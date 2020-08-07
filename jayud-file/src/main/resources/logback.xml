@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <conversionRule conversionWord="colorlevel" converterClass="com.jayud.common.config.LogbackConfigs.ColorDebugLevel"/>
+    <conversionRule conversionWord="colorname" converterClass="com.jayud.common.config.LogbackConfigs.ColorName"/>
+    <conversionRule conversionWord="colorthread" converterClass="com.jayud.common.config.LogbackConfigs.ColorThread"/>
+
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d{yyyy-MM-dd HH:mm:ss} %colorlevel(%-5level) %colorthread({%thread}) %colorname(%logger{36}) - %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+
+    <logger name="org.springframework.web" level="info" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <logger name="com.lenovo" level="info" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <!--打印端口号-->
+    <logger name="org.springframework.boot.web.embedded.tomcat.TomcatWebServer" level="info" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+    <logger name="org.springframework.cloud.alibaba.nacos.registry.NacosServiceRegistry" level="info"
+            additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+
+
+    <root level="error">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>

@@ -1,0 +1,21 @@
+jayud:
+  nacos:
+    server-addr: 192.168.0.231:8848
+    config:
+      namespace: c19b4244-6c37-4ca2-ba49-a27404ca3f74
+
+fdfs:
+  soTimeout: 1500
+  connectTimeout: 600
+  resHost: 192.168.0.231
+  storagePort: 23332
+  serverPath: http://192.168.0.231
+  thumbImage:             #缩略图生成参数
+    width: 150
+    height: 150
+  trackerList:            #TrackerList参数,支持多个
+    - 192.168.0.231:23333    #多个继续增加一行即可 携带
+  pool:
+    max-total: 200      # 连接池最大数量
+    max-total-per-key: 50   # 每个tracker地址的最大连接数
+    max-wait-millis: 5000 # 连接耗尽时等待获取连接的最大毫秒数

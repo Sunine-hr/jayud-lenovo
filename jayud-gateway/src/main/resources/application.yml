@@ -1,0 +1,29 @@
+server:
+  port: 8001 #端口
+spring:
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"   # 允许跨域请求的域名或服务器IP,多个用逗号分隔，*为允许所有
+            allowedMethods:       # 允许跨域的请求方法
+              - GET
+              - POST
+              - PUT
+              - DELETE
+      routes:
+        - id: route-jayud-spider-web #联想物流塔
+          uri: lb://jayud-spider-web-config  # uri以lb://开头（后面接的服务名称)
+          predicates:
+            - Path=/spider/**
+          filters:
+            - StripPrefix=1
+            - IgnoreGlobalFilterFactor
+        - id: jayud-file #文件处理中心
+          uri: lb://jayud-file
+          predicates:
+            - Path=/file/** #指定路径（localhost:8001/swagger-ui.html）
+          filters:
+            - StripPrefix=1
+            - IgnoreGlobalFilterFactor

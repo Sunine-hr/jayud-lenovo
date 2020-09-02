@@ -41,7 +41,7 @@
         FROM
         customer_info ci
         WHERE
-        c.id = #{id}
+        ci.id = #{id}
     </select>
 
 

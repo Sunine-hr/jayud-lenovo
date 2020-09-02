@@ -44,10 +44,6 @@
             <groupId>com.alibaba.nacos</groupId>
             <artifactId>nacos-client</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>com.jayud</groupId>
@@ -67,7 +63,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <!-- 指定该Main Class为全局的唯一入口 -->
-                    <mainClass>com.scmrt.JayudMsgApplication</mainClass>
+                    <mainClass>com.jayud.JayudMsgApplication</mainClass>
                     <layout>ZIP</layout>
                 </configuration>
                 <executions>
@@ -80,7 +76,4 @@
             </plugin>
         </plugins>
     </build>
-
-
-
 </project>

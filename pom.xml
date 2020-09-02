@@ -25,9 +25,7 @@
         <module>jayud-oms</module>
         <module>jayud-customs</module>
         <module>jayud-finance</module>
-        <module>jayud-oms/jayud-oms-model</module>
-        <module>jayud-oms/jayud-oms-service</module>
-        <module>jayud-oms/jayud-oms-web</module>
+        <module>jayud-oms</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

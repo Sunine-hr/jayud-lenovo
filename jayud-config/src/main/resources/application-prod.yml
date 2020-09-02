@@ -1,7 +1,7 @@
 #数据库配置
 jayud:
   datasource:
-    ip: 192.168.0.231
+    ip: 113.100.140.250
     username: root
     password: Root!!2020
 swagger:

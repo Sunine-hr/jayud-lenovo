@@ -1,5 +1,5 @@
-rtscf:
+jayud:
   nacos:
     server-addr: 192.168.0.231:8848
-      config:
-        namespace: c19b4244-6c37-4ca2-ba49-a27404ca3f74
+    config:
+      namespace: c19b4244-6c37-4ca2-ba49-a27404ca3f74

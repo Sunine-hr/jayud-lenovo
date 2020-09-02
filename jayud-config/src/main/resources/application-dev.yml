@@ -10,7 +10,7 @@ swagger:
 #oms前缀路径
 oms:
   content:
-    path: /spider
+    path: /jayud-oms/
 business:
   oms:
     datasource:
@@ -19,5 +19,5 @@ business:
 redis:
   server:
     url: 127.0.0.1
-    port: 6379
-    password:
+    port: 6377
+    password: 'q$o8S#ixaf9x87nOF8oSoyAAQZut@zxe'

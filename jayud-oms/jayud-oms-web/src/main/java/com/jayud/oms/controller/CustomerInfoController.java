@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/customerInfo")
 public class CustomerInfoController {
 
-    @Autowired
-    private ICustomerInfoService ICustomerInfoService;
+//    @Autowired
+//    private ICustomerInfoService iCustomerInfoService;
 
     @ApiOperation(value = "获取用户基本信息", httpMethod = "GET")
     @GetMapping("/getAdInfo")

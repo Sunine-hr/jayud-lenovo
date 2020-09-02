@@ -46,7 +46,7 @@ spring:
             multi-statement-allow: true
 mybatis-plus:
   mapper-locations: classpath:com/jayud/oms/mapper/*.xml
-  typeAliasesPackage: com.lenovo.model
+  typeAliasesPackage: com.jayud.model
   configuration:
     map-underscore-to-camel-case: true
   global-config:

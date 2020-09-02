@@ -1,43 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.lenovo.mapper.CityMapper">
+<mapper namespace="com.jayud.oms.mapper.CustomerInfoMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.lenovo.model.po.City">
+    <resultMap id="BaseResultMap" type="com.jayud.model.po.CustomerInfo">
         <id column="id" property="id" />
-        <result column="country" property="country" />
-        <result column="state" property="state" />
-        <result column="city" property="city" />
-        <result column="state_code" property="stateCode" />
-        <result column="city_code" property="cityCode" />
-        <result column="cn_city" property="cnCity" />
-        <result column="cn_state" property="cnState" />
-        <result column="cn_country" property="cnCountry" />
-        <result column="country_code" property="countryCode" />
-        <result column="country_id" property="countryId"/>
-        <result column="state_id" property="stateId"/>
+        <result column="name" property="name" />
+        <result column="unit_account" property="unitAccount" />
+        <result column="id_code" property="idCode" />
+        <result column="types" property="types" />
+        <result column="contact" property="contact" />
+        <result column="phone" property="phone" />
+        <result column="address" property="address" />
+        <result column="email" property="email" />
+        <result column="legal_entity" property="legalEntity" />
+        <result column="invoice_code" property="invoiceCode"/>
+        <result column="tfn" property="tfn"/>
+        <result column="if_contract" property="ifContract"/>
+        <result column="settlement_type" property="settlementType"/>
+        <result column="account_period" property="accountPeriod"/>
+        <result column="estate" property="estate"/>
+        <result column="department_code" property="departmentCode"/>
+        <result column="ku_code" property="kuCode"/>
+        <result column="yw_code" property="ywCode"/>
+        <result column="audit_status" property="auditStatus"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="updated_user" property="updatedUser"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, country, state, city, state_code, city_code, cn_city, cn_state, cn_country, country_code, country_id, state_id
+         id,name,unit_account,id_code,types,contact,phone,address,email,legal_entity,invoice_code,tfn,
+         if_contract,settlement_type,account_period,estate,department_code,ku_code,yw_code,audit_status,
+         created_user,updated_user
     </sql>
-    
-    <select id="getCityByCountryId" resultMap="BaseResultMap">
+
+    <select id="getCustomerInfoById" resultMap="BaseResultMap">
         SELECT
-            ci.country,
-            ci.state,
-            ci.city
+        <include refid="Base_Column_List"/>
         FROM
-            country c
-            LEFT JOIN state_province p ON c.id = p.country_id
-            LEFT JOIN city ci ON ci.state_id = p.id
+        customer_info ci
         WHERE
-            c.id = #{countryId}
-            AND p.id = #{stateId}
-            AND ci.id = #{cityId}
+        c.id = #{id}
     </select>
-    
-    
+
+
 
 </mapper>

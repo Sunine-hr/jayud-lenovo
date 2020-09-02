@@ -1,18 +1,13 @@
 package com.jayud.oms.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.model.po.CustomerInfo;
 import org.apache.ibatis.annotations.Mapper;
 
-/**
- * <p>
- *
- * </p>
- *
- * @author larry
- * @since 2020-7-10
- */
+
+
 @Mapper
-public interface CustomerInfoMapper extends BaseMapper<Object> {
+public interface CustomerInfoMapper extends BaseMapper<CustomerInfo> {
 
-
+    CustomerInfo getCustomerInfoById(Long id);
 }

@@ -12,7 +12,7 @@ import org.apache.ibatis.annotations.Mapper;
  * @since 2020-7-10
  */
 @Mapper
-public interface BottomNavMapper extends BaseMapper<Object> {
+public interface CustomerInfoMapper extends BaseMapper<Object> {
 
 
 }

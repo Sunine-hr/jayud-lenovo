@@ -6,6 +6,6 @@ package com.jayud.service;
  * @description
  * @Date: 2020-08-13 19:52
  */
-public interface CodeTrackerService {
+public interface ICustomerInfoService {
 
 }

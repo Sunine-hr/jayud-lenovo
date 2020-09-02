@@ -1,24 +1,24 @@
 server:
   port: 8205
   servlet:
-    context-path: /api
+    context-path: ${oms.content.path}
 spring:
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 15MB
   redis:
-    host: 113.100.140.250
-    port: 6377
-    password: 'q$o8S#ixaf9x87nOF8oSoyAAQZut@zxe'
+    host: ${redis.server.url}
+    port: ${redis.server.port}
+    password: ${redis.server.password}
     timeout: 2000s
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driverClassName: com.mysql.cj.jdbc.Driver
     druid:
-      url: jdbc:mysql://113.100.140.250:8098/jayd_platform?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-      username: root
-      password: Root!!2020
+      url: jdbc:mysql://${jayud.datasource.ip}:8098/${business.oms.datasource.name}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+      username: ${jayud.datasource.username}
+      password: ${jayud.datasource.password}
       initial-size: 10
       max-active: 100
       min-idle: 10
@@ -55,7 +55,7 @@ mybatis-plus:
 swagger:
   enable: true
 logging:
-  path: /data/log/lenovo
+  path: /data/log/oms
 
 
 

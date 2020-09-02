@@ -1,4 +1,4 @@
-package com.jayud.oms.model.bo;
+package com.jayud.model.bo;
 
 import lombok.Data;
 

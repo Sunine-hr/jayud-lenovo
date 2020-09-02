@@ -22,7 +22,6 @@
         <!-- 任务调度 -->
         <module>jayud-task</module>
         <module>jayud-oauth</module>
-        <module>jayud-oms</module>
         <module>jayud-customs</module>
         <module>jayud-finance</module>
         <module>jayud-oms</module>

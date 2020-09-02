@@ -10,14 +10,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>jayud-oms</artifactId>
+    <packaging>pom</packaging>
     <version>1.0</version>
     <name>jayud-oms</name>
     <description>oms管理系统</description>
 
     <modules>
+        <module>jayud-oms-web</module>
         <module>jayud-oms-model</module>
         <module>jayud-oms-service</module>
-        <module>jayud-oms-web</module>
     </modules>
 
     <dependencies>

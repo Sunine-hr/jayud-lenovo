@@ -2,8 +2,6 @@ package com.jayud.model.vo;
 
 import lombok.Data;
 
-import java.util.List;
-
 /**
  * @author william
  * @description

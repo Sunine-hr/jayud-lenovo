@@ -14,10 +14,16 @@
     <name>jayud-oms</name>
     <description>oms管理系统</description>
 
+    <modules>
+        <module>jayud-oms-model</module>
+        <module>jayud-oms-service</module>
+        <module>jayud-oms-web</module>
+    </modules>
+
     <dependencies>
         <dependency>
             <groupId>com.jayud</groupId>
-            <artifactId>jayud-service</artifactId>
+            <artifactId>jayud-oms-service</artifactId>
             <version>1.0</version>
         </dependency>
         <dependency>

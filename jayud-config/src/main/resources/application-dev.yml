@@ -7,14 +7,14 @@ jayud:
 swagger:
   is:
     enable: true
-#联想物流塔前缀路径
-spider:
-  admin:
-    content:
-      path: /v1
-  web:
+#oms前缀路径
+oms:
+  content:
+    path: /spider
+business:
+  oms:
     datasource:
-      name: spider
+      name: jayud_platform
 #redis数据源
 redis:
   server:

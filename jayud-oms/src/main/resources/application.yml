@@ -1,7 +1,7 @@
 server:
   port: 8205
   servlet:
-    context-path: ${guarantee.web.content.path}
+    context-path: ${oms.content.path}
 spring:
   servlet:
     multipart:
@@ -15,9 +15,9 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     driverClassName: com.mysql.cj.jdbc.Driver
     druid:
-      url: jdbc:mysql://${rtscf.datasource.ip}:3306/${rfscf.guarantee.datasource.name}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-      username: ${rtscf.datasource.username}
-      password: ${rtscf.datasource.password}
+      url: jdbc:mysql://${jayud.datasource.ip}:3306/${business.oms.datasource.name}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+      username: ${jayud.datasource.username}
+      password: ${jayud.datasource.password}
       initial-size: 10
       max-active: 100
       min-idle: 10
@@ -44,8 +44,8 @@ spring:
           config:
             multi-statement-allow: true
 mybatis-plus:
-  mapper-locations: classpath:com/scmrt/mapper/*.xml
-  typeAliasesPackage: com.scmrt.model
+  mapper-locations: classpath:com/jayud/mapper/*.xml
+  typeAliasesPackage: com.jayud.model
   configuration:
     map-underscore-to-camel-case: true
   global-config:

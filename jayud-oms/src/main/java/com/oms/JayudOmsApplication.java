@@ -14,10 +14,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableFeignClients
-@EnableAspectJAutoProxy(exposeProxy = true)
 public class JayudOmsApplication {
     public static void main(String[] args) {
-        SpringApplication.run(com.oms.JayudOmsApplication.class,args);
-        System.err.println("Guarantee服务启动了");
-    }
+        SpringApplication.run(JayudOmsApplication.class,args); }
 }

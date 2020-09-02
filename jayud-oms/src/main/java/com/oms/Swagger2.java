@@ -27,7 +27,7 @@ public class Swagger2 {
      *
      * @return
      */
-    @Bean
+   /* @Bean
     public Docket createRestApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
@@ -37,7 +37,7 @@ public class Swagger2 {
                 .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
                 .paths(PathSelectors.any())
                 .build();
-    }
+    }*/
 
     /**
      * 创建该API的基本信息（这些基本信息会展现在文档页面中）

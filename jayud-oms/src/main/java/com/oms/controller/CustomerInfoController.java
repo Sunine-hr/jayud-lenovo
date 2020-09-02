@@ -1,8 +1,8 @@
 package com.oms.controller;
 
 
-import com.jayud.service.ICustomerInfoService;
 import com.jayud.common.ApiResult;
+import com.jayud.service.ICustomerInfoService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

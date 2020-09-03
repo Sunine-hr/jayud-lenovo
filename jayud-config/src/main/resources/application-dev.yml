@@ -15,8 +15,7 @@ business:
   oms:
     datasource:
       name: jayud_platform
-
-#oms前缀路径
+#oauth前缀路径
 oauth:
   content:
     path: /jayud-oauth/

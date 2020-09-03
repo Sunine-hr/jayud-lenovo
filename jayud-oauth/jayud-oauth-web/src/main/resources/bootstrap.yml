@@ -1,6 +1,6 @@
 spring:
   application:
-    name: jayud-oms-web
+    name: jayud-oauth-web
   profiles:
     active: dev
   cloud:

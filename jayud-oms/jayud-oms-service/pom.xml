@@ -10,8 +10,22 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>jayud-oms-service</artifactId>
+    <description>业务逻辑处理模块</description>
+    <packaging>jar</packaging>
+    <version>1.0</version>
+    <name>jayud-oms-service</name>
 
     <dependencies>
+        <dependency>
+            <groupId>com.jayud</groupId>
+            <artifactId>jayud-oms-model</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jayud</groupId>
+            <artifactId>jayud-common</artifactId>
+            <version>1.0</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
@@ -39,17 +53,6 @@
             <artifactId>mysql-connector-java</artifactId>
             <scope>runtime</scope>
         </dependency>
-        <dependency>
-            <groupId>com.jayud</groupId>
-            <artifactId>jayud-oms-model</artifactId>
-            <version>1.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.jayud</groupId>
-            <artifactId>jayud-common</artifactId>
-            <version>1.0</version>
-            <scope>compile</scope>
-        </dependency>
+
     </dependencies>
 </project>

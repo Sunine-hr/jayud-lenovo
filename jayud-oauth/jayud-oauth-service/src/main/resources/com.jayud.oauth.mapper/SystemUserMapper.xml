@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oauth.mapper.SystemUserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.model.po.SystemUser">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="password" property="password" />
+        <result column="icon" property="icon" />
+        <result column="contract" property="contract" />
+        <result column="note" property="note" />
+        <result column="create_time" property="createTime" />
+        <result column="login_time" property="loginTime" />
+        <result column="status" property="status" />
+        <result column="country" property="country" />
+        <result column="state" property="state" />
+        <result column="time_zone" property="timeZone" />
+        <result column="photo" property="photo" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        system_user.id,
+        system_user.name,
+        system_user.password,
+        system_user.icon,
+        system_user.contract,
+        system_user.note,
+        system_user.create_time,
+        system_user.login_time,
+        system_user.status,
+        system_user.country,
+        system_user.state,
+        system_user.time_zone,
+        system_user.photo
+    </sql>
+
+</mapper>

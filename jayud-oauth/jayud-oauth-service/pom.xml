@@ -9,20 +9,20 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jayud-oauth</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>jayud-oauth-model</module>
-        <module>jayud-oauth-service</module>
-        <module>jayud-oauth-web</module>
-    </modules>
+    <artifactId>jayud-oauth-service</artifactId>
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <groupId>com.jayud</groupId>
+            <artifactId>jayud-oauth-model</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.jayud</groupId>
+            <artifactId>jayud-common</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
-
-
 
 </project>

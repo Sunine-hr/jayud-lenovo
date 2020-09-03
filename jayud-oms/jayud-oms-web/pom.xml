@@ -26,6 +26,11 @@
         </dependency>
         <dependency>
             <groupId>com.jayud</groupId>
+            <artifactId>jayud-oms-model</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jayud</groupId>
             <artifactId>jayud-common</artifactId>
             <version>1.0</version>
         </dependency>

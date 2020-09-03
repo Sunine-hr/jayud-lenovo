@@ -7,9 +7,11 @@
         <groupId>com.jayud</groupId>
         <version>1.0</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
-
     <artifactId>jayud-oms-model</artifactId>
-
-
+    <packaging>jar</packaging>
+    <description>项目实体对象</description>
+    <version>1.0</version>
+    <groupId>com.jayud</groupId>
+    <name>jayud-oms-model</name>
+    <modelVersion>4.0.0</modelVersion>
 </project>

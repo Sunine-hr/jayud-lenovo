@@ -13,10 +13,10 @@ spring:
               - PUT
               - DELETE
       routes:
-        - id: route-jayud-spider-web #联想物流塔
-          uri: lb://jayud-spider-web-config  # uri以lb://开头（后面接的服务名称)
+        - id: route-jayud-oms #联想物流塔
+          uri: lb://jayud-oms-web  # uri以lb://开头（后面接的服务名称)
           predicates:
-            - Path=/spider/**
+            - Path=/jayud-oms/**
           filters:
             - StripPrefix=1
             - IgnoreGlobalFilterFactor

@@ -15,9 +15,14 @@ business:
   oms:
     datasource:
       name: jayud_platform
+
+#oms前缀路径
+oauth:
+  content:
+    path: /jayud-oauth/
 #redis数据源
 redis:
   server:
-    url: 127.0.0.1
+    url: 113.100.140.250
     port: 6377
     password: 'q$o8S#ixaf9x87nOF8oSoyAAQZut@zxe'

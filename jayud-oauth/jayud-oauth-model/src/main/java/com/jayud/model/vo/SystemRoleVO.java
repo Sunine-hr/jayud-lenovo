@@ -3,8 +3,6 @@ package com.jayud.model.vo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 /**
  * @author chuanmei
  */
@@ -23,11 +21,9 @@ public class SystemRoleVO {
     @ApiModelProperty(value = "后台用户数量")
     private Integer adminCount;
 
-    @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
-
     @ApiModelProperty(value = "启用状态：0->禁用；1->启用")
     private Integer status;
 
+    @ApiModelProperty(value = "角色优先级")
     private Integer sort;
 }

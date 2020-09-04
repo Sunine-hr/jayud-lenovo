@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.annotation.ComponentScan;
 
 /**
  * jayud-oauth模块启动类
@@ -11,6 +12,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableFeignClients
+@ComponentScan(basePackages = {"com.jayud.common","com.jayud.oauth"})
 public class JayudOauthApplication {
     public static void main(String[] args) {
         SpringApplication.run(JayudOauthApplication.class,args); }

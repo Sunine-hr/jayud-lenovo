@@ -125,7 +125,8 @@ public class ShiroConfig {
         RedisSessionDAO redisSessionDAO = new RedisSessionDAO();
         redisSessionDAO.setRedisManager(redisManager());
         redisSessionDAO.setSessionIdGenerator(sessionIdGenerator());
-        redisSessionDAO.setExpire(1800);
+        //设置session的过期时间（秒）
+        redisSessionDAO.setExpire(3600*24);
         return redisSessionDAO;
     }
 

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oauth.mapper.SystemRoleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.model.po.SystemRole">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="description" property="description" />
+        <result column="admin_count" property="adminCount" />
+        <result column="create_time" property="createTime" />
+        <result column="status" property="status" />
+        <result column="sort" property="sort" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        system_role.id,
+        system_role.name,
+        system_role.description,
+        system_role.admin_count,
+        system_role.create_time,
+        system_role.status,
+        system_role.sort
+    </sql>
+    <select id="getRoleList" resultType="com.jayud.model.po.SystemRole">
+        select
+            <include refid="Base_Column_List"/>
+        from
+            system_role
+        left join system_user_role_relation surr on system_role.id =  surr.role_id
+        where
+            surr.user_id = #{userId}
+    </select>
+
+</mapper>

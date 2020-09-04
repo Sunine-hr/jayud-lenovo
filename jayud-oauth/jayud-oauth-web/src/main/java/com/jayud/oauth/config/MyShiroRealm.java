@@ -1,7 +1,9 @@
 package com.jayud.oauth.config;
 
+import com.jayud.model.po.SystemRole;
 import com.jayud.model.po.SystemUser;
 import com.jayud.model.vo.UserLoginToken;
+import com.jayud.oauth.service.ISystemUserRoleRelationService;
 import com.jayud.oauth.service.ISystemUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
@@ -14,6 +16,7 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -26,6 +29,14 @@ public class MyShiroRealm extends AuthorizingRealm {
 
     @Resource
     private ISystemUserService userService;
+    @Resource
+    private ISystemUserRoleRelationService userRoleRelationService;
+//
+//    @Resource
+//    private IRoleService iRoleService;
+//
+//    @Resource
+//    private IPermissionService iPermissionService;
 
 
     /**
@@ -74,15 +85,21 @@ public class MyShiroRealm extends AuthorizingRealm {
 
         UserLoginToken loginToken = (UserLoginToken) token;
 
-        //校验验证码
-       /* if(!loginToken.getClientPickAuthCode().equalsIgnoreCase(loginToken.getServicePicAuthCode())){
-            throw new AuthenticationException("Verification Code is error");
-        }*/
+//todo 取消注释
+//        //校验验证码
+//        if(!loginToken.getClientPickAuthCode().equalsIgnoreCase(loginToken.getServicePicAuthCode())){
+//            throw new AuthenticationException("Verification Code is error");
+//        }
 
         //通过username从数据库中查找 User对象.
         //实际项目中，这里可以根据实际情况做缓存，如果不做，Shiro自己也是有时间间隔机制，2分钟内不会重复执行该方法
         SystemUser user = userService.selectByName(userName);
         if (Objects.isNull(user)) {
+            return null;
+        }
+        //如果用户未绑定任何可用角色，将不可登录
+        List<SystemRole> roleList = userRoleRelationService.getEnabledRolesByUserId(user.getId());
+        if (Objects.isNull(roleList) || roleList.isEmpty()) {
             return null;
         }
 

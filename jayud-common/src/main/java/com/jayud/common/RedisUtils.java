@@ -28,6 +28,12 @@ public class RedisUtils {
      * 默认过期时长，单位：秒
      */
     public final static long DEFAULT_EXPIRE = 60 * 60 * 24;
+
+    /**
+     * 过期时长 30分钟 单位：秒
+     */
+    public final static long EXPIRE_THIRTY_MIN = 1800;
+
     /**
      * 不设置过期时长
      */

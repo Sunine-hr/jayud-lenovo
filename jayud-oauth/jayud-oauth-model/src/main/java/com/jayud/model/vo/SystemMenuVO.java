@@ -1,13 +1,10 @@
 package com.jayud.model.vo;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-
-import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
@@ -19,13 +16,6 @@ public class SystemMenuVO {
 
     @ApiModelProperty(value = "父级ID")
     private Long parentId;
-
-    @ApiModelProperty(value = "创建时间")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private LocalDateTime createTime;
-
-    @ApiModelProperty(value = "菜单名称")
-    private String title;
 
     @ApiModelProperty(value = "菜单级数")
     private Integer level;
@@ -41,5 +31,11 @@ public class SystemMenuVO {
 
     @ApiModelProperty(value = "前端隐藏")
     private Integer hidden;
+
+    @ApiModelProperty(value = "前端路由，二级菜单链接地址")
+    private String router;
+
+    @ApiModelProperty(value = "名称key值")
+    private String key;
 
 }

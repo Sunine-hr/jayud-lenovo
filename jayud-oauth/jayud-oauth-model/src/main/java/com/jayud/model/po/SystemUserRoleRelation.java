@@ -12,33 +12,30 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 
 /**
- * 后台用户角色表
+ * <p>
+ * 
+ * </p>
+ *
+ * @author bocong.zheng
+ * @since 2020-07-20
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="SystemRole对象", description="后台用户角色表")
-public class SystemRole extends Model<SystemRole> {
+@ApiModel(value="SystemUserRoleRelation对象", description="")
+public class SystemUserRoleRelation extends Model<SystemUserRoleRelation> {
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty(value = "主键ID")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "名称")
-    private String name;
+    @ApiModelProperty(value = "用户ID")
+    private Long userId;
 
-    @ApiModelProperty(value = "描述")
-    private String description;
-
-    @ApiModelProperty(value = "后台用户数量")
-    private Integer adminCount;
-
-    @ApiModelProperty(value = "启用状态：0->禁用；1->启用")
-    private Integer status;
-
-    @ApiModelProperty(value = "角色优先级")
-    private Integer sort;
+    @ApiModelProperty(value = "角色ID")
+    private Long roleId;
 
 
     @Override

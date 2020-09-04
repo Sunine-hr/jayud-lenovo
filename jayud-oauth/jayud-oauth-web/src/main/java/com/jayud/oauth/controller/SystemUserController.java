@@ -45,7 +45,7 @@ public class SystemUserController {
         //保持登录
         token.setRememberMe(loginForm.getKeepLogin());
 
-        //该系统暂没有图验证 TODO
+        //该系统暂没有图验证
 
         //登录逻辑
         SystemUserVO userVO = service.login(token);

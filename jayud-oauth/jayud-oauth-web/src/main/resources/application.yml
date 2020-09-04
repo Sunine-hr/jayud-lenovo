@@ -45,7 +45,7 @@ spring:
           config:
             multi-statement-allow: true
 mybatis-plus:
-  mapper-locations: classpath:com/jayud/oauth/mapper/*.xml
+  mapper-locations: classpath:com.jayud.oauth.mapper/*.xml
   typeAliasesPackage: com.jayud.model
   configuration:
     map-underscore-to-camel-case: true
@@ -56,6 +56,24 @@ swagger:
   enable: true
 logging:
   path: /data/log/oauth
-
+secure:
+  ignored:
+    urls: #安全路径白名单
+      - /swagger-ui.html
+      - /swagger-resources/**
+      - /swagger/**
+      - /**/v2/api-docs
+      - /**/*.js
+      - /**/*.css
+      - /**/*.png
+      - /**/*.ico
+      - /doc.html
+      - /webjars/springfox-swagger-ui/**
+      - /actuator/**
+      - /druid/**
+      - /system/user/login
+      - /system/user/logout
+      - /system/user/auth/image
+      - /oss/upload
 
 

@@ -1,10 +1,10 @@
 package com.jayud.model.vo;
 
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.model.enums.SystemUserStatusEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -56,6 +56,9 @@ public class SystemUserVO {
     @ApiModelProperty(value = "图片(支持多张)")
     private String photo;
 
+    @ApiModelProperty(value = "图片Url")
+    private String photoUrl;
+
     @ApiModelProperty(value = "用户角色")
     private List<SystemRoleVO> roles;
 
@@ -67,6 +70,9 @@ public class SystemUserVO {
 
     @ApiModelProperty(value = "菜单树")
     private List<SystemMenuNode> menuNodeList;
+
+    @ApiModelProperty(value = "用户token")
+    private String token;
 
     public String getStatusDesc(){
         return SystemUserStatusEnum.getDesc(this.status);

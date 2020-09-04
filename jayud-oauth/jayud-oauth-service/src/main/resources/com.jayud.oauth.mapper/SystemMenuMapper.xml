@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oauth.mapper.SystemMenuMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.model.po.SystemMenu">
+        <id column="id" property="id" />
+        <result column="parent_id" property="parentId" />
+        <result column="name" property="name" />
+        <result column="level" property="level" />
+        <result column="sort" property="sort" />
+        <result column="key" property="key" />
+        <result column="icon" property="icon" />
+        <result column="hidden" property="hidden" />
+        <result column="router" property="router" />
+        <result column="created_user" property="createdUser" />
+        <result column="updated_user" property="updatedUser" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        system_menu.id,
+        system_menu.parent_id,
+        system_menu.name,
+        system_menu.level,
+        system_menu.sort,
+        system_menu.key,
+        system_menu.icon,
+        system_menu.hidden,
+        system_menu.router,
+        system_menu.created_user,
+        system_menu.updated_user
+    </sql>
+
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        SELECT
+        DISTINCT
+            <include refid="Base_Column_List"/>
+        FROM
+            system_menu
+        LEFT JOIN system_role_menu_relation srmr on system_menu.id = srmr.menu_id
+        <where>
+            <if test="roleIds != null and roleIds.size > 0">
+                srmr.role_id in
+                <foreach collection="roleIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="hidden != null">
+                and system_menu.hidden = #{hidden}
+            </if>
+        </where>
+        ORDER BY system_menu.sort desc;
+    </select>
+</mapper>

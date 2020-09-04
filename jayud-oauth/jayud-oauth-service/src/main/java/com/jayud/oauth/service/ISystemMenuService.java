@@ -19,11 +19,10 @@ public interface ISystemMenuService extends IService<SystemMenu> {
 
 
     /**
-     * 菜单树查询
+     * 获取该角色下的所有菜单
+     * @param roleIds
      * @return
      */
-    List<SystemMenuNode> treeList();
-
     List<SystemMenuNode> roleTreeList(List<Long> roleIds);
 
 }

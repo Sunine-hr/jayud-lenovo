@@ -4,14 +4,18 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.exceptions.ApiException;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.model.po.SystemUser;
 import com.jayud.model.po.SystemUserLoginLog;
+import com.jayud.model.vo.SystemMenuNode;
+import com.jayud.model.vo.SystemRoleVO;
 import com.jayud.model.vo.SystemUserVO;
 import com.jayud.model.vo.UserLoginToken;
 import com.jayud.oauth.mapper.SystemUserMapper;
+import com.jayud.oauth.service.ISystemMenuService;
 import com.jayud.oauth.service.ISystemRoleService;
 import com.jayud.oauth.service.ISystemUserLoginLogService;
 import com.jayud.oauth.service.ISystemUserService;
@@ -25,6 +29,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -45,6 +51,11 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     @Autowired
     ISystemUserLoginLogService loginLogService;
 
+    @Autowired
+    private RedisUtils redisUtils;
+
+    @Autowired
+    ISystemMenuService systemMenuService;
 
     @Override
     public SystemUser selectByName(String name) {
@@ -75,6 +86,22 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         SystemUser user = (SystemUser) subject.getPrincipals().getPrimaryPrincipal();
         //响应前端数据
         cacheUser = convert(user);
+        //构建用户拥有角色和菜单
+        List<SystemRoleVO> roleVOS = roleService.getRoleList(user.getId());
+        List<Long> roleIds = new ArrayList<>();
+        for (SystemRoleVO systemRoleVO:roleVOS) {
+            roleIds.add(systemRoleVO.getId());
+        }
+        List<SystemMenuNode> systemMenuNodes = systemMenuService.roleTreeList(roleIds);
+        cacheUser.setRoles(roleVOS);
+        cacheUser.setRoleIds(roleIds);
+        cacheUser.setMenuNodeList(systemMenuNodes);
+        //缓存用户ID larry 2020年8月13日11:21:11
+        String uid = redisUtils.get(user.getId().toString());
+        if(uid == null){
+            redisUtils.set(user.getId().toString(),subject.getSession().getId().toString());
+        }
+        cacheUser.setToken(subject.getSession().getId().toString());
         log.warn("CacheUser is {}", JSONUtil.toJsonStr(cacheUser));
         //保存登录记录
         insertLoginLog(user);

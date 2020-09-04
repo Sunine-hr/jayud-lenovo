@@ -23,14 +23,6 @@ import java.util.stream.Collectors;
 @Service
 public class SystemMenuServiceImpl extends ServiceImpl<SystemMenuMapper, SystemMenu> implements ISystemMenuService {
 
-
-
-
-    @Override
-    public List<SystemMenuNode> treeList() {
-        return convertMenuTree(list(), 0L);
-    }
-
     @Override
     public List<SystemMenuNode> roleTreeList(List<Long> roleIds){
         return convertMenuTree(selectByUserId(roleIds,0), 0L);

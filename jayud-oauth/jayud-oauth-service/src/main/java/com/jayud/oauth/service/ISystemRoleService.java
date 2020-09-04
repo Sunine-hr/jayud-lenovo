@@ -25,5 +25,11 @@ public interface ISystemRoleService extends IService<SystemRole> {
      */
     List<SystemRoleVO> getRoleList(Long userId);
 
+    /**
+     * 角色新增,需返回新增记录的主键
+     * @param role
+     */
+    Long saveRole(SystemRole role);
+
 
 }

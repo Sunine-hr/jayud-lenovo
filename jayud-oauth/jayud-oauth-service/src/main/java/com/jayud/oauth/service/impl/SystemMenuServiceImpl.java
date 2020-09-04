@@ -28,11 +28,15 @@ public class SystemMenuServiceImpl extends ServiceImpl<SystemMenuMapper, SystemM
         return convertMenuTree(selectByUserId(roleIds,0), 0L);
     }
 
-    private List<SystemMenu> selectByUserId(List<Long> roleIds,Integer hidden){
-        return baseMapper.selectByUserId(roleIds,hidden);
+    @Override
+    public List<SystemMenuNode> findAllMenuNode() {
+        return convertMenuTree(selectByUserId(null,0), 0L);
     }
 
 
+    private List<SystemMenu> selectByUserId(List<Long> roleIds,Integer hidden){
+        return baseMapper.selectByUserId(roleIds,hidden);
+    }
 
     /**
      * 将SystemMenu转化为USystemMenuNode并设置children属性

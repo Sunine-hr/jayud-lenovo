@@ -1,11 +1,16 @@
 package com.jayud.oauth.controller;
 
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.CommonResult;
+import com.jayud.common.utils.ConvertUtil;
+import com.jayud.model.bo.AddRoleForm;
 import com.jayud.model.bo.SystemUserLoginForm;
+import com.jayud.model.po.SystemRole;
+import com.jayud.model.vo.SystemMenuNode;
 import com.jayud.model.vo.SystemUserVO;
 import com.jayud.model.vo.UserLoginToken;
 import com.jayud.oauth.service.ISystemMenuService;
+import com.jayud.oauth.service.ISystemRoleMenuRelationService;
+import com.jayud.oauth.service.ISystemRoleService;
 import com.jayud.oauth.service.ISystemUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -13,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 
 @RestController
@@ -21,11 +27,16 @@ import javax.validation.Valid;
 public class SystemUserController {
 
     @Autowired
-    ISystemUserService service;
+    ISystemUserService userService;
 
     @Autowired
     ISystemMenuService menuService;
 
+    @Autowired
+    ISystemRoleMenuRelationService roleMenuRelationService;
+
+    @Autowired
+    ISystemRoleService roleService;
 
     /**
      * 登录接口
@@ -48,7 +59,7 @@ public class SystemUserController {
         //该系统暂没有图验证
 
         //登录逻辑
-        SystemUserVO userVO = service.login(token);
+        SystemUserVO userVO = userService.login(token);
 
         return CommonResult.success(userVO);
     }
@@ -62,25 +73,28 @@ public class SystemUserController {
     @ResponseBody
     public CommonResult logout() {
         //登出
-        service.logout();
+        userService.logout();
         return CommonResult.success();
     }
 
-    /**
-     *
-     * @return 登录用户信息
-     */
-    @ApiOperation(value = "登录用户信息查询")
-    @GetMapping(value = "/info")
+    @ApiOperation(value = "角色权限管理-新增数据初始化")
+    @RequestMapping(value = "/findAllMenuNode", method = RequestMethod.GET)
     @ResponseBody
-    public CommonResult<SystemUserVO> info() {
-        //登录用户信息
-        SystemUserVO loginUser = service.getLoginUser();
-        //查询权限菜单集合
-        if(CollectionUtils.isNotEmpty(loginUser.getRoleIds())){
-            loginUser.setMenuNodeList(menuService.roleTreeList(loginUser.getRoleIds()));
-        }
-        return CommonResult.success(loginUser);
+    public CommonResult<List<SystemMenuNode>> findAllMenuNode() {
+        List<SystemMenuNode> systemMenuNodes = menuService.findAllMenuNode();
+        return CommonResult.success(systemMenuNodes);
+    }
+
+    @ApiOperation(value = "角色权限管理-新增确认")
+    @RequestMapping(value = "/addRole", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult addRole(@RequestBody AddRoleForm addRoleForm){
+        SystemRole systemRole = ConvertUtil.convert(addRoleForm, SystemRole.class);
+        List<Long> menuIds = addRoleForm.getMenuIds();
+        roleService.saveRole(systemRole);
+        systemRole.setId(systemRole.getId());
+        roleMenuRelationService.createRelation(systemRole,menuIds);
+        return CommonResult.success();
     }
 
 }

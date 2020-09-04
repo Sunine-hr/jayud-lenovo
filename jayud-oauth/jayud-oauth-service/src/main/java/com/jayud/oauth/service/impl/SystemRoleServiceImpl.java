@@ -32,6 +32,11 @@ public class SystemRoleServiceImpl extends ServiceImpl<SystemRoleMapper, SystemR
         return convertList(roleList);
     }
 
+    @Override
+    public Long saveRole(SystemRole role) {
+        return baseMapper.saveRole(role);
+    }
+
 
     /**
      * 参数转换

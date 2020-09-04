@@ -33,4 +33,14 @@
             surr.user_id = #{userId}
     </select>
 
+    <insert id="saveRole" parameterType="com.jayud.model.po.SystemRole" useGeneratedKeys="true" keyProperty="id">
+	insert into system_role
+	   (name,description,admin_count,sort)
+	values (
+		#{name},
+		#{description},
+		#{adminCount},
+		#{sort})
+  </insert>
+
 </mapper>

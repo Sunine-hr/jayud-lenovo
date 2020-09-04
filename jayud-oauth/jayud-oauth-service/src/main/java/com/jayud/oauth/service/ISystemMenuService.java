@@ -25,4 +25,12 @@ public interface ISystemMenuService extends IService<SystemMenu> {
      */
     List<SystemMenuNode> roleTreeList(List<Long> roleIds);
 
+    /**
+     * 获取所有可显示的菜单
+     * @return
+     */
+    List<SystemMenuNode> findAllMenuNode();
+
+
+
 }

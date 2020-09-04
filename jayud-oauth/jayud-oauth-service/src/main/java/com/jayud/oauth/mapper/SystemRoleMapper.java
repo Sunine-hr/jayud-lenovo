@@ -25,4 +25,11 @@ public interface SystemRoleMapper extends BaseMapper<SystemRole> {
      */
     List<SystemRole> getRoleList(Long userId);
 
+    /**
+     * 角色新增,需返回新增记录的主键
+     * @param systemRole
+     * @return
+     */
+    Long saveRole(SystemRole systemRole);
+
 }

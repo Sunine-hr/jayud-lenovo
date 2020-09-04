@@ -24,7 +24,7 @@
  * jayud-gateway 统一路由转发
  * jayud-msg 统一消息处理
  * jayud-task 统一定时任务项目
- * jayud-customer 客服模块
+ * jayud-tms 运输模块
  * jayud-customs 报关模块
  * jayud-finance 财务模块
  * jayud-oms OMS统一项目

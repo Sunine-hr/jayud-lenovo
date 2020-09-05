@@ -189,6 +189,20 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         return user;
     }
 
+    @Override
+    public List<QueryOrgStructureVO> findOrgStructure(Long fId) {
+        return departmentService.findDepartmentByfId(fId);
+    }
+
+    @Override
+    public List<DepartmentChargeVO> findOrgStructureCharge(Long departmentId) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("department_id",departmentId);
+        queryWrapper.eq("is_department_charge","1");
+        return baseMapper.selectList(queryWrapper);
+    }
+
+
     /**
      * 获取created_user和updated_user
      * @return

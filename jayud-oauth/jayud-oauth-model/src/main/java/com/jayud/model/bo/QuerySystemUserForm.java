@@ -21,7 +21,10 @@ public class QuerySystemUserForm extends BasePageForm{
     @Pattern(regexp = "1|2|3",message = "auditStatus requires '1' or '2' or '3' only")
     private String auditStatus;
 
-    @ApiModelProperty(value = "操作指令(isAccount:账号管理的员工查询 isAudit:人员审核总经办的员工查询)")
-    @Pattern(regexp = "isAccount|isAudit",message = "cmd requires 'isAccount' or 'isAudit' only")
+    @ApiModelProperty(value = "操作指令(isAccount:账号管理的员工查询 isAudit:人员审核总经办的员工查询 byDepartmentId)")
+    @Pattern(regexp = "isAccount|isAudit|byDepartmentId",message = "cmd requires 'isAccount' or 'isAudit' or 'byDepartmentId' only")
     private String cmd;
+
+    @ApiModelProperty("所属部门ID(组织架构的员工查询)")
+    private Long departmentId;
 }

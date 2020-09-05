@@ -6,9 +6,9 @@ import com.jayud.model.bo.AuditSystemUserForm;
 import com.jayud.model.bo.OprSystemUserForm;
 import com.jayud.model.bo.QuerySystemUserForm;
 import com.jayud.model.po.SystemUser;
-import com.jayud.model.vo.SystemUserVO;
-import com.jayud.model.vo.UpdateSystemUserVO;
-import com.jayud.model.vo.UserLoginToken;
+import com.jayud.model.vo.*;
+
+import java.util.List;
 
 /**
  * <p>
@@ -67,4 +67,18 @@ public interface ISystemUserService extends IService<SystemUser> {
      * @return
      */
     SystemUser getLoginUser();
+
+    /**
+     * 获取部门结构
+     * @return
+     */
+    List<QueryOrgStructureVO> findOrgStructure(Long fId);
+
+    /**
+     * 根据部门ID获取部门负责人信息
+     * @param departmentId
+     * @return
+     */
+    List<DepartmentChargeVO>  findOrgStructureCharge(Long departmentId);
+
 }

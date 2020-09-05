@@ -2,8 +2,10 @@ package com.jayud.oauth.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.model.bo.AddDepartmentForm;
 import com.jayud.model.po.Department;
 import com.jayud.model.vo.DepartmentVO;
+import com.jayud.model.vo.QueryOrgStructureVO;
 
 import java.util.List;
 
@@ -25,5 +27,16 @@ public interface ISystemDepartmentService extends IService<Department> {
     List<DepartmentVO> findDepartment();
 
 
+    /**
+     * 根据父级部门查子部门
+     * @return
+     */
+    List<QueryOrgStructureVO> findDepartmentByfId(Long fId);
+
+    /**
+     * 新增部门/编辑
+     * @param departmentId
+     */
+    void saveOrUpdateDepartment(Long departmentId, AddDepartmentForm form);
 
 }

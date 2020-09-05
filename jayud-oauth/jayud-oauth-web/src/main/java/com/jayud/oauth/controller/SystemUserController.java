@@ -5,15 +5,11 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.model.bo.*;
+import com.jayud.model.po.LegalEntity;
 import com.jayud.model.po.SystemRole;
-import com.jayud.model.vo.SystemMenuNode;
-import com.jayud.model.vo.SystemUserVO;
-import com.jayud.model.vo.UpdateSystemUserVO;
-import com.jayud.model.vo.UserLoginToken;
-import com.jayud.oauth.service.ISystemMenuService;
-import com.jayud.oauth.service.ISystemRoleMenuRelationService;
-import com.jayud.oauth.service.ISystemRoleService;
-import com.jayud.oauth.service.ISystemUserService;
+import com.jayud.model.po.SystemUser;
+import com.jayud.model.vo.*;
+import com.jayud.oauth.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +35,12 @@ public class SystemUserController {
 
     @Autowired
     ISystemRoleService roleService;
+
+    @Autowired
+    ISystemDepartmentService departmentService;
+
+    @Autowired
+    ILegalEntityService legalEntityService;
 
     /**
      * 登录接口
@@ -103,7 +105,7 @@ public class SystemUserController {
      * 账户管理模块
      */
     @PostMapping("/list")
-    @ApiOperation(value = "账户管理和人员审核（总经办")
+    @ApiOperation(value = "账户管理和人员审核（总经办和组织架构界面-点击部门初始员工信息")
     public CommonResult<CommonPageResult<SystemUserVO>> list(@RequestBody QuerySystemUserForm form) {
 
         IPage<SystemUserVO> pageList = userService.getPageList(form);
@@ -125,7 +127,7 @@ public class SystemUserController {
     @ApiOperation(value = "账户管理-删除/修改/新增")
     @RequestMapping(value = "/oprAccountSystemUser", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult<UpdateSystemUserVO> oprAccountSystemUser(@RequestBody OprSystemUserForm form) {
+    public CommonResult oprAccountSystemUser(@RequestBody OprSystemUserForm form) {
         userService.oprSystemUser(form);
         return CommonResult.success();
     }
@@ -133,7 +135,7 @@ public class SystemUserController {
     @ApiOperation(value = "人员审核(总经办)-审核")
     @RequestMapping(value = "/auditAccountSystemUser", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult<UpdateSystemUserVO> auditAccountSystemUser(@RequestBody AuditSystemUserForm form) {
+    public CommonResult auditAccountSystemUser(@RequestBody AuditSystemUserForm form) {
         userService.auditSystemUser(form);
         return CommonResult.success();
     }
@@ -142,37 +144,50 @@ public class SystemUserController {
      * 组织架构模块
      */
     @ApiOperation(value = "组织架构界面-初始化")
-    @RequestMapping(value = "/findOrgStructure", method = RequestMethod.POST)
+    @RequestMapping(value = "/findOrgStructure", method = RequestMethod.GET)
     @ResponseBody
-    public CommonResult<UpdateSystemUserVO> findOrgStructure(@RequestBody AuditSystemUserForm form) {
-        return CommonResult.success();
+    public CommonResult<List<QueryOrgStructureVO>> findOrgStructure(Long fId) {
+        List<QueryOrgStructureVO> orgStructures = userService.findOrgStructure(fId);
+        return CommonResult.success(orgStructures);
+    }
+
+    @ApiOperation(value = "组织架构界面-初始化负责人信息")
+    @RequestMapping(value = "/findOrgStructureCharge", method = RequestMethod.GET)
+    @ResponseBody
+    public CommonResult<List<DepartmentChargeVO>> findOrgStructureCharge(Long departmentId) {
+        List<DepartmentChargeVO> departmentChargeVOS = userService.findOrgStructureCharge(departmentId);
+        return CommonResult.success(departmentChargeVOS);
     }
 
     @ApiOperation(value = "组织架构界面-新增部门/编辑")
     @RequestMapping(value = "/saveOrUpdateDepartment", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult<UpdateSystemUserVO> saveOrUpdateDepartment(@RequestBody AuditSystemUserForm form) {
+    public CommonResult saveOrUpdateDepartment(Long departmentId,@RequestBody AddDepartmentForm form) {
+        departmentService.saveOrUpdateDepartment(departmentId,form);
         return CommonResult.success();
     }
 
     @ApiOperation(value = "组织架构界面-删除部门")
-    @RequestMapping(value = "/delDepartment", method = RequestMethod.POST)
+    @RequestMapping(value = "/delDepartment", method = RequestMethod.GET)
     @ResponseBody
-    public CommonResult<UpdateSystemUserVO> delDepartment(@RequestBody AuditSystemUserForm form) {
+    public CommonResult delDepartment(Long departmentId) {
+        departmentService.removeById(departmentId);
         return CommonResult.success();
     }
 
     @ApiOperation(value = "组织架构界面-删除员工")
     @RequestMapping(value = "/delSystemUser", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult<UpdateSystemUserVO> delSystemUser(@RequestBody AuditSystemUserForm form) {
+    public CommonResult delSystemUser(List<Long> userId) {
+        userService.removeByIds(userId);
         return CommonResult.success();
     }
 
     @ApiOperation(value = "组织架构界面-新增员工/编辑")
     @RequestMapping(value = "/saveOrUpdatedSystemUser", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult<UpdateSystemUserVO> saveOrUpdatedSystemUser(@RequestBody AuditSystemUserForm form) {
+    public CommonResult saveOrUpdatedSystemUser(@RequestBody AddSystemUserForm form) {
+        userService.saveOrUpdate(ConvertUtil.convert(form,SystemUser.class));
         return CommonResult.success();
     }
 
@@ -182,31 +197,59 @@ public class SystemUserController {
     @ApiOperation(value = "法人主体-界面")
     @RequestMapping(value = "/findLegalEntityByPage", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult<UpdateSystemUserVO> findLegalEntityByPage(@RequestBody AuditSystemUserForm form) {
-        return CommonResult.success();
+    public CommonResult<CommonPageResult<LegalEntityVO>> findLegalEntityByPage(@RequestBody QueryLegalEntityForm form) {
+        IPage<LegalEntityVO> pageList = legalEntityService.findLegalEntityByPage(form);
+        CommonPageResult<LegalEntityVO> pageVO = new CommonPageResult(pageList);
+        return CommonResult.success(pageVO);
     }
 
     @ApiOperation(value = "法人主体-新增/修改")
     @RequestMapping(value = "/saveOrUpdateLegalEntity", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult<UpdateSystemUserVO> saveOrUpdateLegalEntity(@RequestBody AuditSystemUserForm form) {
+    public CommonResult saveOrUpdateLegalEntity(@RequestBody AddLegalEntityForm form) {
+        LegalEntity legalEntity = new LegalEntity();
+        if(form.getId() != null){
+            legalEntity.setId(form.getId());
+            legalEntity.setUpdatedUser(getLoginName());
+        }else {
+            legalEntity.setCreatedUser(getLoginName());
+        }
+        legalEntity.setLegalName(form.getLegalName());
+        legalEntity.setLegalCode(form.getLegalCode());
+        legalEntity.setRigisAddress(form.getRigisAddress());
+        legalEntity.setSaleDepartId(form.getSaleDepartId());
+        legalEntityService.saveOrUpdate(legalEntity);
         return CommonResult.success();
     }
 
     @ApiOperation(value = "法人主体-删除")
-    @RequestMapping(value = "/deleteLegalEntity", method = RequestMethod.POST)
+    @RequestMapping(value = "/deleteLegalEntity", method = RequestMethod.GET)
     @ResponseBody
-    public CommonResult<UpdateSystemUserVO> deleteLegalEntity(@RequestBody AuditSystemUserForm form) {
+    public CommonResult deleteLegalEntity(Long id) {
+        legalEntityService.removeById(id);
         return CommonResult.success();
     }
 
     @ApiOperation(value = "法人主体-审核")
     @RequestMapping(value = "/auditLegalEntity", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult<UpdateSystemUserVO> auditLegalEntity(@RequestBody AuditSystemUserForm form) {
+    public CommonResult auditLegalEntity(@RequestBody AuditLegalEntityForm form) {
+        LegalEntity legalEntity = new LegalEntity();
+        legalEntity.setId(form.getId());
+        legalEntity.setAuditStatus(form.getAuditStatus());
+        legalEntity.setUpdatedUser(getLoginName());
+        legalEntityService.saveOrUpdate(legalEntity);
         return CommonResult.success();
     }
 
+
+    /**
+     * 获取created_user和updated_user
+     * @return
+     */
+    private String getLoginName(){
+        return userService.getLoginUser().getName();
+    }
 
     
 

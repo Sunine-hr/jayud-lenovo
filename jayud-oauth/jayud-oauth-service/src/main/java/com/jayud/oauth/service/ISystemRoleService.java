@@ -32,4 +32,11 @@ public interface ISystemRoleService extends IService<SystemRole> {
     Long saveRole(SystemRole role);
 
 
+    /**
+     * 获取所有角色
+     * @return
+     */
+    List<SystemRoleVO> findRole();
+
+
 }

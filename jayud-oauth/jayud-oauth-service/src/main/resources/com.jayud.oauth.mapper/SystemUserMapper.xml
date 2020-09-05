@@ -7,16 +7,23 @@
         <id column="id" property="id" />
         <result column="name" property="name" />
         <result column="password" property="password" />
-        <result column="icon" property="icon" />
-        <result column="contract" property="contract" />
-        <result column="note" property="note" />
-        <result column="create_time" property="createTime" />
+        <result column="user_name" property="userName" />
+        <result column="en_user_name" property="enUserName" />
+        <result column="phone" property="phone" />
+        <result column="department_id" property="departmentId" />
+        <result column="work_id" property="workId" />
+        <result column="role_id" property="roleId" />
+        <result column="company_id" property="companyId" />
+        <result column="superior_id" property="superiorId" />
         <result column="login_time" property="loginTime" />
+        <result column="audit_status" property="auditStatus" />
         <result column="status" property="status" />
-        <result column="country" property="country" />
-        <result column="state" property="state" />
-        <result column="time_zone" property="timeZone" />
-        <result column="photo" property="photo" />
+        <result column="note" property="note" />
+        <result column="created_time" property="createdTime" />
+        <result column="created_user" property="createdUser" />
+        <result column="created_time" property="createdTime" />
+        <result column="updated_time" property="updatedTime" />
+        <result column="updated_user" property="updatedUser" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -24,16 +31,71 @@
         system_user.id,
         system_user.name,
         system_user.password,
-        system_user.icon,
-        system_user.contract,
-        system_user.note,
-        system_user.create_time,
-        system_user.login_time,
+        system_user.user_name,
+        system_user.en_user_name,
+        system_user.phone,
+        system_user.department_id,
+        system_user.work_id,
+        system_user.role_id,
+        system_user.company_id,
+        system_user.superior_id,
+        system_user.audit_status,
         system_user.status,
-        system_user.country,
-        system_user.state,
-        system_user.time_zone,
-        system_user.photo
+        system_user.login_time,
+        system_user.note
     </sql>
+
+    <select id="getPageList" parameterType="com.jayud.model.bo.QuerySystemUserForm" resultType="com.jayud.model.vo.QuerySystemUserVO" >
+        SELECT
+        su.id,
+        su.name,
+        su.phone,
+        su.email,
+        su.user_name userName,
+        su.en_user_name enUserName,
+        su.audit_status auditStatusDesc,
+        w.`work_name` workName,
+        sr.`name` roleName,
+        c.`company_name` companyName,
+        su.`created_time` createdTime,
+        su.`created_user` createdUser,
+        temp.user_name superiorName
+        FROM
+        `system_user` su
+        LEFT JOIN `work` w
+        ON su.`work_id` = w.`id`
+        LEFT JOIN system_role sr
+        ON su.`role_id` = sr.`id`
+        LEFT JOIN company c
+        ON su.`company_id` = c.`id`
+        LEFT JOIN department dt
+        ON dt.`id` = su.`department_id`
+        LEFT JOIN
+        (SELECT
+        t.user_name,
+        t.`department_id`
+        FROM
+        `system_user` t
+        WHERE t.`is_department_charge` = 1) temp
+        ON temp.department_id = su.`department_id`
+        WHERE 1 = 1
+        <if test="form.cmd == 'isAccount' or form.cmd == 'isAudit'">
+            and status = 1
+            <if test="form.name != null and form.name != ''">
+                and system_user.name like concat('%',#{form.name},'%')
+            </if>
+            <if test="form.companyId != null ">
+                and system_user.company_id = #{form.companyId}
+            </if>
+            <if test="form.auditStatus != null ">
+                and system_user.audit_status = #{form.auditStatus}
+            </if>
+        </if>
+        <if test="form.cmd == 'all'">
+            <if test="form.userName != null and form.userName != ''">
+                and system_user.user_name like concat('%',#{form.userName},'%')
+            </if>
+        </if>
+    </select>
 
 </mapper>

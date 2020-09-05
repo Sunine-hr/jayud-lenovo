@@ -2,23 +2,23 @@ package com.jayud.oauth.service.impl;
 
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.exceptions.ApiException;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.model.bo.AuditSystemUserForm;
+import com.jayud.model.bo.OprSystemUserForm;
+import com.jayud.model.bo.QuerySystemUserForm;
 import com.jayud.model.po.SystemUser;
 import com.jayud.model.po.SystemUserLoginLog;
-import com.jayud.model.vo.SystemMenuNode;
-import com.jayud.model.vo.SystemRoleVO;
-import com.jayud.model.vo.SystemUserVO;
-import com.jayud.model.vo.UserLoginToken;
+import com.jayud.model.vo.*;
 import com.jayud.oauth.mapper.SystemUserMapper;
-import com.jayud.oauth.service.ISystemMenuService;
-import com.jayud.oauth.service.ISystemRoleService;
-import com.jayud.oauth.service.ISystemUserLoginLogService;
-import com.jayud.oauth.service.ISystemUserService;
+import com.jayud.oauth.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -57,6 +57,15 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     @Autowired
     ISystemMenuService systemMenuService;
 
+    @Autowired
+    ISystemWorkService systemWorkService;
+
+    @Autowired
+    ISystemCompanyService companyService;
+
+    @Autowired
+    ISystemDepartmentService departmentService;
+
     @Override
     public SystemUser selectByName(String name) {
         QueryWrapper queryWrapper = new QueryWrapper();
@@ -85,7 +94,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         // 构建缓存用户信息返回给前端
         SystemUser user = (SystemUser) subject.getPrincipals().getPrimaryPrincipal();
         //响应前端数据
-        cacheUser = convert(user);
+        cacheUser = ConvertUtil.convert(user,SystemUserVO.class);
         //构建用户拥有角色和菜单
         List<SystemRoleVO> roleVOS = roleService.getRoleList(user.getId());
         List<Long> roleIds = new ArrayList<>();
@@ -116,18 +125,78 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     }
 
     @Override
-    public SystemUserVO getLoginUser(){
+    public IPage<SystemUserVO> getPageList(QuerySystemUserForm form) {
+        //定义分页参数
+        Page<SystemUser> page = new Page(form.getPageNum(),form.getPageSize());
+        //定义排序规则
+        page.addOrder(OrderItem.asc("su.id"));
+        IPage<SystemUserVO> pageInfo = this.baseMapper.getPageList(page, form);
+        return pageInfo;
+    }
+
+    @Override
+    public UpdateSystemUserVO getSystemUser(Long id) {
+        UpdateSystemUserVO updateSystemUserVO = new UpdateSystemUserVO();
+        if(id != null) {
+            SystemUser systemUser = baseMapper.selectById(id);
+            updateSystemUserVO = ConvertUtil.convert(systemUser, UpdateSystemUserVO.class);
+        }
+        updateSystemUserVO.setDepartments(departmentService.findDepartment());
+        updateSystemUserVO.setWorks(systemWorkService.findWork());
+        updateSystemUserVO.setRoles(roleService.findRole());
+        updateSystemUserVO.setCompanys(companyService.findCompany());
+        //所属上级
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("is_department_charge", "1");
+        List<SystemUser> systemUsers = baseMapper.selectList(queryWrapper);
+        updateSystemUserVO.setSuperiors(ConvertUtil.convertList(systemUsers,QuerySystemUserNameVO.class));
+        //可开通账号的用户
+        queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status", "0");
+        systemUsers = baseMapper.selectList(queryWrapper);
+        updateSystemUserVO.setUsers(ConvertUtil.convertList(systemUsers,QuerySystemUserNameVO.class));
+        return updateSystemUserVO;
+    }
+
+    @Override
+    public void oprSystemUser(OprSystemUserForm form) {
+        if("update".equals(form.getCmd())) {//修改
+            SystemUser systemUser = ConvertUtil.convert(form,SystemUser.class);
+            systemUser.setPassword("E10ADC3949BA59ABBE56E057F20F883E");//默认密码为:123456
+            systemUser.setStatus(1);//账户为启用状态
+            systemUser.setAuditStatus(1);
+            systemUser.setUpdatedUser(getLoginName());
+            baseMapper.updateById(systemUser);
+        }else if("delete".equals(form.getCmd())){
+            SystemUser systemUser = ConvertUtil.convert(form,SystemUser.class);
+            systemUser.setStatus(0);
+            baseMapper.updateById(systemUser);
+        }
+    }
+
+    @Override
+    public void auditSystemUser(AuditSystemUserForm form) {
+        SystemUser systemUser = ConvertUtil.convert(form,SystemUser.class);
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("audit_status", "1");
+        baseMapper.update(systemUser,queryWrapper);
+    }
+
+    @Override
+    public SystemUser getLoginUser() {
         Subject subject = SecurityUtils.getSubject();
         SystemUser user = (SystemUser) subject.getPrincipals().getPrimaryPrincipal();
-        //查询最新用户信息
-        user = getById(user.getId());
-        //用户
-        SystemUserVO userVO = convert(user);
-
-        userVO.setRoles(roleService.getRoleList(user.getId()));
-
-        return userVO;
+        return user;
     }
+
+    /**
+     * 获取created_user和updated_user
+     * @return
+     */
+    private String getLoginName(){
+        return getLoginUser().getName();
+    }
+
 
     /**
      * 添加登录记录
@@ -143,21 +212,4 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         loginLogService.save(loginLog);
     }
 
-    /**
-     * 参数转换
-     * @param user
-     * @return
-     */
-    private SystemUserVO convert(SystemUser user){
-        return ConvertUtil.convert(user,SystemUserVO.class);
-    }
-
-    /**
-     * 参数转换
-     * @param userVO
-     * @return
-     */
-    private SystemUser convert(SystemUserVO userVO){
-        return ConvertUtil.convert(userVO,SystemUser.class);
-    }
 }

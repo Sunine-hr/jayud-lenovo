@@ -1,12 +1,14 @@
 package com.jayud.oauth.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.model.bo.AddRoleForm;
-import com.jayud.model.bo.SystemUserLoginForm;
+import com.jayud.model.bo.*;
 import com.jayud.model.po.SystemRole;
 import com.jayud.model.vo.SystemMenuNode;
 import com.jayud.model.vo.SystemUserVO;
+import com.jayud.model.vo.UpdateSystemUserVO;
 import com.jayud.model.vo.UserLoginToken;
 import com.jayud.oauth.service.ISystemMenuService;
 import com.jayud.oauth.service.ISystemRoleMenuRelationService;
@@ -96,6 +98,118 @@ public class SystemUserController {
         roleMenuRelationService.createRelation(systemRole,menuIds);
         return CommonResult.success();
     }
+
+    /**
+     * 账户管理模块
+     */
+    @PostMapping("/list")
+    @ApiOperation(value = "账户管理和人员审核（总经办")
+    public CommonResult<CommonPageResult<SystemUserVO>> list(@RequestBody QuerySystemUserForm form) {
+
+        IPage<SystemUserVO> pageList = userService.getPageList(form);
+
+        CommonPageResult<SystemUserVO> pageVO = new CommonPageResult(pageList);
+
+
+        return CommonResult.success(pageVO);
+    }
+
+    @ApiOperation(value = "账户管理-新增修改数据初始化")
+    @RequestMapping(value = "/getAccountSystemUser", method = RequestMethod.GET)
+    @ResponseBody
+    public CommonResult<UpdateSystemUserVO> getAccountSystemUser(Long id) {
+        UpdateSystemUserVO systemUserVO = userService.getSystemUser(id);
+        return CommonResult.success(systemUserVO);
+    }
+
+    @ApiOperation(value = "账户管理-删除/修改/新增")
+    @RequestMapping(value = "/oprAccountSystemUser", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult<UpdateSystemUserVO> oprAccountSystemUser(@RequestBody OprSystemUserForm form) {
+        userService.oprSystemUser(form);
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "人员审核(总经办)-审核")
+    @RequestMapping(value = "/auditAccountSystemUser", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult<UpdateSystemUserVO> auditAccountSystemUser(@RequestBody AuditSystemUserForm form) {
+        userService.auditSystemUser(form);
+        return CommonResult.success();
+    }
+
+    /**
+     * 组织架构模块
+     */
+    @ApiOperation(value = "组织架构界面-初始化")
+    @RequestMapping(value = "/findOrgStructure", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult<UpdateSystemUserVO> findOrgStructure(@RequestBody AuditSystemUserForm form) {
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "组织架构界面-新增部门/编辑")
+    @RequestMapping(value = "/saveOrUpdateDepartment", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult<UpdateSystemUserVO> saveOrUpdateDepartment(@RequestBody AuditSystemUserForm form) {
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "组织架构界面-删除部门")
+    @RequestMapping(value = "/delDepartment", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult<UpdateSystemUserVO> delDepartment(@RequestBody AuditSystemUserForm form) {
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "组织架构界面-删除员工")
+    @RequestMapping(value = "/delSystemUser", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult<UpdateSystemUserVO> delSystemUser(@RequestBody AuditSystemUserForm form) {
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "组织架构界面-新增员工/编辑")
+    @RequestMapping(value = "/saveOrUpdatedSystemUser", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult<UpdateSystemUserVO> saveOrUpdatedSystemUser(@RequestBody AuditSystemUserForm form) {
+        return CommonResult.success();
+    }
+
+    /**
+     * 法人主体模块
+     */
+    @ApiOperation(value = "法人主体-界面")
+    @RequestMapping(value = "/findLegalEntityByPage", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult<UpdateSystemUserVO> findLegalEntityByPage(@RequestBody AuditSystemUserForm form) {
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "法人主体-新增/修改")
+    @RequestMapping(value = "/saveOrUpdateLegalEntity", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult<UpdateSystemUserVO> saveOrUpdateLegalEntity(@RequestBody AuditSystemUserForm form) {
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "法人主体-删除")
+    @RequestMapping(value = "/deleteLegalEntity", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult<UpdateSystemUserVO> deleteLegalEntity(@RequestBody AuditSystemUserForm form) {
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "法人主体-审核")
+    @RequestMapping(value = "/auditLegalEntity", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult<UpdateSystemUserVO> auditLegalEntity(@RequestBody AuditSystemUserForm form) {
+        return CommonResult.success();
+    }
+
+
+    
+
 
 }
 

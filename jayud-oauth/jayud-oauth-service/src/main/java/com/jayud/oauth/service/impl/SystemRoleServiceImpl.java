@@ -37,15 +37,12 @@ public class SystemRoleServiceImpl extends ServiceImpl<SystemRoleMapper, SystemR
         return baseMapper.saveRole(role);
     }
 
-
-    /**
-     * 参数转换
-     * @param roleVO
-     * @return
-     */
-    private SystemRole convert(SystemRoleVO roleVO){
-        return ConvertUtil.convert(roleVO,SystemRole.class);
+    @Override
+    public List<SystemRoleVO> findRole() {
+        List<SystemRole> systemRoles = baseMapper.selectList(null);
+        return convertList(systemRoles);
     }
+
 
     /**
      * 参数转换

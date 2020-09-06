@@ -47,8 +47,8 @@ public class Swagger2Config {
      */
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("lenovo物流塔系统")
-                .description("lenovo物流塔系统后台文档")
+                .title("佳裕达物流系统")
+                .description("佳裕达物流系统后台文档")
                 .version("1.0")
                 .build();
     }

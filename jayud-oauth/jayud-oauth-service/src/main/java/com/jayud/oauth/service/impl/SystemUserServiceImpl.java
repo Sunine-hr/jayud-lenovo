@@ -141,8 +141,8 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             SystemUser systemUser = baseMapper.selectById(id);
             updateSystemUserVO = ConvertUtil.convert(systemUser, UpdateSystemUserVO.class);
         }
-        updateSystemUserVO.setDepartments(departmentService.findDepartment());
-        updateSystemUserVO.setWorks(systemWorkService.findWork());
+        updateSystemUserVO.setDepartments(departmentService.findDepartment(null));
+        updateSystemUserVO.setWorks(systemWorkService.findWork(null));
         updateSystemUserVO.setRoles(roleService.findRole());
         updateSystemUserVO.setCompanys(companyService.findCompany());
         //所属上级
@@ -196,10 +196,12 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     @Override
     public List<DepartmentChargeVO> findOrgStructureCharge(Long departmentId) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("department_id",departmentId);
-        queryWrapper.eq("is_department_charge","1");
-        return baseMapper.selectList(queryWrapper);
+        return baseMapper.findOrgStructureCharge(departmentId);
+    }
+
+    @Override
+    public void saveOrUpdateSystemUser(SystemUser systemUser) {
+        saveOrUpdate(systemUser);
     }
 
 

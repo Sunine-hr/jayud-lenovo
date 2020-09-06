@@ -33,4 +33,11 @@ public class Department extends Model<Department> {
 
     @ApiModelProperty(value = "状态(0无效 1有效)")
     private String status;
+
+    @ApiModelProperty(value = "创建人")
+    private String createdUser;
+
+    @ApiModelProperty(value = "修改人")
+    private String updatedUser;
+
 }

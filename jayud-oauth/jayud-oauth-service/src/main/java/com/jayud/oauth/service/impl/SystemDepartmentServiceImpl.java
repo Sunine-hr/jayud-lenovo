@@ -9,6 +9,8 @@ import com.jayud.model.vo.DepartmentVO;
 import com.jayud.model.vo.QueryOrgStructureVO;
 import com.jayud.oauth.mapper.SystemDepartmentMapper;
 import com.jayud.oauth.service.ISystemDepartmentService;
+import com.jayud.oauth.service.ISystemUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,9 +26,17 @@ import java.util.List;
 @Service
 public class SystemDepartmentServiceImpl extends ServiceImpl<SystemDepartmentMapper, Department> implements ISystemDepartmentService {
 
+    @Autowired
+    private ISystemUserService userService;
+
     @Override
-    public List<DepartmentVO> findDepartment() {
-        return ConvertUtil.convertList(baseMapper.selectList(null),DepartmentVO.class);
+    public List<DepartmentVO> findDepartment(Long id) {
+        QueryWrapper queryWrapper = null;
+        if(id != null) {
+            queryWrapper = new QueryWrapper();
+            queryWrapper.eq("id", id);
+        }
+        return ConvertUtil.convertList(baseMapper.selectList(queryWrapper),DepartmentVO.class);
     }
 
     @Override
@@ -40,7 +50,14 @@ public class SystemDepartmentServiceImpl extends ServiceImpl<SystemDepartmentMap
     @Override
     public void saveOrUpdateDepartment(Long departmentId, AddDepartmentForm form) {
         Department department = new Department();
-        department.setId(departmentId);
+        String loginUser = userService.getLoginUser().getName();
+        if(departmentId != null) {
+            department.setUpdatedUser(loginUser);
+            department.setId(departmentId);
+        }else {
+            department.setCreatedUser(loginUser);
+            department.setFId(0L);
+        }
         department.setName(form.getName());
         saveOrUpdate(department);
     }

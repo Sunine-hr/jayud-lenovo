@@ -21,6 +21,11 @@ import java.util.List;
 public interface ISystemUserService extends IService<SystemUser> {
 
 
+    /**
+     * 判断该用户是否存在
+     * @param name
+     * @return
+     */
     SystemUser selectByName(String name);
 
 
@@ -80,5 +85,11 @@ public interface ISystemUserService extends IService<SystemUser> {
      * @return
      */
     List<DepartmentChargeVO>  findOrgStructureCharge(Long departmentId);
+
+    /**
+     * 更新或修改用户
+     * @param systemUser
+     */
+    void saveOrUpdateSystemUser(SystemUser systemUser);
 
 }

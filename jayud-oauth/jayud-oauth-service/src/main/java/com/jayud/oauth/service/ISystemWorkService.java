@@ -13,10 +13,10 @@ import java.util.List;
 public interface ISystemWorkService extends IService<Work> {
 
     /**
-     * 获取用户角色
+     * 获取部门下的岗位
      * @return
      */
-    List<WorkVO> findWork();
+    List<WorkVO> findWork(Long departmentId);
 
 
 

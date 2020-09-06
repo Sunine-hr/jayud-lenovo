@@ -1,5 +1,6 @@
 package com.jayud.oauth.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.model.po.Work;
@@ -23,8 +24,13 @@ public class SystemWorkServiceImpl extends ServiceImpl<SystemWorkMapper, Work> i
 
 
     @Override
-    public List<WorkVO> findWork() {
-        return ConvertUtil.convertList(baseMapper.selectList(null),WorkVO.class);
+    public List<WorkVO> findWork(Long departmentId) {
+        QueryWrapper queryWrapper = null;
+        if(departmentId != null){
+            queryWrapper = new QueryWrapper();
+            queryWrapper.eq("department_id",departmentId);
+        }
+        return ConvertUtil.convertList(baseMapper.selectList(queryWrapper),WorkVO.class);
     }
 
 

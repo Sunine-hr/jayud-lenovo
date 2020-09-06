@@ -24,7 +24,7 @@ public interface ISystemDepartmentService extends IService<Department> {
      * 获取部门
      * @return
      */
-    List<DepartmentVO> findDepartment();
+    List<DepartmentVO> findDepartment(Long id);
 
 
     /**

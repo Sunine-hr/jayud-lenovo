@@ -98,4 +98,20 @@
         </if>
     </select>
 
+    <select id="findOrgStructureCharge"  resultType="com.jayud.model.vo.DepartmentChargeVO" >
+        SELECT
+          su.id,
+          su.user_name userName,
+          su.en_user_name enUserName,
+          su.phone,
+          w.`work_name` workName,
+          (SELECT COUNT(1) FROM `system_user` t WHERE t.`department_id` = su.`department_id` AND t.`is_department_charge` = '0') countUser
+        FROM
+          `system_user` su
+          LEFT JOIN `work` w
+            ON su.`work_id` = w.`id`
+            WHERE su.`department_id` = #{departmentId}
+            AND su.`is_department_charge` = '1'
+    </select>
+
 </mapper>

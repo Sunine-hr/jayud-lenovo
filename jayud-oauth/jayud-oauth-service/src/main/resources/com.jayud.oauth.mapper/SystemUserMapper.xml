@@ -114,4 +114,14 @@
             AND su.`is_department_charge` = '1'
     </select>
 
+    <select id="findUserByRoleId"  resultType="java.util.Map" >
+        SELECT
+          su.id,
+          su.user_name userName
+        FROM
+          `system_user` su
+        WHERE su.`role_id` = #{roleId}
+    </select>
+
+
 </mapper>

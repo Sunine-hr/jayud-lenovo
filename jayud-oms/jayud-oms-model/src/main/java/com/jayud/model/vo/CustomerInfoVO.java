@@ -9,7 +9,7 @@ public class CustomerInfoVO {
     @ApiModelProperty(value = "id")
     private Integer id;
 
-    @ApiModelProperty(value = "客户名")
+    @ApiModelProperty(value = "一级客户名称")
     private String name;
 
     @ApiModelProperty(value = "结算单位")
@@ -17,6 +17,9 @@ public class CustomerInfoVO {
 
     @ApiModelProperty(value = "客户代码")
     private String idCode;
+
+    @ApiModelProperty(value = "结算代码")
+    private String unitCode;
 
     @ApiModelProperty(value = "客户类型(1同行 2电商 3货代)")
     private Integer types;
@@ -54,13 +57,39 @@ public class CustomerInfoVO {
     @ApiModelProperty(value = "等级")
     private Integer estate;
 
-    @ApiModelProperty(value = "对应部门code")
-    private String departmentCode;
+    @ApiModelProperty(value = "接单部门ID")
+    private String departmentId;
 
-    @ApiModelProperty(value = "对应客服code")
-    private String kuCode;
+    @ApiModelProperty(value = "接单部门")
+    private String departmentName;
 
-    @ApiModelProperty(value = "对应业务员code")
-    private String ywCode;
+    @ApiModelProperty(value = "接单客服ID")
+    private String kuId;
 
+    @ApiModelProperty(value = "业务员ID")
+    private String ywId;
+
+    @ApiModelProperty(value = "接单客服")
+    private String kuName;
+
+    @ApiModelProperty(value = "业务员")
+    private String ywName;
+
+    @ApiModelProperty(value = "审核状态")
+    private Integer auditStatus;
+
+    @ApiModelProperty(value = "审核状态描述")
+    private String auditStatusDesc;
+
+    @ApiModelProperty(value = "创建人")
+    private String createdUser;
+
+    @ApiModelProperty(value = "创建时间")
+    private String createdTimeStr;
+
+    @ApiModelProperty(value = "审核意见")
+    private String auditComment;
+
+    @ApiModelProperty(value = "更新时间")
+    private String updatedTimeStr;
 }

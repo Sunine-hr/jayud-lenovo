@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -286,5 +287,13 @@ public class DateUtils {
         }
         DateTimeFormatter df = DateTimeFormatter.ofPattern(pattern);
         return df.format(localDateTime);
+    }
+
+    /**
+     * Timestamp：获取当前时间
+     * @return
+     */
+    public static Timestamp getNowTime(){
+        return new Timestamp(System.currentTimeMillis());
     }
 }

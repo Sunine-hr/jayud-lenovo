@@ -9,6 +9,7 @@ import com.jayud.model.po.SystemUser;
 import com.jayud.model.vo.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -91,5 +92,12 @@ public interface ISystemUserService extends IService<SystemUser> {
      * @param systemUser
      */
     void saveOrUpdateSystemUser(SystemUser systemUser);
+
+    /**
+     * 根据角色获取用户列表
+     * @param roleId
+     * @return
+     */
+    List<Map<Long,String>> findUserByRoleId(Long roleId);
 
 }

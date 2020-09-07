@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 
 @Data
@@ -28,6 +29,9 @@ public class CustomerInfo extends Model<CustomerInfo> {
 
     @ApiModelProperty(value = "结算单位")
     private String unitAccount;
+
+    @ApiModelProperty(value = "结算代码")
+    private String unitCode;
 
     @ApiModelProperty(value = "客户代码")
     private String idCode;
@@ -69,22 +73,36 @@ public class CustomerInfo extends Model<CustomerInfo> {
     private Integer estate;
 
     @ApiModelProperty(value = "对应部门code")
-    private String departmentCode;
+    private String departmentId;
 
-    @ApiModelProperty(value = "对应客服code")
-    private String kuCode;
+    @ApiModelProperty(value = "对应客服ID")
+    private Long kuId;
 
-    @ApiModelProperty(value = "对应业务员code")
-    private String ywCode;
+    @ApiModelProperty(value = "对应业务员ID")
+    private Long ywId;
 
     @ApiModelProperty(value = "审核状态")
     private String auditStatus;
+
+    @ApiModelProperty(value = "审核意见")
+    private String auditComment;
 
     @ApiModelProperty(value = "创建人")
     private String createdUser;
 
     @ApiModelProperty(value = "更新人")
     private String updatedUser;
+
+    @ApiModelProperty(value = "修改时间")
+    private Timestamp updatedTime;
+
+    @ApiModelProperty(value = "创建时间")
+    private Timestamp createdTime;
+
+    @ApiModelProperty(value = "状态(0无效 1有效)")
+    private String status;
+
+
 
     @Override
     protected Serializable pkVal() {

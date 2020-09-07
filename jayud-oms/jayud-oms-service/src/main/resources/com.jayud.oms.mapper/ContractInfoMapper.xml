@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.mapper.ContractInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.model.po.ContractInfo">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="contract_no" property="contractNo" />
+        <result column="contract_url" property="contractUrl" />
+        <result column="business_type" property="businessType" />
+        <result column="legal_entity" property="legalEntity" />
+        <result column="start_date" property="startDate" />
+        <result column="end_date" property="endDate" />
+        <result column="status" property="status" />
+        <result column="created_user" property="createdUser"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_user" property="updatedUser"/>
+        <result column="updated_time" property="updatedTime"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+         id,name,contract_no,contract_url,business_type,legal_entity,start_date,end_date,status,created_user,updated_user,
+         created_time,updated_time
+    </sql>
+
+    <select id="findContractInfoByPage" parameterType="com.jayud.model.bo.QueryContractInfoForm" resultType="com.jayud.model.vo.ContractInfoVO" >
+            SELECT
+              ci.`id`,
+              ci.`name`,
+              ci.`contract_no` contractNo,
+              ci.`contract_url` contractUrl,
+              ci.`business_type` businessType,
+              ci.`legal_entity` legalEntity,
+              DATE_FORMAT(ci.`start_date`, '%Y-%m-%d') startDateStr,
+              DATE_FORMAT(ci.`end_date`, '%Y-%m-%d') endDateStr,
+              ci.`created_user` createdUser,
+              DATE_FORMAT(
+                ci.`created_time`,
+                '%Y-%m-%d %H %I %S'
+              ) createdTimeStr
+            FROM
+              contract_info ci where 1=1
+            <if test="form.name != null and form.name != ''">
+                and ci.name like concat('%',#{form.name},'%')
+            </if>
+            <if test="form.contractNo != null and form.contractNo != ''">
+                and ci.contract_no like concat('%',#{form.contractNo},'%')
+            </if>
+            <if test="form.id != null">
+                and ci.id = #{form.id}
+            </if>
+    </select>
+</mapper>

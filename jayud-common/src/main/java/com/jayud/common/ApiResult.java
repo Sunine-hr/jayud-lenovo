@@ -13,7 +13,7 @@ public class ApiResult<T> implements Serializable {
     private int code;
     @ApiModelProperty(value = "错误信息", dataType = "String")
     private String msg = "success";
-    @ApiModelProperty(value = "返回數據")
+    @ApiModelProperty(value = "返回数据")
     private T data;
 
     public ApiResult() {

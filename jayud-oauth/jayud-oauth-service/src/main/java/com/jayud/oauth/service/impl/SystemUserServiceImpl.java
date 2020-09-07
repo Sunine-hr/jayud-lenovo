@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -202,6 +203,11 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     @Override
     public void saveOrUpdateSystemUser(SystemUser systemUser) {
         saveOrUpdate(systemUser);
+    }
+
+    @Override
+    public List<Map<Long, String>> findUserByRoleId(Long roleId) {
+        return baseMapper.findUserByRoleId(roleId);
     }
 
 

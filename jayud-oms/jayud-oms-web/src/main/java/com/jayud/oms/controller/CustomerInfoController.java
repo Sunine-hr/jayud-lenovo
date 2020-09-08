@@ -18,10 +18,7 @@ import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.service.ICustomerInfoService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +38,7 @@ public class CustomerInfoController {
     private OauthClient oauthClient;
 
     @ApiOperation(value = "查询客户列表")
-    @RequestMapping(value = "/findCustomerInfoByPage",method = RequestMethod.POST)
+    @PostMapping(value = "/findCustomerInfoByPage")
     public CommonResult<CommonPageResult<CustomerInfoVO>> findCustomerInfoByPage(@RequestBody QueryCustomerInfoForm form) {
         IPage<CustomerInfoVO> pageList = customerInfoService.findCustomerInfoByPage(form);
         CommonPageResult<CustomerInfoVO> pageVO = new CommonPageResult(pageList);
@@ -50,13 +47,13 @@ public class CustomerInfoController {
 
 
     @ApiOperation(value = "查看客户详情，编辑时数据回显")
-    @RequestMapping(value = "/getCustomerInfoById",method = RequestMethod.POST)
+    @PostMapping(value = "/getCustomerInfoById")
     public CommonResult<CustomerInfoVO> getCustomerInfoById(@RequestBody QueryCustomerInfoForm form) {
         return CommonResult.success(customerInfoService.getCustomerInfoById(form));
     }
 
     @ApiOperation(value = "新增编辑客户")
-    @RequestMapping(value = "/saveOrUpdateCustomerInfo",method = RequestMethod.POST)
+    @PostMapping(value = "/saveOrUpdateCustomerInfo")
     public CommonResult saveOrUpdateCustomerInfo(@RequestBody AddCustomerInfoForm form) {
         CustomerInfo customerInfo = null;
         customerInfo = ConvertUtil.convert(form,CustomerInfo.class);
@@ -71,7 +68,7 @@ public class CustomerInfoController {
     }
 
     @ApiOperation(value = "新增客户时初始化下拉框信息")
-    @RequestMapping(value = "/getInfoBySave",method = RequestMethod.GET)
+    @PostMapping(value = "/getInfoBySave")
     public CommonResult<AddCustomerInfoRelListVO> getInfoBySave() {
         AddCustomerInfoRelListVO addCustomerInfoRelListVO = new AddCustomerInfoRelListVO();
         List<Map<Long,String>> departments = (List<Map<Long,String>>)oauthClient.findDepartment().getData();
@@ -84,7 +81,7 @@ public class CustomerInfoController {
     }
 
     @ApiOperation(value = "删除客户信息")
-    @RequestMapping(value = "/delCustomerInfo",method = RequestMethod.POST)
+    @PostMapping(value = "/delCustomerInfo")
     public CommonResult delCustomerInfo(@RequestBody List<Integer> ids) {
         List<CustomerInfo> customerInfos = new ArrayList<>();
         for (Integer id : ids) {
@@ -99,7 +96,7 @@ public class CustomerInfoController {
     }
 
     @ApiOperation(value = "审核客户信息")
-    @RequestMapping(value = "/auditCustomerInfo",method = RequestMethod.POST)
+    @PostMapping(value = "/auditCustomerInfo")
     public CommonResult auditCustomerInfo(@RequestBody AuditCustomerInfoForm form) {
         CustomerInfo customerInfo = new CustomerInfo();
         customerInfo.setId(form.getId());

@@ -12,7 +12,7 @@ import javax.validation.constraints.NotEmpty;
 @Data
 public class SystemUserLoginForm {
 
-    @ApiModelProperty(value = "用户名",name="username", required = true)
+    @ApiModelProperty(value = "用户名", required = true)
     @NotEmpty(message = "用户名不能为空")
     private String username;
     @ApiModelProperty(value = "密码", required = true)

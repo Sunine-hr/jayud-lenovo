@@ -32,6 +32,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -191,9 +192,36 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     }
 
     @Override
-    public List<QueryOrgStructureVO> findOrgStructure(Long fId) {
-        return departmentService.findDepartmentByfId(fId);
+    public List<QueryOrgStructureVO> findOrgStructure() {
+        List<QueryOrgStructureVO> queryOrgStructureVOS = new ArrayList<>();
+        List<DepartmentVO> departmentVOS = departmentService.findDepartment(null);
+        for (DepartmentVO departmentVO : departmentVOS) {
+            QueryOrgStructureVO orgStructureVO = new QueryOrgStructureVO();
+            orgStructureVO.setId(departmentVO.getId());
+            orgStructureVO.setFId(departmentVO.getFId());
+            orgStructureVO.setLabel(departmentVO.getName());
+            queryOrgStructureVOS.add(orgStructureVO);
+        }
+        return convertDepartTree(queryOrgStructureVOS, 0L);
     }
+
+    /**
+     * 生成组织架构树
+     * @param orgStructureVOS
+     * @param parentId
+     * @return
+     */
+    private List<QueryOrgStructureVO> convertDepartTree(List<QueryOrgStructureVO> orgStructureVOS, long parentId) {
+        return orgStructureVOS.stream()
+                .filter(org -> org.getFId().equals(parentId))
+                .map(org -> covertMenuNode(org, orgStructureVOS)).collect(Collectors.toList());
+    }
+    private QueryOrgStructureVO covertMenuNode(QueryOrgStructureVO org, List<QueryOrgStructureVO> orgList) {
+        //设置菜单
+        org.setChildren(convertDepartTree(orgList, org.getId()));
+        return org;
+    }
+
 
     @Override
     public List<DepartmentChargeVO> findOrgStructureCharge(Long departmentId) {

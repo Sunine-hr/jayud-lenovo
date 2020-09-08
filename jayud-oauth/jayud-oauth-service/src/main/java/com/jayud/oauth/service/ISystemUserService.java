@@ -78,7 +78,7 @@ public interface ISystemUserService extends IService<SystemUser> {
      * 获取部门结构
      * @return
      */
-    List<QueryOrgStructureVO> findOrgStructure(Long fId);
+    List<QueryOrgStructureVO> findOrgStructure();
 
     /**
      * 根据部门ID获取部门负责人信息

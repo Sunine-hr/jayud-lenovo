@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/system/user")
-@Api(tags = "用户管理")
+@Api(tags = "集团管理")
 public class SystemUserController {
 
     @Autowired
@@ -139,10 +139,10 @@ public class SystemUserController {
     /**
      * 组织架构模块
      */
-    @ApiOperation(value = "组织架构界面-初始化部门，fId为0时获取的是一级部门,点击一级部门传一级部门的ID,获取的是子部门")
+    @ApiOperation(value = "组织架构界面-初始化部门结构")
     @PostMapping(value = "/findOrgStructure")
-    public CommonResult<List<QueryOrgStructureVO>> findOrgStructure(Long fId) {
-        List<QueryOrgStructureVO> orgStructures = userService.findOrgStructure(fId);
+    public CommonResult<List<QueryOrgStructureVO>> findOrgStructure() {
+        List<QueryOrgStructureVO> orgStructures = userService.findOrgStructure();
         return CommonResult.success(orgStructures);
     }
 

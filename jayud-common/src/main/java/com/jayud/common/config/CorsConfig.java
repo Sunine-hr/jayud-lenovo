@@ -1,27 +1,31 @@
 package com.jayud.common.config;
 
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 
-/**
- * @anthor Satellite
- * CorsConfig
- * Cors 配置
- * http://www.javalow.com
- * @date 2018-11-21-11:51
- **/
-//TODO 子项目跨域设置 暂时取消
-//@Configuration
-public class CorsConfig implements WebMvcConfigurer {
+@Configuration
+public class CorsConfig {
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("*")
-                .allowCredentials(true)
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .maxAge(3600);
+    @Bean
+    public FilterRegistrationBean corsFilter() {
+        // 注册CORS过滤器
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true); // 是否支持安全证书
+        config.addAllowedOrigin("*"); // 允许任何域名使用
+        config.addAllowedHeader("*"); // 允许任何头
+        config.addAllowedMethod("*"); // 允许任何方法（post、get等）
+        // 预检请求的有效期，单位为秒。
+        //        config.setMaxAge(3600L);
+
+        source.registerCorsConfiguration("/**", config);
+        FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
+        bean.setOrder(0);
+        return bean;
     }
-
 }

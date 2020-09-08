@@ -9,7 +9,7 @@
         <result column="name" property="name" />
         <result column="level" property="level" />
         <result column="sort" property="sort" />
-        <result column="key" property="key" />
+        <result column="title" property="title" />
         <result column="icon" property="icon" />
         <result column="hidden" property="hidden" />
         <result column="router" property="router" />
@@ -24,7 +24,7 @@
         system_menu.name,
         system_menu.level,
         system_menu.sort,
-        system_menu.key,
+        system_menu.title,
         system_menu.icon,
         system_menu.hidden,
         system_menu.router,

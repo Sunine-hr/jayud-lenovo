@@ -12,7 +12,6 @@
         <result column="phone" property="phone" />
         <result column="department_id" property="departmentId" />
         <result column="work_id" property="workId" />
-        <result column="role_id" property="roleId" />
         <result column="company_id" property="companyId" />
         <result column="superior_id" property="superiorId" />
         <result column="login_time" property="loginTime" />
@@ -36,7 +35,6 @@
         system_user.phone,
         system_user.department_id,
         system_user.work_id,
-        system_user.role_id,
         system_user.company_id,
         system_user.superior_id,
         system_user.audit_status,
@@ -64,8 +62,10 @@
         `system_user` su
         LEFT JOIN `work` w
         ON su.`work_id` = w.`id`
+        LEFT JOIN system_user_role_relation surr
+        ON surr.`user_id` = su.`id`
         LEFT JOIN system_role sr
-        ON su.`role_id` = sr.`id`
+        ON sr.`id` = surr.`role_id`
         LEFT JOIN company c
         ON su.`company_id` = c.`id`
         LEFT JOIN department dt

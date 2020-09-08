@@ -32,7 +32,7 @@ public class SystemMenu extends Model<SystemMenu> {
     private Integer sort;
 
     @ApiModelProperty(value = "前端名称")
-    private String name;
+    private String title;
 
     @ApiModelProperty(value = "前端图标")
     private String icon;
@@ -44,7 +44,7 @@ public class SystemMenu extends Model<SystemMenu> {
     private String router;
 
     @ApiModelProperty(value = "名称key值")
-    private String key;
+    private String name;
 
     @ApiModelProperty(value = "创建人")
     private String createdUser;

@@ -48,9 +48,6 @@ public class SystemUser extends Model<SystemUser> {
     @ApiModelProperty(value = "岗位ID")
     private Long workId;
 
-    @ApiModelProperty(value = "角色ID")
-    private Long roleId;
-
     @ApiModelProperty(value = "所属公司ID")
     private Long companyId;
 

@@ -11,8 +11,6 @@ public class AddSystemUserForm {
     @ApiModelProperty(value = "用户ID 修改时必传")
     private Long id;
 
-    private Long fId;
-
     @ApiModelProperty(value = "是否是负责人 1-是 0-否",required = true)
     @NotEmpty(message = "是否是负责人不能为空")
     private String isDepartmentCharge;

@@ -1,5 +1,6 @@
 package com.jayud.oauth.controller;
 
+import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
@@ -13,10 +14,7 @@ import com.jayud.oauth.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -151,10 +149,11 @@ public class SystemUserController {
         return CommonResult.success(pageVO);
     }
 
-    @ApiOperation(value = "账户管理-修改数据初始化")
+    @ApiOperation(value = "账户管理-修改数据初始化,id=用户ID")
     @PostMapping(value = "/getAccountSystemUser")
-    public CommonResult<UpdateSystemUserVO> getAccountSystemUser(Long id) {
-        UpdateSystemUserVO systemUserVO = userService.getSystemUser(id);
+    public CommonResult<UpdateSystemUserVO> getAccountSystemUser(@RequestBody Map<String,Object> param) {
+        String id = MapUtil.getStr(param,"id");
+        UpdateSystemUserVO systemUserVO = userService.getSystemUser(Long.valueOf(id));
         return CommonResult.success(systemUserVO);
     }
 
@@ -182,10 +181,11 @@ public class SystemUserController {
         return CommonResult.success(orgStructures);
     }
 
-    @ApiOperation(value = "组织架构界面-初始化负责人信息,departmentId传的是部门ID")
+    @ApiOperation(value = "组织架构界面-初始化负责人信息,id=部门ID")
     @PostMapping(value = "/findOrgStructureCharge")
-    public CommonResult<List<DepartmentChargeVO>> findOrgStructureCharge(Long departmentId) {
-        List<DepartmentChargeVO> departmentChargeVOS = userService.findOrgStructureCharge(departmentId);
+    public CommonResult<List<DepartmentChargeVO>> findOrgStructureCharge(@RequestBody Map<String,Object> param) {
+        String departmentId = MapUtil.getStr(param,"id");
+        List<DepartmentChargeVO> departmentChargeVOS = userService.findOrgStructureCharge(Long.valueOf(departmentId));
         return CommonResult.success(departmentChargeVOS);
     }
 
@@ -198,8 +198,8 @@ public class SystemUserController {
 
     @ApiOperation(value = "组织架构界面-删除部门,departmentId传的是部门ID")
     @PostMapping(value = "/delDepartment")
-    public CommonResult delDepartment(Long departmentId) {
-        departmentService.removeById(departmentId);
+    public CommonResult delDepartment(@RequestBody Map<String,Object> param) {
+        departmentService.removeById(MapUtil.getStr(param,"departmentId"));
         return CommonResult.success();
     }
 
@@ -262,7 +262,7 @@ public class SystemUserController {
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "法人主体-审核")
+    @ApiOperation(value = "法人主体-审核,审核界面信息就只有4个,可从列表里面取")
     @PostMapping(value = "/auditLegalEntity")
     public CommonResult auditLegalEntity(@RequestBody AuditLegalEntityForm form) {
         LegalEntity legalEntity = new LegalEntity();
@@ -273,24 +273,25 @@ public class SystemUserController {
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "查询部门,id为部门ID,不传代表查所有的")
-    @PostMapping(value = "/findDepartmentById")
-    public CommonResult<List<DepartmentVO>> findDepartmentById(Long id) {
-        List<DepartmentVO> departmentVOS = departmentService.findDepartment(id);
-        return CommonResult.success(departmentVOS);
-    }
-
-    @ApiOperation(value = "查询岗位,需求上暂时没有体现岗位和部门的关系，不传查所有的")
-    @PostMapping(value = "/findWorkByDepartmentId")
-    public CommonResult<List<WorkVO>> findWorkByDepartmentId(Long departmentId) {
-        List<WorkVO> workVOS = workService.findWork(departmentId);
-        return CommonResult.success(workVOS);
-    }
-
 
     /**
      * 所有下拉框的初始化
      */
+    @ApiOperation(value = "查询岗位,需求上暂时没有体现岗位和部门的关系，id=部门ID,不传查所有的")
+    @PostMapping(value = "/initWork")
+    public CommonResult<List<InitComboxVO>> findWorkByDepartmentId(@RequestBody Map<String,Object> param) {
+        String departmentId = MapUtil.getStr(param,"id");
+        List<WorkVO> workVOS = workService.findWork(Long.valueOf(departmentId));
+        List<InitComboxVO> initComboxs = new ArrayList<>();
+        for (WorkVO workVO : workVOS) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(workVO.getId());
+            initComboxVO.setName(workVO.getWorkName());
+            initComboxs.add(initComboxVO);
+        }
+        return CommonResult.success(initComboxs);
+    }
+
     @ApiOperation(value = "账户管理-新增数据初始化-姓名")
     @PostMapping(value = "/initUserAccount")
     public CommonResult<List<InitComboxVO>> initUserAccount() {

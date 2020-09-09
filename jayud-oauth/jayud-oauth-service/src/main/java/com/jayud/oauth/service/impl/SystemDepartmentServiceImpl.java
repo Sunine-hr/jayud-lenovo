@@ -56,7 +56,12 @@ public class SystemDepartmentServiceImpl extends ServiceImpl<SystemDepartmentMap
             department.setId(departmentId);
         }else {
             department.setCreatedUser(loginUser);
-            department.setFId(0L);
+            if(form.getFId() != null && !"".equals(form.getFId())){
+                department.setFId(form.getFId());
+            }else {
+                department.setFId(0L);
+            }
+            department.setName(form.getName());
         }
         department.setName(form.getName());
         saveOrUpdate(department);

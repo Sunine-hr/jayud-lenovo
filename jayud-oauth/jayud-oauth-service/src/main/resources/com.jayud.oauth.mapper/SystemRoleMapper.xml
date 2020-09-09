@@ -43,4 +43,25 @@
 		#{sort})
   </insert>
 
+    <select id="findRoleByPage" parameterType="com.jayud.model.bo.QueryRoleForm" resultType="com.jayud.model.vo.SystemRoleView" >
+        SELECT
+        sr.`id`,
+        sr.`name`,
+        sr.`description`,
+        GROUP_CONCAT(DISTINCT su.`name` SEPARATOR ',') roleUser
+        FROM
+        system_role sr
+        LEFT JOIN system_user_role_relation surr
+        ON surr.`role_id` = sr.`id`
+        LEFT JOIN `system_user` su
+        ON su.`id` = surr.`user_id`
+        WHERE 1 = 1
+           <if test="form.name != null and form.name != ''">
+               and sr.name like concat('%',#{form.name},'%')
+           </if>
+        GROUP BY sr.`id`,
+        sr.`name`,
+        sr.`description`
+    </select>
+
 </mapper>

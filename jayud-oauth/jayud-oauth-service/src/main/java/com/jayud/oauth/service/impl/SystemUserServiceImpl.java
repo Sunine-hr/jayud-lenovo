@@ -146,25 +146,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     @Override
     public UpdateSystemUserVO getSystemUser(Long id) {
-        UpdateSystemUserVO updateSystemUserVO = new UpdateSystemUserVO();
-        if(id != null) {
-            SystemUser systemUser = baseMapper.selectById(id);
-            updateSystemUserVO = ConvertUtil.convert(systemUser, UpdateSystemUserVO.class);
-        }
-        updateSystemUserVO.setDepartments(departmentService.findDepartment(null));
-        updateSystemUserVO.setWorks(systemWorkService.findWork(null));
-        updateSystemUserVO.setRoles(roleService.findRole());
-        updateSystemUserVO.setCompanys(companyService.findCompany());
-        //所属上级
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("is_department_charge", "1");
-        List<SystemUser> systemUsers = baseMapper.selectList(queryWrapper);
-        updateSystemUserVO.setSuperiors(ConvertUtil.convertList(systemUsers,QuerySystemUserNameVO.class));
-        //可开通账号的用户
-        queryWrapper = new QueryWrapper();
-        queryWrapper.eq("status", "0");
-        systemUsers = baseMapper.selectList(queryWrapper);
-        updateSystemUserVO.setUsers(ConvertUtil.convertList(systemUsers,QuerySystemUserNameVO.class));
+        UpdateSystemUserVO updateSystemUserVO = baseMapper.getSystemUser(id);
         return updateSystemUserVO;
     }
 

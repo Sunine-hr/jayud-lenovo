@@ -32,9 +32,9 @@ public interface ISystemRoleMenuRelationService extends IService<SystemRoleMenuR
 
     /**
      * 根据角色ID删除菜单关系
-     * @param roleId
+     * @param roleIds
      * @return
      */
-    boolean removeRelationByRoleId(Long roleId);
+    boolean removeRelationByRoleId(List<Long> roleIds);
 
 }

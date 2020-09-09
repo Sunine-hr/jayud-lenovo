@@ -13,10 +13,16 @@ import com.jayud.oauth.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -34,6 +40,9 @@ public class SystemUserController {
     ISystemRoleMenuRelationService roleMenuRelationService;
 
     @Autowired
+    ISystemUserRoleRelationService userRoleRelationService;
+
+    @Autowired
     ISystemRoleService roleService;
 
     @Autowired
@@ -44,6 +53,9 @@ public class SystemUserController {
 
     @Autowired
     ISystemWorkService workService;
+
+    @Autowired
+    ISystemCompanyService companyService;
 
     /**
      * 登录接口
@@ -107,6 +119,23 @@ public class SystemUserController {
         return CommonResult.success();
     }
 
+    @ApiOperation(value = "角色权限管理-分页查询")
+    @PostMapping(value = "/findRoleByPage")
+    public CommonResult<CommonPageResult<SystemRoleView>> findRoleByPage(@RequestBody QueryRoleForm form){
+        IPage<SystemRoleView> pageList = roleService.findRoleByPage(form);
+        CommonPageResult<SystemRoleView> pageVO = new CommonPageResult(pageList);
+        return CommonResult.success(pageVO);
+    }
+
+    @ApiOperation(value = "角色权限管理-删除")
+    @PostMapping(value = "/delRole")
+    public CommonResult delRole(@RequestBody DeleteForm form){
+        roleService.removeByIds(form.getIds());//删除角色
+        roleMenuRelationService.removeRelationByRoleId(form.getIds());//删除角色和菜单的关系
+        userRoleRelationService.removeRelationByRoleId(form.getIds());//删除角色和用户的关系
+        return CommonResult.success();
+    }
+
     /**
      * 账户管理模块
      */
@@ -122,7 +151,7 @@ public class SystemUserController {
         return CommonResult.success(pageVO);
     }
 
-    @ApiOperation(value = "账户管理-新增修改数据初始化")
+    @ApiOperation(value = "账户管理-修改数据初始化")
     @PostMapping(value = "/getAccountSystemUser")
     public CommonResult<UpdateSystemUserVO> getAccountSystemUser(Long id) {
         UpdateSystemUserVO systemUserVO = userService.getSystemUser(id);
@@ -176,8 +205,8 @@ public class SystemUserController {
 
     @ApiOperation(value = "组织架构界面-删除员工")
     @PostMapping(value = "/delSystemUser")
-    public CommonResult delSystemUser(@RequestBody DelSystemUserForm form) {
-        userService.removeByIds(form.getUserIds());
+    public CommonResult delSystemUser(@RequestBody DeleteForm form) {
+        userService.removeByIds(form.getIds());
         return CommonResult.success();
     }
 
@@ -228,7 +257,7 @@ public class SystemUserController {
 
     @ApiOperation(value = "法人主体-删除")
     @PostMapping(value = "/deleteLegalEntity")
-    public CommonResult deleteLegalEntity(@RequestBody DelLegalEntityForm form) {
+    public CommonResult deleteLegalEntity(@RequestBody DeleteForm form) {
         legalEntityService.removeByIds(form.getIds());
         return CommonResult.success();
     }
@@ -256,6 +285,98 @@ public class SystemUserController {
     public CommonResult<List<WorkVO>> findWorkByDepartmentId(Long departmentId) {
         List<WorkVO> workVOS = workService.findWork(departmentId);
         return CommonResult.success(workVOS);
+    }
+
+
+    /**
+     * 所有下拉框的初始化
+     */
+    @ApiOperation(value = "账户管理-新增数据初始化-姓名")
+    @PostMapping(value = "/initUserAccount")
+    public CommonResult<List<InitComboxVO>> initUserAccount() {
+        Map<String,Object> param = new HashMap<>();
+        param.put("status","0");
+        List<InitComboxVO> initComboxs = new ArrayList<>();
+        List<SystemUser> systemUsers = userService.findUserByCondition(param);
+        for (SystemUser systemUser : systemUsers) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(systemUser.getId());
+            initComboxVO.setName(systemUser.getName());
+            initComboxs.add(initComboxVO);
+        }
+        return CommonResult.success(initComboxs);
+    }
+
+    @ApiOperation(value = "账户管理-新增数据初始化-部门")
+    @PostMapping(value = "/initUserDepartment")
+    public CommonResult<List<InitComboxVO>> initUserDepartment() {
+        List<InitComboxVO> initComboxs = new ArrayList<>();
+        List<DepartmentVO> departmentVOS = departmentService.findDepartment(null);
+        for (DepartmentVO departmentVO : departmentVOS) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(departmentVO.getId());
+            initComboxVO.setName(departmentVO.getName());
+            initComboxs.add(initComboxVO);
+        }
+        return CommonResult.success(initComboxs);
+    }
+
+    @ApiOperation(value = "账户管理-新增数据初始化-岗位")
+    @PostMapping(value = "/initUserWork")
+    public CommonResult<List<InitComboxVO>> initUserWork() {
+        List<InitComboxVO> initComboxs = new ArrayList<>();
+        List<WorkVO> workVOS = workService.findWork(null);
+        for (WorkVO workVO : workVOS) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(workVO.getId());
+            initComboxVO.setName(workVO.getWorkName());
+            initComboxs.add(initComboxVO);
+        }
+        return CommonResult.success(initComboxs);
+    }
+
+    @ApiOperation(value = "账户管理-新增数据初始化-角色")
+    @PostMapping(value = "/initAccountRole")
+    public CommonResult<List<InitComboxVO>> initAccountRole() {
+        List<InitComboxVO> initComboxs = new ArrayList<>();
+        List<SystemRoleVO> systemRoleVOS = roleService.findRole();
+        for (SystemRoleVO systemRoleVO : systemRoleVOS) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(systemRoleVO.getId());
+            initComboxVO.setName(systemRoleVO.getName());
+            initComboxs.add(initComboxVO);
+        }
+        return CommonResult.success(initComboxs);
+    }
+
+    @ApiOperation(value = "账户管理-新增数据初始化-所属公司")
+    @PostMapping(value = "/initUserAccountCompany")
+    public CommonResult<List<InitComboxVO>> initUserAccountCompany() {
+        List<InitComboxVO> initComboxs = new ArrayList<>();
+        List<CompanyVO> companyVOS = companyService.findCompany();
+        for (CompanyVO companyVO : companyVOS) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(companyVO.getId());
+            initComboxVO.setName(companyVO.getCompanyName());
+            initComboxs.add(initComboxVO);
+        }
+        return CommonResult.success(initComboxs);
+    }
+
+    @ApiOperation(value = "账户管理-新增数据初始化-所属上级")
+    @PostMapping(value = "/initUserAccountSuperiors")
+    public CommonResult<List<InitComboxVO>> initUserAccountSuperiors() {
+        List<InitComboxVO> initComboxs = new ArrayList<>();
+        Map<String,Object> param = new HashMap<>();
+        param.put("is_department_charge","1");
+        List<SystemUser> systemUsers = userService.findUserByCondition(param);
+        for (SystemUser systemUser : systemUsers) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(systemUser.getId());
+            initComboxVO.setName(systemUser.getUserName());
+            initComboxs.add(initComboxVO);
+        }
+        return CommonResult.success(initComboxs);
     }
 
     /**

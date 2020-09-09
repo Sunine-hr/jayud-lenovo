@@ -2,8 +2,13 @@ package com.jayud.oauth.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.model.bo.QueryRoleForm;
 import com.jayud.model.po.SystemRole;
+import com.jayud.model.vo.SystemRoleView;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -31,5 +36,13 @@ public interface SystemRoleMapper extends BaseMapper<SystemRole> {
      * @return
      */
     Long saveRole(SystemRole systemRole);
+
+    /**
+     * 获取用户列表分页
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<SystemRoleView> findRoleByPage(Page page, @Param("form") QueryRoleForm form);
 
 }

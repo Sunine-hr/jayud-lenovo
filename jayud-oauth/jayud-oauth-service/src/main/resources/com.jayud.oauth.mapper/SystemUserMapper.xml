@@ -84,10 +84,10 @@
             <if test="form.name != null and form.name != ''">
                 and su.name like concat('%',#{form.name},'%')
             </if>
-            <if test="form.companyId != null ">
+            <if test="form.companyId != null and form.companyId !=''">
                 and su.company_id = #{form.companyId}
             </if>
-            <if test="form.auditStatus != null ">
+            <if test="form.auditStatus != null and form.auditStatus != ''">
                 and su.audit_status = #{form.auditStatus}
             </if>
         </if>
@@ -121,6 +121,43 @@
         FROM
           `system_user` su
         WHERE su.`role_id` = #{roleId}
+    </select>
+
+    <select id="getSystemUser"  resultType="com.jayud.model.vo.UpdateSystemUserVO" >
+        SELECT
+          su.id,
+          su.`name`,
+          su.user_name userName,
+          su.`en_user_name` enUserName,
+          su.`department_id` departmentId,
+          d.`name` departmentName,
+          su.`work_id` workId,
+          w.`work_name` workName,
+          sr.`id` roleId,
+          sr.`name` roleName,
+          (SELECT
+            c.company_name
+          FROM
+            company c
+          WHERE c.id = su.`company_id`) companyName,
+          su.`company_id` companyId,
+          su.`superior_id` superiorId,
+          (SELECT
+            t.user_name
+          FROM
+            `system_user` t
+          WHERE t.id = su.`superior_id`) superiorName
+        FROM
+          `system_user` su
+          LEFT JOIN department d
+            ON su.`department_id` = d.`id`
+          LEFT JOIN `work` w
+            ON su.`work_id` = w.`id`
+          LEFT JOIN system_user_role_relation surr
+            ON su.`id` = surr.`user_id`
+          LEFT JOIN system_role sr
+            ON sr.`id` = surr.`role_id`
+        WHERE su.`id` = #{id}
     </select>
 
 

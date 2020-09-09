@@ -24,4 +24,11 @@ public class SystemUserRoleRelationServiceImpl extends ServiceImpl<SystemUserRol
     public List<SystemRole> getEnabledRolesByUserId(Long id) {
         return baseMapper.getEnabledRolesByUserId(id);
     }
+
+    @Override
+    public boolean removeRelationByRoleId(List<Long> roleIds) {
+        return baseMapper.removeRelationByRoleId(roleIds);
+    }
+
+
 }

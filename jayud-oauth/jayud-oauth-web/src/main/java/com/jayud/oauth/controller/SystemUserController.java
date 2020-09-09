@@ -82,6 +82,13 @@ public class SystemUserController {
         return CommonResult.success();
     }
 
+    @ApiOperation(value = "获取登录后用户的角色菜单相关信息")
+    @PostMapping(value = "/findLoginUserInfo")
+    public CommonResult<SystemUserLoginInfoVO> findLoginUserInfo() {
+        SystemUserLoginInfoVO userLoginInfoVO = userService.findLoginUserInfo();
+        return CommonResult.success(userLoginInfoVO);
+    }
+
     @ApiOperation(value = "角色权限管理-新增数据初始化")
     @PostMapping(value = "/findAllMenuNode")
     public CommonResult<List<SystemMenuNode>> findAllMenuNode() {

@@ -97,16 +97,6 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         SystemUser user = (SystemUser) subject.getPrincipals().getPrimaryPrincipal();
         //响应前端数据
         cacheUser = ConvertUtil.convert(user,SystemUserVO.class);
-        //构建用户拥有角色和菜单
-        List<SystemRoleVO> roleVOS = roleService.getRoleList(user.getId());
-        List<Long> roleIds = new ArrayList<>();
-        for (SystemRoleVO systemRoleVO:roleVOS) {
-            roleIds.add(systemRoleVO.getId());
-        }
-        List<SystemMenuNode> systemMenuNodes = systemMenuService.roleTreeList(roleIds);
-        cacheUser.setRoles(roleVOS);
-        cacheUser.setRoleIds(roleIds);
-        cacheUser.setMenuNodeList(systemMenuNodes);
         //缓存用户ID larry 2020年8月13日11:21:11
         String uid = redisUtils.get(user.getId().toString());
         if(uid == null){
@@ -125,6 +115,24 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         Subject subject = SecurityUtils.getSubject();
         subject.logout();
     }
+
+    @Override
+    public SystemUserLoginInfoVO findLoginUserInfo() {
+        SystemUserLoginInfoVO loginInfoVO = new SystemUserLoginInfoVO();
+        //构建用户拥有角色和菜单
+        Long userId = getLoginUser().getId();
+        List<SystemRoleVO> roleVOS = roleService.getRoleList(userId);
+        List<Long> roleIds = new ArrayList<>();
+        for (SystemRoleVO systemRoleVO:roleVOS) {
+            roleIds.add(systemRoleVO.getId());
+        }
+        List<SystemMenuNode> systemMenuNodes = systemMenuService.roleTreeList(roleIds);
+        loginInfoVO.setRoles(roleVOS);
+        loginInfoVO.setRoleIds(roleIds);
+        loginInfoVO.setMenuNodeList(systemMenuNodes);
+        return loginInfoVO;
+    }
+
 
     @Override
     public IPage<SystemUserVO> getPageList(QuerySystemUserForm form) {

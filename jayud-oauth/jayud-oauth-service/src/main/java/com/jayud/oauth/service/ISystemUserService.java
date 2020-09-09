@@ -42,6 +42,13 @@ public interface ISystemUserService extends IService<SystemUser> {
      */
     void logout();
 
+
+    /**
+     *获取登录后用户的角色菜单相关信息
+     * @return
+     */
+    SystemUserLoginInfoVO findLoginUserInfo();
+
     /**
      * 用户列表查询
      * @param form

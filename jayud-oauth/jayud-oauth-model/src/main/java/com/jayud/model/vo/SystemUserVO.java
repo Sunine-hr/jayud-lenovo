@@ -4,7 +4,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  *
@@ -60,15 +59,6 @@ public class SystemUserVO {
 
     @ApiModelProperty(value = "创建人")
     private String createdUser;
-
-    @ApiModelProperty(value = "用户角色")
-    private List<SystemRoleVO> roles;
-
-    @ApiModelProperty(value = "角色ID集合")
-    private List<Long> roleIds;
-
-    @ApiModelProperty(value = "菜单树")
-    private List<SystemMenuNode> menuNodeList;
 
     @ApiModelProperty(value = "用户token")
     private String token;

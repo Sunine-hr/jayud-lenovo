@@ -107,6 +107,105 @@
         </if>
     </select>
 
+    <!--客户账户管理-->
+    <select id="getCustAccountByCondition"  resultType="com.jayud.model.vo.CustAccountVO" >
+        SELECT
+        su.id,
+        su.name,
+        su.`en_user_name` enUserName,
+        su.`user_name` userName,
+        sr.`name` roleName,
+        sr.`id` roleId,
+        ci.`name` companyName,
+        ci.id companyId,
+        (SELECT
+        t.user_name
+        FROM
+        `system_user` t
+        WHERE t.id = su.`superior_id`) departChargeName,
+        (SELECT
+        t.id
+        FROM
+        `system_user` t
+        WHERE t.id = su.`superior_id`) departmentChargeId,
+        (
+        CASE
+        su.`status`
+        WHEN '0'
+        THEN '关闭'
+        WHEN '1'
+        THEN '启用'
+        END
+        ) statusDesc,
+        su.`created_user` createdUser,
+        DATE_FORMAT(
+        su.`created_time`,
+        '%Y-%m-%d %H:%i:%S'
+        ) createdTimeStr
+        FROM
+        `system_user` su
+        LEFT JOIN system_user_role_relation surr
+        ON su.`id` = surr.`user_id`
+        LEFT JOIN system_role sr
+        ON surr.`role_id` = sr.`id`
+        LEFT JOIN customer_info ci
+        ON su.`company_id` = ci.`id`
+        WHERE su.id = #{id}
+    </select>
+
+    <select id="findCustAccountByPage"  resultType="com.jayud.model.vo.CustAccountVO" parameterType="com.jayud.model.bo.QueryCusAccountForm">
+        SELECT
+        su.id,
+        su.name,
+        su.`en_user_name` enUserName,
+        su.`user_name` userName,
+        sr.`name` roleName,
+        sr.`id` roleId,
+        ci.`name` companyName,
+        ci.id companyId,
+        (SELECT
+        t.user_name
+        FROM
+        `system_user` t
+        WHERE t.id = su.`superior_id`) departChargeName,
+        (SELECT
+        t.id
+        FROM
+        `system_user` t
+        WHERE t.id = su.`superior_id`) departmentChargeId,
+        (
+        CASE
+        su.`status`
+        WHEN '0'
+        THEN '关闭'
+        WHEN '1'
+        THEN '启用'
+        END
+        ) statusDesc,
+        su.`created_user` createdUser,
+        DATE_FORMAT(
+        su.`created_time`,
+        '%Y-%m-%d %H:%i:%S'
+        ) createdTimeStr
+        FROM
+        `system_user` su
+        LEFT JOIN system_user_role_relation surr
+        ON su.`id` = surr.`user_id`
+        LEFT JOIN system_role sr
+        ON surr.`role_id` = sr.`id`
+        LEFT JOIN customer_info ci
+        ON su.`company_id` = ci.`id`
+        WHERE 1 = 1
+        <if test="form.companyId != null">
+            and su.companyId = #{form.companyId}
+        </if>
+        <if test="form.status != null">
+            and su.status = #{form.status}
+        </if>
+        <if test="form.name != null">
+            and su.name like concat('%',#{form.name},'%')
+        </if>
+    </select>
 
 
 </mapper>

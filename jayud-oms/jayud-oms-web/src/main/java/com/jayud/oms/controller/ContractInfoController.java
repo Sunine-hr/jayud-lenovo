@@ -17,6 +17,7 @@ import com.jayud.model.vo.ContractInfoVO;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.service.IContractInfoService;
 import com.jayud.oms.service.ICustomerInfoService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +35,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/contractInfo")
+@Api(tags = "客户管理-合同管理")
 public class ContractInfoController {
 
     @Autowired
@@ -108,7 +110,6 @@ public class ContractInfoController {
         return CommonResult.success();
     }
 
-    //客户账户管理 TODO
 
 
     /**

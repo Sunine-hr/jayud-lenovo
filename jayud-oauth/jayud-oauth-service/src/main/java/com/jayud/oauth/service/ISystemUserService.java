@@ -107,4 +107,11 @@ public interface ISystemUserService extends IService<SystemUser> {
      */
     List<Map<Long,String>> findUserByRoleId(Long roleId);
 
+    /**
+     * 获取用户信息
+     * @param param
+     * @return
+     */
+    List<SystemUser> findUserByCondition(Map<String,Object> param);
+
 }

@@ -2,8 +2,9 @@ package com.jayud.oms.feign;
 
 
 import com.jayud.common.ApiResult;
+import com.jayud.model.bo.AddCusAccountForm;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @FeignClient(value = "jayud-oauth-web")
 public interface OauthClient {
@@ -11,14 +12,14 @@ public interface OauthClient {
     /**
      * 获取登录用户信息
      */
-    @GetMapping("/system/user/getLoginUser")
+    @PostMapping("/system/user/getLoginUser")
     ApiResult getLoginUser();
 
     /**
      * 获取接单部门
      * @return
      */
-    @GetMapping("system/user/findJieDanDepartment")
+    @PostMapping("system/user/findDepartment")
     ApiResult findDepartment();
 
     /**
@@ -26,16 +27,44 @@ public interface OauthClient {
      * @param roleId
      * @return
      */
-    @GetMapping("system/user/findUserByRoleId")
+    @PostMapping("system/user/findUserByRoleId")
     ApiResult findUserByRoleId(Long roleId);
 
     /**
      * 获取法人主体
      * @return
      */
-    @GetMapping("system/user/findLegalEntity")
+    @PostMapping("system/user/findLegalEntity")
     ApiResult findLegalEntity();
 
+
+    /**
+     * 获取角色
+     * @return
+     */
+    @PostMapping("system/user/findRole")
+    ApiResult findRole();
+
+    /**
+     * 获取客户账户负责人
+     * @return
+     */
+    @PostMapping("system/user/findCustAccount")
+    ApiResult findCustAccount();
+
+    /**
+     * 删除客户账户
+     * @return
+     */
+    @PostMapping("system/user/delCustAccount")
+    ApiResult delCustAccount(Long id);
+
+    /**
+     * 保存客户账户
+     * @return
+     */
+    @PostMapping("system/user/saveOrUpdateCustAccount")
+    ApiResult saveOrUpdateCustAccount(AddCusAccountForm form);
 
 
 

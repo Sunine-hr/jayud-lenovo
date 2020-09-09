@@ -80,20 +80,20 @@
         ON temp.department_id = su.`department_id`
         WHERE 1 = 1
         <if test="form.cmd == 'isAccount' or form.cmd == 'isAudit'">
-            and status = 1
+            and su.`status` = 1
             <if test="form.name != null and form.name != ''">
-                and system_user.name like concat('%',#{form.name},'%')
+                and su.name like concat('%',#{form.name},'%')
             </if>
             <if test="form.companyId != null ">
-                and system_user.company_id = #{form.companyId}
+                and su.company_id = #{form.companyId}
             </if>
             <if test="form.auditStatus != null ">
-                and system_user.audit_status = #{form.auditStatus}
+                and su.audit_status = #{form.auditStatus}
             </if>
         </if>
         <if test="form.cmd == 'all'">
             <if test="form.userName != null and form.userName != ''">
-                and system_user.user_name like concat('%',#{form.userName},'%')
+                and su.user_name like concat('%',#{form.userName},'%')
             </if>
         </if>
     </select>

@@ -7,20 +7,22 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
-import com.jayud.model.bo.AddCustomerInfoForm;
-import com.jayud.model.bo.AuditCustomerInfoForm;
-import com.jayud.model.bo.QueryCustomerInfoForm;
+import com.jayud.model.bo.*;
 import com.jayud.model.enums.CustomerInfoStatusEnum;
 import com.jayud.model.po.CustomerInfo;
+import com.jayud.model.vo.AddCustomerAccountRelListVO;
 import com.jayud.model.vo.AddCustomerInfoRelListVO;
+import com.jayud.model.vo.CustAccountVO;
 import com.jayud.model.vo.CustomerInfoVO;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.service.ICustomerInfoService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +31,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/customerInfo")
+@Api(tags = "客户管理")
 public class CustomerInfoController {
 
     @Autowired
@@ -115,6 +118,53 @@ public class CustomerInfoController {
             }
         }
         customerInfoService.updateById(customerInfo);
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "客户账号管理-新增时数据回显")
+    @PostMapping(value = "/findAddCustomerAccount")
+    public CommonResult<AddCustomerAccountRelListVO> findAddCustomerAccount() {
+        AddCustomerAccountRelListVO accountRelListVO = new AddCustomerAccountRelListVO();
+        accountRelListVO.setDepartCharges((List<Map<Long,String>>)oauthClient.findCustAccount());//获取客户类型相同公司下的账户
+        List<CustomerInfo> customerInfos = customerInfoService.findCustomerInfoByCondition(null);
+        List<Map<Integer,String>> strList = new ArrayList<>();
+        for (CustomerInfo cus : customerInfos) {
+            Map<Integer,String> strMap = new HashMap<>();
+            strMap.put(cus.getId(),cus.getName());
+            strList.add(strMap);
+        }
+        accountRelListVO.setCustomerInfos(strList);//获取客户信息
+        accountRelListVO.setRoles((List<Map<Long,String>>)oauthClient.findRole());
+        return CommonResult.success(accountRelListVO);
+    }
+
+    @ApiOperation(value = "客户账号管理-修改时数据回显")
+    @PostMapping(value = "/getCustomerAccountInfo")
+    public CommonResult<CustAccountVO> getCustomerAccountInfo(Long id) {
+        Map<String,Object> param = new HashMap<>();
+        param.put("id",id);
+        CustAccountVO custAccountVO = customerInfoService.getCustAccountByCondition(param);
+        return CommonResult.success(custAccountVO);
+    }
+
+    @ApiOperation(value = "客户账号管理-删除")
+    @PostMapping(value = "/delCustomerAccountInfo")
+    public CommonResult delCustomerAccountInfo(Long id) {
+        oauthClient.delCustAccount(id);
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "客户账号管理-修改/编辑")
+    @PostMapping(value = "/saveOrUpdateCusAccountInfo")
+    public CommonResult saveOrUpdateCusAccountInfo(AddCusAccountForm form) {
+        oauthClient.saveOrUpdateCustAccount(form);
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "客户账号管理-分页获取数据")
+    @PostMapping(value = "/findCusAccountByPage")
+    public CommonResult findCusAccountByPage(QueryCusAccountForm form) {
+        customerInfoService.findCustAccountByPage(form);
         return CommonResult.success();
     }
 

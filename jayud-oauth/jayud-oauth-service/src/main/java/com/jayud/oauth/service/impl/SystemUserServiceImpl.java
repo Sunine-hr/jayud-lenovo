@@ -246,6 +246,16 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         return baseMapper.findUserByRoleId(roleId);
     }
 
+    @Override
+    public List<SystemUser> findUserByCondition(Map<String, Object> param) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        for(String key : param.keySet()){
+            String value = String.valueOf(param.get(key));
+            queryWrapper.eq(key,value);
+        }
+        return baseMapper.selectList(queryWrapper);
+    }
+
 
     /**
      * 获取created_user和updated_user

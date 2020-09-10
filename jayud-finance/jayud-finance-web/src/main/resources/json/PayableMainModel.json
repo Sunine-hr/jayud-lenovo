@@ -1,0 +1,118 @@
+{
+  "Creator": "",
+  "NeedUpDateFields": [],
+  "NeedReturnFields": [],
+  "IsDeleteEntry": "true",
+  "SubSystemId": "",
+  "IsVerifyBaseDataField": "false",
+  "IsEntryBatchFill": "true",
+  "ValidateFlag": "true",
+  "NumberSearch": "true",
+  "InterationFlags": "",
+  "IsAutoSubmitAndAudit": "false",
+  "F_PCQE_Text": "",
+  "Model": {
+    "FID": 0,
+    "FBillTypeID": {
+      "FNUMBER": "YFD01_SYS"
+    },
+    "FISINIT": false,
+    "FDATE": "2020-04-24 00:00:00",
+    "FENDDATE_H": "2020-04-24 00:00:00",
+    "FDOCUMENTSTATUS": "Z",
+    "FSUPPLIERID": {
+      "FNumber": "VEN00099"
+    },
+    "FCURRENCYID": {
+      "FNumber": "PRE001"
+    },
+    "FISPRICEEXCLUDETAX": true,
+    "FBUSINESSTYPE": "CG",
+    "FISTAX": true,
+    "FSETTLEORGID": {
+      "FNumber": "802"
+    },
+    "FPAYORGID": {
+      "FNumber": "802"
+    },
+    "FPURCHASEORGID": {
+      "FNumber": "802"
+    },
+    "FSetAccountType": "1",
+    "FISTAXINCOST": false,
+    "FAP_Remark": "信息部测试单号",
+    "FISHookMatch": false,
+    "FPURCHASEDEPTID": {
+      "FNumber": "BM011"
+    },
+    "FCancelStatus": "A",
+    "FISBYIV": false,
+    "FISGENHSADJ": false,
+    "FISINVOICEARLIER": false,
+    "F_JYD_Text": "ITTEST123456789",
+    "FWBOPENQTY": false,
+    "FsubHeadSuppiler": {
+      "FORDERID": {
+        "FNumber": "VEN00099"
+      },
+      "FTRANSFERID": {
+        "FNumber": "VEN00099"
+      },
+      "FChargeId": {
+        "FNumber": "VEN00099"
+      }
+    },
+    "FsubHeadFinc": {
+      "FACCNTTIMEJUDGETIME": "2020-04-24 00:00:00",
+      "FMAINBOOKSTDCURRID": {
+        "FNumber": "PRE001"
+      },
+      "FEXCHANGETYPE": {
+        "FNumber": "HLTX01_SYS"
+      },
+      "FExchangeRate": 1.0,
+      "FNoTaxAmountFor": 300.0
+    },
+    "FEntityDetail": [
+      {
+        "FMATERIALID": {
+          "FNumber": "C0030"
+        },
+        "FMaterialDesc": "报关费",
+        "FPRICEUNITID": {
+          "FNumber": "Pcs"
+        },
+        "FPrice": 150.0,
+        "FPriceQty": 2.0,
+        "FTaxPrice": 150.0,
+        "FPriceWithTax": 150.0,
+        "FNoTaxAmountFor_D": 300.0,
+        "FALLAMOUNTFOR_D": 300.0,
+        "FINCLUDECOST": false,
+        "FISOUTSTOCK": false,
+        "FIsFree": false,
+        "FStockUnitId": {
+          "FNumber": "Pcs"
+        },
+        "FStockQty": 2.0,
+        "FStockBaseQty": 2.0,
+        "FPriceBaseDen": 1.0,
+        "FStockBaseNum": 1.0,
+        "F_JYD_Assistant": {
+          "FNumber": "FYLX011"
+        },
+        "F_JYD_Assistant1": {
+          "FNumber": "FYLB0001"
+        }
+      }
+    ],
+    "FEntityPlan": [
+      {
+        "FENDDATE": "2020-04-24 00:00:00",
+        "FPAYAMOUNTFOR": 300.0,
+        "FPAYRATE": 100.0,
+        "FQTY_P": 2.0
+      }
+    ]
+  }
+}

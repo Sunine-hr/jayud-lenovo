@@ -1,0 +1,37 @@
+{
+  "FMATERIALID": {
+    "FNumber": "C0030"
+  },
+  "FMaterialDesc": "报关费",
+  "FPRICEUNITID": {
+    "FNumber": "Pcs"
+  },
+  "FPriceQty": 1.0,
+  "FTaxPrice": 170.0,
+  "FPrice": 165.048544,
+  "FEntryTaxRate": 3.0,
+  "FNoTaxAmountFor_D": 165.05,
+  "FTAXAMOUNTFOR_D": 4.95,
+  "FALLAMOUNTFOR_D": 170.0,
+  "FDeliveryControl": false,
+  "FStockUnitId": {
+    "FNumber": "Pcs"
+  },
+  "FStockQty": 1.0,
+  "FIsFree": false,
+  "FStockBaseQty": 1.0,
+  "FSalUnitId": {
+    "FNumber": "Pcs"
+  },
+  "FSalQty": 1.0,
+  "FSalBaseQty": 1.0,
+  "FPriceBaseDen": 1.0,
+  "FSalBaseNum": 1.0,
+  "FStockBaseNum": 1.0,
+  "F_JYD_Assistant": {
+    "FNumber": "FYLB0001"
+  },
+  "F_JYD_Assistant1": {
+    "FNumber": ""
+  }
+}

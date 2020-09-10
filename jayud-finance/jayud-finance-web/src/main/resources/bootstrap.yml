@@ -1,0 +1,41 @@
+kingdee:
+  url: http://120.78.140.146:8090/K3Cloud/
+  userName: ERP
+  passwd: '&#.!8g6X'
+  login: Kingdee.BOS.WebApi.ServicesStub.AuthService.ValidateUser.common.kdsvc
+  view: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.View.common.kdsvc
+  save: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.Save.common.kdsvc
+  submit: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.Submit.common.kdsvc
+  audit: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.Audit.common.kdsvc
+  statusConver: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.StatusConvert.common.kdsvc
+  query: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.ExecuteBillQuery.common.kdsvc
+  expire: 1500
+kingdeeback:
+  url: http://120.78.140.146:8090/K3Cloud/
+  userName: ERP
+  passwd: '&#.!8g6X'
+  login: Kingdee.BOS.WebApi.ServicesStub.AuthService.ValidateUser.common.kdsvc
+  view: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.View.common.kdsvc
+  save: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.Save.common.kdsvc
+  submit: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.Submit.common.kdsvc
+  audit: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.Audit.common.kdsvc
+  statusConver: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.StatusConvert.common.kdsvc
+  query: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.ExecuteBillQuery.common.kdsvc
+  expire: 1500
+
+
+spring:
+  application:
+    name: finance-web
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      config:
+        server-addr: ${jayud.nacos.server-addr}
+        # 配置文件后缀名为yaml
+        file-extension: yaml
+        namespace: ${jayud.nacos.config.namespace}
+      discovery:
+        server-addr: ${jayud.nacos.server-addr}
+        namespace: ${jayud.nacos.config.namespace}

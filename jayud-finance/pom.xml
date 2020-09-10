@@ -10,6 +10,24 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>jayud-finance</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>jayud-finance-model</module>
+        <module>jayud-finance-service</module>
+        <module>jayud-finance-web</module>
+    </modules>
+    <properties>
+        <finance-model.version>1.0</finance-model.version>
+        <finance-service.version>1.0</finance-service.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.jayud</groupId>
+            <artifactId>jayud-common</artifactId>
+            <version>${jayud-common.version}</version>
+        </dependency>
+    </dependencies>
 
 
 </project>

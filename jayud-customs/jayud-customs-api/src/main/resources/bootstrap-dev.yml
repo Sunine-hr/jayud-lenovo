@@ -1,0 +1,22 @@
+server:
+  port: 8091
+
+jayud:
+  nacos:
+    server-addr: 113.100.140.250:8848
+    config:
+      namespace: c19b4244-6c37-4ca2-ba49-a27404ca3f74
+
+spring:
+  redis:
+    host: 113.100.140.250
+    port: 6377
+    password: 'q$o8S#ixaf9x87nOF8oSoyAAQZut@zxe'
+    timeout: 2000s
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.0.231:8098/warehouse?characterEncoding=utf8&useSSL=false&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: Root!!2020
+    configuration:
+      maximum-pool-size: 2

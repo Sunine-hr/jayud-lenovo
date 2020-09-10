@@ -10,6 +10,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>jayud-customs-service</artifactId>
-
+<dependencies>
+    <dependency>
+        <groupId>com.jayud</groupId>
+        <artifactId>jayud-customs-model</artifactId>
+        <version>${customs.model.version}</version>
+    </dependency>
+</dependencies>
+    
 
 </project>

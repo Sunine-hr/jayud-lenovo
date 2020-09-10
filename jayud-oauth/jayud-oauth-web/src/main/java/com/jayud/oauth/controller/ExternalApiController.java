@@ -5,6 +5,8 @@ import com.jayud.model.po.SystemRole;
 import com.jayud.model.po.SystemUser;
 import com.jayud.model.vo.DepartmentVO;
 import com.jayud.model.vo.InitComboxVO;
+import com.jayud.model.vo.LegalEntityVO;
+import com.jayud.model.vo.SystemRoleVO;
 import com.jayud.oauth.service.ILegalEntityService;
 import com.jayud.oauth.service.ISystemDepartmentService;
 import com.jayud.oauth.service.ISystemRoleService;
@@ -23,7 +25,6 @@ import java.util.Map;
 
 
 @RestController
-@RequestMapping("/oauth/api")
 @Api(tags = "oauth对外接口")
 public class ExternalApiController {
 
@@ -46,7 +47,7 @@ public class ExternalApiController {
     }
 
     @ApiOperation(value = "获取所有部门")
-    @PostMapping(value = "/findDepartment")
+    @RequestMapping(value = "/api/findDepartment")
     public ApiResult findDepartment() {
         List<DepartmentVO> departmentVOS = departmentService.findDepartment(null);
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
@@ -81,19 +82,43 @@ public class ExternalApiController {
     @ApiOperation(value = "获取法人主体")
     @PostMapping("/findLegalEntity")
     public ApiResult findLegalEntity() {
-        return new ApiResult(200, legalEntityService.findLegalEntity(null));
+        List<LegalEntityVO> legalEntitys = legalEntityService.findLegalEntity(null);
+        List<InitComboxVO> initComboxVOS = new ArrayList<>();
+        for (LegalEntityVO legalEntityVO : legalEntitys) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(legalEntityVO.getId());
+            initComboxVO.setName(legalEntityVO.getLegalName());
+            initComboxVOS.add(initComboxVO);
+        }
+        return new ApiResult(200, initComboxVOS);
     }
 
     @ApiOperation(value = "获取角色")
     @PostMapping("/findRole")
     public ApiResult findRole() {
-        return new ApiResult(200, roleService.findRole());
+        List<SystemRoleVO> systemRoleVOS = roleService.findRole();
+        List<InitComboxVO> initComboxVOS = new ArrayList<>();
+        for (SystemRoleVO systemRoleVO : systemRoleVOS) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(systemRoleVO.getId());
+            initComboxVO.setName(systemRoleVO.getName());
+            initComboxVOS.add(initComboxVO);
+        }
+        return new ApiResult(200, initComboxVOS);
     }
 
     @ApiOperation(value = "获取客户账户负责人")
     @PostMapping("findCustAccount")
     public ApiResult findCustAccount() {
-        return new ApiResult(200, userService.findUserByCondition(null));
+        List<SystemUser> systemUsers = userService.findUserByCondition(null);
+        List<InitComboxVO> initComboxVOS = new ArrayList<>();
+        for (SystemUser systemUser : systemUsers) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(systemUser.getId());
+            initComboxVO.setName(systemUser.getUserName());
+            initComboxVOS.add(initComboxVO);
+        }
+        return new ApiResult(200, initComboxVOS);
     }
 
 

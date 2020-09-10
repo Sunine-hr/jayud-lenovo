@@ -101,9 +101,9 @@ public class SystemUserController {
 
     @ApiOperation(value = "角色权限管理-新增数据初始化")
     @PostMapping(value = "/findAllMenuNode")
-    public CommonResult<List<SystemMenuNode>> findAllMenuNode() {
-        List<SystemMenuNode> systemMenuNodes = menuService.findAllMenuNode();
-        return CommonResult.success(systemMenuNodes);
+    public CommonResult<List<QueryMenuStructureVO>> findAllMenuNode() {
+        List<QueryMenuStructureVO> menuStructureVOS = menuService.findAllMenuNode();
+        return CommonResult.success(menuStructureVOS);
     }
 
     @ApiOperation(value = "角色权限管理-新增确认")

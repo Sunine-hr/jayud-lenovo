@@ -1,6 +1,7 @@
 package com.jayud.oms.controller;
 
 
+import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
@@ -8,6 +9,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.model.bo.AddCustomerInfoForm;
+import com.jayud.model.bo.DeleteForm;
 import com.jayud.model.bo.QueryContractInfoForm;
 import com.jayud.model.enums.CustomerInfoStatusEnum;
 import com.jayud.model.po.ContractInfo;
@@ -55,10 +57,11 @@ public class ContractInfoController {
         return CommonResult.success(pageVO);
     }
 
-    @ApiOperation(value = "编辑时数据回显")
+    @ApiOperation(value = "编辑时数据回显,id=合同ID")
     @PostMapping(value = "/getContractInfoById")
-    public CommonResult<ContractInfoVO> getContractInfoById(@RequestBody QueryContractInfoForm form) {
-        return CommonResult.success(contractInfoService.getContractInfoById(form));
+    public CommonResult<ContractInfoVO> getContractInfoById(@RequestBody Map<String,Object> param) {
+        String id = MapUtil.getStr(param,"id");
+        return CommonResult.success(contractInfoService.getContractInfoById(Long.parseLong(id)));
     }
 
     @ApiOperation(value = "新增编辑合同")
@@ -97,14 +100,15 @@ public class ContractInfoController {
 
     @ApiOperation(value = "删除合同信息")
     @PostMapping(value = "/delContractInfo")
-    public CommonResult delContractInfo(@RequestBody List<Integer> ids) {
+    public CommonResult delContractInfo(@RequestBody DeleteForm form) {
         List<ContractInfo> contractInfos = new ArrayList<>();
-        for (Integer id : ids) {
+        for (Long id : form.getIds()) {
             ContractInfo contractInfo = new ContractInfo();
             contractInfo.setId(id);
             contractInfo.setUpdatedTime(DateUtils.getNowTime());
             contractInfo.setUpdatedUser(getLoginUser());
             contractInfo.setStatus("0");
+            contractInfos.add(contractInfo);
         }
         contractInfoService.saveOrUpdateBatch(contractInfos);
         return CommonResult.success();

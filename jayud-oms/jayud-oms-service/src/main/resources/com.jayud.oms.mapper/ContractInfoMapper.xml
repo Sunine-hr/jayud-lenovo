@@ -48,8 +48,24 @@
             <if test="form.contractNo != null and form.contractNo != ''">
                 and ci.contract_no like concat('%',#{form.contractNo},'%')
             </if>
-            <if test="form.id != null">
-                and ci.id = #{form.id}
-            </if>
+    </select>
+    <select id="getContractInfoById" resultType="com.jayud.model.vo.ContractInfoVO" >
+        SELECT
+        ci.`id`,
+        ci.`name`,
+        ci.`contract_no` contractNo,
+        ci.`contract_url` contractUrl,
+        ci.`business_type` businessType,
+        ci.`legal_entity` legalEntity,
+        DATE_FORMAT(ci.`start_date`, '%Y-%m-%d') startDateStr,
+        DATE_FORMAT(ci.`end_date`, '%Y-%m-%d') endDateStr,
+        ci.`created_user` createdUser,
+        DATE_FORMAT(
+        ci.`created_time`,
+        '%Y-%m-%d %H %I %S'
+        ) createdTimeStr
+        FROM
+        contract_info ci where
+        ci.id = #{id}
     </select>
 </mapper>

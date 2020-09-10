@@ -13,7 +13,7 @@ public class AddCustomerAccountRelListVO {
     private List<Map<Long,String>> roles;
 
     @ApiModelProperty(value = "所客户公司集合")
-    private List<Map<Integer,String>> customerInfos;
+    private List<Map<Long,String>> customerInfos;
 
     @ApiModelProperty(value = "所属上级集合")
     private List<Map<Long,String>> departCharges;

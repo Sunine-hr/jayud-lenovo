@@ -5,21 +5,22 @@ import com.jayud.common.ApiResult;
 import com.jayud.model.bo.AddCusAccountForm;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-@FeignClient(value = "jayud-oauth-web")
+@FeignClient(name = "jayud-oauth-web")
 public interface OauthClient {
 
     /**
      * 获取登录用户信息
      */
-    @PostMapping("/system/user/getLoginUser")
+    @PostMapping("/api/getLoginUser")
     ApiResult getLoginUser();
 
     /**
      * 获取接单部门
      * @return
      */
-    @PostMapping("system/user/findDepartment")
+    @RequestMapping("/api/findDepartment")
     ApiResult findDepartment();
 
     /**

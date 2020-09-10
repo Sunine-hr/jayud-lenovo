@@ -224,11 +224,6 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     }
 
     @Override
-    public List<Map<Long, String>> findUserByRoleId(Long roleId) {
-        return baseMapper.findUserByRoleId(roleId);
-    }
-
-    @Override
     public List<SystemUser> findUserByCondition(Map<String, Object> param) {
         QueryWrapper queryWrapper = new QueryWrapper();
         for(String key : param.keySet()){

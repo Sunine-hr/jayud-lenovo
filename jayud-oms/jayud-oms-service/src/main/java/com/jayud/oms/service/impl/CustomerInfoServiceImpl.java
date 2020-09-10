@@ -6,11 +6,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.common.utils.ConvertUtil;
 import com.jayud.model.bo.QueryCusAccountForm;
 import com.jayud.model.bo.QueryCustomerInfoForm;
 import com.jayud.model.po.CustomerInfo;
-import com.jayud.model.vo.AddCustomerInfoRelListVO;
 import com.jayud.model.vo.CustAccountVO;
 import com.jayud.model.vo.CustomerInfoVO;
 import com.jayud.oms.mapper.CustomerInfoMapper;
@@ -36,14 +34,8 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
     }
 
     @Override
-    public CustomerInfoVO getCustomerInfoById(QueryCustomerInfoForm form) {
-        CustomerInfo customerInfo = baseMapper.getCustomerInfoById(form);
-        return  ConvertUtil.convert(customerInfo,CustomerInfoVO.class);
-    }
-
-    @Override
-    public AddCustomerInfoRelListVO getInfoBySave() {
-        return null;
+    public CustomerInfoVO getCustomerInfoById(Long id) {
+        return  baseMapper.getCustomerInfoById(id);
     }
 
     @Override

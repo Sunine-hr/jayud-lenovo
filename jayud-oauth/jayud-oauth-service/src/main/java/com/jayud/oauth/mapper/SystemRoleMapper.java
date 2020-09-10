@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -44,5 +45,12 @@ public interface SystemRoleMapper extends BaseMapper<SystemRole> {
      * @return
      */
     IPage<SystemRoleView> findRoleByPage(Page page, @Param("form") QueryRoleForm form);
+
+    /**
+     * 根据条件获取角色
+     * @param param
+     * @return
+     */
+    SystemRole getRoleByCondition(Map<String,Object> param);
 
 }

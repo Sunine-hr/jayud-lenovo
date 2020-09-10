@@ -64,4 +64,14 @@
         sr.`description`
     </select>
 
+    <select id="getRoleByCondition" resultType="com.jayud.model.po.SystemRole">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        system_role
+        where 1 = 1
+        <if test="key != null and key != ''">
+            `key` = #{key}
+        </if>
+    </select>
 </mapper>

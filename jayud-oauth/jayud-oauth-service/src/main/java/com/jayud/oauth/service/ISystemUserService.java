@@ -101,13 +101,6 @@ public interface ISystemUserService extends IService<SystemUser> {
     void saveOrUpdateSystemUser(SystemUser systemUser);
 
     /**
-     * 根据角色获取用户列表
-     * @param roleId
-     * @return
-     */
-    List<Map<Long,String>> findUserByRoleId(Long roleId);
-
-    /**
      * 获取用户信息
      * @param param
      * @return

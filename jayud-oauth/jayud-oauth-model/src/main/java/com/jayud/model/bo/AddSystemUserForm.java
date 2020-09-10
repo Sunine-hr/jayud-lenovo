@@ -33,6 +33,10 @@ public class AddSystemUserForm {
     @ApiModelProperty(value = "邮箱")
     private String email;
 
+    @ApiModelProperty(value = "部门ID",required = true)
+    @NotEmpty(message = "部门ID不能为空")
+    private Long departmentId;
+
 
 
 }

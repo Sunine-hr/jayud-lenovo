@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.model.bo.QueryCusAccountForm;
 import com.jayud.model.bo.QueryCustomerInfoForm;
 import com.jayud.model.po.CustomerInfo;
-import com.jayud.model.vo.AddCustomerInfoRelListVO;
 import com.jayud.model.vo.CustAccountVO;
 import com.jayud.model.vo.CustomerInfoVO;
 
@@ -27,16 +26,10 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
 
     /**
      * 根据id获取客户信息
-     * @param from
+     * @param id
      * @return
      */
-    CustomerInfoVO getCustomerInfoById(QueryCustomerInfoForm from);
-
-    /**
-     * 新增客户时获取下拉列表
-     * @return
-     */
-    AddCustomerInfoRelListVO getInfoBySave();
+    CustomerInfoVO getCustomerInfoById(Long id);
 
     /**
      * 根据条件获取客户

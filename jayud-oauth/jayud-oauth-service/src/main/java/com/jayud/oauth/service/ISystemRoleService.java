@@ -9,6 +9,7 @@ import com.jayud.model.vo.SystemRoleVO;
 import com.jayud.model.vo.SystemRoleView;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -47,5 +48,12 @@ public interface ISystemRoleService extends IService<SystemRole> {
      * @return
      */
     IPage<SystemRoleView> findRoleByPage(QueryRoleForm form);
+
+    /**
+     * 根据条件查询角色
+     * @param param
+     * @return
+     */
+    SystemRole getRoleByCondition(Map<String,Object> param);
 
 }

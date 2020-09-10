@@ -1,6 +1,7 @@
 package com.jayud.oms.controller;
 
 
+import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
@@ -11,15 +12,18 @@ import com.jayud.model.bo.*;
 import com.jayud.model.enums.CustomerInfoStatusEnum;
 import com.jayud.model.po.CustomerInfo;
 import com.jayud.model.vo.AddCustomerAccountRelListVO;
-import com.jayud.model.vo.AddCustomerInfoRelListVO;
 import com.jayud.model.vo.CustAccountVO;
 import com.jayud.model.vo.CustomerInfoVO;
+import com.jayud.model.vo.InitComboxVO;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.service.ICustomerInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,11 +52,11 @@ public class CustomerInfoController {
         return CommonResult.success(pageVO);
     }
 
-
-    @ApiOperation(value = "查看客户详情，编辑时数据回显")
+    @ApiOperation(value = "查看客户详情和编辑时数据回显,id=客户ID")
     @PostMapping(value = "/getCustomerInfoById")
-    public CommonResult<CustomerInfoVO> getCustomerInfoById(@RequestBody QueryCustomerInfoForm form) {
-        return CommonResult.success(customerInfoService.getCustomerInfoById(form));
+    public CommonResult<CustomerInfoVO> getCustomerInfoById(@RequestBody Map<String,Object> param) {
+        String id = MapUtil.getStr(param,"id");
+        return CommonResult.success(customerInfoService.getCustomerInfoById(Long.valueOf(id)));
     }
 
     @ApiOperation(value = "新增编辑客户")
@@ -68,19 +72,6 @@ public class CustomerInfoController {
         }
         customerInfoService.saveOrUpdate(customerInfo);
         return CommonResult.success();
-    }
-
-    @ApiOperation(value = "新增客户时初始化下拉框信息")
-    @PostMapping(value = "/getInfoBySave")
-    public CommonResult<AddCustomerInfoRelListVO> getInfoBySave() {
-        AddCustomerInfoRelListVO addCustomerInfoRelListVO = new AddCustomerInfoRelListVO();
-        List<Map<Long,String>> departments = (List<Map<Long,String>>)oauthClient.findDepartment().getData();
-        addCustomerInfoRelListVO.setDepartments(departments);
-        List<Map<Long,String>> kfs = (List<Map<Long,String>>)oauthClient.findUserByRoleId(1L);//客服
-        List<Map<Long,String>> yws = (List<Map<Long,String>>)oauthClient.findUserByRoleId(2L);//业务
-        addCustomerInfoRelListVO.setKfs(kfs);
-        addCustomerInfoRelListVO.setYws(yws);
-        return CommonResult.success(addCustomerInfoRelListVO);
     }
 
     @ApiOperation(value = "删除客户信息")
@@ -166,6 +157,30 @@ public class CustomerInfoController {
     public CommonResult findCusAccountByPage(QueryCusAccountForm form) {
         customerInfoService.findCustAccountByPage(form);
         return CommonResult.success();
+    }
+
+    /**
+     * 所有下拉框的初始化
+     */
+    @ApiOperation(value = "客户列表-新增-接单部门")
+    @PostMapping(value = "/initDepartment")
+    public CommonResult<List<InitComboxVO>> initDepartment() {
+        List<InitComboxVO> initComboxVOS = (List<InitComboxVO>) oauthClient.findDepartment().getData();
+        return CommonResult.success(initComboxVOS);
+    }
+
+    @ApiOperation(value = "客户列表-新增-接单客服")
+    @PostMapping(value = "/initKfs")
+    public CommonResult<List<InitComboxVO>> initKfs() {
+        List<InitComboxVO> initComboxVOS = null;// (List<InitComboxVO>) oauthClient.findUserByKey(RoleKeyEnum.CUSTOMER_SERVICE.getCode()).getData();
+        return CommonResult.success(initComboxVOS);
+    }
+
+    @ApiOperation(value = "客户列表-新增-业务员")
+    @PostMapping(value = "/initYws")
+    public CommonResult<List<InitComboxVO>> initYws() {
+        List<InitComboxVO> initComboxVOS = null;//(List<InitComboxVO>) oauthClient.findUserByKey(RoleKeyEnum.BUSINESS_MANAGER.getCode()).getData();
+        return CommonResult.success(initComboxVOS);
     }
 
     /**

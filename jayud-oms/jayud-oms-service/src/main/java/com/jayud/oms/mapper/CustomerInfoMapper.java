@@ -27,10 +27,10 @@ public interface CustomerInfoMapper extends BaseMapper<CustomerInfo> {
 
     /**
      * 查看客户详情
-     * @param form
+     * @param id
      * @return
      */
-    CustomerInfo getCustomerInfoById(QueryCustomerInfoForm form);
+    CustomerInfoVO getCustomerInfoById(Long id);
 
     /**
      * 获取客户账号

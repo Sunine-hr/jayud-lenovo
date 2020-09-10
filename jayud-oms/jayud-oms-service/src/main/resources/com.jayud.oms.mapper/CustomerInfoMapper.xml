@@ -102,9 +102,71 @@
         <if test="form.name != null and form.name != ''">
             and ci.name like concat('%',#{form.name},'%')
         </if>
-        <if test="form.id != null">
-            and ci.id = #{form.id}
-        </if>
+    </select>
+
+    <select id="getCustomerInfoById"  resultType="com.jayud.model.vo.CustomerInfoVO" >
+        SELECT
+        ci.id,
+        ci.name,
+        ci.`unit_account` unitAccount,
+        ci.`unit_code` unitCode,
+        ci.`id_code` idCode,
+        ci.`types`,
+        ci.`contact`,
+        ci.`phone`,
+        ci.`address`,
+        ci.`email`,
+        ci.`legal_entity` legalEntity,
+        ci.`invoice_code` invoiceCode,
+        ci.`tfn`,
+        ci.`if_contract` ifContract,
+        ci.`settlement_type` settlementType,
+        ci.`account_period` accountPeriod,
+        ci.`estate`,
+        ci.`department_id` departmentId,
+        d.`name` departmentName,
+        ci.`ku_id` kuId,
+        su1.`user_name` kuName,
+        ci.`yw_id` ywId,
+        su2.`user_name` ywName,
+        ci.`audit_status` auditStatus,
+        (
+        CASE
+        ci.`audit_status`
+        WHEN '0'
+        THEN '待审核'
+        WHEN '1'
+        THEN '待客服审核'
+        WHEN '2'
+        THEN '待财务审'
+        WHEN '3'
+        THEN '待总经办审核'
+        WHEN '10'
+        THEN '通过'
+        WHEN '11'
+        THEN '审核拒绝'
+        END
+        ) auditStatusDesc,
+        ci.`created_user` createdUser,
+        DATE_FORMAT(
+        ci.`created_time`,
+        '%Y-%m-%d %H %I %S'
+        ) createdTimeStr,
+        ci.`updated_user` updatedTimeStr,
+        ci.`audit_comment` auditComment,
+        DATE_FORMAT(
+        ci.`updated_time`,
+        '%Y-%m-%d %H %I %S'
+        ) updatedTimeStr
+        FROM
+        customer_info ci
+        LEFT JOIN department d
+        ON ci.`department_id` = d.`id`
+        LEFT JOIN `system_user` su1
+        ON su1.`id` = ci.`ku_id`
+        LEFT JOIN `system_user` su2
+        ON su2.`id` = ci.`yw_id` where 1 = 1
+        and ci.id = #{id}
     </select>
 
     <!--客户账户管理-->

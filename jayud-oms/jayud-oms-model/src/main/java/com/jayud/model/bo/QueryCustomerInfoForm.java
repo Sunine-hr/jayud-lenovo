@@ -9,9 +9,6 @@ import lombok.Data;
 @Data
 public class QueryCustomerInfoForm extends BasePageForm{
 
-    @ApiModelProperty(value = "客户ID，查看客户详情时传")
-    private Long id;
-
     @ApiModelProperty(value = "客户名")
     private String name;
 

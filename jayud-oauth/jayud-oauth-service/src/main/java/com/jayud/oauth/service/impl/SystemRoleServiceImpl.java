@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -55,7 +56,10 @@ public class SystemRoleServiceImpl extends ServiceImpl<SystemRoleMapper, SystemR
         return pageInfo;
     }
 
-
+    @Override
+    public SystemRole getRoleByCondition(Map<String, Object> param) {
+        return baseMapper.getRoleByCondition(param);
+    }
 
 
     /**

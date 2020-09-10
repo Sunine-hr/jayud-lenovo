@@ -12,7 +12,6 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -39,13 +38,6 @@ public interface SystemUserMapper extends BaseMapper<SystemUser> {
      * @return
      */
     List<DepartmentChargeVO> findOrgStructureCharge(Long departmentId);
-
-    /**
-     * 根据角色获取用户列表
-     * @param roleId
-     * @return
-     */
-    List<Map<Long,String>> findUserByRoleId(Long roleId);
 
     /**
      * 获取用户信息

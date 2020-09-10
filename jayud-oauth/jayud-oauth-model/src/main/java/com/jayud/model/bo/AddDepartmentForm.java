@@ -18,4 +18,7 @@ public class AddDepartmentForm {
 
     @ApiModelProperty(value = "父级部门ID")
     private Long fId;
+
+    @ApiModelProperty(value = "部门ID,修改时必传")
+    private Long id;
 }

@@ -191,8 +191,8 @@ public class SystemUserController {
 
     @ApiOperation(value = "组织架构界面-新增部门/编辑,departmentId编辑时传")
     @PostMapping(value = "/saveOrUpdateDepartment")
-    public CommonResult saveOrUpdateDepartment(Long departmentId,@RequestBody AddDepartmentForm form) {
-        departmentService.saveOrUpdateDepartment(departmentId,form);
+    public CommonResult saveOrUpdateDepartment(@RequestBody AddDepartmentForm form) {
+        departmentService.saveOrUpdateDepartment(form);
         return CommonResult.success();
     }
 

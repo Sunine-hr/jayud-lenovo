@@ -48,12 +48,12 @@ public class SystemDepartmentServiceImpl extends ServiceImpl<SystemDepartmentMap
     }
 
     @Override
-    public void saveOrUpdateDepartment(Long departmentId, AddDepartmentForm form) {
+    public void saveOrUpdateDepartment(AddDepartmentForm form) {
         Department department = new Department();
         String loginUser = userService.getLoginUser().getName();
-        if(departmentId != null) {
+        if(form.getId() != null) {
             department.setUpdatedUser(loginUser);
-            department.setId(departmentId);
+            department.setId(form.getId());
         }else {
             department.setCreatedUser(loginUser);
             if(form.getFId() != null && !"".equals(form.getFId())){

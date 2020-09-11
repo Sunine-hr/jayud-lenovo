@@ -73,5 +73,8 @@
         <if test="key != null and key != ''">
             and `key` = #{key}
         </if>
+        <if test="id != null">
+            and `id` = #{id}
+        </if>
     </select>
 </mapper>

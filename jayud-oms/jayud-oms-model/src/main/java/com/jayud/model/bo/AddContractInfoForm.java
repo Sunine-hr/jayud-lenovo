@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.Date;
+import java.util.List;
 
 
 @Data
@@ -24,9 +25,9 @@ public class AddContractInfoForm  {
     @ApiModelProperty(value = "合同地址")
     private String contractUrl;
 
-    @ApiModelProperty(value = "业务类型(1-中港 2-报关 3-空海运 4-仓储)",required = true)
+    @ApiModelProperty(value = "业务类型",required = true)
     @NotEmpty(message = "businessType is required")
-    private String businessType;
+    private List<Long> businessTypes;
 
     @ApiModelProperty(value = "法人主体",required = true)
     @NotEmpty(message = "legalEntity is required")

@@ -69,13 +69,29 @@ public class ContractInfoController {
     @PostMapping(value = "/getContractInfoById")
     public CommonResult<ContractInfoVO> getContractInfoById(@RequestBody Map<String,Object> param) {
         String id = MapUtil.getStr(param,"id");
-        return CommonResult.success(contractInfoService.getContractInfoById(Long.parseLong(id)));
+        ContractInfoVO contractInfoVO = contractInfoService.getContractInfoById(Long.parseLong(id));
+        if(contractInfoVO != null && contractInfoVO.getBusinessType() != null){
+            String businessType = contractInfoVO.getBusinessType();
+            String[] strList = businessType.split(",");
+            List<Long> longList = new ArrayList<>();
+            for(String str : strList){
+                longList.add(Long.parseLong(str));
+            }
+            contractInfoVO.setBusinessTypes(longList);
+        }
+        return CommonResult.success(contractInfoVO);
     }
 
     @ApiOperation(value = "新增编辑合同")
     @PostMapping(value = "/saveOrUpdateContractInfo")
     public CommonResult saveOrUpdateCustomerInfo(@RequestBody AddContractInfoForm form) {
         ContractInfo contractInfo = ConvertUtil.convert(form,ContractInfo.class);
+        List<Long> businessTypes = form.getBusinessTypes();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < businessTypes.size(); i++) {
+            sb.append(businessTypes.get(i)).append(",");
+        }
+        contractInfo.setBusinessType(sb.toString());
         if(form.getId() != null){
             contractInfo.setUpdatedUser(getLoginUser());
             contractInfo.setUpdatedTime(DateUtils.getNowTime());

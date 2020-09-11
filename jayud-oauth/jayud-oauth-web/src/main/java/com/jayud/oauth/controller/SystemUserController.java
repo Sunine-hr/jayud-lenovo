@@ -106,14 +106,38 @@ public class SystemUserController {
         return CommonResult.success(menuStructureVOS);
     }
 
+    @ApiOperation(value = "角色权限管理-编辑数据初始化 id=角色ID")
+    @PostMapping(value = "/editRolePage")
+    public CommonResult<EditRoleMenuVO> editRolePage(@RequestBody Map<String,Object> param) {
+        EditRoleMenuVO editRoleMenuVO = new EditRoleMenuVO();
+        String id = MapUtil.getStr(param,"id");
+        param = new HashMap<>();
+        param.put("id",Long.valueOf(id));
+        SystemRole systemRole = roleService.getRoleByCondition(param);
+        editRoleMenuVO.setId(Long.valueOf(id));
+        editRoleMenuVO.setName(systemRole.getName());
+        editRoleMenuVO.setDescription(systemRole.getDescription());
+        editRoleMenuVO.setWebFlag(systemRole.getWebFlag());
+        return CommonResult.success(editRoleMenuVO);
+    }
+
     @ApiOperation(value = "角色权限管理-新增确认")
     @PostMapping(value = "/addRole")
     public CommonResult addRole(@RequestBody AddRoleForm addRoleForm){
         SystemRole systemRole = ConvertUtil.convert(addRoleForm, SystemRole.class);
-        List<Long> menuIds = addRoleForm.getMenuIds();
-        roleService.saveRole(systemRole);
+        roleService.saveOrUpdate(systemRole);//新增/编辑角色
+        if(addRoleForm.getId() != null){
+            //编辑角色权限
+            roleService.saveOrUpdate(systemRole);
+            //清除旧的角色菜单关系
+            List<Long> roleIds = new ArrayList<>();
+            roleIds.add(addRoleForm.getId());
+            roleMenuRelationService.removeRelationByRoleId(roleIds);
+        }else {//新增
+            roleService.saveRole(systemRole);
+        }
         systemRole.setId(systemRole.getId());
-        roleMenuRelationService.createRelation(systemRole,menuIds);
+        roleMenuRelationService.createRelation(systemRole, addRoleForm.getMenuIds());
         return CommonResult.success();
     }
 

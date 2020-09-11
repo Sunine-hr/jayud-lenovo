@@ -14,6 +14,7 @@ import com.jayud.oauth.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -132,7 +133,7 @@ public class ExternalApiController {
 
     @ApiOperation(value = "新增修改客户账户")
     @RequestMapping("/api/saveOrUpdateCustAccount")
-    public ApiResult saveOrUpdateCustAccount(AddCusAccountForm form) {
+    public ApiResult saveOrUpdateCustAccount(@RequestBody AddCusAccountForm form) {
         SystemUser systemUser = new SystemUser();
         systemUser.setName(form.getName());
         systemUser.setUserName(form.getUserName());

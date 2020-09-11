@@ -4,6 +4,7 @@ package com.jayud.oms.feign;
 import com.jayud.common.ApiResult;
 import com.jayud.model.bo.AddCusAccountForm;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -52,15 +53,15 @@ public interface OauthClient {
      * 删除客户账户
      * @return
      */
-    @RequestMapping("/api/delCustAccount")
+    @RequestMapping(value = "/api/delCustAccount")
     ApiResult delCustAccount(Long id);
 
     /**
      * 保存客户账户
      * @return
      */
-    @RequestMapping("/api/saveOrUpdateCustAccount")
-    ApiResult saveOrUpdateCustAccount(AddCusAccountForm form);
+    @RequestMapping(value = "/api/saveOrUpdateCustAccount")
+    ApiResult saveOrUpdateCustAccount(@RequestBody AddCusAccountForm form);
 
 
 

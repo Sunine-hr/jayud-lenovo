@@ -143,9 +143,10 @@ public class CustomerInfoController {
 
     @ApiOperation(value = "客户账号管理-分页获取数据")
     @PostMapping(value = "/findCusAccountByPage")
-    public CommonResult findCusAccountByPage(@RequestBody QueryCusAccountForm form) {
-        customerInfoService.findCustAccountByPage(form);
-        return CommonResult.success();
+    public CommonResult<CommonPageResult<CustAccountVO>> findCusAccountByPage(@RequestBody QueryCusAccountForm form) {
+        IPage<CustAccountVO> pageList = customerInfoService.findCustAccountByPage(form);
+        CommonPageResult<CustAccountVO> pageVO = new CommonPageResult(pageList);
+        return CommonResult.success(pageVO);
     }
 
     @ApiOperation(value = "客户列表新增-下拉框合并返回")

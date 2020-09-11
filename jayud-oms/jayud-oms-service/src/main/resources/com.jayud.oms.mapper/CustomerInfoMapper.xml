@@ -258,13 +258,13 @@
         LEFT JOIN customer_info ci
         ON su.`company_id` = ci.`id`
         WHERE 1 = 1
-        <if test="form.companyId != null">
+        <if test="form.companyId != null and form.companyId != ''">
             and su.companyId = #{form.companyId}
         </if>
-        <if test="form.status != null">
+        <if test="form.status != null and form.status != ''">
             and su.status = #{form.status}
         </if>
-        <if test="form.name != null">
+        <if test="form.name != null and form.name != ''">
             and su.name like concat('%',#{form.name},'%')
         </if>
     </select>

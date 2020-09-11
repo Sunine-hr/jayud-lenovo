@@ -14,8 +14,8 @@ import com.jayud.oauth.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ public class ExternalApiController {
     ISystemUserRoleRelationService userRoleRelationService;
 
     @ApiOperation(value = "获取当前登录用户")
-    @PostMapping(value = "/api/getLoginUser")
+    @RequestMapping(value = "/api/getLoginUser")
     public ApiResult getLoginUser() {
         return new ApiResult(200, userService.getLoginUser().getName());
     }
@@ -64,13 +64,15 @@ public class ExternalApiController {
     }
 
     @ApiOperation(value = "根据角色KEY获取用户")
-    @PostMapping(value = "/api/findUserByRoleKey")
-    public ApiResult findUserByRoleKey(String key) {
+    @RequestMapping(value = "/api/findUserByKey")
+    public ApiResult findUserByKey(@RequestParam(value = "key") String key) {
         Map<String, Object> param = new HashMap<>();
         param.put("key", key);
         SystemRole role = roleService.getRoleByCondition(param);
         param = new HashMap<>();
-        param.put("roleId", role.getId());
+        if(role != null){
+            param.put("roleId", role.getId());
+        }
         List<SystemUser> systemUsers = userService.findUserByCondition(param);
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (SystemUser systemUser : systemUsers) {
@@ -83,9 +85,9 @@ public class ExternalApiController {
     }
 
     @ApiOperation(value = "获取法人主体")
-    @PostMapping("/api/findLegalEntity")
+    @RequestMapping(value = "/api/findLegalEntity")
     public ApiResult findLegalEntity() {
-        List<LegalEntityVO> legalEntitys = legalEntityService.findLegalEntity(null);
+        List<LegalEntityVO> legalEntitys = legalEntityService.findLegalEntity(new HashMap<>());
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (LegalEntityVO legalEntityVO : legalEntitys) {
             InitComboxVO initComboxVO = new InitComboxVO();
@@ -97,7 +99,7 @@ public class ExternalApiController {
     }
 
     @ApiOperation(value = "获取角色")
-    @PostMapping("/api/findRole")
+    @RequestMapping("/api/findRole")
     public ApiResult findRole() {
         List<SystemRoleVO> systemRoleVOS = roleService.findRole();
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
@@ -111,9 +113,9 @@ public class ExternalApiController {
     }
 
     @ApiOperation(value = "获取客户账户负责人")
-    @PostMapping("/api/findCustAccount")
+    @RequestMapping("/api/findCustAccount")
     public ApiResult findCustAccount() {
-        List<SystemUser> systemUsers = userService.findUserByCondition(null);
+        List<SystemUser> systemUsers = userService.findUserByCondition(new HashMap<>());
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (SystemUser systemUser : systemUsers) {
             InitComboxVO initComboxVO = new InitComboxVO();
@@ -125,7 +127,7 @@ public class ExternalApiController {
     }
 
     @ApiOperation(value = "删除客户账户")
-    @PostMapping("/api/delCustAccount")
+    @RequestMapping("/api/delCustAccount")
     public ApiResult delCustAccount(Long id) {
         OprSystemUserForm form = new OprSystemUserForm();
         form.setCmd("delete");
@@ -135,7 +137,7 @@ public class ExternalApiController {
     }
 
     @ApiOperation(value = "新增修改客户账户")
-    @PostMapping("/api/saveOrUpdateCustAccount")
+    @RequestMapping("/api/saveOrUpdateCustAccount")
     public ApiResult saveOrUpdateCustAccount(AddCusAccountForm form) {
         SystemUser systemUser = new SystemUser();
         systemUser.setName(form.getName());

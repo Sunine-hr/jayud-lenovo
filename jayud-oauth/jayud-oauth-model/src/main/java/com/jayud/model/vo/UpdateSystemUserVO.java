@@ -51,5 +51,16 @@ public class UpdateSystemUserVO {
 
     @ApiModelProperty(value = "所属上级")
     private String superiorName;
+
+    //以下字段是为了给组织架构处编辑员工回显
+    @ApiModelProperty(value = "联系电话")
+    private String phone;
+
+    @ApiModelProperty(value = "邮箱")
+    private String email;
+
+    @ApiModelProperty(value = "是否部门负责人 1-是 0-否")
+    private String isDepartmentCharge;
+
 }
 

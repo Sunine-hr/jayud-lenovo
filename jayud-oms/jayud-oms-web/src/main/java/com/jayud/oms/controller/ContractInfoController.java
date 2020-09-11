@@ -14,11 +14,13 @@ import com.jayud.model.bo.QueryContractInfoForm;
 import com.jayud.model.enums.CustomerInfoStatusEnum;
 import com.jayud.model.po.ContractInfo;
 import com.jayud.model.po.CustomerInfo;
-import com.jayud.model.vo.AddContractInfoRelListVO;
+import com.jayud.model.po.ProductBiz;
 import com.jayud.model.vo.ContractInfoVO;
+import com.jayud.model.vo.InitComboxVO;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.service.IContractInfoService;
 import com.jayud.oms.service.ICustomerInfoService;
+import com.jayud.oms.service.IProductBizService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +51,9 @@ public class ContractInfoController {
     @Autowired
     private ICustomerInfoService customerInfoService;
 
+    @Autowired
+    private IProductBizService productBizService;
+
     @ApiOperation(value = "查询合同列表")
     @PostMapping(value = "/findContractInfoByPage")
     public CommonResult<CommonPageResult<ContractInfoVO>> findCustomerInfoByPage(@RequestBody QueryContractInfoForm form) {
@@ -78,26 +83,6 @@ public class ContractInfoController {
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "新增合同时初始化下拉框信息")
-    @PostMapping(value = "/getInfoBySave")
-    public CommonResult<AddContractInfoRelListVO> getInfoBySave() {
-        AddContractInfoRelListVO addContractInfoRelListVO = new AddContractInfoRelListVO();
-        Map<String,String> param = new HashMap<String,String>();
-        param.put("audit_status", CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());//有效的，审核通过的客户名称
-        param.put("status", "1");
-        List<CustomerInfo> customerInfos = customerInfoService.findCustomerInfoByCondition(param);
-        List<Map<String,String>> mapList1 = new ArrayList<>();
-        for (CustomerInfo customerInfo : customerInfos) {
-            param = new HashMap<String,String>();
-            param.put("id",String.valueOf(customerInfo.getId()));
-            param.put("name",customerInfo.getName());
-            mapList1.add(param);
-        }
-        addContractInfoRelListVO.setCustomerInfos(mapList1);
-        addContractInfoRelListVO.setLegalEntitys((List<Map<String,String>>)oauthClient.findLegalEntity().getData());//获取法人主体
-        return CommonResult.success(addContractInfoRelListVO);
-    }
-
     @ApiOperation(value = "删除合同信息")
     @PostMapping(value = "/delContractInfo")
     public CommonResult delContractInfo(@RequestBody DeleteForm form) {
@@ -113,7 +98,60 @@ public class ContractInfoController {
         contractInfoService.saveOrUpdateBatch(contractInfos);
         return CommonResult.success();
     }
+    @ApiOperation(value = "合同管理-下拉框合并返回")
+    @PostMapping(value = "/findComboxs3")
+    public CommonResult<Map<String,Object>> findComboxs3(){
+        Map<String,Object> resultMap = new HashMap<>();
+        //客户名称
+        resultMap.put("customers",initCustomer());
+        //业务类型
+        resultMap.put("productBiz",initProductBiz());
+        //法人主体
+        resultMap.put("legalEntity",initLegalEntity());
+        return CommonResult.success(resultMap);
 
+    }
+
+    /**
+     * 初始化下拉框
+     */
+    @ApiOperation(value = "合同管理-下拉框-客户名称")
+    @PostMapping(value = "/initCustomer")
+    public CommonResult<List<InitComboxVO>> initCustomer() {
+        Map<String,String> param = new HashMap<String,String>();
+        param.put("audit_status", CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());//有效的，审核通过的客户名称
+        param.put("status", "1");
+        List<CustomerInfo> customerInfos = customerInfoService.findCustomerInfoByCondition(param);
+        List<InitComboxVO> initComboxVOS = new ArrayList<>();
+        for (CustomerInfo customerInfo : customerInfos) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(customerInfo.getId());
+            initComboxVO.setName(customerInfo.getName());
+            initComboxVOS.add(initComboxVO);
+        }
+        return CommonResult.success(initComboxVOS);
+    }
+
+    @ApiOperation(value = "合同管理-下拉框-法人主体")
+    @PostMapping(value = "/initLegalEntity")
+    public CommonResult<List<InitComboxVO>> initLegalEntity() {
+        List<InitComboxVO> initComboxVOS = (List<InitComboxVO>)oauthClient.findLegalEntity().getData();
+        return CommonResult.success(initComboxVOS);
+    }
+
+    @ApiOperation(value = "合同管理-下拉框-业务类型")
+    @PostMapping(value = "/initProductBiz")
+    public CommonResult<List<InitComboxVO>> initProductBiz() {
+        List<ProductBiz> productBizs = productBizService.findProductBiz();
+        List<InitComboxVO> initComboxVOS = new ArrayList<>();
+        for (ProductBiz productBiz : productBizs) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(productBiz.getId());
+            initComboxVO.setName(productBiz.getName());
+            initComboxVOS.add(initComboxVO);
+        }
+        return CommonResult.success(initComboxVOS);
+    }
 
 
     /**

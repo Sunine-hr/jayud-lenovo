@@ -91,7 +91,7 @@
                 and su.audit_status = #{form.auditStatus}
             </if>
         </if>
-        <if test="form.cmd == 'all'">
+        <if test="form.cmd == 'byDepartmentId'">
             <if test="form.userName != null and form.userName != ''">
                 and su.user_name like concat('%',#{form.userName},'%')
             </if>
@@ -146,7 +146,10 @@
             t.user_name
           FROM
             `system_user` t
-          WHERE t.id = su.`superior_id`) superiorName
+          WHERE t.id = su.`superior_id`) superiorName,
+           su.`phone`,
+           su.`email`,
+           su.`is_department_charge` isDepartmentCharge
         FROM
           `system_user` su
           LEFT JOIN department d

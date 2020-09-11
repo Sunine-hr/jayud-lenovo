@@ -145,6 +145,34 @@ public class CustomerInfoController {
         return CommonResult.success();
     }
 
+    @ApiOperation(value = "客户列表新增-下拉框合并返回")
+    @PostMapping(value = "/findComboxs1")
+    public CommonResult<Map<String,Object>> findComboxs1(){
+        Map<String,Object> resultMap = new HashMap<>();
+        //接单部门
+        resultMap.put("jiedanDepart",initDepartment());
+        //接单客服
+        resultMap.put("jiedanKF",initKfs());
+        //业务员
+        resultMap.put("yws",initYws());
+        return CommonResult.success(resultMap);
+
+    }
+
+    @ApiOperation(value = "客户账号管理-下拉框合并返回")
+    @PostMapping(value = "/findComboxs2")
+    public CommonResult<Map<String,Object>> findComboxs2(){
+        Map<String,Object> resultMap = new HashMap<>();
+        //角色
+        resultMap.put("roles",initRole());
+        //所属公司
+        resultMap.put("companys",initCompany());
+        //所属上级
+        resultMap.put("departCharges",initDepartCharge());
+        return CommonResult.success(resultMap);
+
+    }
+
     /**
      * 所有下拉框的初始化
      */
@@ -179,7 +207,7 @@ public class CustomerInfoController {
     @ApiOperation(value = "供应商账号-新增-所属公司")
     @PostMapping(value = "/initCompany")
     public CommonResult<List<InitComboxVO>> initCompany() {
-        List<CustomerInfo> customerInfos = customerInfoService.findCustomerInfoByCondition(null);
+        List<CustomerInfo> customerInfos = customerInfoService.findCustomerInfoByCondition(new HashMap<>());
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (CustomerInfo customerInfo : customerInfos) {
             InitComboxVO initComboxVO = new InitComboxVO();
@@ -194,7 +222,8 @@ public class CustomerInfoController {
     @ApiOperation(value = "供应商账号-新增-所属上级")
     @PostMapping(value = "/initDepartCharge")
     public CommonResult<List<InitComboxVO>> initDepartCharge() {
-        return CommonResult.success((List<InitComboxVO>)oauthClient.findCustAccount());
+        List<InitComboxVO> initComboxVOS = (List<InitComboxVO>)oauthClient.findCustAccount().getData();
+        return CommonResult.success(initComboxVOS);
     }
 
     /**

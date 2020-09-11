@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.model.bo.QueryLegalEntityForm;
 import com.jayud.model.po.LegalEntity;
 import com.jayud.model.po.SystemUser;
@@ -36,7 +37,7 @@ public class LegalEntityServiceImpl extends ServiceImpl<LegalEntityMapper, Legal
             String value = String.valueOf(param.get(key));
             queryWrapper.eq(key,value);
         }
-        return baseMapper.selectList(queryWrapper);
+        return ConvertUtil.convertList(baseMapper.selectList(queryWrapper),LegalEntityVO.class);
     }
 
 

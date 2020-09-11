@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mapper.CustomsApiLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.model.po.CustomsApiLog">
+        <id column="id" property="id" />
+        <result column="method" property="method" />
+        <result column="request_json" property="requestJson" />
+        <result column="result_json" property="resultJson" />
+        <result column="ip_address" property="ipAddress" />
+        <result column="user_id" property="userId" />
+        <result column="time_span" property="timeSpan" />
+        <result column="request_time" property="requestTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, method, request_json, result_json, ip_address, user_id, time_span, request_time
+    </sql>
+
+</mapper>

@@ -3,11 +3,14 @@ package com.jayud.controller;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONUtil;
+import com.jayud.annotations.APILog;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.model.bo.*;
 import com.jayud.model.vo.*;
+import com.jayud.service.ICustomsApiLogService;
 import com.jayud.service.ICustomsApiService;
 import io.swagger.annotations.*;
 import org.apache.commons.lang.StringUtils;
@@ -121,6 +124,14 @@ public class ApiController {
             return CommonResult.success();
         }
         return CommonResult.success(service.getOrderProcessStep(id));
+    }
+
+    @ApiOperation(value = "test")
+    @PostMapping("/test")
+    @APILog
+    public CommonResult<OrderProcessStepVO> test(@RequestBody Map<String, String> param) {
+        System.out.println(JSONUtil.toJsonStr(param));
+        return CommonResult.success();
     }
 
 }

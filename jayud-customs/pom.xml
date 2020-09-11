@@ -19,7 +19,7 @@
         <module>jayud-customs-api</module>
         <module>jayud-customs-model</module>
         <module>jayud-customs-service</module>
-        <module>jadyu-customs-web</module>
+        <module>jayud-customs-client</module>
     </modules>
 
     <dependencies>

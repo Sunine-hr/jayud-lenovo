@@ -1,5 +1,0 @@
-rtscf:
-  nacos:
-    server-addr: 47.106.108.105:8848
-    config:
-      namespace: 3a7ba978-b304-4d5a-a642-df4139bbb03b

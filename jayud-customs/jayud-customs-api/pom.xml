@@ -25,6 +25,10 @@
             <artifactId>jayud-customs-service</artifactId>
             <version>${customs.service.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
 
     </dependencies>
 

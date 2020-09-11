@@ -26,6 +26,8 @@
         <module>jayud-finance</module>
         <module>jayud-oms</module>
         <module>jayud-tms</module>
+
+
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -153,6 +155,12 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-openfeign-core</artifactId>
+            <version>2.1.5.RELEASE</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
     <build>

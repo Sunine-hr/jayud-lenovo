@@ -29,4 +29,12 @@
             #{item}
         </foreach>
     </delete>
+
+    <delete id="removeRelationByUserId"  parameterType = "java.util.List">
+        delete from system_user_role_relation where 1>2
+        or user_id in
+        <foreach collection="list"  item="item" open="(" separator="," close=")"  >
+            #{item}
+        </foreach>
+    </delete>
 </mapper>

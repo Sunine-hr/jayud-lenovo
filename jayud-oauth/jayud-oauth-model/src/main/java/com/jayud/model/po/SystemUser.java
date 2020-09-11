@@ -66,6 +66,9 @@ public class SystemUser extends Model<SystemUser> {
     @ApiModelProperty(value = "帐号启用状态：0->Off；1->On")
     private Integer status;
 
+    @ApiModelProperty(value = "1-用户 2-客户")
+    private String userType;
+
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createdTime;
 

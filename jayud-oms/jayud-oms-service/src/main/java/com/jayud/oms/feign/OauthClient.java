@@ -25,17 +25,17 @@ public interface OauthClient {
 
     /**
      * 获取接单业务员和接单客服
-     * @param roleId
+     * @param key
      * @return
      */
-    @PostMapping("system/user/findUserByRoleId")
-    ApiResult findUserByRoleId(Long roleId);
+    @PostMapping("/api/findUserByRoleId")
+    ApiResult findUserByKey(String key);
 
     /**
      * 获取法人主体
      * @return
      */
-    @PostMapping("system/user/findLegalEntity")
+    @PostMapping("/api/findLegalEntity")
     ApiResult findLegalEntity();
 
 
@@ -43,28 +43,28 @@ public interface OauthClient {
      * 获取角色
      * @return
      */
-    @PostMapping("system/user/findRole")
+    @PostMapping("/api/findRole")
     ApiResult findRole();
 
     /**
      * 获取客户账户负责人
      * @return
      */
-    @PostMapping("system/user/findCustAccount")
+    @PostMapping("/api/findCustAccount")
     ApiResult findCustAccount();
 
     /**
      * 删除客户账户
      * @return
      */
-    @PostMapping("system/user/delCustAccount")
+    @PostMapping("/api/delCustAccount")
     ApiResult delCustAccount(Long id);
 
     /**
      * 保存客户账户
      * @return
      */
-    @PostMapping("system/user/saveOrUpdateCustAccount")
+    @PostMapping("/api/saveOrUpdateCustAccount")
     ApiResult saveOrUpdateCustAccount(AddCusAccountForm form);
 
 

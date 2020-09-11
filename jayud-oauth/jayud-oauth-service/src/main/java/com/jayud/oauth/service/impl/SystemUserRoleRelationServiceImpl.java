@@ -30,5 +30,24 @@ public class SystemUserRoleRelationServiceImpl extends ServiceImpl<SystemUserRol
         return baseMapper.removeRelationByRoleId(roleIds);
     }
 
+    /**
+     * 创建角色与用户的关联
+     * @param roleId
+     * @param userId
+     */
+    @Override
+    public void createRelation(Long roleId, Long userId){
+        SystemUserRoleRelation roleRelation = new SystemUserRoleRelation();
+        roleRelation.setRoleId(roleId);
+        roleRelation.setUserId(userId);
+        saveOrUpdate(roleRelation);
+
+    }
+
+    @Override
+    public boolean removeRelationByUserId(List<Long> userIds) {
+        return baseMapper.removeRelationByUserId(userIds);
+    }
+
 
 }

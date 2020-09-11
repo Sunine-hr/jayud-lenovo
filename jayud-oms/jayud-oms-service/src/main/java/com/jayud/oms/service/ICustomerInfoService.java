@@ -47,10 +47,10 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
 
     /**
      * 客户账户列表分页查询
-     * @param from
+     * @param form
      * @return
      */
-    IPage<CustAccountVO>  findCustAccountByPage(QueryCusAccountForm from);
+    IPage<CustAccountVO>  findCustAccountByPage(QueryCusAccountForm form);
 
 
 }

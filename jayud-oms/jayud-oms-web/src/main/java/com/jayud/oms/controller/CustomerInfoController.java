@@ -10,6 +10,7 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.model.bo.*;
 import com.jayud.model.enums.CustomerInfoStatusEnum;
+import com.jayud.model.enums.RoleKeyEnum;
 import com.jayud.model.po.CustomerInfo;
 import com.jayud.model.vo.CustAccountVO;
 import com.jayud.model.vo.CustomerInfoVO;
@@ -157,14 +158,14 @@ public class CustomerInfoController {
     @ApiOperation(value = "客户列表-新增-接单客服")
     @PostMapping(value = "/initKfs")
     public CommonResult<List<InitComboxVO>> initKfs() {
-        List<InitComboxVO> initComboxVOS = null;// (List<InitComboxVO>) oauthClient.findUserByKey(RoleKeyEnum.CUSTOMER_SERVICE.getCode()).getData();
+        List<InitComboxVO> initComboxVOS = (List<InitComboxVO>) oauthClient.findUserByKey(RoleKeyEnum.CUSTOMER_SERVICE.getCode()).getData();
         return CommonResult.success(initComboxVOS);
     }
 
     @ApiOperation(value = "客户列表-新增-业务员")
     @PostMapping(value = "/initYws")
     public CommonResult<List<InitComboxVO>> initYws() {
-        List<InitComboxVO> initComboxVOS = null;//(List<InitComboxVO>) oauthClient.findUserByKey(RoleKeyEnum.BUSINESS_MANAGER.getCode()).getData();
+        List<InitComboxVO> initComboxVOS = (List<InitComboxVO>) oauthClient.findUserByKey(RoleKeyEnum.BUSINESS_MANAGER.getCode()).getData();
         return CommonResult.success(initComboxVOS);
     }
 

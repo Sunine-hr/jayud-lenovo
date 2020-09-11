@@ -7,7 +7,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@FeignClient(name = "jayud-oauth-web")
+@FeignClient(value = "jayud-oauth-web",path = "/jayud-oauth")
 public interface OauthClient {
 
     /**
@@ -20,7 +20,7 @@ public interface OauthClient {
      * 获取接单部门
      * @return
      */
-    @RequestMapping("/api/findDepartment")
+    @RequestMapping(value = "/api/findDepartment")
     ApiResult findDepartment();
 
     /**

@@ -95,6 +95,9 @@
             <if test="form.userName != null and form.userName != ''">
                 and su.user_name like concat('%',#{form.userName},'%')
             </if>
+            <if test="form.departmentId != null">
+                and su.department_id = #{form.departmentId}
+            </if>
         </if>
     </select>
 

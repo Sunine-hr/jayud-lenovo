@@ -43,12 +43,6 @@ public class ExternalApiController {
     @Autowired
     ISystemUserRoleRelationService userRoleRelationService;
 
-    @ApiOperation(value = "获取当前登录用户")
-    @RequestMapping(value = "/api/getLoginUser")
-    public ApiResult getLoginUser() {
-        return new ApiResult(200, userService.getLoginUser().getName());
-    }
-
     @ApiOperation(value = "获取所有部门")
     @RequestMapping(value = "/api/findDepartment")
     public ApiResult findDepartment() {

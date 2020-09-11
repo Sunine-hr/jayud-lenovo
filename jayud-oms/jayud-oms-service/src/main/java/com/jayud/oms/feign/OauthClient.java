@@ -12,12 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface OauthClient {
 
     /**
-     * 获取登录用户信息
-     */
-    @RequestMapping("/api/getLoginUser")
-    ApiResult getLoginUser();
-
-    /**
      * 获取接单部门
      * @return
      */

@@ -58,16 +58,16 @@ public class CustomerInfoVO {
     private Integer estate;
 
     @ApiModelProperty(value = "接单部门ID")
-    private String departmentId;
+    private Long departmentId;
 
     @ApiModelProperty(value = "接单部门")
     private String departmentName;
 
     @ApiModelProperty(value = "接单客服ID")
-    private String kuId;
+    private Long kuId;
 
     @ApiModelProperty(value = "业务员ID")
-    private String ywId;
+    private Long ywId;
 
     @ApiModelProperty(value = "接单客服")
     private String kuName;

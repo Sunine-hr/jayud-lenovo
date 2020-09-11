@@ -91,7 +91,7 @@ public class AddCustomerInfoForm {
 
     @ApiModelProperty(value = "业务员ID",required = true)
     @NotEmpty(message = "ywId is required")
-    private String ywId;
+    private Long ywId;
 
     @ApiModelProperty(value = "业务员",required = true)
     @NotEmpty(message = "ywName is required")

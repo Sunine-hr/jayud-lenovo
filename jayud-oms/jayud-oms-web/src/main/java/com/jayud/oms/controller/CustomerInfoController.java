@@ -3,9 +3,9 @@ package com.jayud.oms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.RedisUtils;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.model.bo.*;
@@ -43,6 +43,9 @@ public class CustomerInfoController {
 
     @Autowired
     private OauthClient oauthClient;
+
+    @Autowired
+    private RedisUtils redisUtils;
 
     @ApiOperation(value = "查询客户列表")
     @PostMapping(value = "/findCustomerInfoByPage")
@@ -231,8 +234,8 @@ public class CustomerInfoController {
      * @return
      */
     private String getLoginUser(){
-        ApiResult apiResult = oauthClient.getLoginUser();
-        return apiResult.getData().toString();
+        String loginUser = redisUtils.get("loginUser",100);
+        return loginUser;
     }
 
 }

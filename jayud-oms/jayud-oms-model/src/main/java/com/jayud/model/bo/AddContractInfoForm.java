@@ -10,6 +10,9 @@ import java.util.Date;
 @Data
 public class AddContractInfoForm  {
 
+    @ApiModelProperty(value = "主键,修改时必传")
+    private Long id;
+
     @ApiModelProperty(value = "客户名称",required = true)
     @NotEmpty(message = "name is required")
     private String name;

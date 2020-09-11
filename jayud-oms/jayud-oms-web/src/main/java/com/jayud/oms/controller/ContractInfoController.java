@@ -3,12 +3,12 @@ package com.jayud.oms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.RedisUtils;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
-import com.jayud.model.bo.AddCustomerInfoForm;
+import com.jayud.model.bo.AddContractInfoForm;
 import com.jayud.model.bo.DeleteForm;
 import com.jayud.model.bo.QueryContractInfoForm;
 import com.jayud.model.enums.CustomerInfoStatusEnum;
@@ -54,6 +54,9 @@ public class ContractInfoController {
     @Autowired
     private IProductBizService productBizService;
 
+    @Autowired
+    private RedisUtils redisUtils;
+
     @ApiOperation(value = "查询合同列表")
     @PostMapping(value = "/findContractInfoByPage")
     public CommonResult<CommonPageResult<ContractInfoVO>> findCustomerInfoByPage(@RequestBody QueryContractInfoForm form) {
@@ -71,7 +74,7 @@ public class ContractInfoController {
 
     @ApiOperation(value = "新增编辑合同")
     @PostMapping(value = "/saveOrUpdateContractInfo")
-    public CommonResult saveOrUpdateCustomerInfo(@RequestBody AddCustomerInfoForm form) {
+    public CommonResult saveOrUpdateCustomerInfo(@RequestBody AddContractInfoForm form) {
         ContractInfo contractInfo = ConvertUtil.convert(form,ContractInfo.class);
         if(form.getId() != null){
             contractInfo.setUpdatedUser(getLoginUser());
@@ -159,8 +162,8 @@ public class ContractInfoController {
      * @return
      */
     private String getLoginUser(){
-        ApiResult apiResult = oauthClient.getLoginUser();
-        return apiResult.getData().toString();
+        String loginUser = redisUtils.get("loginUser");
+        return loginUser;
     }
 
 }

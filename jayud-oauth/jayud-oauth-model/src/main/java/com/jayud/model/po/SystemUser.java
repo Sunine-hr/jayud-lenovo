@@ -69,6 +69,12 @@ public class SystemUser extends Model<SystemUser> {
     @ApiModelProperty(value = "1-用户 2-客户")
     private String userType;
 
+    @ApiModelProperty(value = "是否是负责人 1-是 0-否")
+    private String isDepartmentCharge;
+
+    @ApiModelProperty(value = "邮箱")
+    private String email;
+
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createdTime;
 

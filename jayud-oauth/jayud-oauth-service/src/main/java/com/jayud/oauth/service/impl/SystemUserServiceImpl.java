@@ -11,6 +11,7 @@ import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.model.bo.AuditSystemUserForm;
 import com.jayud.model.bo.OprSystemUserForm;
 import com.jayud.model.bo.QuerySystemUserForm;
@@ -232,6 +233,17 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             queryWrapper.eq(key,value);
         }
         return baseMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public void updateIsCharge(Long departmentId) {
+        SystemUser systemUser = new SystemUser();
+        systemUser.setUpdatedUser(getLoginName());
+        systemUser.setUpdatedTime(DateUtils.getNowTime());
+        systemUser.setIsDepartmentCharge("0");
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("department_id",departmentId);
+        baseMapper.update(systemUser,queryWrapper);
     }
 
 

@@ -107,4 +107,10 @@ public interface ISystemUserService extends IService<SystemUser> {
      */
     List<SystemUser> findUserByCondition(Map<String,Object> param);
 
+    /**
+     * 一个部门只能有一个负责人
+     * @param departmentId
+     */
+    void updateIsCharge(Long departmentId);
+
 }

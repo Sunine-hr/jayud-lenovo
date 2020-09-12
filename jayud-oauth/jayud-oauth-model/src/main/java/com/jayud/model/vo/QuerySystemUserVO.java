@@ -37,7 +37,7 @@ public class QuerySystemUserVO {
     @ApiModelProperty(value = "所属上级")
     private String superiorName;
 
-    @ApiModelProperty(value = "状态")
+    @ApiModelProperty(value = "审核状态描述")
     private String auditStatusDesc;
 
     @ApiModelProperty(value = "创建人")
@@ -51,6 +51,12 @@ public class QuerySystemUserVO {
 
     @ApiModelProperty(value = "岗位ID")
     private Long workId;
+
+    @ApiModelProperty(value = "审核意见")
+    private String note;
+
+    @ApiModelProperty(value = "审核状态")
+    private String auditStatus;
 
 
 }

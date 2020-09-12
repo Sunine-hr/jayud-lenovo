@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 /**
@@ -76,7 +77,7 @@ public class SystemUser extends Model<SystemUser> {
     private String email;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createdTime;
+    private Timestamp createdTime;
 
     @ApiModelProperty(value = "创建人")
     private String createdUser;
@@ -85,7 +86,7 @@ public class SystemUser extends Model<SystemUser> {
     private String updatedUser;
 
     @ApiModelProperty(value = "修改时间")
-    private LocalDateTime updatedTime;
+    private Timestamp updatedTime;
 
 
 

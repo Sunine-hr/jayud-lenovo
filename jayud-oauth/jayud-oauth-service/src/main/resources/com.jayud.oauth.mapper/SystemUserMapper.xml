@@ -69,7 +69,9 @@
         su.`created_user` createdUser,
         temp.user_name superiorName,
         w.`id` workId,
-        sr.`id` roleId
+        sr.`id` roleId,
+        su.note,
+        su.`audit_status` auditStatus
         FROM
         `system_user` su
         LEFT JOIN `work` w

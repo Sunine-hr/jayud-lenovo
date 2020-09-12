@@ -238,6 +238,10 @@ public class SystemUserController {
     public CommonResult saveOrUpdatedSystemUser(@RequestBody AddSystemUserForm form) {
         SystemUser systemUser = ConvertUtil.convert(form,SystemUser.class);
         String loginUser = getLoginName();
+        //如果新增编辑传的是我是负责人,则把历史负责人改为员工
+        if("1".equals(form.getIsDepartmentCharge())){
+            userService.updateIsCharge(form.getDepartmentId());
+        }
         if(form.getId() != null){
             systemUser.setUpdatedUser(loginUser);
         }else {

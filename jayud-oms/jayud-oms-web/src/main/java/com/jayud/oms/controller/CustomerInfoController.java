@@ -130,7 +130,7 @@ public class CustomerInfoController {
     @PostMapping(value = "/delCustomerAccountInfo")
     public CommonResult delCustomerAccountInfo(@RequestBody Map<String,Object> param) {
         String id = MapUtil.getStr(param,"id");
-        oauthClient.delCustAccount(Long.valueOf(id));
+        oauthClient.delCustAccount(id);
         return CommonResult.success();
     }
 

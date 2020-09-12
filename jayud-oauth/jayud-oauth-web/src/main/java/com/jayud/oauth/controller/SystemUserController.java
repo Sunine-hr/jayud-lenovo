@@ -125,7 +125,6 @@ public class SystemUserController {
     @PostMapping(value = "/addRole")
     public CommonResult addRole(@RequestBody AddRoleForm addRoleForm){
         SystemRole systemRole = ConvertUtil.convert(addRoleForm, SystemRole.class);
-        roleService.saveOrUpdate(systemRole);//新增/编辑角色
         if(addRoleForm.getId() != null){
             //编辑角色权限
             roleService.saveOrUpdate(systemRole);

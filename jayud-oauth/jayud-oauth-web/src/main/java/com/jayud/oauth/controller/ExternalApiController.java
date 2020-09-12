@@ -122,11 +122,11 @@ public class ExternalApiController {
     }
 
     @ApiOperation(value = "删除客户账户")
-    @RequestMapping("/api/delCustAccount")
-    public ApiResult delCustAccount(Long id) {
+    @RequestMapping(value = "/api/delCustAccount")
+    public ApiResult delCustAccount(@RequestParam(value = "id") String id) {
         OprSystemUserForm form = new OprSystemUserForm();
         form.setCmd("delete");
-        form.setId(id);
+        form.setId(Long.parseLong(id));
         userService.oprSystemUser(form);
         return ApiResult.ok();
     }

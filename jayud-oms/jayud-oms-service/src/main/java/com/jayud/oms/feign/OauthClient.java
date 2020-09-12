@@ -53,8 +53,8 @@ public interface OauthClient {
      * 删除客户账户
      * @return
      */
-    @RequestMapping(value = "/api/delCustAccount")
-    ApiResult delCustAccount(Long id);
+    @RequestMapping("/api/delCustAccount")
+    ApiResult delCustAccount(@RequestParam(value = "id") String id);
 
     /**
      * 保存客户账户

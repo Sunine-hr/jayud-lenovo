@@ -73,6 +73,7 @@ public class CustomerInfoController {
         }else {
             customerInfo.setCreatedUser(getLoginUser());
         }
+        customerInfo.setAuditStatus(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode());
         customerInfoService.saveOrUpdate(customerInfo);
         return CommonResult.success();
     }
@@ -100,15 +101,20 @@ public class CustomerInfoController {
         customerInfo.setId(form.getId());
         customerInfo.setUpdatedTime(DateUtils.getNowTime());
         customerInfo.setUpdatedUser(getLoginUser());
+        CustomerInfoVO customerInfoVO = customerInfoService.getCustomerInfoById(form.getId());
+        Integer auditStatus = customerInfoVO.getAuditStatus();
+        if(auditStatus != null){
+            return CommonResult.error(400,"不属于审核状态流程");
+        }
         if("0".equals(form.getAuditStatus())){//审核拒绝
             customerInfo.setAuditStatus(CustomerInfoStatusEnum.AUDIT_FAIL.getCode());
             customerInfo.setAuditComment(form.getAuditComment());
         }else if("1".equals(form.getAuditStatus())){//审核状态
-            if("kf".equals(form.getRoleFlag())){
+            if(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode().equals(auditStatus)){//客服审核流程
                 customerInfo.setAuditStatus(CustomerInfoStatusEnum.CW_WAIT_AUDIT.getCode());
-            }else if("cw".equals(form.getRoleFlag())){
+            }else if(CustomerInfoStatusEnum.CW_WAIT_AUDIT.getCode().equals(auditStatus)){//财务审核流程
                 customerInfo.setAuditStatus(CustomerInfoStatusEnum.ZJB_WAIT_AUDIT.getCode());
-            }else if("zjb".equals(form.getRoleFlag())){
+            }else if(CustomerInfoStatusEnum.ZJB_WAIT_AUDIT.getCode().equals(auditStatus)){//总经办审核
                 customerInfo.setAuditStatus(CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());
             }
         }

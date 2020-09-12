@@ -33,15 +33,15 @@
               ci.`contract_url` contractUrl,
               ci.`business_type` businessType,
               ci.`legal_entity` legalEntity,
-              DATE_FORMAT(ci.`start_date`, '%Y-%m-%d') startDateStr,
-              DATE_FORMAT(ci.`end_date`, '%Y-%m-%d') endDateStr,
+              DATE_FORMAT(ci.`start_date`, '%Y-%m-%d') startDate,
+              DATE_FORMAT(ci.`end_date`, '%Y-%m-%d') endDate,
               ci.`created_user` createdUser,
               DATE_FORMAT(
                 ci.`created_time`,
                 '%Y-%m-%d %H %I %S'
               ) createdTimeStr
             FROM
-              contract_info ci where 1=1
+              contract_info ci where ci.status = 1
             <if test="form.name != null and form.name != ''">
                 and ci.name like concat('%',#{form.name},'%')
             </if>

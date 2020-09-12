@@ -101,8 +101,8 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         String uid = redisUtils.get(user.getId().toString());
         if(uid == null){
             redisUtils.set(user.getId().toString(),subject.getSession().getId().toString());
-            redisUtils.set("loginUser",user.getName());
         }
+        redisUtils.set("loginUser",user.getName());
         cacheUser.setToken(subject.getSession().getId().toString());
         log.warn("CacheUser is {}", JSONUtil.toJsonStr(cacheUser));
         //保存登录记录

@@ -84,7 +84,7 @@ public class ContractInfoController {
 
     @ApiOperation(value = "新增编辑合同")
     @PostMapping(value = "/saveOrUpdateContractInfo")
-    public CommonResult saveOrUpdateCustomerInfo(@RequestBody AddContractInfoForm form) {
+    public CommonResult saveOrUpdateContractInfo(@RequestBody AddContractInfoForm form) {
         ContractInfo contractInfo = ConvertUtil.convert(form,ContractInfo.class);
         List<Long> businessTypes = form.getBusinessTypes();
         StringBuilder sb = new StringBuilder();

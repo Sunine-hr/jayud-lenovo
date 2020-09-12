@@ -51,13 +51,25 @@
         su.email,
         su.user_name userName,
         su.en_user_name enUserName,
-        su.audit_status auditStatusDesc,
+        (
+        CASE
+        su.`audit_status`
+        WHEN '1'
+        THEN '待审核'
+        WHEN '2'
+        THEN '审核通过'
+        WHEN '0'
+        THEN '审核拒绝'
+        END
+        ) auditStatusDesc,
         w.`work_name` workName,
         sr.`name` roleName,
         c.`company_name` companyName,
         su.`created_time` createdTime,
         su.`created_user` createdUser,
-        temp.user_name superiorName
+        temp.user_name superiorName,
+        w.`id` workId,
+        sr.`id` roleId
         FROM
         `system_user` su
         LEFT JOIN `work` w
@@ -83,6 +95,9 @@
             and su.`status` = 1
             <if test="form.name != null and form.name != ''">
                 and su.name like concat('%',#{form.name},'%')
+            </if>
+            <if test="form.cmd == 'isAudit'">
+                and su.`audit_status` = '1'
             </if>
             <if test="form.companyId != null and form.companyId !=''">
                 and su.company_id = #{form.companyId}

@@ -42,5 +42,13 @@ public class ContractInfoVO {
     @ApiModelProperty(value = "创建时间")
     private String createdTimeStr;
 
+    public void setBusinessTypes() {
+        if(businessType != null){
+            String[] strList = businessType.split(",");
+            for (String str : strList) {
+                businessTypes.add(Long.parseLong(str));
+            }
+        }
+    }
 
 }

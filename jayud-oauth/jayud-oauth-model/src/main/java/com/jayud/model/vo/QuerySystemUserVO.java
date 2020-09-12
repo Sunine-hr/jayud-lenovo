@@ -46,5 +46,11 @@ public class QuerySystemUserVO {
     @ApiModelProperty(value = "创建时间")
     private String strCreatedTime;
 
+    @ApiModelProperty(value = "角色ID")
+    private Long roleId;
+
+    @ApiModelProperty(value = "岗位ID")
+    private Long workId;
+
 
 }

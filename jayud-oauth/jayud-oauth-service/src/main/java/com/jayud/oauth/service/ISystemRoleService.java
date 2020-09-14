@@ -1,11 +1,15 @@
 package com.jayud.oauth.service;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.model.bo.QueryRoleForm;
 import com.jayud.model.po.SystemRole;
 import com.jayud.model.vo.SystemRoleVO;
+import com.jayud.model.vo.SystemRoleView;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -38,5 +42,18 @@ public interface ISystemRoleService extends IService<SystemRole> {
      */
     List<SystemRoleVO> findRole();
 
+    /**
+     * 用户列表查询
+     * @param form
+     * @return
+     */
+    IPage<SystemRoleView> findRoleByPage(QueryRoleForm form);
+
+    /**
+     * 根据条件查询角色
+     * @param param
+     * @return
+     */
+    SystemRole getRoleByCondition(Map<String,Object> param);
 
 }

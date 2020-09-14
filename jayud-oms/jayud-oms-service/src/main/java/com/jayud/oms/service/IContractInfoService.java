@@ -21,10 +21,10 @@ public interface IContractInfoService extends IService<ContractInfo> {
 
     /**
      * 根据id获取合同信息
-     * @param from
+     * @param id
      * @return
      */
-    ContractInfoVO getContractInfoById(QueryContractInfoForm from);
+    ContractInfoVO getContractInfoById(Long id);
 
 
 

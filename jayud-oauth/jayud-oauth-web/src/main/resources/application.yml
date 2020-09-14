@@ -75,5 +75,6 @@ secure:
       - /system/user/logout
       - /system/user/auth/image
       - /oss/upload
+      - /api/**
 
 

@@ -20,10 +20,10 @@ spring:
           filters:
             - StripPrefix=1
             - IgnoreGlobalFilterFactor
-        - id: jayud-file #文件处理中心
-          uri: lb://jayud-file
+        - id: route-jayud-file #文件处理中心
+          uri: lb://jayud-file-web
           predicates:
-            - Path=/file/** #指定路径（localhost:8001/swagger-ui.html）
+            - Path=/jayud-file-gateway/** #指定路径（localhost:8001/swagger-ui.html）
           filters:
             - StripPrefix=1
             - IgnoreGlobalFilterFactor

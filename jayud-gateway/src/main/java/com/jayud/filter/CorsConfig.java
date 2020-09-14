@@ -2,7 +2,6 @@ package com.jayud.filter;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.DefaultCorsProcessor;
@@ -47,20 +46,8 @@ public class CorsConfig {
     private CorsConfiguration buildCorsConfiguration() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.addAllowedOrigin("*");
-
-        corsConfiguration.addAllowedMethod(HttpMethod.OPTIONS);
-        corsConfiguration.addAllowedMethod(HttpMethod.POST);
-        corsConfiguration.addAllowedMethod(HttpMethod.GET);
-        corsConfiguration.addAllowedMethod(HttpMethod.PUT);
-        corsConfiguration.addAllowedMethod(HttpMethod.DELETE);
-        corsConfiguration.addAllowedMethod(HttpMethod.PATCH);
-        // corsConfiguration.addAllowedMethod("*");
-
-        corsConfiguration.addAllowedHeader("origin");
-        corsConfiguration.addAllowedHeader("content-type");
-        corsConfiguration.addAllowedHeader("accept");
-        corsConfiguration.addAllowedHeader("x-requested-with");
-        corsConfiguration.addAllowedHeader("Referer");
+        corsConfiguration.addAllowedMethod("*");
+        corsConfiguration.addAllowedHeader("*");
         corsConfiguration.setMaxAge(7200L);
         corsConfiguration.setAllowCredentials(true);
         return corsConfiguration;

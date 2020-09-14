@@ -12,7 +12,7 @@ import javax.validation.constraints.Pattern;
 @Data
 public class AddCustomerInfoForm {
 
-    @ApiModelProperty(value = "主键")
+    @ApiModelProperty(value = "主键ID,修改时必传")
     private Integer id;
 
     @ApiModelProperty(value = "客户名称",required = true)
@@ -91,7 +91,7 @@ public class AddCustomerInfoForm {
 
     @ApiModelProperty(value = "业务员ID",required = true)
     @NotEmpty(message = "ywId is required")
-    private String ywId;
+    private Long ywId;
 
     @ApiModelProperty(value = "业务员",required = true)
     @NotEmpty(message = "ywName is required")

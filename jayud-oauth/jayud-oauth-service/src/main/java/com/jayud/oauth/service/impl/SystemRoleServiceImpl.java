@@ -1,9 +1,13 @@
 package com.jayud.oauth.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.model.bo.QueryRoleForm;
 import com.jayud.model.po.SystemRole;
 import com.jayud.model.vo.SystemRoleVO;
+import com.jayud.model.vo.SystemRoleView;
 import com.jayud.oauth.mapper.SystemRoleMapper;
 import com.jayud.oauth.service.ISystemMenuService;
 import com.jayud.oauth.service.ISystemRoleService;
@@ -11,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -41,6 +46,19 @@ public class SystemRoleServiceImpl extends ServiceImpl<SystemRoleMapper, SystemR
     public List<SystemRoleVO> findRole() {
         List<SystemRole> systemRoles = baseMapper.selectList(null);
         return convertList(systemRoles);
+    }
+
+    @Override
+    public IPage<SystemRoleView> findRoleByPage(QueryRoleForm form) {
+        //定义分页参数
+        Page<SystemRoleView> page = new Page(form.getPageNum(),form.getPageSize());
+        IPage<SystemRoleView> pageInfo = baseMapper.findRoleByPage(page, form);
+        return pageInfo;
+    }
+
+    @Override
+    public SystemRole getRoleByCondition(Map<String, Object> param) {
+        return baseMapper.getRoleByCondition(param);
     }
 
 

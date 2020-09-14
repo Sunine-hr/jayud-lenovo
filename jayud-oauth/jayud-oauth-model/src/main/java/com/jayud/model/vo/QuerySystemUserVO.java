@@ -29,15 +29,15 @@ public class QuerySystemUserVO {
     private String workName;
 
     @ApiModelProperty(value = "角色")
-    private Long roleName;
+    private String roleName;
 
     @ApiModelProperty(value = "所属公司")
     private String companyName;
 
     @ApiModelProperty(value = "所属上级")
-    private Long superiorName;
+    private String superiorName;
 
-    @ApiModelProperty(value = "状态")
+    @ApiModelProperty(value = "审核状态描述")
     private String auditStatusDesc;
 
     @ApiModelProperty(value = "创建人")
@@ -45,6 +45,18 @@ public class QuerySystemUserVO {
 
     @ApiModelProperty(value = "创建时间")
     private String strCreatedTime;
+
+    @ApiModelProperty(value = "角色ID")
+    private Long roleId;
+
+    @ApiModelProperty(value = "岗位ID")
+    private Long workId;
+
+    @ApiModelProperty(value = "审核意见")
+    private String note;
+
+    @ApiModelProperty(value = "审核状态")
+    private String auditStatus;
 
 
 }

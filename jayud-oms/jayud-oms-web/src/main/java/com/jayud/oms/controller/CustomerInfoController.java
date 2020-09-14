@@ -1,26 +1,32 @@
 package com.jayud.oms.controller;
 
 
+import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.RedisUtils;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
-import com.jayud.model.bo.AddCustomerInfoForm;
-import com.jayud.model.bo.AuditCustomerInfoForm;
-import com.jayud.model.bo.QueryCustomerInfoForm;
+import com.jayud.model.bo.*;
 import com.jayud.model.enums.CustomerInfoStatusEnum;
+import com.jayud.model.enums.RoleKeyEnum;
 import com.jayud.model.po.CustomerInfo;
-import com.jayud.model.vo.AddCustomerInfoRelListVO;
+import com.jayud.model.vo.CustAccountVO;
 import com.jayud.model.vo.CustomerInfoVO;
+import com.jayud.model.vo.InitComboxVO;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.service.ICustomerInfoService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +35,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/customerInfo")
+@Api(tags = "客户管理")
 public class CustomerInfoController {
 
     @Autowired
@@ -36,6 +43,9 @@ public class CustomerInfoController {
 
     @Autowired
     private OauthClient oauthClient;
+
+    @Autowired
+    private RedisUtils redisUtils;
 
     @ApiOperation(value = "查询客户列表")
     @PostMapping(value = "/findCustomerInfoByPage")
@@ -45,11 +55,11 @@ public class CustomerInfoController {
         return CommonResult.success(pageVO);
     }
 
-
-    @ApiOperation(value = "查看客户详情，编辑时数据回显")
+    @ApiOperation(value = "查看客户详情和编辑时数据回显,id=客户ID")
     @PostMapping(value = "/getCustomerInfoById")
-    public CommonResult<CustomerInfoVO> getCustomerInfoById(@RequestBody QueryCustomerInfoForm form) {
-        return CommonResult.success(customerInfoService.getCustomerInfoById(form));
+    public CommonResult<CustomerInfoVO> getCustomerInfoById(@RequestBody Map<String,Object> param) {
+        String id = MapUtil.getStr(param,"id");
+        return CommonResult.success(customerInfoService.getCustomerInfoById(Long.valueOf(id)));
     }
 
     @ApiOperation(value = "新增编辑客户")
@@ -63,33 +73,22 @@ public class CustomerInfoController {
         }else {
             customerInfo.setCreatedUser(getLoginUser());
         }
+        customerInfo.setAuditStatus(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode());
         customerInfoService.saveOrUpdate(customerInfo);
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "新增客户时初始化下拉框信息")
-    @PostMapping(value = "/getInfoBySave")
-    public CommonResult<AddCustomerInfoRelListVO> getInfoBySave() {
-        AddCustomerInfoRelListVO addCustomerInfoRelListVO = new AddCustomerInfoRelListVO();
-        List<Map<Long,String>> departments = (List<Map<Long,String>>)oauthClient.findDepartment().getData();
-        addCustomerInfoRelListVO.setDepartments(departments);
-        List<Map<Long,String>> kfs = (List<Map<Long,String>>)oauthClient.findUserByRoleId(1L);//客服
-        List<Map<Long,String>> yws = (List<Map<Long,String>>)oauthClient.findUserByRoleId(2L);//业务
-        addCustomerInfoRelListVO.setKfs(kfs);
-        addCustomerInfoRelListVO.setYws(yws);
-        return CommonResult.success(addCustomerInfoRelListVO);
-    }
-
     @ApiOperation(value = "删除客户信息")
     @PostMapping(value = "/delCustomerInfo")
-    public CommonResult delCustomerInfo(@RequestBody List<Integer> ids) {
+    public CommonResult delCustomerInfo(@RequestBody DeleteForm form) {
         List<CustomerInfo> customerInfos = new ArrayList<>();
-        for (Integer id : ids) {
+        for (Long id : form.getIds()) {
             CustomerInfo customerInfo = new CustomerInfo();
             customerInfo.setId(id);
             customerInfo.setUpdatedTime(DateUtils.getNowTime());
             customerInfo.setUpdatedUser(getLoginUser());
             customerInfo.setStatus("0");
+            customerInfos.add(customerInfo);
         }
         customerInfoService.saveOrUpdateBatch(customerInfos);
         return CommonResult.success();
@@ -102,15 +101,20 @@ public class CustomerInfoController {
         customerInfo.setId(form.getId());
         customerInfo.setUpdatedTime(DateUtils.getNowTime());
         customerInfo.setUpdatedUser(getLoginUser());
+        CustomerInfoVO customerInfoVO = customerInfoService.getCustomerInfoById(form.getId());
+        Integer auditStatus = customerInfoVO.getAuditStatus();
+        if(auditStatus != null){
+            return CommonResult.error(400,"不属于审核状态流程");
+        }
         if("0".equals(form.getAuditStatus())){//审核拒绝
             customerInfo.setAuditStatus(CustomerInfoStatusEnum.AUDIT_FAIL.getCode());
             customerInfo.setAuditComment(form.getAuditComment());
         }else if("1".equals(form.getAuditStatus())){//审核状态
-            if("kf".equals(form.getRoleFlag())){
+            if(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode().equals(auditStatus)){//客服审核流程
                 customerInfo.setAuditStatus(CustomerInfoStatusEnum.CW_WAIT_AUDIT.getCode());
-            }else if("cw".equals(form.getRoleFlag())){
+            }else if(CustomerInfoStatusEnum.CW_WAIT_AUDIT.getCode().equals(auditStatus)){//财务审核流程
                 customerInfo.setAuditStatus(CustomerInfoStatusEnum.ZJB_WAIT_AUDIT.getCode());
-            }else if("zjb".equals(form.getRoleFlag())){
+            }else if(CustomerInfoStatusEnum.ZJB_WAIT_AUDIT.getCode().equals(auditStatus)){//总经办审核
                 customerInfo.setAuditStatus(CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());
             }
         }
@@ -118,13 +122,127 @@ public class CustomerInfoController {
         return CommonResult.success();
     }
 
+    @ApiOperation(value = "客户账号管理-修改时数据回显,id=客户账号ID")
+    @PostMapping(value = "/getCustomerAccountInfo")
+    public CommonResult<CustAccountVO> getCustomerAccountInfo(@RequestBody Map<String,Object> param) {
+        String id = MapUtil.getStr(param,"id");
+        param = new HashMap<>();
+        param.put("id",id);
+        CustAccountVO custAccountVO = customerInfoService.getCustAccountByCondition(param);
+        return CommonResult.success(custAccountVO);
+    }
+
+    @ApiOperation(value = "客户账号管理-删除，id=客户账号ID")
+    @PostMapping(value = "/delCustomerAccountInfo")
+    public CommonResult delCustomerAccountInfo(@RequestBody Map<String,Object> param) {
+        String id = MapUtil.getStr(param,"id");
+        oauthClient.delCustAccount(id);
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "客户账号管理-修改/编辑")
+    @PostMapping(value = "/saveOrUpdateCusAccountInfo")
+    public CommonResult saveOrUpdateCusAccountInfo(@RequestBody AddCusAccountForm form) {
+        oauthClient.saveOrUpdateCustAccount(form);
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "客户账号管理-分页获取数据")
+    @PostMapping(value = "/findCusAccountByPage")
+    public CommonResult<CommonPageResult<CustAccountVO>> findCusAccountByPage(@RequestBody QueryCusAccountForm form) {
+        IPage<CustAccountVO> pageList = customerInfoService.findCustAccountByPage(form);
+        CommonPageResult<CustAccountVO> pageVO = new CommonPageResult(pageList);
+        return CommonResult.success(pageVO);
+    }
+
+    @ApiOperation(value = "客户列表新增-下拉框合并返回")
+    @PostMapping(value = "/findComboxs1")
+    public CommonResult<Map<String,Object>> findComboxs1(){
+        Map<String,Object> resultMap = new HashMap<>();
+        //接单部门
+        resultMap.put("jiedanDepart",initDepartment());
+        //接单客服
+        resultMap.put("jiedanKF",initKfs());
+        //业务员
+        resultMap.put("yws",initYws());
+        return CommonResult.success(resultMap);
+
+    }
+
+    @ApiOperation(value = "客户账号管理-下拉框合并返回")
+    @PostMapping(value = "/findComboxs2")
+    public CommonResult<Map<String,Object>> findComboxs2(){
+        Map<String,Object> resultMap = new HashMap<>();
+        //角色
+        resultMap.put("roles",initRole());
+        //所属公司
+        resultMap.put("companys",initCompany());
+        //所属上级
+        resultMap.put("departCharges",initDepartCharge());
+        return CommonResult.success(resultMap);
+
+    }
+
+    /**
+     * 所有下拉框的初始化
+     */
+    @ApiOperation(value = "客户列表-新增-接单部门")
+    @PostMapping(value = "/initDepartment")
+    public CommonResult<List<InitComboxVO>> initDepartment() {
+        List<InitComboxVO> initComboxVOS = (List<InitComboxVO>) oauthClient.findDepartment().getData();
+        return CommonResult.success(initComboxVOS);
+    }
+
+    @ApiOperation(value = "客户列表-新增-接单客服")
+    @PostMapping(value = "/initKfs")
+    public CommonResult<List<InitComboxVO>> initKfs() {
+        List<InitComboxVO> initComboxVOS = (List<InitComboxVO>) oauthClient.findUserByKey(RoleKeyEnum.CUSTOMER_SERVICE.getCode()).getData();
+        return CommonResult.success(initComboxVOS);
+    }
+
+    @ApiOperation(value = "客户列表-新增-业务员")
+    @PostMapping(value = "/initYws")
+    public CommonResult<List<InitComboxVO>> initYws() {
+        List<InitComboxVO> initComboxVOS = (List<InitComboxVO>) oauthClient.findUserByKey(RoleKeyEnum.BUSINESS_MANAGER.getCode()).getData();
+        return CommonResult.success(initComboxVOS);
+    }
+
+    @ApiOperation(value = "供应商账号-新增-角色")
+    @PostMapping(value = "/initRole")
+    public CommonResult<List<InitComboxVO>> initRole() {
+        List<InitComboxVO> initComboxVOS = (List<InitComboxVO>) oauthClient.findRole().getData();
+        return CommonResult.success(initComboxVOS);
+    }
+
+    @ApiOperation(value = "供应商账号-新增-所属公司")
+    @PostMapping(value = "/initCompany")
+    public CommonResult<List<InitComboxVO>> initCompany() {
+        List<CustomerInfo> customerInfos = customerInfoService.findCustomerInfoByCondition(new HashMap<>());
+        List<InitComboxVO> initComboxVOS = new ArrayList<>();
+        for (CustomerInfo customerInfo : customerInfos) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(customerInfo.getId());
+            initComboxVO.setName(customerInfo.getName());
+            initComboxVOS.add(initComboxVO);
+        }
+        return CommonResult.success(initComboxVOS);
+    }
+
+
+    @ApiOperation(value = "供应商账号-新增-所属上级")
+    @PostMapping(value = "/initDepartCharge")
+    public CommonResult<List<InitComboxVO>> initDepartCharge() {
+        List<InitComboxVO> initComboxVOS = (List<InitComboxVO>)oauthClient.findCustAccount().getData();
+        return CommonResult.success(initComboxVOS);
+    }
+
     /**
      * 获取当前登录用户
      * @return
      */
     private String getLoginUser(){
-        ApiResult apiResult = oauthClient.getLoginUser();
-        return apiResult.getData().toString();
+        String loginUser = redisUtils.get("loginUser",100);
+        return loginUser;
     }
 
 }

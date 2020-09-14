@@ -44,7 +44,7 @@ public class OprSystemUserForm {
     private Long superiorId;
 
     @ApiModelProperty(value = "操作指令",required = true)
-    @Pattern(regexp = "save|update|delete",message = "cmd requires 'save' or 'update' or 'delete' only")
+    @Pattern(regexp = "update|delete",message = "cmd requires 'update' or 'delete' only")
     private String cmd;
 
 

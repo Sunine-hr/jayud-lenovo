@@ -3,6 +3,7 @@ package com.jayud.oauth.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.model.po.SystemMenu;
+import com.jayud.model.vo.QueryMenuStructureVO;
 import com.jayud.model.vo.SystemMenuNode;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public interface ISystemMenuService extends IService<SystemMenu> {
      * 获取所有可显示的菜单
      * @return
      */
-    List<SystemMenuNode> findAllMenuNode();
+    List<QueryMenuStructureVO> findAllMenuNode();
 
 
 

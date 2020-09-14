@@ -39,6 +39,9 @@ public class SystemRole extends Model<SystemRole> {
     @ApiModelProperty(value = "角色优先级")
     private Integer sort;
 
+    @ApiModelProperty(value = "仅供前台使用")
+    private String webFlag;
+
 
     @Override
     protected Serializable pkVal() {

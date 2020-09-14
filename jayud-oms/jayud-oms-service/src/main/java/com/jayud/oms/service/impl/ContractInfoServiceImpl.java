@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.common.utils.ConvertUtil;
 import com.jayud.model.bo.QueryContractInfoForm;
 import com.jayud.model.po.ContractInfo;
 import com.jayud.model.vo.ContractInfoVO;
@@ -29,9 +28,8 @@ public class ContractInfoServiceImpl extends ServiceImpl<ContractInfoMapper, Con
     }
 
     @Override
-    public ContractInfoVO getContractInfoById(QueryContractInfoForm form) {
-        ContractInfo contractInfo = baseMapper.getContractInfoById(form);
-        return  ConvertUtil.convert(contractInfo,ContractInfoVO.class);
+    public ContractInfoVO getContractInfoById(Long id) {
+        return  baseMapper.getContractInfoById(id);
     }
 
 

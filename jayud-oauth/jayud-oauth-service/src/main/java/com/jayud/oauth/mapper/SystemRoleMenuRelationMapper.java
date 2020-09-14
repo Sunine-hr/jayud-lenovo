@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.model.po.SystemRoleMenuRelation;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * <p>
  * 后台角色菜单关系表 Mapper 接口
@@ -15,4 +17,10 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface SystemRoleMenuRelationMapper extends BaseMapper<SystemRoleMenuRelation> {
 
+    /**
+     * 批量删除
+     * @param roleIds
+     * @return
+     */
+    boolean removeRelationByRoleId(List<Long> roleIds);
 }

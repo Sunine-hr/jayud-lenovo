@@ -3,9 +3,6 @@ package com.jayud.model.vo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 /**
  *
  * @author bocong.zheng
@@ -50,25 +47,16 @@ public class SystemUserVO {
     private String note;
 
     @ApiModelProperty(value = "最后登录时间")
-    private LocalDateTime loginTime;
+    private String loginTime;
 
     @ApiModelProperty(value = "帐号启用状态：0->Off；1->On")
     private Integer status;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createdTime;
+    private String createdTime;
 
     @ApiModelProperty(value = "创建人")
     private String createdUser;
-
-    @ApiModelProperty(value = "用户角色")
-    private List<SystemRoleVO> roles;
-
-    @ApiModelProperty(value = "角色ID集合")
-    private List<Long> roleIds;
-
-    @ApiModelProperty(value = "菜单树")
-    private List<SystemMenuNode> menuNodeList;
 
     @ApiModelProperty(value = "用户token")
     private String token;

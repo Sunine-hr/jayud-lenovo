@@ -19,4 +19,8 @@ import java.util.List;
 public interface SystemUserRoleRelationMapper extends BaseMapper<SystemUserRoleRelation> {
 
     List<SystemRole> getEnabledRolesByUserId(Long id);
+
+    boolean removeRelationByRoleId(List<Long> roleIds);
+
+    boolean removeRelationByUserId(List<Long> userIds);
 }

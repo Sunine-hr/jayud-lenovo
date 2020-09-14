@@ -1,9 +1,7 @@
 package com.jayud.aspects;
 
 import cn.hutool.json.JSONUtil;
-import com.jayud.GeneralLogMsgClient;
 import com.jayud.model.po.CustomsApiLog;
-import com.jayud.service.ICustomsApiLogService;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -16,7 +14,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,8 +41,8 @@ import java.util.*;
 @Order(1)
 @Slf4j
 public class GeneralAPILogAspect {
-    @Autowired
-    GeneralLogMsgClient msgClient;
+//    @Autowired
+//    GeneralLogMsgClient msgClient;
 
     @Pointcut("@annotation(com.jayud.annotations.APILog)")
     public void catchLog() {
@@ -90,7 +87,7 @@ public class GeneralAPILogAspect {
         apiLog.setRequestTime(LocalDateTime.ofInstant(Instant.ofEpochMilli(startTime), ZoneId.systemDefault()));
 
         //todo 配置kafka异步处理
-        msgClient.saveLog(JSONUtil.toJsonStr(apiLog));
+//        msgClient.saveLog(JSONUtil.toJsonStr(apiLog));
     }
 
     /**

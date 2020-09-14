@@ -16,21 +16,21 @@ spring:
         - id: route-jayud-oms #佳裕达物流系统oms服务端
           uri: lb://jayud-oms-web  # uri以lb://开头（后面接的服务名称)
           predicates:
-            - Path=/jayud-oms-gateway/**
+            - Path=/jayudOms/**
           filters:
             - StripPrefix=1
             - IgnoreGlobalFilterFactor
         - id: route-jayud-file #文件处理中心
           uri: lb://jayud-file-web
           predicates:
-            - Path=/jayud-file-gateway/** #指定路径（localhost:8001/swagger-ui.html）
+            - Path=/jayudFile/** #指定路径（localhost:8001/swagger-ui.html）
           filters:
             - StripPrefix=1
             - IgnoreGlobalFilterFactor
         - id: route-jayud-oauth      #佳裕达物流系统oauth服务端
           uri: lb://jayud-oauth-web  # uri以lb://开头（后面接的服务名称)
           predicates:
-            - Path=/jayud-oauth-gateway/**
+            - Path=/jayudOauth/**
           filters:
             - StripPrefix=1
             - IgnoreGlobalFilterFactor

@@ -329,7 +329,7 @@ public class SystemUserController {
         for (SystemUser systemUser : systemUsers) {
             InitComboxVO initComboxVO = new InitComboxVO();
             initComboxVO.setId(systemUser.getId());
-            initComboxVO.setName(systemUser.getName());
+            initComboxVO.setName(systemUser.getUserName());
             initComboxs.add(initComboxVO);
         }
         return CommonResult.success(initComboxs);
@@ -396,7 +396,7 @@ public class SystemUserController {
     public CommonResult<List<InitComboxVO>> initUserAccountSuperiors() {
         List<InitComboxVO> initComboxs = new ArrayList<>();
         Map<String,Object> param = new HashMap<>();
-        param.put("is_department_charge","1");
+        //param.put("is_department_charge","1");
         List<SystemUser> systemUsers = userService.findUserByCondition(param);
         for (SystemUser systemUser : systemUsers) {
             InitComboxVO initComboxVO = new InitComboxVO();

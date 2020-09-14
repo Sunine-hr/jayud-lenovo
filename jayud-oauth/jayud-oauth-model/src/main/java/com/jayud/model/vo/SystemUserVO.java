@@ -3,8 +3,6 @@ package com.jayud.model.vo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 /**
  *
  * @author bocong.zheng
@@ -49,13 +47,13 @@ public class SystemUserVO {
     private String note;
 
     @ApiModelProperty(value = "最后登录时间")
-    private LocalDateTime loginTime;
+    private String loginTime;
 
     @ApiModelProperty(value = "帐号启用状态：0->Off；1->On")
     private Integer status;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createdTime;
+    private String createdTime;
 
     @ApiModelProperty(value = "创建人")
     private String createdUser;

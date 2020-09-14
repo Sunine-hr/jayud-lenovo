@@ -166,6 +166,10 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             systemUser.setAuditStatus(1);
             systemUser.setUpdatedUser(getLoginName());
             baseMapper.updateById(systemUser);
+            //创建角色前删除旧的用户角色关系
+            List<Long> userIds = new ArrayList<>();
+            userIds.add(form.getId());
+            roleRelationService.removeRelationByUserId(userIds);
             //创建角色
             roleRelationService.createRelation(form.getRoleId(),form.getId());
         }else if("delete".equals(form.getCmd())){

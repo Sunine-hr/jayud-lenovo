@@ -51,13 +51,27 @@
         su.email,
         su.user_name userName,
         su.en_user_name enUserName,
-        su.audit_status auditStatusDesc,
+        (
+        CASE
+        su.`audit_status`
+        WHEN '1'
+        THEN '待审核'
+        WHEN '2'
+        THEN '审核通过'
+        WHEN '0'
+        THEN '审核拒绝'
+        END
+        ) auditStatusDesc,
         w.`work_name` workName,
         sr.`name` roleName,
         c.`company_name` companyName,
         su.`created_time` createdTime,
         su.`created_user` createdUser,
-        temp.user_name superiorName
+        temp.user_name superiorName,
+        w.`id` workId,
+        sr.`id` roleId,
+        su.note,
+        su.`audit_status` auditStatus
         FROM
         `system_user` su
         LEFT JOIN `work` w
@@ -80,20 +94,26 @@
         ON temp.department_id = su.`department_id`
         WHERE 1 = 1
         <if test="form.cmd == 'isAccount' or form.cmd == 'isAudit'">
-            and status = 1
+            and su.`status` = 1
             <if test="form.name != null and form.name != ''">
-                and system_user.name like concat('%',#{form.name},'%')
+                and su.name like concat('%',#{form.name},'%')
             </if>
-            <if test="form.companyId != null ">
-                and system_user.company_id = #{form.companyId}
+            <if test="form.cmd == 'isAudit'">
+                and su.`audit_status` = '1'
             </if>
-            <if test="form.auditStatus != null ">
-                and system_user.audit_status = #{form.auditStatus}
+            <if test="form.companyId != null and form.companyId !=''">
+                and su.company_id = #{form.companyId}
+            </if>
+            <if test="form.auditStatus != null and form.auditStatus != ''">
+                and su.audit_status = #{form.auditStatus}
             </if>
         </if>
-        <if test="form.cmd == 'all'">
+        <if test="form.cmd == 'byDepartmentId'">
             <if test="form.userName != null and form.userName != ''">
-                and system_user.user_name like concat('%',#{form.userName},'%')
+                and su.user_name like concat('%',#{form.userName},'%')
+            </if>
+            <if test="form.departmentId != null">
+                and su.department_id = #{form.departmentId}
             </if>
         </if>
     </select>
@@ -121,6 +141,46 @@
         FROM
           `system_user` su
         WHERE su.`role_id` = #{roleId}
+    </select>
+
+    <select id="getSystemUser"  resultType="com.jayud.model.vo.UpdateSystemUserVO" >
+        SELECT
+          su.id,
+          su.`name`,
+          su.user_name userName,
+          su.`en_user_name` enUserName,
+          su.`department_id` departmentId,
+          d.`name` departmentName,
+          su.`work_id` workId,
+          w.`work_name` workName,
+          sr.`id` roleId,
+          sr.`name` roleName,
+          (SELECT
+            c.company_name
+          FROM
+            company c
+          WHERE c.id = su.`company_id`) companyName,
+          su.`company_id` companyId,
+          su.`superior_id` superiorId,
+          (SELECT
+            t.user_name
+          FROM
+            `system_user` t
+          WHERE t.id = su.`superior_id`) superiorName,
+           su.`phone`,
+           su.`email`,
+           su.`is_department_charge` isDepartmentCharge
+        FROM
+          `system_user` su
+          LEFT JOIN department d
+            ON su.`department_id` = d.`id`
+          LEFT JOIN `work` w
+            ON su.`work_id` = w.`id`
+          LEFT JOIN system_user_role_relation surr
+            ON su.`id` = surr.`user_id`
+          LEFT JOIN system_role sr
+            ON sr.`id` = surr.`role_id`
+        WHERE su.`id` = #{id}
     </select>
 
 

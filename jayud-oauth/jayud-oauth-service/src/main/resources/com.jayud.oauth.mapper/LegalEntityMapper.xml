@@ -32,7 +32,16 @@
         FROM
           legal_entity le
           LEFT JOIN department d
-            ON le.`sale_depart_id` = d.`id`
+            ON le.`sale_depart_id` = d.`id` WHERE 1=1
+        <if test="form.cmd == 'cw'">
+            and le.audit_status in (0,1,2)
+        </if>
+        <if test="form.cmd == 'zjb'">
+            and le.audit_status in (1)
+        </if>
+        <if test="form.legalName != null and form.legalName != ''">
+        and le.legal_name like concat('%',#{legalName.name},'%')
+        </if>
     </select>
 
 </mapper>

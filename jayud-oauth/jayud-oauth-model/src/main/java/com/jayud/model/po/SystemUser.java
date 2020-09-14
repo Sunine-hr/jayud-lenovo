@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 /**
@@ -66,8 +67,17 @@ public class SystemUser extends Model<SystemUser> {
     @ApiModelProperty(value = "帐号启用状态：0->Off；1->On")
     private Integer status;
 
+    @ApiModelProperty(value = "1-用户 2-客户")
+    private String userType;
+
+    @ApiModelProperty(value = "是否是负责人 1-是 0-否")
+    private String isDepartmentCharge;
+
+    @ApiModelProperty(value = "邮箱")
+    private String email;
+
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createdTime;
+    private Timestamp createdTime;
 
     @ApiModelProperty(value = "创建人")
     private String createdUser;
@@ -76,7 +86,7 @@ public class SystemUser extends Model<SystemUser> {
     private String updatedUser;
 
     @ApiModelProperty(value = "修改时间")
-    private LocalDateTime updatedTime;
+    private Timestamp updatedTime;
 
 
 

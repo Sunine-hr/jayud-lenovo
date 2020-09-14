@@ -42,6 +42,13 @@ public interface ISystemUserService extends IService<SystemUser> {
      */
     void logout();
 
+
+    /**
+     *获取登录后用户的角色菜单相关信息
+     * @return
+     */
+    SystemUserLoginInfoVO findLoginUserInfo();
+
     /**
      * 用户列表查询
      * @param form
@@ -78,7 +85,7 @@ public interface ISystemUserService extends IService<SystemUser> {
      * 获取部门结构
      * @return
      */
-    List<QueryOrgStructureVO> findOrgStructure(Long fId);
+    List<QueryOrgStructureVO> findOrgStructure();
 
     /**
      * 根据部门ID获取部门负责人信息
@@ -94,10 +101,16 @@ public interface ISystemUserService extends IService<SystemUser> {
     void saveOrUpdateSystemUser(SystemUser systemUser);
 
     /**
-     * 根据角色获取用户列表
-     * @param roleId
+     * 获取用户信息
+     * @param param
      * @return
      */
-    List<Map<Long,String>> findUserByRoleId(Long roleId);
+    List<SystemUser> findUserByCondition(Map<String,Object> param);
+
+    /**
+     * 一个部门只能有一个负责人
+     * @param departmentId
+     */
+    void updateIsCharge(Long departmentId);
 
 }

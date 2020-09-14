@@ -26,7 +26,7 @@ public class SystemWorkServiceImpl extends ServiceImpl<SystemWorkMapper, Work> i
     @Override
     public List<WorkVO> findWork(Long departmentId) {
         QueryWrapper queryWrapper = null;
-        if(departmentId != null){
+        if(departmentId != null && departmentId != 0){
             queryWrapper = new QueryWrapper();
             queryWrapper.eq("department_id",departmentId);
         }

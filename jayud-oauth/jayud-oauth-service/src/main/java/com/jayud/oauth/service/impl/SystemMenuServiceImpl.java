@@ -3,12 +3,14 @@ package com.jayud.oauth.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.model.po.SystemMenu;
+import com.jayud.model.vo.QueryMenuStructureVO;
 import com.jayud.model.vo.SystemMenuNode;
 import com.jayud.model.vo.SystemMenuVO;
 import com.jayud.oauth.mapper.SystemMenuMapper;
 import com.jayud.oauth.service.ISystemMenuService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,8 +31,17 @@ public class SystemMenuServiceImpl extends ServiceImpl<SystemMenuMapper, SystemM
     }
 
     @Override
-    public List<SystemMenuNode> findAllMenuNode() {
-        return convertMenuTree(selectByUserId(null,0), 0L);
+    public List<QueryMenuStructureVO> findAllMenuNode() {
+        List<SystemMenu> systemMenus = baseMapper.selectList(null);
+        List<QueryMenuStructureVO> menuStructureVOS = new ArrayList<>();
+        for (SystemMenu systemMenu : systemMenus) {
+            QueryMenuStructureVO menuStructureVO = new QueryMenuStructureVO();
+            menuStructureVO.setLabel(systemMenu.getTitle());
+            menuStructureVO.setFId(systemMenu.getParentId());
+            menuStructureVO.setId(systemMenu.getId());
+            menuStructureVOS.add(menuStructureVO);
+        }
+        return convertRoleMenuTree(menuStructureVOS,0L);
     }
 
 
@@ -80,5 +91,23 @@ public class SystemMenuServiceImpl extends ServiceImpl<SystemMenuMapper, SystemM
                 .filter(menu -> menu.getParentId().equals(parentId))
                 .map(menu -> covertMenuNode(menu, menuList)).collect(Collectors.toList());
     }
+
+    /**
+     * 分配角色授权是生成菜单树
+     * @param menuList
+     * @param parentId
+     * @return
+     */
+    private List<QueryMenuStructureVO> convertRoleMenuTree(List<QueryMenuStructureVO> menuList,long parentId){
+        return menuList.stream()
+                .filter(menu -> menu.getFId().equals(parentId))
+                .map(menu -> covertMenuNode(menu, menuList)).collect(Collectors.toList());
+    }
+    private QueryMenuStructureVO covertMenuNode(QueryMenuStructureVO menu, List<QueryMenuStructureVO> menuList) {
+        //设置菜单
+        menu.setChildren(convertRoleMenuTree(menuList, menu.getId()));
+        return menu;
+    }
+
 
 }

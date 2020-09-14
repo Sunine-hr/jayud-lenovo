@@ -14,12 +14,7 @@ public class AuditCustomerInfoForm {
 
     @ApiModelProperty(value = "主键",required = true)
     @NotEmpty(message = "id is required")
-    private Integer id;
-
-    @ApiModelProperty(value = "审核角色",required = true)
-    @NotEmpty(message = "roleFlag is required")
-    @Pattern(regexp = "kf|cw|zjb",message = "types requires 'kf' or 'cw' or 'zjb' only")
-    private String roleFlag;
+    private Long id;
 
     @ApiModelProperty(value = "审核状态 0-拒绝 1-通过",required = true)
     @NotEmpty(message = "auditStatus is required")

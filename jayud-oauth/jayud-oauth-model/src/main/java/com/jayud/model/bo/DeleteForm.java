@@ -6,14 +6,10 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
-/**
- * 删除法人主体
- * @author chuanmei
- */
 @Data
-public class DelLegalEntityForm {
+public class DeleteForm {
 
-    @ApiModelProperty(value = "法人主体ID", required = true)
-    @NotEmpty(message = "法人主体ID不能为空")
+    @ApiModelProperty(value = "删除记录的ID集合,逗号分割", required = true)
+    @NotEmpty(message = "ids不能为空")
     private List<Long> ids;
 }

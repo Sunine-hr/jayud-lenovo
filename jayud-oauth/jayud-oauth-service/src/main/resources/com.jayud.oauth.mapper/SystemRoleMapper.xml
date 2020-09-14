@@ -11,6 +11,7 @@
         <result column="create_time" property="createTime" />
         <result column="status" property="status" />
         <result column="sort" property="sort" />
+        <result column="web_flag" property="webFlag" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -21,7 +22,8 @@
         system_role.admin_count,
         system_role.create_time,
         system_role.status,
-        system_role.sort
+        system_role.sort,
+        system_role.web_flag
     </sql>
     <select id="getRoleList" resultType="com.jayud.model.po.SystemRole">
         select
@@ -35,12 +37,47 @@
 
     <insert id="saveRole" parameterType="com.jayud.model.po.SystemRole" useGeneratedKeys="true" keyProperty="id">
 	insert into system_role
-	   (name,description,admin_count,sort)
+	   (name,description,admin_count,sort,web_flag)
 	values (
 		#{name},
 		#{description},
 		#{adminCount},
-		#{sort})
+		#{sort},
+		#{webFlag})
   </insert>
 
+    <select id="findRoleByPage" parameterType="com.jayud.model.bo.QueryRoleForm" resultType="com.jayud.model.vo.SystemRoleView" >
+        SELECT
+        sr.`id`,
+        sr.`name`,
+        sr.`description`,
+        GROUP_CONCAT(DISTINCT su.`name` SEPARATOR ',') roleUser
+        FROM
+        system_role sr
+        LEFT JOIN system_user_role_relation surr
+        ON surr.`role_id` = sr.`id`
+        LEFT JOIN `system_user` su
+        ON su.`id` = surr.`user_id`
+        WHERE 1 = 1
+           <if test="form.name != null and form.name != ''">
+               and sr.name like concat('%',#{form.name},'%')
+           </if>
+        GROUP BY sr.`id`,
+        sr.`name`,
+        sr.`description`
+    </select>
+
+    <select id="getRoleByCondition" resultType="com.jayud.model.po.SystemRole"  parameterType="java.util.Map">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        system_role
+        where 1 = 1
+        <if test="key != null and key != ''">
+            and `key` = #{key}
+        </if>
+        <if test="id != null">
+            and `id` = #{id}
+        </if>
+    </select>
 </mapper>

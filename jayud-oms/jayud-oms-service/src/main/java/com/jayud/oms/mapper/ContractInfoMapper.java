@@ -23,8 +23,8 @@ public interface ContractInfoMapper extends BaseMapper<ContractInfo> {
 
     /**
      * 查看合同详情
-     * @param form
+     * @param id
      * @return
      */
-    ContractInfo getContractInfoById(QueryContractInfoForm form);
+    ContractInfoVO getContractInfoById(Long id);
 }

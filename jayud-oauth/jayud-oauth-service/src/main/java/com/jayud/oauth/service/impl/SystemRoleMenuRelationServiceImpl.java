@@ -50,10 +50,8 @@ public class SystemRoleMenuRelationServiceImpl extends ServiceImpl<SystemRoleMen
     }
 
     @Override
-    public boolean removeRelationByRoleId(Long roleId){
-        QueryWrapper<SystemRoleMenuRelation> wrapper = new QueryWrapper<>();
-        wrapper.eq("role_id", roleId);
-        return this.remove(wrapper);
+    public boolean removeRelationByRoleId(List<Long> roleIds){
+        return baseMapper.removeRelationByRoleId(roleIds);
     }
 
 }

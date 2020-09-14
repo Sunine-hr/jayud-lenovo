@@ -11,9 +11,11 @@ import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.model.bo.AuditSystemUserForm;
 import com.jayud.model.bo.OprSystemUserForm;
 import com.jayud.model.bo.QuerySystemUserForm;
+import com.jayud.model.enums.StatusEnum;
 import com.jayud.model.po.SystemUser;
 import com.jayud.model.po.SystemUserLoginLog;
 import com.jayud.model.vo.*;
@@ -32,6 +34,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -67,10 +70,14 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     @Autowired
     ISystemDepartmentService departmentService;
 
+    @Autowired
+    ISystemUserRoleRelationService roleRelationService;
+
     @Override
     public SystemUser selectByName(String name) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("name", name);
+        queryWrapper.eq("audit_status", StatusEnum.AUDIT_SUCCESS.getCode());
         //校验用户名是否重复
         return getOne(queryWrapper);
     }
@@ -96,21 +103,12 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         SystemUser user = (SystemUser) subject.getPrincipals().getPrimaryPrincipal();
         //响应前端数据
         cacheUser = ConvertUtil.convert(user,SystemUserVO.class);
-        //构建用户拥有角色和菜单
-        List<SystemRoleVO> roleVOS = roleService.getRoleList(user.getId());
-        List<Long> roleIds = new ArrayList<>();
-        for (SystemRoleVO systemRoleVO:roleVOS) {
-            roleIds.add(systemRoleVO.getId());
-        }
-        List<SystemMenuNode> systemMenuNodes = systemMenuService.roleTreeList(roleIds);
-        cacheUser.setRoles(roleVOS);
-        cacheUser.setRoleIds(roleIds);
-        cacheUser.setMenuNodeList(systemMenuNodes);
         //缓存用户ID larry 2020年8月13日11:21:11
         String uid = redisUtils.get(user.getId().toString());
         if(uid == null){
             redisUtils.set(user.getId().toString(),subject.getSession().getId().toString());
         }
+        redisUtils.set("loginUser",user.getName());
         cacheUser.setToken(subject.getSession().getId().toString());
         log.warn("CacheUser is {}", JSONUtil.toJsonStr(cacheUser));
         //保存登录记录
@@ -126,6 +124,24 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     }
 
     @Override
+    public SystemUserLoginInfoVO findLoginUserInfo() {
+        SystemUserLoginInfoVO loginInfoVO = new SystemUserLoginInfoVO();
+        //构建用户拥有角色和菜单
+        Long userId = getLoginUser().getId();
+        List<SystemRoleVO> roleVOS = roleService.getRoleList(userId);
+        List<Long> roleIds = new ArrayList<>();
+        for (SystemRoleVO systemRoleVO:roleVOS) {
+            roleIds.add(systemRoleVO.getId());
+        }
+        List<SystemMenuNode> systemMenuNodes = systemMenuService.roleTreeList(roleIds);
+        loginInfoVO.setRoles(roleVOS);
+        loginInfoVO.setRoleIds(roleIds);
+        loginInfoVO.setMenuNodeList(systemMenuNodes);
+        return loginInfoVO;
+    }
+
+
+    @Override
     public IPage<SystemUserVO> getPageList(QuerySystemUserForm form) {
         //定义分页参数
         Page<SystemUser> page = new Page(form.getPageNum(),form.getPageSize());
@@ -137,25 +153,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     @Override
     public UpdateSystemUserVO getSystemUser(Long id) {
-        UpdateSystemUserVO updateSystemUserVO = new UpdateSystemUserVO();
-        if(id != null) {
-            SystemUser systemUser = baseMapper.selectById(id);
-            updateSystemUserVO = ConvertUtil.convert(systemUser, UpdateSystemUserVO.class);
-        }
-        updateSystemUserVO.setDepartments(departmentService.findDepartment(null));
-        updateSystemUserVO.setWorks(systemWorkService.findWork(null));
-        updateSystemUserVO.setRoles(roleService.findRole());
-        updateSystemUserVO.setCompanys(companyService.findCompany());
-        //所属上级
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("is_department_charge", "1");
-        List<SystemUser> systemUsers = baseMapper.selectList(queryWrapper);
-        updateSystemUserVO.setSuperiors(ConvertUtil.convertList(systemUsers,QuerySystemUserNameVO.class));
-        //可开通账号的用户
-        queryWrapper = new QueryWrapper();
-        queryWrapper.eq("status", "0");
-        systemUsers = baseMapper.selectList(queryWrapper);
-        updateSystemUserVO.setUsers(ConvertUtil.convertList(systemUsers,QuerySystemUserNameVO.class));
+        UpdateSystemUserVO updateSystemUserVO = baseMapper.getSystemUser(id);
         return updateSystemUserVO;
     }
 
@@ -168,6 +166,8 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             systemUser.setAuditStatus(1);
             systemUser.setUpdatedUser(getLoginName());
             baseMapper.updateById(systemUser);
+            //创建角色
+            roleRelationService.createRelation(form.getRoleId(),form.getId());
         }else if("delete".equals(form.getCmd())){
             SystemUser systemUser = ConvertUtil.convert(form,SystemUser.class);
             systemUser.setStatus(0);
@@ -191,9 +191,36 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     }
 
     @Override
-    public List<QueryOrgStructureVO> findOrgStructure(Long fId) {
-        return departmentService.findDepartmentByfId(fId);
+    public List<QueryOrgStructureVO> findOrgStructure() {
+        List<QueryOrgStructureVO> queryOrgStructureVOS = new ArrayList<>();
+        List<DepartmentVO> departmentVOS = departmentService.findDepartment(null);
+        for (DepartmentVO departmentVO : departmentVOS) {
+            QueryOrgStructureVO orgStructureVO = new QueryOrgStructureVO();
+            orgStructureVO.setId(departmentVO.getId());
+            orgStructureVO.setFId(departmentVO.getFId());
+            orgStructureVO.setLabel(departmentVO.getName());
+            queryOrgStructureVOS.add(orgStructureVO);
+        }
+        return convertDepartTree(queryOrgStructureVOS, 0L);
     }
+
+    /**
+     * 生成组织架构树
+     * @param orgStructureVOS
+     * @param parentId
+     * @return
+     */
+    private List<QueryOrgStructureVO> convertDepartTree(List<QueryOrgStructureVO> orgStructureVOS, long parentId) {
+        return orgStructureVOS.stream()
+                .filter(org -> org.getFId().equals(parentId))
+                .map(org -> covertMenuNode(org, orgStructureVOS)).collect(Collectors.toList());
+    }
+    private QueryOrgStructureVO covertMenuNode(QueryOrgStructureVO org, List<QueryOrgStructureVO> orgList) {
+        //设置菜单
+        org.setChildren(convertDepartTree(orgList, org.getId()));
+        return org;
+    }
+
 
     @Override
     public List<DepartmentChargeVO> findOrgStructureCharge(Long departmentId) {
@@ -206,8 +233,24 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     }
 
     @Override
-    public List<Map<Long, String>> findUserByRoleId(Long roleId) {
-        return baseMapper.findUserByRoleId(roleId);
+    public List<SystemUser> findUserByCondition(Map<String, Object> param) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        for(String key : param.keySet()){
+            String value = String.valueOf(param.get(key));
+            queryWrapper.eq(key,value);
+        }
+        return baseMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public void updateIsCharge(Long departmentId) {
+        SystemUser systemUser = new SystemUser();
+        systemUser.setUpdatedUser(getLoginName());
+        systemUser.setUpdatedTime(DateUtils.getNowTime());
+        systemUser.setIsDepartmentCharge("0");
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("department_id",departmentId);
+        baseMapper.update(systemUser,queryWrapper);
     }
 
 

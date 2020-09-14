@@ -22,7 +22,7 @@ public class ContractInfo extends Model<ContractInfo> {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     @ApiModelProperty(value = "客户名称")
     private String name;
@@ -33,11 +33,11 @@ public class ContractInfo extends Model<ContractInfo> {
     @ApiModelProperty(value = "合同地址")
     private String contractUrl;
 
-    @ApiModelProperty(value = "业务类型(1-中港 2-报关 3-空海运 4-仓储)")
+    @ApiModelProperty(value = "业务类型")
     private String businessType;
 
     @ApiModelProperty(value = "法人主体")
-    private String legalEntity;
+    private Long legalEntity;
 
     @ApiModelProperty(value = "合同起期")
     private Date startDate;

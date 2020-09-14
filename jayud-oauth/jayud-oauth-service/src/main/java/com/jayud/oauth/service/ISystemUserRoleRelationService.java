@@ -22,4 +22,25 @@ public interface ISystemUserRoleRelationService extends IService<SystemUserRoleR
      * @return
      */
     List<SystemRole> getEnabledRolesByUserId(Long id);
+
+    /**
+     * 批量删除关系
+     * @param roleIds
+     * @return
+     */
+    boolean removeRelationByRoleId(List<Long> roleIds);
+
+    /**
+     * 创建角色与用户的关联
+     * @param roleId
+     * @param userId
+     */
+    void createRelation(Long roleId, Long userId);
+
+    /**
+     * 批量删除关系
+     * @param userIds
+     * @return
+     */
+    boolean removeRelationByUserId(List<Long> userIds);
 }

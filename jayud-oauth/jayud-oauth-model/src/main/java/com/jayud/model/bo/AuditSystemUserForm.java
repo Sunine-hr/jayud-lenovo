@@ -17,9 +17,9 @@ public class AuditSystemUserForm {
     @NotEmpty(message = "审核意见不能为空")
     private String note;
 
-    @ApiModelProperty(value = "审核状态",required = true)
+    @ApiModelProperty(value = "审核状态 2-通过 0-拒绝",required = true)
     @NotEmpty(message = "审核状态不能为空")
-    @Pattern(regexp = "2|3",message = "auditStatus requires '2' or '3' only")
+    @Pattern(regexp = "2|0",message = "auditStatus requires '2' or '0' only")
     private String auditStatus;
 
 

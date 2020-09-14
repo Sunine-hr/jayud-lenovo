@@ -3,6 +3,8 @@ package com.jayud.model.vo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 
 @Data
 public class ContractInfoVO {
@@ -19,17 +21,20 @@ public class ContractInfoVO {
     @ApiModelProperty(value = "合同地址")
     private String contractUrl;
 
-    @ApiModelProperty(value = "业务类型(1-中港 2-报关 3-空海运 4-仓储)")
+    @ApiModelProperty(value = "业务类型")
     private String businessType;
 
+    @ApiModelProperty(value = "业务类型集合")
+    private List<Long> businessTypes;
+
     @ApiModelProperty(value = "法人主体")
-    private String legalEntity;
+    private Long legalEntity;
 
     @ApiModelProperty(value = "合同起期")
-    private String startDateStr;
+    private String startDate;
 
     @ApiModelProperty(value = "合同止期")
-    private String endDateStr;
+    private String endDate;
 
     @ApiModelProperty(value = "创建人")
     private String createdUser;
@@ -37,5 +42,13 @@ public class ContractInfoVO {
     @ApiModelProperty(value = "创建时间")
     private String createdTimeStr;
 
+    public void setBusinessTypes() {
+        if(businessType != null){
+            String[] strList = businessType.split(",");
+            for (String str : strList) {
+                businessTypes.add(Long.parseLong(str));
+            }
+        }
+    }
 
 }

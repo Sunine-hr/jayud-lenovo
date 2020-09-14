@@ -14,4 +14,12 @@
         id, role_id, menu_id
     </sql>
 
+    <delete id="removeRelationByRoleId"  parameterType = "java.util.List">
+        delete from system_role_menu_relation where 1>2
+        or role_id in
+        <foreach collection="list"  item="item" open="(" separator="," close=")"  >
+            #{item}
+        </foreach>
+    </delete>
+
 </mapper>

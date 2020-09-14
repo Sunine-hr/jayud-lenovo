@@ -35,8 +35,8 @@ public interface ISystemDepartmentService extends IService<Department> {
 
     /**
      * 新增部门/编辑
-     * @param departmentId
+     * @param form
      */
-    void saveOrUpdateDepartment(Long departmentId, AddDepartmentForm form);
+    void saveOrUpdateDepartment(AddDepartmentForm form);
 
 }

@@ -2,40 +2,66 @@ package com.jayud.oms.feign;
 
 
 import com.jayud.common.ApiResult;
+import com.jayud.model.bo.AddCusAccountForm;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(value = "jayud-oauth-web")
+@FeignClient(value = "jayud-oauth-web",path = "/jayud-oauth")
 public interface OauthClient {
-
-    /**
-     * 获取登录用户信息
-     */
-    @GetMapping("/system/user/getLoginUser")
-    ApiResult getLoginUser();
 
     /**
      * 获取接单部门
      * @return
      */
-    @GetMapping("system/user/findJieDanDepartment")
+    @RequestMapping(value = "/api/findDepartment")
     ApiResult findDepartment();
 
     /**
      * 获取接单业务员和接单客服
-     * @param roleId
+     * @param key
      * @return
      */
-    @GetMapping("system/user/findUserByRoleId")
-    ApiResult findUserByRoleId(Long roleId);
+    @RequestMapping("/api/findUserByKey")
+    ApiResult findUserByKey(@RequestParam(value = "key") String key);
 
     /**
      * 获取法人主体
      * @return
      */
-    @GetMapping("system/user/findLegalEntity")
+    @RequestMapping(value = "/api/findLegalEntity",method = RequestMethod.GET)
     ApiResult findLegalEntity();
 
+
+    /**
+     * 获取角色
+     * @return
+     */
+    @RequestMapping("/api/findRole")
+    ApiResult findRole();
+
+    /**
+     * 获取客户账户负责人
+     * @return
+     */
+    @RequestMapping("/api/findCustAccount")
+    ApiResult findCustAccount();
+
+    /**
+     * 删除客户账户
+     * @return
+     */
+    @RequestMapping("/api/delCustAccount")
+    ApiResult delCustAccount(@RequestParam(value = "id") String id);
+
+    /**
+     * 保存客户账户
+     * @return
+     */
+    @RequestMapping(value = "/api/saveOrUpdateCustAccount")
+    ApiResult saveOrUpdateCustAccount(@RequestBody AddCusAccountForm form);
 
 
 

@@ -294,7 +294,7 @@ public class SystemUserController {
     public CommonResult auditLegalEntity(@RequestBody AuditLegalEntityForm form) {
         LegalEntity legalEntity = new LegalEntity();
         legalEntity.setId(form.getId());
-        legalEntity.setAuditStatus(form.getAuditStatus());
+        legalEntity.setAuditStatus(Long.parseLong(form.getAuditStatus()));
         legalEntity.setUpdatedUser(getLoginName());
         legalEntityService.saveOrUpdate(legalEntity);
         return CommonResult.success();

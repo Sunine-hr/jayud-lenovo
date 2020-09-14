@@ -15,6 +15,7 @@ import com.jayud.common.utils.DateUtils;
 import com.jayud.model.bo.AuditSystemUserForm;
 import com.jayud.model.bo.OprSystemUserForm;
 import com.jayud.model.bo.QuerySystemUserForm;
+import com.jayud.model.enums.StatusEnum;
 import com.jayud.model.po.SystemUser;
 import com.jayud.model.po.SystemUserLoginLog;
 import com.jayud.model.vo.*;
@@ -69,10 +70,14 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     @Autowired
     ISystemDepartmentService departmentService;
 
+    @Autowired
+    ISystemUserRoleRelationService roleRelationService;
+
     @Override
     public SystemUser selectByName(String name) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("name", name);
+        queryWrapper.eq("audit_status", StatusEnum.AUDIT_SUCCESS.getCode());
         //校验用户名是否重复
         return getOne(queryWrapper);
     }
@@ -161,6 +166,8 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             systemUser.setAuditStatus(1);
             systemUser.setUpdatedUser(getLoginName());
             baseMapper.updateById(systemUser);
+            //创建角色
+            roleRelationService.createRelation(form.getRoleId(),form.getId());
         }else if("delete".equals(form.getCmd())){
             SystemUser systemUser = ConvertUtil.convert(form,SystemUser.class);
             systemUser.setStatus(0);

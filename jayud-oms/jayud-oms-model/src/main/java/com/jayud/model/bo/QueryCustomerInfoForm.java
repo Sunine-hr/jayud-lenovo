@@ -12,4 +12,7 @@ public class QueryCustomerInfoForm extends BasePageForm{
     @ApiModelProperty(value = "客户名")
     private String name;
 
+    @ApiModelProperty(value = "操作指令，cmd=kf or cw or zjb",required = true)
+    private String cmd;
+
 }

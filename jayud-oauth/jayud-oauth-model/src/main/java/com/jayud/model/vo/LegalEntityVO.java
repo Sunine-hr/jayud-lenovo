@@ -24,5 +24,8 @@ public class LegalEntityVO {
     @ApiModelProperty(value = "销售部门")
     private String saleDepartName;
 
+    @ApiModelProperty(value = "销售部门ID")
+    private Long saleDepartId;
+
 
 }

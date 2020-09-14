@@ -67,15 +67,13 @@
             CASE
               ci.`audit_status`
               WHEN '0'
-              THEN '待审核'
-              WHEN '1'
               THEN '待客服审核'
+              WHEN '1'
+              THEN '待财务审核'
               WHEN '2'
-              THEN '待财务审'
-              WHEN '3'
               THEN '待总经办审核'
               WHEN '10'
-              THEN '通过'
+              THEN '审核通过'
               WHEN '11'
               THEN '审核拒绝'
             END
@@ -101,6 +99,15 @@
             ON su2.`id` = ci.`yw_id` where  ci.`status` = 1
         <if test="form.name != null and form.name != ''">
             and ci.name like concat('%',#{form.name},'%')
+        </if>
+        <if test="form.cmd == 'kf'">
+            and ci.audit_status = 0
+        </if>
+        <if test="form.cmd == 'cw'">
+            and ci.audit_status = 1
+        </if>
+        <if test="form.cmd == 'zjb'">
+            and ci.audit_status = 2
         </if>
     </select>
 
@@ -131,20 +138,18 @@
         su2.`user_name` ywName,
         ci.`audit_status` auditStatus,
         (
-        CASE
-        ci.`audit_status`
-        WHEN '0'
-        THEN '待审核'
-        WHEN '1'
-        THEN '待客服审核'
-        WHEN '2'
-        THEN '待财务审'
-        WHEN '3'
-        THEN '待总经办审核'
-        WHEN '10'
-        THEN '通过'
-        WHEN '11'
-        THEN '审核拒绝'
+         CASE
+              ci.`audit_status`
+              WHEN '0'
+              THEN '待客服审核'
+              WHEN '1'
+              THEN '待财务审核'
+              WHEN '2'
+              THEN '待总经办审核'
+              WHEN '10'
+              THEN '审核通过'
+              WHEN '11'
+              THEN '审核拒绝'
         END
         ) auditStatusDesc,
         ci.`created_user` createdUser,

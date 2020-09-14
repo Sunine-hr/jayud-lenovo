@@ -102,8 +102,8 @@ public class CustomerInfoController {
         customerInfo.setUpdatedTime(DateUtils.getNowTime());
         customerInfo.setUpdatedUser(getLoginUser());
         CustomerInfoVO customerInfoVO = customerInfoService.getCustomerInfoById(form.getId());
-        Integer auditStatus = customerInfoVO.getAuditStatus();
-        if(auditStatus != null){
+        String auditStatus = String.valueOf(customerInfoVO.getAuditStatus());
+        if(auditStatus == null){
             return CommonResult.error(400,"不属于审核状态流程");
         }
         if("0".equals(form.getAuditStatus())){//审核拒绝

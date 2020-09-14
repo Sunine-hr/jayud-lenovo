@@ -11,6 +11,9 @@
 
     <artifactId>jayud-oauth</artifactId>
     <packaging>pom</packaging>
+    <version>1.0</version>
+    <name>jayud-oauth</name>
+    <description>oauth管理系统</description>
     <modules>
         <module>jayud-oauth-model</module>
         <module>jayud-oauth-service</module>

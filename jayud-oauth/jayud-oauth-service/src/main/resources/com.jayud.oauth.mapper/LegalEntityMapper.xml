@@ -28,7 +28,8 @@
           le.`legal_code` legalCode,
           le.`legal_name` legalName,
           le.`rigis_address` rigisAddress,
-          d.`name` saleDepartName
+          d.`name` saleDepartName,
+          d.id saleDepartId
         FROM
           legal_entity le
           LEFT JOIN department d
@@ -40,7 +41,7 @@
             and le.audit_status in (1)
         </if>
         <if test="form.legalName != null and form.legalName != ''">
-        and le.legal_name like concat('%',#{legalName.name},'%')
+        and le.legal_name like concat('%',#{form.legalName},'%')
         </if>
     </select>
 

@@ -67,7 +67,11 @@
         c.`company_name` companyName,
         su.`created_time` createdTime,
         su.`created_user` createdUser,
-        temp.user_name superiorName,
+        (SELECT
+        t.user_name
+        FROM
+        `system_user` t
+        WHERE t.id = su.`superior_id`) superiorName,
         w.`id` workId,
         sr.`id` roleId,
         su.note,
@@ -84,14 +88,6 @@
         ON su.`company_id` = c.`id`
         LEFT JOIN department dt
         ON dt.`id` = su.`department_id`
-        LEFT JOIN
-        (SELECT
-        t.user_name,
-        t.`department_id`
-        FROM
-        `system_user` t
-        WHERE t.`is_department_charge` = 1) temp
-        ON temp.department_id = su.`department_id`
         WHERE 1 = 1
         <if test="form.cmd == 'isAccount' or form.cmd == 'isAudit'">
             and su.`status` = 1

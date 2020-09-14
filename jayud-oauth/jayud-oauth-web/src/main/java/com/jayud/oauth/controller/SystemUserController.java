@@ -6,6 +6,8 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.model.bo.*;
+import com.jayud.model.enums.SystemUserStatusEnum;
+import com.jayud.model.enums.UserTypeEnum;
 import com.jayud.model.po.LegalEntity;
 import com.jayud.model.po.SystemRole;
 import com.jayud.model.po.SystemUser;
@@ -245,7 +247,8 @@ public class SystemUserController {
         if(form.getId() != null){
             systemUser.setUpdatedUser(loginUser);
         }else {
-            systemUser.setStatus(0);
+            systemUser.setUserType(UserTypeEnum.EMPLOYEE_TYPE.getCode());
+            systemUser.setStatus(SystemUserStatusEnum.OFF.getCode());
             systemUser.setCreatedUser(loginUser);
         }
         userService.saveOrUpdateSystemUser(systemUser);

@@ -4,6 +4,8 @@ import com.jayud.common.ApiResult;
 import com.jayud.model.bo.AddCusAccountForm;
 import com.jayud.model.bo.OprSystemUserForm;
 import com.jayud.model.enums.StatusEnum;
+import com.jayud.model.enums.SystemUserStatusEnum;
+import com.jayud.model.enums.UserTypeEnum;
 import com.jayud.model.po.SystemRole;
 import com.jayud.model.po.SystemUser;
 import com.jayud.model.vo.DepartmentVO;
@@ -142,9 +144,9 @@ public class ExternalApiController {
         systemUser.setCompanyId(form.getCompanyId());
         systemUser.setId(form.getId());
         systemUser.setPassword("E10ADC3949BA59ABBE56E057F20F883E");//默认密码为:123456
-        systemUser.setStatus(1);//账户为启用状态
+        systemUser.setStatus(SystemUserStatusEnum.ON.getCode());//账户为启用状态
         systemUser.setAuditStatus(StatusEnum.AUDIT_SUCCESS.getCode());
-        systemUser.setUserType("2");//客户用户
+        systemUser.setUserType(UserTypeEnum.CUSTOMER_TYPE.getCode());//客户用户
         userService.saveOrUpdateSystemUser(systemUser);//修改客户账户信息
         //删除旧的账户用户角色关系
         List<Long> userIds = new ArrayList<>();

@@ -121,7 +121,7 @@
     <distributionManagement>
         <repository>
             <id>nexus</id>
-            <url>http://192.168.0.231:8181/repository/localpublic/</url>
+            <url>http://113.100.140.250:8181/repository/localpublic/</url>
         </repository>
     </distributionManagement>
 

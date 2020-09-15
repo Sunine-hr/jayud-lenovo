@@ -27,10 +27,6 @@ import java.util.Date;
  * @Date: 2020-09-14 15:27
  */
 public  class RsaEncryptUtil {
-    @Value("${vivo.public-key}")
-    private static String vivoPublicKey;
-
-
     /**
      * C#中通过FromXmlString属性加载的是XML形式,而JAVA中用到的是解析后的PEM格式的字符串,总之读取证书中信息无非是转换方式问题
      *
@@ -60,19 +56,15 @@ public  class RsaEncryptUtil {
 //            e.printStackTrace();
 //        }
 //    }
-
-    public static String getEncryptedPassword(String username, String password) throws NoSuchPaddingException, NoSuchAlgorithmException, IOException, BadPaddingException, IllegalBlockSizeException, InvalidKeyException, InvalidKeySpecException {
+    public static String getEncryptedPassword(String username, String password, String vivoPublicKey) throws NoSuchPaddingException, NoSuchAlgorithmException, IOException, BadPaddingException, IllegalBlockSizeException, InvalidKeyException, InvalidKeySpecException {
         CryptPair info = new CryptPair();
         info.setPassword("123456");
         info.setTimeStamp(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
         String infoStr = JSONUtil.toJsonStr(info);
-        return encrypt(infoStr);
+        return encrypt(infoStr,vivoPublicKey);
     }
 
-    private static String encrypt(String info) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IOException, BadPaddingException, IllegalBlockSizeException {
-
-//        Object object = XmlUtil.readObjectFromXml(vivoPublicKey);
-//        String xmlString = ("<RSAKeyValue><Modulus>4xGrWUFEftqNS4DvSOW9wfeYK1i9gJBYB+tmhz6E9QCo6cvRdmT+IaG6lE6U7sh1dP3atLc8lzvljDmxoDu/SBMLkDXiXJgj7AJWbhDUn1xCbQb/1jEb08jEqr/3K4+03bCX06W0V5HrjL53GiQ0dZHIO1eFdAvRDPYfvIwIWq0=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>");
+    private static String encrypt(String info,String vivoPublicKey) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IOException, BadPaddingException, IllegalBlockSizeException {
         String xmlModulus = ReUtil.get("(?<=\\<Modulus\\>)\\S+(?=\\<\\/Modulus\\>)", vivoPublicKey, 0);
         String xmlExponentString = ReUtil.get("(?<=\\<Exponent\\>)\\S+(?=\\<\\/Exponent\\>)", vivoPublicKey, 0);
 

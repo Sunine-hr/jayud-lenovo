@@ -10,10 +10,11 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
- * 产品服务对应业务类型
+ * 产品分类
  * </p>
  *
  * @author chuanmei
@@ -22,26 +23,26 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="ProductBiz对象", description="产品服务对应业务类型")
-public class ProductBiz extends Model<ProductBiz> {
+@ApiModel(value="ProductClassify对象", description="产品分类")
+public class ProductClassify extends Model<ProductClassify> {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "自增id")
+    @ApiModelProperty(value = "自增ID")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "编码")
+    @ApiModelProperty(value = "产品分类编码")
     private String idCode;
 
-    @ApiModelProperty(value = "业务名")
+    @ApiModelProperty(value = "产品名")
     private String name;
 
-    @ApiModelProperty(value = "排序值")
-    private Long sorts;
+    @ApiModelProperty(value = "父级id")
+    private Integer fId;
 
-    @ApiModelProperty(value = "描述")
-    private String remarks;
+    @ApiModelProperty(value = "业务类型(product_bize code)")
+    private String bizCode;
 
     @ApiModelProperty(value = "状态(0无效 1有效)")
     private String status;
@@ -50,7 +51,13 @@ public class ProductBiz extends Model<ProductBiz> {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
-    private String createTime;
+    private LocalDateTime createTime;
+
+    @ApiModelProperty(value = "更新人")
+    private String updateUser;
+
+    @ApiModelProperty(value = "更新时间")
+    private LocalDateTime updateTime;
 
 
     @Override

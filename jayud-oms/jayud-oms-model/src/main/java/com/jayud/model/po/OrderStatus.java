@@ -13,7 +13,7 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 产品服务对应业务类型
+ * 业务流程节点，例如报关有(报关接单，报关打单，报关复核 报关申请 报关放行)
  * </p>
  *
  * @author chuanmei
@@ -22,8 +22,8 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="ProductBiz对象", description="产品服务对应业务类型")
-public class ProductBiz extends Model<ProductBiz> {
+@ApiModel(value="OrderStatus对象", description="业务流程节点，例如报关有(报关接单，报关打单，报关复核 报关申请 报关放行)")
+public class OrderStatus extends Model<OrderStatus> {
 
     private static final long serialVersionUID = 1L;
 
@@ -34,23 +34,23 @@ public class ProductBiz extends Model<ProductBiz> {
     @ApiModelProperty(value = "编码")
     private String idCode;
 
-    @ApiModelProperty(value = "业务名")
+    @ApiModelProperty(value = "名字")
     private String name;
 
+    @ApiModelProperty(value = "主节点id 0表示主节点(order_status)")
+    private Integer fId;
+
+    @ApiModelProperty(value = "对应业务code(product_biz code)")
+    private String bizCode;
+
+    @ApiModelProperty(value = "对应业务名(product_biz name)")
+    private String bizName;
+
     @ApiModelProperty(value = "排序值")
-    private Long sorts;
+    private Integer sorts;
 
-    @ApiModelProperty(value = "描述")
-    private String remarks;
-
-    @ApiModelProperty(value = "状态(0无效 1有效)")
+    @ApiModelProperty(value = "状态(0-无效 1有效)")
     private String status;
-
-    @ApiModelProperty(value = "创建人")
-    private String createUser;
-
-    @ApiModelProperty(value = "创建时间")
-    private String createTime;
 
 
     @Override

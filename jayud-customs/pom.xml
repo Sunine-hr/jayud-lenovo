@@ -8,6 +8,10 @@
         <version>1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
+    <properties>
+        <customs.model.version>1.0</customs.model.version>
+        <customs.service.version>1.0</customs.service.version>
+    </properties>
 
     <artifactId>jayud-customs</artifactId>
     <packaging>pom</packaging>
@@ -15,8 +19,16 @@
         <module>jayud-customs-api</module>
         <module>jayud-customs-model</module>
         <module>jayud-customs-service</module>
-        <module>jayud-customs-web</module>
+        <module>jayud-customs-client</module>
     </modules>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.jayud</groupId>
+            <artifactId>jayud-common</artifactId>
+            <version>${jayud-common.version}</version>
+        </dependency>
+
+    </dependencies>
 
 </project>

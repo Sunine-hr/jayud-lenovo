@@ -35,6 +35,11 @@ public class RedisUtils {
     public final static long EXPIRE_THIRTY_MIN = 1800;
 
     /**
+     * 云报关token过期时长
+     */
+    public final static long EXPIRE_YUNBAOGUAN = 12 * 3600;
+
+    /**
      * 不设置过期时长
      */
     public final static long NOT_EXPIRE = -1;

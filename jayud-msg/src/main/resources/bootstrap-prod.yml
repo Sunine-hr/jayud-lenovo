@@ -1,5 +1,0 @@
-rtscf:
-  nacos:
-    server-addr: 120.79.146.8:8848
-    config:
-      namespace:

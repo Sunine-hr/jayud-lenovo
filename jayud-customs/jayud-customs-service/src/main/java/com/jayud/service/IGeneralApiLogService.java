@@ -1,6 +1,6 @@
 package com.jayud.service;
 
-import com.jayud.model.po.CustomsApiLog;
+import com.jayud.model.po.GeneralApiLog;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author william.chen
  * @since 2020-09-10
  */
-public interface ICustomsApiLogService extends IService<CustomsApiLog> {
+public interface IGeneralApiLogService extends IService<GeneralApiLog> {
 
 }

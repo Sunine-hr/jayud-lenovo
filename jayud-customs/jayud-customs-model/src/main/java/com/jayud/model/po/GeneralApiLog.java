@@ -2,7 +2,6 @@ package com.jayud.model.po;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import java.time.LocalDateTime;
-import java.sql.Blob;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -22,7 +21,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value="CustomsApiLog对象", description="报关请求接口历史数据表")
-public class CustomsApiLog extends Model<CustomsApiLog> {
+public class GeneralApiLog extends Model<GeneralApiLog> {
 
     private static final long serialVersionUID = 1L;
 
@@ -48,6 +47,9 @@ public class CustomsApiLog extends Model<CustomsApiLog> {
 
     @ApiModelProperty(value = "访问发起时间")
     private LocalDateTime requestTime;
+
+    @ApiModelProperty(value = "模块名称")
+    private String moduleName;
 
 
     @Override

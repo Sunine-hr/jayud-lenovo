@@ -1,7 +1,7 @@
 package com.jayud.aspects;
 
 import cn.hutool.json.JSONUtil;
-import com.jayud.model.po.CustomsApiLog;
+import com.jayud.model.po.GeneralApiLog;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -9,7 +9,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -75,7 +74,7 @@ public class GeneralAPILogAspect {
         Long endTime = System.currentTimeMillis();
         Integer timeSpan = (int) (endTime - startTime);
 
-        CustomsApiLog apiLog = new CustomsApiLog();
+        GeneralApiLog apiLog = new GeneralApiLog();
         apiLog.setMethod(methodName);
         apiLog.setRequestJson(requestParameterString);
         apiLog.setResultJson(resultParameterString);

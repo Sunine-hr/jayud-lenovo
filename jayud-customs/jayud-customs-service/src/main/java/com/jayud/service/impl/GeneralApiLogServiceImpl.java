@@ -1,8 +1,8 @@
 package com.jayud.service.impl;
 
-import com.jayud.model.po.CustomsApiLog;
-import com.jayud.mapper.CustomsApiLogMapper;
-import com.jayud.service.ICustomsApiLogService;
+import com.jayud.model.po.GeneralApiLog;
+import com.jayud.mapper.GeneralApiLogMapper;
+import com.jayud.service.IGeneralApiLogService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2020-09-10
  */
 @Service
-public class CustomsApiLogServiceImpl extends ServiceImpl<CustomsApiLogMapper, CustomsApiLog> implements ICustomsApiLogService {
+public class GeneralApiLogServiceImpl extends ServiceImpl<GeneralApiLogMapper, GeneralApiLog> implements IGeneralApiLogService {
 
 }

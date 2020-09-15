@@ -1,6 +1,6 @@
 package com.jayud.mapper;
 
-import com.jayud.model.po.CustomsApiLog;
+import com.jayud.model.po.GeneralApiLog;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author william.chen
  * @since 2020-09-10
  */
-public interface CustomsApiLogMapper extends BaseMapper<CustomsApiLog> {
+public interface GeneralApiLogMapper extends BaseMapper<GeneralApiLog> {
 
 }

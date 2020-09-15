@@ -26,6 +26,7 @@
         <module>jayud-finance</module>
         <module>jayud-oms</module>
         <module>jayud-tms</module>
+        <module>jayud-freight-air</module>
 
 
     </modules>

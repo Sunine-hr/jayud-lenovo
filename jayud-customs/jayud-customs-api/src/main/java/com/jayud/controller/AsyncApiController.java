@@ -3,12 +3,11 @@ package com.jayud.controller;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONUtil;
-import com.jayud.model.po.CustomsApiLog;
-import com.jayud.service.ICustomsApiLogService;
+import com.jayud.model.po.GeneralApiLog;
+import com.jayud.service.IGeneralApiLogService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,7 +30,7 @@ import java.util.Objects;
 @Slf4j
 public class AsyncApiController {
     @Autowired
-    ICustomsApiLogService logService;
+    IGeneralApiLogService logService;
 
         @PostMapping("/generalLog/save")
     @ApiOperation(value = "保存接口调用日志")
@@ -45,14 +44,14 @@ public class AsyncApiController {
             log.error("保存接口调用日志失败：数据为空");
             return;
         }
-        CustomsApiLog customsApiLog = null;
+        GeneralApiLog generalApiLog = null;
         try {
-            customsApiLog = JSONUtil.toBean(logInfo, CustomsApiLog.class);
+            generalApiLog = JSONUtil.toBean(logInfo, GeneralApiLog.class);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("保存接口调用日志失败：数据解析失败");
             return;
         }
-        logService.save(customsApiLog);
+        logService.save(generalApiLog);
     }
 }

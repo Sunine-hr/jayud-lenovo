@@ -25,7 +25,7 @@ public class LegalEntityServiceImpl extends ServiceImpl<LegalEntityMapper, Legal
         //定义分页参数
         Page<SystemUser> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
-        page.addOrder(OrderItem.asc("su.id"));
+        page.addOrder(OrderItem.asc("le.id"));
         IPage<LegalEntityVO> pageInfo = this.baseMapper.findLegalEntityByPage(page, form);
         return pageInfo;
     }

@@ -6,8 +6,11 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.model.bo.*;
+import com.jayud.model.enums.SystemUserStatusEnum;
+import com.jayud.model.enums.UserTypeEnum;
 import com.jayud.model.po.LegalEntity;
 import com.jayud.model.po.SystemRole;
+import com.jayud.model.po.SystemRoleMenuRelation;
 import com.jayud.model.po.SystemUser;
 import com.jayud.model.vo.*;
 import com.jayud.oauth.service.*;
@@ -118,6 +121,13 @@ public class SystemUserController {
         editRoleMenuVO.setName(systemRole.getName());
         editRoleMenuVO.setDescription(systemRole.getDescription());
         editRoleMenuVO.setWebFlag(systemRole.getWebFlag());
+        //获取角色所拥有的所有菜单
+        List<SystemRoleMenuRelation> roleMenuRelations = roleMenuRelationService.findRelationByRoleId(Long.valueOf(id));
+        List<Long> menuIds = new ArrayList<>();
+        for (SystemRoleMenuRelation roleMenuRel : roleMenuRelations) {
+            menuIds.add(roleMenuRel.getMenuId());
+        }
+        editRoleMenuVO.setMenuIds(menuIds);
         return CommonResult.success(editRoleMenuVO);
     }
 
@@ -125,6 +135,9 @@ public class SystemUserController {
     @PostMapping(value = "/addRole")
     public CommonResult addRole(@RequestBody AddRoleForm addRoleForm){
         SystemRole systemRole = ConvertUtil.convert(addRoleForm, SystemRole.class);
+        if(addRoleForm.getMenuIds() == null){
+            return CommonResult.error(400,"参数不合法");
+        }
         if(addRoleForm.getId() != null){
             //编辑角色权限
             roleService.saveOrUpdate(systemRole);
@@ -245,7 +258,8 @@ public class SystemUserController {
         if(form.getId() != null){
             systemUser.setUpdatedUser(loginUser);
         }else {
-            systemUser.setStatus(0);
+            systemUser.setUserType(UserTypeEnum.EMPLOYEE_TYPE.getCode());
+            systemUser.setStatus(SystemUserStatusEnum.OFF.getCode());
             systemUser.setCreatedUser(loginUser);
         }
         userService.saveOrUpdateSystemUser(systemUser);
@@ -294,7 +308,7 @@ public class SystemUserController {
     public CommonResult auditLegalEntity(@RequestBody AuditLegalEntityForm form) {
         LegalEntity legalEntity = new LegalEntity();
         legalEntity.setId(form.getId());
-        legalEntity.setAuditStatus(form.getAuditStatus());
+        legalEntity.setAuditStatus(Long.parseLong(form.getAuditStatus()));
         legalEntity.setUpdatedUser(getLoginName());
         legalEntityService.saveOrUpdate(legalEntity);
         return CommonResult.success();

@@ -1,4 +1,4 @@
-package com.jayud.service;
+package com.jayud.customs.service;
 
 import com.jayud.model.bo.InputOrderCustomsForm;
 import com.jayud.model.po.OrderCustoms;

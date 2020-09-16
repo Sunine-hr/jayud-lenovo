@@ -1,4 +1,4 @@
-package com.jayud.service.impl;
+package com.jayud.customs.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -6,14 +6,14 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.feign.OmsClient;
+import com.jayud.customs.feign.OmsClient;
+import com.jayud.customs.service.IOrderCustomsService;
 import com.jayud.mapper.OrderCustomsMapper;
 import com.jayud.model.bo.InputOrderCustomsForm;
 import com.jayud.model.bo.InputOrderForm;
 import com.jayud.model.bo.InputSubOrderCustomsForm;
 import com.jayud.model.bo.OprOrderLogForm;
 import com.jayud.model.po.OrderCustoms;
-import com.jayud.service.IOrderCustomsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

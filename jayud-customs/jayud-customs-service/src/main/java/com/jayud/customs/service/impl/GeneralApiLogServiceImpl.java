@@ -1,9 +1,9 @@
-package com.jayud.service.impl;
+package com.jayud.customs.service.impl;
 
-import com.jayud.model.po.GeneralApiLog;
-import com.jayud.mapper.GeneralApiLogMapper;
-import com.jayud.service.IGeneralApiLogService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.customs.service.IGeneralApiLogService;
+import com.jayud.mapper.GeneralApiLogMapper;
+import com.jayud.model.po.GeneralApiLog;
 import org.springframework.stereotype.Service;
 
 /**

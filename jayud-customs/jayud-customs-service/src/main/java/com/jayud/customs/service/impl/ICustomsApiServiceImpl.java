@@ -1,4 +1,4 @@
-package com.jayud.service.impl;
+package com.jayud.customs.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
@@ -8,9 +8,9 @@ import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.customs.service.ICustomsApiService;
 import com.jayud.model.bo.*;
 import com.jayud.model.vo.*;
-import com.jayud.service.ICustomsApiService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;

@@ -1,4 +1,4 @@
-package com.jayud.service;
+package com.jayud.customs.service;
 
 import com.jayud.model.po.GeneralApiLog;
 import com.baomidou.mybatisplus.extension.service.IService;

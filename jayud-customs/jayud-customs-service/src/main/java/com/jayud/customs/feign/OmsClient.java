@@ -1,4 +1,4 @@
-package com.jayud.feign;
+package com.jayud.customs.feign;
 
 
 import com.jayud.common.ApiResult;

@@ -2,7 +2,7 @@ package com.jayud.oms.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.model.po.OrderInfo;
-import org.mapstruct.Mapper;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>

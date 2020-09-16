@@ -27,7 +27,6 @@
         <module>jayud-oms</module>
         <module>jayud-tms</module>
         <module>jayud-freight-air</module>
-        <module>jayud-tms</module>
 
 
     </modules>
@@ -73,11 +72,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.boot</groupId>-->
-        <!--            <artifactId>spring-boot-devtools</artifactId>-->
-        <!--            <optional>true</optional>-->
-        <!--        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
@@ -161,12 +155,6 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-openfeign-core</artifactId>
-            <version>2.1.5.RELEASE</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
     <build>

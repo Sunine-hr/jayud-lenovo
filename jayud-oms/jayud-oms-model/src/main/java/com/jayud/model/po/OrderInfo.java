@@ -74,6 +74,9 @@ public class OrderInfo extends Model<OrderInfo> {
     @ApiModelProperty(value = "订单状态1正常 2草稿 3关闭")
     private Integer status;
 
+    @ApiModelProperty(value = "业务所属部门")
+    private String bizBelongDepart;
+
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 

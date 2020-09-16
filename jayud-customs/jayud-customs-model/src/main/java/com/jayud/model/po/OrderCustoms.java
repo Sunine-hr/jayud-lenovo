@@ -33,10 +33,10 @@ public class OrderCustoms extends Model<OrderCustoms> {
     private Long id;
 
     @ApiModelProperty(value = "主订单号")
-    private Integer mainOrderNo;
+    private String mainOrderNo;
 
     @ApiModelProperty(value = "订单编号(生成规则product_classify code+随时数)")
-    private Integer orderNo;
+    private String orderNo;
 
     @ApiModelProperty(value = "口岸code(port_info code)")
     private String portCode;
@@ -90,10 +90,16 @@ public class OrderCustoms extends Model<OrderCustoms> {
     private LocalDateTime optTime;
 
     @ApiModelProperty(value = "创建时间")
-    private String createTime;
+    private LocalDateTime createTime;
 
     @ApiModelProperty(value = "创建用户")
     private String createUser;
+
+    @ApiModelProperty(value = "修改时间")
+    private LocalDateTime updatedTime;
+
+    @ApiModelProperty(value = "修改人")
+    private String updatedUser;
 
 
     @Override

@@ -19,6 +19,7 @@
         <result column="cntr_no" property="cntrNo" />
         <result column="biz_code" property="bizCode" />
         <result column="status" property="status" />
+        <result column="biz_belong_depart" property="bizBelongDepart" />
         <result column="create_time" property="createTime" />
         <result column="created_user" property="createdUser" />
         <result column="up_time" property="upTime" />

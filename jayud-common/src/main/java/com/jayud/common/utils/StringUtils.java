@@ -6,6 +6,7 @@ import io.netty.util.internal.StringUtil;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Random;
 
 public class StringUtils {
     /**
@@ -117,6 +118,26 @@ public class StringUtils {
         }
         String regex = "(\\w{" + front + "})(\\w+)(\\w{" + end + "})";
         return idCardNum.replaceAll(regex, "$1" + asteriskStr + "$3");
+    }
+
+    /**
+     * 生成规定的n位随机不重复的数
+     * @param randomNum 随机数长度
+     * @return
+     */
+    public static String loadNum(String head,int randomNum){
+        int roandm = 0;
+        char [] str = {'0','1','2','3','4','5','6','7','8','9'};
+        StringBuffer stringBuffer = new StringBuffer("");
+        Random r = new Random();
+        for(int count = 0;count < randomNum;count++){
+            //生成10以内的随机整数
+            roandm = Math.abs(r.nextInt(10));
+            if(roandm>=0 || roandm<str.length){
+                stringBuffer.append(""+str[roandm]);
+            }
+        }
+        return head+""+stringBuffer.toString();
     }
 
     public static String generate(){

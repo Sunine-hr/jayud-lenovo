@@ -1,7 +1,8 @@
 package com.jayud.oms.mapper;
 
-import com.jayud.model.po.OrderInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.model.po.OrderInfo;
+import org.mapstruct.Mapper;
 
 /**
  * <p>
@@ -11,6 +12,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author chuanmei
  * @since 2020-09-15
  */
+@Mapper
 public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
 
 }

@@ -2,6 +2,7 @@ package com.jayud.oms.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.model.po.PortInfo;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
@@ -11,6 +12,7 @@ import com.jayud.model.po.PortInfo;
  * @author chuanmei
  * @since 2020-09-16
  */
+@Mapper
 public interface PortInfoMapper extends BaseMapper<PortInfo> {
 
 }

@@ -2,10 +2,10 @@ package com.jayud.oauth.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.model.bo.AddDepartmentForm;
-import com.jayud.model.po.Department;
-import com.jayud.model.vo.DepartmentVO;
-import com.jayud.model.vo.QueryOrgStructureVO;
+import com.jayud.oauth.model.bo.AddDepartmentForm;
+import com.jayud.oauth.model.po.Department;
+import com.jayud.oauth.model.vo.DepartmentVO;
+import com.jayud.oauth.model.vo.QueryOrgStructureVO;
 
 import java.util.List;
 

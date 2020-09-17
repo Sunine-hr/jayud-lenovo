@@ -1,6 +1,6 @@
 package com.jayud.oms.service;
 
-import com.jayud.model.po.ProductClassify;
+import com.jayud.oms.model.po.ProductClassify;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

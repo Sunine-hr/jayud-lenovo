@@ -4,9 +4,9 @@ package com.jayud.oauth.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.jayud.model.bo.QueryRoleForm;
-import com.jayud.model.po.SystemRole;
-import com.jayud.model.vo.SystemRoleView;
+import com.jayud.oauth.model.po.SystemRole;
+import com.jayud.oauth.model.bo.QueryRoleForm;
+import com.jayud.oauth.model.vo.SystemRoleView;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

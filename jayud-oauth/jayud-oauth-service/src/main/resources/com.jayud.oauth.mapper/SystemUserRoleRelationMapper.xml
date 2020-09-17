@@ -3,7 +3,7 @@
 <mapper namespace="com.jayud.oauth.mapper.SystemUserRoleRelationMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.jayud.model.po.SystemUserRoleRelation">
+    <resultMap id="BaseResultMap" type="com.jayud.oauth.model.po.SystemUserRoleRelation">
         <id column="id" property="id" />
         <result column="user_id" property="userId" />
         <result column="role_id" property="roleId" />
@@ -15,7 +15,7 @@
     </sql>
 
 
-    <select id="getEnabledRolesByUserId" resultType="com.jayud.model.po.SystemRole">
+    <select id="getEnabledRolesByUserId" resultType="com.jayud.oauth.model.po.SystemRole">
         select enabledRole.* from system_user_role_relation as relations
          left join system_role as enabledRole
          on enabledRole.id=relations.role_id

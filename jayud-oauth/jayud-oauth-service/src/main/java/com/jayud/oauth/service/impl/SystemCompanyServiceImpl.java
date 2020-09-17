@@ -2,8 +2,8 @@ package com.jayud.oauth.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.model.po.Company;
-import com.jayud.model.vo.CompanyVO;
+import com.jayud.oauth.model.po.Company;
+import com.jayud.oauth.model.vo.CompanyVO;
 import com.jayud.oauth.mapper.SystemCompanyMapper;
 import com.jayud.oauth.service.ISystemCompanyService;
 import org.springframework.stereotype.Service;

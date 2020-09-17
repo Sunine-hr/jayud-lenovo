@@ -5,7 +5,6 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.json.JSONUtil;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;

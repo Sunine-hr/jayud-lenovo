@@ -43,7 +43,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.jayud.oauth.JayudCustomsApplication</mainClass>
+                    <mainClass>com.jayud.customs.JayudCustomsApplication</mainClass>
                     <layout>ZIP</layout>
                 </configuration>
                 <executions>

@@ -3,7 +3,7 @@
 <mapper namespace="com.jayud.oms.mapper.CustomerInfoMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.jayud.model.po.CustomerInfo">
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.CustomerInfo">
         <id column="id" property="id" />
         <result column="name" property="name" />
         <result column="unit_account" property="unitAccount" />
@@ -37,7 +37,7 @@
          created_user,updated_user
     </sql>
 
-    <select id="findCustomerInfoByPage" parameterType="com.jayud.model.bo.QueryCustomerInfoForm" resultType="com.jayud.model.vo.CustomerInfoVO" >
+    <select id="findCustomerInfoByPage" parameterType="com.jayud.oms.model.bo.QueryCustomerInfoForm" resultType="com.jayud.oms.model.vo.CustomerInfoVO" >
         SELECT
           ci.id,
           ci.name,
@@ -111,7 +111,7 @@
         </if>
     </select>
 
-    <select id="getCustomerInfoById"  resultType="com.jayud.model.vo.CustomerInfoVO" >
+    <select id="getCustomerInfoById"  resultType="com.jayud.oms.model.vo.CustomerInfoVO" >
         SELECT
         ci.id,
         ci.name,
@@ -175,7 +175,7 @@
     </select>
 
     <!--客户账户管理-->
-    <select id="getCustAccountByCondition"  resultType="com.jayud.model.vo.CustAccountVO" >
+    <select id="getCustAccountByCondition"  resultType="com.jayud.oms.model.vo.CustAccountVO" >
         SELECT
         su.id,
         su.name,
@@ -220,7 +220,7 @@
         WHERE su.id = #{id}
     </select>
 
-    <select id="findCustAccountByPage"  resultType="com.jayud.model.vo.CustAccountVO" parameterType="com.jayud.model.bo.QueryCusAccountForm">
+    <select id="findCustAccountByPage" resultType="com.jayud.oms.model.vo.CustAccountVO" parameterType="com.jayud.oms.model.bo.QueryCusAccountForm">
         SELECT
         su.id,
         su.name,

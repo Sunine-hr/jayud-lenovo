@@ -2,9 +2,9 @@ package com.jayud.oauth.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.model.po.SystemMenu;
-import com.jayud.model.vo.QueryMenuStructureVO;
-import com.jayud.model.vo.SystemMenuNode;
+import com.jayud.oauth.model.vo.SystemMenuNode;
+import com.jayud.oauth.model.po.SystemMenu;
+import com.jayud.oauth.model.vo.QueryMenuStructureVO;
 
 import java.util.List;
 

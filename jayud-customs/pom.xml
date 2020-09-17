@@ -22,7 +22,6 @@
         <module>jayud-customs-api</module>
         <module>jayud-customs-model</module>
         <module>jayud-customs-service</module>
-        <module>jayud-customs-client</module>
         <module>jayud-customs-web</module>
     </modules>
 

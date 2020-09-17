@@ -2,7 +2,7 @@ package com.jayud.oms.feign;
 
 
 import com.jayud.common.ApiResult;
-import com.jayud.model.bo.AddCusAccountForm;
+import com.jayud.oms.model.bo.AddCusAccountForm;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

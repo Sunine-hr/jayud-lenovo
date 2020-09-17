@@ -1,7 +1,7 @@
 package com.jayud.oms.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.jayud.model.po.PortInfo;
+import com.jayud.oms.model.po.PortInfo;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

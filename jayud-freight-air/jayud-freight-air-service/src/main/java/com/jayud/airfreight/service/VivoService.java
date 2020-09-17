@@ -1,8 +1,10 @@
 package com.jayud.airfreight.service;
 
-import com.jayud.airfreight.model.bo.BookingSpaceForm;
 import com.jayud.airfreight.model.bo.ForwarderBookingConfirmedFeedbackForm;
+import com.jayud.airfreight.model.bo.ForwarderLadingFileForm;
+import com.jayud.airfreight.model.bo.ForwarderLadingInfoForm;
 import com.jayud.airfreight.model.bo.ForwarderVehicleInfoForm;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * vivo数据接口服务
@@ -11,12 +13,7 @@ import com.jayud.airfreight.model.bo.ForwarderVehicleInfoForm;
  * @Date: 2020-09-14 13:47
  */
 public interface VivoService {
-    /**
-     * 下单订舱
-     *
-     * @param form
-     */
-    void bookingSpace(BookingSpaceForm form);
+
 
     /**
      * 货代确认订舱
@@ -24,7 +21,7 @@ public interface VivoService {
      * @param form
      * @return
      */
-    String forwarderBookingConfirmedFeedback(ForwarderBookingConfirmedFeedbackForm form);
+    Boolean forwarderBookingConfirmedFeedback(ForwarderBookingConfirmedFeedbackForm form);
 
 
     /**
@@ -33,5 +30,22 @@ public interface VivoService {
      * @param form
      * @return
      */
-    String forwarderVehicleInfo(ForwarderVehicleInfoForm form);
+    Boolean forwarderVehicleInfo(ForwarderVehicleInfoForm form);
+
+    /**
+     * 向vivo发送空运提单文件
+     *
+     * @param form
+     * @param file
+     * @return
+     */
+    Boolean forwarderLadingFile(ForwarderLadingFileForm form, MultipartFile file);
+
+    /**
+     * 向vivo发送空运状态
+     *
+     * @param form
+     * @return
+     */
+    boolean forwarderLadingInfo(ForwarderLadingInfoForm form);
 }

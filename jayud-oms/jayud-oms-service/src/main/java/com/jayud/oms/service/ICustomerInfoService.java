@@ -3,11 +3,11 @@ package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.model.bo.QueryCusAccountForm;
-import com.jayud.model.bo.QueryCustomerInfoForm;
-import com.jayud.model.po.CustomerInfo;
-import com.jayud.model.vo.CustAccountVO;
-import com.jayud.model.vo.CustomerInfoVO;
+import com.jayud.oms.model.bo.QueryCustomerInfoForm;
+import com.jayud.oms.model.po.CustomerInfo;
+import com.jayud.oms.model.vo.CustomerInfoVO;
+import com.jayud.oms.model.bo.QueryCusAccountForm;
+import com.jayud.oms.model.vo.CustAccountVO;
 
 import java.util.List;
 import java.util.Map;

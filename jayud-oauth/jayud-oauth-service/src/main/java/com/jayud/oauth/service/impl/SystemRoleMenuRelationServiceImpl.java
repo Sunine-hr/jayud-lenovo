@@ -2,8 +2,8 @@ package com.jayud.oauth.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.model.po.SystemRole;
-import com.jayud.model.po.SystemRoleMenuRelation;
+import com.jayud.oauth.model.po.SystemRole;
+import com.jayud.oauth.model.po.SystemRoleMenuRelation;
 import com.jayud.oauth.mapper.SystemRoleMenuRelationMapper;
 import com.jayud.oauth.service.ISystemRoleMenuRelationService;
 import org.springframework.stereotype.Service;

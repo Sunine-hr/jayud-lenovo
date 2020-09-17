@@ -3,7 +3,7 @@
 <mapper namespace="com.jayud.oauth.mapper.SystemMenuMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.jayud.model.po.SystemMenu">
+    <resultMap id="BaseResultMap" type="com.jayud.oauth.model.po.SystemMenu">
         <id column="id" property="id" />
         <result column="parent_id" property="parentId" />
         <result column="name" property="name" />

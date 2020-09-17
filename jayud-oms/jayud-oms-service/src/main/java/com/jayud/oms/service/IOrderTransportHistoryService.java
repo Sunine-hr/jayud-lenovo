@@ -1,6 +1,6 @@
 package com.jayud.oms.service;
 
-import com.jayud.model.po.OrderTransportHistory;
+import com.jayud.oms.model.po.OrderTransportHistory;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

@@ -2,7 +2,7 @@ package com.jayud.oauth.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.model.po.SystemUserLoginLog;
+import com.jayud.oauth.model.po.SystemUserLoginLog;
 
 /**
  * <p>

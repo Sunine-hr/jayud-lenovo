@@ -3,7 +3,7 @@ package com.jayud.oms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.model.po.ProductBiz;
+import com.jayud.oms.model.po.ProductBiz;
 import com.jayud.oms.mapper.ProductBizMapper;
 import com.jayud.oms.service.IProductBizService;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,7 @@
 package com.jayud.oms.service;
 
-import com.jayud.model.bo.InputOrderForm;
-import com.jayud.model.po.OrderInfo;
+import com.jayud.oms.model.bo.InputOrderForm;
+import com.jayud.oms.model.po.OrderInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

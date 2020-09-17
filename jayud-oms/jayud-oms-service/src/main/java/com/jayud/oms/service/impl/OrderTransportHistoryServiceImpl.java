@@ -1,9 +1,9 @@
 package com.jayud.oms.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.model.po.OrderTransportHistory;
-import com.jayud.oms.mapper.OrderTransportHistoryMapper;
 import com.jayud.oms.service.IOrderTransportHistoryService;
+import com.jayud.oms.model.po.OrderTransportHistory;
+import com.jayud.oms.mapper.OrderTransportHistoryMapper;
 import org.springframework.stereotype.Service;
 
 /**

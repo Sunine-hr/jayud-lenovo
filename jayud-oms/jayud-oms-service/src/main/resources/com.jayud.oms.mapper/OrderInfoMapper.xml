@@ -3,7 +3,7 @@
 <mapper namespace="com.jayud.oms.mapper.OrderInfoMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.jayud.model.po.OrderInfo">
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.OrderInfo">
         <id column="id" property="id" />
         <result column="order_no" property="orderNo" />
         <result column="customer_code" property="customerCode" />

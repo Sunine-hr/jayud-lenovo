@@ -3,7 +3,7 @@
 <mapper namespace="com.jayud.oms.mapper.ContractInfoMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.jayud.model.po.ContractInfo">
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.ContractInfo">
         <id column="id" property="id" />
         <result column="name" property="name" />
         <result column="contract_no" property="contractNo" />
@@ -25,7 +25,7 @@
          created_time,updated_time
     </sql>
 
-    <select id="findContractInfoByPage" parameterType="com.jayud.model.bo.QueryContractInfoForm" resultType="com.jayud.model.vo.ContractInfoVO" >
+    <select id="findContractInfoByPage" parameterType="com.jayud.oms.model.bo.QueryContractInfoForm" resultType="com.jayud.oms.model.vo.ContractInfoVO" >
             SELECT
               ci.`id`,
               ci.`name`,
@@ -49,7 +49,7 @@
                 and ci.contract_no like concat('%',#{form.contractNo},'%')
             </if>
     </select>
-    <select id="getContractInfoById" resultType="com.jayud.model.vo.ContractInfoVO" >
+    <select id="getContractInfoById" resultType="com.jayud.oms.model.vo.ContractInfoVO" >
         SELECT
         ci.`id`,
         ci.`name`,

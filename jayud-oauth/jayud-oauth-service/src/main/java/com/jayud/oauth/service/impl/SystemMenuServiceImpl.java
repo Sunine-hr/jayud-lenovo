@@ -2,12 +2,12 @@ package com.jayud.oauth.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.model.po.SystemMenu;
-import com.jayud.model.vo.QueryMenuStructureVO;
-import com.jayud.model.vo.SystemMenuNode;
-import com.jayud.model.vo.SystemMenuVO;
+import com.jayud.oauth.model.vo.SystemMenuNode;
+import com.jayud.oauth.model.vo.SystemMenuVO;
 import com.jayud.oauth.mapper.SystemMenuMapper;
 import com.jayud.oauth.service.ISystemMenuService;
+import com.jayud.oauth.model.po.SystemMenu;
+import com.jayud.oauth.model.vo.QueryMenuStructureVO;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

@@ -1,8 +1,8 @@
 package com.jayud.oauth.config;
 
-import com.jayud.model.po.SystemRole;
-import com.jayud.model.po.SystemUser;
-import com.jayud.model.vo.UserLoginToken;
+import com.jayud.oauth.model.po.SystemRole;
+import com.jayud.oauth.model.po.SystemUser;
+import com.jayud.oauth.model.vo.UserLoginToken;
 import com.jayud.oauth.service.ISystemUserRoleRelationService;
 import com.jayud.oauth.service.ISystemUserService;
 import lombok.extern.slf4j.Slf4j;

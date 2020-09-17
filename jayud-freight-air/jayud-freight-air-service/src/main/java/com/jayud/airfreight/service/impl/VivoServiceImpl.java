@@ -5,20 +5,20 @@ import cn.hutool.http.Header;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.json.JSONUtil;
 import com.google.gson.Gson;
-import com.jayud.airfreight.model.bo.BookingSpaceForm;
-import com.jayud.airfreight.model.bo.ForwarderBookingConfirmedFeedbackForm;
-import com.jayud.airfreight.model.bo.ForwarderVehicleInfoForm;
-import com.jayud.airfreight.service.VivoService;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.RsaEncryptUtil;
+import com.jayud.airfreight.service.VivoService;
+import com.jayud.airfreight.model.bo.ForwarderBookingConfirmedFeedbackForm;
+import com.jayud.airfreight.model.bo.ForwarderLadingFileForm;
+import com.jayud.airfreight.model.bo.ForwarderLadingInfoForm;
+import com.jayud.airfreight.model.bo.ForwarderVehicleInfoForm;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
 
@@ -38,22 +38,27 @@ public class VivoServiceImpl implements VivoService {
     String defaultPassword;
     @Value("${vivo.default.scope}")
     String defaultScope;
+
     @Value("${vivo.urls.base}")
     String urlBase;
+
     @Value("${vivo.urls.token}")
     String urlToken;
     @Value("${vivo.urls.booking-confirm}")
     String urlBookingConfirm;
     @Value("${vivo.urls.vehicle-info}")
     String urlVehicleInfo;
+    @Value("${vivo.urls.lading-file}")
+    String urlLadingFile;
+    @Value("${vivo.urls.lading-info}")
+    String urlLadingInfo;
+
+
     @Value("${vivo.public-key}")
     String publicKey;
 
 
-    @Override
-    public void bookingSpace(BookingSpaceForm form) {
 
-    }
 
     /**
      * 向vivo发送确认订舱的数据
@@ -62,7 +67,7 @@ public class VivoServiceImpl implements VivoService {
      * @return
      */
     @Override
-    public String forwarderBookingConfirmedFeedback(ForwarderBookingConfirmedFeedbackForm form) {
+    public Boolean forwarderBookingConfirmedFeedback(ForwarderBookingConfirmedFeedbackForm form) {
         String url = urlBase + urlBookingConfirm;
         return doPost(form, url);
     }
@@ -74,8 +79,27 @@ public class VivoServiceImpl implements VivoService {
      * @return
      */
     @Override
-    public String forwarderVehicleInfo(ForwarderVehicleInfoForm form) {
+    public Boolean forwarderVehicleInfo(ForwarderVehicleInfoForm form) {
         String url = urlBase + urlVehicleInfo;
+        return doPost(form, url);
+    }
+
+    /**
+     * 提单文件信息
+     *
+     * @param form
+     * @param file
+     * @return
+     */
+    @Override
+    public Boolean forwarderLadingFile(ForwarderLadingFileForm form, MultipartFile file) {
+        String url = urlBase + urlLadingFile;
+        return doPostWithFile(form, file, url);
+    }
+
+    @Override
+    public boolean forwarderLadingInfo(ForwarderLadingInfoForm form) {
+        String url = urlBase + urlLadingInfo;
         return doPost(form, url);
     }
 
@@ -86,7 +110,7 @@ public class VivoServiceImpl implements VivoService {
      * @param url
      * @return
      */
-    private String doPost(Object form, String url) {
+    private Boolean doPost(Object form, String url) {
         Gson gson = new Gson();
         String feedback = HttpRequest.post(url)
                 .header("Authorization", String.format(getToken(null, null, null)))
@@ -94,15 +118,20 @@ public class VivoServiceImpl implements VivoService {
                 .form("transfer_data", gson.toJson(form))
                 .execute()
                 .body();
-        Map<String, Object> map = JSONUtil.toBean(feedback, Map.class);
 
-        Integer status = MapUtil.getInt(map, "status");
-        String message = MapUtil.getStr(map, "message");
+        return check4Success(feedback);
+    }
 
-        if (Objects.isNull(status) || Objects.isNull(message)) {
-            Asserts.fail(ResultEnum.PARAM_ERROR, "接口请求失败");
-        }
-        return feedback;
+    private Boolean doPostWithFile(Object form, MultipartFile file, String url) {
+        Gson gson = new Gson();
+        String feedback = HttpRequest.post(url)
+                .header("Authorization", String.format(getToken(null, null, null)))
+                .header(Header.CONTENT_TYPE.name(), "multipart/form-data")
+                .form("transfer_data", gson.toJson(form))
+                .form("MultipartFile", file)
+                .execute()
+                .body();
+        return check4Success(feedback);
     }
 
     /**
@@ -146,5 +175,20 @@ public class VivoServiceImpl implements VivoService {
             Asserts.fail(ResultEnum.UNAUTHORIZED, "vivo 授权失败");
         }
         return null;
+    }
+
+    private Boolean check4Success(String feedback) {
+        Map<String, Object> map = JSONUtil.toBean(feedback, Map.class);
+
+        Integer status = MapUtil.getInt(map, "status");
+        String message = MapUtil.getStr(map, "message");
+
+        if (Objects.isNull(status) || Objects.isNull(message)) {
+            Asserts.fail(ResultEnum.PARAM_ERROR, "接口请求失败");
+        }
+        if (status == 0) {
+            return false;
+        }
+        return true;
     }
 }

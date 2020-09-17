@@ -3,7 +3,7 @@
 <mapper namespace="com.jayud.oms.mapper.ProductClassifyMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.jayud.model.po.ProductClassify">
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.ProductClassify">
         <id column="id" property="id" />
         <result column="id_code" property="idCode" />
         <result column="name" property="name" />

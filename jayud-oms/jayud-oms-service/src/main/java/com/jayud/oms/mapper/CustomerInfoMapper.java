@@ -3,11 +3,11 @@ package com.jayud.oms.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.jayud.model.bo.QueryCusAccountForm;
-import com.jayud.model.bo.QueryCustomerInfoForm;
-import com.jayud.model.po.CustomerInfo;
-import com.jayud.model.vo.CustAccountVO;
-import com.jayud.model.vo.CustomerInfoVO;
+import com.jayud.oms.model.bo.QueryCustomerInfoForm;
+import com.jayud.oms.model.po.CustomerInfo;
+import com.jayud.oms.model.vo.CustomerInfoVO;
+import com.jayud.oms.model.bo.QueryCusAccountForm;
+import com.jayud.oms.model.vo.CustAccountVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

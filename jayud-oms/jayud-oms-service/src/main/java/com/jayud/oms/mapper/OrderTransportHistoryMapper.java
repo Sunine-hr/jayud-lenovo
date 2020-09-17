@@ -1,6 +1,6 @@
 package com.jayud.oms.mapper;
 
-import com.jayud.model.po.OrderTransportHistory;
+import com.jayud.oms.model.po.OrderTransportHistory;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 

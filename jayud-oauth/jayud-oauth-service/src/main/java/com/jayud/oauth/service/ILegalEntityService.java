@@ -3,9 +3,9 @@ package com.jayud.oauth.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.model.bo.QueryLegalEntityForm;
-import com.jayud.model.po.LegalEntity;
-import com.jayud.model.vo.LegalEntityVO;
+import com.jayud.oauth.model.bo.QueryLegalEntityForm;
+import com.jayud.oauth.model.po.LegalEntity;
+import com.jayud.oauth.model.vo.LegalEntityVO;
 
 import java.util.List;
 import java.util.Map;

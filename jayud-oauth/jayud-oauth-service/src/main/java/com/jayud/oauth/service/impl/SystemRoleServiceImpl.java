@@ -4,13 +4,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.model.bo.QueryRoleForm;
-import com.jayud.model.po.SystemRole;
-import com.jayud.model.vo.SystemRoleVO;
-import com.jayud.model.vo.SystemRoleView;
+import com.jayud.oauth.model.po.SystemRole;
+import com.jayud.oauth.model.vo.SystemRoleVO;
 import com.jayud.oauth.mapper.SystemRoleMapper;
 import com.jayud.oauth.service.ISystemMenuService;
 import com.jayud.oauth.service.ISystemRoleService;
+import com.jayud.oauth.model.bo.QueryRoleForm;
+import com.jayud.oauth.model.vo.SystemRoleView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

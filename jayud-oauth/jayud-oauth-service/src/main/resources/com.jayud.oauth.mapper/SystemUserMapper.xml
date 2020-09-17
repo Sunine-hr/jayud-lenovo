@@ -3,7 +3,7 @@
 <mapper namespace="com.jayud.oauth.mapper.SystemUserMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.jayud.model.po.SystemUser">
+    <resultMap id="BaseResultMap" type="com.jayud.oauth.model.po.SystemUser">
         <id column="id" property="id" />
         <result column="name" property="name" />
         <result column="password" property="password" />
@@ -43,7 +43,7 @@
         system_user.note
     </sql>
 
-    <select id="getPageList" parameterType="com.jayud.model.bo.QuerySystemUserForm" resultType="com.jayud.model.vo.QuerySystemUserVO" >
+    <select id="getPageList" parameterType="com.jayud.oauth.model.bo.QuerySystemUserForm" resultType="com.jayud.oauth.model.vo.QuerySystemUserVO" >
         SELECT
         su.id,
         su.name,
@@ -114,7 +114,7 @@
         </if>
     </select>
 
-    <select id="findOrgStructureCharge"  resultType="com.jayud.model.vo.DepartmentChargeVO" >
+    <select id="findOrgStructureCharge"  resultType="com.jayud.oauth.model.vo.DepartmentChargeVO" >
         SELECT
           su.id,
           su.user_name userName,
@@ -139,7 +139,7 @@
         WHERE su.`role_id` = #{roleId}
     </select>
 
-    <select id="getSystemUser"  resultType="com.jayud.model.vo.UpdateSystemUserVO" >
+    <select id="getSystemUser"  resultType="com.jayud.oauth.model.vo.UpdateSystemUserVO" >
         SELECT
           su.id,
           su.`name`,

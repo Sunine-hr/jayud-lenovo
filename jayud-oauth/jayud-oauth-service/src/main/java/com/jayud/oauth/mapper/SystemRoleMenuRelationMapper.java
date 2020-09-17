@@ -1,7 +1,7 @@
 package com.jayud.oauth.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.jayud.model.po.SystemRoleMenuRelation;
+import com.jayud.oauth.model.po.SystemRoleMenuRelation;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

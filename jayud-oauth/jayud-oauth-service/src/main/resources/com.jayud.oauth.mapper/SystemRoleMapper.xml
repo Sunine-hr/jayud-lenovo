@@ -3,7 +3,7 @@
 <mapper namespace="com.jayud.oauth.mapper.SystemRoleMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.jayud.model.po.SystemRole">
+    <resultMap id="BaseResultMap" type="com.jayud.oauth.model.po.SystemRole">
         <id column="id" property="id" />
         <result column="name" property="name" />
         <result column="description" property="description" />
@@ -25,7 +25,7 @@
         system_role.sort,
         system_role.web_flag
     </sql>
-    <select id="getRoleList" resultType="com.jayud.model.po.SystemRole">
+    <select id="getRoleList" resultType="com.jayud.oauth.model.po.SystemRole">
         select
             <include refid="Base_Column_List"/>
         from
@@ -35,7 +35,7 @@
             surr.user_id = #{userId}
     </select>
 
-    <insert id="saveRole" parameterType="com.jayud.model.po.SystemRole" useGeneratedKeys="true" keyProperty="id">
+    <insert id="saveRole" parameterType="com.jayud.oauth.model.po.SystemRole" useGeneratedKeys="true" keyProperty="id">
 	insert into system_role
 	   (name,description,admin_count,sort,web_flag)
 	values (
@@ -46,7 +46,7 @@
 		#{webFlag})
   </insert>
 
-    <select id="findRoleByPage" parameterType="com.jayud.model.bo.QueryRoleForm" resultType="com.jayud.model.vo.SystemRoleView" >
+    <select id="findRoleByPage" parameterType="com.jayud.oauth.model.bo.QueryRoleForm" resultType="com.jayud.oauth.model.vo.SystemRoleView" >
         SELECT
         sr.`id`,
         sr.`name`,
@@ -67,7 +67,7 @@
         sr.`description`
     </select>
 
-    <select id="getRoleByCondition" resultType="com.jayud.model.po.SystemRole"  parameterType="java.util.Map">
+    <select id="getRoleByCondition" resultType="com.jayud.oauth.model.po.SystemRole" parameterType="java.util.Map">
         select
         <include refid="Base_Column_List"/>
         from

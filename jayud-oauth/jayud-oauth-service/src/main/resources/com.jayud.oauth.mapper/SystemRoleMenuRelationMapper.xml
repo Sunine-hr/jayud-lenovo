@@ -3,7 +3,7 @@
 <mapper namespace="com.jayud.oauth.mapper.SystemRoleMenuRelationMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.jayud.model.po.SystemRoleMenuRelation">
+    <resultMap id="BaseResultMap" type="com.jayud.oauth.model.po.SystemRoleMenuRelation">
         <id column="id" property="id" />
         <result column="role_id" property="roleId" />
         <result column="menu_id" property="menuId" />

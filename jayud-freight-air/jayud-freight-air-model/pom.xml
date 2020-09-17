@@ -11,5 +11,11 @@
 
     <artifactId>jayud-freight-air-model</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>com.jayud</groupId>
+            <artifactId>jayud-common</artifactId>
+            <version>${jayud-common.version}</version>
+        </dependency>
+    </dependencies>
 </project>

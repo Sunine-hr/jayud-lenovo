@@ -3,7 +3,7 @@
 <mapper namespace="com.jayud.oauth.mapper.LegalEntityMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.jayud.model.po.LegalEntity">
+    <resultMap id="BaseResultMap" type="com.jayud.oauth.model.po.LegalEntity">
         <id column="id" property="id" />
         <result column="legal_name" property="legalName" />
         <result column="legal_code" property="legalCode" />
@@ -22,7 +22,7 @@
         id,legal_name,legal_code,rigis_address,sale_depart_id,audit_status
     </sql>
 
-    <select id="findLegalEntityByPage" parameterType="com.jayud.model.bo.QueryLegalEntityForm" resultType="com.jayud.model.vo.LegalEntityVO" >
+    <select id="findLegalEntityByPage" parameterType="com.jayud.oauth.model.bo.QueryLegalEntityForm" resultType="com.jayud.oauth.model.vo.LegalEntityVO" >
         SELECT
           le.`id`,
           le.`legal_code` legalCode,

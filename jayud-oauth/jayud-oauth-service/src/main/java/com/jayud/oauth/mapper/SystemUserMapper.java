@@ -3,11 +3,11 @@ package com.jayud.oauth.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.jayud.model.bo.QuerySystemUserForm;
-import com.jayud.model.po.SystemUser;
-import com.jayud.model.vo.DepartmentChargeVO;
-import com.jayud.model.vo.SystemUserVO;
-import com.jayud.model.vo.UpdateSystemUserVO;
+import com.jayud.oauth.model.bo.QuerySystemUserForm;
+import com.jayud.oauth.model.po.SystemUser;
+import com.jayud.oauth.model.vo.DepartmentChargeVO;
+import com.jayud.oauth.model.vo.SystemUserVO;
+import com.jayud.oauth.model.vo.UpdateSystemUserVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

@@ -8,9 +8,9 @@ import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.customs.model.bo.*;
+import com.jayud.customs.model.vo.*;
 import com.jayud.customs.service.ICustomsApiService;
-import com.jayud.model.bo.*;
-import com.jayud.model.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;
@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import javax.annotation.Resources;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -33,7 +35,7 @@ import java.util.Objects;
 @Slf4j
 public class ICustomsApiServiceImpl implements ICustomsApiService {
     @Autowired
-    RedisUtils redisUtils;
+    private RedisUtils redisUtils;
 
     @Value("${yunbaoguan.urls.login}")
     String loginUrl;

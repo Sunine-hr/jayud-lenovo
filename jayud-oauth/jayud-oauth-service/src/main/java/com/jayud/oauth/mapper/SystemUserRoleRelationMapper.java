@@ -1,8 +1,8 @@
 package com.jayud.oauth.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.jayud.model.po.SystemRole;
-import com.jayud.model.po.SystemUserRoleRelation;
+import com.jayud.oauth.model.po.SystemRole;
+import com.jayud.oauth.model.po.SystemUserRoleRelation;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

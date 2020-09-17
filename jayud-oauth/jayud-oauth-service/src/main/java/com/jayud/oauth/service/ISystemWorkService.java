@@ -2,8 +2,8 @@ package com.jayud.oauth.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.model.po.Work;
-import com.jayud.model.vo.WorkVO;
+import com.jayud.oauth.model.po.Work;
+import com.jayud.oauth.model.vo.WorkVO;
 
 import java.util.List;
 

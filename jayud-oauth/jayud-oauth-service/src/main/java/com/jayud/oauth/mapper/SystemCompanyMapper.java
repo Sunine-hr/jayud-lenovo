@@ -2,7 +2,7 @@ package com.jayud.oauth.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.jayud.model.po.Company;
+import com.jayud.oauth.model.po.Company;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

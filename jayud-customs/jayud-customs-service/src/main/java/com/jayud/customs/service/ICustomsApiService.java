@@ -1,7 +1,10 @@
 package com.jayud.customs.service;
 
-import com.jayud.model.bo.*;
-import com.jayud.model.vo.*;
+import com.jayud.customs.model.bo.FindOrderInfoWrapperForm;
+import com.jayud.customs.model.bo.LoginForm;
+import com.jayud.customs.model.bo.PushAppendixForm;
+import com.jayud.customs.model.bo.PushOrderForm;
+import com.jayud.customs.model.vo.*;
 
 /**
  * api接口服务

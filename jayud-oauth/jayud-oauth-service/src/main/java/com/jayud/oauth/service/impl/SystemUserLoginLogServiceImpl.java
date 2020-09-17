@@ -1,7 +1,7 @@
 package com.jayud.oauth.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.model.po.SystemUserLoginLog;
+import com.jayud.oauth.model.po.SystemUserLoginLog;
 import com.jayud.oauth.mapper.SystemUserLoginLogMapper;
 import com.jayud.oauth.service.ISystemUserLoginLogService;
 import org.springframework.stereotype.Service;

@@ -1,8 +1,8 @@
 package com.jayud.oauth.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.model.po.SystemRole;
-import com.jayud.model.po.SystemRoleMenuRelation;
+import com.jayud.oauth.model.po.SystemRole;
+import com.jayud.oauth.model.po.SystemRoleMenuRelation;
 
 import java.util.List;
 

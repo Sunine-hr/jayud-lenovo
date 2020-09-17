@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.jayud.mapper.OrderTransportMapper">
+<mapper namespace="com.jayud.tms.mapper.OrderTransportMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.jayud.model.po.OrderTransport">
+    <resultMap id="BaseResultMap" type="com.jayud.tms.model.po.OrderTransport">
         <id column="id" property="id" />
         <result column="main_order_no" property="mainOrderNo" />
         <result column="order_no" property="orderNo" />

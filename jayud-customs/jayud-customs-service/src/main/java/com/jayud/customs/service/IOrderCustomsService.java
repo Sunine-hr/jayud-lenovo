@@ -1,7 +1,7 @@
 package com.jayud.customs.service;
 
-import com.jayud.model.bo.InputOrderCustomsForm;
-import com.jayud.model.po.OrderCustoms;
+import com.jayud.customs.model.bo.InputOrderCustomsForm;
+import com.jayud.customs.model.po.OrderCustoms;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

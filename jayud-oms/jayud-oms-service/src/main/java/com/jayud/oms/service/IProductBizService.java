@@ -2,7 +2,7 @@ package com.jayud.oms.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.model.po.ProductBiz;
+import com.jayud.oms.model.po.ProductBiz;
 
 import java.util.List;
 

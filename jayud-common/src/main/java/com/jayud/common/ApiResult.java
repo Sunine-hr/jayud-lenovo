@@ -5,10 +5,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.httpclient.HttpStatus;
 
-import java.io.Serializable;
-
 @ApiModel("swagger返回的通用接口数据")
-public class ApiResult<T> implements Serializable {
+public class ApiResult<T> extends BaseApiResult{
     @ApiModelProperty(value = "返回码", dataType = "int")
     private int code;
     @ApiModelProperty(value = "错误信息", dataType = "String")

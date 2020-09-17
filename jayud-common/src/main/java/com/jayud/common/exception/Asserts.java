@@ -25,4 +25,7 @@ public class Asserts {
         throw new ApiException(code,message);
     }
 
+    public static void vivoFail(String message) {
+        throw new VivoApiException(message);
+    }
 }

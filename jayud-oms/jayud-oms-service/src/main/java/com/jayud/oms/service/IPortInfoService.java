@@ -1,7 +1,7 @@
 package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.model.po.PortInfo;
+import com.jayud.oms.model.po.PortInfo;
 
 import java.util.List;
 import java.util.Map;

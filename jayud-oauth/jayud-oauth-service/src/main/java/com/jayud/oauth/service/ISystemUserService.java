@@ -2,11 +2,11 @@ package com.jayud.oauth.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.model.bo.AuditSystemUserForm;
-import com.jayud.model.bo.OprSystemUserForm;
-import com.jayud.model.bo.QuerySystemUserForm;
-import com.jayud.model.po.SystemUser;
-import com.jayud.model.vo.*;
+import com.jayud.oauth.model.bo.AuditSystemUserForm;
+import com.jayud.oauth.model.bo.OprSystemUserForm;
+import com.jayud.oauth.model.bo.QuerySystemUserForm;
+import com.jayud.oauth.model.po.SystemUser;
+import com.jayud.oauth.model.vo.*;
 
 import java.util.List;
 import java.util.Map;

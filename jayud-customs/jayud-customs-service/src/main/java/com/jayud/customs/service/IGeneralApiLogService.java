@@ -1,6 +1,6 @@
 package com.jayud.customs.service;
 
-import com.jayud.model.po.GeneralApiLog;
+import com.jayud.customs.model.po.GeneralApiLog;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

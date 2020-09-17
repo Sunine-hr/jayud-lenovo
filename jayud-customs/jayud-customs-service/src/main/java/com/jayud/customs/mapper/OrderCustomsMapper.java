@@ -1,7 +1,8 @@
 package com.jayud.customs.mapper;
 
+
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.jayud.model.po.OrderCustoms;
+import com.jayud.customs.model.po.OrderCustoms;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

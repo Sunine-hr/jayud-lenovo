@@ -1,7 +1,7 @@
 package com.jayud.oms.controller;
 
 import com.jayud.common.ApiResult;
-import com.jayud.model.bo.InputOrderForm;
+import com.jayud.oms.model.bo.InputOrderForm;
 import com.jayud.oms.service.IOrderInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

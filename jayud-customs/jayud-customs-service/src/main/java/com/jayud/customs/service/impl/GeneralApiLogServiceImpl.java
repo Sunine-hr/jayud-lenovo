@@ -3,7 +3,7 @@ package com.jayud.customs.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.customs.mapper.GeneralApiLogMapper;
 import com.jayud.customs.service.IGeneralApiLogService;
-import com.jayud.model.po.GeneralApiLog;
+import com.jayud.customs.model.po.GeneralApiLog;
 import org.springframework.stereotype.Service;
 
 /**

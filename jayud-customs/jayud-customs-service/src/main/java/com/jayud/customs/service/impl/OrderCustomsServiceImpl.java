@@ -16,7 +16,6 @@ import com.jayud.model.bo.OprOrderLogForm;
 import com.jayud.model.po.OrderCustoms;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -51,7 +50,6 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
         return false;
     }
 
-    @Transactional
     @Override
     public boolean oprOrderCustoms(InputOrderCustomsForm form) {
         try {

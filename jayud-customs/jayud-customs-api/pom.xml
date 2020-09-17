@@ -12,10 +12,6 @@
     <artifactId>jayud-customs-api</artifactId>
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.jayud</groupId>
             <artifactId>jayud-customs-model</artifactId>
             <version>${customs.model.version}</version>
@@ -24,10 +20,6 @@
             <groupId>com.jayud</groupId>
             <artifactId>jayud-customs-service</artifactId>
             <version>${customs.service.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
 
     </dependencies>

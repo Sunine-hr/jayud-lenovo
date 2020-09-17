@@ -2,8 +2,8 @@ package com.jayud.customs.feign;
 
 
 import com.jayud.common.ApiResult;
-import com.jayud.model.bo.OprOrderLogForm;
 import com.jayud.model.bo.InputOrderForm;
+import com.jayud.model.bo.OprOrderLogForm;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * customs模块消费oms模块的接口
  */
-@FeignClient(value = "jayud-oms-web",path = "/")
+@FeignClient(value = "jayud-oms-web")
 public interface OmsClient {
 
 

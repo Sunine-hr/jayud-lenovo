@@ -1,7 +1,10 @@
 package com.jayud.oms.service;
 
-import com.jayud.oms.model.po.ProductClassify;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.oms.model.po.ProductClassify;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -13,4 +16,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IProductClassifyService extends IService<ProductClassify> {
 
+    List<ProductClassify> findProductClassify(Map<String,Object> param);
 }

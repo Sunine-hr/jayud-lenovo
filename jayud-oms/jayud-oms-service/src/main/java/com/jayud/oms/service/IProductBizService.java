@@ -13,6 +13,12 @@ public interface IProductBizService extends IService<ProductBiz> {
 
     List<ProductBiz> findProductBiz();
 
+    /**
+     * 获取作业类型
+     * @param idCode
+     * @return
+     */
+    ProductBiz getProductBizByCode(String idCode);
 
 
 }

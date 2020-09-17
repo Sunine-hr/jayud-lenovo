@@ -31,4 +31,61 @@
         id, order_no, customer_code, customer_name, biz_uid, biz_uname, unit_account, unit_code, contract_no, legal_code, legal_name, reference_no, cntr_no, biz_code, status, create_time, created_user, up_time, up_user
     </sql>
 
+    <select id="noSubmitOrderByPage" parameterType="com.jayud.oms.model.bo.QueryOrderInfoForm" resultType="com.jayud.oms.model.vo.NoSubmitOrderVO" >
+        select * from (
+        SELECT
+        oi.id,
+        oi.`order_no` orderNo,
+        (CASE oc.`goods_type` WHEN 1 THEN '进口'
+        WHEN 2 THEN '出口' END) goodsTypeDesc,
+        oc.`port_code` portCode,
+        oc.`port_name` portName,
+        oi.`status`,
+        (CASE oi.`status` WHEN 1 THEN '正常'
+        WHEN 2 THEN '草稿'
+        WHEN 3 THEN '关闭' END) statusDesc,
+        oi.`biz_code` bizCode,
+        (SELECT pc.name FROM product_classify pc WHERE pc.id_code = oi.`biz_code`) bizDesc,
+        oi.`customer_name` customerName,
+        '' goodsInfo,
+        '' takeAddress,
+        '' giveAddress,
+        oi.`created_user` createdUser,
+        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H %I %S') createdTimeStr
+        FROM
+        order_info oi LEFT JOIN order_customs oc ON oi.`order_no` = oc.`main_order_no`
+        UNION ALL
+        SELECT
+        oi.id,
+        oi.`order_no` orderNo,
+        (CASE ot.`goods_type` WHEN 1 THEN '进口'
+        WHEN 2 THEN '出口' END) goodsTypeDesc,
+        ot.`port_code` portCode,
+        ot.`port_name` portName,
+        oi.`status`,
+        (CASE oi.`status` WHEN 1 THEN '正常'
+        WHEN 2 THEN '草稿'
+        WHEN 3 THEN '关闭' END) statusDesc,
+        oi.`biz_code` bizCode,
+        (SELECT pc.name FROM product_classify pc WHERE pc.id_code = oi.`biz_code`) bizDesc,
+        oi.`customer_name` customerName,
+        (SELECT CONCAT(ota.`describe`,' ',ota.`amount`,(CASE ota.`unit` WHEN 1 THEN '件' WHEN 2 THEN '其他'
+        END),',','重量',ota.`weight`,'KG') FROM order_take_adr ota WHERE ota.`order_no` = ot.order_no AND ota.`types` = 1 ORDER BY ota.`id` LIMIT 1) goodsInfo,
+        (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`types` = 1 ORDER BY ota.`id` LIMIT 1) takeAddress,
+        (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`types` = 2 ORDER BY ota.`id` LIMIT 1) giveAddress,
+        oi.`created_user` createdUser,
+        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H %I %S') createdTimeStr
+        FROM
+        order_info oi LEFT JOIN order_transport ot ON oi.`order_no` = ot.`main_order_no` ) temp WHERE 1 = 1
+        <if test="form.orderNo != null and form.orderNo != ''">
+            and temp.orderNo = #{form.orderNo}
+        </if>
+        <if test="form.portCode != null and form.portCode != ''">
+            and temp.portCode = #{form.portCode}
+        </if>
+        <if test="form.bizCode != null and form.bizCode !=''">
+            and temp.bizCode = #{form.bizCode}
+        </if>
+    </select>
+
 </mapper>

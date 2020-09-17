@@ -58,6 +58,10 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
             //处理主订单
             //保存主订单数据,返回主订单号,暂存和提交
             ApiResult apiResult = omsClient.oprMainOrder(inputOrderForm);
+            //调用服务失败
+            if(apiResult.getCode() != 200 || apiResult.getData() == null){
+                return false;
+            }
 
             //暂存或提交只是主订单的状态不一样，具体更新还是保存还是根据主键区别
             OrderCustoms customs = ConvertUtil.convert(form, OrderCustoms.class);

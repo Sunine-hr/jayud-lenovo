@@ -21,4 +21,12 @@
         <module>jayud-oms-service</module>
     </modules>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.jayud</groupId>
+            <artifactId>jayud-common</artifactId>
+            <version>1.0</version>
+        </dependency>
+    </dependencies>
+
 </project>

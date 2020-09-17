@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mapper.LogisticsTrackMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.model.po.LogisticsTrack">
+        <id column="id" property="id" />
+        <result column="main_order_no" property="mainOrderNo" />
+        <result column="order_id" property="orderId" />
+        <result column="status" property="status" />
+        <result column="status_name" property="statusName" />
+        <result column="remarks" property="remarks" />
+        <result column="status_pic" property="statusPic" />
+        <result column="description" property="description" />
+        <result column="create_time" property="createTime" />
+        <result column="operator_id" property="operatorId" />
+        <result column="operator_name" property="operatorName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, main_order_no, order_id, status, status_name, remarks, status_pic, description, create_time, operator_id, operator_name
+    </sql>
+
+</mapper>

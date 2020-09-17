@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.customs.mapper.OrderCustomsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.model.po.OrderCustoms">
+        <id column="id" property="id" />
+        <result column="main_order_no" property="mainOrderNo" />
+        <result column="order_no" property="orderNo" />
+        <result column="port_code" property="portCode" />
+        <result column="port_name" property="portName" />
+        <result column="goods_type" property="goodsType" />
+        <result column="cntr_no" property="cntrNo" />
+        <result column="cntr_pic" property="cntrPic" />
+        <result column="encode" property="encode" />
+        <result column="title" property="title" />
+        <result column="unit_account" property="unitAccount" />
+        <result column="unit_code" property="unitCode" />
+        <result column="description" property="description" />
+        <result column="entrust_no" property="entrustNo" />
+        <result column="status" property="status" />
+        <result column="remarks" property="remarks" />
+        <result column="opt_name" property="optName" />
+        <result column="user_id" property="userId" />
+        <result column="user_name" property="userName" />
+        <result column="opt_time" property="optTime" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user" property="createUser" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, main_order_no, order_no, port_code, port_name, goods_type, cntr_no, cntr_pic, encode, title, unit_account, unit_code, description, entrust_no, status, remarks, opt_name, user_id, user_name, opt_time, create_time, create_user
+    </sql>
+
+</mapper>

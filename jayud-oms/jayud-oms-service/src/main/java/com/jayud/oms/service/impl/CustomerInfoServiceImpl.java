@@ -9,10 +9,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.model.bo.QueryCusAccountForm;
 import com.jayud.model.bo.QueryCustomerInfoForm;
 import com.jayud.model.po.CustomerInfo;
+import com.jayud.oms.service.ICustomerInfoService;
 import com.jayud.model.vo.CustAccountVO;
 import com.jayud.model.vo.CustomerInfoVO;
 import com.jayud.oms.mapper.CustomerInfoMapper;
-import com.jayud.oms.service.ICustomerInfoService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,7 +39,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
     }
 
     @Override
-    public List<CustomerInfo> findCustomerInfoByCondition(Map<String,String> param) {
+    public List<CustomerInfo> findCustomerInfoByCondition(Map<String,Object> param) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("status","1");
         for(String key : param.keySet()){

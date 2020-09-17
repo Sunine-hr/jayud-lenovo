@@ -9,15 +9,25 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
 
+/**
+ * <p>
+ * 产品服务对应业务类型
+ * </p>
+ *
+ * @author chuanmei
+ * @since 2020-09-15
+ */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="ProductBiz对象", description="业务类型表")
+@ApiModel(value="ProductBiz对象", description="产品服务对应业务类型")
 public class ProductBiz extends Model<ProductBiz> {
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty(value = "自增id")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
@@ -42,5 +52,10 @@ public class ProductBiz extends Model<ProductBiz> {
     @ApiModelProperty(value = "创建时间")
     private String createTime;
 
+
+    @Override
+    protected Serializable pkVal() {
+        return this.id;
+    }
 
 }

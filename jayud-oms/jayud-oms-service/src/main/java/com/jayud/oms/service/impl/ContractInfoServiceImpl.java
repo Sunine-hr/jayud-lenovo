@@ -1,6 +1,7 @@
 package com.jayud.oms.service.impl;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -11,6 +12,9 @@ import com.jayud.model.vo.ContractInfoVO;
 import com.jayud.oms.mapper.ContractInfoMapper;
 import com.jayud.oms.service.IContractInfoService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -30,6 +34,17 @@ public class ContractInfoServiceImpl extends ServiceImpl<ContractInfoMapper, Con
     @Override
     public ContractInfoVO getContractInfoById(Long id) {
         return  baseMapper.getContractInfoById(id);
+    }
+
+    @Override
+    public List<ContractInfo> findContractByCondition(Map<String, Object> param) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status","1");//有效的合同
+        for(String key : param.keySet()){
+            String value = String.valueOf(param.get(key));
+            queryWrapper.eq(key,value);
+        }
+        return baseMapper.selectList(queryWrapper);
     }
 
 

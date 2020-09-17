@@ -137,7 +137,7 @@ public class ContractInfoController {
     @ApiOperation(value = "合同管理-下拉框-客户名称")
     @PostMapping(value = "/initCustomer")
     public CommonResult<List<InitComboxVO>> initCustomer() {
-        Map<String,String> param = new HashMap<String,String>();
+        Map<String,Object> param = new HashMap<String,Object>();
         param.put("audit_status", CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());//有效的，审核通过的客户名称
         param.put("status", "1");
         List<CustomerInfo> customerInfos = customerInfoService.findCustomerInfoByCondition(param);

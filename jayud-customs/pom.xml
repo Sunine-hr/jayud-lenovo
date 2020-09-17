@@ -15,11 +15,15 @@
 
     <artifactId>jayud-customs</artifactId>
     <packaging>pom</packaging>
+    <version>1.0</version>
+    <name>jayud-customs</name>
+    <description>customs管理系统</description>
     <modules>
         <module>jayud-customs-api</module>
         <module>jayud-customs-model</module>
         <module>jayud-customs-service</module>
         <module>jayud-customs-client</module>
+        <module>jayud-customs-web</module>
     </modules>
 
     <dependencies>

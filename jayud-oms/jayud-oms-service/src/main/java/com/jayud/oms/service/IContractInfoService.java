@@ -7,6 +7,9 @@ import com.jayud.model.bo.QueryContractInfoForm;
 import com.jayud.model.po.ContractInfo;
 import com.jayud.model.vo.ContractInfoVO;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * 合同信息
  */
@@ -25,6 +28,13 @@ public interface IContractInfoService extends IService<ContractInfo> {
      * @return
      */
     ContractInfoVO getContractInfoById(Long id);
+
+    /**
+     * 根据条件查询合同信息
+     * @param param
+     * @return
+     */
+    List<ContractInfo> findContractByCondition(Map<String,Object> param);
 
 
 

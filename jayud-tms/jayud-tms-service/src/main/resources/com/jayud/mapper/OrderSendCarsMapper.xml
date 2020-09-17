@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mapper.OrderSendCarsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.model.po.OrderSendCars">
+        <id column="id" property="id" />
+        <result column="transport_no" property="transportNo" />
+        <result column="order_no" property="orderNo" />
+        <result column="encode" property="encode" />
+        <result column="encode_url" property="encodeUrl" />
+        <result column="vehicle_type" property="vehicleType" />
+        <result column="vehicle_size" property="vehicleSize" />
+        <result column="cntr_no" property="cntrNo" />
+        <result column="cntr_pic" property="cntrPic" />
+        <result column="supplier_code" property="supplierCode" />
+        <result column="supplier_name" property="supplierName" />
+        <result column="license_plate" property="licensePlate" />
+        <result column="driver_name" property="driverName" />
+        <result column="hk_license_plate" property="hkLicensePlate" />
+        <result column="hk_driver_name" property="hkDriverName" />
+        <result column="warehouse_code" property="warehouseCode" />
+        <result column="warehouse_name" property="warehouseName" />
+        <result column="remarks" property="remarks" />
+        <result column="describes" property="describes" />
+        <result column="status" property="status" />
+        <result column="opt_des" property="optDes" />
+        <result column="opt_uid" property="optUid" />
+        <result column="opt_uname" property="optUname" />
+        <result column="up_time" property="upTime" />
+        <result column="create_time" property="createTime" />
+        <result column="create_uid" property="createUid" />
+        <result column="create_uname" property="createUname" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, transport_no, order_no, encode, encode_url, vehicle_type, vehicle_size, cntr_no, cntr_pic, supplier_code, supplier_name, license_plate, driver_name, hk_license_plate, hk_driver_name, warehouse_code, warehouse_name, remarks, describes, status, opt_des, opt_uid, opt_uname, up_time, create_time, create_uid, create_uname
+    </sql>
+
+</mapper>

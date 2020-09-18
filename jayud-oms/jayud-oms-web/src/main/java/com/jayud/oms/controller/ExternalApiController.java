@@ -2,12 +2,14 @@ package com.jayud.oms.controller;
 
 import com.jayud.common.ApiResult;
 import com.jayud.oms.model.bo.InputOrderForm;
+import com.jayud.oms.model.vo.InputOrderVO;
 import com.jayud.oms.service.IOrderInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -27,6 +29,16 @@ public class ExternalApiController {
         }
         return ApiResult.error();
     }
+
+
+    @ApiOperation(value = "获取主订单信息")
+    @RequestMapping(value = "/api/getMainOrderById")
+    ApiResult getMainOrderById(@RequestParam(value = "idValue") Long idValue){
+        InputOrderVO inputOrderVO = orderInfoService.getMainOrderById(idValue);
+        return ApiResult.ok(inputOrderVO);
+    }
+
+
 
 }
 

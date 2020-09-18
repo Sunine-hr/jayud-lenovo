@@ -108,7 +108,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
 
     @Override
     public InputOrderCustomsVO editOrderCustomsView(Long id) {
-        String prePath = "";//TODO
+        String prePath = omsClient.getBaseUrl().getData().toString();
         //1.查询主订单信息
         InputOrderVO inputOrderVO = (InputOrderVO) omsClient.getMainOrderById(id).getData();
         InputOrderCustomsVO inputOrderCustomsVO = ConvertUtil.convert(inputOrderVO,InputOrderCustomsVO.class);

@@ -88,4 +88,21 @@
         </if>
     </select>
 
+    <select id="getMainOrderById" parameterType="java.lang.Long" resultType="com.jayud.oms.model.vo.InputOrderVO" >
+        SELECT
+            oi.`id` orderId,
+            oi.`order_no` orderNo,
+            oi.`customer_code` customerCode,
+            oi.`biz_code` bizUid,
+            oi.`contract_no` contractNo,
+            oi.`legal_code` legalCode,
+            oi.`biz_belong_depart` bizBelongDepart,
+            oi.`reference_no` referenceNo
+        FROM
+            order_info oi WHERE 1 > 2
+        <if test="idValue != null and idValue != ''">
+            and oi.`id` = #{idValue}
+        </if>
+    </select>
+
 </mapper>

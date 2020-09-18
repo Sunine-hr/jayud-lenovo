@@ -13,6 +13,7 @@ import com.jayud.oms.mapper.OrderInfoMapper;
 import com.jayud.oms.model.bo.InputOrderForm;
 import com.jayud.oms.model.bo.QueryOrderInfoForm;
 import com.jayud.oms.model.po.OrderInfo;
+import com.jayud.oms.model.vo.InputOrderVO;
 import com.jayud.oms.model.vo.NoSubmitOrderVO;
 import com.jayud.oms.service.IOrderInfoService;
 import com.jayud.oms.service.IProductBizService;
@@ -88,6 +89,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         page.addOrder(OrderItem.asc("oi.id"));
         IPage<NoSubmitOrderVO> pageInfo = baseMapper.noSubmitOrderByPage(page, form);
         return pageInfo;
+    }
+
+    @Override
+    public InputOrderVO getMainOrderById(Long idValue) {
+        return baseMapper.getMainOrderById(idValue);
     }
 
 

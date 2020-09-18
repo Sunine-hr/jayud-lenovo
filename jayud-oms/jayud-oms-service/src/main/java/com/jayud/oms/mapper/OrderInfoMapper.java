@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.oms.model.bo.QueryOrderInfoForm;
 import com.jayud.oms.model.po.OrderInfo;
+import com.jayud.oms.model.vo.InputOrderVO;
 import com.jayud.oms.model.vo.NoSubmitOrderVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -27,5 +28,12 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      * @return
      */
     IPage<NoSubmitOrderVO> noSubmitOrderByPage(Page page, @Param("form") QueryOrderInfoForm form);
+
+    /**
+     * 获取主订单信息
+     * @param idValue
+     * @return
+     */
+    InputOrderVO getMainOrderById(Long idValue);
 
 }

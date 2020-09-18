@@ -3,7 +3,7 @@
 <mapper namespace="com.jayud.tms.mapper.OrderReceivableCostMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.jayud.tms.model.po.OrderReceivableCost">
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.OrderReceivableCost">
         <id column="id" property="id" />
         <result column="main_order_no" property="mainOrderNo" />
         <result column="biz_order_no" property="bizOrderNo" />

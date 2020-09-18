@@ -10,10 +10,9 @@ import com.jayud.oms.model.po.ContractInfo;
 import com.jayud.oms.model.po.CustomerInfo;
 import com.jayud.oms.model.po.PortInfo;
 import com.jayud.oms.feign.OauthClient;
-import com.jayud.oms.service.IContractInfoService;
-import com.jayud.oms.service.IPortInfoService;
+import com.jayud.oms.model.po.ProductClassify;
+import com.jayud.oms.service.*;
 import com.jayud.oms.model.vo.InitComboxStrVO;
-import com.jayud.oms.service.ICustomerInfoService;
 import com.jayud.oms.model.vo.InitComboxVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -42,6 +41,8 @@ public class OrderComboxController {
     @Autowired
     IPortInfoService portInfoService;
 
+    @Autowired
+    IProductClassifyService productClassifyService;
 
     @ApiOperation(value = "纯报关-客户,业务员,合同,业务所属部门,通关口岸")
     @PostMapping(value = "/initCombox1")
@@ -120,6 +121,34 @@ public class OrderComboxController {
         }
         resultMap.put("units",comboxStrVOS);
         return CommonResult.success(resultMap);
+    }
+
+    @ApiOperation(value = "纯报关-通关口岸")
+    @PostMapping(value = "/initPort")
+    public CommonResult<List<InitComboxStrVO>> initPort() {
+        List<PortInfo> proInfos = portInfoService.findPortInfoByCondition(new HashMap<>());
+        List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
+        for (PortInfo portInfo : proInfos) {
+            InitComboxStrVO comboxStrVO = new InitComboxStrVO();
+            comboxStrVO.setCode(portInfo.getIdCode());
+            comboxStrVO.setName(portInfo.getName());
+            comboxStrVOS.add(comboxStrVO);
+        }
+        return CommonResult.success(comboxStrVOS);
+    }
+
+    @ApiOperation(value = "纯报关-作业类型")
+    @PostMapping(value = "/initBizType")
+    public CommonResult<List<InitComboxStrVO>> initBizType() {
+        List<ProductClassify> productClassifies = productClassifyService.findProductClassify(new HashMap<>());
+        List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
+        for (ProductClassify productClassify : productClassifies) {
+            InitComboxStrVO comboxStrVO = new InitComboxStrVO();
+            comboxStrVO.setCode(productClassify.getIdCode());
+            comboxStrVO.setName(productClassify.getName());
+            comboxStrVOS.add(comboxStrVO);
+        }
+        return CommonResult.success(comboxStrVOS);
     }
 
 

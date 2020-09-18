@@ -9,6 +9,9 @@ import javax.validation.constraints.NotEmpty;
 @Data
 public class InputSubOrderCustomsForm extends InputOrderForm{
 
+    @ApiModelProperty(value = "子订单ID,编辑时必传")
+    private Long subOrderId;
+
     @ApiModelProperty(value = "报关子订单",required = true)
     @NotEmpty(message = "orderNo is required")
     private String orderNo;

@@ -1,8 +1,11 @@
 package com.jayud.oms.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.oms.model.bo.InputOrderForm;
+import com.jayud.oms.model.bo.QueryOrderInfoForm;
 import com.jayud.oms.model.po.OrderInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.oms.model.vo.NoSubmitOrderVO;
 
 /**
  * <p>
@@ -27,6 +30,13 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     public boolean isExistOrder(String orderNo);
+
+    /**
+     * 分页查询未提交订单
+     * @param form
+     * @return
+     */
+    IPage<NoSubmitOrderVO> noSubmitOrderByPage(QueryOrderInfoForm form);
 
 
 }

@@ -7,6 +7,7 @@ import com.jayud.common.utils.StringUtils;
 import com.jayud.customs.feign.OmsClient;
 import com.jayud.customs.model.bo.InputOrderCustomsForm;
 import com.jayud.customs.model.bo.InputSubOrderCustomsForm;
+import com.jayud.customs.model.vo.InputOrderCustomsVO;
 import com.jayud.customs.service.IOrderCustomsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -96,6 +97,14 @@ public class OrderCustomsController {
             stringList.add(result);
         }
         return CommonResult.success(stringList);
+    }
+
+    @ApiOperation(value = "编辑回显,id=主订单ID")
+    @PostMapping(value = "/editOrderCustomsView")
+    public CommonResult<InputOrderCustomsVO> editOrderCustomsView(Map<String,Object> param) {
+        String id = MapUtil.getStr(param,"id");
+        InputOrderCustomsVO inputOrderCustomsVO = orderCustomsService.editOrderCustomsView(Long.parseLong(id));
+        return CommonResult.success(inputOrderCustomsVO);
     }
 
 

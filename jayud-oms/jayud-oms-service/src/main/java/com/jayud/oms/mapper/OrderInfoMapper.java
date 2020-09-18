@@ -1,8 +1,13 @@
 package com.jayud.oms.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.oms.model.bo.QueryOrderInfoForm;
 import com.jayud.oms.model.po.OrderInfo;
+import com.jayud.oms.model.vo.NoSubmitOrderVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -14,5 +19,13 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
+
+    /**
+     * 分页查询未提交订单
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<NoSubmitOrderVO> noSubmitOrderByPage(Page page, @Param("form") QueryOrderInfoForm form);
 
 }

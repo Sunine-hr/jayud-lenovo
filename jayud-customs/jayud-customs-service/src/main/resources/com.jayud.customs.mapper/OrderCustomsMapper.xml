@@ -33,4 +33,24 @@
         id, main_order_no, order_no, port_code, port_name, goods_type, cntr_no, cntr_pic, encode, title, unit_account, unit_code, description, entrust_no, status, remarks, opt_name, user_id, user_name, opt_time, create_time, create_user
     </sql>
 
+    <select id="findOrderCustomsByCondition" parameterType="java.util.Map" resultType="com.jayud.customs.model.vo.OrderCustomsVO" >
+        SELECT
+            oc.`id` subOrderId,
+            oc.`port_code` portCode,
+            oc.`goods_type` goodsType,
+            oc.`cntr_no` cntrNo,
+            oc.`cntr_pic` cntrPic,
+            oc.`encode`,
+            oc.`order_no` orderNo,
+            oc.`title`,
+            oc.`unit_code` unitCode,
+            oc.`description` fileStr
+        FROM
+            order_customs oc
+        WHERE 1 = 1
+        <if test="main_order_no != null and main_order_no != ''">
+            and oc.main_order_no = #{main_order_no}
+        </if>
+    </select>
+
 </mapper>

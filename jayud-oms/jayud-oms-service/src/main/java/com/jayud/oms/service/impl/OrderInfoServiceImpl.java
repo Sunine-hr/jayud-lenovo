@@ -1,15 +1,21 @@
 package com.jayud.oms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.RedisUtils;
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
-import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.oms.model.bo.InputOrderForm;
 import com.jayud.oms.mapper.OrderInfoMapper;
-import com.jayud.oms.service.IOrderInfoService;
+import com.jayud.oms.model.bo.InputOrderForm;
+import com.jayud.oms.model.bo.QueryOrderInfoForm;
 import com.jayud.oms.model.po.OrderInfo;
+import com.jayud.oms.model.vo.NoSubmitOrderVO;
+import com.jayud.oms.service.IOrderInfoService;
+import com.jayud.oms.service.IProductBizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +35,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Autowired
     RedisUtils redisUtils;
+
+    @Autowired
+    IProductBizService productBizService;
 
     @Override
     public String oprMainOrder(InputOrderForm form) {
@@ -69,6 +78,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             return true;
         }
         return false;
+    }
+
+    @Override
+    public IPage<NoSubmitOrderVO> noSubmitOrderByPage(QueryOrderInfoForm form) {
+        //定义分页参数
+        Page<NoSubmitOrderVO> page = new Page(form.getPageNum(),form.getPageSize());
+        //定义排序规则
+        page.addOrder(OrderItem.asc("oi.id"));
+        IPage<NoSubmitOrderVO> pageInfo = baseMapper.noSubmitOrderByPage(page, form);
+        return pageInfo;
     }
 
 

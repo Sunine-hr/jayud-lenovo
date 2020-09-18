@@ -4,22 +4,25 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
-import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.customs.feign.OmsClient;
 import com.jayud.customs.mapper.OrderCustomsMapper;
-import com.jayud.customs.service.IOrderCustomsService;
 import com.jayud.customs.model.bo.InputOrderCustomsForm;
 import com.jayud.customs.model.bo.InputOrderForm;
 import com.jayud.customs.model.bo.InputSubOrderCustomsForm;
 import com.jayud.customs.model.bo.OprOrderLogForm;
 import com.jayud.customs.model.po.OrderCustoms;
+import com.jayud.customs.model.vo.*;
+import com.jayud.customs.service.IOrderCustomsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -58,15 +61,13 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
             //处理主订单
             //保存主订单数据,返回主订单号,暂存和提交
             ApiResult apiResult = omsClient.oprMainOrder(inputOrderForm);
+            //调用服务失败
+            if(apiResult.getCode() != 200 || apiResult.getData() == null){
+                return false;
+            }
 
             //暂存或提交只是主订单的状态不一样，具体更新还是保存还是根据主键区别
             OrderCustoms customs = ConvertUtil.convert(form, OrderCustoms.class);
-            if (form.getSubOrderId() != null) {
-                customs.setUpdatedTime(LocalDateTime.now());
-                customs.setUpdatedUser(getLoginUser());
-            } else {
-                customs.setCreateUser(getLoginUser());
-            }
             //子订单数据初始化处理
             //设置子订单号/报关抬头/结算单位/附件
             List<OrderCustoms> orderCustomsList = new ArrayList<>();
@@ -79,6 +80,12 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 customs.setDescription(subOrder.getDescription());
                 customs.setMainOrderNo(String.valueOf(apiResult.getData()));
                 customs.setStatus(Integer.valueOf(OrderStatusEnum.CUSTOMS_0.getCode()));
+                if (subOrder .getSubOrderId() != null) {
+                    customs.setUpdatedTime(LocalDateTime.now());
+                    customs.setUpdatedUser(getLoginUser());
+                } else {
+                    customs.setCreateUser(getLoginUser());
+                }
                 orderCustomsList.add(customs);
 
                 //记录操作日志
@@ -98,6 +105,61 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
         }
         return true;
     }
+
+    @Override
+    public InputOrderCustomsVO editOrderCustomsView(Long id) {
+        String prePath = "";//TODO
+        //1.查询主订单信息
+        InputOrderVO inputOrderVO = (InputOrderVO) omsClient.getMainOrderById(id).getData();
+        InputOrderCustomsVO inputOrderCustomsVO = ConvertUtil.convert(inputOrderVO,InputOrderCustomsVO.class);
+        //2.查询子订单信息,根据主订单
+        if(inputOrderCustomsVO != null && inputOrderCustomsVO.getOrderNo() != null){
+            Map<String, Object> param = new HashMap<>();
+            param.put("main_order_no",inputOrderCustomsVO.getOrderNo());
+            List<OrderCustomsVO> orderCustomsVOS = findOrderCustomsByCondition(param);
+            if(orderCustomsVOS != null && orderCustomsVOS.size() > 0){
+                OrderCustomsVO orderCustomsVO = orderCustomsVOS.get(0);
+                //设置纯报关头部分
+                inputOrderCustomsVO.setPortCode(orderCustomsVO.getPortCode());
+                inputOrderCustomsVO.setGoodsType(orderCustomsVO.getGoodsType());
+                inputOrderCustomsVO.setCntrNo(orderCustomsVO.getCntrNo());
+                inputOrderCustomsVO.setCntrPic(""+orderCustomsVO.getCntrPic());
+                inputOrderCustomsVO.setEncode(orderCustomsVO.getEncode());
+                //处理子订单部分
+                List<InputSubOrderCustomsVO> subOrderCustomsVOS = new ArrayList<>();
+                for (OrderCustomsVO orderCustoms : orderCustomsVOS) {
+                    InputSubOrderCustomsVO subOrderCustomsVO = new InputSubOrderCustomsVO();
+                    subOrderCustomsVO.setSubOrderId(orderCustoms.getSubOrderId());
+                    subOrderCustomsVO.setOrderNo(orderCustoms.getOrderNo());
+                    subOrderCustomsVO.setTitle(orderCustoms.getTitle());
+                    subOrderCustomsVO.setUnitCode(orderCustoms.getUnitCode());
+                    //处理子订单附件信息
+                    String fileStr = orderCustoms.getFileStr();
+                    List<FileView> fileViews = new ArrayList<>();
+                    if(fileStr != null && !"".equals(fileStr)){
+                        String[] fileList = fileStr.split(",");
+                        for(String str : fileList){
+                            int index = str.lastIndexOf("/");
+                            FileView fileView = new FileView();
+                            fileView.setRelativePath(str);
+                            fileView.setFileName(str.substring(index + 1, str.length()));
+                            fileView.setAbsolutePath(prePath + str);
+                            fileViews.add(fileView);
+                        }
+                    }
+                    subOrderCustomsVO.setFileViews(fileViews);
+                }
+                inputOrderCustomsVO.setSubOrders(subOrderCustomsVOS);
+            }
+        }
+        return inputOrderCustomsVO;
+    }
+
+    @Override
+    public List<OrderCustomsVO> findOrderCustomsByCondition(Map<String, Object> param) {
+        return baseMapper.findOrderCustomsByCondition(param);
+    }
+
 
     /**
      * 获取当前登录用户

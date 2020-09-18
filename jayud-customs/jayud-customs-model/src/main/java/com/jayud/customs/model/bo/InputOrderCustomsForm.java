@@ -10,9 +10,6 @@ import java.util.List;
 @Data
 public class InputOrderCustomsForm extends InputOrderForm{
 
-    @ApiModelProperty(value = "子订单ID,编辑时必传")
-    private Long subOrderId;
-
     @ApiModelProperty(value = "通关口岸code",required = true)
     @NotEmpty(message = "portCode is required")
     private String portCode;

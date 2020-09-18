@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.oms.model.bo.QueryOrderInfoForm;
-import com.jayud.oms.model.vo.NoSubmitOrderVO;
+import com.jayud.oms.model.vo.OrderInfoVO;
 import com.jayud.oms.service.IOrderInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,11 +24,11 @@ public class OrderInfoController {
     @Autowired
     IOrderInfoService orderInfoService;
 
-    @ApiOperation(value = "未提交订单")
-    @PostMapping("/noSubmitOrderByPage")
-    public CommonResult<CommonPageResult<NoSubmitOrderVO>> noSubmitOrderByPage(@RequestBody QueryOrderInfoForm form) {
-        IPage<NoSubmitOrderVO> pageList = orderInfoService.noSubmitOrderByPage(form);
-        CommonPageResult<NoSubmitOrderVO> pageVO = new CommonPageResult(pageList);
+    @ApiOperation(value = "未提交/提交订单列表")
+    @PostMapping("/findOrderInfoByPage")
+    public CommonResult<CommonPageResult<OrderInfoVO>> findOrderInfoByPage(@RequestBody QueryOrderInfoForm form) {
+        IPage<OrderInfoVO> pageList = orderInfoService.findOrderInfoByPage(form);
+        CommonPageResult<OrderInfoVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
     }
 

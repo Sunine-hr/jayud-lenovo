@@ -14,7 +14,7 @@ import com.jayud.oms.model.bo.InputOrderForm;
 import com.jayud.oms.model.bo.QueryOrderInfoForm;
 import com.jayud.oms.model.po.OrderInfo;
 import com.jayud.oms.model.vo.InputOrderVO;
-import com.jayud.oms.model.vo.NoSubmitOrderVO;
+import com.jayud.oms.model.vo.OrderInfoVO;
 import com.jayud.oms.service.IOrderInfoService;
 import com.jayud.oms.service.IProductBizService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,12 +82,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     @Override
-    public IPage<NoSubmitOrderVO> noSubmitOrderByPage(QueryOrderInfoForm form) {
+    public IPage<OrderInfoVO> findOrderInfoByPage(QueryOrderInfoForm form) {
         //定义分页参数
-        Page<NoSubmitOrderVO> page = new Page(form.getPageNum(),form.getPageSize());
+        Page<OrderInfoVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.asc("oi.id"));
-        IPage<NoSubmitOrderVO> pageInfo = baseMapper.noSubmitOrderByPage(page, form);
+        IPage<OrderInfoVO> pageInfo = baseMapper.findOrderInfoByPage(page, form);
         return pageInfo;
     }
 

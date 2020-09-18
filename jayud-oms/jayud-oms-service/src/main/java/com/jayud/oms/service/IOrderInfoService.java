@@ -6,7 +6,7 @@ import com.jayud.oms.model.bo.QueryOrderInfoForm;
 import com.jayud.oms.model.po.OrderInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.vo.InputOrderVO;
-import com.jayud.oms.model.vo.NoSubmitOrderVO;
+import com.jayud.oms.model.vo.OrderInfoVO;
 
 /**
  * <p>
@@ -37,7 +37,7 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @param form
      * @return
      */
-    IPage<NoSubmitOrderVO> noSubmitOrderByPage(QueryOrderInfoForm form);
+    IPage<OrderInfoVO> findOrderInfoByPage(QueryOrderInfoForm form);
 
 
     /**

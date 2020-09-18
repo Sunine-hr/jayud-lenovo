@@ -13,7 +13,7 @@ import org.springframework.context.annotation.ComponentScan;
  */
 
 @SpringBootApplication()
-@ComponentScan(basePackages = {"com.jayud.common"})
+@ComponentScan(basePackages = "com.jayud")
 @EnableFeignClients()
 public class JayudCustomsApiApplication {
     public static void main(String[] args) {

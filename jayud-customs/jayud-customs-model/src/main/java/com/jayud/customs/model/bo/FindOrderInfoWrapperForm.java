@@ -11,6 +11,6 @@ import lombok.Data;
  */
 @Data
 public class FindOrderInfoWrapperForm extends FindOrderInfoForm {
-    private Integer page;
-    private Integer rows;
+    private Integer page =1;
+    private Integer rows =10;
 }

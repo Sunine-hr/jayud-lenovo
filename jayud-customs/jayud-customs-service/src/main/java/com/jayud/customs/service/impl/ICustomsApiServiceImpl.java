@@ -2,12 +2,17 @@ package com.jayud.customs.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.http.Header;
 import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
+import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.HttpRequester;
 import com.jayud.customs.model.bo.*;
 import com.jayud.customs.model.vo.*;
 import com.jayud.customs.service.ICustomsApiService;
@@ -20,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.annotation.Resources;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -61,7 +67,7 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
     @Override
     public String checkoutUserToken(LoginForm form) {
         String token = redisUtils.get(getRedisKey(form));
-        if (StringUtils.isBlank(token)) {
+        if (StringUtils.isEmpty(token)) {
             token = doLogin(form);
         }
         return token;
@@ -96,9 +102,10 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
         requestParam.put("fname", form.getFname());
         requestParam.put("ftype", form.getFtype());
 
-        String feedback = doComplexPost(trustsUrl, requestParam, String.format("{\"data\": \"%s\"}", form.getData()));
+        JSONObject feedback = doComplexPost(trustsUrl, requestParam, String.format("{\"data\": \"%s\"}", form.getData()));
 
-        if (!StringUtils.isBlank(feedback) && !feedback.contains("上传成功")) {
+        String jsonStr = JSONUtil.toJsonStr(feedback);
+        if (!StringUtils.isEmpty(jsonStr) && !jsonStr.contains("上传成功")) {
             Asserts.fail(ResultEnum.PARAM_ERROR, "上传失败");
         }
     }
@@ -110,7 +117,7 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
         param.put("rows", form.getRows());
 
         FindOrderInfoForm body = ConvertUtil.convert(form, FindOrderInfoForm.class);
-        String feedback = doComplexPost(trustsUrl, param, JSONUtil.toJsonStr(body));
+        JSONObject feedback = doComplexPost(trustsUrl, param, JSONUtil.toJsonStr(body));
 
         try {
             return JSONUtil.toBean(feedback, FindOrderInfoVO.class);
@@ -211,7 +218,7 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
         //获取token
         Map map = JSONUtil.toBean(feedback, Map.class);
         String ticket = MapUtil.getStr(map, "ticket");
-        if (StringUtils.isBlank(ticket)) {
+        if (StringUtils.isEmpty(ticket)) {
             Asserts.fail(ResultEnum.PARAM_ERROR, "登录失败，用户名或密码错误");
         }
         //token不为空，放入redis，过期时间12小时
@@ -228,21 +235,30 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
                 .execute().body();
     }
 
-    private String doComplexPost(String url, Map<String, Object> requestParams, String body) {
+    private JSONObject doComplexPost(String url, Map<String, Object> requestParams, String body) {
         //拼接路径参数
         StringBuffer urlBase = new StringBuffer().append(String.format("%s?", url));
         for (Map.Entry<String, Object> entry : requestParams.entrySet()) {
-            urlBase.append(String.format("%s=%s&", entry.getKey(), entry.getValue().toString()));
+            urlBase.append(String.format("%s=%s&", entry.getKey() == null ? "" : entry.getKey(),
+                    entry.getValue().toString() == null ? "" : entry.getValue()));
         }
-        String paramedUrl = urlBase.toString();
+        String paramedUrl = urlBase.toString().substring(0, urlBase.toString().length() - 1);
 
-        return
-                HttpRequest
-                        .post(paramedUrl.substring(0, paramedUrl.length() - 1))
-                        .header("X-Ticket", checkoutUserToken(new LoginForm(defaultUserName, defaultPassword, null)))
-                        .body(body)
-                        .execute()
-                        .body();
+
+        HttpRequester httpRequester = new HttpRequester();
+        HashMap<String, String> headerMap = new HashMap<>();
+        headerMap.put(Header.CONTENT_TYPE.name(), "application/json");
+        headerMap.put("X-Ticket", checkoutUserToken(new LoginForm(defaultUserName, defaultPassword, null)));
+
+
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = httpRequester.sendPost(paramedUrl, null, headerMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+
     }
 
     private String getRedisKey(LoginForm form) {

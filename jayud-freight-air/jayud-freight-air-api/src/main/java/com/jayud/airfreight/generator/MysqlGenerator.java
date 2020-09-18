@@ -1,4 +1,4 @@
-package com.jayud.customs.generator;
+package com.jayud.airfreight.generator;
 
 
 import com.baomidou.mybatisplus.annotation.DbType;
@@ -26,11 +26,11 @@ import java.util.Map;
 public class MysqlGenerator {
 
     public static void main(String[] args) {
-        String[] models = {"jayud-customs\\jayud-customs-model",
-                "jayud-customs\\jayud-customs-service",
-                "jayud-customs\\jayud-customs-api"};
+        String[] models = {"jayud-freight-air\\jayud-freight-air-model",
+                "jayud-freight-air\\jayud-freight-air-service",
+                "jayud-freight-air\\jayud-freight-air-api"};
         for (String model : models) {
-            shell(model,"customs_api_log");
+            shell(model,"general_api_log");
 
 
         }
@@ -79,7 +79,7 @@ public class MysqlGenerator {
         String pack = "";
         // 包配置
         PackageConfig pc = new PackageConfig();
-        pc.setParent("com.jayud.customs");
+        pc.setParent("com.jayud.airfreight");
         pc.setEntity("model.po");
         pc.setController("controller");
         pc.setMapper("mapper");
@@ -102,7 +102,7 @@ public class MysqlGenerator {
             focList.add(new FileOutConfig("/templates/mapper.xml.vm") {
                 @Override
                 public String outputFile(TableInfo tableInfo) {
-                    return path + "/src/main/resources/com/jayud/customs/mapper"
+                    return path + "/src/main/resources/com/jayud/airfreight/mapper"
                             + "/" + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
                 }
             });

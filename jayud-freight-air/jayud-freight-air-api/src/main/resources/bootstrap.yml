@@ -1,6 +1,6 @@
 spring:
   application:
-    name: freight-air-api
+    name: jayud-freight-air-api
   profiles:
     active: dev
   cloud:

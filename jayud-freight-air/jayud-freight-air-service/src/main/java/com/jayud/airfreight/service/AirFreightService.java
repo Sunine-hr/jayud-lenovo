@@ -14,5 +14,5 @@ public interface AirFreightService {
      *
      * @param form
      */
-    void bookingSpace(BookingSpaceForm form);
+    Boolean bookingSpace(BookingSpaceForm form);
 }

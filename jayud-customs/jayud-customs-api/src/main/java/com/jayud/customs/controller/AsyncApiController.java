@@ -32,7 +32,7 @@ public class AsyncApiController {
     @Autowired
     IGeneralApiLogService logService;
 
-        @PostMapping("/generalLog/save")
+    @PostMapping("/generalLog/save")
     @ApiOperation(value = "保存接口调用日志")
     public void saveLog(@RequestBody Map<String, String> param) {
         if (CollectionUtil.isEmpty(param)) {

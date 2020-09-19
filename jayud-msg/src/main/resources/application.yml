@@ -1,0 +1,5 @@
+server:
+  port: 8001 #端口
+spring:
+  kafka:     # 指定kafka 代理地址，可以多个
+    bootstrap-servers: 113.100.140.250:8046

@@ -8,10 +8,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.customs.annotations.APILog;
-import com.jayud.customs.model.bo.FindOrderInfoWrapperForm;
-import com.jayud.customs.model.bo.LoginForm;
-import com.jayud.customs.model.bo.PushAppendixForm;
-import com.jayud.customs.model.bo.PushOrderForm;
+import com.jayud.customs.model.bo.*;
 import com.jayud.customs.model.po.CustomsReceivable;
 import com.jayud.customs.model.vo.*;
 import com.jayud.customs.service.ICustomsApiService;
@@ -28,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author william
@@ -131,19 +129,19 @@ public class ApiController {
     }
 
     @ApiOperation(value = "查询应收单并推到金蝶")
-    @PostMapping("/order/receivable")
+    @PostMapping("/order/finance")
     @APILog
-    public CommonResult getReceivableAndPush2Kingdee(@RequestBody Map<String, String> param) {
-        System.out.println(JSONUtil.toJsonStr(param));
+    public CommonResult getFinanceInfoAndPush2Kingdee(@RequestBody GetFinanceInfoForm form) {
+        if (StringUtils.isEmpty(form.getApplyNo()) &&
+                StringUtils.isEmpty(form.getTrustId()) &&
+                StringUtils.isEmpty(form.getUnifyNo()) &&
+                StringUtils.isEmpty(form.getId())
+        ) {
+            Asserts.fail(ResultEnum.PARAM_ERROR, "至少填写一个单号");
+        }
+        service.getFinanceInfoAndPush2Kingdee(form);
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "查询应付单并推到金蝶")
-    @PostMapping("/order/payable")
-    @APILog
-    public CommonResult getPayableAndPush2Kingdee(@RequestBody Map<String, String> param) {
-        System.out.println(JSONUtil.toJsonStr(param));
-        return CommonResult.success();
-    }
 
 }

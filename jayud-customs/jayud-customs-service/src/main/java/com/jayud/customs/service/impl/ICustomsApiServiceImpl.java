@@ -14,12 +14,14 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.HttpRequester;
+import com.jayud.customs.feign.MsgClient;
 import com.jayud.customs.model.bo.*;
 import com.jayud.customs.model.vo.*;
 import com.jayud.customs.service.ICustomsApiService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;
+import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -55,10 +57,16 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
     String trustTraceUrl;
     @Value("${yunbaoguan.urls.declaration}")
     String declarationUrl;
+    @Value("${yunbaoguan.urls.finance}")
+    String financeUrl;
     @Value("${yunbaoguan.username}")
     String defaultUserName;
     @Value("${yunbaoguan.password}")
     String defaultPassword;
+
+    @Autowired
+    MsgClient msgClient;
+
 
     @Override
     public void login(LoginForm form) {
@@ -189,6 +197,51 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @Override
+    public void getFinanceInfoAndPush2Kingdee(GetFinanceInfoForm form) {
+        Map<String, String> recParam = new HashMap<>();
+        Map<String, String> payParam = new HashMap<>();
+
+        if (StringUtils.isNotBlank(form.getApplyNo())) {
+            recParam.put("apply_no", form.getApplyNo());
+            payParam.put("apply_no", form.getApplyNo());
+        }
+        if (StringUtils.isNotBlank(form.getUnifyNo())) {
+            recParam.put("unify_no", form.getUnifyNo());
+            payParam.put("unify_no", form.getUnifyNo());
+        }
+        if (StringUtils.isNotBlank(form.getTrustId())) {
+            recParam.put("trust_id", form.getTrustId());
+            payParam.put("trust_id", form.getTrustId());
+        }
+        if (StringUtils.isNotBlank(form.getId())) {
+            recParam.put("id", form.getId());
+            payParam.put("id", form.getId());
+        }
+        recParam.put("costtype", "1");
+        payParam.put("costtype", "2");
+
+        JSONObject receivable = doPost(JSONUtil.toJsonStr(recParam), financeUrl);
+        JSONObject payable = doPost(JSONUtil.toJsonStr(payParam), financeUrl);
+
+
+        try {
+            generateKafkaMsg("finance", "customs-receivable", receivable);
+            generateKafkaMsg("finance", "customs-receivable", payable);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Asserts.fail(ResultEnum.PARAM_ERROR, "发送金蝶失败");
+        }
+    }
+
+    private void generateKafkaMsg(String topic, String key, JSONObject msg) {
+        Map<String, String> msgMap = new HashMap<>();
+        msgMap.put("topic", topic);
+        msgMap.put("key", key);
+        msgMap.put("msg", JSONUtil.toJsonStr(msg));
+        msgClient.sendMessage(msgMap);
     }
 
     private JSONObject doGet(String url, Map<String, Object> params) {

@@ -1,6 +1,6 @@
 spring:
   application:
-    name: customs-api
+    name: jayud-msg-config
   profiles:
     active: dev
   cloud:
@@ -13,18 +13,3 @@ spring:
       discovery:
         server-addr: ${jayud.nacos.server-addr}
         namespace: ${jayud.nacos.config.namespace}
-yunbaoguan:
-  username: szjyd002
-  password: 8520
-  urls:
-    #云报关登录路径
-    login: http://api.yunbaoguan.cn/users
-    #云报关委托单操作路径
-    trusts: http://api.yunbaoguan.cn/trusts
-    #云报关报关进程查询路径
-    bg-trace: http://api.yunbaoguan.cn/bgtrace
-    #云报关委托进程查询路径
-    trust-trace: http://api.yunbaoguan.cn/trusttrace
-    #报关单下载
-    declaration: http://api.yunbaoguan.cn/bg
-

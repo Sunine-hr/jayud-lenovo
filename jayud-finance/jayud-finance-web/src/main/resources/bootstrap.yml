@@ -26,7 +26,7 @@ kingdeeback:
 
 spring:
   application:
-    name: finance-web
+    name: jayud-finance-web
   profiles:
     active: dev
   cloud:

@@ -2,18 +2,16 @@ package com.jayud.oms.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.enums.CustomerInfoStatusEnum;
 import com.jayud.oms.model.enums.RoleKeyEnum;
-import com.jayud.oms.model.po.ContractInfo;
-import com.jayud.oms.model.po.CustomerInfo;
-import com.jayud.oms.model.po.PortInfo;
-import com.jayud.oms.feign.OauthClient;
-import com.jayud.oms.model.po.ProductClassify;
-import com.jayud.oms.service.*;
+import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.InitComboxStrVO;
 import com.jayud.oms.model.vo.InitComboxVO;
+import com.jayud.oms.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +41,12 @@ public class OrderComboxController {
 
     @Autowired
     IProductClassifyService productClassifyService;
+
+    @Autowired
+    ICostInfoService costInfoService;
+
+    @Autowired
+    ICurrencyInfoService currencyInfoService;
 
     @ApiOperation(value = "纯报关-客户,业务员,合同,业务所属部门,通关口岸")
     @PostMapping(value = "/initCombox1")
@@ -149,6 +153,41 @@ public class OrderComboxController {
             comboxStrVOS.add(comboxStrVO);
         }
         return CommonResult.success(comboxStrVOS);
+    }
+
+    @ApiOperation(value = "录入费用:应收/付项目/币种 ")
+    @PostMapping(value = "/initCost")
+    public CommonResult initCost() {
+        Map<String,Object> param = new HashMap<>();
+        List<CostInfo> costInfos = costInfoService.findCostInfo();//费用类型
+        List<InitComboxStrVO> paymentCombox = new ArrayList<>();
+        List<InitComboxStrVO> receivableCombox = new ArrayList<>();
+        for (CostInfo costInfo : costInfos) {
+            InitComboxStrVO comboxStrVO = new InitComboxStrVO();
+            comboxStrVO.setCode(costInfo.getIdCode());
+            comboxStrVO.setName(costInfo.getName());
+            if(costInfo.getTypes() == 1){
+                receivableCombox.add(comboxStrVO);
+            }else if(costInfo.getTypes() == 2){
+                paymentCombox.add(comboxStrVO);
+            }
+        }
+        param.put("paymentCost",paymentCombox);
+        param.put("receivableCost",receivableCombox);
+
+        //币种
+        List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status",1);
+        List<CurrencyInfo> currencyInfos = currencyInfoService.list(queryWrapper);
+        for (CurrencyInfo currencyInfo : currencyInfos) {
+            InitComboxStrVO comboxStrVO = new InitComboxStrVO();
+            comboxStrVO.setCode(currencyInfo.getCountryCode());
+            comboxStrVO.setName(currencyInfo.getCurrencyName());
+            initComboxStrVOS.add(comboxStrVO);
+        }
+        param.put("currency",receivableCombox);
+        return CommonResult.success(param);
     }
 
 

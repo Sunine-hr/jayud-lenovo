@@ -1,7 +1,10 @@
 package com.jayud.oms.service;
 
-import com.jayud.oms.model.po.CurrencyInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.oms.model.po.CurrencyInfo;
+import com.jayud.oms.model.vo.CurrencyInfoVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ICurrencyInfoService extends IService<CurrencyInfo> {
 
+    /**
+     * 获取币种信息
+     * @return
+     */
+    List<CurrencyInfoVO> findCurrencyInfo();
 }

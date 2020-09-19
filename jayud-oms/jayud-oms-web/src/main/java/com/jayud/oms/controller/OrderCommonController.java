@@ -3,6 +3,7 @@ package com.jayud.oms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
+import com.jayud.oms.model.bo.AuditCostForm;
 import com.jayud.oms.model.bo.InputCostForm;
 import com.jayud.oms.model.vo.InputCostVO;
 import com.jayud.oms.service.IOrderInfoService;
@@ -48,6 +49,16 @@ public class OrderCommonController {
     }
 
 
+
+    @ApiOperation(value = "费用审核")
+    @PostMapping(value = "/auditCost")
+    public CommonResult auditCost(@RequestBody AuditCostForm form) {
+        boolean result = orderInfoService.auditCost(form);
+        if(!result){
+            return CommonResult.error(400,"调用失败");
+        }
+        return CommonResult.success();
+    }
 
 
 

@@ -164,6 +164,44 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return inputCostVO;
     }
 
+    @Override
+    public boolean auditCost(AuditCostForm form) {
+        try {
+           List<Long> paymentIds = form.getPaymentIds();
+           List<Long> receivableIds = form.getReceivableIds();
+           List<OrderPaymentCost> orderPaymentCosts = new ArrayList<>();
+           List<OrderReceivableCost> orderReceivableCosts = new ArrayList<>();
+           for(Long id : paymentIds){
+               OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
+               //参数校验
+               if(id == null || "".equals(id) || (!form.getStatus().equals(1) && !form.getStatus().equals(2))){
+                   return false;
+               }
+               orderPaymentCost.setId(id);
+               orderPaymentCost.setStatus(Integer.valueOf(form.getStatus()));
+               orderPaymentCost.setRemarks(form.getRemarks());
+               orderPaymentCosts.add(orderPaymentCost);
+           }
+            for(Long id : receivableIds){
+                OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
+                //参数校验
+                if(id == null || "".equals(id) || (!form.getStatus().equals(1) && !form.getStatus().equals(2))){
+                    return false;
+                }
+                orderReceivableCost.setId(id);
+                orderReceivableCost.setStatus(Integer.valueOf(form.getStatus()));
+                orderReceivableCost.setRemarks(form.getRemarks());
+                orderReceivableCosts.add(orderReceivableCost);
+            }
+            paymentCostService.saveOrUpdateBatch(orderPaymentCosts);
+            receivableCostService.saveOrUpdateBatch(orderReceivableCosts);
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
 
     /**
      * 获取当前登录用户

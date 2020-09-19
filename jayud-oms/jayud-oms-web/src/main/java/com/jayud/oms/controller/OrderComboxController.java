@@ -2,13 +2,13 @@ package com.jayud.oms.controller;
 
 
 import cn.hutool.core.map.MapUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.enums.CustomerInfoStatusEnum;
 import com.jayud.oms.model.enums.RoleKeyEnum;
 import com.jayud.oms.model.po.*;
+import com.jayud.oms.model.vo.CurrencyInfoVO;
 import com.jayud.oms.model.vo.InitComboxStrVO;
 import com.jayud.oms.model.vo.InitComboxVO;
 import com.jayud.oms.service.*;
@@ -177,17 +177,23 @@ public class OrderComboxController {
 
         //币种
         List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("status",1);
-        List<CurrencyInfo> currencyInfos = currencyInfoService.list(queryWrapper);
-        for (CurrencyInfo currencyInfo : currencyInfos) {
+        List<CurrencyInfoVO> currencyInfos = currencyInfoService.findCurrencyInfo();
+        for (CurrencyInfoVO currencyInfo : currencyInfos) {
             InitComboxStrVO comboxStrVO = new InitComboxStrVO();
-            comboxStrVO.setCode(currencyInfo.getCountryCode());
+            comboxStrVO.setCode(currencyInfo.getCurrencyCode());
             comboxStrVO.setName(currencyInfo.getCurrencyName());
+            comboxStrVO.setName(currencyInfo.getExchangeRate());
             initComboxStrVOS.add(comboxStrVO);
         }
         param.put("currency",receivableCombox);
         return CommonResult.success(param);
+    }
+
+    @ApiOperation(value = "操作员")
+    @PostMapping(value = "/initOptUser")
+    public CommonResult initOptUser() {
+        List<InitComboxVO> initComboxVOS = (List<InitComboxVO>) oauthClient.findUserByKey(null);
+        return CommonResult.success(initComboxVOS);
     }
 
 

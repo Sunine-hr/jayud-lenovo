@@ -1,6 +1,9 @@
 package com.jayud.customs.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
@@ -8,10 +11,7 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.customs.feign.OmsClient;
 import com.jayud.customs.mapper.OrderCustomsMapper;
-import com.jayud.customs.model.bo.InputOrderCustomsForm;
-import com.jayud.customs.model.bo.InputOrderForm;
-import com.jayud.customs.model.bo.InputSubOrderCustomsForm;
-import com.jayud.customs.model.bo.OprOrderLogForm;
+import com.jayud.customs.model.bo.*;
 import com.jayud.customs.model.po.OrderCustoms;
 import com.jayud.customs.model.vo.*;
 import com.jayud.customs.service.IOrderCustomsService;
@@ -160,12 +160,43 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
         return baseMapper.findOrderCustomsByCondition(param);
     }
 
+    @Override
+    public IPage<CustomsOrderInfoVO> findCustomsOrderByPage(QueryCustomsOrderInfoForm form) {
+        //定义分页参数
+        Page<CustomsOrderInfoVO> page = new Page(form.getPageNum(),form.getPageSize());
+        //定义排序规则
+        page.addOrder(OrderItem.asc("oc.id"));
+        IPage<CustomsOrderInfoVO> pageInfo = baseMapper.findCustomsOrderByPage(page, form);
+        //处理附件
+        List<CustomsOrderInfoVO> customsOrderInfoVOS = pageInfo.getRecords();
+        String prePath = omsClient.getBaseUrl().getData().toString();
+        for (CustomsOrderInfoVO customsOrder : customsOrderInfoVOS) {
+            //处理子订单附件信息
+            String fileStr = customsOrder.getFileStr();
+            List<FileView> fileViews = new ArrayList<>();
+            if(fileStr != null && !"".equals(fileStr)){
+                String[] fileList = fileStr.split(",");
+                for(String str : fileList){
+                    int index = str.lastIndexOf("/");
+                    FileView fileView = new FileView();
+                    fileView.setRelativePath(str);
+                    fileView.setFileName(str.substring(index + 1, str.length()));
+                    fileView.setAbsolutePath(prePath + str);
+                    fileViews.add(fileView);
+                }
+            }
+            customsOrder.setFileViews(fileViews);
+        }
+        return pageInfo;
+    }
+
 
     /**
      * 获取当前登录用户
      * @return
      */
-    private String getLoginUser(){
+    @Override
+    public String getLoginUser(){
         String loginUser = redisUtils.get("loginUser",100);
         return loginUser;
     }

@@ -2,9 +2,12 @@ package com.jayud.oms.service.impl;
 
 import com.jayud.oms.model.po.CurrencyInfo;
 import com.jayud.oms.mapper.CurrencyInfoMapper;
+import com.jayud.oms.model.vo.CurrencyInfoVO;
 import com.jayud.oms.service.ICurrencyInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +20,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class CurrencyInfoServiceImpl extends ServiceImpl<CurrencyInfoMapper, CurrencyInfo> implements ICurrencyInfoService {
 
+    @Override
+    public List<CurrencyInfoVO> findCurrencyInfo() {
+        return baseMapper.findCurrencyInfo();
+    }
 }

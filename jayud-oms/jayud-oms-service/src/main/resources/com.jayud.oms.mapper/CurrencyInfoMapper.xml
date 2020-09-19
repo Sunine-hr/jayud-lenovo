@@ -19,4 +19,17 @@
         id, currency_code, currency_name, country_code, status, user_id, user_name, create_time
     </sql>
 
+    <select id="findCurrencyInfo"  resultType="com.jayud.oms.model.vo.CurrencyInfoVO" >
+        SELECT
+          ci.`currency_name` currencyCode,
+          ci.`currency_code` currencyName,
+          cr.`exchange_rate` exchangeRate
+        FROM
+          currency_info ci
+          LEFT JOIN currency_rate cr
+            ON ci.`id` = cr.`ocid`
+            AND cr.`status` = 1
+        WHERE ci.`status` = 1
+    </select>
+
 </mapper>

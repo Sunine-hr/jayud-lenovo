@@ -1,5 +1,7 @@
 package com.jayud.customs.model.po;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -15,31 +17,51 @@ import java.math.BigDecimal;
 @Data
 public class CustomsDetail {
     @ApiModelProperty(value = "序号")
-    private Integer num_no;
-    @ApiModelProperty(value = "柜型")
-    //4选1： 20、40、45、53
-    private String container_type_no;
+    @JsonProperty("num_no")
+    @SerializedName("num_no")
+    private Integer numNo;
 
     @ApiModelProperty(value = "柜型")
+    @JsonProperty("container_type_no")
+    @SerializedName("container_type_no")
+    //4选1： 20、40、45、53
+    private String containerTypeNo;
+
+    @ApiModelProperty(value = "柜型")
+    @JsonProperty("container_type")
+    @SerializedName("container_type")
     //2选1：GP、HQ
-    private String container_type;
+    private String containerType;
 
     @ApiModelProperty(value = "柜号")
-    private String container_no;
+    @JsonProperty("container_no")
+    @SerializedName("container_no")
+    private String containerNo;
 
     @ApiModelProperty(value = "是否拼柜")
+    @JsonProperty("fee_type")
+    @SerializedName("fee_type")
     //拼柜填写L、整柜填写F
-    private String fee_type;
+    private String feeType;
+
     @ApiModelProperty(value = "封条号")
-    private String seal_no;
+    @JsonProperty("seal_no")
+    @SerializedName("seal_no")
+    private String sealNo;
+
     @ApiModelProperty(value = "件数")
+    @JsonProperty("piece")
+    @SerializedName("piece")
     private Integer piece;
 
     @ApiModelProperty(value = "毛重(18,4)")
-
-    private BigDecimal grossweight;
+    @JsonProperty("grossweight")
+    @SerializedName("grossweight")
+    private BigDecimal grossWeight;
 
     @ApiModelProperty(value = "品名")
-    private String goodsname;
+    @JsonProperty("goodsname")
+    @SerializedName("goodsname")
+    private String goodsName;
 
 }

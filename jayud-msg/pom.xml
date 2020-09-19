@@ -11,11 +11,9 @@
 
     <artifactId>jayud-msg</artifactId>
     <description>统一消息处理</description>
-
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
     <version>1.0</version>
     <name>jayud-msg</name>
-
 
     <dependencies>
         <dependency>
@@ -29,6 +27,20 @@
             <artifactId>spring-kafka</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.alibaba.nacos</groupId>
+                    <artifactId>nacos-client</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>com.alibaba.nacos</groupId>
             <artifactId>nacos-client</artifactId>
         </dependency>
@@ -37,6 +49,10 @@
             <groupId>com.jayud</groupId>
             <artifactId>jayud-common</artifactId>
             <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
     </dependencies>
 
@@ -47,7 +63,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <!-- 指定该Main Class为全局的唯一入口 -->
-                    <mainClass>com.com.JayudMsgApplication</mainClass>
+                    <mainClass>com.jayud.JayudMsgApplication</mainClass>
                     <layout>ZIP</layout>
                 </configuration>
                 <executions>
@@ -60,5 +76,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

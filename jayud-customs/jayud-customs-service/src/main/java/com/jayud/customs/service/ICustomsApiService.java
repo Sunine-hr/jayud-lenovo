@@ -1,9 +1,6 @@
 package com.jayud.customs.service;
 
-import com.jayud.customs.model.bo.FindOrderInfoWrapperForm;
-import com.jayud.customs.model.bo.LoginForm;
-import com.jayud.customs.model.bo.PushAppendixForm;
-import com.jayud.customs.model.bo.PushOrderForm;
+import com.jayud.customs.model.bo.*;
 import com.jayud.customs.model.vo.*;
 
 /**
@@ -53,4 +50,6 @@ public interface ICustomsApiService {
     DclarationProcessStepVO getDeclarationProcessStep(String id);
 
     OrderProcessStepVO getOrderProcessStep(String id);
+
+    void getFinanceInfoAndPush2Kingdee(GetFinanceInfoForm form);
 }

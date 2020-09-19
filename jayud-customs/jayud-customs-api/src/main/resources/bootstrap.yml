@@ -1,6 +1,6 @@
 spring:
   application:
-    name: customs-api
+    name: jayud-customs-api
   profiles:
     active: dev
   cloud:

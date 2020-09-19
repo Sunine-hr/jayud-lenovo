@@ -189,6 +189,13 @@ public class OrderComboxController {
         return CommonResult.success(param);
     }
 
+    @ApiOperation(value = "操作员")
+    @PostMapping(value = "/initOptUser")
+    public CommonResult initOptUser() {
+        List<InitComboxVO> initComboxVOS = (List<InitComboxVO>) oauthClient.findUserByKey(null);
+        return CommonResult.success(initComboxVOS);
+    }
+
 
 
 

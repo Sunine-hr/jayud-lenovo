@@ -53,4 +53,48 @@
         </if>
     </select>
 
+    <select id="findCustomsOrderByPage" parameterType="com.jayud.customs.model.bo.QueryCustomsOrderInfoForm" resultType="com.jayud.customs.model.vo.CustomsOrderInfoVO" >
+        SELECT
+          oc.`id`,
+          oi.`order_no` mainOrderNo,
+          oc.`order_no` orderNo,
+          (
+            CASE
+              oc.`goods_type`
+              WHEN 1
+              THEN '进口'
+              WHEN 2
+              THEN '出口'
+            END
+          ) goodsTypeDesc,
+          oc.`port_name` portName,
+          (
+            CASE
+              oc.`status`
+              WHEN 0
+              THEN '未接单'
+              WHEN 1
+              THEN '已接单'
+              WHEN 2
+              THEN '接单中'
+              WHEN 3
+              THEN '接单中'
+            END
+          ) statusDesc,
+          oi.`customer_name` customerName,
+          '' goodsInfo,
+          oc.`encode`,
+          oc.`description` fileStr,
+          oc.`created_user` createdUser,
+          DATE_FORMAT(
+            oc.`created_time`,
+            '%Y-%m-%d %H %I %S'
+          ) createdTimeStr
+        FROM
+          order_customs oc,
+          order_info oi
+        WHERE oc.`main_order_no` = oi.`order_no`
+        AND oc.`status` = 0
+    </select>
+
 </mapper>

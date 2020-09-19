@@ -1,8 +1,11 @@
 package com.jayud.customs.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.customs.model.bo.InputOrderCustomsForm;
+import com.jayud.customs.model.bo.QueryCustomsOrderInfoForm;
 import com.jayud.customs.model.po.OrderCustoms;
+import com.jayud.customs.model.vo.CustomsOrderInfoVO;
 import com.jayud.customs.model.vo.InputOrderCustomsVO;
 import com.jayud.customs.model.vo.OrderCustomsVO;
 
@@ -46,5 +49,18 @@ public interface IOrderCustomsService extends IService<OrderCustoms> {
      * @return
      */
     public List<OrderCustomsVO> findOrderCustomsByCondition(Map<String,Object> param);
+
+    /**
+     * 分页查询
+     * @param form
+     * @return
+     */
+    IPage<CustomsOrderInfoVO> findCustomsOrderByPage(QueryCustomsOrderInfoForm form);
+
+    /**
+     * 获取当前登录用户
+     * @return
+     */
+    public String getLoginUser();
 
 }

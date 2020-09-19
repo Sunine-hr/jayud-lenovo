@@ -2,11 +2,17 @@ package com.jayud.customs.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.customs.feign.OmsClient;
 import com.jayud.customs.model.bo.InputOrderCustomsForm;
 import com.jayud.customs.model.bo.InputSubOrderCustomsForm;
+import com.jayud.customs.model.bo.QueryCustomsOrderInfoForm;
+import com.jayud.customs.model.po.OrderCustoms;
+import com.jayud.customs.model.vo.CustomsOrderInfoVO;
 import com.jayud.customs.model.vo.InputOrderCustomsVO;
 import com.jayud.customs.service.IOrderCustomsService;
 import io.swagger.annotations.Api;
@@ -17,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -107,6 +114,38 @@ public class OrderCustomsController {
         return CommonResult.success(inputOrderCustomsVO);
     }
 
+    @ApiOperation(value = "报关接单列表")
+    @PostMapping("/findCustomsOrderByPage")
+    public CommonResult<CommonPageResult<CustomsOrderInfoVO>> findCustomsOrderByPage(@RequestBody QueryCustomsOrderInfoForm form) {
+        IPage<CustomsOrderInfoVO> pageList = orderCustomsService.findCustomsOrderByPage(form);
+        CommonPageResult<CustomsOrderInfoVO> pageVO = new CommonPageResult(pageList);
+        return CommonResult.success(pageVO);
+    }
+
+
+    @ApiOperation(value = "确认接单,id=子订单ID optUser=管理员CODE")
+    @PostMapping(value = "/confirmOrder")
+    public CommonResult confirmOrder(@RequestBody Map<String,Object> param) {
+        String id = MapUtil.getStr(param,"id");
+        String optUser = MapUtil.getStr(param,"optUser");
+        if(id == null || "".equals(id)){
+            return CommonResult.error(400,"参数不合法");
+        }
+        String loginUser = orderCustomsService.getLoginUser();
+        OrderCustoms orderCustoms = new OrderCustoms();
+        orderCustoms.setId(Long.valueOf(id));
+        orderCustoms.setStatus(Integer.valueOf(OrderStatusEnum.CUSTOMS_1.getCode()));
+        orderCustoms.setUpdatedTime(LocalDateTime.now());
+        orderCustoms.setUpdatedUser(loginUser);
+        orderCustoms.setUserName(loginUser);
+        orderCustoms.setOptName(optUser);
+        orderCustoms.setOptTime(LocalDateTime.now());
+        boolean result = orderCustomsService.saveOrUpdate(orderCustoms);
+        if(!result){
+            return CommonResult.error(400,"操作失败");
+        }
+        return CommonResult.success();
+    }
 
 }
 

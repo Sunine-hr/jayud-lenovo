@@ -15,8 +15,11 @@ public class QueryCustomsOrderInfoForm extends BasePageForm{
     @ApiModelProperty(value = "六联单号")
     private String encode;
 
-   /* @ApiModelProperty(value = "操作指令,cmd = noSubmit or submit")
-    private String cmd;*/
+    @ApiModelProperty(value = "委托号")
+    private String entrustNo;
+
+    @ApiModelProperty(value = "操作指令,cmd = confirmOrder or customsRelease or exceptionOrder or auditFail")
+    private String cmd;
 
 
 }

@@ -89,12 +89,40 @@
           DATE_FORMAT(
             oc.`created_time`,
             '%Y-%m-%d %H %I %S'
-          ) createdTimeStr
+          ) createdTimeStr,
+            oc.`entrust_no` entrustNo,
+            '' unifiedNumber,
+            oc.`updated_time` updatedTimeStr,
+            oc.`remarks`,
+            '' yunCustomsNo
         FROM
           order_customs oc,
           order_info oi
         WHERE oc.`main_order_no` = oi.`order_no`
-        AND oc.`status` = 0
+        <if test="form.cmd == 'confirmOrder'">
+            AND oc.`status` = 0
+        </if>
+        <if test="form.orderNo != null">
+            AND oi.`order_no` = #{form.orderNo}
+        </if>
+        <if test="form.customerName != null and form.customerName != ''">
+            and oi.`customer_name` like concat('%',#{form.customerName},'%')
+        </if>
+        <if test="form.encode != null">
+            AND oc.`encode` = #{form.encode}
+        </if>
+        <if test="form.entrustNo != null">
+            AND oc.`entrust_no` = #{form.entrustNo}
+        </if>
+        <if test="form.cmd == 'customsRelease'">
+            AND oc.`status` = 1
+        </if>
+        <if test="form.cmd == 'exceptionOrder'">
+            AND oc.`status` = 4
+        </if>
+        <if test="form.cmd == 'auditFail'">
+            AND oc.`status` = 4
+        </if>
     </select>
 
 </mapper>

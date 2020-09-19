@@ -114,7 +114,7 @@ public class OrderCustomsController {
         return CommonResult.success(inputOrderCustomsVO);
     }
 
-    @ApiOperation(value = "报关接单列表")
+    @ApiOperation(value = "报关接单列表/报关放行/放行异常列表/放行确认/审核不通过")
     @PostMapping("/findCustomsOrderByPage")
     public CommonResult<CommonPageResult<CustomsOrderInfoVO>> findCustomsOrderByPage(@RequestBody QueryCustomsOrderInfoForm form) {
         IPage<CustomsOrderInfoVO> pageList = orderCustomsService.findCustomsOrderByPage(form);
@@ -146,6 +146,57 @@ public class OrderCustomsController {
         }
         return CommonResult.success();
     }
+
+    @ApiOperation(value = "录入委托号,id=子订单ID inputEntrustNo=委托号 entrustNote=编辑委托号的备注")
+    @PostMapping(value = "/inputEntrustNo")
+    public CommonResult inputEntrustNo(@RequestBody Map<String,Object> param) {
+        String id = MapUtil.getStr(param,"id");
+        String inputEntrustNo = MapUtil.getStr(param,"inputEntrustNo");
+        String entrustNote = MapUtil.getStr(param,"entrustNote");
+        if(id == null || "".equals(id)){
+            return CommonResult.error(400,"参数不合法");
+        }
+        String loginUser = orderCustomsService.getLoginUser();
+        OrderCustoms orderCustoms = new OrderCustoms();
+        orderCustoms.setId(Long.valueOf(id));
+        orderCustoms.setEntrustNo(inputEntrustNo);
+        orderCustoms.setEntrustNo(entrustNote);
+        orderCustoms.setUpdatedTime(LocalDateTime.now());
+        orderCustoms.setUpdatedUser(loginUser);
+        boolean result = orderCustomsService.saveOrUpdate(orderCustoms);
+        if(!result){
+            return CommonResult.error(400,"操作失败");
+        }
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "审核,id=子订单ID  status=审核状态，3通过4驳回 remarks=审核意见")
+    @PostMapping(value = "/auditOrderRelease")
+    public CommonResult auditOrderRelease(@RequestBody Map<String,Object> param) {
+        String id = MapUtil.getStr(param,"id");
+        String status = MapUtil.getStr(param,"status");
+        String remarks = MapUtil.getStr(param,"remarks");
+        if(id == null || "".equals(id) || status == null || "".equals(status)){
+            return CommonResult.error(400,"参数不合法");
+        }
+        boolean result =false;
+        if("3".equals(status) || "4".equals(status)){
+            String loginUser = orderCustomsService.getLoginUser();
+            OrderCustoms orderCustoms = new OrderCustoms();
+            orderCustoms.setId(Long.valueOf(id));
+            orderCustoms.setStatus(Integer.valueOf(status));
+            orderCustoms.setRemarks(remarks);
+            orderCustoms.setUpdatedTime(LocalDateTime.now());
+            orderCustoms.setUpdatedUser(loginUser);
+            result = orderCustomsService.saveOrUpdate(orderCustoms);
+        }
+        if(!result){
+            return CommonResult.error(400,"操作失败");
+        }
+        return CommonResult.success();
+    }
+
+
 
 }
 

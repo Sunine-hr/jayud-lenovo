@@ -48,4 +48,19 @@ public class CustomsOrderInfoVO {
     @ApiModelProperty(value = "附件")
     private String fileStr;
 
+    @ApiModelProperty(value = "委托号")
+    private String entrustNo;
+
+    @ApiModelProperty(value = "统一编号")
+    private String unifiedNumber;
+
+    @ApiModelProperty(value = "更新时间")
+    private String updatedTimeStr;
+
+    @ApiModelProperty(value = "审核意见")
+    private String remarks;
+
+    @ApiModelProperty(value = "报关单号")
+    private String yunCustomsNo;
+
 }

@@ -86,7 +86,7 @@ public class BookingSpaceForm {
     @SerializedName( "Trade_terms")
     @ApiModelProperty(value = "贸易条款")
     @NotEmpty(message = "贸易条款不可为空")
-    @Length(min = 5, max = 5, message = "贸易条款代码长度为五位代码")
+    @Length(max = 32, message = "贸易条款代码长度最大为32位代码")
     private String tradeTerms;
 
     @JsonProperty("Shipper")

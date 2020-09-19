@@ -13,7 +13,7 @@ import java.util.List;
  */
 @Data
 public class DownloadCustomsDeclarationVO {
-    private List<CustomsHeadVO> head;
+    private CustomsHeadVO head;
     private List<CustomsDetailVO> dtls;
     private List<CustomsGoodsVO> gdtls;
     private List<CustomsAppendixVO> adtls;

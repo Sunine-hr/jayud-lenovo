@@ -12,6 +12,7 @@ import com.jayud.customs.model.bo.FindOrderInfoWrapperForm;
 import com.jayud.customs.model.bo.LoginForm;
 import com.jayud.customs.model.bo.PushAppendixForm;
 import com.jayud.customs.model.bo.PushOrderForm;
+import com.jayud.customs.model.po.CustomsReceivable;
 import com.jayud.customs.model.vo.*;
 import com.jayud.customs.service.ICustomsApiService;
 import io.swagger.annotations.Api;
@@ -118,7 +119,7 @@ public class ApiController {
 
     @ApiOperation(value = "委托单操作进程查询")
     @PostMapping("/order/process/info")
-    public CommonResult<OrderProcessStepVO> getOrderProcessStep(@RequestBody Map<String,String> param){
+    public CommonResult<OrderProcessStepVO> getOrderProcessStep(@RequestBody Map<String, String> param) {
         if (CollectionUtil.isEmpty(param)) {
             return CommonResult.success();
         }
@@ -129,10 +130,18 @@ public class ApiController {
         return CommonResult.success(service.getOrderProcessStep(id));
     }
 
-    @ApiOperation(value = "test")
-    @PostMapping("/test")
+    @ApiOperation(value = "查询应收单并推到金蝶")
+    @PostMapping("/order/receivable")
     @APILog
-    public CommonResult<OrderProcessStepVO> test(@RequestBody Map<String, String> param) {
+    public CommonResult getReceivableAndPush2Kingdee(@RequestBody Map<String, String> param) {
+        System.out.println(JSONUtil.toJsonStr(param));
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "查询应付单并推到金蝶")
+    @PostMapping("/order/payable")
+    @APILog
+    public CommonResult getPayableAndPush2Kingdee(@RequestBody Map<String, String> param) {
         System.out.println(JSONUtil.toJsonStr(param));
         return CommonResult.success();
     }

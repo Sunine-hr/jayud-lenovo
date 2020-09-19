@@ -1,5 +1,7 @@
 package com.jayud.customs.model.po;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -15,64 +17,126 @@ import java.math.BigDecimal;
 @Data
 public class CustomsGoods {
     @ApiModelProperty(value = "序号")
-    private Integer num_no;
+    @JsonProperty("num_no")
+    @SerializedName("num_no")
+    private Integer numNo;
+
     @ApiModelProperty(value = "项号")
-    private String item_no;
+    @JsonProperty("item_no")
+    @SerializedName("item_no")
+    private String itemNo;
+
     @ApiModelProperty(value = "商品编号")
-    private String goods_no;
+    @JsonProperty("goods_no")
+    @SerializedName("goods_no")
+    private String goodsNo;
+
     @ApiModelProperty(value = "品名")
-    private String goods_name;
+    @JsonProperty("goods_name")
+    @SerializedName("goods_name")
+    private String goodsName;
+
     @ApiModelProperty(value = "规格")
-    private String goods_spec;
+    @JsonProperty("goods_spec")
+    @SerializedName("goods_spec")
+    private String goodsSpec;
+
     @ApiModelProperty(value = "版本号")
-    private String ver_no;
+    @JsonProperty("ver_no")
+    @SerializedName("ver_no")
+    private String verNo;
+
     @ApiModelProperty(value = "成交数量(18,5)")
     private BigDecimal amount;
 
     @ApiModelProperty(value = "成交单位编号")
-    private String unit_no;
+    @JsonProperty("unit_no")
+    @SerializedName("unit_no")
+    private String unitNo;
+
     @ApiModelProperty(value = "法1数量(18,5)")
     private BigDecimal amount02;
+
     @ApiModelProperty(value = "法1单位编号")
-    private String unit02_no;
+    @JsonProperty("unit02_no")
+    @SerializedName("unit02_no")
+    private String unit02No;
+
     @ApiModelProperty(value = "法2数量(18,5)")
     private BigDecimal amount03;
+
     @ApiModelProperty(value = "法2单位编号")
-    private String unit03_no;
+    @JsonProperty("unit03_no")
+    @SerializedName("unit03_no")
+    private String unit03No;
+
     @ApiModelProperty(value = "目的国/原产国")
+    @JsonProperty("country_no")
+    @SerializedName("country_no")
     //出口填写目的国，进口填写原产国
-    private String country_no;
+    private String countryNo;
+
     @ApiModelProperty(value = "原产国/目的国")
+    @JsonProperty("other_country_no")
+    @SerializedName("other_country_no")
     //出口填写原产国，进口填写目的国
-    private String other_country_no;
+    private String otherCountryNo;
+
     @ApiModelProperty(value = "总价(18,4)")
     private BigDecimal sum;
+
     @ApiModelProperty(value = "单价(18,4)")
     private BigDecimal price;
+
     @ApiModelProperty(value = "币种编号")
-    private String currency_no;
+    @JsonProperty("currency_no")
+    @SerializedName("currency_no")
+    private String currencyNo;
+
     @ApiModelProperty(value = "征免性质编号")
-    private String impose_no;
-    ;
+    @JsonProperty("impose_no")
+    @SerializedName("impose_no")
+    private String imposeNo;
+
 
     @ApiModelProperty(value = "毛重(18,4)")
-    private BigDecimal grossweight;
+    @JsonProperty("grossweight")
+    @SerializedName("grossweight")
+    private BigDecimal grossWeight;
 
     @ApiModelProperty(value = "净重(18,4)")
-    private BigDecimal netweight;
+    @JsonProperty("netweight")
+    @SerializedName("netweight")
+    private BigDecimal netWeight;
 
     @ApiModelProperty(value = "件数")
     private Integer piece;
+
     @ApiModelProperty(value = "货号")
-    private String exg_no;
+    @JsonProperty("exg_no")
+    @SerializedName("exg_no")
+    private String exgNo;
+
     @ApiModelProperty(value = "工缴费")
     private Integer gjf;
+
     @ApiModelProperty(value = "检验检疫代码")
-    private String sjgoods_no;
+    @JsonProperty("sjgoods_no")
+    @SerializedName("sjgoods_no")
+    private String sjgoodsNo;
+
     @ApiModelProperty(value = "检验检疫名称")
-    private String ciq_name;
+    @JsonProperty("ciq_name")
+    @SerializedName("ciq_name")
+    private String ciqName;
+
     @ApiModelProperty(value = "境内货源地")
-    private String districtcode;
+    @JsonProperty("districtcode")
+    @SerializedName("districtcode")
+    private String districtCode;
+
     @ApiModelProperty(value = "地区代码")
-    private String origincode;
+    @JsonProperty("origincode")
+    @SerializedName("origincode")
+    private String originCode;
 }

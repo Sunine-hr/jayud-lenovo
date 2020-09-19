@@ -1,10 +1,12 @@
 package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.oms.model.bo.InputCostForm;
 import com.jayud.oms.model.bo.InputOrderForm;
 import com.jayud.oms.model.bo.QueryOrderInfoForm;
 import com.jayud.oms.model.po.OrderInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.oms.model.vo.InputCostVO;
 import com.jayud.oms.model.vo.InputOrderVO;
 import com.jayud.oms.model.vo.OrderInfoVO;
 
@@ -46,5 +48,19 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     InputOrderVO getMainOrderById(Long idValue);
+
+    /**
+     * 录入费用
+     * @param form
+     * @return
+     */
+    boolean saveOrUpdateCost(InputCostForm form);
+
+    /**
+     * 获取费用详情
+     * @param id
+     * @return
+     */
+    InputCostVO getCostDetail(Long id);
 
 }

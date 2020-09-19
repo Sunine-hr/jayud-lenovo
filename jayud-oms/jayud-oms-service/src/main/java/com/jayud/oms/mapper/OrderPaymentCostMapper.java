@@ -2,6 +2,7 @@ package com.jayud.oms.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.oms.model.po.OrderPaymentCost;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
@@ -11,6 +12,7 @@ import com.jayud.oms.model.po.OrderPaymentCost;
  * @author chuanmei
  * @since 2020-09-15
  */
+@Mapper
 public interface OrderPaymentCostMapper extends BaseMapper<OrderPaymentCost> {
 
 }

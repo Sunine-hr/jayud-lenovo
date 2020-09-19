@@ -1,9 +1,9 @@
 package com.jayud.oms.service.impl;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.oms.mapper.OrderReceivableCostMapper;
 import com.jayud.oms.model.po.OrderReceivableCost;
+import com.jayud.oms.service.IOrderReceivableCostService;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2020-09-15
  */
 @Service
-public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableCostMapper, OrderReceivableCost> implements IService<OrderReceivableCost> {
+public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableCostMapper, OrderReceivableCost> implements IOrderReceivableCostService {
 
 }

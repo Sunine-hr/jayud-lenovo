@@ -39,4 +39,10 @@ public interface OmsClient {
     @RequestMapping(value = "/api/getMainOrderById")
     ApiResult getMainOrderById(@RequestParam(value = "idValue") Long idValue);
 
+    /**
+     * 获取根路径
+     */
+    @RequestMapping(value = "/api/getBaseUrl")
+    ApiResult getBaseUrl();
+
 }

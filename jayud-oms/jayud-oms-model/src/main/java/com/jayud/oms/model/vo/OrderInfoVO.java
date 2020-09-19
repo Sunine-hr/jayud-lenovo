@@ -5,7 +5,7 @@ import lombok.Data;
 
 
 @Data
-public class NoSubmitOrderVO {
+public class OrderInfoVO {
 
     @ApiModelProperty(value = "主订单ID")
     private Integer id;

@@ -20,7 +20,14 @@ public enum OrderStatusEnum {
     CUSTOMS_2("2","接单中"),
     CUSTOMS_3("3","放行通过"),
     CUSTOMS_4("4","放行驳回"),
-    CUSTOMS_5("4","已完成")
+    CUSTOMS_5("4","已完成"),
+
+    //费用状态
+    COST_0("0","审核驳回"),
+    COST_1("1","草稿"),
+    COST_2("2","提交审核"),
+    COST_3("3","审核通过")
+
      ;
 
     private String code;

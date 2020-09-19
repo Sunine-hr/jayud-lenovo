@@ -31,7 +31,7 @@
         id, order_no, customer_code, customer_name, biz_uid, biz_uname, unit_account, unit_code, contract_no, legal_code, legal_name, reference_no, cntr_no, biz_code, status, create_time, created_user, up_time, up_user
     </sql>
 
-    <select id="noSubmitOrderByPage" parameterType="com.jayud.oms.model.bo.QueryOrderInfoForm" resultType="com.jayud.oms.model.vo.NoSubmitOrderVO" >
+    <select id="findOrderInfoByPage" parameterType="com.jayud.oms.model.bo.QueryOrderInfoForm" resultType="com.jayud.oms.model.vo.OrderInfoVO" >
         select * from (
         SELECT
         oi.id,
@@ -77,6 +77,12 @@
         DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H %I %S') createdTimeStr
         FROM
         order_info oi LEFT JOIN order_transport ot ON oi.`order_no` = ot.`main_order_no` ) temp WHERE 1 = 1
+        <if test="form.cmd == 'noSubmit'">
+           and temp.`status` = 2
+        </if>
+        <if test="form.cmd == 'submit'">
+           and temp.`status` in (1,3)
+        </if>
         <if test="form.orderNo != null and form.orderNo != ''">
             and temp.orderNo = #{form.orderNo}
         </if>
@@ -85,6 +91,23 @@
         </if>
         <if test="form.bizCode != null and form.bizCode !=''">
             and temp.bizCode = #{form.bizCode}
+        </if>
+    </select>
+
+    <select id="getMainOrderById" parameterType="java.lang.Long" resultType="com.jayud.oms.model.vo.InputOrderVO" >
+        SELECT
+            oi.`id` orderId,
+            oi.`order_no` orderNo,
+            oi.`customer_code` customerCode,
+            oi.`biz_code` bizUid,
+            oi.`contract_no` contractNo,
+            oi.`legal_code` legalCode,
+            oi.`biz_belong_depart` bizBelongDepart,
+            oi.`reference_no` referenceNo
+        FROM
+            order_info oi WHERE 1 > 2
+        <if test="idValue != null and idValue != ''">
+            and oi.`id` = #{idValue}
         </if>
     </select>
 

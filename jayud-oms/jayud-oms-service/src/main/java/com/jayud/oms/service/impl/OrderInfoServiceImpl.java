@@ -10,16 +10,20 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.mapper.OrderInfoMapper;
-import com.jayud.oms.model.bo.InputOrderForm;
-import com.jayud.oms.model.bo.QueryOrderInfoForm;
+import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.OrderInfo;
-import com.jayud.oms.model.vo.NoSubmitOrderVO;
+import com.jayud.oms.model.po.OrderPaymentCost;
+import com.jayud.oms.model.po.OrderReceivableCost;
+import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.IOrderInfoService;
+import com.jayud.oms.service.IOrderPaymentCostService;
+import com.jayud.oms.service.IOrderReceivableCostService;
 import com.jayud.oms.service.IProductBizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,6 +42,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Autowired
     IProductBizService productBizService;
+
+    @Autowired
+    IOrderPaymentCostService paymentCostService;
+
+    @Autowired
+    IOrderReceivableCostService receivableCostService;
 
     @Override
     public String oprMainOrder(InputOrderForm form) {
@@ -81,13 +91,77 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     @Override
-    public IPage<NoSubmitOrderVO> noSubmitOrderByPage(QueryOrderInfoForm form) {
+    public IPage<OrderInfoVO> findOrderInfoByPage(QueryOrderInfoForm form) {
         //定义分页参数
-        Page<NoSubmitOrderVO> page = new Page(form.getPageNum(),form.getPageSize());
+        Page<OrderInfoVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.asc("oi.id"));
-        IPage<NoSubmitOrderVO> pageInfo = baseMapper.noSubmitOrderByPage(page, form);
+        IPage<OrderInfoVO> pageInfo = baseMapper.findOrderInfoByPage(page, form);
         return pageInfo;
+    }
+
+    @Override
+    public InputOrderVO getMainOrderById(Long idValue) {
+        return baseMapper.getMainOrderById(idValue);
+    }
+
+    @Override
+    public boolean saveOrUpdateCost(InputCostForm form) {
+        try {
+            if (form == null || form.getMainOrderId() == null) {
+                return false;
+            }
+            InputOrderVO inputOrderVO = getMainOrderById(form.getMainOrderId());
+            if (inputOrderVO == null) {
+                return false;
+            }
+            List<OrderPaymentCost> orderPaymentCosts = new ArrayList<>();
+            List<OrderReceivableCost> orderReceivableCosts = new ArrayList<>();
+            List<InputPaymentCostForm> paymentCostForms = form.getPaymentCostList();
+            List<InputReceivableCostForm> receivableCostForms = form.getReceivableCostList();
+            orderPaymentCosts = ConvertUtil.convertList(paymentCostForms, OrderPaymentCost.class);
+            orderReceivableCosts = ConvertUtil.convertList(receivableCostForms, OrderReceivableCost.class);
+            for (OrderPaymentCost orderPaymentCost : orderPaymentCosts) {//应付费用
+                orderPaymentCost.setOptName(getLoginUser());
+                orderPaymentCost.setOptTime(LocalDateTime.now());
+                orderPaymentCost.setCreatedTime(LocalDateTime.now());
+                orderPaymentCost.setCreatedUser(getLoginUser());
+                if ("preSubmit_main".equals(form.getCmd())) {
+                    orderPaymentCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_1.getCode()));
+                } else if ("submit_main".equals(form.getCmd())) {
+                    orderPaymentCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_2.getCode()));
+                }
+            }
+            for (OrderReceivableCost orderReceivableCost : orderReceivableCosts) {//应收费用
+                orderReceivableCost.setOptName(getLoginUser());
+                orderReceivableCost.setOptTime(LocalDateTime.now());
+                orderReceivableCost.setCreatedTime(LocalDateTime.now());
+                orderReceivableCost.setCreatedUser(getLoginUser());
+                if ("noSubmit".equals(form.getCmd())) {
+                    orderReceivableCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_1.getCode()));
+                } else if ("submit".equals(form.getCmd())) {
+                    orderReceivableCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_2.getCode()));
+                }
+            }
+            paymentCostService.saveOrUpdateBatch(orderPaymentCosts);
+            receivableCostService.saveOrUpdateBatch(orderReceivableCosts);
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public InputCostVO getCostDetail(Long id) {
+        List<OrderPaymentCost> orderPaymentCosts = paymentCostService.list();
+        List<OrderReceivableCost> orderReceivableCosts = receivableCostService.list();
+        List<InputPaymentCostVO> inputPaymentCostVOS = ConvertUtil.convertList(orderPaymentCosts,InputPaymentCostVO.class);
+        List<InputReceivableCostVO> inputReceivableCostVOS = ConvertUtil.convertList(orderReceivableCosts,InputReceivableCostVO.class);
+        InputCostVO inputCostVO = new InputCostVO();
+        inputCostVO.setPaymentCostList(inputPaymentCostVOS);
+        inputCostVO.setReceivableCostList(inputReceivableCostVOS);
+        return inputCostVO;
     }
 
 

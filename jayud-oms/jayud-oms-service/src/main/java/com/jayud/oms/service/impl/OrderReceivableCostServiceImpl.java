@@ -1,9 +1,9 @@
-package com.jayud.tms.service.impl;
+package com.jayud.oms.service.impl;
 
-import com.jayud.tms.model.po.OrderReceivableCost;
-import com.jayud.tms.mapper.OrderReceivableCostMapper;
-import com.jayud.tms.service.IOrderReceivableCostService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.oms.mapper.OrderReceivableCostMapper;
+import com.jayud.oms.model.po.OrderReceivableCost;
+import com.jayud.oms.service.IOrderReceivableCostService;
 import org.springframework.stereotype.Service;
 
 /**

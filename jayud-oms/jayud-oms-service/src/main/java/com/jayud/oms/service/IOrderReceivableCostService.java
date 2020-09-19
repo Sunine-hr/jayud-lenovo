@@ -1,7 +1,7 @@
-package com.jayud.tms.service;
+package com.jayud.oms.service;
 
-import com.jayud.tms.model.po.OrderReceivableCost;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.oms.model.po.OrderReceivableCost;
 
 /**
  * <p>

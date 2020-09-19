@@ -1,4 +1,4 @@
-package com.jayud.tms.model.po;
+package com.jayud.oms.model.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 订单对应应付费用明细
+ * 订单对应应收费用明细
  * </p>
  *
  * @author chuanmei
@@ -24,8 +24,8 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="OrderPaymentCost对象", description="订单对应应付费用明细")
-public class OrderPaymentCost extends Model<OrderPaymentCost> {
+@ApiModel(value="OrderReceivableCost对象", description="订单对应应收费用明细")
+public class OrderReceivableCost extends Model<OrderReceivableCost> {
 
     private static final long serialVersionUID = 1L;
 
@@ -41,12 +41,6 @@ public class OrderPaymentCost extends Model<OrderPaymentCost> {
 
     @ApiModelProperty(value = "实际产生业务订单号")
     private String orderNo;
-
-    @ApiModelProperty(value = "服务类型(product_biz code)")
-    private String bizCode;
-
-    @ApiModelProperty(value = "服务名(product_biz name)")
-    private String bizName;
 
     @ApiModelProperty(value = "客户code(customer_info code)")
     private String customerCode;

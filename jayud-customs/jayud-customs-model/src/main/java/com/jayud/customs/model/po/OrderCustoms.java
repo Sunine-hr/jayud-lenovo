@@ -71,6 +71,9 @@ public class OrderCustoms extends Model<OrderCustoms> {
     @ApiModelProperty(value = "委托单号")
     private String entrustNo;
 
+    @ApiModelProperty(value = "编辑委托单号备注")
+    private String entrustNote;
+
     @ApiModelProperty(value = "状态(0-未接单 1-已接单 2-接单中 3-放行通过 4-放行驳回  5-已完成)")
     private Integer status;
 

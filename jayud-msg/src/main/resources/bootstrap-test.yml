@@ -1,5 +1,26 @@
-rtscf:
-  nacos:
-    server-addr: 47.106.108.105:8848
-    config:
-      namespace: 3fe93640-c334-4120-8d98-069a599dd9a0
+#kafka:
+#  producer:
+#    servers: 113.100.140.250:8046
+#    buffer:
+#      memory: 40960
+#    retries: 0
+#    batch:
+#      size: 4096
+#    linger: 1
+#  consumer:
+#    servers: 113.100.140.250:8046
+#    #(kafka生产集群ip+port端口)
+#    enable:
+#      auto:
+#        commit: true
+#          #(是否自动提交)
+#          interval : 100
+#        offset:
+#          reset: earliest
+#          #(从最早的开始消费)
+#  session:
+#    timeout: 15000
+#  group:
+#    id: test
+#    #(消费组)
+#  concurrency: 3

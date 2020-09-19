@@ -1,5 +1,5 @@
-rtscf:
+jayud:
   nacos:
-    server-addr: 47.106.108.105:8848
+    server-addr: 113.100.140.250:8848
     config:
-      namespace: 3a7ba978-b304-4d5a-a642-df4139bbb03b
+      namespace: c19b4244-6c37-4ca2-ba49-a27404ca3f74

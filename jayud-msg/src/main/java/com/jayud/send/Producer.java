@@ -1,4 +1,4 @@
-package com.jayud.msg.send;
+package com.jayud.send;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +25,10 @@ public class Producer {
      * @return
      */
     public ListenableFuture send(String key, String value) {
-        return  kafkaTemplate.send(topic,key,value);
+        return  kafkaTemplate.send(this.topic,key,value);
     }
 
+    public ListenableFuture send(String topic, String key, String value) {
+        return kafkaTemplate.send(topic, key, value);
+    }
 }

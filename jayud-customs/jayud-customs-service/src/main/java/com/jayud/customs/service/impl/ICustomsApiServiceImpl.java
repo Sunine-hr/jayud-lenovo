@@ -8,6 +8,7 @@ import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSONArray;
 import com.google.gson.Gson;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.ResultEnum;
@@ -24,7 +25,13 @@ import org.apache.http.HttpHeaders;
 import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import javax.annotation.Resources;
@@ -88,7 +95,7 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
         Gson gson = new Gson();
         String requestStr =gson.toJson(form);
         //请求
-        JSONObject feedback = doPost(requestStr, trustsUrl);
+        String feedback = doPost(requestStr, trustsUrl);
 
         PushOrderVO result = null;
         try {
@@ -223,25 +230,41 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
         recParam.put("costtype", "1");
         payParam.put("costtype", "2");
 
-        JSONObject receivable = doPost(JSONUtil.toJsonStr(recParam), financeUrl);
-        JSONObject payable = doPost(JSONUtil.toJsonStr(payParam), financeUrl);
+        String receivable = doPost(JSONUtil.toJsonStr(recParam), financeUrl);
+        String payable = doPost(JSONUtil.toJsonStr(payParam), financeUrl);
+
 
 
         try {
-            generateKafkaMsg("finance", "customs-receivable", receivable);
-            generateKafkaMsg("finance", "customs-receivable", payable);
+            try {
+                int size = JSONArray.parseArray(receivable).size();
+                if (size > 0) {
+                    generateKafkaMsg("financeTest", "customs-receivable", receivable);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                int size = JSONArray.parseArray(payable).size();
+                if (size > 0) {
+                    generateKafkaMsg("financeTest", "customs-payable", payable);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             Asserts.fail(ResultEnum.PARAM_ERROR, "发送金蝶失败");
         }
     }
 
-    private void generateKafkaMsg(String topic, String key, JSONObject msg) {
+    private void generateKafkaMsg(String topic, String key, String msg) {
         Map<String, String> msgMap = new HashMap<>();
         msgMap.put("topic", topic);
         msgMap.put("key", key);
         msgMap.put("msg", JSONUtil.toJsonStr(msg));
-        msgClient.sendMessage(msgMap);
+        msgClient.consume(msgMap);
     }
 
     private JSONObject doGet(String url, Map<String, Object> params) {
@@ -295,27 +318,18 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
         return ticket;
     }
 
-    private JSONObject doPost(String requestStr, String url) {
-        HttpRequester httpRequester = new HttpRequester();
-        HashMap<String, String> headerMap = new HashMap<>();
-        headerMap.put(Header.CONTENT_TYPE.name(), "application/json");
-        headerMap.put("X-Ticket", checkoutUserToken(new LoginForm(defaultUserName, defaultPassword, null)));
+    private String doPost(String requestStr, String url) {
+        RestTemplate client = new RestTemplate();
+        org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+        //  请勿轻易改变此提交方式，大部分的情况下，提交方式都是表单提交
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("X-Ticket", checkoutUserToken(new LoginForm(defaultUserName, defaultPassword, null)));
+        HttpEntity<MultiValueMap<String, String>> requestEntity = null;
+        requestEntity = new HttpEntity<MultiValueMap<String, String>>(JSONUtil.toBean(requestStr, MultiValueMap.class), headers);
+        //  执行HTTP请求
+        ResponseEntity<String> response = client.exchange(url, HttpMethod.POST, requestEntity, String.class);
+        return response.getBody();
 
-
-        JSONObject jsonObject = null;
-        try {
-            jsonObject = httpRequester.sendPost(url, JSONUtil.toBean(requestStr, Map.class), headerMap);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Asserts.fail(ResultEnum.PARAM_ERROR, "接口请求失败");
-        }
-        return jsonObject;
-//        return HttpRequest
-//                .post(url)
-//                .header(HttpHeaders.CONTENT_TYPE, "application/json")
-//                .header("X-Ticket", checkoutUserToken(new LoginForm(defaultUserName, defaultPassword, null)))
-//                .body(requestStr)
-//                .execute().body();
     }
 
     private JSONObject doComplexPost(String url, Map<String, Object> requestParams, String body) {

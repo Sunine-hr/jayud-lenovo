@@ -131,22 +131,28 @@ public class KingdeeServiceImpl implements KingdeeService {
     @Override
     public CommonResult savePayableBill(String formId, PayableHeaderForm reqForm) {
         //调用Redis中的cookie
-        Map<String, Object> header = new HashMap<>();
-        header.put("Cookie", cookieService.getCookie(k3CloundConfig));
-        String content = buildParam(formId, constructPayableBill(reqForm));
-        log.info("请求内容：{}", content);
 
-        String result = KingdeeHttpUtil.httpPost(k3CloundConfig.getSave(), header, content);
+        try {
+            Map<String, Object> header = new HashMap<>();
+            header.put("Cookie", cookieService.getCookie(k3CloundConfig));
+            String content = buildParam(formId, constructPayableBill(reqForm));
+            log.info("请求内容：{}", content);
 
-        log.info("保存结果：{}", result);
-        JSONObject jsonObject = JSON.parseObject(result);
-        Map<String, Object> map = (Map<String, Object>) jsonObject.get("Result");
-        Map<String, Object> responseStatus = (Map<String, Object>) map.get("ResponseStatus");
-        Boolean isSuccess = (Boolean) responseStatus.get("IsSuccess");
-        if (isSuccess) {
-            return CommonResult.success(map.get("Number"));
-        } else {
-            List<Map<String, Object>> errors = (List<Map<String, Object>>) responseStatus.get("Errors");
+            String result = KingdeeHttpUtil.httpPost(k3CloundConfig.getSave(), header, content);
+
+            log.info("保存结果：{}", result);
+            JSONObject jsonObject = JSON.parseObject(result);
+            Map<String, Object> map = (Map<String, Object>) jsonObject.get("Result");
+            Map<String, Object> responseStatus = (Map<String, Object>) map.get("ResponseStatus");
+            Boolean isSuccess = (Boolean) responseStatus.get("IsSuccess");
+            if (isSuccess) {
+                return CommonResult.success(map.get("Number"));
+            } else {
+                List<Map<String, Object>> errors = (List<Map<String, Object>>) responseStatus.get("Errors");
+                return CommonResult.error(-1, "errors");
+            }
+        } catch (Exception e) {
+            log.info(e.getMessage());
             return CommonResult.error(-1, "errors");
         }
 
@@ -877,7 +883,7 @@ public class KingdeeServiceImpl implements KingdeeService {
         //根据前端传入的数据获取
 
         //定义单价
-        BigDecimal price = taxPrice.divide(BigDecimal.ONE.add(taxRate.divide(new BigDecimal("100"))), 8, RoundingMode.HALF_UP);
+        BigDecimal price = taxPrice.divide(BigDecimal.ONE.add(taxRate.multiply(new BigDecimal("0.01"))), 8, RoundingMode.HALF_UP);
 
         //单价(如果计税，单价=含税单价/（1+税率）并保留6位小数，四舍五入)
         detail.put("FPrice", price.setScale(2, RoundingMode.HALF_UP));
@@ -1032,7 +1038,7 @@ public class KingdeeServiceImpl implements KingdeeService {
      * @param reqForm 传入的表单数据
      * @return
      */
-    private Object Name2Code(Object reqForm) {
+    public Object Name2Code(Object reqForm) {
         /**
          * 传入表单是一个应收单
          */

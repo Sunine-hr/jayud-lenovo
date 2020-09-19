@@ -9,6 +9,8 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
@@ -172,6 +174,8 @@ public class HttpRequester {
             // 利用List<NameValuePair>生成Post请求的实体数据
             // UrlEncodedFormEntity 把输入数据编码成合适的内容
             entity = new UrlEncodedFormEntity(nameValuePairArrayList, defaultContentEncoding);
+            entity.setContentType("application/json");
+            entity.setContentEncoding("utf-8");
             HttpPost httpPost = new HttpPost(urlString);
             // 为HttpPost设置实体数据
             httpPost.setEntity(entity);
@@ -190,7 +194,43 @@ public class HttpRequester {
         return result;
     }
 
+    public JSONObject sendPostByJson(String urlString, Map<String, String> params, Map<String, String> propertys) throws Exception {
+        JSONObject result = null;
+        //创建httpClient连接
+        CloseableHttpClient httpClient = HttpClients.createDefault();
 
+        List<NameValuePair> nameValuePairArrayList = new ArrayList<>();
+        // 将传过来的参数添加到List<NameValuePair>中
+        if (params != null && !params.isEmpty()) {
+            //遍历map
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                nameValuePairArrayList.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+            }
+        }
+        StringEntity entity = null;
+        // HttpClient 发送请求
+        CloseableHttpResponse httpResponse = null;
+        try {
+            // 利用List<NameValuePair>生成Post请求的实体数据
+            // UrlEncodedFormEntity 把输入数据编码成合适的内容
+            entity = new StringEntity(JSONUtil.toJsonStr(nameValuePairArrayList), ContentType.APPLICATION_JSON);
+            HttpPost httpPost = new HttpPost(urlString);
+            // 为HttpPost设置实体数据
+            httpPost.setEntity(entity);
+            //设置请求头参数
+            if (propertys != null) {
+                for (String key : propertys.keySet()) {
+                    httpPost.setHeader(key, propertys.get(key));
+                }
+            }
+            // HttpClient 发送Post请求
+            httpResponse = httpClient.execute(httpPost);
+            result = this.makeContent(httpResponse);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
     /**
      * @param httpResponse
      * @return

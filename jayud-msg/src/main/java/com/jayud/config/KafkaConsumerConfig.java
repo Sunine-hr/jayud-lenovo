@@ -36,8 +36,8 @@ public class KafkaConsumerConfig {
 //    private String sessionTimeout;
 //    @Value("${kafka.consumer.auto.commit.interval:}")
 //    private String autoCommitInterval;
-//    @Value("${kafka.consumer.group.id:}")
-//    private String groupId;
+    @Value("${kafka.consumer.group.id:}")
+    private String groupId;
 //    @Value("${kafka.consumer.auto.offset.reset:}")
 //    private String autoOffsetReset;
 //    @Value("${kafka.consumer.concurrency:}")
@@ -65,7 +65,7 @@ public class KafkaConsumerConfig {
 //        propsMap.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, sessionTimeout);
         propsMap.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         propsMap.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-//        propsMap.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+        propsMap.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
 //        propsMap.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffsetReset);
         return propsMap;
     }

@@ -1,4 +1,4 @@
-package com.jayud.msg.enums;
+package com.jayud.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,8 +16,8 @@ import java.util.Objects;
 @Getter
 @AllArgsConstructor
 public enum KafkaMsgEnums {
-    FINANCE_CUSTOMS_RECEIVABLE("finance", "customs-receivable"),
-    FINANCE_CUSTOMS_PAYABLE("finance", "customs-payable"),
+    FINANCE_CUSTOMS_RECEIVABLE("financeTest", "customs-receivable"),
+    FINANCE_CUSTOMS_PAYABLE("financeTest", "customs-payable"),
     ;
     private String topic;
     private String key;

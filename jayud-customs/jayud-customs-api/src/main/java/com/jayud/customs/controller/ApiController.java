@@ -140,7 +140,8 @@ public class ApiController {
             Asserts.fail(ResultEnum.PARAM_ERROR, "至少填写一个单号");
         }
         service.getFinanceInfoAndPush2Kingdee(form);
-        return CommonResult.success();
+
+        return CommonResult.success("发送完成");
     }
 
 

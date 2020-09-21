@@ -21,16 +21,16 @@
         <result column="status" property="status" />
         <result column="remarks" property="remarks" />
         <result column="opt_name" property="optName" />
-        <result column="user_id" property="userId" />
+        <result column="entrust_note" property="entrustNote" />
         <result column="user_name" property="userName" />
         <result column="opt_time" property="optTime" />
-        <result column="create_time" property="createTime" />
-        <result column="create_user" property="createUser" />
+        <result column="created_time" property="createdTime" />
+        <result column="created_user" property="createdUser" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, main_order_no, order_no, port_code, port_name, goods_type, cntr_no, cntr_pic, encode, title, unit_account, unit_code, description, entrust_no, status, remarks, opt_name, user_id, user_name, opt_time, create_time, create_user
+        id, main_order_no, order_no, port_code, port_name, goods_type, cntr_no, cntr_pic, encode, title, unit_account, unit_code, description, entrust_no, status, remarks, opt_name, entrust_note, user_name, opt_time, created_time, created_user
     </sql>
 
     <select id="findOrderCustomsByCondition" parameterType="java.util.Map" resultType="com.jayud.customs.model.vo.OrderCustomsVO" >

@@ -83,9 +83,6 @@ public class OrderCustoms extends Model<OrderCustoms> {
     @ApiModelProperty(value = "操作人")
     private String optName;
 
-    @ApiModelProperty(value = "接单人id")
-    private Integer userId;
-
     @ApiModelProperty(value = "接单人姓名")
     private String userName;
 
@@ -93,10 +90,10 @@ public class OrderCustoms extends Model<OrderCustoms> {
     private LocalDateTime optTime;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
+    private LocalDateTime createdTime;
 
     @ApiModelProperty(value = "创建用户")
-    private String createUser;
+    private String createdUser;
 
     @ApiModelProperty(value = "修改时间")
     private LocalDateTime updatedTime;

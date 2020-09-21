@@ -6,6 +6,7 @@ import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jayud.common.CommonResult;
+import com.jayud.common.Result;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.finance.bo.*;
@@ -17,13 +18,18 @@ import com.jayud.finance.po.CustomsReceivable;
 import com.jayud.finance.po.Supplier;
 import com.jayud.finance.service.BaseService;
 import com.jayud.finance.service.KingdeeService;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import javafx.geometry.Pos;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -52,7 +58,7 @@ public class MsgApiProcessorController {
      */
     @RequestMapping(path = "/yunbaoguan/receivable/push", method = RequestMethod.POST)
     @ApiOperation(value = "接收云报关的应收单信息推至金蝶")
-    public void saveReceivableBill(@RequestBody Map<String, String> msg) {
+    public CommonResult saveReceivableBill(@RequestBody Map<String, String> msg) {
         String reqMsg = MapUtil.getStr(msg, "msg");
         log.info("金蝶接收到报关应收数据：{}", reqMsg);
 
@@ -64,14 +70,45 @@ public class MsgApiProcessorController {
 
         //拼装信息
 
+        //写入费用项
+        List<APARDetailForm> list = new ArrayList<>();
+        Class<? extends CustomsReceivable> clz = customsReceivable.getClass();
+        Field[] fields = clz.getDeclaredFields();
+        StringBuilder errorString = new StringBuilder();
+        for (Field field : fields) {
+            String name = field.getName();
+            //找到实体类中带Cost字样的数据
+            if (name.contains("Cost")) {
+                //读出注解@ApiModelProperty中的中文释义进行匹配
+                ApiModelProperty annotation = field.getAnnotation(ApiModelProperty.class);
+                CustomsFeeEnum customsFeeEnum = CustomsFeeEnum.getEnum(annotation.value());
+                if (Objects.isNull(customsFeeEnum)) {
+                    //费用无法对应金蝶,记录
+                    errorString.append(String.format("云报关费用项%s无法匹配金蝶费用项;", annotation.value()));
+                }
+                APARDetailForm feeItem = new APARDetailForm();
+                feeItem.setExpenseName(customsFeeEnum.getKingdee());
+                feeItem.setExpenseTypeName(customsFeeEnum.getType());
+                feeItem.setExpenseCategoryName(customsFeeEnum.getCategory());
+                feeItem.setPriceQty(BigDecimal.ONE);
+                feeItem.setTaxRate(BigDecimal.ZERO);
+                try {
+                    Method getMethod = clz.getMethod("get" + name.substring(0, 1).toUpperCase() + name.substring(1));
+                    Object invoke = getMethod.invoke(customsReceivable);
+                    feeItem.setTaxPrice((BigDecimal) invoke);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+
+
         //抬头信息
         //尝试查询客戶名并写入
-        Optional<Customer> suppliers = baseService.get(dataForm.getCustomerName(), Customer.class);
+        Optional<Customer> suppliers = baseService.get(customsReceivable.getCustomerName(), Customer.class);
         if (suppliers.isPresent()) {
-            log.info("传入的供应商名称 [" + dataForm.getCustomerName() + "] 无法找到相应的金蝶系统代码");
-            dataForm.setCustomerName(suppliers.get().getFNumber());
-        } else {
-            dataForm.setCustomerName("盐田港国际资讯有限公司");
+            errorString.append(String.format("传入的供应商名称 [%s] 无法找到相应的金蝶系统代码", customsReceivable.getCustomerName()));
         }
 
         dataForm.setCurrency("CNY");
@@ -83,16 +120,18 @@ public class MsgApiProcessorController {
         dataForm.setBaseCurrency("CNY");
         dataForm.setBusinessDate(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
 
-        //写入费用项
-        Field[] fields = customsReceivable.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            String name = field.getName();
-            //找到实体类中带Cost字样的数据
-            if (name.contains("Cost")) {
 
-            }
+        if (StringUtils.isNotBlank(errorString.toString())) {
+            return CommonResult.error(ResultEnum.INTERNAL_SERVER_ERROR, errorString.toString());
         }
 
+        try {
+            CommonResult commonResult = service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), dataForm);
+            return commonResult;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return CommonResult.error(ResultEnum.INTERNAL_SERVER_ERROR, "保存失败");
+        }
     }
 
     /**
@@ -104,7 +143,7 @@ public class MsgApiProcessorController {
      */
     @RequestMapping(path = "/yunbaoguan/payable/push", method = RequestMethod.POST)
     @ApiOperation(value = "接收云报关的应收单信息推至金蝶")
-    public void savePayableBill(@RequestBody Map<String, String> msg) {
+    public CommonResult savePayableBill(@RequestBody Map<String, String> msg) {
         String reqMsg = MapUtil.getStr(msg, "msg");
         log.info("金蝶接收到报关应付数据：{}", reqMsg);
         //拼装根据入参拼装实体数据
@@ -118,9 +157,9 @@ public class MsgApiProcessorController {
 
         dataForm.setBusinessNo(customsPayable.getCustomApplyNo());
         //尝试查询供应商名并写入
-        Optional<Supplier> suppliers = baseService.get(dataForm.getSupplierName(), Supplier.class);
+        Optional<Supplier> suppliers = baseService.get(customsPayable.getTargetName(), Supplier.class);
         if (suppliers.isPresent()) {
-            log.info("传入的供应商名称 [" + dataForm.getSupplierName() + "] 无法找到相应的金蝶系统代码");
+            log.info("传入的供应商名称 [" + customsPayable.getTargetName() + "] 无法找到相应的金蝶系统代码");
             dataForm.setSupplierName(suppliers.get().getFNumber());
         }else{
             dataForm.setSupplierName("盐田港国际资讯有限公司");
@@ -146,13 +185,19 @@ public class MsgApiProcessorController {
             item.setExpenseCategoryName(customsFeeEnum.getCategory());
             item.setExpenseTypeName(customsFeeEnum.getType());
             item.setPriceQty(BigDecimal.ONE);
-            item.setTaxPrice(BigDecimal.ZERO);
+            item.setTaxPrice(customsPayable.getCost());
             item.setTaxRate(BigDecimal.ZERO);
             list.add(item);
         }
         dataForm.setEntityDetail(list);
 
         //调用保存应付单接口
-        service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), dataForm);
+        try {
+            CommonResult commonResult = service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), dataForm);
+            return commonResult;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return CommonResult.error(ResultEnum.INTERNAL_SERVER_ERROR, "保存失败");
+        }
     }
 }

@@ -4,6 +4,8 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.google.gson.Gson;
+import com.jayud.common.CommonResult;
+import com.jayud.common.enums.ResultEnum;
 import com.jayud.enums.KafkaMsgEnums;
 import com.jayud.feign.AirfreightClient;
 import com.jayud.feign.FinanceClient;
@@ -114,13 +116,21 @@ public class RawDataListener {
             log.info("写入金蝶报关应收数据...");
             Map<String, String> msg = new HashMap<>();
             msg.put("msg", value);
-            financeClient.saveReceivableBill(msg);
+            CommonResult commonResult = financeClient.saveReceivableBill(msg);
+            doLog(commonResult);
         }
         if (match(KafkaMsgEnums.FINANCE_CUSTOMS_PAYABLE, record)) {
             log.info("写入金蝶报关应付数据...");
             Map<String, String> msg = new HashMap<>();
             msg.put("msg", value);
-            financeClient.savePayableBill(msg);
+            CommonResult commonResult = financeClient.savePayableBill(msg);
+            doLog(commonResult);
+        }
+    }
+
+    private void doLog(CommonResult commonResult) {
+        if (commonResult.getCode() != ResultEnum.SUCCESS.getCode()) {
+            log.error(commonResult.getMsg());
         }
     }
 

@@ -2,6 +2,7 @@ package com.jayud.send;
 
 import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.ResultEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,7 +35,13 @@ public class ProducerController {
         String topic = MapUtil.getStr(param, "topic");
         String key = MapUtil.getStr(param, "key");
         String value = MapUtil.getStr(param, "msg");
-        kafkaTemplate.send(topic, key, value);
+//        return CommonResult.success();
+        try {
+            kafkaTemplate.send(topic, key, value);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return CommonResult.error(ResultEnum.INTERNAL_SERVER_ERROR, "发送失败");
+        }
         return CommonResult.success();
     }
 }

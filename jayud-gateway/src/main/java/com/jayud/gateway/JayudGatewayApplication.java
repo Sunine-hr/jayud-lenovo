@@ -14,7 +14,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 @EnableDiscoveryClient
-@ComponentScan(basePackages = {"com.jayud"})
+//@ComponentScan(basePackages = {"com.jayud"})
 @EnableFeignClients
 public class JayudGatewayApplication {
     public static void main(String []args){

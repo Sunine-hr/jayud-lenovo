@@ -26,6 +26,10 @@ public class AddSystemUserForm {
     @NotEmpty(message = "岗位ID不能为空")
     private Long workId;
 
+    @ApiModelProperty(value = "岗位描述",required = true)
+    @NotEmpty(message = "岗位描述不能为空")
+    private String workName;
+
     @ApiModelProperty(value = "联系电话",required = true)
     @NotEmpty(message = "联系电话不能为空")
     private String phone;

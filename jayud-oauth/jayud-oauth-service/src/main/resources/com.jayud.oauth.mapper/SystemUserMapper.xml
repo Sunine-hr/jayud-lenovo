@@ -12,6 +12,7 @@
         <result column="phone" property="phone" />
         <result column="department_id" property="departmentId" />
         <result column="work_id" property="workId" />
+        <result column="work_name" property="workName" />
         <result column="company_id" property="companyId" />
         <result column="superior_id" property="superiorId" />
         <result column="login_time" property="loginTime" />
@@ -62,7 +63,6 @@
         THEN '审核拒绝'
         END
         ) auditStatusDesc,
-        w.`work_name` workName,
         sr.`name` roleName,
         c.`company_name` companyName,
         su.`created_time` createdTime,
@@ -73,14 +73,12 @@
         FROM
         `system_user` t
         WHERE t.id = su.`superior_id`) superiorName,
-        w.`id` workId,
+        su.`work_name` workName,
         sr.`id` roleId,
         su.note,
         su.`audit_status` auditStatus
         FROM
         `system_user` su
-        LEFT JOIN `work` w
-        ON su.`work_id` = w.`id`
         LEFT JOIN system_user_role_relation surr
         ON surr.`user_id` = su.`id`
         LEFT JOIN system_role sr

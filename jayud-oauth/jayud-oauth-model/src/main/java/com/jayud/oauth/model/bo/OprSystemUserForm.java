@@ -31,6 +31,10 @@ public class OprSystemUserForm {
     @NotEmpty(message = "岗位ID不能为空")
     private Long workId;
 
+    @ApiModelProperty(value = "岗位",required = true)
+    @NotEmpty(message = "岗位不能为空")
+    private String workName;
+
     @ApiModelProperty(value = "角色ID",required = true)
     @NotEmpty(message = "角色ID不能为空")
     private Long roleId;

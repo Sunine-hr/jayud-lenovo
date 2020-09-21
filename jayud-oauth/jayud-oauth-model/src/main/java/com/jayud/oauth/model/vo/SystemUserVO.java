@@ -34,6 +34,9 @@ public class SystemUserVO {
     @ApiModelProperty(value = "岗位ID")
     private Long workId;
 
+    @ApiModelProperty(value = "岗位描述")
+    private String workName;
+
     @ApiModelProperty(value = "角色ID")
     private Long roleId;
 

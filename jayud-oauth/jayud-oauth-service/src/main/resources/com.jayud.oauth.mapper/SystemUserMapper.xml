@@ -108,7 +108,10 @@
                 and su.user_name like concat('%',#{form.userName},'%')
             </if>
             <if test="form.departmentId != null">
-                and su.department_id = #{form.departmentId}
+                and su.department_id in
+                <foreach collection="form.departmentIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
             </if>
         </if>
     </select>

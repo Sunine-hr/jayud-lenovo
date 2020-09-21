@@ -185,6 +185,17 @@ public class SystemUserController {
     @PostMapping("/list")
     public CommonResult<CommonPageResult<SystemUserVO>> list(@RequestBody QuerySystemUserForm form) {
 
+        //选择父级部门时要显示下面所有得部门员工信息
+        if("byDepartmentId".equals(form.getCmd())) {
+            List<Long> departmentIds = new ArrayList<>();
+            Long departmentId = form.getDepartmentId();
+            departmentIds.add(departmentId);
+            List<QueryOrgStructureVO> queryOrgStructureVOS = departmentService.findDepartmentByfId(departmentId);
+            for (QueryOrgStructureVO queryOrgStructure : queryOrgStructureVOS) {
+                departmentIds.add(queryOrgStructure.getId());
+            }
+            form.setDepartmentIds(departmentIds);
+        }
         IPage<SystemUserVO> pageList = userService.getPageList(form);
 
         CommonPageResult<SystemUserVO> pageVO = new CommonPageResult(pageList);

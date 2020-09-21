@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.Pattern;
+import java.util.List;
 
 @Data
 public class QuerySystemUserForm extends BasePageForm{
@@ -27,4 +28,7 @@ public class QuerySystemUserForm extends BasePageForm{
 
     @ApiModelProperty("所属部门ID(组织架构的员工查询)")
     private Long departmentId;
+
+    @ApiModelProperty("所属部门ID集合，前台忽略")
+    private List<Long> departmentIds;
 }

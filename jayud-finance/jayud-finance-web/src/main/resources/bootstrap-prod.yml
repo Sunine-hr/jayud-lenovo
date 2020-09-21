@@ -1,0 +1,17 @@
+jayud:
+  nacos:
+    server-addr: 172.18.239.242:8848
+    config:
+      namespace:
+kingdee:
+  dbId: 5ee190b8e791bf #物流科技测试账套
+kingdeeback:
+  dbId: 5e8db02efe5c4a #信息部测试账套
+spring:
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    database: 10
+    password: 'jayud@)@)'
+server:
+  port: 9998

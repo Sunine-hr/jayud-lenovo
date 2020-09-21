@@ -1,14 +1,17 @@
 package com.jayud.send;
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONUtil;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import sun.rmi.runtime.Log;
 
 import java.util.Map;
 
@@ -22,6 +25,7 @@ import java.util.Map;
 @RequestMapping(value = "/kafka")
 @RestController
 @SuppressWarnings("unchecked")
+@Slf4j
 public class ProducerController {
     @Autowired
     private KafkaTemplate kafkaTemplate;
@@ -37,6 +41,7 @@ public class ProducerController {
         String value = MapUtil.getStr(param, "msg");
 //        return CommonResult.success();
         try {
+            log.info(String.format("正在向kafka发送数据：%s", JSONUtil.toJsonPrettyStr(param)));
             kafkaTemplate.send(topic, key, value);
         } catch (Exception e) {
             e.printStackTrace();

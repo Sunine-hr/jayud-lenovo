@@ -235,6 +235,7 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
         recParam.put("costtype", "1");
         payParam.put("costtype", "2");
 
+        log.info(String.format("拼装数据完成，开始请求云报关接口..."));
         String receivable = doPost(JSONUtil.toJsonStr(recParam), financeUrl);
         String payable = doPost(JSONUtil.toJsonStr(payParam), financeUrl);
 
@@ -285,6 +286,7 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
         msgMap.put("topic", topic);
         msgMap.put("key", key);
         msgMap.put("msg", JSONUtil.toJsonStr(msg));
+        log.info(String.format("开始发送数据给kafka..."));
         CommonResult consume = msgClient.consume(msgMap);
         if (consume.getCode() != ResultEnum.SUCCESS.getCode()) {
             //调用失败将返回false

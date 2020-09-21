@@ -117,14 +117,14 @@ public class RawDataListener {
             Map<String, String> msg = new HashMap<>();
             msg.put("msg", value);
             CommonResult commonResult = financeClient.saveReceivableBill(msg);
-            doLog(commonResult);
+//            doLog(commonResult);
         }
         if (match(KafkaMsgEnums.FINANCE_CUSTOMS_PAYABLE, record)) {
             log.info("写入金蝶报关应付数据...");
             Map<String, String> msg = new HashMap<>();
             msg.put("msg", value);
             CommonResult commonResult = financeClient.savePayableBill(msg);
-            doLog(commonResult);
+//            doLog(commonResult);
         }
     }
 

@@ -10,7 +10,9 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.google.gson.Gson;
+import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
+import com.jayud.common.Result;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
@@ -257,25 +259,38 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        Boolean sentReceivableStatus = true;
+        Boolean sentPayableStatus = true;
         if (hasPayable || hasReceivable) {
             if (hasPayable) {
-                generateKafkaMsg("financeTest", "customs-payable", payable);
+                sentPayableStatus = generateKafkaMsg("financeTest", "customs-payable", payable);
+
             }
             if (hasReceivable) {
                 //应收单会出现一个报关单号对应多个行的情况，一般是因为柜号不一致，要区分计费
-                generateKafkaMsg("financeTest", "customs-receivable", receivable);
+                sentReceivableStatus = generateKafkaMsg("financeTest", "customs-receivable", receivable);
+            }
+            if (!sentPayableStatus || !sentReceivableStatus) {
+                Asserts.fail(ResultEnum.PARAM_ERROR, "发送金蝶失败");
             }
         } else {
-            Asserts.fail(ResultEnum.PARAM_ERROR, "发送金蝶失败");
+            if (!sentPayableStatus || !sentReceivableStatus) {
+                Asserts.fail(ResultEnum.PARAM_ERROR, "发送金蝶失败");
+            }
         }
     }
 
-    private void generateKafkaMsg(String topic, String key, String msg) {
+    private Boolean generateKafkaMsg(String topic, String key, String msg) {
         Map<String, String> msgMap = new HashMap<>();
         msgMap.put("topic", topic);
         msgMap.put("key", key);
         msgMap.put("msg", JSONUtil.toJsonStr(msg));
-        msgClient.consume(msgMap);
+        CommonResult consume = msgClient.consume(msgMap);
+        if (consume.getCode() != ResultEnum.SUCCESS.getCode()) {
+            //调用失败将返回false
+            return false;
+        }
+        return true;
     }
 
     private JSONObject doGet(String url, Map<String, Object> params) {

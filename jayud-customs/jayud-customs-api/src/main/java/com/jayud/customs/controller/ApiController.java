@@ -8,12 +8,14 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.customs.annotations.APILog;
+import com.jayud.customs.feign.MsgClient;
 import com.jayud.customs.model.bo.*;
 import com.jayud.customs.model.po.CustomsReceivable;
 import com.jayud.customs.model.vo.*;
 import com.jayud.customs.service.ICustomsApiService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -35,9 +38,12 @@ import java.util.Objects;
 @RequestMapping("/customs")
 @Api(tags = "云报关接口")
 @RestController
+@Slf4j
 public class ApiController {
     @Autowired
     ICustomsApiService service;
+    @Autowired
+    MsgClient client;
 
     @ApiOperation(value = "云报关登录（强制从新登录）")
     @PostMapping("/login")
@@ -140,7 +146,9 @@ public class ApiController {
             Asserts.fail(ResultEnum.PARAM_ERROR, "至少填写一个单号");
         }
         service.getFinanceInfoAndPush2Kingdee(form);
-
+//        Map<String, String> map = new HashMap<>();
+//        map.put("test", "test");
+//       client.consume(map);
         return CommonResult.success("发送完成");
     }
 
@@ -150,16 +158,16 @@ public class ApiController {
     public CommonResult receiveFinanceFeed(@RequestBody Map<String, String> param) {
         String applyNo = MapUtil.getStr(param, "apply_no");
         String uid = MapUtil.getStr(param, "uid");
-        return CommonResult.success(String.format("收到数据：apply_no=%s,uid=%s", applyNo == null ? "" : applyNo, uid == null ? "" : uid));
-//        if (StringUtils.isNotBlank(applyNo) && (18 == applyNo.length())) {
-//            GetFinanceInfoForm getFinanceInfoForm = new GetFinanceInfoForm();
-//            getFinanceInfoForm.setApplyNo(applyNo);
-//            service.getFinanceInfoAndPush2Kingdee(getFinanceInfoForm);
-//            return CommonResult.success(String.format("已经收到回执信息：18位报关单号为：%s", applyNo));
-//        } else {
-//            Asserts.fail("apply_no需要输入18位报关单号");
-//        }
-//        return CommonResult.error(ResultEnum.PARAM_ERROR, "apply_no需要输入18位报关单号");
+        log.info(String.format("收到数据：apply_no=%s,uid=%s", applyNo == null ? "" : applyNo, uid == null ? "" : uid));
+        if (StringUtils.isNotBlank(applyNo) && (18 == applyNo.length())) {
+            GetFinanceInfoForm getFinanceInfoForm = new GetFinanceInfoForm();
+            getFinanceInfoForm.setApplyNo(applyNo);
+            service.getFinanceInfoAndPush2Kingdee(getFinanceInfoForm);
+            return CommonResult.success(String.format("已经收到回执信息：18位报关单号为：%s", applyNo));
+        } else {
+            Asserts.fail("apply_no需要输入18位报关单号");
+        }
+        return CommonResult.error(ResultEnum.PARAM_ERROR, "apply_no需要输入18位报关单号");
     }
 
 

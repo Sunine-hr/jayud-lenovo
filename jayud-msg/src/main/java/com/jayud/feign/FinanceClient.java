@@ -26,7 +26,7 @@ public interface FinanceClient {
      * @return
      */
     @RequestMapping(path = "/api/finance/kingdee/yunbaoguan/receivable/push", method = RequestMethod.POST)
-    public CommonResult saveReceivableBill(@RequestBody Map<String, String> msg);
+    CommonResult saveReceivableBill(@RequestBody Map<String, String> msg);
 
     /**
      * 推送应付单到金蝶
@@ -34,6 +34,6 @@ public interface FinanceClient {
      * @return
      */
     @RequestMapping(path = "/api/finance/kingdee/yunbaoguan/payable/push", method = RequestMethod.POST)
-    public void savePayableBill(@RequestBody Map<String, String> msg);
+    CommonResult savePayableBill(@RequestBody Map<String, String> msg);
 
 }

@@ -259,20 +259,32 @@ public class SystemUserController {
     public CommonResult saveOrUpdatedSystemUser(@RequestBody AddSystemUserForm form) {
         SystemUser systemUser = ConvertUtil.convert(form,SystemUser.class);
         String loginUser = getLoginName();
-        //校验该员工是否存在
-        Map<String,Object> param = new HashMap<>();
-        param.put("user_name",form.getUserName());
-        List<SystemUser> users = userService.findUserByCondition(param);
-        if(users != null && users.size() > 0){
-            return CommonResult.error(400,"该员工已经存在");
-        }
         //如果新增编辑传的是我是负责人,则把历史负责人改为员工
         if("1".equals(form.getIsDepartmentCharge())){
             userService.updateIsCharge(form.getDepartmentId());
         }
+        //校验该员工是否存在
+        Map<String,Object> param = new HashMap<>();
+        List<SystemUser> users = new ArrayList<>();
         if(form.getId() != null){
+            param.put("id",form.getId());
+            users = userService.findUserByCondition(param);//旧用户姓名
+            if(!users.get(0).getUserName().equals(form.getUserName())){//修改了用户姓名进行重复校验
+                param = new HashMap<>();
+                param.put("user_name",form.getUserName());
+                users = userService.findUserByCondition(param);
+                if(users != null && users.size() > 0){
+                    return CommonResult.error(400,"该员工已经存在");
+                }
+            }
             systemUser.setUpdatedUser(loginUser);
         }else {
+            param = new HashMap<>();
+            param.put("user_name",form.getUserName());
+            users = userService.findUserByCondition(param);
+            if(users != null && users.size() > 0){
+                return CommonResult.error(400,"该员工已经存在");
+            }
             systemUser.setUserType(UserTypeEnum.EMPLOYEE_TYPE.getCode());
             systemUser.setStatus(SystemUserStatusEnum.OFF.getCode());
             systemUser.setCreatedUser(loginUser);

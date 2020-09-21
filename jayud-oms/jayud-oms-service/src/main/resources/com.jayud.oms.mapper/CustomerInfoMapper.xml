@@ -217,7 +217,7 @@
         ON surr.`role_id` = sr.`id`
         LEFT JOIN customer_info ci
         ON su.`company_id` = ci.`id`
-        WHERE su.id = #{id}
+        WHERE su.user_type = '2' and su.id = #{id}
     </select>
 
     <select id="findCustAccountByPage" resultType="com.jayud.oms.model.vo.CustAccountVO" parameterType="com.jayud.oms.model.bo.QueryCusAccountForm">
@@ -262,7 +262,7 @@
         ON surr.`role_id` = sr.`id`
         LEFT JOIN customer_info ci
         ON su.`company_id` = ci.`id`
-        WHERE su.status = 1
+        WHERE su.status = 1 and su.user_type = '2'
         <if test="form.companyId != null and form.companyId != ''">
             and su.companyId = #{form.companyId}
         </if>

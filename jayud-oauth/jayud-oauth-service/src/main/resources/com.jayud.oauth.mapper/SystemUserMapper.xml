@@ -87,7 +87,7 @@
         ON su.`company_id` = c.`id`
         LEFT JOIN department dt
         ON dt.`id` = su.`department_id`
-        WHERE 1 = 1
+        WHERE su.user_type = '1'
         <if test="form.cmd == 'isAccount' or form.cmd == 'isAudit'">
             and su.`status` = 1
             <if test="form.name != null and form.name != ''">

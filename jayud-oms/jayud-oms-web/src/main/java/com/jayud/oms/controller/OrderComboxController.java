@@ -88,7 +88,7 @@ public class OrderComboxController {
         resultMap.put("contracts",comboxStrVOS);
 
         //业务所属部门
-        initComboxVOS = (List<InitComboxVO>)oauthClient.findDepartment();
+        initComboxVOS = (List<InitComboxVO>) oauthClient.findDepartment().getData();
         resultMap.put("departments",initComboxVOS);
 
         //通关口岸

@@ -37,4 +37,12 @@
             #{item}
         </foreach>
     </delete>
+
+    <select id="isExistUserRelation" resultType="com.jayud.oauth.model.po.SystemUserRoleRelation" parameterType = "java.util.List">
+        select * from system_user_role_relation where 1 > 2
+        or role_id in
+        <foreach collection="list"  item="item" open="(" separator="," close=")"  >
+            #{item}
+        </foreach>
+    </select>
 </mapper>

@@ -23,4 +23,6 @@ public interface SystemUserRoleRelationMapper extends BaseMapper<SystemUserRoleR
     boolean removeRelationByRoleId(List<Long> roleIds);
 
     boolean removeRelationByUserId(List<Long> userIds);
+
+    List<SystemUserRoleRelation> isExistUserRelation(List<Long> roleIds);
 }

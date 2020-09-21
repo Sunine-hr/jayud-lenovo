@@ -184,6 +184,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         SystemUser systemUser = ConvertUtil.convert(form,SystemUser.class);
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("audit_status", "1");
+        queryWrapper.eq("id",systemUser.getId());
         baseMapper.update(systemUser,queryWrapper);
     }
 

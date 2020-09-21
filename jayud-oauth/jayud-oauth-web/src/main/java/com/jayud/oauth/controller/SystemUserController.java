@@ -167,6 +167,11 @@ public class SystemUserController {
     @ApiOperation(value = "角色权限管理-删除")
     @PostMapping(value = "/delRole")
     public CommonResult delRole(@RequestBody DeleteForm form){
+        //删除角色前校验该角色是否有授权人员
+        boolean result = userRoleRelationService.isExistUserRelation(form.getIds());
+        if(!result){
+            return CommonResult.error(400,"该角色有授权人员，不允许删除");
+        }
         roleService.removeByIds(form.getIds());//删除角色
         roleMenuRelationService.removeRelationByRoleId(form.getIds());//删除角色和菜单的关系
         userRoleRelationService.removeRelationByRoleId(form.getIds());//删除角色和用户的关系
@@ -254,6 +259,13 @@ public class SystemUserController {
     public CommonResult saveOrUpdatedSystemUser(@RequestBody AddSystemUserForm form) {
         SystemUser systemUser = ConvertUtil.convert(form,SystemUser.class);
         String loginUser = getLoginName();
+        //校验该员工是否存在
+        Map<String,Object> param = new HashMap<>();
+        param.put("user_name",form.getUserName());
+        List<SystemUser> users = userService.findUserByCondition(param);
+        if(users != null && users.size() > 0){
+            return CommonResult.error(400,"该员工已经存在");
+        }
         //如果新增编辑传的是我是负责人,则把历史负责人改为员工
         if("1".equals(form.getIsDepartmentCharge())){
             userService.updateIsCharge(form.getDepartmentId());

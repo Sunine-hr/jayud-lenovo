@@ -43,4 +43,11 @@ public interface ISystemUserRoleRelationService extends IService<SystemUserRoleR
      * @return
      */
     boolean removeRelationByUserId(List<Long> userIds);
+
+    /**
+     * 该角色是否存在授权人员
+     * @param roleIds
+     * @return
+     */
+    boolean isExistUserRelation(List<Long> roleIds);
 }

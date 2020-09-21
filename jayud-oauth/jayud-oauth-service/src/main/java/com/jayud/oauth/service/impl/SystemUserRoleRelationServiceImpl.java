@@ -49,5 +49,14 @@ public class SystemUserRoleRelationServiceImpl extends ServiceImpl<SystemUserRol
         return baseMapper.removeRelationByUserId(userIds);
     }
 
+    @Override
+    public boolean isExistUserRelation(List<Long> roleIds) {
+        List<SystemUserRoleRelation> userRoleRelations = baseMapper.isExistUserRelation(roleIds);
+        if(userRoleRelations != null && userRoleRelations.size() > 0){
+            return false;
+        }
+        return true;
+    }
+
 
 }

@@ -185,14 +185,14 @@ public class OrderComboxController {
             comboxStrVO.setName(currencyInfo.getExchangeRate());
             initComboxStrVOS.add(comboxStrVO);
         }
-        param.put("currency",receivableCombox);
+        param.put("currency",initComboxStrVOS);
         return CommonResult.success(param);
     }
 
     @ApiOperation(value = "操作员")
     @PostMapping(value = "/initOptUser")
     public CommonResult initOptUser() {
-        List<InitComboxVO> initComboxVOS = (List<InitComboxVO>) oauthClient.findUserByKey(null);
+        List<InitComboxVO> initComboxVOS = (List<InitComboxVO>) oauthClient.findUserByKey(RoleKeyEnum.OPERATOR.getCode()).getData();
         return CommonResult.success(initComboxVOS);
     }
 

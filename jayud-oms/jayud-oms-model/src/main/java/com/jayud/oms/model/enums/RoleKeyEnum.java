@@ -10,7 +10,8 @@ import java.util.Objects;
 public enum RoleKeyEnum {
 
     BUSINESS_MANAGER("business_manager","业务员"),
-    CUSTOMER_SERVICE("customer_service","客服")
+    CUSTOMER_SERVICE("customer_service","客服"),
+    OPERATOR("operator","操作员")
     ;
 
     private String code;

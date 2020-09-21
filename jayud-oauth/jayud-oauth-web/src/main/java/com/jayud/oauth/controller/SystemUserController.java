@@ -288,9 +288,9 @@ public class SystemUserController {
             legalEntity.setId(form.getId());
             legalEntity.setUpdatedUser(getLoginName());
         }else {
-            legalEntity.setAuditStatus(1L);
             legalEntity.setCreatedUser(getLoginName());
         }
+        legalEntity.setAuditStatus(1L);
         legalEntity.setLegalName(form.getLegalName());
         legalEntity.setLegalCode(form.getLegalCode());
         legalEntity.setRigisAddress(form.getRigisAddress());

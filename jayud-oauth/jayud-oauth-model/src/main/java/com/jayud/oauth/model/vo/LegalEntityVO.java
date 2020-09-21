@@ -27,5 +27,13 @@ public class LegalEntityVO {
     @ApiModelProperty(value = "销售部门ID")
     private Long saleDepartId;
 
+    @ApiModelProperty(value = "审核状态")
+    private Long auditStatus;
+
+    @ApiModelProperty(value = "审核状态描述")
+    private String auditStatusDesc;
+
+
+
 
 }

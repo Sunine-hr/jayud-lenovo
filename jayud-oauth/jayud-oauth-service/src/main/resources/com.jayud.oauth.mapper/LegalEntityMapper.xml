@@ -29,7 +29,16 @@
           le.`legal_name` legalName,
           le.`rigis_address` rigisAddress,
           d.`name` saleDepartName,
-          d.id saleDepartId
+          d.id saleDepartId,
+          le.`audit_status` auditStatus,
+          (CASE
+          le.`audit_status`
+          WHEN 0
+          THEN '审核拒绝'
+          WHEN 1
+          THEN '待审核'
+          WHEN 2 THEN '审核通过'
+          END) auditStatusDesc
         FROM
           legal_entity le
           LEFT JOIN department d

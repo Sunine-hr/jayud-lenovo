@@ -84,7 +84,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                     customs.setUpdatedTime(LocalDateTime.now());
                     customs.setUpdatedUser(getLoginUser());
                 } else {
-                    customs.setCreateUser(getLoginUser());
+                    customs.setCreatedUser(getLoginUser());
                 }
                 orderCustomsList.add(customs);
 

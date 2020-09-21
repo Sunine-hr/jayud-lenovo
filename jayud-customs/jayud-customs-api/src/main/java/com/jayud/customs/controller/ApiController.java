@@ -144,5 +144,24 @@ public class ApiController {
         return CommonResult.success("发送完成");
     }
 
+    @ApiOperation(value = "接收云报关审核成功的信息")
+    @PostMapping("/feedback/finance/approved")
+    @APILog
+    public CommonResult receiveFinanceFeed(@RequestBody Map<String, String> param) {
+        String applyNo = MapUtil.getStr(param, "apply_no");
+        String uid = MapUtil.getStr(param, "uid");
+        return CommonResult.success(String.format("收到数据：apply_no=%s,uid=%s", applyNo == null ? "" : applyNo, uid == null ? "" : uid));
+//        if (StringUtils.isNotBlank(applyNo) && (18 == applyNo.length())) {
+//            GetFinanceInfoForm getFinanceInfoForm = new GetFinanceInfoForm();
+//            getFinanceInfoForm.setApplyNo(applyNo);
+//            service.getFinanceInfoAndPush2Kingdee(getFinanceInfoForm);
+//            return CommonResult.success(String.format("已经收到回执信息：18位报关单号为：%s", applyNo));
+//        } else {
+//            Asserts.fail("apply_no需要输入18位报关单号");
+//        }
+//        return CommonResult.error(ResultEnum.PARAM_ERROR, "apply_no需要输入18位报关单号");
+    }
+
+
 
 }

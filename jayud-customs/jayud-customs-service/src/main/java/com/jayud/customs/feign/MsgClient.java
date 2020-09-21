@@ -19,5 +19,5 @@ import java.util.Map;
 public interface MsgClient {
 
     @RequestMapping(value = "/kafka/producer", method = RequestMethod.POST)
-    public void consume(@RequestBody Map<String,String> param);
+    public CommonResult consume(@RequestBody Map<String,String> param);
 }

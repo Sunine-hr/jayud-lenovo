@@ -1,6 +1,7 @@
 package com.jayud.send;
 
 import cn.hutool.core.map.MapUtil;
+import com.jayud.common.CommonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,10 +30,11 @@ public class ProducerController {
      *
      */
     @RequestMapping(value = "/producer", method = RequestMethod.POST)
-    public void consume(@RequestBody Map<String, String> param) {
+    public CommonResult consume(@RequestBody Map<String, String> param) {
         String topic = MapUtil.getStr(param, "topic");
         String key = MapUtil.getStr(param, "key");
         String value = MapUtil.getStr(param, "msg");
         kafkaTemplate.send(topic, key, value);
+        return CommonResult.success();
     }
 }

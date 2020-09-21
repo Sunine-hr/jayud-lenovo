@@ -16,7 +16,7 @@ import lombok.Data;
 public class CustomsPayable {
     @JsonProperty("fee_cd")
     @SerializedName("fee_cd")
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "费用项代码")
     private String feeCd;
 
     @JsonProperty("fee_name")

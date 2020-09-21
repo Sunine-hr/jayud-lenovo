@@ -17,8 +17,11 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.HttpRequester;
 import com.jayud.customs.feign.MsgClient;
 import com.jayud.customs.model.bo.*;
+import com.jayud.customs.model.po.CustomsPayable;
+import com.jayud.customs.model.po.CustomsReceivable;
 import com.jayud.customs.model.vo.*;
 import com.jayud.customs.service.ICustomsApiService;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;
@@ -234,27 +237,35 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
         String payable = doPost(JSONUtil.toJsonStr(payParam), financeUrl);
 
 
-
+        //应付为行显示费用
+        //应收为列显示费用，但可能存在多行应收对应同一个报关单
+        Boolean hasReceivable = false;
+        Boolean hasPayable = false;
         try {
-            try {
-                int size = JSONArray.parseArray(receivable).size();
-                if (size > 0) {
-                    generateKafkaMsg("financeTest", "customs-receivable", receivable);
+            List<CustomsReceivable> receivableArray = JSONArray.parseArray(receivable, CustomsReceivable.class);
+            if (!CollectionUtil.isEmpty(receivableArray)) {
+                hasReceivable = true;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
             try {
-                int size = JSONArray.parseArray(payable).size();
-                if (size > 0) {
-                    generateKafkaMsg("financeTest", "customs-payable", payable);
+                List<CustomsPayable> payableArray = JSONArray.parseArray(payable, CustomsPayable.class);
+                if (!CollectionUtil.isEmpty(payableArray)) {
+                    hasPayable = true;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (hasPayable || hasReceivable) {
+            if (hasPayable) {
+                generateKafkaMsg("financeTest", "customs-payable", payable);
+            }
+            if (hasReceivable) {
+                //应收单会出现一个报关单号对应多个行的情况，一般是因为柜号不一致，要区分计费
+                generateKafkaMsg("financeTest", "customs-receivable", receivable);
+            }
+        } else {
             Asserts.fail(ResultEnum.PARAM_ERROR, "发送金蝶失败");
         }
     }

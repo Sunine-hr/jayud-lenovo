@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
- * 应付单实体
+ * 应付单实体（直接从报关模块复制）
  *
  * @author william
  * @description
@@ -16,7 +16,7 @@ import lombok.Data;
 public class CustomsPayable {
     @JsonProperty("fee_cd")
     @SerializedName("fee_cd")
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "费用项代码")
     private String feeCd;
 
     @JsonProperty("fee_name")

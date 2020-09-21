@@ -16,8 +16,11 @@ import java.util.Objects;
 @Getter
 @AllArgsConstructor
 public enum KafkaMsgEnums {
+    //财务-应收应付异步处理
     FINANCE_CUSTOMS_RECEIVABLE("financeTest", "customs-receivable"),
     FINANCE_CUSTOMS_PAYABLE("financeTest", "customs-payable"),
+    //空运订单异步处理
+
     ;
     private String topic;
     private String key;

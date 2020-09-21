@@ -5,8 +5,10 @@ import com.google.gson.annotations.SerializedName;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
- * 云报关应收单实体
+ * 云报关应收单实体（直接从报关模块复制）
  *
  * @author william
  * @description
@@ -16,8 +18,8 @@ import lombok.Data;
 public class CustomsReceivable {
     @JsonProperty("declare_id")
     @SerializedName("declare_id")
-    @ApiModelProperty(value = "当前报关单序号（无用）")
-    private int declareId;
+    @ApiModelProperty(value = "进出口标识（1-出口，2-进口）")
+    private Integer declareId;
 
     @JsonProperty("port_no")
     @SerializedName("port_no")
@@ -31,7 +33,7 @@ public class CustomsReceivable {
 
     @JsonProperty("shipper_name")
     @SerializedName("shipper_name")
-    @ApiModelProperty(value = "经营单位")
+    @ApiModelProperty(value = "收发货人")
     private String shipperName;
 
     @JsonProperty("cust_linkman")
@@ -66,7 +68,7 @@ public class CustomsReceivable {
 
     @JsonProperty("trade_no")
     @SerializedName("trade_no")
-    @ApiModelProperty(value = "贸易方式编号（如需名称，需要查询基础数据）")
+    @ApiModelProperty(value = "监管方式（如需名称，需要查询基础数据）")
     private String tradeNo;
 
     @JsonProperty("start_country_no")
@@ -86,7 +88,7 @@ public class CustomsReceivable {
 
     @JsonProperty("accompany_no")
     @SerializedName("accompany_no")
-    @ApiModelProperty(value = "随附单证编号")
+    @ApiModelProperty(value = "随附单证-通关单号")
     private String accompanyNo;
 
 
@@ -96,13 +98,13 @@ public class CustomsReceivable {
     @ApiModelProperty(value = "航次号")
     private String voyage;
 
-    @ApiModelProperty(value = "金关清单号")
+    @ApiModelProperty(value = "金关清单号-核注清单号")
     private String emsno;
 
     @JsonProperty("num_no")
     @SerializedName("num_no")
-    @ApiModelProperty(value = "序号")
-    private int numNo;
+    @ApiModelProperty(value = "集装箱序号")
+    private Integer numNo;
 
     @JsonProperty("container_type_no")
     @SerializedName("container_type_no")
@@ -116,146 +118,261 @@ public class CustomsReceivable {
 
     @JsonProperty("cost_note")
     @SerializedName("cost_note")
-    @ApiModelProperty(value = "未对应")
+    @ApiModelProperty(value = "费用备注")
     private String costNote;
 
-    @JsonProperty("apply_cost")
-    @SerializedName("apply_cost")
-    @ApiModelProperty(value = "")
-    private int applyCost;
+    @JsonProperty("BHF")
+    @SerializedName("BHF")
+    @ApiModelProperty(value = "编号费")
+    private BigDecimal bhf;
 
-    @JsonProperty("wharf_cost")
-    @SerializedName("wharf_cost")
+    @JsonProperty("WF")
+    @SerializedName("WF")
+    @ApiModelProperty(value = "网付代理费")
+    private BigDecimal wf;
+
+    @JsonProperty("CGF")
+    @SerializedName("CGF")
+    @ApiModelProperty(value = "查柜费")
+    private BigDecimal cgf;
+
+    @JsonProperty("DLF")
+    @SerializedName("DLF")
+    @ApiModelProperty(value = "代理费")
+    private BigDecimal dlf;
+
+    @JsonProperty("GJF")
+    @SerializedName("GJF")
+    @ApiModelProperty(value = "国检费")
+    private BigDecimal gjf;
+
+    @JsonProperty("HDF")
+    @SerializedName("HDF")
+    @ApiModelProperty(value = "换单费")
+    private BigDecimal hdf;
+
+    @JsonProperty("KSSMF")
+    @SerializedName("KSSMF")
+    @ApiModelProperty(value = "快速扫描费")
+    private BigDecimal kssmf;
+
+    @JsonProperty("DZF")
+    @SerializedName("DZF")
+    @ApiModelProperty(value = "单证费")
+    private BigDecimal dzf;
+
+    @JsonProperty("DDF")
+    @SerializedName("DDF")
+    @ApiModelProperty(value = "打单费")
+    private BigDecimal ddf;
+
+    @JsonProperty("XGFY")
+    @SerializedName("XGFY")
+    @ApiModelProperty(value = "修柜费用")
+    private BigDecimal xgfy;
+
+    @JsonProperty("JKHDF")
+    @SerializedName("JKHDF")
+    @ApiModelProperty(value = "进口换单费")
+    private BigDecimal jkhdf;
+
+    @JsonProperty("BGF")
+    @SerializedName("BGF")
+    @ApiModelProperty(value = "报关费")
+    private BigDecimal bgf;
+
+    @JsonProperty("HDDLF")
+    @SerializedName("HDDLF")
+    @ApiModelProperty(value = "换单代理费")
+    private BigDecimal hddlf;
+
+    @JsonProperty("GCF")
+    @SerializedName("GCF")
+    @ApiModelProperty(value = "改船费")
+    private BigDecimal gcf;
+
+    @JsonProperty("BCLHF")
+    @SerializedName("BCLHF")
+    @ApiModelProperty(value = "驳船理货费")
+    private BigDecimal bclhf;
+
+    @JsonProperty("HZQD")
+    @SerializedName("HZQD")
+    @ApiModelProperty(value = "保税核注清单")
+    private BigDecimal hzqd;
+
+    @JsonProperty("GS")
+    @SerializedName("GS")
+    @ApiModelProperty(value = "关税")
+    private BigDecimal gs;
+
+    @JsonProperty("ZZS")
+    @SerializedName("ZZS")
+    @ApiModelProperty(value = "增值税")
+    private BigDecimal zzs;
+
+    @JsonProperty("YSF")
+    @SerializedName("YSF")
+    @ApiModelProperty(value = "运输费")
+    private BigDecimal ysf;
+
+    @JsonProperty("SDCB")
+    @SerializedName("SDCB")
+    @ApiModelProperty(value = "删单费")
+    private BigDecimal sdcb;
+
+    @JsonProperty("GBF001")
+    @SerializedName("GBF001")
+    @ApiModelProperty(value = "过磅费")
+    private BigDecimal gbf001;
+
+    @JsonProperty("Y3C")
+    @SerializedName("Y3C")
+    @ApiModelProperty(value = "3C认证费用")
+    private BigDecimal y3c;
+
+    @JsonProperty("XGF")
+    @SerializedName("XGF")
+    @ApiModelProperty(value = "续柜费")
+    private BigDecimal xgf;
+
+    @JsonProperty("GBF1")
+    @SerializedName("GBF1")
     @ApiModelProperty(value = "港保费")
-    private int wharfCost;
+    private BigDecimal gbf1;
 
-    @JsonProperty("protect_cost")
-    @SerializedName("protect_cost")
-    @ApiModelProperty(value = "")
-    private int protectCost;
+    @JsonProperty("SF")
+    @SerializedName("SF")
+    @ApiModelProperty(value = "税费")
+    private BigDecimal sf;
 
-    @JsonProperty("sanitate_cost")
-    @SerializedName("sanitate_cost")
-    @ApiModelProperty(value = "")
-    private int sanitateCost;
+    @JsonProperty("CDF")
+    @SerializedName("CDF")
+    @ApiModelProperty(value = "舱单费")
+    private BigDecimal cdf;
 
-    @JsonProperty("hgcg_cost")
-    @SerializedName("hgcg_cost")
-    @ApiModelProperty(value = "")
-    private int hgcgCost;
+    @JsonProperty("GDF")
+    @SerializedName("GDF")
+    @ApiModelProperty(value = "改单费")
+    private BigDecimal gdf;
 
-    @JsonProperty("sjcg_cost")
-    @SerializedName("sjcg_cost")
-    @ApiModelProperty(value = "")
-    private int sjcgCost;
+//    @JsonProperty("tcf_cost")
+//    @SerializedName("tcf_cost")
+//    @ApiModelProperty(value = "舱单费")
+//    private BigDecimal tcfCost;
 
-    @JsonProperty("fc_cost")
-    @SerializedName("fc_cost")
-    @ApiModelProperty(value = "")
-    private int fcCost;
+    @JsonProperty("CYDL")
+    @SerializedName("CYDL")
+    @ApiModelProperty(value = "查验代理费")
+    private BigDecimal cydl;
 
-    @JsonProperty("bclh_cost")
-    @SerializedName("bclh_cost")
-    @ApiModelProperty(value = "")
-    private int bclhCost;
+    @JsonProperty("DL")
+    @SerializedName("DL")
+    @ApiModelProperty(value = "代理费")
+    private BigDecimal dl;
 
-    @JsonProperty("bgxy_cost")
-    @SerializedName("bgxy_cost")
-    @ApiModelProperty(value = "")
-    private int bgxyCost;
+    @JsonProperty("XFS")
+    @SerializedName("XFS")
+    @ApiModelProperty(value = "消费税")
+    private BigDecimal xfs;
 
-    @JsonProperty("bh_cost")
-    @SerializedName("bh_cost")
-    @ApiModelProperty(value = "")
-    private int bhCost;
+    @JsonProperty("HWTY")
+    @SerializedName("HWTY")
+    @ApiModelProperty(value = "海关退运")
+    private BigDecimal hwty;
 
-    @JsonProperty("dd_cost")
-    @SerializedName("dd_cost")
-    @ApiModelProperty(value = "")
-    private int ddCost;
+    @JsonProperty("FDLHF")
+    @SerializedName("FDLHF")
+    @ApiModelProperty(value = "分单理货费")
+    private BigDecimal fdlhf;
 
-    @JsonProperty("ddxy_cost")
-    @SerializedName("ddxy_cost")
-    @ApiModelProperty(value = "")
-    private int ddxyCost;
+    @JsonProperty("XYF")
+    @SerializedName("XYF")
+    @ApiModelProperty(value = "续页费")
+    private BigDecimal xyf;
 
-    @JsonProperty("zml_cost")
-    @SerializedName("zml_cost")
-    @ApiModelProperty(value = "")
-    private int zmlCost;
+    @JsonProperty("GLCD")
+    @SerializedName("GLCD")
+    @ApiModelProperty(value = "公路舱单费")
+    private BigDecimal glcd;
 
-    @JsonProperty("gjsb_cost")
-    @SerializedName("gjsb_cost")
-    @ApiModelProperty(value = "")
-    private int gjsbCost;
+    @JsonProperty("BJ")
+    @SerializedName("BJ")
+    @ApiModelProperty(value = "代理报检费")
+    private BigDecimal bj;
 
-    @JsonProperty("sjdl_cost")
-    @SerializedName("sjdl_cost")
-    @ApiModelProperty(value = "")
-    private int sjdlCost;
+    @JsonProperty("MTF")
+    @SerializedName("MTF")
+    @ApiModelProperty(value = "港建费")
+    private BigDecimal mtf;
 
-    @JsonProperty("sjhz_cost")
-    @SerializedName("sjhz_cost")
-    @ApiModelProperty(value = "")
-    private int sjhzCost;
+    @JsonProperty("MTBA")
+    @SerializedName("MTBA")
+    @ApiModelProperty(value = "保安费")
+    private double mtba;
 
-    @JsonProperty("sjsz_cost")
-    @SerializedName("sjsz_cost")
-    @ApiModelProperty(value = "")
-    private int sjszCost;
+    @JsonProperty("DEL")
+    @SerializedName("DEL")
+    @ApiModelProperty(value = "删单费")
+    private BigDecimal del;
+
+    @JsonProperty("OTH")
+    @SerializedName("OTH")
+    @ApiModelProperty(value = "其他收入")
+    private BigDecimal oth;
+
+    @JsonProperty("CZF")
+    @SerializedName("CZF")
+    @ApiModelProperty(value = "操作费")
+    private BigDecimal czf;
+
+    @JsonProperty("TTSYF")
+    @SerializedName("TTSYF")
+    @ApiModelProperty(value = "抬头费")
+    private BigDecimal ttsyf;
+
+    @JsonProperty("BYJ")
+    @SerializedName("BYJ")
+    @ApiModelProperty(value = "备用金")
+    private BigDecimal byj;
+
+    @JsonProperty("HGYGF")
+    @SerializedName("HGYGF")
+    @ApiModelProperty(value = "验估费")
+    private BigDecimal hgygf;
+
+    @JsonProperty("GBF")
+    @SerializedName("GBF")
+    @ApiModelProperty(value = "港保费")
+    private BigDecimal gbf;
+
+//    @JsonProperty("qts_cost")
+//    @SerializedName("qts_cost")
+//    @ApiModelProperty(value = "其他收入")
+//    private BigDecimal qtsCost;
 
     @JsonProperty("sjbj_cost")
     @SerializedName("sjbj_cost")
-    @ApiModelProperty(value = "")
-    private int sjbjCost;
+    @ApiModelProperty(value = "商检报检费")
+    private BigDecimal sjbjCost;
 
     @JsonProperty("xzxd_cost")
     @SerializedName("xzxd_cost")
-    @ApiModelProperty(value = "")
-    private int xzxdCost;
+    @ApiModelProperty(value = "熏蒸消毒费")
+    private BigDecimal xzxdCost;
 
     @JsonProperty("sjdd_cost")
     @SerializedName("sjdd_cost")
-    @ApiModelProperty(value = "")
-    private int sjddCost;
-
-    @JsonProperty("jkhd_cost")
-    @SerializedName("jkhd_cost")
-    @ApiModelProperty(value = "")
-    private int jkhdCost;
+    @ApiModelProperty(value = "商检打单费")
+    private BigDecimal sjddCost;
 
     @JsonProperty("kd_cost")
     @SerializedName("kd_cost")
-    @ApiModelProperty(value = "")
-    private int kdCost;
+    @ApiModelProperty(value = "快递费")
+    private BigDecimal kdCost;
 
-    @JsonProperty("gc_cost")
-    @SerializedName("gc_cost")
-    @ApiModelProperty(value = "")
-    private int gcCost;
-
-    @JsonProperty("kb_cost")
-    @SerializedName("kb_cost")
-    @ApiModelProperty(value = "")
-    private int kbCost;
-
-    @JsonProperty("ld_cost")
-    @SerializedName("ld_cost")
-    @ApiModelProperty(value = "")
-    private int ldCost;
-
-    @SerializedName("qtc_cost")
-    @ApiModelProperty(value = "")
     @JsonProperty("qtc_cost")
-    private int qtcCost;
-
-    @JsonProperty("qts_cost")
-    @SerializedName("qts_cost")
-    @ApiModelProperty(value = "")
-    private int qtsCost;
-
-    @JsonProperty("tcf_cost")
-    @SerializedName("tcf_cost")
-    @ApiModelProperty(value = "")
-    private int tcfCost;
+    @SerializedName("qtc_cost")
+    @ApiModelProperty(value = "其他代垫费")
+    private BigDecimal qtcCost;
 }

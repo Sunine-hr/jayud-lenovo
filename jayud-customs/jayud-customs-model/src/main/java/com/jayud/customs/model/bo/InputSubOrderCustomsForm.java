@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -35,6 +36,6 @@ public class InputSubOrderCustomsForm extends InputOrderForm{
 
     @ApiModelProperty(value = "附件",required = true)
     @NotEmpty(message = "fileViews is required")
-    private List<FileView> fileViews;
+    private List<FileView> fileViews = new ArrayList<>();
 
 }

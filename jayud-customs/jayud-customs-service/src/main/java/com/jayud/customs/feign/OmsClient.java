@@ -5,6 +5,7 @@ import com.jayud.common.ApiResult;
 
 import com.jayud.customs.model.bo.OprOrderLogForm;
 import com.jayud.customs.model.bo.InputOrderForm;
+import com.jayud.customs.model.bo.OprStatusForm;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,5 +45,11 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/getBaseUrl")
     ApiResult getBaseUrl();
+
+    /**
+     * 记录流程状态
+     */
+    @RequestMapping(value = "/api/saveOprStatus")
+    ApiResult saveOprStatus(@RequestBody OprStatusForm form);
 
 }

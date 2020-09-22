@@ -10,6 +10,7 @@ import com.jayud.common.utils.StringUtils;
 import com.jayud.customs.feign.OmsClient;
 import com.jayud.customs.model.bo.InputOrderCustomsForm;
 import com.jayud.customs.model.bo.InputSubOrderCustomsForm;
+import com.jayud.customs.model.bo.OprStatusForm;
 import com.jayud.customs.model.bo.QueryCustomsOrderInfoForm;
 import com.jayud.customs.model.po.OrderCustoms;
 import com.jayud.customs.model.vo.CustomsOrderInfoVO;
@@ -127,7 +128,7 @@ public class OrderCustomsController {
         return CommonResult.success(inputOrderCustomsVO);
     }
 
-    @ApiOperation(value = "报关接单列表/报关放行/放行异常列表/放行确认/审核不通过/订单列表")
+    @ApiOperation(value = "报关接单列表/放行异常列表/放行确认/审核不通过/订单列表/报关打单/复核/申报")
     @PostMapping("/findCustomsOrderByPage")
     public CommonResult<CommonPageResult<CustomsOrderInfoVO>> findCustomsOrderByPage(@RequestBody QueryCustomsOrderInfoForm form) {
         IPage<CustomsOrderInfoVO> pageList = orderCustomsService.findCustomsOrderByPage(form);
@@ -136,24 +137,26 @@ public class OrderCustomsController {
     }
 
 
-    @ApiOperation(value = "确认接单,id=子订单ID optUser=管理员CODE")
+    @ApiOperation(value = "确认接单,mainOrderId/orderId/operatorUser必传")
     @PostMapping(value = "/confirmOrder")
-    public CommonResult confirmOrder(@RequestBody Map<String,Object> param) {
-        String id = MapUtil.getStr(param,"id");
-        String optUser = MapUtil.getStr(param,"optUser");
-        if(id == null || "".equals(id)){
+    public CommonResult confirmOrder(@RequestBody OprStatusForm form) {
+        if(form.getOrderId() == null || "".equals(form.getOrderId()) ||
+          form.getMainOrderId() == null || "".equals(form.getMainOrderId()) ||
+          form.getOperatorUser() == null || "".equals(form.getOperatorUser())){
             return CommonResult.error(400,"参数不合法");
         }
         String loginUser = orderCustomsService.getLoginUser();
         OrderCustoms orderCustoms = new OrderCustoms();
-        orderCustoms.setId(Long.valueOf(id));
-        orderCustoms.setStatus(Integer.valueOf(OrderStatusEnum.CUSTOMS_1.getCode()));
+        orderCustoms.setId(form.getOrderId());
+        orderCustoms.setStatus(Integer.valueOf(OrderStatusEnum.CUSTOMS_C_1.getCode()));
         orderCustoms.setUpdatedTime(LocalDateTime.now());
         orderCustoms.setUpdatedUser(loginUser);
-        orderCustoms.setUserName(loginUser);
-        orderCustoms.setOptName(optUser);
-        orderCustoms.setOptTime(LocalDateTime.now());
         boolean result = orderCustomsService.saveOrUpdate(orderCustoms);
+        //记录操作状态
+        form.setOperatorTime(LocalDateTime.now());
+        form.setStatus(OrderStatusEnum.CUSTOMS_C_1.getCode());
+        form.setStatusName(OrderStatusEnum.CUSTOMS_C_1.getDesc());
+        omsClient.saveOprStatus(form);
         if(!result){
             return CommonResult.error(400,"操作失败");
         }
@@ -183,7 +186,7 @@ public class OrderCustomsController {
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "审核,id=子订单ID  status=审核状态，3通过4驳回 remarks=审核意见")
+    @ApiOperation(value = "审核,id=子订单ID  status=审核状态，5通过 5_1驳回 remarks=审核意见")
     @PostMapping(value = "/auditOrderRelease")
     public CommonResult auditOrderRelease(@RequestBody Map<String,Object> param) {
         String id = MapUtil.getStr(param,"id");
@@ -193,12 +196,11 @@ public class OrderCustomsController {
             return CommonResult.error(400,"参数不合法");
         }
         boolean result =false;
-        if("3".equals(status) || "4".equals(status)){
+        if("5".equals(status) || "5_1".equals(status)){
             String loginUser = orderCustomsService.getLoginUser();
             OrderCustoms orderCustoms = new OrderCustoms();
             orderCustoms.setId(Long.valueOf(id));
             orderCustoms.setStatus(Integer.valueOf(status));
-            orderCustoms.setRemarks(remarks);
             orderCustoms.setUpdatedTime(LocalDateTime.now());
             orderCustoms.setUpdatedUser(loginUser);
             result = orderCustomsService.saveOrUpdate(orderCustoms);
@@ -209,7 +211,7 @@ public class OrderCustomsController {
         return CommonResult.success();
     }
 
-    //纯报关状态流程 TODO
+
 
 
 

@@ -79,7 +79,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 customs.setUnitAccount(subOrder.getUnitAccount());
                 customs.setDescription(subOrder.getDescription());
                 customs.setMainOrderNo(String.valueOf(apiResult.getData()));
-                customs.setStatus(Integer.valueOf(OrderStatusEnum.CUSTOMS_0.getCode()));
+                customs.setStatus(Integer.valueOf(OrderStatusEnum.CUSTOMS_C_0.getCode()));
                 if (subOrder .getSubOrderId() != null) {
                     customs.setUpdatedTime(LocalDateTime.now());
                     customs.setUpdatedUser(getLoginUser());

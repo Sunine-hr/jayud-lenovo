@@ -100,7 +100,7 @@
           order_info oi
         WHERE oc.`main_order_no` = oi.`order_no`
         <if test="form.cmd == 'confirmOrder'">
-            AND oc.`status` = 0
+            AND oc.`status` = '0'
         </if>
         <if test="form.orderNo != null">
             AND oi.`order_no` = #{form.orderNo}
@@ -114,14 +114,23 @@
         <if test="form.entrustNo != null">
             AND oc.`entrust_no` = #{form.entrustNo}
         </if>
-        <if test="form.cmd == 'customsRelease'">
-            AND oc.`status` = 1
-        </if>
         <if test="form.cmd == 'exceptionOrder'">
-            AND oc.`status` = 4
+            AND oc.`status` = '6'
         </if>
         <if test="form.cmd == 'auditFail'">
-            AND oc.`status` = 4
+            AND oc.`status` in ('3_1','5_1')
+        </if>
+        <if test="form.cmd == 'issueOrder'">
+            AND oc.`status` = '1'
+        </if>
+        <if test="form.cmd == 'toCheck'">
+            AND oc.`status` = '2'
+        </if>
+        <if test="form.cmd == 'declare'">
+            AND oc.`status` = '3'
+        </if>
+        <if test="form.cmd == 'releaseConfirm'">
+            AND oc.`status` = '4'
         </if>
     </select>
 

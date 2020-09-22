@@ -18,7 +18,7 @@ public class QueryCustomsOrderInfoForm extends BasePageForm{
     @ApiModelProperty(value = "委托号")
     private String entrustNo;
 
-    @ApiModelProperty(value = "操作指令,cmd = confirmOrder or customsRelease or exceptionOrder or auditFail or orderList")
+    @ApiModelProperty(value = "操作指令,cmd = confirmOrder or exceptionOrder or auditFail or orderList or issueOrder or toCheck or declare or releaseConfirm")
     private String cmd;
 
 

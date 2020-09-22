@@ -15,12 +15,16 @@ public enum OrderStatusEnum {
     MAIN_3("3","关闭"),
 
     //纯报关子订单
-    CUSTOMS_0("0","未接单"),
-    CUSTOMS_1("1","已接单"),
-    CUSTOMS_2("2","接单中"),
-    CUSTOMS_3("3","放行通过"),
-    CUSTOMS_4("4","放行驳回"),
-    CUSTOMS_5("4","已完成"),
+    CUSTOMS_C_0("C_0","未接单"),
+    CUSTOMS_C_1("C_1","报关接单"),
+    CUSTOMS_C_2("C_2","报关打单"),
+    CUSTOMS_C_3("C_3","报关复核"),
+    CUSTOMS_C_3_1("C_3_1","报关复核驳回"),
+    CUSTOMS_C_4("C_4","报关申报"),
+    CUSTOMS_C_5("C_5","报关放行"),
+    CUSTOMS_C_5_1("C_5_1","报关放行驳回"),
+    CUSTOMS_C_6("C_6","报关异常"),
+
 
     //费用状态
     COST_0("0","审核驳回"),

@@ -16,6 +16,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -107,7 +108,7 @@ public class OrderComboxController {
 
     @ApiOperation(value = "纯报关-结算单位,idCode=客户CODE,必填")
     @PostMapping(value = "/initUnit")
-    public CommonResult<Map<String,Object>> initUnit(Map<String,Object> param) {
+    public CommonResult<Map<String,Object>> initUnit(@RequestBody Map<String,Object> param) {
         String idCode = MapUtil.getStr(param,"idCode");
         if(idCode != null && "".equals(idCode)){
             return CommonResult.error(400,"参数不合法");

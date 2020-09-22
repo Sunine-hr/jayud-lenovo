@@ -90,8 +90,8 @@ public class OrderCustomsController {
 
     @ApiOperation(value = "确认:生成报关子订单号,num=生成报关单数")
     @PostMapping(value = "/createOrderNo")
-    public CommonResult<List<String>> createOrderNo(@RequestBody Map<String,Object> param) {
-        List<String> stringList = new ArrayList<>();
+    public CommonResult<List<InputSubOrderCustomsForm>> createOrderNo(@RequestBody Map<String,Object> param) {
+        List<InputSubOrderCustomsForm> stringList = new ArrayList<>();
         int num = Integer.valueOf(MapUtil.getStr(param,"num"));
         String code = "BG";//报关类型
         for (int i = 0; i < num; i++) {//产品类别code+随机数
@@ -101,7 +101,9 @@ public class OrderCustomsController {
             if(!isExist){
                 i = i - 1;
             }
-            stringList.add(result);
+            InputSubOrderCustomsForm inputSubOrderCustomsForm = new InputSubOrderCustomsForm();
+            inputSubOrderCustomsForm.setOrderNo(result);
+            stringList.add(inputSubOrderCustomsForm);
         }
         return CommonResult.success(stringList);
     }

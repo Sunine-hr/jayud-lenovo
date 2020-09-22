@@ -190,9 +190,11 @@ public class SystemUserController {
             List<Long> departmentIds = new ArrayList<>();
             Long departmentId = form.getDepartmentId();
             departmentIds.add(departmentId);
-            List<QueryOrgStructureVO> queryOrgStructureVOS = departmentService.findDepartmentByfId(departmentId);
-            for (QueryOrgStructureVO queryOrgStructure : queryOrgStructureVOS) {
-                departmentIds.add(queryOrgStructure.getId());
+            List<DepartmentVO> departmentVOS = departmentService.findDepartment(null);
+            List<DepartmentVO> check = new ArrayList<>();
+            handleDepartIds(departmentVOS,departmentId,check);
+            for (DepartmentVO departmentVO : check) {
+                departmentIds.add(departmentVO.getId());
             }
             form.setDepartmentIds(departmentIds);
         }
@@ -203,6 +205,22 @@ public class SystemUserController {
 
         return CommonResult.success(pageVO);
     }
+
+    /**
+     * 递归获取该部门下的所有子部门
+     * @param alls
+     * @param departmentId
+     * @param check
+     */
+    private static void handleDepartIds(List<DepartmentVO> alls,long departmentId, List<DepartmentVO> check) {
+        for (DepartmentVO all : alls) {
+            if (all.getFId() == departmentId) {
+                check.add(all);
+                handleDepartIds(alls, all.getId(), check);
+            }
+        }
+    }
+
 
     @ApiOperation(value = "账户管理-修改数据初始化,id=用户ID")
     @PostMapping(value = "/getAccountSystemUser")

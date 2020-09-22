@@ -150,7 +150,7 @@
           su.`department_id` departmentId,
           d.`name` departmentName,
           su.`work_id` workId,
-          w.`work_name` workName,
+          su.`work_name` workName,
           sr.`id` roleId,
           sr.`name` roleName,
           (SELECT
@@ -172,8 +172,6 @@
           `system_user` su
           LEFT JOIN department d
             ON su.`department_id` = d.`id`
-          LEFT JOIN `work` w
-            ON su.`work_id` = w.`id`
           LEFT JOIN system_user_role_relation surr
             ON su.`id` = surr.`user_id`
           LEFT JOIN system_role sr

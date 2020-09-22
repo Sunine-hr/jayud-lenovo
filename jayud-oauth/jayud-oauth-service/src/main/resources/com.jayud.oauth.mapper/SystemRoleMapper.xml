@@ -57,7 +57,7 @@
         LEFT JOIN system_user_role_relation surr
         ON surr.`role_id` = sr.`id`
         LEFT JOIN `system_user` su
-        ON su.`id` = surr.`user_id`
+        ON su.`id` = surr.`user_id` and su.status = 1
         WHERE 1 = 1
            <if test="form.name != null and form.name != ''">
                and sr.name like concat('%',#{form.name},'%')

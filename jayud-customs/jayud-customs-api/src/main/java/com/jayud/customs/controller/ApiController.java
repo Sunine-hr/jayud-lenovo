@@ -3,14 +3,12 @@ package com.jayud.customs.controller;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.json.JSONUtil;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.customs.annotations.APILog;
 import com.jayud.customs.feign.MsgClient;
 import com.jayud.customs.model.bo.*;
-import com.jayud.customs.model.po.CustomsReceivable;
 import com.jayud.customs.model.vo.*;
 import com.jayud.customs.service.ICustomsApiService;
 import io.swagger.annotations.Api;
@@ -26,9 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * @author william
@@ -163,7 +159,7 @@ public class ApiController {
             GetFinanceInfoForm getFinanceInfoForm = new GetFinanceInfoForm();
             getFinanceInfoForm.setApplyNo(applyNo);
             log.info(String.format("开始查找云报关数据..."));
-            service.getFinanceInfoAndPush2Kingdee(getFinanceInfoForm);
+//            service.getFinanceInfoAndPush2Kingdee(getFinanceInfoForm);
             return CommonResult.success(String.format("已经收到回执信息：18位报关单号为：%s", applyNo));
         } else {
             Asserts.fail("apply_no需要输入18位报关单号");

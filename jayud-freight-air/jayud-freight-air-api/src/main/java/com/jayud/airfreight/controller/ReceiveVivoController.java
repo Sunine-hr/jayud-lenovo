@@ -1,10 +1,9 @@
 package com.jayud.airfreight.controller;
 
 import com.jayud.airfreight.annotations.APILog;
+import com.jayud.airfreight.model.bo.BookingSpaceForm;
 import com.jayud.airfreight.service.AirFreightService;
 import com.jayud.common.CommonResult;
-import com.jayud.airfreight.model.bo.BookingSpaceForm;
-import com.jayud.airfreight.service.VivoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +34,6 @@ public class ReceiveVivoController {
     public CommonResult bookingSpace(@RequestBody @Valid BookingSpaceForm form) {
         //校验数据
         log.info("执行入参校验");
-
         return CommonResult.success();
     }
 }

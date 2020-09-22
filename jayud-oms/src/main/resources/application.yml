@@ -1,0 +1,55 @@
+server:
+  port: 8205
+  servlet:
+    context-path: ${guarantee.web.content.path}
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 15MB
+  redis:
+    host: ${redis.server.url}
+    port: ${redis.server.port}
+    password: ${redis.server.password}
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    druid:
+      url: jdbc:mysql://${rtscf.datasource.ip}:3306/${rfscf.guarantee.datasource.name}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+      username: ${rtscf.datasource.username}
+      password: ${rtscf.datasource.password}
+      initial-size: 10
+      max-active: 100
+      min-idle: 10
+      max-wait: 60000
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        login-username: admin
+        login-password: admin
+      filter:
+        stat:
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: false
+        wall:
+          config:
+            multi-statement-allow: true
+mybatis-plus:
+  mapper-locations: classpath:com/scmrt/mapper/*.xml
+  typeAliasesPackage: com.scmrt.model
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: auto
+swagger:
+  enable: true

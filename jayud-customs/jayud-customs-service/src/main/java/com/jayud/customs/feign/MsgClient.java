@@ -1,9 +1,7 @@
 package com.jayud.customs.feign;
 
 import com.jayud.common.CommonResult;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,4 +18,5 @@ public interface MsgClient {
 
     @RequestMapping(value = "/kafka/producer", method = RequestMethod.POST)
     CommonResult consume(@RequestBody Map<String,String> param);
+
 }

@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: rtscf-guarantee-web
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      config:
+        server-addr: ${rtscf.nacos.server-addr}
+        # 配置文件后缀名为yaml
+        file-extension: yaml
+        namespace: ${rtscf.nacos.config.namespace}
+      discovery:
+        server-addr: ${rtscf.nacos.server-addr}
+        namespace: ${rtscf.nacos.config.namespace}

@@ -4,30 +4,26 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.http.Header;
 import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
-import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.google.gson.Gson;
 import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
-import com.jayud.common.Result;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.HttpRequester;
+import com.jayud.customs.feign.FinanceClient;
 import com.jayud.customs.feign.MsgClient;
 import com.jayud.customs.model.bo.*;
 import com.jayud.customs.model.po.CustomsPayable;
 import com.jayud.customs.model.po.CustomsReceivable;
 import com.jayud.customs.model.vo.*;
 import com.jayud.customs.service.ICustomsApiService;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;
-import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -38,9 +34,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.Resource;
-import javax.annotation.Resources;
-import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +51,8 @@ import java.util.Objects;
 public class ICustomsApiServiceImpl implements ICustomsApiService {
     @Autowired
     private RedisUtils redisUtils;
+    @Autowired
+    FinanceClient financeClient;
 
     @Value("${yunbaoguan.urls.login}")
     String loginUrl;
@@ -98,7 +93,7 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
     @Override
     public PushOrderVO pushOrder(PushOrderForm form) {
         Gson gson = new Gson();
-        String requestStr =gson.toJson(form);
+        String requestStr = gson.toJson(form);
         //请求
         String feedback = doPost(requestStr, trustsUrl);
 
@@ -235,11 +230,11 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
         recParam.put("costtype", "1");
         payParam.put("costtype", "2");
 
-        log.info(String.format("拼装数据完成，开始请求云报关接口..."));
+        log.info(String.format("拼装数据完成，发送数据请求云报关..."));
         String receivable = doPost(JSONUtil.toJsonStr(recParam), financeUrl);
         String payable = doPost(JSONUtil.toJsonStr(payParam), financeUrl);
 
-
+//        log.info(String.format("拼装数据完成，开始请求金蝶接口..." + receivable + "====" + receivable));
         //应付为行显示费用
         //应收为列显示费用，但可能存在多行应收对应同一个报关单
         Boolean hasReceivable = false;
@@ -248,28 +243,45 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
             List<CustomsReceivable> receivableArray = JSONArray.parseArray(receivable, CustomsReceivable.class);
             if (!CollectionUtil.isEmpty(receivableArray)) {
                 hasReceivable = true;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-            try {
-                List<CustomsPayable> payableArray = JSONArray.parseArray(payable, CustomsPayable.class);
-                if (!CollectionUtil.isEmpty(payableArray)) {
-                    hasPayable = true;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            List<CustomsPayable> payableArray = JSONArray.parseArray(payable, CustomsPayable.class);
+            if (!CollectionUtil.isEmpty(payableArray)) {
+                hasPayable = true;
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         Boolean sentReceivableStatus = true;
         Boolean sentPayableStatus = true;
         if (hasPayable || hasReceivable) {
             if (hasPayable) {
-                sentPayableStatus = generateKafkaMsg("financeTest", "customs-payable", payable);
+                log.info(String.format("拼装数据完成，开始上传财务数据：customs-payable口..." + payable + "====" + payable));
+//todo kafka正常后开放
+//                sentPayableStatus = generateKafkaMsg("financeTest", "customs-payable", payable);
+                Map<String, String> pMap = new HashMap<>();
+                pMap.put("msg", payable);
+                CommonResult commonResult = financeClient.savePayableBill(pMap);
+                if (Objects.isNull(commonResult) || commonResult.getCode() != ResultEnum.SUCCESS.getCode()) {
+                    sentPayableStatus = false;
+                }
 
             }
             if (hasReceivable) {
+                log.info(String.format("拼装数据完成，开始上传财务数据：financeTest-payable口..." + receivable + "====" + receivable));
+                Map<String, String> rMap = new HashMap<>();
+                rMap.put("msg", receivable);
+                CommonResult commonResult = financeClient.saveReceivableBill(rMap);
+                if (Objects.isNull(commonResult) || commonResult.getCode() != ResultEnum.SUCCESS.getCode()) {
+                    sentReceivableStatus = false;
+                }
+
+
                 //应收单会出现一个报关单号对应多个行的情况，一般是因为柜号不一致，要区分计费
-                sentReceivableStatus = generateKafkaMsg("financeTest", "customs-receivable", receivable);
+//todo kafka正常后开放                sentReceivableStatus = generateKafkaMsg("financeTest", "customs-receivable", receivable);
             }
             if (!sentPayableStatus || !sentReceivableStatus) {
                 Asserts.fail(ResultEnum.PARAM_ERROR, "发送金蝶失败");

@@ -13,6 +13,7 @@ import com.jayud.customs.model.bo.InputSubOrderCustomsForm;
 import com.jayud.customs.model.bo.QueryCustomsOrderInfoForm;
 import com.jayud.customs.model.po.OrderCustoms;
 import com.jayud.customs.model.vo.CustomsOrderInfoVO;
+import com.jayud.customs.model.vo.FileView;
 import com.jayud.customs.model.vo.InputOrderCustomsVO;
 import com.jayud.customs.service.IOrderCustomsService;
 import io.swagger.annotations.Api;
@@ -47,6 +48,16 @@ public class OrderCustomsController {
         boolean flag = true;
         if(form == null || form.getCmd() == null || "".equals(form.getCmd())){
             return CommonResult.error(400,"参数不合法");
+        }
+        //处理附件，前台提供数组
+        List<InputSubOrderCustomsForm> subOrderCustomsForms = form.getSubOrders();
+        for(InputSubOrderCustomsForm inputSubOrderCustomsForm : subOrderCustomsForms){
+            List<FileView> fileViews = inputSubOrderCustomsForm.getFileViews();
+            StringBuffer buf = new StringBuffer();
+            for (FileView fileView : fileViews) {
+                buf.append(fileView.getRelativePath()).append(",");
+            }
+            inputSubOrderCustomsForm.setDescription(buf.substring(0,buf.length()-1));
         }
         if("submit".equals(form.getCmd())){
             if(form.getCustomerCode() == null || "".equals(form.getCustomerCode())

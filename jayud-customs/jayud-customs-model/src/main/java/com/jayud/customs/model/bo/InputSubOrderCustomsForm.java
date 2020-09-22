@@ -1,9 +1,11 @@
 package com.jayud.customs.model.bo;
 
+import com.jayud.customs.model.vo.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 
 @Data
@@ -28,8 +30,11 @@ public class InputSubOrderCustomsForm extends InputOrderForm{
     @NotEmpty(message = "unitAccount is required")
     private String unitAccount;
 
-    @ApiModelProperty(value = "附件,多个逗号分隔",required = true)
-    @NotEmpty(message = "description is required")
+    @ApiModelProperty(value = "附件,多个逗号分隔,前台忽略")
     private String description;
+
+    @ApiModelProperty(value = "附件",required = true)
+    @NotEmpty(message = "fileViews is required")
+    private List<FileView> fileViews;
 
 }

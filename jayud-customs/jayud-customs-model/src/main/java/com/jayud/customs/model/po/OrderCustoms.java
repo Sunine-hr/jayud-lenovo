@@ -72,7 +72,7 @@ public class OrderCustoms extends Model<OrderCustoms> {
     private String entrustNo;
 
     @ApiModelProperty(value = "状态(0-未接单 1-已接单 2-接单中 3-放行通过 4-放行驳回  5-已完成)")
-    private Integer status;
+    private String status;
 
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createdTime;

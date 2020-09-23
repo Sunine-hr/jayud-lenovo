@@ -1,9 +1,5 @@
 package com.jayud.receive;
 
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
-import com.alibaba.fastjson.JSONArray;
-import com.google.gson.Gson;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.enums.KafkaMsgEnums;
@@ -18,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -116,14 +111,16 @@ public class RawDataListener {
             log.info("写入金蝶报关应收数据...");
             Map<String, String> msg = new HashMap<>();
             msg.put("msg", value);
-            CommonResult commonResult = financeClient.saveReceivableBill(msg);
+            Boolean aBoolean = financeClient.saveReceivableBill(msg);
+            System.out.println(aBoolean);
 //            doLog(commonResult);
         }
         if (match(KafkaMsgEnums.FINANCE_CUSTOMS_PAYABLE, record)) {
             log.info("写入金蝶报关应付数据...");
             Map<String, String> msg = new HashMap<>();
             msg.put("msg", value);
-            CommonResult commonResult = financeClient.savePayableBill(msg);
+            Boolean aBoolean = financeClient.savePayableBill(msg);
+            System.out.println(aBoolean);
 //            doLog(commonResult);
         }
     }

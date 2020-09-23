@@ -2,7 +2,6 @@ package com.jayud.send;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONUtil;
-import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import sun.rmi.runtime.Log;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -24,7 +23,6 @@ import java.util.Map;
 
 @RequestMapping(value = "/kafka")
 @RestController
-@SuppressWarnings("unchecked")
 @Slf4j
 public class ProducerController {
     @Autowired
@@ -35,7 +33,7 @@ public class ProducerController {
      *
      */
     @RequestMapping(value = "/producer", method = RequestMethod.POST)
-    public CommonResult consume(@RequestBody Map<String, String> param) {
+    public Map<String,String> consume(@RequestBody Map<String, String> param) {
         String topic = MapUtil.getStr(param, "topic");
         String key = MapUtil.getStr(param, "key");
         String value = MapUtil.getStr(param, "msg");
@@ -45,8 +43,18 @@ public class ProducerController {
             kafkaTemplate.send(topic, key, value);
         } catch (Exception e) {
             e.printStackTrace();
-            return CommonResult.error(ResultEnum.INTERNAL_SERVER_ERROR, "发送失败");
+//            return CommonResult.error(ResultEnum.INTERNAL_SERVER_ERROR, "发送失败");
+            Map<String, String> result = new HashMap<>();
+            result.put("code", ResultEnum.INTERNAL_SERVER_ERROR.getCode().toString());
+            result.put("msg", ResultEnum.INTERNAL_SERVER_ERROR.getMessage());
+            result.put("data", "发送失败");
+            return result;
         }
-        return CommonResult.success();
+        Map<String, String> result = new HashMap<>();
+        result.put("code", ResultEnum.SUCCESS.getCode().toString());
+        result.put("msg", ResultEnum.SUCCESS.getMessage());
+        result.put("data", "发送成功");
+        return result;
+//        return CommonResult.success();
     }
 }

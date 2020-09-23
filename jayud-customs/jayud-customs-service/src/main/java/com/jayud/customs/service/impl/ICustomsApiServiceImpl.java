@@ -8,7 +8,6 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.google.gson.Gson;
-import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
@@ -260,28 +259,28 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
         if (hasPayable || hasReceivable) {
             if (hasPayable) {
                 log.info(String.format("拼装数据完成，开始上传财务数据：customs-payable口..." + payable + "====" + payable));
-//todo kafka正常后开放
-//                sentPayableStatus = generateKafkaMsg("financeTest", "customs-payable", payable);
-                Map<String, String> pMap = new HashMap<>();
-                pMap.put("msg", payable);
-                CommonResult commonResult = financeClient.savePayableBill(pMap);
-                if (Objects.isNull(commonResult) || commonResult.getCode() != ResultEnum.SUCCESS.getCode()) {
-                    sentPayableStatus = false;
-                }
+
+                sentPayableStatus = generateKafkaMsg("financeTest", "customs-payable", payable);
+//                Map<String, String> pMap = new HashMap<>();
+//                pMap.put("msg", payable);
+//                CommonResult commonResult = financeClient.savePayableBill(pMap);
+//                if (Objects.isNull(commonResult) || commonResult.getCode() != ResultEnum.SUCCESS.getCode()) {
+//                    sentPayableStatus = false;
+//                }
 
             }
             if (hasReceivable) {
-                log.info(String.format("拼装数据完成，开始上传财务数据：financeTest-payable口..." + receivable + "====" + receivable));
-                Map<String, String> rMap = new HashMap<>();
-                rMap.put("msg", receivable);
-                CommonResult commonResult = financeClient.saveReceivableBill(rMap);
-                if (Objects.isNull(commonResult) || commonResult.getCode() != ResultEnum.SUCCESS.getCode()) {
-                    sentReceivableStatus = false;
-                }
+//                log.info(String.format("拼装数据完成，开始上传财务数据：financeTest-payable口..." + receivable + "====" + receivable));
+//                Map<String, String> rMap = new HashMap<>();
+//                rMap.put("msg", receivable);
+//                CommonResult commonResult = financeClient.saveReceivableBill(rMap);
+//                if (Objects.isNull(commonResult) || commonResult.getCode() != ResultEnum.SUCCESS.getCode()) {
+//                    sentReceivableStatus = false;
+//                }
 
 
                 //应收单会出现一个报关单号对应多个行的情况，一般是因为柜号不一致，要区分计费
-//todo kafka正常后开放                sentReceivableStatus = generateKafkaMsg("financeTest", "customs-receivable", receivable);
+                sentReceivableStatus = generateKafkaMsg("financeTest", "customs-receivable", receivable);
             }
             if (!sentPayableStatus || !sentReceivableStatus) {
                 Asserts.fail(ResultEnum.PARAM_ERROR, "发送金蝶失败");
@@ -299,11 +298,25 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
         msgMap.put("key", key);
         msgMap.put("msg", JSONUtil.toJsonStr(msg));
         log.info(String.format("开始发送数据给kafka..."));
-        CommonResult consume = msgClient.consume(msgMap);
-        if (consume.getCode() != ResultEnum.SUCCESS.getCode()) {
-            //调用失败将返回false
-            return false;
+        Map<String, String> consume = msgClient.consume(msgMap);
+
+        if (Objects.nonNull(consume)) {
+            log.info(consume.toString());
+            String code = MapUtil.getStr(consume, "code");
+            String errorMsg = MapUtil.getStr(consume, "msg");
+            String data = MapUtil.getStr(consume, "data");
+            if (StringUtils.isNotEmpty(code)) {
+                if (Integer.parseInt(code) == ResultEnum.SUCCESS.getCode()) {
+                    return true;
+                }
+            } else {
+                return false;
+            }
         }
+//        if (consume.getCode() != ResultEnum.SUCCESS.getCode()) {
+//            //调用失败将返回false
+//            return false;
+//        }
         return true;
     }
 

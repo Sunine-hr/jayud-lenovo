@@ -60,7 +60,7 @@ public class MsgApiProcessorController {
      */
     @RequestMapping(path = "/yunbaoguan/receivable/push", method = RequestMethod.POST)
     @ApiOperation(value = "接收云报关的应收单信息推至金蝶")
-    public CommonResult saveReceivableBill(@RequestBody Map<String, String> msg) {
+    public Boolean saveReceivableBill(@RequestBody Map<String, String> msg) {
         String reqMsg = MapUtil.getStr(msg, "msg");
         log.info("金蝶接收到报关应收数据：{}", reqMsg);
 
@@ -114,7 +114,8 @@ public class MsgApiProcessorController {
             }
             if (CollectionUtil.isEmpty(dataForm.getEntityDetail())) {
                 log.info(String.format("应收费用项没有数据，退出方法"));
-                return CommonResult.success();
+//                return CommonResult.success();
+                return true;
             }
 
             //抬头信息
@@ -136,13 +137,14 @@ public class MsgApiProcessorController {
             dataForm.setRemark(getRemark());
             dataForm.setBillNo("");
             dataForm.setBaseCurrency("CNY");
-            dataForm.setBusinessDate(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
+            dataForm.setBusinessDate(item.getApplyDt());
 
 
             log.info("3.拼装完毕，程序汇总可能异常...");
             if (StringUtils.isNotBlank(errorString.toString())) {
                 log.error(errorString.toString());
-                return CommonResult.error(ResultEnum.INTERNAL_SERVER_ERROR, errorString.toString());
+//                return CommonResult.error(ResultEnum.INTERNAL_SERVER_ERROR, errorString.toString());
+                return false;
             }
 
             try {
@@ -150,15 +152,18 @@ public class MsgApiProcessorController {
                 CommonResult commonResult = service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), dataForm);
                 if (Objects.nonNull(commonResult) && commonResult.getCode() == ResultEnum.SUCCESS.getCode()) {
                     log.info("金蝶应付单推送完毕");
-                    return commonResult.success("金蝶应付单推送完毕");
+//                    return CommonResult.success("金蝶应付单推送完毕");
+                    return true;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                return CommonResult.error(ResultEnum.INTERNAL_SERVER_ERROR, "保存失败");
+//                return CommonResult.error(ResultEnum.INTERNAL_SERVER_ERROR, "保存失败");
+                return false;
             }
 
         }
-        return CommonResult.error(ResultEnum.INTERNAL_SERVER_ERROR, "未知异常抛出");
+//        return CommonResult.error(ResultEnum.INTERNAL_SERVER_ERROR, "未知异常抛出");
+        return false;
     }
 
     private String getRemark() {
@@ -174,14 +179,15 @@ public class MsgApiProcessorController {
      */
     @RequestMapping(path = "/yunbaoguan/payable/push", method = RequestMethod.POST)
     @ApiOperation(value = "接收云报关的应收单信息推至金蝶")
-    public CommonResult savePayableBill(@RequestBody Map<String, String> msg) {
+    public Boolean savePayableBill(@RequestBody Map<String, String> msg) {
         String reqMsg = MapUtil.getStr(msg, "msg");
         log.info("金蝶接收到报关应付数据：{}", reqMsg);
         //拼装根据入参拼装实体数据
         List<CustomsPayable> customsPayableForms = JSONArray.parseArray(reqMsg).toJavaList(CustomsPayable.class);
         if (CollectionUtil.isEmpty(customsPayableForms)) {
             log.info("应付费用项为空，退出方法");
-            return CommonResult.success();
+//            return CommonResult.success();
+            return true;
         }
         //整理出不同的应付供应商，每一个应付供应商会生成一个单独的应付单
         log.info("开始根据供应商分组...");
@@ -226,7 +232,7 @@ public class MsgApiProcessorController {
             dataForm.setBillNo("");
             dataForm.setBaseCurrency("CNY");
             dataForm.setExchangeRate(BigDecimal.ONE);
-            dataForm.setBusinessDate(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
+            dataForm.setBusinessDate(customsPayable.getApplyDt());
             //费用明细
             List<APARDetailForm> list = new ArrayList<>();
             for (CustomsPayable payableForm : customsPayableentity) {
@@ -255,7 +261,8 @@ public class MsgApiProcessorController {
                 CommonResult commonResult = service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), dataForm);
                 if (Objects.nonNull(commonResult) && commonResult.getCode() == ResultEnum.SUCCESS.getCode()) {
                     log.info("金蝶应付单推送完毕");
-                    return commonResult.success("金蝶应付单推送完毕");
+//                    return CommonResult.success("金蝶应付单推送完毕");
+                    return true;
                 }
 //                return commonResult;
             } catch (Exception e) {
@@ -264,7 +271,8 @@ public class MsgApiProcessorController {
             }
         }
 
-        return CommonResult.error(ResultEnum.INTERNAL_SERVER_ERROR, "遇到其他错误抛出");
+//        return CommonResult.error(ResultEnum.INTERNAL_SERVER_ERROR, "遇到其他错误抛出");
+        return false;
     }
 
 }

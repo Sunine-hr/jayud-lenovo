@@ -7,7 +7,7 @@ import java.util.List;
 
 
 @Data
-public class InputSubOrderCustomsVO extends InputOrderVO {
+public class InputSubOrderCustomsVO {
 
     @ApiModelProperty(value = "子订单ID")
     private Long subOrderId;

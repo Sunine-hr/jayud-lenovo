@@ -10,7 +10,7 @@ import java.util.List;
 
 
 @Data
-public class InputSubOrderCustomsForm extends InputOrderForm{
+public class InputSubOrderCustomsForm {
 
     @ApiModelProperty(value = "子订单ID,编辑时必传")
     private Long subOrderId;

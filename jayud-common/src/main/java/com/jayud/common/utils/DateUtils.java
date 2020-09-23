@@ -296,4 +296,14 @@ public class DateUtils {
     public static Timestamp getNowTime(){
         return new Timestamp(System.currentTimeMillis());
     }
+
+    /**
+     * 格式化日期
+     * @param localDateTime
+     * @return
+     */
+    public static String getLocalToStr(LocalDateTime localDateTime){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return localDateTime.format(formatter);
+    }
 }

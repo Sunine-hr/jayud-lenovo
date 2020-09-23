@@ -79,7 +79,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 customs.setUnitAccount(subOrder.getUnitAccount());
                 customs.setDescription(subOrder.getDescription());
                 customs.setMainOrderNo(String.valueOf(apiResult.getData()));
-                customs.setStatus(Integer.valueOf(OrderStatusEnum.CUSTOMS_C_0.getCode()));
+                customs.setStatus(OrderStatusEnum.CUSTOMS_C_0.getCode());
                 if (subOrder .getSubOrderId() != null) {
                     customs.setUpdatedTime(LocalDateTime.now());
                     customs.setUpdatedUser(getLoginUser());
@@ -108,9 +108,9 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
 
     @Override
     public InputOrderCustomsVO editOrderCustomsView(Long id) {
-        String prePath = omsClient.getBaseUrl().getData().toString();
+        String prePath = String.valueOf(omsClient.getBaseUrl().getData());
         //1.查询主订单信息
-        InputOrderVO inputOrderVO = (InputOrderVO) omsClient.getMainOrderById(id).getData();
+        InputOrderVO inputOrderVO = omsClient.getMainOrderById(id).getData();
         InputOrderCustomsVO inputOrderCustomsVO = ConvertUtil.convert(inputOrderVO,InputOrderCustomsVO.class);
         //2.查询子订单信息,根据主订单
         if(inputOrderCustomsVO != null && inputOrderCustomsVO.getOrderNo() != null){

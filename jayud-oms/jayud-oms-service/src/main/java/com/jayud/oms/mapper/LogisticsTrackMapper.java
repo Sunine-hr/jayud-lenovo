@@ -2,6 +2,7 @@ package com.jayud.oms.mapper;
 
 import com.jayud.oms.model.po.LogisticsTrack;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
@@ -11,6 +12,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author chuanmei
  * @since 2020-09-22
  */
+@Mapper
 public interface LogisticsTrackMapper extends BaseMapper<LogisticsTrack> {
 
 }

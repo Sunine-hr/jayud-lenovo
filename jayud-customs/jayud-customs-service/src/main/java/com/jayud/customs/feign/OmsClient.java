@@ -6,6 +6,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.customs.model.bo.OprOrderLogForm;
 import com.jayud.customs.model.bo.InputOrderForm;
 import com.jayud.customs.model.bo.OprStatusForm;
+import com.jayud.customs.model.vo.InputOrderVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,7 +39,7 @@ public interface OmsClient {
      * 获取主订单信息
      */
     @RequestMapping(value = "/api/getMainOrderById")
-    ApiResult getMainOrderById(@RequestParam(value = "idValue") Long idValue);
+    ApiResult<InputOrderVO> getMainOrderById(@RequestParam(value = "id") Long id);
 
     /**
      * 获取根路径

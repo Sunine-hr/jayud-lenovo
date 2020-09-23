@@ -1,0 +1,237 @@
+{
+  "Creator": "",
+  "NeedUpDateFields": [],
+  "NeedReturnFields": [],
+  "IsDeleteEntry": "true",
+  "SubSystemId": "",
+  "IsVerifyBaseDataField": "false",
+  "IsEntryBatchFill": "true",
+  "ValidateFlag": "true",
+  "NumberSearch": "true",
+  "InterationFlags": "",
+  "IsAutoSubmitAndAudit": "false",
+  "Model": {
+    "FMATERIALID": 0,
+    "FCreateOrgId": {
+      "FNumber": "801"
+    },
+    "FUseOrgId": {
+      "FNumber": "801"
+    },
+    "FName": "小龙虾",
+    "FDescription": "大份，微辣",
+    "FImgStorageType": "B",
+    "FIsSalseByNet": false,
+    "FSubHeadEntity": {},
+    "SubHeadEntity": {
+      "FErpClsID": "1",
+      "FCategoryID": {
+        "FNumber": "CHLB01_SYS"
+      },
+      "FTaxType": {
+        "FNumber": "WLDSFL01_SYS"
+      },
+      "FTaxRateId": {
+        "FNUMBER": "SL02_SYS"
+      },
+      "FBaseUnitId": {
+        "FNumber": "Pcs"
+      },
+      "FIsPurchase": true,
+      "FIsInventory": true,
+      "FIsSubContract": false,
+      "FIsSale": true,
+      "FIsProduce": false,
+      "FIsAsset": false,
+      "FWEIGHTUNITID": {
+        "FNUMBER": "kg"
+      },
+      "FVOLUMEUNITID": {
+        "FNUMBER": "m"
+      }
+    },
+    "SubHeadEntity1": {
+      "FStoreUnitID": {
+        "FNumber": "Pcs"
+      },
+      "FUnitConvertDir": "1",
+      "FIsLockStock": true,
+      "FIsCycleCounting": false,
+      "FCountCycle": "1",
+      "FCountDay": 1,
+      "FIsMustCounting": false,
+      "FIsBatchManage": false,
+      "FIsKFPeriod": false,
+      "FIsExpParToFlot": false,
+      "FCurrencyId": {
+        "FNumber": "PRE001"
+      },
+      "FIsEnableMinStock": false,
+      "FIsEnableMaxStock": false,
+      "FIsEnableSafeStock": false,
+      "FIsEnableReOrder": false,
+      "FIsSNManage": false,
+      "FIsSNPRDTracy": false,
+      "FSNManageType": "1",
+      "FSNGenerateTime": "1"
+    },
+    "SubHeadEntity2": {
+      "FSaleUnitId": {
+        "FNumber": "Pcs"
+      },
+      "FSalePriceUnitId": {
+        "FNumber": "Pcs"
+      },
+      "FMaxQty": 100000.0,
+      "FIsATPCheck": false,
+      "FIsReturnPart": false,
+      "FIsInvoice": false,
+      "FIsReturn": true,
+      "FAllowPublish": false,
+      "FISAFTERSALE": true,
+      "FISPRODUCTFILES": true,
+      "FISWARRANTED": false,
+      "FWARRANTYUNITID": "D",
+      "FOutLmtUnit": "SAL",
+      "FIsTaxEnjoy": false
+    },
+    "SubHeadEntity3": {
+      "FPurchaseUnitId": {
+        "FNumber": "Pcs"
+      },
+      "FPurchasePriceUnitId": {
+        "FNumber": "Pcs"
+      },
+      "FIsQuota": false,
+      "FQuotaType": "1",
+      "FIsVmiBusiness": false,
+      "FEnableSL": false,
+      "FIsPR": false,
+      "FIsReturnMaterial": true,
+      "FIsSourceControl": false,
+      "FPOBillTypeId": {
+        "FNUMBER": "CGSQD01_SYS"
+      },
+      "FPrintCount": 1
+    },
+    "SubHeadEntity4": {
+      "FPlanningStrategy": "1",
+      "FMfgPolicyId": {
+        "FNumber": "ZZCL001_SYS"
+      },
+      "FFixLeadTimeType": "1",
+      "FVarLeadTimeType": "1",
+      "FCheckLeadTimeType": "1",
+      "FOrderIntervalTimeType": "3",
+      "FMaxPOQty": 100000.0,
+      "FEOQ": 1.0,
+      "FVarLeadTimeLotSize": 1.0,
+      "FIsMrpComReq": false,
+      "FReserveType": "1",
+      "FAllowPartAhead": false,
+      "FCanDelayDays": 999,
+      "FAllowPartDelay": true,
+      "FPlanOffsetTimeType": "1",
+      "FWriteOffQty": 1.0
+    },
+    "SubHeadEntity5": {
+      "FProduceUnitId": {
+        "FNumber": "Pcs"
+      },
+      "FProduceBillType": {
+        "FNUMBER": "SCDD03_SYS"
+      },
+      "FOrgTrustBillType": {
+        "FNUMBER": "SCDD06_SYS"
+      },
+      "FIsSNCarryToParent": false,
+      "FIsProductLine": false,
+      "FBOMUnitId": {
+        "FNumber": "Pcs"
+      },
+      "FIsMainPrd": false,
+      "FIsCoby": false,
+      "FIsECN": false,
+      "FIssueType": "1",
+      "FOverControlMode": "1",
+      "FMinIssueQty": 1.0,
+      "FISMinIssueQty": false,
+      "FIsKitting": false,
+      "FIsCompleteSet": false,
+      "FMinIssueUnitId": {
+        "FNUMBER": "Pcs"
+      },
+      "FStandHourUnitId": "3600",
+      "FBackFlushType": "1"
+    },
+    "SubHeadEntity7": {
+      "FSubconUnitId": {
+        "FNumber": "Pcs"
+      },
+      "FSubconPriceUnitId": {
+        "FNumber": "Pcs"
+      },
+      "FSubBillType": {
+        "FNUMBER": "WWDD01_SYS"
+      }
+    },
+    "SubHeadEntity6": {
+      "FCheckIncoming": false,
+      "FCheckProduct": false,
+      "FCheckStock": false,
+      "FCheckReturn": false,
+      "FCheckDelivery": false,
+      "FEnableCyclistQCSTK": false,
+      "FEnableCyclistQCSTKEW": false,
+      "FCheckEntrusted": false,
+      "FCheckOther": false
+    },
+    "FEntityInvPty": [
+      {
+        "FInvPtyId": {
+          "FNumber": "01"
+        },
+        "FIsEnable": true,
+        "FIsAffectPrice": false,
+        "FIsAffectPlan": false,
+        "FIsAffectCost": false
+      },
+      {
+        "FInvPtyId": {
+          "FNumber": "02"
+        },
+        "FIsEnable": true,
+        "FIsAffectPrice": false,
+        "FIsAffectPlan": false,
+        "FIsAffectCost": false
+      },
+      {
+        "FInvPtyId": {
+          "FNumber": "03"
+        },
+        "FIsEnable": false,
+        "FIsAffectPrice": false,
+        "FIsAffectPlan": false,
+        "FIsAffectCost": false
+      },
+      {
+        "FInvPtyId": {
+          "FNumber": "04"
+        },
+        "FIsEnable": false,
+        "FIsAffectPrice": false,
+        "FIsAffectPlan": false,
+        "FIsAffectCost": false
+      },
+      {
+        "FInvPtyId": {
+          "FNumber": "06"
+        },
+        "FIsEnable": false,
+        "FIsAffectPrice": false,
+        "FIsAffectPlan": false,
+        "FIsAffectCost": false
+      }
+    ]
+  }
+}

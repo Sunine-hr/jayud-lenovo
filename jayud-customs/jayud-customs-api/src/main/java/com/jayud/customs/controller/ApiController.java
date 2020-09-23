@@ -159,7 +159,7 @@ public class ApiController {
             GetFinanceInfoForm getFinanceInfoForm = new GetFinanceInfoForm();
             getFinanceInfoForm.setApplyNo(applyNo);
             log.info(String.format("开始查找云报关数据..."));
-//            service.getFinanceInfoAndPush2Kingdee(getFinanceInfoForm);
+            service.getFinanceInfoAndPush2Kingdee(getFinanceInfoForm);
             return CommonResult.success(String.format("已经收到回执信息：18位报关单号为：%s", applyNo));
         } else {
             Asserts.fail("apply_no需要输入18位报关单号");

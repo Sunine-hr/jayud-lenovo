@@ -34,6 +34,6 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      * @param idValue
      * @return
      */
-    InputOrderVO getMainOrderById(Long idValue);
+    InputOrderVO getMainOrderById(@Param("idValue") Long idValue);
 
 }

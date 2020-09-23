@@ -8,6 +8,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.finance.annotations.IsFee;
 import com.jayud.finance.bo.APARDetailForm;
 import com.jayud.finance.bo.PayableHeaderForm;
 import com.jayud.finance.bo.ReceivableHeaderForm;
@@ -81,14 +82,14 @@ public class MsgApiProcessorController {
             StringBuilder errorString = new StringBuilder();
             for (Field field : fields) {
                 String name = field.getName();
-                //找到实体类中带Cost字样的数据
-                if (name.contains("Cost")) {
+                //找到实体类中带isFee注解的数据
+                if (Objects.nonNull(field.getAnnotation(IsFee.class))) {
                     //读出注解@ApiModelProperty中的中文释义进行匹配
                     try {
                         Method getMethod = clz.getMethod("get" + name.substring(0, 1).toUpperCase() + name.substring(1));
                         Object invoke = getMethod.invoke(item);
                         //费用项为零不记录
-                        if (Objects.isNull(invoke) || BigDecimal.ZERO.compareTo((BigDecimal) invoke) == 0) {
+                        if (Objects.isNull(invoke) || BigDecimal.ZERO.equals(new BigDecimal(invoke.toString()))) {
                             continue;
                         }
                         ApiModelProperty annotation = field.getAnnotation(ApiModelProperty.class);

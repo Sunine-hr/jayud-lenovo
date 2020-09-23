@@ -15,10 +15,7 @@ import com.jayud.finance.bo.ReceivableHeaderForm;
 import com.jayud.finance.enums.CustomsCompanyEnum;
 import com.jayud.finance.enums.CustomsFeeEnum;
 import com.jayud.finance.enums.FormIDEnum;
-import com.jayud.finance.po.Customer;
-import com.jayud.finance.po.CustomsPayable;
-import com.jayud.finance.po.CustomsReceivable;
-import com.jayud.finance.po.Supplier;
+import com.jayud.finance.po.*;
 import com.jayud.finance.service.BaseService;
 import com.jayud.finance.service.KingdeeService;
 import io.swagger.annotations.ApiModelProperty;
@@ -68,6 +65,17 @@ public class MsgApiProcessorController {
         //feign调用之前确保从列表中取出单行数据且非空，因此此处不需再校验
         List<CustomsReceivable> customsReceivable = JSONObject.parseArray(reqMsg, CustomsReceivable.class);
 
+        //重单校验
+        if (CollectionUtil.isNotEmpty(customsReceivable)) {
+            //获取报关单号
+            String customApplyNo = customsReceivable.get(0).getCustomApplyNo();
+            List<InvoiceBase> query = (List<InvoiceBase>) baseService.query(customApplyNo, Receivable.class);
+            if (CollectionUtil.isNotEmpty(query)) {
+                log.info("应收单已经存在，不能重复推送");
+                return true;
+            }
+        }
+
         for (CustomsReceivable item : customsReceivable) {
             //要写入金蝶的实体
             ReceivableHeaderForm dataForm = new ReceivableHeaderForm();
@@ -90,7 +98,7 @@ public class MsgApiProcessorController {
                         Method getMethod = clz.getMethod("get" + name.substring(0, 1).toUpperCase() + name.substring(1));
                         Object invoke = getMethod.invoke(item);
                         //费用项为零不记录
-                        if (Objects.isNull(invoke) || Objects.equals("0.00",invoke.toString())) {
+                        if (Objects.isNull(invoke) || Objects.equals("0.00", invoke.toString())) {
                             continue;
                         }
                         ApiModelProperty annotation = field.getAnnotation(ApiModelProperty.class);
@@ -167,7 +175,6 @@ public class MsgApiProcessorController {
 //                return CommonResult.error(ResultEnum.INTERNAL_SERVER_ERROR, "保存失败");
                 return false;
             }
-
         }
 //        return CommonResult.error(ResultEnum.INTERNAL_SERVER_ERROR, "未知异常抛出");
         return false;
@@ -191,95 +198,108 @@ public class MsgApiProcessorController {
         log.info("金蝶接收到报关应付数据：{}", reqMsg);
         //拼装根据入参拼装实体数据
         List<CustomsPayable> customsPayableForms = JSONArray.parseArray(reqMsg).toJavaList(CustomsPayable.class);
+
+        //空数据校验
         if (CollectionUtil.isEmpty(customsPayableForms)) {
             log.info("应付费用项为空，退出方法");
 //            return CommonResult.success();
             return true;
-        }
-        //整理出不同的应付供应商，每一个应付供应商会生成一个单独的应付单
-        log.info("开始根据供应商分组...");
-        Map<String, List> diffSupplierMaps = new HashMap<>();
-        for (CustomsPayable details : customsPayableForms) {
-            String supplierName = details.getTargetName();
-            if (diffSupplierMaps.containsKey(supplierName)) {
-                diffSupplierMaps.get(supplierName).add(details);
-            } else {
-                diffSupplierMaps.put(supplierName, Lists.newArrayList(details));
+        } else {
+            //非空时重单校验
+            //获取报关单号
+            String customApplyNo = customsPayableForms.get(0).getCustomApplyNo();
+            List<InvoiceBase> query = (List<InvoiceBase>) baseService.query(customApplyNo, Payable.class);
+            if (CollectionUtil.isNotEmpty(query)) {
+                log.info("应付单已经存在，不能重复推送");
+                return true;
             }
-        }
-
-        //遍历供应商，将数据依次写入金蝶中
-//        ExecutorService service = Executors.newCachedThreadPool();
-        for (Map.Entry<String, List> stringListEntry : diffSupplierMaps.entrySet()) {
-            List<CustomsPayable> customsPayableentity = (List<CustomsPayable>) stringListEntry.getValue();
-            //取出第一行获取相关的应付抬头信息
-            CustomsPayable customsPayable = (CustomsPayable) customsPayableentity.get(0);
-
-            //要写入金蝶的数据
-            PayableHeaderForm dataForm = new PayableHeaderForm();
-
-            //声明异常日志
-            StringBuilder errorString = new StringBuilder();
 
 
-            dataForm.setBusinessNo(customsPayable.getCustomApplyNo());
-            //尝试查询供应商名并写入
-            String kingdeeCompName = CustomsCompanyEnum.getEnum(customsPayable.getTargetName()).getKingdee();
-            Optional<Supplier> suppliers = baseService.get(kingdeeCompName, Supplier.class);
-            if (!suppliers.isPresent()) {
-                log.info("传入的供应商名称 [" + customsPayable.getTargetName() + "] 无法找到相应的金蝶系统代码");
-                errorString.append("传入的供应商名称 [" + customsPayable.getTargetName() + "] 无法找到相应的金蝶系统代码");
-            }
-            //抬头信息
-            dataForm.setSupplierName(kingdeeCompName);
-            dataForm.setCurrency("CNY");
-            dataForm.setSettleOrgName("深圳市佳裕达报关有限公司");
-            dataForm.setRemark(getRemark());
-            dataForm.setPurchaseDeptName("报关部");
-            dataForm.setBillNo("");
-            dataForm.setBaseCurrency("CNY");
-            dataForm.setExchangeRate(BigDecimal.ONE);
-            dataForm.setBusinessDate(customsPayable.getApplyDt());
-            //费用明细
-            List<APARDetailForm> list = new ArrayList<>();
-            for (CustomsPayable payableForm : customsPayableentity) {
-                CustomsFeeEnum customsFeeEnum = CustomsFeeEnum.getEnum(payableForm.getFeeName());
-                if (Objects.isNull(customsFeeEnum)) {
-                    errorString.append(String.format("在金蝶的数据库中没有找到与%s相关的费用项", payableForm.getFeeName()));
-                    continue;
+            //整理出不同的应付供应商，每一个应付供应商会生成一个单独的应付单
+            log.info("开始根据供应商分组...");
+            Map<String, List> diffSupplierMaps = new HashMap<>();
+            for (CustomsPayable details : customsPayableForms) {
+                String supplierName = details.getTargetName();
+                if (diffSupplierMaps.containsKey(supplierName)) {
+                    diffSupplierMaps.get(supplierName).add(details);
+                } else {
+                    diffSupplierMaps.put(supplierName, Lists.newArrayList(details));
                 }
-                APARDetailForm item = new APARDetailForm();
-                item.setExpenseName(customsFeeEnum.getKingdee());
-                item.setExpenseCategoryName(customsFeeEnum.getCategory());
-                item.setExpenseTypeName(customsFeeEnum.getType());
-                item.setPriceQty(BigDecimal.ONE);
-                item.setTaxPrice(customsPayable.getCost());
-                item.setTaxRate(BigDecimal.ZERO);
-                list.add(item);
-            }
-            dataForm.setEntityDetail(list);
-
-            if (StringUtils.isEmpty(errorString.toString())) {
-
             }
 
-            //调用保存应付单接口
-            try {
-                CommonResult commonResult = service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), dataForm);
-                if (Objects.nonNull(commonResult) && commonResult.getCode() == ResultEnum.SUCCESS.getCode()) {
-                    log.info("金蝶应付单({})推送完毕", kingdeeCompName);
+            //遍历供应商，将数据依次写入金蝶中
+//        ExecutorService service = Executors.newCachedThreadPool();
+            for (Map.Entry<String, List> stringListEntry : diffSupplierMaps.entrySet()) {
+                List<CustomsPayable> customsPayableentity = (List<CustomsPayable>) stringListEntry.getValue();
+                //取出第一行获取相关的应付抬头信息
+                CustomsPayable customsPayable = (CustomsPayable) customsPayableentity.get(0);
+
+                //要写入金蝶的数据
+                PayableHeaderForm dataForm = new PayableHeaderForm();
+
+                //声明异常日志
+                StringBuilder errorString = new StringBuilder();
+
+
+                dataForm.setBusinessNo(customsPayable.getCustomApplyNo());
+                //尝试查询供应商名并写入
+                String kingdeeCompName = CustomsCompanyEnum.getEnum(customsPayable.getTargetName()).getKingdee();
+                Optional<Supplier> suppliers = baseService.get(kingdeeCompName, Supplier.class);
+                if (!suppliers.isPresent()) {
+                    log.info("传入的供应商名称 [" + customsPayable.getTargetName() + "] 无法找到相应的金蝶系统代码");
+                    errorString.append("传入的供应商名称 [" + customsPayable.getTargetName() + "] 无法找到相应的金蝶系统代码");
+                }
+                //抬头信息
+                dataForm.setSupplierName(kingdeeCompName);
+                dataForm.setCurrency("CNY");
+                dataForm.setSettleOrgName("深圳市佳裕达报关有限公司");
+                dataForm.setRemark(getRemark());
+                dataForm.setPurchaseDeptName("报关部");
+                dataForm.setBillNo("");
+                dataForm.setBaseCurrency("CNY");
+                dataForm.setExchangeRate(BigDecimal.ONE);
+                dataForm.setBusinessDate(customsPayable.getApplyDt());
+                //费用明细
+                List<APARDetailForm> list = new ArrayList<>();
+                for (CustomsPayable payableForm : customsPayableentity) {
+                    CustomsFeeEnum customsFeeEnum = CustomsFeeEnum.getEnum(payableForm.getFeeName());
+                    if (Objects.isNull(customsFeeEnum)) {
+                        errorString.append(String.format("在金蝶的数据库中没有找到与%s相关的费用项", payableForm.getFeeName()));
+                        continue;
+                    }
+                    APARDetailForm item = new APARDetailForm();
+                    item.setExpenseName(customsFeeEnum.getKingdee());
+                    item.setExpenseCategoryName(customsFeeEnum.getCategory());
+                    item.setExpenseTypeName(customsFeeEnum.getType());
+                    item.setPriceQty(BigDecimal.ONE);
+                    item.setTaxPrice(customsPayable.getCost());
+                    item.setTaxRate(BigDecimal.ZERO);
+                    list.add(item);
+                }
+                dataForm.setEntityDetail(list);
+
+                if (StringUtils.isEmpty(errorString.toString())) {
+
+                }
+
+                //调用保存应付单接口
+                try {
+                    CommonResult commonResult = service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), dataForm);
+                    if (Objects.nonNull(commonResult) && commonResult.getCode() == ResultEnum.SUCCESS.getCode()) {
+                        log.info("金蝶应付单({})推送完毕", kingdeeCompName);
 //                    return CommonResult.success("金蝶应付单推送完毕");
 //                    return true;
-                }
+                    }
 //                return commonResult;
-            } catch (Exception e) {
-                e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
 //                return CommonResult.error(ResultEnum.INTERNAL_SERVER_ERROR, "保存失败");
+                }
             }
-        }
 
 //        return CommonResult.error(ResultEnum.INTERNAL_SERVER_ERROR, "遇到其他错误抛出");
-        return true;
-    }
+            return true;
+        }
 
+    }
 }

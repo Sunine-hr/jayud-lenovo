@@ -65,8 +65,10 @@ public class UploadServiceImpl implements UploadService {
             // 2.1、获取文件后缀名
             String extension = StringUtils.substringAfterLast(file.getOriginalFilename(), ".");
             // 2.2、上传
+
             StorePath storePath = fastFileStorageClient.uploadFile(
                     file.getInputStream(), file.getSize(), extension, null);
+
             log.info("原图完整访问路径：" + uploadProperties.getBaseUrl() + "/" + storePath.getFullPath());
 
             // 2.2、上传并生成缩略图

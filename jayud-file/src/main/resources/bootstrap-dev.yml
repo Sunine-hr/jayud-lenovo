@@ -13,7 +13,7 @@ fdfs:
     width: 150
     height: 150
   trackerList:            #TrackerList参数,支持多个
-    - 113.100.140.250:6022    #多个继续增加一行即可 携带
+    - 113.100.140.250:23333    #多个继续增加一行即可 携带
   pool:
     max-total: 200      # 连接池最大数量
     max-total-per-key: 50   # 每个tracker地址的最大连接数

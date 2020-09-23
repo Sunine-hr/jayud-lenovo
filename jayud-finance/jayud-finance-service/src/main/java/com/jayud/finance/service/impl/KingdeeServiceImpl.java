@@ -247,13 +247,15 @@ public class KingdeeServiceImpl implements KingdeeService {
         return CommonResult.success(list);
     }
 
+
+
     @Override
-    public <T> CommonResult<T> getInvoice(String BusinessCode, Class<T> clz) {
+    public <T> CommonResult<T> getInvoice(String businessCode, Class<T> clz) {
         if (clz.isAssignableFrom(InvoiceBase.class)) {
             Asserts.fail(ResultEnum.PARAM_ERROR, "请求实体类型不正确");
         }
         //1. 获取应收或应付单单号
-        List<InvoiceBase> idLists = (List<InvoiceBase>) baseService.query(BusinessCode, clz);
+        List<InvoiceBase> idLists = (List<InvoiceBase>) baseService.query(businessCode, clz);
         if (idLists.isEmpty()) {
             Asserts.fail(ResultEnum.PARAM_ERROR, "没有查询到数据");
         }
@@ -283,6 +285,7 @@ public class KingdeeServiceImpl implements KingdeeService {
             param.put("Id", "");
 
             String result = KingdeeHttpUtil.httpPost(k3CloundConfig.getView(), header, buildParam(formId, JSONObject.parseObject(JSONUtil.toJsonStr(param))));
+
 
             log.info("回执数据为：" + result);
 

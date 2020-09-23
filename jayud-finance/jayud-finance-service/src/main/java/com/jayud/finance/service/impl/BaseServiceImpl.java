@@ -26,7 +26,7 @@ public class BaseServiceImpl implements BaseService {
     KingdeeService kingdeeService;
 
     @Override
-    public <T> List<T> query(String name,Class<T> clz) {
+    public <T> Object query(String name, Class<T> clz) {
         K3Entity k3Entity = clz.getAnnotation(K3Entity.class);
         if(!Optional.of(k3Entity).isPresent()){
             Asserts.fail(ResultEnum.PARAM_ERROR,"k3基本数据字段未配置");

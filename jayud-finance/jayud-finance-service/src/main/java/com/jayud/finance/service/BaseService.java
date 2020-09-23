@@ -1,6 +1,5 @@
 package com.jayud.finance.service;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -15,7 +14,7 @@ public interface BaseService {
      * @param clz 指定返回值类型
      * @return
      */
-    <T> List<T> query(String name, Class<T> clz);
+    <T> Object query(String name, Class<T> clz);
 
 
     /**

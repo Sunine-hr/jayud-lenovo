@@ -58,7 +58,9 @@ public class OrderCustomsController {
             for (FileView fileView : fileViews) {
                 buf.append(fileView.getRelativePath()).append(",");
             }
-            inputSubOrderCustomsForm.setDescription(buf.substring(0,buf.length()-1));
+            if(!"".equals(String.valueOf(buf))) {
+                inputSubOrderCustomsForm.setDescription(buf.substring(0, buf.length() - 1));
+            }
         }
         if("submit".equals(form.getCmd())){
             if(form.getCustomerCode() == null || "".equals(form.getCustomerCode())

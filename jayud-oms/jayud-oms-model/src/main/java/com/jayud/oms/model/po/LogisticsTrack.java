@@ -32,7 +32,7 @@ public class LogisticsTrack extends Model<LogisticsTrack> {
     private Integer id;
 
     @ApiModelProperty(value = "关联主订单ID")
-    private String mainOrderNo;
+    private String mainOrderId;
 
     @ApiModelProperty(value = "关联订单ID")
     private String orderId;

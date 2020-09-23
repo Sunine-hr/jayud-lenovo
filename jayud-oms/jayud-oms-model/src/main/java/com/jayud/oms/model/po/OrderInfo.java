@@ -30,7 +30,7 @@ public class OrderInfo extends Model<OrderInfo> {
 
     @ApiModelProperty(value = "自增id")
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     @ApiModelProperty(value = "订单编号(生成规则product_classify code+随时数)")
     private String orderNo;

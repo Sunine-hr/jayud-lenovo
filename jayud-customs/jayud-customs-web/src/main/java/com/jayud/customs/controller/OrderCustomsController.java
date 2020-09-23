@@ -8,14 +8,11 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.customs.feign.OmsClient;
-import com.jayud.customs.model.bo.InputOrderCustomsForm;
-import com.jayud.customs.model.bo.InputSubOrderCustomsForm;
-import com.jayud.customs.model.bo.OprStatusForm;
-import com.jayud.customs.model.bo.QueryCustomsOrderInfoForm;
+import com.jayud.customs.model.bo.*;
 import com.jayud.customs.model.po.OrderCustoms;
 import com.jayud.customs.model.vo.CustomsOrderInfoVO;
 import com.jayud.customs.model.vo.FileView;
-import com.jayud.customs.model.vo.InputOrderCustomsVO;
+import com.jayud.customs.model.vo.InputOrderVO;
 import com.jayud.customs.service.IOrderCustomsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -44,14 +41,19 @@ public class OrderCustomsController {
 
     @ApiOperation(value = "暂存/提交")
     @PostMapping(value = "/oprOrderCustoms")
-    public CommonResult oprOrderCustoms(@RequestBody InputOrderCustomsForm form) {
+    public CommonResult oprOrderCustoms(@RequestBody InputOrderForm form) {
         //参数校验
         boolean flag = true;
         if(form == null || form.getCmd() == null || "".equals(form.getCmd())){
             return CommonResult.error(400,"参数不合法");
         }
+        InputOrderCustomsForm inputOrderCustomsForm = form.getOrderCustomsForm();
+        InputMainOrderForm inputMainOrderForm = form.getOrderForm();
+        if(inputMainOrderForm == null || inputOrderCustomsForm == null){
+            return CommonResult.error(400,"参数不合法");
+        }
         //处理附件，前台提供数组
-        List<InputSubOrderCustomsForm> subOrderCustomsForms = form.getSubOrders();
+        List<InputSubOrderCustomsForm> subOrderCustomsForms = inputOrderCustomsForm.getSubOrders();
         for(InputSubOrderCustomsForm inputSubOrderCustomsForm : subOrderCustomsForms){
             List<FileView> fileViews = inputSubOrderCustomsForm.getFileViews();
             StringBuffer buf = new StringBuffer();
@@ -63,23 +65,24 @@ public class OrderCustomsController {
             }
         }
         if("submit".equals(form.getCmd())){
-            if(form.getCustomerCode() == null || "".equals(form.getCustomerCode())
-            || form.getCustomerName() == null || "".equals(form.getCustomerName())
-            || form.getBizUid() == null
-            || form.getBizUname() == null || "".equals(form.getBizUname())
-            || form.getLegalCode() == null || "".equals(form.getLegalCode())
-            || form.getLegalName() == null || "".equals(form.getLegalName())
-            || form.getBizBelongDepart() == null
-            || form.getReferenceNo() == null || "".equals(form.getReferenceNo())
-            || form.getPortCode() == null || "".equals(form.getPortCode())
-            || form.getPortName() == null || "".equals(form.getPortName())
-            || form.getGoodsType() == null
-            || form.getSubOrders() == null){
+            if(inputMainOrderForm.getCustomerCode() == null || "".equals(inputMainOrderForm.getCustomerCode())
+            || inputMainOrderForm.getCustomerName() == null || "".equals(inputMainOrderForm.getCustomerName())
+            || inputMainOrderForm.getBizUid() == null
+            || inputMainOrderForm.getBizUname() == null || "".equals(inputMainOrderForm.getBizUname())
+            || inputMainOrderForm.getLegalCode() == null || "".equals(inputMainOrderForm.getLegalCode())
+            || inputMainOrderForm.getLegalName() == null || "".equals(inputMainOrderForm.getLegalName())
+            || inputMainOrderForm.getBizBelongDepart() == null
+            || inputMainOrderForm.getReferenceNo() == null || "".equals(inputMainOrderForm.getReferenceNo())
+                    //报关单
+            || inputOrderCustomsForm.getPortCode() == null || "".equals(inputOrderCustomsForm.getPortCode())
+            || inputOrderCustomsForm.getPortName() == null || "".equals(inputOrderCustomsForm.getPortName())
+            || inputOrderCustomsForm.getGoodsType() == null
+            || inputOrderCustomsForm.getSubOrders() == null){
                 flag = false;
             }
             //子订单参数校验
-            if(form.getSubOrders() != null){
-                for (InputSubOrderCustomsForm subOrderCustomsForm : form.getSubOrders()) {
+            if(inputOrderCustomsForm.getSubOrders() != null){
+                for (InputSubOrderCustomsForm subOrderCustomsForm : inputOrderCustomsForm.getSubOrders()) {
                     if(subOrderCustomsForm.getOrderNo() == null || "".equals(subOrderCustomsForm.getOrderNo())
                     || subOrderCustomsForm.getTitle() == null || "".equals(subOrderCustomsForm.getTitle())
                     || subOrderCustomsForm.getUnitCode() == null || "".equals(subOrderCustomsForm.getUnitCode())
@@ -124,10 +127,10 @@ public class OrderCustomsController {
 
     @ApiOperation(value = "编辑回显,id=主订单ID")
     @PostMapping(value = "/editOrderCustomsView")
-    public CommonResult<InputOrderCustomsVO> editOrderCustomsView(@RequestBody Map<String,Object> param) {
+    public CommonResult<InputOrderVO> editOrderCustomsView(@RequestBody Map<String,Object> param) {
         String id = MapUtil.getStr(param,"id");
-        InputOrderCustomsVO inputOrderCustomsVO = orderCustomsService.editOrderCustomsView(Long.parseLong(id));
-        return CommonResult.success(inputOrderCustomsVO);
+        InputOrderVO inputOrderVO = orderCustomsService.editOrderCustomsView(Long.parseLong(id));
+        return CommonResult.success(inputOrderVO);
     }
 
     @ApiOperation(value = "报关接单列表/放行异常列表/放行确认/审核不通过/订单列表/报关打单/复核/申报")

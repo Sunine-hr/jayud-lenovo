@@ -54,7 +54,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     ILogisticsTrackService logisticsTrackService;
 
     @Override
-    public String oprMainOrder(InputOrderForm form) {
+    public String oprMainOrder(InputMainOrderForm form) {
         OrderInfo orderInfo = ConvertUtil.convert(form, OrderInfo.class);
         if(form != null && form.getOrderNo() != null){//修改
             orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
@@ -168,9 +168,21 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     @Override
-    public InputOrderVO getMainOrderById(Long idValue) {
+    public InputMainOrderVO getMainOrderById(Long idValue) {
         return baseMapper.getMainOrderById(idValue);
     }
+
+    @Override
+    public Long getIdByOrderNo(String orderNo) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("order_no",orderNo);
+        OrderInfo orderInfo = baseMapper.selectOne(queryWrapper);
+        if(orderInfo == null){
+            return 0L;
+        }
+        return orderInfo.getId();
+    }
+
 
     @Override
     public boolean saveOrUpdateCost(InputCostForm form) {
@@ -178,7 +190,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             if (form == null || form.getMainOrderId() == null) {
                 return false;
             }
-            InputOrderVO inputOrderVO = getMainOrderById(form.getMainOrderId());
+            InputMainOrderVO inputOrderVO = getMainOrderById(form.getMainOrderId());
             if (inputOrderVO == null) {
                 return false;
             }

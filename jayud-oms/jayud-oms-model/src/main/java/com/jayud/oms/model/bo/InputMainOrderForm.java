@@ -7,7 +7,7 @@ import javax.validation.constraints.NotEmpty;
 
 
 @Data
-public class InputOrderForm {
+public class InputMainOrderForm {
 
 
     @ApiModelProperty(value = "主订单号,编辑时必传")

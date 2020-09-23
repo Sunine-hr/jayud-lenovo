@@ -54,24 +54,30 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
     }
 
     @Override
-    public boolean oprOrderCustoms(InputOrderCustomsForm form) {
+    public boolean oprOrderCustoms(InputOrderForm form) {
         try {
-            InputOrderForm inputOrderForm = ConvertUtil.convert(form, InputOrderForm.class);
-            List<OprOrderLogForm> oprOrderLogForms = new ArrayList<>();
+            InputOrderCustomsForm inputOrderCustomsForm = form.getOrderCustomsForm();
+            InputMainOrderForm inputMainOrderForm = form.getOrderForm();
             //处理主订单
             //保存主订单数据,返回主订单号,暂存和提交
-            ApiResult apiResult = omsClient.oprMainOrder(inputOrderForm);
+            inputMainOrderForm.setCmd(form.getCmd());
+            ApiResult apiResult = omsClient.oprMainOrder(inputMainOrderForm);
+            //根据主订单号获取主订单ID
+            Long mainOrderId = omsClient.getIdByOrderNo(String.valueOf(apiResult.getData())).getData();
+            if(mainOrderId == null){
+                return false;
+            }
             //调用服务失败
             if(apiResult.getCode() != 200 || apiResult.getData() == null){
                 return false;
             }
 
             //暂存或提交只是主订单的状态不一样，具体更新还是保存还是根据主键区别
-            OrderCustoms customs = ConvertUtil.convert(form, OrderCustoms.class);
+            OrderCustoms customs = ConvertUtil.convert(inputOrderCustomsForm, OrderCustoms.class);
             //子订单数据初始化处理
             //设置子订单号/报关抬头/结算单位/附件
             List<OrderCustoms> orderCustomsList = new ArrayList<>();
-            List<InputSubOrderCustomsForm> subOrderCustomsForms = form.getSubOrders();
+            List<InputSubOrderCustomsForm> subOrderCustomsForms = inputOrderCustomsForm.getSubOrders();
             for (InputSubOrderCustomsForm subOrder : subOrderCustomsForms) {
                 customs.setOrderNo(subOrder.getOrderNo());
                 customs.setTitle(subOrder.getTitle());
@@ -87,18 +93,20 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                     customs.setCreatedUser(getLoginUser());
                 }
                 orderCustomsList.add(customs);
-
-                //记录操作日志
-                OprOrderLogForm oprOrderLogForm = new OprOrderLogForm();
-                oprOrderLogForm.setMainOrderNo(String.valueOf(apiResult.getData()));
-                oprOrderLogForm.setOrderNo(subOrder.getOrderNo());
-                oprOrderLogForm.setRemarks("纯报关-创建订单");
-                oprOrderLogForm.setOptUname(getLoginUser());
-                oprOrderLogForms.add(oprOrderLogForm);
             }
             saveOrUpdateBatch(orderCustomsList);
-            //记录订单日志
-            omsClient.saveOprOrderLog(oprOrderLogForms);
+
+            //记录操作状态
+            if("submit".equals(form.getCmd())){
+                for (OrderCustoms orderCustom : orderCustomsList) {
+                    OprStatusForm oprStatusForm = new OprStatusForm();
+                    oprStatusForm.setStatus(OrderStatusEnum.MAIN_PROCESS_1.getCode());
+                    oprStatusForm.setStatusName(OrderStatusEnum.MAIN_PROCESS_1.getDesc());
+                    oprStatusForm.setMainOrderId(mainOrderId);
+                    oprStatusForm.setOrderId(orderCustom.getId());
+                    omsClient.saveOprStatus(oprStatusForm);
+                }
+            }
         }catch (Exception e){
             e.printStackTrace();
             return false;
@@ -107,15 +115,17 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
     }
 
     @Override
-    public InputOrderCustomsVO editOrderCustomsView(Long id) {
+    public InputOrderVO editOrderCustomsView(Long id) {
         String prePath = String.valueOf(omsClient.getBaseUrl().getData());
+        InputOrderVO inputOrderVO = new InputOrderVO();
         //1.查询主订单信息
-        InputOrderVO inputOrderVO = omsClient.getMainOrderById(id).getData();
-        InputOrderCustomsVO inputOrderCustomsVO = ConvertUtil.convert(inputOrderVO,InputOrderCustomsVO.class);
+        InputMainOrderVO inputMainOrderVO = omsClient.getMainOrderById(id).getData();
+        inputOrderVO.setOrderForm(inputMainOrderVO);
         //2.查询子订单信息,根据主订单
-        if(inputOrderCustomsVO != null && inputOrderCustomsVO.getOrderNo() != null){
+        InputOrderCustomsVO inputOrderCustomsVO = new InputOrderCustomsVO();
+        if(inputMainOrderVO != null && inputMainOrderVO.getOrderNo() != null){
             Map<String, Object> param = new HashMap<>();
-            param.put("main_order_no",inputOrderCustomsVO.getOrderNo());
+            param.put("main_order_no",inputMainOrderVO.getOrderNo());
             List<OrderCustomsVO> orderCustomsVOS = findOrderCustomsByCondition(param);
             if(orderCustomsVOS != null && orderCustomsVOS.size() > 0){
                 OrderCustomsVO orderCustomsVO = orderCustomsVOS.get(0);
@@ -152,7 +162,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 inputOrderCustomsVO.setSubOrders(subOrderCustomsVOS);
             }
         }
-        return inputOrderCustomsVO;
+        return inputOrderVO;
     }
 
     @Override

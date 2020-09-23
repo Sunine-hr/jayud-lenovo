@@ -47,12 +47,6 @@ public interface OmsClient {
     ApiResult<Long> getIdByOrderNo(@RequestParam(value = "orderNo") String orderNo);
 
     /**
-     * 获取根路径
-     */
-    @RequestMapping(value = "/api/getBaseUrl")
-    ApiResult getBaseUrl();
-
-    /**
      * 记录流程状态
      */
     @RequestMapping(value = "/api/saveOprStatus")

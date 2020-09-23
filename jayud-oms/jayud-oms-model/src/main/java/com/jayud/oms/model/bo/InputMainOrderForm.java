@@ -10,8 +10,8 @@ import javax.validation.constraints.NotEmpty;
 public class InputMainOrderForm {
 
 
-    @ApiModelProperty(value = "主订单号,编辑时必传")
-    private String orderNo;
+    @ApiModelProperty(value = "主订单ID,编辑时必传")
+    private Long orderId;
 
     @ApiModelProperty(value = "客户code",required = true)
     @NotEmpty(message = "customerCode is required")
@@ -47,6 +47,9 @@ public class InputMainOrderForm {
     @ApiModelProperty(value = "客户参考号",required = true)
     @NotEmpty(message = "referenceNo is required")
     private String referenceNo;
+
+    @ApiModelProperty(value = "业务类型 CBG:纯报关",required = true)
+    private String bizCode;
 
     @ApiModelProperty(value = "操作指令:cmd=preSubmit or submit",required = true)
     private String cmd;

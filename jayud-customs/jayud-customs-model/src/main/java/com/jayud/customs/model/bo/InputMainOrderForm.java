@@ -48,6 +48,9 @@ public class InputMainOrderForm {
     @NotEmpty(message = "referenceNo is required")
     private String referenceNo;
 
+    @ApiModelProperty(value = "业务类型 CBG:纯报关",required = true)
+    private String bizCode;
+
     @ApiModelProperty(value = "前台忽略")
     private String cmd;
 

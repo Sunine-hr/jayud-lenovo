@@ -56,7 +56,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public String oprMainOrder(InputMainOrderForm form) {
         OrderInfo orderInfo = ConvertUtil.convert(form, OrderInfo.class);
-        if(form != null && form.getOrderNo() != null){//修改
+        if(form != null && form.getOrderId() != null){//修改
+            //修改时也要返回主订单号
+            OrderInfo oldOrder = baseMapper.selectById(form.getOrderId());
+            orderInfo.setId(form.getOrderId());
+            orderInfo.setOrderNo(oldOrder.getOrderNo());
             orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
             orderInfo.setUpTime(LocalDateTime.now());
             orderInfo.setUpUser(getLoginUser());

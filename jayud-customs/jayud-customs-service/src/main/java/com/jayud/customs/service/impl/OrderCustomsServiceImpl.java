@@ -9,6 +9,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.customs.feign.FileClient;
 import com.jayud.customs.feign.OmsClient;
 import com.jayud.customs.mapper.OrderCustomsMapper;
 import com.jayud.customs.model.bo.*;
@@ -37,6 +38,9 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
 
     @Autowired
     OmsClient omsClient;
+
+    @Autowired
+    FileClient fileClient;
 
     @Autowired
     RedisUtils redisUtils;
@@ -71,14 +75,14 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
             if(apiResult.getCode() != 200 || apiResult.getData() == null){
                 return false;
             }
-
             //暂存或提交只是主订单的状态不一样，具体更新还是保存还是根据主键区别
-            OrderCustoms customs = ConvertUtil.convert(inputOrderCustomsForm, OrderCustoms.class);
             //子订单数据初始化处理
             //设置子订单号/报关抬头/结算单位/附件
             List<OrderCustoms> orderCustomsList = new ArrayList<>();
             List<InputSubOrderCustomsForm> subOrderCustomsForms = inputOrderCustomsForm.getSubOrders();
             for (InputSubOrderCustomsForm subOrder : subOrderCustomsForms) {
+                OrderCustoms customs = new OrderCustoms();
+                customs = ConvertUtil.convert(inputOrderCustomsForm, OrderCustoms.class);
                 customs.setOrderNo(subOrder.getOrderNo());
                 customs.setTitle(subOrder.getTitle());
                 customs.setUnitCode(subOrder.getUnitCode());
@@ -116,7 +120,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
 
     @Override
     public InputOrderVO editOrderCustomsView(Long id) {
-        String prePath = String.valueOf(omsClient.getBaseUrl().getData());
+        String prePath = String.valueOf(fileClient.getBaseUrl().getData());
         InputOrderVO inputOrderVO = new InputOrderVO();
         //1.查询主订单信息
         InputMainOrderVO inputMainOrderVO = omsClient.getMainOrderById(id).getData();
@@ -158,8 +162,10 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                         }
                     }
                     subOrderCustomsVO.setFileViews(fileViews);
+                    subOrderCustomsVOS.add(subOrderCustomsVO);
                 }
                 inputOrderCustomsVO.setSubOrders(subOrderCustomsVOS);
+                inputOrderVO.setOrderCustomsForm(inputOrderCustomsVO);
             }
         }
         return inputOrderVO;
@@ -179,7 +185,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
         IPage<CustomsOrderInfoVO> pageInfo = baseMapper.findCustomsOrderByPage(page, form);
         //处理附件
         List<CustomsOrderInfoVO> customsOrderInfoVOS = pageInfo.getRecords();
-        String prePath = omsClient.getBaseUrl().getData().toString();
+        String prePath = fileClient.getBaseUrl().getData().toString();
         for (CustomsOrderInfoVO customsOrder : customsOrderInfoVOS) {
             //处理子订单附件信息
             String fileStr = customsOrder.getFileStr();

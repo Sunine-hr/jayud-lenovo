@@ -20,3 +20,7 @@ spring:
     password: Root!!2020
     configuration:
       maximum-pool-size: 2
+
+mybatis-plus:
+  mapper-locations: classpath:com.jayud.airfreight.mapper/*.xml
+  typeAliasesPackage: com.jayud.airfreight.model

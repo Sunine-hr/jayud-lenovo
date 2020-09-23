@@ -8,23 +8,21 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.mapper.OrderInfoMapper;
 import com.jayud.oms.model.bo.*;
-import com.jayud.oms.model.po.OrderInfo;
-import com.jayud.oms.model.po.OrderPaymentCost;
-import com.jayud.oms.model.po.OrderReceivableCost;
+import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
-import com.jayud.oms.service.IOrderInfoService;
-import com.jayud.oms.service.IOrderPaymentCostService;
-import com.jayud.oms.service.IOrderReceivableCostService;
-import com.jayud.oms.service.IProductBizService;
+import com.jayud.oms.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -48,6 +46,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Autowired
     IOrderReceivableCostService receivableCostService;
+
+    @Autowired
+    IOrderStatusService orderStatusService;
+
+    @Autowired
+    ILogisticsTrackService logisticsTrackService;
 
     @Override
     public String oprMainOrder(InputOrderForm form) {
@@ -95,8 +99,71 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //定义分页参数
         Page<OrderInfoVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
-        page.addOrder(OrderItem.asc("oi.id"));
+        page.addOrder(OrderItem.asc("temp.id"));
         IPage<OrderInfoVO> pageInfo = baseMapper.findOrderInfoByPage(page, form);
+        if("submit".equals(form.getCmd())){//处理流程
+            List<OrderInfoVO> orderInfoVOS = pageInfo.getRecords();
+            for (OrderInfoVO orderInfo : orderInfoVOS) {
+                List<OrderStatusVO> orderStatusVOS = new ArrayList<>();
+                QueryWrapper queryWrapper = new QueryWrapper();
+                queryWrapper.eq("biz_code",orderInfo.getBizCode());
+                List<OrderStatus> allProcess = orderStatusService.list(queryWrapper);//所有流程
+                allProcess.sort((h1, h2) -> {//排序
+                    if (h1.getFId().equals(h2.getFId())) {
+                        return Integer.compare(h1.getSorts(), h2.getSorts());
+                    }
+                    return Integer.compare(h1.getFId(), h2.getFId());
+
+                });
+                allProcess.forEach(x ->{
+                    OrderStatusVO orderStatus = new OrderStatusVO();
+                    orderStatus.setId(x.getId());
+                    orderStatus.setProcessName(x.getName());
+                    orderStatus.setProcessCode(x.getIdCode());
+                    orderStatus.setStatus();
+                    if (x.getFId() == 0) {
+                        orderStatusVOS.add(orderStatus);
+                    } else {
+                        orderStatusVOS.forEach(v -> {
+                            if (v.getId() == x.getFId()) {
+                                v.addChildren(orderStatus);
+                            }
+                        });
+                    }
+                });
+                queryWrapper = new QueryWrapper();
+                queryWrapper.eq("main_order_id",orderInfo.getId());
+                List<LogisticsTrack> logisticsTracks = logisticsTrackService.list();//已操作的流程
+                Map<String, LogisticsTrack> logisticsTrackMap = logisticsTracks.stream().collect(Collectors.toMap(LogisticsTrack::getStatus, x -> x));
+                if (!logisticsTracks.isEmpty()) {
+                    orderStatusVOS.forEach(x -> {
+                        if (logisticsTrackMap.keySet().contains(x.getProcessCode())) {
+                            x.setStatusChangeTime(DateUtils.getLocalToStr(logisticsTrackMap.get(x.getProcessCode()).getOperatorTime()));
+                            if (x.getChildren().isEmpty()) {
+                                x.setStatus("3");
+                            } else {
+                                x.setStatus("2");
+                                final boolean[] flag = {false};
+                                x.getChildren().forEach(v -> {
+                                    if (!flag[0]) {
+                                        if (logisticsTrackMap.keySet().contains(v.getProcessCode())) {
+                                            v.setStatus("3");
+                                            v.setStatusChangeTime(DateUtils.getLocalToStr(logisticsTrackMap.get(x.getProcessCode()).getOperatorTime()));
+                                        } else {
+                                            flag[0] = true;
+                                        }
+                                    }
+                                });
+                                if (!flag[0]) {
+                                    x.setStatus("3");
+                                }
+                            }
+                        }
+                    });
+                }
+                orderInfo.setStatusList(orderStatusVOS);
+            }
+        }
         return pageInfo;
     }
 

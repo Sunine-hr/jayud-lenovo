@@ -122,7 +122,7 @@ public class OrderCustomsController {
 
     @ApiOperation(value = "编辑回显,id=主订单ID")
     @PostMapping(value = "/editOrderCustomsView")
-    public CommonResult<InputOrderCustomsVO> editOrderCustomsView(Map<String,Object> param) {
+    public CommonResult<InputOrderCustomsVO> editOrderCustomsView(@RequestBody Map<String,Object> param) {
         String id = MapUtil.getStr(param,"id");
         InputOrderCustomsVO inputOrderCustomsVO = orderCustomsService.editOrderCustomsView(Long.parseLong(id));
         return CommonResult.success(inputOrderCustomsVO);

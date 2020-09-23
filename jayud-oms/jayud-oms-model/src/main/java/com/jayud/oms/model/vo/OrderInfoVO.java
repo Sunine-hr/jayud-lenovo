@@ -3,6 +3,8 @@ package com.jayud.oms.model.vo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 
 @Data
 public class OrderInfoVO {
@@ -48,5 +50,8 @@ public class OrderInfoVO {
 
     @ApiModelProperty(value = "创建时间")
     private String createdTimeStr;
+
+    @ApiModelProperty(value = "流程节点")
+    private List<OrderStatusVO> statusList;
 
 }

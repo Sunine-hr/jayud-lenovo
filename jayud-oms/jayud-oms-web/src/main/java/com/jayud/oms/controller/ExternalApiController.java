@@ -46,8 +46,8 @@ public class ExternalApiController {
 
     @ApiOperation(value = "获取主订单信息")
     @RequestMapping(value = "/api/getMainOrderById")
-    ApiResult getMainOrderById(@RequestParam(value = "idValue") Long idValue){
-        InputOrderVO inputOrderVO = orderInfoService.getMainOrderById(idValue);
+    ApiResult getMainOrderById(@RequestParam(value = "id") Long id){
+        InputOrderVO inputOrderVO = orderInfoService.getMainOrderById(id);
         return ApiResult.ok(inputOrderVO);
     }
 
@@ -56,7 +56,7 @@ public class ExternalApiController {
     @RequestMapping(value = "/api/saveOprStatus")
     ApiResult saveOprStatus(@RequestBody OprStatusForm form){
         LogisticsTrack logisticsTrack = ConvertUtil.convert(form,LogisticsTrack.class);
-        logisticsTrack.setCreatedUser(getLoginUser());
+        logisticsTrack.setCreatedUser(String.valueOf(getLoginUser().getData()));
         logisticsTrack.setCreatedTime(LocalDateTime.now());
         logisticsTrackService.saveOrUpdate(logisticsTrack);
         return ApiResult.ok();
@@ -66,9 +66,10 @@ public class ExternalApiController {
      * 获取当前登录用户
      * @return
      */
-    private String getLoginUser(){
+    @RequestMapping(value = "/api/getBaseUrl")
+    ApiResult getLoginUser(){
         String loginUser = redisUtils.get("loginUser",100);
-        return loginUser;
+        return ApiResult.ok(loginUser);
     }
 
 

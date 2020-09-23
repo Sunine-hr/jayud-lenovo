@@ -32,7 +32,7 @@
     </sql>
 
     <select id="findOrderInfoByPage" parameterType="com.jayud.oms.model.bo.QueryOrderInfoForm" resultType="com.jayud.oms.model.vo.OrderInfoVO" >
-        select * from (
+        select distinct * from (
         SELECT
         oi.id,
         oi.`order_no` orderNo,
@@ -53,7 +53,7 @@
         oi.`created_user` createdUser,
         DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H %I %S') createdTimeStr
         FROM
-        order_info oi LEFT JOIN order_customs oc ON oi.`order_no` = oc.`main_order_no`
+        order_info oi,order_customs oc WHERE oi.`order_no` = oc.`main_order_no`
         UNION ALL
         SELECT
         oi.id,
@@ -76,7 +76,7 @@
         oi.`created_user` createdUser,
         DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H %I %S') createdTimeStr
         FROM
-        order_info oi LEFT JOIN order_transport ot ON oi.`order_no` = ot.`main_order_no` ) temp WHERE 1 = 1
+        order_info oi,order_transport ot WHERE oi.`order_no` = ot.`main_order_no` ) temp WHERE 1 = 1
         <if test="form.cmd == 'noSubmit'">
            and temp.`status` = 2
         </if>
@@ -99,13 +99,13 @@
             oi.`id` orderId,
             oi.`order_no` orderNo,
             oi.`customer_code` customerCode,
-            oi.`biz_code` bizUid,
+            oi.`biz_uid` bizUid,
             oi.`contract_no` contractNo,
             oi.`legal_code` legalCode,
             oi.`biz_belong_depart` bizBelongDepart,
             oi.`reference_no` referenceNo
         FROM
-            order_info oi WHERE 1 > 2
+            order_info oi WHERE 1 = 1
         <if test="idValue != null and idValue != ''">
             and oi.`id` = #{idValue}
         </if>

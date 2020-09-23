@@ -38,7 +38,7 @@ public class LogisticsTrack extends Model<LogisticsTrack> {
     private String orderId;
 
     @ApiModelProperty(value = "状态码(order_status)")
-    private Integer status;
+    private String status;
 
     @ApiModelProperty(value = "状态名")
     private String statusName;

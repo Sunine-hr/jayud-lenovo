@@ -5,18 +5,22 @@ import cn.hutool.http.Header;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.json.JSONUtil;
 import com.google.gson.Gson;
-import com.jayud.common.enums.ResultEnum;
-import com.jayud.common.exception.Asserts;
-import com.jayud.common.utils.RsaEncryptUtil;
-import com.jayud.airfreight.service.VivoService;
 import com.jayud.airfreight.model.bo.ForwarderBookingConfirmedFeedbackForm;
 import com.jayud.airfreight.model.bo.ForwarderLadingFileForm;
 import com.jayud.airfreight.model.bo.ForwarderLadingInfoForm;
 import com.jayud.airfreight.model.bo.ForwarderVehicleInfoForm;
+import com.jayud.airfreight.service.VivoService;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.Asserts;
+import com.jayud.common.utils.RsaEncryptUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
@@ -112,6 +116,11 @@ public class VivoServiceImpl implements VivoService {
      */
     private Boolean doPost(Object form, String url) {
         Gson gson = new Gson();
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<MultiValueMap<String, String>> body=null;
+//        body=new HttpEntity<MultiValueMap<String, String>>(JSONUtil.toBean(form,MultiValueMap.class),headers);
+
         String feedback = HttpRequest.post(url)
                 .header("Authorization", String.format(getToken(null, null, null)))
                 .header(Header.CONTENT_TYPE.name(), "multipart/form-data")

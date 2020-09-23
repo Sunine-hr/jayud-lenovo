@@ -88,9 +88,9 @@ public class MsgApiProcessorController {
                         Method getMethod = clz.getMethod("get" + name.substring(0, 1).toUpperCase() + name.substring(1));
                         Object invoke = getMethod.invoke(item);
                         //费用项为零不记录
-//                        if ((Objects.equals((BigDecimal) invoke,BigDecimal.ZERO))){
-//                            continue;
-//                        }
+                        if (Objects.isNull(invoke) || BigDecimal.ZERO.compareTo((BigDecimal) invoke) == 0) {
+                            continue;
+                        }
                         ApiModelProperty annotation = field.getAnnotation(ApiModelProperty.class);
                         CustomsFeeEnum customsFeeEnum = CustomsFeeEnum.getEnum(annotation.value());
                         if (Objects.isNull(customsFeeEnum)) {
@@ -104,19 +104,24 @@ public class MsgApiProcessorController {
                         feeItem.setExpenseCategoryName(customsFeeEnum.getCategory());
                         feeItem.setPriceQty(BigDecimal.ONE);
                         feeItem.setTaxRate(BigDecimal.ZERO);
-                        feeItem.setTaxPrice((BigDecimal) invoke);
+                        BigDecimal bigDecimal = new BigDecimal(invoke.toString());
 
+                        feeItem.setTaxPrice(bigDecimal);
+                        list.add(feeItem);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
 
                 }
             }
-            if (CollectionUtil.isEmpty(dataForm.getEntityDetail())) {
+
+
+            if (CollectionUtil.isEmpty(list)) {
                 log.info(String.format("应收费用项没有数据，退出方法"));
 //                return CommonResult.success();
                 return true;
             }
+            dataForm.setEntityDetail(list);
 
             //抬头信息
             //尝试查询客戶名并写入
@@ -260,9 +265,9 @@ public class MsgApiProcessorController {
             try {
                 CommonResult commonResult = service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), dataForm);
                 if (Objects.nonNull(commonResult) && commonResult.getCode() == ResultEnum.SUCCESS.getCode()) {
-                    log.info("金蝶应付单推送完毕");
+                    log.info("金蝶应付单({})推送完毕", kingdeeCompName);
 //                    return CommonResult.success("金蝶应付单推送完毕");
-                    return true;
+//                    return true;
                 }
 //                return commonResult;
             } catch (Exception e) {
@@ -272,7 +277,7 @@ public class MsgApiProcessorController {
         }
 
 //        return CommonResult.error(ResultEnum.INTERNAL_SERVER_ERROR, "遇到其他错误抛出");
-        return false;
+        return true;
     }
 
 }

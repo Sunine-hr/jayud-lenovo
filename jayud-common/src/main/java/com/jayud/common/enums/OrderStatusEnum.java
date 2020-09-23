@@ -14,7 +14,13 @@ public enum OrderStatusEnum {
     MAIN_2("2","草稿"),
     MAIN_3("3","关闭"),
 
-    //纯报关子订单
+    //主干流程
+    MAIN_PROCESS_1("1","已下单"),
+    MAIN_PROCESS_2("2","运输中"),
+    MAIN_PROCESS_3("3","报关中"),
+    MAIN_PROCESS_4("4","已完成"),
+
+    //纯报关子订单流程
     CUSTOMS_C_0("C_0","未接单"),
     CUSTOMS_C_1("C_1","报关接单"),
     CUSTOMS_C_2("C_2","报关打单"),

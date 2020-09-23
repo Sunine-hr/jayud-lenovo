@@ -94,7 +94,7 @@
         </if>
     </select>
 
-    <select id="getMainOrderById" parameterType="java.lang.Long" resultType="com.jayud.oms.model.vo.InputOrderVO" >
+    <select id="getMainOrderById" parameterType="java.lang.Long" resultType="com.jayud.oms.model.vo.InputMainOrderVO" >
         SELECT
             oi.`id` orderId,
             oi.`order_no` orderNo,

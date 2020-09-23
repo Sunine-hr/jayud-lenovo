@@ -3,12 +3,12 @@ package com.jayud.oms.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.oms.model.bo.AuditCostForm;
 import com.jayud.oms.model.bo.InputCostForm;
-import com.jayud.oms.model.bo.InputOrderForm;
+import com.jayud.oms.model.bo.InputMainOrderForm;
 import com.jayud.oms.model.bo.QueryOrderInfoForm;
 import com.jayud.oms.model.po.OrderInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.vo.InputCostVO;
-import com.jayud.oms.model.vo.InputOrderVO;
+import com.jayud.oms.model.vo.InputMainOrderVO;
 import com.jayud.oms.model.vo.OrderInfoVO;
 
 /**
@@ -26,7 +26,7 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @param form
      * @return
      */
-    public String oprMainOrder(InputOrderForm form);
+    public String oprMainOrder(InputMainOrderForm form);
 
     /**
      * 订单是否存在
@@ -48,7 +48,14 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @param idValue
      * @return
      */
-    InputOrderVO getMainOrderById(Long idValue);
+    InputMainOrderVO getMainOrderById(Long idValue);
+
+    /**
+     * 获取主订单主键
+     * @param orderNo
+     * @return
+     */
+    Long getIdByOrderNo(String orderNo);
 
     /**
      * 录入费用

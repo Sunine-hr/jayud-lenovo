@@ -7,7 +7,7 @@ import java.util.List;
 
 
 @Data
-public class InputOrderCustomsVO extends InputOrderVO {
+public class InputOrderCustomsVO {
 
     @ApiModelProperty(value = "通关口岸code")
     private String portCode;

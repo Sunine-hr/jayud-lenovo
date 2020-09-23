@@ -93,7 +93,7 @@
             oc.`entrust_no` entrustNo,
             '' unifiedNumber,
             oc.`updated_time` updatedTimeStr,
-            oc.`remarks`,
+        (SELECT lt.description FROM logistics_track lt WHERE lt.order_id = oc.`id`) remarks,
             '' yunCustomsNo
         FROM
           order_customs oc,

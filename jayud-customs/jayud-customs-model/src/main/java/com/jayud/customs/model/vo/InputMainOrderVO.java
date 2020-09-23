@@ -1,11 +1,11 @@
-package com.jayud.oms.model.vo;
+package com.jayud.customs.model.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 
 @Data
-public class InputOrderVO {
+public class InputMainOrderVO {
 
     @ApiModelProperty(value = "主订单ID")
     private Long orderId;

@@ -3,10 +3,10 @@ package com.jayud.oms.controller;
 import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.oms.model.bo.InputOrderForm;
+import com.jayud.oms.model.bo.InputMainOrderForm;
 import com.jayud.oms.model.bo.OprStatusForm;
 import com.jayud.oms.model.po.LogisticsTrack;
-import com.jayud.oms.model.vo.InputOrderVO;
+import com.jayud.oms.model.vo.InputMainOrderVO;
 import com.jayud.oms.service.ILogisticsTrackService;
 import com.jayud.oms.service.IOrderInfoService;
 import io.swagger.annotations.Api;
@@ -35,7 +35,7 @@ public class ExternalApiController {
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
-    public ApiResult oprMainOrder(@RequestBody InputOrderForm form) {
+    public ApiResult oprMainOrder(@RequestBody InputMainOrderForm form) {
         String result = orderInfoService.oprMainOrder(form);
         if(result != null){
             return ApiResult.ok(result);
@@ -47,8 +47,15 @@ public class ExternalApiController {
     @ApiOperation(value = "获取主订单信息")
     @RequestMapping(value = "/api/getMainOrderById")
     ApiResult getMainOrderById(@RequestParam(value = "id") Long id){
-        InputOrderVO inputOrderVO = orderInfoService.getMainOrderById(id);
+        InputMainOrderVO inputOrderVO = orderInfoService.getMainOrderById(id);
         return ApiResult.ok(inputOrderVO);
+    }
+
+    @ApiOperation(value = "获取主订单ID")
+    @RequestMapping(value = "/api/getIdByOrderNo")
+    ApiResult getIdByOrderNo(@RequestParam(value = "orderNo") String orderNo){
+        Long mainOrderId = orderInfoService.getIdByOrderNo(orderNo);
+        return ApiResult.ok(mainOrderId);
     }
 
 

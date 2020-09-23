@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.oms.model.bo.QueryOrderInfoForm;
 import com.jayud.oms.model.po.OrderInfo;
-import com.jayud.oms.model.vo.InputOrderVO;
+import com.jayud.oms.model.vo.InputMainOrderVO;
 import com.jayud.oms.model.vo.OrderInfoVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -34,6 +34,6 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      * @param idValue
      * @return
      */
-    InputOrderVO getMainOrderById(@Param("idValue") Long idValue);
+    InputMainOrderVO getMainOrderById(@Param("idValue") Long idValue);
 
 }

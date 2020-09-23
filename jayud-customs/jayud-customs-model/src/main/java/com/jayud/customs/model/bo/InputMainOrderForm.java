@@ -1,4 +1,4 @@
-package com.jayud.oms.model.bo;
+package com.jayud.customs.model.bo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -7,11 +7,11 @@ import javax.validation.constraints.NotEmpty;
 
 
 @Data
-public class InputOrderForm {
+public class InputMainOrderForm {
 
 
-    @ApiModelProperty(value = "主订单号,编辑时必传")
-    private String orderNo;
+    @ApiModelProperty(value = "主订单ID,编辑时必传")
+    private Long orderId;
 
     @ApiModelProperty(value = "客户code",required = true)
     @NotEmpty(message = "customerCode is required")
@@ -48,8 +48,10 @@ public class InputOrderForm {
     @NotEmpty(message = "referenceNo is required")
     private String referenceNo;
 
-    @ApiModelProperty(value = "操作指令:cmd=preSubmit or submit",required = true)
-    private String cmd;
+    @ApiModelProperty(value = "业务类型 CBG:纯报关",required = true)
+    private String bizCode;
 
+    @ApiModelProperty(value = "前台忽略")
+    private String cmd;
 
 }

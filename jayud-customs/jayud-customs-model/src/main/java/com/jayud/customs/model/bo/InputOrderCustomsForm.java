@@ -8,7 +8,7 @@ import java.util.List;
 
 
 @Data
-public class InputOrderCustomsForm extends InputOrderForm{
+public class InputOrderCustomsForm {
 
     @ApiModelProperty(value = "通关口岸code",required = true)
     @NotEmpty(message = "portCode is required")

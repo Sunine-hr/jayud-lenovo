@@ -2,11 +2,10 @@ package com.jayud.customs.feign;
 
 
 import com.jayud.common.ApiResult;
-
+import com.jayud.customs.model.bo.InputMainOrderForm;
 import com.jayud.customs.model.bo.OprOrderLogForm;
-import com.jayud.customs.model.bo.InputOrderForm;
 import com.jayud.customs.model.bo.OprStatusForm;
-import com.jayud.customs.model.vo.InputOrderVO;
+import com.jayud.customs.model.vo.InputMainOrderVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +25,7 @@ public interface OmsClient {
      * @return
      */
     @RequestMapping(value = "/api/oprMainOrder")
-    ApiResult oprMainOrder(@RequestBody InputOrderForm form);
+    ApiResult oprMainOrder(@RequestBody InputMainOrderForm form);
 
     /**
      * 记录操作日志
@@ -39,13 +38,13 @@ public interface OmsClient {
      * 获取主订单信息
      */
     @RequestMapping(value = "/api/getMainOrderById")
-    ApiResult<InputOrderVO> getMainOrderById(@RequestParam(value = "id") Long id);
+    ApiResult<InputMainOrderVO> getMainOrderById(@RequestParam(value = "id") Long id);
 
     /**
-     * 获取根路径
+     * 获取主订单信息
      */
-    @RequestMapping(value = "/api/getBaseUrl")
-    ApiResult getBaseUrl();
+    @RequestMapping(value = "/api/getIdByOrderNo")
+    ApiResult<Long> getIdByOrderNo(@RequestParam(value = "orderNo") String orderNo);
 
     /**
      * 记录流程状态

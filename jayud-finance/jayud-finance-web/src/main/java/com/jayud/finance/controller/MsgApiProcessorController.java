@@ -82,14 +82,15 @@ public class MsgApiProcessorController {
             StringBuilder errorString = new StringBuilder();
             for (Field field : fields) {
                 String name = field.getName();
+
                 //找到实体类中带isFee注解的数据
-                if (Objects.nonNull(field.getAnnotation(IsFee.class))) {
+                if (Objects.nonNull(field.getDeclaredAnnotation(IsFee.class))) {
                     //读出注解@ApiModelProperty中的中文释义进行匹配
                     try {
                         Method getMethod = clz.getMethod("get" + name.substring(0, 1).toUpperCase() + name.substring(1));
                         Object invoke = getMethod.invoke(item);
                         //费用项为零不记录
-                        if (Objects.isNull(invoke) || BigDecimal.ZERO.equals(new BigDecimal(invoke.toString()))) {
+                        if (Objects.isNull(invoke) || Objects.equals("0.00",invoke.toString())) {
                             continue;
                         }
                         ApiModelProperty annotation = field.getAnnotation(ApiModelProperty.class);
@@ -157,7 +158,7 @@ public class MsgApiProcessorController {
                 log.info("4.拼装校验无异常，开始向金蝶发送数据...");
                 CommonResult commonResult = service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), dataForm);
                 if (Objects.nonNull(commonResult) && commonResult.getCode() == ResultEnum.SUCCESS.getCode()) {
-                    log.info("金蝶应付单推送完毕");
+                    log.info("金蝶应收单推送完毕");
 //                    return CommonResult.success("金蝶应付单推送完毕");
                     return true;
                 }

@@ -69,7 +69,6 @@ public class OrderCustomsController {
             || inputMainOrderForm.getCustomerName() == null || "".equals(inputMainOrderForm.getCustomerName())
             || inputMainOrderForm.getBizUid() == null
             || inputMainOrderForm.getBizUname() == null || "".equals(inputMainOrderForm.getBizUname())
-            || inputMainOrderForm.getLegalCode() == null || "".equals(inputMainOrderForm.getLegalCode())
             || inputMainOrderForm.getLegalName() == null || "".equals(inputMainOrderForm.getLegalName())
             || inputMainOrderForm.getBizBelongDepart() == null
             || inputMainOrderForm.getReferenceNo() == null || "".equals(inputMainOrderForm.getReferenceNo())

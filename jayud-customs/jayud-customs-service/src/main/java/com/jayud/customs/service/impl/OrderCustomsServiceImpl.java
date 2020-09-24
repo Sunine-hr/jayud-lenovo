@@ -101,14 +101,11 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
 
             //记录操作状态
             if("submit".equals(form.getCmd())){
-                for (OrderCustoms orderCustom : orderCustomsList) {
-                    OprStatusForm oprStatusForm = new OprStatusForm();
-                    oprStatusForm.setStatus(OrderStatusEnum.MAIN_PROCESS_1.getCode());
-                    oprStatusForm.setStatusName(OrderStatusEnum.MAIN_PROCESS_1.getDesc());
-                    oprStatusForm.setMainOrderId(mainOrderId);
-                    oprStatusForm.setOrderId(orderCustom.getId());
-                    omsClient.saveOprStatus(oprStatusForm);
-                }
+                OprStatusForm oprStatusForm = new OprStatusForm();
+                oprStatusForm.setStatus(OrderStatusEnum.MAIN_PROCESS_1.getCode());
+                oprStatusForm.setStatusName(OrderStatusEnum.MAIN_PROCESS_1.getDesc());
+                oprStatusForm.setMainOrderId(mainOrderId);
+                omsClient.saveOprStatus(oprStatusForm);
             }
         }catch (Exception e){
             e.printStackTrace();

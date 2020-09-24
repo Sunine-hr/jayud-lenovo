@@ -12,6 +12,9 @@ public class InputCostForm {
     @ApiModelProperty(value = "主订单ID", required = true)
     private Long mainOrderId;
 
+    @ApiModelProperty(value = "子订单号", required = true)
+    private String orderNo;
+
     @ApiModelProperty(value = "应付费用", required = true)
     private List<InputPaymentCostForm> paymentCostList;
 

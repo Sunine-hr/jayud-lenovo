@@ -206,6 +206,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderPaymentCosts = ConvertUtil.convertList(paymentCostForms, OrderPaymentCost.class);
             orderReceivableCosts = ConvertUtil.convertList(receivableCostForms, OrderReceivableCost.class);
             for (OrderPaymentCost orderPaymentCost : orderPaymentCosts) {//应付费用
+                orderPaymentCost.setMainOrderNo(inputOrderVO.getOrderNo());
+                orderPaymentCost.setOrderNo(form.getOrderNo());
                 orderPaymentCost.setOptName(getLoginUser());
                 orderPaymentCost.setOptTime(LocalDateTime.now());
                 orderPaymentCost.setCreatedTime(LocalDateTime.now());
@@ -217,6 +219,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
             }
             for (OrderReceivableCost orderReceivableCost : orderReceivableCosts) {//应收费用
+                orderReceivableCost.setMainOrderNo(inputOrderVO.getOrderNo());
+                orderReceivableCost.setOrderNo(form.getOrderNo());
                 orderReceivableCost.setOptName(getLoginUser());
                 orderReceivableCost.setOptTime(LocalDateTime.now());
                 orderReceivableCost.setCreatedTime(LocalDateTime.now());

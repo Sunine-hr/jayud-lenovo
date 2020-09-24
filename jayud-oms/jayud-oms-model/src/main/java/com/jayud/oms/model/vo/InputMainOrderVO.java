@@ -16,14 +16,20 @@ public class InputMainOrderVO {
     @ApiModelProperty(value = "客户code")
     private String customerCode;
 
+    @ApiModelProperty(value = "客户名称")
+    private String customerName;
+
     @ApiModelProperty(value = "业务员ID")
     private Long bizUid;
+
+    @ApiModelProperty(value = "业务员")
+    private String bizUname;
 
     @ApiModelProperty(value = "合同编号")
     private String contractNo;
 
-    @ApiModelProperty(value = "接单法人code")
-    private String legalCode;
+    @ApiModelProperty(value = "接单法人")
+    private String legalName;
 
     @ApiModelProperty(value = "业务所属部门")
     private Long bizBelongDepart;

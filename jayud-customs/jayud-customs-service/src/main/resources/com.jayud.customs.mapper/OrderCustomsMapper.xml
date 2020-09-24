@@ -37,6 +37,7 @@
         SELECT
             oc.`id` subOrderId,
             oc.`port_code` portCode,
+            oc.`port_name` portName,
             oc.`goods_type` goodsType,
             oc.`cntr_no` cntrNo,
             oc.`cntr_pic` cntrPic,

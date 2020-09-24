@@ -99,9 +99,11 @@
             oi.`id` orderId,
             oi.`order_no` orderNo,
             oi.`customer_code` customerCode,
+            oi.`customer_name` customerName,
             oi.`biz_uid` bizUid,
+            oi.`biz_uname` bizUname,
             oi.`contract_no` contractNo,
-            oi.`legal_code` legalCode,
+            oi.`legal_name` legalName,
             oi.`biz_belong_depart` bizBelongDepart,
             oi.`reference_no` referenceNo
         FROM

@@ -12,8 +12,8 @@ import java.util.List;
 @Data
 public class InputSubOrderCustomsForm {
 
-    @ApiModelProperty(value = "子订单ID,编辑时必传")
-    private Long subOrderId;
+    /*@ApiModelProperty(value = "子订单ID,编辑时必传")
+    private Long subOrderId;*/
 
     @ApiModelProperty(value = "报关子订单",required = true)
     @NotEmpty(message = "orderNo is required")

@@ -90,10 +90,10 @@ public class MsgApiProcessorController {
         List<CustomsReceivable> customsReceivable = JSONObject.parseArray(reqMsg, CustomsReceivable.class);
 
         //重单校验,只要金蝶中有数据就不能再次推送
-//        Optional<CustomsReceivable> first = customsReceivable.stream().filter(Objects::nonNull).findFirst();
-//        if (first.isPresent() && checkForDuplicateOrder(first.get().getCustomApplyNo())) {
-//            return true;
-//        }
+        Optional<CustomsReceivable> first = customsReceivable.stream().filter(Objects::nonNull).findFirst();
+        if (first.isPresent() && checkForDuplicateOrder(first.get().getCustomApplyNo())) {
+            return true;
+        }
 
         //基本校验完毕，装载预制数据
         Map<String, CustomsFinanceCoRelation> coRelationMap = new HashMap<>();
@@ -279,10 +279,10 @@ public class MsgApiProcessorController {
         } else {
             //非空时重单校验
             //获取报关单号
-//            Optional<CustomsPayable> first = customsPayableForms.stream().filter(Objects::nonNull).findFirst();
-//            if (first.isPresent() && checkForDuplicateOrder(first.get().getCustomApplyNo())) {
-//                return true;
-//            }
+            Optional<CustomsPayable> first = customsPayableForms.stream().filter(Objects::nonNull).findFirst();
+            if (first.isPresent() && checkForDuplicateOrder(first.get().getCustomApplyNo())) {
+                return true;
+            }
 
             //基础校验完毕，装载预加载数据
             //基本校验完毕，装载预制数据

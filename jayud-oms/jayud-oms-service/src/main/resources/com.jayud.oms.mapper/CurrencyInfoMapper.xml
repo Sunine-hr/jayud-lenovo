@@ -21,8 +21,8 @@
 
     <select id="findCurrencyInfo"  resultType="com.jayud.oms.model.vo.CurrencyInfoVO" >
         SELECT
-          ci.`currency_name` currencyCode,
-          ci.`currency_code` currencyName,
+          ci.`currency_name` currencyName,
+          ci.`currency_code` currencyCode,
           cr.`exchange_rate` exchangeRate
         FROM
           currency_info ci

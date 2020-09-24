@@ -246,6 +246,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     @Override
     public List<SystemUser> findUserByCondition(Map<String, Object> param) {
         QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status",1);//有效的
         for(String key : param.keySet()){
             String value = String.valueOf(param.get(key));
             queryWrapper.eq(key,value);

@@ -206,6 +206,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderPaymentCosts = ConvertUtil.convertList(paymentCostForms, OrderPaymentCost.class);
             orderReceivableCosts = ConvertUtil.convertList(receivableCostForms, OrderReceivableCost.class);
             for (OrderPaymentCost orderPaymentCost : orderPaymentCosts) {//应付费用
+                orderPaymentCost.setMainOrderNo(inputOrderVO.getOrderNo());
+                orderPaymentCost.setOrderNo(form.getOrderNo());
                 orderPaymentCost.setOptName(getLoginUser());
                 orderPaymentCost.setOptTime(LocalDateTime.now());
                 orderPaymentCost.setCreatedTime(LocalDateTime.now());
@@ -217,6 +219,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
             }
             for (OrderReceivableCost orderReceivableCost : orderReceivableCosts) {//应收费用
+                orderReceivableCost.setMainOrderNo(inputOrderVO.getOrderNo());
+                orderReceivableCost.setOrderNo(form.getOrderNo());
                 orderReceivableCost.setOptName(getLoginUser());
                 orderReceivableCost.setOptTime(LocalDateTime.now());
                 orderReceivableCost.setCreatedTime(LocalDateTime.now());
@@ -237,9 +241,23 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     @Override
-    public InputCostVO getCostDetail(Long id) {
-        List<OrderPaymentCost> orderPaymentCosts = paymentCostService.list();
-        List<OrderReceivableCost> orderReceivableCosts = receivableCostService.list();
+    public InputCostVO getCostDetail(GetCostDetailForm form) {
+        if(form.getCmd() == null || "".equals(form.getCmd()) || form.getMainOrderNo() == null ||
+           "".equals(form.getMainOrderNo())){
+            return null;//参数异常
+        }
+        List<OrderPaymentCost> orderPaymentCosts = new ArrayList<>();
+        List<OrderReceivableCost> orderReceivableCosts = new ArrayList<>();
+        QueryWrapper queryWrapper = new QueryWrapper();
+        if("main_cost".equals(form.getCmd())){
+            queryWrapper.eq("main_order_no",form.getMainOrderNo());
+            queryWrapper.eq("order_no","");
+        }else if("sub_cost".equals(form.getCmd())){
+            queryWrapper.eq("main_order_no",form.getMainOrderNo());
+            queryWrapper.ne("order_no","");
+        }
+        orderPaymentCosts = paymentCostService.list(queryWrapper);
+        orderReceivableCosts = receivableCostService.list(queryWrapper);
         List<InputPaymentCostVO> inputPaymentCostVOS = ConvertUtil.convertList(orderPaymentCosts,InputPaymentCostVO.class);
         List<InputReceivableCostVO> inputReceivableCostVOS = ConvertUtil.convertList(orderReceivableCosts,InputReceivableCostVO.class);
         InputCostVO inputCostVO = new InputCostVO();

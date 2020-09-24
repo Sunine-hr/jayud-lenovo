@@ -35,6 +35,9 @@ public class LegalEntity {
     @ApiModelProperty(value = "审核状态 1-待审核 2-通过 3-拒绝")
     private Long auditStatus;
 
+    @ApiModelProperty(value = "审核意见")
+    private String auditComment;
+
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createdTime;
 

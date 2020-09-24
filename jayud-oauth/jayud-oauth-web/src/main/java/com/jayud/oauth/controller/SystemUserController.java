@@ -337,10 +337,23 @@ public class SystemUserController {
     @PostMapping(value = "/saveOrUpdateLegalEntity")
     public CommonResult saveOrUpdateLegalEntity(@RequestBody AddLegalEntityForm form) {
         LegalEntity legalEntity = new LegalEntity();
+        Map<String, String> param = new HashMap<>();
+        param.put("legal_name",form.getLegalName());
         if(form.getId() != null){
+            LegalEntity oldLegalEntity = legalEntityService.getById(form.getId());
+            if(oldLegalEntity != null && !oldLegalEntity.getLegalName().equals(form.getLegalName())){
+                List<LegalEntityVO> legalEntityVOS = legalEntityService.findLegalEntity(param);
+                if(legalEntityVOS != null && legalEntityVOS.size() > 0){
+                    return CommonResult.error(400,"该法人主体已存在，不能重复录入");
+                }
+            }
             legalEntity.setId(form.getId());
             legalEntity.setUpdatedUser(getLoginName());
         }else {
+            List<LegalEntityVO> legalEntityVOS = legalEntityService.findLegalEntity(param);
+            if(legalEntityVOS != null && legalEntityVOS.size() > 0){
+                return CommonResult.error(400,"该法人主体已存在，不能重复录入");
+            }
             legalEntity.setCreatedUser(getLoginName());
         }
         legalEntity.setAuditStatus(1L);
@@ -366,6 +379,7 @@ public class SystemUserController {
         legalEntity.setId(form.getId());
         legalEntity.setAuditStatus(Long.parseLong(form.getAuditStatus()));
         legalEntity.setUpdatedUser(getLoginName());
+        legalEntity.setAuditComment(form.getAuditComment());
         legalEntityService.saveOrUpdate(legalEntity);
         return CommonResult.success();
     }
@@ -467,6 +481,7 @@ public class SystemUserController {
         List<InitComboxVO> initComboxs = new ArrayList<>();
         Map<String,Object> param = new HashMap<>();
         //param.put("is_department_charge","1");
+        param.put("user_type","1");
         List<SystemUser> systemUsers = userService.findUserByCondition(param);
         for (SystemUser systemUser : systemUsers) {
             InitComboxVO initComboxVO = new InitComboxVO();

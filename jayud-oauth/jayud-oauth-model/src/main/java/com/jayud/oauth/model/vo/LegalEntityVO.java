@@ -33,6 +33,9 @@ public class LegalEntityVO {
     @ApiModelProperty(value = "审核状态描述")
     private String auditStatusDesc;
 
+    @ApiModelProperty(value = "审核意见")
+    private String auditComment;
+
 
 
 

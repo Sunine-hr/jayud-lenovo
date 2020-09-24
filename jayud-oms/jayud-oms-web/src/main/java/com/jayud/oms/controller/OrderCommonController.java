@@ -1,9 +1,9 @@
 package com.jayud.oms.controller;
 
 
-import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
 import com.jayud.oms.model.bo.AuditCostForm;
+import com.jayud.oms.model.bo.GetCostDetailForm;
 import com.jayud.oms.model.bo.InputCostForm;
 import com.jayud.oms.model.vo.InputCostVO;
 import com.jayud.oms.service.IOrderInfoService;
@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 
 @RestController
@@ -42,9 +40,8 @@ public class OrderCommonController {
 
     @ApiOperation(value = "费用详情,id= 主订单ID")
     @PostMapping(value = "/getCostDetail")
-    public CommonResult getCostDetail(@RequestBody Map<String,Object> param) {
-        String id = MapUtil.getStr(param,"id");
-        InputCostVO inputCostVO = orderInfoService.getCostDetail(Long.parseLong(id));
+    public CommonResult getCostDetail(@RequestBody GetCostDetailForm form) {
+        InputCostVO inputCostVO = orderInfoService.getCostDetail(form);
         return CommonResult.success(inputCostVO);
     }
 

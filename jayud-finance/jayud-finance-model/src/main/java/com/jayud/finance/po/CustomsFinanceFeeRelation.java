@@ -1,14 +1,15 @@
 package com.jayud.finance.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
 
 /**
  * <p>
@@ -56,7 +57,7 @@ public class CustomsFinanceFeeRelation extends Model<CustomsFinanceFeeRelation> 
     @ApiModelProperty(value = "税率")
     private String taxRate;
 
-    @ApiModelProperty(value = "是否作废")
+    @ApiModelProperty(value = "是否作废(0-否，1-是)")
     private Integer deprecated;
 
 

@@ -1,14 +1,15 @@
 package com.jayud.finance.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
 
 /**
  * <p>
@@ -29,11 +30,17 @@ public class CustomsFinanceCoRelation extends Model<CustomsFinanceCoRelation> {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
+    @ApiModelProperty(value = "云报关公司名称")
     private String yunbaoguanName;
 
+    @ApiModelProperty(value = "金蝶公司名称")
     private String kingdeeName;
 
+    @ApiModelProperty(value = "金蝶公司代码（客户对应应收，为CUS开头。供应商对应应付，VEN开头）")
     private String kingdeeCode;
+
+    @ApiModelProperty(value = "是否废弃（1-是，0-否）")
+    private Integer deprecated;
 
 
     @Override

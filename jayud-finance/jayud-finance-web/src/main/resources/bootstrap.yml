@@ -26,8 +26,10 @@ relation-setting:
   redis-key:
     yunbaoguan:
       #云报关，金蝶对应关系表的redis key值
-      company: JAYUD_FINANCE_YUNBAOGUAN_COMPANY_RELATIONS
-      fee: JAYUD_FINANCE_YUNBAOGUAN_FEE_RELATIONS
+      rec-company: JAYUD_FINANCE_YUNBAOGUAN_COMPANY_RELATIONS_REC
+      rec-fee: JAYUD_FINANCE_YUNBAOGUAN_FEE_RELATIONS_REC
+      pay-company: JAYUD_FINANCE_YUNBAOGUAN_COMPANY_RELATIONS_PAY
+      pay-fee: JAYUD_FINANCE_YUNBAOGUAN_FEE_RELATIONS_PAY
 
 
 spring:

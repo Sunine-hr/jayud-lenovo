@@ -217,17 +217,17 @@ public class KingdeeServiceImpl implements KingdeeService {
         Map<String, Object> header = new HashMap<>();
         header.put("Cookie", cookieService.getCookie(k3CloundConfig));
         String content = buildParam(formId, data);
-        log.info("请求内容：{}", content);
+//        log.info("请求内容：{}", content);
         String result = KingdeeHttpUtil.httpPost(k3CloundConfig.getQuery(), header, content);
-        log.info("默认账套查询结果：{}", result);
+//        log.info("默认账套查询结果：{}", result);
         if ("[]".equals(result)) {
             header = new HashMap<>();
 
             header.put("Cookie", cookieService.getCookie(k3CloudConfigBack));
             content = buildParam(formId, data);
-            log.info("请求内容：{}", content);
+//            log.info("请求内容：{}", content);
             result = KingdeeHttpUtil.httpPost(k3CloudConfigBack.getQuery(), header, content);
-            log.info("默认账套查询结果：{}", result);
+//            log.info("默认账套查询结果：{}", result);
         }
 
         if (result.contains("IsSuccess")) {

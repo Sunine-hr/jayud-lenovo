@@ -89,14 +89,15 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 customs.setOrderNo(subOrder.getOrderNo());
                 customs.setTitle(subOrder.getTitle());
                 customs.setUnitCode(subOrder.getUnitCode());
-                customs.setUnitAccount(subOrder.getUnitAccount());
                 customs.setDescription(subOrder.getDescription());
                 customs.setMainOrderNo(String.valueOf(apiResult.getData()));
                 customs.setStatus(OrderStatusEnum.CUSTOMS_C_0.getCode());
                 customs.setCreatedUser(getLoginUser());
                 orderCustomsList.add(customs);
             }
-            saveOrUpdateBatch(orderCustomsList);
+            if(!orderCustomsList.isEmpty()) {
+                saveOrUpdateBatch(orderCustomsList);
+            }
 
             //记录操作状态
             if("submit".equals(form.getCmd())){
@@ -163,6 +164,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                     subOrderCustomsVOS.add(subOrderCustomsVO);
                 }
                 inputOrderCustomsVO.setSubOrders(subOrderCustomsVOS);
+                inputOrderCustomsVO.setNumber(String.valueOf(subOrderCustomsVOS.size()));
                 inputOrderVO.setOrderCustomsForm(inputOrderCustomsVO);
             }
         }

@@ -76,20 +76,17 @@ public class OrderCustomsController {
             || inputOrderCustomsForm.getPortCode() == null || "".equals(inputOrderCustomsForm.getPortCode())
             || inputOrderCustomsForm.getPortName() == null || "".equals(inputOrderCustomsForm.getPortName())
             || inputOrderCustomsForm.getGoodsType() == null
-            || inputOrderCustomsForm.getSubOrders() == null){
+            || inputOrderCustomsForm.getSubOrders() == null || inputOrderCustomsForm.getSubOrders().size() == 0){
                 flag = false;
             }
             //子订单参数校验
-            if(inputOrderCustomsForm.getSubOrders() != null){
-                for (InputSubOrderCustomsForm subOrderCustomsForm : inputOrderCustomsForm.getSubOrders()) {
-                    if(subOrderCustomsForm.getOrderNo() == null || "".equals(subOrderCustomsForm.getOrderNo())
-                    || subOrderCustomsForm.getTitle() == null || "".equals(subOrderCustomsForm.getTitle())
+            for (InputSubOrderCustomsForm subOrderCustomsForm : inputOrderCustomsForm.getSubOrders()) {
+                if(subOrderCustomsForm.getOrderNo() == null || "".equals(subOrderCustomsForm.getOrderNo())
+                        || subOrderCustomsForm.getTitle() == null || "".equals(subOrderCustomsForm.getTitle())
                     || subOrderCustomsForm.getUnitCode() == null || "".equals(subOrderCustomsForm.getUnitCode())
-                    || subOrderCustomsForm.getUnitAccount() == null || "".equals(subOrderCustomsForm.getUnitAccount())
-                    || subOrderCustomsForm.getDescription() == null || "".equals(subOrderCustomsForm.getDescription())) {
-                        flag = false;
-                        break;
-                    }
+                    || subOrderCustomsForm.getFileViews().size() == 0) {
+                    flag = false;
+                    break;
                 }
             }
             if(!flag){

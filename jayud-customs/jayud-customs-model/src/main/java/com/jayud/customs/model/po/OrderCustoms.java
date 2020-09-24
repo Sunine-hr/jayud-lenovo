@@ -59,9 +59,6 @@ public class OrderCustoms extends Model<OrderCustoms> {
     @ApiModelProperty(value = "报关抬头")
     private String title;
 
-    @ApiModelProperty(value = "结算单位(customer_info)")
-    private String unitAccount;
-
     @ApiModelProperty(value = "结算代码(customer_info)")
     private String unitCode;
 

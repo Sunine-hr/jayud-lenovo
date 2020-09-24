@@ -24,6 +24,9 @@ public class InputOrderCustomsVO {
     @ApiModelProperty(value = "六联单号")
     private String encode;
 
+    @ApiModelProperty(value = "报关单数")
+    private String number;
+
     @ApiModelProperty(value = "子订单")
     private List<InputSubOrderCustomsVO> subOrders;
 

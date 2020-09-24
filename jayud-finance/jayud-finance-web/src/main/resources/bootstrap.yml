@@ -22,6 +22,12 @@ kingdeeback:
   statusConver: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.StatusConvert.common.kdsvc
   query: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.ExecuteBillQuery.common.kdsvc
   expire: 1500
+relation-setting:
+  redis-key:
+    yunbaoguan:
+      #云报关，金蝶对应关系表的redis key值
+      company: JAYUD_FINANCE_YUNBAOGUAN_COMPANY_RELATIONS
+      fee: JAYUD_FINANCE_YUNBAOGUAN_FEE_RELATIONS
 
 
 spring:

@@ -1,6 +1,6 @@
 spring:
   application:
-    name: jayud-file-web
+    name: jayud-file-web-debug
   profiles:
     active: dev
   cloud:

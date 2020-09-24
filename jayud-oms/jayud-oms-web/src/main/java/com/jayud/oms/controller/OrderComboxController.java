@@ -183,7 +183,7 @@ public class OrderComboxController {
             InitComboxStrVO comboxStrVO = new InitComboxStrVO();
             comboxStrVO.setCode(currencyInfo.getCurrencyCode());
             comboxStrVO.setName(currencyInfo.getCurrencyName());
-            comboxStrVO.setName(currencyInfo.getExchangeRate());
+            comboxStrVO.setNote(currencyInfo.getExchangeRate());
             initComboxStrVOS.add(comboxStrVO);
         }
         param.put("currency",initComboxStrVOS);

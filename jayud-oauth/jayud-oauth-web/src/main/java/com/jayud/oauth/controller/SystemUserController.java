@@ -481,6 +481,7 @@ public class SystemUserController {
         List<InitComboxVO> initComboxs = new ArrayList<>();
         Map<String,Object> param = new HashMap<>();
         //param.put("is_department_charge","1");
+        param.put("user_type","1");
         List<SystemUser> systemUsers = userService.findUserByCondition(param);
         for (SystemUser systemUser : systemUsers) {
             InitComboxVO initComboxVO = new InitComboxVO();

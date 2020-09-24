@@ -137,7 +137,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 });
                 queryWrapper = new QueryWrapper();
                 queryWrapper.eq("main_order_id",orderInfo.getId());
-                List<LogisticsTrack> logisticsTracks = logisticsTrackService.list();//已操作的流程
+                queryWrapper.eq("order_id","");
+                List<LogisticsTrack> logisticsTracks = logisticsTrackService.list(queryWrapper);//已操作的流程
                 Map<String, LogisticsTrack> logisticsTrackMap = logisticsTracks.stream().collect(Collectors.toMap(LogisticsTrack::getStatus, x -> x));
                 if (!logisticsTracks.isEmpty()) {
                     orderStatusVOS.forEach(x -> {

@@ -32,9 +32,9 @@ public class InputMainOrderForm {
     @ApiModelProperty(value = "合同编号")
     private String contractNo;
 
-    @ApiModelProperty(value = "接单法人code",required = true)
+    /*@ApiModelProperty(value = "接单法人code",required = true)
     @NotEmpty(message = "legalCode is required")
-    private String legalCode;
+    private String legalCode;*/
 
     @ApiModelProperty(value = "接单法人",required = true)
     @NotEmpty(message = "legalName is required")

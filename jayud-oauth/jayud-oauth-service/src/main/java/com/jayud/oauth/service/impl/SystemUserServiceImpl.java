@@ -234,6 +234,12 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     @Override
     public void saveOrUpdateSystemUser(SystemUser systemUser) {
+        if(systemUser.getId() == null){
+            systemUser.setCreatedUser(getLoginName());
+        }else {
+            systemUser.setUpdatedUser(getLoginName());
+            systemUser.setUpdatedTime(DateUtils.getNowTime());
+        }
         saveOrUpdate(systemUser);
     }
 
@@ -264,7 +270,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
      * @return
      */
     private String getLoginName(){
-        return getLoginUser().getName();
+        return redisUtils.get("loginUser",100);
     }
 
 

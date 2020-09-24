@@ -55,7 +55,7 @@ public class VIVOProvideApiController {
         }
         String token = TokenGenerator.generateValue(encodeValue);
         redisUtils.set("token",token);
-        return CommonResult.success(token);
+        return CommonResult.error(1,"成功",token);
     }
 
 

@@ -77,5 +77,6 @@ secure:
       - /system/user/auth/image
       - /oss/upload
       - /api/**
+      - /jayudAir/**
 
 

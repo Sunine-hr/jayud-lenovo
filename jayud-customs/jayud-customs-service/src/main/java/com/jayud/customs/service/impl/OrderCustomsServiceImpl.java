@@ -19,7 +19,6 @@ import com.jayud.customs.service.IOrderCustomsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,8 +65,9 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
             //保存主订单数据,返回主订单号,暂存和提交
             inputMainOrderForm.setCmd(form.getCmd());
             ApiResult apiResult = omsClient.oprMainOrder(inputMainOrderForm);
+            String mainOrderNo = String.valueOf(apiResult.getData());
             //根据主订单号获取主订单ID
-            Long mainOrderId = omsClient.getIdByOrderNo(String.valueOf(apiResult.getData())).getData();
+            Long mainOrderId = omsClient.getIdByOrderNo(mainOrderNo).getData();
             if(mainOrderId == null){
                 return false;
             }
@@ -75,7 +75,10 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
             if(apiResult.getCode() != 200 || apiResult.getData() == null){
                 return false;
             }
-            //暂存或提交只是主订单的状态不一样，具体更新还是保存还是根据主键区别
+            //暂存或提交只是主订单的状态不一样，子订单的操作每次先根据主订单号清空子订单
+            QueryWrapper<OrderCustoms> queryWrapper = new QueryWrapper<OrderCustoms>();
+            queryWrapper.eq("main_order_no",mainOrderNo);
+            remove(queryWrapper);
             //子订单数据初始化处理
             //设置子订单号/报关抬头/结算单位/附件
             List<OrderCustoms> orderCustomsList = new ArrayList<>();
@@ -86,30 +89,23 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 customs.setOrderNo(subOrder.getOrderNo());
                 customs.setTitle(subOrder.getTitle());
                 customs.setUnitCode(subOrder.getUnitCode());
-                customs.setUnitAccount(subOrder.getUnitAccount());
                 customs.setDescription(subOrder.getDescription());
                 customs.setMainOrderNo(String.valueOf(apiResult.getData()));
                 customs.setStatus(OrderStatusEnum.CUSTOMS_C_0.getCode());
-                if (subOrder .getSubOrderId() != null) {
-                    customs.setUpdatedTime(LocalDateTime.now());
-                    customs.setUpdatedUser(getLoginUser());
-                } else {
-                    customs.setCreatedUser(getLoginUser());
-                }
+                customs.setCreatedUser(getLoginUser());
                 orderCustomsList.add(customs);
             }
-            saveOrUpdateBatch(orderCustomsList);
+            if(!orderCustomsList.isEmpty()) {
+                saveOrUpdateBatch(orderCustomsList);
+            }
 
             //记录操作状态
             if("submit".equals(form.getCmd())){
-                for (OrderCustoms orderCustom : orderCustomsList) {
-                    OprStatusForm oprStatusForm = new OprStatusForm();
-                    oprStatusForm.setStatus(OrderStatusEnum.MAIN_PROCESS_1.getCode());
-                    oprStatusForm.setStatusName(OrderStatusEnum.MAIN_PROCESS_1.getDesc());
-                    oprStatusForm.setMainOrderId(mainOrderId);
-                    oprStatusForm.setOrderId(orderCustom.getId());
-                    omsClient.saveOprStatus(oprStatusForm);
-                }
+                OprStatusForm oprStatusForm = new OprStatusForm();
+                oprStatusForm.setStatus(OrderStatusEnum.MAIN_PROCESS_1.getCode());
+                oprStatusForm.setStatusName(OrderStatusEnum.MAIN_PROCESS_1.getDesc());
+                oprStatusForm.setMainOrderId(mainOrderId);
+                omsClient.saveOprStatus(oprStatusForm);
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -135,6 +131,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 OrderCustomsVO orderCustomsVO = orderCustomsVOS.get(0);
                 //设置纯报关头部分
                 inputOrderCustomsVO.setPortCode(orderCustomsVO.getPortCode());
+                inputOrderCustomsVO.setPortCode(orderCustomsVO.getPortName());
                 inputOrderCustomsVO.setGoodsType(orderCustomsVO.getGoodsType());
                 inputOrderCustomsVO.setCntrNo(orderCustomsVO.getCntrNo());
                 inputOrderCustomsVO.setCntrPic(""+orderCustomsVO.getCntrPic());
@@ -165,6 +162,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                     subOrderCustomsVOS.add(subOrderCustomsVO);
                 }
                 inputOrderCustomsVO.setSubOrders(subOrderCustomsVOS);
+                inputOrderCustomsVO.setNumber(String.valueOf(subOrderCustomsVOS.size()));
                 inputOrderVO.setOrderCustomsForm(inputOrderCustomsVO);
             }
         }

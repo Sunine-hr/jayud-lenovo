@@ -11,4 +11,7 @@ public class AuditLegalEntityForm {
 
     @ApiModelProperty(value = "审核状态 1-待审核 2-通过 0-拒绝",required = true)
     private String auditStatus;
+
+    @ApiModelProperty(value = "审核意见")
+    private String auditComment;
 }

@@ -10,6 +10,7 @@
         <result column="rigis_address" property="rigisAddress" />
         <result column="sale_depart_id" property="saleDepartId" />
         <result column="audit_status" property="auditStatus" />
+        <result column="audit_comment" property="auditComment" />
         <result column="created_time" property="createdTime" />
         <result column="created_user" property="createdUser" />
         <result column="created_time" property="createdTime" />
@@ -19,7 +20,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id,legal_name,legal_code,rigis_address,sale_depart_id,audit_status
+        id,legal_name,legal_code,rigis_address,sale_depart_id,audit_status,audit_comment
     </sql>
 
     <select id="findLegalEntityByPage" parameterType="com.jayud.oauth.model.bo.QueryLegalEntityForm" resultType="com.jayud.oauth.model.vo.LegalEntityVO" >
@@ -31,6 +32,7 @@
           d.`name` saleDepartName,
           d.id saleDepartId,
           le.`audit_status` auditStatus,
+          le.`audit_comment` auditComment,
           (CASE
           le.`audit_status`
           WHEN 0

@@ -18,6 +18,9 @@ public class InputReceivableCostVO {
     @ApiModelProperty(value = "应收项目CODE")
     private String costCode;
 
+    @ApiModelProperty(value = "应收项目")
+    private String costName;
+
     @ApiModelProperty(value = "单价")
     private BigDecimal unitPrice;
 
@@ -26,6 +29,9 @@ public class InputReceivableCostVO {
 
     @ApiModelProperty(value = "币种CODE")
     private String currencyCode;
+
+    @ApiModelProperty(value = "币种")
+    private String currencyName;
 
     @ApiModelProperty(value = "应收金额")
     private BigDecimal amount;
@@ -38,5 +44,8 @@ public class InputReceivableCostVO {
 
     @ApiModelProperty(value = "备注")
     private String remarks;
+
+    @ApiModelProperty(value = "状态")
+    private Integer status;
 
 }

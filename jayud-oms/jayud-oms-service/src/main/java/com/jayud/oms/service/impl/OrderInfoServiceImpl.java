@@ -53,6 +53,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Autowired
     ILogisticsTrackService logisticsTrackService;
 
+    @Autowired
+    ICurrencyInfoService currencyInfoService;
+
+    @Autowired
+    ICostInfoService costInfoService;
+
     @Override
     public String oprMainOrder(InputMainOrderForm form) {
         OrderInfo orderInfo = ConvertUtil.convert(form, OrderInfo.class);
@@ -214,6 +220,27 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderReceivableCosts = receivableCostService.list(queryWrapper);
         List<InputPaymentCostVO> inputPaymentCostVOS = ConvertUtil.convertList(orderPaymentCosts,InputPaymentCostVO.class);
         List<InputReceivableCostVO> inputReceivableCostVOS = ConvertUtil.convertList(orderReceivableCosts,InputReceivableCostVO.class);
+        //设置费用类型/应收项目/币种名称
+        for (InputPaymentCostVO inputPaymentCost : inputPaymentCostVOS) {
+            QueryWrapper currencyCode = new QueryWrapper();
+            currencyCode.eq("currency_code",inputPaymentCost.getCurrencyCode());
+            CurrencyInfo currencyInfo = currencyInfoService.getOne(currencyCode);
+            QueryWrapper costCode = new QueryWrapper();
+            costCode.eq("id_code",inputPaymentCost.getCostCode());
+            CostInfo costInfo = costInfoService.getOne(costCode);
+            inputPaymentCost.setCostName(costInfo.getName());
+            inputPaymentCost.setCurrencyName(currencyInfo.getCurrencyName());
+        }
+        for (InputReceivableCostVO inputReceivableCost : inputReceivableCostVOS) {
+            QueryWrapper currencyCode = new QueryWrapper();
+            currencyCode.eq("currency_code",inputReceivableCost.getCurrencyCode());
+            CurrencyInfo currencyInfo = currencyInfoService.getOne(currencyCode);
+            QueryWrapper costCode = new QueryWrapper();
+            costCode.eq("id_code",inputReceivableCost.getCostCode());
+            CostInfo costInfo = costInfoService.getOne(costCode);
+            inputReceivableCost.setCostName(costInfo.getName());
+            inputReceivableCost.setCurrencyName(currencyInfo.getCurrencyName());
+        }
         InputCostVO inputCostVO = new InputCostVO();
         inputCostVO.setPaymentCostList(inputPaymentCostVOS);
         inputCostVO.setReceivableCostList(inputReceivableCostVOS);

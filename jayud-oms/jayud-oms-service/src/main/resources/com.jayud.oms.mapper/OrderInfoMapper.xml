@@ -83,6 +83,11 @@
         <if test="form.cmd == 'submit'">
            and temp.`status` in (1,3)
         </if>
+        <if test="form.cmd == 'costAudit'">
+            and temp.`status` = 1
+            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = temp.orderNo)
+            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = temp.orderNo))
+        </if>
         <if test="form.orderNo != null and form.orderNo != ''">
             and temp.orderNo = #{form.orderNo}
         </if>

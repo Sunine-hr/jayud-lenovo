@@ -3,6 +3,7 @@ package com.jayud.oms.controller;
 
 import com.jayud.common.CommonResult;
 import com.jayud.oms.model.bo.*;
+import com.jayud.oms.model.po.LogisticsTrack;
 import com.jayud.oms.model.po.OrderPaymentCost;
 import com.jayud.oms.model.po.OrderReceivableCost;
 import com.jayud.oms.model.vo.InputCostVO;
@@ -102,6 +103,23 @@ public class OrderCommonController {
         }
         return CommonResult.success();
     }
+
+    @ApiOperation(value = "费用审核")
+    @PostMapping(value = "/findReplyStatus")
+    public CommonResult<List<LogisticsTrack>> findReplyStatus() {
+
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "反馈状态确认")
+    @PostMapping(value = "/confirmReplyStatus")
+    public CommonResult confirmReplyStatus() {
+
+        return CommonResult.success();
+    }
+
+    //创建订单界面
+
 
 
 

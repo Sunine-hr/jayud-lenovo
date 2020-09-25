@@ -1,12 +1,15 @@
 package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.OrderInfo;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.vo.InputCostVO;
 import com.jayud.oms.model.vo.InputMainOrderVO;
 import com.jayud.oms.model.vo.OrderInfoVO;
+import com.jayud.oms.model.vo.OrderStatusVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -74,5 +77,12 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     boolean auditCost(AuditCostForm form);
+
+    /**
+     * 获取主订单流程节点
+     * @param form
+     * @return
+     */
+    List<OrderStatusVO> handleProcess(QueryOrderStatusForm form);
 
 }

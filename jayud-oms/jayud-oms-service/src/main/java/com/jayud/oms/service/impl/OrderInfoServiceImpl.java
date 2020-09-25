@@ -105,68 +105,25 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //定义排序规则
         page.addOrder(OrderItem.asc("temp.id"));
         IPage<OrderInfoVO> pageInfo = baseMapper.findOrderInfoByPage(page, form);
-        if("submit".equals(form.getCmd())){//处理流程
+        if("submit".equals(form.getCmd())){//是否有录入费用
             List<OrderInfoVO> orderInfoVOS = pageInfo.getRecords();
             for (OrderInfoVO orderInfo : orderInfoVOS) {
-                List<OrderStatusVO> orderStatusVOS = new ArrayList<>();
                 QueryWrapper queryWrapper = new QueryWrapper();
-                queryWrapper.eq("biz_code",orderInfo.getBizCode());
-                List<OrderStatus> allProcess = orderStatusService.list(queryWrapper);//所有流程
-                allProcess.sort((h1, h2) -> {//排序
-                    if (h1.getFId().equals(h2.getFId())) {
-                        return Integer.compare(h1.getSorts(), h2.getSorts());
-                    }
-                    return Integer.compare(h1.getFId(), h2.getFId());
-
-                });
-                allProcess.forEach(x ->{
-                    OrderStatusVO orderStatus = new OrderStatusVO();
-                    orderStatus.setId(x.getId());
-                    orderStatus.setProcessName(x.getName());
-                    orderStatus.setProcessCode(x.getIdCode());
-                    orderStatus.setStatus();
-                    if (x.getFId() == 0) {
-                        orderStatusVOS.add(orderStatus);
-                    } else {
-                        orderStatusVOS.forEach(v -> {
-                            if (v.getId() == x.getFId()) {
-                                v.addChildren(orderStatus);
-                            }
-                        });
-                    }
-                });
-                queryWrapper = new QueryWrapper();
-                queryWrapper.eq("main_order_id",orderInfo.getId());
-                queryWrapper.eq("order_id","");
-                List<LogisticsTrack> logisticsTracks = logisticsTrackService.list(queryWrapper);//已操作的流程
-                Map<String, LogisticsTrack> logisticsTrackMap = logisticsTracks.stream().collect(Collectors.toMap(LogisticsTrack::getStatus, x -> x));
-                if (!logisticsTracks.isEmpty()) {
-                    orderStatusVOS.forEach(x -> {
-                        if (logisticsTrackMap.keySet().contains(x.getProcessCode())) {
-                            x.setStatusChangeTime(DateUtils.getLocalToStr(logisticsTrackMap.get(x.getProcessCode()).getOperatorTime()));
-                            if (x.getChildren().isEmpty()) {
-                                x.setStatus("3");
-                            } else {
-                                x.setStatus("2");
-                                final boolean[] flag = {false};
-                                x.getChildren().forEach(v -> {
-                                    if (!flag[0]) {
-                                        if (logisticsTrackMap.keySet().contains(v.getProcessCode())) {
-                                            v.setStatus("3");
-                                            v.setStatusChangeTime(DateUtils.getLocalToStr(logisticsTrackMap.get(x.getProcessCode()).getOperatorTime()));
-                                        } else {
-                                            flag[0] = true;
-                                        }
-                                    }
-                                });
-                                if (!flag[0]) {
-                                    x.setStatus("3");
-                                }
-                            }
-                        }
-                    });
+                queryWrapper.eq("main_order_no",orderInfo.getOrderNo());
+                List<OrderPaymentCost> paymentCosts = paymentCostService.list(queryWrapper);
+                List<OrderReceivableCost> receivableCosts = receivableCostService.list(queryWrapper);
+                int num = 0;
+                if(paymentCosts != null){
+                    num = num + paymentCosts.size();
                 }
-                orderInfo.setStatusList(orderStatusVOS);
+                if(receivableCosts != null){
+                    num = num + receivableCosts.size();
+                }
+                if(num > 0) {
+                    orderInfo.setCost(true);
+                }else {
+                    orderInfo.setCost(false);
+                }
             }
         }
         return pageInfo;
@@ -302,6 +259,69 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             return false;
         }
         return true;
+    }
+
+    @Override
+    public List<OrderStatusVO> handleProcess(QueryOrderStatusForm form) {
+        List<OrderStatusVO> orderStatusVOS = new ArrayList<>();
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("biz_code",form.getBizCode());
+        List<OrderStatus> allProcess = orderStatusService.list(queryWrapper);//所有流程
+        allProcess.sort((h1, h2) -> {//排序
+            if (h1.getFId().equals(h2.getFId())) {
+                return Integer.compare(h1.getSorts(), h2.getSorts());
+            }
+            return Integer.compare(h1.getFId(), h2.getFId());
+
+        });
+        allProcess.forEach(x ->{
+            OrderStatusVO orderStatus = new OrderStatusVO();
+            orderStatus.setId(x.getId());
+            orderStatus.setProcessName(x.getName());
+            orderStatus.setProcessCode(x.getIdCode());
+            orderStatus.setStatus();
+            if (x.getFId() == 0) {
+                orderStatusVOS.add(orderStatus);
+            } else {
+                orderStatusVOS.forEach(v -> {
+                    if (v.getId() == x.getFId()) {
+                        v.addChildren(orderStatus);
+                    }
+                });
+            }
+        });
+        queryWrapper = new QueryWrapper();
+        queryWrapper.eq("main_order_id",form.getMainOrderId());
+        queryWrapper.eq("order_id","");
+        List<LogisticsTrack> logisticsTracks = logisticsTrackService.list(queryWrapper);//已操作的流程
+        Map<String, LogisticsTrack> logisticsTrackMap = logisticsTracks.stream().collect(Collectors.toMap(LogisticsTrack::getStatus, x -> x));
+        if (!logisticsTracks.isEmpty()) {
+            orderStatusVOS.forEach(x -> {
+                if (logisticsTrackMap.keySet().contains(x.getProcessCode())) {
+                    x.setStatusChangeTime(DateUtils.getLocalToStr(logisticsTrackMap.get(x.getProcessCode()).getOperatorTime()));
+                    if (x.getChildren().isEmpty()) {
+                        x.setStatus("3");
+                    } else {
+                        x.setStatus("2");
+                        final boolean[] flag = {false};
+                        x.getChildren().forEach(v -> {
+                            if (!flag[0]) {
+                                if (logisticsTrackMap.keySet().contains(v.getProcessCode())) {
+                                    v.setStatus("3");
+                                    v.setStatusChangeTime(DateUtils.getLocalToStr(logisticsTrackMap.get(x.getProcessCode()).getOperatorTime()));
+                                } else {
+                                    flag[0] = true;
+                                }
+                            }
+                        });
+                        if (!flag[0]) {
+                            x.setStatus("3");
+                        }
+                    }
+                }
+            });
+        }
+        return orderStatusVOS;
     }
 
 

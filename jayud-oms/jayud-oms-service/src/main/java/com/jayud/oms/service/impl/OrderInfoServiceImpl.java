@@ -149,9 +149,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public boolean saveOrUpdateCost(InputCostForm form) {
         try {
-            if (form == null || form.getMainOrderId() == null) {
-                return false;
-            }
             InputMainOrderVO inputOrderVO = getMainOrderById(form.getMainOrderId());
             if (inputOrderVO == null) {
                 return false;

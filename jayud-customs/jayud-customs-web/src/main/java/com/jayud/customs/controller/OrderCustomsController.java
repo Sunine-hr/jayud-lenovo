@@ -203,8 +203,7 @@ public class OrderCustomsController {
             return CommonResult.error(400,"参数不合法");
         }
         boolean result =false;
-        if(OrderStatusEnum.CUSTOMS_C_3.getCode().equals(form.getStatus()) ||
-                OrderStatusEnum.CUSTOMS_C_3_1.getCode().equals(form.getStatus())){
+        if(OrderStatusEnum.CUSTOMS_C_3.getCode().equals(form.getStatus()) ){
             String loginUser = orderCustomsService.getLoginUser();
             OrderCustoms orderCustoms = new OrderCustoms();
             orderCustoms.setId(form.getOrderId());
@@ -217,8 +216,6 @@ public class OrderCustomsController {
             form.setStatus(form.getStatus());
             if(OrderStatusEnum.CUSTOMS_C_3.getCode().equals(form.getStatus())){
                 form.setStatusName(OrderStatusEnum.CUSTOMS_C_3.getDesc());
-            }else {
-                form.setStatusName(OrderStatusEnum.CUSTOMS_C_3_1.getDesc());
             }
             omsClient.saveOprStatus(form);
         }

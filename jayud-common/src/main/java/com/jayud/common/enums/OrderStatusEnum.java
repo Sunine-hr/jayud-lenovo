@@ -9,27 +9,29 @@ import java.util.Objects;
 @AllArgsConstructor
 public enum OrderStatusEnum {
 
-    //主订单
+    //主订单状态
     MAIN_1("1","正常"),
     MAIN_2("2","草稿"),
     MAIN_3("3","关闭"),
 
-    //主干流程
-    MAIN_PROCESS_1("1","已下单"),
-    MAIN_PROCESS_2("2","运输中"),
-    MAIN_PROCESS_3("3","报关中"),
-    MAIN_PROCESS_4("4","已完成"),
+    //主干流程节点
+    MAIN_PROCESS_1("M_1","已下单"),
+    MAIN_PROCESS_2("M_2","运输中"),
+    MAIN_PROCESS_3("M_3","报关中"),
+    MAIN_PROCESS_4("M_4","已完成"),
 
-    //纯报关子订单流程
-    CUSTOMS_C_0("C_0","未接单"),
+    //纯报关子订单流程节点+纯报关子订单状态
+    CUSTOMS_C_0("C_0","未接单"), //仅纯报关子订单状态用
     CUSTOMS_C_1("C_1","报关接单"),
     CUSTOMS_C_2("C_2","报关打单"),
     CUSTOMS_C_3("C_3","报关复核"),
-    CUSTOMS_C_3_1("C_3_1","报关复核驳回"),
     CUSTOMS_C_4("C_4","报关申报"),
     CUSTOMS_C_5("C_5","报关放行"),
-    CUSTOMS_C_5_1("C_5_1","报关放行驳回"),
-    CUSTOMS_C_6("C_6","报关异常"),
+    CUSTOMS_C_5_1("C_5_1","报关放行驳回"),//仅纯报关子订单状态用
+    CUSTOMS_C_6("C_6","通关确认"),
+    CUSTOMS_C_7("C_7","录入费用"),
+    CUSTOMS_C_8("C_8","费用审核"),
+    CUSTOMS_C_Y("C_Y","报关异常"),//仅纯报关子订单状态用
 
 
     //费用状态

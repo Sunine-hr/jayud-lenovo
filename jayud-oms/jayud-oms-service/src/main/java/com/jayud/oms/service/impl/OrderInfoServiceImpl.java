@@ -53,6 +53,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Autowired
     ILogisticsTrackService logisticsTrackService;
 
+    @Autowired
+    ICurrencyInfoService currencyInfoService;
+
+    @Autowired
+    ICostInfoService costInfoService;
+
     @Override
     public String oprMainOrder(InputMainOrderForm form) {
         OrderInfo orderInfo = ConvertUtil.convert(form, OrderInfo.class);
@@ -149,9 +155,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public boolean saveOrUpdateCost(InputCostForm form) {
         try {
-            if (form == null || form.getMainOrderId() == null) {
-                return false;
-            }
             InputMainOrderVO inputOrderVO = getMainOrderById(form.getMainOrderId());
             if (inputOrderVO == null) {
                 return false;
@@ -217,6 +220,27 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderReceivableCosts = receivableCostService.list(queryWrapper);
         List<InputPaymentCostVO> inputPaymentCostVOS = ConvertUtil.convertList(orderPaymentCosts,InputPaymentCostVO.class);
         List<InputReceivableCostVO> inputReceivableCostVOS = ConvertUtil.convertList(orderReceivableCosts,InputReceivableCostVO.class);
+        //设置费用类型/应收项目/币种名称
+        for (InputPaymentCostVO inputPaymentCost : inputPaymentCostVOS) {
+            QueryWrapper currencyCode = new QueryWrapper();
+            currencyCode.eq("currency_code",inputPaymentCost.getCurrencyCode());
+            CurrencyInfo currencyInfo = currencyInfoService.getOne(currencyCode);
+            QueryWrapper costCode = new QueryWrapper();
+            costCode.eq("id_code",inputPaymentCost.getCostCode());
+            CostInfo costInfo = costInfoService.getOne(costCode);
+            inputPaymentCost.setCostName(costInfo.getName());
+            inputPaymentCost.setCurrencyName(currencyInfo.getCurrencyName());
+        }
+        for (InputReceivableCostVO inputReceivableCost : inputReceivableCostVOS) {
+            QueryWrapper currencyCode = new QueryWrapper();
+            currencyCode.eq("currency_code",inputReceivableCost.getCurrencyCode());
+            CurrencyInfo currencyInfo = currencyInfoService.getOne(currencyCode);
+            QueryWrapper costCode = new QueryWrapper();
+            costCode.eq("id_code",inputReceivableCost.getCostCode());
+            CostInfo costInfo = costInfoService.getOne(costCode);
+            inputReceivableCost.setCostName(costInfo.getName());
+            inputReceivableCost.setCurrencyName(currencyInfo.getCurrencyName());
+        }
         InputCostVO inputCostVO = new InputCostVO();
         inputCostVO.setPaymentCostList(inputPaymentCostVOS);
         inputCostVO.setReceivableCostList(inputReceivableCostVOS);
@@ -226,34 +250,18 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public boolean auditCost(AuditCostForm form) {
         try {
-           List<Long> paymentIds = form.getPaymentIds();
-           List<Long> receivableIds = form.getReceivableIds();
-           List<OrderPaymentCost> orderPaymentCosts = new ArrayList<>();
-           List<OrderReceivableCost> orderReceivableCosts = new ArrayList<>();
-           for(Long id : paymentIds){
-               OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
-               //参数校验
-               if(id == null || "".equals(id) || (!form.getStatus().equals(1) && !form.getStatus().equals(2))){
-                   return false;
-               }
-               orderPaymentCost.setId(id);
-               orderPaymentCost.setStatus(Integer.valueOf(form.getStatus()));
-               orderPaymentCost.setRemarks(form.getRemarks());
-               orderPaymentCosts.add(orderPaymentCost);
+           List<OrderPaymentCost> orderPaymentCosts = form.getPaymentCosts();
+           List<OrderReceivableCost> orderReceivableCosts = form.getReceivableCosts();
+           for(OrderPaymentCost paymentCost : orderPaymentCosts){
+               paymentCost.setStatus(Integer.valueOf(form.getStatus()));
+               paymentCost.setRemarks(form.getRemarks());
            }
-            for(Long id : receivableIds){
-                OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
-                //参数校验
-                if(id == null || "".equals(id) || (!form.getStatus().equals(1) && !form.getStatus().equals(2))){
-                    return false;
-                }
-                orderReceivableCost.setId(id);
-                orderReceivableCost.setStatus(Integer.valueOf(form.getStatus()));
-                orderReceivableCost.setRemarks(form.getRemarks());
-                orderReceivableCosts.add(orderReceivableCost);
-            }
-            paymentCostService.saveOrUpdateBatch(orderPaymentCosts);
-            receivableCostService.saveOrUpdateBatch(orderReceivableCosts);
+           for(OrderReceivableCost receivableCost : orderReceivableCosts){
+               receivableCost.setStatus(Integer.valueOf(form.getStatus()));
+               receivableCost.setRemarks(form.getRemarks());
+           }
+           paymentCostService.saveOrUpdateBatch(orderPaymentCosts);
+           receivableCostService.saveOrUpdateBatch(orderReceivableCosts);
         }catch (Exception e){
             e.printStackTrace();
             return false;

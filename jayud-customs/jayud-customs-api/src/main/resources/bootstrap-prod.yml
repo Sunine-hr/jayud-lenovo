@@ -15,8 +15,8 @@ spring:
     timeout: 2000s
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://113.100.140.250:8098/jayud_platform?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: root
-    password: Root!!2020
+    url: jdbc:mysql://rm-wz9m40gpm90c230wo.mysql.rds.aliyuncs.com:3306/jayud_platform?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: jayuddb
+    password: jayud@)@)
     configuration:
       maximum-pool-size: 2

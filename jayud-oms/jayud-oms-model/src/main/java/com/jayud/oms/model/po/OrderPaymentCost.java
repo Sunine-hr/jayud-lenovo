@@ -57,9 +57,6 @@ public class OrderPaymentCost extends Model<OrderPaymentCost> {
     @ApiModelProperty(value = "收费项目code")
     private String costCode;
 
-    @ApiModelProperty(value = "收费项目名")
-    private String costName;
-
     @ApiModelProperty(value = "单价")
     private BigDecimal unitPrice;
 
@@ -68,9 +65,6 @@ public class OrderPaymentCost extends Model<OrderPaymentCost> {
 
     @ApiModelProperty(value = "币种代码")
     private String currencyCode;
-
-    @ApiModelProperty(value = "币种名称")
-    private String currencyName;
 
     @ApiModelProperty(value = "应收金额")
     private BigDecimal amount;

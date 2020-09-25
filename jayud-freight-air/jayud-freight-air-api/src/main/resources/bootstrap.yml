@@ -13,3 +13,7 @@ spring:
       discovery:
         server-addr: ${jayud.nacos.server-addr}
         namespace: ${jayud.nacos.config.namespace}
+  servlet:
+    multipart:
+      max-file-size: 24MB
+      max-request-size: 24MB

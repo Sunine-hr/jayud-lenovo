@@ -15,7 +15,7 @@ public class QueryOrderInfoForm extends BasePageForm{
     @ApiModelProperty(value = "作业类型")
     private String bizCode;
 
-    @ApiModelProperty(value = "操作指令,cmd = noSubmit or submit")
+    @ApiModelProperty(value = "操作指令,cmd = noSubmit or submit costAudit")
     private String cmd;
 
 

@@ -19,4 +19,17 @@ public class VivoApiResult extends BaseApiResult {
         this.status = 0;
         this.message = message;
     }
+
+    public VivoApiResult(int status ,String message) {
+        this.status = status;
+        this.message = message;
+    }
+
+    public static VivoApiResult error(String message){
+        return new VivoApiResult(0,message);
+    }
+
+    public static VivoApiResult success(){
+        return new VivoApiResult(1,"OK");
+    }
 }

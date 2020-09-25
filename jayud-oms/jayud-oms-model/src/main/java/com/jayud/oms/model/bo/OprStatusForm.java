@@ -32,4 +32,13 @@ public class OprStatusForm {
     @ApiModelProperty(value = "备注")
     private String description;
 
+    @ApiModelProperty(value = "委托号")
+    private String entrustNo;
+
+    @ApiModelProperty(value = "通关时间")
+    private LocalDateTime goCustomsTime;
+
+    @ApiModelProperty(value = "预计通关时间")
+    private LocalDateTime preGoCustomsTime;
+
 }

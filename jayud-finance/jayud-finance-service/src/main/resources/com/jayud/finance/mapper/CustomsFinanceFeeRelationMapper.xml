@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.finance.mapper.CustomsFinanceFeeRelationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.finance.po.CustomsFinanceFeeRelation">
+        <id column="id" property="id" />
+        <result column="yunbaoguan_code" property="yunbaoguanCode" />
+        <result column="yunbaoguan_name" property="yunbaoguanName" />
+        <result column="kingdee_code" property="kingdeeCode" />
+        <result column="kingdee_name" property="kingdeeName" />
+        <result column="category_code" property="categoryCode" />
+        <result column="category" property="category" />
+        <result column="type_code" property="typeCode" />
+        <result column="type" property="type" />
+        <result column="tax_rate" property="taxRate" />
+        <result column="deprecated" property="deprecated" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, yunbaoguan_code, yunbaoguan_name, kingdee_code, kingdee_name, category_code, category, type_code, type, tax_rate, deprecated
+    </sql>
+
+</mapper>

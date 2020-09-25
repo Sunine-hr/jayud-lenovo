@@ -34,8 +34,18 @@ public class OprStatusForm {
     @ApiModelProperty(value = "备注")
     private String description;
 
+    @ApiModelProperty(value = "委托号")
+    private String entrustNo;
+
+    @ApiModelProperty(value = "通关时间")
+    private LocalDateTime goCustomsTime;
+
+    @ApiModelProperty(value = "预计通关时间")
+    private LocalDateTime preGoCustomsTime;
+
     @ApiModelProperty(value = "操作指令,cmd = confirmOrder接单 or exceptionOrder异常单 or auditFail审核不通过 or orderList订单列表 or " +
-            "issueOrder打单 or toCheck复核 or declare申报 or releaseConfirm放行确认")
+            "issueOrder打单 or toCheck复核 or declare申报 or releaseConfirm放行确认 or auditFailEdit 审核不通过的编辑" +
+            "or goCustomsSuccess 通关完成 or customsCheck 通关查验 or customsExcep通关其他异常")
     private String cmd;
 
 }

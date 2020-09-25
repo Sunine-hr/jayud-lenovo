@@ -13,5 +13,12 @@ spring:
     port: 6377
     database: 10
     password: 'q$o8S#ixaf9x87nOF8oSoyAAQZut@zxe'
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://113.100.140.250:8098/jayud_platform?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: Root!!2020
+    configuration:
+      maximum-pool-size: 2
 server:
   port: 9998

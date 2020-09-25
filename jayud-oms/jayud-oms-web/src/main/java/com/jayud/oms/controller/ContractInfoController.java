@@ -8,19 +8,19 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.AddContractInfoForm;
-import com.jayud.oms.model.bo.QueryContractInfoForm;
-import com.jayud.oms.model.po.ContractInfo;
-import com.jayud.oms.model.vo.ContractInfoVO;
-import com.jayud.oms.service.IProductBizService;
 import com.jayud.oms.model.bo.DeleteForm;
+import com.jayud.oms.model.bo.QueryContractInfoForm;
 import com.jayud.oms.model.enums.CustomerInfoStatusEnum;
+import com.jayud.oms.model.po.ContractInfo;
 import com.jayud.oms.model.po.CustomerInfo;
 import com.jayud.oms.model.po.ProductBiz;
+import com.jayud.oms.model.vo.ContractInfoVO;
 import com.jayud.oms.model.vo.InitComboxVO;
-import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.service.IContractInfoService;
 import com.jayud.oms.service.ICustomerInfoService;
+import com.jayud.oms.service.IProductBizService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,10 +92,24 @@ public class ContractInfoController {
             sb.append(businessTypes.get(i)).append(",");
         }
         contractInfo.setBusinessType(sb.toString());
+        Map<String,Object> param = new HashMap<>();
+        param.put("status",1);//有效
+        param.put("contract_no",form.getContractNo());
         if(form.getId() != null){
+            ContractInfo oldContractInfo = contractInfoService.getById(form.getId());
+            if(oldContractInfo != null && !oldContractInfo.getContractNo().equals(form.getContractNo())){//若修改合同号了，则校重
+                List<ContractInfo> contractInfos = contractInfoService.findContractByCondition(param);
+                if(contractInfos != null && contractInfos.size() > 0){
+                    return CommonResult.error(400,"该合同已经存在,不能重复录入");
+                }
+            }
             contractInfo.setUpdatedUser(getLoginUser());
             contractInfo.setUpdatedTime(DateUtils.getNowTime());
         }else {
+            List<ContractInfo> contractInfos = contractInfoService.findContractByCondition(param);
+            if(contractInfos != null && contractInfos.size() > 0){
+                return CommonResult.error(400,"该合同已经存在,不能重复录入");
+            }
             contractInfo.setCreatedUser(getLoginUser());
         }
         contractInfoService.saveOrUpdate(contractInfo);

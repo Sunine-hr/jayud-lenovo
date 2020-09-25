@@ -70,6 +70,7 @@ public class ExternalApiController {
         if(role != null){
             param.put("roleId", role.getId());
         }
+        param.put("user_type", "1");
         List<SystemUser> systemUsers = userService.findUserByCondition(param);
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (SystemUser systemUser : systemUsers) {

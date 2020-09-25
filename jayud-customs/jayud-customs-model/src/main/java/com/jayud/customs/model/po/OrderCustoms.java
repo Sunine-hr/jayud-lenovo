@@ -71,6 +71,12 @@ public class OrderCustoms extends Model<OrderCustoms> {
     @ApiModelProperty(value = "状态(0-未接单 1-已接单 2-接单中 3-放行通过 4-放行驳回  5-已完成)")
     private String status;
 
+    @ApiModelProperty(value = "通关时间")
+    private LocalDateTime goCustomsTime;
+
+    @ApiModelProperty(value = "预计通关时间")
+    private LocalDateTime preGoCustomsTime;
+
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createdTime;
 

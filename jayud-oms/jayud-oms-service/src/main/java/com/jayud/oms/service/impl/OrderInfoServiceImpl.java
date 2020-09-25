@@ -105,68 +105,25 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //定义排序规则
         page.addOrder(OrderItem.asc("temp.id"));
         IPage<OrderInfoVO> pageInfo = baseMapper.findOrderInfoByPage(page, form);
-        if("submit".equals(form.getCmd())){//处理流程
+        if("submit".equals(form.getCmd())){//是否有录入费用
             List<OrderInfoVO> orderInfoVOS = pageInfo.getRecords();
             for (OrderInfoVO orderInfo : orderInfoVOS) {
-                List<OrderStatusVO> orderStatusVOS = new ArrayList<>();
                 QueryWrapper queryWrapper = new QueryWrapper();
-                queryWrapper.eq("biz_code",orderInfo.getBizCode());
-                List<OrderStatus> allProcess = orderStatusService.list(queryWrapper);//所有流程
-                allProcess.sort((h1, h2) -> {//排序
-                    if (h1.getFId().equals(h2.getFId())) {
-                        return Integer.compare(h1.getSorts(), h2.getSorts());
-                    }
-                    return Integer.compare(h1.getFId(), h2.getFId());
-
-                });
-                allProcess.forEach(x ->{
-                    OrderStatusVO orderStatus = new OrderStatusVO();
-                    orderStatus.setId(x.getId());
-                    orderStatus.setProcessName(x.getName());
-                    orderStatus.setProcessCode(x.getIdCode());
-                    orderStatus.setStatus();
-                    if (x.getFId() == 0) {
-                        orderStatusVOS.add(orderStatus);
-                    } else {
-                        orderStatusVOS.forEach(v -> {
-                            if (v.getId() == x.getFId()) {
-                                v.addChildren(orderStatus);
-                            }
-                        });
-                    }
-                });
-                queryWrapper = new QueryWrapper();
-                queryWrapper.eq("main_order_id",orderInfo.getId());
-                queryWrapper.eq("order_id","");
-                List<LogisticsTrack> logisticsTracks = logisticsTrackService.list(queryWrapper);//已操作的流程
-                Map<String, LogisticsTrack> logisticsTrackMap = logisticsTracks.stream().collect(Collectors.toMap(LogisticsTrack::getStatus, x -> x));
-                if (!logisticsTracks.isEmpty()) {
-                    orderStatusVOS.forEach(x -> {
-                        if (logisticsTrackMap.keySet().contains(x.getProcessCode())) {
-                            x.setStatusChangeTime(DateUtils.getLocalToStr(logisticsTrackMap.get(x.getProcessCode()).getOperatorTime()));
-                            if (x.getChildren().isEmpty()) {
-                                x.setStatus("3");
-                            } else {
-                                x.setStatus("2");
-                                final boolean[] flag = {false};
-                                x.getChildren().forEach(v -> {
-                                    if (!flag[0]) {
-                                        if (logisticsTrackMap.keySet().contains(v.getProcessCode())) {
-                                            v.setStatus("3");
-                                            v.setStatusChangeTime(DateUtils.getLocalToStr(logisticsTrackMap.get(x.getProcessCode()).getOperatorTime()));
-                                        } else {
-                                            flag[0] = true;
-                                        }
-                                    }
-                                });
-                                if (!flag[0]) {
-                                    x.setStatus("3");
-                                }
-                            }
-                        }
-                    });
+                queryWrapper.eq("main_order_no",orderInfo.getOrderNo());
+                List<OrderPaymentCost> paymentCosts = paymentCostService.list(queryWrapper);
+                List<OrderReceivableCost> receivableCosts = receivableCostService.list(queryWrapper);
+                int num = 0;
+                if(paymentCosts != null){
+                    num = num + paymentCosts.size();
                 }
-                orderInfo.setStatusList(orderStatusVOS);
+                if(receivableCosts != null){
+                    num = num + receivableCosts.size();
+                }
+                if(num > 0) {
+                    orderInfo.setCost(true);
+                }else {
+                    orderInfo.setCost(false);
+                }
             }
         }
         return pageInfo;
@@ -192,9 +149,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public boolean saveOrUpdateCost(InputCostForm form) {
         try {
-            if (form == null || form.getMainOrderId() == null) {
-                return false;
-            }
             InputMainOrderVO inputOrderVO = getMainOrderById(form.getMainOrderId());
             if (inputOrderVO == null) {
                 return false;
@@ -206,6 +160,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderPaymentCosts = ConvertUtil.convertList(paymentCostForms, OrderPaymentCost.class);
             orderReceivableCosts = ConvertUtil.convertList(receivableCostForms, OrderReceivableCost.class);
             for (OrderPaymentCost orderPaymentCost : orderPaymentCosts) {//应付费用
+                orderPaymentCost.setMainOrderNo(inputOrderVO.getOrderNo());
+                orderPaymentCost.setOrderNo(form.getOrderNo());
                 orderPaymentCost.setOptName(getLoginUser());
                 orderPaymentCost.setOptTime(LocalDateTime.now());
                 orderPaymentCost.setCreatedTime(LocalDateTime.now());
@@ -217,6 +173,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
             }
             for (OrderReceivableCost orderReceivableCost : orderReceivableCosts) {//应收费用
+                orderReceivableCost.setMainOrderNo(inputOrderVO.getOrderNo());
+                orderReceivableCost.setOrderNo(form.getOrderNo());
                 orderReceivableCost.setOptName(getLoginUser());
                 orderReceivableCost.setOptTime(LocalDateTime.now());
                 orderReceivableCost.setCreatedTime(LocalDateTime.now());
@@ -237,9 +195,23 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     @Override
-    public InputCostVO getCostDetail(Long id) {
-        List<OrderPaymentCost> orderPaymentCosts = paymentCostService.list();
-        List<OrderReceivableCost> orderReceivableCosts = receivableCostService.list();
+    public InputCostVO getCostDetail(GetCostDetailForm form) {
+        if(form.getCmd() == null || "".equals(form.getCmd()) || form.getMainOrderNo() == null ||
+           "".equals(form.getMainOrderNo())){
+            return null;//参数异常
+        }
+        List<OrderPaymentCost> orderPaymentCosts = new ArrayList<>();
+        List<OrderReceivableCost> orderReceivableCosts = new ArrayList<>();
+        QueryWrapper queryWrapper = new QueryWrapper();
+        if("main_cost".equals(form.getCmd())){
+            queryWrapper.eq("main_order_no",form.getMainOrderNo());
+            queryWrapper.eq("order_no","");
+        }else if("sub_cost".equals(form.getCmd())){
+            queryWrapper.eq("main_order_no",form.getMainOrderNo());
+            queryWrapper.ne("order_no","");
+        }
+        orderPaymentCosts = paymentCostService.list(queryWrapper);
+        orderReceivableCosts = receivableCostService.list(queryWrapper);
         List<InputPaymentCostVO> inputPaymentCostVOS = ConvertUtil.convertList(orderPaymentCosts,InputPaymentCostVO.class);
         List<InputReceivableCostVO> inputReceivableCostVOS = ConvertUtil.convertList(orderReceivableCosts,InputReceivableCostVO.class);
         InputCostVO inputCostVO = new InputCostVO();
@@ -251,39 +223,86 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public boolean auditCost(AuditCostForm form) {
         try {
-           List<Long> paymentIds = form.getPaymentIds();
-           List<Long> receivableIds = form.getReceivableIds();
-           List<OrderPaymentCost> orderPaymentCosts = new ArrayList<>();
-           List<OrderReceivableCost> orderReceivableCosts = new ArrayList<>();
-           for(Long id : paymentIds){
-               OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
-               //参数校验
-               if(id == null || "".equals(id) || (!form.getStatus().equals(1) && !form.getStatus().equals(2))){
-                   return false;
-               }
-               orderPaymentCost.setId(id);
-               orderPaymentCost.setStatus(Integer.valueOf(form.getStatus()));
-               orderPaymentCost.setRemarks(form.getRemarks());
-               orderPaymentCosts.add(orderPaymentCost);
+           List<OrderPaymentCost> orderPaymentCosts = form.getPaymentCosts();
+           List<OrderReceivableCost> orderReceivableCosts = form.getReceivableCosts();
+           for(OrderPaymentCost paymentCost : orderPaymentCosts){
+               paymentCost.setStatus(Integer.valueOf(form.getStatus()));
+               paymentCost.setRemarks(form.getRemarks());
            }
-            for(Long id : receivableIds){
-                OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
-                //参数校验
-                if(id == null || "".equals(id) || (!form.getStatus().equals(1) && !form.getStatus().equals(2))){
-                    return false;
-                }
-                orderReceivableCost.setId(id);
-                orderReceivableCost.setStatus(Integer.valueOf(form.getStatus()));
-                orderReceivableCost.setRemarks(form.getRemarks());
-                orderReceivableCosts.add(orderReceivableCost);
-            }
-            paymentCostService.saveOrUpdateBatch(orderPaymentCosts);
-            receivableCostService.saveOrUpdateBatch(orderReceivableCosts);
+           for(OrderReceivableCost receivableCost : orderReceivableCosts){
+               receivableCost.setStatus(Integer.valueOf(form.getStatus()));
+               receivableCost.setRemarks(form.getRemarks());
+           }
+           paymentCostService.saveOrUpdateBatch(orderPaymentCosts);
+           receivableCostService.saveOrUpdateBatch(orderReceivableCosts);
         }catch (Exception e){
             e.printStackTrace();
             return false;
         }
         return true;
+    }
+
+    @Override
+    public List<OrderStatusVO> handleProcess(QueryOrderStatusForm form) {
+        List<OrderStatusVO> orderStatusVOS = new ArrayList<>();
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("biz_code",form.getBizCode());
+        List<OrderStatus> allProcess = orderStatusService.list(queryWrapper);//所有流程
+        allProcess.sort((h1, h2) -> {//排序
+            if (h1.getFId().equals(h2.getFId())) {
+                return Integer.compare(h1.getSorts(), h2.getSorts());
+            }
+            return Integer.compare(h1.getFId(), h2.getFId());
+
+        });
+        allProcess.forEach(x ->{
+            OrderStatusVO orderStatus = new OrderStatusVO();
+            orderStatus.setId(x.getId());
+            orderStatus.setProcessName(x.getName());
+            orderStatus.setProcessCode(x.getIdCode());
+            orderStatus.setStatus();
+            if (x.getFId() == 0) {
+                orderStatusVOS.add(orderStatus);
+            } else {
+                orderStatusVOS.forEach(v -> {
+                    if (v.getId() == x.getFId()) {
+                        v.addChildren(orderStatus);
+                    }
+                });
+            }
+        });
+        queryWrapper = new QueryWrapper();
+        queryWrapper.eq("main_order_id",form.getMainOrderId());
+        queryWrapper.eq("order_id","");
+        List<LogisticsTrack> logisticsTracks = logisticsTrackService.list(queryWrapper);//已操作的流程
+        Map<String, LogisticsTrack> logisticsTrackMap = logisticsTracks.stream().collect(Collectors.toMap(LogisticsTrack::getStatus, x -> x));
+        if (!logisticsTracks.isEmpty()) {
+            orderStatusVOS.forEach(x -> {
+                if (logisticsTrackMap.keySet().contains(x.getProcessCode())) {
+                    x.setStatusChangeTime(DateUtils.getLocalToStr(logisticsTrackMap.get(x.getProcessCode()).getOperatorTime()));
+                    if (x.getChildren().isEmpty()) {
+                        x.setStatus("3");
+                    } else {
+                        x.setStatus("2");
+                        final boolean[] flag = {false};
+                        x.getChildren().forEach(v -> {
+                            if (!flag[0]) {
+                                if (logisticsTrackMap.keySet().contains(v.getProcessCode())) {
+                                    v.setStatus("3");
+                                    v.setStatusChangeTime(DateUtils.getLocalToStr(logisticsTrackMap.get(x.getProcessCode()).getOperatorTime()));
+                                } else {
+                                    flag[0] = true;
+                                }
+                            }
+                        });
+                        if (!flag[0]) {
+                            x.setStatus("3");
+                        }
+                    }
+                }
+            });
+        }
+        return orderStatusVOS;
     }
 
 

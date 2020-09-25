@@ -217,17 +217,17 @@ public class KingdeeServiceImpl implements KingdeeService {
         Map<String, Object> header = new HashMap<>();
         header.put("Cookie", cookieService.getCookie(k3CloundConfig));
         String content = buildParam(formId, data);
-        log.info("请求内容：{}", content);
+//        log.info("请求内容：{}", content);
         String result = KingdeeHttpUtil.httpPost(k3CloundConfig.getQuery(), header, content);
-        log.info("默认账套查询结果：{}", result);
+//        log.info("默认账套查询结果：{}", result);
         if ("[]".equals(result)) {
             header = new HashMap<>();
 
             header.put("Cookie", cookieService.getCookie(k3CloudConfigBack));
             content = buildParam(formId, data);
-            log.info("请求内容：{}", content);
+//            log.info("请求内容：{}", content);
             result = KingdeeHttpUtil.httpPost(k3CloudConfigBack.getQuery(), header, content);
-            log.info("默认账套查询结果：{}", result);
+//            log.info("默认账套查询结果：{}", result);
         }
 
         if (result.contains("IsSuccess")) {
@@ -1025,7 +1025,7 @@ public class KingdeeServiceImpl implements KingdeeService {
         //获取文件
         //获取物料数据模板
         String template = FileUtil.toString(new ClassPathResource(filePath));
-        log.info("template = {}", template);
+        log.debug("template = {}", template);
         //带顺序的json，model顺序会相互影响，不能改变顺序
         //将template读到的模板数据尝试解析并放入LinkedHashMap中
         LinkedHashMap<String, Object> json = JSON.parseObject(template, LinkedHashMap.class, Feature.OrderedField);

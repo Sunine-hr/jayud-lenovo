@@ -13,8 +13,10 @@ import com.jayud.finance.bo.APARDetailForm;
 import com.jayud.finance.bo.PayableHeaderForm;
 import com.jayud.finance.bo.ReceivableHeaderForm;
 import com.jayud.finance.enums.FormIDEnum;
+import com.jayud.finance.kingdeesettings.K3CloudConfig;
 import com.jayud.finance.po.*;
 import com.jayud.finance.service.*;
+import com.jayud.finance.util.KingdeeHttpUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -26,10 +28,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class CustomsFinancePushServiceImpl implements CustomsFinancePushService {
+public class CustomsFinanceServiceImpl implements CustomsFinanceService {
     @Autowired
     RedisUtils redisUtils;
     @Value("${relation-setting.redis-key.yunbaoguan.rec-company}")
@@ -49,6 +52,10 @@ public class CustomsFinancePushServiceImpl implements CustomsFinancePushService 
     ICustomsFinanceCoRelationService coRelationService;
     @Autowired
     ICustomsFinanceFeeRelationService feeRelationService;
+    @Autowired
+    CookieService cookieService;
+    @Autowired
+    K3CloudConfig k3CloudConfig;
 
     @Override
     public Boolean pushReceivable(List<CustomsReceivable> customsReceivable) {
@@ -170,7 +177,7 @@ public class CustomsFinancePushServiceImpl implements CustomsFinancePushService 
             dataForm.setBusinessDate(item.getApplyDt());
 
 
-            log.info("3.拼装完毕，程序汇总可能异常...");
+            log.info("3.拼装完毕，正在汇总拼装时是否发生的异常...");
             if (StringUtils.isNotBlank(errorString.toString())) {
                 log.error(errorString.toString());
                 return false;
@@ -231,7 +238,7 @@ public class CustomsFinancePushServiceImpl implements CustomsFinancePushService 
 
         //整理出不同的应付供应商，每一个应付供应商会生成一个单独的应付单
         log.info("开始根据供应商分组...");
-        StringBuilder errorString=new StringBuilder();
+        StringBuilder errorString = new StringBuilder();
         Map<String, List> diffSupplierMaps = new HashMap<>();
         for (CustomsPayable details : customsPayableForms) {
             String supplierName = details.getTargetName();
@@ -253,7 +260,7 @@ public class CustomsFinancePushServiceImpl implements CustomsFinancePushService 
                 }
             }
         }
-
+        log.info("开始写入应付单数据...");
         //遍历供应商，将数据依次写入金蝶中
         for (Map.Entry<String, List> stringListEntry : diffSupplierMaps.entrySet()) {
             List<CustomsPayable> customsPayableEntity = (List<CustomsPayable>) stringListEntry.getValue();
@@ -316,12 +323,97 @@ public class CustomsFinancePushServiceImpl implements CustomsFinancePushService 
         }
 
         if (StringUtils.isNotEmpty(errorString.toString())) {
-                log.error("应付数据推送出现异常：{}",errorString.toString());
-        }else{
+            log.error("应付数据推送出现异常：{}", errorString.toString());
+        } else {
             log.info("所有的应付数据推送完毕");
         }
-
         return false;
+    }
+
+
+    /**
+     * 删除指定的报关单号的财务数据
+     *
+     * @param applyNo
+     * @return
+     */
+    @Override
+    public Boolean removeSpecifiedInvoice(String applyNo) {
+        //校验订单是否存在
+        Boolean removedAP = true;
+        Boolean removedAR = true;
+
+        //处理应收
+        List<InvoiceBase> existingReceivable = (List<InvoiceBase>) baseService.query(applyNo, Receivable.class);
+        if (CollectionUtil.isNotEmpty(existingReceivable)) {
+            log.info("存在应收单数据如下，即将安排删除...");
+            for (InvoiceBase receiveble2Remove : existingReceivable) {
+                log.info(receiveble2Remove.getFBillNo());
+            }
+            removedAR = doRemove(existingReceivable
+                            .stream()
+                            .map(InvoiceBase::getFBillNo)
+                            .collect(Collectors.toList())
+                    , "AR_receivable");
+        }
+        //处理应付
+        List<InvoiceBase> existingPayable = (List<InvoiceBase>) baseService.query(applyNo, Payable.class);
+        if (CollectionUtil.isNotEmpty(existingPayable)) {
+            log.info("存在应付单数据如下，即将安排删除...");
+            for (InvoiceBase payable2Remove : existingPayable) {
+                log.info(payable2Remove.getFBillNo());
+            }
+            removedAP = doRemove((existingPayable
+                            .stream()
+                            .map(InvoiceBase::getFBillNo)
+                            .collect(Collectors.toList()))
+                    , "AP_Payable");
+        }
+        if (!removedAP || !removedAR) {
+            log.error(String.format("报关单号%s删除失败", applyNo));
+            return false;
+        }
+        return true;
+    }
+
+
+
+    /**
+     * 实际处理删除应收单数据
+     *
+     * @param orderList
+     * @return
+     */
+    private Boolean doRemove(List<String> orderList, String formId) {
+        Map<String, Object> header = new HashMap<>();
+        header.put("Cookie", cookieService.getCookie(k3CloudConfig));
+
+        Map<String, Object> param = new HashMap<>();
+        param.put("Numbers", orderList);
+        //拼装数据
+        String jsonString = JSONUtil.toJsonStr(param);
+        JSONObject data = JSONObject.parseObject(jsonString);
+        String content = buildParam(formId, data);
+
+        //向金蝶发送请求
+        String result = KingdeeHttpUtil.httpPost(k3CloudConfig.getDelete(), header, content);
+        return KingdeeHttpUtil.ifSucceed(result);
+    }
+
+    /**
+     * 拼装实际请求的json数据
+     *
+     * @param formId
+     * @param data
+     * @return
+     */
+    private String buildParam(String formId, JSONObject data) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("formid", formId);
+        jsonObject.put("data", data);
+        String result = JSONUtil.toJsonStr(jsonObject);
+        log.info("请求内容：{}", result);
+        return result;
     }
 
 

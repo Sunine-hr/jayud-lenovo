@@ -1,8 +1,13 @@
 package com.jayud.finance.util;
 
+import cn.hutool.core.collection.CollectionUtil;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.*;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.CollectionUtils;
@@ -11,6 +16,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -167,6 +173,60 @@ public class KingdeeHttpUtil {
     }
 
     /**
+     * 解析金蝶响应体返回是否处理成功
+     * <br>如果金蝶响应为成功，那么将返回
+     * <br>如果金蝶响应为失败，那么打印错误日志并返回false
+     *
+     * @return
+     */
+    public static Boolean ifSucceed(String responseJsonStr) {
+        String errorCode = findByTargetFromJson(responseJsonStr, "IsSuccess");
+        String message = findByTargetFromJson(responseJsonStr, "Message");
+        if (Boolean.getBoolean(errorCode) == true) {
+            return true;
+        }
+        log.error(message);
+        return false;
+    }
+
+    private static String findByTargetFromJson(String jsonStr, String target) {
+        StringBuilder result = new StringBuilder();
+        extractJsonAndGetObject(JSONObject.parseObject(jsonStr), target, result);
+        if (StringUtils.isNotEmpty(result.toString())) {
+            return result.toString();
+        }
+        return null;
+    }
+
+    private static void extractJsonAndGetObject(JSONObject data, String target, StringBuilder result) {
+        if (CollectionUtil.isNotEmpty(data)) {
+            for (String key : data.keySet()) {
+                if (key.equals(target)) {
+                    result.append(data.get(key).toString());
+                } else {
+                    extractFromObject(target, result, data.get(key));
+                }
+            }
+        }
+    }
+
+    private static void extractFromObject(String target, StringBuilder result, Object object) {
+        if (Objects.nonNull(object)) {
+            if (JSONObject.class.isAssignableFrom(object.getClass())) {
+                extractJsonAndGetObject((JSONObject) object, target, result);
+            }
+            if (JSONArray.class.isAssignableFrom(object.getClass())) {
+                JSONArray subList = (JSONArray) object;
+                if (CollectionUtil.isNotEmpty(subList)) {
+                    for (Object o : subList) {
+                        extractFromObject(target, result, o);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * 发送请求
      *
      * @param valueMap
@@ -239,4 +299,6 @@ public class KingdeeHttpUtil {
         }
         return valueMap;
     }
+
+
 }

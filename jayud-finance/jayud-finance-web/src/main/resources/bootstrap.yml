@@ -9,6 +9,7 @@ kingdee:
   audit: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.Audit.common.kdsvc
   statusConver: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.StatusConvert.common.kdsvc
   query: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.ExecuteBillQuery.common.kdsvc
+  delete: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.Delete.common.kdsvc
   expire: 1500
 kingdeeback:
   url: http://120.78.140.146:8090/K3Cloud/
@@ -21,6 +22,7 @@ kingdeeback:
   audit: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.Audit.common.kdsvc
   statusConver: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.StatusConvert.common.kdsvc
   query: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.ExecuteBillQuery.common.kdsvc
+  delete: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.Delete.common.kdsvc
   expire: 1500
 relation-setting:
   redis-key:

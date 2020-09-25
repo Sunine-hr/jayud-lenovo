@@ -6,9 +6,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jayud.finance.po.*;
 import com.jayud.finance.service.BaseService;
-import com.jayud.finance.service.CustomsFinancePushService;
+import com.jayud.finance.service.CustomsFinanceService;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,8 +36,16 @@ public class MsgApiProcessorController {
     @Autowired
     BaseService baseService;
     @Autowired
-    CustomsFinancePushService pushService;
+    CustomsFinanceService customsFinanceService;
 
+    @RequestMapping(path = "/yunbaoguan/invoice/remove", method = RequestMethod.POST)
+    public Boolean removeInvoice(@RequestBody Map<String, String> param) {
+        String applyNo = MapUtil.getStr(param, "applyNo");
+        if (StringUtils.isEmpty(applyNo)) {
+            return false;
+        }
+        return customsFinanceService.removeSpecifiedInvoice(applyNo);
+    }
 
     /**
      * 处理云报关的应收推送到金蝶接口
@@ -67,7 +76,7 @@ public class MsgApiProcessorController {
         }
 
         //基本校验完毕，调用方法进行处理
-        return pushService.pushReceivable(customsReceivable);
+        return customsFinanceService.pushReceivable(customsReceivable);
 
     }
 
@@ -101,7 +110,7 @@ public class MsgApiProcessorController {
             }
 
             //基础校验完毕
-            return pushService.pushPayable(customsPayableForms);
+            return customsFinanceService.pushPayable(customsPayableForms);
 
         }
 

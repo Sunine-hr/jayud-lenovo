@@ -31,6 +31,8 @@ public interface K3CloudConfigBase {
     void setUserName(String userName);
 
     String getPasswd();
+    String getDelete();
+    void setDelete(String delete);
 
     void setPasswd(String passwd);
 

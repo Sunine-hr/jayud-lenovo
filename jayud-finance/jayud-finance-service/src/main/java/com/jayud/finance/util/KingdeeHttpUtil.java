@@ -137,7 +137,7 @@ public class KingdeeHttpUtil {
      * @return
      */
     public static String httpPost(String url, Map<String, Object> header, String json) {
-        log.info("请求json={}", json);
+        log.debug("请求json={}", json);
         //初始化header公共参数
         HttpHeaders httpHeaders = initHeader();
         setHeaderParam(httpHeaders, header);

@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.oms.model.bo.QueryOrderInfoForm;
+import com.jayud.oms.model.bo.QueryOrderStatusForm;
 import com.jayud.oms.model.vo.OrderInfoVO;
+import com.jayud.oms.model.vo.OrderStatusVO;
 import com.jayud.oms.service.IOrderInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 
 @RestController
@@ -32,7 +36,12 @@ public class OrderInfoController {
         return CommonResult.success(pageVO);
     }
 
-    //1.订单详情 TODO
+    @ApiOperation(value = "主订单流程获取")
+    @PostMapping("/handleProcess")
+    public CommonResult<List<OrderStatusVO>> handleProcess(@RequestBody QueryOrderStatusForm form) {
+        List<OrderStatusVO> orderStatusVOS = orderInfoService.handleProcess(form);
+        return CommonResult.success(orderStatusVOS);
+    }
 
 }
 

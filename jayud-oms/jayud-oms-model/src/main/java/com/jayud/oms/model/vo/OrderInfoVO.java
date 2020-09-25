@@ -51,6 +51,9 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "创建时间")
     private String createdTimeStr;
 
+    @ApiModelProperty(value = "是否有费用详情")
+    private boolean isCost;
+
     @ApiModelProperty(value = "流程节点")
     private List<OrderStatusVO> statusList;
 

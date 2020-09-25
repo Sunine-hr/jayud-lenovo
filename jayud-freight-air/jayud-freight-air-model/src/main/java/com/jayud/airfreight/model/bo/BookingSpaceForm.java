@@ -37,14 +37,14 @@ public class BookingSpaceForm {
     @SerializedName( "Pick_up_date")
     @ApiModelProperty(value = "提货时间")
     @NotEmpty(message = "提货时间为必填")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/M/dd HH:mm", timezone = "GMT+8")
-    private LocalDateTime pickUpDate;
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/M/dd HH:mm", timezone = "GMT+8")
+    private String pickUpDate;
 
     @JsonProperty("Urgency")
     @SerializedName( "Urgency")
     @ApiModelProperty(value = "紧急程度")
     @NotNull(message = "紧急程度为必填")
-    @Pattern(regexp = "1|2|3", message = "1=一般，2=经济，3=十分紧急")
+//    @Pattern(regexp = "1|2|3", message = "1=一般，2=经济，3=十分紧急")
     private Integer urgency;
 
     @JsonProperty("Invoice_no")
@@ -58,28 +58,28 @@ public class BookingSpaceForm {
     @SerializedName( "Place_of_departure")
     @ApiModelProperty(value = "启运地")
     @NotEmpty(message = "启运地不可为空")
-    @Length(min = 5, max = 5, message = "启运地代码长度为五位代码")
+//    @Length(min = 5, max = 5, message = "启运地代码长度为五位代码")
     private String placeOfDeparture;
 
     @JsonProperty("Port_of_departure")
     @SerializedName( "Port_of_departure")
     @ApiModelProperty(value = "启运港")
     @NotEmpty(message = "启运港不可为空")
-    @Length(min = 5, max = 5, message = "启运港代码长度为五位代码")
+//    @Length(min = 5, max = 5, message = "启运港代码长度为五位代码")
     private String portOfDeparture;
 
     @JsonProperty("Destination")
     @SerializedName( "Destination")
     @ApiModelProperty(value = "目的地")
     @NotEmpty(message = "目的地不可为空")
-    @Length(min = 5, max = 5, message = "目的地代码长度为五位代码")
+//    @Length(min = 5, max = 5, message = "目的地代码长度为五位代码")
     private String destination;
 
     @JsonProperty("Port_of_destination")
     @SerializedName( "Port_of_destination")
     @ApiModelProperty(value = "目的港")
     @NotEmpty(message = "目的港不可为空")
-    @Length(min = 5, max = 5, message = "目的港代码长度为五位代码")
+//    @Length(min = 5, max = 5, message = "目的港代码长度为五位代码")
     private String portOfDestination;
 
     @JsonProperty("Trade_terms")
@@ -127,15 +127,15 @@ public class BookingSpaceForm {
     @JsonProperty("Total_volume")
     @SerializedName( "Total_volume")
     @ApiModelProperty(value = "订单总体积(保留两位小数)")
-    @NotEmpty(message = "订单总体积不能为空")
-    @Length(max = 10, message = "订单总体积字段的最大长度为10")
+    @NotNull(message = "订单总体积不能为空")
+//    @Length(max = 10, message = "订单总体积字段的最大长度为10")
     private Float totalVolume;
 
     @JsonProperty("Total_gross_weight")
     @SerializedName( "Total_gross_weight")
     @ApiModelProperty(value = "订单总毛重(保留两位小数)")
-    @NotEmpty(message = "订单总毛重不能为空")
-    @Length(max = 10, message = "订单总毛重字段的最大长度为10")
+    @NotNull(message = "订单总毛重不能为空")
+//    @Length(max = 10, message = "订单总毛重字段的最大长度为10")
     private Float totalGrossWeight;
 
     @JsonProperty("General_dimension")
@@ -148,8 +148,8 @@ public class BookingSpaceForm {
     @JsonProperty("Pallet_Number")
     @SerializedName( "Pallet_Number")
     @ApiModelProperty(value = "卡板数")
-    @NotEmpty(message = "卡板数不能为空")
-    @Length(max = 4, message = "卡板数字段的最大长度为4")
+    @NotNull(message = "卡板数不能为空")
+//    @Length(max = 4, message = "卡板数字段的最大长度为4")
     private Integer palletNNumber;
 
     @JsonProperty("Pallet_Unit")
@@ -162,8 +162,8 @@ public class BookingSpaceForm {
     @JsonProperty("Bulk_Box_Number")
     @SerializedName( "Bulk_Box_Number")
     @ApiModelProperty(value = "散箱数")
-    @NotEmpty(message = "散箱数不能为空")
-    @Length(max = 4, message = "散箱数字段的最大长度为4")
+    @NotNull(message = "散箱数不能为空")
+//    @Length(max = 4, message = "散箱数字段的最大长度为4")
     private Integer bulkBoxNumber;
 
     @JsonProperty("Bulk_Box_Unit")
@@ -204,9 +204,9 @@ public class BookingSpaceForm {
     @JsonProperty("Cargo_type")
     @SerializedName( "Cargo_type")
     @ApiModelProperty(value = "货物类型")
-    @NotEmpty(message = "货物类型不能为空")
-    @Length(max = 2, message = "货物类型字段的最大长度为2")
-    @Pattern(regexp = "1|2|3|4|5", message = "1=普货、2=电池、3=化学品、4=危险品、5=临时业务（针对一次性报价的货物都选这个类型）")
+    @NotNull(message = "货物类型不能为空")
+//    @Length(max = 2, message = "货物类型字段的最大长度为2")
+//    @Pattern(regexp = "1|2|3|4|5", message = "1=普货、2=电池、3=化学品、4=危险品、5=临时业务（针对一次性报价的货物都选这个类型）")
     private Integer cargoType;
 
     @JsonProperty("Goods")
@@ -219,8 +219,8 @@ public class BookingSpaceForm {
     @JsonProperty("Mode_of_transport")
     @SerializedName( "Mode_of_transport")
     @ApiModelProperty(value = "运输方式")
-    @NotEmpty(message = "运输方式不能为空")
-    @Length(max = 1, message = "运输方式字段的最大长度为1")
-    @Pattern(regexp = "1|2|3|4", message = "1=空运、2=海运、3=铁运、4=陆运")
+    @NotNull(message = "运输方式不能为空")
+//    @Length(max = 1, message = "运输方式字段的最大长度为1")
+//    @Pattern(regexp = "1|2|3|4", message = "1=空运、2=海运、3=铁运、4=陆运")
     private Integer modeOfTransport;
 }

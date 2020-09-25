@@ -45,11 +45,11 @@ public class CarInfoToForwarderLineForm {
     @EnumAnnotation(message = "Cargo_type错误",target = {ViVoCargoTypeEnum.class})
     private String cargoType;
 
-    @JsonProperty("Forwarder_Booking_no")
-    @SerializedName("Forwarder_Booking_no")
+    @JsonProperty("Forwarder_booking_no")
+    @SerializedName("Forwarder_booking_no")
     @ApiModelProperty("货代booking单号")
-    @NotBlank(message = "Forwarder_Booking_no号 必填")
-    @Length(max = 200,message = "Forwarder_Booking_no最大长度为200位")
+//    @NotEmpty(message = "Forwarder_Booking_no号 必填")
+//    @Length(max = 200,message = "Forwarder_Booking_no最大长度为200位")
     private String forwarderBookingNo;
 
     @JsonProperty("Pallet_qty")

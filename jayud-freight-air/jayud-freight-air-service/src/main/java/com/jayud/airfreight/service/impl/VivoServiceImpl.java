@@ -12,8 +12,10 @@ import com.jayud.airfreight.model.bo.ForwarderVehicleInfoForm;
 import com.jayud.airfreight.service.VivoService;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
+import com.jayud.common.utils.FileUtil;
 import com.jayud.common.utils.RsaEncryptUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -23,6 +25,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.Map;
 import java.util.Objects;
 
@@ -121,6 +124,7 @@ public class VivoServiceImpl implements VivoService {
         HttpEntity<MultiValueMap<String, String>> body=null;
 //        body=new HttpEntity<MultiValueMap<String, String>>(JSONUtil.toBean(form,MultiValueMap.class),headers);
 
+        log.info("vivo参数=========="+gson.toJson(form));
         String feedback = HttpRequest.post(url)
                 .header("Authorization", String.format(getToken(null, null, null)))
                 .header(Header.CONTENT_TYPE.name(), "multipart/form-data")
@@ -133,13 +137,22 @@ public class VivoServiceImpl implements VivoService {
 
     private Boolean doPostWithFile(Object form, MultipartFile file, String url) {
         Gson gson = new Gson();
-        String feedback = HttpRequest.post(url)
-                .header("Authorization", String.format(getToken(null, null, null)))
-                .header(Header.CONTENT_TYPE.name(), "multipart/form-data")
-                .form("transfer_data", gson.toJson(form))
-                .form("MultipartFile", file)
-                .execute()
-                .body();
+        log.info("参数========"+gson.toJson(form));
+        File fw = new File(file.getOriginalFilename());
+        String feedback = "";
+        try {
+            FileUtils.copyInputStreamToFile(file.getInputStream(), fw);
+            log.info("文件大小====={}=======名称{}",FileUtils.sizeOf(fw), fw.getName());
+            feedback = HttpRequest.post(url)
+                    .header("Authorization", String.format(getToken(null, null, null)))
+                    .header(Header.CONTENT_TYPE.name(), "multipart/form-data")
+                    .form("transfer_data", gson.toJson(form))
+                    .form("MultipartFile", fw)
+                    .execute()
+                    .body();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         return check4Success(feedback);
     }
 

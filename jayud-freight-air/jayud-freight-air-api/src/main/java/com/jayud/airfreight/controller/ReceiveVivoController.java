@@ -33,23 +33,23 @@ public class ReceiveVivoController {
     @ApiOperation(value = "接收")
     @PostMapping("/bookingSpace")
 //    @APILog
-    public CommonResult bookingSpace(@RequestBody @Valid BookingSpaceForm form) {
+    public VivoApiResult bookingSpace(@RequestBody @Valid BookingSpaceForm form) {
         //校验数据
         log.info("执行入参校验");
-        return CommonResult.success();
+        return VivoApiResult.success();
     }
 
     @PostMapping("/bookingCancel")
     @ApiOperation(value = "取消订舱单")
     public VivoApiResult bookingCancel(@RequestBody @Valid BookingCancelForm bookingCancelForm){
         log.info("参数============"+ JSONUtil.toJsonStr(bookingCancelForm));
-        return new VivoApiResult("OK");
+        return VivoApiResult.success();
     }
 
     @PostMapping("/bookingFile")
     @ApiOperation(value = "货代获取订舱文件")
     public VivoApiResult bookingFile(@RequestParam("transfer_data") String transferData,
-                                     @RequestParam("multipartFile") MultipartFile multipartFile){
+                                     @RequestParam("MultipartFile") MultipartFile multipartFile){
 
         BookingFileTransferDataForm bookingFileTransferDataForm  = new BookingFileTransferDataForm();
         JSONObject jsonObject = JSONUtil.parseObj(transferData);
@@ -57,8 +57,8 @@ public class ReceiveVivoController {
         bookingFileTransferDataForm.setFileType(jsonObject.getInt("File_type"));
         bookingFileTransferDataForm.setFileSize(jsonObject.getInt("File_size"));
         ValidatorUtil.validate(bookingFileTransferDataForm);
-        log.info("参数============{}",transferData);
-        return new VivoApiResult("OK");
+        log.info("参数============{},文件名称==={}",transferData,multipartFile.getOriginalFilename());
+        return VivoApiResult.success();
     }
 
     @PostMapping("/carInfoToForwarder")
@@ -66,21 +66,21 @@ public class ReceiveVivoController {
     public VivoApiResult carInfoToForwarder(@RequestBody @Valid CardInfoToForwarderForm cardInfoToForwarderForm){
 
         log.info("参数==============={}",JSONUtil.toJsonStr(cardInfoToForwarderForm));
-        return new VivoApiResult("OK");
+        return VivoApiResult.success();
     }
 
     @PostMapping("/carCancel")
     @ApiOperation("vivo取消派车")
     public VivoApiResult carCancel(@RequestBody @Valid CarCancelForm carCancelForm){
         log.info("参数======{}",JSONUtil.toJsonStr(carCancelForm));
-        return new VivoApiResult("OK");
+        return VivoApiResult.success();
     }
 
     @PostMapping("/parameterToForwarder")
     @ApiOperation("vivo抛台账数据到货代")
     public VivoApiResult parameterToForwarder(@RequestBody @Valid ParameterToForwarderForm parameterToForwarderForm){
         log.info("参数=================={}",JSONUtil.toJsonStr(parameterToForwarderForm));
-        return new VivoApiResult("OK");
+        return VivoApiResult.success();
     }
 
 }

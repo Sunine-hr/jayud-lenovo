@@ -64,7 +64,7 @@ public class ForwarderVehicleInfoForm {
 
     @JsonProperty("Cabinet_weight")
     @SerializedName("Cabinet_weight")
-    @Length(max = 10,message = "吉柜重字段的最大长度为10")
+//    @Length(max = 10,message = "吉柜重字段的最大长度为10")
     @ApiModelProperty(value = "吉柜重")
     private Float cabinetWeight;
 

@@ -14,10 +14,13 @@ import lombok.Data;
 @Data
 public class QueryLogisticsTrackForm  {
 
-    @ApiModelProperty(value = "关联主订单ID")
-    private String mainOrderId;
-
-    @ApiModelProperty(value = "关联订单ID")
+    @ApiModelProperty(value = "子订单ID")
     private String orderId;
+
+    @ApiModelProperty(value = "业务类型")
+    private String bizCode;
+
+    @ApiModelProperty(value = "状态,仅后台使用")
+    private String status;
 
 }

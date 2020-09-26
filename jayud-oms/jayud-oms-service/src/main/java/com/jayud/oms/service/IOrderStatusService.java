@@ -1,7 +1,7 @@
 package com.jayud.oms.service;
 
-import com.jayud.oms.model.po.OrderStatus;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.oms.model.po.OrderStatus;
 
 /**
  * <p>

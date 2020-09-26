@@ -2,11 +2,15 @@ package com.jayud.oms.controller;
 
 
 import com.jayud.common.CommonResult;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.LogisticsTrack;
 import com.jayud.oms.model.po.OrderPaymentCost;
 import com.jayud.oms.model.po.OrderReceivableCost;
+import com.jayud.oms.model.vo.FileView;
 import com.jayud.oms.model.vo.InputCostVO;
+import com.jayud.oms.model.vo.LogisticsTrackVO;
+import com.jayud.oms.service.ILogisticsTrackService;
 import com.jayud.oms.service.IOrderInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -26,6 +30,9 @@ public class OrderCommonController {
 
     @Autowired
     private IOrderInfoService orderInfoService;
+
+    @Autowired
+    private ILogisticsTrackService logisticsTrackService;
 
     @ApiOperation(value = "录入费用")
     @PostMapping(value = "/saveOrUpdateCost")
@@ -104,17 +111,32 @@ public class OrderCommonController {
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "费用审核")
+    @ApiOperation(value = "反馈状态列表")
     @PostMapping(value = "/findReplyStatus")
-    public CommonResult<List<LogisticsTrack>> findReplyStatus() {
-
-        return CommonResult.success();
+    public CommonResult<List<LogisticsTrackVO>> findReplyStatus(@RequestBody QueryLogisticsTrackForm form) {
+        List<LogisticsTrackVO> logisticsTrackVOS = logisticsTrackService.findReplyStatus(form);
+        return CommonResult.success(logisticsTrackVOS);
     }
 
     @ApiOperation(value = "反馈状态确认")
     @PostMapping(value = "/confirmReplyStatus")
-    public CommonResult confirmReplyStatus() {
-
+    public CommonResult confirmReplyStatus(@RequestBody LogisticsTrackForm form) {
+        if(form == null || form.getLogisticsTrackForms() == null || form.getLogisticsTrackForms().size() == 0){
+            return CommonResult.error(400,"参数不合法");
+        }
+        //处理附件
+        for (LogisticsTrackVO logisticsTrack : form.getLogisticsTrackForms()) {
+            List<FileView> fileViews = logisticsTrack.getFileViewList();
+            StringBuilder sb = new StringBuilder();
+            for (FileView fileView : fileViews) {
+                sb.append(fileView.getRelativePath()).append(",");
+            }
+            if(!"".equals(String.valueOf(sb))) {
+                logisticsTrack.setStatusPic(sb.substring(0, sb.length() - 1));
+            }
+        }
+        List<LogisticsTrack> logisticsTracks = ConvertUtil.convertList(form.getLogisticsTrackForms(),LogisticsTrack.class);
+        logisticsTrackService.saveOrUpdateBatch(logisticsTracks);
         return CommonResult.success();
     }
 

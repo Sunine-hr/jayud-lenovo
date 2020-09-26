@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -31,7 +33,16 @@ public class LogisticsTrackVO {
     @ApiModelProperty(value = "操作人")
     private String operatorUser;
 
-    @ApiModelProperty(value = "操作时间")
+    @ApiModelProperty(value = "操作时间,不为空则置灰")
     private LocalDateTime operatorTime;
+
+    @ApiModelProperty(value = "创建时间")
+    private LocalDateTime createdTime;
+
+    @ApiModelProperty(value = "附件")
+    private String statusPic;
+
+    @ApiModelProperty(value = "附件")
+    private List<FileView> fileViewList = new ArrayList<>();
 
 }

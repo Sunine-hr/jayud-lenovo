@@ -1,7 +1,11 @@
 package com.jayud.oms.service;
 
+import com.jayud.oms.model.bo.QueryLogisticsTrackForm;
 import com.jayud.oms.model.po.LogisticsTrack;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.oms.model.vo.LogisticsTrackVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +17,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ILogisticsTrackService extends IService<LogisticsTrack> {
 
+    /**
+     * 获取反馈状态
+     * @param form
+     * @return
+     */
+    List<LogisticsTrackVO> findReplyStatus(QueryLogisticsTrackForm form);
 }

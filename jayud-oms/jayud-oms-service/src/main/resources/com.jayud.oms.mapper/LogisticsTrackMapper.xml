@@ -23,4 +23,19 @@
         id, main_order_no, order_id, status, status_name, remarks, status_pic, description, created_time, created_user,operator_user, operator_time
     </sql>
 
+    <select id="findReplyStatus" parameterType="com.jayud.oms.model.bo.QueryLogisticsTrackForm" resultType="com.jayud.oms.model.vo.LogisticsTrackVO" >
+        SELECT
+        lt.`id`,
+        lt.`status`,
+        lt.`status_name` statusName,
+        lt.`description`,
+        lt.`operator_user` operatorUser,
+        lt.`operator_time` operatorTime,
+        lt.`status_pic` statusPic,
+        lt.`created_time` createdTime
+        FROM
+        logistics_track lt WHERE lt.`order_id` = #{form.orderId}
+        and lt.`status` = #{form.status} order by lt.created_time desc
+    </select>
+
 </mapper>

@@ -496,7 +496,7 @@ public class KingdeeServiceImpl implements KingdeeService {
      */
     private <T> T getObject(Map<String, Object> targetMap, Class<T> clz, String key) {
         Object o = targetMap.get(key);
-        if (Objects.isNull(o)) {
+        if (Objects.isNull(o)&&key.equals("ResponseStatus")) {
             log.error("不存在" + key + "这个节点，请检查");
             return null;
         }

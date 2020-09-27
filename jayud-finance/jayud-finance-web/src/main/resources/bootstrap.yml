@@ -1,37 +1,3 @@
-kingdee:
-  url: http://120.78.140.146:8090/K3Cloud/
-  userName: ERP
-  passwd: '&#.!8g6X'
-  login: Kingdee.BOS.WebApi.ServicesStub.AuthService.ValidateUser.common.kdsvc
-  view: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.View.common.kdsvc
-  save: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.Save.common.kdsvc
-  submit: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.Submit.common.kdsvc
-  audit: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.Audit.common.kdsvc
-  statusConver: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.StatusConvert.common.kdsvc
-  query: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.ExecuteBillQuery.common.kdsvc
-  expire: 1500
-kingdeeback:
-  url: http://120.78.140.146:8090/K3Cloud/
-  userName: ERP
-  passwd: '&#.!8g6X'
-  login: Kingdee.BOS.WebApi.ServicesStub.AuthService.ValidateUser.common.kdsvc
-  view: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.View.common.kdsvc
-  save: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.Save.common.kdsvc
-  submit: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.Submit.common.kdsvc
-  audit: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.Audit.common.kdsvc
-  statusConver: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.StatusConvert.common.kdsvc
-  query: Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.ExecuteBillQuery.common.kdsvc
-  expire: 1500
-relation-setting:
-  redis-key:
-    yunbaoguan:
-      #云报关，金蝶对应关系表的redis key值
-      rec-company: JAYUD_FINANCE_YUNBAOGUAN_COMPANY_RELATIONS_REC
-      rec-fee: JAYUD_FINANCE_YUNBAOGUAN_FEE_RELATIONS_REC
-      pay-company: JAYUD_FINANCE_YUNBAOGUAN_COMPANY_RELATIONS_PAY
-      pay-fee: JAYUD_FINANCE_YUNBAOGUAN_FEE_RELATIONS_PAY
-
-
 spring:
   application:
     name: jayud-finance-web

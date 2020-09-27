@@ -71,6 +71,8 @@ public class K3CloudConfigBack implements K3CloudConfigBase{
      */
     private Long expire;
 
+    private String delete;
+
     private String getUrl(){
         return this.url;
     }
@@ -99,4 +101,11 @@ public class K3CloudConfigBack implements K3CloudConfigBase{
     public String getQuery() {
         return getUrl() + this.query;
     }
+
+    @Override
+    public String getDelete() {
+        return getUrl()+this.delete;
+    }
+
+
 }

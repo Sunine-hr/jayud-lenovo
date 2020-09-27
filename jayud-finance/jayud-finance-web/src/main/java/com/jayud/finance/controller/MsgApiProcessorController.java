@@ -6,10 +6,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jayud.finance.po.*;
 import com.jayud.finance.service.BaseService;
-import com.jayud.finance.service.CustomsFinancePushService;
+import com.jayud.finance.service.CustomsFinanceService;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -35,8 +37,18 @@ public class MsgApiProcessorController {
     @Autowired
     BaseService baseService;
     @Autowired
-    CustomsFinancePushService pushService;
+    CustomsFinanceService customsFinanceService;
+    @Value("${kingdee.settings.allow-delete-push}")
+    Boolean allowDeletePush;
 
+    @RequestMapping(path = "/yunbaoguan/invoice/remove", method = RequestMethod.POST)
+    public Boolean removeInvoice(@RequestBody Map<String, String> param) {
+        String applyNo = MapUtil.getStr(param, "applyNo");
+        if (StringUtils.isEmpty(applyNo)) {
+            return false;
+        }
+        return customsFinanceService.removeSpecifiedInvoice(applyNo);
+    }
 
     /**
      * 处理云报关的应收推送到金蝶接口
@@ -53,7 +65,6 @@ public class MsgApiProcessorController {
          * 根据财务要求，应收单才记税率，应付单不记税率
          * 根据财务要求，应收单中如果遇到费用项目的类别为代垫税金，费用类型为代收代垫的，均进行标记且不记税率
          **/
-
         String reqMsg = MapUtil.getStr(msg, "msg");
         log.info("金蝶接收到报关应收数据：{}", reqMsg);
 
@@ -62,12 +73,17 @@ public class MsgApiProcessorController {
 
         //重单校验,只要金蝶中有数据就不能再次推送
         Optional<CustomsReceivable> first = customsReceivable.stream().filter(Objects::nonNull).findFirst();
+
         if (first.isPresent() && checkForReceivableDuplicateOrder(first.get().getCustomApplyNo())) {
-            return true;
+            if (allowDeletePush) {
+                customsFinanceService.removeSpecifiedInvoice(first.get().getCustomApplyNo());
+            } else {
+                return true;
+            }
         }
 
         //基本校验完毕，调用方法进行处理
-        return pushService.pushReceivable(customsReceivable);
+        return customsFinanceService.pushReceivable(customsReceivable);
 
     }
 
@@ -97,14 +113,15 @@ public class MsgApiProcessorController {
             //获取报关单号
             Optional<CustomsPayable> first = customsPayableForms.stream().filter(Objects::nonNull).findFirst();
             if (first.isPresent() && checkForPayableDuplicateOrder(first.get().getCustomApplyNo())) {
-                return true;
+                if (allowDeletePush) {
+                    customsFinanceService.removeSpecifiedInvoice(first.get().getCustomApplyNo());
+                } else {
+                    return true;
+                }
             }
-
             //基础校验完毕
-            return pushService.pushPayable(customsPayableForms);
-
+            return customsFinanceService.pushPayable(customsPayableForms);
         }
-
     }
 
 

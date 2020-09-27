@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Data
 @ConfigurationProperties(prefix = "kingdee")
 @Component
-public class K3CloudConfig implements K3CloudConfigBase{
+public class K3CloudConfig implements K3CloudConfigBase {
 
     /**
      * 金蝶url前缀
@@ -67,37 +67,47 @@ public class K3CloudConfig implements K3CloudConfigBase{
     private String query;
 
     /**
+     * 删除表单
+     */
+    private String delete;
+
+    /**
      * cookie 失效时间 单位 秒
      */
     private Long expire;
 
-    private String getUrl(){
+    private String getUrl() {
         return this.url;
     }
 
     @Override
-    public String getLogin(){
+    public String getLogin() {
         return getUrl() + this.login;
     }
 
     @Override
-    public String getView(){
+    public String getView() {
         return getUrl() + this.view;
     }
 
     @Override
-    public String getSave(){
+    public String getSave() {
         return getUrl() + this.save;
     }
 
     @Override
-    public String getSubmit(){
+    public String getSubmit() {
         return getUrl() + this.submit;
     }
 
     @Override
     public String getAudit() {
         return getUrl() + this.audit;
+    }
+
+    @Override
+    public String getDelete() {
+        return getUrl() + this.delete;
     }
 
     @Override

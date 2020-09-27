@@ -85,11 +85,19 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
             List<InputSubOrderCustomsForm> subOrderCustomsForms = inputOrderCustomsForm.getSubOrders();
             for (InputSubOrderCustomsForm subOrder : subOrderCustomsForms) {
                 OrderCustoms customs = new OrderCustoms();
+                //处理附件
+                List<FileView> fileViews = subOrder.getFileViews();
+                StringBuilder sb = new StringBuilder();
+                for (FileView fileView : fileViews) {
+                    sb.append(fileView.getRelativePath()).append(",");
+                }
+                if(!"".equals(String.valueOf(sb))) {
+                    customs.setDescription(sb.substring(0, sb.length() - 1));
+                }
                 customs = ConvertUtil.convert(inputOrderCustomsForm, OrderCustoms.class);
                 customs.setOrderNo(subOrder.getOrderNo());
                 customs.setTitle(subOrder.getTitle());
                 customs.setUnitCode(subOrder.getUnitCode());
-                customs.setDescription(subOrder.getDescription());
                 customs.setMainOrderNo(String.valueOf(apiResult.getData()));
                 customs.setStatus(OrderStatusEnum.CUSTOMS_C_0.getCode());
                 customs.setCreatedUser(getLoginUser());
@@ -131,7 +139,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 OrderCustomsVO orderCustomsVO = orderCustomsVOS.get(0);
                 //设置纯报关头部分
                 inputOrderCustomsVO.setPortCode(orderCustomsVO.getPortCode());
-                inputOrderCustomsVO.setPortCode(orderCustomsVO.getPortName());
+                inputOrderCustomsVO.setPortName(orderCustomsVO.getPortName());
                 inputOrderCustomsVO.setGoodsType(orderCustomsVO.getGoodsType());
                 inputOrderCustomsVO.setCntrNo(orderCustomsVO.getCntrNo());
                 inputOrderCustomsVO.setCntrPic(""+orderCustomsVO.getCntrPic());

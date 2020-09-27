@@ -56,17 +56,11 @@ public class OrderInfo extends Model<OrderInfo> {
     @ApiModelProperty(value = "合同编号(contract_no)")
     private String contractNo;
 
-    @ApiModelProperty(value = "法人主体code(legal_entity code)")
-    private String legalCode;
-
-    @ApiModelProperty(value = "法人主体名(legal_entity code)")
+    @ApiModelProperty(value = "接单法人")
     private String legalName;
 
     @ApiModelProperty(value = "客户参考号")
     private String referenceNo;
-
-    @ApiModelProperty(value = "柜号")
-    private String cntrNo;
 
     @ApiModelProperty(value = "对应业务类型(product_biz code 多个时用逗号分开)")
     private String bizCode;

@@ -13,6 +13,9 @@ public class CustomsOrderInfoVO {
     private Integer id;
 
     @ApiModelProperty(value = "订单号")
+    private Long mainOrderId;
+
+    @ApiModelProperty(value = "订单号")
     private String mainOrderNo;
 
     @ApiModelProperty(value = "子订单")
@@ -62,5 +65,8 @@ public class CustomsOrderInfoVO {
 
     @ApiModelProperty(value = "报关单号")
     private String yunCustomsNo;
+
+    @ApiModelProperty(value = "业务类型")
+    private String bizCode;
 
 }

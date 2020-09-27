@@ -12,6 +12,9 @@ public class InputOrderCustomsVO {
     @ApiModelProperty(value = "通关口岸code")
     private String portCode;
 
+    @ApiModelProperty(value = "通关口岸")
+    private String portName;
+
     @ApiModelProperty(value = "货物流向")
     private Integer goodsType;
 

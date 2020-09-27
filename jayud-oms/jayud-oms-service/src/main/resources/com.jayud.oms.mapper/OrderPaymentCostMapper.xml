@@ -34,4 +34,33 @@
         id, main_order_no, biz_order_no, order_no, biz_code, biz_name, customer_code, customer_name, cost_code, cost_name, unit_price, number, currency_code, currency_name, amount, exchange_rate, change_amount, remarks, status, opt_name, opt_time, created_time, created_user
     </sql>
 
+    <select id="findPaymentCost" parameterType="com.jayud.oms.model.bo.GetCostDetailForm" resultType="com.jayud.oms.model.vo.InputPaymentCostVO" >
+        SELECT
+        opc.`id`,
+        opc.`customer_name` customerName ,
+        opc.`cost_type_id` costTypeId,
+        (SELECT ct.code_name FROM cost_type ct WHERE ct.id = opc.`cost_type_id` LIMIT 1) costType,
+        opc.`cost_code` costCode,
+        (SELECT ci.name FROM cost_info ci WHERE ci.id_code = opc.`cost_code` AND ci.types = 2 LIMIT 1) costName,
+        opc.`unit_price` unitPrice,
+        opc.`number`,
+        opc.`currency_code` currencyCode,
+        (SELECT ci.currency_name FROM currency_info ci WHERE ci.currency_code = opc.`currency_code` LIMIT 1) currencyName,
+        opc.`amount`,
+        opc.`change_amount` changeAmount,
+        opc.`exchange_rate` exchangeRate,
+        opc.`remarks`,
+        opc.`status`
+        FROM
+        order_payment_cost opc
+        where opc.`main_order_no` = #{form.mainOrderNo}
+        <if test="form.cmd == 'main_cost'">
+            and (opc.`order_no` = '' or opc.`order_no` is null)
+        </if>
+        <if test="form.cmd == 'sub_cost'">
+            and opc.`order_no` != '' and opc.`order_no` is not null
+        </if>
+
+    </select>
+
 </mapper>

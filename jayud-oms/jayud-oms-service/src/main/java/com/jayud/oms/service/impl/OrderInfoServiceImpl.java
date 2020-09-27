@@ -10,6 +10,7 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.oms.feign.CustomsClient;
 import com.jayud.oms.mapper.OrderInfoMapper;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.*;
@@ -58,6 +59,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Autowired
     ICostInfoService costInfoService;
+
+    @Autowired
+    CustomsClient customsClient;
+
+    @Autowired
+    ICostTypeService costTypeService;
 
     @Override
     public String oprMainOrder(InputMainOrderForm form) {
@@ -165,6 +172,23 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             List<InputReceivableCostForm> receivableCostForms = form.getReceivableCostList();
             orderPaymentCosts = ConvertUtil.convertList(paymentCostForms, OrderPaymentCost.class);
             orderReceivableCosts = ConvertUtil.convertList(receivableCostForms, OrderReceivableCost.class);
+            //业务场景:暂存时提交所有未提交审核的信息,为了避免用户删除一条然后又添加的情况，每次暂存前先把原来未提交审核的清空
+            if("preSubmit_main".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())){
+                List<Long> paymentIds = new ArrayList<>();
+                List<Long> receivableIds = new ArrayList<>();
+                for (OrderPaymentCost orderPaymentCost : orderPaymentCosts) {
+                    if(orderPaymentCost.getId() != null) {
+                        paymentIds.add(orderPaymentCost.getId());
+                    }
+                }
+                for (OrderReceivableCost orderReceivableCost : orderReceivableCosts) {
+                    if(orderReceivableCost.getId() != null){
+                        paymentIds.add(orderReceivableCost.getId());
+                    }
+                }
+                paymentCostService.removeByIds(paymentIds);
+                receivableCostService.removeByIds(receivableIds);
+            }
             for (OrderPaymentCost orderPaymentCost : orderPaymentCosts) {//应付费用
                 orderPaymentCost.setMainOrderNo(inputOrderVO.getOrderNo());
                 orderPaymentCost.setOrderNo(form.getOrderNo());
@@ -206,41 +230,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
            "".equals(form.getMainOrderNo())){
             return null;//参数异常
         }
-        List<OrderPaymentCost> orderPaymentCosts = new ArrayList<>();
-        List<OrderReceivableCost> orderReceivableCosts = new ArrayList<>();
-        QueryWrapper queryWrapper = new QueryWrapper();
-        if("main_cost".equals(form.getCmd())){
-            queryWrapper.eq("main_order_no",form.getMainOrderNo());
-            queryWrapper.eq("order_no","");
-        }else if("sub_cost".equals(form.getCmd())){
-            queryWrapper.eq("main_order_no",form.getMainOrderNo());
-            queryWrapper.ne("order_no","");
-        }
-        orderPaymentCosts = paymentCostService.list(queryWrapper);
-        orderReceivableCosts = receivableCostService.list(queryWrapper);
-        List<InputPaymentCostVO> inputPaymentCostVOS = ConvertUtil.convertList(orderPaymentCosts,InputPaymentCostVO.class);
-        List<InputReceivableCostVO> inputReceivableCostVOS = ConvertUtil.convertList(orderReceivableCosts,InputReceivableCostVO.class);
-        //设置费用类型/应收项目/币种名称
-        for (InputPaymentCostVO inputPaymentCost : inputPaymentCostVOS) {
-            QueryWrapper currencyCode = new QueryWrapper();
-            currencyCode.eq("currency_code",inputPaymentCost.getCurrencyCode());
-            CurrencyInfo currencyInfo = currencyInfoService.getOne(currencyCode);
-            QueryWrapper costCode = new QueryWrapper();
-            costCode.eq("id_code",inputPaymentCost.getCostCode());
-            CostInfo costInfo = costInfoService.getOne(costCode);
-            inputPaymentCost.setCostName(costInfo.getName());
-            inputPaymentCost.setCurrencyName(currencyInfo.getCurrencyName());
-        }
-        for (InputReceivableCostVO inputReceivableCost : inputReceivableCostVOS) {
-            QueryWrapper currencyCode = new QueryWrapper();
-            currencyCode.eq("currency_code",inputReceivableCost.getCurrencyCode());
-            CurrencyInfo currencyInfo = currencyInfoService.getOne(currencyCode);
-            QueryWrapper costCode = new QueryWrapper();
-            costCode.eq("id_code",inputReceivableCost.getCostCode());
-            CostInfo costInfo = costInfoService.getOne(costCode);
-            inputReceivableCost.setCostName(costInfo.getName());
-            inputReceivableCost.setCurrencyName(currencyInfo.getCurrencyName());
-        }
+        List<InputPaymentCostVO> inputPaymentCostVOS = paymentCostService.findPaymentCost(form);
+        List<InputReceivableCostVO> inputReceivableCostVOS = receivableCostService.findReceivableCost(form);
         InputCostVO inputCostVO = new InputCostVO();
         inputCostVO.setPaymentCostList(inputPaymentCostVOS);
         inputCostVO.setReceivableCostList(inputReceivableCostVOS);
@@ -302,22 +293,48 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 });
             }
         });
+        InputMainOrderVO inputMainOrderVO = getMainOrderById(form.getMainOrderId());
+        //根据主订单ID获取子订单数量
+        int customsNum = 0;//纯报关单数量
+        if(OrderStatusEnum.CBG.getCode().equals(form.getBizCode()) || inputMainOrderVO != null){
+            customsNum = customsClient.getCustomsOrderNum(inputMainOrderVO.getOrderNo()).getData();
+        }
+        //以后有其他的会逐渐增加 TODO
         queryWrapper = new QueryWrapper();
         queryWrapper.eq("main_order_id",form.getMainOrderId());
         queryWrapper.eq("order_id","");
-        List<LogisticsTrack> logisticsTracks = logisticsTrackService.list(queryWrapper);//已操作的流程
+        List<LogisticsTrack> logisticsTracks = logisticsTrackService.list(queryWrapper);//已操作的主流程
         Map<String, LogisticsTrack> logisticsTrackMap = logisticsTracks.stream().collect(Collectors.toMap(LogisticsTrack::getStatus, x -> x));
         if (!logisticsTracks.isEmpty()) {
+            int finalCustomsNum = customsNum;
             orderStatusVOS.forEach(x -> {
                 if (logisticsTrackMap.keySet().contains(x.getProcessCode())) {
                     x.setStatusChangeTime(DateUtils.getLocalToStr(logisticsTrackMap.get(x.getProcessCode()).getOperatorTime()));
                     if (x.getChildren().isEmpty()) {
-                        x.setStatus("3");
+                        x.setStatus("3");//已完成
                     } else {
-                        x.setStatus("2");
+                        x.setStatus("2");//进行中
                         final boolean[] flag = {false};
-                        x.getChildren().forEach(v -> {
+                        for (int i = 0; i < x.getChildren().size(); i++) {
+                            OrderStatusVO v = x.getChildren().get(i);
                             if (!flag[0]) {
+                                QueryWrapper subParam = new QueryWrapper();
+                                subParam.eq("main_order_id", form.getMainOrderId());
+                                subParam.eq("status", v.getProcessCode());
+                                List<LogisticsTrack> subTrack = logisticsTrackService.list(subParam);//已操作的子流程
+                                //报关中
+                                if (OrderStatusEnum.MAIN_PROCESS_3.getCode().equals(x.getProcessCode())) {
+                                    if (subTrack != null && subTrack.size() < finalCustomsNum) {
+                                        flag[0] = true;//进行中
+                                    } else {
+                                        //子节点循环中取最后一个流程节点
+                                        if (!v.getProcessCode().equals(x.getChildren().get(x.getChildren().size()-1))) {
+                                            flag[0] = true;//进行中
+                                        }
+                                        v.setStatus("3");
+                                    }
+                                }
+                                //后续其他业务类型在此处加 TODO
                                 if (logisticsTrackMap.keySet().contains(v.getProcessCode())) {
                                     v.setStatus("3");
                                     v.setStatusChangeTime(DateUtils.getLocalToStr(logisticsTrackMap.get(x.getProcessCode()).getOperatorTime()));
@@ -325,7 +342,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                                     flag[0] = true;
                                 }
                             }
-                        });
+                        }
                         if (!flag[0]) {
                             x.setStatus("3");
                         }

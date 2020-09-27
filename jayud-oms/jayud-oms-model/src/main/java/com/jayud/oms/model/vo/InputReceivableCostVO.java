@@ -13,7 +13,16 @@ public class InputReceivableCostVO {
     private Long id;
 
     @ApiModelProperty(value = "客户名称")
+    private String customerCode;
+
+    @ApiModelProperty(value = "客户名称")
     private String customerName;
+
+    @ApiModelProperty(value = "费用类型ID")
+    private Long costTypeId;
+
+    @ApiModelProperty(value = "费用类型")
+    private String costType;
 
     @ApiModelProperty(value = "应收项目CODE")
     private String costCode;

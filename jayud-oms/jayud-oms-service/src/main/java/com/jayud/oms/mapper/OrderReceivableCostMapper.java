@@ -1,8 +1,13 @@
 package com.jayud.oms.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.oms.model.bo.GetCostDetailForm;
 import com.jayud.oms.model.po.OrderReceivableCost;
+import com.jayud.oms.model.vo.InputReceivableCostVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -15,4 +20,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface OrderReceivableCostMapper extends BaseMapper<OrderReceivableCost> {
 
+    List<InputReceivableCostVO> findReceivableCost(@Param("form") GetCostDetailForm form);
 }

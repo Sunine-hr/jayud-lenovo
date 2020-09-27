@@ -9,6 +9,9 @@ import java.util.Objects;
 @AllArgsConstructor
 public enum OrderStatusEnum {
 
+    //业务单类型
+    CBG("CBG","纯报关"),
+
     //主订单状态
     MAIN_1("1","正常"),
     MAIN_2("2","草稿"),

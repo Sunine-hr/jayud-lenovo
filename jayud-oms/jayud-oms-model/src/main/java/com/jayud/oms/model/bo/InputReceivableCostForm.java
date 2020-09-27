@@ -25,9 +25,9 @@ public class InputReceivableCostForm {
     @NotEmpty(message = "costCode is required")
     private String costCode;
 
-    @ApiModelProperty(value = "应收项目",required = true)
-    @NotEmpty(message = "costName is required")
-    private String costName;
+    @ApiModelProperty(value = "费用类型ID",required = true)
+    @NotEmpty(message = "costTypeId is required")
+    private Long costTypeId;
 
     @ApiModelProperty(value = "单价",required = true)
     @NotEmpty(message = "unitPrice is required")
@@ -40,10 +40,6 @@ public class InputReceivableCostForm {
     @ApiModelProperty(value = "币种CODE",required = true)
     @NotEmpty(message = "currencyCode is required")
     private String currencyCode;
-
-    @ApiModelProperty(value = "币种",required = true)
-    @NotEmpty(message = "currencyName is required")
-    private String currencyName;
 
     @ApiModelProperty(value = "应收金额",required = true)
     @NotEmpty(message = "amount is required")

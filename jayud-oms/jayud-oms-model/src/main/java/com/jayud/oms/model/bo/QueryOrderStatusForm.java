@@ -15,7 +15,7 @@ public class QueryOrderStatusForm extends BasePageForm{
     @ApiModelProperty(value = "业务类型")
     private String bizCode;
 
-    @ApiModelProperty(value = "子订单ID")
+    @ApiModelProperty(value = "子订单ID,不用传")
     private Long orderId;
 
 }

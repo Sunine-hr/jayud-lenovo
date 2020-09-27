@@ -168,26 +168,26 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             for (OrderPaymentCost orderPaymentCost : orderPaymentCosts) {//应付费用
                 orderPaymentCost.setMainOrderNo(inputOrderVO.getOrderNo());
                 orderPaymentCost.setOrderNo(form.getOrderNo());
-                orderPaymentCost.setOptName(getLoginUser());
-                orderPaymentCost.setOptTime(LocalDateTime.now());
-                orderPaymentCost.setCreatedTime(LocalDateTime.now());
-                orderPaymentCost.setCreatedUser(getLoginUser());
                 if ("preSubmit_main".equals(form.getCmd())) {
+                    orderPaymentCost.setCreatedTime(LocalDateTime.now());
+                    orderPaymentCost.setCreatedUser(getLoginUser());
                     orderPaymentCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_1.getCode()));
                 } else if ("submit_main".equals(form.getCmd())) {
+                    orderPaymentCost.setOptName(getLoginUser());
+                    orderPaymentCost.setOptTime(LocalDateTime.now());
                     orderPaymentCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_2.getCode()));
                 }
             }
             for (OrderReceivableCost orderReceivableCost : orderReceivableCosts) {//应收费用
                 orderReceivableCost.setMainOrderNo(inputOrderVO.getOrderNo());
                 orderReceivableCost.setOrderNo(form.getOrderNo());
-                orderReceivableCost.setOptName(getLoginUser());
-                orderReceivableCost.setOptTime(LocalDateTime.now());
-                orderReceivableCost.setCreatedTime(LocalDateTime.now());
-                orderReceivableCost.setCreatedUser(getLoginUser());
-                if ("noSubmit".equals(form.getCmd())) {
+                if ("preSubmit_main".equals(form.getCmd())) {
+                    orderReceivableCost.setCreatedTime(LocalDateTime.now());
+                    orderReceivableCost.setCreatedUser(getLoginUser());
                     orderReceivableCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_1.getCode()));
-                } else if ("submit".equals(form.getCmd())) {
+                } else if ("submit_main".equals(form.getCmd())) {
+                    orderReceivableCost.setOptName(getLoginUser());
+                    orderReceivableCost.setOptTime(LocalDateTime.now());
                     orderReceivableCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_2.getCode()));
                 }
             }
@@ -260,8 +260,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                receivableCost.setStatus(Integer.valueOf(form.getStatus()));
                receivableCost.setRemarks(form.getRemarks());
            }
-           paymentCostService.saveOrUpdateBatch(orderPaymentCosts);
-           receivableCostService.saveOrUpdateBatch(orderReceivableCosts);
+           if(orderPaymentCosts != null && orderPaymentCosts.size() > 0){
+               paymentCostService.saveOrUpdateBatch(orderPaymentCosts);
+           }
+           if(orderReceivableCosts != null && orderReceivableCosts.size() > 0){
+               receivableCostService.saveOrUpdateBatch(orderReceivableCosts);
+           }
         }catch (Exception e){
             e.printStackTrace();
             return false;

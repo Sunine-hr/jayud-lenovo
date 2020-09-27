@@ -83,8 +83,7 @@ public class OrderCustomsController {
             for (InputSubOrderCustomsForm subOrderCustomsForm : inputOrderCustomsForm.getSubOrders()) {
                 if(subOrderCustomsForm.getOrderNo() == null || "".equals(subOrderCustomsForm.getOrderNo())
                         || subOrderCustomsForm.getTitle() == null || "".equals(subOrderCustomsForm.getTitle())
-                    || subOrderCustomsForm.getUnitCode() == null || "".equals(subOrderCustomsForm.getUnitCode())
-                    || subOrderCustomsForm.getFileViews().size() == 0) {
+                    || subOrderCustomsForm.getUnitCode() == null || "".equals(subOrderCustomsForm.getUnitCode())) {
                     flag = false;
                     break;
                 }

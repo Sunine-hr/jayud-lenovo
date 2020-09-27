@@ -2,7 +2,7 @@ package com.jayud.oms.controller;
 
 
 import com.jayud.common.CommonResult;
-import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.LogisticsTrack;
 import com.jayud.oms.model.po.OrderPaymentCost;
@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -132,19 +133,31 @@ public class OrderCommonController {
         if(form == null || form.getLogisticsTrackForms() == null || form.getLogisticsTrackForms().size() == 0){
             return CommonResult.error(400,"参数不合法");
         }
-        //处理附件
+        List<LogisticsTrack> logisticsTracks = new ArrayList<>();
         for (LogisticsTrackVO logisticsTrack : form.getLogisticsTrackForms()) {
+            LogisticsTrack track = new LogisticsTrack();
+            track.setMainOrderId(form.getMainOrderId());
+            track.setOrderId(form.getOrderId());
+            track.setId(logisticsTrack.getId());
+            track.setStatus(logisticsTrack.getStatus());
+            track.setStatusName(logisticsTrack.getStatusName());
+            track.setDescription(logisticsTrack.getDescription());
+            track.setOperatorUser(logisticsTrack.getOperatorUser());
+            track.setOperatorTime(DateUtils.str2LocalDateTime(logisticsTrack.getOperatorTime(),DateUtils.DATE_TIME_PATTERN));
+            //处理附件
             List<FileView> fileViews = logisticsTrack.getFileViewList();
             StringBuilder sb = new StringBuilder();
             for (FileView fileView : fileViews) {
                 sb.append(fileView.getRelativePath()).append(",");
             }
             if(!"".equals(String.valueOf(sb))) {
-                logisticsTrack.setStatusPic(sb.substring(0, sb.length() - 1));
+                track.setStatusPic(sb.substring(0, sb.length() - 1));
             }
+            logisticsTracks.add(track);
         }
-        List<LogisticsTrack> logisticsTracks = ConvertUtil.convertList(form.getLogisticsTrackForms(),LogisticsTrack.class);
-        logisticsTrackService.saveOrUpdateBatch(logisticsTracks);
+        if(logisticsTracks.size() > 0) {
+            logisticsTrackService.saveOrUpdateBatch(logisticsTracks);
+        }
         return CommonResult.success();
     }
 

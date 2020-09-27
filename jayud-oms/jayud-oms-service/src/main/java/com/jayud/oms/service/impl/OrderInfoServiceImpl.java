@@ -174,20 +174,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderReceivableCosts = ConvertUtil.convertList(receivableCostForms, OrderReceivableCost.class);
             //业务场景:暂存时提交所有未提交审核的信息,为了避免用户删除一条然后又添加的情况，每次暂存前先把原来未提交审核的清空
             if("preSubmit_main".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())){
-                List<Long> paymentIds = new ArrayList<>();
-                List<Long> receivableIds = new ArrayList<>();
-                for (OrderPaymentCost orderPaymentCost : orderPaymentCosts) {
-                    if(orderPaymentCost.getId() != null) {
-                        paymentIds.add(orderPaymentCost.getId());
-                    }
-                }
-                for (OrderReceivableCost orderReceivableCost : orderReceivableCosts) {
-                    if(orderReceivableCost.getId() != null){
-                        paymentIds.add(orderReceivableCost.getId());
-                    }
-                }
-                paymentCostService.removeByIds(paymentIds);
-                receivableCostService.removeByIds(receivableIds);
+                QueryWrapper queryWrapper = new QueryWrapper();
+                queryWrapper.eq("main_order_no",inputOrderVO.getOrderNo());
+                queryWrapper.isNull("order_no");
+                paymentCostService.remove(queryWrapper);
+                receivableCostService.remove(queryWrapper);
             }
             for (OrderPaymentCost orderPaymentCost : orderPaymentCosts) {//应付费用
                 orderPaymentCost.setMainOrderNo(inputOrderVO.getOrderNo());

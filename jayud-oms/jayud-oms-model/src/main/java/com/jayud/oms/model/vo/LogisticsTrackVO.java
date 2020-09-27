@@ -3,7 +3,6 @@ package com.jayud.oms.model.vo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,10 +33,10 @@ public class LogisticsTrackVO {
     private String operatorUser;
 
     @ApiModelProperty(value = "操作时间,不为空则置灰")
-    private LocalDateTime operatorTime;
+    private String operatorTime;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createdTime;
+    private String createdTime;
 
     @ApiModelProperty(value = "附件")
     private String statusPic;

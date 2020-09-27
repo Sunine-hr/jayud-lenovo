@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,6 +33,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/finance/kingdee")
 @Slf4j
+@RefreshScope
 public class MsgApiProcessorController {
 
     @Autowired
@@ -66,23 +68,27 @@ public class MsgApiProcessorController {
          * 根据财务要求，应收单中如果遇到费用项目的类别为代垫税金，费用类型为代收代垫的，均进行标记且不记税率
          **/
         String reqMsg = MapUtil.getStr(msg, "msg");
-        log.info("金蝶接收到报关应收数据：{}", reqMsg);
+        log.debug("金蝶接收到报关应收数据：{}", reqMsg);
 
         //feign调用之前确保从列表中取出单行数据且非空，因此此处不需再校验
         List<CustomsReceivable> customsReceivable = JSONObject.parseArray(reqMsg, CustomsReceivable.class);
 
         //重单校验,只要金蝶中有数据就不能再次推送
         Optional<CustomsReceivable> first = customsReceivable.stream().filter(Objects::nonNull).findFirst();
-
+        String applyNo="";
         if (first.isPresent() && checkForReceivableDuplicateOrder(first.get().getCustomApplyNo())) {
+            applyNo = first.get().getCustomApplyNo();
             if (allowDeletePush) {
+                log.info("应收单{}已经存在，但允许删单重推，正在处理...",applyNo);
                 customsFinanceService.removeSpecifiedInvoice(first.get().getCustomApplyNo());
             } else {
+                log.error("应收单{}已经存在，不能重复推送",applyNo);
                 return true;
             }
         }
 
         //基本校验完毕，调用方法进行处理
+        log.info("正在处理报关单{}应收数据...",applyNo);
         return customsFinanceService.pushReceivable(customsReceivable);
 
     }
@@ -99,27 +105,32 @@ public class MsgApiProcessorController {
     @ApiOperation(value = "接收云报关的应收单信息推至金蝶")
     public Boolean savePayableBill(@RequestBody Map<String, String> msg) {
         String reqMsg = MapUtil.getStr(msg, "msg");
-        log.info("金蝶接收到报关应付数据：{}", reqMsg);
+        log.debug("金蝶接收到报关应付数据：{}", reqMsg);
         //拼装根据入参拼装实体数据
         List<CustomsPayable> customsPayableForms = JSONArray.parseArray(reqMsg).toJavaList(CustomsPayable.class);
 
         //空数据校验
         if (CollectionUtil.isEmpty(customsPayableForms)) {
-            log.info("应付费用项为空，退出方法");
+            log.error("应付费用项为空，退出方法");
 //            return CommonResult.success();
             return true;
         } else {
             //非空时重单校验
             //获取报关单号
+            String applyNo="";
             Optional<CustomsPayable> first = customsPayableForms.stream().filter(Objects::nonNull).findFirst();
             if (first.isPresent() && checkForPayableDuplicateOrder(first.get().getCustomApplyNo())) {
+                applyNo = first.get().getCustomApplyNo();
                 if (allowDeletePush) {
+                    log.info("应付单{}已经存在，但可以删单重推，正在处理...");
                     customsFinanceService.removeSpecifiedInvoice(first.get().getCustomApplyNo());
                 } else {
+                    log.error("应付单{}已经存在，不能重复推送",applyNo);
                     return true;
                 }
             }
             //基础校验完毕
+            log.info("正在处理报关单{}应付数据",applyNo);
             return customsFinanceService.pushPayable(customsPayableForms);
         }
     }
@@ -134,8 +145,7 @@ public class MsgApiProcessorController {
     private boolean checkForReceivableDuplicateOrder(String applyNo) {
         List<InvoiceBase> existingReceivable = (List<InvoiceBase>) baseService.query(applyNo, Receivable.class);
         if (CollectionUtil.isNotEmpty(existingReceivable)) {
-            log.info("应收单已经存在，不能重复推送");
-            return true;
+                        return true;
         }
         return false;
     }
@@ -149,8 +159,7 @@ public class MsgApiProcessorController {
     private boolean checkForPayableDuplicateOrder(String applyNo) {
         List<InvoiceBase> existingPayable = (List<InvoiceBase>) baseService.query(applyNo, Payable.class);
         if (CollectionUtil.isNotEmpty(existingPayable)) {
-            log.info("应付单已经存在，不能重复推送");
-            return true;
+                        return true;
         }
         return false;
     }

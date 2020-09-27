@@ -182,7 +182,7 @@ public class KingdeeHttpUtil {
     public static Boolean ifSucceed(String responseJsonStr) {
         String errorCode = findByTargetFromJson(responseJsonStr, "IsSuccess");
         String message = findByTargetFromJson(responseJsonStr, "Message");
-        if (Boolean.getBoolean(errorCode) == true) {
+        if (Boolean.valueOf(errorCode) == true) {
             return true;
         }
         log.error(message);

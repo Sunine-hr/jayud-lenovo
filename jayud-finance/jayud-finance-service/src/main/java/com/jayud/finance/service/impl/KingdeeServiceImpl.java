@@ -106,11 +106,11 @@ public class KingdeeServiceImpl implements KingdeeService {
         header.put("Cookie", cookieService.getCookie(k3CloundConfig));
         String content = buildParam(formId, constructReceivableBill(reqForm));
 
-        log.info("请求内容：{}", content);
+        log.debug("请求内容：{}", content);
 
         String result = KingdeeHttpUtil.httpPost(k3CloundConfig.getSave(), header, content);
 
-        log.info("保存结果：{}", result);
+        log.debug("保存结果：{}", result);
         JSONObject jsonObject = JSON.parseObject(result);
         //获取金蝶响应json
         Map<String, Object> map = (Map<String, Object>) jsonObject.get("Result");
@@ -136,11 +136,11 @@ public class KingdeeServiceImpl implements KingdeeService {
             Map<String, Object> header = new HashMap<>();
             header.put("Cookie", cookieService.getCookie(k3CloundConfig));
             String content = buildParam(formId, constructPayableBill(reqForm));
-            log.info("请求内容：{}", content);
+            log.debug("请求内容：{}", content);
 
             String result = KingdeeHttpUtil.httpPost(k3CloundConfig.getSave(), header, content);
 
-            log.info("保存结果：{}", result);
+            log.debug("保存结果：{}", result);
             JSONObject jsonObject = JSON.parseObject(result);
             Map<String, Object> map = (Map<String, Object>) jsonObject.get("Result");
             Map<String, Object> responseStatus = (Map<String, Object>) map.get("ResponseStatus");
@@ -152,7 +152,7 @@ public class KingdeeServiceImpl implements KingdeeService {
                 return CommonResult.error(-1, "errors");
             }
         } catch (Exception e) {
-            log.info(e.getMessage());
+            log.error(e.getMessage());
             return CommonResult.error(-1, "errors");
         }
 
@@ -167,11 +167,11 @@ public class KingdeeServiceImpl implements KingdeeService {
         header.put("Cookie", cookieService.getCookie(k3CloundConfig));
 
         String content = buildParam(formId, data);
-        log.info("请求内容：{}", content);
+        log.debug("请求内容：{}", content);
 
         String result = KingdeeHttpUtil.httpPost(k3CloundConfig.getSave(), header, content);
 
-        log.info("保存结果：{}", result);
+        log.debug("保存结果：{}", result);
         //String result = KingdeeHttpUtil.httpPost(url, header, content);
         JSONObject jsonObject = JSON.parseObject(result);
         Map<String, Object> map = (Map<String, Object>) jsonObject.get("Result");
@@ -287,7 +287,7 @@ public class KingdeeServiceImpl implements KingdeeService {
             String result = KingdeeHttpUtil.httpPost(k3CloundConfig.getView(), header, buildParam(formId, JSONObject.parseObject(JSONUtil.toJsonStr(param))));
 
 
-            log.info("回执数据为：" + result);
+            log.debug("回执数据为：" + result);
 
             //5.解析回执
             JSONObject jsonObject = JSON.parseObject(result);
@@ -308,7 +308,7 @@ public class KingdeeServiceImpl implements KingdeeService {
                 param.put("Number", orderId);
                 param.put("Id", "");
                 result = KingdeeHttpUtil.httpPost(k3CloundConfig.getView(), header, buildParam(formId, JSONObject.parseObject(JSONUtil.toJsonStr(param))));
-                log.info("回执数据为：" + result);
+                log.debug("回执数据为：" + result);
                 //5.解析回执
                 jsonObject = JSON.parseObject(result);
                 jsonObjectInnerMap = jsonObject.getInnerMap();
@@ -537,14 +537,14 @@ public class KingdeeServiceImpl implements KingdeeService {
     @Override
     @Deprecated
     public CommonResult save(String formId, String jsonContent) {
-        log.info("请求参数：{}", jsonContent);
+        log.debug("请求参数：{}", jsonContent);
         //调用Redis中的cookie
         Map<String, Object> header = new HashMap<>();
 
         header.put("Cookie", "kdservice-sessionid=20750c4e-10fa-4c11-bf05-7103a812f9b0; path=/");
         String result = KingdeeHttpUtil.httpPost(k3CloundConfig.getSave(), header, jsonContent);
 
-        log.info("保存结果：{}", result);
+        log.debug("保存结果：{}", result);
 
         JSONObject jsonObject = JSON.parseObject(result);
         Map<String, Object> map = (Map<String, Object>) jsonObject.get("Result");

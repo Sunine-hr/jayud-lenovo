@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RefreshScope
 public class CustomsFinanceServiceImpl implements CustomsFinanceService {
     @Autowired
     RedisUtils redisUtils;
@@ -100,7 +102,7 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
             //拼装信息
 
             //写入费用项
-            log.info("1.开始拼装应收明细...");
+            log.debug("1.开始拼装应收明细...");
             List<APARDetailForm> list = new ArrayList<>();
             Class<? extends CustomsReceivable> clz = item.getClass();
             Field[] fields = clz.getDeclaredFields();
@@ -156,7 +158,7 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
 
             //抬头信息
             //尝试查询客戶名并写入
-            log.info("2.开始拼装表单头部...");
+            log.debug("2.开始拼装表单头部...");
             //从财务给的数据中对应到金蝶的客户名称
             CustomsFinanceCoRelation customsFinanceCoRelation = JSONObject.parseObject(JSONUtil.toJsonStr(coRelationMap.get(item.getCustomerName())), CustomsFinanceCoRelation.class);
             String kingdeeCompName = customsFinanceCoRelation == null ? "" : customsFinanceCoRelation.getKingdeeName();
@@ -177,14 +179,14 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
             dataForm.setBusinessDate(item.getApplyDt());
 
 
-            log.info("3.拼装完毕，正在汇总拼装时是否发生的异常...");
+            log.debug("3.拼装完毕，正在汇总拼装时是否发生的异常...");
             if (StringUtils.isNotBlank(errorString.toString())) {
                 log.error(errorString.toString());
                 return false;
             }
 
             try {
-                log.info("4.拼装校验无异常，开始向金蝶发送数据...");
+                log.debug("4.拼装校验无异常，开始向金蝶发送数据...");
                 CommonResult commonResult = kingdeeService.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), dataForm);
                 if (Objects.nonNull(commonResult) && commonResult.getCode() == ResultEnum.SUCCESS.getCode()) {
                     log.info("金蝶应收单推送完毕：（{}）", kingdeeCompName);
@@ -237,7 +239,7 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
         }
 
         //整理出不同的应付供应商，每一个应付供应商会生成一个单独的应付单
-        log.info("开始根据供应商分组...");
+        log.debug("开始根据供应商分组...");
         StringBuilder errorString = new StringBuilder();
         Map<String, List> diffSupplierMaps = new HashMap<>();
         for (CustomsPayable details : customsPayableForms) {
@@ -260,7 +262,7 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
                 }
             }
         }
-        log.info("开始写入应付单数据...");
+        log.debug("开始写入应付单数据...");
         //遍历供应商，将数据依次写入金蝶中
         for (Map.Entry<String, List> stringListEntry : diffSupplierMaps.entrySet()) {
             List<CustomsPayable> customsPayableEntity = (List<CustomsPayable>) stringListEntry.getValue();
@@ -276,7 +278,7 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
             String kingdeeCompName = companyProfile == null ? customsPayable.getTargetName() : companyProfile.getKingdeeName();
             Optional<Supplier> suppliers = baseService.get(kingdeeCompName, Supplier.class);
             if (!suppliers.isPresent()) {
-                log.info("传入的供应商名称 [" + customsPayable.getTargetName() + "] 无法找到相应的金蝶系统代码");
+                log.error("传入的供应商名称 [" + customsPayable.getTargetName() + "] 无法找到相应的金蝶系统代码");
                 errorString.append("传入的供应商名称 [" + customsPayable.getTargetName() + "] 无法找到相应的金蝶系统代码");
             }
 
@@ -378,6 +380,8 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
 
 
 
+
+
     /**
      * 实际处理删除应收单数据
      *
@@ -412,7 +416,7 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
         jsonObject.put("formid", formId);
         jsonObject.put("data", data);
         String result = JSONUtil.toJsonStr(jsonObject);
-        log.info("请求内容：{}", result);
+        log.debug("请求内容：{}", result);
         return result;
     }
 

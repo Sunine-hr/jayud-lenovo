@@ -229,7 +229,7 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
         recParam.put("costtype", "1");
         payParam.put("costtype", "2");
 
-        log.info(String.format("拼装数据完成，发送数据请求云报关..."));
+        log.debug(String.format("拼装数据完成，发送数据请求云报关..."));
         String receivable = doPost(JSONUtil.toJsonStr(recParam), financeUrl);
         String payable = doPost(JSONUtil.toJsonStr(payParam), financeUrl);
 
@@ -258,7 +258,7 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
         Boolean sentPayableStatus = true;
         if (hasPayable || hasReceivable) {
             if (hasPayable) {
-                log.info(String.format("拼装数据完成，开始上传财务数据：customs-payable口..." + payable + "====" + payable));
+                log.debug(String.format("拼装数据完成，开始上传财务数据：customs-payable口..." + payable + "====" + payable));
 
                 sentPayableStatus = generateKafkaMsg("financeTest", "customs-payable", payable);
 //                Map<String, String> pMap = new HashMap<>();
@@ -297,11 +297,11 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
         msgMap.put("topic", topic);
         msgMap.put("key", key);
         msgMap.put("msg", JSONUtil.toJsonStr(msg));
-        log.info(String.format("开始发送数据给kafka..."));
+        log.debug(String.format("开始发送数据给kafka..."));
         Map<String, String> consume = msgClient.consume(msgMap);
 
         if (Objects.nonNull(consume)) {
-            log.info(consume.toString());
+            log.debug(consume.toString());
             String code = MapUtil.getStr(consume, "code");
             String errorMsg = MapUtil.getStr(consume, "msg");
             String data = MapUtil.getStr(consume, "data");

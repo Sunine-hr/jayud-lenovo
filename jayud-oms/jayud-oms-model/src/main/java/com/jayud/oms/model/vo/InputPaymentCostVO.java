@@ -15,8 +15,8 @@ public class InputPaymentCostVO {
     @ApiModelProperty(value = "应付客户名称")
     private String customerName;
 
-    @ApiModelProperty(value = "费用类型CODE")
-    private String costTypeCode;
+    @ApiModelProperty(value = "费用类型ID")
+    private Long costTypeId;
 
     @ApiModelProperty(value = "费用类型")
     private String costType;

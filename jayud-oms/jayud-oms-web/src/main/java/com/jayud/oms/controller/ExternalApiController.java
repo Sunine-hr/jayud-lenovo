@@ -73,7 +73,7 @@ public class ExternalApiController {
      * 获取当前登录用户
      * @return
      */
-    @RequestMapping(value = "/api/getBaseUrl")
+    @RequestMapping(value = "/api/getLoginUser")
     ApiResult getLoginUser(){
         String loginUser = redisUtils.get("loginUser",100);
         return ApiResult.ok(loginUser);

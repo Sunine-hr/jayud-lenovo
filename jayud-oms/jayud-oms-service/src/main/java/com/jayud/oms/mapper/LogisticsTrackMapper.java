@@ -1,10 +1,11 @@
 package com.jayud.oms.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.oms.model.bo.QueryLogisticsTrackForm;
 import com.jayud.oms.model.po.LogisticsTrack;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.oms.model.vo.LogisticsTrackVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -19,6 +20,6 @@ import java.util.List;
 @Mapper
 public interface LogisticsTrackMapper extends BaseMapper<LogisticsTrack> {
 
-    List<LogisticsTrackVO> findReplyStatus(QueryLogisticsTrackForm form);
+    List<LogisticsTrackVO> findReplyStatus(@Param("form") QueryLogisticsTrackForm form);
 
 }

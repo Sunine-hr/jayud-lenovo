@@ -55,7 +55,7 @@ public class LogisticsTrackServiceImpl extends ServiceImpl<LogisticsTrackMapper,
             //获取子订单下的某状态的操作记录
             form.setStatus(logisticsTrackVOS.get(i).getStatus());
             List<LogisticsTrackVO> oprProcess = baseMapper.findReplyStatus(form);//已操作流程
-            if(oprProcess == null && oprProcess.size() == 0){
+            if(oprProcess == null || oprProcess.size() == 0){
                 break;
             }
             //取该状态下最新的一条操作记录,并且该记录比上一节点的最新流程创建时间大

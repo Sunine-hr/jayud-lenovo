@@ -1,7 +1,11 @@
 package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.oms.model.bo.GetCostDetailForm;
 import com.jayud.oms.model.po.OrderPaymentCost;
+import com.jayud.oms.model.vo.InputPaymentCostVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +16,13 @@ import com.jayud.oms.model.po.OrderPaymentCost;
  * @since 2020-09-15
  */
 public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
+
+    /**
+     * 获取费用详情
+     * @param form
+     * @return
+     */
+    List<InputPaymentCostVO> findPaymentCost(GetCostDetailForm form);
+
 
 }

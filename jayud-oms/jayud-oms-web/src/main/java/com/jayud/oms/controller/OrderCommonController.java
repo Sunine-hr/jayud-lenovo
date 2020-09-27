@@ -42,6 +42,11 @@ public class OrderCommonController {
             form.getPaymentCostList().size() == 0) {
             return CommonResult.error(400,"参数不合法");
         }
+        if("preSubmit_sub".equals(form.getCmd()) || "submit_sub".equals(form.getCmd())){
+            if(form.getOrderNo() == null || "".equals(form.getOrderNo())){
+                return CommonResult.error(400,"参数不合法");
+            }
+        }
         if("submit_main".equals(form.getCmd()) || "submit_sub".equals(form.getCmd())){
             List<InputPaymentCostForm> paymentCostForms = form.getPaymentCostList();
             List<InputReceivableCostForm> receivableCostForms = form.getReceivableCostList();
@@ -51,7 +56,8 @@ public class OrderCommonController {
                 || paymentCost.getUnitPrice() == null || paymentCost.getNumber() == null
                 || paymentCost.getCurrencyCode() == null || "".equals(paymentCost.getCurrencyCode())
                 || paymentCost.getAmount() == null || paymentCost.getExchangeRate() == null
-                || paymentCost.getChangeAmount() == null){
+                || paymentCost.getChangeAmount() == null
+                || paymentCost.getCostTypeId() == null){
                     return CommonResult.error(400,"参数不合法");
                 }
             }
@@ -62,11 +68,13 @@ public class OrderCommonController {
                         || receivableCost.getUnitPrice() == null || receivableCost.getNumber() == null
                         || receivableCost.getCurrencyCode() == null || "".equals(receivableCost.getCurrencyCode())
                         || receivableCost.getAmount() == null || receivableCost.getExchangeRate() == null
-                        || receivableCost.getChangeAmount() == null){
+                        || receivableCost.getChangeAmount() == null
+                        || receivableCost.getCostTypeId() == null){
                     return CommonResult.error(400,"参数不合法");
                 }
             }
         }
+        //1.需求为，提交审核按钮跟在每一条记录后面 2.暂存是保存所有未提交审核的数据  3.提交审核的数据不可编辑和删除
         boolean result = orderInfoService.saveOrUpdateCost(form);
         if(!result){
             return CommonResult.error(400,"调用失败");

@@ -32,4 +32,32 @@
         id, main_order_no, biz_order_no, order_no, customer_code, customer_name, cost_code, cost_name, unit_price, number, currency_code, currency_name, amount, exchange_rate, change_amount, remarks, status, opt_name, opt_time, created_time, created_user
     </sql>
 
+    <select id="findReceivableCost" parameterType="com.jayud.oms.model.bo.GetCostDetailForm" resultType="com.jayud.oms.model.vo.InputReceivableCostVO" >
+        SELECT
+        orc.`id`,
+        orc.`customer_code` customerCode,
+        orc.`customer_name` customerName ,
+        orc.`cost_type_id` costTypeId,
+        (SELECT ct.code_name FROM cost_type ct WHERE ct.id = orc.`cost_type_id` LIMIT 1) costType,
+        orc.`cost_code` costCode,
+        (SELECT ci.name FROM cost_info ci WHERE ci.id_code = orc.`cost_code` AND ci.types = 1 LIMIT 1) costName,
+        orc.`unit_price` unitPrice,
+        orc.`number`,
+        orc.`currency_code` currencyCode,
+        (SELECT ci.currency_name FROM currency_info ci WHERE ci.currency_code = orc.`currency_code` LIMIT 1) currencyName,
+        orc.`amount`,
+        orc.`change_amount` changeAmount,
+        orc.`exchange_rate` exchangeRate,
+        orc.`remarks`,
+        orc.`status`
+        FROM
+        order_receivable_cost orc
+        <if test="form.cmd == 'main_cost'">
+            and (orc.`order_no` = '' or orc.`order_no` is null)
+        </if>
+        <if test="form.cmd == 'sub_cost'">
+            and orc.`order_no` != '' and orc.`order_no` is not null
+        </if>
+
+    </select>
 </mapper>

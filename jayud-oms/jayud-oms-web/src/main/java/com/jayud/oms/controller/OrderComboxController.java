@@ -2,6 +2,7 @@ package com.jayud.oms.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.oms.feign.OauthClient;
@@ -48,6 +49,9 @@ public class OrderComboxController {
 
     @Autowired
     ICurrencyInfoService currencyInfoService;
+
+    @Autowired
+    ICostTypeService costTypeService;
 
     @ApiOperation(value = "纯报关-客户,业务员,合同,业务所属部门,通关口岸")
     @PostMapping(value = "/initCombox1")
@@ -160,7 +164,7 @@ public class OrderComboxController {
     @PostMapping(value = "/initCost")
     public CommonResult initCost() {
         Map<String,Object> param = new HashMap<>();
-        List<CostInfo> costInfos = costInfoService.findCostInfo();//费用类型
+        List<CostInfo> costInfos = costInfoService.findCostInfo();//费用项目
         List<InitComboxStrVO> paymentCombox = new ArrayList<>();
         List<InitComboxStrVO> receivableCombox = new ArrayList<>();
         for (CostInfo costInfo : costInfos) {
@@ -187,6 +191,19 @@ public class OrderComboxController {
             initComboxStrVOS.add(comboxStrVO);
         }
         param.put("currency",initComboxStrVOS);
+
+        //费用类型
+        List<InitComboxVO> costTypeComboxs = new ArrayList<>();
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status","1");
+        List<CostType> costTypes = costTypeService.list(queryWrapper);
+        for (CostType costType : costTypes) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setName(costType.getCodeName());
+            initComboxVO.setId(costType.getId());
+            costTypeComboxs.add(initComboxVO);
+        }
+        param.put("costTypes",costTypeComboxs);
         return CommonResult.success(param);
     }
 

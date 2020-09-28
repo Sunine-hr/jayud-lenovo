@@ -39,7 +39,7 @@ public class ProducerController {
         String value = MapUtil.getStr(param, "msg");
 //        return CommonResult.success();
         try {
-            log.info(String.format("正在向kafka发送数据：%s", JSONUtil.toJsonPrettyStr(param)));
+            log.debug(String.format("正在向kafka发送数据：%s", JSONUtil.toJsonPrettyStr(param)));
             kafkaTemplate.send(topic, key, value);
         } catch (Exception e) {
             e.printStackTrace();

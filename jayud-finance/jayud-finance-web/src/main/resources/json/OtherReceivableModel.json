@@ -1,0 +1,73 @@
+{
+  "Creator": "",
+  "NeedUpDateFields": [],
+  "NeedReturnFields": [],
+  "IsDeleteEntry": "true",
+  "SubSystemId": "",
+  "IsVerifyBaseDataField": "false",
+  "IsEntryBatchFill": "true",
+  "ValidateFlag": "true",
+  "NumberSearch": "true",
+  "InterationFlags": "",
+  "IsAutoSubmitAndAudit": "false",
+  "Model": {
+    "FID": 0,
+    "FBillTypeID": {
+      "FNUMBER": "QTYSD01_SYS"
+    },
+    "FDATE": "2020-09-28 00:00:00",
+    "FENDDATE_H": "2020-09-28 00:00:00",
+    "FISINIT": false,
+    "FCONTACTUNITTYPE": "BD_Supplier",
+    "FCONTACTUNIT": {
+      "FNumber": "VEN00470"
+    },
+    "FAMOUNTFOR": 2047.74,
+    "FCURRENCYID": {
+      "FNumber": "PRE001"
+    },
+    "FDEPARTMENTID": {
+      "FNumber": "BM101"
+    },
+    "FSETTLEORGID": {
+      "FNumber": "802"
+    },
+    "FPAYORGID": {
+      "FNumber": "802"
+    },
+    "FSALEORGID": {
+      "FNumber": "802"
+    },
+    "FACCNTTIMEJUDGETIME": "2020-09-28 00:00:00",
+    "FMAINBOOKSTDCURRID": {
+      "FNumber": "PRE001"
+    },
+    "FEXCHANGETYPE": {
+      "FNumber": "HLTX01_SYS"
+    },
+    "FExchangeRate": 1.0,
+    "FNOTAXAMOUNT": 2047.74,
+    "FCancelStatus": "A",
+    "FEntity": [
+      {
+        "FCOSTID": {
+          "FNumber": "F0003"
+        },
+        "FCOSTDEPARTMENTID": {
+          "FNumber": "BM101"
+        },
+        "FNOTAXAMOUNTFOR": 2047.74,
+        "FAMOUNTFOR_D": 2047.74,
+        "FNOTAXAMOUNT_D": 2047.74,
+        "FCOMMENT": "测试明细备注",
+        "FCREATEINVOICE": false,
+        "F_JYD_Assistant": {
+          "FNumber": "FYLB0002"
+        },
+        "F_JYD_Assistant1": {
+          "FNumber": "FYLX099"
+        }
+      }
+    ]
+  }
+}

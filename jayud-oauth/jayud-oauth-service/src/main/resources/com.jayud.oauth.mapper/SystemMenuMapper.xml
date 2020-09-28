@@ -50,6 +50,6 @@
                 and system_menu.hidden = #{hidden}
             </if>
         </where>
-        ORDER BY system_menu.sort desc;
+        ORDER BY system_menu.sort asc;
     </select>
 </mapper>

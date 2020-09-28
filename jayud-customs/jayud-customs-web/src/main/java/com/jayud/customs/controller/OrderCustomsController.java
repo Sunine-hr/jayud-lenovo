@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.customs.feign.OmsClient;
@@ -148,7 +149,6 @@ public class OrderCustomsController {
         boolean result = orderCustomsService.saveOrUpdate(orderCustoms);
         //记录操作状态
         form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
-        form.setOperatorTime(LocalDateTime.now());
         form.setStatus(OrderStatusEnum.CUSTOMS_C_1.getCode());
         form.setStatusName(OrderStatusEnum.CUSTOMS_C_1.getDesc());
         omsClient.saveOprStatus(form);
@@ -258,7 +258,7 @@ public class OrderCustomsController {
                 return CommonResult.error(400, "参数不合法");
             }
             orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_6.getCode());
-            orderCustoms.setGoCustomsTime(form.getGoCustomsTime());
+            orderCustoms.setGoCustomsTime(DateUtils.str2LocalDateTime(form.getGoCustomsTime(),DateUtils.DATE_TIME_PATTERN));
             form.setStatus(OrderStatusEnum.CUSTOMS_C_6.getCode());
             form.setStatus(OrderStatusEnum.CUSTOMS_C_6.getDesc());
             form.setDescription(form.getDescription());
@@ -267,7 +267,7 @@ public class OrderCustomsController {
                 return CommonResult.error(400, "参数不合法");
             }
             orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_6_1.getCode());
-            orderCustoms.setPreGoCustomsTime(form.getPreGoCustomsTime());
+            orderCustoms.setPreGoCustomsTime(DateUtils.str2LocalDateTime(form.getPreGoCustomsTime(),DateUtils.DATE_TIME_PATTERN));
             form.setStatus(OrderStatusEnum.CUSTOMS_C_6_1.getCode());
             form.setStatus(OrderStatusEnum.CUSTOMS_C_6_1.getDesc());
             form.setDescription(form.getDescription());
@@ -276,7 +276,7 @@ public class OrderCustomsController {
                 return CommonResult.error(400, "参数不合法");
             }
             orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_6_2.getCode());
-            orderCustoms.setPreGoCustomsTime(form.getPreGoCustomsTime());
+            orderCustoms.setPreGoCustomsTime(DateUtils.str2LocalDateTime(form.getPreGoCustomsTime(),DateUtils.DATE_TIME_PATTERN));
             form.setStatus(OrderStatusEnum.CUSTOMS_C_6_2.getCode());
             form.setStatus(OrderStatusEnum.CUSTOMS_C_6_2.getDesc());
             form.setDescription(form.getDescription());

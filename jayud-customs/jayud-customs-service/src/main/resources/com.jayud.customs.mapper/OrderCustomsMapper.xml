@@ -126,7 +126,7 @@
             AND oc.`status` = 'C_3'
         </if>
         <if test="form.cmd == 'releaseConfirm'">
-            AND oc.`status` = 'C_5'
+            AND oc.`status` = 'C_4'
         </if>
     </select>
 

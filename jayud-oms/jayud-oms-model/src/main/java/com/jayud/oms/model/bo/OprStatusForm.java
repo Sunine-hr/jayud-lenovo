@@ -3,8 +3,6 @@ package com.jayud.oms.model.bo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 @Data
 public class OprStatusForm {
 
@@ -24,7 +22,7 @@ public class OprStatusForm {
     private String operatorUser;
 
     @ApiModelProperty(value = "操作时间")
-    private LocalDateTime operatorTime;
+    private String operatorTime;
 
     @ApiModelProperty(value = "附件")
     private String statusPic;
@@ -36,9 +34,9 @@ public class OprStatusForm {
     private String entrustNo;
 
     @ApiModelProperty(value = "通关时间")
-    private LocalDateTime goCustomsTime;
+    private String goCustomsTime;
 
     @ApiModelProperty(value = "预计通关时间")
-    private LocalDateTime preGoCustomsTime;
+    private String preGoCustomsTime;
 
 }

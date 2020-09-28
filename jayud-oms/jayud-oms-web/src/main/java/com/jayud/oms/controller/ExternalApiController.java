@@ -2,7 +2,7 @@ package com.jayud.oms.controller;
 
 import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
-import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.oms.model.bo.InputMainOrderForm;
 import com.jayud.oms.model.bo.OprStatusForm;
 import com.jayud.oms.model.po.LogisticsTrack;
@@ -62,7 +62,18 @@ public class ExternalApiController {
     @ApiOperation(value = "保存操作状态")
     @RequestMapping(value = "/api/saveOprStatus")
     ApiResult saveOprStatus(@RequestBody OprStatusForm form){
-        LogisticsTrack logisticsTrack = ConvertUtil.convert(form,LogisticsTrack.class);
+        LogisticsTrack logisticsTrack = new LogisticsTrack();
+        logisticsTrack.setMainOrderId(form.getMainOrderId());
+        logisticsTrack.setOrderId(form.getOrderId());
+        logisticsTrack.setStatus(form.getStatus());
+        logisticsTrack.setStatusName(form.getStatusName());
+        logisticsTrack.setOperatorUser(form.getOperatorUser());
+        logisticsTrack.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(),DateUtils.DATE_TIME_PATTERN));
+        logisticsTrack.setStatusPic(form.getStatusPic());
+        logisticsTrack.setDescription(form.getDescription());
+        logisticsTrack.setEntrustNo(form.getEntrustNo());
+        logisticsTrack.setGoCustomsTime(DateUtils.str2LocalDateTime(form.getGoCustomsTime(),DateUtils.DATE_TIME_PATTERN));
+        logisticsTrack.setPreGoCustomsTime(DateUtils.str2LocalDateTime(form.getPreGoCustomsTime(),DateUtils.DATE_TIME_PATTERN));
         logisticsTrack.setCreatedUser(String.valueOf(getLoginUser().getData()));
         logisticsTrack.setCreatedTime(LocalDateTime.now());
         logisticsTrackService.saveOrUpdate(logisticsTrack);

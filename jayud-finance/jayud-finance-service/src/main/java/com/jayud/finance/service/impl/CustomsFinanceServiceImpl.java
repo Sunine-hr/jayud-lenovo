@@ -1,7 +1,6 @@
 package com.jayud.finance.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
@@ -377,7 +376,12 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
         }
         return true;
     }
-
+//
+//
+//    @Override
+//    private Boolean pushOtherReceivable(){
+//
+//    }
 
 
 
@@ -427,7 +431,8 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
      * @return
      */
     private String getRemark() {
-        return String.format("报关应收单测试%s", String.valueOf(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss")));
+        return "";
+//        return String.format("报关应收单测试%s", String.valueOf(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss")));
     }
 }
 

@@ -24,7 +24,7 @@ public enum OrderStatusEnum {
     MAIN_PROCESS_4("M_4","已完成"),
 
     //纯报关子订单流程节点+纯报关子订单状态
-    CUSTOMS_C_0("C_0","未接单"), //仅报关子订单状态用
+    CUSTOMS_C_0("C_0","待接单"), //仅报关子订单状态用
     CUSTOMS_C_1("C_1","报关接单"),
     CUSTOMS_C_2("C_2","报关打单"),
     CUSTOMS_C_3("C_3","报关复核"),

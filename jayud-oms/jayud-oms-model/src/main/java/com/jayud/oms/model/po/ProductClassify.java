@@ -39,7 +39,7 @@ public class ProductClassify extends Model<ProductClassify> {
     private String name;
 
     @ApiModelProperty(value = "父级id")
-    private Integer fId;
+    private Long fId;
 
     @ApiModelProperty(value = "业务类型(product_bize code)")
     private String bizCode;

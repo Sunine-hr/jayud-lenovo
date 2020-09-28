@@ -2,12 +2,12 @@ package com.jayud.oms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.mapper.LogisticsTrackMapper;
 import com.jayud.oms.model.bo.QueryLogisticsTrackForm;
 import com.jayud.oms.model.po.LogisticsTrack;
 import com.jayud.oms.model.po.OrderStatus;
-import com.jayud.oms.model.vo.FileView;
 import com.jayud.oms.model.vo.LogisticsTrackVO;
 import com.jayud.oms.service.ILogisticsTrackService;
 import com.jayud.oms.service.IOrderStatusService;
@@ -60,31 +60,24 @@ public class LogisticsTrackServiceImpl extends ServiceImpl<LogisticsTrackMapper,
             }
             //取该状态下最新的一条操作记录,并且该记录比上一节点的最新流程创建时间大
             LogisticsTrackVO nowOprProcess = oprProcess.get(0);
+            boolean flag = false;
             if(i != 0){//第一个流程节点除外
                 form.setStatus(logisticsTrackVOS.get(i-1).getStatus());
                 List<LogisticsTrackVO> preOprStatus = baseMapper.findReplyStatus(form);//已操作流程
                 LogisticsTrackVO nowPreOprProcess = preOprStatus.get(0);
                 if(nowOprProcess.getCreatedTime().compareTo(nowPreOprProcess.getCreatedTime()) >= 0){
-                    logisticsTrackVOS.get(i).setId(nowOprProcess.getId());
-                    logisticsTrackVOS.get(i).setDescription(nowOprProcess.getDescription());
-                    logisticsTrackVOS.get(i).setOperatorUser(nowOprProcess.getOperatorUser());
-                    logisticsTrackVOS.get(i).setOperatorTime(nowOprProcess.getOperatorTime());
-                    String statusPic = nowOprProcess.getStatusPic();
-                    List<FileView> fileViews = new ArrayList<>();
-                    if(statusPic != null && "".equals(statusPic)){
-                        String[] fileList = statusPic.split(",");
-                        for(String str : fileList){
-                            int index = str.lastIndexOf("/");
-                            FileView fileView = new FileView();
-                            fileView.setRelativePath(str);
-                            fileView.setFileName(str.substring(index + 1, str.length()));
-                            fileView.setAbsolutePath(prePath + str);
-                            fileViews.add(fileView);
-                        }
-                    }
-                    logisticsTrackVOS.get(i).setFileViewList(fileViews);
-
+                    flag = true;
                 }
+            }else {
+                flag = true;
+            }
+            if(flag) {
+                logisticsTrackVOS.get(i).setId(nowOprProcess.getId());
+                logisticsTrackVOS.get(i).setDescription(nowOprProcess.getDescription());
+                logisticsTrackVOS.get(i).setOperatorUser(nowOprProcess.getOperatorUser());
+                logisticsTrackVOS.get(i).setOperatorTime(nowOprProcess.getOperatorTime());
+                String statusPic = nowOprProcess.getStatusPic();
+                logisticsTrackVOS.get(i).setFileViewList(StringUtils.getFileViews(statusPic,prePath));
             }
 
         }

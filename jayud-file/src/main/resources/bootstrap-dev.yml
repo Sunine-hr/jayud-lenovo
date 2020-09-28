@@ -7,7 +7,7 @@ fdfs:
   soTimeout: 1500
   connectTimeout: 600
   resHost: 192.168.0.231
-  storagePort: 23333
+  storagePort: 23332
   serverPath: http://192.168.0.231
   thumbImage:             #缩略图生成参数
     width: 150

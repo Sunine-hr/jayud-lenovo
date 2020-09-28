@@ -27,4 +27,4 @@ file:
     - application/vnd.openxmlformats-officedocument.wordprocessingml.document
     #压缩包
     - application/octet-stream
-  base-url: ${fdfs.resHost}:23333
+  base-url: test.oms.jayud.com:9448/group1/M00

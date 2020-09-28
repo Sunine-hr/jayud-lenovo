@@ -21,9 +21,9 @@ public class LogisticsTrackForm {
     private List<LogisticsTrackVO> logisticsTrackForms;
 
     @ApiModelProperty(value = "关联主订单ID")
-    private String mainOrderId;
+    private Long mainOrderId;
 
     @ApiModelProperty(value = "关联订单ID")
-    private String orderId;
+    private Long orderId;
 
 }

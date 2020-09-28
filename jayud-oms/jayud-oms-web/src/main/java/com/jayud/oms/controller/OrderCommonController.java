@@ -1,17 +1,22 @@
 package com.jayud.oms.controller;
 
 
+import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
-import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.FileView;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.LogisticsTrack;
 import com.jayud.oms.model.po.OrderPaymentCost;
 import com.jayud.oms.model.po.OrderReceivableCost;
-import com.jayud.oms.model.vo.FileView;
+import com.jayud.oms.model.po.ProductClassify;
 import com.jayud.oms.model.vo.InputCostVO;
 import com.jayud.oms.model.vo.LogisticsTrackVO;
+import com.jayud.oms.model.vo.ProductClassifyVO;
 import com.jayud.oms.service.ILogisticsTrackService;
 import com.jayud.oms.service.IOrderInfoService;
+import com.jayud.oms.service.IProductClassifyService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +25,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -33,6 +41,9 @@ public class OrderCommonController {
 
     @Autowired
     private ILogisticsTrackService logisticsTrackService;
+
+    @Autowired
+    private IProductClassifyService productClassifyService;
 
     @ApiOperation(value = "录入费用")
     @PostMapping(value = "/saveOrUpdateCost")
@@ -132,23 +143,62 @@ public class OrderCommonController {
         if(form == null || form.getLogisticsTrackForms() == null || form.getLogisticsTrackForms().size() == 0){
             return CommonResult.error(400,"参数不合法");
         }
-        //处理附件
+        List<LogisticsTrack> logisticsTracks = new ArrayList<>();
         for (LogisticsTrackVO logisticsTrack : form.getLogisticsTrackForms()) {
+            LogisticsTrack track = new LogisticsTrack();
+            track.setMainOrderId(form.getMainOrderId());
+            track.setOrderId(form.getOrderId());
+            track.setId(logisticsTrack.getId());
+            track.setStatus(logisticsTrack.getStatus());
+            track.setStatusName(logisticsTrack.getStatusName());
+            track.setDescription(logisticsTrack.getDescription());
+            track.setOperatorUser(logisticsTrack.getOperatorUser());
+            track.setOperatorTime(DateUtils.str2LocalDateTime(logisticsTrack.getOperatorTime(),DateUtils.DATE_TIME_PATTERN));
+            //处理附件
             List<FileView> fileViews = logisticsTrack.getFileViewList();
-            StringBuilder sb = new StringBuilder();
-            for (FileView fileView : fileViews) {
-                sb.append(fileView.getRelativePath()).append(",");
-            }
-            if(!"".equals(String.valueOf(sb))) {
-                logisticsTrack.setStatusPic(sb.substring(0, sb.length() - 1));
-            }
+            track.setStatusPic(StringUtils.getFileStr(fileViews));
+            logisticsTracks.add(track);
         }
-        List<LogisticsTrack> logisticsTracks = ConvertUtil.convertList(form.getLogisticsTrackForms(),LogisticsTrack.class);
-        logisticsTrackService.saveOrUpdateBatch(logisticsTracks);
+        if(logisticsTracks.size() > 0) {
+            logisticsTrackService.saveOrUpdateBatch(logisticsTracks);
+        }
         return CommonResult.success();
     }
 
-    //创建订单界面
+    @ApiOperation(value = "创建订单界面获取业务类型 bizCode=业务类型")
+    @PostMapping(value = "/findCreateOrderClass")
+    public CommonResult findCreateOrderClass(@RequestBody Map<String,Object> param) {
+        String bizCode = MapUtil.getStr(param,"bizCode");
+        param = new HashMap<>();
+        if(bizCode != null && !"".equals(bizCode)){
+            param.put("biz_code",bizCode);
+        }
+        List<ProductClassify> productClassifys = productClassifyService.findProductClassify(param);
+        List<ProductClassifyVO> productClassifyVOS = new ArrayList<>();
+        productClassifys.forEach(x ->{
+            ProductClassifyVO productClassifyVO = new ProductClassifyVO();
+            productClassifyVO.setId(x.getId());
+            productClassifyVO.setFId(x.getFId());
+            productClassifyVO.setIdCode(x.getIdCode());
+            productClassifyVO.setName(x.getName());
+            if(x.getFId() == 0){
+                List<ProductClassifyVO> subObjects = new ArrayList<>();
+                productClassifys.forEach(v ->{
+                    if(v.getFId().equals(x.getId())){
+                        ProductClassifyVO subObject = new ProductClassifyVO();
+                        subObject.setId(v.getId());
+                        subObject.setFId(v.getFId());
+                        subObject.setIdCode(v.getIdCode());
+                        subObject.setName(v.getName());
+                        subObjects.add(subObject);
+                    }
+                });
+                productClassifyVO.setProductClassifyVOS(subObjects);
+                productClassifyVOS.add(productClassifyVO);
+            }
+        });
+        return CommonResult.success(productClassifyVOS);
+    }
 
 
 

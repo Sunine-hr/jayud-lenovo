@@ -82,7 +82,11 @@
             oc.`entrust_no` entrustNo,
             '' unifiedNumber,
             oc.`updated_time` updatedTimeStr,
-        (SELECT lt.description FROM logistics_track lt WHERE lt.order_id = oc.`id`) remarks,
+            (SELECT lt.description FROM
+            logistics_track lt
+            WHERE lt.order_id = oc.`id`
+            ORDER BY lt.created_time desc
+            LIMIT 1) remarks,
             '' yunCustomsNo,
             oi.`biz_code` bizCode,
             oi.`id` mainOrderId
@@ -107,22 +111,25 @@
             AND oc.`entrust_no` = #{form.entrustNo}
         </if>
         <if test="form.cmd == 'exceptionOrder'">
-            AND oc.`status` = '6'
+            AND oc.`status` = 'C_6_2'
         </if>
         <if test="form.cmd == 'auditFail'">
-            AND oc.`status` in ('3_1','5_1')
+            AND oc.`status` = 'C_5_1'
         </if>
         <if test="form.cmd == 'issueOrder'">
-            AND oc.`status` = '1'
+            AND oc.`status` = 'C_1'
         </if>
         <if test="form.cmd == 'toCheck'">
-            AND oc.`status` = '2'
+            AND oc.`status` = 'C_2'
         </if>
         <if test="form.cmd == 'declare'">
-            AND oc.`status` = '3'
+            AND oc.`status` = 'C_3'
         </if>
         <if test="form.cmd == 'releaseConfirm'">
-            AND oc.`status` = '4'
+            AND oc.`status` = 'C_4'
+        </if>
+        <if test="form.cmd == 'goCustomsConfirm'">
+            AND oc.`status` = 'C_5'
         </if>
     </select>
 

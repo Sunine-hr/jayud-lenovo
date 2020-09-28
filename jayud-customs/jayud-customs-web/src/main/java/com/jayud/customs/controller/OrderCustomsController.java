@@ -182,6 +182,10 @@ public class OrderCustomsController {
         orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_2.getCode());
         boolean result = orderCustomsService.saveOrUpdate(orderCustoms);
         //记录操作状态
+        if("reIssueOrder".equals(form.getCmd())){
+            form.setOperatorUser(loginUser);
+            form.setOperatorTime(DateUtils.getLocalToStr(LocalDateTime.now()));
+        }
         form.setStatus(OrderStatusEnum.CUSTOMS_C_2.getCode());
         form.setStatusName(OrderStatusEnum.CUSTOMS_C_2.getDesc());
         form.setEntrustNo(form.getEntrustNo());

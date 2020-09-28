@@ -162,11 +162,16 @@ public class OrderCustomsController {
     @PostMapping(value = "/inputEntrustNo")
     public CommonResult inputEntrustNo(@RequestBody OprStatusForm form) {
         if(form.getOrderId() == null || "".equals(form.getOrderId()) ||
+                form.getCmd() == null || "".equals(form.getCmd()) ||
                 form.getMainOrderId() == null || "".equals(form.getMainOrderId()) ||
-                form.getOperatorUser() == null || "".equals(form.getOperatorUser()) ||
-                form.getOperatorTime() == null || "".equals(form.getOperatorTime()) ||
                 form.getEntrustNo() == null || "".equals(form.getEntrustNo())){
             return CommonResult.error(400,"参数不合法");
+        }
+        if("issueOrder".equals(form.getCmd())){//报关打单，重新打单时不用填操作人操作时间
+            if(form.getOperatorUser() == null || "".equals(form.getOperatorUser()) ||
+                    form.getOperatorTime() == null || "".equals(form.getOperatorTime())){
+                return CommonResult.error(400,"参数不合法");
+            }
         }
         String loginUser = orderCustomsService.getLoginUser();
         OrderCustoms orderCustoms = new OrderCustoms();
@@ -247,9 +252,6 @@ public class OrderCustomsController {
                 return CommonResult.error(400, "参数不合法");
             }
         } else if("auditFailEdit".equals(form.getCmd())){//审核不通过-编辑完成
-            if (form.getEntrustNo() == null || "".equals(form.getEntrustNo())){
-                return CommonResult.error(400, "参数不合法");
-            }
             orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_4.getCode());
             form.setStatus(OrderStatusEnum.CUSTOMS_C_4.getCode());
             form.setStatusName(OrderStatusEnum.CUSTOMS_C_4.getDesc());

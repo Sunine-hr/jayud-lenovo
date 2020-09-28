@@ -82,7 +82,11 @@
             oc.`entrust_no` entrustNo,
             '' unifiedNumber,
             oc.`updated_time` updatedTimeStr,
-        (SELECT lt.description FROM logistics_track lt WHERE lt.order_id = oc.`id`) remarks,
+            (SELECT lt.description FROM
+            logistics_track lt
+            WHERE lt.order_id = oc.`id`
+            ORDER BY lt.created_time desc
+            LIMIT 1) remarks,
             '' yunCustomsNo,
             oi.`biz_code` bizCode,
             oi.`id` mainOrderId

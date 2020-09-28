@@ -177,9 +177,6 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
         List<CustomsOrderInfoVO> customsOrderInfoVOS = pageInfo.getRecords();
         String prePath = fileClient.getBaseUrl().getData().toString();
         for (CustomsOrderInfoVO customsOrder : customsOrderInfoVOS) {
-            if(customsOrder.getStatusDesc() == null || "".equals(customsOrder.getStatusDesc())){
-                customsOrder.setStatusDesc("待接单");
-            }
             //处理子订单附件信息
             String fileStr = customsOrder.getFileStr();
             customsOrder.setFileViews(StringUtils.getFileViews(fileStr,prePath));

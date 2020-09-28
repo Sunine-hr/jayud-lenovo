@@ -266,7 +266,7 @@ public class OrderCustomsController {
             orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_6.getCode());
             orderCustoms.setGoCustomsTime(DateUtils.str2LocalDateTime(form.getGoCustomsTime(),DateUtils.DATE_TIME_PATTERN));
             form.setStatus(OrderStatusEnum.CUSTOMS_C_6.getCode());
-            form.setStatus(OrderStatusEnum.CUSTOMS_C_6.getDesc());
+            form.setStatusName(OrderStatusEnum.CUSTOMS_C_6.getDesc());
             form.setDescription(form.getDescription());
         }else if("customsCheck".equals(form.getCmd())){//通关查验
             if(form.getPreGoCustomsTime() == null){
@@ -275,7 +275,7 @@ public class OrderCustomsController {
             orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_6_1.getCode());
             orderCustoms.setPreGoCustomsTime(DateUtils.str2LocalDateTime(form.getPreGoCustomsTime(),DateUtils.DATE_TIME_PATTERN));
             form.setStatus(OrderStatusEnum.CUSTOMS_C_6_1.getCode());
-            form.setStatus(OrderStatusEnum.CUSTOMS_C_6_1.getDesc());
+            form.setStatusName(OrderStatusEnum.CUSTOMS_C_6_1.getDesc());
             form.setDescription(form.getDescription());
         }else if("customsExcep".equals(form.getCmd())){//通关其他异常
             if(form.getPreGoCustomsTime() == null){
@@ -284,7 +284,7 @@ public class OrderCustomsController {
             orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_6_2.getCode());
             orderCustoms.setPreGoCustomsTime(DateUtils.str2LocalDateTime(form.getPreGoCustomsTime(),DateUtils.DATE_TIME_PATTERN));
             form.setStatus(OrderStatusEnum.CUSTOMS_C_6_2.getCode());
-            form.setStatus(OrderStatusEnum.CUSTOMS_C_6_2.getDesc());
+            form.setStatusName(OrderStatusEnum.CUSTOMS_C_6_2.getDesc());
             form.setDescription(form.getDescription());
         }
         orderCustoms.setUpdatedTime(LocalDateTime.now());

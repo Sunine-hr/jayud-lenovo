@@ -42,6 +42,9 @@ public class LogisticsTrackVO {
     @ApiModelProperty(value = "附件")
     private String statusPic;
 
+    @ApiModelProperty(value = "是否确认过")
+    private boolean flag;
+
     @ApiModelProperty(value = "附件")
     private List<FileView> fileViewList = new ArrayList<>();
 

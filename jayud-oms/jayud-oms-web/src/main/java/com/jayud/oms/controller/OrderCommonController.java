@@ -134,6 +134,13 @@ public class OrderCommonController {
     @PostMapping(value = "/findReplyStatus")
     public CommonResult<List<LogisticsTrackVO>> findReplyStatus(@RequestBody QueryLogisticsTrackForm form) {
         List<LogisticsTrackVO> logisticsTrackVOS = logisticsTrackService.findReplyStatus(form);
+        for (LogisticsTrackVO logisticsTrackVO : logisticsTrackVOS) {
+            logisticsTrackVO.setFlag(false);
+            if(logisticsTrackVO.getOperatorUser() != null && !"".equals(logisticsTrackVO.getOperatorUser())
+               && logisticsTrackVO.getOperatorTime() != null && !"".equals(logisticsTrackVO.getOperatorTime())){
+                logisticsTrackVO.setFlag(true);
+            }
+        }
         return CommonResult.success(logisticsTrackVOS);
     }
 

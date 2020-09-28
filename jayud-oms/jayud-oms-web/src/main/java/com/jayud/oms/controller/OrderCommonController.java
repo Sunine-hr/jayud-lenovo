@@ -3,11 +3,12 @@ package com.jayud.oms.controller;
 
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.FileView;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.LogisticsTrack;
 import com.jayud.oms.model.po.OrderPaymentCost;
 import com.jayud.oms.model.po.OrderReceivableCost;
-import com.jayud.oms.model.vo.FileView;
 import com.jayud.oms.model.vo.InputCostVO;
 import com.jayud.oms.model.vo.LogisticsTrackVO;
 import com.jayud.oms.service.ILogisticsTrackService;
@@ -146,13 +147,7 @@ public class OrderCommonController {
             track.setOperatorTime(DateUtils.str2LocalDateTime(logisticsTrack.getOperatorTime(),DateUtils.DATE_TIME_PATTERN));
             //处理附件
             List<FileView> fileViews = logisticsTrack.getFileViewList();
-            StringBuilder sb = new StringBuilder();
-            for (FileView fileView : fileViews) {
-                sb.append(fileView.getRelativePath()).append(",");
-            }
-            if(!"".equals(String.valueOf(sb))) {
-                track.setStatusPic(sb.substring(0, sb.length() - 1));
-            }
+            track.setStatusPic(StringUtils.getFileStr(fileViews));
             logisticsTracks.add(track);
         }
         if(logisticsTracks.size() > 0) {

@@ -1,11 +1,12 @@
 package com.jayud.common.utils;
 
-import org.apache.http.util.TextUtils;
-
 import io.netty.util.internal.StringUtil;
+import org.apache.http.util.TextUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class StringUtils {
@@ -157,6 +158,47 @@ public class StringUtils {
             flags[index] = true;
         }
         return new StringBuilder().append(chs).toString();
+    }
+
+    /**
+     * 将附件集合处理成字符串逗号拼接
+     * @param fileViewList
+     * @return
+     */
+    public static String getFileStr(List<FileView> fileViewList){
+        String fileStr = "";
+        if(fileViewList == null || fileViewList.size() == 0){
+            return fileStr;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (FileView fileView : fileViewList) {
+            sb.append(fileView.getRelativePath()).append(",");
+        }
+        if(!"".equals(String.valueOf(sb))) {
+            fileStr = sb.substring(0, sb.length() - 1);
+        }
+        return fileStr;
+    }
+
+    /**
+     * 把字符串解析成文件数组
+     * @param fileStr
+     * @return
+     */
+    public static List<FileView> getFileViews(String fileStr,String prePath){
+        List<FileView> fileViews = new ArrayList<>();
+        if(fileStr != null && !"".equals(fileStr)){
+            String[] fileList = fileStr.split(",");
+            for(String str : fileList){
+                int index = str.lastIndexOf("/");
+                FileView fileView = new FileView();
+                fileView.setRelativePath(str);
+                fileView.setFileName(str.substring(index + 1, str.length()));
+                fileView.setAbsolutePath(prePath + str);
+                fileViews.add(fileView);
+            }
+        }
+        return fileViews;
     }
 
     public static void main(String[] args) {

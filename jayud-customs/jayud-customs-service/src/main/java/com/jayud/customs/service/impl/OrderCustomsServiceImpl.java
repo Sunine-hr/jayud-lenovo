@@ -9,6 +9,8 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.FileView;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.customs.feign.FileClient;
 import com.jayud.customs.feign.OmsClient;
 import com.jayud.customs.mapper.OrderCustomsMapper;
@@ -87,13 +89,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 OrderCustoms customs = new OrderCustoms();
                 //处理附件
                 List<FileView> fileViews = subOrder.getFileViews();
-                StringBuilder sb = new StringBuilder();
-                for (FileView fileView : fileViews) {
-                    sb.append(fileView.getRelativePath()).append(",");
-                }
-                if(!"".equals(String.valueOf(sb))) {
-                    customs.setDescription(sb.substring(0, sb.length() - 1));
-                }
+                customs.setDescription(StringUtils.getFileStr(fileViews));
                 customs = ConvertUtil.convert(inputOrderCustomsForm, OrderCustoms.class);
                 customs.setOrderNo(subOrder.getOrderNo());
                 customs.setTitle(subOrder.getTitle());
@@ -154,19 +150,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                     subOrderCustomsVO.setUnitCode(orderCustoms.getUnitCode());
                     //处理子订单附件信息
                     String fileStr = orderCustoms.getFileStr();
-                    List<FileView> fileViews = new ArrayList<>();
-                    if(fileStr != null && !"".equals(fileStr)){
-                        String[] fileList = fileStr.split(",");
-                        for(String str : fileList){
-                            int index = str.lastIndexOf("/");
-                            FileView fileView = new FileView();
-                            fileView.setRelativePath(str);
-                            fileView.setFileName(str.substring(index + 1, str.length()));
-                            fileView.setAbsolutePath(prePath + str);
-                            fileViews.add(fileView);
-                        }
-                    }
-                    subOrderCustomsVO.setFileViews(fileViews);
+                    subOrderCustomsVO.setFileViews(StringUtils.getFileViews(fileStr,prePath));
                     subOrderCustomsVOS.add(subOrderCustomsVO);
                 }
                 inputOrderCustomsVO.setSubOrders(subOrderCustomsVOS);
@@ -195,19 +179,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
         for (CustomsOrderInfoVO customsOrder : customsOrderInfoVOS) {
             //处理子订单附件信息
             String fileStr = customsOrder.getFileStr();
-            List<FileView> fileViews = new ArrayList<>();
-            if(fileStr != null && !"".equals(fileStr)){
-                String[] fileList = fileStr.split(",");
-                for(String str : fileList){
-                    int index = str.lastIndexOf("/");
-                    FileView fileView = new FileView();
-                    fileView.setRelativePath(str);
-                    fileView.setFileName(str.substring(index + 1, str.length()));
-                    fileView.setAbsolutePath(prePath + str);
-                    fileViews.add(fileView);
-                }
-            }
-            customsOrder.setFileViews(fileViews);
+            customsOrder.setFileViews(StringUtils.getFileViews(fileStr,prePath));
         }
         return pageInfo;
     }

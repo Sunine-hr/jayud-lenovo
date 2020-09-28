@@ -1,5 +1,6 @@
 package com.jayud.oms.model.vo;
 
+import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

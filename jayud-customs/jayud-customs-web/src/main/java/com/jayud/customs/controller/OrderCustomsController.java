@@ -6,12 +6,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.customs.feign.OmsClient;
 import com.jayud.customs.model.bo.*;
 import com.jayud.customs.model.po.OrderCustoms;
 import com.jayud.customs.model.vo.CustomsOrderInfoVO;
-import com.jayud.customs.model.vo.FileView;
 import com.jayud.customs.model.vo.InputOrderVO;
 import com.jayud.customs.service.IOrderCustomsService;
 import io.swagger.annotations.Api;
@@ -56,13 +56,7 @@ public class OrderCustomsController {
         List<InputSubOrderCustomsForm> subOrderCustomsForms = inputOrderCustomsForm.getSubOrders();
         for(InputSubOrderCustomsForm inputSubOrderCustomsForm : subOrderCustomsForms){
             List<FileView> fileViews = inputSubOrderCustomsForm.getFileViews();
-            StringBuffer buf = new StringBuffer();
-            for (FileView fileView : fileViews) {
-                buf.append(fileView.getRelativePath()).append(",");
-            }
-            if(!"".equals(String.valueOf(buf))) {
-                inputSubOrderCustomsForm.setDescription(buf.substring(0, buf.length() - 1));
-            }
+            inputSubOrderCustomsForm.setDescription(StringUtils.getFileStr(fileViews));
         }
         if("submit".equals(form.getCmd())){
             if(inputMainOrderForm.getCustomerCode() == null || "".equals(inputMainOrderForm.getCustomerCode())
@@ -153,6 +147,7 @@ public class OrderCustomsController {
         orderCustoms.setUpdatedUser(loginUser);
         boolean result = orderCustomsService.saveOrUpdate(orderCustoms);
         //记录操作状态
+        form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
         form.setOperatorTime(LocalDateTime.now());
         form.setStatus(OrderStatusEnum.CUSTOMS_C_1.getCode());
         form.setStatusName(OrderStatusEnum.CUSTOMS_C_1.getDesc());

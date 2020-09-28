@@ -1,10 +1,13 @@
 package com.jayud.customs.model.bo;
 
+import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class OprStatusForm {
@@ -20,16 +23,19 @@ public class OprStatusForm {
     @ApiModelProperty(value = "状态名称")
     private String statusName;
 
-    @ApiModelProperty(value = "操作人")
+    @ApiModelProperty(value = "操作人",required = true)
     @NotNull(message = "操作人不能为空")
     private String operatorUser;
 
-    @ApiModelProperty(value = "操作时间")
+    @ApiModelProperty(value = "操作时间",required = true)
     @NotNull(message = "操作时间不能为空")
     private LocalDateTime operatorTime;
 
     @ApiModelProperty(value = "附件")
     private String statusPic;
+
+    @ApiModelProperty(value = "附件集合")
+    private List<FileView> fileViewList = new ArrayList<>();
 
     @ApiModelProperty(value = "备注")
     private String description;

@@ -85,4 +85,11 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      */
     List<OrderStatusVO> handleProcess(QueryOrderStatusForm form);
 
+    /**
+     * 获取子订单流程节点
+     * @param form
+     * @return
+     */
+    List<OrderStatusVO> handleSubProcess(HandleSubProcessForm form);
+
 }

@@ -176,12 +176,9 @@ public class OrderCommonController {
     @ApiOperation(value = "创建订单界面获取业务类型 classCode=订单类型")
     @PostMapping(value = "/findCreateOrderClass")
     public CommonResult findCreateOrderClass(@RequestBody Map<String,Object> param) {
+        String prePath = "http://test.oms.jayud.com:9448/";//TODO
         String classCode = MapUtil.getStr(param,"classCode");
-        param = new HashMap<>();
-        if(classCode != null && !"".equals(classCode)){
-            param.put("id_code",classCode);
-        }
-        List<ProductClassify> productClassifys = productClassifyService.findProductClassify(param);
+        List<ProductClassify> productClassifys = productClassifyService.findProductClassify(new HashMap<>());
         List<ProductClassifyVO> productClassifyVOS = new ArrayList<>();
         productClassifys.forEach(x ->{
             ProductClassifyVO productClassifyVO = new ProductClassifyVO();
@@ -189,6 +186,8 @@ public class OrderCommonController {
             productClassifyVO.setFId(x.getFId());
             productClassifyVO.setIdCode(x.getIdCode());
             productClassifyVO.setName(x.getName());
+            productClassifyVO.setObviousPic(prePath + x.getObviousPic());
+            productClassifyVO.setVaguePic(prePath + x.getVaguePic());
             if(x.getFId() == 0){
                 List<ProductClassifyVO> subObjects = new ArrayList<>();
                 productClassifys.forEach(v ->{
@@ -211,7 +210,17 @@ public class OrderCommonController {
                 productClassifyVOS.add(productClassifyVO);
             }
         });
-        return CommonResult.success(productClassifyVOS);
+        if(classCode != null && !"".equals(classCode)){
+            List<ProductClassifyVO> finalProductClassify = new ArrayList<>();
+            for (ProductClassifyVO productClass : productClassifyVOS) {
+                if(classCode.equals(productClass.getIdCode())){
+                    finalProductClassify.add(productClass);
+                }
+            }
+            return CommonResult.success(finalProductClassify);
+        }else {
+            return CommonResult.success(productClassifyVOS);
+        }
     }
 
 

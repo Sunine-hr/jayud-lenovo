@@ -2,10 +2,12 @@ package com.jayud.customs.feign;
 
 
 import com.jayud.common.ApiResult;
+import com.jayud.customs.model.bo.HandleSubProcessForm;
 import com.jayud.customs.model.bo.InputMainOrderForm;
 import com.jayud.customs.model.bo.OprOrderLogForm;
 import com.jayud.customs.model.bo.OprStatusForm;
 import com.jayud.customs.model.vo.InputMainOrderVO;
+import com.jayud.customs.model.vo.OrderStatusVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,5 +53,12 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/saveOprStatus")
     ApiResult saveOprStatus(@RequestBody OprStatusForm form);
+
+    /**
+     * 子订单流程
+     * @return
+     */
+    @RequestMapping(value = "/api/handleSubProcess")
+    ApiResult<List<OrderStatusVO>> handleSubProcess(@RequestBody HandleSubProcessForm form);
 
 }

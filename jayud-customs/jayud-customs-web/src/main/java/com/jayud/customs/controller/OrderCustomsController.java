@@ -14,6 +14,7 @@ import com.jayud.customs.model.bo.*;
 import com.jayud.customs.model.po.OrderCustoms;
 import com.jayud.customs.model.vo.CustomsOrderInfoVO;
 import com.jayud.customs.model.vo.InputOrderVO;
+import com.jayud.customs.model.vo.OrderStatusVO;
 import com.jayud.customs.service.IOrderCustomsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -315,6 +317,13 @@ public class OrderCustomsController {
         return CommonResult.success();
     }
 
+
+    @ApiOperation(value = "子订单处理流程")
+    @PostMapping(value = "/handleSubProcess")
+    public CommonResult handleSubProcess(@RequestBody @Valid HandleSubProcessForm form) {
+        List<OrderStatusVO> orderStatusVOS = omsClient.handleSubProcess(form).getData();
+        return CommonResult.success(orderStatusVOS);
+    }
 
 
 

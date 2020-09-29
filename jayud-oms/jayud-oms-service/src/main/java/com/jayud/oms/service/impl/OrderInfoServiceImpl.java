@@ -344,6 +344,56 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return orderStatusVOS;
     }
 
+    @Override
+    public List<OrderStatusVO> handleSubProcess(HandleSubProcessForm form) {
+        List<OrderStatusVO> orderStatusVOS = new ArrayList<>();
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("biz_code",form.getClassCode());
+        List<OrderStatus> allProcess = orderStatusService.list(queryWrapper);//所有流程
+        allProcess.sort((h1, h2) -> {//排序
+            if (h1.getFId().equals(h2.getFId())) {
+                return Integer.compare(h1.getSorts(), h2.getSorts());
+            }
+            return Integer.compare(h1.getFId(), h2.getFId());
+
+        });
+        allProcess.forEach(x ->{
+            if(x.getFId() != 0){
+                OrderStatusVO orderStatus = new OrderStatusVO();
+                orderStatus.setId(x.getId());
+                orderStatus.setProcessName(x.getName());
+                orderStatus.setProcessCode(x.getIdCode());
+                orderStatus.setStatus();
+                orderStatusVOS.add(orderStatus);
+            }
+        });
+        for (int i = 0; i < orderStatusVOS.size(); i++) {
+            QueryWrapper subOrderQuery = new QueryWrapper();
+            subOrderQuery.eq("status",orderStatusVOS.get(i).getProcessCode());
+            subOrderQuery.eq("order_id",form.getOrderId());
+            subOrderQuery.orderByDesc("created_time");
+            List<LogisticsTrack> logisticsTracks = logisticsTrackService.list(queryWrapper);//已操作的主流程
+            if(logisticsTracks != null && logisticsTracks.size() > 0){
+                LogisticsTrack logisticsTrack = logisticsTracks.get(0);//最新的状态
+                if(i == 0 && logisticsTrack != null){
+                    orderStatusVOS.get(0).setStatus("3");//已完成
+                    orderStatusVOS.get(0).setStatusChangeTime(DateUtils.getLocalToStr(logisticsTrack.getOperatorTime()));
+                }else if(i > 0 && logisticsTrack != null){
+                    //获取上一节点流程的创建时间
+                    queryWrapper.eq("status",orderStatusVOS.get(i-1).getProcessCode());
+                    List<LogisticsTrack> preLogisticsTracks = logisticsTrackService.list(queryWrapper);//已操作的主流程
+                    LocalDateTime preCreateTime = preLogisticsTracks.get(0).getCreatedTime();
+                    if(logisticsTrack.getCreatedTime().compareTo(preCreateTime) >= 0){
+                        orderStatusVOS.get(i).setStatus("3");//已完成
+                        orderStatusVOS.get(i).setStatusChangeTime(DateUtils.getLocalToStr(logisticsTrack.getOperatorTime()));
+                    }
+                }
+
+            }
+        }
+        return orderStatusVOS;
+    }
+
 
     /**
      * 获取当前登录用户

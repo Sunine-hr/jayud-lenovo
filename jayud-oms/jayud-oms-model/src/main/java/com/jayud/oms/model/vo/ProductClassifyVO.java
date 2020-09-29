@@ -31,6 +31,12 @@ public class ProductClassifyVO extends Model<ProductClassifyVO> {
     @ApiModelProperty(value = "父级id")
     private Long fId;
 
+    @ApiModelProperty(value = "清晰的图片")
+    private String obviousPic;
+
+    @ApiModelProperty(value = "模糊的图片")
+    private String vaguePic;
+
     @ApiModelProperty(value = "步骤描述集合")
     private String[] descs;
 

@@ -3,10 +3,12 @@ package com.jayud.oms.controller;
 import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.oms.model.bo.HandleSubProcessForm;
 import com.jayud.oms.model.bo.InputMainOrderForm;
 import com.jayud.oms.model.bo.OprStatusForm;
 import com.jayud.oms.model.po.LogisticsTrack;
 import com.jayud.oms.model.vo.InputMainOrderVO;
+import com.jayud.oms.model.vo.OrderStatusVO;
 import com.jayud.oms.service.ILogisticsTrackService;
 import com.jayud.oms.service.IOrderInfoService;
 import io.swagger.annotations.Api;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @RestController
@@ -88,6 +91,12 @@ public class ExternalApiController {
     ApiResult getLoginUser(){
         String loginUser = redisUtils.get("loginUser",100);
         return ApiResult.ok(loginUser);
+    }
+
+    @RequestMapping(value = "/api/handleSubProcess")
+    ApiResult handleSubProcess(@RequestBody HandleSubProcessForm form){
+        List<OrderStatusVO> orderStatusVOS = orderInfoService.handleSubProcess(form);
+        return ApiResult.ok(orderStatusVOS);
     }
 
 

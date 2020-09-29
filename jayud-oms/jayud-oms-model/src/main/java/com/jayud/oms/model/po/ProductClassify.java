@@ -47,6 +47,12 @@ public class ProductClassify extends Model<ProductClassify> {
     @ApiModelProperty(value = "状态(0无效 1有效)")
     private String status;
 
+    @ApiModelProperty(value = "清晰的图片")
+    private String obviousPic;
+
+    @ApiModelProperty(value = "模糊的图片")
+    private String vaguePic;
+
     @ApiModelProperty(value = "创建人")
     private String createUser;
 

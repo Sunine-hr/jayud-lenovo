@@ -10,6 +10,8 @@
         <result column="f_id" property="fId" />
         <result column="description" property="description" />
         <result column="status" property="status" />
+        <result column="obvious_pic" property="obviousPic" />
+        <result column="vague_pic" property="vaguePic" />
         <result column="create_user" property="createUser" />
         <result column="create_time" property="createTime" />
         <result column="update_user" property="updateUser" />
@@ -18,7 +20,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, id_code, name, f_id, description, status, create_user, create_time, update_user, update_time
+        id, id_code, name, f_id, description, status, create_user, create_time, update_user, update_time,obviousPic,vaguePic
     </sql>
 
 </mapper>

@@ -18,6 +18,7 @@
         <result column="reference_no" property="referenceNo" />
         <result column="cntr_no" property="cntrNo" />
         <result column="biz_code" property="bizCode" />
+        <result column="class_code" property="classCode" />
         <result column="status" property="status" />
         <result column="biz_belong_depart" property="bizBelongDepart" />
         <result column="create_time" property="createTime" />
@@ -28,7 +29,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, order_no, customer_code, customer_name, biz_uid, biz_uname, unit_account, unit_code, contract_no, legal_code, legal_name, reference_no, cntr_no, biz_code, status, create_time, created_user, up_time, up_user
+        id, order_no, customer_code, customer_name, biz_uid, biz_uname, unit_account, unit_code, contract_no, legal_code, legal_name, reference_no, cntr_no, biz_code,class_code, status, create_time, created_user, up_time, up_user
     </sql>
 
     <select id="findOrderInfoByPage" parameterType="com.jayud.oms.model.bo.QueryOrderInfoForm" resultType="com.jayud.oms.model.vo.OrderInfoVO" >
@@ -66,7 +67,7 @@
         (CASE oi.`status` WHEN 1 THEN '正常'
         WHEN 2 THEN '草稿'
         WHEN 3 THEN '关闭' END) statusDesc,
-        oi.`biz_code` bizCode,
+        oi.`class_code` classCode,
         (SELECT pc.name FROM product_classify pc WHERE pc.id_code = oi.`biz_code`) bizDesc,
         oi.`customer_name` customerName,
         (SELECT CONCAT(ota.`describe`,' ',ota.`amount`,(CASE ota.`unit` WHEN 1 THEN '件' WHEN 2 THEN '其他'
@@ -94,8 +95,8 @@
         <if test="form.portCode != null and form.portCode != ''">
             and temp.portCode = #{form.portCode}
         </if>
-        <if test="form.bizCode != null and form.bizCode !=''">
-            and temp.bizCode = #{form.bizCode}
+        <if test="form.classCode != null and form.classCode !=''">
+            and temp.classCode = #{form.classCode}
         </if>
     </select>
 

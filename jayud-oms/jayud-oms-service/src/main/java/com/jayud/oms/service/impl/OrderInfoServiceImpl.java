@@ -79,10 +79,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderInfo.setUpUser(getLoginUser());
         }else {//新增
             //生成主订单号
-            String orderNo = StringUtils.loadNum("MAIN",12);
+            String orderNo = StringUtils.loadNum("M",12);
             while (true){
                 if(!isExistOrder(orderNo)){//重复
-                    orderNo = StringUtils.loadNum("MAIN",12);
+                    orderNo = StringUtils.loadNum("M",12);
                 }else {
                     break;
                 }

@@ -41,8 +41,8 @@ public class ProductClassify extends Model<ProductClassify> {
     @ApiModelProperty(value = "父级id")
     private Long fId;
 
-    @ApiModelProperty(value = "业务类型(product_bize code)")
-    private String bizCode;
+    @ApiModelProperty(value = "描述")
+    private String description;
 
     @ApiModelProperty(value = "状态(0无效 1有效)")
     private String status;

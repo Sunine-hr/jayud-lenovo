@@ -53,6 +53,20 @@ public class OrderCustomsController {
         if(inputMainOrderForm == null || inputOrderCustomsForm == null){
             return CommonResult.error(400,"参数不合法");
         }
+        //处理六连单号/提运单/提运单号/柜号附件处理
+        if(inputOrderCustomsForm.getCntrPics() != null && inputOrderCustomsForm.getCntrPics().size() > 0){
+            inputOrderCustomsForm.setCntrPic(StringUtils.getFileStr(inputOrderCustomsForm.getCntrPics()));
+        }
+        if(inputOrderCustomsForm.getEncodePics() != null && inputOrderCustomsForm.getEncodePics().size() > 0){
+            inputOrderCustomsForm.setEncodePic(StringUtils.getFileStr(inputOrderCustomsForm.getEncodePics()));
+        }
+        if(inputOrderCustomsForm.getAirTransportPics() != null && inputOrderCustomsForm.getAirTransportPics().size() > 0){
+            inputOrderCustomsForm.setAirTransportPic(StringUtils.getFileStr(inputOrderCustomsForm.getAirTransportPics()));
+        }
+        if(inputOrderCustomsForm.getSeaTransportPics() != null && inputOrderCustomsForm.getSeaTransportPics().size() > 0){
+            inputOrderCustomsForm.setSeaTransportPic(StringUtils.getFileStr(inputOrderCustomsForm.getSeaTransportPics()));
+        }
+
         //处理附件，前台提供数组
         List<InputSubOrderCustomsForm> subOrderCustomsForms = inputOrderCustomsForm.getSubOrders();
         for(InputSubOrderCustomsForm inputSubOrderCustomsForm : subOrderCustomsForms){
@@ -67,6 +81,8 @@ public class OrderCustomsController {
             || inputMainOrderForm.getLegalName() == null || "".equals(inputMainOrderForm.getLegalName())
             || inputMainOrderForm.getBizBelongDepart() == null
             || inputMainOrderForm.getReferenceNo() == null || "".equals(inputMainOrderForm.getReferenceNo())
+            || inputMainOrderForm.getBizCode() == null || "".equals(inputMainOrderForm.getBizCode())//业务类型
+            || inputMainOrderForm.getClassCode() == null || "".equals(inputMainOrderForm.getClassCode())//产品类别
                     //报关单
             || inputOrderCustomsForm.getPortCode() == null || "".equals(inputOrderCustomsForm.getPortCode())
             || inputOrderCustomsForm.getPortName() == null || "".equals(inputOrderCustomsForm.getPortName())
@@ -78,7 +94,8 @@ public class OrderCustomsController {
             for (InputSubOrderCustomsForm subOrderCustomsForm : inputOrderCustomsForm.getSubOrders()) {
                 if(subOrderCustomsForm.getOrderNo() == null || "".equals(subOrderCustomsForm.getOrderNo())
                         || subOrderCustomsForm.getTitle() == null || "".equals(subOrderCustomsForm.getTitle())
-                    || subOrderCustomsForm.getUnitCode() == null || "".equals(subOrderCustomsForm.getUnitCode())) {
+                    || subOrderCustomsForm.getUnitCode() == null || "".equals(subOrderCustomsForm.getUnitCode())
+                    || subOrderCustomsForm.getIsTitle() == null || "".equals(subOrderCustomsForm.getIsTitle())) {
                     flag = false;
                     break;
                 }

@@ -27,6 +27,9 @@ public class InputSubOrderCustomsForm {
     @ApiModelProperty(value = "附件,多个逗号分隔,前台忽略")
     private String description;
 
+    @ApiModelProperty(value = "单双抬头")
+    private String isTitle;
+
     @ApiModelProperty(value = "附件",required = true)
     @NotEmpty(message = "fileViews is required")
     private List<FileView> fileViews = new ArrayList<>();

@@ -62,8 +62,11 @@ public class OrderInfo extends Model<OrderInfo> {
     @ApiModelProperty(value = "客户参考号")
     private String referenceNo;
 
-    @ApiModelProperty(value = "对应业务类型(product_biz code 多个时用逗号分开)")
+    @ApiModelProperty(value = "对应业务类型")
     private String bizCode;
+
+    @ApiModelProperty(value = "订单类型")
+    private String classCode;
 
     @ApiModelProperty(value = "订单状态1正常 2草稿 3关闭")
     private Integer status;

@@ -53,6 +53,9 @@ public class OrderComboxController {
     @Autowired
     ICostTypeService costTypeService;
 
+    @Autowired
+    IProductBizService productBizService;
+
     @ApiOperation(value = "纯报关-客户,业务员,合同,业务所属部门,通关口岸")
     @PostMapping(value = "/initCombox1")
     public CommonResult<Map<String,Object>> initCombox1() {
@@ -106,6 +109,17 @@ public class OrderComboxController {
             comboxStrVOS.add(comboxStrVO);
         }
         resultMap.put("proInfos",comboxStrVOS);
+
+        //业务类型
+        List<ProductBiz> productBizs = productBizService.findProductBiz();
+        comboxStrVOS = new ArrayList<>();
+        for (ProductBiz productBiz : productBizs) {
+            InitComboxStrVO comboxStrVO = new InitComboxStrVO();
+            comboxStrVO.setCode(productBiz.getIdCode());
+            comboxStrVO.setName(productBiz.getName());
+            comboxStrVOS.add(comboxStrVO);
+        }
+        resultMap.put("bizCodes",comboxStrVOS);
         return CommonResult.success(resultMap);
     }
 
@@ -149,7 +163,9 @@ public class OrderComboxController {
     @ApiOperation(value = "纯报关-作业类型")
     @PostMapping(value = "/initBizType")
     public CommonResult<List<InitComboxStrVO>> initBizType() {
-        List<ProductClassify> productClassifies = productClassifyService.findProductClassify(new HashMap<>());
+        Map<String,Object> param = new HashMap<>();
+        param.put("f_id",0);
+        List<ProductClassify> productClassifies = productClassifyService.findProductClassify(param);
         List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
         for (ProductClassify productClassify : productClassifies) {
             InitComboxStrVO comboxStrVO = new InitComboxStrVO();

@@ -3,6 +3,7 @@ package com.jayud.oms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
@@ -135,10 +136,10 @@ public class OrderCommonController {
     public CommonResult<List<LogisticsTrackVO>> findReplyStatus(@RequestBody QueryLogisticsTrackForm form) {
         List<LogisticsTrackVO> logisticsTrackVOS = logisticsTrackService.findReplyStatus(form);
         for (LogisticsTrackVO logisticsTrackVO : logisticsTrackVOS) {
-            logisticsTrackVO.setFlag(false);
-            if(logisticsTrackVO.getOperatorUser() != null && !"".equals(logisticsTrackVO.getOperatorUser())
-               && logisticsTrackVO.getOperatorTime() != null && !"".equals(logisticsTrackVO.getOperatorTime())){
-                logisticsTrackVO.setFlag(true);
+            logisticsTrackVO.setFlag(true);
+            if(OrderStatusEnum.CUSTOMS_C_7.getCode().equals(logisticsTrackVO.getStatus()) ||
+               OrderStatusEnum.CUSTOMS_C_8.getCode().equals(logisticsTrackVO.getStatus())){
+                logisticsTrackVO.setFlag(false);
             }
         }
         return CommonResult.success(logisticsTrackVOS);
@@ -172,13 +173,13 @@ public class OrderCommonController {
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "创建订单界面获取业务类型 bizCode=业务类型")
+    @ApiOperation(value = "创建订单界面获取业务类型 classCode=订单类型")
     @PostMapping(value = "/findCreateOrderClass")
     public CommonResult findCreateOrderClass(@RequestBody Map<String,Object> param) {
-        String bizCode = MapUtil.getStr(param,"bizCode");
+        String classCode = MapUtil.getStr(param,"classCode");
         param = new HashMap<>();
-        if(bizCode != null && !"".equals(bizCode)){
-            param.put("biz_code",bizCode);
+        if(classCode != null && !"".equals(classCode)){
+            param.put("id_code",classCode);
         }
         List<ProductClassify> productClassifys = productClassifyService.findProductClassify(param);
         List<ProductClassifyVO> productClassifyVOS = new ArrayList<>();
@@ -197,6 +198,12 @@ public class OrderCommonController {
                         subObject.setFId(v.getFId());
                         subObject.setIdCode(v.getIdCode());
                         subObject.setName(v.getName());
+                        //处理步骤描述
+                        String desc = v.getDescription();
+                        if(desc != null){
+                            String[] descs = desc.split(";");
+                            subObject.setDescs(descs);
+                        }
                         subObjects.add(subObject);
                     }
                 });

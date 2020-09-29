@@ -31,6 +31,9 @@ public class ProductClassifyVO extends Model<ProductClassifyVO> {
     @ApiModelProperty(value = "父级id")
     private Long fId;
 
+    @ApiModelProperty(value = "步骤描述集合")
+    private String[] descs;
+
     @ApiModelProperty(value = "子集合")
     private List<ProductClassifyVO> productClassifyVOS;
 

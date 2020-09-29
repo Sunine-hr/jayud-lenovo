@@ -59,6 +59,9 @@ public class OrderCustoms extends Model<OrderCustoms> {
     @ApiModelProperty(value = "报关抬头")
     private String title;
 
+    @ApiModelProperty(value = "单双抬头")
+    private String isTitle;
+
     @ApiModelProperty(value = "结算代码(customer_info)")
     private String unitCode;
 
@@ -67,6 +70,27 @@ public class OrderCustoms extends Model<OrderCustoms> {
 
     @ApiModelProperty(value = "委托单号")
     private String entrustNo;
+
+    @ApiModelProperty(value = "六联单号附件")
+    private String encodePic;
+
+    @ApiModelProperty(value = "业务模式(1-陆路运输 2-空运 3-海运 4-快递)")
+    private String bizModel;
+
+    @ApiModelProperty(value = "提运单")
+    private String airTransportNo;
+
+    @ApiModelProperty(value = "提运单附件")
+    private String airTransportPic;
+
+    @ApiModelProperty(value = "提运单号")
+    private String seaTransportNo;
+
+    @ApiModelProperty(value = "提运单号附件")
+    private String seaTransportPic;
+
+    @ApiModelProperty(value = "是否代垫税金1-是 0-否")
+    private String isAgencyTax;
 
     @ApiModelProperty(value = "状态(0-未接单 1-已接单 2-接单中 3-放行通过 4-放行驳回  5-已完成)")
     private String status;

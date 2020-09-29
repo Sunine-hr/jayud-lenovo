@@ -45,8 +45,8 @@
         (CASE oi.`status` WHEN 1 THEN '正常'
         WHEN 2 THEN '草稿'
         WHEN 3 THEN '关闭' END) statusDesc,
-        oi.`biz_code` bizCode,
-        (SELECT pc.name FROM product_classify pc WHERE pc.id_code = oi.`biz_code`) bizDesc,
+        oi.`class_code` bizCode,
+        (SELECT pc.name FROM product_classify pc WHERE pc.id_code = oi.`class_code`) bizDesc,
         oi.`customer_name` customerName,
         '' goodsInfo,
         '' takeAddress,
@@ -67,8 +67,8 @@
         (CASE oi.`status` WHEN 1 THEN '正常'
         WHEN 2 THEN '草稿'
         WHEN 3 THEN '关闭' END) statusDesc,
-        oi.`class_code` classCode,
-        (SELECT pc.name FROM product_classify pc WHERE pc.id_code = oi.`biz_code`) bizDesc,
+        oi.`class_code` bizCode,
+        (SELECT pc.name FROM product_classify pc WHERE pc.id_code = oi.`class_code`) bizDesc,
         oi.`customer_name` customerName,
         (SELECT CONCAT(ota.`describe`,' ',ota.`amount`,(CASE ota.`unit` WHEN 1 THEN '件' WHEN 2 THEN '其他'
         END),',','重量',ota.`weight`,'KG') FROM order_take_adr ota WHERE ota.`order_no` = ot.order_no AND ota.`types` = 1 ORDER BY ota.`id` LIMIT 1) goodsInfo,
@@ -111,7 +111,9 @@
             oi.`contract_no` contractNo,
             oi.`legal_name` legalName,
             oi.`biz_belong_depart` bizBelongDepart,
-            oi.`reference_no` referenceNo
+            oi.`reference_no` referenceNo,
+            oi.`biz_code` bizCode,
+            (SELECT pb.name FROM product_biz pb WHERE pb.id_code = oi.`biz_code` LIMIT 1) bizDesc
         FROM
             order_info oi WHERE 1 = 1
         <if test="idValue != null and idValue != ''">

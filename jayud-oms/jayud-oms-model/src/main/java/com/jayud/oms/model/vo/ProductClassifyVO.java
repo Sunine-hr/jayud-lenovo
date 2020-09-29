@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,7 +42,7 @@ public class ProductClassifyVO extends Model<ProductClassifyVO> {
     private String[] descs;
 
     @ApiModelProperty(value = "子集合")
-    private List<ProductClassifyVO> productClassifyVOS;
+    private List<ProductClassifyVO> productClassifyVOS = new ArrayList<>();
 
 
 }

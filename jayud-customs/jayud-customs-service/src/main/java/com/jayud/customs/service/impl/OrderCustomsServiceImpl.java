@@ -138,8 +138,15 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 inputOrderCustomsVO.setPortName(orderCustomsVO.getPortName());
                 inputOrderCustomsVO.setGoodsType(orderCustomsVO.getGoodsType());
                 inputOrderCustomsVO.setCntrNo(orderCustomsVO.getCntrNo());
-                inputOrderCustomsVO.setCntrPic(""+orderCustomsVO.getCntrPic());
+                inputOrderCustomsVO.setCntrPics(StringUtils.getFileViews(orderCustomsVO.getCntrPic(),prePath));
                 inputOrderCustomsVO.setEncode(orderCustomsVO.getEncode());
+                inputOrderCustomsVO.setEncodePics(StringUtils.getFileViews(orderCustomsVO.getEncodePic(),prePath));
+                inputOrderCustomsVO.setIsAgencyTax(orderCustomsVO.getIsAgencyTax());
+                inputOrderCustomsVO.setSeaTransportNo(orderCustomsVO.getSeaTransportNo());
+                inputOrderCustomsVO.setSeaTransportPics(StringUtils.getFileViews(orderCustomsVO.getSeaTransportPic(),prePath));
+                inputOrderCustomsVO.setAirTransportNo(orderCustomsVO.getAirTransportNo());
+                inputOrderCustomsVO.setAirTransportPics(StringUtils.getFileViews(orderCustomsVO.getAirTransportPic(),prePath));
+                inputOrderCustomsVO.setLegalName(orderCustomsVO.getLegalName());
                 //处理子订单部分
                 List<InputSubOrderCustomsVO> subOrderCustomsVOS = new ArrayList<>();
                 for (OrderCustomsVO orderCustoms : orderCustomsVOS) {
@@ -147,6 +154,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                     subOrderCustomsVO.setSubOrderId(orderCustoms.getSubOrderId());
                     subOrderCustomsVO.setOrderNo(orderCustoms.getOrderNo());
                     subOrderCustomsVO.setTitle(orderCustoms.getTitle());
+                    subOrderCustomsVO.setIsTitle(orderCustoms.getIsTitle());
                     subOrderCustomsVO.setUnitCode(orderCustoms.getUnitCode());
                     //处理子订单附件信息
                     String fileStr = orderCustoms.getFileStr();

@@ -45,7 +45,16 @@
             oc.`order_no` orderNo,
             oc.`title`,
             oc.`unit_code` unitCode,
-            oc.`description` fileStr
+            oc.`description` fileStr,
+            oc.`is_title` isTitle,
+            oc.`encode_pic` encodePic,
+            oc.`biz_model` bizModel,
+            oc.`air_transport_no` airTransportNo,
+            oc.`air_transport_pic` airTransportPic,
+            oc.`sea_transport_no` seaTransportNo,
+            oc.`sea_transport_pic` seaTransportPic,
+            oc.`is_agency_tax` isAgencyTax,
+            oc.`legal_name` legalName
         FROM
             order_customs oc
         WHERE 1 = 1

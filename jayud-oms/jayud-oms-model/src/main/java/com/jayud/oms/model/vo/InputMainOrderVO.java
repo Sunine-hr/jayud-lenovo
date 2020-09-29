@@ -37,4 +37,10 @@ public class InputMainOrderVO {
     @ApiModelProperty(value = "客户参考号")
     private String referenceNo;
 
+    @ApiModelProperty(value = "业务类型")
+    private String bizCode;
+
+    @ApiModelProperty(value = "业务类型描述")
+    private String bizDesc;
+
 }

@@ -66,6 +66,9 @@ public class InputOrderCustomsForm {
     @ApiModelProperty(value = "是否代垫税金1-是 0-否")
     private String isAgencyTax;
 
+    @ApiModelProperty(value = "接单法人")
+    private String legalName;
+
     @ApiModelProperty(value = "子订单",required = true)
     @NotEmpty(message = "subOrders is required")
     private List<InputSubOrderCustomsForm> subOrders;

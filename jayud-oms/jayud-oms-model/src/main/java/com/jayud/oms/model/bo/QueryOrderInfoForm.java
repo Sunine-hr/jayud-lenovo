@@ -13,7 +13,7 @@ public class QueryOrderInfoForm extends BasePageForm{
     private String portCode;
 
     @ApiModelProperty(value = "作业类型")
-    private String bizCode;
+    private String classCode;
 
     @ApiModelProperty(value = "操作指令,cmd = noSubmit or submit costAudit")
     private String cmd;

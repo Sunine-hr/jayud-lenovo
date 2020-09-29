@@ -19,6 +19,9 @@ public class InputSubOrderCustomsVO {
     @ApiModelProperty(value = "报关抬头")
     private String title;
 
+    @ApiModelProperty(value = "单双抬头")
+    private String isTitle;
+
     @ApiModelProperty(value = "结算单位code")
     private String unitCode;
 

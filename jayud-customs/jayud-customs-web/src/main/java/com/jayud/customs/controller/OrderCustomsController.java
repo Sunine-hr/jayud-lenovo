@@ -89,6 +89,7 @@ public class OrderCustomsController {
             || inputOrderCustomsForm.getPortCode() == null || "".equals(inputOrderCustomsForm.getPortCode())
             || inputOrderCustomsForm.getPortName() == null || "".equals(inputOrderCustomsForm.getPortName())
             || inputOrderCustomsForm.getGoodsType() == null
+            || inputOrderCustomsForm.getLegalName() == null || "".equals(inputOrderCustomsForm.getLegalName())
             || inputOrderCustomsForm.getSubOrders() == null || inputOrderCustomsForm.getSubOrders().size() == 0){
                 flag = false;
             }

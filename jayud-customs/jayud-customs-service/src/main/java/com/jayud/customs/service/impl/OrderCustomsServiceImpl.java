@@ -93,6 +93,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 customs = ConvertUtil.convert(inputOrderCustomsForm, OrderCustoms.class);
                 customs.setOrderNo(subOrder.getOrderNo());
                 customs.setTitle(subOrder.getTitle());
+                customs.setIsTitle(subOrder.getIsTitle());
                 customs.setUnitCode(subOrder.getUnitCode());
                 customs.setMainOrderNo(String.valueOf(apiResult.getData()));
                 customs.setStatus(OrderStatusEnum.CUSTOMS_C_0.getCode());
@@ -147,6 +148,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 inputOrderCustomsVO.setAirTransportNo(orderCustomsVO.getAirTransportNo());
                 inputOrderCustomsVO.setAirTransportPics(StringUtils.getFileViews(orderCustomsVO.getAirTransportPic(),prePath));
                 inputOrderCustomsVO.setLegalName(orderCustomsVO.getLegalName());
+                inputOrderCustomsVO.setBizModel(orderCustomsVO.getBizModel());
                 //处理子订单部分
                 List<InputSubOrderCustomsVO> subOrderCustomsVOS = new ArrayList<>();
                 for (OrderCustomsVO orderCustoms : orderCustomsVOS) {

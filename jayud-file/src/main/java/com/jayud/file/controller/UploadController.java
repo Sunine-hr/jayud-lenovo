@@ -82,7 +82,7 @@ public class UploadController {
     @PostMapping("/delete")
     @ApiOperation(value = "删除文件", httpMethod = "POST")
     public ApiResult singleFileDelete(@RequestBody Map<String,Object> paramMap) {
-        String param = MapUtil.getStr(paramMap,"param");
+        String param = MapUtil.getStr(paramMap,"absolutePath");
         if (param.isEmpty()) {
             return ApiResult.error(1, "文件地址不能为空!");
         }

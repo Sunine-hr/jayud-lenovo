@@ -177,12 +177,12 @@ public class OrderCustomsController {
         form.setStatus(OrderStatusEnum.CUSTOMS_C_1.getCode());
         form.setStatusName(OrderStatusEnum.CUSTOMS_C_1.getDesc());
         omsClient.saveOprStatus(form);
-        //接单时也需要初始化一条报关中的操作记录
+       /* //接单时也需要初始化一条报关中的操作记录
         OprStatusForm extForm = new OprStatusForm();
         extForm.setMainOrderId(form.getMainOrderId());
         extForm.setStatus(OrderStatusEnum.MAIN_PROCESS_3.getCode());
         extForm.setStatusName(OrderStatusEnum.MAIN_PROCESS_3.getDesc());
-        omsClient.saveOprStatus(extForm);
+        omsClient.saveOprStatus(extForm);*/
         if(!result){
             return CommonResult.error(400,"操作失败");
         }

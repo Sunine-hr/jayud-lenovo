@@ -4,13 +4,14 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 
 @Data
 public class HandleSubProcessForm {
 
     @ApiModelProperty(value = "子订单ID",required = true)
-    @NotEmpty(message = "orderId is required")
+    @NotNull(message = "orderId is required")
     private Long orderId;
 
     @ApiModelProperty(value = "产品类型",required = true)

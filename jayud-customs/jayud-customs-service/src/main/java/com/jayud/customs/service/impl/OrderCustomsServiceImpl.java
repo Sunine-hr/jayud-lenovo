@@ -180,7 +180,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
         //定义分页参数
         Page<CustomsOrderInfoVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
-        page.addOrder(OrderItem.asc("oc.id"));
+        page.addOrder(OrderItem.desc("oc.id"));
         IPage<CustomsOrderInfoVO> pageInfo = baseMapper.findCustomsOrderByPage(page, form);
         //处理附件
         List<CustomsOrderInfoVO> customsOrderInfoVOS = pageInfo.getRecords();

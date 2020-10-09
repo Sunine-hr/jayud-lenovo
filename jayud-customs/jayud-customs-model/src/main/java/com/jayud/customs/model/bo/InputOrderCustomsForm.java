@@ -27,8 +27,11 @@ public class InputOrderCustomsForm {
     @ApiModelProperty(value = "柜号")
     private String cntrNo;
 
-    @ApiModelProperty(value = "柜号上传附件地址")
+    @ApiModelProperty(value = "柜号上传附件地址,前台忽略")
     private String cntrPic;
+
+    @ApiModelProperty(value = "柜号上传附件地址名称,前台忽略")
+    private String cntrPicName;
 
     @ApiModelProperty(value = "柜号上传附件地址数组集合")
     private List<FileView> cntrPics = new ArrayList<>();
@@ -36,8 +39,11 @@ public class InputOrderCustomsForm {
     @ApiModelProperty(value = "六联单号")
     private String encode;
 
-    @ApiModelProperty(value = "六联单号附件")
+    @ApiModelProperty(value = "六联单号附件,前台忽略")
     private String encodePic;
+
+    @ApiModelProperty(value = "六联单号附件名称,前台忽略")
+    private String encodePicName;
 
     @ApiModelProperty(value = "六联单号附件数组集合")
     private List<FileView> encodePics = new ArrayList<>();
@@ -48,8 +54,11 @@ public class InputOrderCustomsForm {
     @ApiModelProperty(value = "提运单")
     private String airTransportNo;
 
-    @ApiModelProperty(value = "提运单附件")
+    @ApiModelProperty(value = "提运单附件,前台忽略")
     private String airTransportPic;
+
+    @ApiModelProperty(value = "提运单附件名称,前台忽略")
+    private String airTransPicName;
 
     @ApiModelProperty(value = "提运单附件数组集合")
     private List<FileView> airTransportPics = new ArrayList<>();
@@ -57,8 +66,11 @@ public class InputOrderCustomsForm {
     @ApiModelProperty(value = "提运单号")
     private String seaTransportNo;
 
-    @ApiModelProperty(value = "提运单号附件")
+    @ApiModelProperty(value = "提运单号附件,前台忽略")
     private String seaTransportPic;
+
+    @ApiModelProperty(value = "提运单号附件名称,前台忽略")
+    private String seaTransPicName;
 
     @ApiModelProperty(value = "提运单号附件数组集合")
     private List<FileView> seaTransportPics = new ArrayList<>();

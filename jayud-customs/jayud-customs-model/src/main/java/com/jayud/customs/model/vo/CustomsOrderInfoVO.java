@@ -52,6 +52,9 @@ public class CustomsOrderInfoVO {
     @ApiModelProperty(value = "附件")
     private String fileStr;
 
+    @ApiModelProperty(value = "附件")
+    private String fileNameStr;
+
     @ApiModelProperty(value = "委托号")
     private String entrustNo;
 

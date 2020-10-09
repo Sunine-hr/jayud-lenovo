@@ -9,7 +9,6 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.customs.feign.FileClient;
 import com.jayud.customs.feign.OmsClient;
@@ -87,9 +86,8 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
             List<InputSubOrderCustomsForm> subOrderCustomsForms = inputOrderCustomsForm.getSubOrders();
             for (InputSubOrderCustomsForm subOrder : subOrderCustomsForms) {
                 OrderCustoms customs = new OrderCustoms();
-                //处理附件
-                List<FileView> fileViews = subOrder.getFileViews();
-                customs.setDescription(StringUtils.getFileStr(fileViews));
+                customs.setDescription(subOrder.getDescription());
+                customs.setDescName(subOrder.getDescName());
                 customs = ConvertUtil.convert(inputOrderCustomsForm, OrderCustoms.class);
                 customs.setOrderNo(subOrder.getOrderNo());
                 customs.setTitle(subOrder.getTitle());
@@ -139,14 +137,14 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 inputOrderCustomsVO.setPortName(orderCustomsVO.getPortName());
                 inputOrderCustomsVO.setGoodsType(orderCustomsVO.getGoodsType());
                 inputOrderCustomsVO.setCntrNo(orderCustomsVO.getCntrNo());
-                inputOrderCustomsVO.setCntrPics(StringUtils.getFileViews(orderCustomsVO.getCntrPic(),prePath));
+                inputOrderCustomsVO.setCntrPics(StringUtils.getFileViews(orderCustomsVO.getCntrPic(),orderCustomsVO.getCntrPicName(),prePath));
                 inputOrderCustomsVO.setEncode(orderCustomsVO.getEncode());
-                inputOrderCustomsVO.setEncodePics(StringUtils.getFileViews(orderCustomsVO.getEncodePic(),prePath));
+                inputOrderCustomsVO.setEncodePics(StringUtils.getFileViews(orderCustomsVO.getEncodePic(),orderCustomsVO.getEncodePicName(),prePath));
                 inputOrderCustomsVO.setIsAgencyTax(orderCustomsVO.getIsAgencyTax());
                 inputOrderCustomsVO.setSeaTransportNo(orderCustomsVO.getSeaTransportNo());
-                inputOrderCustomsVO.setSeaTransportPics(StringUtils.getFileViews(orderCustomsVO.getSeaTransportPic(),prePath));
+                inputOrderCustomsVO.setSeaTransportPics(StringUtils.getFileViews(orderCustomsVO.getSeaTransportPic(),orderCustomsVO.getSeaTransPicName(),prePath));
                 inputOrderCustomsVO.setAirTransportNo(orderCustomsVO.getAirTransportNo());
-                inputOrderCustomsVO.setAirTransportPics(StringUtils.getFileViews(orderCustomsVO.getAirTransportPic(),prePath));
+                inputOrderCustomsVO.setAirTransportPics(StringUtils.getFileViews(orderCustomsVO.getAirTransportPic(),orderCustomsVO.getAirTransPicName(),prePath));
                 inputOrderCustomsVO.setLegalName(orderCustomsVO.getLegalName());
                 inputOrderCustomsVO.setBizModel(orderCustomsVO.getBizModel());
                 //处理子订单部分
@@ -160,7 +158,8 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                     subOrderCustomsVO.setUnitCode(orderCustoms.getUnitCode());
                     //处理子订单附件信息
                     String fileStr = orderCustoms.getFileStr();
-                    subOrderCustomsVO.setFileViews(StringUtils.getFileViews(fileStr,prePath));
+                    String fileNameStr = orderCustoms.getFileNameStr();
+                    subOrderCustomsVO.setFileViews(StringUtils.getFileViews(fileStr,fileNameStr,prePath));
                     subOrderCustomsVOS.add(subOrderCustomsVO);
                 }
                 inputOrderCustomsVO.setSubOrders(subOrderCustomsVOS);
@@ -189,7 +188,8 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
         for (CustomsOrderInfoVO customsOrder : customsOrderInfoVOS) {
             //处理子订单附件信息
             String fileStr = customsOrder.getFileStr();
-            customsOrder.setFileViews(StringUtils.getFileViews(fileStr,prePath));
+            String fileNameStr = customsOrder.getFileNameStr();
+            customsOrder.setFileViews(StringUtils.getFileViews(fileStr,fileNameStr,prePath));
         }
         return pageInfo;
     }

@@ -77,7 +77,8 @@ public class LogisticsTrackServiceImpl extends ServiceImpl<LogisticsTrackMapper,
                 logisticsTrackVOS.get(i).setOperatorUser(nowOprProcess.getOperatorUser());
                 logisticsTrackVOS.get(i).setOperatorTime(nowOprProcess.getOperatorTime());
                 String statusPic = nowOprProcess.getStatusPic();
-                logisticsTrackVOS.get(i).setFileViewList(StringUtils.getFileViews(statusPic,prePath));
+                String statusPicNme = nowOprProcess.getStatusPicName();
+                logisticsTrackVOS.get(i).setFileViewList(StringUtils.getFileViews(statusPic,statusPicNme,prePath));
             }
 
         }

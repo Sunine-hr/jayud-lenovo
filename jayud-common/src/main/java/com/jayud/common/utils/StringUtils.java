@@ -181,20 +181,40 @@ public class StringUtils {
     }
 
     /**
+     * 将附件集合处理成字符串逗号拼接
+     * @param fileViewList
+     * @return
+     */
+    public static String getFileNameStr(List<FileView> fileViewList){
+        String fileNameStr = "";
+        if(fileViewList == null || fileViewList.size() == 0){
+            return fileNameStr;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (FileView fileView : fileViewList) {
+            sb.append(fileView.getFileName()).append(",");
+        }
+        if(!"".equals(String.valueOf(sb))) {
+            fileNameStr = sb.substring(0, sb.length() - 1);
+        }
+        return fileNameStr;
+    }
+
+    /**
      * 把字符串解析成文件数组
      * @param fileStr
      * @return
      */
-    public static List<FileView> getFileViews(String fileStr,String prePath){
+    public static List<FileView> getFileViews(String fileStr,String fileNameStr,String prePath){
         List<FileView> fileViews = new ArrayList<>();
-        if(fileStr != null && !"".equals(fileStr)){
+        if(fileStr != null && !"".equals(fileStr) && fileNameStr != null && !"".equals(fileNameStr)){
+            String[] fileNameList = fileNameStr.split(",");
             String[] fileList = fileStr.split(",");
-            for(String str : fileList){
-                int index = str.lastIndexOf("/");
+            for (int i = 0; i < fileList.length; i++) {
                 FileView fileView = new FileView();
-                fileView.setRelativePath(str);
-                fileView.setFileName(str.substring(index + 1, str.length()));
-                fileView.setAbsolutePath(prePath + str);
+                fileView.setRelativePath(fileList[i]);
+                fileView.setFileName(fileNameList[i]);
+                fileView.setAbsolutePath(prePath + fileList[i]);
                 fileViews.add(fileView);
             }
         }

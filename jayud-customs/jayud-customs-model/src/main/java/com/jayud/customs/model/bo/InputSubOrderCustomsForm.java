@@ -27,6 +27,9 @@ public class InputSubOrderCustomsForm {
     @ApiModelProperty(value = "附件,多个逗号分隔,前台忽略")
     private String description;
 
+    @ApiModelProperty(value = "附件名称,多个逗号分隔,前台忽略")
+    private String descName;
+
     @ApiModelProperty(value = "单双抬头")
     private String isTitle;
 

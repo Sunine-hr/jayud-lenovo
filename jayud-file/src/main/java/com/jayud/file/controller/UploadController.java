@@ -1,5 +1,6 @@
 package com.jayud.file.controller;
 
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONObject;
 import com.jayud.common.ApiResult;
 import com.jayud.file.service.UploadService;
@@ -8,11 +9,10 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
 
 
 /**
@@ -81,7 +81,8 @@ public class UploadController {
      */
     @PostMapping("/delete")
     @ApiOperation(value = "删除文件", httpMethod = "POST")
-    public ApiResult singleFileDelete(String param) {
+    public ApiResult singleFileDelete(@RequestBody Map<String,Object> paramMap) {
+        String param = MapUtil.getStr(paramMap,"param");
         if (param.isEmpty()) {
             return ApiResult.error(1, "文件地址不能为空!");
         }

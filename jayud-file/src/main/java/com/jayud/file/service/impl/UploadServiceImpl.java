@@ -111,7 +111,10 @@ public class UploadServiceImpl implements UploadService {
 
             // 2.3、返回完整路径
             JSONObject jsonObject = new JSONObject();
-            Objects.requireNonNull(jsonObject.put("filePath", uploadProperties.getBaseUrl() + "/" + storePath.getFullPath()));
+            jsonObject.put("absolutePath", uploadProperties.getBaseUrl() + "/" + storePath.getFullPath());
+            jsonObject.put("relativePath","/"+storePath.getFullPath());
+            jsonObject.put("fileName",file.getOriginalFilename());
+            Objects.requireNonNull(jsonObject);
             return jsonObject;
         } catch (IOException e) {
             e.printStackTrace();

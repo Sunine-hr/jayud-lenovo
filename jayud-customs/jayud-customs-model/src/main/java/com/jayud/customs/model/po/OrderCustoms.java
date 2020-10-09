@@ -53,6 +53,9 @@ public class OrderCustoms extends Model<OrderCustoms> {
     @ApiModelProperty(value = "柜号图片")
     private String cntrPic;
 
+    @ApiModelProperty(value = "柜号上传附件地址名称")
+    private String cntrPicName;
+
     @ApiModelProperty(value = "六联单号")
     private String encode;
 
@@ -68,11 +71,17 @@ public class OrderCustoms extends Model<OrderCustoms> {
     @ApiModelProperty(value = "附件(json存储 文件名，url)")
     private String description;
 
+    @ApiModelProperty(value = "附件名称,多个逗号分隔")
+    private String descName;
+
     @ApiModelProperty(value = "委托单号")
     private String entrustNo;
 
     @ApiModelProperty(value = "六联单号附件")
     private String encodePic;
+
+    @ApiModelProperty(value = "六联单号附件名称")
+    private String encodePicName;
 
     @ApiModelProperty(value = "业务模式(1-陆路运输 2-空运 3-海运 4-快递)")
     private String bizModel;
@@ -83,11 +92,17 @@ public class OrderCustoms extends Model<OrderCustoms> {
     @ApiModelProperty(value = "提运单附件")
     private String airTransportPic;
 
+    @ApiModelProperty(value = "提运单附件名称")
+    private String airTransPicName;
+
     @ApiModelProperty(value = "提运单号")
     private String seaTransportNo;
 
     @ApiModelProperty(value = "提运单号附件")
     private String seaTransportPic;
+
+    @ApiModelProperty(value = "提运单号附件名称")
+    private String seaTransPicName;
 
     @ApiModelProperty(value = "是否代垫税金1-是 0-否")
     private String isAgencyTax;

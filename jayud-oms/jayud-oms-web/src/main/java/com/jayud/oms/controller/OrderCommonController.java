@@ -7,6 +7,7 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.LogisticsTrack;
 import com.jayud.oms.model.po.OrderPaymentCost;
@@ -46,14 +47,24 @@ public class OrderCommonController {
     @Autowired
     private IProductClassifyService productClassifyService;
 
+    @Autowired
+    private FileClient fileClient;
+
     @ApiOperation(value = "录入费用")
     @PostMapping(value = "/saveOrUpdateCost")
     public CommonResult saveOrUpdateCost(@RequestBody InputCostForm form) {
-        if (form == null || form.getMainOrderId() == null || form.getPaymentCostList() == null ||
-            form.getReceivableCostList() == null || form.getReceivableCostList().size() == 0 ||
-            form.getPaymentCostList().size() == 0) {
+        if (form == null || form.getMainOrderId() == null) {
             return CommonResult.error(400,"参数不合法");
         }
+
+        if("preSubmit_sub".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())){
+            if (form.getPaymentCostList() == null ||
+                    form.getReceivableCostList() == null || form.getReceivableCostList().size() == 0 ||
+                    form.getPaymentCostList().size() == 0) {
+                return CommonResult.error(400,"参数不合法");
+            }
+        }
+
         if("preSubmit_sub".equals(form.getCmd()) || "submit_sub".equals(form.getCmd())){
             if(form.getOrderNo() == null || "".equals(form.getOrderNo())){
                 return CommonResult.error(400,"参数不合法");
@@ -68,8 +79,7 @@ public class OrderCommonController {
                 || paymentCost.getUnitPrice() == null || paymentCost.getNumber() == null
                 || paymentCost.getCurrencyCode() == null || "".equals(paymentCost.getCurrencyCode())
                 || paymentCost.getAmount() == null || paymentCost.getExchangeRate() == null
-                || paymentCost.getChangeAmount() == null
-                || paymentCost.getCostTypeId() == null){
+                || paymentCost.getChangeAmount() == null){
                     return CommonResult.error(400,"参数不合法");
                 }
             }
@@ -80,8 +90,7 @@ public class OrderCommonController {
                         || receivableCost.getUnitPrice() == null || receivableCost.getNumber() == null
                         || receivableCost.getCurrencyCode() == null || "".equals(receivableCost.getCurrencyCode())
                         || receivableCost.getAmount() == null || receivableCost.getExchangeRate() == null
-                        || receivableCost.getChangeAmount() == null
-                        || receivableCost.getCostTypeId() == null){
+                        || receivableCost.getChangeAmount() == null){
                     return CommonResult.error(400,"参数不合法");
                 }
             }
@@ -176,7 +185,7 @@ public class OrderCommonController {
     @ApiOperation(value = "创建订单界面获取业务类型 classCode=订单类型")
     @PostMapping(value = "/findCreateOrderClass")
     public CommonResult findCreateOrderClass(@RequestBody Map<String,Object> param) {
-        String prePath = "http://test.oms.jayud.com:9448/";//TODO
+        String prePath = fileClient.getBaseUrl().getData().toString();
         String classCode = MapUtil.getStr(param,"classCode");
         List<ProductClassify> productClassifys = productClassifyService.findProductClassify(new HashMap<>());
         List<ProductClassifyVO> productClassifyVOS = new ArrayList<>();

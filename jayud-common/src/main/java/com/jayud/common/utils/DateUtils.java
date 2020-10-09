@@ -303,6 +303,9 @@ public class DateUtils {
      * @return
      */
     public static String getLocalToStr(LocalDateTime localDateTime){
+        if(localDateTime == null){
+            return "";
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return localDateTime.format(formatter);
     }

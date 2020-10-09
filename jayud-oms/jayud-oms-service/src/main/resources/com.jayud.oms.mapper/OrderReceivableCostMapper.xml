@@ -52,6 +52,7 @@
         orc.`status`
         FROM
         order_receivable_cost orc
+        where orc.`main_order_no` = #{form.mainOrderNo}
         <if test="form.cmd == 'main_cost'">
             and (orc.`order_no` = '' or orc.`order_no` is null)
         </if>

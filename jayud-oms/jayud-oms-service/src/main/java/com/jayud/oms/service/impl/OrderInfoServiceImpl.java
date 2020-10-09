@@ -177,6 +177,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 QueryWrapper queryWrapper = new QueryWrapper();
                 queryWrapper.eq("main_order_no",inputOrderVO.getOrderNo());
                 queryWrapper.isNull("order_no");
+                queryWrapper.eq("status",OrderStatusEnum.COST_1.getCode());
                 paymentCostService.remove(queryWrapper);
                 receivableCostService.remove(queryWrapper);
             }
@@ -206,8 +207,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     orderReceivableCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_2.getCode()));
                 }
             }
-            paymentCostService.saveOrUpdateBatch(orderPaymentCosts);
-            receivableCostService.saveOrUpdateBatch(orderReceivableCosts);
+            if(orderPaymentCosts.size() > 0) {
+                paymentCostService.saveOrUpdateBatch(orderPaymentCosts);
+            }
+            if(orderReceivableCosts.size() > 0) {
+                receivableCostService.saveOrUpdateBatch(orderReceivableCosts);
+            }
         }catch (Exception e){
             e.printStackTrace();
             return false;
@@ -260,6 +265,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<OrderStatusVO> orderStatusVOS = new ArrayList<>();
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("biz_code",form.getBizCode());
+        queryWrapper.eq("status","1");
         List<OrderStatus> allProcess = orderStatusService.list(queryWrapper);//所有流程
         allProcess.sort((h1, h2) -> {//排序
             if (h1.getFId().equals(h2.getFId())) {
@@ -287,13 +293,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         InputMainOrderVO inputMainOrderVO = getMainOrderById(form.getMainOrderId());
         //根据主订单ID获取子订单数量
         int customsNum = 0;//纯报关单数量
-        if(OrderStatusEnum.CBG.getCode().equals(form.getBizCode()) || inputMainOrderVO != null){
+        if(OrderStatusEnum.CBG.getCode().equals(form.getBizCode()) && inputMainOrderVO != null){
             customsNum = customsClient.getCustomsOrderNum(inputMainOrderVO.getOrderNo()).getData();
         }
         //以后有其他的会逐渐增加 TODO
         queryWrapper = new QueryWrapper();
         queryWrapper.eq("main_order_id",form.getMainOrderId());
-        queryWrapper.eq("order_id","");
+        queryWrapper.isNull("order_id");//不包括"已完成"
         List<LogisticsTrack> logisticsTracks = logisticsTrackService.list(queryWrapper);//已操作的主流程
         Map<String, LogisticsTrack> logisticsTrackMap = logisticsTracks.stream().collect(Collectors.toMap(LogisticsTrack::getStatus, x -> x));
         if (!logisticsTracks.isEmpty()) {
@@ -308,7 +314,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         final boolean[] flag = {false};
                         for (int i = 0; i < x.getChildren().size(); i++) {
                             OrderStatusVO v = x.getChildren().get(i);
-                            if (!flag[0]) {
+                            /*if (!flag[0]) {*/
                                 QueryWrapper subParam = new QueryWrapper();
                                 subParam.eq("main_order_id", form.getMainOrderId());
                                 subParam.eq("status", v.getProcessCode());
@@ -323,6 +329,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                                             flag[0] = true;//进行中
                                         }
                                         v.setStatus("3");
+                                        v.setStatusChangeTime(DateUtils.getLocalToStr(logisticsTrackMap.get(x.getProcessCode()).getOperatorTime()));
                                     }
                                 }
                                 //后续其他业务类型在此处加 TODO
@@ -332,7 +339,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                                 } else {
                                     flag[0] = true;
                                 }
-                            }
+                           /* }*/
                         }
                         if (!flag[0]) {
                             x.setStatus("3");
@@ -341,6 +348,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
             });
         }
+
+        //子节点全部完成时，主节点已完成
+        
         return orderStatusVOS;
     }
 

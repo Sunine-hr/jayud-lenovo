@@ -25,7 +25,7 @@ public class InputReceivableCostForm {
     @NotEmpty(message = "costCode is required")
     private String costCode;
 
-    @ApiModelProperty(value = "费用类型ID",required = true)
+    @ApiModelProperty(value = "费用类型ID,后面去掉了费用类型",required = true)
     @NotEmpty(message = "costTypeId is required")
     private Long costTypeId;
 

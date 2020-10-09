@@ -36,6 +36,9 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "客户名称")
     private String customerName;
 
+    @ApiModelProperty(value = "客户名称")
+    private String customerCode;
+
     @ApiModelProperty(value = "货物信息")
     private String goodsInfo;
 

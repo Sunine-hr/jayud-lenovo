@@ -48,6 +48,7 @@
         oi.`class_code` bizCode,
         (SELECT pc.name FROM product_classify pc WHERE pc.id_code = oi.`class_code`) bizDesc,
         oi.`customer_name` customerName,
+        oi.`customer_code` customerCode,
         '' goodsInfo,
         '' takeAddress,
         '' giveAddress,
@@ -70,6 +71,7 @@
         oi.`class_code` bizCode,
         (SELECT pc.name FROM product_classify pc WHERE pc.id_code = oi.`class_code`) bizDesc,
         oi.`customer_name` customerName,
+        oi.`customer_code` customerCode,
         (SELECT CONCAT(ota.`describe`,' ',ota.`amount`,(CASE ota.`unit` WHEN 1 THEN '件' WHEN 2 THEN '其他'
         END),',','重量',ota.`weight`,'KG') FROM order_take_adr ota WHERE ota.`order_no` = ot.order_no AND ota.`types` = 1 ORDER BY ota.`id` LIMIT 1) goodsInfo,
         (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`types` = 1 ORDER BY ota.`id` LIMIT 1) takeAddress,

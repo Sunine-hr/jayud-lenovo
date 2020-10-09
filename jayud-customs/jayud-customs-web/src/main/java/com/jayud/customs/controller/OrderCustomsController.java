@@ -89,7 +89,6 @@ public class OrderCustomsController {
             || inputMainOrderForm.getBizBelongDepart() == null
             || inputMainOrderForm.getReferenceNo() == null || "".equals(inputMainOrderForm.getReferenceNo())
             || inputMainOrderForm.getBizCode() == null || "".equals(inputMainOrderForm.getBizCode())//业务类型
-            || inputMainOrderForm.getClassCode() == null || "".equals(inputMainOrderForm.getClassCode())//产品类别
                     //报关单
             || inputOrderCustomsForm.getPortCode() == null || "".equals(inputOrderCustomsForm.getPortCode())
             || inputOrderCustomsForm.getPortName() == null || "".equals(inputOrderCustomsForm.getPortName())
@@ -174,6 +173,7 @@ public class OrderCustomsController {
         boolean result = orderCustomsService.saveOrUpdate(orderCustoms);
         //记录操作状态
         form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
+        form.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
         form.setStatus(OrderStatusEnum.CUSTOMS_C_1.getCode());
         form.setStatusName(OrderStatusEnum.CUSTOMS_C_1.getDesc());
         omsClient.saveOprStatus(form);
@@ -211,6 +211,8 @@ public class OrderCustomsController {
             form.setOperatorUser(loginUser);
             form.setOperatorTime(DateUtils.getLocalToStr(LocalDateTime.now()));
         }
+        form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
+        form.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
         form.setStatus(OrderStatusEnum.CUSTOMS_C_2.getCode());
         form.setStatusName(OrderStatusEnum.CUSTOMS_C_2.getDesc());
         form.setEntrustNo(form.getEntrustNo());
@@ -238,6 +240,8 @@ public class OrderCustomsController {
         orderCustoms.setUpdatedUser(loginUser);
         boolean result = orderCustomsService.saveOrUpdate(orderCustoms);
         //记录操作状态
+        form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
+        form.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
         form.setStatus(OrderStatusEnum.CUSTOMS_C_3.getCode());
         form.setStatusName(OrderStatusEnum.CUSTOMS_C_3.getDesc());
         omsClient.saveOprStatus(form);
@@ -316,6 +320,8 @@ public class OrderCustomsController {
         orderCustoms.setUpdatedUser(loginUser);
         boolean result = orderCustomsService.saveOrUpdate(orderCustoms);
         //记录操作状态
+        form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
+        form.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
         omsClient.saveOprStatus(form);
         if (!result) {
             return CommonResult.error(400, "操作失败");

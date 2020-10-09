@@ -116,6 +116,9 @@ public class OrderCustoms extends Model<OrderCustoms> {
     @ApiModelProperty(value = "预计通关时间")
     private LocalDateTime preGoCustomsTime;
 
+    @ApiModelProperty(value = "接单法人")
+    private String legalName;
+
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createdTime;
 

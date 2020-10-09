@@ -33,6 +33,9 @@ public class OprStatusForm {
     @ApiModelProperty(value = "附件")
     private String statusPic;
 
+    @ApiModelProperty(value = "附件名称")
+    private String statusPicName;
+
     @ApiModelProperty(value = "附件集合")
     private List<FileView> fileViewList = new ArrayList<>();
 

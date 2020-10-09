@@ -27,6 +27,9 @@ public class OprStatusForm {
     @ApiModelProperty(value = "附件")
     private String statusPic;
 
+    @ApiModelProperty(value = "附件名称")
+    private String statusPicName;
+
     @ApiModelProperty(value = "备注")
     private String description;
 

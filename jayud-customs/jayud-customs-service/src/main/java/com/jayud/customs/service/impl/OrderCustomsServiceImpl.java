@@ -65,6 +65,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
             //处理主订单
             //保存主订单数据,返回主订单号,暂存和提交
             inputMainOrderForm.setCmd(form.getCmd());
+            inputMainOrderForm.setClassCode(OrderStatusEnum.CBG.getCode());
             ApiResult apiResult = omsClient.oprMainOrder(inputMainOrderForm);
             String mainOrderNo = String.valueOf(apiResult.getData());
             //根据主订单号获取主订单ID
@@ -85,10 +86,9 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
             List<OrderCustoms> orderCustomsList = new ArrayList<>();
             List<InputSubOrderCustomsForm> subOrderCustomsForms = inputOrderCustomsForm.getSubOrders();
             for (InputSubOrderCustomsForm subOrder : subOrderCustomsForms) {
-                OrderCustoms customs = new OrderCustoms();
+                OrderCustoms customs = ConvertUtil.convert(inputOrderCustomsForm, OrderCustoms.class);
                 customs.setDescription(subOrder.getDescription());
                 customs.setDescName(subOrder.getDescName());
-                customs = ConvertUtil.convert(inputOrderCustomsForm, OrderCustoms.class);
                 customs.setOrderNo(subOrder.getOrderNo());
                 customs.setTitle(subOrder.getTitle());
                 customs.setIsTitle(subOrder.getIsTitle());

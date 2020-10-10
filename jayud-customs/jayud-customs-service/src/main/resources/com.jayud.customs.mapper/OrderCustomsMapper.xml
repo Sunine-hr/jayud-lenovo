@@ -107,7 +107,7 @@
           oc.`created_user` createdUser,
           DATE_FORMAT(
             oc.`created_time`,
-            '%Y-%m-%d %H %I %S'
+            '%Y-%m-%d %H:%I:%S'
           ) createdTimeStr,
             oc.`entrust_no` entrustNo,
             '' unifiedNumber,

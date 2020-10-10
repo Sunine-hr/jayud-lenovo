@@ -38,7 +38,7 @@
               ci.`created_user` createdUser,
               DATE_FORMAT(
                 ci.`created_time`,
-                '%Y-%m-%d %H %I %S'
+                '%Y-%m-%d %H:%I:%S'
               ) createdTimeStr
             FROM
               contract_info ci where ci.status = 1
@@ -62,7 +62,7 @@
         ci.`created_user` createdUser,
         DATE_FORMAT(
         ci.`created_time`,
-        '%Y-%m-%d %H %I %S'
+        '%Y-%m-%d %H:%I:%S'
         ) createdTimeStr
         FROM
         contract_info ci where

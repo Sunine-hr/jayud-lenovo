@@ -11,7 +11,11 @@
         <result column="status_name" property="statusName" />
         <result column="remarks" property="remarks" />
         <result column="status_pic" property="statusPic" />
+        <result column="status_pic_name" property="statusPicName" />
         <result column="description" property="description" />
+        <result column="entrust_no" property="entrustNo" />
+        <result column="go_customs_time" property="goCustomsTime" />
+        <result column="pre_go_customs_time" property="preGoCustomsTime" />
         <result column="created_time" property="createdTime" />
         <result column="created_user" property="createdUser" />
         <result column="operator_user" property="operatorUser" />
@@ -20,7 +24,8 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, main_order_no, order_id, status, status_name, remarks, status_pic, description, created_time, created_user,operator_user, operator_time
+        id, main_order_no, order_id, status, status_name, remarks, status_pic,status_pic_name, description,
+        entrust_no,go_customs_time,pre_go_customs_time,created_time, created_user,operator_user, operator_time
     </sql>
 
     <select id="findReplyStatus" parameterType="com.jayud.oms.model.bo.QueryLogisticsTrackForm" resultType="com.jayud.oms.model.vo.LogisticsTrackVO" >

@@ -10,12 +10,11 @@
         <result column="order_no" property="orderNo" />
         <result column="customer_code" property="customerCode" />
         <result column="customer_name" property="customerName" />
+        <result column="cost_type_id" property="costTypeId" />
         <result column="cost_code" property="costCode" />
-        <result column="cost_name" property="costName" />
         <result column="unit_price" property="unitPrice" />
         <result column="number" property="number" />
         <result column="currency_code" property="currencyCode" />
-        <result column="currency_name" property="currencyName" />
         <result column="amount" property="amount" />
         <result column="exchange_rate" property="exchangeRate" />
         <result column="change_amount" property="changeAmount" />
@@ -29,7 +28,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, main_order_no, biz_order_no, order_no, customer_code, customer_name, cost_code, cost_name, unit_price, number, currency_code, currency_name, amount, exchange_rate, change_amount, remarks, status, opt_name, opt_time, created_time, created_user
+        id, main_order_no, biz_order_no, order_no, customer_code, customer_name,cost_type_id, cost_code, unit_price, number, currency_code, amount, exchange_rate, change_amount, remarks, status, opt_name, opt_time, created_time, created_user
     </sql>
 
     <select id="findReceivableCost" parameterType="com.jayud.oms.model.bo.GetCostDetailForm" resultType="com.jayud.oms.model.vo.InputReceivableCostVO" >

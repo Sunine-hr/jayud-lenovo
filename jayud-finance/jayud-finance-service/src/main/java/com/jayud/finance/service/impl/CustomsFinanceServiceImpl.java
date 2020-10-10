@@ -195,7 +195,12 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
             //尝试查询客戶名并写入
             log.debug("2.开始拼装表单头部...");
             //从财务给的数据中对应到金蝶的客户名称
-            CustomsFinanceCoRelation customsFinanceCoRelation = JSONObject.parseObject(JSONUtil.toJsonStr(coRelationMap.get(item.getCustomerName())), CustomsFinanceCoRelation.class);
+            CustomsFinanceCoRelation customsFinanceCoRelation = null;
+            try {
+                customsFinanceCoRelation = JSONObject.parseObject(JSONUtil.toJsonStr(coRelationMap.get(item.getCustomerName())), CustomsFinanceCoRelation.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             String kingdeeCompName = customsFinanceCoRelation == null ? "" : customsFinanceCoRelation.getKingdeeName();
             Optional<Customer> customer = baseService.get(kingdeeCompName, Customer.class);
             if (!customer.isPresent()) {
@@ -304,7 +309,12 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
         Map<String, List> diffSupplierMaps = new HashMap<>();
         for (CustomsPayable details : customsPayableForms) {
             String supplierName = details.getTargetName();
-            CustomsFinanceFeeRelation feeRelation = JSONObject.parseObject(JSONUtil.toJsonStr(feeRelationMap.get(details.getFeeName())), CustomsFinanceFeeRelation.class);
+            CustomsFinanceFeeRelation feeRelation = null;
+            try {
+                feeRelation = JSONObject.parseObject(JSONUtil.toJsonStr(feeRelationMap.get(details.getFeeName())), CustomsFinanceFeeRelation.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             //代垫税金项目单独列给海关
             if (Objects.nonNull(feeRelation)) {
                 if (feeRelation.getCategory().equals("代垫税金")) {
@@ -344,6 +354,7 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
                 FutureTask<String> futureTask = new FutureTask<>(pushOtherPayable);
                 futureTasks.add(futureTask);
                 executorService.execute(futureTask);
+                continue;
             }
 
             List<CustomsPayable> customsPayableEntity = (List<CustomsPayable>) stringListEntry.getValue();
@@ -382,7 +393,12 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
             List<APARDetailForm> list = new ArrayList<>();
             for (CustomsPayable payableForm : customsPayableEntity) {
 
-                CustomsFinanceFeeRelation customsFeeItem = JSONObject.parseObject(JSONUtil.toJsonStr(feeRelationMap.get(payableForm.getFeeName())), CustomsFinanceFeeRelation.class);
+                CustomsFinanceFeeRelation customsFeeItem = null;
+                try {
+                    customsFeeItem = JSONObject.parseObject(JSONUtil.toJsonStr(feeRelationMap.get(payableForm.getFeeName())), CustomsFinanceFeeRelation.class);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 if (Objects.isNull(customsFeeItem)) {
                     errorString.append(String.format("在金蝶的数据库中没有找到与%s相关的费用项", payableForm.getFeeName()));
                     continue;

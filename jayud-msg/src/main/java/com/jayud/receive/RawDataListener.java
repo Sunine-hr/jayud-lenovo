@@ -1,5 +1,6 @@
 package com.jayud.receive;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.enums.KafkaMsgEnums;
@@ -111,7 +112,7 @@ public class RawDataListener {
             log.info("写入金蝶报关应收数据...");
             Map<String, String> msg = new HashMap<>();
             msg.put("msg", value);
-            Boolean aBoolean = financeClient.saveReceivableBill(msg);
+            Boolean aBoolean = financeClient.saveReceivableBill(JSONObject.toJSONString(msg));
             System.out.println(aBoolean);
 //            doLog(commonResult);
         }
@@ -119,7 +120,7 @@ public class RawDataListener {
             log.info("写入金蝶报关应付数据...");
             Map<String, String> msg = new HashMap<>();
             msg.put("msg", value);
-            Boolean aBoolean = financeClient.savePayableBill(msg);
+            Boolean aBoolean = financeClient.savePayableBill(JSONObject.toJSONString(msg));
             System.out.println(aBoolean);
 //            doLog(commonResult);
         }

@@ -12,6 +12,7 @@ import com.jayud.finance.bo.APARDetailForm;
 import com.jayud.finance.bo.PayableHeaderForm;
 import com.jayud.finance.bo.ReceivableHeaderForm;
 import com.jayud.finance.enums.FormIDEnum;
+import com.jayud.finance.enums.InvoiceTypeEnum;
 import com.jayud.finance.kingdeesettings.K3CloudConfig;
 import com.jayud.finance.po.*;
 import com.jayud.finance.service.*;
@@ -339,38 +340,43 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
      * @return
      */
     @Override
-    public Boolean removeSpecifiedInvoice(String applyNo) {
+    public Boolean removeSpecifiedInvoice(String applyNo, InvoiceTypeEnum invoiceTypeEnum) {
         //校验订单是否存在
         Boolean removedAP = true;
         Boolean removedAR = true;
-
-        //处理应收
-        List<InvoiceBase> existingReceivable = (List<InvoiceBase>) baseService.query(applyNo, Receivable.class);
-        if (CollectionUtil.isNotEmpty(existingReceivable)) {
-            log.info("存在应收单数据如下，即将安排删除...");
-            for (InvoiceBase receiveble2Remove : existingReceivable) {
-                log.info(receiveble2Remove.getFBillNo());
+        if (Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.RECEIVABLE) ||
+                Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.ALL)) {
+            //处理应收
+            List<InvoiceBase> existingReceivable = (List<InvoiceBase>) baseService.query(applyNo, Receivable.class);
+            if (CollectionUtil.isNotEmpty(existingReceivable)) {
+                log.info("存在应收单数据如下，即将安排删除...");
+                for (InvoiceBase receiveble2Remove : existingReceivable) {
+                    log.info(receiveble2Remove.getFBillNo());
+                }
+                removedAR = doRemove(existingReceivable
+                                .stream()
+                                .map(InvoiceBase::getFBillNo)
+                                .collect(Collectors.toList())
+                        , "AR_receivable");
             }
-            removedAR = doRemove(existingReceivable
-                            .stream()
-                            .map(InvoiceBase::getFBillNo)
-                            .collect(Collectors.toList())
-                    , "AR_receivable");
         }
-        //处理应付
-        List<InvoiceBase> existingPayable = (List<InvoiceBase>) baseService.query(applyNo, Payable.class);
-        if (CollectionUtil.isNotEmpty(existingPayable)) {
-            log.info("存在应付单数据如下，即将安排删除...");
-            for (InvoiceBase payable2Remove : existingPayable) {
-                log.info(payable2Remove.getFBillNo());
+        if (Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.PAYABLE) ||
+                Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.ALL)) {
+            //处理应付
+            List<InvoiceBase> existingPayable = (List<InvoiceBase>) baseService.query(applyNo, Payable.class);
+            if (CollectionUtil.isNotEmpty(existingPayable)) {
+                log.info("存在应付单数据如下，即将安排删除...");
+                for (InvoiceBase payable2Remove : existingPayable) {
+                    log.info(payable2Remove.getFBillNo());
+                }
+                removedAP = doRemove((existingPayable
+                                .stream()
+                                .map(InvoiceBase::getFBillNo)
+                                .collect(Collectors.toList()))
+                        , "AP_Payable");
             }
-            removedAP = doRemove((existingPayable
-                            .stream()
-                            .map(InvoiceBase::getFBillNo)
-                            .collect(Collectors.toList()))
-                    , "AP_Payable");
         }
-        if (!removedAP || !removedAR) {
+        if (Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.ALL) && (!removedAP || !removedAR)) {
             log.error(String.format("报关单号%s删除失败", applyNo));
             return false;
         }
@@ -382,8 +388,6 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
 //    private Boolean pushOtherReceivable(){
 //
 //    }
-
-
 
 
     /**

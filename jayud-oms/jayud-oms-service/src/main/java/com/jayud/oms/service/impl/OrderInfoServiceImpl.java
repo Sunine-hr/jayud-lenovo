@@ -116,27 +116,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //定义排序规则
         page.addOrder(OrderItem.desc("temp.id"));
         IPage<OrderInfoVO> pageInfo = baseMapper.findOrderInfoByPage(page, form);
-        if("submit".equals(form.getCmd())){//是否有录入费用
-            List<OrderInfoVO> orderInfoVOS = pageInfo.getRecords();
-            for (OrderInfoVO orderInfo : orderInfoVOS) {
-                QueryWrapper queryWrapper = new QueryWrapper();
-                queryWrapper.eq("main_order_no",orderInfo.getOrderNo());
-                List<OrderPaymentCost> paymentCosts = paymentCostService.list(queryWrapper);
-                List<OrderReceivableCost> receivableCosts = receivableCostService.list(queryWrapper);
-                int num = 0;
-                if(paymentCosts != null){
-                    num = num + paymentCosts.size();
-                }
-                if(receivableCosts != null){
-                    num = num + receivableCosts.size();
-                }
-                if(num > 0) {
-                    orderInfo.setCost(true);
-                }else {
-                    orderInfo.setCost(false);
-                }
-            }
-        }
         return pageInfo;
     }
 

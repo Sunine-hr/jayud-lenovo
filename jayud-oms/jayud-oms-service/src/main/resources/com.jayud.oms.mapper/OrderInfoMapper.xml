@@ -53,7 +53,11 @@
         '' takeAddress,
         '' giveAddress,
         oi.`created_user` createdUser,
-        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%I:%S') createdTimeStr
+        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%I:%S') createdTimeStr,
+        (CASE  WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
+        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
+        ELSE FALSE
+        END) isCost
         FROM
         order_info oi,order_customs oc WHERE oi.`order_no` = oc.`main_order_no`
         UNION ALL
@@ -77,7 +81,11 @@
         (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`types` = 1 ORDER BY ota.`id` LIMIT 1) takeAddress,
         (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`types` = 2 ORDER BY ota.`id` LIMIT 1) giveAddress,
         oi.`created_user` createdUser,
-        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%I:%S') createdTimeStr
+        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%I:%S') createdTimeStr,
+        (CASE  WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
+        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
+        ELSE FALSE
+        END) isCost
         FROM
         order_info oi,order_transport ot WHERE oi.`order_no` = ot.`main_order_no` ) temp WHERE 1 = 1
         <if test="form.cmd == 'noSubmit'">

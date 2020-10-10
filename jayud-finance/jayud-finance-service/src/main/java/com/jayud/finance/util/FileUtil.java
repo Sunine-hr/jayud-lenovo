@@ -1,9 +1,14 @@
 package com.jayud.finance.util;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -13,7 +18,28 @@ import java.util.zip.ZipOutputStream;
  * @author amosryan
  * @since 2010-06-03
  */
+@Slf4j
 public class FileUtil {
+    /**
+     * 从文件路径模板获取json对象以便后续处理
+     *
+     * @param filePath 格式 json/material.json 将从resources中尝试获取指定的json包下的文件
+     * @return
+     * @throws Exception
+     */
+    public static JSONObject getMapFromJsonFile(String filePath) throws Exception {
+        //获取文件
+        //获取物料数据模板
+        String template = FileUtil.toString(new ClassPathResource(filePath));
+        log.debug("template = {}", template);
+        //带顺序的json，model顺序会相互影响，不能改变顺序
+        //将template读到的模板数据尝试解析并放入LinkedHashMap中
+        LinkedHashMap<String, Object> json = JSON.parseObject(template, LinkedHashMap.class, Feature.OrderedField);
+        JSONObject basic = new JSONObject(true);
+        //将LinkedHashMap数据装进JSONObject
+        basic.putAll(json);
+        return basic;
+    }
 
     /**
      * 将输入流转换成字节流

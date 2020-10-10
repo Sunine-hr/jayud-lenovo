@@ -1,0 +1,19 @@
+{
+  "FCOSTID": {
+    "FNumber": "F0039"
+  },
+  "FCOSTDEPARTMENTID": {
+    "FNumber": "BM101"
+  },
+  "FTAXAMOUNTFOR": 1304.46,
+  "FAMOUNTFOR_D": 1304.46,
+  "FTAXAMOUNT_D": 1304.46,
+  "FCOMMENT": "行备注1",
+  "FCREATEINVOICE": false,
+  "F_JYD_Assistant": {
+    "FNumber": "FYLB0002"
+  },
+  "F_JYD_Assistant1": {
+    "FNumber": "FYLX099"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "FCOSTID": {
+    "FNumber": "F0003"
+  },
+  "FCOSTDEPARTMENTID": {
+    "FNumber": "BM101"
+  },
+  "FNOTAXAMOUNTFOR": 2047.74,
+  "FTOTALAMOUNTFOR": 2047.74,
+  "FNOTSETTLEAMOUNTFOR_D": 2047.74,
+  "FNOTAXAMOUNT_D": 2047.74,
+  "FCOMMENT": "备注",
+  "FCREATEINVOICE": false,
+  "F_JYD_Assistant": {
+    "FNumber": "FYLB0002"
+  },
+  "F_JYD_Assistant1": {
+    "FNumber": "FYLX099"
+  }
+}

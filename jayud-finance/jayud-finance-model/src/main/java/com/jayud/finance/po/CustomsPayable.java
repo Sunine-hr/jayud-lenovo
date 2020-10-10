@@ -5,8 +5,6 @@ import com.google.gson.annotations.SerializedName;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.math.BigDecimal;
-
 /**
  * 应付单实体（直接从报关模块复制）
  *
@@ -32,7 +30,7 @@ public class CustomsPayable {
     private String targetName;
 
     @ApiModelProperty(value = "支付费用")
-    private BigDecimal cost;
+    private String cost;
 
     @JsonProperty("fee_item")
     @SerializedName("fee_item")

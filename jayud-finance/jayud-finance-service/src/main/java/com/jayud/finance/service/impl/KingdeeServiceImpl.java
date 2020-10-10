@@ -48,7 +48,7 @@ import static com.jayud.finance.enums.KingdeeResultEnum.LOGIN_FAIL;
 public class KingdeeServiceImpl implements KingdeeService {
 
     @Autowired
-    private K3CloudConfig k3CloundConfig;
+    private K3CloudConfig k3CloudConfig;
     /**
      * 仅查询时使用，在默认账套查询失败时使用
      */
@@ -94,8 +94,8 @@ public class KingdeeServiceImpl implements KingdeeService {
     public CommonResult view(String formId, Map<String, Object> data) {
         //调用Redis中的cookie
         Map<String, Object> header = new HashMap<>();
-        header.put("Cookie", cookieService.getCookie(k3CloundConfig));
-        String result = KingdeeHttpUtil.httpPost(k3CloundConfig.getView(), header, buildParam(formId, JSONObject.parseObject(JSONUtil.toJsonStr(data))));
+        header.put("Cookie", cookieService.getCookie(k3CloudConfig));
+        String result = KingdeeHttpUtil.httpPost(k3CloudConfig.getView(), header, buildParam(formId, JSONObject.parseObject(JSONUtil.toJsonStr(data))));
         return CommonResult.success(result);
     }
 
@@ -103,12 +103,12 @@ public class KingdeeServiceImpl implements KingdeeService {
     public CommonResult saveReceivableBill(String formId, ReceivableHeaderForm reqForm) {
         //调用Redis中的cookie
         Map<String, Object> header = new HashMap<>();
-        header.put("Cookie", cookieService.getCookie(k3CloundConfig));
+        header.put("Cookie", cookieService.getCookie(k3CloudConfig));
         String content = buildParam(formId, constructReceivableBill(reqForm));
 
         log.debug("请求内容：{}", content);
 
-        String result = KingdeeHttpUtil.httpPost(k3CloundConfig.getSave(), header, content);
+        String result = KingdeeHttpUtil.httpPost(k3CloudConfig.getSave(), header, content);
 
         log.debug("保存结果：{}", result);
         JSONObject jsonObject = JSON.parseObject(result);
@@ -134,11 +134,11 @@ public class KingdeeServiceImpl implements KingdeeService {
 
         try {
             Map<String, Object> header = new HashMap<>();
-            header.put("Cookie", cookieService.getCookie(k3CloundConfig));
+            header.put("Cookie", cookieService.getCookie(k3CloudConfig));
             String content = buildParam(formId, constructPayableBill(reqForm));
             log.debug("请求内容：{}", content);
 
-            String result = KingdeeHttpUtil.httpPost(k3CloundConfig.getSave(), header, content);
+            String result = KingdeeHttpUtil.httpPost(k3CloudConfig.getSave(), header, content);
 
             log.debug("保存结果：{}", result);
             JSONObject jsonObject = JSON.parseObject(result);
@@ -164,12 +164,12 @@ public class KingdeeServiceImpl implements KingdeeService {
     public CommonResult save(String formId, JSONObject data) {
         //调用Redis中的cookie
         Map<String, Object> header = new HashMap<>();
-        header.put("Cookie", cookieService.getCookie(k3CloundConfig));
+        header.put("Cookie", cookieService.getCookie(k3CloudConfig));
 
         String content = buildParam(formId, data);
         log.debug("请求内容：{}", content);
 
-        String result = KingdeeHttpUtil.httpPost(k3CloundConfig.getSave(), header, content);
+        String result = KingdeeHttpUtil.httpPost(k3CloudConfig.getSave(), header, content);
 
         log.debug("保存结果：{}", result);
         //String result = KingdeeHttpUtil.httpPost(url, header, content);
@@ -215,10 +215,10 @@ public class KingdeeServiceImpl implements KingdeeService {
 //        1.7.Limit：最大行数，整型，不能超过2000（非必录）
         //调用Redis中的cookie
         Map<String, Object> header = new HashMap<>();
-        header.put("Cookie", cookieService.getCookie(k3CloundConfig));
+        header.put("Cookie", cookieService.getCookie(k3CloudConfig));
         String content = buildParam(formId, data);
 //        log.info("请求内容：{}", content);
-        String result = KingdeeHttpUtil.httpPost(k3CloundConfig.getQuery(), header, content);
+        String result = KingdeeHttpUtil.httpPost(k3CloudConfig.getQuery(), header, content);
 //        log.info("默认账套查询结果：{}", result);
         if ("[]".equals(result)) {
             header = new HashMap<>();
@@ -276,7 +276,7 @@ public class KingdeeServiceImpl implements KingdeeService {
 
             //3. 获取请求头
             Map<String, Object> header = new HashMap<>();
-            header.put("Cookie", cookieService.getCookie(k3CloundConfig));
+            header.put("Cookie", cookieService.getCookie(k3CloudConfig));
 
             //4. 请求并获取回执信息
             Map<String, Object> param = new HashMap<>(3);
@@ -284,7 +284,7 @@ public class KingdeeServiceImpl implements KingdeeService {
             param.put("Number", orderId);
             param.put("Id", "");
 
-            String result = KingdeeHttpUtil.httpPost(k3CloundConfig.getView(), header, buildParam(formId, JSONObject.parseObject(JSONUtil.toJsonStr(param))));
+            String result = KingdeeHttpUtil.httpPost(k3CloudConfig.getView(), header, buildParam(formId, JSONObject.parseObject(JSONUtil.toJsonStr(param))));
 
 
             log.debug("回执数据为：" + result);
@@ -307,7 +307,7 @@ public class KingdeeServiceImpl implements KingdeeService {
                 param.put("CreateOrgId", 0);
                 param.put("Number", orderId);
                 param.put("Id", "");
-                result = KingdeeHttpUtil.httpPost(k3CloundConfig.getView(), header, buildParam(formId, JSONObject.parseObject(JSONUtil.toJsonStr(param))));
+                result = KingdeeHttpUtil.httpPost(k3CloudConfig.getView(), header, buildParam(formId, JSONObject.parseObject(JSONUtil.toJsonStr(param))));
                 log.debug("回执数据为：" + result);
                 //5.解析回执
                 jsonObject = JSON.parseObject(result);
@@ -542,7 +542,7 @@ public class KingdeeServiceImpl implements KingdeeService {
         Map<String, Object> header = new HashMap<>();
 
         header.put("Cookie", "kdservice-sessionid=20750c4e-10fa-4c11-bf05-7103a812f9b0; path=/");
-        String result = KingdeeHttpUtil.httpPost(k3CloundConfig.getSave(), header, jsonContent);
+        String result = KingdeeHttpUtil.httpPost(k3CloudConfig.getSave(), header, jsonContent);
 
         log.debug("保存结果：{}", result);
 
@@ -742,7 +742,6 @@ public class KingdeeServiceImpl implements KingdeeService {
         calendar.setTime(new Date());
         calendar.add(Calendar.MONTH, 3);
         model.put("FENDDATE_H", DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
-
 
         //客户代码（必填项） TODO 可能要想办法根据名称获取代码
         putPackedProperty(model, "FCUSTOMERID", reqForm.getCustomerName());

@@ -2,7 +2,10 @@ package com.jayud.finance.po;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
+import com.jayud.finance.annotations.HeadProperty;
 import com.jayud.finance.annotations.IsFee;
+import com.jayud.finance.enums.InvoiceFormNeedRelationEnum;
+import com.jayud.finance.enums.InvoiceFormTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -28,6 +31,11 @@ public class CustomsReceivable {
     @JsonProperty("customer_name")
     @SerializedName("customer_name")
     @ApiModelProperty(value = "客户名称")
+    @HeadProperty(name = "FCUSTOMERID",
+            type = InvoiceFormTypeEnum.BOTH,
+            wrap = true,
+            needRelation = InvoiceFormNeedRelationEnum.COMPANY,
+            otherName = "FCONTACTUNIT")
     private String customerName;
 
     @JsonProperty("shipper_name")
@@ -43,11 +51,18 @@ public class CustomsReceivable {
     @JsonProperty("custom_apply_no")
     @SerializedName("custom_apply_no")
     @ApiModelProperty(value = "海关18位报关单号")
+    @HeadProperty(name = "F_JYD_Remarks",
+            toCode = false,
+            type = InvoiceFormTypeEnum.BOTH,
+            otherName = "FAR_OtherRemarks")
     private String customApplyNo;
 
     @JsonProperty("apply_dt")
     @SerializedName("apply_dt")
     @ApiModelProperty(value = "报关日期")
+    @HeadProperty(name = "FDATE",
+            toCode = false,
+            type = InvoiceFormTypeEnum.BOTH)
     private String applyDt;
 
     @JsonProperty("goods_name")

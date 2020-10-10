@@ -45,12 +45,13 @@ public class MsgApiProcessorController {
     Boolean allowDeletePush;
 
     @RequestMapping(path = "/yunbaoguan/invoice/remove", method = RequestMethod.POST)
-    public Boolean removeInvoice(@RequestBody Map<String, String> param) {
+    public Boolean removeInvoice(@RequestBody String msg) {
+        Map param = JSONObject.parseObject(msg, Map.class);
         String applyNo = MapUtil.getStr(param, "applyNo");
         if (StringUtils.isEmpty(applyNo)) {
             return false;
         }
-        return customsFinanceService.removeSpecifiedInvoice(applyNo,InvoiceTypeEnum.ALL);
+        return customsFinanceService.removeSpecifiedInvoice(applyNo, InvoiceTypeEnum.ALL);
     }
 
     /**
@@ -62,13 +63,14 @@ public class MsgApiProcessorController {
      */
     @RequestMapping(path = "/yunbaoguan/receivable/push", method = RequestMethod.POST)
     @ApiOperation(value = "接收云报关的应收单信息推至金蝶")
-    public Boolean saveReceivableBill(@RequestBody Map<String, String> msg) {
+    public Boolean saveReceivableBill(@RequestBody String msg) {
         /**
          * 根据财务要求，税率改为1%
          * 根据财务要求，应收单才记税率，应付单不记税率
          * 根据财务要求，应收单中如果遇到费用项目的类别为代垫税金，费用类型为代收代垫的，均进行标记且不记税率
          **/
-        String reqMsg = MapUtil.getStr(msg, "msg");
+        Map param = JSONObject.parseObject(msg, Map.class);
+        String reqMsg = MapUtil.getStr(param, "msg");
         log.debug("金蝶接收到报关应收数据：{}", reqMsg);
 
         //feign调用之前确保从列表中取出单行数据且非空，因此此处不需再校验
@@ -76,20 +78,20 @@ public class MsgApiProcessorController {
 
         //重单校验,只要金蝶中有数据就不能再次推送
         Optional<CustomsReceivable> first = customsReceivable.stream().filter(Objects::nonNull).findFirst();
-        String applyNo="";
+        String applyNo = "";
         if (first.isPresent() && checkForReceivableDuplicateOrder(first.get().getCustomApplyNo())) {
             applyNo = first.get().getCustomApplyNo();
             if (allowDeletePush) {
-                log.info("应收单{}已经存在，但允许删单重推，正在处理...",applyNo);
+                log.info("应收单{}已经存在，但允许删单重推，正在处理...", applyNo);
                 customsFinanceService.removeSpecifiedInvoice(first.get().getCustomApplyNo(), InvoiceTypeEnum.RECEIVABLE);
             } else {
-                log.error("应收单{}已经存在，不能重复推送",applyNo);
+                log.error("应收单{}已经存在，不能重复推送", applyNo);
                 return true;
             }
         }
 
         //基本校验完毕，调用方法进行处理
-        log.info("正在处理报关单{}应收数据...",applyNo);
+        log.info("正在处理报关单{}应收数据...", applyNo);
         return customsFinanceService.pushReceivable(customsReceivable);
 
     }
@@ -104,8 +106,9 @@ public class MsgApiProcessorController {
      */
     @RequestMapping(path = "/yunbaoguan/payable/push", method = RequestMethod.POST)
     @ApiOperation(value = "接收云报关的应收单信息推至金蝶")
-    public Boolean savePayableBill(@RequestBody Map<String, String> msg) {
-        String reqMsg = MapUtil.getStr(msg, "msg");
+    public Boolean savePayableBill(@RequestBody String msg) {
+
+        String reqMsg = MapUtil.getStr(JSONObject.parseObject(msg, Map.class), "msg");
         log.debug("金蝶接收到报关应付数据：{}", reqMsg);
         //拼装根据入参拼装实体数据
         List<CustomsPayable> customsPayableForms = JSONArray.parseArray(reqMsg).toJavaList(CustomsPayable.class);
@@ -118,20 +121,20 @@ public class MsgApiProcessorController {
         } else {
             //非空时重单校验
             //获取报关单号
-            String applyNo="";
+            String applyNo = "";
             Optional<CustomsPayable> first = customsPayableForms.stream().filter(Objects::nonNull).findFirst();
             if (first.isPresent() && checkForPayableDuplicateOrder(first.get().getCustomApplyNo())) {
                 applyNo = first.get().getCustomApplyNo();
                 if (allowDeletePush) {
                     log.info("应付单{}已经存在，但可以删单重推，正在处理...");
-                    customsFinanceService.removeSpecifiedInvoice(first.get().getCustomApplyNo(),InvoiceTypeEnum.PAYABLE);
+                    customsFinanceService.removeSpecifiedInvoice(first.get().getCustomApplyNo(), InvoiceTypeEnum.PAYABLE);
                 } else {
-                    log.error("应付单{}已经存在，不能重复推送",applyNo);
+                    log.error("应付单{}已经存在，不能重复推送", applyNo);
                     return true;
                 }
             }
             //基础校验完毕
-            log.info("正在处理报关单{}应付数据",applyNo);
+            log.info("正在处理报关单{}应付数据", applyNo);
             return customsFinanceService.pushPayable(customsPayableForms);
         }
     }
@@ -146,7 +149,7 @@ public class MsgApiProcessorController {
     private boolean checkForReceivableDuplicateOrder(String applyNo) {
         List<InvoiceBase> existingReceivable = (List<InvoiceBase>) baseService.query(applyNo, Receivable.class);
         if (CollectionUtil.isNotEmpty(existingReceivable)) {
-                        return true;
+            return true;
         }
         return false;
     }
@@ -160,7 +163,7 @@ public class MsgApiProcessorController {
     private boolean checkForPayableDuplicateOrder(String applyNo) {
         List<InvoiceBase> existingPayable = (List<InvoiceBase>) baseService.query(applyNo, Payable.class);
         if (CollectionUtil.isNotEmpty(existingPayable)) {
-                        return true;
+            return true;
         }
         return false;
     }

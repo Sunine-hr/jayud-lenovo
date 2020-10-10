@@ -5,8 +5,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.util.Map;
-
 /**
  * 嗅探到财务应收应付后丢给金蝶接口
  *
@@ -23,7 +21,7 @@ public interface FinanceClient {
      * @return
      */
     @RequestMapping(path = "/api/finance/kingdee/yunbaoguan/receivable/push", method = RequestMethod.POST)
-    Boolean saveReceivableBill(@RequestBody Map<String, String> msg);
+    Boolean saveReceivableBill(@RequestBody String msg);
 
     /**
      * 推送应付单到金蝶
@@ -31,6 +29,6 @@ public interface FinanceClient {
      * @return
      */
     @RequestMapping(path = "/api/finance/kingdee/yunbaoguan/payable/push", method = RequestMethod.POST)
-    Boolean savePayableBill(@RequestBody Map<String, String> msg);
+    Boolean savePayableBill(@RequestBody String msg);
 
 }

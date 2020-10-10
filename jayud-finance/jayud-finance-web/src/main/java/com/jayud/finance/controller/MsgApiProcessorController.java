@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.jayud.finance.enums.InvoiceTypeEnum;
 import com.jayud.finance.po.*;
 import com.jayud.finance.service.BaseService;
 import com.jayud.finance.service.CustomsFinanceService;
@@ -49,7 +50,7 @@ public class MsgApiProcessorController {
         if (StringUtils.isEmpty(applyNo)) {
             return false;
         }
-        return customsFinanceService.removeSpecifiedInvoice(applyNo);
+        return customsFinanceService.removeSpecifiedInvoice(applyNo,InvoiceTypeEnum.ALL);
     }
 
     /**
@@ -80,7 +81,7 @@ public class MsgApiProcessorController {
             applyNo = first.get().getCustomApplyNo();
             if (allowDeletePush) {
                 log.info("应收单{}已经存在，但允许删单重推，正在处理...",applyNo);
-                customsFinanceService.removeSpecifiedInvoice(first.get().getCustomApplyNo());
+                customsFinanceService.removeSpecifiedInvoice(first.get().getCustomApplyNo(), InvoiceTypeEnum.RECEIVABLE);
             } else {
                 log.error("应收单{}已经存在，不能重复推送",applyNo);
                 return true;
@@ -123,7 +124,7 @@ public class MsgApiProcessorController {
                 applyNo = first.get().getCustomApplyNo();
                 if (allowDeletePush) {
                     log.info("应付单{}已经存在，但可以删单重推，正在处理...");
-                    customsFinanceService.removeSpecifiedInvoice(first.get().getCustomApplyNo());
+                    customsFinanceService.removeSpecifiedInvoice(first.get().getCustomApplyNo(),InvoiceTypeEnum.PAYABLE);
                 } else {
                     log.error("应付单{}已经存在，不能重复推送",applyNo);
                     return true;

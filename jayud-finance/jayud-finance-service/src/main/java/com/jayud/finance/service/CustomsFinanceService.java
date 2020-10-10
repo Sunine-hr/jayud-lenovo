@@ -1,5 +1,6 @@
 package com.jayud.finance.service;
 
+import com.jayud.finance.enums.InvoiceTypeEnum;
 import com.jayud.finance.po.CustomsPayable;
 import com.jayud.finance.po.CustomsReceivable;
 
@@ -31,6 +32,6 @@ public interface CustomsFinanceService {
      * @param applyNo
      * @return
      */
-    Boolean removeSpecifiedInvoice(String applyNo);
+    Boolean removeSpecifiedInvoice(String applyNo, InvoiceTypeEnum invoiceTypeEnum);
 
 }

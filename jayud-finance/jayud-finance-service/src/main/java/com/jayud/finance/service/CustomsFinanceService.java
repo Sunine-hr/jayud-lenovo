@@ -32,5 +32,7 @@ public interface CustomsFinanceService {
      * @param applyNo
      * @return
      */
-    Boolean removeSpecifiedInvoice(String applyNo, InvoiceTypeEnum typeEnum);
+
+    Boolean removeSpecifiedInvoice(String applyNo, InvoiceTypeEnum invoiceTypeEnum);
+
 }

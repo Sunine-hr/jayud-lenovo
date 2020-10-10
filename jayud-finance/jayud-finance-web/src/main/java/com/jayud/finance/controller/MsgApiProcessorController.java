@@ -50,7 +50,7 @@ public class MsgApiProcessorController {
         if (StringUtils.isEmpty(applyNo)) {
             return false;
         }
-        return customsFinanceService.removeSpecifiedInvoice(applyNo,InvoiceTypeEnum.ALL);
+        return customsFinanceService.removeSpecifiedInvoice(applyNo, InvoiceTypeEnum.ALL);
     }
 
     /**
@@ -76,20 +76,20 @@ public class MsgApiProcessorController {
 
         //重单校验,只要金蝶中有数据就不能再次推送
         Optional<CustomsReceivable> first = customsReceivable.stream().filter(Objects::nonNull).findFirst();
-        String applyNo="";
+        String applyNo = "";
         if (first.isPresent() && checkForReceivableDuplicateOrder(first.get().getCustomApplyNo())) {
             applyNo = first.get().getCustomApplyNo();
             if (allowDeletePush) {
-                log.info("应收单{}已经存在，但允许删单重推，正在处理...",applyNo);
+                log.info("应收单{}已经存在，但允许删单重推，正在处理...", applyNo);
                 customsFinanceService.removeSpecifiedInvoice(first.get().getCustomApplyNo(), InvoiceTypeEnum.RECEIVABLE);
             } else {
-                log.error("应收单{}已经存在，不能重复推送",applyNo);
+                log.error("应收单{}已经存在，不能重复推送", applyNo);
                 return true;
             }
         }
 
         //基本校验完毕，调用方法进行处理
-        log.info("正在处理报关单{}应收数据...",applyNo);
+        log.info("正在处理报关单{}应收数据...", applyNo);
         return customsFinanceService.pushReceivable(customsReceivable);
 
     }
@@ -118,20 +118,20 @@ public class MsgApiProcessorController {
         } else {
             //非空时重单校验
             //获取报关单号
-            String applyNo="";
+            String applyNo = "";
             Optional<CustomsPayable> first = customsPayableForms.stream().filter(Objects::nonNull).findFirst();
             if (first.isPresent() && checkForPayableDuplicateOrder(first.get().getCustomApplyNo())) {
                 applyNo = first.get().getCustomApplyNo();
                 if (allowDeletePush) {
-                    log.info("应付单{}已经存在，但可以删单重推，正在处理...",applyNo);
-                    customsFinanceService.removeSpecifiedInvoice(first.get().getCustomApplyNo(),InvoiceTypeEnum.PAYABLE);
+                    log.info("应付单{}已经存在，但可以删单重推，正在处理...", applyNo);
+                    customsFinanceService.removeSpecifiedInvoice(first.get().getCustomApplyNo(), InvoiceTypeEnum.PAYABLE);
                 } else {
-                    log.error("应付单{}已经存在，不能重复推送",applyNo);
+                    log.error("应付单{}已经存在，不能重复推送", applyNo);
                     return true;
                 }
             }
             //基础校验完毕
-            log.info("正在处理报关单{}应付数据",applyNo);
+            log.info("正在处理报关单{}应付数据", applyNo);
             return customsFinanceService.pushPayable(customsPayableForms);
         }
     }
@@ -146,7 +146,7 @@ public class MsgApiProcessorController {
     private boolean checkForReceivableDuplicateOrder(String applyNo) {
         List<InvoiceBase> existingReceivable = (List<InvoiceBase>) baseService.query(applyNo, Receivable.class);
         if (CollectionUtil.isNotEmpty(existingReceivable)) {
-                        return true;
+            return true;
         }
         return false;
     }
@@ -160,7 +160,7 @@ public class MsgApiProcessorController {
     private boolean checkForPayableDuplicateOrder(String applyNo) {
         List<InvoiceBase> existingPayable = (List<InvoiceBase>) baseService.query(applyNo, Payable.class);
         if (CollectionUtil.isNotEmpty(existingPayable)) {
-                        return true;
+            return true;
         }
         return false;
     }

@@ -37,6 +37,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
+
 @Service
 @Slf4j
 @RefreshScope
@@ -448,7 +449,9 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
         //校验订单是否存在
         Boolean removedAP = true;
         Boolean removedAR = true;
-        if (Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.RECEIVABLE) || Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.ALL)) {
+
+        if (Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.RECEIVABLE) ||
+                Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.ALL)) {
             //处理应收
             List<InvoiceBase> existingReceivable = (List<InvoiceBase>) baseService.query(applyNo, Receivable.class);
             if (CollectionUtil.isNotEmpty(existingReceivable)) {
@@ -463,7 +466,8 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
                         , "AR_receivable");
             }
         }
-        if (Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.PAYABLE) || Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.ALL)) {
+        if (Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.PAYABLE) ||
+                Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.ALL)) {
             //处理应付
             List<InvoiceBase> existingPayable = (List<InvoiceBase>) baseService.query(applyNo, Payable.class);
             if (CollectionUtil.isNotEmpty(existingPayable)) {
@@ -478,8 +482,6 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
                         , "AP_Payable");
             }
         }
-
-
         if (Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.ALL) && (!removedAP || !removedAR)) {
             log.error(String.format("报关单号%s删除失败", applyNo));
             return false;

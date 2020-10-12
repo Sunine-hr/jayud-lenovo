@@ -73,4 +73,7 @@ public class CustomsOrderInfoVO {
     @ApiModelProperty(value = "业务类型")
     private String bizCode;
 
+    @ApiModelProperty(value = "订单类型")
+    private String classCode;
+
 }

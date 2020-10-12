@@ -40,14 +40,20 @@ public class OrderStatus extends Model<OrderStatus> {
     @ApiModelProperty(value = "主节点id 0表示主节点(order_status)")
     private Integer fId;
 
-    @ApiModelProperty(value = "对应业务code(product_biz code)")
-    private String bizCode;
+    @ApiModelProperty(value = "对应业务code")
+    private String classCode;
 
-    @ApiModelProperty(value = "对应业务名(product_biz name)")
-    private String bizName;
+    @ApiModelProperty(value = "对应业务名")
+    private String className;
+
+    @ApiModelProperty(value = "哪些状态就属于这个流程接点的")
+    private String containState;
 
     @ApiModelProperty(value = "排序值")
     private Integer sorts;
+
+    @ApiModelProperty(value = "整个子节点排序值")
+    private Integer subSorts;
 
     @ApiModelProperty(value = "状态(0-无效 1有效)")
     private String status;

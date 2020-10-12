@@ -98,7 +98,7 @@
             END
           ) goodsTypeDesc,
           oc.`port_name` portName,
-        (SELECT os.name FROM order_status os WHERE os.id_code = oc.`status` LIMIT 1) statusDesc,
+        (SELECT os.name FROM order_status os WHERE os.id_code = oc.`status` and os.status = '0' LIMIT 1) statusDesc,
           oi.`customer_name` customerName,
           '' goodsInfo,
           oc.`encode`,
@@ -119,6 +119,7 @@
             LIMIT 1) remarks,
             '' yunCustomsNo,
             oi.`biz_code` bizCode,
+            oi.`class_code` classCode,
             oi.`id` mainOrderId
         FROM
           order_customs oc,

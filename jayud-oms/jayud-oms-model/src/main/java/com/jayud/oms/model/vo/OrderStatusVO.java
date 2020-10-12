@@ -18,8 +18,14 @@ public class OrderStatusVO {
     @ApiModelProperty(value = "流程名称")
     private String processName;
 
+    @ApiModelProperty(value = "包含的操作状态")
+    private String containState;
+
+    @ApiModelProperty(value = "优先级")
+    private Integer sorts;
+
     @ApiModelProperty(value = "流程状态 1-灰色 2-进行中 3-已完成 4-异常")
-    private String status;
+     private String status;
 
     @ApiModelProperty(value = "流程状态变更时间")
     private String statusChangeTime;

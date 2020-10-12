@@ -3,7 +3,6 @@ package com.jayud.oms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
-import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
@@ -27,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -142,15 +142,8 @@ public class OrderCommonController {
 
     @ApiOperation(value = "反馈状态列表")
     @PostMapping(value = "/findReplyStatus")
-    public CommonResult<List<LogisticsTrackVO>> findReplyStatus(@RequestBody QueryLogisticsTrackForm form) {
+    public CommonResult<List<LogisticsTrackVO>> findReplyStatus(@RequestBody @Valid QueryLogisticsTrackForm form) {
         List<LogisticsTrackVO> logisticsTrackVOS = logisticsTrackService.findReplyStatus(form);
-        for (LogisticsTrackVO logisticsTrackVO : logisticsTrackVOS) {
-            logisticsTrackVO.setFlag(true);
-            if(OrderStatusEnum.CUSTOMS_C_7.getCode().equals(logisticsTrackVO.getStatus()) ||
-               OrderStatusEnum.CUSTOMS_C_8.getCode().equals(logisticsTrackVO.getStatus())){
-                logisticsTrackVO.setFlag(false);
-            }
-        }
         return CommonResult.success(logisticsTrackVOS);
     }
 
@@ -195,6 +188,7 @@ public class OrderCommonController {
             productClassifyVO.setFId(x.getFId());
             productClassifyVO.setIdCode(x.getIdCode());
             productClassifyVO.setName(x.getName());
+            productClassifyVO.setIsOptional(x.getIsOptional());
             productClassifyVO.setObviousPic(prePath + x.getObviousPic());
             productClassifyVO.setVaguePic(prePath + x.getVaguePic());
             if(x.getFId() == 0){

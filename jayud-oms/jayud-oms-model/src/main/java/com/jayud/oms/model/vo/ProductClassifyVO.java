@@ -32,6 +32,9 @@ public class ProductClassifyVO extends Model<ProductClassifyVO> {
     @ApiModelProperty(value = "父级id")
     private Long fId;
 
+    @ApiModelProperty(value = "是否可选物流服务 0-不可 1-可以")
+    private String isOptional;
+
     @ApiModelProperty(value = "清晰的图片")
     private String obviousPic;
 

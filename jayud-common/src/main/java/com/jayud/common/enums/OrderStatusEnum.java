@@ -37,6 +37,8 @@ public enum OrderStatusEnum {
     CUSTOMS_C_7("C_7","录入费用"),
     CUSTOMS_C_8("C_8","费用审核"),
     CUSTOMS_C_Y("C_Y","报关异常"),//仅报关子订单状态用
+    //左边菜单无操作，反馈状态确认使用的状态
+    PASS("PASS","通过"),
 
 
     //费用状态

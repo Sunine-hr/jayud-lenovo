@@ -102,14 +102,6 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 saveOrUpdateBatch(orderCustomsList);
             }
 
-            //记录操作状态
-            if("submit".equals(form.getCmd())){
-                OprStatusForm oprStatusForm = new OprStatusForm();
-                oprStatusForm.setStatus(OrderStatusEnum.MAIN_PROCESS_1.getCode());
-                oprStatusForm.setStatusName(OrderStatusEnum.MAIN_PROCESS_1.getDesc());
-                oprStatusForm.setMainOrderId(mainOrderId);
-                omsClient.saveOprStatus(oprStatusForm);
-            }
         }catch (Exception e){
             e.printStackTrace();
             return false;

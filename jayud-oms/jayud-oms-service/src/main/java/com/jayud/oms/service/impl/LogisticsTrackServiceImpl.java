@@ -2,6 +2,7 @@ package com.jayud.oms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.mapper.LogisticsTrackMapper;
@@ -39,21 +40,27 @@ public class LogisticsTrackServiceImpl extends ServiceImpl<LogisticsTrackMapper,
         String prePath = fileClient.getBaseUrl().getData().toString();
         //根据业务类型获取该业务类型的所有流程节点 业务类型加有没有父节点获取，这里是获取子订单流程节点
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("biz_code",form.getBizCode());
+        queryWrapper.eq("class_code",form.getClassCode());
         queryWrapper.ne("f_id",0);
         queryWrapper.eq("status",1);
-        queryWrapper.orderByAsc("sorts");
+        queryWrapper.orderByAsc("sub_sorts");
         List<OrderStatus> allOrderStatus = statusService.list(queryWrapper);//所有流程
         List<LogisticsTrackVO> logisticsTrackVOS = new ArrayList<>();//构建所有流程返回给前端显示
         for (OrderStatus orderStatus : allOrderStatus) {
             LogisticsTrackVO logisticsTrackVO = new LogisticsTrackVO();
-            logisticsTrackVO.setStatus(orderStatus.getIdCode());
+            if(OrderStatusEnum.PASS.getCode().equals(orderStatus.getContainState())){//特殊处理需要反馈确认的状态节点
+                logisticsTrackVO.setFlag(false);
+            }else {
+                logisticsTrackVO.setFlag(true);
+            }
+            logisticsTrackVO.setStatus(orderStatus.getContainState());
             logisticsTrackVO.setStatusName(orderStatus.getName());
             logisticsTrackVOS.add(logisticsTrackVO);
         }
         for (int i = 0; i < logisticsTrackVOS.size(); i++) {
             //获取子订单下的某状态的操作记录
-            form.setStatus(logisticsTrackVOS.get(i).getStatus());
+            String containState = logisticsTrackVOS.get(i).getStatus();//在子节点上原则上只有一个
+            form.setStatus(containState);
             List<LogisticsTrackVO> oprProcess = baseMapper.findReplyStatus(form);//已操作流程
             if(oprProcess == null || oprProcess.size() == 0){
                 break;

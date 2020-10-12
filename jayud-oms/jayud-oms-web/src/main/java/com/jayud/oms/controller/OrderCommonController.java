@@ -167,6 +167,7 @@ public class OrderCommonController {
             //处理附件
             List<FileView> fileViews = logisticsTrack.getFileViewList();
             track.setStatusPic(StringUtils.getFileStr(fileViews));
+            track.setStatusPicName(StringUtils.getFileNameStr(fileViews));
             logisticsTracks.add(track);
         }
         if(logisticsTracks.size() > 0) {

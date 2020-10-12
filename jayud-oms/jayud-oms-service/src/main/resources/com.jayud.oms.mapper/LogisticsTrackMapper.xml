@@ -37,6 +37,7 @@
         lt.`operator_user` operatorUser,
         lt.`operator_time` operatorTime,
         lt.`status_pic` statusPic,
+        lt.`status_pic_name` statusPicName,
         lt.`created_time` createdTime
         FROM
         logistics_track lt WHERE lt.`order_id` = #{form.orderId}

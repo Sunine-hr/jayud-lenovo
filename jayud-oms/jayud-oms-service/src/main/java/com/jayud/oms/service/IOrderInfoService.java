@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.OrderInfo;
-import com.jayud.oms.model.vo.InputCostVO;
-import com.jayud.oms.model.vo.InputMainOrderVO;
-import com.jayud.oms.model.vo.OrderInfoVO;
-import com.jayud.oms.model.vo.OrderStatusVO;
+import com.jayud.oms.model.vo.*;
 
 import java.util.List;
 
@@ -91,5 +88,12 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     List<OrderStatusVO> handleSubProcess(HandleSubProcessForm form);
+
+    /**
+     * 订单详情
+     * @param form
+     * @return
+     */
+    InputOrderVO getOrderDetail(GetOrderDetailForm form);
 
 }

@@ -4,8 +4,10 @@ package com.jayud.oms.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.oms.model.bo.GetOrderDetailForm;
 import com.jayud.oms.model.bo.QueryOrderInfoForm;
 import com.jayud.oms.model.bo.QueryOrderStatusForm;
+import com.jayud.oms.model.vo.InputOrderVO;
 import com.jayud.oms.model.vo.OrderInfoVO;
 import com.jayud.oms.model.vo.OrderStatusVO;
 import com.jayud.oms.service.IOrderInfoService;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 
@@ -43,7 +46,13 @@ public class OrderInfoController {
         return CommonResult.success(orderStatusVOS);
     }
 
-    //订单详情接口 TODO
+    //订单详情接口
+    @ApiOperation(value = "订单详情")
+    @PostMapping("/getOrderDetail")
+    public CommonResult<InputOrderVO> getOrderDetail(@RequestBody @Valid GetOrderDetailForm form) {
+        InputOrderVO inputOrderVO = orderInfoService.getOrderDetail(form);
+        return CommonResult.success(inputOrderVO);
+    }
 
 }
 

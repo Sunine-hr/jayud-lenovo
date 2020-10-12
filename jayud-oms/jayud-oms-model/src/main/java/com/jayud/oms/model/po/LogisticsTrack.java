@@ -49,6 +49,9 @@ public class LogisticsTrack extends Model<LogisticsTrack> {
     @ApiModelProperty(value = "附件地址，多个用逗号分开")
     private String statusPic;
 
+    @ApiModelProperty(value = "附件名称地址，多个用逗号分开")
+    private String statusPicName;
+
     @ApiModelProperty(value = "本次节点的操作描述")
     private String description;
 

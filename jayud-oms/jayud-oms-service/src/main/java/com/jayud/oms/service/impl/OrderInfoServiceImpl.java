@@ -459,8 +459,17 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Override
     public InputOrderVO getOrderDetail(GetOrderDetailForm form) {
-        customsClient.getCustomsDetail(null);
-        return null;
+        InputOrderVO inputOrderVO = new InputOrderVO();
+        //获取主订单信息
+        InputMainOrderVO inputMainOrderVO = getMainOrderById(form.getMainOrderId());
+        inputOrderVO.setOrderForm(inputMainOrderVO);
+        //获取纯报关信息
+        InputOrderCustomsVO inputOrderCustomsVO = new InputOrderCustomsVO();
+        if(OrderStatusEnum.CBG.getCode().equals(form.getClassCode())) {
+            inputOrderCustomsVO = customsClient.getCustomsDetail(form.getMainOrderId()).getData();
+        }
+        inputOrderVO.setOrderCustomsForm(inputOrderCustomsVO);
+        return inputOrderVO;
     }
 
 

@@ -81,6 +81,9 @@
         <if test="main_order_no != null and main_order_no != ''">
             and oc.main_order_no = #{main_order_no}
         </if>
+        <if test="id != null and id != ''">
+            and oc.id = #{id}
+        </if>
     </select>
 
     <select id="findCustomsOrderByPage" parameterType="com.jayud.customs.model.bo.QueryCustomsOrderInfoForm" resultType="com.jayud.customs.model.vo.CustomsOrderInfoVO" >

@@ -2,7 +2,6 @@ package com.jayud.oms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.mapper.LogisticsTrackMapper;
@@ -48,11 +47,7 @@ public class LogisticsTrackServiceImpl extends ServiceImpl<LogisticsTrackMapper,
         List<LogisticsTrackVO> logisticsTrackVOS = new ArrayList<>();//构建所有流程返回给前端显示
         for (OrderStatus orderStatus : allOrderStatus) {
             LogisticsTrackVO logisticsTrackVO = new LogisticsTrackVO();
-            if(OrderStatusEnum.PASS.getCode().equals(orderStatus.getContainState())){//特殊处理需要反馈确认的状态节点
-                logisticsTrackVO.setFlag(false);
-            }else {
-                logisticsTrackVO.setFlag(true);
-            }
+            logisticsTrackVO.setFlag(true);//默认都不能勾选
             logisticsTrackVO.setStatus(orderStatus.getContainState());
             logisticsTrackVO.setStatusName(orderStatus.getName());
             logisticsTrackVOS.add(logisticsTrackVO);

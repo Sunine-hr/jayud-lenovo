@@ -115,7 +115,7 @@ public class CustomerInfoController {
         }else if("1".equals(form.getAuditStatus())){//审核状态
             if(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode().equals(auditStatus)){//客服审核流程
                 if(form.getDepartmentId() == null || "".equals(form.getDepartmentId()) ||
-                   form.getKuId() == null || "".equals(form.getKuName())){
+                   form.getKuId() == null || "".equals(form.getKuId())){
                     return CommonResult.error(400,"参数不合法");
                 }
                 customerInfo.setDepartmentId(form.getDepartmentId());

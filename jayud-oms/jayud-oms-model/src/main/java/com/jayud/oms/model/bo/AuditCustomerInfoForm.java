@@ -27,14 +27,8 @@ public class AuditCustomerInfoForm {
     @ApiModelProperty(value = "接单部门ID,客服审核时传")
     private String departmentId;
 
-    @ApiModelProperty(value = "接单部门,客服审核时传")
-    private String departmentName;
-
     @ApiModelProperty(value = "接单客服ID,客服审核时传")
     private Long kuId;
-
-    @ApiModelProperty(value = "接单客服,客服审核时传")
-    private String kuName;
 
     @ApiModelProperty(value = "结算类型(1票结 2月结 3周结),财务审核时传")
     private Integer settlementType;

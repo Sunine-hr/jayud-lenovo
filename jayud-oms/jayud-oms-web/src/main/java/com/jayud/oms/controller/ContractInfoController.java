@@ -78,12 +78,7 @@ public class ContractInfoController {
         ContractInfoVO contractInfoVO = contractInfoService.getContractInfoById(Long.parseLong(id));
         if(contractInfoVO != null && contractInfoVO.getBusinessType() != null){
             String businessType = contractInfoVO.getBusinessType();
-            String[] strList = businessType.split(",");
-            List<Long> longList = new ArrayList<>();
-            for(String str : strList){
-                longList.add(Long.parseLong(str));
-            }
-            contractInfoVO.setBusinessTypes(longList);
+            contractInfoVO.setBusinessTypes(businessType);
         }
         //处理附件
         contractInfoVO.setFileViews(StringUtils.getFileViews(contractInfoVO.getContractUrl(),contractInfoVO.getContractName(),prePath));

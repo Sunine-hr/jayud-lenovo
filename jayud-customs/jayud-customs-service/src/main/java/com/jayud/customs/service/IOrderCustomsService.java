@@ -66,9 +66,9 @@ public interface IOrderCustomsService extends IService<OrderCustoms> {
 
     /**
      * 获取订单详情
-     * @param mainOrderId
+     * @param mainOrderNo
      * @return
      */
-    public InputOrderCustomsVO getOrderCustomsDetail(Long mainOrderId);
+    public InputOrderCustomsVO getOrderCustomsDetail(String mainOrderNo);
 
 }

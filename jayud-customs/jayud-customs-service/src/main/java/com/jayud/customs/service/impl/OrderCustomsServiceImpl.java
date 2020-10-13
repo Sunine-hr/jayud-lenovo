@@ -45,7 +45,6 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
     @Autowired
     RedisUtils redisUtils;
 
-
     @Override
     public boolean isExistOrder(String orderNo) {
         QueryWrapper queryWrapper = new QueryWrapper();
@@ -199,11 +198,11 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
     }
 
     @Override
-    public InputOrderCustomsVO getOrderCustomsDetail(Long mainOrderId) {
+    public InputOrderCustomsVO getOrderCustomsDetail(String mainOrderNo) {
         String prePath = String.valueOf(fileClient.getBaseUrl().getData());
         InputOrderCustomsVO inputOrderCustomsVO = new InputOrderCustomsVO();
         Map<String, Object> param = new HashMap<>();
-        param.put("id", mainOrderId);
+        param.put("main_order_no", mainOrderNo);
         List<OrderCustomsVO> orderCustomsVOS = findOrderCustomsByCondition(param);
         if (orderCustomsVOS != null && orderCustomsVOS.size() > 0) {
             OrderCustomsVO orderCustomsVO = orderCustomsVOS.get(0);
@@ -230,6 +229,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 subOrderCustomsVO.setTitle(orderCustoms.getTitle());
                 subOrderCustomsVO.setIsTitle(orderCustoms.getIsTitle());
                 subOrderCustomsVO.setUnitCode(orderCustoms.getUnitCode());
+                subOrderCustomsVO.setStatusDesc(orderCustoms.getStatusDesc());
                 //处理子订单附件信息
                 String fileStr = orderCustoms.getFileStr();
                 String fileNameStr = orderCustoms.getFileNameStr();

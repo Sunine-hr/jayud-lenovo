@@ -59,5 +59,8 @@ public class InputOrderCustomsVO {
     @ApiModelProperty(value = "子订单")
     private List<InputSubOrderCustomsVO> subOrders = new ArrayList<>();
 
+    @ApiModelProperty(value = "所有附件集合")
+    private List<FileView> allPics = new ArrayList<>();
+
 
 }

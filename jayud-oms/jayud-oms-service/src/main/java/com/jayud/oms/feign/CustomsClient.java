@@ -21,11 +21,11 @@ public interface CustomsClient {
 
     /**
      * 获取报关订单详情
-     * @param mainOrderId
+     * @param mainOrderNo
      * @return
      */
     @RequestMapping(value = "/api/getCustomsDetail")
-    ApiResult<InputOrderCustomsVO> getCustomsDetail(@RequestParam(value = "mainOrderId") Long mainOrderId);
+    ApiResult<InputOrderCustomsVO> getCustomsDetail(@RequestParam(value = "mainOrderNo") String mainOrderNo);
 
 
 }

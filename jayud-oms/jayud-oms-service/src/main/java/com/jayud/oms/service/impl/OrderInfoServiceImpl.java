@@ -9,6 +9,7 @@ import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.CustomsClient;
 import com.jayud.oms.mapper.OrderInfoMapper;
@@ -466,7 +467,27 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //获取纯报关信息
         InputOrderCustomsVO inputOrderCustomsVO = new InputOrderCustomsVO();
         if(OrderStatusEnum.CBG.getCode().equals(form.getClassCode())) {
-            inputOrderCustomsVO = customsClient.getCustomsDetail(form.getMainOrderId()).getData();
+            inputOrderCustomsVO = customsClient.getCustomsDetail(inputMainOrderVO.getOrderNo()).getData();
+        }
+        //附件处理
+        List<FileView> allPics = new ArrayList<>();
+        allPics.addAll(inputOrderCustomsVO.getCntrPics());
+        allPics.addAll(inputOrderCustomsVO.getEncodePics());
+        allPics.addAll(inputOrderCustomsVO.getAirTransportPics());
+        allPics.addAll(inputOrderCustomsVO.getSeaTransportPics());
+        inputOrderCustomsVO.setAllPics(allPics);
+        //循环处理接单人和接单时间
+        List<InputSubOrderCustomsVO> inputSubOrderCustomsVOS = inputOrderCustomsVO.getSubOrders();
+        for (InputSubOrderCustomsVO inputSubOrderCustomsVO : inputSubOrderCustomsVOS) {
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("order_id",inputSubOrderCustomsVO.getSubOrderId());
+            queryWrapper.eq("status",OrderStatusEnum.CUSTOMS_C_1.getCode());
+            queryWrapper.orderByDesc("created_time");
+            List<LogisticsTrack> logisticsTracks = logisticsTrackService.list(queryWrapper);
+            if(!logisticsTracks.isEmpty()){
+                inputSubOrderCustomsVO.setJiedanTimeStr(DateUtils.getLocalToStr(logisticsTracks.get(0).getOperatorTime()));
+                inputSubOrderCustomsVO.setJiedanUser(logisticsTracks.get(0).getOperatorUser());
+            }
         }
         inputOrderVO.setOrderCustomsForm(inputOrderCustomsVO);
         return inputOrderVO;

@@ -43,8 +43,8 @@ public class ExternalApiController {
 
     @ApiOperation(value = "获取子订单详情")
     @RequestMapping(value = "/api/getCustomsDetail")
-    ApiResult getCustomsDetail(@RequestParam(value = "mainOrderId") Long mainOrderId){
-        InputOrderCustomsVO inputOrderCustomsVO = orderCustomsService.getOrderCustomsDetail(mainOrderId);
+    ApiResult getCustomsDetail(@RequestParam(value = "mainOrderNo") String mainOrderNo){
+        InputOrderCustomsVO inputOrderCustomsVO = orderCustomsService.getOrderCustomsDetail(mainOrderNo);
         return ApiResult.ok(inputOrderCustomsVO);
     }
 

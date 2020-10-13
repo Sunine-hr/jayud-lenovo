@@ -106,13 +106,27 @@ public class CustomerInfoController {
         if(auditStatus == null){
             return CommonResult.error(400,"不属于审核状态流程");
         }
+        if(form.getAuditStatus() == null || "".equals(form.getAuditStatus())){
+            return CommonResult.error(400,"参数不合法");
+        }
         if("0".equals(form.getAuditStatus())){//审核拒绝
             customerInfo.setAuditStatus(CustomerInfoStatusEnum.AUDIT_FAIL.getCode());
             customerInfo.setAuditComment(form.getAuditComment());
         }else if("1".equals(form.getAuditStatus())){//审核状态
             if(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode().equals(auditStatus)){//客服审核流程
+                if(form.getDepartmentId() == null || "".equals(form.getDepartmentId()) ||
+                   form.getKuId() == null || "".equals(form.getKuName())){
+                    return CommonResult.error(400,"参数不合法");
+                }
+                customerInfo.setDepartmentId(form.getDepartmentId());
+                customerInfo.setKuId(form.getKuId());
                 customerInfo.setAuditStatus(CustomerInfoStatusEnum.CW_WAIT_AUDIT.getCode());
             }else if(CustomerInfoStatusEnum.CW_WAIT_AUDIT.getCode().equals(auditStatus)){//财务审核流程
+                if(form.getSettlementType() == null || form.getAccountPeriod() == null){
+                    return CommonResult.error(400,"参数不合法");
+                }
+                customerInfo.setSettlementType(form.getSettlementType());
+                customerInfo.setAccountPeriod(form.getAccountPeriod());
                 customerInfo.setAuditStatus(CustomerInfoStatusEnum.ZJB_WAIT_AUDIT.getCode());
             }else if(CustomerInfoStatusEnum.ZJB_WAIT_AUDIT.getCode().equals(auditStatus)){//总经办审核
                 customerInfo.setAuditStatus(CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());

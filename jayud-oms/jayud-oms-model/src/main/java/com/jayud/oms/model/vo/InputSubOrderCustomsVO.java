@@ -39,6 +39,9 @@ public class InputSubOrderCustomsVO {
     @ApiModelProperty(value = "报关单号，预留字段")
     private String yunCustomsNo;
 
+    @ApiModelProperty(value = "放行状态")
+    private String statusDesc;
+
     @ApiModelProperty(value = "重量，预留字段")
     private BigDecimal weight;
 

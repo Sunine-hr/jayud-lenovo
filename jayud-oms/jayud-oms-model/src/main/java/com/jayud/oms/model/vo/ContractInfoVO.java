@@ -1,8 +1,10 @@
 package com.jayud.oms.model.vo;
 
+import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -20,6 +22,12 @@ public class ContractInfoVO {
 
     @ApiModelProperty(value = "合同地址")
     private String contractUrl;
+
+    @ApiModelProperty(value = "合同附件名称")
+    private String contractName;
+
+    @ApiModelProperty(value = "合同地址集合")
+    private List<FileView> fileViews = new ArrayList<>();
 
     @ApiModelProperty(value = "业务类型")
     private String businessType;

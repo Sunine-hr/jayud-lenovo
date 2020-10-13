@@ -147,6 +147,8 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                     subOrderCustomsVO.setTitle(orderCustoms.getTitle());
                     subOrderCustomsVO.setIsTitle(orderCustoms.getIsTitle());
                     subOrderCustomsVO.setUnitCode(orderCustoms.getUnitCode());
+                    orderCustoms.setStatusDesc(orderCustoms.getStatus());
+                    subOrderCustomsVO.setStatusDesc(orderCustoms.getStatusDesc());
                     //处理子订单附件信息
                     String fileStr = orderCustoms.getFileStr();
                     String fileNameStr = orderCustoms.getFileNameStr();
@@ -177,6 +179,8 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
         List<CustomsOrderInfoVO> customsOrderInfoVOS = pageInfo.getRecords();
         String prePath = fileClient.getBaseUrl().getData().toString();
         for (CustomsOrderInfoVO customsOrder : customsOrderInfoVOS) {
+            customsOrder.setGoodsTypeDesc(customsOrder.getGoodsType());
+            customsOrder.setStatusDesc(customsOrder.getStatus());
             //处理子订单附件信息
             String fileStr = customsOrder.getFileStr();
             String fileNameStr = customsOrder.getFileNameStr();
@@ -229,6 +233,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 subOrderCustomsVO.setTitle(orderCustoms.getTitle());
                 subOrderCustomsVO.setIsTitle(orderCustoms.getIsTitle());
                 subOrderCustomsVO.setUnitCode(orderCustoms.getUnitCode());
+                orderCustoms.setStatusDesc(orderCustoms.getStatus());
                 subOrderCustomsVO.setStatusDesc(orderCustoms.getStatusDesc());
                 //处理子订单附件信息
                 String fileStr = orderCustoms.getFileStr();

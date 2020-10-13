@@ -1,9 +1,11 @@
 package com.jayud.oms.model.bo;
 
+import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +26,9 @@ public class AddContractInfoForm  {
 
     @ApiModelProperty(value = "合同地址")
     private String contractUrl;
+
+    @ApiModelProperty(value = "合同地址集合")
+    private List<FileView> fileViews = new ArrayList<>();
 
     @ApiModelProperty(value = "业务类型",required = true)
     @NotEmpty(message = "businessType is required")

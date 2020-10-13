@@ -45,8 +45,8 @@
         (CASE oi.`status` WHEN 1 THEN '正常'
         WHEN 2 THEN '草稿'
         WHEN 3 THEN '关闭' END) statusDesc,
-        oi.`class_code` bizCode,
-        (SELECT pc.name FROM product_classify pc WHERE pc.id_code = oi.`class_code`) bizDesc,
+        oi.`class_code` classCode,
+        (SELECT pc.name FROM product_classify pc WHERE pc.id_code = oi.`class_code`) classCodeDesc,
         oi.`customer_name` customerName,
         oi.`customer_code` customerCode,
         '' goodsInfo,

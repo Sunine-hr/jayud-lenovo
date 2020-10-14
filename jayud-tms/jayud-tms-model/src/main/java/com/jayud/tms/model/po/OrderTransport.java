@@ -38,9 +38,6 @@ public class OrderTransport extends Model<OrderTransport> {
     @ApiModelProperty(value = "口岸code(port_info code)")
     private String portCode;
 
-    @ApiModelProperty(value = "口岸名称(port_info name)")
-    private String portName;
-
     @ApiModelProperty(value = "货物流向(1进口 2出口)")
     private Integer goodsType;
 
@@ -56,32 +53,35 @@ public class OrderTransport extends Model<OrderTransport> {
     @ApiModelProperty(value = "柜号图片")
     private String cntrPic;
 
-    @ApiModelProperty(value = "仓库代码(warehouse_info)")
-    private String warehouseCode;
+    @ApiModelProperty(value = "柜号图片名称")
+    private String cntrPicName;
 
-    @ApiModelProperty(value = "仓库名称(warehouse_info)")
-    private String warehouseName;
+    @ApiModelProperty(value = "仓库代码(warehouse_info)")
+    private String warehouseInfoId;
 
     @ApiModelProperty(value = "六联单号")
     private String encode;
 
-    @ApiModelProperty(value = "状态(0-未接单 1-已接单 2-运输中 3-已完成)")
+    @ApiModelProperty(value = "状态")
     private Integer status;
 
-    @ApiModelProperty(value = "接单人id")
-    private Integer userId;
+    @ApiModelProperty(value = "1-装货 0-不需要装货")
+    private String isLoadGoods;
 
-    @ApiModelProperty(value = "接单人姓名")
-    private String userName;
-
-    @ApiModelProperty(value = "接单时间")
-    private LocalDateTime optTime;
+    @ApiModelProperty(value = "1-装货 0-不需要装货")
+    private String isUnloadGoods;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
+    private LocalDateTime createdTime;
 
     @ApiModelProperty(value = "创建用户")
-    private String createUser;
+    private String createdUser;
+
+    @ApiModelProperty(value = "创建时间")
+    private LocalDateTime updatedTime;
+
+    @ApiModelProperty(value = "创建用户")
+    private String updatedUser;
 
 
     @Override

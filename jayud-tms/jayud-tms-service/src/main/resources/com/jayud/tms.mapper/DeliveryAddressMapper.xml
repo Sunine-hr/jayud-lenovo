@@ -15,16 +15,14 @@
         <result column="city_code" property="cityCode" />
         <result column="city_name" property="cityName" />
         <result column="address" property="address" />
-        <result column="zip_code" property="zipCode" />
-        <result column="warehouse_code" property="warehouseCode" />
-        <result column="types" property="types" />
-        <result column="warehouse_name" property="warehouseName" />
+        <result column="post_code" property="postCode" />
+        <result column="warehouse_info_id" property="warehouseInfoId" />
         <result column="status" property="status" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, customer_id, contacts, phone, country_code, country_name, state_code, state_name, city_code, city_name, address, zip_code, warehouse_code, types, warehouse_name, status
+        id, customer_id, contacts, phone, country_code, country_name, state_code, state_name, city_code, city_name, address, post_code, warehouse_info_id, status
     </sql>
 
 </mapper>

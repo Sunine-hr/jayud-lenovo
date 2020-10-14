@@ -45,7 +45,6 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
     @Autowired
     RedisUtils redisUtils;
 
-
     @Override
     public boolean isExistOrder(String orderNo) {
         QueryWrapper queryWrapper = new QueryWrapper();
@@ -102,14 +101,6 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 saveOrUpdateBatch(orderCustomsList);
             }
 
-            //记录操作状态
-            if("submit".equals(form.getCmd())){
-                OprStatusForm oprStatusForm = new OprStatusForm();
-                oprStatusForm.setStatus(OrderStatusEnum.MAIN_PROCESS_1.getCode());
-                oprStatusForm.setStatusName(OrderStatusEnum.MAIN_PROCESS_1.getDesc());
-                oprStatusForm.setMainOrderId(mainOrderId);
-                omsClient.saveOprStatus(oprStatusForm);
-            }
         }catch (Exception e){
             e.printStackTrace();
             return false;
@@ -156,6 +147,8 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                     subOrderCustomsVO.setTitle(orderCustoms.getTitle());
                     subOrderCustomsVO.setIsTitle(orderCustoms.getIsTitle());
                     subOrderCustomsVO.setUnitCode(orderCustoms.getUnitCode());
+                    orderCustoms.setStatusDesc(orderCustoms.getStatus());
+                    subOrderCustomsVO.setStatusDesc(orderCustoms.getStatusDesc());
                     //处理子订单附件信息
                     String fileStr = orderCustoms.getFileStr();
                     String fileNameStr = orderCustoms.getFileNameStr();
@@ -186,6 +179,8 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
         List<CustomsOrderInfoVO> customsOrderInfoVOS = pageInfo.getRecords();
         String prePath = fileClient.getBaseUrl().getData().toString();
         for (CustomsOrderInfoVO customsOrder : customsOrderInfoVOS) {
+            customsOrder.setGoodsTypeDesc(customsOrder.getGoodsType());
+            customsOrder.setStatusDesc(customsOrder.getStatus());
             //处理子订单附件信息
             String fileStr = customsOrder.getFileStr();
             String fileNameStr = customsOrder.getFileNameStr();
@@ -197,11 +192,59 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
 
     /**
      * 获取当前登录用户
+     *
      * @return
      */
     @Override
-    public String getLoginUser(){
-        String loginUser = redisUtils.get("loginUser",100);
+    public String getLoginUser() {
+        String loginUser = redisUtils.get("loginUser", 100);
         return loginUser;
+    }
+
+    @Override
+    public InputOrderCustomsVO getOrderCustomsDetail(String mainOrderNo) {
+        String prePath = String.valueOf(fileClient.getBaseUrl().getData());
+        InputOrderCustomsVO inputOrderCustomsVO = new InputOrderCustomsVO();
+        Map<String, Object> param = new HashMap<>();
+        param.put("main_order_no", mainOrderNo);
+        List<OrderCustomsVO> orderCustomsVOS = findOrderCustomsByCondition(param);
+        if (orderCustomsVOS != null && orderCustomsVOS.size() > 0) {
+            OrderCustomsVO orderCustomsVO = orderCustomsVOS.get(0);
+            //设置纯报关头部分
+            inputOrderCustomsVO.setPortName(orderCustomsVO.getPortName());
+            inputOrderCustomsVO.setGoodsType(orderCustomsVO.getGoodsType());
+            inputOrderCustomsVO.setCntrNo(orderCustomsVO.getCntrNo());
+            inputOrderCustomsVO.setCntrPics(StringUtils.getFileViews(orderCustomsVO.getCntrPic(), orderCustomsVO.getCntrPicName(), prePath));
+            inputOrderCustomsVO.setEncode(orderCustomsVO.getEncode());
+            inputOrderCustomsVO.setEncodePics(StringUtils.getFileViews(orderCustomsVO.getEncodePic(), orderCustomsVO.getEncodePicName(), prePath));
+            inputOrderCustomsVO.setIsAgencyTax(orderCustomsVO.getIsAgencyTax());
+            inputOrderCustomsVO.setSeaTransportNo(orderCustomsVO.getSeaTransportNo());
+            inputOrderCustomsVO.setSeaTransportPics(StringUtils.getFileViews(orderCustomsVO.getSeaTransportPic(), orderCustomsVO.getSeaTransPicName(), prePath));
+            inputOrderCustomsVO.setAirTransportNo(orderCustomsVO.getAirTransportNo());
+            inputOrderCustomsVO.setAirTransportPics(StringUtils.getFileViews(orderCustomsVO.getAirTransportPic(), orderCustomsVO.getAirTransPicName(), prePath));
+            inputOrderCustomsVO.setLegalName(orderCustomsVO.getLegalName());
+            inputOrderCustomsVO.setBizModel(orderCustomsVO.getBizModel());
+            //处理子订单部分
+            List<InputSubOrderCustomsVO> subOrderCustomsVOS = new ArrayList<>();
+            for (OrderCustomsVO orderCustoms : orderCustomsVOS) {
+                InputSubOrderCustomsVO subOrderCustomsVO = new InputSubOrderCustomsVO();
+                subOrderCustomsVO.setSubOrderId(orderCustoms.getSubOrderId());
+                subOrderCustomsVO.setOrderNo(orderCustoms.getOrderNo());
+                subOrderCustomsVO.setTitle(orderCustoms.getTitle());
+                subOrderCustomsVO.setIsTitle(orderCustoms.getIsTitle());
+                subOrderCustomsVO.setUnitCode(orderCustoms.getUnitCode());
+                orderCustoms.setStatusDesc(orderCustoms.getStatus());
+                subOrderCustomsVO.setStatusDesc(orderCustoms.getStatusDesc());
+                //处理子订单附件信息
+                String fileStr = orderCustoms.getFileStr();
+                String fileNameStr = orderCustoms.getFileNameStr();
+                subOrderCustomsVO.setFileViews(StringUtils.getFileViews(fileStr, fileNameStr, prePath));
+                subOrderCustomsVOS.add(subOrderCustomsVO);
+            }
+            inputOrderCustomsVO.setSubOrders(subOrderCustomsVOS);
+            inputOrderCustomsVO.setNumber(String.valueOf(subOrderCustomsVOS.size()));
+
+        }
+        return inputOrderCustomsVO;
     }
 }

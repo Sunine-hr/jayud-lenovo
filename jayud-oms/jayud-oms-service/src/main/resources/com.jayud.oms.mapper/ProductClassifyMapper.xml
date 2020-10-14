@@ -7,6 +7,7 @@
         <id column="id" property="id" />
         <result column="id_code" property="idCode" />
         <result column="name" property="name" />
+        <result column="is_optional" property="isOptional" />
         <result column="f_id" property="fId" />
         <result column="description" property="description" />
         <result column="status" property="status" />
@@ -20,7 +21,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, id_code, name, f_id, description, status, create_user, create_time, update_user, update_time,obviousPic,vaguePic
+        id, id_code, name,is_optional, f_id, description, status, create_user, create_time, update_user, update_time,obviousPic,vaguePic
     </sql>
 
 </mapper>

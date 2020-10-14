@@ -74,7 +74,8 @@
             oc.`sea_transport_pic` seaTransportPic,
             oc.`sea_trans_pic_name` seaTransPicName,
             oc.`is_agency_tax` isAgencyTax,
-            oc.`legal_name` legalName
+            oc.`legal_name` legalName,
+            oc.`status` status
         FROM
             order_customs oc
         WHERE 1 = 1
@@ -88,17 +89,9 @@
           oc.`id`,
           oi.`order_no` mainOrderNo,
           oc.`order_no` orderNo,
-          (
-            CASE
-              oc.`goods_type`
-              WHEN 1
-              THEN '进口'
-              WHEN 2
-              THEN '出口'
-            END
-          ) goodsTypeDesc,
+          oc.`goods_type` goodsType,
           oc.`port_name` portName,
-        (SELECT os.name FROM order_status os WHERE os.id_code = oc.`status` LIMIT 1) statusDesc,
+          oc.`status` status,
           oi.`customer_name` customerName,
           '' goodsInfo,
           oc.`encode`,
@@ -119,6 +112,7 @@
             LIMIT 1) remarks,
             '' yunCustomsNo,
             oi.`biz_code` bizCode,
+            oi.`class_code` classCode,
             oi.`id` mainOrderId
         FROM
           order_customs oc,

@@ -33,6 +33,9 @@ public class ContractInfo extends Model<ContractInfo> {
     @ApiModelProperty(value = "合同地址")
     private String contractUrl;
 
+    @ApiModelProperty(value = "合同附件名称")
+    private String contractName;
+
     @ApiModelProperty(value = "业务类型")
     private String businessType;
 

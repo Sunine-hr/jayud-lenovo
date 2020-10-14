@@ -71,6 +71,7 @@ public class ExternalApiController {
             param.put("roleId", role.getId());
         }
         param.put("user_type", "1");
+        param.put("status","1");
         List<SystemUser> systemUsers = userService.findUserByCondition(param);
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (SystemUser systemUser : systemUsers) {
@@ -113,7 +114,9 @@ public class ExternalApiController {
     @ApiOperation(value = "获取客户账户负责人")
     @RequestMapping("/api/findCustAccount")
     public ApiResult findCustAccount() {
-        List<SystemUser> systemUsers = userService.findUserByCondition(new HashMap<>());
+        Map<String, Object> param = new HashMap<>();
+        param.put("status","1");
+        List<SystemUser> systemUsers = userService.findUserByCondition(param);
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (SystemUser systemUser : systemUsers) {
             InitComboxVO initComboxVO = new InitComboxVO();

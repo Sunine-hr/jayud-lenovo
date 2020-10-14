@@ -1,10 +1,11 @@
-package com.jayud.customs.model.vo;
+package com.jayud.oms.model.vo;
 
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -27,7 +28,7 @@ public class InputSubOrderCustomsVO {
     private String unitCode;
 
     @ApiModelProperty(value = "附件")
-    private List<FileView> fileViews;
+    private List<FileView> fileViews = new ArrayList<>();
 
     @ApiModelProperty(value = "接单人")
     private String jiedanUser;
@@ -35,11 +36,11 @@ public class InputSubOrderCustomsVO {
     @ApiModelProperty(value = "接单时间")
     private String jiedanTimeStr;
 
-    @ApiModelProperty(value = "放行状态")
-    private String statusDesc;
-
     @ApiModelProperty(value = "报关单号，预留字段")
     private String yunCustomsNo;
+
+    @ApiModelProperty(value = "放行状态")
+    private String statusDesc;
 
     @ApiModelProperty(value = "重量，预留字段")
     private BigDecimal weight;
@@ -49,7 +50,5 @@ public class InputSubOrderCustomsVO {
 
     @ApiModelProperty(value = "识别信息，预留字段")
     private String isRight;
-
-
 
 }

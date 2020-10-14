@@ -8,6 +8,8 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.StringUtils;
+import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.AddContractInfoForm;
 import com.jayud.oms.model.bo.DeleteForm;
@@ -57,6 +59,9 @@ public class ContractInfoController {
     @Autowired
     private RedisUtils redisUtils;
 
+    @Autowired
+    private FileClient fileClient;
+
     @ApiOperation(value = "查询合同列表")
     @PostMapping(value = "/findContractInfoByPage")
     public CommonResult<CommonPageResult<ContractInfoVO>> findCustomerInfoByPage(@RequestBody QueryContractInfoForm form) {
@@ -68,17 +73,15 @@ public class ContractInfoController {
     @ApiOperation(value = "编辑时数据回显,id=合同ID")
     @PostMapping(value = "/getContractInfoById")
     public CommonResult<ContractInfoVO> getContractInfoById(@RequestBody Map<String,Object> param) {
+        String prePath = String.valueOf(fileClient.getBaseUrl().getData());
         String id = MapUtil.getStr(param,"id");
         ContractInfoVO contractInfoVO = contractInfoService.getContractInfoById(Long.parseLong(id));
         if(contractInfoVO != null && contractInfoVO.getBusinessType() != null){
             String businessType = contractInfoVO.getBusinessType();
-            String[] strList = businessType.split(",");
-            List<Long> longList = new ArrayList<>();
-            for(String str : strList){
-                longList.add(Long.parseLong(str));
-            }
-            contractInfoVO.setBusinessTypes(longList);
+            contractInfoVO.setBusinessTypes(businessType);
         }
+        //处理附件
+        contractInfoVO.setFileViews(StringUtils.getFileViews(contractInfoVO.getContractUrl(),contractInfoVO.getContractName(),prePath));
         return CommonResult.success(contractInfoVO);
     }
 
@@ -112,6 +115,9 @@ public class ContractInfoController {
             }
             contractInfo.setCreatedUser(getLoginUser());
         }
+        //处理附件
+        contractInfo.setContractUrl(StringUtils.getFileStr(form.getFileViews()));
+        contractInfo.setContractName(StringUtils.getFileNameStr(form.getFileViews()));
         contractInfoService.saveOrUpdate(contractInfo);
         return CommonResult.success();
     }

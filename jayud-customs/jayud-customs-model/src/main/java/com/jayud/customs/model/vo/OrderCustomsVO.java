@@ -1,5 +1,6 @@
 package com.jayud.customs.model.vo;
 
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -87,8 +88,41 @@ public class OrderCustomsVO {
     @ApiModelProperty(value = "接单法人")
     private String legalName;
 
+    @ApiModelProperty(value = "状态描述")
+    private String statusDesc;
+
+    @ApiModelProperty(value = "状态描述CODE")
+    private String status;
+
     @ApiModelProperty(value = "附件")
     private List<FileView> fileViews;
 
+    public void setStatusDesc(String status) {
+        if (OrderStatusEnum.CUSTOMS_C_0.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_0.getDesc();
+        } else if (OrderStatusEnum.CUSTOMS_C_1.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_1.getDesc();
+        } else if (OrderStatusEnum.CUSTOMS_C_2.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_2.getDesc();
+        } else if (OrderStatusEnum.CUSTOMS_C_3.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_3.getDesc();
+        } else if (OrderStatusEnum.CUSTOMS_C_4.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_4.getDesc();
+        } else if (OrderStatusEnum.CUSTOMS_C_5.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_5.getDesc();
+        } else if (OrderStatusEnum.CUSTOMS_C_5_1.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_5_1.getDesc();
+        } else if (OrderStatusEnum.CUSTOMS_C_6.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_6.getDesc();
+        } else if (OrderStatusEnum.CUSTOMS_C_6_1.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_6_1.getDesc();
+        } else if (OrderStatusEnum.CUSTOMS_C_6_2.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_6_2.getDesc();
+        } else if (OrderStatusEnum.CUSTOMS_C_7.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_7.getDesc();
+        } else if (OrderStatusEnum.CUSTOMS_C_8.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_8.getDesc();
+        }
 
+    }
 }

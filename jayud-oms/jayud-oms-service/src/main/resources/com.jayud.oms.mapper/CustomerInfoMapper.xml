@@ -264,7 +264,7 @@
         ON su.`company_id` = ci.`id`
         WHERE su.status = 1 and su.user_type = '2'
         <if test="form.companyId != null and form.companyId != ''">
-            and su.companyId = #{form.companyId}
+            and ci.id = #{form.companyId}
         </if>
         <if test="form.status != null and form.status != ''">
             and su.status = #{form.status}

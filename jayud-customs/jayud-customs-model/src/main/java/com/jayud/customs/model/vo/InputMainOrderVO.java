@@ -43,4 +43,10 @@ public class InputMainOrderVO {
     @ApiModelProperty(value = "业务类型描述")
     private String bizDesc;
 
+    @ApiModelProperty(value = "创建人")
+    private String createdUser;
+
+    @ApiModelProperty(value = "创建时间")
+    private String createdTimeStr;
+
 }

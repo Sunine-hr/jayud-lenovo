@@ -1,8 +1,11 @@
 package com.jayud.oms.model.vo;
 
+import com.jayud.common.utils.FileView;
+import com.jayud.oms.model.po.ProductBiz;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -21,11 +24,17 @@ public class ContractInfoVO {
     @ApiModelProperty(value = "合同地址")
     private String contractUrl;
 
+    @ApiModelProperty(value = "合同附件名称")
+    private String contractName;
+
+    @ApiModelProperty(value = "合同地址集合")
+    private List<FileView> fileViews = new ArrayList<>();
+
     @ApiModelProperty(value = "业务类型")
     private String businessType;
 
     @ApiModelProperty(value = "业务类型集合")
-    private List<Long> businessTypes;
+    private List<Long> businessTypes = new ArrayList<>();
 
     @ApiModelProperty(value = "法人主体")
     private Long legalEntity;
@@ -42,12 +51,29 @@ public class ContractInfoVO {
     @ApiModelProperty(value = "创建时间")
     private String createdTimeStr;
 
-    public void setBusinessTypes() {
+    public void setBusinessTypes(String businessType) {
         if(businessType != null){
             String[] strList = businessType.split(",");
             for (String str : strList) {
                 businessTypes.add(Long.parseLong(str));
             }
+        }
+    }
+
+    /**
+     * 构建合同业务类型
+     */
+    public void buildViewBusinessType(List<ProductBiz> productBizs){
+        StringBuilder sb = new StringBuilder();
+        for (Long str : businessTypes) {
+            for (ProductBiz productBiz : productBizs) {
+                if (str.equals(productBiz.getId())) {
+                    sb.append(productBiz.getName() + ",");
+                }
+            }
+        }
+        if (!"".equals(String.valueOf(sb))) {
+            businessType = sb.substring(0, sb.length() - 1);
         }
     }
 

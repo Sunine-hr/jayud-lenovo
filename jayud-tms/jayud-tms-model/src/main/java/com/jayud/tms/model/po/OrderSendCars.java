@@ -44,6 +44,9 @@ public class OrderSendCars extends Model<OrderSendCars> {
     @ApiModelProperty(value = "六联单号文件地址")
     private String encodeUrl;
 
+    @ApiModelProperty(value = "六联单号文件地址名称")
+    private String encodeUrlName;
+
     @ApiModelProperty(value = "车型(1吨车 2柜车)")
     private Integer vehicleType;
 
@@ -56,11 +59,11 @@ public class OrderSendCars extends Model<OrderSendCars> {
     @ApiModelProperty(value = "柜号图片")
     private String cntrPic;
 
-    @ApiModelProperty(value = "供应商code(supplier_info code)")
-    private String supplierCode;
+    @ApiModelProperty(value = "柜号图片名称")
+    private String cntrPicName;
 
-    @ApiModelProperty(value = "供应商中文名(supplier_info supplier_ch_name)")
-    private String supplierName;
+    @ApiModelProperty(value = "供应商ID")
+    private Long supplierInfoId;
 
     @ApiModelProperty(value = "大陆车牌号")
     private String licensePlate;
@@ -74,11 +77,8 @@ public class OrderSendCars extends Model<OrderSendCars> {
     @ApiModelProperty(value = "HK司机名")
     private String hkDriverName;
 
-    @ApiModelProperty(value = "仓库代码(warehouse_info)")
-    private String warehouseCode;
-
-    @ApiModelProperty(value = "仓库名称(warehouse_info)")
-    private String warehouseName;
+    @ApiModelProperty(value = "仓库ID)")
+    private Long warehouseInfoId;
 
     @ApiModelProperty(value = "要求")
     private String remarks;
@@ -87,28 +87,22 @@ public class OrderSendCars extends Model<OrderSendCars> {
     private String describes;
 
     @ApiModelProperty(value = "状态(0-草稿 1-审核中 2-审核驳回 3-审核通过)")
-    private Integer status;
+    private String status;
 
-    @ApiModelProperty(value = "通过/驳回原因")
-    private String optDes;
-
-    @ApiModelProperty(value = "通过/驳回人")
-    private Integer optUid;
-
-    @ApiModelProperty(value = "通过/驳回人名字")
-    private String optUname;
-
-    @ApiModelProperty(value = "通过/驳回时间")
-    private LocalDateTime upTime;
+    @ApiModelProperty(value = "审核信息")
+    private Long auditInfoId;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
+    private LocalDateTime createdTime;
 
-    @ApiModelProperty(value = "创建人id")
-    private Integer createUid;
+    @ApiModelProperty(value = "创建人")
+    private String createdUser;
 
-    @ApiModelProperty(value = "创建人姓名")
-    private String createUname;
+    @ApiModelProperty(value = "修改人")
+    private String updatedUser;
+
+    @ApiModelProperty(value = "修改时间")
+    private LocalDateTime updatedTime;
 
 
     @Override

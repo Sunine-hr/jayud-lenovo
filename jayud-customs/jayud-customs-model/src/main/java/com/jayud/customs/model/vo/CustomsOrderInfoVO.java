@@ -1,5 +1,6 @@
 package com.jayud.customs.model.vo;
 
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -23,10 +24,16 @@ public class CustomsOrderInfoVO {
     private String orderNo;
 
     @ApiModelProperty(value = "进出口类型")
+    private Integer goodsType;
+
+    @ApiModelProperty(value = "进出口类型")
     private String goodsTypeDesc;
 
     @ApiModelProperty(value = "通关口岸")
     private String portName;
+
+    @ApiModelProperty(value = "状态CODE")
+    private String status;
 
     @ApiModelProperty(value = "状态描述")
     private String statusDesc;
@@ -72,5 +79,45 @@ public class CustomsOrderInfoVO {
 
     @ApiModelProperty(value = "业务类型")
     private String bizCode;
+
+    @ApiModelProperty(value = "订单类型")
+    private String classCode;
+
+    public void setGoodsTypeDesc(Integer goodsType){
+        if(goodsType == 1){
+            this.goodsTypeDesc = "进口";
+        }else if(goodsType == 2){
+            this.goodsTypeDesc = "出口";
+        }
+    }
+
+    public void setStatusDesc(String status) {
+        if (OrderStatusEnum.CUSTOMS_C_0.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_0.getDesc();
+        } else if (OrderStatusEnum.CUSTOMS_C_1.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_1.getDesc();
+        } else if (OrderStatusEnum.CUSTOMS_C_2.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_2.getDesc();
+        } else if (OrderStatusEnum.CUSTOMS_C_3.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_3.getDesc();
+        } else if (OrderStatusEnum.CUSTOMS_C_4.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_4.getDesc();
+        } else if (OrderStatusEnum.CUSTOMS_C_5.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_5.getDesc();
+        } else if (OrderStatusEnum.CUSTOMS_C_5_1.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_5_1.getDesc();
+        } else if (OrderStatusEnum.CUSTOMS_C_6.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_6.getDesc();
+        } else if (OrderStatusEnum.CUSTOMS_C_6_1.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_6_1.getDesc();
+        } else if (OrderStatusEnum.CUSTOMS_C_6_2.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_6_2.getDesc();
+        } else if (OrderStatusEnum.CUSTOMS_C_7.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_7.getDesc();
+        } else if (OrderStatusEnum.CUSTOMS_C_8.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_8.getDesc();
+        }
+
+    }
 
 }

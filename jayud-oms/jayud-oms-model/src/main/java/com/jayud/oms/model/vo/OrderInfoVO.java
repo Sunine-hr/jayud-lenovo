@@ -28,10 +28,10 @@ public class OrderInfoVO {
     private String statusDesc;
 
     @ApiModelProperty(value = "作业类型")
-    private String bizDesc;
+    private String classCodeDesc;
 
     @ApiModelProperty(value = "作业类型CODE")
-    private String bizCode;
+    private String classCode;
 
     @ApiModelProperty(value = "客户名称")
     private String customerName;

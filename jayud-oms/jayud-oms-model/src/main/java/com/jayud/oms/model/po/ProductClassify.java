@@ -38,6 +38,9 @@ public class ProductClassify extends Model<ProductClassify> {
     @ApiModelProperty(value = "产品名")
     private String name;
 
+    @ApiModelProperty(value = "是否可选物流服务 0-不可 1-可以")
+    private String isOptional;
+
     @ApiModelProperty(value = "父级id")
     private Long fId;
 

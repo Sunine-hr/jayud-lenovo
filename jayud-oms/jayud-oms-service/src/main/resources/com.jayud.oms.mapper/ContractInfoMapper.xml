@@ -8,6 +8,7 @@
         <result column="name" property="name" />
         <result column="contract_no" property="contractNo" />
         <result column="contract_url" property="contractUrl" />
+        <result column="contract_name" property="contractName" />
         <result column="business_type" property="businessType" />
         <result column="legal_entity" property="legalEntity" />
         <result column="start_date" property="startDate" />
@@ -21,7 +22,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-         id,name,contract_no,contract_url,business_type,legal_entity,start_date,end_date,status,created_user,updated_user,
+         id,name,contract_no,contract_url,contract_name,business_type,legal_entity,start_date,end_date,status,created_user,updated_user,
          created_time,updated_time
     </sql>
 
@@ -31,6 +32,7 @@
               ci.`name`,
               ci.`contract_no` contractNo,
               ci.`contract_url` contractUrl,
+              ci.`contract_name` contractName,
               ci.`business_type` businessType,
               ci.`legal_entity` legalEntity,
               DATE_FORMAT(ci.`start_date`, '%Y-%m-%d') startDate,
@@ -55,6 +57,7 @@
         ci.`name`,
         ci.`contract_no` contractNo,
         ci.`contract_url` contractUrl,
+        ci.`contract_name` contractName,
         ci.`business_type` businessType,
         ci.`legal_entity` legalEntity,
         DATE_FORMAT(ci.`start_date`, '%Y-%m-%d') startDate,

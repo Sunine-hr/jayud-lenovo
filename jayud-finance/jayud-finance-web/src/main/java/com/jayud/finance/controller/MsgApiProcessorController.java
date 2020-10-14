@@ -49,7 +49,11 @@ public class MsgApiProcessorController {
         if (StringUtils.isEmpty(applyNo)) {
             return false;
         }
-        return customsFinanceService.removeSpecifiedInvoice(applyNo, InvoiceTypeEnum.ALL);
+        List<String> unremovable = customsFinanceService.removeSpecifiedInvoice(applyNo, new HashMap<>(), InvoiceTypeEnum.ALL).get("unremovable");
+        if (null != unremovable && unremovable.size() != 0) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -82,12 +86,17 @@ public class MsgApiProcessorController {
             if (CollectionUtil.isNotEmpty(existingMap)) {
                 applyNo = first.get().getCustomApplyNo();
                 if (allowDeletePush) {
-                    log.info("应收单{}已经存在，但允许删单重推，正在处理...", applyNo);
-                    customsFinanceService.removeSpecifiedInvoice(first.get().getCustomApplyNo(), InvoiceTypeEnum.RECEIVABLE);
-                    //todo 返回删除成功的数据，推送时只重新推送删除成功的数据
+                    log.info("应收单{}已经存在，但允许删单重推，尝试删除旧数据...", applyNo);
+                    Map<String, List<String>> unremovables = customsFinanceService.removeSpecifiedInvoice(first.get().getCustomApplyNo(), existingMap, InvoiceTypeEnum.RECEIVABLE);
+
+//                    if (unremovables == null) {
+//                        log.error("{}应收单所在状态已经无法删除", applyNo);
+//                        return true;
+//                    }
+
                     //处理需要比对的推送
                     log.info("正在处理报关单{}应收数据...", applyNo);
-                    return customsFinanceService.pushReceivable(customsReceivable);
+                    return customsFinanceService.pushReceivable(customsReceivable, unremovables);
                 } else {
                     log.error("应收单{}已经存在，不能重复推送", applyNo);
                     return true;
@@ -95,15 +104,13 @@ public class MsgApiProcessorController {
             } else {
                 //基本校验完毕，调用方法进行处理，不需要比对，直接推送
                 log.info("正在处理报关单{}应收数据...", applyNo);
-                return customsFinanceService.pushReceivable(customsReceivable);
+                return customsFinanceService.pushReceivable(customsReceivable, null);
             }
         } else {
             String grabError = String.format("应收单异常：第一条数据==>%s", first.toString());
             log.error(grabError);
             return false;
         }
-
-
     }
 
 
@@ -136,12 +143,17 @@ public class MsgApiProcessorController {
             String applyNo = "";
             Optional<CustomsPayable> first = customsPayableForms.stream().filter(Objects::nonNull).findFirst();
             if (first.isPresent()) {
+                Map<String, List<String>> existingMap = checkForPayableDuplicateOrder(first.get().getCustomApplyNo());
                 if (CollectionUtil.isNotEmpty(checkForPayableDuplicateOrder(first.get().getCustomApplyNo()))) {
                     applyNo = first.get().getCustomApplyNo();
                     if (allowDeletePush) {
                         log.info("应付单{}已经存在，但可以删单重推，正在处理...", applyNo);
-                        //todo 返回删除成功的数据，推送时只重新推送删除成功的数据
-                        customsFinanceService.removeSpecifiedInvoice(first.get().getCustomApplyNo(), InvoiceTypeEnum.PAYABLE);
+                        Map<String, List<String>> unremovables = customsFinanceService.removeSpecifiedInvoice(first.get().getCustomApplyNo(), existingMap, InvoiceTypeEnum.PAYABLE);
+//                        if (unremovables == null) {
+//                            log.error("{}应付单所在状态已经无法删除", applyNo);
+//                            return true;
+//                        }
+                        return customsFinanceService.pushPayable(customsPayableForms, unremovables);
                     } else {
                         log.error("应付单{}已经存在，不能重复推送", applyNo);
                         return true;
@@ -149,7 +161,7 @@ public class MsgApiProcessorController {
                 } else {
                     //基础校验完毕,没有现存的订单，不用比对直接推送
                     log.info("正在处理报关单{}应付数据", applyNo);
-                    return customsFinanceService.pushPayable(customsPayableForms);
+                    return customsFinanceService.pushPayable(customsPayableForms, null);
                 }
             } else {
                 String grabError = String.format("应收单异常：第一条数据==>%s", first.toString());
@@ -162,6 +174,7 @@ public class MsgApiProcessorController {
 
     /**
      * 校验应收订单存在
+     * 返回已存在的订单
      *
      * @param applyNo
      * @return
@@ -181,6 +194,7 @@ public class MsgApiProcessorController {
 
     /**
      * 校验应付订单存在
+     * 返回已存在的订单
      *
      * @param applyNo
      * @return

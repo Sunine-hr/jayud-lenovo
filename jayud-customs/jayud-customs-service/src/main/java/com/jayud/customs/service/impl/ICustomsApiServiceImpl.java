@@ -257,31 +257,30 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
         Boolean sentReceivableStatus = true;
         Boolean sentPayableStatus = true;
         if (hasPayable || hasReceivable) {
-            if (hasPayable) {
-                log.debug(String.format("拼装数据完成，开始上传财务数据：customs-payable口..." + payable + "====" + payable));
-
-                sentPayableStatus = generateKafkaMsg("financeTest", "customs-payable", payable);
-//                Map<String, String> pMap = new HashMap<>();
-//                pMap.put("msg", payable);
-//                CommonResult commonResult = financeClient.savePayableBill(pMap);
-//                if (Objects.isNull(commonResult) || commonResult.getCode() != ResultEnum.SUCCESS.getCode()) {
-//                    sentPayableStatus = false;
-//                }
-
-            }
+            String customerName = "";
             if (hasReceivable) {
-//                log.info(String.format("拼装数据完成，开始上传财务数据：financeTest-payable口..." + receivable + "====" + receivable));
-//                Map<String, String> rMap = new HashMap<>();
-//                rMap.put("msg", receivable);
-//                CommonResult commonResult = financeClient.saveReceivableBill(rMap);
-//                if (Objects.isNull(commonResult) || commonResult.getCode() != ResultEnum.SUCCESS.getCode()) {
-//                    sentReceivableStatus = false;
-//                }
-
-
                 //应收单会出现一个报关单号对应多个行的情况，一般是因为柜号不一致，要区分计费
+                JSONArray jsonArray = JSONArray.parseArray(receivable);
+                if (CollectionUtil.isNotEmpty(jsonArray)){
+                    customerName = (String) ((com.alibaba.fastjson.JSONObject)jsonArray.get(0)).get("customer_name");
+                }
+
                 sentReceivableStatus = generateKafkaMsg("financeTest", "customs-receivable", receivable);
             }
+            if (hasPayable) {
+                log.debug(String.format("拼装数据完成，开始上传财务数据：customs-payable口..." + payable + "====" + payable));
+                JSONArray jsonArray = JSONArray.parseArray(payable);
+                if (CollectionUtil.isNotEmpty(jsonArray)){
+                    for (Object o : jsonArray) {
+                        Map map = (Map) o;
+                        map.put("customerName",customerName);
+                    }
+                }
+
+                sentPayableStatus = generateKafkaMsg("financeTest", "customs-payable", jsonArray.toJSONString());
+
+            }
+
             if (!sentPayableStatus || !sentReceivableStatus) {
                 Asserts.fail(ResultEnum.PARAM_ERROR, "发送金蝶失败");
             }

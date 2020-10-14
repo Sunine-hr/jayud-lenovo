@@ -71,4 +71,7 @@ public class CustomsPayable {
     @SerializedName("container_no")
     @ApiModelProperty(value = "柜号")
     private String containerNo;
+
+    @ApiModelProperty(value = "客户名称")
+    private String customerName;
 }

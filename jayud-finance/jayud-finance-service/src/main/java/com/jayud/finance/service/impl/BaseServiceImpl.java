@@ -17,6 +17,7 @@ import java.util.Optional;
 
 /**
  * k3基本数据查询 通用服务接口实现
+ *
  * @author bocong.zheng
  */
 @Service
@@ -28,11 +29,14 @@ public class BaseServiceImpl implements BaseService {
     @Override
     public <T> Object query(String name, Class<T> clz) {
         K3Entity k3Entity = clz.getAnnotation(K3Entity.class);
-        if(!Optional.of(k3Entity).isPresent()){
-            Asserts.fail(ResultEnum.PARAM_ERROR,"k3基本数据字段未配置");
+        if (!Optional.of(k3Entity).isPresent()) {
+            Asserts.fail(ResultEnum.PARAM_ERROR, "k3基本数据字段未配置");
         }
         CommonResult<List<T>> resultVO = null;
-        if (k3Entity.formId().equals(FormIDEnum.RECEIVABLE) || k3Entity.formId().equals(FormIDEnum.PAYABLE)) {
+        if (k3Entity.formId().equals(FormIDEnum.RECEIVABLE) ||
+                k3Entity.formId().equals(FormIDEnum.PAYABLE) ||
+                k3Entity.formId().equals(FormIDEnum.PAYABLE_OTHER) ||
+                k3Entity.formId().equals(FormIDEnum.RECEIVABLE_OTHER)) {
             resultVO = kingdeeService.query(likeSqlAll(k3Entity, name), clz, k3Entity);
             if (resultVO.getCode() == 0) {
                 return resultVO.getData();
@@ -48,13 +52,13 @@ public class BaseServiceImpl implements BaseService {
     }
 
     @Override
-    public <T> Optional<T> get(String name,Class<T> clz) {
+    public <T> Optional<T> get(String name, Class<T> clz) {
         K3Entity k3Entity = clz.getAnnotation(K3Entity.class);
-        if(!Optional.of(k3Entity).isPresent()){
-            Asserts.fail(ResultEnum.PARAM_ERROR,"k3基本数据字段未配置");
+        if (!Optional.of(k3Entity).isPresent()) {
+            Asserts.fail(ResultEnum.PARAM_ERROR, "k3基本数据字段未配置");
         }
         T data = null;
-        CommonResult<List<T>> resultVO = kingdeeService.query(equalsSql(k3Entity,name),clz,k3Entity );
+        CommonResult<List<T>> resultVO = kingdeeService.query(equalsSql(k3Entity, name), clz, k3Entity);
         if (resultVO.getCode() == 0) {
             if (CollectionUtil.isNotEmpty(resultVO.getData())) {
                 data = resultVO.getData().get(0);
@@ -63,13 +67,14 @@ public class BaseServiceImpl implements BaseService {
         return Optional.ofNullable(data);
     }
 
-   /**
+    /**
      * 拼接查询条件语句，支持精确查询
+     *
      * @param k3Entity
-     * @param name 查询用的key
+     * @param name     查询用的key
      * @return
      */
-    private String equalsSql(K3Entity k3Entity,String name){
+    private String equalsSql(K3Entity k3Entity, String name) {
         StringBuilder sb = new StringBuilder();
         sb.append(k3Entity.fName());
         sb.append(" = '");
@@ -81,11 +86,12 @@ public class BaseServiceImpl implements BaseService {
 
     /**
      * 拼接查询条件语句,支持模糊查询
+     *
      * @param k3Entity
      * @param name
      * @return
      */
-    private String likeSql(K3Entity k3Entity,String name){
+    private String likeSql(K3Entity k3Entity, String name) {
         StringBuilder sb = new StringBuilder();
         sb.append(k3Entity.fName());
         sb.append(" like '%");

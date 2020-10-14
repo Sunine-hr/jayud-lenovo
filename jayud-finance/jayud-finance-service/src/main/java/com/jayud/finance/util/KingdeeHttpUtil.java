@@ -15,9 +15,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 金蝶http请求工具类；
@@ -187,6 +185,28 @@ public class KingdeeHttpUtil {
         }
         log.error(message);
         return false;
+    }
+
+    /**
+     * 删除订单时使用，返回报错信息中能够匹配入参列表的订单号，即返回操作异常的单号列表
+     *
+     * @param responseJsonStr
+     * @param targetOrders
+     * @return
+     */
+    public static List<String> ifSucceed(String responseJsonStr, List<String> targetOrders) {
+        String errorCode = findByTargetFromJson(responseJsonStr, "IsSuccess");
+        String message = findByTargetFromJson(responseJsonStr, "Message");
+        if (Boolean.valueOf(errorCode) == true) {
+            return new ArrayList<>();
+        }
+        List<String> result = new ArrayList<>();
+        for (String targetOrder : targetOrders) {
+            if (message.contains(targetOrder)) {
+                result.add(targetOrder);
+            }
+        }
+        return result;
     }
 
     private static String findByTargetFromJson(String jsonStr, String target) {

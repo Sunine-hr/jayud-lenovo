@@ -70,7 +70,7 @@
         (CASE ot.`goods_type` WHEN 1 THEN '进口'
         WHEN 2 THEN '出口' END) goodsTypeDesc,
         ot.`port_code` portCode,
-        ot.`port_name` portName,
+        p.`name` portName,
         oi.`status`,
         (CASE oi.`status` WHEN 1 THEN '正常'
         WHEN 2 THEN '草稿'
@@ -90,7 +90,9 @@
         ELSE FALSE
         END) isCost
         FROM
-        order_info oi,order_transport ot WHERE oi.`order_no` = ot.`main_order_no` ) temp WHERE 1 = 1
+        order_transport ot LEFT JOIN order_info oi ON
+        oi.`order_no` = ot.`main_order_no`
+        LEFT JOIN port_info p ON ot.port_code = p.id_code) temp WHERE 1 = 1
         <if test="form.cmd == 'noSubmit'">
            and temp.`status` = 2
         </if>

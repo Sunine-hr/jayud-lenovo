@@ -56,9 +56,6 @@ public class OrderTakeAdr extends Model<OrderTakeAdr> {
     @ApiModelProperty(value = "描述")
     private String remarks;
 
-    @ApiModelProperty(value = "业务类型(product_biz)")
-    private String bizCode;
-
     @ApiModelProperty(value = "类型(1提货 2收货)")
     private Integer types;
 

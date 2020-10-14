@@ -61,16 +61,10 @@ public class DeliveryAddress extends Model<DeliveryAddress> {
     private String address;
 
     @ApiModelProperty(value = "邮编")
-    private String zipCode;
+    private String postCode;
 
     @ApiModelProperty(value = "仓库代码")
-    private String warehouseCode;
-
-    @ApiModelProperty(value = "类型1收货地址 2 提货地址")
-    private Integer types;
-
-    @ApiModelProperty(value = "仓库名称")
-    private String warehouseName;
+    private String warehouseInfoId;
 
     @ApiModelProperty(value = "启用状态0-禁用，1-启用")
     private Integer status;

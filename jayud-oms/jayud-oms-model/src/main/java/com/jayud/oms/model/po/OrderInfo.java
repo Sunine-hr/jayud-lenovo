@@ -74,6 +74,12 @@ public class OrderInfo extends Model<OrderInfo> {
     @ApiModelProperty(value = "业务所属部门")
     private String bizBelongDepart;
 
+    @ApiModelProperty(value = "该订单选中得物流服务")
+    private String selectedServer;
+
+    @ApiModelProperty(value = "报关资料是否齐全")
+    private String isDataAll;
+
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 

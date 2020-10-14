@@ -14,7 +14,6 @@
         <result column="weight" property="weight" />
         <result column="volume" property="volume" />
         <result column="remarks" property="remarks" />
-        <result column="biz_code" property="bizCode" />
         <result column="types" property="types" />
         <result column="create_time" property="createTime" />
         <result column="create_user" property="createUser" />
@@ -22,7 +21,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, order_no, delivery_id, take_time, describe, amount, unit, weight, volume, remarks, biz_code, types, create_time, create_user
+        id, order_no, delivery_id, take_time, describe, amount, unit, weight, volume, remarks, types, create_time, create_user
     </sql>
 
 </mapper>

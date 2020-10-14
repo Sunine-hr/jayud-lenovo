@@ -21,6 +21,8 @@
         <result column="class_code" property="classCode" />
         <result column="status" property="status" />
         <result column="biz_belong_depart" property="bizBelongDepart" />
+        <result column="selected_server" property="selectedServer" />
+        <result column="is_data_all" property="isDataAll" />
         <result column="create_time" property="createTime" />
         <result column="created_user" property="createdUser" />
         <result column="up_time" property="upTime" />
@@ -29,7 +31,8 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, order_no, customer_code, customer_name, biz_uid, biz_uname, unit_account, unit_code, contract_no, legal_code, legal_name, reference_no, cntr_no, biz_code,class_code, status, create_time, created_user, up_time, up_user
+        id, order_no, customer_code, customer_name, biz_uid, biz_uname, unit_account, unit_code, contract_no, legal_code, legal_name, reference_no, cntr_no, biz_code,class_code, status,
+        biz_belong_depart,selected_server,is_data_all,create_time, created_user, up_time, up_user
     </sql>
 
     <select id="findOrderInfoByPage" parameterType="com.jayud.oms.model.bo.QueryOrderInfoForm" resultType="com.jayud.oms.model.vo.OrderInfoVO" >

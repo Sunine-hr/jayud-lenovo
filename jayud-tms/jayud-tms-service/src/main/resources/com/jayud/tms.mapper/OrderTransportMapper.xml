@@ -8,26 +8,27 @@
         <result column="main_order_no" property="mainOrderNo" />
         <result column="order_no" property="orderNo" />
         <result column="port_code" property="portCode" />
-        <result column="port_name" property="portName" />
         <result column="goods_type" property="goodsType" />
         <result column="vehicle_type" property="vehicleType" />
         <result column="vehicle_size" property="vehicleSize" />
         <result column="cntr_no" property="cntrNo" />
         <result column="cntr_pic" property="cntrPic" />
-        <result column="warehouse_code" property="warehouseCode" />
-        <result column="warehouse_name" property="warehouseName" />
+        <result column="cntr_pic_name" property="cntrPicName" />
+        <result column="warehouse_info_id" property="warehouseInfoId" />
         <result column="encode" property="encode" />
         <result column="status" property="status" />
-        <result column="user_id" property="userId" />
-        <result column="user_name" property="userName" />
-        <result column="opt_time" property="optTime" />
-        <result column="create_time" property="createTime" />
-        <result column="create_user" property="createUser" />
+        <result column="is_load_goods" property="isLoadGoods" />
+        <result column="is_unload_goods" property="isUnloadGoods" />
+        <result column="updated_time" property="updatedTime" />
+        <result column="updated_user" property="updatedUser" />
+        <result column="created_time" property="createdTime" />
+        <result column="created_user" property="createdUser" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, main_order_no, order_no, port_code, port_name, goods_type, vehicle_type, vehicle_size, cntr_no, cntr_pic, warehouse_code, warehouse_name, encode, status, user_id, user_name, opt_time, create_time, create_user
+        id, main_order_no, order_no, port_code, goods_type, vehicle_type, vehicle_size, cntr_no, cntr_pic, cntrPicName,
+        warehouse_info_id, encode, status, is_load_goods, is_unload_goods, updated_time, updated_user, created_time,created_user
     </sql>
 
 </mapper>

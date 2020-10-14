@@ -142,7 +142,7 @@ public class BookingSpaceForm {
     @SerializedName( "General_dimension")
     @ApiModelProperty(value = "订单具体尺寸")
     @NotEmpty(message = "订单具体尺寸不能为空")
-    @Length(max = 100, message = "订单具体尺寸字段的最大长度为100")
+    @Length(max = 1000, message = "订单具体尺寸字段的最大长度为1000")
     private String generalDimension;
 
     @JsonProperty("Pallet_Number")

@@ -242,7 +242,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     public List<OrderStatusVO> handleProcess(QueryOrderStatusForm form) {
         List<OrderStatusVO> orderStatusVOS = new ArrayList<>();
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("class_code", form.getBizCode());
+        queryWrapper.eq("class_code", form.getClassCode());
         queryWrapper.eq("status", "1");
         List<OrderStatus> allProcess = orderStatusService.list(queryWrapper);//所有流程
         allProcess.sort((h1, h2) -> {//排序
@@ -273,7 +273,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         InputMainOrderVO inputMainOrderVO = getMainOrderById(form.getMainOrderId());
         //根据主订单ID获取子订单数量
         int customsNum = 0;//纯报关单数量
-        if (OrderStatusEnum.CBG.getCode().equals(form.getBizCode()) && inputMainOrderVO != null) {
+        if (OrderStatusEnum.CBG.getCode().equals(form.getClassCode()) && inputMainOrderVO != null) {
             customsNum = customsClient.getCustomsOrderNum(inputMainOrderVO.getOrderNo()).getData();
         }
         //以后有其他的会逐渐增加 TODO

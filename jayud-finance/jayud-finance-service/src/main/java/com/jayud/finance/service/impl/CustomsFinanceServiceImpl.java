@@ -1,7 +1,6 @@
 package com.jayud.finance.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -16,7 +15,6 @@ import com.jayud.finance.bo.PayableHeaderForm;
 import com.jayud.finance.bo.ReceivableHeaderForm;
 import com.jayud.finance.enums.FormIDEnum;
 import com.jayud.finance.enums.InvoiceFormNeedRelationEnum;
-import com.jayud.finance.enums.InvoiceTypeEnum;
 import com.jayud.finance.kingdeesettings.K3CloudConfig;
 import com.jayud.finance.po.*;
 import com.jayud.finance.service.*;
@@ -67,7 +65,7 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
     K3CloudConfig k3CloudConfig;
 
     @Override
-    public Boolean pushReceivable(List<CustomsReceivable> customsReceivable, Map<String, List<String>> unremovables) {
+    public Boolean pushReceivable(List<CustomsReceivable> customsReceivable, YunbaoguanPushProperties properties) {
 
         Map<String, CustomsFinanceCoRelation> coRelationMap = new HashMap<>();
         Map<String, CustomsFinanceFeeRelation> feeRelationMap = new HashMap<>();
@@ -113,11 +111,12 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
 //                }
 //            }
 //        }
+        Map<FormIDEnum, List<String>> unremovables = properties.getUnRemovableCompName();
         List<String> unremovableReceivableOther = null;
         List<String> unremovableReceivable = null;
         if (CollectionUtil.isNotEmpty(unremovables)) {
-            unremovableReceivableOther = unremovables.get("receivableOther");
-            unremovableReceivable = unremovables.get("receivable");
+            unremovableReceivableOther = unremovables.get(FormIDEnum.RECEIVABLE_OTHER);
+            unremovableReceivable = unremovables.get(FormIDEnum.RECEIVABLE);
         }
 
         //初始化可能的其他应收单线程池
@@ -191,7 +190,7 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
             //处理可能的其他应收单
             //执行条件：
             //本行存在需要存入其他应收单的数据，并且不存在禁止推送的客户名，或本行的客户名称不在禁止推送的列表中
-                        if (hasOtherReceivable &&
+            if (hasOtherReceivable &&
                     ((CollectionUtil.isEmpty(unremovableReceivableOther)) ||
                             (CollectionUtil.isNotEmpty(unremovableReceivableOther) && !unremovableReceivableOther.contains(item.getCustomerName())))) {
                 log.info("处理其他应收款项");
@@ -295,9 +294,8 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
         }
 
         if (StringUtils.isNotEmpty(errorString.toString())) {
-            log.error(String.format("写入应收单的时候出现异常：{}"), errorString.toString());
-            executorService.shutdown();
-            return false;
+            log.warn(String.format("写入应收单的时候出现异常：{}"), errorString.toString());
+            return true;
         }
 
 
@@ -306,7 +304,7 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
     }
 
     @Override
-    public Boolean pushPayable(List<CustomsPayable> customsPayableForms, Map<String, List<String>> unremovables) {
+    public Boolean pushPayable(List<CustomsPayable> customsPayableForms, YunbaoguanPushProperties properties) {
         Map<String, CustomsFinanceCoRelation> coRelationMap = new HashMap<>();
         Map<String, CustomsFinanceFeeRelation> feeRelationMap = new HashMap<>();
         String compJson = redisUtils.get(yunbaoguanCompKeyPay);
@@ -344,9 +342,10 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
         //todo 应付 与 其他应付要分开处理（应付中哪些不能传，其他应付中哪些不能传）
         List<String> unremovablePayable = null;
         List<String> unremovablePayableOther = null;
+        Map<FormIDEnum, List<String>> unremovables = properties.getUnRemovableCompName();
         if (CollectionUtil.isNotEmpty(unremovables)) {
-            unremovablePayable = unremovables.get("payable");
-            unremovablePayableOther = unremovables.get("payableOther");
+            unremovablePayable = unremovables.get(FormIDEnum.PAYABLE);
+            unremovablePayableOther = unremovables.get(FormIDEnum.PAYABLE_OTHER);
         }
 
 
@@ -509,8 +508,8 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
         }
 
         if (StringUtils.isNotEmpty(errorString.toString())) {
-            log.error("应付数据推送出现异常：{}", errorString.toString());
-            return false;
+            log.warn("应付数据推送可能出现异常：{}", errorString.toString());
+            return true;
         } else {
             log.info("所有的应付数据推送完毕");
             return true;
@@ -522,68 +521,66 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
     /**
      * 删除指定的报关单号的财务数据
      *
-     * @param applyNo
      * @return
      */
     @Override
-    public Map<String, List<String>> removeSpecifiedInvoice(String applyNo, Map<String, List<String>> ordersMap, InvoiceTypeEnum invoiceTypeEnum) {
-        //校验订单是否存在
-        Boolean removedAP = true;
-        Boolean removedAR = true;
-        Boolean removedAPOther = true;
-        Boolean removedAROther = true;
+    public YunbaoguanPushProperties removeSpecifiedInvoice(YunbaoguanPushProperties properties) {
+//        Map<FormIDEnum, List<String>> ordersMap = properties.getExistingOrders();
+//        String applyNo = properties.getApplyNo();
 
-        HashMap<String, List<String>> unremovables = new HashMap<>();
-        if (Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.RECEIVABLE) ||
-                Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.ALL)) {
-            //处理应收
-            List<String> receivable = MapUtil.get(ordersMap, "receivable", List.class);
-            List<String> receivableOther = MapUtil.get(ordersMap, "receivableOther", List.class);
-            if (CollectionUtil.isNotEmpty(receivable)) {
-                List<String> unRemovableReceivable = doRemove(receivable, FormIDEnum.RECEIVABLE.getFormid());
-                if (CollectionUtil.isNotEmpty(unRemovableReceivable)) {
-                    unremovables.put("receivable", unRemovableReceivable);
-                    removedAR = false;
-                }
-            }
-            if (CollectionUtil.isNotEmpty(receivableOther)) {
-                List<String> unremovableReceivableOther = doRemove(receivableOther, FormIDEnum.RECEIVABLE_OTHER.getFormid());
-                if (CollectionUtil.isNotEmpty(unremovableReceivableOther)) {
-                    unremovables.put("receivableOther", unremovableReceivableOther);
-                    removedAROther = false;
-                }
-            }
-        }
-        if (Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.PAYABLE) ||
-                Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.ALL)) {
-            //处理应付
-            List<String> payable = MapUtil.get(ordersMap, "payable", List.class);
-            List<String> payableOther = MapUtil.get(ordersMap, "payableOther", List.class);
-            if (CollectionUtil.isNotEmpty(payable)) {
-                List<String> unremovablePayable = doRemove(payable, FormIDEnum.PAYABLE.getFormid());
-                if (CollectionUtil.isNotEmpty(unremovablePayable)) {
-                    unremovables.put("payable", unremovablePayable);
-                    removedAR = false;
-                }
-            }
-            if (CollectionUtil.isNotEmpty(payableOther)) {
-                List<String> unremovablePayableOther = doRemove(payableOther, FormIDEnum.PAYABLE_OTHER.getFormid());
-                if (CollectionUtil.isNotEmpty(unremovablePayableOther)) {
-                    unremovables.put("payableOther", unremovablePayableOther);
-                    removedAROther = false;
-                }
-            }
-        }
-        if (Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.ALL) &&
-                (!removedAP || !removedAR || !removedAPOther || !removedAROther)) {
-            log.error(String.format("报关单号%s删除失败", applyNo));
-            return null;
-        }
-        if (CollectionUtil.isNotEmpty(unremovables)) {
-            return unremovables;
-        } else {
-            return null;
-        }
+        return doRemove(properties);
+//
+//        HashMap<String, List<String>> unremovables = new HashMap<>();
+//        if (Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.RECEIVABLE) ||
+//                Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.ALL)) {
+//            //处理应收
+//            List<String> receivable = MapUtil.get(ordersMap, FormIDEnum.RECEIVABLE, List.class);
+//            List<String> receivableOther = MapUtil.get(ordersMap, FormIDEnum.RECEIVABLE_OTHER, List.class);
+//            if (CollectionUtil.isNotEmpty(receivable)) {
+//                List<String> unRemovableReceivable = doRemove(receivable, FormIDEnum.RECEIVABLE.getFormid());
+//                if (CollectionUtil.isNotEmpty(unRemovableReceivable)) {
+//                    unremovables.put("receivable", unRemovableReceivable);
+//                    removedAR = false;
+//                }
+//            }
+//            if (CollectionUtil.isNotEmpty(receivableOther)) {
+//                List<String> unremovableReceivableOther = doRemove(receivableOther, FormIDEnum.RECEIVABLE_OTHER.getFormid());
+//                if (CollectionUtil.isNotEmpty(unremovableReceivableOther)) {
+//                    unremovables.put("receivableOther", unremovableReceivableOther);
+//                    removedAROther = false;
+//                }
+//            }
+//        }
+//        if (Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.PAYABLE) ||
+//                Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.ALL)) {
+//            //处理应付
+//            List<String> payable = MapUtil.get(ordersMap, "payable", List.class);
+//            List<String> payableOther = MapUtil.get(ordersMap, "payableOther", List.class);
+//            if (CollectionUtil.isNotEmpty(payable)) {
+//                List<String> unremovablePayable = doRemove(payable, FormIDEnum.PAYABLE.getFormid());
+//                if (CollectionUtil.isNotEmpty(unremovablePayable)) {
+//                    unremovables.put("payable", unremovablePayable);
+//                    removedAR = false;
+//                }
+//            }
+//            if (CollectionUtil.isNotEmpty(payableOther)) {
+//                List<String> unremovablePayableOther = doRemove(payableOther, FormIDEnum.PAYABLE_OTHER.getFormid());
+//                if (CollectionUtil.isNotEmpty(unremovablePayableOther)) {
+//                    unremovables.put("payableOther", unremovablePayableOther);
+//                    removedAROther = false;
+//                }
+//            }
+//        }
+//        if (Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.ALL) &&
+//                (!removedAP || !removedAR || !removedAPOther || !removedAROther)) {
+//            log.error(String.format("报关单号%s删除失败", applyNo));
+//            return null;
+//        }
+//        if (CollectionUtil.isNotEmpty(unremovables)) {
+//            return unremovables;
+//        } else {
+//            return null;
+//        }
     }
 
 
@@ -592,10 +589,9 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
      * <br>如果返回为空列表说明全部删除成功
      * <br>如果返回为非空列表，那么说明该客户或供应商的财务数据不能被删除，再推送时要进行忽略
      *
-     * @param orderList
      * @return
      */
-    private List<String> doRemove(List<String> orderList, String formId) {
+    private YunbaoguanPushProperties doRemove(YunbaoguanPushProperties properties) {
         Map<String, CustomsFinanceCoRelation> coRelationMap = new HashMap<>();
         String compJson = redisUtils.get(yunbaoguanCompKeyRec);
         if (StringUtils.isNotEmpty(compJson)) {
@@ -612,75 +608,107 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
 
         if (CollectionUtil.isEmpty(coRelationMap)) {
             log.error("基础数据加载失败：费用或公司对应关系表加载失败");
-            return new ArrayList<>();
+            properties.setError(true);
+            return properties;
         }
 
-        Map<String, Object> header = new HashMap<>();
-        header.put("Cookie", cookieService.getCookie(k3CloudConfig));
+        //基础数据加载完成，开始处理
+        Map<FormIDEnum, List<String>> existingOrders = properties.getExistingOrders();
+        for (Map.Entry<FormIDEnum, List<String>> existingEntries : existingOrders.entrySet()) {
+            List<String> orderList = existingEntries.getValue();
+            String formId = existingEntries.getKey().getFormid();
+            if (CollectionUtil.isNotEmpty(orderList)) {
+                Map<String, Object> header = new HashMap<>();
+                header.put("Cookie", cookieService.getCookie(k3CloudConfig));
 
-        Map<String, Object> param = new HashMap<>();
-        param.put("Numbers", orderList);
-        //拼装数据
-        String jsonString = JSONUtil.toJsonStr(param);
-        JSONObject data = JSONObject.parseObject(jsonString);
-        String content = buildParam(formId, data);
+                Map<String, Object> param = new HashMap<>();
+                param.put("Numbers", orderList);
+                //拼装数据
+                String jsonString = JSONUtil.toJsonStr(param);
+                JSONObject data = JSONObject.parseObject(jsonString);
+                String content = buildParam(formId, data);
 
-        //向金蝶发送请求
-        String result = KingdeeHttpUtil.httpPost(k3CloudConfig.getDelete(), header, content);
-        List<String> failedOrders = KingdeeHttpUtil.ifSucceed(result, orderList);
+                //向金蝶发送请求，尝试删除订单
+                String result = KingdeeHttpUtil.httpPost(k3CloudConfig.getDelete(), header, content);
+                log.debug("删除订单尝试：{}", result);
+                //如果推送失败，返回推送失败的订单号列表
+                List<String> failedOrders = KingdeeHttpUtil.ifSucceed(result, orderList);
+
+                //装载删除失败的订单列表
+                if (CollectionUtil.isNotEmpty(properties.getUnRemovableOrders())) {
+                    properties.getUnRemovableOrders().put(existingEntries.getKey(), failedOrders);
+                } else {
+                    Map<FormIDEnum, List<String>> failedOrdersMap = new HashMap<>();
+                    failedOrdersMap.put(existingEntries.getKey(), failedOrders);
+                    properties.setUnRemovableOrders(failedOrdersMap);
+                }
 
 
-        if (CollectionUtil.isNotEmpty(failedOrders)) {
-            List<String> failedCompanies = new ArrayList<>();
-            Map<String, Object> queryHeader = new HashMap<>();
-            queryHeader.put("Cookie", cookieService.getCookie(k3CloudConfig));
-            Map<String, Object> queryParam = new HashMap<>();
-            for (String failedOrder : failedOrders) {
-                queryParam.put("Number", failedOrder);
-                String queryContent = buildParam(formId, JSONObject.parseObject(JSONObject.toJSONString(queryParam)));
-                String queryResult = KingdeeHttpUtil.httpPost(k3CloudConfig.getView(), header, queryContent);
-                if (null != queryResult) {
-                    JSONObject resultObject = JSONObject.parseObject(queryResult);
-                    Map<String, Object> innerMap = resultObject.getInnerMap();
-                    Object rootResult = innerMap.get("Result");
-                    if (null != rootResult) {
-                        Object headResult = ((Map) rootResult).get("Result");
-                        if (null != headResult) {
-                            Map comp = null;
-                            if (formId.equals(FormIDEnum.PAYABLE.getFormid())) {
-                                comp = (Map) ((Map) headResult).get("SUPPLIERID");
-                            } else if (formId.equals(FormIDEnum.RECEIVABLE.getFormid())) {
-                                comp = (Map) ((Map) headResult).get("CUSTOMERID");
-                            } else if (formId.equals(FormIDEnum.RECEIVABLE_OTHER) || formId.equals(FormIDEnum.PAYABLE_OTHER.getFormid())) {
-                                comp = (Map) ((Map) headResult).get("CONTACTUNIT");
-                            }
-                            if (null != comp) {
-                                List<Map> name = (List<Map>) ((Map) comp).get("Name");
-                                if (CollectionUtil.isNotEmpty(name)) {
+                //获取推送失败的订单对应的商户抬头
+                List<String> failedCompanies = new ArrayList<>();
 
-                                    if (null != name.get(0).get("Value")) {
-                                        failedCompanies.add(name.get(0).get("Value").toString());
+                if (CollectionUtil.isNotEmpty(failedOrders)) {
+                    Map<String, Object> queryHeader = new HashMap<>();
+                    queryHeader.put("Cookie", cookieService.getCookie(k3CloudConfig));
+                    Map<String, Object> queryParam = new HashMap<>();
+                    for (String failedOrder : failedOrders) {
+                        queryParam.put("Number", failedOrder);
+                        String queryContent = buildParam(formId, JSONObject.parseObject(JSONObject.toJSONString(queryParam)));
+                        String queryResult = KingdeeHttpUtil.httpPost(k3CloudConfig.getView(), header, queryContent);
+                        log.debug("查询订单明细结果：{}", queryResult);
+                        if (null != queryResult) {
+                            JSONObject resultObject = JSONObject.parseObject(queryResult);
+                            Map<String, Object> innerMap = resultObject.getInnerMap();
+                            Object rootResult = innerMap.get("Result");
+                            if (null != rootResult) {
+                                Object headResult = ((Map) rootResult).get("Result");
+                                if (null != headResult) {
+                                    Map comp = null;
+                                    if (formId.equals(FormIDEnum.PAYABLE.getFormid())) {
+                                        comp = (Map) ((Map) headResult).get("SUPPLIERID");
+                                    } else if (formId.equals(FormIDEnum.RECEIVABLE.getFormid())) {
+                                        comp = (Map) ((Map) headResult).get("CUSTOMERID");
+                                    } else if (formId.equals(FormIDEnum.RECEIVABLE_OTHER.getFormid()) || formId.equals(FormIDEnum.PAYABLE_OTHER.getFormid())) {
+                                        comp = (Map) ((Map) headResult).get("CONTACTUNIT");
+                                    }
+                                    if (null != comp) {
+                                        List<Map> name = (List<Map>) ((Map) comp).get("Name");
+                                        if (CollectionUtil.isNotEmpty(name)) {
+
+                                            if (null != name.get(0).get("Value")) {
+                                                failedCompanies.add(name.get(0).get("Value").toString());
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
-            }
-            //如果有无法推送的数据，推送失败的公司名称转为云报关的名称，并返回
-            if (CollectionUtil.isNotEmpty(failedCompanies)) {
-                List<String> failedCompaniesYunbaoguan = new ArrayList<>();
-                for (Map.Entry<String, CustomsFinanceCoRelation> coRelationEntry : coRelationMap.entrySet()) {
-                    CustomsFinanceCoRelation coRelation = JSONObject.parseObject(JSONObject.toJSONString(coRelationEntry.getValue()), CustomsFinanceCoRelation.class);
-                    String kingdeeName = coRelation.getKingdeeName();
-                    if (failedCompanies.contains(kingdeeName)) {
-                        failedCompaniesYunbaoguan.add(coRelationEntry.getKey());
+
+                    //如果上面的抬头列表不为空，推送失败的公司名称在此转为对应云报关的名称
+                    if (CollectionUtil.isNotEmpty(failedCompanies)) {
+                        List<String> failedCompaniesYunbaoguan = new ArrayList<>();
+                        for (Map.Entry<String, CustomsFinanceCoRelation> coRelationEntry : coRelationMap.entrySet()) {
+                            CustomsFinanceCoRelation coRelation = JSONObject.parseObject(JSONObject.toJSONString(coRelationEntry.getValue()), CustomsFinanceCoRelation.class);
+                            String kingdeeName = coRelation.getKingdeeName();
+                            if (failedCompanies.contains(kingdeeName)) {
+                                failedCompaniesYunbaoguan.add(coRelationEntry.getKey());
+                            }
+                        }
+                        if (CollectionUtil.isNotEmpty(properties.getUnRemovableCompName())) {
+                            properties.getUnRemovableCompName().put(existingEntries.getKey(), failedCompaniesYunbaoguan);
+                        } else {
+                            Map<FormIDEnum, List<String>> unRemovableComps = new HashMap<>();
+                            unRemovableComps.put(existingEntries.getKey(), failedCompaniesYunbaoguan);
+                            properties.setUnRemovableCompName(unRemovableComps);
+                        }
                     }
                 }
-                return failedCompaniesYunbaoguan;
+
             }
         }
-        return new ArrayList<>();
+        return properties;
+
     }
 
     /**
@@ -1054,10 +1082,10 @@ class PushOtherPayable implements Callable<String> {
 
                 Boolean succeed = KingdeeHttpUtil.ifSucceed(result);
                 if (succeed) {
-                    log.info(String.format("报关单号（%s）其他应收单保存成功", applyNo));
+                    log.info(String.format("报关单号（%s）其他应付单保存成功", applyNo));
                 } else {
-                    log.error(String.format("报关单号（%s）其他应收单保存失败", applyNo));
-                    errorString.append(String.format("报关单号（%s）其他应收单保存失败", applyNo));
+                    log.error(String.format("报关单号（%s）其他应付单保存失败", applyNo));
+                    errorString.append(String.format("报关单号（%s）其他应付单保存失败", applyNo));
                 }
                 return errorString.toString();
             }

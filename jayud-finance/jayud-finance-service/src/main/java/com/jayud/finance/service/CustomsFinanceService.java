@@ -1,11 +1,10 @@
 package com.jayud.finance.service;
 
-import com.jayud.finance.enums.InvoiceTypeEnum;
 import com.jayud.finance.po.CustomsPayable;
 import com.jayud.finance.po.CustomsReceivable;
+import com.jayud.finance.po.YunbaoguanPushProperties;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 报关的应收应付信息向金蝶推送数据
@@ -17,7 +16,7 @@ public interface CustomsFinanceService {
      * @param customsReceivable
      * @return
      */
-    Boolean pushReceivable(List<CustomsReceivable> customsReceivable, Map<String, List<String>> unremovables);
+    Boolean pushReceivable(List<CustomsReceivable> customsReceivable, YunbaoguanPushProperties properties);
 
     /**
      * 推送应付
@@ -25,15 +24,14 @@ public interface CustomsFinanceService {
      * @param customsPayableForms
      * @return
      */
-    Boolean pushPayable(List<CustomsPayable> customsPayableForms, Map<String, List<String>> unremovables);
+    Boolean pushPayable(List<CustomsPayable> customsPayableForms,YunbaoguanPushProperties properties);
 
     /**
      * 删除金蝶指定订单
      *
-     * @param applyNo
      * @return
      */
 
-    Map<String, List<String>> removeSpecifiedInvoice(String applyNo, Map<String, List<String>> orderMap, InvoiceTypeEnum invoiceTypeEnum);
+    YunbaoguanPushProperties removeSpecifiedInvoice(YunbaoguanPushProperties properties);
 
 }

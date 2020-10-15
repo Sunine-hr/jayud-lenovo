@@ -4,13 +4,12 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.jayud.finance.enums.InvoiceTypeEnum;
+import com.jayud.finance.enums.FormIDEnum;
 import com.jayud.finance.po.*;
 import com.jayud.finance.service.BaseService;
 import com.jayud.finance.service.CustomsFinanceService;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -42,17 +41,19 @@ public class MsgApiProcessorController {
     @Value("${kingdee.settings.allow-delete-push}")
     Boolean allowDeletePush;
 
+    @Deprecated
     @RequestMapping(path = "/yunbaoguan/invoice/remove", method = RequestMethod.POST)
     public Boolean removeInvoice(@RequestBody String msg) {
-        Map param = JSONObject.parseObject(msg, Map.class);
-        String applyNo = MapUtil.getStr(param, "applyNo");
-        if (StringUtils.isEmpty(applyNo)) {
-            return false;
-        }
-        List<String> unremovable = customsFinanceService.removeSpecifiedInvoice(applyNo, new HashMap<>(), InvoiceTypeEnum.ALL).get("unremovable");
-        if (null != unremovable && unremovable.size() != 0) {
-            return false;
-        }
+//        Map param = JSONObject.parseObject(msg, Map.class);
+//        String applyNo = MapUtil.getStr(param, "applyNo");
+//        if (StringUtils.isEmpty(applyNo)) {
+//            return false;
+//        }
+//
+//        List<String> unremovable = customsFinanceService.removeSpecifiedInvoice(applyNo, new HashMap<>(), InvoiceTypeEnum.ALL).get("unremovable");
+//        if (null != unremovable && unremovable.size() != 0) {
+//            return false;
+//        }
         return true;
     }
 
@@ -82,21 +83,23 @@ public class MsgApiProcessorController {
         Optional<CustomsReceivable> first = customsReceivable.stream().filter(Objects::nonNull).findFirst();
         String applyNo = "";
         if (first.isPresent()) {
-            Map<String, List<String>> existingMap = checkForReceivableDuplicateOrder(first.get().getCustomApplyNo());
+            Map<FormIDEnum, List<String>> existingMap = checkForReceivableDuplicateOrder(first.get().getCustomApplyNo());
             if (CollectionUtil.isNotEmpty(existingMap)) {
                 applyNo = first.get().getCustomApplyNo();
                 if (allowDeletePush) {
                     log.info("应收单{}已经存在，但允许删单重推，尝试删除旧数据...", applyNo);
-                    Map<String, List<String>> unremovables = customsFinanceService.removeSpecifiedInvoice(first.get().getCustomApplyNo(), existingMap, InvoiceTypeEnum.RECEIVABLE);
-
-//                    if (unremovables == null) {
-//                        log.error("{}应收单所在状态已经无法删除", applyNo);
-//                        return true;
-//                    }
+                    YunbaoguanPushProperties properties = new YunbaoguanPushProperties();
+                    properties.setApplyNo(applyNo);
+                    properties.setExistingOrders(existingMap);
+                    properties = customsFinanceService.removeSpecifiedInvoice(properties);
+                    if (!properties.ifAllowPush(FormIDEnum.RECEIVABLE)) {
+                        log.warn("{}应收单所在状态已经无法删除", applyNo);
+                        return true;
+                    }
 
                     //处理需要比对的推送
                     log.info("正在处理报关单{}应收数据...", applyNo);
-                    return customsFinanceService.pushReceivable(customsReceivable, unremovables);
+                    return customsFinanceService.pushReceivable(customsReceivable, properties);
                 } else {
                     log.error("应收单{}已经存在，不能重复推送", applyNo);
                     return true;
@@ -143,17 +146,20 @@ public class MsgApiProcessorController {
             String applyNo = "";
             Optional<CustomsPayable> first = customsPayableForms.stream().filter(Objects::nonNull).findFirst();
             if (first.isPresent()) {
-                Map<String, List<String>> existingMap = checkForPayableDuplicateOrder(first.get().getCustomApplyNo());
+                Map<FormIDEnum, List<String>> existingMap = checkForPayableDuplicateOrder(first.get().getCustomApplyNo());
                 if (CollectionUtil.isNotEmpty(checkForPayableDuplicateOrder(first.get().getCustomApplyNo()))) {
                     applyNo = first.get().getCustomApplyNo();
                     if (allowDeletePush) {
                         log.info("应付单{}已经存在，但可以删单重推，正在处理...", applyNo);
-                        Map<String, List<String>> unremovables = customsFinanceService.removeSpecifiedInvoice(first.get().getCustomApplyNo(), existingMap, InvoiceTypeEnum.PAYABLE);
-//                        if (unremovables == null) {
-//                            log.error("{}应付单所在状态已经无法删除", applyNo);
-//                            return true;
-//                        }
-                        return customsFinanceService.pushPayable(customsPayableForms, unremovables);
+                        YunbaoguanPushProperties properties = new YunbaoguanPushProperties();
+                        properties.setApplyNo(applyNo);
+                        properties.setExistingOrders(existingMap);
+                        properties = customsFinanceService.removeSpecifiedInvoice(properties);
+                        if (!properties.ifAllowPush(FormIDEnum.PAYABLE)) {
+                            log.warn("{}应付单所在状态已经无法删除", applyNo);
+                            return true;
+                        }
+                        return customsFinanceService.pushPayable(customsPayableForms, properties);
                     } else {
                         log.error("应付单{}已经存在，不能重复推送", applyNo);
                         return true;
@@ -179,15 +185,15 @@ public class MsgApiProcessorController {
      * @param applyNo
      * @return
      */
-    private Map<String, List<String>> checkForReceivableDuplicateOrder(String applyNo) {
+    private Map<FormIDEnum, List<String>> checkForReceivableDuplicateOrder(String applyNo) {
         List<String> existingReceivable = ((List<InvoiceBase>) baseService.query(applyNo, Receivable.class)).stream().map(InvoiceBase::getFBillNo).collect(Collectors.toList());
         List<String> existingReceivableOther = ((List<InvoiceBase>) baseService.query(applyNo, ReceivableOther.class)).stream().map(InvoiceBase::getFBillNo).collect(Collectors.toList());
-        Map<String, List<String>> result = new HashMap<>();
+        Map<FormIDEnum, List<String>> result = new HashMap<>();
         if (CollectionUtil.isNotEmpty(existingReceivable)) {
-            result.put("receivable", existingReceivable);
+            result.put(FormIDEnum.RECEIVABLE, existingReceivable);
         }
         if (CollectionUtil.isNotEmpty(existingReceivableOther)) {
-            result.put("receivableOther", existingReceivableOther);
+            result.put(FormIDEnum.RECEIVABLE_OTHER, existingReceivableOther);
         }
         return result;
     }
@@ -199,15 +205,15 @@ public class MsgApiProcessorController {
      * @param applyNo
      * @return
      */
-    private Map<String, List<String>> checkForPayableDuplicateOrder(String applyNo) {
+    private Map<FormIDEnum, List<String>> checkForPayableDuplicateOrder(String applyNo) {
         List<String> existingPayable = ((List<InvoiceBase>) baseService.query(applyNo, Payable.class)).stream().map(InvoiceBase::getFBillNo).collect(Collectors.toList());
         List<String> existingPayableOther = ((List<InvoiceBase>) baseService.query(applyNo, PayableOther.class)).stream().map(InvoiceBase::getFBillNo).collect(Collectors.toList());
-        Map<String, List<String>> result = new HashMap<>();
+        Map<FormIDEnum, List<String>> result = new HashMap<>();
         if (CollectionUtil.isNotEmpty(existingPayable)) {
-            result.put("payable", existingPayable);
+            result.put(FormIDEnum.PAYABLE, existingPayable);
         }
         if (CollectionUtil.isNotEmpty(existingPayableOther)) {
-            result.put("payableOther", existingPayableOther);
+            result.put(FormIDEnum.PAYABLE_OTHER, existingPayableOther);
         }
         return result;
     }

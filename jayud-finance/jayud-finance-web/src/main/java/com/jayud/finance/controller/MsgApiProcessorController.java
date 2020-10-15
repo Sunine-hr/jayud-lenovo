@@ -44,16 +44,6 @@ public class MsgApiProcessorController {
     @Deprecated
     @RequestMapping(path = "/yunbaoguan/invoice/remove", method = RequestMethod.POST)
     public Boolean removeInvoice(@RequestBody String msg) {
-//        Map param = JSONObject.parseObject(msg, Map.class);
-//        String applyNo = MapUtil.getStr(param, "applyNo");
-//        if (StringUtils.isEmpty(applyNo)) {
-//            return false;
-//        }
-//
-//        List<String> unremovable = customsFinanceService.removeSpecifiedInvoice(applyNo, new HashMap<>(), InvoiceTypeEnum.ALL).get("unremovable");
-//        if (null != unremovable && unremovable.size() != 0) {
-//            return false;
-//        }
         return true;
     }
 

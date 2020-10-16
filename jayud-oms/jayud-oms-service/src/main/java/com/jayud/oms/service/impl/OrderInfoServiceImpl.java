@@ -6,17 +6,20 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.RedisUtils;
+import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.CustomsClient;
+import com.jayud.oms.feign.TmsClient;
 import com.jayud.oms.mapper.OrderInfoMapper;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
+import io.netty.util.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -63,6 +66,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     CustomsClient customsClient;
 
     @Autowired
+    TmsClient tmsClient;
+
+    @Autowired
     ICostTypeService costTypeService;
 
     @Override
@@ -78,10 +84,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderInfo.setUpUser(getLoginUser());
         }else {//新增
             //生成主订单号
-            String orderNo = StringUtils.loadNum("M",12);
+            String orderNo = StringUtils.loadNum(CommonConstant.M,12);
             while (true){
                 if(!isExistOrder(orderNo)){//重复
-                    orderNo = StringUtils.loadNum("M",12);
+                    orderNo = StringUtils.loadNum(CommonConstant.M,12);
                 }else {
                     break;
                 }
@@ -89,10 +95,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderInfo.setOrderNo(orderNo);
             orderInfo.setCreateTime(LocalDateTime.now());
             orderInfo.setCreatedUser(getLoginUser());
-            if("preSubmit".equals(form.getCmd())) {
+            if(CommonConstant.PRE_SUBMIT.equals(form.getCmd())) {
                 orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_2.getCode()));
-            }else if("submit".equals(form.getCmd())){
+            }else if(CommonConstant.SUBMIT.equals(form.getCmd()) && CommonConstant.VALUE_1.equals(form.getIsDataAll())){
                 orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
+            }else if(CommonConstant.SUBMIT.equals(form.getCmd()) && CommonConstant.VALUE_0.equals(form.getIsDataAll())){
+                orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_4.getCode()));
             }
         }
         saveOrUpdate(orderInfo);
@@ -491,6 +499,52 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
         inputOrderVO.setOrderCustomsForm(inputOrderCustomsVO);
         return inputOrderVO;
+    }
+
+    @Override
+    public boolean createOrder(InputOrderForm form) {
+        //保存主订单
+        InputMainOrderForm inputMainOrderForm = form.getOrderForm();
+        inputMainOrderForm.setCmd(form.getCmd());
+        String mainOrderNo = oprMainOrder(inputMainOrderForm);
+        if(StringUtil.isNullOrEmpty(mainOrderNo)){
+            return false;
+        }
+        String classCode = inputMainOrderForm.getClassCode();//订单类型
+        String selectedServer = inputMainOrderForm.getSelectedServer();//所选服务
+        //纯报关
+        if(OrderStatusEnum.CBG.getCode().equals(classCode)){
+            InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
+            orderCustomsForm.setClassCode(OrderStatusEnum.CKBG.getCode());
+            customsClient.createOrderCustoms(orderCustomsForm);
+        //中港运输
+        }else if(OrderStatusEnum.ZGYS.getCode().equals(classCode)){
+            //创建中港订单信息
+            InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
+            if(!OrderStatusEnum.XGQG.getCode().contains(selectedServer)) {
+                //若没有选择香港清关,则情况香港清关信息，避免信息有误
+                orderTransportForm.setHkLegalName(null);
+                orderTransportForm.setHkUnitCode(null);
+                orderTransportForm.setIsHkClear(null);
+            }
+            Boolean result = tmsClient.createOrderTransport(orderTransportForm).getData();
+            if(!result){//调用失败
+                return false;
+            }
+            if(OrderStatusEnum.SZZZC.getCode().contains(selectedServer)){
+                //创建深圳中转仓信息 TODO
+            }else if(OrderStatusEnum.CKBG.getCode().contains(selectedServer)) {
+                //创建报关信息
+                InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
+                orderCustomsForm.setClassCode(OrderStatusEnum.CKBG.getCode());
+                result = customsClient.createOrderCustoms(orderCustomsForm).getData();
+                if(!result){//调用失败
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
 

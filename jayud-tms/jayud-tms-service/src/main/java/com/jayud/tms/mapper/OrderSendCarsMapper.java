@@ -1,7 +1,7 @@
 package com.jayud.tms.mapper;
 
-import com.jayud.tms.model.po.OrderSendCars;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.tms.model.po.OrderSendCars;
 
 /**
  * <p>

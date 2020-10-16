@@ -3,8 +3,6 @@ package com.jayud.oms.model.bo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
-
 
 @Data
 public class InputMainOrderForm {
@@ -14,43 +12,48 @@ public class InputMainOrderForm {
     private Long orderId;
 
     @ApiModelProperty(value = "客户code",required = true)
-    @NotEmpty(message = "customerCode is required")
     private String customerCode;
 
     @ApiModelProperty(value = "客户",required = true)
-    @NotEmpty(message = "customerName is required")
     private String customerName;
 
     @ApiModelProperty(value = "业务员ID",required = true)
-    @NotEmpty(message = "bizUid is required")
     private Long bizUid;
 
     @ApiModelProperty(value = "业务员",required = true)
-    @NotEmpty(message = "bizUname is required")
     private String bizUname;
 
     @ApiModelProperty(value = "合同编号")
     private String contractNo;
 
     @ApiModelProperty(value = "接单法人",required = true)
-    @NotEmpty(message = "legalName is required")
     private String legalName;
 
     @ApiModelProperty(value = "业务所属部门",required = true)
-    @NotEmpty(message = "bizBelongDepart is required")
     private Long bizBelongDepart;
 
-    @ApiModelProperty(value = "客户参考号",required = true)
-    @NotEmpty(message = "referenceNo is required")
+    @ApiModelProperty(value = "客户参考号")
     private String referenceNo;
 
     @ApiModelProperty(value = "业务类型",required = true)
     private String bizCode;
 
-    @ApiModelProperty(value = "产品类型 CBG:纯报关",required = true)
+    @ApiModelProperty(value = "产品类型 如CBG:纯报关",required = true)
     private String classCode;
 
-    @ApiModelProperty(value = "操作指令:cmd=preSubmit or submit",required = true)
+    @ApiModelProperty(value = "已选中得服务",required = true)
+    private String selectedServer;
+
+    @ApiModelProperty(value = "结算单位code",required = true)
+    private String unitCode;
+
+    @ApiModelProperty(value = "结算单位",required = true)
+    private String unitAccount;
+
+    @ApiModelProperty(value = "报关资料是否齐全 1-齐全 0-不齐全",required = true)
+    private String isDataAll;
+
+    @ApiModelProperty(value = "操作指令,前台忽略")
     private String cmd;
 
 

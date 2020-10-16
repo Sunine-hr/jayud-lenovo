@@ -2,8 +2,10 @@ package com.jayud.oms.feign;
 
 
 import com.jayud.common.ApiResult;
+import com.jayud.oms.model.bo.InputOrderCustomsForm;
 import com.jayud.oms.model.vo.InputOrderCustomsVO;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -26,6 +28,14 @@ public interface CustomsClient {
      */
     @RequestMapping(value = "/api/getCustomsDetail")
     ApiResult<InputOrderCustomsVO> getCustomsDetail(@RequestParam(value = "mainOrderNo") String mainOrderNo);
+
+    /**
+     * 创建报关单
+     * @param form
+     * @return
+     */
+    @RequestMapping(value = "/api/createOrderCustoms")
+    ApiResult<Boolean> createOrderCustoms(@RequestBody InputOrderCustomsForm form);
 
 
 }

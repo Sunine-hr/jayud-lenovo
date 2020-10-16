@@ -2,7 +2,7 @@ package com.jayud.customs.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.customs.model.bo.InputOrderForm;
+import com.jayud.customs.model.bo.InputOrderCustomsForm;
 import com.jayud.customs.model.bo.QueryCustomsOrderInfoForm;
 import com.jayud.customs.model.po.OrderCustoms;
 import com.jayud.customs.model.vo.CustomsOrderInfoVO;
@@ -35,7 +35,7 @@ public interface IOrderCustomsService extends IService<OrderCustoms> {
      * @param form
      * @return
      */
-    public boolean oprOrderCustoms(InputOrderForm form);
+    public boolean oprOrderCustoms(InputOrderCustomsForm form);
 
     /**
      * 编辑时获取订单详情

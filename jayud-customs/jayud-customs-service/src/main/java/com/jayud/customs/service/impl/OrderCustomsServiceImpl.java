@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
@@ -13,7 +12,9 @@ import com.jayud.common.utils.StringUtils;
 import com.jayud.customs.feign.FileClient;
 import com.jayud.customs.feign.OmsClient;
 import com.jayud.customs.mapper.OrderCustomsMapper;
-import com.jayud.customs.model.bo.*;
+import com.jayud.customs.model.bo.InputOrderCustomsForm;
+import com.jayud.customs.model.bo.InputSubOrderCustomsForm;
+import com.jayud.customs.model.bo.QueryCustomsOrderInfoForm;
 import com.jayud.customs.model.po.OrderCustoms;
 import com.jayud.customs.model.vo.*;
 import com.jayud.customs.service.IOrderCustomsService;
@@ -57,42 +58,25 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
     }
 
     @Override
-    public boolean oprOrderCustoms(InputOrderForm form) {
+    public boolean oprOrderCustoms(InputOrderCustomsForm form) {
         try {
-            InputOrderCustomsForm inputOrderCustomsForm = form.getOrderCustomsForm();
-            InputMainOrderForm inputMainOrderForm = form.getOrderForm();
-            //处理主订单
-            //保存主订单数据,返回主订单号,暂存和提交
-            inputMainOrderForm.setCmd(form.getCmd());
-            inputMainOrderForm.setClassCode(OrderStatusEnum.CBG.getCode());
-            ApiResult apiResult = omsClient.oprMainOrder(inputMainOrderForm);
-            String mainOrderNo = String.valueOf(apiResult.getData());
-            //根据主订单号获取主订单ID
-            Long mainOrderId = omsClient.getIdByOrderNo(mainOrderNo).getData();
-            if(mainOrderId == null){
-                return false;
-            }
-            //调用服务失败
-            if(apiResult.getCode() != 200 || apiResult.getData() == null){
-                return false;
-            }
             //暂存或提交只是主订单的状态不一样，子订单的操作每次先根据主订单号清空子订单
             QueryWrapper<OrderCustoms> queryWrapper = new QueryWrapper<OrderCustoms>();
-            queryWrapper.eq("main_order_no",mainOrderNo);
+            queryWrapper.eq("main_order_no",form.getMainOrderNo());
             remove(queryWrapper);
             //子订单数据初始化处理
             //设置子订单号/报关抬头/结算单位/附件
             List<OrderCustoms> orderCustomsList = new ArrayList<>();
-            List<InputSubOrderCustomsForm> subOrderCustomsForms = inputOrderCustomsForm.getSubOrders();
+            List<InputSubOrderCustomsForm> subOrderCustomsForms = form.getSubOrders();
             for (InputSubOrderCustomsForm subOrder : subOrderCustomsForms) {
-                OrderCustoms customs = ConvertUtil.convert(inputOrderCustomsForm, OrderCustoms.class);
+                OrderCustoms customs = ConvertUtil.convert(form, OrderCustoms.class);
                 customs.setDescription(subOrder.getDescription());
                 customs.setDescName(subOrder.getDescName());
                 customs.setOrderNo(subOrder.getOrderNo());
                 customs.setTitle(subOrder.getTitle());
                 customs.setIsTitle(subOrder.getIsTitle());
                 customs.setUnitCode(subOrder.getUnitCode());
-                customs.setMainOrderNo(String.valueOf(apiResult.getData()));
+                customs.setMainOrderNo(form.getMainOrderNo());
                 customs.setStatus(OrderStatusEnum.CUSTOMS_C_0.getCode());
                 customs.setCreatedUser(getLoginUser());
                 orderCustomsList.add(customs);

@@ -7,10 +7,12 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.DateUtils;
-import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.customs.feign.OmsClient;
-import com.jayud.customs.model.bo.*;
+import com.jayud.customs.model.bo.HandleSubProcessForm;
+import com.jayud.customs.model.bo.InputSubOrderCustomsForm;
+import com.jayud.customs.model.bo.OprStatusForm;
+import com.jayud.customs.model.bo.QueryCustomsOrderInfoForm;
 import com.jayud.customs.model.po.OrderCustoms;
 import com.jayud.customs.model.vo.CustomsOrderInfoVO;
 import com.jayud.customs.model.vo.InputOrderVO;
@@ -41,83 +43,6 @@ public class OrderCustomsController {
 
     @Autowired
     OmsClient omsClient;
-
-    @ApiOperation(value = "暂存/提交")
-    @PostMapping(value = "/oprOrderCustoms")
-    public CommonResult oprOrderCustoms(@RequestBody InputOrderForm form) {
-        //参数校验
-        boolean flag = true;
-        if(form == null || form.getCmd() == null || "".equals(form.getCmd())){
-            return CommonResult.error(400,"参数不合法");
-        }
-        InputOrderCustomsForm inputOrderCustomsForm = form.getOrderCustomsForm();
-        InputMainOrderForm inputMainOrderForm = form.getOrderForm();
-        if(inputMainOrderForm == null || inputOrderCustomsForm == null){
-            return CommonResult.error(400,"参数不合法");
-        }
-        //处理六连单号/提运单/提运单号/柜号附件处理
-        if(inputOrderCustomsForm.getCntrPics() != null && inputOrderCustomsForm.getCntrPics().size() > 0){
-            inputOrderCustomsForm.setCntrPic(StringUtils.getFileStr(inputOrderCustomsForm.getCntrPics()));
-            inputOrderCustomsForm.setCntrPicName(StringUtils.getFileNameStr(inputOrderCustomsForm.getCntrPics()));
-        }
-        if(inputOrderCustomsForm.getEncodePics() != null && inputOrderCustomsForm.getEncodePics().size() > 0){
-            inputOrderCustomsForm.setEncodePic(StringUtils.getFileStr(inputOrderCustomsForm.getEncodePics()));
-            inputOrderCustomsForm.setEncodePicName(StringUtils.getFileNameStr(inputOrderCustomsForm.getEncodePics()));
-        }
-        if(inputOrderCustomsForm.getAirTransportPics() != null && inputOrderCustomsForm.getAirTransportPics().size() > 0){
-            inputOrderCustomsForm.setAirTransportPic(StringUtils.getFileStr(inputOrderCustomsForm.getAirTransportPics()));
-            inputOrderCustomsForm.setAirTransPicName(StringUtils.getFileNameStr(inputOrderCustomsForm.getAirTransportPics()));
-        }
-        if(inputOrderCustomsForm.getSeaTransportPics() != null && inputOrderCustomsForm.getSeaTransportPics().size() > 0){
-            inputOrderCustomsForm.setSeaTransportPic(StringUtils.getFileStr(inputOrderCustomsForm.getSeaTransportPics()));
-            inputOrderCustomsForm.setSeaTransPicName(StringUtils.getFileNameStr(inputOrderCustomsForm.getSeaTransportPics()));
-        }
-
-        //处理附件，前台提供数组
-        List<InputSubOrderCustomsForm> subOrderCustomsForms = inputOrderCustomsForm.getSubOrders();
-        for(InputSubOrderCustomsForm inputSubOrderCustomsForm : subOrderCustomsForms){
-            List<FileView> fileViews = inputSubOrderCustomsForm.getFileViews();
-            inputSubOrderCustomsForm.setDescription(StringUtils.getFileStr(fileViews));
-            inputSubOrderCustomsForm.setDescName(StringUtils.getFileNameStr(fileViews));
-        }
-        if("submit".equals(form.getCmd())){
-            if(inputMainOrderForm.getCustomerCode() == null || "".equals(inputMainOrderForm.getCustomerCode())
-            || inputMainOrderForm.getCustomerName() == null || "".equals(inputMainOrderForm.getCustomerName())
-            || inputMainOrderForm.getBizUid() == null
-            || inputMainOrderForm.getBizUname() == null || "".equals(inputMainOrderForm.getBizUname())
-            || inputMainOrderForm.getLegalName() == null || "".equals(inputMainOrderForm.getLegalName())
-            || inputMainOrderForm.getBizBelongDepart() == null
-            || inputMainOrderForm.getReferenceNo() == null || "".equals(inputMainOrderForm.getReferenceNo())
-            || inputMainOrderForm.getBizCode() == null || "".equals(inputMainOrderForm.getBizCode())//业务类型
-                    //报关单
-            || inputOrderCustomsForm.getPortCode() == null || "".equals(inputOrderCustomsForm.getPortCode())
-            || inputOrderCustomsForm.getPortName() == null || "".equals(inputOrderCustomsForm.getPortName())
-            || inputOrderCustomsForm.getGoodsType() == null
-            || inputOrderCustomsForm.getLegalName() == null || "".equals(inputOrderCustomsForm.getLegalName())
-            || inputOrderCustomsForm.getSubOrders() == null || inputOrderCustomsForm.getSubOrders().size() == 0){
-                flag = false;
-            }
-            //子订单参数校验
-            for (InputSubOrderCustomsForm subOrderCustomsForm : inputOrderCustomsForm.getSubOrders()) {
-                if(subOrderCustomsForm.getOrderNo() == null || "".equals(subOrderCustomsForm.getOrderNo())
-                        || subOrderCustomsForm.getTitle() == null || "".equals(subOrderCustomsForm.getTitle())
-                    || subOrderCustomsForm.getUnitCode() == null || "".equals(subOrderCustomsForm.getUnitCode())
-                    || subOrderCustomsForm.getIsTitle() == null || "".equals(subOrderCustomsForm.getIsTitle())) {
-                    flag = false;
-                    break;
-                }
-            }
-            if(!flag){
-                return CommonResult.error(400,"参数不合法");
-            }
-        }
-        //功能逻辑
-        boolean result = orderCustomsService.oprOrderCustoms(form);
-        if(!result){
-            return CommonResult.error(400,"操作失败");
-        }
-        return CommonResult.success();
-    }
 
     @ApiOperation(value = "确认:生成报关子订单号,num=生成报关单数")
     @PostMapping(value = "/createOrderNo")

@@ -17,7 +17,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author chuanmei
- * @since 2020-09-15
+ * @since 2020-10-16
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -57,13 +57,13 @@ public class DeliveryAddress extends Model<DeliveryAddress> {
     @ApiModelProperty(value = "城市名称")
     private String cityName;
 
-    @ApiModelProperty(value = "地址")
+    @ApiModelProperty(value = "详细地址")
     private String address;
 
     @ApiModelProperty(value = "邮编")
     private String postCode;
 
-    @ApiModelProperty(value = "仓库代码")
+    @ApiModelProperty(value = "仓库ID")
     private String warehouseInfoId;
 
     @ApiModelProperty(value = "启用状态0-禁用，1-启用")

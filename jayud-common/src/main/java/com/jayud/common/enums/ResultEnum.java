@@ -32,6 +32,9 @@ public enum ResultEnum implements IResultCode {
     UNPROCESSABLE_ENTITY(422, "所上传文件大小超过最大限制，上传失败"),
 
     INTERNAL_SERVER_ERROR(500, "服务内部异常"),
+
+
+    OPR_FAIL(10001, "操作失败"),
     ;
     private Integer code;
     private String message;

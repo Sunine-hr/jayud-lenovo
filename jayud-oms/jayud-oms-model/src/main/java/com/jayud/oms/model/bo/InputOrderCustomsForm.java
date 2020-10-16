@@ -1,4 +1,4 @@
-package com.jayud.customs.model.bo;
+package com.jayud.oms.model.bo;
 
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
@@ -11,9 +11,6 @@ import java.util.List;
 
 @Data
 public class InputOrderCustomsForm {
-
-    @ApiModelProperty(value = "主订单号,前台忽略")
-    private String mainOrderNo;
 
     @ApiModelProperty(value = "通关口岸code",required = true)
     @NotEmpty(message = "portCode is required")
@@ -51,7 +48,7 @@ public class InputOrderCustomsForm {
     @ApiModelProperty(value = "六联单号附件数组集合")
     private List<FileView> encodePics = new ArrayList<>();
 
-    @ApiModelProperty(value = "业务模式(1-陆路运输 2-空运 3-海运 4-快递)")
+    @ApiModelProperty(value = "业务模式(1-陆路运输 2-空运 3-海运 4-快递)",required = true)
     private String bizModel;
 
     @ApiModelProperty(value = "提运单")
@@ -83,6 +80,9 @@ public class InputOrderCustomsForm {
 
     @ApiModelProperty(value = "接单法人")
     private String legalName;
+
+    @ApiModelProperty(value = "报关类型 CBG-纯报关 CKBG-出口报关,前台忽略")
+    private String classCode;
 
     @ApiModelProperty(value = "子订单",required = true)
     @NotEmpty(message = "subOrders is required")

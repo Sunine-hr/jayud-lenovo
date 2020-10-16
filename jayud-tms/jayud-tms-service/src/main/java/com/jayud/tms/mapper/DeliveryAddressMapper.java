@@ -1,7 +1,7 @@
 package com.jayud.tms.mapper;
 
-import com.jayud.tms.model.po.DeliveryAddress;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.tms.model.po.DeliveryAddress;
 
 /**
  * <p>
@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * </p>
  *
  * @author chuanmei
- * @since 2020-09-15
+ * @since 2020-10-16
  */
 public interface DeliveryAddressMapper extends BaseMapper<DeliveryAddress> {
 

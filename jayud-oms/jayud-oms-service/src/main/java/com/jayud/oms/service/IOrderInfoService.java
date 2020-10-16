@@ -96,4 +96,11 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      */
     InputOrderVO getOrderDetail(GetOrderDetailForm form);
 
+    /**
+     * 创建订单
+     * @param form
+     * @return
+     */
+    boolean createOrder(InputOrderForm form);
+
 }

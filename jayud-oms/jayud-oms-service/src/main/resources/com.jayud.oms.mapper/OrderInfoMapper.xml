@@ -36,22 +36,19 @@
     </sql>
 
     <select id="findOrderInfoByPage" parameterType="com.jayud.oms.model.bo.QueryOrderInfoForm" resultType="com.jayud.oms.model.vo.OrderInfoVO" >
-        select distinct * from (
+        SELECT DISTINCT * FROM (
         SELECT
         oi.id,
         oi.`order_no` orderNo,
-        (CASE oc.`goods_type` WHEN 1 THEN '进口'
-        WHEN 2 THEN '出口' END) goodsTypeDesc,
+        oc.`goods_type` goodsType,
         oc.`port_code` portCode,
         oc.`port_name` portName,
         oi.`status`,
-        (CASE oi.`status` WHEN 1 THEN '正常'
-        WHEN 2 THEN '草稿'
-        WHEN 3 THEN '关闭' END) statusDesc,
         oi.`class_code` classCode,
-        (SELECT pc.name FROM product_classify pc WHERE pc.id_code = oi.`class_code`) classCodeDesc,
+        pc1.name classCodeDesc,
         oi.`customer_name` customerName,
         oi.`customer_code` customerCode,
+        oi.`legal_name` legalName,
         '' goodsInfo,
         '' takeAddress,
         '' giveAddress,
@@ -62,23 +59,21 @@
         ELSE FALSE
         END) isCost
         FROM
-        order_info oi,order_customs oc WHERE oi.`order_no` = oc.`main_order_no`
+        order_customs oc LEFT JOIN order_info oi ON oi.`order_no` = oc.`main_order_no`
+        LEFT JOIN product_classify pc1 ON pc1.`id_code` = oi.`class_code`
         UNION ALL
         SELECT
         oi.id,
         oi.`order_no` orderNo,
-        (CASE ot.`goods_type` WHEN 1 THEN '进口'
-        WHEN 2 THEN '出口' END) goodsTypeDesc,
+        ot.`goods_type` goodsType,
         ot.`port_code` portCode,
         p.`name` portName,
         oi.`status`,
-        (CASE oi.`status` WHEN 1 THEN '正常'
-        WHEN 2 THEN '草稿'
-        WHEN 3 THEN '关闭' END) statusDesc,
         oi.`class_code` bizCode,
-        (SELECT pc.name FROM product_classify pc WHERE pc.id_code = oi.`class_code`) bizDesc,
+        pc2.name bizDesc,
         oi.`customer_name` customerName,
         oi.`customer_code` customerCode,
+        oi.`legal_name` legalName,
         (SELECT CONCAT(ota.`describe`,' ',ota.`amount`,(CASE ota.`unit` WHEN 1 THEN '件' WHEN 2 THEN '其他'
         END),',','重量',ota.`weight`,'KG') FROM order_take_adr ota WHERE ota.`order_no` = ot.order_no AND ota.`types` = 1 ORDER BY ota.`id` LIMIT 1) goodsInfo,
         (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`types` = 1 ORDER BY ota.`id` LIMIT 1) takeAddress,
@@ -92,17 +87,22 @@
         FROM
         order_transport ot LEFT JOIN order_info oi ON
         oi.`order_no` = ot.`main_order_no`
-        LEFT JOIN port_info p ON ot.port_code = p.id_code) temp WHERE 1 = 1
+        LEFT JOIN port_info p ON ot.port_code = p.id_code
+        LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`
+        ) temp WHERE 1 = 1
         <if test="form.cmd == 'noSubmit'">
            and temp.`status` = 2
-        </if>
-        <if test="form.cmd == 'submit'">
-           and temp.`status` in (1,3)
         </if>
         <if test="form.cmd == 'costAudit'">
             and temp.`status` = 1
             AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = temp.orderNo)
             OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = temp.orderNo))
+        </if>
+        <if test="form.cmd == 'outCustomsRelease'">
+            and temp.classCode = 'ZGYS' and temp.`status` = 1
+        </if>
+        <if test="form.cmd == 'dataNotAll'">
+            and temp.`status` = 4
         </if>
         <if test="form.orderNo != null and form.orderNo != ''">
             and temp.orderNo = #{form.orderNo}
@@ -112,6 +112,71 @@
         </if>
         <if test="form.classCode != null and form.classCode !=''">
             and temp.classCode = #{form.classCode}
+        </if>
+        <if test="form.customerName != null and form.customerName !=''">
+            and temp.customerName like concat('%',#{form.customerName},'%')
+        </if>
+        <if test="form.legalName != null and form.legalName !=''">
+            and temp.legalName like concat('%',#{form.legalName},'%')
+        </if>
+        <if test="form.endCreateTimeStr != null and form.endCreateTimeStr !=''">
+            and temp.createdTimeStr <![CDATA[<=]]> #{form.endCreateTimeStr}
+        </if>
+        <if test="form.beginCreateTimeStr != null and form.beginCreateTimeStr !=''">
+            and temp.createdTimeStr <![CDATA[>=]]> #{form.beginCreateTimeStr}
+        </if>
+    </select>
+
+    <select id="findGoCustomsAuditByPage" parameterType="com.jayud.oms.model.bo.QueryOrderInfoForm" resultType="com.jayud.oms.model.vo.OrderInfoVO" >
+        SELECT
+        oi.id,
+        oi.`order_no` orderNo,
+        ot.`goods_type` goodsType,
+        ot.`port_code` portCode,
+        p.`name` portName,
+        oi.`status`,
+        oi.`class_code` bizCode,
+        pc2.name bizDesc,
+        oi.`customer_name` customerName,
+        oi.`customer_code` customerCode,
+        oi.`legal_name` legalName,
+        (SELECT CONCAT(ota.`describe`,' ',ota.`amount`,(CASE ota.`unit` WHEN 1 THEN '件' WHEN 2 THEN '其他'
+        END),',','重量',ota.`weight`,'KG') FROM order_take_adr ota WHERE ota.`order_no` = ot.order_no AND ota.`types` = 1 ORDER BY ota.`id` LIMIT 1) goodsInfo,
+        (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`types` = 1 ORDER BY ota.`id` LIMIT 1) takeAddress,
+        (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`types` = 2 ORDER BY ota.`id` LIMIT 1) giveAddress,
+        oi.`created_user` createdUser,
+        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%I:%S') createdTimeStr,
+        (CASE  WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
+        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
+        ELSE FALSE
+        END) isCost
+        FROM
+        order_transport ot LEFT JOIN order_info oi ON
+        oi.`order_no` = ot.`main_order_no`
+        LEFT JOIN port_info p ON ot.port_code = p.id_code
+        LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`
+        WHERE (SELECT COUNT(1) FROM logistics_track lt WHERE lt.`main_order_id` = oi.`id` AND lt.`status`='放行') =
+        (SELECT COUNT(1) FROM order_customs oc WHERE oc.`main_order_no` = oi.`order_no`) where 1 = 1
+        <if test="form.orderNo != null and form.orderNo != ''">
+            and oi.order_no = #{form.orderNo}
+        </if>
+        <if test="form.portCode != null and form.portCode != ''">
+            and ot.port_code = #{form.portCode}
+        </if>
+        <if test="form.classCode != null and form.classCode !=''">
+            and oi.class_code = #{form.classCode}
+        </if>
+        <if test="form.customerName != null and form.customerName !=''">
+            and oi.customer_name like concat('%',#{form.customerName},'%')
+        </if>
+        <if test="form.legalName != null and form.legalName !=''">
+            and temp.legal_name like concat('%',#{form.legalName},'%')
+        </if>
+        <if test="form.endCreateTimeStr != null and form.endCreateTimeStr !=''">
+            and DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%I:%S') <![CDATA[<=]]> #{form.endCreateTimeStr}
+        </if>
+        <if test="form.beginCreateTimeStr != null and form.beginCreateTimeStr !=''">
+            and DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%I:%S') <![CDATA[>=]]> #{form.beginCreateTimeStr}
         </if>
     </select>
 

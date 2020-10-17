@@ -22,12 +22,20 @@ import org.apache.ibatis.annotations.Param;
 public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
 
     /**
-     * 分页查询未提交订单
+     * 分页查询订单
      * @param page
      * @param form
      * @return
      */
     IPage<OrderInfoVO> findOrderInfoByPage(Page page, @Param("form") QueryOrderInfoForm form);
+
+    /**
+     * 分页查询通关前审核
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<OrderInfoVO> findGoCustomsAuditByPage(Page page, @Param("form") QueryOrderInfoForm form);
 
     /**
      * 获取主订单信息

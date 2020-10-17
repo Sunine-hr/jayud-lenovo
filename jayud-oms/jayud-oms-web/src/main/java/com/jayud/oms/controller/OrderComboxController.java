@@ -4,6 +4,8 @@ package com.jayud.oms.controller;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.CommonResult;
+import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.enums.CustomerInfoStatusEnum;
@@ -56,13 +58,16 @@ public class OrderComboxController {
     @Autowired
     IProductBizService productBizService;
 
+    @Autowired
+    IWarehouseInfoService warehouseInfoService;
+
     @ApiOperation(value = "纯报关-客户,业务员,合同,业务所属部门,通关口岸")
     @PostMapping(value = "/initCombox1")
     public CommonResult<Map<String,Object>> initCombox1() {
         Map<String,Object> resultMap = new HashMap<>();
         //客户
         Map<String,Object> param = new HashMap<>();
-        param.put("audit_status", CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());
+        param.put(SqlConstant.AUDIT_STATUS, CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());
         List<CustomerInfo> customerInfoList = customerInfoService.findCustomerInfoByCondition(param);
         List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
         for (CustomerInfo customerInfo : customerInfoList) {
@@ -71,11 +76,11 @@ public class OrderComboxController {
             comboxStrVO.setName(customerInfo.getName()+" ("+customerInfo.getIdCode()+")");
             comboxStrVOS.add(comboxStrVO);
         }
-        resultMap.put("customers",comboxStrVOS);
+        resultMap.put(CommonConstant.CUSTOMERS,comboxStrVOS);
 
         //业务员
         List<InitComboxVO> initComboxVOS = (List<InitComboxVO>) oauthClient.findUserByKey(RoleKeyEnum.BUSINESS_MANAGER.getCode()).getData();
-        resultMap.put("yws",initComboxVOS);
+        resultMap.put(CommonConstant.YWS,initComboxVOS);
 
         //合同
         List<ContractInfo> contractInfos = contractInfoService.findContractByCondition(new HashMap<>());
@@ -93,11 +98,11 @@ public class OrderComboxController {
             comboxStrVO.setNote(String.valueOf(DateUtils.diffDay(nowDate,endDate)));
             comboxStrVOS.add(comboxStrVO);
         }
-        resultMap.put("contracts",comboxStrVOS);
+        resultMap.put(CommonConstant.CONTRACTS,comboxStrVOS);
 
         //业务所属部门
         initComboxVOS = (List<InitComboxVO>) oauthClient.findDepartment().getData();
-        resultMap.put("departments",initComboxVOS);
+        resultMap.put(CommonConstant.DEPARTMENTS,initComboxVOS);
 
         //通关口岸
         List<PortInfo> proInfos = portInfoService.findPortInfoByCondition(new HashMap<>());
@@ -108,7 +113,7 @@ public class OrderComboxController {
             comboxStrVO.setName(portInfo.getName());
             comboxStrVOS.add(comboxStrVO);
         }
-        resultMap.put("proInfos",comboxStrVOS);
+        resultMap.put(CommonConstant.PROTINFOS,comboxStrVOS);
 
         //业务类型
         List<ProductBiz> productBizs = productBizService.findProductBiz();
@@ -119,7 +124,7 @@ public class OrderComboxController {
             comboxStrVO.setName(productBiz.getName());
             comboxStrVOS.add(comboxStrVO);
         }
-        resultMap.put("bizCodes",comboxStrVOS);
+        resultMap.put(CommonConstant.BIZCODES,comboxStrVOS);
         return CommonResult.success(resultMap);
     }
 
@@ -229,6 +234,23 @@ public class OrderComboxController {
         List<InitComboxVO> initComboxVOS = (List<InitComboxVO>) oauthClient.findUserByKey(RoleKeyEnum.OPERATOR.getCode()).getData();
         return CommonResult.success(initComboxVOS);
     }
+
+    @ApiOperation(value = "中转仓库")
+    @PostMapping(value = "/initWarehouseInfo")
+    public CommonResult initWarehouseInfo() {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(SqlConstant.STATUS,1);
+        List<WarehouseInfo> warehouseInfos = warehouseInfoService.list(queryWrapper);
+        List<InitComboxVO> initComboxVOS = new ArrayList<>();
+        for (WarehouseInfo warehouseInfo : warehouseInfos) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(warehouseInfo.getId());
+            initComboxVO.setName(warehouseInfo.getWarehouseName());
+            initComboxVOS.add(initComboxVO);
+        }
+        return CommonResult.success(initComboxVOS);
+    }
+
 
 
 

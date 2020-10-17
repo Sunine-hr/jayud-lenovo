@@ -10,4 +10,10 @@ public abstract class SqlConstant {
 
     public static final String ORDER_NO = "order_no";
 
+    public static final String STATUS = "status";
+
+    public static final String AUDIT_STATUS = "audit_status";
+
+    public static final String TRANSPORT_NO = "transport_no";
+
 }

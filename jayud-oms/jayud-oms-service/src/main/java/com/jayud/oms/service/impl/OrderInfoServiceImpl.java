@@ -124,7 +124,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         Page<OrderInfoVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.desc("temp.id"));
-        IPage<OrderInfoVO> pageInfo = baseMapper.findOrderInfoByPage(page, form);
+        IPage<OrderInfoVO> pageInfo = null;
+        if(CommonConstant.GO_CUSTOMS_AUDIT.equals(form.getCmd())){
+            pageInfo = baseMapper.findGoCustomsAuditByPage(page,form);
+        } else {
+            pageInfo = baseMapper.findOrderInfoByPage(page, form);
+        }
         return pageInfo;
     }
 

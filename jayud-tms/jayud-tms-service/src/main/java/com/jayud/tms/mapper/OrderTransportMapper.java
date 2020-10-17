@@ -3,6 +3,7 @@ package com.jayud.tms.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.tms.model.po.OrderTransport;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
@@ -12,6 +13,7 @@ import com.jayud.tms.model.po.OrderTransport;
  * @author chuanmei
  * @since 2020-09-15
  */
+@Mapper
 public interface OrderTransportMapper extends BaseMapper<OrderTransport> {
 
 }

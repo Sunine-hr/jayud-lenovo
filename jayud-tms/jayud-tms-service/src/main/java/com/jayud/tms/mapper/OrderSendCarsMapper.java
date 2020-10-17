@@ -2,6 +2,7 @@ package com.jayud.tms.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.tms.model.po.OrderSendCars;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
@@ -11,6 +12,7 @@ import com.jayud.tms.model.po.OrderSendCars;
  * @author chuanmei
  * @since 2020-09-15
  */
+@Mapper
 public interface OrderSendCarsMapper extends BaseMapper<OrderSendCars> {
 
 }

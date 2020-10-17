@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.mapper.WarehouseInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.WarehouseInfo">
+        <id column="id" property="id" />
+        <result column="warehouse_code" property="warehouseCode" />
+        <result column="warehouse_name" property="warehouseName" />
+        <result column="state_code" property="stateCode" />
+        <result column="contacts" property="contacts" />
+        <result column="company_name" property="companyName" />
+        <result column="contact_number" property="contactNumber" />
+        <result column="contact_phone" property="contactPhone" />
+        <result column="address" property="address" />
+        <result column="pid" property="pid" />
+        <result column="pname" property="pname" />
+        <result column="cid" property="cid" />
+        <result column="cname" property="cname" />
+        <result column="zip_code" property="zipCode" />
+        <result column="status" property="status" />
+        <result column="user_id" property="userId" />
+        <result column="user_name" property="userName" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, warehouse_code, warehouse_name, state_code, contacts, company_name, contact_number, contact_phone, address, pid, pname, cid, cname, zip_code, status, user_id, user_name, create_time
+    </sql>
+
+</mapper>

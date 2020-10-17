@@ -63,7 +63,7 @@ public class OrderTransport extends Model<OrderTransport> {
     private String encode;
 
     @ApiModelProperty(value = "状态")
-    private Integer status;
+    private String status;
 
     @ApiModelProperty(value = "1-装货 0-不需要装货")
     private String isLoadGoods;

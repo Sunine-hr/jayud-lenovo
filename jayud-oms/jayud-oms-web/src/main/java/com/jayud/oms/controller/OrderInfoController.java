@@ -81,34 +81,37 @@ public class OrderInfoController {
               || StringUtil.isNullOrEmpty(inputMainOrderForm.getIsDataAll())){
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
             }
-            //报关订单参数校验
-            InputOrderCustomsForm inputOrderCustomsForm = form.getOrderCustomsForm();
-            if(inputOrderCustomsForm == null ||
-               StringUtil.isNullOrEmpty(inputOrderCustomsForm.getPortCode()) ||
-               StringUtil.isNullOrEmpty(inputOrderCustomsForm.getPortName()) ||
-               inputOrderCustomsForm.getGoodsType() == null ||
-               StringUtil.isNullOrEmpty(inputOrderCustomsForm.getBizModel()) ||
-               StringUtil.isNullOrEmpty(inputOrderCustomsForm.getLegalName()) ||
-               inputOrderCustomsForm.getSubOrders() == null){
-                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
-            }
-            //附件处理
-            inputOrderCustomsForm.setCntrPic(StringUtils.getFileStr(inputOrderCustomsForm.getCntrPics()));
-            inputOrderCustomsForm.setCntrPicName(StringUtils.getFileNameStr(inputOrderCustomsForm.getCntrPics()));
-            inputOrderCustomsForm.setEncodePic(StringUtils.getFileStr(inputOrderCustomsForm.getEncodePics()));
-            inputOrderCustomsForm.setEncodePicName(StringUtils.getFileNameStr(inputOrderCustomsForm.getEncodePics()));
-            inputOrderCustomsForm.setAirTransportPic(StringUtils.getFileStr(inputOrderCustomsForm.getAirTransportPics()));
-            inputOrderCustomsForm.setAirTransPicName(StringUtils.getFileNameStr(inputOrderCustomsForm.getAirTransportPics()));
-            inputOrderCustomsForm.setSeaTransportPic(StringUtils.getFileStr(inputOrderCustomsForm.getAirTransportPics()));
-            inputOrderCustomsForm.setSeaTransPicName(StringUtils.getFileNameStr(inputOrderCustomsForm.getAirTransportPics()));
-            //报关订单中的子订单
-            List<InputSubOrderCustomsForm> subOrders = inputOrderCustomsForm.getSubOrders();
-            for (InputSubOrderCustomsForm subOrderCustomsForm : subOrders) {
-                if(StringUtil.isNullOrEmpty(subOrderCustomsForm.getOrderNo())
-                        || StringUtil.isNullOrEmpty(subOrderCustomsForm.getTitle())
-                        || StringUtil.isNullOrEmpty(subOrderCustomsForm.getUnitCode())
-                        || StringUtil.isNullOrEmpty(subOrderCustomsForm.getIsTitle())) {
-                    return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+            //报关资料是否齐全 1-齐全 0-不齐全 齐全时校验报关数据
+            if(CommonConstant.VALUE_1.equals(inputMainOrderForm.getIsDataAll())) {
+                //报关订单参数校验
+                InputOrderCustomsForm inputOrderCustomsForm = form.getOrderCustomsForm();
+                if (inputOrderCustomsForm == null ||
+                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getPortCode()) ||
+                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getPortName()) ||
+                        inputOrderCustomsForm.getGoodsType() == null ||
+                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getBizModel()) ||
+                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getLegalName()) ||
+                        inputOrderCustomsForm.getSubOrders() == null) {
+                    return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+                }
+                //附件处理
+                inputOrderCustomsForm.setCntrPic(StringUtils.getFileStr(inputOrderCustomsForm.getCntrPics()));
+                inputOrderCustomsForm.setCntrPicName(StringUtils.getFileNameStr(inputOrderCustomsForm.getCntrPics()));
+                inputOrderCustomsForm.setEncodePic(StringUtils.getFileStr(inputOrderCustomsForm.getEncodePics()));
+                inputOrderCustomsForm.setEncodePicName(StringUtils.getFileNameStr(inputOrderCustomsForm.getEncodePics()));
+                inputOrderCustomsForm.setAirTransportPic(StringUtils.getFileStr(inputOrderCustomsForm.getAirTransportPics()));
+                inputOrderCustomsForm.setAirTransPicName(StringUtils.getFileNameStr(inputOrderCustomsForm.getAirTransportPics()));
+                inputOrderCustomsForm.setSeaTransportPic(StringUtils.getFileStr(inputOrderCustomsForm.getAirTransportPics()));
+                inputOrderCustomsForm.setSeaTransPicName(StringUtils.getFileNameStr(inputOrderCustomsForm.getAirTransportPics()));
+                //报关订单中的子订单
+                List<InputSubOrderCustomsForm> subOrders = inputOrderCustomsForm.getSubOrders();
+                for (InputSubOrderCustomsForm subOrderCustomsForm : subOrders) {
+                    if (StringUtil.isNullOrEmpty(subOrderCustomsForm.getOrderNo())
+                            || StringUtil.isNullOrEmpty(subOrderCustomsForm.getTitle())
+                            || StringUtil.isNullOrEmpty(subOrderCustomsForm.getUnitCode())
+                            || StringUtil.isNullOrEmpty(subOrderCustomsForm.getIsTitle())) {
+                        return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+                    }
                 }
             }
             //中港订单参数校验

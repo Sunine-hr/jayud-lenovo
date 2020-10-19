@@ -49,4 +49,7 @@ public class InputMainOrderVO {
     @ApiModelProperty(value = "创建时间")
     private String createdTimeStr;
 
+    @ApiModelProperty(value = "已选中得服务")
+    private String selectedServer;
+
 }

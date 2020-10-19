@@ -26,6 +26,17 @@ public abstract class CommonConstant {
      */
     public static final String GO_CUSTOMS_AUDIT = "goCustomsAudit";
     public static final String GO_CUSTOMS_AUDIT_DESC = "通关前审核";
+    /**
+     * 通关前复核
+     */
+    public static final String GO_CUSTOMS_CHECK = "goCustomsCheck";
+    public static final String GO_CUSTOMS_CHECK_DESC = "通关前复核";
+
+    /**
+     * 车辆通关
+     */
+    public static final String CAR_GO_CUSTOMS = "carGoCustoms";
+    public static final String CAR_GO_CUSTOMS_DESC = "车辆通关";
 
     /**
      * 确认接单
@@ -44,6 +55,41 @@ public abstract class CommonConstant {
      * 待补全
      */
     public static final String DATA_NOT_ALL = "dataNotAll";
+
+    /**
+     * 车辆提货
+     */
+    public static final String  CAR_TAKE_GOODS = "carTakeGoods";
+
+    /**
+     * 车辆过磅
+     */
+    public static final String CAR_WEIGH = "carWeigh";
+
+    /**
+     * 香港清关
+     */
+    public static final String HK_CLEAR_CUSTOMS = "hkClearCustoms";
+
+    /**
+     * 车辆入仓
+     */
+    public static final String CAR_ENTER_WAREHOUSE = "carEnterWarehouse";
+
+    /**
+     * 车辆出仓
+     */
+    public static final String CAR_OUT_WAREHOUSE = "carOutWarehouse";
+
+    /**
+     * 车辆派送
+     */
+    public static final String CAR_SEND = "carSend";
+
+    /**
+     * 确认签收
+     */
+    public static final String COMFIRM_SIGN_IN = "comfirmSignIn";
 
     /**
      * 生成主订单前缀

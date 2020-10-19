@@ -41,11 +41,11 @@ public class OrderTakeAdr extends Model<OrderTakeAdr> {
     @ApiModelProperty(value = "货物描述")
     private String describe;
 
-    @ApiModelProperty(value = "数量")
-    private Double amount;
+    @ApiModelProperty(value = "板数")
+    private Double plateAmount;
 
-    @ApiModelProperty(value = "单位(1件 2其他)")
-    private Integer unit;
+    @ApiModelProperty(value = "件数")
+    private Double pieceAmount;
 
     @ApiModelProperty(value = "重量")
     private Integer weight;

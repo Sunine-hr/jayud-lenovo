@@ -2,7 +2,11 @@ package com.jayud.tms.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.tms.model.po.OrderTakeAdr;
+import com.jayud.tms.model.vo.InputOrderTakeAdrVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -15,4 +19,10 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface OrderTakeAdrMapper extends BaseMapper<OrderTakeAdr> {
 
+    /**
+     * 获取提货信息
+     * @param orderNo
+     * @return
+     */
+    public List<InputOrderTakeAdrVO> findTakeGoodsInfo(@Param("orderNo") String orderNo);
 }

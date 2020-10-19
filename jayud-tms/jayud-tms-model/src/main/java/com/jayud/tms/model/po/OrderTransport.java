@@ -71,6 +71,24 @@ public class OrderTransport extends Model<OrderTransport> {
     @ApiModelProperty(value = "1-装货 0-不需要装货")
     private String isUnloadGoods;
 
+    @ApiModelProperty(value = "香港清关结算单位,选择了香港清关必填")
+    private String hkUnitCode;
+
+    @ApiModelProperty(value = "香港清关接单法人,选择了香港清关必填")
+    private String hkLegalName;
+
+    @ApiModelProperty(value = "是否香港清关 1-是 0-否,选择了香港清关必填")
+    private String isHkClear;
+
+    @ApiModelProperty(value = "接单人")
+    private String jiedanUser;
+
+    @ApiModelProperty(value = "接单时间")
+    private LocalDateTime jiedanTime;
+
+    @ApiModelProperty(value = "过磅数")
+    private Double carWeighNum;
+
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createdTime;
 

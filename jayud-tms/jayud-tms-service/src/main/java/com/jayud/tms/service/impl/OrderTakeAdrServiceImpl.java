@@ -3,8 +3,11 @@ package com.jayud.tms.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.tms.mapper.OrderTakeAdrMapper;
 import com.jayud.tms.model.po.OrderTakeAdr;
+import com.jayud.tms.model.vo.InputOrderTakeAdrVO;
 import com.jayud.tms.service.IOrderTakeAdrService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +20,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class OrderTakeAdrServiceImpl extends ServiceImpl<OrderTakeAdrMapper, OrderTakeAdr> implements IOrderTakeAdrService {
 
+    @Override
+    public List<InputOrderTakeAdrVO> findTakeGoodsInfo(String orderNo) {
+        return baseMapper.findTakeGoodsInfo(orderNo);
+    }
 }

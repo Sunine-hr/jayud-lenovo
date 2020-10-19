@@ -19,7 +19,8 @@
         <result column="license_plate" property="licensePlate" />
         <result column="driver_name" property="driverName" />
         <result column="hk_license_plate" property="hkLicensePlate" />
-        <result column="hk_driver_name" property="hkDriverName" />
+        <result column="driver_phone" property="driverPhone" />
+        <result column="driver_hk_phone" property="driverHkPhone" />
         <result column="warehouse_info_id" property="warehouseInfoId" />
         <result column="remarks" property="remarks" />
         <result column="describes" property="describes" />
@@ -34,8 +35,8 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, transport_no, order_no, encode, encode_url,encode_url_name, vehicle_type, vehicle_size, cntr_no, cntr_pic,
-        cntr_pic_name,supplier_info_id, license_plate, driver_name, hk_license_plate, hk_driver_name, warehouse_info_id,
-        remarks, describes, status, audit_info_id, updated_time, updated_user, created_user, created_time
+        cntr_pic_name,supplier_info_id, license_plate, driver_name, hk_license_plate, driver_phone, driver_hk_phone,
+        warehouse_info_id,remarks, describes, status, audit_info_id, updated_time, updated_user, created_user, created_time
     </sql>
 
 </mapper>

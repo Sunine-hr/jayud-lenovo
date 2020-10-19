@@ -3,6 +3,7 @@ package com.jayud.tms.service;
 import com.jayud.tms.model.bo.InputOrderTransportForm;
 import com.jayud.tms.model.po.OrderTransport;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.tms.model.vo.InputOrderTransportVO;
 
 /**
  * <p>
@@ -28,6 +29,13 @@ public interface IOrderTransportService extends IService<OrderTransport> {
      * @return
      */
     public boolean isExistOrder(String orderNo);
+
+    /**
+     * 获取订单详情
+     * @param mainOrderNo
+     * @return
+     */
+    public InputOrderTransportVO getOrderTransport(String mainOrderNo);
 
 
 }

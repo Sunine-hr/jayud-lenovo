@@ -9,8 +9,8 @@
         <result column="delivery_id" property="deliveryId" />
         <result column="take_time" property="takeTime" />
         <result column="describe" property="describe" />
-        <result column="amount" property="amount" />
-        <result column="unit" property="unit" />
+        <result column="plate_amount" property="plateAmount" />
+        <result column="piece_amount" property="pieceAmount" />
         <result column="weight" property="weight" />
         <result column="volume" property="volume" />
         <result column="remarks" property="remarks" />
@@ -21,7 +21,33 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, order_no, delivery_id, take_time, describe, amount, unit, weight, volume, remarks, types, create_time, create_user
+        id, order_no, delivery_id, take_time, describe, plate_amount, piece_amount, weight, volume, remarks, types, create_time, create_user
     </sql>
+
+    <select id="findTakeGoodsInfo"  resultType="com.jayud.tms.model.vo.InputOrderTakeAdrVO" >
+        SELECT
+          da.`contacts`,
+          da.`phone`,
+          da.`country_name` countryName,
+          da.`state_name` stateName,
+          da.`city_name` cityName,
+          da.`address`,
+          DATE_FORMAT(
+            ota.`take_time`.,
+            '%Y-%m-%d %H:%I:%S'
+          ) takeTimeStr,
+          ota.`describe`,
+          ota.`plate_amount` plateAmount,
+          ota.`piece_amount` pieceAmount,
+          '' boxAmount,
+          ota.`weight`,
+          ota.`volume`,
+          ota.`types`
+        FROM
+          order_take_adr ota
+          LEFT JOIN delivery_address da
+            ON ota.`delivery_id` = da.`id`
+            WHERE ota.`order_no` = #{orderNo}
+    </select>
 
 </mapper>

@@ -64,6 +64,9 @@ public class LogisticsTrack extends Model<LogisticsTrack> {
     @ApiModelProperty(value = "预计通关时间")
     private LocalDateTime preGoCustomsTime;
 
+    @ApiModelProperty(value = "过磅数")
+    private double carWeighNum;
+
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createdTime;
 

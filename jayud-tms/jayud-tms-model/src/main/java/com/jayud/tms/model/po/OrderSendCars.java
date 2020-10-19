@@ -74,8 +74,11 @@ public class OrderSendCars extends Model<OrderSendCars> {
     @ApiModelProperty(value = "HK车牌号")
     private String hkLicensePlate;
 
-    @ApiModelProperty(value = "HK司机名")
-    private String hkDriverName;
+    @ApiModelProperty(value = "司机大陆电话")
+    private String driverPhone;
+
+    @ApiModelProperty(value = "司机香港电话")
+    private String driverHkPhone;
 
     @ApiModelProperty(value = "仓库ID)")
     private Long warehouseInfoId;

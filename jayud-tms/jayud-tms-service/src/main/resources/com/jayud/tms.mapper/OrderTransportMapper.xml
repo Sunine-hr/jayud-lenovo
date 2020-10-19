@@ -19,6 +19,12 @@
         <result column="status" property="status" />
         <result column="is_load_goods" property="isLoadGoods" />
         <result column="is_unload_goods" property="isUnloadGoods" />
+        <result column="hk_unit_code" property="hkUnitCode" />
+        <result column="hk_legal_name" property="hkLegalName" />
+        <result column="is_hk_clear" property="isHkClear" />
+        <result column="jiedan_user" property="jiedanUser" />
+        <result column="jiedan_time" property="jiedanTime" />
+        <result column="car_weigh_num" property="carWeighNum" />
         <result column="updated_time" property="updatedTime" />
         <result column="updated_user" property="updatedUser" />
         <result column="created_time" property="createdTime" />
@@ -28,7 +34,51 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, main_order_no, order_no, port_code, goods_type, vehicle_type, vehicle_size, cntr_no, cntr_pic, cntrPicName,
-        warehouse_info_id, encode, status, is_load_goods, is_unload_goods, updated_time, updated_user, created_time,created_user
+        warehouse_info_id, encode, status, is_load_goods, is_unload_goods, hk_unit_code,hk_legal_name,is_hk_clear,
+        updated_time, updated_user, created_time,created_user,jiedan_user,jiedan_time,car_weigh_num
     </sql>
 
+    <select id="getOrderTransport"  resultType="com.jayud.tms.model.vo.InputOrderTransportVO" >
+        SELECT
+          ot.id,
+          ot.`order_no` orderNo,
+          ot.`jiedan_user` jiedanUser,
+          DATE_FORMAT(ot.`jiedan_time`,'%Y-%m-%d %H:%I:%S') jiedanTimeStr,
+          ot.`goods_type` goodsType,
+          p.`name` portName,
+          ot.`encode`,
+          ot.`status`,
+          osc.`hk_license_plate` hkLicensePlate,
+          osc.`license_plate` licensePlate,
+          osc.`vehicle_size` vehicleSize,
+          osc.`cntr_no` cntrNo,
+          si.`supplier_ch_name` supplierChName,
+          '' customsNo,
+          osc.`driver_name` driverName,
+          osc.`driver_phone` driverPhone,
+          osc.`driver_hk_phone` driverHkPhone,
+          ot.`car_weigh_num` carWeighNum,
+          ot.`seamless_no`  seamlessNo,
+          ot.`clear_customs_no` clearCustomsNo,
+          osc.`remarks`,
+          ot.`cntr_pic` cntrPic,
+          ot.`cntr_pic_name` cntrPicName,
+          wi.`company_name` companyName,
+          wi.`contacts`,
+          wi.`contact_number` contactNumber,
+          wi.`address`
+        FROM
+          order_transport ot
+          LEFT JOIN order_info oi
+            ON ot.`main_order_no` = oi.`order_no`
+          LEFT JOIN port_info p
+            ON ot.`port_code` = p.`id_code`
+          LEFT JOIN order_send_cars osc
+            ON osc.order_no = ot.`order_no`
+          LEFT JOIN supplier_info si
+            ON si.`id` = osc.`supplier_info_id`
+          LEFT JOIN warehouse_info wi
+            ON osc.`warehouse_info_id` = wi.`id`
+            ot.`main_order_no` = #{mainOrderNo}
+    </select>
 </mapper>

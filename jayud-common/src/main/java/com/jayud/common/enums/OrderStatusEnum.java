@@ -12,6 +12,7 @@ public enum OrderStatusEnum {
     //业务单类型
     CBG("CBG","纯报关"),
     ZGYS("ZGYS","中港运输"),
+    NLYS("NLYS","内陆运输"),
     SZZZC("SZZZC","深圳中转仓"),
     CKBG("CKBG","出口报关"),
     XGQG("XGQG","香港清关"),
@@ -70,7 +71,6 @@ public enum OrderStatusEnum {
     EXT_CUSTOMS_RELEASE("E_C_0","外部报关放行"),
 
     //香港清关
-    HK_CLEAR_0("HK_C_0","无缝申请"),
     HK_CLEAR_1("HK_C_1","香港清关"),
 
     //内陆运输 TODO

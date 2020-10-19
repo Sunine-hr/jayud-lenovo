@@ -45,7 +45,12 @@ public class OprStatusForm {
     @ApiModelProperty(value = "预计通关时间")
     private String preGoCustomsTime;
 
-    @ApiModelProperty(value = "操作指令,cmd = extCustomsRelease外部报关放行 ")
+    @ApiModelProperty(value = "过磅数")
+    private Double carWeighNum;
+
+    @ApiModelProperty(value = "操作指令,cmd = extCustomsRelease外部报关放行,confirmOrder确认接单,carTakeGoods车辆提货,carWeigh车辆过磅, " +
+            "goCustomsAudit通过前审核，goCustomsCheck通关前复核,carGoCustoms车辆通关,hkClearCustoms香港清关,carEnterWarehouse车辆入仓," +
+            "carOutWarehouse车辆出仓,carSend车辆派送,comfirmSignIn确认签收")
     private String cmd;
 
 }

@@ -13,6 +13,8 @@ import com.jayud.tms.model.bo.InputOrderTransportForm;
 import com.jayud.tms.model.po.DeliveryAddress;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import com.jayud.tms.model.po.OrderTransport;
+import com.jayud.tms.model.vo.InputOrderTakeAdrVO;
+import com.jayud.tms.model.vo.InputOrderTransportVO;
 import com.jayud.tms.service.IDeliveryAddressService;
 import com.jayud.tms.service.IOrderTakeAdrService;
 import com.jayud.tms.service.IOrderTransportService;
@@ -105,6 +107,32 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         }
         return false;
     }
+
+    @Override
+    public InputOrderTransportVO getOrderTransport(String mainOrderNo) {
+        InputOrderTransportVO inputOrderTransportVO = baseMapper.getOrderTransport(mainOrderNo);
+        //获取提货/送货地址
+        List<InputOrderTakeAdrVO> inputOrderTakeAdrVOS = orderTakeAdrService.findTakeGoodsInfo(inputOrderTransportVO.getOrderNo());
+        List<InputOrderTakeAdrVO> orderTakeAdrForms1 = new ArrayList<>();
+        List<InputOrderTakeAdrVO> orderTakeAdrForms2 = new ArrayList<>();
+        Integer totalAmount = 0;//总件数
+        Double totalWeight = 0.0;//总重量
+        for (InputOrderTakeAdrVO inputOrderTakeAdrVO : inputOrderTakeAdrVOS) {
+            if(CommonConstant.VALUE_1.equals(inputOrderTakeAdrVO.getTypes())){//提货
+                orderTakeAdrForms1.add(inputOrderTakeAdrVO);
+                totalAmount = totalAmount + inputOrderTakeAdrVO.getPieceAmount();
+                totalWeight = totalWeight + inputOrderTakeAdrVO.getWeight();
+            }else {
+                orderTakeAdrForms2.add(inputOrderTakeAdrVO);  //送货
+            }
+        }
+        inputOrderTransportVO.setTotalAmount(totalAmount);
+        inputOrderTransportVO.setTotalWeight(totalWeight);
+        inputOrderTransportVO.setOrderTakeAdrForms1(orderTakeAdrForms1);
+        inputOrderTransportVO.setOrderTakeAdrForms2(orderTakeAdrForms2);
+        return inputOrderTransportVO;
+    }
+
 
     /**
      * 当前登录用户

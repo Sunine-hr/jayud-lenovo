@@ -16,4 +16,6 @@ public abstract class SqlConstant {
 
     public static final String TRANSPORT_NO = "transport_no";
 
+    public static final String ORDER_ID = "order_id";
+
 }

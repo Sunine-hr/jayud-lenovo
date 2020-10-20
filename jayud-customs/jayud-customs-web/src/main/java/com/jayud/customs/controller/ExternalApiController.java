@@ -1,8 +1,14 @@
 package com.jayud.customs.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
+import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.constant.SqlConstant;
+import com.jayud.customs.model.bo.CustomsChangeStatusForm;
 import com.jayud.customs.model.bo.InputOrderCustomsForm;
+import com.jayud.customs.model.po.OrderCustoms;
+import com.jayud.customs.model.vo.InitChangeStatusVO;
 import com.jayud.customs.model.vo.InputOrderCustomsVO;
 import com.jayud.customs.model.vo.OrderCustomsVO;
 import com.jayud.customs.service.IOrderCustomsService;
@@ -14,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +78,39 @@ public class ExternalApiController {
     ApiResult createOrderCustoms(@RequestBody InputOrderCustomsForm form){
         boolean result = orderCustomsService.oprOrderCustoms(form);
         return ApiResult.ok(result);
+    }
+
+    @ApiOperation(value = "获取报关订单单号")
+    @RequestMapping(value = "/api/findCustomsOrderNo")
+    ApiResult findCustomsOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo){
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(SqlConstant.MAIN_ORDER_NO,mainOrderNo);
+        List<OrderCustoms> orderCustoms = orderCustomsService.list(queryWrapper);
+        List<InitChangeStatusVO> changeStatusVOS = new ArrayList<>();
+        for (OrderCustoms orderCustom : orderCustoms) {
+            InitChangeStatusVO initChangeStatusVO = new InitChangeStatusVO();
+            initChangeStatusVO.setId(orderCustom.getId());
+            initChangeStatusVO.setOrderNo(orderCustom.getOrderNo());
+            initChangeStatusVO.setOrderType(CommonConstant.BG);
+            changeStatusVOS.add(initChangeStatusVO);
+        }
+        return ApiResult.ok(changeStatusVOS);
+    }
+
+    @ApiOperation(value = "修改报关状态")
+    @RequestMapping(value = "/api/changeCustomsStatus")
+    ApiResult changeCustomsStatus(@RequestBody CustomsChangeStatusForm form){
+        List<OrderCustoms> orderCustomsList = new ArrayList<>();
+        for (String str : form.getOrderNos()) {
+            OrderCustoms orderCustoms = new OrderCustoms();
+            orderCustoms.setOrderNo(str);
+            orderCustoms.setStatus(form.getStatus());
+            orderCustoms.setUpdatedUser(String.valueOf(getLoginUser().getData()));
+            orderCustoms.setUpdatedTime(LocalDateTime.now());
+            orderCustomsList.add(orderCustoms);
+        }
+        orderCustomsService.saveOrUpdateBatch(orderCustomsList);
+        return ApiResult.ok();
     }
 
 }

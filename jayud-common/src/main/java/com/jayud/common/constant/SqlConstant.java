@@ -18,4 +18,6 @@ public abstract class SqlConstant {
 
     public static final String ORDER_ID = "order_id";
 
+    public static final String MAIN_ORDER_NO = "main_order_no";
+
 }

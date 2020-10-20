@@ -8,6 +8,7 @@ import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.*;
+import com.jayud.oms.model.vo.InitChangeStatusVO;
 import com.jayud.oms.model.vo.InputOrderVO;
 import com.jayud.oms.model.vo.OrderInfoVO;
 import com.jayud.oms.model.vo.OrderStatusVO;
@@ -133,6 +134,24 @@ public class OrderInfoController {
         }
         return CommonResult.success();
     }
+
+    @ApiOperation(value = "更改状态初始化订单下的子订单号")
+    @PostMapping("/findSubOrderNo")
+    public CommonResult<List<InitChangeStatusVO>> findSubOrderNo(@RequestBody @Valid GetOrderDetailForm form) {
+        List<InitChangeStatusVO> changeStatusVOS = orderInfoService.findSubOrderNo(form);
+        return CommonResult.success(changeStatusVOS);
+    }
+
+    @ApiOperation(value = "确认更改状态")
+    @PostMapping("/changeStatus")
+    public CommonResult changeStatus(@RequestBody @Valid ChangeStatusListForm form) {
+        Boolean result = orderInfoService.changeStatus(form);
+        if(!result){
+            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(),ResultEnum.OPR_FAIL.getMessage());
+        }
+        return CommonResult.success();
+    }
+
 
 
 

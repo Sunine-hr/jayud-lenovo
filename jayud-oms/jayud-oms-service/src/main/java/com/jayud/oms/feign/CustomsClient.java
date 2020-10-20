@@ -2,12 +2,16 @@ package com.jayud.oms.feign;
 
 
 import com.jayud.common.ApiResult;
+import com.jayud.oms.model.bo.CustomsChangeStatusForm;
 import com.jayud.oms.model.bo.InputOrderCustomsForm;
+import com.jayud.oms.model.vo.InitChangeStatusVO;
 import com.jayud.oms.model.vo.InputOrderCustomsVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 /**
  * oms模块消费customs模块的接口
@@ -37,5 +41,21 @@ public interface CustomsClient {
     @RequestMapping(value = "/api/createOrderCustoms")
     ApiResult<Boolean> createOrderCustoms(@RequestBody InputOrderCustomsForm form);
 
+    /**
+     * 获取报关订单单号
+     * @param mainOrderNo
+     * @return
+     */
+    @RequestMapping(value = "/api/findCustomsOrderNo")
+    ApiResult<List<InitChangeStatusVO>> findCustomsOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo);
+
+
+    /**
+     * 更改报关单状态
+     * @param form
+     * @return
+     */
+    @RequestMapping(value = "/api/changeCustomsStatus")
+    ApiResult changeCustomsStatus(@RequestBody CustomsChangeStatusForm form);
 
 }

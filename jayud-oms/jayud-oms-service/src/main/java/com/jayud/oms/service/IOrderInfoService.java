@@ -103,4 +103,18 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      */
     boolean createOrder(InputOrderForm form);
 
+    /**
+     * 查询主订单下面的所有子订单
+     * @param form
+     * @return
+     */
+    List<InitChangeStatusVO> findSubOrderNo(GetOrderDetailForm form);
+
+    /**
+     * 确认更改状态
+     * @param form
+     * @return
+     */
+    boolean changeStatus(ChangeStatusListForm form);
+
 }

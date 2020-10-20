@@ -1,6 +1,9 @@
 package com.jayud.tms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.constant.CommonConstant;
@@ -10,11 +13,13 @@ import com.jayud.common.utils.StringUtils;
 import com.jayud.tms.mapper.OrderTransportMapper;
 import com.jayud.tms.model.bo.InputOrderTakeAdrForm;
 import com.jayud.tms.model.bo.InputOrderTransportForm;
+import com.jayud.tms.model.bo.QueryOrderTmsForm;
 import com.jayud.tms.model.po.DeliveryAddress;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.InputOrderTakeAdrVO;
 import com.jayud.tms.model.vo.InputOrderTransportVO;
+import com.jayud.tms.model.vo.OrderTransportVO;
 import com.jayud.tms.service.IDeliveryAddressService;
 import com.jayud.tms.service.IOrderTakeAdrService;
 import com.jayud.tms.service.IOrderTransportService;
@@ -133,6 +138,15 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         return inputOrderTransportVO;
     }
 
+    @Override
+    public IPage<OrderTransportVO> findTransportOrderByPage(QueryOrderTmsForm form) {
+        //定义分页参数
+        Page<OrderTransportVO> page = new Page(form.getPageNum(),form.getPageSize());
+        //定义排序规则
+        page.addOrder(OrderItem.desc("ot.id"));
+        IPage<OrderTransportVO> pageInfo = baseMapper.findTransportOrderByPage(page, form);
+        return pageInfo;
+    }
 
     /**
      * 当前登录用户

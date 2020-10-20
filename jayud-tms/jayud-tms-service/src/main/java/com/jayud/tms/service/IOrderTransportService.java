@@ -1,9 +1,12 @@
 package com.jayud.tms.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.tms.model.bo.InputOrderTransportForm;
+import com.jayud.tms.model.bo.QueryOrderTmsForm;
 import com.jayud.tms.model.po.OrderTransport;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.tms.model.vo.InputOrderTransportVO;
+import com.jayud.tms.model.vo.OrderTransportVO;
 
 /**
  * <p>
@@ -36,6 +39,13 @@ public interface IOrderTransportService extends IService<OrderTransport> {
      * @return
      */
     public InputOrderTransportVO getOrderTransport(String mainOrderNo);
+
+    /**
+     * 中港分页查询
+     * @param form
+     * @return
+     */
+    IPage<OrderTransportVO> findTransportOrderByPage(QueryOrderTmsForm form);
 
 
 }

@@ -81,4 +81,88 @@
             ON osc.`warehouse_info_id` = wi.`id`
             ot.`main_order_no` = #{mainOrderNo}
     </select>
+    <select id="findTransportOrderByPage" parameterType="com.jayud.tms.model.bo.QueryOrderTmsForm" resultType="com.jayud.tms.model.vo.OrderTransportVO" >
+        SELECT
+            ot.`id`,
+            oi.`order_no` mainOrderNo,
+            ot.`order_no` orderNo,
+            p.`name` portName,
+            ot.`goods_type` goodsType,
+            oi.`status`,
+            oi.`class_code` classCode,
+            pc.`name` classCodeDesc,
+            oi.`customer_name` customerName,
+            ot.`created_user` createdUser,
+            DATE_FORMAT(ot.`created_time`,'%Y-%m-%d %H:%I:%S') createdTimeStr,
+            t.`describe`,
+            t.`piece_amount` pieceAmount,
+            t.`plate_amount` plateAmount,
+            t.`weight`,
+            t.state_name stateName1,
+            t.city_name cityName1,
+            t.address address1,
+            s.state_name stateName2,
+            s.city_name cityName2,
+            s.address address2
+        FROM
+            order_transport ot
+            LEFT JOIN order_info oi
+            ON ot.`main_order_no` = oi.`order_no`
+            LEFT JOIN port_info p
+            ON p.`id_code` = ot.`port_code`
+            LEFT JOIN product_classify pc
+            ON oi.`class_code` = pc.`id_code`
+            LEFT JOIN (SELECT ota.`order_no`,da.`state_name`,da.`city_name`,da.`address`,ota.`describe`,ota.`piece_amount`,ota.`plate_amount`,
+            ota.`weight` FROM order_take_adr ota LEFT JOIN delivery_address da
+            ON ota.`delivery_id` = da.`id` AND ota.`types` = '1' ) t
+            ON t.order_no = ot.`order_no`
+            LEFT JOIN (SELECT ota.`order_no`,da.`state_name`,da.`city_name`,da.`address`,ota.`describe`,ota.`piece_amount`,ota.`plate_amount`,
+            ota.`weight` FROM order_take_adr ota LEFT JOIN delivery_address da
+            ON ota.`delivery_id` = da.`id` AND ota.`types` = '2' ) s
+            ON s.order_no = ot.`order_no` where 1 = 1
+        <if test="form.cmd == 'T_1'">
+            AND ot.`status` = 'T_0'
+        </if>
+        <if test="form.cmd == 'T_2'">
+            AND ot.`status` = 'T_1'
+        </if>
+        <if test="form.cmd == 'T_3'">
+            and ot.`status` == 'T_2'
+        </if>
+        <if test="form.cmd == 'T_3_1'">
+            AND ot.`status` == 'T_3_1'
+        </if>
+        <if test="form.cmd == 'T_5'">
+            AND ot.`status` = 'T_4'
+        </if>
+        <if test="form.cmd == 'T_6'">
+            AND ot.`status` = 'C_5'
+        </if>
+        <if test="form.cmd == 'T_8'">
+            AND ot.`status` = 'T_7'
+        </if>
+        <if test="form.cmd == 'T_9'">
+            AND ot.`status` = 'T_8'
+        </if>
+        <if test="form.cmd == 'clearCustoms'">
+            AND ot.`status` != 'HK_C_1' AND ot.`is_hk_clear` = '1'
+        </if>
+        <if test="form.cmd == 'T_10'">
+            AND ot.`status` = 'T_9'
+        </if>
+        <if test="form.cmd == 'T_13'">
+            AND ot.`status` = 'T_10'
+        </if>
+        <if test="form.cmd == 'T_14'">
+            AND ot.`status` = 'T_13'
+        </if>
+        <if test="form.cmd == 'T_15'">
+            AND ot.`status` = 'T_14'
+        </if>
+        <if test="form.cmd == 'costAudit'">
+            AND oi.`status` = '1'
+            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = oi.orderNo)
+            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = oi.orderNo))
+        </if>
+    </select>
 </mapper>

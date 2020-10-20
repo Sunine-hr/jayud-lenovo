@@ -130,4 +130,8 @@ public abstract class CommonConstant {
 
     public static final String SUPPLIERINFO = "supplierInfo";
 
+    public static final String BG = "BG";
+
+    public static final String ZGYS = "ZGYS";
+
 }

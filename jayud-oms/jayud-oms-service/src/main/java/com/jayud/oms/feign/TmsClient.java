@@ -3,6 +3,8 @@ package com.jayud.oms.feign;
 
 import com.jayud.common.ApiResult;
 import com.jayud.oms.model.bo.InputOrderTransportForm;
+import com.jayud.oms.model.bo.TmsChangeStatusForm;
+import com.jayud.oms.model.vo.InitChangeStatusVO;
 import com.jayud.oms.model.vo.InputOrderTransportVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,8 +29,24 @@ public interface TmsClient {
      * @param mainOrderNo
      * @return
      */
-    @RequestMapping(value = "/api/getCustomsDetail")
-    ApiResult<InputOrderTransportVO> getCustomsDetail(@RequestParam(value = "mainOrderNo") String mainOrderNo);
+    @RequestMapping(value = "/api/getOrderTransport")
+    ApiResult<InputOrderTransportVO> getOrderTransport(@RequestParam(value = "mainOrderNo") String mainOrderNo);
 
+    /**
+     * 获取中港订单号
+     * @param mainOrderNo
+     * @return
+     */
+    @RequestMapping(value = "/api/getTransportOrderNo")
+    ApiResult<InitChangeStatusVO> getTransportOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo);
+
+
+    /**
+     * 更改报关单状态
+     * @param form
+     * @return
+     */
+    @RequestMapping(value = "/api/changeCustomsStatus")
+    ApiResult changeTransportStatus(@RequestBody TmsChangeStatusForm form);
 
 }

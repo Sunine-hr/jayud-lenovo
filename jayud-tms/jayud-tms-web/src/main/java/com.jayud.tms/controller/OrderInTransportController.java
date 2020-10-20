@@ -3,6 +3,8 @@ package com.jayud.tms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.constant.CommonConstant;
@@ -14,9 +16,11 @@ import com.jayud.common.utils.StringUtils;
 import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.model.bo.AuditInfoForm;
 import com.jayud.tms.model.bo.OprStatusForm;
+import com.jayud.tms.model.bo.QueryOrderTmsForm;
 import com.jayud.tms.model.bo.SendCarForm;
 import com.jayud.tms.model.po.OrderSendCars;
 import com.jayud.tms.model.po.OrderTransport;
+import com.jayud.tms.model.vo.OrderTransportVO;
 import com.jayud.tms.service.IOrderSendCarsService;
 import com.jayud.tms.service.IOrderTransportService;
 import io.netty.util.internal.StringUtil;
@@ -346,7 +350,13 @@ public class OrderInTransportController {
         return false;
     }
 
-
+    @ApiOperation(value = "报关接单列表/放行异常列表/放行确认/审核不通过/订单列表/报关打单/复核/申报")
+    @PostMapping("/findTransportOrderByPage")
+    public CommonResult<CommonPageResult<OrderTransportVO>> findTransportOrderByPage(@RequestBody QueryOrderTmsForm form) {
+        IPage<OrderTransportVO> pageList = orderTransportService.findTransportOrderByPage(form);
+        CommonPageResult<OrderTransportVO> pageVO = new CommonPageResult(pageList);
+        return CommonResult.success(pageVO);
+    }
 
 
     /**

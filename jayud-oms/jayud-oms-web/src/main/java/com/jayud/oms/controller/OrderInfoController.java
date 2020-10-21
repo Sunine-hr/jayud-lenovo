@@ -8,10 +8,7 @@ import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.*;
-import com.jayud.oms.model.vo.InitChangeStatusVO;
-import com.jayud.oms.model.vo.InputOrderVO;
-import com.jayud.oms.model.vo.OrderInfoVO;
-import com.jayud.oms.model.vo.OrderStatusVO;
+import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.IOrderInfoService;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
@@ -23,7 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -36,10 +35,16 @@ public class OrderInfoController {
 
     @ApiOperation(value = "外部报关放行/通过前审核/订单列表/费用审核")
     @PostMapping("/findOrderInfoByPage")
-    public CommonResult<CommonPageResult<OrderInfoVO>> findOrderInfoByPage(@RequestBody QueryOrderInfoForm form) {
+    public CommonResult<Map<String,Object>> findOrderInfoByPage(@RequestBody QueryOrderInfoForm form) {
         IPage<OrderInfoVO> pageList = orderInfoService.findOrderInfoByPage(form);
         CommonPageResult<OrderInfoVO> pageVO = new CommonPageResult(pageList);
-        return CommonResult.success(pageVO);
+        OrderDataCountVO orderDataCountVO = orderInfoService.countOrderData();
+        Map<String,Object> resultMap = new HashMap<>();
+        resultMap.put(CommonConstant.PAGE_LIST,pageVO);//分页数据
+        resultMap.put(CommonConstant.ALL_COUNT,orderDataCountVO.getAllCount());//所有订单数量
+        resultMap.put(CommonConstant.PRE_SUBMIT_COUNT,orderDataCountVO.getPreSubmitCount());//暂存数量
+        resultMap.put(CommonConstant.DATA_NOT_ALL_COUNT,orderDataCountVO.getDataNotAllCount());//待补全数据量
+        return CommonResult.success(resultMap);
     }
 
     @ApiOperation(value = "主订单流程获取")

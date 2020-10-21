@@ -134,4 +134,12 @@ public abstract class CommonConstant {
 
     public static final String ZGYS = "ZGYS";
 
+    public static final String PAGE_LIST = "pageList";
+
+    public static final String PRE_SUBMIT_COUNT = "preSubmitCount";
+
+    public static final String ALL_COUNT = "allCount";
+
+    public static final String DATA_NOT_ALL_COUNT = "dataNotAllCount";
+
 }

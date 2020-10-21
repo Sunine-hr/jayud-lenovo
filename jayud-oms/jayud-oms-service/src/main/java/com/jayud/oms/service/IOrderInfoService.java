@@ -117,4 +117,10 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      */
     boolean changeStatus(ChangeStatusListForm form);
 
+    /**
+     * 统计订单数据
+     * @return
+     */
+    OrderDataCountVO countOrderData();
+
 }

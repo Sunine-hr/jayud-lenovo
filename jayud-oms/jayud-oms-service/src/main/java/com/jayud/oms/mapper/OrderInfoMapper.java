@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.oms.model.bo.QueryOrderInfoForm;
 import com.jayud.oms.model.po.OrderInfo;
 import com.jayud.oms.model.vo.InputMainOrderVO;
+import com.jayud.oms.model.vo.OrderDataCountVO;
 import com.jayud.oms.model.vo.OrderInfoVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -43,5 +44,11 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      * @return
      */
     InputMainOrderVO getMainOrderById(@Param("idValue") Long idValue);
+
+    /**
+     * 统计订单数据
+     * @return
+     */
+    OrderDataCountVO countOrderData();
 
 }

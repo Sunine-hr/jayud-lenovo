@@ -646,6 +646,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return true;
     }
 
+    @Override
+    public OrderDataCountVO countOrderData() {
+        return baseMapper.countOrderData();
+    }
+
 
     /**
      * 获取当前登录用户

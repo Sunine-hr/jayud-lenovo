@@ -36,8 +36,8 @@
     </sql>
 
     <select id="findOrderInfoByPage" parameterType="com.jayud.oms.model.bo.QueryOrderInfoForm" resultType="com.jayud.oms.model.vo.OrderInfoVO" >
-        SELECT DISTINCT * FROM (
-        SELECT
+        SELECT * FROM (
+        SELECT DISTINCT
         oi.id,
         oi.`order_no` orderNo,
         oc.`goods_type` goodsType,
@@ -59,10 +59,11 @@
         ELSE FALSE
         END) isCost
         FROM
-        order_customs oc LEFT JOIN order_info oi ON oi.`order_no` = oc.`main_order_no`
+        order_info oi LEFT JOIN order_customs oc ON oi.`order_no` = oc.`main_order_no`
         LEFT JOIN product_classify pc1 ON pc1.`id_code` = oi.`class_code`
+        WHERE oi.`class_code` = 'CBG'
         UNION ALL
-        SELECT
+        SELECT DISTINCT
         oi.id,
         oi.`order_no` orderNo,
         ot.`goods_type` goodsType,
@@ -84,10 +85,11 @@
         ELSE FALSE
         END) isCost
         FROM
-        order_transport ot LEFT JOIN order_info oi ON
+        order_info oi LEFT JOIN order_transport ot ON
         oi.`order_no` = ot.`main_order_no`
         LEFT JOIN port_info p ON ot.port_code = p.id_code
         LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`
+        WHERE oi.`class_code` = 'ZGYS'
         ) temp WHERE 1 = 1
         <if test="form.cmd == 'noSubmit'">
            and temp.`status` = 2
@@ -139,8 +141,7 @@
         oi.`customer_name` customerName,
         oi.`customer_code` customerCode,
         oi.`legal_name` legalName,
-        (SELECT CONCAT(ota.`describe`,' ',ota.`amount`,(CASE ota.`unit` WHEN 1 THEN '件' WHEN 2 THEN '其他'
-        END),',','重量',ota.`weight`,'KG') FROM order_take_adr ota WHERE ota.`order_no` = ot.order_no AND ota.`types` = 1 ORDER BY ota.`id` LIMIT 1) goodsInfo,
+        (SELECT CONCAT(ota.`describe`,' ',ota.`piece_amount`,'件',',','重量',ota.`weight`,'KG') FROM order_take_adr ota WHERE ota.`order_no` = ot.order_no AND ota.`types` = 1 ORDER BY ota.`id` LIMIT 1) goodsInfo,
         (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`types` = 1 ORDER BY ota.`id` LIMIT 1) takeAddress,
         (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`types` = 2 ORDER BY ota.`id` LIMIT 1) giveAddress,
         oi.`created_user` createdUser,
@@ -154,8 +155,8 @@
         oi.`order_no` = ot.`main_order_no`
         LEFT JOIN port_info p ON ot.port_code = p.id_code
         LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`
-        WHERE (SELECT COUNT(1) FROM logistics_track lt WHERE lt.`main_order_id` = oi.`id` AND lt.`status`='放行') =
-        (SELECT COUNT(1) FROM order_customs oc WHERE oc.`main_order_no` = oi.`order_no`) where 1 = 1
+        WHERE (SELECT COUNT(1) FROM logistics_track lt WHERE lt.`main_order_id` = oi.`id` AND lt.`status`='C_5') =
+        (SELECT COUNT(1) FROM order_customs oc WHERE oc.`main_order_no` = oi.`order_no`) AND 1 = 1
         <if test="form.orderNo != null and form.orderNo != ''">
             and oi.order_no = #{form.orderNo}
         </if>
@@ -200,6 +201,26 @@
         <if test="idValue != null and idValue != ''">
             and oi.`id` = #{idValue}
         </if>
+    </select>
+
+    <select id="countOrderData"  resultType="com.jayud.oms.model.vo.OrderDataCountVO" >
+        SELECT
+          (SELECT
+            COUNT(1)
+          FROM
+            order_info o1) AS allCount,
+          (SELECT
+            COUNT(1)
+          FROM
+            order_info o2
+          WHERE o2.status = '2') AS preSubmitCount,
+          (SELECT
+            COUNT(1)
+          FROM
+            order_info o3
+          WHERE o3.status = '4') AS dataNotAllCount
+        FROM
+          DUAL
     </select>
 
 </mapper>

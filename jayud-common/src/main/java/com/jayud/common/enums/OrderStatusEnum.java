@@ -28,11 +28,6 @@ public enum OrderStatusEnum {
     CLOSE("CLOSE","关闭"),
     STOP("STOP","终止"),
 
-    //主干流程节点
-    MAIN_PROCESS_1("M_1","已下单"),
-    MAIN_PROCESS_2("M_2","运输中"),
-    MAIN_PROCESS_3("M_3","报关中"),
-    MAIN_PROCESS_4("M_4","已完成"),
 
     //纯报关子订单流程节点+纯报关子订单状态
     CUSTOMS_C_0("C_0","待接单"), //仅报关子订单状态用

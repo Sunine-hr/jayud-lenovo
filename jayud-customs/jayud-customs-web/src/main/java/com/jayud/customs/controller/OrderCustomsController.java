@@ -5,19 +5,17 @@ import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.OrderOprCmdEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.customs.feign.OmsClient;
-import com.jayud.customs.model.bo.HandleSubProcessForm;
-import com.jayud.customs.model.bo.InputSubOrderCustomsForm;
-import com.jayud.customs.model.bo.OprStatusForm;
-import com.jayud.customs.model.bo.QueryCustomsOrderInfoForm;
+import com.jayud.customs.model.bo.*;
 import com.jayud.customs.model.po.OrderCustoms;
 import com.jayud.customs.model.vo.CustomsOrderInfoVO;
-import com.jayud.customs.model.vo.InputOrderVO;
 import com.jayud.customs.model.vo.OrderStatusVO;
 import com.jayud.customs.service.IOrderCustomsService;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,14 +60,6 @@ public class OrderCustomsController {
             stringList.add(inputSubOrderCustomsForm);
         }
         return CommonResult.success(stringList);
-    }
-
-    @ApiOperation(value = "编辑回显,id=主订单ID")
-    @PostMapping(value = "/editOrderCustomsView")
-    public CommonResult<InputOrderVO> editOrderCustomsView(@RequestBody Map<String,Object> param) {
-        String id = MapUtil.getStr(param,"id");
-        InputOrderVO inputOrderVO = orderCustomsService.editOrderCustomsView(Long.parseLong(id));
-        return CommonResult.success(inputOrderVO);
     }
 
     @ApiOperation(value = "报关接单列表/放行异常列表/放行确认/审核不通过/订单列表/报关打单/复核/申报")
@@ -135,6 +125,16 @@ public class OrderCustomsController {
         if("reIssueOrder".equals(form.getCmd())){
             form.setOperatorUser(loginUser);
             form.setOperatorTime(DateUtils.getLocalToStr(LocalDateTime.now()));
+            //把C_2/C_3/C_4/的记录删除
+            DelOprStatusForm delOprStatusForm = new DelOprStatusForm();
+            delOprStatusForm.setMainOrderId(form.getMainOrderId());
+            delOprStatusForm.setOrderId(form.getOrderId());
+            List<String> strs = new ArrayList<>();
+            strs.add(OrderStatusEnum.CUSTOMS_C_2.getCode());
+            strs.add(OrderStatusEnum.CUSTOMS_C_3.getCode());
+            strs.add(OrderStatusEnum.CUSTOMS_C_4.getCode());
+            delOprStatusForm.setStatus(strs);
+            omsClient.deleteOprStatus(delOprStatusForm);
         }
         form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
         form.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
@@ -199,13 +199,10 @@ public class OrderCustomsController {
             if(OrderStatusEnum.CUSTOMS_C_5.getCode().equals(form.getStatus()) ||
                     OrderStatusEnum.CUSTOMS_C_5_1.getCode().equals(form.getStatus())){
                 orderCustoms.setStatus(form.getStatus());
-                form.setStatus(form.getStatus());
                 if(OrderStatusEnum.CUSTOMS_C_5.getCode().equals(form.getStatus())){
+                    form.setStatus(form.getStatus());
                     form.setStatusName(OrderStatusEnum.CUSTOMS_C_5.getDesc());
-                }else {
-                    form.setStatusName(OrderStatusEnum.CUSTOMS_C_5_1.getDesc());
                 }
-
             }else {
                 return CommonResult.error(400, "参数不合法");
             }
@@ -213,6 +210,15 @@ public class OrderCustomsController {
             orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_4.getCode());
             form.setStatus(OrderStatusEnum.CUSTOMS_C_4.getCode());
             form.setStatusName(OrderStatusEnum.CUSTOMS_C_4.getDesc());
+            //需删除C_4/C_5的状态记录
+            DelOprStatusForm delOprStatusForm = new DelOprStatusForm();
+            delOprStatusForm.setMainOrderId(form.getMainOrderId());
+            delOprStatusForm.setOrderId(form.getOrderId());
+            List<String> strs = new ArrayList<>();
+            strs.add(OrderStatusEnum.CUSTOMS_C_5.getCode());
+            strs.add(OrderStatusEnum.CUSTOMS_C_4.getCode());
+            delOprStatusForm.setStatus(strs);
+            omsClient.deleteOprStatus(delOprStatusForm);
         } else if("goCustomsSuccess".equals(form.getCmd())){//通关完成
             if(form.getGoCustomsTime() == null){
                 return CommonResult.error(400, "参数不合法");
@@ -247,7 +253,15 @@ public class OrderCustomsController {
         //记录操作状态
         form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
         form.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
-        omsClient.saveOprStatus(form);
+        if(!StringUtil.isNullOrEmpty(form.getStatus())){
+            omsClient.saveOprStatus(form);//只保存操作成功，既能推动流程的状态,便于流程节点的展示
+        }
+        AuditInfoForm auditInfoForm = new AuditInfoForm();
+        auditInfoForm.setAuditComment(form.getDescription());
+        auditInfoForm.setAuditStatus(form.getStatus());
+        auditInfoForm.setAuditTypeDesc(OrderOprCmdEnum.getDesc(form.getCmd()));
+        auditInfoForm.setExtId(form.getOrderId());
+        omsClient.saveAuditInfo(auditInfoForm);
         if (!result) {
             return CommonResult.error(400, "操作失败");
         }

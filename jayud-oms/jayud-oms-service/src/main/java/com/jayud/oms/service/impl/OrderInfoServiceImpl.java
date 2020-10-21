@@ -532,6 +532,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             for (InputOrderTakeAdrVO inputOrderTakeAdr2 : orderTakeAdrForms2) {
                 inputOrderTakeAdr2.setCustomerName(inputMainOrderVO.getCustomerName());
             }
+            inputOrderVO.setOrderTransportForm(inputOrderTransportVO);
         }else if(OrderStatusEnum.NLYS.getCode().equals(form.getClassCode()) ||
                 OrderStatusEnum.SZZZC.getCode().contains(inputMainOrderVO.getSelectedServer())){
 

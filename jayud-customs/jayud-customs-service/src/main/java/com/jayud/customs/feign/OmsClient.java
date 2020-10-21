@@ -2,10 +2,7 @@ package com.jayud.customs.feign;
 
 
 import com.jayud.common.ApiResult;
-import com.jayud.customs.model.bo.HandleSubProcessForm;
-import com.jayud.customs.model.bo.InputMainOrderForm;
-import com.jayud.customs.model.bo.OprOrderLogForm;
-import com.jayud.customs.model.bo.OprStatusForm;
+import com.jayud.customs.model.bo.*;
 import com.jayud.customs.model.vo.InputMainOrderVO;
 import com.jayud.customs.model.vo.OrderStatusVO;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -49,7 +46,7 @@ public interface OmsClient {
     ApiResult<Long> getIdByOrderNo(@RequestParam(value = "orderNo") String orderNo);
 
     /**
-     * 记录流程状态
+     * 只记录成功流程状态
      */
     @RequestMapping(value = "/api/saveOprStatus")
     ApiResult saveOprStatus(@RequestBody OprStatusForm form);
@@ -60,5 +57,21 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/handleSubProcess")
     ApiResult<List<OrderStatusVO>> handleSubProcess(@RequestBody HandleSubProcessForm form);
+
+    /**
+     * 记录审核信息
+     * @param form
+     * @return
+     */
+    @RequestMapping(value = "/api/saveAuditInfo")
+    ApiResult saveAuditInfo(@RequestBody AuditInfoForm form);
+
+    /**
+     * 删除特定单的操作流程
+     * @param form
+     * @return
+     */
+    @RequestMapping(value = "/api/deleteOprStatus")
+    ApiResult deleteOprStatus(@RequestBody DelOprStatusForm form);
 
 }

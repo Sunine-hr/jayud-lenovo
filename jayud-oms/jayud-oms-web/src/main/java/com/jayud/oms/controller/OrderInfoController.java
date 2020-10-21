@@ -34,7 +34,7 @@ public class OrderInfoController {
     @Autowired
     IOrderInfoService orderInfoService;
 
-    @ApiOperation(value = "未提交/提交订单列表/费用审核")
+    @ApiOperation(value = "外部报关放行/通过前审核/订单列表/费用审核")
     @PostMapping("/findOrderInfoByPage")
     public CommonResult<CommonPageResult<OrderInfoVO>> findOrderInfoByPage(@RequestBody QueryOrderInfoForm form) {
         IPage<OrderInfoVO> pageList = orderInfoService.findOrderInfoByPage(form);

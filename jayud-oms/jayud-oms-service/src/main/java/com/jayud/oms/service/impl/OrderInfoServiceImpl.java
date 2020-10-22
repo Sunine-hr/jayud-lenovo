@@ -486,7 +486,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //获取主订单信息
         InputMainOrderVO inputMainOrderVO = getMainOrderById(form.getMainOrderId());
         inputOrderVO.setOrderForm(inputMainOrderVO);
-        //获取纯报关信息
+        //获取纯报关和出口报关信息
         if (OrderStatusEnum.CBG.getCode().equals(form.getClassCode()) ||
             inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode())) {
             InputOrderCustomsVO inputOrderCustomsVO = customsClient.getCustomsDetail(inputMainOrderVO.getOrderNo()).getData();
@@ -513,7 +513,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
                 inputOrderVO.setOrderCustomsForm(inputOrderCustomsVO);
             }
-        }else if(OrderStatusEnum.ZGYS.getCode().equals(form.getClassCode())){
+        }
+        //获取中港运输信息
+        if(OrderStatusEnum.ZGYS.getCode().equals(form.getClassCode())){
             InputOrderTransportVO inputOrderTransportVO = tmsClient.getOrderTransport(inputMainOrderVO.getOrderNo()).getData();
             if(inputOrderTransportVO != null) {
                 //附件信息
@@ -539,7 +541,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
                 inputOrderVO.setOrderTransportForm(inputOrderTransportVO);
             }
-        }else if(OrderStatusEnum.NLYS.getCode().equals(form.getClassCode()) ||
+        }
+        //获取内陆运输和深圳中转仓信息
+        if(OrderStatusEnum.NLYS.getCode().equals(form.getClassCode()) ||
                 inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.SZZZC.getCode())){
 
         }
@@ -563,14 +567,18 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 selectedServer.contains(OrderStatusEnum.CKBG.getCode())){
             InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
             //如果没有生成子订单则不调用
-
-            orderCustomsForm.setMainOrderNo(mainOrderNo);
-            orderCustomsForm.setClassCode(OrderStatusEnum.CBG.getCode());
-            Boolean result = customsClient.createOrderCustoms(orderCustomsForm).getData();
-            if(!result){//调用失败
-                return false;
+            if(orderCustomsForm.getSubOrders() != null && orderCustomsForm.getSubOrders().size() >= 0) {
+                 orderCustomsForm.setMainOrderNo(mainOrderNo);
+                 if(OrderStatusEnum.CBG.getCode().equals(classCode)) {
+                     orderCustomsForm.setClassCode(OrderStatusEnum.CBG.getCode());
+                 }else {
+                     orderCustomsForm.setClassCode(OrderStatusEnum.CKBG.getCode());
+                 }
+                 Boolean result = customsClient.createOrderCustoms(orderCustomsForm).getData();
+                 if (!result) {//调用失败
+                     return false;
+                 }
             }
-
         }
         //中港运输
         if(OrderStatusEnum.ZGYS.getCode().equals(classCode)){

@@ -51,6 +51,9 @@ public class InputOrderTakeAdrVO {
     @ApiModelProperty(value = "体积")
     private Double volume;
 
+    @ApiModelProperty(value = "备注")
+    private String remarks;
+
     @ApiModelProperty(value = "类型(1提货 2收货)")
     private Integer oprType;
 

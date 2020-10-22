@@ -51,4 +51,7 @@ public class InputOrderTakeAdrVO {
     @ApiModelProperty(value = "体积")
     private Double volume;
 
+    @ApiModelProperty(value = "备注")
+    private String remarks;
+
 }

@@ -7,7 +7,6 @@ import com.jayud.customs.model.bo.QueryCustomsOrderInfoForm;
 import com.jayud.customs.model.po.OrderCustoms;
 import com.jayud.customs.model.vo.CustomsOrderInfoVO;
 import com.jayud.customs.model.vo.InputOrderCustomsVO;
-import com.jayud.customs.model.vo.InputOrderVO;
 import com.jayud.customs.model.vo.OrderCustomsVO;
 
 import java.util.List;
@@ -36,13 +35,6 @@ public interface IOrderCustomsService extends IService<OrderCustoms> {
      * @return
      */
     public boolean oprOrderCustoms(InputOrderCustomsForm form);
-
-    /**
-     * 编辑时获取订单详情
-     * @param id
-     * @return
-     */
-    public InputOrderVO editOrderCustomsView(Long id);
 
     /**
      * 获取子订单

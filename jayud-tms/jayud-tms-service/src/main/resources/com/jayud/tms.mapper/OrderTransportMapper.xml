@@ -52,7 +52,9 @@
           osc.`hk_license_plate` hkLicensePlate,
           osc.`license_plate` licensePlate,
           osc.`vehicle_size` vehicleSize,
+          osc.`vehicle_type` vehicleType,
           osc.`cntr_no` cntrNo,
+          osc.`warehouse_info_id` warehouseInfoId,
           si.`supplier_ch_name` supplierChName,
           '' customsNo,
           osc.`driver_name` driverName,
@@ -67,7 +69,9 @@
           wi.`company_name` companyName,
           wi.`contacts`,
           wi.`contact_number` contactNumber,
-          wi.`address`
+          wi.`address`,
+          ot.`is_load_goods` isLoadGoods,
+          ot.`is_unload_goods` isUnloadGoods
         FROM
           order_transport ot
           LEFT JOIN order_info oi

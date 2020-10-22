@@ -3,7 +3,6 @@ package com.jayud.customs.feign;
 
 import com.jayud.common.ApiResult;
 import com.jayud.customs.model.bo.*;
-import com.jayud.customs.model.vo.InputMainOrderVO;
 import com.jayud.customs.model.vo.OrderStatusVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,12 +31,6 @@ public interface OmsClient {
     @RequestMapping(value = "/api/saveOprOrderLog")
     ApiResult saveOprOrderLog(@RequestBody List<OprOrderLogForm> forms);
 
-
-    /**
-     * 获取主订单信息
-     */
-    @RequestMapping(value = "/api/getMainOrderById")
-    ApiResult<InputMainOrderVO> getMainOrderById(@RequestParam(value = "id") Long id);
 
     /**
      * 获取主订单信息

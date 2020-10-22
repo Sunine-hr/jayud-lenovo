@@ -42,7 +42,8 @@
           '' boxAmount,
           ota.`weight`,
           ota.`volume`,
-          ota.`opr_type` oprType
+          ota.`opr_type` oprType,
+          ota.`remarks`
         FROM
           order_take_adr ota
           LEFT JOIN delivery_address da

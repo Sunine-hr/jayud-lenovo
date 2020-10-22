@@ -52,4 +52,16 @@ public class InputMainOrderVO {
     @ApiModelProperty(value = "已选中得服务")
     private String selectedServer;
 
+    @ApiModelProperty(value = "产品类型 如CBG:纯报关")
+    private String classCode;
+
+    @ApiModelProperty(value = "结算单位code")
+    private String unitCode;
+
+    @ApiModelProperty(value = "结算单位")
+    private String unitAccount;
+
+    @ApiModelProperty(value = "报关资料是否齐全 1-齐全 0-不齐全")
+    private String isDataAll;
+
 }

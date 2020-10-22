@@ -46,7 +46,7 @@ public class InputOrderTakeAdrVO {
     private Double boxAmount;
 
     @ApiModelProperty(value = "重量")
-    private Integer weight;
+    private Double weight;
 
     @ApiModelProperty(value = "体积")
     private Double volume;

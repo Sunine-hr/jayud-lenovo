@@ -21,6 +21,7 @@ import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.InputOrderTakeAdrVO;
 import com.jayud.tms.model.vo.InputOrderTransportVO;
 import com.jayud.tms.model.vo.OrderTransportVO;
+import com.jayud.tms.model.vo.SendCarPdfVO;
 import com.jayud.tms.service.IDeliveryAddressService;
 import com.jayud.tms.service.IOrderTakeAdrService;
 import com.jayud.tms.service.IOrderTransportService;
@@ -153,6 +154,12 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         page.addOrder(OrderItem.desc("ot.id"));
         IPage<OrderTransportVO> pageInfo = baseMapper.findTransportOrderByPage(page, form);
         return pageInfo;
+    }
+
+    @Override
+    public SendCarPdfVO initPdfData(String orderNo, String classCode) {
+        // TODO
+        return null;
     }
 
     /**

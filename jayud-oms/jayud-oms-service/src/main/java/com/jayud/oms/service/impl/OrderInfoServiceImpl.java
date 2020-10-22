@@ -490,51 +490,55 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if (OrderStatusEnum.CBG.getCode().equals(form.getClassCode()) ||
             inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode())) {
             InputOrderCustomsVO inputOrderCustomsVO = customsClient.getCustomsDetail(inputMainOrderVO.getOrderNo()).getData();
-            //附件处理
-            List<FileView> allPics = new ArrayList<>();
-            allPics.addAll(inputOrderCustomsVO.getCntrPics());
-            allPics.addAll(inputOrderCustomsVO.getEncodePics());
-            allPics.addAll(inputOrderCustomsVO.getAirTransportPics());
-            allPics.addAll(inputOrderCustomsVO.getSeaTransportPics());
-            inputOrderCustomsVO.setAllPics(allPics);
-            //循环处理接单人和接单时间
-            List<InputSubOrderCustomsVO> inputSubOrderCustomsVOS = inputOrderCustomsVO.getSubOrders();
-            for (InputSubOrderCustomsVO inputSubOrderCustomsVO : inputSubOrderCustomsVOS) {
-                QueryWrapper queryWrapper = new QueryWrapper();
-                queryWrapper.eq("order_id", inputSubOrderCustomsVO.getSubOrderId());
-                queryWrapper.eq("status", OrderStatusEnum.CUSTOMS_C_1.getCode());
-                queryWrapper.orderByDesc("created_time");
-                List<LogisticsTrack> logisticsTracks = logisticsTrackService.list(queryWrapper);
-                if (!logisticsTracks.isEmpty()) {
-                    inputSubOrderCustomsVO.setJiedanTimeStr(DateUtils.getLocalToStr(logisticsTracks.get(0).getOperatorTime()));
-                    inputSubOrderCustomsVO.setJiedanUser(logisticsTracks.get(0).getOperatorUser());
+            if(inputOrderCustomsVO != null) {
+                //附件处理
+                List<FileView> allPics = new ArrayList<>();
+                allPics.addAll(inputOrderCustomsVO.getCntrPics());
+                allPics.addAll(inputOrderCustomsVO.getEncodePics());
+                allPics.addAll(inputOrderCustomsVO.getAirTransportPics());
+                allPics.addAll(inputOrderCustomsVO.getSeaTransportPics());
+                inputOrderCustomsVO.setAllPics(allPics);
+                //循环处理接单人和接单时间
+                List<InputSubOrderCustomsVO> inputSubOrderCustomsVOS = inputOrderCustomsVO.getSubOrders();
+                for (InputSubOrderCustomsVO inputSubOrderCustomsVO : inputSubOrderCustomsVOS) {
+                    QueryWrapper queryWrapper = new QueryWrapper();
+                    queryWrapper.eq("order_id", inputSubOrderCustomsVO.getSubOrderId());
+                    queryWrapper.eq("status", OrderStatusEnum.CUSTOMS_C_1.getCode());
+                    queryWrapper.orderByDesc("created_time");
+                    List<LogisticsTrack> logisticsTracks = logisticsTrackService.list(queryWrapper);
+                    if (!logisticsTracks.isEmpty()) {
+                        inputSubOrderCustomsVO.setJiedanTimeStr(DateUtils.getLocalToStr(logisticsTracks.get(0).getOperatorTime()));
+                        inputSubOrderCustomsVO.setJiedanUser(logisticsTracks.get(0).getOperatorUser());
+                    }
                 }
+                inputOrderVO.setOrderCustomsForm(inputOrderCustomsVO);
             }
-            inputOrderVO.setOrderCustomsForm(inputOrderCustomsVO);
         }else if(OrderStatusEnum.ZGYS.getCode().equals(form.getClassCode())){
             InputOrderTransportVO inputOrderTransportVO = tmsClient.getOrderTransport(inputMainOrderVO.getOrderNo()).getData();
-            //附件信息
-            List<FileView> allPics = new ArrayList<>();
-            allPics.addAll(StringUtils.getFileViews(inputOrderTransportVO.getCntrPic(),inputOrderTransportVO.getCntrPicName(),prePath));
-            //获取反馈操作人时上传的附件
-            QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.eq(SqlConstant.ORDER_ID,inputOrderTransportVO.getId());
-            List<LogisticsTrack> logisticsTracks = logisticsTrackService.list(queryWrapper);
-            for (LogisticsTrack logisticsTrack : logisticsTracks) {
-                allPics.addAll(StringUtils.getFileViews(logisticsTrack.getStatusPic(),logisticsTrack.getStatusPicName(),prePath));
-            }
-            inputOrderTransportVO.setAllPics(allPics);
+            if(inputOrderTransportVO != null) {
+                //附件信息
+                List<FileView> allPics = new ArrayList<>();
+                allPics.addAll(StringUtils.getFileViews(inputOrderTransportVO.getCntrPic(), inputOrderTransportVO.getCntrPicName(), prePath));
+                //获取反馈操作人时上传的附件
+                QueryWrapper queryWrapper = new QueryWrapper();
+                queryWrapper.eq(SqlConstant.ORDER_ID, inputOrderTransportVO.getId());
+                List<LogisticsTrack> logisticsTracks = logisticsTrackService.list(queryWrapper);
+                for (LogisticsTrack logisticsTrack : logisticsTracks) {
+                    allPics.addAll(StringUtils.getFileViews(logisticsTrack.getStatusPic(), logisticsTrack.getStatusPicName(), prePath));
+                }
+                inputOrderTransportVO.setAllPics(allPics);
 
-            //设置提货信息的客户
-            List<InputOrderTakeAdrVO> orderTakeAdrForms1 = inputOrderTransportVO.getOrderTakeAdrForms1();
-            for (InputOrderTakeAdrVO inputOrderTakeAdr1 : orderTakeAdrForms1) {
-                inputOrderTakeAdr1.setCustomerName(inputMainOrderVO.getCustomerName());
+                //设置提货信息的客户
+                List<InputOrderTakeAdrVO> orderTakeAdrForms1 = inputOrderTransportVO.getOrderTakeAdrForms1();
+                for (InputOrderTakeAdrVO inputOrderTakeAdr1 : orderTakeAdrForms1) {
+                    inputOrderTakeAdr1.setCustomerName(inputMainOrderVO.getCustomerName());
+                }
+                List<InputOrderTakeAdrVO> orderTakeAdrForms2 = inputOrderTransportVO.getOrderTakeAdrForms2();
+                for (InputOrderTakeAdrVO inputOrderTakeAdr2 : orderTakeAdrForms2) {
+                    inputOrderTakeAdr2.setCustomerName(inputMainOrderVO.getCustomerName());
+                }
+                inputOrderVO.setOrderTransportForm(inputOrderTransportVO);
             }
-            List<InputOrderTakeAdrVO> orderTakeAdrForms2 = inputOrderTransportVO.getOrderTakeAdrForms2();
-            for (InputOrderTakeAdrVO inputOrderTakeAdr2 : orderTakeAdrForms2) {
-                inputOrderTakeAdr2.setCustomerName(inputMainOrderVO.getCustomerName());
-            }
-            inputOrderVO.setOrderTransportForm(inputOrderTransportVO);
         }else if(OrderStatusEnum.NLYS.getCode().equals(form.getClassCode()) ||
                 inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.SZZZC.getCode())){
 
@@ -554,13 +558,22 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
         String classCode = inputMainOrderForm.getClassCode();//订单类型
         String selectedServer = inputMainOrderForm.getSelectedServer();//所选服务
-        //纯报关
-        if(OrderStatusEnum.CBG.getCode().equals(classCode)){
+        //纯报关和出口报关
+        if(OrderStatusEnum.CBG.getCode().equals(classCode) ||
+                selectedServer.contains(OrderStatusEnum.CKBG.getCode())){
             InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
-            orderCustomsForm.setClassCode(OrderStatusEnum.CKBG.getCode());
-            customsClient.createOrderCustoms(orderCustomsForm);
+            //如果没有生成子订单则不调用
+
+            orderCustomsForm.setMainOrderNo(mainOrderNo);
+            orderCustomsForm.setClassCode(OrderStatusEnum.CBG.getCode());
+            Boolean result = customsClient.createOrderCustoms(orderCustomsForm).getData();
+            if(!result){//调用失败
+                return false;
+            }
+
+        }
         //中港运输
-        }else if(OrderStatusEnum.ZGYS.getCode().equals(classCode)){
+        if(OrderStatusEnum.ZGYS.getCode().equals(classCode)){
             //创建中港订单信息
             InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
             if(!selectedServer.contains(OrderStatusEnum.XGQG.getCode())) {
@@ -574,19 +587,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             if(!result){//调用失败
                 return false;
             }
-            if(selectedServer.contains(OrderStatusEnum.SZZZC.getCode())){
-                //创建深圳中转仓信息 TODO
-            }
-            if(selectedServer.contains(OrderStatusEnum.CKBG.getCode())) {
-                //创建报关信息
-                InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
-                orderCustomsForm.setClassCode(OrderStatusEnum.CKBG.getCode());
-                orderCustomsForm.setMainOrderNo(mainOrderNo);
-                result = customsClient.createOrderCustoms(orderCustomsForm).getData();
-                if(!result){//调用失败
-                    return false;
-                }
-            }
+        }
+        //内陆运输和深圳中转仓
+        if(selectedServer.contains(OrderStatusEnum.SZZZC.getCode())){
+            //创建深圳中转仓信息 TODO
         }
 
         return true;

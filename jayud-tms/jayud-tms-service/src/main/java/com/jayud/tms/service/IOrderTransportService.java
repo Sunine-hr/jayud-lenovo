@@ -7,6 +7,7 @@ import com.jayud.tms.model.po.OrderTransport;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.tms.model.vo.InputOrderTransportVO;
 import com.jayud.tms.model.vo.OrderTransportVO;
+import com.jayud.tms.model.vo.SendCarPdfVO;
 
 /**
  * <p>
@@ -46,6 +47,14 @@ public interface IOrderTransportService extends IService<OrderTransport> {
      * @return
      */
     IPage<OrderTransportVO> findTransportOrderByPage(QueryOrderTmsForm form);
+
+    /**
+     * 初始化确认派车时的PDF数据
+     * @param orderNo
+     * @param classCode
+     * @return
+     */
+    SendCarPdfVO initPdfData(String orderNo,String classCode);
 
 
 }

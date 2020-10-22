@@ -131,6 +131,9 @@ public class OrderCustoms extends Model<OrderCustoms> {
     @ApiModelProperty(value = "修改人")
     private String updatedUser;
 
+    @ApiModelProperty(value = "报关类型 CBG-纯报关 CKBG-出口报关")
+    private String classCode;
+
 
     @Override
     protected Serializable pkVal() {

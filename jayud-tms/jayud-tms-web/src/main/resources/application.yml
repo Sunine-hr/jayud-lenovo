@@ -45,8 +45,8 @@ spring:
           config:
             multi-statement-allow: true
 mybatis-plus:
-  mapper-locations: classpath:com.jayud.tms.mapper/*.xml
-  typeAliasesPackage: com.jayud.tms.model
+  mapper-locations: classpath:com/jayud/tms.mapper/*.xml
+  typeAliasesPackage: com.jayud.model
   configuration:
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

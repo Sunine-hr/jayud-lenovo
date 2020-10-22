@@ -488,7 +488,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         inputOrderVO.setOrderForm(inputMainOrderVO);
         //获取纯报关信息
         if (OrderStatusEnum.CBG.getCode().equals(form.getClassCode()) ||
-            OrderStatusEnum.CKBG.getCode().contains(inputMainOrderVO.getSelectedServer())) {
+            inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode())) {
             InputOrderCustomsVO inputOrderCustomsVO = customsClient.getCustomsDetail(inputMainOrderVO.getOrderNo()).getData();
             //附件处理
             List<FileView> allPics = new ArrayList<>();
@@ -536,7 +536,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
             inputOrderVO.setOrderTransportForm(inputOrderTransportVO);
         }else if(OrderStatusEnum.NLYS.getCode().equals(form.getClassCode()) ||
-                OrderStatusEnum.SZZZC.getCode().contains(inputMainOrderVO.getSelectedServer())){
+                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.SZZZC.getCode())){
 
         }
 
@@ -563,7 +563,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }else if(OrderStatusEnum.ZGYS.getCode().equals(classCode)){
             //创建中港订单信息
             InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
-            if(!OrderStatusEnum.XGQG.getCode().contains(selectedServer)) {
+            if(!selectedServer.contains(OrderStatusEnum.XGQG.getCode())) {
                 //若没有选择香港清关,则情况香港清关信息，避免信息有误
                 orderTransportForm.setHkLegalName(null);
                 orderTransportForm.setHkUnitCode(null);
@@ -574,10 +574,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             if(!result){//调用失败
                 return false;
             }
-            if(OrderStatusEnum.SZZZC.getCode().contains(selectedServer)){
+            if(selectedServer.contains(OrderStatusEnum.SZZZC.getCode())){
                 //创建深圳中转仓信息 TODO
             }
-            if(OrderStatusEnum.CKBG.getCode().contains(selectedServer)) {
+            if(selectedServer.contains(OrderStatusEnum.CKBG.getCode())) {
                 //创建报关信息
                 InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
                 orderCustomsForm.setClassCode(OrderStatusEnum.CKBG.getCode());
@@ -599,14 +599,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         InputMainOrderVO inputMainOrderVO = getMainOrderById(form.getMainOrderId());
         //获取纯报关信息
         if (OrderStatusEnum.CBG.getCode().equals(form.getClassCode()) ||
-                OrderStatusEnum.CKBG.getCode().contains(inputMainOrderVO.getSelectedServer())) {
+                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode())) {
             List<InitChangeStatusVO> cbgList = customsClient.findCustomsOrderNo(inputMainOrderVO.getOrderNo()).getData();
             changeStatusVOS.addAll(cbgList);
         }else if(OrderStatusEnum.ZGYS.getCode().equals(form.getClassCode())){
             InitChangeStatusVO initChangeStatusVO = tmsClient.getTransportOrderNo(inputMainOrderVO.getOrderNo()).getData();
             changeStatusVOS.add(initChangeStatusVO);
         }else if(OrderStatusEnum.NLYS.getCode().equals(form.getClassCode()) ||
-                OrderStatusEnum.SZZZC.getCode().contains(inputMainOrderVO.getSelectedServer())){
+                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.SZZZC.getCode())){
             //TODO
         }
         return changeStatusVOS;

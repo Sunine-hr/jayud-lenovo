@@ -33,7 +33,7 @@
           da.`city_name` cityName,
           da.`address`,
           DATE_FORMAT(
-            ota.`take_time`.,
+            ota.`take_time`,
             '%Y-%m-%d %H:%I:%S'
           ) takeTimeStr,
           ota.`goods_desc` goodsDesc,

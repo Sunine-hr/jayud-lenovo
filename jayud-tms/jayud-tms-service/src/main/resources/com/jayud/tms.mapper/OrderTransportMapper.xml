@@ -80,7 +80,7 @@
             ON si.`id` = osc.`supplier_info_id`
           LEFT JOIN warehouse_info wi
             ON osc.`warehouse_info_id` = wi.`id`
-            ot.`main_order_no` = #{mainOrderNo}
+          where ot.`main_order_no` = #{mainOrderNo}
     </select>
     <select id="findTransportOrderByPage" parameterType="com.jayud.tms.model.bo.QueryOrderTmsForm" resultType="com.jayud.tms.model.vo.OrderTransportVO" >
         SELECT

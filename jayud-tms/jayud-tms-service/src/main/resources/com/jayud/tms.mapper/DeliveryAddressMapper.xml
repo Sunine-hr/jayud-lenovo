@@ -18,11 +18,13 @@
         <result column="post_code" property="postCode" />
         <result column="warehouse_info_id" property="warehouseInfoId" />
         <result column="status" property="status" />
+        <result column="create_user" property="createUser" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, customer_id, contacts, phone, country_code, country_name, state_code, state_name, city_code, city_name, address, post_code, warehouse_info_id, status
+        id, customer_id, contacts, phone, country_code, country_name, state_code, state_name, city_code, city_name, address,
+        post_code, warehouse_info_id, status,create_user
     </sql>
 
 </mapper>

@@ -75,9 +75,9 @@
         oi.`customer_name` customerName,
         oi.`customer_code` customerCode,
         oi.`legal_name` legalName,
-        (SELECT CONCAT(ota.`describe`,' ',ota.`piece_amount`,'件',',','重量',ota.`weight`,'KG') FROM order_take_adr ota WHERE ota.`order_no` = ot.order_no AND ota.`types` = 1 ORDER BY ota.`id` LIMIT 1) goodsInfo,
-        (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`types` = 1 ORDER BY ota.`id` LIMIT 1) takeAddress,
-        (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`types` = 2 ORDER BY ota.`id` LIMIT 1) giveAddress,
+        (SELECT CONCAT(ota.`goods_desc`,' ',ota.`piece_amount`,'件',',','重量',ota.`weight`,'KG') FROM order_take_adr ota WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 1 ORDER BY ota.`id` LIMIT 1) goodsInfo,
+        (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 1 ORDER BY ota.`id` LIMIT 1) takeAddress,
+        (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 2 ORDER BY ota.`id` LIMIT 1) giveAddress,
         oi.`created_user` createdUser,
         DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%I:%S') createdTimeStr,
         (CASE  WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
@@ -141,9 +141,9 @@
         oi.`customer_name` customerName,
         oi.`customer_code` customerCode,
         oi.`legal_name` legalName,
-        (SELECT CONCAT(ota.`describe`,' ',ota.`piece_amount`,'件',',','重量',ota.`weight`,'KG') FROM order_take_adr ota WHERE ota.`order_no` = ot.order_no AND ota.`types` = 1 ORDER BY ota.`id` LIMIT 1) goodsInfo,
-        (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`types` = 1 ORDER BY ota.`id` LIMIT 1) takeAddress,
-        (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`types` = 2 ORDER BY ota.`id` LIMIT 1) giveAddress,
+        (SELECT CONCAT(ota.`goods_desc`,' ',ota.`piece_amount`,'件',',','重量',ota.`weight`,'KG') FROM order_take_adr ota WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 1 ORDER BY ota.`id` LIMIT 1) goodsInfo,
+        (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 1 ORDER BY ota.`id` LIMIT 1) takeAddress,
+        (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 2 ORDER BY ota.`id` LIMIT 1) giveAddress,
         oi.`created_user` createdUser,
         DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%I:%S') createdTimeStr,
         (CASE  WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
@@ -156,7 +156,9 @@
         LEFT JOIN port_info p ON ot.port_code = p.id_code
         LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`
         WHERE (SELECT COUNT(1) FROM logistics_track lt WHERE lt.`main_order_id` = oi.`id` AND lt.`status`='C_5') =
-        (SELECT COUNT(1) FROM order_customs oc WHERE oc.`main_order_no` = oi.`order_no`) AND 1 = 1
+        (SELECT COUNT(1) FROM order_customs oc WHERE oc.`main_order_no` = oi.`order_no`)
+        AND (SELECT COUNT(1) FROM logistics_track lt WHERE lt.`main_order_id` = oi.`id` AND lt.`status`='C_5') > 0
+        AND 1 = 1
         <if test="form.orderNo != null and form.orderNo != ''">
             and oi.order_no = #{form.orderNo}
         </if>

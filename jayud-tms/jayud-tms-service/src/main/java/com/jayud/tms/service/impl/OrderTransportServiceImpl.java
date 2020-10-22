@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.tms.mapper.OrderTransportMapper;
@@ -60,9 +61,9 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         if(orderTransport == null){
             return false;
         }
-        List<InputOrderTakeAdrForm> orderTakeAdrForms1 = form.getOrderTakeAdrForms1();
-        List<InputOrderTakeAdrForm> orderTakeAdrForms2 = form.getOrderTakeAdrForms2();
-        List<InputOrderTakeAdrForm> orderTakeAdrForms = form.getOrderTakeAdrForms2();
+        List<InputOrderTakeAdrForm> orderTakeAdrForms1 = form.getTakeAdrForms1();
+        List<InputOrderTakeAdrForm> orderTakeAdrForms2 = form.getTakeAdrForms2();
+        List<InputOrderTakeAdrForm> orderTakeAdrForms = new ArrayList<>();
         orderTakeAdrForms.addAll(orderTakeAdrForms1);
         orderTakeAdrForms.addAll(orderTakeAdrForms2);
         if(orderTransport.getId() != null){//修改
@@ -94,10 +95,16 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         for (InputOrderTakeAdrForm inputOrderTakeAdrForm : orderTakeAdrForms) {
             OrderTakeAdr orderTakeAdr = ConvertUtil.convert(inputOrderTakeAdrForm,OrderTakeAdr.class);
             DeliveryAddress deliveryAddress = ConvertUtil.convert(inputOrderTakeAdrForm,DeliveryAddress.class);
+            deliveryAddress.setStatus(Integer.valueOf(CommonConstant.VALUE_0));
+            deliveryAddress.setCreateUser(getLoginUser());
             deliveryAddressService.save(deliveryAddress);
             orderTakeAdr.setDeliveryId(deliveryAddress.getId());
+            orderTakeAdr.setOrderNo(orderTransport.getOrderNo());
             orderTakeAdrService.save(orderTakeAdr);
         }
+        orderTransport.setCntrPic(StringUtils.getFileStr(form.getCntrPics()));
+        orderTransport.setCntrPicName(StringUtils.getFileNameStr(form.getCntrPics()));
+        orderTransport.setStatus(OrderStatusEnum.TMS_T_0.getCode());
         boolean result = orderTransportService.saveOrUpdate(orderTransport);
         return result;
     }
@@ -123,7 +130,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         Integer totalAmount = 0;//总件数
         Double totalWeight = 0.0;//总重量
         for (InputOrderTakeAdrVO inputOrderTakeAdrVO : inputOrderTakeAdrVOS) {
-            if(CommonConstant.VALUE_1.equals(inputOrderTakeAdrVO.getTypes())){//提货
+            if(CommonConstant.VALUE_1.equals(inputOrderTakeAdrVO.getOprType())){//提货
                 orderTakeAdrForms1.add(inputOrderTakeAdrVO);
                 totalAmount = totalAmount + inputOrderTakeAdrVO.getPieceAmount();
                 totalWeight = totalWeight + inputOrderTakeAdrVO.getWeight();

@@ -125,8 +125,8 @@ public class OrderInfoController {
             if(inputOrderTransportForm == null ||
             StringUtil.isNullOrEmpty(inputOrderTransportForm.getPortCode()) ||
             inputOrderTransportForm.getGoodsType() == null ||
-            StringUtil.isNullOrEmpty(inputOrderTransportForm.getVehicleType()) ||
-            StringUtil.isNullOrEmpty(inputOrderTransportForm.getVehicleSize()) ||
+            inputOrderTransportForm.getVehicleType() == null ||
+            inputOrderTransportForm.getVehicleSize() == null ||
             inputOrderTransportForm.getWarehouseInfoId() == null ||
             StringUtil.isNullOrEmpty(inputOrderTransportForm.getLegalName()) ||
             StringUtil.isNullOrEmpty(inputOrderTransportForm.getUnitCode())){

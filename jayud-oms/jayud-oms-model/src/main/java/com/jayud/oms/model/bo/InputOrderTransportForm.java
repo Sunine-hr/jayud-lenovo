@@ -30,10 +30,10 @@ public class InputOrderTransportForm {
     private String encode;
 
     @ApiModelProperty(value = "车型(1吨车 2柜车)",required = true)
-    private String vehicleType;
+    private Integer vehicleType;
 
     @ApiModelProperty(value = "车型(1-3T 2-5t 3-8T 4-10T)",required = true)
-    private String vehicleSize;
+    private Integer vehicleSize;
 
     @ApiModelProperty(value = "柜号")
     private String cntrNo;
@@ -72,9 +72,9 @@ public class InputOrderTransportForm {
     private String isHkClear;
 
     @ApiModelProperty(value = "提货地址")
-    private List<InputOrderTakeAdrForm> orderTakeAdrForms1 = new ArrayList<>();
+    private List<InputOrderTakeAdrForm> takeAdrForms1 = new ArrayList<>();
 
     @ApiModelProperty(value = "卸货地址")
-    private List<InputOrderTakeAdrForm> orderTakeAdrForms2 = new ArrayList<>();
+    private List<InputOrderTakeAdrForm> takeAdrForms2 = new ArrayList<>();
 
 }

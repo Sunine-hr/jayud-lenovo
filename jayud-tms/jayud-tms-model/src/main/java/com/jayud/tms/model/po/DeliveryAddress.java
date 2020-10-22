@@ -69,6 +69,9 @@ public class DeliveryAddress extends Model<DeliveryAddress> {
     @ApiModelProperty(value = "启用状态0-禁用，1-启用")
     private Integer status;
 
+    @ApiModelProperty(value = "创建人")
+    private String createUser;
+
 
     @Override
     protected Serializable pkVal() {

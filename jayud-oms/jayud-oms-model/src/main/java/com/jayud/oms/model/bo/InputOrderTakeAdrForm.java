@@ -1,5 +1,6 @@
 package com.jayud.oms.model.bo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -39,19 +40,20 @@ public class InputOrderTakeAdrForm {
     private Long deliveryId;
 
     @ApiModelProperty(value = "提货日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime takeTime;
 
     @ApiModelProperty(value = "货物描述")
-    private String describe;
+    private String goodsDesc;
 
-    @ApiModelProperty(value = "数量")
-    private Double amount;
+    @ApiModelProperty(value = "板数")
+    private Integer plateAmount;
 
-    @ApiModelProperty(value = "单位(1件 2其他)")
-    private Integer unit;
+    @ApiModelProperty(value = "件数")
+    private Integer pieceAmount;
 
     @ApiModelProperty(value = "重量")
-    private Integer weight;
+    private Double weight;
 
     @ApiModelProperty(value = "体积")
     private Double volume;
@@ -60,6 +62,6 @@ public class InputOrderTakeAdrForm {
     private String remarks;
 
     @ApiModelProperty(value = "类型(1提货 2收货)")
-    private Integer types;
+    private Integer oprType;
 
 }

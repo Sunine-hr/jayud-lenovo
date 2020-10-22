@@ -127,12 +127,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     public IPage<OrderInfoVO> findOrderInfoByPage(QueryOrderInfoForm form) {
         //定义分页参数
         Page<OrderInfoVO> page = new Page(form.getPageNum(),form.getPageSize());
-        //定义排序规则
-        page.addOrder(OrderItem.desc("temp.id"));
         IPage<OrderInfoVO> pageInfo = null;
         if(CommonConstant.GO_CUSTOMS_AUDIT.equals(form.getCmd())){
+            //定义排序规则
+            page.addOrder(OrderItem.desc("oi.id"));
             pageInfo = baseMapper.findGoCustomsAuditByPage(page,form);
         } else {
+            //定义排序规则
+            page.addOrder(OrderItem.desc("temp.id"));
             pageInfo = baseMapper.findOrderInfoByPage(page, form);
         }
         return pageInfo;
@@ -567,16 +569,19 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 orderTransportForm.setHkUnitCode(null);
                 orderTransportForm.setIsHkClear(null);
             }
+            orderTransportForm.setMainOrderNo(mainOrderNo);
             Boolean result = tmsClient.createOrderTransport(orderTransportForm).getData();
             if(!result){//调用失败
                 return false;
             }
             if(OrderStatusEnum.SZZZC.getCode().contains(selectedServer)){
                 //创建深圳中转仓信息 TODO
-            }else if(OrderStatusEnum.CKBG.getCode().contains(selectedServer)) {
+            }
+            if(OrderStatusEnum.CKBG.getCode().contains(selectedServer)) {
                 //创建报关信息
                 InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
                 orderCustomsForm.setClassCode(OrderStatusEnum.CKBG.getCode());
+                orderCustomsForm.setMainOrderNo(mainOrderNo);
                 result = customsClient.createOrderCustoms(orderCustomsForm).getData();
                 if(!result){//调用失败
                     return false;

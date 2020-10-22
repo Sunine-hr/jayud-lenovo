@@ -39,16 +39,16 @@ public class OrderTakeAdr extends Model<OrderTakeAdr> {
     private LocalDateTime takeTime;
 
     @ApiModelProperty(value = "货物描述")
-    private String describe;
+    private String goodsDesc;
 
     @ApiModelProperty(value = "板数")
-    private Double plateAmount;
+    private Integer plateAmount;
 
     @ApiModelProperty(value = "件数")
-    private Double pieceAmount;
+    private Integer pieceAmount;
 
     @ApiModelProperty(value = "重量")
-    private Integer weight;
+    private Double weight;
 
     @ApiModelProperty(value = "体积")
     private Double volume;
@@ -57,7 +57,7 @@ public class OrderTakeAdr extends Model<OrderTakeAdr> {
     private String remarks;
 
     @ApiModelProperty(value = "类型(1提货 2收货)")
-    private Integer types;
+    private Integer oprType;
 
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;

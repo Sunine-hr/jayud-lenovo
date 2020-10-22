@@ -79,6 +79,16 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 customs.setMainOrderNo(form.getMainOrderNo());
                 customs.setStatus(OrderStatusEnum.CUSTOMS_C_0.getCode());
                 customs.setCreatedUser(getLoginUser());
+                customs.setCntrPic(StringUtils.getFileStr(form.getCntrPics()));
+                customs.setCntrPicName(StringUtils.getFileNameStr(form.getCntrPics()));
+                customs.setDescription(StringUtils.getFileStr(subOrder.getFileViews()));
+                customs.setDescName(StringUtils.getFileNameStr(subOrder.getFileViews()));
+                customs.setEncodePic(StringUtils.getFileStr(form.getEncodePics()));
+                customs.setEncodePicName(StringUtils.getFileNameStr(form.getEncodePics()));
+                customs.setAirTransportPic(StringUtils.getFileStr(form.getAirTransportPics()));
+                customs.setAirTransPicName(StringUtils.getFileNameStr(form.getAirTransportPics()));
+                customs.setSeaTransportPic(StringUtils.getFileStr(form.getSeaTransportPics()));
+                customs.setSeaTransPicName(StringUtils.getFileNameStr(form.getSeaTransportPics()));
                 orderCustomsList.add(customs);
             }
             if(!orderCustomsList.isEmpty()) {

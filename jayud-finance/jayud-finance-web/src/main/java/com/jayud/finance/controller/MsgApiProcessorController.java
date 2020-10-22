@@ -97,7 +97,9 @@ public class MsgApiProcessorController {
             } else {
                 //基本校验完毕，调用方法进行处理，不需要比对，直接推送
                 log.info("正在处理报关单{}应收数据...", applyNo);
-                return customsFinanceService.pushReceivable(customsReceivable, null);
+                YunbaoguanPushProperties properties = new YunbaoguanPushProperties();
+                properties.setApplyNo(applyNo);
+                return customsFinanceService.pushReceivable(customsReceivable, properties);
             }
         } else {
             String grabError = String.format("应收单异常：第一条数据==>%s", first.toString());
@@ -137,8 +139,8 @@ public class MsgApiProcessorController {
             Optional<CustomsPayable> first = customsPayableForms.stream().filter(Objects::nonNull).findFirst();
             if (first.isPresent()) {
                 Map<FormIDEnum, List<String>> existingMap = checkForPayableDuplicateOrder(first.get().getCustomApplyNo());
+                applyNo = first.get().getCustomApplyNo();
                 if (CollectionUtil.isNotEmpty(checkForPayableDuplicateOrder(first.get().getCustomApplyNo()))) {
-                    applyNo = first.get().getCustomApplyNo();
                     if (allowDeletePush) {
                         log.info("应付单{}已经存在，但可以删单重推，正在处理...", applyNo);
                         YunbaoguanPushProperties properties = new YunbaoguanPushProperties();
@@ -157,7 +159,9 @@ public class MsgApiProcessorController {
                 } else {
                     //基础校验完毕,没有现存的订单，不用比对直接推送
                     log.info("正在处理报关单{}应付数据", applyNo);
-                    return customsFinanceService.pushPayable(customsPayableForms, null);
+                    YunbaoguanPushProperties properties = new YunbaoguanPushProperties();
+                    properties.setApplyNo(applyNo);
+                    return customsFinanceService.pushPayable(customsPayableForms, properties);
                 }
             } else {
                 String grabError = String.format("应收单异常：第一条数据==>%s", first.toString());

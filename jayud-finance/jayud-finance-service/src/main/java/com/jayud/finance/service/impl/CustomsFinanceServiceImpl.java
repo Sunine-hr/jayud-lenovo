@@ -929,7 +929,8 @@ class PushOtherReceivable implements Callable<String> {
                 root.put("FEntity", details);
                 root.put("FAMOUNTFOR", totalValue);
                 root.put("FTAXAMOUNT", totalValue);
-                root.put("FAR_OtherRemarks", String.format("%s : %s", customerName, applyNo));
+                root.put("FAR_OtherRemarks", customerName);
+                root.put("F_PCQE_Text", applyNo);
                 //root装载完毕，更新main
                 mainEntity.put("Model", root);
 
@@ -1061,7 +1062,8 @@ class PushOtherPayable implements Callable<String> {
                 root.put("FTOTALAMOUNTFOR_H", totalValue);
                 root.put("FNOTSETTLEAMOUNTFOR", totalValue);
                 root.put("FNOTAXAMOUNT", totalValue);
-                root.put("FRemarks", String.format("%s ：%s", customerName, applyNo));
+                root.put("FRemarks", customerName);
+                root.put("F_PCQE_Text", applyNo);
                 //root装载完毕，更新main
                 mainEntity.put("Model", root);
 

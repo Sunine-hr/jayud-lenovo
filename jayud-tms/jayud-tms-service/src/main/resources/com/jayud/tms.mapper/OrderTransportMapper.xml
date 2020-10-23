@@ -20,6 +20,7 @@
         <result column="is_load_goods" property="isLoadGoods" />
         <result column="is_unload_goods" property="isUnloadGoods" />
         <result column="unit_code" property="unitCode" />
+        <result column="legal_name" property="legalName" />
         <result column="hk_unit_code" property="hkUnitCode" />
         <result column="hk_legal_name" property="hkLegalName" />
         <result column="is_hk_clear" property="isHkClear" />
@@ -36,7 +37,7 @@
     <sql id="Base_Column_List">
         id, main_order_no, order_no, port_code, goods_type, vehicle_type, vehicle_size, cntr_no, cntr_pic, cntrPicName,
         warehouse_info_id, encode, status, is_load_goods, is_unload_goods,unit_code, hk_unit_code,hk_legal_name,is_hk_clear,
-        updated_time, updated_user, created_time,created_user,jiedan_user,jiedan_time,car_weigh_num
+        updated_time, updated_user, created_time,created_user,jiedan_user,jiedan_time,car_weigh_num,legal_name
     </sql>
 
     <select id="getOrderTransport"  resultType="com.jayud.tms.model.vo.InputOrderTransportVO" >
@@ -44,17 +45,20 @@
           ot.id,
           ot.`order_no` orderNo,
           ot.`jiedan_user` jiedanUser,
+          ot.`legal_name` legalName,
           DATE_FORMAT(ot.`jiedan_time`,'%Y-%m-%d %H:%I:%S') jiedanTimeStr,
           ot.`goods_type` goodsType,
+          ot.`port_code` portCode,
+          ot.`unit_code` unitCode,
           p.`name` portName,
           ot.`encode`,
           ot.`status`,
           osc.`hk_license_plate` hkLicensePlate,
           osc.`license_plate` licensePlate,
-          osc.`vehicle_size` vehicleSize,
-          osc.`vehicle_type` vehicleType,
-          osc.`cntr_no` cntrNo,
-          osc.`warehouse_info_id` warehouseInfoId,
+          ot.`vehicle_size` vehicleSize,
+          ot.`vehicle_type` vehicleType,
+          ot.`cntr_no` cntrNo,
+          ot.`warehouse_info_id` warehouseInfoId,
           si.`supplier_ch_name` supplierChName,
           '' customsNo,
           osc.`driver_name` driverName,

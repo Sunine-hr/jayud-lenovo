@@ -29,6 +29,15 @@ public class InputOrderTransportVO {
     @ApiModelProperty(value = "货物流向描述")
     private String goodsTypeDesc;
 
+    @ApiModelProperty("通关口岸CODE")
+    private String portCode;
+
+    @ApiModelProperty("结算单位CODE")
+    private String unitCode;
+
+    @ApiModelProperty("接单法人")
+    private String legalName;
+
     @ApiModelProperty(value = "通关口岸")
     private String portName;
 

@@ -30,8 +30,8 @@ public class MysqlGenerator {
                 "jayud-finance\\jayud-finance-service",
                 "jayud-finance\\jayud-finance-web"};
         for (String model : models) {
-            shell(model,"customs_finance_co_relation");
-            shell(model,"customs_finance_fee_relation");
+            shell(model,"customs_finance_push_log");
+//            shell(model,"customs_finance_fee_relation");
 
         }
     }

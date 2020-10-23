@@ -469,7 +469,7 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
                 item.setExpenseCategoryName(customsFeeItem.getCategory());
                 item.setExpenseTypeName(customsFeeItem.getType());
                 item.setPriceQty(BigDecimal.ONE);
-                item.setTaxPrice(new BigDecimal(customsPayable.getCost()));
+                item.setTaxPrice(new BigDecimal(payableForm.getCost()));
                 item.setTaxRate(BigDecimal.ZERO);
                 list.add(item);
             }

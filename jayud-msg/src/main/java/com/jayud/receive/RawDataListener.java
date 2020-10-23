@@ -101,9 +101,9 @@ public class RawDataListener {
         String value = (String) record.value();
         String key = (String) record.key();
         String topic = record.topic();
-
+        long offset = record.offset();
         //消费信息
-        log.info("kafka信息消费：{}{}{}", topic, key, value);
+        log.info("kafka信息消费：offset={} topic={} key={} value={}", offset, topic, key, value);
         if (StringUtils.isEmpty(key)) {
             return;
         }
@@ -122,6 +122,7 @@ public class RawDataListener {
             msg.put("msg", value);
             Boolean aBoolean = financeClient.savePayableBill(JSONObject.toJSONString(msg));
             System.out.println(aBoolean);
+
 //            doLog(commonResult);
         }
     }

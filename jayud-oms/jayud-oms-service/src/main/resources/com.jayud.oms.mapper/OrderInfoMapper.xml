@@ -52,6 +52,8 @@
         '' goodsInfo,
         '' takeAddress,
         '' giveAddress,
+        oi.`status` subCustomsStatus,
+        '' subTmsStatus,
         oi.`created_user` createdUser,
         DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%I:%S') createdTimeStr,
         (CASE  WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
@@ -68,6 +70,8 @@
         oi.`order_no` orderNo,
         ot.`goods_type` goodsType,
         ot.`port_code` portCode,
+        (SELECT oc.`status` FROM order_customs oc WHERE oc.`main_order_no`= oi.`order_no` LIMIT 1) subCustomsStatus,
+        ot.`status` subTmsStatus,
         p.`name` portName,
         oi.`status`,
         oi.`class_code` bizCode,

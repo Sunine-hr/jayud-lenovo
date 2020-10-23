@@ -63,6 +63,12 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "是否有费用详情")
     private boolean isCost;
 
+    @ApiModelProperty(value = "报关状态,用于标识驳回可编辑")
+    private String subCustomsStatus;
+
+    @ApiModelProperty(value = "中港运输状态,用于标识驳回可编辑")
+    private String subTmsStatus;
+
     public String getStatusDesc() {
         if(OrderStatusEnum.MAIN_1.getCode().equals(this.status)){
             statusDesc = OrderStatusEnum.MAIN_1.getDesc();

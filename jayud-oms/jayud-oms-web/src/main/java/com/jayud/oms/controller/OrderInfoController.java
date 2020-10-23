@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.*;
@@ -71,25 +72,28 @@ public class OrderInfoController {
            form.getOrderForm() == null || "".equals(form.getOrderForm())){
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
         }
-        if(CommonConstant.SUBMIT.equals(form.getCmd())){
-            //主订单参数校验
-            InputMainOrderForm inputMainOrderForm = form.getOrderForm();
-            if(inputMainOrderForm == null || StringUtil.isNullOrEmpty(inputMainOrderForm.getCustomerCode())
-              || StringUtil.isNullOrEmpty(inputMainOrderForm.getCustomerName())
-              || inputMainOrderForm.getBizUid() == null
-              || StringUtil.isNullOrEmpty(inputMainOrderForm.getBizUname())
-              || StringUtil.isNullOrEmpty(inputMainOrderForm.getLegalName())
-              || inputMainOrderForm.getBizBelongDepart() == null
-              || StringUtil.isNullOrEmpty(inputMainOrderForm.getBizCode())
-              || StringUtil.isNullOrEmpty(inputMainOrderForm.getClassCode())
-              || StringUtil.isNullOrEmpty(inputMainOrderForm.getSelectedServer())
-              || StringUtil.isNullOrEmpty(inputMainOrderForm.getUnitCode())
-              || StringUtil.isNullOrEmpty(inputMainOrderForm.getUnitAccount())
-              || StringUtil.isNullOrEmpty(inputMainOrderForm.getIsDataAll())){
-                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
-            }
-            //报关资料是否齐全 1-齐全 0-不齐全 齐全时校验报关数据
-            if(CommonConstant.VALUE_1.equals(inputMainOrderForm.getIsDataAll())) {
+        //主订单参数校验
+        InputMainOrderForm inputMainOrderForm = form.getOrderForm();
+        if (inputMainOrderForm == null || StringUtil.isNullOrEmpty(inputMainOrderForm.getCustomerCode())
+                || StringUtil.isNullOrEmpty(inputMainOrderForm.getCustomerName())
+                || inputMainOrderForm.getBizUid() == null
+                || StringUtil.isNullOrEmpty(inputMainOrderForm.getBizUname())
+                || StringUtil.isNullOrEmpty(inputMainOrderForm.getLegalName())
+                || inputMainOrderForm.getBizBelongDepart() == null
+                || StringUtil.isNullOrEmpty(inputMainOrderForm.getBizCode())
+                || StringUtil.isNullOrEmpty(inputMainOrderForm.getClassCode())
+                || StringUtil.isNullOrEmpty(inputMainOrderForm.getSelectedServer())
+                || StringUtil.isNullOrEmpty(inputMainOrderForm.getUnitCode())
+                || StringUtil.isNullOrEmpty(inputMainOrderForm.getUnitAccount())
+                || (StringUtil.isNullOrEmpty(inputMainOrderForm.getIsDataAll())
+                && inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode()))) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+        }
+        if(CommonConstant.SUBMIT.equals(form.getCmd())) {
+            //1.报关资料是否齐全 1-齐全 0-不齐全 齐全时校验报关数据
+            //2.纯报关时校验数据
+            if (CommonConstant.VALUE_1.equals(inputMainOrderForm.getIsDataAll()) ||
+                    OrderStatusEnum.CBG.getCode().equals(form.getOrderForm().getClassCode())) {
                 //报关订单参数校验
                 InputOrderCustomsForm inputOrderCustomsForm = form.getOrderCustomsForm();
                 if (inputOrderCustomsForm == null ||
@@ -122,30 +126,41 @@ public class OrderInfoController {
                 }
             }
             //中港订单参数校验
-            InputOrderTransportForm inputOrderTransportForm = form.getOrderTransportForm();
-            if(inputOrderTransportForm == null ||
-            StringUtil.isNullOrEmpty(inputOrderTransportForm.getPortCode()) ||
-            inputOrderTransportForm.getGoodsType() == null ||
-            inputOrderTransportForm.getVehicleType() == null ||
-            inputOrderTransportForm.getVehicleSize() == null ||
-            inputOrderTransportForm.getWarehouseInfoId() == null ||
-            StringUtil.isNullOrEmpty(inputOrderTransportForm.getLegalName()) ||
-            StringUtil.isNullOrEmpty(inputOrderTransportForm.getUnitCode())){
-                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
-            }
-            //中港订单提货收货信息参数校验
-            List<InputOrderTakeAdrForm> takeAdrForms1 = inputOrderTransportForm.getTakeAdrForms1();
-            List<InputOrderTakeAdrForm> takeAdrForms2 = inputOrderTransportForm.getTakeAdrForms2();
-            List<InputOrderTakeAdrForm> takeAdrForms = new ArrayList<>();
-            takeAdrForms.addAll(takeAdrForms1);
-            takeAdrForms.addAll(takeAdrForms2);
-            for (InputOrderTakeAdrForm inputOrderTakeAdr : takeAdrForms) {
-                if(StringUtil.isNullOrEmpty(inputOrderTakeAdr.getContacts()) || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getPhone())
-                  || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getCountryName()) || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getStateName())
-                  || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getCityName()) || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getAddress())
-                  || inputOrderTakeAdr.getTakeTime() == null || inputOrderTakeAdr.getPieceAmount() == null
-                  || inputOrderTakeAdr.getWeight() == null){
-                    return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+            if (OrderStatusEnum.ZGYS.getCode().equals(inputMainOrderForm.getClassCode())) {
+                //中港订单参数校验
+                InputOrderTransportForm inputOrderTransportForm = form.getOrderTransportForm();
+                if (inputOrderTransportForm == null ||
+                        StringUtil.isNullOrEmpty(inputOrderTransportForm.getPortCode()) ||
+                        inputOrderTransportForm.getGoodsType() == null ||
+                        inputOrderTransportForm.getVehicleType() == null ||
+                        inputOrderTransportForm.getVehicleSize() == null ||
+                        inputOrderTransportForm.getWarehouseInfoId() == null ||
+                        StringUtil.isNullOrEmpty(inputOrderTransportForm.getLegalName()) ||
+                        StringUtil.isNullOrEmpty(inputOrderTransportForm.getUnitCode())) {
+                    return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+                }
+                //中港订单提货收货信息参数校验
+                List<InputOrderTakeAdrForm> takeAdrForms1 = inputOrderTransportForm.getTakeAdrForms1();
+                List<InputOrderTakeAdrForm> takeAdrForms2 = inputOrderTransportForm.getTakeAdrForms2();
+                List<InputOrderTakeAdrForm> takeAdrForms = new ArrayList<>();
+                takeAdrForms.addAll(takeAdrForms1);
+                takeAdrForms.addAll(takeAdrForms2);
+                for (InputOrderTakeAdrForm inputOrderTakeAdr : takeAdrForms) {
+                    if (StringUtil.isNullOrEmpty(inputOrderTakeAdr.getContacts()) || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getPhone())
+                            || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getCountryName()) || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getStateName())
+                            || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getCityName()) || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getAddress())
+                            || inputOrderTakeAdr.getTakeTime() == null || inputOrderTakeAdr.getPieceAmount() == null
+                            || inputOrderTakeAdr.getWeight() == null) {
+                        return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+                    }
+                }
+                //清关参数校验
+                if(inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.XGQG.getCode())){
+                    if(StringUtil.isNullOrEmpty(inputOrderTransportForm.getHkLegalName()) ||
+                       StringUtil.isNullOrEmpty(inputOrderTransportForm.getHkUnitCode()) ||
+                       StringUtil.isNullOrEmpty(inputOrderTransportForm.getIsHkClear())){
+                        return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+                    }
                 }
             }
         }

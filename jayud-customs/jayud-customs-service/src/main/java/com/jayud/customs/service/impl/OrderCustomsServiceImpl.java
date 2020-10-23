@@ -150,6 +150,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
         if (orderCustomsVOS != null && orderCustomsVOS.size() > 0) {
             OrderCustomsVO orderCustomsVO = orderCustomsVOS.get(0);
             //设置纯报关头部分
+            inputOrderCustomsVO.setPortCode(orderCustomsVO.getPortCode());
             inputOrderCustomsVO.setPortName(orderCustomsVO.getPortName());
             inputOrderCustomsVO.setGoodsType(orderCustomsVO.getGoodsType());
             inputOrderCustomsVO.setCntrNo(orderCustomsVO.getCntrNo());

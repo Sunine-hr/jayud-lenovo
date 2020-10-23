@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,6 +132,21 @@ public class OrderInfoController {
             StringUtil.isNullOrEmpty(inputOrderTransportForm.getLegalName()) ||
             StringUtil.isNullOrEmpty(inputOrderTransportForm.getUnitCode())){
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+            }
+            //中港订单提货收货信息参数校验
+            List<InputOrderTakeAdrForm> takeAdrForms1 = inputOrderTransportForm.getTakeAdrForms1();
+            List<InputOrderTakeAdrForm> takeAdrForms2 = inputOrderTransportForm.getTakeAdrForms2();
+            List<InputOrderTakeAdrForm> takeAdrForms = new ArrayList<>();
+            takeAdrForms.addAll(takeAdrForms1);
+            takeAdrForms.addAll(takeAdrForms2);
+            for (InputOrderTakeAdrForm inputOrderTakeAdr : takeAdrForms) {
+                if(StringUtil.isNullOrEmpty(inputOrderTakeAdr.getContacts()) || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getPhone())
+                  || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getCountryName()) || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getStateName())
+                  || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getCityName()) || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getAddress())
+                  || inputOrderTakeAdr.getTakeTime() == null || inputOrderTakeAdr.getPieceAmount() == null
+                  || inputOrderTakeAdr.getWeight() == null){
+                    return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+                }
             }
         }
         boolean result = orderInfoService.createOrder(form);

@@ -89,7 +89,7 @@ public class InputOrderCustomsForm {
 
     @ApiModelProperty(value = "子订单",required = true)
     @NotEmpty(message = "subOrders is required")
-    private List<InputSubOrderCustomsForm> subOrders;
+    private List<InputSubOrderCustomsForm> subOrders = new ArrayList<>();
 
 
 }

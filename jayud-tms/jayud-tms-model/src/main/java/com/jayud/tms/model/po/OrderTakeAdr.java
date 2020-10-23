@@ -59,6 +59,9 @@ public class OrderTakeAdr extends Model<OrderTakeAdr> {
     @ApiModelProperty(value = "类型(1提货 2收货)")
     private Integer oprType;
 
+    @ApiModelProperty(value = "入仓号")
+    private String enterWarehouseNo;
+
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 

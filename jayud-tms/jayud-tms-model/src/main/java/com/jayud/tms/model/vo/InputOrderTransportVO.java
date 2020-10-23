@@ -50,6 +50,18 @@ public class InputOrderTransportVO {
     @ApiModelProperty(value = "车型(1-3T 2-5t 3-8T 4-10T)")
     private String vehicleSize;
 
+    @ApiModelProperty(value = "车型(1吨车 2柜车)")
+    private Integer vehicleType;
+
+    @ApiModelProperty(value = "中转仓库ID")
+    private Long warehouseInfoId;
+
+    @ApiModelProperty(value = "1-装货 0-不需要装货")
+    private String isLoadGoods;
+
+    @ApiModelProperty(value = "1-卸货 0-不需要卸货")
+    private String isUnloadGoods;
+
     @ApiModelProperty(value = "柜号")
     private String cntrNo;
 

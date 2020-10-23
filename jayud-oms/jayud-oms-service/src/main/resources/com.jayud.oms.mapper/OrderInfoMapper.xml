@@ -197,7 +197,12 @@
             oi.`biz_code` bizCode,
             (SELECT pb.name FROM product_biz pb WHERE pb.id_code = oi.`biz_code` LIMIT 1) bizDesc,
             oi.created_user createdUser,
-            DATE_FORMAT(oi.create_time,'%Y-%m-%d %H:%I:%S') createdTimeStr
+            DATE_FORMAT(oi.create_time,'%Y-%m-%d %H:%I:%S') createdTimeStr,
+            oi.`selected_server` selectedServer,
+            oi.`class_code` classCode,
+            oi.`unit_code` unitCode,
+            oi.`unit_account` unitAccount,
+            oi.`is_data_all` isDataAll
         FROM
             order_info oi WHERE 1 = 1
         <if test="idValue != null and idValue != ''">

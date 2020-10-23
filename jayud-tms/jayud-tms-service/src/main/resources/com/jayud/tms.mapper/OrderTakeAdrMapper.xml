@@ -17,11 +17,12 @@
         <result column="opr_type" property="oprType" />
         <result column="create_time" property="createTime" />
         <result column="create_user" property="createUser" />
+        <result column="enter_warehouse_no" property="enterWarehouseNo" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, order_no, delivery_id, take_time, goods_desc, plate_amount, piece_amount, weight, volume, remarks, opr_type, create_time, create_user
+        id, order_no, delivery_id, take_time, goods_desc, plate_amount, piece_amount, weight, volume, remarks, opr_type, enter_warehouse_no,create_time, create_user
     </sql>
 
     <select id="findTakeGoodsInfo"  resultType="com.jayud.tms.model.vo.InputOrderTakeAdrVO" >

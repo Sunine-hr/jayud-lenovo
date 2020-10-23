@@ -25,6 +25,7 @@ import com.jayud.tms.model.vo.SendCarPdfVO;
 import com.jayud.tms.service.IDeliveryAddressService;
 import com.jayud.tms.service.IOrderTakeAdrService;
 import com.jayud.tms.service.IOrderTransportService;
+import io.netty.util.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -65,8 +66,18 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         List<InputOrderTakeAdrForm> orderTakeAdrForms1 = form.getTakeAdrForms1();
         List<InputOrderTakeAdrForm> orderTakeAdrForms2 = form.getTakeAdrForms2();
         List<InputOrderTakeAdrForm> orderTakeAdrForms = new ArrayList<>();
-        orderTakeAdrForms.addAll(orderTakeAdrForms1);
-        orderTakeAdrForms.addAll(orderTakeAdrForms2);
+
+        //值为空的不进行保存
+        List<InputOrderTakeAdrForm> handleTakeAdrForms = new ArrayList<>();
+        handleTakeAdrForms.addAll(orderTakeAdrForms1);
+        handleTakeAdrForms.addAll(orderTakeAdrForms2);
+        for(InputOrderTakeAdrForm inputOrderTakeAdrForm : handleTakeAdrForms){
+            //如果收货提货信息的联系人都不填,不保存该信息,视为恶意操作
+            if(!StringUtil.isNullOrEmpty(inputOrderTakeAdrForm.getContacts())){
+                orderTakeAdrForms.add(inputOrderTakeAdrForm);
+            }
+        }
+
         if(orderTransport.getId() != null){//修改
             //修改时,先把以前的收货提货地址清空
             List<Long> ids = new ArrayList<>();
@@ -74,7 +85,9 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
                Long deliveryId = inputOrderTakeAdrForm.getDeliveryId();
                ids.add(deliveryId);
             }
-            deliveryAddressService.removeByIds(ids);//删除地址信息
+            if(ids.size() > 0) {
+                deliveryAddressService.removeByIds(ids);//删除地址信息
+            }
             QueryWrapper queryWrapper = new QueryWrapper();
             queryWrapper.eq("order_no",form.getOrderNo());
             orderTakeAdrService.remove(queryWrapper);//删除货物信息
@@ -124,6 +137,9 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     @Override
     public InputOrderTransportVO getOrderTransport(String mainOrderNo) {
         InputOrderTransportVO inputOrderTransportVO = baseMapper.getOrderTransport(mainOrderNo);
+        if(inputOrderTransportVO == null){
+            return new InputOrderTransportVO();
+        }
         //获取提货/送货地址
         List<InputOrderTakeAdrVO> inputOrderTakeAdrVOS = orderTakeAdrService.findTakeGoodsInfo(inputOrderTransportVO.getOrderNo());
         List<InputOrderTakeAdrVO> orderTakeAdrForms1 = new ArrayList<>();

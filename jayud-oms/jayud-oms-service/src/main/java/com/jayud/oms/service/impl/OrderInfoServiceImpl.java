@@ -164,12 +164,23 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             if (inputOrderVO == null) {
                 return false;
             }
-            List<OrderPaymentCost> orderPaymentCosts = new ArrayList<>();
-            List<OrderReceivableCost> orderReceivableCosts = new ArrayList<>();
             List<InputPaymentCostForm> paymentCostForms = form.getPaymentCostList();
             List<InputReceivableCostForm> receivableCostForms = form.getReceivableCostList();
-            orderPaymentCosts = ConvertUtil.convertList(paymentCostForms, OrderPaymentCost.class);
-            orderReceivableCosts = ConvertUtil.convertList(receivableCostForms, OrderReceivableCost.class);
+            List<InputPaymentCostForm> newPaymentCostForms = new ArrayList<>();
+            List<InputReceivableCostForm> newReceivableCostForms = new ArrayList<>();
+            //如果是暂存情况下,已提交的费用不再次处理
+            for (InputPaymentCostForm inputPaymentCost : paymentCostForms) {
+                if(!OrderStatusEnum.COST_2.getCode().equals(inputPaymentCost.getStatus())){
+                    newPaymentCostForms.add(inputPaymentCost);
+                }
+            }
+            for (InputReceivableCostForm inputReceivableCost : receivableCostForms) {
+                if(!OrderStatusEnum.COST_2.getCode().equals(inputReceivableCost.getStatus())){
+                    newReceivableCostForms.add(inputReceivableCost);
+                }
+            }
+            List<OrderPaymentCost> orderPaymentCosts = ConvertUtil.convertList(newPaymentCostForms, OrderPaymentCost.class);
+            List<OrderReceivableCost> orderReceivableCosts = ConvertUtil.convertList(newReceivableCostForms, OrderReceivableCost.class);
             //业务场景:暂存时提交所有未提交审核的信息,为了避免用户删除一条然后又添加的情况，每次暂存前先把原来未提交审核的清空
             if("preSubmit_main".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())){
                 QueryWrapper queryWrapper = new QueryWrapper();
@@ -220,10 +231,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Override
     public InputCostVO getCostDetail(GetCostDetailForm form) {
-        if(form.getCmd() == null || "".equals(form.getCmd()) || form.getMainOrderNo() == null ||
-           "".equals(form.getMainOrderNo())){
-            return null;//参数异常
-        }
         List<InputPaymentCostVO> inputPaymentCostVOS = paymentCostService.findPaymentCost(form);
         List<InputReceivableCostVO> inputReceivableCostVOS = receivableCostService.findReceivableCost(form);
         InputCostVO inputCostVO = new InputCostVO();

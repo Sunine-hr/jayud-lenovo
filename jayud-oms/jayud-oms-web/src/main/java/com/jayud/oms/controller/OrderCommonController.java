@@ -3,6 +3,8 @@ package com.jayud.oms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.OrderOprCmdEnum;
+import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
@@ -18,6 +20,7 @@ import com.jayud.oms.model.vo.ProductClassifyVO;
 import com.jayud.oms.service.ILogisticsTrackService;
 import com.jayud.oms.service.IOrderInfoService;
 import com.jayud.oms.service.IProductClassifyService;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,7 +108,12 @@ public class OrderCommonController {
 
     @ApiOperation(value = "费用详情,id= 主订单ID")
     @PostMapping(value = "/getCostDetail")
-    public CommonResult getCostDetail(@RequestBody GetCostDetailForm form) {
+    public CommonResult getCostDetail(@RequestBody @Valid GetCostDetailForm form) {
+        if(OrderOprCmdEnum.SUB_COST.getCode().equals(form.getCmd()) || OrderOprCmdEnum.SUB_COST_AUDIT.getCode().equals(form.getCmd())){
+            if(StringUtil.isNullOrEmpty(form.getSubOrderNo())){
+                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+            }
+        }        
         InputCostVO inputCostVO = orderInfoService.getCostDetail(form);
         return CommonResult.success(inputCostVO);
     }

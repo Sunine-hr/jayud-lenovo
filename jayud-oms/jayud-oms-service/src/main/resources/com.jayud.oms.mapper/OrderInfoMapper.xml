@@ -99,9 +99,9 @@
            and temp.`status` = 2
         </if>
         <if test="form.cmd == 'costAudit'">
-            and temp.`status` = 1
-            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = temp.orderNo)
-            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = temp.orderNo))
+            and temp.`status` IN (1,4)
+            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = temp.orderNo AND opc.`status` = '2')
+            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = temp.orderNo AND orc.`status` = '2'))
         </if>
         <if test="form.cmd == 'outCustomsRelease'">
             and temp.classCode = 'ZGYS' and temp.`status` = 1

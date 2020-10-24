@@ -52,5 +52,8 @@ public class InputPaymentCostForm {
     @ApiModelProperty(value = "备注")
     private String remarks;
 
+    @ApiModelProperty(value = "状态")
+    private String status;
+
 
 }

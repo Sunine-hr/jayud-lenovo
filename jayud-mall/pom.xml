@@ -15,7 +15,7 @@
     <modules>
         <module>jayud-mall-model</module>
         <module>jayud-mall-service</module>
-        <module>jayud-model-web</module>
+        <module>jayud-mall-web</module>
         <module>jayud-mall-admin</module>
     </modules>
     <name>jayud-mall</name>

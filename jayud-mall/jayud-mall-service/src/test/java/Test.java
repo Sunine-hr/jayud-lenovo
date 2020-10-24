@@ -1,5 +1,3 @@
-package com.jayud.mall;
-
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.common.util.Md5Utils;
 

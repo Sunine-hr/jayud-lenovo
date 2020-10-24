@@ -25,12 +25,11 @@ public class SystemUserController {
     ISystemUserService userService;
 
 
-//    @ApiOperation(value = "测试")
-//    @PostMapping(value = "hi")
-//    public String hi(){
-//
-//        return "hi mall admin";
-//    }
+    @ApiOperation(value = "测试")
+    @PostMapping(value = "hi")
+    public String hi(){
+        return "hi mall admin";
+    }
 
 
     @ApiOperation(value = "登录接口")

@@ -19,4 +19,7 @@ public class InitChangeStatusVO {
     @ApiModelProperty(value = "状态")
     private String status;
 
+    @ApiModelProperty(value = "是否需要录入费用")
+    private Boolean needInputCost;
+
 }

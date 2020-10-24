@@ -56,6 +56,6 @@ public interface CustomsClient {
      * @return
      */
     @RequestMapping(value = "/api/changeCustomsStatus")
-    ApiResult changeCustomsStatus(@RequestBody CustomsChangeStatusForm form);
+    ApiResult changeCustomsStatus(@RequestBody List<CustomsChangeStatusForm> form);
 
 }

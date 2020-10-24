@@ -22,11 +22,11 @@ public enum OrderStatusEnum {
     MAIN_2("2","草稿"),
     MAIN_3("3","关闭"),
     MAIN_4("4","待补全"),
-    MAIN_5("5","终止"),
+    MAIN_5("5","终止"),//废弃
 
     //所有主/子订单的状态
     CLOSE("CLOSE","关闭"),
-    STOP("STOP","终止"),
+    STOP("STOP","终止"),//废弃
 
 
     //纯报关子订单流程节点+纯报关子订单状态

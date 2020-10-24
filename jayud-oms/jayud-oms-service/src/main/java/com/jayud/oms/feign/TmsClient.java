@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 /**
  * oms模块消费tms模块的接口
  */
@@ -47,6 +49,6 @@ public interface TmsClient {
      * @return
      */
     @RequestMapping(value = "/api/changeCustomsStatus")
-    ApiResult changeTransportStatus(@RequestBody TmsChangeStatusForm form);
+    ApiResult changeTransportStatus(@RequestBody List<TmsChangeStatusForm> form);
 
 }

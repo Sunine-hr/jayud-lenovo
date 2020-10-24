@@ -92,6 +92,7 @@ public class ExternalApiController {
             initChangeStatusVO.setId(orderCustom.getId());
             initChangeStatusVO.setOrderNo(orderCustom.getOrderNo());
             initChangeStatusVO.setOrderType(CommonConstant.BG);
+            initChangeStatusVO.setNeedInputCost(orderCustom.getNeedInputCost());
             changeStatusVOS.add(initChangeStatusVO);
         }
         return ApiResult.ok(changeStatusVOS);
@@ -99,17 +100,17 @@ public class ExternalApiController {
 
     @ApiOperation(value = "修改报关状态")
     @RequestMapping(value = "/api/changeCustomsStatus")
-    ApiResult changeCustomsStatus(@RequestBody CustomsChangeStatusForm form){
-        List<OrderCustoms> orderCustomsList = new ArrayList<>();
-        for (String str : form.getOrderNos()) {
+    ApiResult changeCustomsStatus(@RequestBody List<CustomsChangeStatusForm> form){
+        for (CustomsChangeStatusForm customs : form) {
             OrderCustoms orderCustoms = new OrderCustoms();
-            orderCustoms.setOrderNo(str);
-            orderCustoms.setStatus(form.getStatus());
+            orderCustoms.setStatus(customs.getStatus());
+            orderCustoms.setNeedInputCost(customs.getNeedInputCost());
             orderCustoms.setUpdatedUser(String.valueOf(getLoginUser().getData()));
             orderCustoms.setUpdatedTime(LocalDateTime.now());
-            orderCustomsList.add(orderCustoms);
+            QueryWrapper<OrderCustoms> updateWrapper = new QueryWrapper<>();
+            updateWrapper.eq(SqlConstant.ORDER_NO,customs.getOrderNo());
+            orderCustomsService.update(orderCustoms,updateWrapper);
         }
-        orderCustomsService.saveOrUpdateBatch(orderCustomsList);
         return ApiResult.ok();
     }
 

@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 
 @Data
@@ -16,6 +17,10 @@ public class ConfirmChangeStatusForm {
     @ApiModelProperty(value = "订单类型",required = true)
     @NotEmpty(message = "orderType is required")
     private String orderType;
+
+    @ApiModelProperty(value = "是否需要录入费用",required = true)
+    @NotNull(message = "needInputCost is required")
+    private Boolean needInputCost;
 
 
 }

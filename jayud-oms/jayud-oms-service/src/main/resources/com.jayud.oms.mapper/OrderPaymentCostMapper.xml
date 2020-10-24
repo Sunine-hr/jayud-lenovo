@@ -54,13 +54,13 @@
         order_payment_cost opc
         where opc.`main_order_no` = #{form.mainOrderNo}
         <if test="form.cmd == 'main_cost_audit'">
-            and opc.`status` = '2'
+            and opc.`status` in ('2','3')
         </if>
         <if test="form.cmd == 'sub_cost'">
             and opc.`order_no` != '' and opc.`order_no` is not null
         </if>
         <if test="form.cmd == 'sub_cost_audit'">
-            and opc.`status` = '2'
+            and opc.`status` in ('2','3')
             and opc.`order_no` != '' and opc.`order_no` is not null
         </if>
     </select>

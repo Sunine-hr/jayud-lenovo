@@ -107,6 +107,9 @@ public class OrderTransport extends Model<OrderTransport> {
     @ApiModelProperty(value = "创建用户")
     private String updatedUser;
 
+    @ApiModelProperty(value = "是否需要录入费用")
+    private Boolean needInputCost;
+
 
     @Override
     protected Serializable pkVal() {

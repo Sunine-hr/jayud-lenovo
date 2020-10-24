@@ -3,17 +3,18 @@ package com.jayud.oms.model.bo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.List;
-
 
 @Data
 public class CustomsChangeStatusForm {
 
     @ApiModelProperty(value = "子订单号")
-    private List<String> orderNos;
+    private String orderNo;
 
     @ApiModelProperty(value = "状态")
     private String status;
+
+    @ApiModelProperty(value = "是否需要录入费用")
+    private Boolean needInputCost;
 
 
 }

@@ -134,6 +134,9 @@ public class OrderCustoms extends Model<OrderCustoms> {
     @ApiModelProperty(value = "报关类型 CBG-纯报关 CKBG-出口报关")
     private String classCode;
 
+    @ApiModelProperty(value = "是否需要录入费用")
+    private Boolean needInputCost;
+
 
     @Override
     protected Serializable pkVal() {

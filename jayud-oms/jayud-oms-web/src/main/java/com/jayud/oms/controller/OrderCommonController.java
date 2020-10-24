@@ -113,7 +113,7 @@ public class OrderCommonController {
             if(StringUtil.isNullOrEmpty(form.getSubOrderNo())){
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
             }
-        }        
+        }
         InputCostVO inputCostVO = orderInfoService.getCostDetail(form);
         return CommonResult.success(inputCostVO);
     }
@@ -128,7 +128,7 @@ public class OrderCommonController {
            form.getReceivableCosts() == null ){
             return CommonResult.error(400,"参数不合法");
         }
-        if((form.getPaymentCosts().size() + form.getPaymentCosts().size()) == 0){
+        if((form.getPaymentCosts().size() + form.getReceivableCosts().size()) == 0){
             return CommonResult.error(400,"参数不合法");
         }
         for(OrderPaymentCost paymentCost : form.getPaymentCosts()){

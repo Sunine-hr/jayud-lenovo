@@ -92,6 +92,9 @@ public class OrderInfo extends Model<OrderInfo> {
     @ApiModelProperty(value = "更新人")
     private String upUser;
 
+    @ApiModelProperty(value = "是否需要录入费用")
+    private Boolean needInputCost;
+
 
     @Override
     protected Serializable pkVal() {

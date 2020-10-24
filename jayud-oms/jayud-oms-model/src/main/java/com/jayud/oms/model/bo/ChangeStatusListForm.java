@@ -3,7 +3,6 @@ package com.jayud.oms.model.bo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
@@ -14,7 +13,7 @@ import java.util.List;
 public class ChangeStatusListForm {
 
     @ApiModelProperty(value = "是否全勾 true-否 false-是", required = true)
-    @NotEmpty(message = "checkAll is required")
+    @NotNull(message = "checkAll is required")
     private Boolean checkAll;
 
     @ApiModelProperty(value = "主订单ID", required = true)
@@ -22,7 +21,7 @@ public class ChangeStatusListForm {
     private Long mainOrderId;
 
     @ApiModelProperty(value = "状态",required = true)
-    @Pattern(regexp = "(CLOSE|STOP)", message = "只允许填写CLOSE/STOP")
+    @Pattern(regexp = "(CLOSE)", message = "只允许填写CLOSE")
     private String status;
 
     @ApiModelProperty(value = "更改状态所需参数集合", required = true)

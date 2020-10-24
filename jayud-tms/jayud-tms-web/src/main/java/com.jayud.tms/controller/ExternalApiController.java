@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -63,6 +62,7 @@ public class ExternalApiController {
             initChangeStatusVO.setOrderNo(orderTransport.getOrderNo());
             initChangeStatusVO.setOrderType(CommonConstant.ZGYS);
             initChangeStatusVO.setStatus(orderTransport.getStatus());
+            initChangeStatusVO.setNeedInputCost(orderTransport.getNeedInputCost());
             return ApiResult.ok(initChangeStatusVO);
         }
         return ApiResult.error();
@@ -70,17 +70,17 @@ public class ExternalApiController {
 
     @ApiOperation(value = "更改中港单状态")
     @RequestMapping(value = "/api/changeCustomsStatus")
-    ApiResult changeTransportStatus(@RequestBody TmsChangeStatusForm form){
-        List<OrderTransport> orderTransports = new ArrayList<>();
-        for (String str : form.getOrderNos()) {
+    ApiResult changeTransportStatus(@RequestBody List<TmsChangeStatusForm> form){
+        for (TmsChangeStatusForm tms : form) {
             OrderTransport orderTransport = new OrderTransport();
-            orderTransport.setOrderNo(str);
-            orderTransport.setStatus(form.getStatus());
+            orderTransport.setStatus(tms.getStatus());
+            orderTransport.setNeedInputCost(tms.getNeedInputCost());
             orderTransport.setUpdatedUser(String.valueOf(getLoginUser().getData()));
             orderTransport.setUpdatedTime(LocalDateTime.now());
-            orderTransports.add(orderTransport);
+            QueryWrapper<OrderTransport> updateWrapper = new QueryWrapper<>();
+            updateWrapper.eq(SqlConstant.ORDER_NO,tms.getOrderNo());
+            orderTransportService.update(orderTransport,updateWrapper);
         }
-        orderTransportService.saveOrUpdateBatch(orderTransports);
         return ApiResult.ok();
     }
 

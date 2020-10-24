@@ -52,12 +52,15 @@
         FROM
         order_receivable_cost orc
         where orc.`main_order_no` = #{form.mainOrderNo}
-        <if test="form.cmd == 'main_cost'">
-            and (orc.`order_no` = '' or orc.`order_no` is null)
+        <if test="form.cmd == 'main_cost_audit'">
+            and orc.`status` in ('2','3')
         </if>
         <if test="form.cmd == 'sub_cost'">
             and orc.`order_no` != '' and orc.`order_no` is not null
         </if>
-
+        <if test="form.cmd == 'sub_cost_audit'">
+            and orc.`order_no` != '' and orc.`order_no` is not null
+            and orc.`status` in ('2','3')
+        </if>
     </select>
 </mapper>

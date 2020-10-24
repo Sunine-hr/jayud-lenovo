@@ -13,7 +13,7 @@ import java.io.Serializable;
  * @Date: 2020-05-28 16:34
  */
 @Data
-@K3Entity(value = {"FBillNo"}, formId = FormIDEnum.RECEIVABLE_OTHER, fName = "FAR_OtherRemarks")
+@K3Entity(value = {"FBillNo"}, formId = FormIDEnum.RECEIVABLE_OTHER, fName = "F_PCQE_Text")
 public class ReceivableOther implements InvoiceBase, Serializable {
     private static final long serialVersionUID = 7438064471906073583L;
     String FBillNo;

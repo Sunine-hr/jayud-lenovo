@@ -2,6 +2,7 @@ package com.jayud.customs.aspects;
 
 import cn.hutool.json.JSONUtil;
 import com.jayud.customs.model.po.GeneralApiLog;
+import com.jayud.customs.service.IGeneralApiLogService;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -9,6 +10,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +23,8 @@ import java.lang.reflect.Parameter;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 统一接口日志切面
@@ -40,8 +43,8 @@ import java.util.*;
 @Order(1)
 @Slf4j
 public class GeneralAPILogAspect {
-//    @Autowired
-//    GeneralLogMsgClient msgClient;
+    @Autowired
+    IGeneralApiLogService logService;
 
     @Pointcut("@annotation(com.jayud.customs.annotations.APILog)")
     public void catchLog() {
@@ -57,6 +60,7 @@ public class GeneralAPILogAspect {
 
         //获取请求方法名
         String methodName = process.getSignature().getName();
+        String moduleName = process.getTarget().getClass().getName();
         //获取请求入参
         Object[] params = process.getArgs();
         //获取签名
@@ -76,6 +80,7 @@ public class GeneralAPILogAspect {
 
         GeneralApiLog apiLog = new GeneralApiLog();
         apiLog.setMethod(methodName);
+        apiLog.setModuleName(moduleName);
         apiLog.setRequestJson(requestParameterString);
         apiLog.setResultJson(resultParameterString);
         //todo 获取远程访问者ID
@@ -88,6 +93,7 @@ public class GeneralAPILogAspect {
 
         //todo 配置kafka异步处理
 //        msgClient.saveLog(JSONUtil.toJsonStr(apiLog));
+        logService.save(apiLog);
         return Result;
     }
 

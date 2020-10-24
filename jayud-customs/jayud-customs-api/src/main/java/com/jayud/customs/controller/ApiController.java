@@ -200,7 +200,7 @@ public class ApiController {
                 }
                 String cusCode9 = cuScode.substring(9);
                 String passtime = item.getAttribute("passtime");
-                if (DateUtil.parseDateTime(passtime).isAfter(DateUtil.parseDateTime("2020-10-21 00:00:00"))) {
+                if (DateUtil.parseDateTime(passtime).isAfter(DateUtil.parseDateTime("2020-10-01 00:00:00"))) {
                     String thisRow = "i= " + i + "    passtime=" + passtime + "    CusCode18=" + cuScode + "    CusCode9=" + cusCode9;
                     infoList.add(thisRow);
                     System.out.println(thisRow);
@@ -211,7 +211,7 @@ public class ApiController {
 //                    if (count == 15) {
 //                        break;
 //                    }
-                    Thread.sleep(3000);
+                    Thread.sleep(4000);
                 }
 
             }

@@ -4,33 +4,33 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.SystemUser">
-        <id column="id" property="id" />
-        <result column="name" property="name" />
-        <result column="password" property="password" />
-        <result column="user_name" property="userName" />
-        <result column="en_user_name" property="enUserName" />
-        <result column="phone" property="phone" />
-        <result column="email" property="email" />
-        <result column="is_department_charge" property="isDepartmentCharge" />
-        <result column="department_id" property="departmentId" />
-        <result column="work_id" property="workId" />
-        <result column="work_name" property="workName" />
-        <result column="company_id" property="companyId" />
-        <result column="superior_id" property="superiorId" />
-        <result column="login_time" property="loginTime" />
-        <result column="status" property="status" />
-        <result column="audit_status" property="auditStatus" />
-        <result column="user_type" property="userType" />
-        <result column="note" property="note" />
-        <result column="created_user" property="createdUser" />
-        <result column="created_time" property="createdTime" />
-        <result column="updated_time" property="updatedTime" />
-        <result column="updated_user" property="updatedUser" />
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="password" property="password"/>
+        <result column="user_name" property="userName"/>
+        <result column="en_user_name" property="enUserName"/>
+        <result column="phone" property="phone"/>
+        <result column="email" property="email"/>
+        <result column="is_department_charge" property="isDepartmentCharge"/>
+        <result column="department_id" property="departmentId"/>
+        <result column="work_id" property="workId"/>
+        <result column="work_name" property="workName"/>
+        <result column="company_id" property="companyId"/>
+        <result column="superior_id" property="superiorId"/>
+        <result column="login_time" property="loginTime"/>
+        <result column="status" property="status"/>
+        <result column="audit_status" property="auditStatus"/>
+        <result column="user_type" property="userType"/>
+        <result column="note" property="note"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="updated_user" property="updatedUser"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, name, password, user_name, en_user_name, phone, email, is_department_charge, department_id, work_id, work_name, company_id, superior_id, login_time, status, audit_status, user_type, note, created_user, created_time, updated_time, updated_user
+        id, `name`, password, user_name, en_user_name, phone, email, is_department_charge, department_id, work_id, work_name, company_id, superior_id, login_time, status, audit_status, user_type, note, created_user, created_time, updated_time, updated_user
     </sql>
 
     <select id="findSystemUserByLoginname" resultType="com.jayud.mall.model.vo.SystemUserVO">
@@ -39,6 +39,31 @@
         FROM system_user
         WHERE status = 1
         AND phone=#{loginname} OR email=#{loginname}
+    </select>
+
+    <select id="getUserList" resultType="com.jayud.mall.model.vo.SystemUserVO">
+        select
+        <include refid="Base_Column_List"/>
+        from system_user
+    </select>
+
+
+    <insert id="insertUser" parameterType="com.jayud.mall.model.bo.SaveUserForm">
+        INSERT INTO system_user (name, dept, website, phone) VALUES (#{name}, #{dept}, #{website}, #{phone})
+    </insert>
+
+    <update id="updateUser" parameterType="com.jayud.mall.model.bo.SaveUserForm">
+        UPDATE system_user SET name = #{name}, dept = #{dept}, website = #{website}, phone = #{phone} where id = #{id}
+    </update>
+
+    <delete id="deleteUser" parameterType="int">
+        delete from system_user where id = #{id}
+    </delete>
+
+    <select id="getUser" parameterType="int" resultType="com.jayud.mall.model.vo.SystemUserVO">
+        select
+        <include refid="Base_Column_List"/>
+        from system_user where id = #{id}
     </select>
 
 </mapper>

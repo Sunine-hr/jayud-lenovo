@@ -10,7 +10,7 @@
         <result column="name" property="name" />
         <result column="level" property="level" />
         <result column="sort" property="sort" />
-        <result column="`key`" property="key" />
+        <result column="key" property="key" />
         <result column="icon" property="icon" />
         <result column="hidden" property="hidden" />
         <result column="router" property="router" />

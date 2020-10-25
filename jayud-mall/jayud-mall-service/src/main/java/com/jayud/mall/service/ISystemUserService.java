@@ -15,5 +15,13 @@ import com.jayud.mall.model.vo.SystemUserVO;
  */
 public interface ISystemUserService extends IService<SystemUser> {
 
+    /**
+     * 用户登录
+     * @param loginForm
+     * @return
+     */
     SystemUserVO login(SystemUserLoginForm loginForm);
+
+
+
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.po.SystemMenu;
 import com.jayud.mall.model.vo.SystemMenuVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ import java.util.List;
  * @since 2020-10-24
  */
 @Mapper
+@Component
 public interface SystemMenuMapper extends BaseMapper<SystemMenu> {
 
     List<SystemMenuVO> findAllMenuVO();

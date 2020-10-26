@@ -33,6 +33,7 @@
         id, `name`, password, user_name, en_user_name, phone, email, is_department_charge, department_id, work_id, work_name, company_id, superior_id, login_time, status, audit_status, user_type, note, created_user, created_time, updated_time, updated_user
     </sql>
 
+    <!--查询登录用户-->
     <select id="findSystemUserByLoginname" resultType="com.jayud.mall.model.vo.SystemUserVO">
         SELECT
         <include refid="Base_Column_List"/>
@@ -41,29 +42,106 @@
         AND phone=#{loginname} OR email=#{loginname}
     </select>
 
+    <!--获取所有用户-->
     <select id="getUserList" resultType="com.jayud.mall.model.vo.SystemUserVO">
         select
         <include refid="Base_Column_List"/>
         from system_user
     </select>
 
-
+    <!--插入用户-->
     <insert id="insertUser" parameterType="com.jayud.mall.model.bo.SaveUserForm">
-        INSERT INTO system_user (name, dept, website, phone) VALUES (#{name}, #{dept}, #{website}, #{phone})
+        INSERT INTO system_user (user_name, company_id, en_user_name, phone, email)
+        VALUES (#{userName}, #{companyId}, #{enUserName}, #{phone}, #{email})
     </insert>
 
+    <!--修改用户-->
     <update id="updateUser" parameterType="com.jayud.mall.model.bo.SaveUserForm">
-        UPDATE system_user SET name = #{name}, dept = #{dept}, website = #{website}, phone = #{phone} where id = #{id}
+        UPDATE system_user
+        SET
+            user_name = #{userName},
+            company_id = #{companyId},
+            en_user_name = #{enUserName},
+            phone = #{phone},
+            email = #{email}
+        where id = #{id}
     </update>
 
-    <delete id="deleteUser" parameterType="int">
+    <!--删除用户-->
+    <delete id="deleteUser" parameterType="Long">
         delete from system_user where id = #{id}
     </delete>
 
-    <select id="getUser" parameterType="int" resultType="com.jayud.mall.model.vo.SystemUserVO">
+    <!--根据用户Id查询用户-->
+    <select id="getUser" parameterType="Long" resultType="com.jayud.mall.model.vo.SystemUserVO">
         select
         <include refid="Base_Column_List"/>
         from system_user where id = #{id}
     </select>
+
+    <!--禁用用户-->
+    <update id="disableUser" parameterType="Long">
+        UPDATE system_user
+        SET
+            status = 0
+        where id = #{id}
+    </update>
+
+    <!--启用用户-->
+    <update id="enableUser" parameterType="Long">
+        UPDATE system_user
+        SET
+            status = 1
+        where id = #{id}
+    </update>
+
+    <!--重置密码-->
+    <update id="resetPassword" parameterType="com.jayud.mall.model.bo.ResetUserPwdForm">
+        UPDATE system_user
+        SET
+            password = #{password}
+        where id = #{id}
+    </update>
+
+    <!--查询用户分页-->
+    <select id="findUserByPage" parameterType="com.jayud.mall.model.bo.QueryUserForm"
+            resultType="com.jayud.mall.model.vo.SystemUserVO" >
+        SELECT
+            su.id,
+            su.`name`,
+            su.`password`,
+            su.user_name,
+            su.en_user_name,
+            su.phone,
+            su.email,
+            su.is_department_charge,
+            su.department_id,
+            su.work_id,
+            su.work_name,
+            su.company_id,
+            su.superior_id,
+            su.login_time,
+            su.`status`,
+            su.audit_status,
+            su.user_type,
+            su.note,
+            su.created_user,
+            su.created_time,
+            su.updated_time,
+            su.updated_user
+        FROM
+            system_user su
+        WHERE
+            1 = 1
+        <if test="form.userName != null and form.userName != ''">
+            AND su.user_name LIKE concat('%',#{form.userName},'%')
+        </if>
+        <if test="form.status != null and form.status != ''">
+            AND su.`status` = #{form.status}
+        </if>
+        GROUP BY
+            su.`id`
+    </select>
+
 
 </mapper>

@@ -1,8 +1,13 @@
 package com.jayud.mall.service.impl;
 
 import com.alibaba.nacos.common.util.Md5Utils;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.mall.mapper.SystemUserMapper;
+import com.jayud.mall.model.bo.QueryUserForm;
+import com.jayud.mall.model.bo.ResetUserPwdForm;
+import com.jayud.mall.model.bo.SaveUserForm;
 import com.jayud.mall.model.bo.SystemUserLoginForm;
 import com.jayud.mall.model.po.SystemUser;
 import com.jayud.mall.model.vo.SystemUserVO;
@@ -10,7 +15,7 @@ import com.jayud.mall.service.ISystemUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 /**
  * <p>
@@ -43,4 +48,60 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         }
         return null;
     }
+
+    @Override
+    public List<SystemUserVO> getUserList() {
+        return systemUserMapper.getUserList();
+    }
+
+    @Override
+    public void insertUser(SaveUserForm user) {
+        systemUserMapper.insertUser(user);
+
+    }
+
+    @Override
+    public void updateUser(SaveUserForm user) {
+        systemUserMapper.updateUser(user);
+
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        systemUserMapper.deleteUser(id);
+    }
+
+    @Override
+    public SystemUserVO getUser(Long id) {
+        return systemUserMapper.getUser(id);
+    }
+
+    @Override
+    public void disableUser(Long id) {
+        systemUserMapper.disableUser(id);
+    }
+
+    @Override
+    public void enableUser(Long id) {
+        systemUserMapper.enableUser(id);
+    }
+
+    @Override
+    public void resetPassword(Long id) {
+        String password = "123456";
+        ResetUserPwdForm resetUserPwdForm = new ResetUserPwdForm();
+        resetUserPwdForm.setId(id);
+        resetUserPwdForm.setPassword(Md5Utils.getMD5(password.getBytes()).toUpperCase());
+        systemUserMapper.resetPassword(resetUserPwdForm);
+    }
+
+    @Override
+    public IPage<SystemUserVO> findUserByPage(QueryUserForm form) {
+        //定义分页参数
+        Page<SystemUserVO> page = new Page(form.getPageNum(),form.getPageSize());
+        IPage<SystemUserVO> pageInfo = baseMapper.findUserByPage(page, form);
+        return pageInfo;
+    }
+
+
 }

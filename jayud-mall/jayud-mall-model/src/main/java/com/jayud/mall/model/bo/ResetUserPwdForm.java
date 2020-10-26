@@ -6,16 +6,13 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 
 /**
- * @author mfc
- * @description:
- * @date 2020/10/23 15:50
+ * 重置密码表单
  */
 @Data
-public class SystemUserLoginForm {
+public class ResetUserPwdForm {
 
-    @ApiModelProperty(value = "登录名（手机号／邮箱）", required = true)
-    @NotEmpty(message = "登录名（手机号／邮箱）不能为空")
-    private String loginname;
+    @ApiModelProperty(value = "用户ID 修改时必传")
+    private Long id;
 
     @ApiModelProperty(value = "密码", required = true)
     @NotEmpty(message = "密码不能为空")

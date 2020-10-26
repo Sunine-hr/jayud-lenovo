@@ -137,6 +137,12 @@ public class OrderCustoms extends Model<OrderCustoms> {
     @ApiModelProperty(value = "是否需要录入费用")
     private Boolean needInputCost;
 
+    @ApiModelProperty(value = "接单人")
+    private String jiedanUser;
+
+    @ApiModelProperty(value = "接单时间")
+    private LocalDateTime jiedanTime;
+
 
     @Override
     protected Serializable pkVal() {

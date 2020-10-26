@@ -133,6 +133,27 @@
             ota.`weight` FROM order_take_adr ota LEFT JOIN delivery_address da
             ON ota.`delivery_id` = da.`id` AND ota.`opr_type` = '2' ) s
             ON s.order_no = ot.`order_no` where 1 = 1
+        <if test="form.orderNo != null and form.orderNo != ''">
+            and ot.order_no = #{form.orderNo}
+        </if>
+        <if test="form.portCode != null and form.portCode != ''">
+            and ot.port_code = #{form.portCode}
+        </if>
+        <if test="form.classCode != null and form.classCode !=''">
+            and oi.class_code = #{form.classCode}
+        </if>
+        <if test="form.customerName != null and form.customerName !=''">
+            and oi.customer_name like concat('%',#{form.customerName},'%')
+        </if>
+        <if test="form.legalName != null and form.legalName !=''">
+            and ot.legal_name like concat('%',#{form.legalName},'%')
+        </if>
+        <if test="form.endCreatedTime != null and form.endCreatedTime !=''">
+            and DATE_FORMAT(ot.`created_time`,'%Y-%m-%d %H:%i:%S') <![CDATA[<=]]> #{form.endCreatedTime}
+        </if>
+        <if test="form.beginCreatedTime != null and form.beginCreatedTime !=''">
+            and DATE_FORMAT(ot.`created_time`,'%Y-%m-%d %H:%i:%S') <![CDATA[>=]]> #{form.beginCreatedTime}
+        </if>
         <if test="form.cmd == 'T_1'">
             AND ot.`status` = 'T_0'
         </if>
@@ -144,6 +165,9 @@
         </if>
         <if test="form.cmd == 'T_3_1'">
             AND ot.`status` == 'T_3_1'
+        </if>
+        <if test="form.cmd == 'T_4'">
+            AND ot.`status` == 'T_3'
         </if>
         <if test="form.cmd == 'T_5'">
             AND ot.`status` = 'T_4'

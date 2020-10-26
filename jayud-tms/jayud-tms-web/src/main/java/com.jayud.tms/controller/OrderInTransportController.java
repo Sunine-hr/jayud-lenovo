@@ -12,6 +12,7 @@ import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.model.bo.*;
@@ -58,7 +59,7 @@ public class OrderInTransportController {
      * @param form
      * @return
      */
-    @ApiOperation(value = "确认接单")
+    @ApiOperation(value = "确认接单/车辆提货/车辆过磅/香港清关/车辆入仓/车辆出仓/车辆派送/确认签收")
     @PostMapping(value = "/oprOrderTransport")
     public CommonResult oprOrderTransport(@RequestBody OprStatusForm form) {
         if(form.getOrderId() == null || form.getMainOrderId() == null ||
@@ -72,6 +73,8 @@ public class OrderInTransportController {
         orderTransport.setUpdatedUser(getLoginUser());
         if(CommonConstant.COMFIRM_ORDER.equals(form.getCmd())){//确认接单
             orderTransport.setStatus(OrderStatusEnum.TMS_T_1.getCode());
+            orderTransport.setJiedanTime(DateUtils.str2LocalDateTime(form.getOperatorTime(),DateUtils.DATE_TIME_PATTERN));
+            orderTransport.setJiedanUser(form.getOperatorUser());
 
             form.setStatus(OrderStatusEnum.TMS_T_1.getCode());
             form.setStatusName(OrderStatusEnum.TMS_T_1.getDesc());
@@ -108,7 +111,7 @@ public class OrderInTransportController {
 
             form.setStatus(OrderStatusEnum.TMS_T_14.getCode());
             form.setStatusName(OrderStatusEnum.TMS_T_14.getDesc());
-        }else if(CommonConstant.COMFIRM_SIGN_IN.equals(form.getCmd())){//确认签收
+        }else if(CommonConstant.CONFIRM_SIGN_IN.equals(form.getCmd())){//确认签收
             orderTransport.setStatus(OrderStatusEnum.TMS_T_15.getCode());
 
             form.setStatus(OrderStatusEnum.TMS_T_15.getCode());
@@ -131,11 +134,12 @@ public class OrderInTransportController {
      * @param form
      * @return
      */
-    @ApiOperation(value = "通关前审核")
+    @ApiOperation(value = "通关前审核/通关前复核/车辆通关")
     @PostMapping(value = "/auditOrderTransport")
     public CommonResult auditOrderTransport(@RequestBody OprStatusForm form) {
-        if (form.getOrderId() == null || form.getMainOrderId() == null ||
-                StringUtil.isNullOrEmpty(form.getStatus()) || StringUtil.isNullOrEmpty(form.getCmd())) {
+        if (form.getMainOrderId() == null || StringUtil.isNullOrEmpty(form.getStatus()) ||
+                StringUtil.isNullOrEmpty(form.getCmd()) ||
+                (!CommonConstant.GO_CUSTOMS_AUDIT.equals(form.getCmd()) && form.getOrderId() == null)) {
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
         OrderTransport orderTransport = new OrderTransport();
@@ -148,6 +152,8 @@ public class OrderInTransportController {
         auditInfoForm.setExtId(form.getOrderId());
         auditInfoForm.setAuditStatus(form.getStatus());
         auditInfoForm.setAuditComment(form.getDescription());
+        auditInfoForm.setExtDesc(SqlConstant.ORDER_TRANSPORT);
+
         if (CommonConstant.GO_CUSTOMS_AUDIT.equals(form.getCmd())) {//通关前审核
             if (OrderStatusEnum.TMS_T_7.getCode().equals(form.getStatus()) ||
                     OrderStatusEnum.TMS_T_7_1.equals(form.getStatus())) {
@@ -341,7 +347,9 @@ public class OrderInTransportController {
         return false;
     }
 
-    @ApiOperation(value = "运输接单cmd=T_1/放行异常列表/放行确认/审核不通过/订单列表/报关打单/复核/申报")
+    @ApiOperation(value = "运输接单cmd=T_1/运输派车T_2/运输审核T_3/驳回重新调度T_3_1/确认派车T_4" +
+            "/车辆提货T_5/车辆过磅T_6/通关前复核T_8/车辆通关T_9" +
+            "/香港清关clearCustoms/车辆入仓T_10/车辆出仓T_13/车辆派送T_14/确认签收T_15/订单列表list/费用审核costAudit")
     @PostMapping("/findTransportOrderByPage")
     public CommonResult<CommonPageResult<OrderTransportVO>> findTransportOrderByPage(@RequestBody QueryOrderTmsForm form) {
         IPage<OrderTransportVO> pageList = orderTransportService.findTransportOrderByPage(form);
@@ -401,6 +409,10 @@ public class OrderInTransportController {
         }
         return CommonResult.success();
     }
+
+    /**
+     * 子订单流程节点
+     */
 
 
     /**

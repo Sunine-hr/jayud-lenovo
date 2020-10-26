@@ -40,6 +40,8 @@
         <result column="updated_time" property="updatedTime" />
         <result column="class_code" property="classCode" />
         <result column="need_input_cost" property="needInputCost" />
+        <result column="jiedan_user" property="jiedanUser" />
+        <result column="jiedan_time" property="jiedanTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -47,7 +49,7 @@
         id, main_order_no, order_no, port_code, port_name, goods_type, cntr_no, cntr_pic,cntr_pic_name, encode, encodePic,encodePicName,
         biz_model,air_transport_no,air_transport_pic,air_trans_pic_name,sea_transport_no,sea_transport_pic,sea_trans_pic_name,is_agency_tax,
         is_title,title,unit_code, description,desc_name, entrust_no,go_customs_time, pre_go_customs_time,legal_name,status, created_time, created_user,
-        updated_user,updated_time,class_code,need_input_cost
+        updated_user,updated_time,class_code,need_input_cost,jiedan_user,jiedan_time
     </sql>
 
     <select id="findOrderCustomsByCondition" parameterType="java.util.Map" resultType="com.jayud.customs.model.vo.OrderCustomsVO" >

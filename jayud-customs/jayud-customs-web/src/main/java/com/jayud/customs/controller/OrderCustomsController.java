@@ -85,6 +85,8 @@ public class OrderCustomsController {
         OrderCustoms orderCustoms = new OrderCustoms();
         orderCustoms.setId(form.getOrderId());
         orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_1.getCode());
+        orderCustoms.setJiedanTime(DateUtils.str2LocalDateTime(form.getOperatorTime(),DateUtils.DATE_TIME_PATTERN));
+        orderCustoms.setJiedanUser(form.getOperatorUser());
         orderCustoms.setUpdatedTime(LocalDateTime.now());
         orderCustoms.setUpdatedUser(loginUser);
 
@@ -133,6 +135,7 @@ public class OrderCustomsController {
         orderCustoms.setEntrustNo(form.getEntrustNo());
         orderCustoms.setUpdatedTime(LocalDateTime.now());
         orderCustoms.setUpdatedUser(loginUser);
+        orderCustoms.setEntrustNo(form.getEntrustNo());
         orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_2.getCode());
 
         //记录操作状态

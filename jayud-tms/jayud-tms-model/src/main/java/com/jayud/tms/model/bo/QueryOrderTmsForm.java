@@ -8,8 +8,8 @@ import javax.validation.constraints.NotEmpty;
 @Data
 public class QueryOrderTmsForm extends BasePageForm{
 
-    @ApiModelProperty(value = "主订单号")
-    private String mainOrderNo;
+    @ApiModelProperty(value = "订单号")
+    private String orderNo;
 
     @ApiModelProperty(value = "客户名称")
     private String customerName;
@@ -25,6 +25,9 @@ public class QueryOrderTmsForm extends BasePageForm{
 
     @ApiModelProperty(value = "结束创建时间")
     private String endCreatedTime;
+
+    @ApiModelProperty(value = "作业类型")
+    private String classCode;
 
     @ApiModelProperty(value = "操作指令",required = true)
     @NotEmpty(message = "cmd is required")

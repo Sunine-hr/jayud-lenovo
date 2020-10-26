@@ -90,7 +90,7 @@ public abstract class CommonConstant {
     /**
      * 确认签收
      */
-    public static final String COMFIRM_SIGN_IN = "comfirmSignIn";
+    public static final String CONFIRM_SIGN_IN = "confirmSignIn";
 
     /**
      * 生成主订单前缀

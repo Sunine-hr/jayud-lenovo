@@ -1,7 +1,11 @@
 package com.jayud.oms.model.bo;
 
+import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class AuditInfoForm {
@@ -20,6 +24,12 @@ public class AuditInfoForm {
 
     @ApiModelProperty(value = "被审核表的描述")
     private String extDesc;
+
+    @ApiModelProperty(value = "审核人")
+    private String auditUser;
+
+    @ApiModelProperty(value = "附件")
+    private List<FileView> fileViews = new ArrayList<>();
 
 
 }

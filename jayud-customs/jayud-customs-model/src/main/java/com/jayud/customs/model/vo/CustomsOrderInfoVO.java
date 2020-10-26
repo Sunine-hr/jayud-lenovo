@@ -96,6 +96,8 @@ public class CustomsOrderInfoVO {
             this.statusDesc = OrderStatusEnum.CUSTOMS_C_0.getDesc();
         } else if (OrderStatusEnum.CUSTOMS_C_1.getCode().equals(status)) {
             this.statusDesc = OrderStatusEnum.CUSTOMS_C_1.getDesc();
+        }else if (OrderStatusEnum.CUSTOMS_C_1_1.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CUSTOMS_C_1_1.getDesc();
         } else if (OrderStatusEnum.CUSTOMS_C_2.getCode().equals(status)) {
             this.statusDesc = OrderStatusEnum.CUSTOMS_C_2.getDesc();
         } else if (OrderStatusEnum.CUSTOMS_C_3.getCode().equals(status)) {
@@ -116,6 +118,8 @@ public class CustomsOrderInfoVO {
             this.statusDesc = OrderStatusEnum.CUSTOMS_C_7.getDesc();
         } else if (OrderStatusEnum.CUSTOMS_C_8.getCode().equals(status)) {
             this.statusDesc = OrderStatusEnum.CUSTOMS_C_8.getDesc();
+        } else if (OrderStatusEnum.CLOSE.getCode().equals(status)) {
+            this.statusDesc = OrderStatusEnum.CLOSE.getDesc();
         }
 
     }

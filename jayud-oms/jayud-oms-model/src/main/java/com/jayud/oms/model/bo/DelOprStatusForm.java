@@ -1,4 +1,4 @@
-package com.jayud.customs.model.bo;
+package com.jayud.oms.model.bo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

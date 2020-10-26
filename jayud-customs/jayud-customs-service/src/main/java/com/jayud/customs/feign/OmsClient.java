@@ -64,7 +64,7 @@ public interface OmsClient {
      * @param form
      * @return
      */
-    @RequestMapping(value = "/api/deleteOprStatus")
-    ApiResult deleteOprStatus(@RequestBody DelOprStatusForm form);
+    @RequestMapping(value = "/api/delSpecOprStatus")
+    ApiResult delSpecOprStatus(@RequestBody DelOprStatusForm form);
 
 }

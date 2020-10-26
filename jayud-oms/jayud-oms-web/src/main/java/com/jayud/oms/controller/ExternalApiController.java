@@ -6,10 +6,8 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.utils.DateUtils;
-import com.jayud.oms.model.bo.AuditInfoForm;
-import com.jayud.oms.model.bo.HandleSubProcessForm;
-import com.jayud.oms.model.bo.InputMainOrderForm;
-import com.jayud.oms.model.bo.OprStatusForm;
+import com.jayud.common.utils.StringUtils;
+import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.AuditInfo;
 import com.jayud.oms.model.po.LogisticsTrack;
 import com.jayud.oms.model.po.SupplierInfo;
@@ -131,7 +129,9 @@ public class ExternalApiController {
         auditInfo.setAuditStatus(form.getAuditStatus());
         auditInfo.setAuditComment(form.getAuditComment());
         auditInfo.setCreatedUser(String.valueOf(getLoginUser().getData()));
-        auditInfo.setAuditUser(auditInfo.getCreatedUser());
+        auditInfo.setAuditUser(form.getAuditUser());
+        auditInfo.setStatusFile(StringUtils.getFileStr(form.getFileViews()));
+        auditInfo.setStatusFileName(StringUtils.getFileNameStr(form.getFileViews()));
         auditInfo.setAuditTime(LocalDateTime.now());
         auditInfo.setCreatedTime(LocalDateTime.now());
         boolean result = auditInfoService.save(auditInfo);
@@ -178,6 +178,20 @@ public class ExternalApiController {
     @RequestMapping(value = "api/delOprStatus")
     ApiResult delOprStatus(@RequestParam("orderId") Long orderId){
         logisticsTrackService.removeById(orderId);
+        return ApiResult.ok();
+    }
+
+    /**
+     * 删除特定单的操作流程
+     * @param form
+     * @return
+     */
+    @RequestMapping(value = "/api/delSpecOprStatus")
+    ApiResult delSpecOprStatus(@RequestBody DelOprStatusForm form){
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(SqlConstant.ORDER_NO,form.getOrderId());
+        queryWrapper.in(SqlConstant.STATUS,form.getStatus());
+        logisticsTrackService.remove(queryWrapper);
         return ApiResult.ok();
     }
 

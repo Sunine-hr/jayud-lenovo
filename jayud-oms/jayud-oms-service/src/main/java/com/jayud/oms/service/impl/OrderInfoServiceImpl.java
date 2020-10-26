@@ -172,15 +172,18 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             List<InputReceivableCostForm> newReceivableCostForms = new ArrayList<>();
             //1.如果是暂存情况下,已提交的费用不再次处理
             //2.空数据不进行保存处理
+            //3.已审核通过的不再次处理
             for (InputPaymentCostForm inputPaymentCost : paymentCostForms) {
                 if((!OrderStatusEnum.COST_2.getCode().equals(inputPaymentCost.getStatus())) &&
-                   !StringUtil.isNullOrEmpty(inputPaymentCost.getCostCode())){
+                   !StringUtil.isNullOrEmpty(inputPaymentCost.getCostCode()) &&
+                        (!OrderStatusEnum.COST_3.getCode().equals(inputPaymentCost.getStatus()))){
                     newPaymentCostForms.add(inputPaymentCost);
                 }
             }
             for (InputReceivableCostForm inputReceivableCost : receivableCostForms) {
                 if((!OrderStatusEnum.COST_2.getCode().equals(inputReceivableCost.getStatus())) &&
-                   !StringUtil.isNullOrEmpty(inputReceivableCost.getCostCode())){
+                   !StringUtil.isNullOrEmpty(inputReceivableCost.getCostCode()) &&
+                        (!OrderStatusEnum.COST_3.getCode().equals(inputReceivableCost.getStatus()))){
                     newReceivableCostForms.add(inputReceivableCost);
                 }
             }

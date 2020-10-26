@@ -15,6 +15,16 @@
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
+    <!--角色菜单resultMap-->
+    <resultMap id="RoleMenuResultMap" type="com.jayud.mall.model.vo.SystemRoleVO">
+        <id column="id" property="id"/>
+        <result column="role_name" property="roleName"/>
+        <result column="role_describe" property="roleDescribe"/>
+        <result column="create_by" property="createBy"/>
+        <!--菜单集合-->
+        <collection property="menuIds" column="id" javaType="list" select="selectMenuIdByRoleId"></collection>
+    </resultMap>
+
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, bs_user_id, role_name, `type`, role_describe, create_by, create_time, update_by, update_time
@@ -37,11 +47,23 @@
     </delete>
 
     <!--根据Id,查询角色-->
-    <select id="getRole" parameterType="Long" resultType="com.jayud.mall.model.vo.SystemRoleVO">
+<!--    <select id="getRole" parameterType="Long" resultType="com.jayud.mall.model.vo.SystemRoleVO">-->
+<!--        select-->
+<!--        <include refid="Base_Column_List"/>-->
+<!--        from system_role where id = #{id}-->
+<!--    </select>-->
+    <!--根据Id,查询角色，以及菜单Id-->
+    <select id="getRole" parameterType="Long" resultMap="RoleMenuResultMap">
         select
         <include refid="Base_Column_List"/>
         from system_role where id = #{id}
     </select>
+
+    <!--根据roleId查询menuId-->
+    <select id="selectMenuIdByRoleId" resultType="Long" parameterType="java.lang.Long">
+        select menu_id from system_role_menu_relation where role_id = #{id}
+     </select>
+
 
     <!--查询角色分页-->
     <select id="findRoleByPage" parameterType="com.jayud.mall.model.bo.QueryRoleForm"

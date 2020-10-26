@@ -63,7 +63,8 @@ public class SystemRoleServiceImpl extends ServiceImpl<SystemRoleMapper, SystemR
 
     @Override
     public SystemRoleVO getRole(Long id) {
-        return roleMapper.getRole(id);
+        SystemRoleVO roleVO = roleMapper.getRole(id);
+        return roleVO;
     }
 
     @Override

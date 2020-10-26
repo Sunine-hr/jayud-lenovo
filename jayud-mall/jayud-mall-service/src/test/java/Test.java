@@ -4,7 +4,9 @@ import com.jayud.mall.model.bo.QueryRoleForm;
 import com.jayud.mall.model.bo.QueryUserForm;
 import com.jayud.mall.model.bo.SaveRoleForm;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -132,10 +134,16 @@ public class Test {
     public void test8(){
 
         SaveRoleForm form = new SaveRoleForm();
-//        form.setId(0L);
+        form.setId(1L);
         form.setRoleName("管理员");
         form.setRoleDescribe("管理员，管理系统");
-//        form.setMenuIds();
+
+        List<Long> menuIds = new ArrayList<>();
+        menuIds.add(1L);
+        menuIds.add(2L);
+        menuIds.add(3L);
+
+        form.setMenuIds(menuIds);
         String json = JSONObject.toJSONString(form);
         System.out.println(json);
 
@@ -153,8 +161,6 @@ public class Test {
         String json = JSONObject.toJSONString(form);
         System.out.println(json);
     }
-
-
 
 
 }

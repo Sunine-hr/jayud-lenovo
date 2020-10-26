@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -17,7 +18,7 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author fachang.mao
- * @since 2020-10-24
+ * @since 2020-10-26
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -27,23 +28,31 @@ public class SystemRole extends Model<SystemRole> {
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty(value = "主键ID")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     private Integer bsUserId;
 
+    @ApiModelProperty(value = "角色名称")
     private String roleName;
 
+    @ApiModelProperty(value = "类型")
     private Integer type;
 
+    @ApiModelProperty(value = "角色描述")
     private String roleDescribe;
 
+    @ApiModelProperty(value = "创建人")
     private String createBy;
 
+    @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "修改人")
     private String updateBy;
 
+    @ApiModelProperty(value = "修改时间")
     private LocalDateTime updateTime;
 
 

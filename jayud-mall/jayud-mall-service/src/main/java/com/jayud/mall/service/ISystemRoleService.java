@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author fachang.mao
- * @since 2020-10-24
+ * @since 2020-10-26
  */
 public interface ISystemRoleService extends IService<SystemRole> {
 

@@ -2,7 +2,6 @@ package com.jayud.mall.mapper;
 
 import com.jayud.mall.model.po.SystemRole;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
@@ -10,9 +9,8 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author fachang.mao
- * @since 2020-10-24
+ * @since 2020-10-26
  */
-@Mapper
 public interface SystemRoleMapper extends BaseMapper<SystemRole> {
 
 }

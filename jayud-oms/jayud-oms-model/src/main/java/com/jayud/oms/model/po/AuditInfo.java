@@ -32,6 +32,9 @@ public class AuditInfo extends Model<AuditInfo> {
     @ApiModelProperty(value = "被审核表的ID")
     private Long extId;
 
+    @ApiModelProperty(value = "被审核表描述")
+    private String extDesc;
+
     @ApiModelProperty(value = "审核类别描述")
     private String auditTypeDesc;
 

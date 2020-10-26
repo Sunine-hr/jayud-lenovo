@@ -20,4 +20,10 @@ public abstract class SqlConstant {
 
     public static final String MAIN_ORDER_NO = "main_order_no";
 
+    public static final String ORDER_INFO = "order_info表";
+
+    public static final String ORDER_CUSTOMS = "order_customs表";
+
+    public static final String ORDER_TRANSPORT = "order_transport表";
+
 }

@@ -47,7 +47,7 @@
           ot.`order_no` orderNo,
           ot.`jiedan_user` jiedanUser,
           ot.`legal_name` legalName,
-          DATE_FORMAT(ot.`jiedan_time`,'%Y-%m-%d %H:%I:%S') jiedanTimeStr,
+          DATE_FORMAT(ot.`jiedan_time`,'%Y-%m-%d %H:%i:%S') jiedanTimeStr,
           ot.`goods_type` goodsType,
           ot.`port_code` portCode,
           ot.`unit_code` unitCode,
@@ -76,7 +76,10 @@
           wi.`contact_number` contactNumber,
           wi.`address`,
           ot.`is_load_goods` isLoadGoods,
-          ot.`is_unload_goods` isUnloadGoods
+          ot.`is_unload_goods` isUnloadGoods,
+          ot.`hk_legal_name` hkLegalName,
+          ot.`hk_unit_code` hkUnitCode,
+          ot.`is_hk_clear` isHkClear
         FROM
           order_transport ot
           LEFT JOIN order_info oi
@@ -103,8 +106,8 @@
             pc.`name` classCodeDesc,
             oi.`customer_name` customerName,
             ot.`created_user` createdUser,
-            DATE_FORMAT(ot.`created_time`,'%Y-%m-%d %H:%I:%S') createdTimeStr,
-            t.`describe`,
+            DATE_FORMAT(ot.`created_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
+            t.`goods_desc` goodsDesc,
             t.`piece_amount` pieceAmount,
             t.`plate_amount` plateAmount,
             t.`weight`,
@@ -122,13 +125,13 @@
             ON p.`id_code` = ot.`port_code`
             LEFT JOIN product_classify pc
             ON oi.`class_code` = pc.`id_code`
-            LEFT JOIN (SELECT ota.`order_no`,da.`state_name`,da.`city_name`,da.`address`,ota.`describe`,ota.`piece_amount`,ota.`plate_amount`,
+            LEFT JOIN (SELECT ota.`order_no`,da.`state_name`,da.`city_name`,da.`address`,ota.`goods_desc`,ota.`piece_amount`,ota.`plate_amount`,
             ota.`weight` FROM order_take_adr ota LEFT JOIN delivery_address da
-            ON ota.`delivery_id` = da.`id` AND ota.`types` = '1' ) t
+            ON ota.`delivery_id` = da.`id` AND ota.`opr_type` = '1' ) t
             ON t.order_no = ot.`order_no`
-            LEFT JOIN (SELECT ota.`order_no`,da.`state_name`,da.`city_name`,da.`address`,ota.`describe`,ota.`piece_amount`,ota.`plate_amount`,
+            LEFT JOIN (SELECT ota.`order_no`,da.`state_name`,da.`city_name`,da.`address`,ota.`goods_desc`,ota.`piece_amount`,ota.`plate_amount`,
             ota.`weight` FROM order_take_adr ota LEFT JOIN delivery_address da
-            ON ota.`delivery_id` = da.`id` AND ota.`types` = '2' ) s
+            ON ota.`delivery_id` = da.`id` AND ota.`opr_type` = '2' ) s
             ON s.order_no = ot.`order_no` where 1 = 1
         <if test="form.cmd == 'T_1'">
             AND ot.`status` = 'T_0'

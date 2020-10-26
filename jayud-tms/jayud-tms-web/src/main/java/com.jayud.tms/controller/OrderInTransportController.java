@@ -14,10 +14,7 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.tms.feign.OmsClient;
-import com.jayud.tms.model.bo.AuditInfoForm;
-import com.jayud.tms.model.bo.OprStatusForm;
-import com.jayud.tms.model.bo.QueryOrderTmsForm;
-import com.jayud.tms.model.bo.SendCarForm;
+import com.jayud.tms.model.bo.*;
 import com.jayud.tms.model.po.OrderSendCars;
 import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.OrderTransportVO;
@@ -344,12 +341,65 @@ public class OrderInTransportController {
         return false;
     }
 
-    @ApiOperation(value = "报关接单列表/放行异常列表/放行确认/审核不通过/订单列表/报关打单/复核/申报")
+    @ApiOperation(value = "运输接单cmd=T_1/放行异常列表/放行确认/审核不通过/订单列表/报关打单/复核/申报")
     @PostMapping("/findTransportOrderByPage")
     public CommonResult<CommonPageResult<OrderTransportVO>> findTransportOrderByPage(@RequestBody QueryOrderTmsForm form) {
         IPage<OrderTransportVO> pageList = orderTransportService.findTransportOrderByPage(form);
         CommonPageResult<OrderTransportVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
+    }
+
+    /**
+     * 该接口针对填各种驳回
+     * @param form
+     * @return
+     */
+    @ApiOperation(value = "确认接单驳回cmd=T_1_1,确认派车驳回cmd=T_2_1,运输审核驳回cmd=T_3_2,确认派车驳回cmd=T_4_1")
+    @PostMapping(value = "/rejectOrder")
+    public CommonResult rejectOrder(@RequestBody RejectOrderForm form) {
+        if (form.getOrderId() == null || StringUtil.isNullOrEmpty(form.getCmd())) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+        }
+        OrderTransport orderTransport = new OrderTransport();
+        orderTransport.setId(form.getOrderId());
+        orderTransport.setUpdatedTime(LocalDateTime.now());
+        orderTransport.setUpdatedUser(getLoginUser());
+
+        //记录审核信息
+        AuditInfoForm auditInfoForm = new AuditInfoForm();
+        auditInfoForm.setExtId(form.getOrderId());
+        auditInfoForm.setExtDesc(SqlConstant.ORDER_TRANSPORT);
+
+        //删除操作流程记录
+
+        if (OrderStatusEnum.TMS_T_1_1.getCode().equals(form.getCmd())) {//确认接单驳回
+            orderTransport.setStatus(OrderStatusEnum.TMS_T_1_1.getCode());
+
+            auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_1_1.getCode());
+            auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_1_1.getDesc());
+        } else if (OrderStatusEnum.TMS_T_2_1.getCode().equals(form.getCmd())) {//确认派车驳回
+            orderTransport.setStatus(OrderStatusEnum.TMS_T_2_1.getCode());
+
+            auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_2_1.getCode());
+            auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_2_1.getDesc());
+        }else if(OrderStatusEnum.TMS_T_3_2.getCode().equals(form.getCmd())){//运输审核驳回
+            orderTransport.setStatus(OrderStatusEnum.TMS_T_3_2.getCode());
+
+            auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_3_2.getCode());
+            auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_3_2.getDesc());
+        }else if(OrderStatusEnum.TMS_T_4_1.getCode().equals(form.getCmd())){//确认派车驳回
+            orderTransport.setStatus(OrderStatusEnum.TMS_T_4_1.getCode());
+
+            auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_4_1.getCode());
+            auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_4_1.getDesc());
+        }
+        omsClient.saveAuditInfo(auditInfoForm);
+        omsClient.delOprStatus(form.getOrderId());
+        boolean result = orderTransportService.updateById(orderTransport);
+        if (!result) {
+            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
+        }
+        return CommonResult.success();
     }
 
 

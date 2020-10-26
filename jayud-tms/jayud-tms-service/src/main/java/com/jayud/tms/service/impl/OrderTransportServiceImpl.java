@@ -147,7 +147,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         Integer totalAmount = 0;//总件数
         Double totalWeight = 0.0;//总重量
         for (InputOrderTakeAdrVO inputOrderTakeAdrVO : inputOrderTakeAdrVOS) {
-            if(CommonConstant.VALUE_1.equals(inputOrderTakeAdrVO.getOprType())){//提货
+            if(CommonConstant.VALUE_1.equals(String.valueOf(inputOrderTakeAdrVO.getOprType()))){//提货
                 orderTakeAdrForms1.add(inputOrderTakeAdrVO);
                 totalAmount = totalAmount + inputOrderTakeAdrVO.getPieceAmount();
                 totalWeight = totalWeight + inputOrderTakeAdrVO.getWeight();

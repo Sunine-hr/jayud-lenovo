@@ -118,6 +118,15 @@ public class InputOrderTransportVO {
     @ApiModelProperty(value = "所有附件信息")
     private List<FileView> allPics = new ArrayList<>();
 
+    @ApiModelProperty(value = "香港清关接单法人")
+    private String hkLegalName;
+
+    @ApiModelProperty(value = "香港清关结算单位")
+    private String hkUnitCode;
+
+    @ApiModelProperty(value = "是否香港清关")
+    private String isHkClear;
+
     //中转信息
     @ApiModelProperty(value = "中转公司")
     private String companyName;

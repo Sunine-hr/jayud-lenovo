@@ -81,13 +81,13 @@
           ci.`created_user` createdUser,
           DATE_FORMAT(
             ci.`created_time`,
-            '%Y-%m-%d %H:%I:%S'
+            '%Y-%m-%d %H:%i:%S'
           ) createdTimeStr,
           ci.`updated_user` updatedUser,
           ci.`audit_comment` auditComment,
           DATE_FORMAT(
             ci.`updated_time`,
-            '%Y-%m-%d %H:%I:%S'
+            '%Y-%m-%d %H:%i:%S'
           ) updatedTimeStr
         FROM
           customer_info ci
@@ -155,13 +155,13 @@
         ci.`created_user` createdUser,
         DATE_FORMAT(
         ci.`created_time`,
-        '%Y-%m-%d %H:%I:%S'
+        '%Y-%m-%d %H:%i:%S'
         ) createdTimeStr,
         ci.`updated_user` updatedTimeStr,
         ci.`audit_comment` auditComment,
         DATE_FORMAT(
         ci.`updated_time`,
-        '%Y-%m-%d %H:%I:%S'
+        '%Y-%m-%d %H:%i:%S'
         ) updatedTimeStr
         FROM
         customer_info ci

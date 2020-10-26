@@ -35,7 +35,7 @@
           da.`address`,
           DATE_FORMAT(
             ota.`take_time`,
-            '%Y-%m-%d %H:%I:%S'
+            '%Y-%m-%d %H:%i:%S'
           ) takeTimeStr,
           ota.`goods_desc` goodsDesc,
           ota.`plate_amount` plateAmount,

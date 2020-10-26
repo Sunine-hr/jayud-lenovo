@@ -18,5 +18,8 @@ public class AuditInfoForm {
     @ApiModelProperty(value = "审核意见")
     private String auditComment;
 
+    @ApiModelProperty(value = "被审核表的ID备注")
+    private String extDesc;
+
 
 }

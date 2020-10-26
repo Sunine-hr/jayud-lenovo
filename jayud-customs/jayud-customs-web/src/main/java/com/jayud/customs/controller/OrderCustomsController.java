@@ -2,11 +2,14 @@ package com.jayud.customs.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.OrderOprCmdEnum;
 import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.customs.feign.OmsClient;
@@ -277,6 +280,55 @@ public class OrderCustomsController {
     }
 
 
+    /**
+     * 该接口针对填各种驳回
+     * @param form
+     * @return
+     */
+    @ApiOperation(value = "报关接单驳回:要么所有报关单驳回,要么不驳回,前台给出相应提示cmd=C_1_1")
+    @PostMapping(value = "/rejectOrder")
+    public CommonResult rejectOrder(@RequestBody RejectOrderForm form) {
+        if (form.getMainOrderNo() == null || StringUtil.isNullOrEmpty(form.getCmd())) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+        }
+        //根据主订单号查询所有的报关子订单
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(SqlConstant.MAIN_ORDER_NO,form.getMainOrderNo());
+        List<OrderCustoms> orderCustoms = orderCustomsService.list(queryWrapper);
+        List<OrderCustoms> orderCustomsList = new ArrayList<>();
+        for (OrderCustoms temp : orderCustoms) {
+            OrderCustoms orderCustom = new OrderCustoms();
+            orderCustom.setId(temp.getId());
+            orderCustom.setUpdatedTime(LocalDateTime.now());
+            orderCustom.setUpdatedUser(orderCustomsService.getLoginUser());
+
+
+            //记录审核信息
+            AuditInfoForm auditInfoForm = new AuditInfoForm();
+            auditInfoForm.setExtId(temp.getId());
+            auditInfoForm.setExtDesc(SqlConstant.ORDER_CUSTOMS);
+
+            //删除操作流程记录 这个节点暂时不需要删除
+
+            if (OrderStatusEnum.CUSTOMS_C_1_1.getCode().equals(form.getCmd())) {//确认接单驳回
+                orderCustom.setStatus(OrderStatusEnum.CUSTOMS_C_1_1.getCode());
+
+                auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_1_1.getCode());
+                auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_1_1.getDesc());
+            }
+
+            orderCustomsList.add(orderCustom);
+            omsClient.saveAuditInfo(auditInfoForm);
+        }
+        boolean result = true;
+        if(orderCustomsList.size() > 0) {
+            result = orderCustomsService.updateBatchById(orderCustomsList);
+        }
+        if (!result) {
+            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
+        }
+        return CommonResult.success();
+    }
 
 
 }

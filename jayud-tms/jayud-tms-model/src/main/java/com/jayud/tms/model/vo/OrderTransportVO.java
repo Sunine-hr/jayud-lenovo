@@ -35,7 +35,7 @@ public class OrderTransportVO {
 
     //货物信息
     @ApiModelProperty(value = "货物描述")
-    private String describe;
+    private String goodsDesc;
 
     @ApiModelProperty(value = "板数")
     private String plateAmount;

@@ -57,7 +57,7 @@
         oc.`status` subCustomsStatus,
         '' subTmsStatus,
         oi.`created_user` createdUser,
-        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%I:%S') createdTimeStr,
+        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
         (CASE  WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
         ELSE FALSE
@@ -87,7 +87,7 @@
         (SELECT oc.`status` FROM order_customs oc WHERE oc.`main_order_no`= oi.`order_no` LIMIT 1) subCustomsStatus,
         ot.`status` subTmsStatus,
         oi.`created_user` createdUser,
-        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%I:%S') createdTimeStr,
+        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
         (CASE  WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
         ELSE FALSE
@@ -159,7 +159,7 @@
         (SELECT oc.`status` FROM order_customs oc WHERE oc.`main_order_no`= oi.`order_no` LIMIT 1) subCustomsStatus,
         ot.`status` subTmsStatus,
         oi.`created_user` createdUser,
-        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%I:%S') createdTimeStr,
+        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
         (CASE  WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
         ELSE FALSE
@@ -195,10 +195,10 @@
             and temp.legal_name like concat('%',#{form.legalName},'%')
         </if>
         <if test="form.endCreateTimeStr != null and form.endCreateTimeStr !=''">
-            and DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%I:%S') <![CDATA[<=]]> #{form.endCreateTimeStr}
+            and DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') <![CDATA[<=]]> #{form.endCreateTimeStr}
         </if>
         <if test="form.beginCreateTimeStr != null and form.beginCreateTimeStr !=''">
-            and DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%I:%S') <![CDATA[>=]]> #{form.beginCreateTimeStr}
+            and DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') <![CDATA[>=]]> #{form.beginCreateTimeStr}
         </if>
     </select>
 
@@ -217,7 +217,7 @@
             oi.`biz_code` bizCode,
             (SELECT pb.name FROM product_biz pb WHERE pb.id_code = oi.`biz_code` LIMIT 1) bizDesc,
             oi.created_user createdUser,
-            DATE_FORMAT(oi.create_time,'%Y-%m-%d %H:%I:%S') createdTimeStr,
+            DATE_FORMAT(oi.create_time,'%Y-%m-%d %H:%i:%S') createdTimeStr,
             oi.`selected_server` selectedServer,
             oi.`class_code` classCode,
             oi.`unit_code` unitCode,

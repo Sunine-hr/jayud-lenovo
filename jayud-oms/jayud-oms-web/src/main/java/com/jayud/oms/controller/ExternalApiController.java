@@ -139,7 +139,7 @@ public class ExternalApiController {
     }
 
     @ApiOperation(value = "中转仓库")
-    @PostMapping(value = "/initWarehouseInfo")
+    @PostMapping(value = "api/initWarehouseInfo")
     public CommonResult initWarehouseInfo() {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq(SqlConstant.STATUS,1);
@@ -155,7 +155,7 @@ public class ExternalApiController {
     }
 
     @ApiOperation(value = "车辆供应商")
-    @PostMapping(value = "/initSupplierInfo")
+    @PostMapping(value = "api/initSupplierInfo")
     public CommonResult initSupplierInfo() {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq(SqlConstant.STATUS,1);
@@ -168,6 +168,17 @@ public class ExternalApiController {
             initComboxVOS.add(initComboxVO);
         }
         return CommonResult.success(initComboxVOS);
+    }
+
+    /**
+     * 删除前面操作成功的记录
+     * @param orderId
+     * @return
+     */
+    @RequestMapping(value = "api/delOprStatus")
+    ApiResult delOprStatus(@RequestParam("orderId") Long orderId){
+        logisticsTrackService.removeById(orderId);
+        return ApiResult.ok();
     }
 
 

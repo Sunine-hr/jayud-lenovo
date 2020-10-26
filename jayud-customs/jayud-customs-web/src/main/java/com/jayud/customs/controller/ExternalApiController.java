@@ -93,6 +93,7 @@ public class ExternalApiController {
             initChangeStatusVO.setOrderNo(orderCustom.getOrderNo());
             initChangeStatusVO.setOrderType(CommonConstant.BG);
             initChangeStatusVO.setNeedInputCost(orderCustom.getNeedInputCost());
+            initChangeStatusVO.setStatus(orderCustom.getStatus());
             changeStatusVOS.add(initChangeStatusVO);
         }
         return ApiResult.ok(changeStatusVOS);

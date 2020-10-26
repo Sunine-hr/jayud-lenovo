@@ -106,6 +106,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
             }else if(CommonConstant.SUBMIT.equals(form.getCmd()) && CommonConstant.VALUE_0.equals(form.getIsDataAll())){
                 orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_4.getCode()));
+            }else {
+                orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
             }
         }
         saveOrUpdate(orderInfo);
@@ -694,11 +696,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
 
-    /**
-     * 获取当前登录用户
-     * @return
-     */
-    private String getLoginUser(){
+    @Override
+    public String getLoginUser(){
         String loginUser = redisUtils.get("loginUser",100);
         return loginUser;
     }

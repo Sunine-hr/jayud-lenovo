@@ -21,6 +21,7 @@ public abstract class CommonConstant {
      * 外部报关放行
      */
     public static final String OUT_CUSTOMS_RELEASE = "outCustomsRelease";
+    public static final String OUT_CUSTOMS_RELEASE_DESC = "外部报关放行";
     /**
      * 通关前审核
      */

@@ -123,4 +123,10 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      */
     OrderDataCountVO countOrderData();
 
+    /**
+     * 获取当前登录用户
+     * @return
+     */
+    String getLoginUser();
+
 }

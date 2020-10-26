@@ -95,6 +95,9 @@ public class OrderInfo extends Model<OrderInfo> {
     @ApiModelProperty(value = "是否需要录入费用")
     private Boolean needInputCost;
 
+    @ApiModelProperty(value = "是否外部报关放行,针对没有出口报关的中港订单")
+    private Boolean customsRelease;
+
 
     @Override
     protected Serializable pkVal() {

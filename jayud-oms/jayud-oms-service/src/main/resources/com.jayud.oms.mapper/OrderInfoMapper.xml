@@ -28,6 +28,7 @@
         <result column="up_time" property="upTime" />
         <result column="up_user" property="upUser" />
         <result column="need_input_cost" property="needInputCost" />
+        <result column="customs_release" property="customsRelease" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -53,7 +54,7 @@
         '' goodsInfo,
         '' takeAddress,
         '' giveAddress,
-        oi.`status` subCustomsStatus,
+        oc.`status` subCustomsStatus,
         '' subTmsStatus,
         oi.`created_user` createdUser,
         DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%I:%S') createdTimeStr,
@@ -108,6 +109,7 @@
         </if>
         <if test="form.cmd == 'outCustomsRelease'">
             and temp.classCode = 'ZGYS' and temp.`status` = 1
+            and not exists (SELECT 1 FROM order_customs oc WHERE oc.`main_order_no` = temp.orderNo)
         </if>
         <if test="form.cmd == 'dataNotAll'">
             and temp.`status` = 4

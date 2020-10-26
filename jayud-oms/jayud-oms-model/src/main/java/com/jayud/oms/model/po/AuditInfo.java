@@ -41,6 +41,12 @@ public class AuditInfo extends Model<AuditInfo> {
     @ApiModelProperty(value = "审核意见")
     private String auditComment;
 
+    @ApiModelProperty(value = "附件")
+    private String statusFile;
+
+    @ApiModelProperty(value = "附件名称")
+    private String statusFileName;
+
     @ApiModelProperty(value = "审核人")
     private String auditUser;
 

@@ -7,9 +7,13 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.*;
+import com.jayud.oms.model.po.AuditInfo;
+import com.jayud.oms.model.po.OrderInfo;
 import com.jayud.oms.model.vo.*;
+import com.jayud.oms.service.IAuditInfoService;
 import com.jayud.oms.service.IOrderInfoService;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +39,10 @@ public class OrderInfoController {
 
     @Autowired
     IOrderInfoService orderInfoService;
+
+    @Autowired
+    IAuditInfoService auditInfoService;
+
 
     @ApiOperation(value = "外部报关放行/通过前审核/订单列表/费用审核")
     @PostMapping("/findOrderInfoByPage")
@@ -182,6 +191,39 @@ public class OrderInfoController {
     @PostMapping("/changeStatus")
     public CommonResult changeStatus(@RequestBody @Valid ChangeStatusListForm form) {
         Boolean result = orderInfoService.changeStatus(form);
+        if(!result){
+            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(),ResultEnum.OPR_FAIL.getMessage());
+        }
+        return CommonResult.success();
+    }
+
+
+    @ApiOperation(value = "外部报关放行")
+    @PostMapping(value = "/outCustomsRelease")
+    public CommonResult outCustomsRelease(@RequestBody OprStatusForm form) {
+        if(form.getMainOrderId() == null || StringUtil.isNullOrEmpty(form.getOperatorUser()) ||
+                StringUtil.isNullOrEmpty(form.getOperatorTime())){
+            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+        }
+        //外部报关放行:1.对主订单放行  2.随时可操作  3.没有出口报关的中港运输的单才可进行外部报关放行,有出口报关的就进行报关模块的报关放行
+        //外部报关放行不体现在流程节点中
+        AuditInfo auditInfo = new AuditInfo();
+        auditInfo.setExtId(form.getMainOrderId());
+        auditInfo.setAuditTypeDesc(CommonConstant.OUT_CUSTOMS_RELEASE_DESC);
+        auditInfo.setAuditStatus(OrderStatusEnum.EXT_CUSTOMS_RELEASE.getCode());
+        auditInfo.setAuditComment(form.getDescription());
+        auditInfo.setStatusFile(StringUtils.getFileStr(form.getFileViewList()));
+        auditInfo.setStatusFileName(StringUtils.getFileNameStr(form.getFileViewList()));
+        auditInfo.setAuditUser(orderInfoService.getLoginUser());
+        auditInfo.setCreatedUser(orderInfoService.getLoginUser());
+        auditInfo.setAuditTime(DateUtils.str2LocalDateTime(form.getOperatorTime(),DateUtils.DATE_TIME_PATTERN));
+        auditInfoService.save(auditInfo);//保存操作记录
+        OrderInfo orderInfo = new OrderInfo();
+        orderInfo.setId(form.getMainOrderId());
+        orderInfo.setCustomsRelease(true);
+        orderInfo.setUpUser(orderInfoService.getLoginUser());
+        orderInfo.setUpTime(LocalDateTime.now());
+        boolean result = orderInfoService.updateById(orderInfo);
         if(!result){
             return CommonResult.error(ResultEnum.OPR_FAIL.getCode(),ResultEnum.OPR_FAIL.getMessage());
         }

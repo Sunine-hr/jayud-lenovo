@@ -13,11 +13,14 @@
         <result column="created_user" property="createdUser" />
         <result column="audit_time" property="auditTime" />
         <result column="created_time" property="createdTime" />
+        <result column="status_file" property="statusFile" />
+        <result column="status_file_name" property="statusFileName" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, ext_id, audit_type_desc, audit_status, audit_comment, audit_user, created_user, audit_time, created_time
+        id, ext_id, audit_type_desc, audit_status, audit_comment, audit_user, created_user, audit_time, created_time,status_file,
+        status_file_name
     </sql>
 
 </mapper>

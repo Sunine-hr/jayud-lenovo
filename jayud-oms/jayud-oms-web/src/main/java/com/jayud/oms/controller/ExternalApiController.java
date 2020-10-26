@@ -125,6 +125,7 @@ public class ExternalApiController {
     ApiResult<Boolean> saveAuditInfo(@RequestBody AuditInfoForm form){
         AuditInfo auditInfo = new AuditInfo();
         auditInfo.setExtId(form.getExtId());
+        auditInfo.setExtDesc(form.getExtDesc());
         auditInfo.setAuditTypeDesc(form.getAuditTypeDesc());
         auditInfo.setAuditStatus(form.getAuditStatus());
         auditInfo.setAuditComment(form.getAuditComment());

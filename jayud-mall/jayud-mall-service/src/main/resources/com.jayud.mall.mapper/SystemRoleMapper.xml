@@ -46,12 +46,6 @@
         delete from system_role where id = #{id}
     </delete>
 
-    <!--根据Id,查询角色-->
-<!--    <select id="getRole" parameterType="Long" resultType="com.jayud.mall.model.vo.SystemRoleVO">-->
-<!--        select-->
-<!--        <include refid="Base_Column_List"/>-->
-<!--        from system_role where id = #{id}-->
-<!--    </select>-->
     <!--根据Id,查询角色，以及菜单Id-->
     <select id="getRole" parameterType="Long" resultMap="RoleMenuResultMap">
         select

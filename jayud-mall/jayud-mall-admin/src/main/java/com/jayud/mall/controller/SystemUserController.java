@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/system/user")
-@Api(tags = "南京电商后台用户管理")
+@Api(tags = "南京电商后台-用户管理")
 public class SystemUserController {
 
     @Autowired

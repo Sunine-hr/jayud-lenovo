@@ -19,7 +19,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/system/menu")
-@Api(tags = "南京电商后台菜单管理")
+@Api(tags = "南京电商后台-菜单管理")
 public class SystemMenuController {
 
     @Autowired

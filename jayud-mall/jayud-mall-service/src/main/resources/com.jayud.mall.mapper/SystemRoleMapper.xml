@@ -4,20 +4,67 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.SystemRole">
-        <id column="id" property="id" />
-        <result column="bs_user_id" property="bsUserId" />
-        <result column="role_name" property="roleName" />
-        <result column="type" property="type" />
-        <result column="role_describe" property="roleDescribe" />
-        <result column="create_by" property="createBy" />
-        <result column="create_time" property="createTime" />
-        <result column="update_by" property="updateBy" />
-        <result column="update_time" property="updateTime" />
+        <id column="id" property="id"/>
+        <result column="bs_user_id" property="bsUserId"/>
+        <result column="role_name" property="roleName"/>
+        <result column="type" property="type"/>
+        <result column="role_describe" property="roleDescribe"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, bs_user_id, role_name, type, role_describe, create_by, create_time, update_by, update_time
+        id, bs_user_id, role_name, `type`, role_describe, create_by, create_time, update_by, update_time
     </sql>
+
+    <!--保存角色-->
+    <insert id="saveRole"
+            parameterType="com.jayud.mall.model.po.SystemRole"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into system_role
+           (role_name,role_describe)
+        values (
+            #{roleName},
+            #{roleDescribe})
+    </insert>
+
+    <!--删除用户-->
+    <delete id="deleteRole" parameterType="Long">
+        delete from system_role where id = #{id}
+    </delete>
+
+    <!--根据Id,查询角色-->
+    <select id="getRole" parameterType="Long" resultType="com.jayud.mall.model.vo.SystemRoleVO">
+        select
+        <include refid="Base_Column_List"/>
+        from system_role where id = #{id}
+    </select>
+
+    <!--查询角色分页-->
+    <select id="findRoleByPage" parameterType="com.jayud.mall.model.bo.QueryRoleForm"
+            resultType="com.jayud.mall.model.vo.SystemRoleVO" >
+        SELECT
+        sr.id,
+        sr.bs_user_id,
+        sr.role_name,
+        sr.`type`,
+        sr.role_describe,
+        sr.create_by,
+        sr.create_time,
+        sr.update_by,
+        sr.update_time
+        FROM
+        system_role sr
+        where 1=1
+        <if test="form.roleName != null and form.roleName != ''">
+            AND sr.role_name LIKE concat('%',#{form.roleName},'%')
+        </if>
+        GROUP BY
+        sr.`id`
+    </select>
+
 
 </mapper>

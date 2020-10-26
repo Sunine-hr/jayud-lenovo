@@ -1,6 +1,8 @@
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.common.util.Md5Utils;
+import com.jayud.mall.model.bo.QueryRoleForm;
 import com.jayud.mall.model.bo.QueryUserForm;
+import com.jayud.mall.model.bo.SaveRoleForm;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -122,6 +124,36 @@ public class Test {
         System.out.println(json);
 
     }
+
+    /**
+     * 保存角色表单json参数
+     */
+    @org.junit.Test
+    public void test8(){
+
+        SaveRoleForm form = new SaveRoleForm();
+//        form.setId(0L);
+        form.setRoleName("管理员");
+        form.setRoleDescribe("管理员，管理系统");
+//        form.setMenuIds();
+        String json = JSONObject.toJSONString(form);
+        System.out.println(json);
+
+    }
+
+    /**
+     * 查询角色表单json参数
+     */
+    @org.junit.Test
+    public void test9(){
+        QueryRoleForm form = new QueryRoleForm();
+        form.setPageNum(1);
+        form.setPageSize(2);
+        form.setRoleName("经理");
+        String json = JSONObject.toJSONString(form);
+        System.out.println(json);
+    }
+
 
 
 

@@ -61,7 +61,7 @@ public class OrderInTransportController {
      * @param form
      * @return
      */
-    @ApiOperation(value = "外部报关放行,确认接单")
+    @ApiOperation(value = "确认接单")
     @PostMapping(value = "/oprOrderTransport")
     public CommonResult oprOrderTransport(@RequestBody OprStatusForm form) {
         if(form.getOrderId() == null || form.getMainOrderId() == null ||
@@ -73,13 +73,7 @@ public class OrderInTransportController {
         orderTransport.setId(form.getOrderId());
         orderTransport.setUpdatedTime(LocalDateTime.now());
         orderTransport.setUpdatedUser(getLoginUser());
-        if(CommonConstant.OUT_CUSTOMS_RELEASE.equals(form.getCmd())){//外部报关放行
-            //接单了就可以操作外部报关放行,通关前审核必须先操作外部报关放行,且该节点不再流程节点上显示
-            orderTransport.setStatus(OrderStatusEnum.EXT_CUSTOMS_RELEASE.getCode());
-
-            form.setStatus(OrderStatusEnum.EXT_CUSTOMS_RELEASE.getCode());
-            form.setStatusName(OrderStatusEnum.EXT_CUSTOMS_RELEASE.getDesc());
-        }else if(CommonConstant.COMFIRM_ORDER.equals(form.getCmd())){//确认接单
+        if(CommonConstant.COMFIRM_ORDER.equals(form.getCmd())){//确认接单
             orderTransport.setStatus(OrderStatusEnum.TMS_T_1.getCode());
 
             form.setStatus(OrderStatusEnum.TMS_T_1.getCode());

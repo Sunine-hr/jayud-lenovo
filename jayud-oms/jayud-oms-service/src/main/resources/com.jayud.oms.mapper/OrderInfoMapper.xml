@@ -62,7 +62,8 @@
         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
         ELSE FALSE
         END) isCost,
-        oi.`need_input_cost` needInputCost
+        oi.`need_input_cost` needInputCost,
+        oi.`customs_release`  customsRelease
         FROM
         order_info oi LEFT JOIN order_customs oc ON oi.`order_no` = oc.`main_order_no`
         LEFT JOIN product_classify pc1 ON pc1.`id_code` = oi.`class_code`
@@ -91,7 +92,8 @@
         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
         ELSE FALSE
         END) isCost,
-        oi.`need_input_cost` needInputCost
+        oi.`need_input_cost` needInputCost,
+        oi.`customs_release`  customsRelease
         FROM
         order_info oi LEFT JOIN order_transport ot ON
         oi.`order_no` = ot.`main_order_no`
@@ -109,6 +111,7 @@
         </if>
         <if test="form.cmd == 'outCustomsRelease'">
             and temp.classCode = 'ZGYS' and temp.`status` = 1
+            and temp.customsRelease = 0
             and not exists (SELECT 1 FROM order_customs oc WHERE oc.`main_order_no` = temp.orderNo)
         </if>
         <if test="form.cmd == 'dataNotAll'">
@@ -138,7 +141,7 @@
     </select>
 
     <select id="findGoCustomsAuditByPage" parameterType="com.jayud.oms.model.bo.QueryOrderInfoForm" resultType="com.jayud.oms.model.vo.OrderInfoVO" >
-        SELECT
+        SELECT DISTINCT
         oi.id,
         oi.`order_no` orderNo,
         ot.`goods_type` goodsType,
@@ -153,21 +156,29 @@
         (SELECT CONCAT(ota.`goods_desc`,' ',ota.`piece_amount`,'件',',','重量',ota.`weight`,'KG') FROM order_take_adr ota WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 1 ORDER BY ota.`id` LIMIT 1) goodsInfo,
         (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 1 ORDER BY ota.`id` LIMIT 1) takeAddress,
         (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 2 ORDER BY ota.`id` LIMIT 1) giveAddress,
+        (SELECT oc.`status` FROM order_customs oc WHERE oc.`main_order_no`= oi.`order_no` LIMIT 1) subCustomsStatus,
+        ot.`status` subTmsStatus,
         oi.`created_user` createdUser,
         DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%I:%S') createdTimeStr,
         (CASE  WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
         ELSE FALSE
-        END) isCost
+        END) isCost,
+        oi.`need_input_cost` needInputCost,
+        oi.`customs_release`  customsRelease
         FROM
-        order_transport ot LEFT JOIN order_info oi ON
+        order_info oi LEFT JOIN order_transport ot ON
         oi.`order_no` = ot.`main_order_no`
         LEFT JOIN port_info p ON ot.port_code = p.id_code
         LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`
-        WHERE (SELECT COUNT(1) FROM logistics_track lt WHERE lt.`main_order_id` = oi.`id` AND lt.`status`='C_5') =
+        WHERE oi.`class_code` = 'ZGYS'
+        AND ot.`status` = 'T_6'
+        AND (oi.`customs_release` = 1
+        OR
+        ((SELECT COUNT(1) FROM logistics_track lt WHERE lt.`main_order_id` = oi.`id` AND lt.`status`='C_5') =
         (SELECT COUNT(1) FROM order_customs oc WHERE oc.`main_order_no` = oi.`order_no`)
-        AND (SELECT COUNT(1) FROM logistics_track lt WHERE lt.`main_order_id` = oi.`id` AND lt.`status`='C_5') > 0
-        AND 1 = 1
+        AND (SELECT COUNT(1) FROM logistics_track lt WHERE lt.`main_order_id` = oi.`id` AND lt.`status`='C_5') > 0)
+        )
         <if test="form.orderNo != null and form.orderNo != ''">
             and oi.order_no = #{form.orderNo}
         </if>

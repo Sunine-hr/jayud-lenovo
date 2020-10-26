@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.XmlUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
@@ -32,8 +33,10 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author william
@@ -225,6 +228,81 @@ public class ApiController {
 
 
         return CommonResult.success();
+    }
+
+
+    @PostMapping("/push/finance/bylist")
+    public CommonResult pushDeterminedApplyNos(@RequestBody String param) {
+        JSONObject jsonObject = JSONObject.parseObject(param);
+        Map<String, Object> innerMap = jsonObject.getInnerMap();
+
+        List<String> list = (List<String>) MapUtil.get(innerMap, "list", List.class);
+        List<String> targetList = null;
+        if (CollectionUtil.isNotEmpty(list)) {
+            targetList = list;
+
+        } else {
+            return CommonResult.error(ResultEnum.PARAM_ERROR, "入参不能为空");
+        }
+
+        HashSet<String> existSet = new HashSet<>();
+        try {
+            InputStream inputStream = (new ClassPathResource("xml/Data.xml")).getInputStream();
+//            String path = classPathResource.getPath();
+
+//            XmlUtil.readXML(inputStream);
+            Document document = XmlUtil.readXML(inputStream);
+            Element documentElement = document.getDocumentElement();
+            NodeList info = documentElement.getElementsByTagName("info");
+            int length = info.getLength();
+            List<String> infoList = new ArrayList<>();
+            Integer count = 0;
+            for (int i = 0; i < info.getLength(); i++) {
+                Element item = (Element) info.item(i);
+                String cuScode = item.getAttribute("CUScode");
+                if (StringUtils.isEmpty(cuScode)) {
+                    continue;
+                }
+                String cusCode9 = cuScode.substring(9);
+
+                if (!targetList.contains(cusCode9)) {
+                    continue;
+                }
+                existSet.add(cusCode9);
+                String passtime = item.getAttribute("passtime");
+                if (DateUtil.parseDateTime(passtime).isAfter(DateUtil.parseDateTime("2020-10-01 00:00:00"))) {
+
+                    String thisRow = "i= " + i + "    passtime=" + passtime + "    CusCode18=" + cuScode + "    CusCode9=" + cusCode9;
+                    infoList.add(thisRow);
+                    System.out.println(thisRow);
+                    GetFinanceInfoForm getFinanceInfoForm = new GetFinanceInfoForm();
+                    getFinanceInfoForm.setApplyNo(cuScode);
+                    service.getFinanceInfoAndPush2Kingdee(getFinanceInfoForm);
+//                    count++;
+//                    if (count == 15) {
+//                        break;
+//                    }
+                    Thread.sleep(4000);
+                }
+
+            }
+            for (String s : infoList) {
+                System.out.println(s);
+            }
+            if (existSet.size() != targetList.size()) {
+                targetList.stream().filter(e -> !existSet.contains(e))
+                        .collect(Collectors.toList()).forEach(e -> {
+                    System.out.println(e);
+                });
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        return CommonResult.success();
+
     }
 
 }

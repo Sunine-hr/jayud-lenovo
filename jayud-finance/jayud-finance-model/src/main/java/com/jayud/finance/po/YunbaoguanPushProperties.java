@@ -36,7 +36,7 @@ public class YunbaoguanPushProperties {
 
     private Boolean error;
 
-    public  YunbaoguanPushProperties() {
+    public YunbaoguanPushProperties() {
         allowPush = new HashMap<>();
         allowPush.put(FormIDEnum.RECEIVABLE, true);
         allowPush.put(FormIDEnum.RECEIVABLE_OTHER, true);
@@ -46,6 +46,7 @@ public class YunbaoguanPushProperties {
 
     /**
      * 是否允许继续进行推送（false将直接退出推送逻辑）
+     *
      * @param formIDEnum
      * @return
      */

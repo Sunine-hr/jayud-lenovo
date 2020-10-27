@@ -24,7 +24,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 
@@ -42,14 +41,7 @@ import java.util.concurrent.*;
 public class CustomsFinanceServiceImpl implements CustomsFinanceService {
     @Autowired
     RedisUtils redisUtils;
-    @Value("${relation-setting.redis-key.yunbaoguan.rec-company}")
-    String yunbaoguanCompKeyRec;
-    @Value("${relation-setting.redis-key.yunbaoguan.rec-fee}")
-    String yunbaoguanFeeKeyRec;
-    @Value("${relation-setting.redis-key.yunbaoguan.pay-company}")
-    String yunbaoguanCompKeyPay;
-    @Value("${relation-setting.redis-key.yunbaoguan.pay-fee}")
-    String yunbaoguanFeeKeyPay;
+
     @Autowired
     KingdeeService kingdeeService;
     @Autowired
@@ -63,39 +55,17 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
     CookieService cookieService;
     @Autowired
     K3CloudConfig k3CloudConfig;
+    @Autowired
+    PreloadService preloadService;
 
     @Override
     public Boolean pushReceivable(List<CustomsReceivable> customsReceivable, YunbaoguanPushProperties properties) {
 
-        Map<String, CustomsFinanceCoRelation> coRelationMap = new HashMap<>();
-        Map<String, CustomsFinanceFeeRelation> feeRelationMap = new HashMap<>();
-        String compJson = redisUtils.get(yunbaoguanCompKeyRec);
-        if (StringUtils.isNotEmpty(compJson)) {
-            coRelationMap = (Map<String, CustomsFinanceCoRelation>) JSONObject.parseObject(compJson, Map.class);
-        } else {
-            List<CustomsFinanceCoRelation> list = coRelationService.list();
-            for (CustomsFinanceCoRelation item : list) {
-                if (!coRelationMap.containsKey(item.getYunbaoguanName()) && item.getDeprecated() == 0) {
-                    coRelationMap.put(item.getYunbaoguanName(), item);
-                }
-            }
-            redisUtils.set(yunbaoguanCompKeyRec, JSONUtil.toJsonStr(coRelationMap), RedisUtils.EXPIRE_THIRTY_MIN);
-        }
-        String feeJson = redisUtils.get(yunbaoguanFeeKeyRec);
-        if (StringUtils.isNotEmpty(feeJson)) {
-            feeRelationMap = (Map<String, CustomsFinanceFeeRelation>) JSONObject.parseObject(feeJson, Map.class);
-        } else {
-            List<CustomsFinanceFeeRelation> list = feeRelationService.list();
-            for (CustomsFinanceFeeRelation item : list) {
-                if (!feeRelationMap.containsKey(item.getYunbaoguanName()) && item.getDeprecated() == 0) {
-                    feeRelationMap.put(item.getYunbaoguanName(), item);
-                }
-            }
-            redisUtils.set(yunbaoguanFeeKeyRec, JSONUtil.toJsonStr(feeRelationMap), RedisUtils.EXPIRE_THIRTY_MIN);
-        }
+        Map<String, CustomsFinanceCoRelation> coRelationMap = preloadService.getCompanyRelationMap();
+        Map<String, CustomsFinanceFeeRelation> feeRelationMap = preloadService.getFeeRelationMap();
+
 
         if (CollectionUtil.isEmpty(feeRelationMap) || CollectionUtil.isEmpty(coRelationMap)) {
-            log.error("基础数据加载失败：费用或公司对应关系表加载失败");
             return false;
         }
 
@@ -155,8 +125,8 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
                         }
                         ApiModelProperty annotation = field.getAnnotation(ApiModelProperty.class);
 
-                        String jsonStr = JSONUtil.toJsonStr(feeRelationMap.get(annotation.value()));
-                        CustomsFinanceFeeRelation customsFinanceFeeRelation = JSONObject.parseObject(jsonStr, CustomsFinanceFeeRelation.class);
+
+                        CustomsFinanceFeeRelation customsFinanceFeeRelation = getRelationMapItem(annotation.value(), feeRelationMap, CustomsFinanceFeeRelation.class);
 
                         if (Objects.isNull(customsFinanceFeeRelation)) {
                             //费用无法对应金蝶,记录
@@ -231,7 +201,7 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
             //从财务给的数据中对应到金蝶的客户名称
             CustomsFinanceCoRelation customsFinanceCoRelation = null;
             try {
-                customsFinanceCoRelation = JSONObject.parseObject(JSONUtil.toJsonStr(coRelationMap.get(item.getCustomerName())), CustomsFinanceCoRelation.class);
+                customsFinanceCoRelation = getRelationMapItem(item.getCustomerName(), coRelationMap, CustomsFinanceCoRelation.class);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -305,36 +275,12 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
 
     @Override
     public Boolean pushPayable(List<CustomsPayable> customsPayableForms, YunbaoguanPushProperties properties) {
-        Map<String, CustomsFinanceCoRelation> coRelationMap = new HashMap<>();
-        Map<String, CustomsFinanceFeeRelation> feeRelationMap = new HashMap<>();
-        String compJson = redisUtils.get(yunbaoguanCompKeyPay);
-        if (StringUtils.isNotEmpty(compJson)) {
-            coRelationMap = (Map<String, CustomsFinanceCoRelation>) JSONObject.parseObject(compJson, Map.class);
-        } else {
-            List<CustomsFinanceCoRelation> list = coRelationService.list();
-            for (CustomsFinanceCoRelation item : list) {
-                if (!coRelationMap.containsKey(item.getYunbaoguanName()) && item.getDeprecated() == 0) {
-                    coRelationMap.put(item.getYunbaoguanName(), item);
-                }
-            }
-            redisUtils.set(yunbaoguanCompKeyPay, JSONUtil.toJsonStr(coRelationMap), RedisUtils.EXPIRE_THIRTY_MIN);
-        }
-        String feeJson = redisUtils.get(yunbaoguanFeeKeyPay);
-        if (StringUtils.isNotEmpty(feeJson)) {
-            feeRelationMap = (Map<String, CustomsFinanceFeeRelation>) JSONObject.parseObject(feeJson, Map.class);
-        } else {
-            List<CustomsFinanceFeeRelation> list = feeRelationService.list();
-            for (CustomsFinanceFeeRelation item : list) {
-                if (!feeRelationMap.containsKey(item.getYunbaoguanName()) && item.getDeprecated() == 0) {
-                    feeRelationMap.put(item.getYunbaoguanName(), item);
-                }
-            }
-            redisUtils.set(yunbaoguanFeeKeyPay, JSONUtil.toJsonStr(feeRelationMap), RedisUtils.EXPIRE_THIRTY_MIN);
-        }
+        Map<String, CustomsFinanceCoRelation> coRelationMap = preloadService.getCompanyRelationMap();
+        Map<String, CustomsFinanceFeeRelation> feeRelationMap = preloadService.getFeeRelationMap();
+
 
         //判断预加载数据是否成功
         if (CollectionUtil.isEmpty(feeRelationMap) || CollectionUtil.isEmpty(coRelationMap)) {
-            log.error("费用或公司名基础数据加载异常");
             return false;
         }
 
@@ -429,7 +375,7 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
             //尝试查询供应商名并写入
             CustomsFinanceCoRelation companyProfile = null;
             try {
-                companyProfile = JSONObject.parseObject(JSONUtil.toJsonStr(coRelationMap.get(customsPayable.getTargetName())), CustomsFinanceCoRelation.class);
+                companyProfile = getRelationMapItem(customsPayable.getTargetName(), coRelationMap, CustomsFinanceCoRelation.class);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -456,7 +402,8 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
 
                 CustomsFinanceFeeRelation customsFeeItem = null;
                 try {
-                    customsFeeItem = JSONObject.parseObject(JSONUtil.toJsonStr(feeRelationMap.get(payableForm.getFeeName())), CustomsFinanceFeeRelation.class);
+//                    customsFeeItem = JSONObject.parseObject(JSONUtil.toJsonStr(feeRelationMap.get(payableForm.getFeeName())), CustomsFinanceFeeRelation.class);
+                    customsFeeItem = getRelationMapItem(payableForm.getFeeName(), feeRelationMap, CustomsFinanceFeeRelation.class);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -592,22 +539,8 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
      * @return
      */
     private YunbaoguanPushProperties doRemove(YunbaoguanPushProperties properties) {
-        Map<String, CustomsFinanceCoRelation> coRelationMap = new HashMap<>();
-        String compJson = redisUtils.get(yunbaoguanCompKeyRec);
-        if (StringUtils.isNotEmpty(compJson)) {
-            coRelationMap = (Map<String, CustomsFinanceCoRelation>) JSONObject.parseObject(compJson, Map.class);
-        } else {
-            List<CustomsFinanceCoRelation> list = coRelationService.list();
-            for (CustomsFinanceCoRelation item : list) {
-                if (!coRelationMap.containsKey(item.getYunbaoguanName()) && item.getDeprecated() == 0) {
-                    coRelationMap.put(item.getYunbaoguanName(), item);
-                }
-            }
-            redisUtils.set(yunbaoguanCompKeyRec, JSONUtil.toJsonStr(coRelationMap), RedisUtils.EXPIRE_THIRTY_MIN);
-        }
-
+        Map<String, CustomsFinanceCoRelation> coRelationMap = preloadService.getCompanyRelationMap();
         if (CollectionUtil.isEmpty(coRelationMap)) {
-            log.error("基础数据加载失败：费用或公司对应关系表加载失败");
             properties.setError(true);
             return properties;
         }
@@ -724,6 +657,12 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
         jsonObject.put("data", data);
         String result = JSONUtil.toJsonStr(jsonObject);
         log.debug("请求内容：{}", result);
+        return result;
+    }
+
+    private <T> T getRelationMapItem(String key, Map<String, T> sourceMap, Class<T> returnType) {
+        String jsonStr = JSONUtil.toJsonStr(sourceMap.get(key));
+        T result = JSONObject.parseObject(jsonStr, returnType);
         return result;
     }
 

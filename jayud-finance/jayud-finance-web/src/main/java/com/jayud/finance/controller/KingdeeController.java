@@ -4,12 +4,18 @@ import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
+import com.jayud.common.utils.ConvertUtil;
+import com.jayud.finance.bo.CustomsFinanceCoRelationForm;
+import com.jayud.finance.bo.CustomsFinanceFeeRelationForm;
 import com.jayud.finance.bo.PayableHeaderForm;
 import com.jayud.finance.bo.ReceivableHeaderForm;
 import com.jayud.finance.enums.FormIDEnum;
+import com.jayud.finance.po.CustomsFinanceCoRelation;
+import com.jayud.finance.po.CustomsFinanceFeeRelation;
 import com.jayud.finance.po.Payable;
 import com.jayud.finance.po.Receivable;
 import com.jayud.finance.service.KingdeeService;
+import com.jayud.finance.service.PreloadService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
@@ -19,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.Map;
 
 /**
@@ -32,6 +39,8 @@ import java.util.Map;
 public class KingdeeController {
     @Autowired
     KingdeeService service;
+    @Autowired
+    PreloadService preloadService;
 
     /**
      * 推送应收单到金蝶
@@ -91,9 +100,19 @@ public class KingdeeController {
         return service.getInvoice(orderNo, Receivable.class);
     }
 
-    @PostMapping("/test")
-    @ApiOperation(value = "test")
-    public CommonResult gettest(){
-        return  CommonResult.success("成功");
+    @PostMapping("/relation/add/fee")
+    @ApiOperation(value = "添加 云报关-金蝶 费用关系")
+    public CommonResult addFee(@RequestBody @Valid CustomsFinanceFeeRelationForm form) {
+        CustomsFinanceFeeRelation relation = ConvertUtil.convert(form, CustomsFinanceFeeRelation.class);
+        Map<String, CustomsFinanceFeeRelation> stringCustomsFinanceFeeRelationMap = preloadService.addFeeRelation(relation);
+        return CommonResult.success(stringCustomsFinanceFeeRelationMap);
+    }
+
+    @PostMapping("/relation/add/company")
+    @ApiOperation(value = "添加 云报关-金蝶 客户关系")
+    public CommonResult addFee(@RequestBody @Valid CustomsFinanceCoRelationForm form) {
+        CustomsFinanceCoRelation relation = ConvertUtil.convert(form, CustomsFinanceCoRelation.class);
+        Map<String, CustomsFinanceCoRelation> stringCustomsFinanceCoRelationMap = preloadService.addCompanyRelation(relation);
+        return CommonResult.success(stringCustomsFinanceCoRelationMap);
     }
 }

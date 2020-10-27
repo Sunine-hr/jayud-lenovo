@@ -228,8 +228,8 @@ public class OrderInTransportController {
             auditInfoForm.setAuditTypeDesc(CommonConstant.GO_CUSTOMS_CHECK_DESC);
         }else if(CommonConstant.CAR_GO_CUSTOMS.equals(form.getCmd())){//车辆通关
             if (!(OrderStatusEnum.TMS_T_9.getCode().equals(form.getStatus()) ||
-                    OrderStatusEnum.TMS_T_9_1.equals(form.getStatus()) ||
-                    OrderStatusEnum.TMS_T_9_2.equals(form.getStatus()))) {
+                    OrderStatusEnum.TMS_T_9_1.getCode().equals(form.getStatus()) ||
+                    OrderStatusEnum.TMS_T_9_2.getCode().equals(form.getStatus()))) {
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }
             orderTransport.setStatus(form.getStatus());

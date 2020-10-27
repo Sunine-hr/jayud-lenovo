@@ -2,6 +2,7 @@ package com.jayud.tms.service.impl;
 
 import com.jayud.tms.model.po.OrderSendCars;
 import com.jayud.tms.mapper.OrderSendCarsMapper;
+import com.jayud.tms.model.vo.OrderSendCarsVO;
 import com.jayud.tms.service.IOrderSendCarsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -17,4 +18,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, OrderSendCars> implements IOrderSendCarsService {
 
+    @Override
+    public OrderSendCarsVO getOrderSendInfo(String orderNo) {
+        return null;
+    }
 }

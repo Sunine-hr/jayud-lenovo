@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 /**
  * @author mfc
@@ -36,8 +37,8 @@ public class SaveUserForm {
     @NotEmpty(message = "邮箱不能为空")
     private String email;
 
-    //角色
-
+    @ApiModelProperty(value = "该用户可查看的角色id")
+    private List<Long> roleIds;
 
 
 }

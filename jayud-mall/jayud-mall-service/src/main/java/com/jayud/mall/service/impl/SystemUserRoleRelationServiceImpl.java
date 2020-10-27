@@ -41,9 +41,10 @@ public class SystemUserRoleRelationServiceImpl extends ServiceImpl<SystemUserRol
     }
 
     @Override
-    public List<SystemUserRoleRelation> findRoleMenuRelationByRoleId(Long userId) {
+    public List<SystemUserRoleRelation> findUserRoleRelationByUserId(Long userId) {
         QueryWrapper<SystemUserRoleRelation> wrapper = new QueryWrapper<>();
         wrapper.eq("user_id", userId);
         return this.list(wrapper);
     }
+
 }

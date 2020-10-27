@@ -34,7 +34,5 @@ public interface ISystemUserRoleRelationService extends IService<SystemUserRoleR
      * @param userId
      * @return
      */
-    List<SystemUserRoleRelation> findRoleMenuRelationByRoleId(Long userId);
-
-
+    List<SystemUserRoleRelation> findUserRoleRelationByUserId(Long userId);
 }

@@ -22,9 +22,9 @@ public class SystemUserRoleRelationController {
     ISystemUserRoleRelationService userRoleRelationService;
 
     @ApiOperation(value = "根据用户Id，查询用户角色信息")
-    @PostMapping(value = "/findUserMenuRelationByRoleId")
-    public CommonResult<List<SystemUserRoleRelation>> findUserMenuRelationByRoleId(@RequestParam(value = "userId") Long userId){
-        List<SystemUserRoleRelation> roleMenuRelationList = userRoleRelationService.findRoleMenuRelationByRoleId(userId);
+    @PostMapping(value = "/findUserRoleRelationByUserId")
+    public CommonResult<List<SystemUserRoleRelation>> findUserRoleRelationByUserId(@RequestParam(value = "userId") Long userId){
+        List<SystemUserRoleRelation> roleMenuRelationList = userRoleRelationService.findUserRoleRelationByUserId(userId);
         return CommonResult.success(roleMenuRelationList);
     }
 

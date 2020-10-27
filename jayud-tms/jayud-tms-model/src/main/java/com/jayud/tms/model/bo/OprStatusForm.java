@@ -9,6 +9,10 @@ import java.util.List;
 
 @Data
 public class OprStatusForm {
+
+    @ApiModelProperty(value = "主订单号,通关前审核时需，其他场景忽略")
+    private String mainOrderNo;
+
     @ApiModelProperty(value = "主订单ID",required = true)
     private Long mainOrderId;
 

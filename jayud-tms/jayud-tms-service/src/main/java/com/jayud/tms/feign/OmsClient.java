@@ -3,8 +3,10 @@ package com.jayud.tms.feign;
 
 import com.jayud.common.ApiResult;
 import com.jayud.tms.model.bo.AuditInfoForm;
+import com.jayud.tms.model.bo.HandleSubProcessForm;
 import com.jayud.tms.model.bo.OprStatusForm;
 import com.jayud.tms.model.vo.InitComboxVO;
+import com.jayud.tms.model.vo.OrderStatusVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,5 +56,12 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/delOprStatus")
     ApiResult delOprStatus(@RequestParam("orderId") Long orderId);
+
+    /**
+     * 子订单流程
+     * @return
+     */
+    @RequestMapping(value = "/api/handleSubProcess")
+    ApiResult<List<OrderStatusVO>> handleSubProcess(@RequestBody HandleSubProcessForm form);
 
 }

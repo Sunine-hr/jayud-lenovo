@@ -8,6 +8,7 @@ import com.jayud.tms.model.bo.QueryOrderTmsForm;
 import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.InputOrderTransportVO;
 import com.jayud.tms.model.vo.OrderTransportVO;
+import com.jayud.tms.model.vo.SendCarPdfVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -36,4 +37,12 @@ public interface OrderTransportMapper extends BaseMapper<OrderTransport> {
      * @return
      */
     IPage<OrderTransportVO> findTransportOrderByPage(Page page, @Param("form") QueryOrderTmsForm form);
+
+    /**
+     * 确认派车渲染PDF数据
+     * @param orderNo
+     * @param classCode
+     * @return
+     */
+    SendCarPdfVO initPdfData(@Param("orderNo") String orderNo, @Param("classCode") String classCode);
 }

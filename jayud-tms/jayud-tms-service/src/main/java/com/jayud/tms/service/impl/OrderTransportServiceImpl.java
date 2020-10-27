@@ -18,10 +18,7 @@ import com.jayud.tms.model.bo.QueryOrderTmsForm;
 import com.jayud.tms.model.po.DeliveryAddress;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import com.jayud.tms.model.po.OrderTransport;
-import com.jayud.tms.model.vo.InputOrderTakeAdrVO;
-import com.jayud.tms.model.vo.InputOrderTransportVO;
-import com.jayud.tms.model.vo.OrderTransportVO;
-import com.jayud.tms.model.vo.SendCarPdfVO;
+import com.jayud.tms.model.vo.*;
 import com.jayud.tms.service.IDeliveryAddressService;
 import com.jayud.tms.service.IOrderTakeAdrService;
 import com.jayud.tms.service.IOrderTransportService;
@@ -174,8 +171,29 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 
     @Override
     public SendCarPdfVO initPdfData(String orderNo, String classCode) {
-        // TODO
-        return null;
+        SendCarPdfVO sendCarPdfVO = baseMapper.initPdfData(orderNo,classCode);
+        if(sendCarPdfVO == null){
+            sendCarPdfVO = new SendCarPdfVO();
+        }
+        List<InputOrderTakeAdrVO> inputOrderTakeAdrVOS = orderTakeAdrService.findTakeGoodsInfo(orderNo);
+        List<TakeGoodsInfoVO> takeGoodsInfoVOS = new ArrayList<>();
+        for (InputOrderTakeAdrVO inputOrderTakeAdrVO : inputOrderTakeAdrVOS) {
+            if(CommonConstant.VALUE_1.equals(String.valueOf(inputOrderTakeAdrVO.getOprType()))){//提货
+
+            }
+        }
+        //提货信息
+
+        sendCarPdfVO.setTakeInfo1(ConvertUtil.convertList(inputOrderTakeAdrVOS,TakeGoodsInfoVO.class));
+        //送货地址/联系人/联系电话/装车要求
+
+        //接单人联系电话
+
+        //货物信息
+
+        //总件数/总重量/总体积
+
+        return sendCarPdfVO;
     }
 
     /**

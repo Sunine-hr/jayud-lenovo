@@ -57,4 +57,10 @@ public class InputOrderTakeAdrVO {
     @ApiModelProperty(value = "类型(1提货 2收货)")
     private Integer oprType;
 
+    @ApiModelProperty(value = "车型(1吨车 2柜车)")
+    private Integer vehicleType;
+
+    @ApiModelProperty(value = "车型(1-3T 2-5t 3-8T 4-10T)")
+    private Integer vehicleSize;
+
 }

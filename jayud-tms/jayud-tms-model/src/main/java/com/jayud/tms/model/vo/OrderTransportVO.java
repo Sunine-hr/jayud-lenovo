@@ -1,5 +1,6 @@
 package com.jayud.tms.model.vo;
 
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -8,6 +9,9 @@ public class OrderTransportVO {
 
     @ApiModelProperty(value = "子订单ID")
     private Long id;
+
+    @ApiModelProperty(value = "主订单ID")
+    private Long mainOrderId;
 
     @ApiModelProperty(value = "主订单")
     private String mainOrderNo;
@@ -56,6 +60,9 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "详细地址")
     private String address1;
 
+    @ApiModelProperty(value = "提货完整地址")
+    private String entireAddress1;
+
     @ApiModelProperty(value = "省")//送货
     private String stateName2;
 
@@ -65,11 +72,30 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "详细地址")
     private String address2;
 
+    @ApiModelProperty(value = "送货完整地址")
+    private String entireAddress2;
+
     @ApiModelProperty(value = "创建人")
     private String createdUser;
 
     @ApiModelProperty(value = "创建时间")
     private String createdTimeStr;
 
+
+    public String getEntireAddress1() {
+        if(StringUtil.isNullOrEmpty(this.stateName1) || StringUtil.isNullOrEmpty(this.cityName1) ||
+                StringUtil.isNullOrEmpty(this.address1)){
+            return "";
+        }
+        return this.entireAddress1 = this.stateName1 + this.cityName1 + this.address1;
+    }
+
+    public String getEntireAddress2() {
+        if(StringUtil.isNullOrEmpty(this.stateName2) || StringUtil.isNullOrEmpty(this.cityName2) ||
+                StringUtil.isNullOrEmpty(this.address2)){
+            return "";
+        }
+        return this.entireAddress2 = this.stateName2 + this.cityName2 + this.address2;
+    }
 
 }

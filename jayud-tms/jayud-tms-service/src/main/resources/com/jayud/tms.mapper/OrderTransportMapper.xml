@@ -117,7 +117,11 @@
             t.address address1,
             s.state_name stateName2,
             s.city_name cityName2,
-            s.address address2
+            s.address address2,
+            ot.`encode`,
+            ot.`vehicle_type` vehicleType,
+            ot.`vehicle_size` vehicleSize,
+            ot.`cntr_no` cntrNo
         FROM
             order_transport ot
             LEFT JOIN order_info oi
@@ -162,13 +166,13 @@
             AND ot.`status` = 'T_1'
         </if>
         <if test="form.cmd == 'T_3'">
-            and ot.`status` == 'T_2'
+            and ot.`status` = 'T_2'
         </if>
         <if test="form.cmd == 'T_3_1'">
-            AND ot.`status` == 'T_3_1'
+            AND ot.`status` = 'T_3_1'
         </if>
         <if test="form.cmd == 'T_4'">
-            AND ot.`status` == 'T_3'
+            AND ot.`status` = 'T_3'
         </if>
         <if test="form.cmd == 'T_5'">
             AND ot.`status` = 'T_4'

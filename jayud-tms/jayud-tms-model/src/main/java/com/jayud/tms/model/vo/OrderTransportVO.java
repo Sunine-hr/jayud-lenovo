@@ -37,6 +37,18 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "客户名称")
     private String customerName;
 
+    @ApiModelProperty(value = "六联单号")
+    private String encode;
+
+    @ApiModelProperty(value = "车型")
+    private String vehicleType;
+
+    @ApiModelProperty(value = "车型尺寸")
+    private String vehicleSize;
+
+    @ApiModelProperty(value = "柜号")
+    private String cntrNo;
+
     //货物信息
     @ApiModelProperty(value = "货物描述")
     private String goodsDesc;
@@ -50,7 +62,7 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "重量")
     private String weight;
 
-    //提供信息
+    //提供货信息
     @ApiModelProperty(value = "省")//提货
     private String stateName1;
 

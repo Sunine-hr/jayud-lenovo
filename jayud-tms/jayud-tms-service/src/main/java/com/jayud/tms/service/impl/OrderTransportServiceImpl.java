@@ -20,6 +20,7 @@ import com.jayud.tms.model.po.OrderTakeAdr;
 import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.*;
 import com.jayud.tms.service.IDeliveryAddressService;
+import com.jayud.tms.service.IOrderSendCarsService;
 import com.jayud.tms.service.IOrderTakeAdrService;
 import com.jayud.tms.service.IOrderTransportService;
 import io.netty.util.internal.StringUtil;
@@ -52,6 +53,9 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 
     @Autowired
     IOrderTransportService orderTransportService;
+
+    @Autowired
+    IOrderSendCarsService orderSendCarsService;
 
 
     @Override
@@ -176,16 +180,28 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             sendCarPdfVO = new SendCarPdfVO();
         }
         List<InputOrderTakeAdrVO> inputOrderTakeAdrVOS = orderTakeAdrService.findTakeGoodsInfo(orderNo);
-        List<TakeGoodsInfoVO> takeGoodsInfoVOS = new ArrayList<>();
+        List<TakeGoodsInfoVO> takeGoodsInfo1 = new ArrayList<>();
+        List<TakeGoodsInfoVO> takeGoodsInfo2 = new ArrayList<>();
         for (InputOrderTakeAdrVO inputOrderTakeAdrVO : inputOrderTakeAdrVOS) {
             if(CommonConstant.VALUE_1.equals(String.valueOf(inputOrderTakeAdrVO.getOprType()))){//提货
-
+                takeGoodsInfo1.add(ConvertUtil.convert(inputOrderTakeAdrVO,TakeGoodsInfoVO.class));
+            }else {
+                takeGoodsInfo2.add(ConvertUtil.convert(inputOrderTakeAdrVO,TakeGoodsInfoVO.class));
             }
         }
         //提货信息
-
-        sendCarPdfVO.setTakeInfo1(ConvertUtil.convertList(inputOrderTakeAdrVOS,TakeGoodsInfoVO.class));
+        sendCarPdfVO.setTakeInfo1(takeGoodsInfo1);
         //送货地址/联系人/联系电话/装车要求
+        OrderSendCarsVO orderSendCarsVO = orderSendCarsService.getOrderSendInfo(orderNo);
+        if(takeGoodsInfo2.size() > 1){//获取中转仓信息
+
+        }else if(takeGoodsInfo2.size() == 1){
+            sendCarPdfVO.setDeliveryAddress(takeGoodsInfo2.get(0).getStateName()+takeGoodsInfo2.get(0).getCityName()+
+                    takeGoodsInfo2.get(0).getAddress());
+            sendCarPdfVO.setDeliveryContacts(takeGoodsInfo2.get(0).getContacts());
+            sendCarPdfVO.setDeliveryPhone(takeGoodsInfo2.get(0).getPhone());
+        }
+       sendCarPdfVO.setRemarks("");
 
         //接单人联系电话
 

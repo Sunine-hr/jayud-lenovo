@@ -23,7 +23,7 @@ public class SystemRoleMenuRelationController {
 
     @ApiOperation(value = "根据角色Id，查询角色菜单")
     @PostMapping(value = "/findRoleMenuRelationByRoleId")
-    public CommonResult<List<SystemRoleMenuRelation>> findUserByPage(@RequestParam(value = "roleId") Long roleId){
+    public CommonResult<List<SystemRoleMenuRelation>> findRoleMenuRelationByRoleId(@RequestParam(value = "roleId") Long roleId){
         List<SystemRoleMenuRelation> roleMenuRelationList = roleMenuRelationService.findRoleMenuRelationByRoleId(roleId);
         return CommonResult.success(roleMenuRelationList);
     }

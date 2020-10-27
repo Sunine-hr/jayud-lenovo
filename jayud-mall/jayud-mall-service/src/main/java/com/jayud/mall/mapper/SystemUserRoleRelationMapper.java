@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * <p>
  * 用户对应角色 Mapper 接口
@@ -17,4 +19,9 @@ import org.springframework.stereotype.Component;
 @Component
 public interface SystemUserRoleRelationMapper extends BaseMapper<SystemUserRoleRelation> {
 
+    /**
+     * 根据userIds，删除用户关联的角色信息
+     * @param userIds
+     */
+    void removeUserRoleRelation(List<Long> userIds);
 }

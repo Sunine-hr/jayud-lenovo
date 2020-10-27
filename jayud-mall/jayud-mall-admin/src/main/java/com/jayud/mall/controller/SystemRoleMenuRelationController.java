@@ -21,7 +21,7 @@ public class SystemRoleMenuRelationController {
     @Autowired
     ISystemRoleMenuRelationService roleMenuRelationService;
 
-    @ApiOperation(value = "用户分页查询")
+    @ApiOperation(value = "根据角色Id，查询角色菜单")
     @PostMapping(value = "/findRoleMenuRelationByRoleId")
     public CommonResult<List<SystemRoleMenuRelation>> findUserByPage(@RequestParam(value = "roleId") Long roleId){
         List<SystemRoleMenuRelation> roleMenuRelationList = roleMenuRelationService.findRoleMenuRelationByRoleId(roleId);

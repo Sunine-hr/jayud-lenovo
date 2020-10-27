@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.tools.mapper.CargoNameMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.tools.model.po.CargoName">
+        <id column="id" property="id" />
+        <result column="xh" property="xh" />
+        <result column="dh" property="dh" />
+        <result column="dz" property="dz" />
+        <result column="ytdh" property="ytdh" />
+        <result column="tdh" property="tdh" />
+        <result column="sl" property="sl" />
+        <result column="zl" property="zl" />
+        <result column="remark" property="remark" />
+        <result column="hpmc" property="hpmc" />
+        <result column="js" property="js" />
+        <result column="pce" property="pce" />
+        <result column="jz" property="jz" />
+        <result column="xm1" property="xm1" />
+        <result column="xm2" property="xm2" />
+        <result column="address" property="address" />
+        <result column="hm1" property="hm1" />
+        <result column="xm3" property="xm3" />
+        <result column="hm2" property="hm2" />
+        <result column="bjdh" property="bjdh" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, xh, dh, dz, ytdh, tdh, sl, zl, remark, hpmc, js, pce, jz, xm1, xm2, address, hm1, xm3, hm2, bjdh
+    </sql>
+
+    <insert id="importExcel" parameterType="com.jayud.tools.model.po.CargoName">
+
+        INSERT INTO `cargo_name` (
+        `xh`,
+        `dh`,
+        `dz`,
+        `ytdh`,
+        `tdh`,
+        `sl`,
+        `zl`,
+        `remark`,
+        `hpmc`,
+        `js`,
+        `pce`,
+        `jz`,
+        `xm1`,
+        `xm2`,
+        `address`,
+        `hm1`,
+        `xm3`,
+        `hm2`,
+        `bjdh`
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            1,
+            '0H4RS003',
+            22.9240,
+            'G01311708092',
+            '00712428595',
+            1,
+            0.7540,
+            '全家普货',
+            '服饰',
+            1,
+            'PCE',
+            2.4679,
+            '余婉真',
+            '余婉真',
+            '台湾省新竹縣竹北市竹北市華興街287號1樓',
+            '0963085778',
+            '余婉真',
+            '0963085778',
+            'FS0170911249574398796'
+            )
+        </foreach>
+    </insert>
+
+
+
+</mapper>

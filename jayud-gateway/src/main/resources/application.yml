@@ -83,3 +83,10 @@ spring:
           filters:
           - StripPrefix=1
           - IgnoreGlobalFilterFactor
+        - id: route-jayud-tools      #佳裕达jayud-tools 佳裕达小工具项目
+          uri: lb://jayud-tools      # uri以lb://开头（后面接的服务名称)
+          predicates:
+            - Path=/jayudTools/**
+          filters:
+            - StripPrefix=1
+            - IgnoreGlobalFilterFactor

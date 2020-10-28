@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,21 +42,29 @@ public class CustomsHandbookServiceImpl implements CustomsHandbookService {
         List<ExcelPageBase> originData = ExcelUtils.getCustomizedExcelInfo(file, excelPage, 0);
 
         //处理数据
-        List<String> blackList = handbookBlacklistService.list()
+        Map<String, CustomsHandbookBlacklist> blackListMap = handbookBlacklistService.list()
                 .stream()
-                .map(CustomsHandbookBlacklist::getName)
-                .collect(Collectors.toList());
+                .collect(Collectors.toMap(CustomsHandbookBlacklist::getName, e -> e));
+
         List<ExcelPageBase> cleanPage = new ArrayList<>();
 
         List<ExcelPageBase> dirtyPage = originData.stream().filter(e -> {
             try {
                 Method getGoodName = excelPage.getClass().getMethod("getGoodName");
                 Object invoke = getGoodName.invoke(e);
-                if (null != invoke && blackList.contains(invoke.toString())) {
-                    return true;//命中黑名单
+
+                Method setMayError = excelPage.getClass().getMethod("setMayError", Boolean.class);
+                Method setReplacement = excelPage.getClass().getMethod("setReplacement", String.class);
+
+                if (null != invoke && blackListMap.containsKey(invoke.toString())) {
+                    //命中黑名单
+                    setMayError.invoke(e, true);
+                    setReplacement.invoke(e, blackListMap.get(invoke.toString()).getReplacement());
+                    return true;
                 } else {
+                    //未命中黑名单
                     cleanPage.add(e);
-                    return false;//未命中黑名单
+                    return false;
                 }
             } catch (Exception exception) {
                 exception.printStackTrace();
@@ -64,8 +73,8 @@ public class CustomsHandbookServiceImpl implements CustomsHandbookService {
         }).collect(Collectors.toList());
 
 
-        SheetDTO passed = new SheetDTO("通过筛查", clz, cleanPage);
-        SheetDTO unSupported = new SheetDTO("包含敏感词", clz, dirtyPage);
+        SheetDTO passed = new SheetDTO("通过筛查", clz, cleanPage, Lists.newArrayList("replacement", "mayError"));
+        SheetDTO unSupported = new SheetDTO("包含敏感词", clz, dirtyPage, new ArrayList<>());
         List<SheetDTO> list = Lists.newArrayList(passed, unSupported);
 
         ExcelUtils.exportMultiPageExcel(list, "导出文件", response);

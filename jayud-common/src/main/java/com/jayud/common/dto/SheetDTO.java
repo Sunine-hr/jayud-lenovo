@@ -13,7 +13,20 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SheetDTO<T> {
+    /**
+     * excel sheet 名称
+     */
     private String sheetName;
+    /**
+     * 本页数据实体
+     */
     private Class<T> clz;
+    /**
+     * 数据
+     */
     private List<T> data;
+    /**
+     * 指定要排除的列名
+     */
+    private List<String> excludeCols;
 }

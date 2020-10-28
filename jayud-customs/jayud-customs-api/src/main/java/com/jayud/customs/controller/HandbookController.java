@@ -25,8 +25,12 @@ public class HandbookController {
     @PostMapping("/process/name/excel")
     public void processExcel(@RequestPart(name = "file") MultipartFile file, HttpServletResponse response) {
         //todo  后续完善：可能需要根据客户名获取相应的接收实体类名，进行处理
-        String customerName = "Xianda";
+//        String customerName = "Xianda";
+//        String className = "BlacklistCheck" + customerName + "Form";
+
+        String customerName = "Default";
         String className = "BlacklistCheck" + customerName + "Form";
+
 
         //处理请求
         try {

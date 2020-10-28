@@ -93,7 +93,10 @@ public class ExcelUtils {
 
                 //获取需要的字段名-列号,直接尝试赋值
                 Arrays.stream(clz.getDeclaredFields())
-                        .filter(e -> null != e.getAnnotation(ColProperties.class))//筛出需要的字段
+                        .filter(e -> {
+                            ColProperties annotation = e.getAnnotation(ColProperties.class);
+                            return (null != annotation && annotation.col() > 0);
+                        })//筛出需要的字段
                         .forEach(e -> {
                             int col = e.getAnnotation(ColProperties.class).col();
                             Class<?> type = e.getType();
@@ -102,14 +105,16 @@ public class ExcelUtils {
                             try {
                                 setMethod = clz.getMethod("set" + e.getName().substring(0, 1).toUpperCase() + e.getName().substring(1), type);
                             } catch (NoSuchMethodException noSuchMethodException) {
-                                noSuchMethodException.printStackTrace();
+//                                noSuchMethodException.printStackTrace();
+                                log.error(noSuchMethodException.getMessage());
                             }
 
                             Object colValue = null;
                             try {
                                 colValue = items.get(col - 1);
                             } catch (Exception exception) {
-                                exception.printStackTrace();
+//                                exception.printStackTrace();
+                               log.error(exception.getMessage());
                             }
 
                             if (null == setMethod || null == colValue) {
@@ -133,7 +138,8 @@ public class ExcelUtils {
                                     }
                                 }
                             } catch (Exception ex) {
-                                ex.printStackTrace();
+//                                ex.printStackTrace();
+                                log.error(ex.getMessage());
                             }
                         });
 
@@ -141,7 +147,7 @@ public class ExcelUtils {
             }
             return results;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return null;
 
@@ -376,6 +382,8 @@ public class ExcelUtils {
 
 
     /**
+     * 导出多页excel
+     *
      * @param sheets
      * @param fileName
      * @param response
@@ -412,7 +420,7 @@ public class ExcelUtils {
             List<String> titleName = new ArrayList<>();
             for (Field field : fields) {
                 ColProperties colProperties = field.getAnnotation(ColProperties.class);
-                if (null != colProperties) {
+                if (null != colProperties && !sheet.getExcludeCols().contains(field.getName())) {
                     titleName.add(field.getName());
                     if (StringUtils.isNotEmpty(colProperties.name())) {
                         //标题的别名 addHeaderAlias( [字段名],[别名] )
@@ -448,7 +456,6 @@ public class ExcelUtils {
                 currentSheet.setColumnWidth(j, currentSheet.getColumnWidth(j) * 17 / 10);
             }
         }
-
 
         try {
             bigWriter.flush(outputStream, true);

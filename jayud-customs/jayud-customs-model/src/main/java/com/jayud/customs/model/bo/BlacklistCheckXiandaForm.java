@@ -8,7 +8,6 @@ import lombok.Data;
  * 先达香港-客户模板抓取定义
  */
 @Data
-
 public class BlacklistCheckXiandaForm extends ExcelPageBase {
     public BlacklistCheckXiandaForm(Integer startRow) {
         this.setStartRow(startRow);

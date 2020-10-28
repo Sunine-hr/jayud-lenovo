@@ -7,5 +7,8 @@ import lombok.Data;
  */
 @Data
 public class ExcelPageBase<T> {
-    private Integer startRow = 0;
+    /**
+     * 初始值为1=第一行
+     */
+    private Integer startRow = 1;
 }

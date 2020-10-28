@@ -23,7 +23,17 @@ public @interface ColProperties {
     int col() default 0;
 
     /**
+     * 输出时使用：
+     * <br>在特定情况下读取数据时
+     * <br>
+     *
+     * @return
+     */
+    boolean forOutput() default false;
+
+    /**
      * 本列是否存在合并单元格
+     *
      * @return
      */
     boolean mayMerged() default false;

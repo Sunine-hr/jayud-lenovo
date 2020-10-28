@@ -2,6 +2,7 @@ package com.jayud.tools.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.tools.model.po.CargoName;
+import com.jayud.tools.model.vo.CargoNameSmallVO;
 import com.jayud.tools.model.vo.CargoNameVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Component;
@@ -44,4 +45,20 @@ public interface CargoNameMapper extends BaseMapper<CargoName> {
      * 删除所有`货物名称表`
      */
     void deleteAllCargoName();
+
+    /**
+     * <p>查询A类表list集合</p>
+     * <p>V2</p>
+     * <p>A类表:不存在`敏感品名`的货物表</p>
+     * @return
+     */
+    List<CargoNameSmallVO> findCargoNameListByAV2();
+
+    /**
+     * <p>查询B类表list集合</p>
+     * <p>V2</p>
+     * <p>B类表:存在`敏感品名`的货物表</p>
+     * @return
+     */
+    List<CargoNameSmallVO> findCargoNameListByBV2();
 }

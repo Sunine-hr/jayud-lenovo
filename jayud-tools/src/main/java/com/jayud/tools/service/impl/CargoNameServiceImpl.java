@@ -3,6 +3,7 @@ package com.jayud.tools.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.tools.mapper.CargoNameMapper;
 import com.jayud.tools.model.po.CargoName;
+import com.jayud.tools.model.vo.CargoNameSmallVO;
 import com.jayud.tools.model.vo.CargoNameVO;
 import com.jayud.tools.service.ICargoNameService;
 import com.jayud.tools.utils.MathUtils;
@@ -85,5 +86,36 @@ public class CargoNameServiceImpl extends ServiceImpl<CargoNameMapper, CargoName
     @Override
     public void deleteAllCargoName() {
         cargoNameMapper.deleteAllCargoName();
+    }
+
+    @Override
+    public void importExcelV2(List<List<Object>> list) {
+        //构造插入的数据
+        List<CargoName> cargoNameList = new ArrayList<>();
+        //int i = 1，从第2行记录开始计算，跳过表头列
+        for(int i=1; i<list.size(); i++){
+            List<Object> o = list.get(i);
+            CargoName cargoName = new CargoName();
+            cargoName.setYtdh(String.valueOf(o.get(0)));
+            cargoName.setZl(MathUtils.getBigDecimal(o.get(1)));
+            cargoName.setXm1(String.valueOf(o.get(2)));
+            cargoName.setJs(Integer.valueOf(String.valueOf(o.get(3))));
+            cargoName.setHpmc(String.valueOf(o.get(4)));
+            //add cargoName
+            cargoNameList.add(cargoName);
+        }
+
+        this.saveBatch(cargoNameList);
+
+    }
+
+    @Override
+    public List<CargoNameSmallVO> findCargoNameListByAV2() {
+        return cargoNameMapper.findCargoNameListByAV2();
+    }
+
+    @Override
+    public List<CargoNameSmallVO> findCargoNameListByBV2() {
+        return cargoNameMapper.findCargoNameListByBV2();
     }
 }

@@ -142,5 +142,32 @@
         delete from cargo_name
     </delete>
 
+    <!--A类表:不存在`敏感品名`的货物表-->
+    <select id="findCargoNameListByAV2" resultType="com.jayud.tools.model.vo.CargoNameSmallVO">
+        select
+        t1.ytdh,
+        t1.zl,
+        t1.xm1,
+        t1.js,
+        t1.hpmc
+        from cargo_name t1
+        LEFT JOIN sensitive_commodity t2 on t1.hpmc=t2.`name`
+        where 1=1
+        and t2.`name` IS NULL
+    </select>
+
+    <!--B类表:存在`敏感品名`的货物表-->
+    <select id="findCargoNameListByBV2" resultType="com.jayud.tools.model.vo.CargoNameSmallVO">
+        select
+        t1.ytdh,
+        t1.zl,
+        t1.xm1,
+        t1.js,
+        t1.hpmc
+        from cargo_name t1
+        JOIN sensitive_commodity t2 on t1.hpmc=t2.`name`
+    </select>
+
+
 
 </mapper>

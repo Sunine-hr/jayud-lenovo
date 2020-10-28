@@ -52,6 +52,27 @@ public class OprStatusForm {
     @ApiModelProperty(value = "过磅数")
     private Double carWeighNum;
 
+    @ApiModelProperty(value = "车辆供应商ID")
+    private Long hkSupplierId;
+
+    @ApiModelProperty(value = "香港清关司机名称")
+    private String hkDriverName;
+
+    @ApiModelProperty(value = "香港清关司机电话")
+    private String hkDriverPhone;
+
+    @ApiModelProperty(value = "香港清关大陆车牌")
+    private String licensePlate;
+
+    @ApiModelProperty(value = "香港清关香港车牌")
+    private String hkLicensePlate;
+
+    @ApiModelProperty(value = "无缝单号")
+    private String seamlessNo;
+
+    @ApiModelProperty(value = "香港清关")
+    private String clearCustomsNo;
+
     @ApiModelProperty(value = "操作指令,cmd = extCustomsRelease外部报关放行,confirmOrder确认接单,carTakeGoods车辆提货,carWeigh车辆过磅, " +
             "goCustomsAudit通过前审核，goCustomsCheck通关前复核,carGoCustoms车辆通关,hkClearCustoms香港清关,carEnterWarehouse车辆入仓," +
             "carOutWarehouse车辆出仓,carSend车辆派送,confirmSignIn确认签收",required = true)

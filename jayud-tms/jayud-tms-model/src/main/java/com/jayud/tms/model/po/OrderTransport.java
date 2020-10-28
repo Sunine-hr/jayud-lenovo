@@ -101,6 +101,12 @@ public class OrderTransport extends Model<OrderTransport> {
     @ApiModelProperty(value = "香港清关香港车牌")
     private String hkLicensePlate;
 
+    @ApiModelProperty(value = "无缝单号")
+    private String seamlessNo;
+
+    @ApiModelProperty(value = "香港清关")
+    private String clearCustomsNo;
+
     @ApiModelProperty(value = "接单人")
     private String jiedanUser;
 

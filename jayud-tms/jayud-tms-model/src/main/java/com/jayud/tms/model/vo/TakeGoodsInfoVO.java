@@ -33,5 +33,17 @@ public class TakeGoodsInfoVO {
     @ApiModelProperty(value = "提货日期")
     private String takeTimeStr;
 
+    @ApiModelProperty(value = "货物描述")
+    private String goodsDesc;
+
+    @ApiModelProperty(value = "件数")
+    private Integer pieceAmount;
+
+    @ApiModelProperty(value = "重量")
+    private Double weight;
+
+    @ApiModelProperty(value = "体积")
+    private Double volume;
+
 
 }

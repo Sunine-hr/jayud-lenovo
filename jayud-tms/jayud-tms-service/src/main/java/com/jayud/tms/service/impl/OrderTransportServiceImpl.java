@@ -195,7 +195,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         //送货地址/联系人/联系电话/装车要求
         OrderSendCarsVO orderSendCarsVO = orderSendCarsService.getOrderSendInfo(orderNo);
         if(orderSendCarsVO == null){
-            return new SendCarPdfVO();
+            return sendCarPdfVO;
         }
         if(takeGoodsInfo2.size() > 1){//获取中转仓信息
             sendCarPdfVO.setDeliveryContacts(orderSendCarsVO.getWarehouseContacts());
@@ -209,10 +209,27 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             sendCarPdfVO.setDeliveryPhone(takeGoodsInfo2.get(0).getPhone());
         }
        sendCarPdfVO.setRemarks(orderSendCarsVO.getRemarks());
-        //货物信息
-
+        //货物信息,取提货信息
+        List<GoodsInfoVO> goodsInfoVOS = new ArrayList<>();
+        Integer totalPieceAmount = 0;//总件数
+        Double totalWeight = 0.0;//总重量
+        Double totalVolume = 0.0;//总体积
+        for (TakeGoodsInfoVO takeGoodsInfoVO : takeGoodsInfo1) {
+            totalPieceAmount = totalPieceAmount + takeGoodsInfoVO.getPieceAmount();
+            totalWeight = totalWeight + takeGoodsInfoVO.getWeight();
+            totalVolume = totalVolume + takeGoodsInfoVO.getVolume();
+            GoodsInfoVO goodsInfoVO = new GoodsInfoVO();
+            goodsInfoVO.setGoodsDesc(takeGoodsInfoVO.getGoodsDesc());
+            goodsInfoVO.setPieceAmount(takeGoodsInfoVO.getPieceAmount());
+            goodsInfoVO.setWeight(takeGoodsInfoVO.getWeight());
+            goodsInfoVO.setVolume(takeGoodsInfoVO.getVolume());
+            goodsInfoVOS.add(goodsInfoVO);
+        }
+        sendCarPdfVO.setGoddsInfos(goodsInfoVOS);
         //总件数/总重量/总体积
-
+        sendCarPdfVO.setTotalPieceAmount(totalPieceAmount);
+        sendCarPdfVO.setTotalWeight(totalWeight);
+        sendCarPdfVO.setTotalVolume(totalVolume);
         return sendCarPdfVO;
     }
 

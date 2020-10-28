@@ -7,6 +7,7 @@ import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
 import com.jayud.common.CommonResult;
+import com.jayud.tools.model.po.CargoName;
 import com.jayud.tools.model.po.TestBean;
 import com.jayud.tools.model.vo.CargoNameSmallVO;
 import com.jayud.tools.model.vo.CargoNameVO;
@@ -24,7 +25,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/cargoname")
@@ -351,9 +354,21 @@ public class CargoNameController {
         }
         //调用用 hutool 方法读取数据 默认调用第一个sheet
         ExcelReader excelReader = ExcelUtil.getReader(inputStream);
-        //读取为Bean列表，Bean中的字段名为标题，字段值为标题对应的单元格值。
-//        List<CargoName> list = excelReader.readAll(CargoName.class);
-        List<List<Object>> list = excelReader.read();
+//        List<List<Object>> list = excelReader.read();
+
+        //配置别名
+        Map<String,String> aliasMap=new HashMap<>();
+        aliasMap.put("圆通单号","ytdh");
+        aliasMap.put("重量","zl");
+        aliasMap.put("收货人","xm1");
+        aliasMap.put("件数","js");
+        aliasMap.put("货品名称","hpmc");
+
+        excelReader.setHeaderAlias(aliasMap);
+
+        // 第一个参数是指表头所在行，第二个参数是指从哪一行开始读取
+        List<CargoName> list= excelReader.read(0, 1, CargoName.class);
+
         cargoNameService.importExcelV2(list);
         return CommonResult.success("导入Excel成功！");
     }

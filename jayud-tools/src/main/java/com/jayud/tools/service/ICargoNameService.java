@@ -46,7 +46,7 @@ public interface ICargoNameService extends IService<CargoName> {
      * 导入Excel，第二版
      * @param list
      */
-    void importExcelV2(List<List<Object>> list);
+    void importExcelV2(List<CargoName> list);
 
     /**
      * <p>查询A类表list集合</p>

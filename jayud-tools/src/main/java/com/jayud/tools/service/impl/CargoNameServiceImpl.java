@@ -63,13 +63,6 @@ public class CargoNameServiceImpl extends ServiceImpl<CargoNameMapper, CargoName
 
         }
 
-        //mybatis-plus插入
-//        cargoNameList.forEach(itme -> {
-//            CargoName cargoName = itme;
-////            cargoName.insert();
-//            cargoNameMapper.insert(cargoName);
-//
-//        });
         this.saveBatch(cargoNameList);
     }
 
@@ -89,27 +82,11 @@ public class CargoNameServiceImpl extends ServiceImpl<CargoNameMapper, CargoName
     }
 
     @Override
-    public void importExcelV2(List<List<Object>> list) {
+    public void importExcelV2(List<CargoName> list) {
         //导入前，先清空表里面的数据
         cargoNameMapper.truncateCargoName();
-
-        //构造插入的数据
-        List<CargoName> cargoNameList = new ArrayList<>();
-        //int i = 1，从第2行记录开始计算，跳过表头列
-        for(int i=1; i<list.size(); i++){
-            List<Object> o = list.get(i);
-            CargoName cargoName = new CargoName();
-            cargoName.setYtdh(String.valueOf(o.get(0)));
-            cargoName.setZl(MathUtils.getBigDecimal(o.get(1)));
-            cargoName.setXm1(String.valueOf(o.get(2)));
-            cargoName.setJs(Integer.valueOf(String.valueOf(o.get(3))));
-            cargoName.setHpmc(String.valueOf(o.get(4)));
-            //add cargoName
-            cargoNameList.add(cargoName);
-        }
-
-        this.saveBatch(cargoNameList);
-
+        //批量插入数据
+        this.saveBatch(list);
     }
 
     @Override

@@ -19,5 +19,5 @@ public interface ICargoNameService extends IService<CargoName> {
      * 导入list
      * @param list
      */
-    void importExcel(List<CargoName> list);
+    void importExcel(List<List<Object>> list);
 }

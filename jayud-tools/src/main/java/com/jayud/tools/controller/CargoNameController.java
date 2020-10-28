@@ -7,7 +7,6 @@ import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
 import com.jayud.common.CommonResult;
-import com.jayud.tools.model.po.CargoName;
 import com.jayud.tools.model.po.TestBean;
 import com.jayud.tools.service.ICargoNameService;
 import io.swagger.annotations.Api;
@@ -37,18 +36,6 @@ public class CargoNameController {
     @ApiOperation(value = "导入Excel")
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public CommonResult importExcel(@RequestParam("file") MultipartFile file, HttpServletRequest request){
-
-//        ExcelReader reader = ExcelUtil.getReader("d:/test.xlsx");
-//        List<List<Object>> readAll = reader.read();
-
-//        ExcelReader reader = ExcelUtil.getReader("d:/test.xlsx");
-//        List<Map<String,Object>> readAll = reader.readAll();
-
-        ExcelReader reader = ExcelUtil.getReader("d:/test.xlsx");
-        List<TestBean> all = reader.readAll(TestBean.class);
-
-        System.out.println("aaaaaaaa");
-
         if (file.isEmpty()) {
             return CommonResult.error(-1, "文件为空！");
         }
@@ -59,16 +46,12 @@ public class CargoNameController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         //调用用 hutool 方法读取数据 默认调用第一个sheet
         ExcelReader excelReader = ExcelUtil.getReader(inputStream);
         //读取为Bean列表，Bean中的字段名为标题，字段值为标题对应的单元格值。
-        List<CargoName> list = excelReader.readAll(CargoName.class);
-
-        List<List<Object>> readAll = excelReader.read();
-
-//
-//        cargoNameService.importExcel(list);
+//        List<CargoName> list = excelReader.readAll(CargoName.class);
+        List<List<Object>> list = excelReader.read();
+        cargoNameService.importExcel(list);
         return CommonResult.success("导入Excel成功！");
     }
 

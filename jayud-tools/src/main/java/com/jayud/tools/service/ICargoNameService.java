@@ -1,7 +1,8 @@
 package com.jayud.tools.service;
 
-import com.jayud.tools.model.po.CargoName;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.tools.model.po.CargoName;
+import com.jayud.tools.model.vo.CargoNameVO;
 
 import java.util.List;
 
@@ -20,4 +21,23 @@ public interface ICargoNameService extends IService<CargoName> {
      * @param list
      */
     void importExcel(List<List<Object>> list);
+
+    /**
+     * <p>查询A类表list集合</p>
+     * <p>A类表:不存在`敏感品名`的货物表</p>
+     * @return
+     */
+    List<CargoNameVO> findCargoNameListByA();
+
+    /**
+     * <p>查询B类表list集合</p>
+     * <p>B类表:存在`敏感品名`的货物表</p>
+     * @return
+     */
+    List<CargoNameVO> findCargoNameListByB();
+
+    /**
+     * 删除所有`货物名称表`
+     */
+    void deleteAllCargoName();
 }

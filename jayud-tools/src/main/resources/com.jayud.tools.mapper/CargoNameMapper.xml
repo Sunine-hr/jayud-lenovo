@@ -31,6 +31,7 @@
         id, xh, dh, dz, ytdh, tdh, sl, zl, remark, hpmc, js, pce, jz, xm1, xm2, address, hm1, xm3, hm2, bjdh
     </sql>
 
+    <!--批量插入数据，没有用这个方式-->
     <insert id="importExcel" parameterType="com.jayud.tools.model.po.CargoName">
 
         INSERT INTO `cargo_name` (
@@ -80,6 +81,66 @@
         </foreach>
     </insert>
 
+    <!--A类表:不存在`敏感品名`的货物表-->
+    <select id="findCargoNameListByA" resultType="com.jayud.tools.model.vo.CargoNameVO">
+        select
+        t1.id,
+        t1.xh,
+        t1.dh,
+        t1.dz,
+        t1.ytdh,
+        t1.tdh,
+        t1.sl,
+        t1.zl,
+        t1.remark,
+        t1.hpmc,
+        t1.js,
+        t1.pce,
+        t1.jz,
+        t1.xm1,
+        t1.xm2,
+        t1.address,
+        t1.hm1,
+        t1.xm3,
+        t1.hm2,
+        t1.bjdh
+        from cargo_name t1
+        LEFT JOIN sensitive_commodity t2 on t1.hpmc=t2.`name`
+        where 1=1
+        and t2.`name` IS NULL
+    </select>
+
+    <!--B类表:存在`敏感品名`的货物表-->
+    <select id="findCargoNameListByB" resultType="com.jayud.tools.model.vo.CargoNameVO">
+        select
+        t1.id,
+        t1.xh,
+        t1.dh,
+        t1.dz,
+        t1.ytdh,
+        t1.tdh,
+        t1.sl,
+        t1.zl,
+        t1.remark,
+        t1.hpmc,
+        t1.js,
+        t1.pce,
+        t1.jz,
+        t1.xm1,
+        t1.xm2,
+        t1.address,
+        t1.hm1,
+        t1.xm3,
+        t1.hm2,
+        t1.bjdh
+        from cargo_name t1
+        JOIN sensitive_commodity t2 on t1.hpmc=t2.`name`
+    </select>
+
+    <!--删除所有`货物名称表`-->
+    <delete id="deleteAllCargoName">
+        delete from cargo_name
+    </delete>
 
 
 </mapper>

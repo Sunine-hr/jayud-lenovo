@@ -1,9 +1,10 @@
 package com.jayud.tools.service.impl;
 
-import com.jayud.tools.model.po.CargoName;
-import com.jayud.tools.mapper.CargoNameMapper;
-import com.jayud.tools.service.ICargoNameService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.tools.mapper.CargoNameMapper;
+import com.jayud.tools.model.po.CargoName;
+import com.jayud.tools.model.vo.CargoNameVO;
+import com.jayud.tools.service.ICargoNameService;
 import com.jayud.tools.utils.MathUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,10 +28,8 @@ public class CargoNameServiceImpl extends ServiceImpl<CargoNameMapper, CargoName
 
     @Override
     public void importExcel(List<List<Object>> list) {
-//        cargoNameMapper.importExcel(excels);
-
+        //构造插入的数据
         List<CargoName> cargoNameList = new ArrayList<>();
-
         //int i = 2，从第三行记录开是计算，跳过表头列
         for(int i=2; i<list.size(); i++){
             List<Object> o = list.get(i);
@@ -58,15 +57,33 @@ public class CargoNameServiceImpl extends ServiceImpl<CargoNameMapper, CargoName
             cargoName.setHm2(String.valueOf(o.get(20)));
             cargoName.setBjdh(String.valueOf(o.get(21)));
 
+            //add cargoName
             cargoNameList.add(cargoName);
 
         }
 
         //mybatis-plus插入
-        cargoNameList.forEach(itme -> {
-            CargoName cargoName = itme;
-            cargoName.insert();
-        });
+//        cargoNameList.forEach(itme -> {
+//            CargoName cargoName = itme;
+////            cargoName.insert();
+//            cargoNameMapper.insert(cargoName);
+//
+//        });
+        this.saveBatch(cargoNameList);
+    }
 
+    @Override
+    public List<CargoNameVO> findCargoNameListByA() {
+        return cargoNameMapper.findCargoNameListByA();
+    }
+
+    @Override
+    public List<CargoNameVO> findCargoNameListByB() {
+        return cargoNameMapper.findCargoNameListByB();
+    }
+
+    @Override
+    public void deleteAllCargoName() {
+        cargoNameMapper.deleteAllCargoName();
     }
 }

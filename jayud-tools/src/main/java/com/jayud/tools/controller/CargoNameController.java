@@ -8,6 +8,7 @@ import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
 import com.jayud.common.CommonResult;
 import com.jayud.tools.model.po.TestBean;
+import com.jayud.tools.model.vo.CargoNameVO;
 import com.jayud.tools.service.ICargoNameService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.List;
 
 @RestController
@@ -56,9 +58,9 @@ public class CargoNameController {
     }
 
 
-    @ApiOperation(value = "导入Excel")
+    @ApiOperation(value = "导出A类表Excel(A类表:不存在`敏感品名`的货物表)")
     @RequestMapping(value = "/exportExcel", method = RequestMethod.POST)
-    public CommonResult export(HttpServletResponse response) throws IOException {
+    public CommonResult exportExcel(HttpServletResponse response) throws IOException {
 
         TestBean bean1 = new TestBean();
         bean1.setName("张三");
@@ -106,6 +108,121 @@ public class CargoNameController {
         writer.close();
         IoUtil.close(out);
         return CommonResult.success("导出成功！");
+    }
+
+
+    @ApiOperation(value = "导出A类表Excel(A类表:不存在`敏感品名`的货物表)")
+    @RequestMapping(value = "/exportExcelA", method = RequestMethod.POST)
+    public CommonResult exportExcelA(HttpServletResponse response) throws IOException {
+        List<CargoNameVO> rows = cargoNameService.findCargoNameListByA();
+        ExcelWriter writer = ExcelUtil.getWriter(true);
+
+        //自定义标题别名
+        writer.addHeaderAlias("xh", "序号");
+        writer.addHeaderAlias("dh", "袋号");
+        writer.addHeaderAlias("dz", "袋重");
+        writer.addHeaderAlias("ytdh", "圆通单号");
+        writer.addHeaderAlias("tdh", "提单号");
+        writer.addHeaderAlias("sl", "数量(PCS)");
+        writer.addHeaderAlias("zl", "重量(PCS)");
+        writer.addHeaderAlias("remark", "备注");
+        writer.addHeaderAlias("hpmc", "货品名称");
+        writer.addHeaderAlias("js", "件数");
+        writer.addHeaderAlias("pce", "PCE");
+        writer.addHeaderAlias("jz", "价值");
+        writer.addHeaderAlias("xm1", "姓名1");
+        writer.addHeaderAlias("xm2", "姓名2");
+        writer.addHeaderAlias("address", "地址");
+        writer.addHeaderAlias("hm1", "号码1");
+        writer.addHeaderAlias("xm3", "姓名3");
+        writer.addHeaderAlias("hm2", "号码2");
+        writer.addHeaderAlias("bjdh", "标记单号");
+
+        Field[] s = CargoNameVO.class.getDeclaredFields();
+        int lastColumn = s.length-1;
+
+        // 合并单元格后的标题行，使用默认标题样式
+        writer.merge(lastColumn, "A类表:不存在`敏感品名`的货物表");
+
+        // 一次性写出内容，使用默认样式，强制输出标题
+        writer.write(rows, true);
+
+        //out为OutputStream，需要写出到的目标流
+
+        //response为HttpServletResponse对象
+        response.setContentType("application/vnd.ms-excel;charset=utf-8");
+        //test.xls是弹出下载对话框的文件名，不能为中文，中文请自行编码
+        response.setHeader("Content-Disposition","attachment;filename=test.xls");
+        ServletOutputStream out=response.getOutputStream();
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
+        response.setHeader("Content-Disposition","attachment;filename=A.xlsx");
+
+        writer.flush(out, true);
+        writer.close();
+        IoUtil.close(out);
+        return CommonResult.success("导出成功！");
+    }
+
+
+    @ApiOperation(value = "导出B类表Excel(B类表:存在`敏感品名`的货物表)")
+    @RequestMapping(value = "/exportExcelB", method = RequestMethod.POST)
+    public CommonResult exportExcelB(HttpServletResponse response) throws IOException {
+        List<CargoNameVO> cargoNameList = cargoNameService.findCargoNameListByB();
+        ExcelWriter writer = ExcelUtil.getWriter(true);
+
+        //自定义标题别名
+        writer.addHeaderAlias("xh", "序号");
+        writer.addHeaderAlias("dh", "袋号");
+        writer.addHeaderAlias("dz", "袋重");
+        writer.addHeaderAlias("ytdh", "圆通单号");
+        writer.addHeaderAlias("tdh", "提单号");
+        writer.addHeaderAlias("sl", "数量(PCS)");
+        writer.addHeaderAlias("zl", "重量(PCS)");
+        writer.addHeaderAlias("remark", "备注");
+        writer.addHeaderAlias("hpmc", "货品名称");
+        writer.addHeaderAlias("js", "件数");
+        writer.addHeaderAlias("pce", "PCE");
+        writer.addHeaderAlias("jz", "价值");
+        writer.addHeaderAlias("xm1", "姓名1");
+        writer.addHeaderAlias("xm2", "姓名2");
+        writer.addHeaderAlias("address", "地址");
+        writer.addHeaderAlias("hm1", "号码1");
+        writer.addHeaderAlias("xm3", "姓名3");
+        writer.addHeaderAlias("hm2", "号码2");
+        writer.addHeaderAlias("bjdh", "标记单号");
+
+        Field[] s = CargoNameVO.class.getDeclaredFields();
+        int lastColumn = s.length-1;
+
+        // 合并单元格后的标题行，使用默认标题样式
+        writer.merge(lastColumn, "B类表:存在`敏感品名`的货物表");
+
+        // 一次性写出内容，使用默认样式，强制输出标题
+        writer.write(cargoNameList, true);
+
+        //out为OutputStream，需要写出到的目标流
+
+        //response为HttpServletResponse对象
+        response.setContentType("application/vnd.ms-excel;charset=utf-8");
+        //test.xls是弹出下载对话框的文件名，不能为中文，中文请自行编码
+        response.setHeader("Content-Disposition","attachment;filename=test.xls");
+        ServletOutputStream out=response.getOutputStream();
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
+        response.setHeader("Content-Disposition","attachment;filename=B.xlsx");
+
+        writer.flush(out, true);
+        writer.close();
+        IoUtil.close(out);
+        return CommonResult.success("导出成功！");
+    }
+
+    @ApiOperation(value = "删除所有`货物名称表`")
+    @RequestMapping(value = "/deleteAllCargoName", method = RequestMethod.POST)
+    public CommonResult deleteAllCargoName(){
+        cargoNameService.deleteAllCargoName();
+        return CommonResult.success("删除所有`货物名称表`成功");
     }
 
 }

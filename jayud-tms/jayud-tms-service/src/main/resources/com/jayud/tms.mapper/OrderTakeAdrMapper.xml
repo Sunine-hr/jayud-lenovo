@@ -36,7 +36,7 @@
           DATE_FORMAT(
             ota.`take_time`,
             '%Y-%m-%d %H:%i:%S'
-          ) takeTimeStr,
+          ) takeTime,
           ota.`goods_desc` goodsDesc,
           ota.`plate_amount` plateAmount,
           ota.`piece_amount` pieceAmount,

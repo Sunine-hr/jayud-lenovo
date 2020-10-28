@@ -86,6 +86,21 @@ public class OrderTransport extends Model<OrderTransport> {
     @ApiModelProperty(value = "是否香港清关 1-是 0-否,选择了香港清关必填")
     private String isHkClear;
 
+    @ApiModelProperty(value = "车辆供应商ID")
+    private Long hkSupplierId;
+
+    @ApiModelProperty(value = "香港清关司机名称")
+    private String hkDriverName;
+
+    @ApiModelProperty(value = "香港清关司机电话")
+    private String hkDriverPhone;
+
+    @ApiModelProperty(value = "香港清关大陆车牌")
+    private String licensePlate;
+
+    @ApiModelProperty(value = "香港清关香港车牌")
+    private String hkLicensePlate;
+
     @ApiModelProperty(value = "接单人")
     private String jiedanUser;
 
@@ -109,6 +124,9 @@ public class OrderTransport extends Model<OrderTransport> {
 
     @ApiModelProperty(value = "是否需要录入费用")
     private Boolean needInputCost;
+
+    @ApiModelProperty(value = "确认派车预览pdfURL")
+    private String sendCarPdfUrl;
 
 
     @Override

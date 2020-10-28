@@ -91,6 +91,9 @@ public class SendCarForm {
     @NotNull(message = "warehouseInfoId is required")
     private Long warehouseInfoId;
 
+    @ApiModelProperty(value = "司机电话")
+    private String driverPhone;
+
     @ApiModelProperty(value = "要求")
     private String remarks;
 

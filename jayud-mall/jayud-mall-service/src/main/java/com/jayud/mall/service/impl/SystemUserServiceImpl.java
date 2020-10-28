@@ -1,9 +1,11 @@
 package com.jayud.mall.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.common.util.Md5Utils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.SystemUserMapper;
 import com.jayud.mall.model.bo.QueryUserForm;
 import com.jayud.mall.model.bo.ResetUserPwdForm;
@@ -56,7 +58,14 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     @Override
     public void insertUser(SaveUserForm user) {
-        systemUserMapper.insertUser(user);
+
+        SystemUser systemUser = ConvertUtil.convert(user, SystemUser.class);
+//        systemUser.insert();
+        systemUserMapper.insert(systemUser);
+//        systemUserMapper.insertUser(user);
+
+        systemUser.setId(systemUser.getId());
+        System.out.println(JSONObject.toJSONString(systemUser));
 
     }
 

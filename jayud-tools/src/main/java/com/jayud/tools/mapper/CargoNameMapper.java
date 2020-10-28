@@ -61,4 +61,9 @@ public interface CargoNameMapper extends BaseMapper<CargoName> {
      * @return
      */
     List<CargoNameSmallVO> findCargoNameListByBV2();
+
+    /**
+     * 清空`货物名称表`
+     */
+    void truncateCargoName();
 }

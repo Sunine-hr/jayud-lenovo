@@ -90,6 +90,9 @@ public class CargoNameServiceImpl extends ServiceImpl<CargoNameMapper, CargoName
 
     @Override
     public void importExcelV2(List<List<Object>> list) {
+        //导入前，先清空表里面的数据
+        cargoNameMapper.truncateCargoName();
+
         //构造插入的数据
         List<CargoName> cargoNameList = new ArrayList<>();
         //int i = 1，从第2行记录开始计算，跳过表头列
@@ -117,5 +120,10 @@ public class CargoNameServiceImpl extends ServiceImpl<CargoNameMapper, CargoName
     @Override
     public List<CargoNameSmallVO> findCargoNameListByBV2() {
         return cargoNameMapper.findCargoNameListByBV2();
+    }
+
+    @Override
+    public void truncateCargoName() {
+        cargoNameMapper.truncateCargoName();
     }
 }

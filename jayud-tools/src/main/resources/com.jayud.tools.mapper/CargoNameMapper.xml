@@ -168,6 +168,10 @@
         JOIN sensitive_commodity t2 on t1.hpmc=t2.`name`
     </select>
 
+    <!--清空`货物名称表`-->
+    <update id="truncateCargoName">
+        truncate table cargo_name
+    </update>
 
 
 </mapper>

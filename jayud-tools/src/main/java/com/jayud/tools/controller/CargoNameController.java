@@ -57,9 +57,9 @@ public class CargoNameController {
     }
 
 
-    @ApiOperation(value = "导出A类表Excel(A类表:不存在`敏感品名`的货物表)")
-    @RequestMapping(value = "/exportExcel", method = RequestMethod.POST)
-    public CommonResult exportExcel(HttpServletResponse response) throws IOException {
+    @ApiOperation(value = "导出Excel测试")
+    @RequestMapping(value = "/exportExcelTest", method = RequestMethod.POST)
+    public CommonResult exportExcelTest(HttpServletResponse response) throws IOException {
 
         TestBean bean1 = new TestBean();
         bean1.setName("张三");
@@ -90,20 +90,22 @@ public class CargoNameController {
         writer.merge(4, "一班成绩单");
 
         // 一次性写出内容，使用默认样式，强制输出标题
-        writer.write(rows, true);
+//        writer.write(rows, true);
+        writer.write(rows);
 
         //out为OutputStream，需要写出到的目标流
 
-        //response为HttpServletResponse对象
-        response.setContentType("application/vnd.ms-excel;charset=utf-8");
-        //test.xls是弹出下载对话框的文件名，不能为中文，中文请自行编码
-        response.setHeader("Content-Disposition","attachment;filename=test.xls");
+//        //response为HttpServletResponse对象
+//        response.setContentType("application/vnd.ms-excel;charset=utf-8");
+//        //test.xls是弹出下载对话框的文件名，不能为中文，中文请自行编码
+//        response.setHeader("Content-Disposition","attachment;filename=test.xls");
         ServletOutputStream out=response.getOutputStream();
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
         response.setHeader("Content-Disposition","attachment;filename=test.xlsx");
 
-        writer.flush(out, true);
+//        writer.flush(out, true);
+        writer.flush(out);
         writer.close();
         IoUtil.close(out);
         return CommonResult.success("导出成功！");
@@ -145,7 +147,8 @@ public class CargoNameController {
         writer.merge(lastColumn, "A类表:不存在`敏感品名`的货物表");
 
         // 一次性写出内容，使用默认样式，强制输出标题
-        writer.write(rows, true);
+//        writer.write(rows, true);
+        writer.write(rows);
 
         //out为OutputStream，需要写出到的目标流
 
@@ -155,7 +158,9 @@ public class CargoNameController {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
         response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
 
-        writer.flush(out, true);
+//        writer.flush(out, true);
+        writer.flush(out);
+
         writer.close();
         IoUtil.close(out);
         return CommonResult.success("导出成功！");
@@ -196,7 +201,8 @@ public class CargoNameController {
         writer.merge(lastColumn, "A类表:不存在`敏感品名`的货物表");
 
         // 一次性写出内容，使用默认样式，强制输出标题
-        writer.write(rows, true);
+//        writer.write(rows, true);
+        writer.write(rows);
 
         //out为OutputStream，需要写出到的目标流
 
@@ -206,7 +212,9 @@ public class CargoNameController {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
         response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
 
-        writer.flush(out, true);
+//        writer.flush(out, true);
+        writer.flush(out);
+
         writer.close();
         IoUtil.close(out);
         return CommonResult.success("导出成功！");
@@ -248,7 +256,8 @@ public class CargoNameController {
         writer.merge(lastColumn, "B类表:存在`敏感品名`的货物表");
 
         // 一次性写出内容，使用默认样式，强制输出标题
-        writer.write(cargoNameList, true);
+//        writer.write(cargoNameList, true);
+        writer.write(cargoNameList);
 
         //out为OutputStream，需要写出到的目标流
 
@@ -257,7 +266,10 @@ public class CargoNameController {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
         response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
 
-        writer.flush(out, true);
+//        writer.flush(out, true);
+        writer.flush(out);
+
+
         writer.close();
         IoUtil.close(out);
         return CommonResult.success("导出成功！");
@@ -298,7 +310,8 @@ public class CargoNameController {
         writer.merge(lastColumn, "B类表:存在`敏感品名`的货物表");
 
         // 一次性写出内容，使用默认样式，强制输出标题
-        writer.write(cargoNameList, true);
+//        writer.write(cargoNameList, true);
+        writer.write(cargoNameList);
 
         //out为OutputStream，需要写出到的目标流
 
@@ -307,7 +320,9 @@ public class CargoNameController {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
         response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
 
-        writer.flush(out, true);
+//        writer.flush(out, true);
+        writer.flush(out);
+
         writer.close();
         IoUtil.close(out);
         return CommonResult.success("导出成功！");
@@ -319,7 +334,6 @@ public class CargoNameController {
         cargoNameService.deleteAllCargoName();
         return CommonResult.success("删除所有`货物名称表`成功");
     }
-
 
     //small 小的列
     @ApiOperation(value = "导入Excel,第二版，较少的列")
@@ -351,6 +365,7 @@ public class CargoNameController {
     public CommonResult postExportExcelAV2(HttpServletResponse response) throws IOException {
         List<CargoNameSmallVO> rows = cargoNameService.findCargoNameListByAV2();
         ExcelWriter writer = ExcelUtil.getWriter(true);
+//        ExcelWriter writer = ExcelUtil.getWriter();
 
         //自定义标题别名
         writer.addHeaderAlias("ytdh", "圆通单号");
@@ -366,7 +381,8 @@ public class CargoNameController {
         writer.merge(lastColumn, "A类表:不存在`敏感品名`的货物表");
 
         // 一次性写出内容，使用默认样式，强制输出标题
-        writer.write(rows, true);
+//        writer.write(rows, true);
+        writer.write(rows);
 
         //out为OutputStream，需要写出到的目标流
 
@@ -376,7 +392,8 @@ public class CargoNameController {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
         response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
 
-        writer.flush(out, true);
+//        writer.flush(out, true);
+        writer.flush(out);
         writer.close();
         IoUtil.close(out);
         return CommonResult.success("导出成功！");
@@ -403,7 +420,8 @@ public class CargoNameController {
         writer.merge(lastColumn, "B类表:存在`敏感品名`的货物表");
 
         // 一次性写出内容，使用默认样式，强制输出标题
-        writer.write(cargoNameList, true);
+//        writer.write(cargoNameList, true);
+        writer.write(cargoNameList);
 
         //out为OutputStream，需要写出到的目标流
 
@@ -412,12 +430,18 @@ public class CargoNameController {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
         response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
 
-        writer.flush(out, true);
+//        writer.flush(out, true);
+        writer.flush(out);
         writer.close();
         IoUtil.close(out);
         return CommonResult.success("导出成功！");
     }
 
-
+    @ApiOperation(value = "清空`货物名称表`")
+    @RequestMapping(value = "/truncateCargoName", method = RequestMethod.POST)
+    public CommonResult truncateCargoName(){
+        cargoNameService.truncateCargoName();
+        return CommonResult.success("清空`货物名称表`成功");
+    }
 
 }

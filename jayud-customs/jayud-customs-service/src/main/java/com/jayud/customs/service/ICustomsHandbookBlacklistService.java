@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author william.chen
  * @since 2020-10-27
  */
-public interface IHandbookBlacklistService extends IService<CustomsHandbookBlacklist> {
+public interface ICustomsHandbookBlacklistService extends IService<CustomsHandbookBlacklist> {
 
 }

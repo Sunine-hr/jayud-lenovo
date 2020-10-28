@@ -2,7 +2,7 @@ package com.jayud.customs.service.impl;
 
 import com.jayud.customs.model.po.CustomsHandbookBlacklist;
 import com.jayud.customs.mapper.CustomsHandbookBlacklistMapper;
-import com.jayud.customs.service.IHandbookBlacklistService;
+import com.jayud.customs.service.ICustomsHandbookBlacklistService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2020-10-27
  */
 @Service
-public class HandbookBlacklistServiceImpl extends ServiceImpl<CustomsHandbookBlacklistMapper, CustomsHandbookBlacklist> implements IHandbookBlacklistService {
+public class CustomsHandbookBlacklistServiceImpl extends ServiceImpl<CustomsHandbookBlacklistMapper, CustomsHandbookBlacklist> implements ICustomsHandbookBlacklistService {
 
 }

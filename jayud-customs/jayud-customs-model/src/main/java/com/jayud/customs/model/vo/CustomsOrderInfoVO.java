@@ -1,5 +1,6 @@
 package com.jayud.customs.model.vo;
 
+import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
@@ -97,7 +98,7 @@ public class CustomsOrderInfoVO {
         } else if (OrderStatusEnum.CUSTOMS_C_1.getCode().equals(status)) {
             this.statusDesc = OrderStatusEnum.CUSTOMS_C_1.getDesc();
         }else if (OrderStatusEnum.CUSTOMS_C_1_1.getCode().equals(status)) {
-            this.statusDesc = OrderStatusEnum.CUSTOMS_C_1_1.getDesc();
+            this.statusDesc = CommonConstant.REJECT;
         } else if (OrderStatusEnum.CUSTOMS_C_2.getCode().equals(status)) {
             this.statusDesc = OrderStatusEnum.CUSTOMS_C_2.getDesc();
         } else if (OrderStatusEnum.CUSTOMS_C_3.getCode().equals(status)) {

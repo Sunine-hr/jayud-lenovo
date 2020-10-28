@@ -18,6 +18,7 @@ import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.model.bo.*;
 import com.jayud.tms.model.po.OrderSendCars;
 import com.jayud.tms.model.po.OrderTransport;
+import com.jayud.tms.model.vo.OrderSendCarsVO;
 import com.jayud.tms.model.vo.OrderStatusVO;
 import com.jayud.tms.model.vo.OrderTransportVO;
 import com.jayud.tms.service.IOrderSendCarsService;
@@ -259,7 +260,7 @@ public class OrderInTransportController {
     @ApiOperation(value = "运输派车")
     @PostMapping(value = "/transportSendCar")
     public CommonResult transportSendCar(@RequestBody @Valid SendCarForm form) {
-        if(form.getIsHaveEncode() && StringUtil.isNullOrEmpty(form.getEncode())){
+        if(StringUtil.isNullOrEmpty(form.getCmd())){
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
         OrderSendCars orderSendCars = ConvertUtil.convert(form,OrderSendCars.class);
@@ -274,8 +275,18 @@ public class OrderInTransportController {
         oprStatusForm.setOrderId(form.getOrderId());
 
         AuditInfoForm auditInfoForm = new AuditInfoForm();
-        auditInfoForm.setExtId(form.getId());
+        auditInfoForm.setExtId(form.getOrderId());
         if(CommonConstant.SEND_CAR.equals(form.getCmd()) || CommonConstant.EDIT_CAR.equals(form.getCmd())){
+            //参数校验
+            if((CommonConstant.EDIT_CAR.equals(form.getCmd()) && form.getId() == null) ||
+              form.getOrderId() == null || form.getMainOrderId() == null ||
+              StringUtil.isNullOrEmpty(form.getTransportNo()) || StringUtil.isNullOrEmpty(form.getOrderNo()) ||
+              form.getIsHaveEncode() == null || form.getVehicleSize() == null || form.getVehicleType() == null ||
+              form.getSupplierInfoId() == null || StringUtil.isNullOrEmpty(form.getLicensePlate()) ||
+              StringUtil.isNullOrEmpty(form.getDriverName()) || StringUtil.isNullOrEmpty(form.getHkLicensePlate()) ||
+              form.getWarehouseInfoId() == null || (form.getIsHaveEncode() && StringUtil.isNullOrEmpty(form.getEncode()))){
+                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+            }
             //保存派车信息
             orderSendCars.setCntrPic(StringUtils.getFileStr(form.getCntrPics()));
             orderSendCars.setCntrPicName(StringUtils.getFileNameStr(form.getCntrPics()));
@@ -289,6 +300,8 @@ public class OrderInTransportController {
                 orderSendCars.setUpdatedUser(getLoginUser());
             }
             //更新订单状态
+            orderTransport.setVehicleSize(form.getVehicleSize());
+            orderTransport.setVehicleType(form.getVehicleType());
             orderTransport.setStatus(OrderStatusEnum.TMS_T_2.getCode());
 
             //记录操作状态
@@ -304,7 +317,7 @@ public class OrderInTransportController {
 
         }else if(CommonConstant.AUDIT_CAR.equals(form.getCmd())){//运输审核
             if(!(OrderStatusEnum.TMS_T_3.getCode().equals(form.getStatus()) ||
-                    OrderStatusEnum.TMS_T_3_1.getCode().equals(form.getStatus()))){
+                    OrderStatusEnum.TMS_T_3_1.getCode().equals(form.getStatus())) || form.getId() == null){
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }
             //更新派车信息
@@ -320,6 +333,8 @@ public class OrderInTransportController {
                 oprStatusForm.setDescription(form.getAuditComment());
             }
             //记录审核信息
+            auditInfoForm.setExtId(form.getId());
+            auditInfoForm.setExtDesc(SqlConstant.ORDER_SEND_CARS);
             auditInfoForm.setAuditStatus(form.getStatus());
             auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_3.getDesc());
             auditInfoForm.setAuditComment(form.getAuditComment());
@@ -342,16 +357,19 @@ public class OrderInTransportController {
      */
     @ApiOperation(value = "运输审核信息回显,参数=order_no=中港子订单号")
     @PostMapping(value = "/getOrderSendCars")
-    public CommonResult<OrderSendCars> getOrderSendCars(@RequestBody  Map<String,Object> param){
+    public CommonResult<OrderSendCarsVO> getOrderSendCars(@RequestBody  Map<String,Object> param){
         String orderNo = MapUtil.getStr(param,SqlConstant.ORDER_NO);
         if(StringUtil.isNullOrEmpty(orderNo)){
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(SqlConstant.ORDER_NO,orderNo);
-        OrderSendCars orderSendCars = orderSendCarsService.getOne(queryWrapper);
+        OrderSendCarsVO orderSendCars = orderSendCarsService.getOrderSendInfo(orderNo);
         if(orderSendCars == null){
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+        }
+        if(StringUtil.isNullOrEmpty(orderSendCars.getEncode())){
+            orderSendCars.setIsHaveEncode(false);
+        }else {
+            orderSendCars.setIsHaveEncode(true);
         }
         return CommonResult.success(orderSendCars);
     }

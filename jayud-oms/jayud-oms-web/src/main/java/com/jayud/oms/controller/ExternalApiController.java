@@ -140,7 +140,7 @@ public class ExternalApiController {
     }
 
     @ApiOperation(value = "中转仓库")
-    @PostMapping(value = "api/initWarehouseInfo")
+    @RequestMapping(value = "api/initWarehouseInfo")
     public CommonResult initWarehouseInfo() {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq(SqlConstant.STATUS,1);
@@ -156,7 +156,7 @@ public class ExternalApiController {
     }
 
     @ApiOperation(value = "车辆供应商")
-    @PostMapping(value = "api/initSupplierInfo")
+    @RequestMapping(value = "api/initSupplierInfo")
     public CommonResult initSupplierInfo() {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq(SqlConstant.STATUS,1);

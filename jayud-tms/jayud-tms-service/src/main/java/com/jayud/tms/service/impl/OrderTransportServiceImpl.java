@@ -178,7 +178,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     public SendCarPdfVO initPdfData(String orderNo, String classCode) {
         SendCarPdfVO sendCarPdfVO = baseMapper.initPdfData(orderNo,classCode);
         if(sendCarPdfVO == null){
-            sendCarPdfVO = new SendCarPdfVO();
+            return new SendCarPdfVO();
         }
         List<InputOrderTakeAdrVO> inputOrderTakeAdrVOS = orderTakeAdrService.findTakeGoodsInfo(orderNo);
         List<TakeGoodsInfoVO> takeGoodsInfo1 = new ArrayList<>();
@@ -194,18 +194,21 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         sendCarPdfVO.setTakeInfo1(takeGoodsInfo1);
         //送货地址/联系人/联系电话/装车要求
         OrderSendCarsVO orderSendCarsVO = orderSendCarsService.getOrderSendInfo(orderNo);
+        if(orderSendCarsVO == null){
+            return new SendCarPdfVO();
+        }
         if(takeGoodsInfo2.size() > 1){//获取中转仓信息
-
+            sendCarPdfVO.setDeliveryContacts(orderSendCarsVO.getWarehouseContacts());
+            sendCarPdfVO.setDeliveryAddress(orderSendCarsVO.getCountryName()+orderSendCarsVO.getProvinceName()+orderSendCarsVO.getCityName()+
+                    orderSendCarsVO.getAddress());
+            sendCarPdfVO.setDeliveryPhone(orderSendCarsVO.getWarehouseNumber());
         }else if(takeGoodsInfo2.size() == 1){
             sendCarPdfVO.setDeliveryAddress(takeGoodsInfo2.get(0).getStateName()+takeGoodsInfo2.get(0).getCityName()+
                     takeGoodsInfo2.get(0).getAddress());
             sendCarPdfVO.setDeliveryContacts(takeGoodsInfo2.get(0).getContacts());
             sendCarPdfVO.setDeliveryPhone(takeGoodsInfo2.get(0).getPhone());
         }
-       sendCarPdfVO.setRemarks("");
-
-        //接单人联系电话
-
+       sendCarPdfVO.setRemarks(orderSendCarsVO.getRemarks());
         //货物信息
 
         //总件数/总重量/总体积

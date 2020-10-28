@@ -4,8 +4,6 @@ import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,23 +14,18 @@ public class SendCarForm {
     private Long id;
 
     @ApiModelProperty(value = "子订单ID",required = true)
-    @NotNull(message = "orderId is required")
     private Long orderId;
 
     @ApiModelProperty(value = "主订单ID",required = true)
-    @NotNull(message = "mainOrderId is required")
     private Long mainOrderId;
 
     @ApiModelProperty(value = "运输订单号",required = true)
-    @NotEmpty(message = "transportNo is required")
     private String transportNo;
 
     @ApiModelProperty(value = "运输对应子订单",required = true)
-    @NotEmpty(message = "orderNo is required")
     private String orderNo;
 
     @ApiModelProperty(value = "是否有六联单",required = true)
-    @NotNull(message = "isHaveEncode is required")
     private Boolean isHaveEncode;
 
     @ApiModelProperty(value = "六联单号,勾了有就必填，没有就不填")
@@ -48,11 +41,9 @@ public class SendCarForm {
     private List<FileView> encodePics = new ArrayList<>();
 
     @ApiModelProperty(value = "车型(1吨车 2柜车)",required = true)
-    @NotNull(message = "vehicleType is required")
     private Integer vehicleType;
 
     @ApiModelProperty(value = "车型(1-3T 2-5t 3-8T 4-10T)",required = true)
-    @NotNull(message = "vehicleSize is required")
     private Integer vehicleSize;
 
     @ApiModelProperty(value = "柜号")
@@ -68,27 +59,18 @@ public class SendCarForm {
     private List<FileView> cntrPics = new ArrayList<>();
 
     @ApiModelProperty(value = "供应商ID",required = true)
-    @NotNull(message = "supplierInfoId is required")
     private Long supplierInfoId;
 
     @ApiModelProperty(value = "大陆车牌号",required = true)
-    @NotEmpty(message = "licensePlate is required")
     private String licensePlate;
 
     @ApiModelProperty(value = "大陆司机名",required = true)
-    @NotEmpty(message = "driverName is required")
     private String driverName;
 
     @ApiModelProperty(value = "HK车牌号",required = true)
-    @NotEmpty(message = "hkLicensePlate is required")
     private String hkLicensePlate;
 
-    @ApiModelProperty(value = "HK司机名",required = true)
-    @NotEmpty(message = "hkDriverName is required")
-    private String hkDriverName;
-
     @ApiModelProperty(value = "仓库ID)",required = true)
-    @NotNull(message = "warehouseInfoId is required")
     private Long warehouseInfoId;
 
     @ApiModelProperty(value = "司机电话")

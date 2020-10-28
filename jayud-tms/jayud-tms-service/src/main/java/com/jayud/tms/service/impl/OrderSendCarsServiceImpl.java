@@ -20,6 +20,6 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
 
     @Override
     public OrderSendCarsVO getOrderSendInfo(String orderNo) {
-        return null;
+        return baseMapper.getOrderSendInfo(orderNo);
     }
 }

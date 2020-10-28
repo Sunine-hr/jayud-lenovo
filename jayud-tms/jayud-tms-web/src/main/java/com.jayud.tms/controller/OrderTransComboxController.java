@@ -4,6 +4,7 @@ package com.jayud.tms.controller;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.tms.feign.OmsClient;
+import com.jayud.tms.model.vo.InitComboxVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -28,8 +30,10 @@ public class OrderTransComboxController {
     @PostMapping(value = "/initSendCarCombox")
     public CommonResult initWarehouseInfo() {
         Map<String,Object> resultMap = new HashMap<>();
-        resultMap.put(CommonConstant.WAREHOUSEINFO,omsClient.initWarehouseInfo());
-        resultMap.put(CommonConstant.SUPPLIERINFO,omsClient.initSupplierInfo());
+        List<InitComboxVO> supplierInfo = omsClient.initSupplierInfo().getData();
+        List<InitComboxVO> warehouseInfo = omsClient.initWarehouseInfo().getData();
+        resultMap.put(CommonConstant.SUPPLIERINFO,supplierInfo);
+        resultMap.put(CommonConstant.WAREHOUSEINFO,warehouseInfo);
         return CommonResult.success(resultMap);
     }
 

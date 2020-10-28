@@ -143,4 +143,6 @@ public abstract class CommonConstant {
 
     public static final String DATA_NOT_ALL_COUNT = "dataNotAllCount";
 
+    public static final String REJECT = "驳回";
+
 }

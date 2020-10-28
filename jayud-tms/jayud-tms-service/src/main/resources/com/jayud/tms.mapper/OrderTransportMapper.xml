@@ -128,7 +128,13 @@
             ot.`encode`,
             ot.`vehicle_type` vehicleType,
             ot.`vehicle_size` vehicleSize,
-            ot.`cntr_no` cntrNo
+            ot.`cntr_no` cntrNo,
+            (CASE  WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
+            (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
+            ELSE FALSE
+            END) isCost,
+            oi.`need_input_cost` needInputCost,
+            ot.`status` subTmsStatus
         FROM
             order_transport ot
             LEFT JOIN order_info oi
@@ -139,11 +145,11 @@
             ON oi.`class_code` = pc.`id_code`
             LEFT JOIN (SELECT ota.`order_no`,da.`state_name`,da.`city_name`,da.`address`,ota.`goods_desc`,ota.`piece_amount`,ota.`plate_amount`,
             ota.`weight` FROM order_take_adr ota LEFT JOIN delivery_address da
-            ON ota.`delivery_id` = da.`id` AND ota.`opr_type` = '1' ) t
+            ON ota.`delivery_id` = da.`id` AND ota.`opr_type` = '1' LIMIT 1) t
             ON t.order_no = ot.`order_no`
             LEFT JOIN (SELECT ota.`order_no`,da.`state_name`,da.`city_name`,da.`address`,ota.`goods_desc`,ota.`piece_amount`,ota.`plate_amount`,
             ota.`weight` FROM order_take_adr ota LEFT JOIN delivery_address da
-            ON ota.`delivery_id` = da.`id` AND ota.`opr_type` = '2' ) s
+            ON ota.`delivery_id` = da.`id` AND ota.`opr_type` = '2' LIMIT 1) s
             ON s.order_no = ot.`order_no` where 1 = 1
         <if test="form.orderNo != null and form.orderNo != ''">
             and ot.order_no = #{form.orderNo}
@@ -233,7 +239,8 @@
             p.`name` portName,
             ot.`goods_type` goodsType,
             ot.`jiedan_user` jiedanUser,
-            si.`supplier_ch_name` clearCustomsAddress
+            si.`supplier_ch_name` clearCustomsAddress,
+            (SELECT su.phone FROM `system_user` su WHERE su.name = ot.`jiedan_user`) jiedanPhone
         FROM
         order_info oi
         LEFT JOIN order_transport ot

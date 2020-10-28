@@ -1,5 +1,6 @@
 package com.jayud.tms.model.vo;
 
+import com.jayud.common.enums.OrderStatusEnum;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -48,6 +49,18 @@ public class OrderTransportVO {
 
     @ApiModelProperty(value = "柜号")
     private String cntrNo;
+
+    @ApiModelProperty(value = "是否有费用详情")
+    private boolean isCost;
+
+    @ApiModelProperty(value = "中港运输状态,用于标识驳回可编辑")
+    private String subTmsStatus;
+
+    @ApiModelProperty(value = "是否需要录入费用")
+    private Boolean needInputCost;
+
+    @ApiModelProperty(value = "状态描述")
+    private String statusDesc;
 
     //货物信息
     @ApiModelProperty(value = "货物描述")
@@ -108,6 +121,10 @@ public class OrderTransportVO {
             return "";
         }
         return this.entireAddress2 = this.stateName2 + this.cityName2 + this.address2;
+    }
+
+    public String getStatusDesc() {
+       return OrderStatusEnum.getDesc(this.status);
     }
 
 }

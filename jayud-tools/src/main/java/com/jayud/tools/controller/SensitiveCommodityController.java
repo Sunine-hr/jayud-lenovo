@@ -34,8 +34,7 @@ public class SensitiveCommodityController {
     @ApiOperation(value = "保存`敏感品名`（新增或修改）")
     @PostMapping(value = "/saveSensitiveCommodity")
     public CommonResult saveSensitiveCommodity(@Valid @RequestBody SensitiveCommodityForm sensitiveCommodityForm){
-        sensitiveCommodityService.saveSensitiveCommodity(sensitiveCommodityForm);
-        return CommonResult.success();
+        return sensitiveCommodityService.saveSensitiveCommodity(sensitiveCommodityForm);
     }
 
     @ApiOperation(value = "删除`敏感品名`")

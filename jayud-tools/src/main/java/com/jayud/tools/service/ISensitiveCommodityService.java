@@ -1,10 +1,11 @@
 package com.jayud.tools.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.CommonResult;
 import com.jayud.tools.model.bo.QuerySensitiveCommodityForm;
 import com.jayud.tools.model.bo.SensitiveCommodityForm;
 import com.jayud.tools.model.po.SensitiveCommodity;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.tools.model.vo.SensitiveCommodityVO;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public interface ISensitiveCommodityService extends IService<SensitiveCommodity>
      * 保存敏感品名
      * @param sensitiveCommodityForm
      */
-    void saveSensitiveCommodity(SensitiveCommodityForm sensitiveCommodityForm);
+    CommonResult saveSensitiveCommodity(SensitiveCommodityForm sensitiveCommodityForm);
 
     /**
      * 删除敏感品名

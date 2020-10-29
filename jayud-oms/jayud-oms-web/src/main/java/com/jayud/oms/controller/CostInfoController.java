@@ -11,6 +11,7 @@ import com.jayud.oms.model.bo.DeleteForm;
 import com.jayud.oms.model.bo.QueryCostInfoForm;
 import com.jayud.oms.model.vo.CostInfoVO;
 import com.jayud.oms.service.ICostInfoService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,7 @@ import javax.validation.constraints.NotNull;
  */
 @RestController
 @RequestMapping("/costInfo")
+@Api(tags = "费用名列表接口")
 public class CostInfoController {
 
     @Autowired

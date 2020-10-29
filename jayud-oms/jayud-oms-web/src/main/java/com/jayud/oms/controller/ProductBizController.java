@@ -11,6 +11,7 @@ import com.jayud.oms.model.bo.DeleteForm;
 import com.jayud.oms.model.bo.QueryProductBizForm;
 import com.jayud.oms.model.vo.ProductBizVO;
 import com.jayud.oms.service.IProductBizService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,7 @@ import javax.validation.Valid;
  */
 @RestController
 @RequestMapping("/productBiz")
+@Api(tags = "业务类型列表接口")
 public class ProductBizController {
 
     @Autowired

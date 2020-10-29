@@ -11,6 +11,7 @@ import com.jayud.oms.model.po.CostType;
 import com.jayud.oms.model.vo.CostInfoVO;
 import com.jayud.oms.model.vo.CostTypeVO;
 import com.jayud.oms.service.ICostTypeService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -29,6 +30,7 @@ import javax.validation.constraints.NotNull;
  */
 @RestController
 @RequestMapping("/costType")
+@Api(tags = "费用类型列表接口")
 public class CostTypeController {
 
     @Autowired

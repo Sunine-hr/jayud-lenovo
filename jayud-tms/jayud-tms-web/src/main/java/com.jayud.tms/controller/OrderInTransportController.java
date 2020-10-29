@@ -104,6 +104,7 @@ public class OrderInTransportController {
             if(form.getCarWeighNum() == null){
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
             }
+            orderTransport.setCarWeighNum(form.getCarWeighNum());
             orderTransport.setStatus(OrderStatusEnum.TMS_T_6.getCode());
 
             form.setStatus(OrderStatusEnum.TMS_T_6.getCode());
@@ -247,6 +248,8 @@ public class OrderInTransportController {
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }
             orderTransport.setStatus(form.getStatus());
+            orderTransport.setGoCustomsTime(DateUtils.str2LocalDateTime(form.getGoCustomsTime(),DateUtils.DATE_TIME_PATTERN));
+
             if (OrderStatusEnum.TMS_T_9.getCode().equals(form.getStatus())) {
                 //记录操作成功状态
                 form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));

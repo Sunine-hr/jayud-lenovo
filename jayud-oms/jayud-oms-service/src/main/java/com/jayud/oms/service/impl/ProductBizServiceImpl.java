@@ -81,7 +81,7 @@ public class ProductBizServiceImpl extends ServiceImpl<ProductBizMapper, Product
             return this.save(productBiz);
         } else {
             productBiz.setUpdateTime(LocalDateTime.now());
-            productBiz.setUpUser(loginUser);
+            productBiz.setUpdateUser(loginUser);
             return this.updateById(productBiz);
         }
     }
@@ -99,7 +99,7 @@ public class ProductBizServiceImpl extends ServiceImpl<ProductBizMapper, Product
         LocalDateTime now = LocalDateTime.now();
         ids.stream().forEach(id -> {
             list.add(new ProductBiz().setId(id).setStatus(StatusEnum.INVALID.getCode())
-                    .setUpdateTime(now).setUpUser(loginUser));
+                    .setUpdateTime(now).setUpdateUser(loginUser));
         });
         return this.updateBatchById(list);
     }

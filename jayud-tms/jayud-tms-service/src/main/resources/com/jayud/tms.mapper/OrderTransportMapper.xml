@@ -37,7 +37,6 @@
         <result column="license_plate" property="licensePlate" />
         <result column="hk_license_plate" property="hkLicensePlate" />
         <result column="need_input_cost" property="needInputCost" />
-        <result column="send_car_pdf_url" property="sendCarPdfUrl" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -45,7 +44,7 @@
         id, main_order_no, order_no, port_code, goods_type, vehicle_type, vehicle_size, cntr_no, cntr_pic, cntrPicName,
         warehouse_info_id, encode, status, is_load_goods, is_unload_goods,unit_code, hk_unit_code,hk_legal_name,is_hk_clear,
         updated_time, updated_user, created_time,created_user,jiedan_user,jiedan_time,car_weigh_num,legal_name,need_input_cost,
-        hk_supplier_id,hk_driver_name,hk_driver_phone,license_plate,hk_license_plate,send_car_pdf_url
+        hk_supplier_id,hk_driver_name,hk_driver_phone,license_plate,hk_license_plate
     </sql>
 
     <select id="getOrderTransport"  resultType="com.jayud.tms.model.vo.InputOrderTransportVO" >
@@ -192,13 +191,13 @@
             AND ot.`status` = 'T_4'
         </if>
         <if test="form.cmd == 'T_6'">
-            AND ot.`status` = 'C_5'
+            AND ot.`status` = 'T_5'
         </if>
         <if test="form.cmd == 'T_8'">
             AND ot.`status` = 'T_7'
         </if>
         <if test="form.cmd == 'T_9'">
-            AND ot.`status` = 'T_8'
+            AND ot.`status` in ('T_8','T_9_1','T_9_2')
         </if>
         <if test="form.cmd == 'clearCustoms'">
             AND ot.`status` != 'HK_C_1' AND ot.`is_hk_clear` = '1'

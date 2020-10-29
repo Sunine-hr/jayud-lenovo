@@ -131,8 +131,11 @@ public class OrderTransport extends Model<OrderTransport> {
     @ApiModelProperty(value = "是否需要录入费用")
     private Boolean needInputCost;
 
-    @ApiModelProperty(value = "确认派车预览pdfURL")
-    private String sendCarPdfUrl;
+    @ApiModelProperty(value = "通关时间")
+    private LocalDateTime goCustomsTime;
+
+    @ApiModelProperty(value = "预计通关时间")
+    private LocalDateTime preGoCustomsTime;
 
 
     @Override

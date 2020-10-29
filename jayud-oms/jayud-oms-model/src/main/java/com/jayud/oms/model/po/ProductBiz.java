@@ -61,7 +61,7 @@ public class ProductBiz extends Model<ProductBiz> {
     private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "更新人")
-    private String upUser;
+    private String updateUser;
 
     @Override
     protected Serializable pkVal() {

@@ -237,6 +237,8 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
                 CommonResult commonResult = kingdeeService.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), dataForm);
                 if (Objects.nonNull(commonResult) && commonResult.getCode() == ResultEnum.SUCCESS.getCode()) {
                     log.info("金蝶应收单推送完毕：（{}）", kingdeeCompName);
+                } else {
+                    log.error("金蝶应收单推送失败：（{}）", commonResult.getData());
                 }
             } catch (
                     Exception e) {
@@ -427,6 +429,8 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
                 CommonResult commonResult = kingdeeService.savePayableBill(FormIDEnum.PAYABLE.getFormid(), dataForm);
                 if (Objects.nonNull(commonResult) && commonResult.getCode() == ResultEnum.SUCCESS.getCode()) {
                     log.info("金蝶应付单推送完毕：({})", kingdeeCompName);
+                } else {
+                    log.error("金蝶应付单推送失败：（{}）", commonResult.getData());
                 }
             } catch (Exception e) {
                 e.printStackTrace();

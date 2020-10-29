@@ -30,7 +30,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
@@ -376,8 +375,8 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
         //  请勿轻易改变此提交方式，大部分的情况下，提交方式都是表单提交
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("X-Ticket", checkoutUserToken(new LoginForm(defaultUserName, defaultPassword, null)));
-        HttpEntity<MultiValueMap<String, String>> requestEntity = null;
-        requestEntity = new HttpEntity<MultiValueMap<String, String>>(JSONUtil.toBean(requestStr, MultiValueMap.class), headers);
+        HttpEntity<Map<String, String>> requestEntity = null;
+        requestEntity = new HttpEntity<Map<String, String>>(JSONUtil.toBean(requestStr, Map.class), headers);
         //  执行HTTP请求
         ResponseEntity<String> response = client.exchange(url, HttpMethod.POST, requestEntity, String.class);
         return response.getBody();

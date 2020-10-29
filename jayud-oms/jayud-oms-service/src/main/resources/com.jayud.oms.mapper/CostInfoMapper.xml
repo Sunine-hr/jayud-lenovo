@@ -11,9 +11,9 @@
         <result column="remarks" property="remarks"/>
         <result column="cids" property="cids"/>
         <result column="create_time" property="createTime"/>
-        <result column="created_user" property="createdUser"/>
-        <result column="up_time" property="upTime"/>
-        <result column="up_user" property="upUser"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->

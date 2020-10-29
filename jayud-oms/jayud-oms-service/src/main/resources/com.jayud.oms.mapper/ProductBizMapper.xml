@@ -3,9 +3,24 @@
 <mapper namespace="com.jayud.oms.mapper.ProductBizMapper">
 
     <!-- 通用查询映射结果 -->
-
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.ProductBiz">
+        <id column="id" property="id" />
+        <result column="id_code" property="idCode" />
+        <result column="name" property="name" />
+        <result column="tax_rate" property="taxRate" />
+        <result column="sorts" property="sorts" />
+        <result column="remarks" property="remarks" />
+        <result column="status" property="status" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_user" property="updateUser" />
+    </resultMap>
 
     <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, id_code, name, tax_rate, sorts, remarks, status, create_user, create_time, update_time, update_user
+    </sql>
 
 
     <select id="findProductBizByPage" parameterType="com.jayud.oms.model.bo.QueryProductBizForm"

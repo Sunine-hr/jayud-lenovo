@@ -32,8 +32,8 @@
         ci.cids codeName,
         ci.create_time createTime,
         ci.create_user createdUser,
-        ci.up_time upTime,
-        ci.up_user upUser
+        ci.update_time updateTime,
+        ci.update_user updateUser
         FROM
         cost_info ci
         <where>

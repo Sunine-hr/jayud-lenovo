@@ -58,7 +58,7 @@ public class ProductBiz extends Model<ProductBiz> {
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "更新时间")
-    private LocalDateTime upTime;
+    private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "更新人")
     private String upUser;

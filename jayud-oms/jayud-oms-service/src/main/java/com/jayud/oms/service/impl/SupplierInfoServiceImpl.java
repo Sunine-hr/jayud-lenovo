@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
  * 供应商信息 服务实现类
  * </p>
  *
- * @author chuanmei
- * @since 2020-10-17
+ * @author 李达荣
+ * @since 2020-10-29
  */
 @Service
 public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, SupplierInfo> implements ISupplierInfoService {

@@ -8,8 +8,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * 供应商信息 服务类
  * </p>
  *
- * @author chuanmei
- * @since 2020-10-17
+ * @author 李达荣
+ * @since 2020-10-29
  */
 public interface ISupplierInfoService extends IService<SupplierInfo> {
 

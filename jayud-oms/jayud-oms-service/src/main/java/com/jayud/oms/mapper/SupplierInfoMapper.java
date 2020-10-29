@@ -9,8 +9,8 @@ import org.apache.ibatis.annotations.Mapper;
  * 供应商信息 Mapper 接口
  * </p>
  *
- * @author chuanmei
- * @since 2020-10-17
+ * @author 李达荣
+ * @since 2020-10-29
  */
 @Mapper
 public interface SupplierInfoMapper extends BaseMapper<SupplierInfo> {

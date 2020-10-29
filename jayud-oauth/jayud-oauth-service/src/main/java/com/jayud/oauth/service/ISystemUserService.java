@@ -113,4 +113,10 @@ public interface ISystemUserService extends IService<SystemUser> {
      */
     void updateIsCharge(Long departmentId);
 
+    /**
+     * 根据id集合查询所用系统用户
+     */
+    List<SystemUser> getByIds(List<Long> ids);
+
+
 }

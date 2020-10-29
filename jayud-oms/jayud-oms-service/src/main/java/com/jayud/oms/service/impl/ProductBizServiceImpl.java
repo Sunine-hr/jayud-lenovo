@@ -11,8 +11,6 @@ import com.jayud.oms.mapper.ProductBizMapper;
 import com.jayud.oms.model.bo.AddProductBizForm;
 import com.jayud.oms.model.bo.QueryProductBizForm;
 import com.jayud.oms.model.enums.StatusEnum;
-import com.jayud.oms.model.po.CostInfo;
-import com.jayud.oms.model.po.CostType;
 import com.jayud.oms.model.po.ProductBiz;
 import com.jayud.oms.model.vo.ProductBizVO;
 import com.jayud.oms.service.IProductBizService;
@@ -82,7 +80,7 @@ public class ProductBizServiceImpl extends ServiceImpl<ProductBizMapper, Product
             productBiz.setCreateUser(loginUser);
             return this.save(productBiz);
         } else {
-            productBiz.setUpTime(LocalDateTime.now());
+            productBiz.setUpdateTime(LocalDateTime.now());
             productBiz.setUpUser(loginUser);
             return this.updateById(productBiz);
         }
@@ -101,7 +99,7 @@ public class ProductBizServiceImpl extends ServiceImpl<ProductBizMapper, Product
         LocalDateTime now = LocalDateTime.now();
         ids.stream().forEach(id -> {
             list.add(new ProductBiz().setId(id).setStatus(StatusEnum.INVALID.getCode())
-                    .setUpTime(now).setUpUser(loginUser));
+                    .setUpdateTime(now).setUpUser(loginUser));
         });
         return this.updateBatchById(list);
     }

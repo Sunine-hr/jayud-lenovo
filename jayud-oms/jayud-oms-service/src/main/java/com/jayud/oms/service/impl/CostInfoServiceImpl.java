@@ -97,8 +97,8 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
             costInfo.setCreateUser(loginUser);
             return this.save(costInfo);
         } else {
-            costInfo.setUpTime(LocalDateTime.now());
-            costInfo.setUpUser(loginUser);
+            costInfo.setUpdateTime(LocalDateTime.now());
+            costInfo.setUpdateUser(loginUser);
             return this.updateById(costInfo);
         }
     }
@@ -125,7 +125,7 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
         LocalDateTime now = LocalDateTime.now();
         ids.stream().forEach(id -> {
             list.add(new CostInfo().setId(id).setStatus(StatusEnum.INVALID.getCode())
-                    .setUpTime(now).setUpUser(loginUser));
+                    .setUpdateTime(now).setUpdateUser(loginUser));
         });
 
         return this.updateBatchById(list);

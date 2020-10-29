@@ -15,8 +15,8 @@
         tax_rate taxRate,status,sorts,
         create_time createTime,
         create_user createdUser,
-        up_time upTime,
-        up_user upUser,
+        update_time updateTime,
+        update_user updateUser,
         remarks
         from
         product_biz

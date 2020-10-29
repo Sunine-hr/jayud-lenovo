@@ -56,10 +56,10 @@ public class CostInfo extends Model<CostInfo> {
     private String createUser;
 
     @ApiModelProperty(value = "更新时间")
-    private LocalDateTime upTime;
+    private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "更新人")
-    private String upUser;
+    private String updateUser;
 
 
     @Override

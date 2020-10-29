@@ -11,9 +11,7 @@ import com.jayud.oms.model.bo.AddCostTypeForm;
 import com.jayud.oms.model.bo.QueryCostTypeForm;
 import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.CostType;
-import com.jayud.oms.model.po.ProductBiz;
 import com.jayud.oms.model.vo.CostTypeVO;
-import com.jayud.oms.model.vo.ProductBizVO;
 import com.jayud.oms.service.ICostTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -83,8 +81,8 @@ public class CostTypeServiceImpl extends ServiceImpl<CostTypeMapper, CostType> i
             costType.setCreateUser(loginUser);
             return this.save(costType);
         } else {
-            costType.setUpTime(LocalDateTime.now());
-            costType.setUpUser(loginUser);
+            costType.setUpdateTime(LocalDateTime.now());
+            costType.setUpdateUser(loginUser);
             return this.updateById(costType);
         }
     }
@@ -110,7 +108,7 @@ public class CostTypeServiceImpl extends ServiceImpl<CostTypeMapper, CostType> i
         LocalDateTime now = LocalDateTime.now();
         ids.stream().forEach(id -> {
             list.add(new CostType().setId(id).setStatus(StatusEnum.INVALID.getCode())
-                    .setUpTime(now).setUpUser(loginUser));
+                    .setUpdateTime(now).setUpdateUser(loginUser));
         });
         return this.updateBatchById(list);
     }

@@ -265,6 +265,14 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         baseMapper.update(systemUser,queryWrapper);
     }
 
+    /**
+     * 根据id集合查询所用系统用户
+     */
+    @Override
+    public List<SystemUser> getByIds(List<Long> ids) {
+        return this.baseMapper.selectBatchIds(ids);
+    }
+
 
     /**
      * 获取created_user和updated_user

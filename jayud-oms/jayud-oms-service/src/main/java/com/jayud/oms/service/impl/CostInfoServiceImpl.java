@@ -131,4 +131,8 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
         return this.updateBatchById(list);
     }
 
+    @Override
+    public List<CostInfo> findCostInfo() {
+        return baseMapper.selectList(null);
+    }
 }

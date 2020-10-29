@@ -23,6 +23,12 @@ import java.util.List;
 public interface ICostInfoService extends IService<CostInfo> {
 
     /**
+     * 获取费用类型
+     * @return
+     */
+    List<CostInfo> findCostInfo();
+
+    /**
      * 列表分页查询
      *
      * @param form

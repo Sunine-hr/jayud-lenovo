@@ -106,7 +106,6 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             }
             orderTransport.setOrderNo(orderNo);
             orderTransport.setCreatedUser(getLoginUser());
-            orderTransport.setSendCarPdfUrl("url");//TODO
         }
         for (InputOrderTakeAdrForm inputOrderTakeAdrForm : orderTakeAdrForms) {
             OrderTakeAdr orderTakeAdr = ConvertUtil.convert(inputOrderTakeAdrForm,OrderTakeAdr.class);

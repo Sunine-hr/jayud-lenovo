@@ -29,7 +29,7 @@ public class SystemUserRoleRelationServiceImpl extends ServiceImpl<SystemUserRol
     public void createUserRoleRelation(SystemUser user, List<Long> roleIds) {
         roleIds.forEach(m -> {
             SystemUserRoleRelation relation = new SystemUserRoleRelation();
-            relation.setRoleId(user.getId().intValue());
+            relation.setUserId(user.getId().intValue());
             relation.setRoleId(m.intValue());
             relation.insert();
         });

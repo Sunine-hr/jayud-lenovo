@@ -1,6 +1,5 @@
 package com.jayud.mall.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.common.util.Md5Utils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -13,10 +12,12 @@ import com.jayud.mall.model.bo.SaveUserForm;
 import com.jayud.mall.model.bo.SystemUserLoginForm;
 import com.jayud.mall.model.po.SystemUser;
 import com.jayud.mall.model.vo.SystemUserVO;
+import com.jayud.mall.service.ISystemUserRoleRelationService;
 import com.jayud.mall.service.ISystemUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,6 +33,8 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     @Autowired
     SystemUserMapper systemUserMapper;
+    @Autowired
+    ISystemUserRoleRelationService userRoleRelationService;
 
     @Override
     public SystemUserVO login(SystemUserLoginForm loginForm) {
@@ -58,26 +61,43 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     @Override
     public void insertUser(SaveUserForm user) {
-
         SystemUser systemUser = ConvertUtil.convert(user, SystemUser.class);
-//        systemUser.insert();
+        systemUser.setName(systemUser.getUserName());
+        systemUser.setPassword(Md5Utils.getMD5("123456".getBytes()).toUpperCase());
+
         systemUserMapper.insert(systemUser);
-//        systemUserMapper.insertUser(user);
-
         systemUser.setId(systemUser.getId());
-        System.out.println(JSONObject.toJSONString(systemUser));
-
+        if(user.getRoleIds() != null){
+            userRoleRelationService.createUserRoleRelation(systemUser,user.getRoleIds());
+        }
     }
 
     @Override
     public void updateUser(SaveUserForm user) {
-        systemUserMapper.updateUser(user);
+        SystemUser systemUser = ConvertUtil.convert(user, SystemUser.class);
+
+//        systemUserMapper.updateUser(user);    //原始的mybatis修改，不用这个，太麻烦了，还要写sql update 语句
+        systemUserMapper.updateById(systemUser);
+
+        //先删除用户的角色
+        List<Long> userIds = new ArrayList<>();
+        userIds.add(systemUser.getId());
+        userRoleRelationService.removeUserRoleRelation(userIds);
+
+        //在重新绑定角色
+        if(user.getRoleIds() != null){
+            userRoleRelationService.createUserRoleRelation(systemUser,user.getRoleIds());
+        }
 
     }
 
     @Override
     public void deleteUser(Long id) {
         systemUserMapper.deleteUser(id);
+        //删除用户的角色
+        List<Long> userIds = new ArrayList<>();
+        userIds.add(id);
+        userRoleRelationService.removeUserRoleRelation(userIds);
     }
 
     @Override

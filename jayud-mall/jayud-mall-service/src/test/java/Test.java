@@ -69,14 +69,18 @@ public class Test {
     @org.junit.Test
     public void test4(){
         Map<String, Object> map = new HashMap<>();
-        map.put("id", null);
+        map.put("id", 141);
         map.put("userName", "张三");
         map.put("companyId", 1L);
 //        map.put("", "");//工号
         map.put("enUserName", "zhangsan");
         map.put("phone", "13028280001");
         map.put("email", "13028280001@qq.com");
-//        map.put("", "");//角色
+        List<Long> roleIds = new ArrayList<>();
+        roleIds.add(1L);
+        roleIds.add(2L);
+        roleIds.add(3L);
+        map.put("roleIds", roleIds);//角色
 
         String json = JSONObject.toJSONString(map);
         System.out.println(json);

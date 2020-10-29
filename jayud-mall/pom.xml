@@ -15,10 +15,30 @@
     <modules>
         <module>jayud-mall-model</module>
         <module>jayud-mall-service</module>
-        <module>jayud-model-web</module>
+        <module>jayud-mall-web</module>
         <module>jayud-mall-admin</module>
     </modules>
     <name>jayud-mall</name>
     <description>南京商城项目</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.jayud</groupId>
+            <artifactId>jayud-common</artifactId>
+            <version>${jayud-common.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>1.1.21</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.41</version>
+        </dependency>
+
+    </dependencies>
+
 
 </project>

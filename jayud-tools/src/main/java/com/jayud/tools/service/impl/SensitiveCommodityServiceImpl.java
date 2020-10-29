@@ -1,5 +1,6 @@
 package com.jayud.tools.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -29,8 +30,16 @@ public class SensitiveCommodityServiceImpl extends ServiceImpl<SensitiveCommodit
     SensitiveCommodityMapper sensitiveCommodityMapper;
 
     @Override
-    public List<SensitiveCommodity> getSensitiveCommodityList() {
-        return sensitiveCommodityMapper.getSensitiveCommodityList();
+    public List<SensitiveCommodity> getSensitiveCommodityList(QuerySensitiveCommodityForm form) {
+//        List<SensitiveCommodity> list = sensitiveCommodityMapper.getSensitiveCommodityList(name);
+//        List<SensitiveCommodity> list
+
+        QueryWrapper<SensitiveCommodity> queryWrapper = new QueryWrapper();
+        if(form.getName() != null){
+            queryWrapper.like("name", form.getName());
+        }
+        List<SensitiveCommodity> list = sensitiveCommodityMapper.selectList(queryWrapper);
+        return list;
     }
 
     @Override

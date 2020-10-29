@@ -27,7 +27,7 @@ public interface SensitiveCommodityMapper extends BaseMapper<SensitiveCommodity>
      * 查询敏感品名list
      * @return
      */
-    List<SensitiveCommodity> getSensitiveCommodityList();
+    List<SensitiveCommodity> getSensitiveCommodityList(String name);
 
     /**
      * 分页查询敏感品名

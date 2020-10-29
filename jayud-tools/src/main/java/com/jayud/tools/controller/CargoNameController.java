@@ -375,7 +375,7 @@ public class CargoNameController {
 
 
     @ApiOperation(value = "导出A类表Excel(A类表:不存在`敏感品名`的货物表)V2版")
-    @RequestMapping(value = "/postExportExcelAV2", method = RequestMethod.POST)
+    @RequestMapping(value = "/postExportExcelAV2", method = RequestMethod.GET)
     @ResponseBody
     public CommonResult postExportExcelAV2(HttpServletResponse response) throws IOException {
         List<CargoNameSmallVO> rows = cargoNameService.findCargoNameListByAV2();
@@ -415,7 +415,7 @@ public class CargoNameController {
     }
 
     @ApiOperation(value = "导出B类表Excel(B类表:存在`敏感品名`的货物表)")
-    @RequestMapping(value = "/postExportExcelBV2", method = RequestMethod.POST)
+    @RequestMapping(value = "/postExportExcelBV2", method = RequestMethod.GET)
     @ResponseBody
     public CommonResult postExportExcelBV2(HttpServletResponse response) throws IOException {
         List<CargoNameSmallVO> cargoNameList = cargoNameService.findCargoNameListByBV2();
@@ -458,5 +458,6 @@ public class CargoNameController {
         cargoNameService.truncateCargoName();
         return CommonResult.success("清空`货物名称表`成功");
     }
+
 
 }

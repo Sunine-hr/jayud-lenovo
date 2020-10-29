@@ -10,14 +10,21 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, name
+        id, `name`
     </sql>
 
-    <!--获取所有用户-->
-    <select id="getSensitiveCommodityList" resultType="com.jayud.tools.model.po.SensitiveCommodity">
+    <!--获取所有敏感品名-->
+    <select id="getSensitiveCommodityList" parameterType="java.lang.String" resultType="com.jayud.tools.model.po.SensitiveCommodity">
         select
         <include refid="Base_Column_List"/>
         from sensitive_commodity
+        WHERE
+        1 = 1
+        <if test="name != null and name != ''">
+            AND `name` LIKE concat('%',#{name},'%')
+        </if>
+        GROUP BY
+        `id`
     </select>
 
     <!--查询敏感品名分页-->

@@ -23,7 +23,7 @@ public interface ISensitiveCommodityService extends IService<SensitiveCommodity>
      * 查询敏感品名list
      * @return
      */
-    List<SensitiveCommodity> getSensitiveCommodityList();
+    List<SensitiveCommodity> getSensitiveCommodityList(QuerySensitiveCommodityForm form);
 
     /**
      * 保存敏感品名

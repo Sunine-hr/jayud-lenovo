@@ -26,11 +26,10 @@ public class SensitiveCommodityController {
 
     @ApiOperation(value = "查询敏感品名list")
     @PostMapping(value = "/getSensitiveCommodityList")
-    public CommonResult getSensitiveCommodityList(){
-        List<SensitiveCommodity> userList = sensitiveCommodityService.getSensitiveCommodityList();
+    public CommonResult<List<SensitiveCommodity>> getSensitiveCommodityList(@RequestBody QuerySensitiveCommodityForm form){
+        List<SensitiveCommodity> userList = sensitiveCommodityService.getSensitiveCommodityList(form);
         return CommonResult.success(userList);
     }
-
 
     @ApiOperation(value = "保存`敏感品名`（新增或修改）")
     @PostMapping(value = "/saveSensitiveCommodity")

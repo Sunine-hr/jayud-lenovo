@@ -1,15 +1,16 @@
-package com.jayud.oms.model.po;
+package com.jayud.oms.model.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -20,15 +21,11 @@ import lombok.experimental.Accessors;
  * @since 2020-10-27
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value="CostInfo对象", description="费用名描述")
-public class CostInfo extends Model<CostInfo> {
+public class CostInfoVO {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "自增id")
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     @ApiModelProperty(value = "费用code")
@@ -37,17 +34,14 @@ public class CostInfo extends Model<CostInfo> {
     @ApiModelProperty(value = "费用名")
     private String name;
 
-    @ApiModelProperty(value = "状态(1应收 2应付)")
-    private Integer types;
-
-    @ApiModelProperty(value = "费用名状态(0无效 1有效)")
+    @ApiModelProperty(value = "费用名状态(1启用 2无效)")
     private String status;
 
     @ApiModelProperty(value = "描述")
     private String remarks;
 
-    @ApiModelProperty(value = "费用类型id")
-    private String cids;
+    @ApiModelProperty(value = "费用类型")
+    private String codeName;
 
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
@@ -61,10 +55,5 @@ public class CostInfo extends Model<CostInfo> {
     @ApiModelProperty(value = "更新人")
     private String upUser;
 
-
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
 
 }

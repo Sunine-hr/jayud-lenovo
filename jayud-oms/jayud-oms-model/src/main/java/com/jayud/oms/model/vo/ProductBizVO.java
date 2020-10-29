@@ -1,4 +1,4 @@
-package com.jayud.oms.model.po;
+package com.jayud.oms.model.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -22,15 +22,11 @@ import java.time.LocalDateTime;
  * @since 2020-09-15
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value="ProductBiz对象", description="产品服务对应业务类型")
-public class ProductBiz extends Model<ProductBiz> {
+public class ProductBizVO {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "自增id")
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     @ApiModelProperty(value = "编码")
@@ -62,10 +58,5 @@ public class ProductBiz extends Model<ProductBiz> {
 
     @ApiModelProperty(value = "更新人")
     private String upUser;
-
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
 
 }

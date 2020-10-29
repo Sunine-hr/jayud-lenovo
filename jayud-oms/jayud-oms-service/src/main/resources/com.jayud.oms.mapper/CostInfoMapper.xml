@@ -4,17 +4,54 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.CostInfo">
-        <id column="id" property="id" />
-        <result column="id_code" property="idCode" />
-        <result column="name" property="name" />
-        <result column="types" property="types" />
-        <result column="remarks" property="remarks" />
-        <result column="create_time" property="createTime" />
+        <id column="id" property="id"/>
+        <result column="id_code" property="idCode"/>
+        <result column="name" property="name"/>
+        <result column="status" property="status"/>
+        <result column="remarks" property="remarks"/>
+        <result column="cids" property="cids"/>
+        <result column="create_time" property="createTime"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="up_time" property="upTime"/>
+        <result column="up_user" property="upUser"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, id_code, name, types, remarks, create_time
+        id, id_code, name, status, remarks,cids, create_time
     </sql>
 
+    <select id="findCostInfoByPage"
+            resultType="com.jayud.oms.model.vo.CostInfoVO">
+        SELECT
+        ci.id,
+        id_code idCode,
+        name,
+        ci.status,
+        remarks,
+        ci.cids codeName,
+        ci.create_time createTime,
+        ci.create_user createdUser,
+        ci.up_time upTime,
+        ci.up_user upUser
+        FROM
+        cost_info ci
+        <where>
+            and ci.status = '1'
+            <if test="form.name != null and form.name != ''">
+                and ci.name like concat('%',#{form.name},'%')
+            </if>
+            <if test="form.idCode != null and form.idCode != ''">
+                and ci.id_code like concat('%',#{form.idCode},'%')
+            </if>
+            <if test="cids !=null and cids.size>0">
+                and (
+                <foreach collection="cids" item="item" index="index" separator="or">
+                    ci.cids like concat('%',#{item},'%')
+                </foreach>
+                )
+            </if>
+        </where>
+
+    </select>
 </mapper>

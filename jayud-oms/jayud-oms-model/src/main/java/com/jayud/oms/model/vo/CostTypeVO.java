@@ -1,47 +1,44 @@
-package com.jayud.oms.model.po;
+package com.jayud.oms.model.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
-import java.time.LocalDateTime;
-
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
 /**
  * <p>
- * 费用类型，暂时废弃
+ * 费用类型
  * </p>
  *
  * @author 李达荣
  * @since 2020-10-27
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value="CostType对象", description="费用类型，暂时废弃")
-public class CostType extends Model<CostType> {
+@ApiModel(value="CostType对象", description="费用类型")
+public class CostTypeVO {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "主键ID")
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "费用类别代码")
+    @ApiModelProperty(value = "费用名称代码")
     private String code;
 
-    @ApiModelProperty(value = "费用类别")
+    @ApiModelProperty(value = "费用类型名称")
     private String codeName;
 
     @ApiModelProperty(value = "是否代垫代收")
     private Boolean isPayCollection;
 
-    @ApiModelProperty(value = "状态（0无效 1有效）")
+    @ApiModelProperty(value = "1启用 2无效")
     private String status;
 
     @ApiModelProperty(value = "创建时间")
@@ -58,11 +55,5 @@ public class CostType extends Model<CostType> {
 
     @ApiModelProperty(value = "描述")
     private String remarks;
-
-
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
 
 }

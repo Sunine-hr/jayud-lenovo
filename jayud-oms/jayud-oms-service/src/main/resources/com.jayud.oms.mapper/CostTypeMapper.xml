@@ -4,15 +4,35 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.CostType">
-        <id column="id" property="id" />
-        <result column="code" property="code" />
-        <result column="code_name" property="codeName" />
-        <result column="status" property="status" />
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="code_name" property="codeName"/>
+        <result column="status" property="status"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, code, code_name, status
     </sql>
+
+    <select id="findCostTypeByPage" parameterType="com.jayud.oms.model.bo.QueryCostTypeForm"
+            resultType="com.jayud.oms.model.vo.CostTypeVO">
+        select
+            id, code, code_name codeName, status,
+            is_pay_collection isPayCollection,
+            create_time,
+            create_user,
+            up_time,
+            up_user,
+            remarks
+        from
+        cost_type
+        <where>
+            and status='1'
+            <if test="form.codeName !=null and form.codeName !=''">
+                and code_name like concat('%',#{form.codeName},'%')
+            </if>
+        </where>
+    </select>
 
 </mapper>

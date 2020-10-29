@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author william
@@ -286,12 +285,12 @@ public class ApiController {
                 }
 
             }
-            for (String s : infoList) {
-                System.out.println(s);
-            }
+
+            System.out.println("======================================");
+
             if (existSet.size() != targetList.size()) {
                 targetList.stream().filter(e -> !existSet.contains(e))
-                        .collect(Collectors.toList()).forEach(e -> {
+                        .forEach(e -> {
                     System.out.println(e);
                 });
             }

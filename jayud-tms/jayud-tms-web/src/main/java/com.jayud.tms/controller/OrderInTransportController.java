@@ -65,7 +65,8 @@ public class OrderInTransportController {
     @PostMapping(value = "/oprOrderTransport")
     public CommonResult oprOrderTransport(@RequestBody OprStatusForm form) {
         if(form.getOrderId() == null || form.getMainOrderId() == null ||
-                StringUtil.isNullOrEmpty(form.getOperatorUser()) || StringUtil.isNullOrEmpty(form.getOperatorTime()) ||
+                (StringUtil.isNullOrEmpty(form.getOperatorUser()) && !CommonConstant.HK_CLEAR_CUSTOMS.equals(form.getCmd())) ||
+                (StringUtil.isNullOrEmpty(form.getOperatorTime()) && !CommonConstant.HK_CLEAR_CUSTOMS.equals(form.getCmd())) ||
                 StringUtil.isNullOrEmpty(form.getCmd())){
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
         }
@@ -329,7 +330,8 @@ public class OrderInTransportController {
 
         }else if(CommonConstant.AUDIT_CAR.equals(form.getCmd())){//运输审核
             if(!(OrderStatusEnum.TMS_T_3.getCode().equals(form.getStatus()) ||
-                    OrderStatusEnum.TMS_T_3_1.getCode().equals(form.getStatus())) || form.getId() == null){
+                    OrderStatusEnum.TMS_T_3_1.getCode().equals(form.getStatus())) || form.getId() == null ||
+                    form.getOrderId() == null){
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }
             //更新派车信息
@@ -491,6 +493,37 @@ public class OrderInTransportController {
         return CommonResult.success(orderStatusVOS);
     }
 
+    @ApiOperation(value = "确认派车,mainOrderId/orderId需传参数")
+    @PostMapping(value = "/confirmSendCar")
+    public CommonResult confirmSendCar(@RequestBody OprStatusForm form) {
+        if (form.getMainOrderId() == null || form.getOrderId() == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+        }
+        OrderTransport orderTransport = new OrderTransport();
+        orderTransport.setId(form.getOrderId());
+        orderTransport.setUpdatedTime(LocalDateTime.now());
+        orderTransport.setUpdatedUser(getLoginUser());
+        orderTransport.setStatus(OrderStatusEnum.TMS_T_4.getCode());
+
+        //记录审核信息
+        AuditInfoForm auditInfoForm = new AuditInfoForm();
+        auditInfoForm.setExtId(form.getOrderId());
+        auditInfoForm.setAuditStatus(form.getStatus());
+        auditInfoForm.setAuditComment(form.getDescription());
+        auditInfoForm.setExtDesc(SqlConstant.ORDER_TRANSPORT);
+        auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_4.getDesc());
+
+        form.setStatusName(OrderStatusEnum.TMS_T_4.getDesc());
+        form.setStatus(OrderStatusEnum.TMS_T_4.getCode());
+
+        omsClient.saveOprStatus(form);
+        omsClient.saveAuditInfo(auditInfoForm);
+        boolean result = orderTransportService.saveOrUpdate(orderTransport);
+        if (!result) {
+            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
+        }
+        return CommonResult.success();
+    }
 
     /**
      * 当前登录用户

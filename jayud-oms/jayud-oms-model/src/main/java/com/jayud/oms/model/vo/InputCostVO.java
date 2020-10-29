@@ -3,6 +3,7 @@ package com.jayud.oms.model.vo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -10,9 +11,9 @@ import java.util.List;
 public class InputCostVO {
 
     @ApiModelProperty(value = "应收费用")
-    private List<InputPaymentCostVO> paymentCostList;
+    private List<InputPaymentCostVO> paymentCostList = new ArrayList<>();
 
     @ApiModelProperty(value = "应付费用")
-    private List<InputReceivableCostVO> receivableCostList;
+    private List<InputReceivableCostVO> receivableCostList = new ArrayList<>();
 
 }

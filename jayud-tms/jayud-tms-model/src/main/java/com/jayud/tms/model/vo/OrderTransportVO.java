@@ -62,6 +62,9 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "状态描述")
     private String statusDesc;
 
+    @ApiModelProperty(value = "法人主体")
+    private String legalName;
+
     //货物信息
     @ApiModelProperty(value = "货物描述")
     private String goodsDesc;

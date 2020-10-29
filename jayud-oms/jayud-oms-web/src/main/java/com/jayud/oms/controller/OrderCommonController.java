@@ -106,9 +106,9 @@ public class OrderCommonController {
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "费用详情,id= 主订单ID")
+    @ApiOperation(value = "费用详情")
     @PostMapping(value = "/getCostDetail")
-    public CommonResult getCostDetail(@RequestBody @Valid GetCostDetailForm form) {
+    public CommonResult<InputCostVO> getCostDetail(@RequestBody @Valid GetCostDetailForm form) {
         if(OrderOprCmdEnum.SUB_COST.getCode().equals(form.getCmd()) || OrderOprCmdEnum.SUB_COST_AUDIT.getCode().equals(form.getCmd())){
             if(StringUtil.isNullOrEmpty(form.getSubOrderNo())){
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());

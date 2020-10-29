@@ -17,7 +17,7 @@ public class QueryOrderTmsForm extends BasePageForm{
     @ApiModelProperty(value = "法人主体")
     private String legalName;
 
-    @ApiModelProperty(value = "通关口岸")
+    @ApiModelProperty(value = "通关口岸code,下拉框隐藏值")
     private String portCode;
 
     @ApiModelProperty(value = "开始创建时间")

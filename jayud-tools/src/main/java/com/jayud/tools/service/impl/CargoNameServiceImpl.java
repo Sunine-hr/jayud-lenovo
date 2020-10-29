@@ -29,6 +29,9 @@ public class CargoNameServiceImpl extends ServiceImpl<CargoNameMapper, CargoName
 
     @Override
     public void importExcel(List<List<Object>> list) {
+        //导入前先删除数据
+        cargoNameMapper.truncateCargoName();
+
         //构造插入的数据
         List<CargoName> cargoNameList = new ArrayList<>();
         //int i = 2，从第三行记录开是计算，跳过表头列

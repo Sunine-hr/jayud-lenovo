@@ -132,8 +132,10 @@ public abstract class CommonConstant {
     public static final String SUPPLIERINFO = "supplierInfo";
 
     public static final String BG = "BG";
+    public static final String BG_DESC = "报关订单";
 
     public static final String ZGYS = "ZGYS";
+    public static final String ZGYS_DESC = "中港运输订单";
 
     public static final String PAGE_LIST = "pageList";
 

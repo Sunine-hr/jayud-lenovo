@@ -34,7 +34,7 @@ public class InputOrderTakeAdrVO {
     private String customerName;
 
     @ApiModelProperty(value = "货物描述")
-    private String describe;
+    private String goodsDesc;
 
     @ApiModelProperty(value = "板数")
     private Double plateAmount;

@@ -65,7 +65,13 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             return false;
         }
         List<InputOrderTakeAdrForm> orderTakeAdrForms1 = form.getTakeAdrForms1();
+        for (InputOrderTakeAdrForm orderTakeAdrForm1 : orderTakeAdrForms1) {
+            orderTakeAdrForm1.setOprType(Integer.valueOf(CommonConstant.VALUE_1));
+        }
         List<InputOrderTakeAdrForm> orderTakeAdrForms2 = form.getTakeAdrForms2();
+        for (InputOrderTakeAdrForm orderTakeAdrForm2 : orderTakeAdrForms2) {
+            orderTakeAdrForm2.setOprType(Integer.valueOf(CommonConstant.VALUE_2));
+        }
         List<InputOrderTakeAdrForm> orderTakeAdrForms = new ArrayList<>();
 
         //值为空的不进行保存

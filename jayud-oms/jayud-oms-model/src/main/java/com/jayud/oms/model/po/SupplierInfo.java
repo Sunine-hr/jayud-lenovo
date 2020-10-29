@@ -1,24 +1,23 @@
 package com.jayud.oms.model.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.baomidou.mybatisplus.annotation.TableId;
+import java.time.LocalDateTime;
+import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-
 /**
  * <p>
  * 供应商信息
  * </p>
  *
- * @author chuanmei
- * @since 2020-10-17
+ * @author 李达荣
+ * @since 2020-10-29
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -34,6 +33,9 @@ public class SupplierInfo extends Model<SupplierInfo> {
 
     @ApiModelProperty(value = "供应商代码")
     private String supplierCode;
+
+    @ApiModelProperty(value = "产品分类id")
+    private Long productClassifyId;
 
     @ApiModelProperty(value = "供应商名称(中)")
     private String supplierChName;
@@ -81,10 +83,16 @@ public class SupplierInfo extends Model<SupplierInfo> {
     private String status;
 
     @ApiModelProperty(value = "创建人")
-    private String createdUser;
+    private String createUser;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createdTime;
+    private LocalDateTime createTime;
+
+    @ApiModelProperty(value = "更新时间")
+    private LocalDateTime updateTime;
+
+    @ApiModelProperty(value = "更新人")
+    private String updateUser;
 
 
     @Override

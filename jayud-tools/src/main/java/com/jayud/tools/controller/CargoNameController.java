@@ -38,8 +38,9 @@ public class CargoNameController {
     ICargoNameService cargoNameService;
 
     @ApiOperation(value = "导入Excel")
-    @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
-    public CommonResult importExcel(@RequestParam("file") MultipartFile file, HttpServletRequest request){
+    @RequestMapping(value = "/importExcelV2", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult importExcelV2(@RequestParam("file") MultipartFile file, HttpServletRequest request){
         if (file.isEmpty()) {
             return CommonResult.error(-1, "文件为空！");
         }
@@ -340,8 +341,9 @@ public class CargoNameController {
 
     //small 小的列
     @ApiOperation(value = "导入Excel,第二版，较少的列")
-    @RequestMapping(value = "/importExcelV2", method = RequestMethod.POST)
-    public CommonResult importExcelV2(@RequestParam("file") MultipartFile file, HttpServletRequest request){
+    @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult importExcel(@RequestParam("file") MultipartFile file, HttpServletRequest request){
         if (file.isEmpty()) {
             return CommonResult.error(-1, "文件为空！");
         }
@@ -454,6 +456,7 @@ public class CargoNameController {
 
     @ApiOperation(value = "清空`货物名称表`")
     @RequestMapping(value = "/truncateCargoName", method = RequestMethod.POST)
+    @ResponseBody
     public CommonResult truncateCargoName(){
         cargoNameService.truncateCargoName();
         return CommonResult.success("清空`货物名称表`成功");

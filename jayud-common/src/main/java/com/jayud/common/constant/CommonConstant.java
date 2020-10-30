@@ -147,4 +147,5 @@ public abstract class CommonConstant {
 
     public static final String REJECT = "驳回";
 
+    public static final String ORDER_NO = "orderNo";
 }

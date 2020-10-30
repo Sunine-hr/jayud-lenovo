@@ -3,7 +3,6 @@ package com.jayud.tms.controller;
 import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
-import com.jayud.common.constant.SqlConstant;
 import com.jayud.tms.model.vo.SendCarPdfVO;
 import com.jayud.tms.pdfUtil.PdfTemplateUtil;
 import com.jayud.tms.service.IOrderTransportService;
@@ -33,7 +32,7 @@ public class PdfController {
     @ApiOperation(value = "渲染数据,orderNo=子订单号")
     @PostMapping(value = "/initPdfData")
     public CommonResult<SendCarPdfVO> initPdfData(@RequestBody Map<String,Object> param) {
-        String orderNo = MapUtil.getStr(param, SqlConstant.ORDER_NO);
+        String orderNo = MapUtil.getStr(param, CommonConstant.ORDER_NO);
         SendCarPdfVO sendCarPdfVO = orderTransportService.initPdfData(orderNo, CommonConstant.ZGYS);
         return CommonResult.success(sendCarPdfVO);
     }

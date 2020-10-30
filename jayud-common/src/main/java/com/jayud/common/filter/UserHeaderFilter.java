@@ -22,7 +22,7 @@ public class UserHeaderFilter implements Filter {
     RedisUtils redisUtils;
 
     private static final Set<String> ALLOWED_PATHS = Collections.unmodifiableSet(new HashSet<>(
-            Arrays.asList("/system/user/login","/system/user/logout")));
+            Arrays.asList("/system/user/login","/system/user/logout","/api/")));
 
 
     @Override
@@ -34,10 +34,15 @@ public class UserHeaderFilter implements Filter {
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) req;
         String path = request.getRequestURI().substring(request.getContextPath().length()).replaceAll("[/]+$", "");
-        boolean allowedPath = ALLOWED_PATHS.contains(path);
+        boolean allowedPath = false;
+        for (String url : ALLOWED_PATHS) {
+            allowedPath = path.contains(url);
+            if(allowedPath){
+                break;
+            }
+        }
         if (allowedPath) {
             System.out.println("这里是不需要处理的url进入的方法");
-
         }
         else {
             String token = request.getHeader("token");

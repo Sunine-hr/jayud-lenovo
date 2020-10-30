@@ -34,7 +34,7 @@ public class CostInfoVO {
     @ApiModelProperty(value = "费用名")
     private String name;
 
-    @ApiModelProperty(value = "费用名状态(1启用 2无效)")
+    @ApiModelProperty(value = "费用名状态(0禁用 1启用)")
     private String status;
 
     @ApiModelProperty(value = "描述")

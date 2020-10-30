@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.mapper.ProductBizMapper;
@@ -15,20 +14,15 @@ import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.ProductBiz;
 import com.jayud.oms.model.vo.ProductBizVO;
 import com.jayud.oms.service.IProductBizService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 
 @Service
 public class ProductBizServiceImpl extends ServiceImpl<ProductBizMapper, ProductBiz> implements IProductBizService {
-
-    @Autowired
-    private RedisUtils redisUtils;
 
     @Override
     public List<ProductBiz> findProductBiz() {
@@ -76,31 +70,35 @@ public class ProductBizServiceImpl extends ServiceImpl<ProductBizMapper, Product
     public boolean saveOrUpdateProductBiz(AddProductBizForm form) {
         ProductBiz productBiz = ConvertUtil.convert(form, ProductBiz.class);
         if (Objects.isNull(productBiz.getId())) {
-            productBiz.setCreateTime(LocalDateTime.now());
-            productBiz.setCreateUser(UserOperator.getToken());
+            productBiz.setCreateTime(LocalDateTime.now())
+                    .setCreateUser(UserOperator.getToken());
             return this.save(productBiz);
         } else {
-            productBiz.setUpdateTime(LocalDateTime.now());
-            productBiz.setUpdateUser(UserOperator.getToken());
+            productBiz.setIdCode(null)
+                    .setUpdateTime(LocalDateTime.now())
+                    .setUpdateUser(UserOperator.getToken());
             return this.updateById(productBiz);
         }
     }
 
     /**
-     * 更新为无效状态
-     *
-     * @param ids
+     * 更改启用/禁用业务类型状态
+     * @param id
      * @return
      */
     @Override
-    public boolean deleteByIds(List<Long> ids) {
-        List<ProductBiz> list = new ArrayList<>();
-        LocalDateTime now = LocalDateTime.now();
-        ids.stream().forEach(id -> {
-            list.add(new ProductBiz().setId(id).setStatus(StatusEnum.INVALID.getCode())
-                    .setUpdateTime(now).setUpdateUser(UserOperator.getToken()));
-        });
-        return this.updateBatchById(list);
+    public boolean enableOrDisableProductBiz(Long id) {
+        //查询当前状态
+        QueryWrapper<ProductBiz> condition = new QueryWrapper<>();
+        condition.lambda().select(ProductBiz::getStatus).eq(ProductBiz::getId, id);
+        ProductBiz tmp = this.baseMapper.selectOne(condition);
+
+        String status = "1".equals(tmp.getStatus()) ? StatusEnum.INVALID.getCode() : StatusEnum.ENABLE.getCode();
+
+        ProductBiz productBiz = new ProductBiz().setId(id).setStatus(status)
+                .setUpdateTime(LocalDateTime.now()).setUpdateUser(UserOperator.getToken());
+
+        return this.updateById(productBiz);
     }
 
 }

@@ -28,7 +28,7 @@
         from
         cost_type
         <where>
-            and status='1'
+
             <if test="form.codeName !=null and form.codeName !=''">
                 and code_name like concat('%',#{form.codeName},'%')
             </if>

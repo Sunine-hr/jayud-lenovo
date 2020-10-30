@@ -50,11 +50,11 @@ public interface IProductBizService extends IService<ProductBiz> {
 
 
     /**
-     * 更新为无效状态
+     * 更改启用/禁用业务类型状态
      *
-     * @param ids
+     * @param id
      * @return
      */
-    boolean deleteByIds(List<Long> ids);
+    boolean enableOrDisableProductBiz(Long id);
 
 }

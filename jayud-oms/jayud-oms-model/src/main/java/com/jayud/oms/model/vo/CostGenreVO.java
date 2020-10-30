@@ -10,53 +10,48 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
  * <p>
- * 产品服务对应业务类型
+ * 基础数据费用类型
  * </p>
  *
- * @author chuanmei
- * @since 2020-09-15
+ * @author 李达荣
+ * @since 2020-10-30
  */
 @Data
-public class ProductBizVO {
+public class CostGenreVO {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "自增id")
+    @ApiModelProperty(value = "主键")
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "编码")
-    private String idCode;
+    @ApiModelProperty(value = "费用类型代码")
+    private String code;
 
-    @ApiModelProperty(value = "业务名")
+    @ApiModelProperty(value = "费用类型名称")
     private String name;
-
-    @ApiModelProperty(value = "税率")
-    private BigDecimal taxRate;
-
-    @ApiModelProperty(value = "排序值")
-    private Long sorts;
 
     @ApiModelProperty(value = "描述")
     private String remarks;
 
-    @ApiModelProperty(value = "状态(0禁用 1启用)")
+    @ApiModelProperty(value = "状态（1启用，0禁用）")
     private String status;
-
-    @ApiModelProperty(value = "创建人")
-    private String createUser;
 
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "创建人")
+    private String createUser;
+
     @ApiModelProperty(value = "更新时间")
-    private LocalDateTime upTime;
+    private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "更新人")
-    private String upUser;
+    private String updateUser;
+
 
 }

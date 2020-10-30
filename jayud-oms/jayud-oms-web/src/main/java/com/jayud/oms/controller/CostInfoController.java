@@ -1,7 +1,6 @@
 package com.jayud.oms.controller;
 
 
-import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
@@ -14,10 +13,13 @@ import com.jayud.oms.service.ICostInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import java.util.Map;
 
 /**
  * <p>
@@ -53,21 +55,28 @@ public class CostInfoController {
         }
     }
 
-    @ApiOperation(value = "删除费用名称")
-    @PostMapping(value = "/deleteCostInfo")
-    public CommonResult deleteCostInfo(@Valid @RequestBody DeleteForm form) {
-        if (this.costInfoService.deleteByIds(form.getIds())) {
+    @ApiOperation(value = "更改启用/禁用费用名称状态,id是费用名称主键")
+    @PostMapping(value = "/enableOrDisableCostInfo")
+    public CommonResult enableOrDisableCostInfo(@RequestBody Map<String, Long> map) {
+        Long id = map.get("id");
+        if (id == null) {
+            return CommonResult.error(500, "id is required");
+        }
+
+        if (this.costInfoService.enableOrDisableCostInfo(id)) {
             return CommonResult.success();
         } else {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
     }
 
-    @ApiOperation(value = "根据主键获取费用名称详情")
-    @PostMapping(value = "/getById")
-    public CommonResult getById(@RequestParam(value = "id") Long id) {
-        if (ObjectUtil.isNull(id)){
-            return CommonResult.error(500,"id is required");
+
+    @ApiOperation(value = "根据主键获取费用名称详情,id是费用名称主键")
+    @PostMapping(value = "/getCostInfoById")
+    public CommonResult getCostInfoById(@RequestBody Map<String, Long> map) {
+        Long id = map.get("id");
+        if (id == null) {
+            return CommonResult.error(500, "id is required");
         }
         CostInfoVO costInfoVO = this.costInfoService.getById(id);
         return CommonResult.success(costInfoVO);

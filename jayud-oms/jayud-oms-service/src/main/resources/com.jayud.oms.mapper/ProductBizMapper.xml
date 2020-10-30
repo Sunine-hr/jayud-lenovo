@@ -36,7 +36,7 @@
         from
         product_biz
         <where>
-            and status='1'
+
             <if test="form.name !=null and form.name !=''">
                 and name like concat('%',#{form.name},'%')
             </if>

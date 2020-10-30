@@ -1,10 +1,10 @@
 package com.jayud.oms.service.impl;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.mapper.CostTypeMapper;
@@ -14,7 +14,6 @@ import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.CostType;
 import com.jayud.oms.model.vo.CostTypeVO;
 import com.jayud.oms.service.ICostTypeService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -32,8 +31,6 @@ import java.util.Objects;
  */
 @Service
 public class CostTypeServiceImpl extends ServiceImpl<CostTypeMapper, CostType> implements ICostTypeService {
-    @Autowired
-    private RedisUtils redisUtils;
 
     /**
      * 列表分页查询
@@ -77,12 +74,13 @@ public class CostTypeServiceImpl extends ServiceImpl<CostTypeMapper, CostType> i
         costType.setCodeName(codeName);
 
         if (Objects.isNull(costType.getId())) {
-            costType.setCreateTime(LocalDateTime.now());
-            costType.setCreateUser(UserOperator.getToken());
+            costType.setCreateTime(LocalDateTime.now())
+                    .setCreateUser(UserOperator.getToken());
             return this.save(costType);
         } else {
-            costType.setUpdateTime(LocalDateTime.now());
-            costType.setUpdateUser(UserOperator.getToken());
+            costType.setCode(null)
+                    .setUpdateTime(LocalDateTime.now())
+                    .setUpdateUser(UserOperator.getToken());
             return this.updateById(costType);
         }
     }
@@ -97,19 +95,23 @@ public class CostTypeServiceImpl extends ServiceImpl<CostTypeMapper, CostType> i
     }
 
     /**
-     * 更新为无效状态
-     * @param ids
+     * 更改启用/禁用状态
+     * @param id
      * @return
      */
     @Override
-    public boolean deleteByIds(List<Long> ids) {
-        List<CostType> list = new ArrayList<>();
-        LocalDateTime now = LocalDateTime.now();
-        ids.stream().forEach(id -> {
-            list.add(new CostType().setId(id).setStatus(StatusEnum.INVALID.getCode())
-                    .setUpdateTime(now).setUpdateUser(UserOperator.getToken()));
-        });
-        return this.updateBatchById(list);
+    public boolean enableOrDisableCostType(Long id) {
+        //查询当前状态
+        QueryWrapper<CostType> condition = new QueryWrapper<>();
+        condition.lambda().select(CostType::getStatus).eq(CostType::getId, id);
+        CostType tmp = this.baseMapper.selectOne(condition);
+
+        String status = "1".equals(tmp.getStatus()) ? StatusEnum.INVALID.getCode() : StatusEnum.ENABLE.getCode();
+
+        CostType costType = new CostType().setId(id).setStatus(status)
+                .setUpdateTime(LocalDateTime.now()).setUpdateUser(UserOperator.getToken());
+
+        return this.updateById(costType);
     }
 
 

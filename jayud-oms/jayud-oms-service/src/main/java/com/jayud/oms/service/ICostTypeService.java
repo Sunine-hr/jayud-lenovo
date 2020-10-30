@@ -46,14 +46,14 @@ public interface ICostTypeService extends IService<CostType> {
     boolean saveOrUpdateCostType(AddCostTypeForm form);
 
     /**
-     * 根据id查询费用类型
+     * 根据id查询费用类别
      */
     CostTypeVO getById(Long id);
 
     /**
-     * 更新为无效状态
-     * @param ids
+     * 更改启用/禁用状态
+     * @param id
      * @return
      */
-    boolean deleteByIds(List<Long> ids);
+    boolean enableOrDisableCostType(Long id);
 }

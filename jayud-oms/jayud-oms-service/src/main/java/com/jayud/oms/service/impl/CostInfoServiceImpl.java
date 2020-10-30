@@ -39,8 +39,6 @@ import java.util.stream.Collectors;
 public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> implements ICostInfoService {
 
     @Autowired
-    private RedisUtils redisUtils;
-    @Autowired
     private ICostTypeService costTypeService;
 
     /**
@@ -93,12 +91,13 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
     public boolean saveOrUpdateCostInfo(AddCostInfoForm form) {
         CostInfo costInfo = ConvertUtil.convert(form, CostInfo.class);
         if (Objects.isNull(costInfo.getId())) {
-            costInfo.setCreateTime(LocalDateTime.now());
-            costInfo.setCreateUser(UserOperator.getToken());
+            costInfo.setCreateTime(LocalDateTime.now())
+                    .setCreateUser(UserOperator.getToken());
             return this.save(costInfo);
         } else {
-            costInfo.setUpdateTime(LocalDateTime.now());
-            costInfo.setUpdateUser(UserOperator.getToken());
+            costInfo.setIdCode(null)
+                    .setUpdateTime(LocalDateTime.now())
+                    .setUpdateUser(UserOperator.getToken());
             return this.updateById(costInfo);
         }
     }
@@ -113,21 +112,23 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
     }
 
     /**
-     * 更新为无效状态
-     *
-     * @param ids
+     * 更改启用/禁用状态
+     * @param id
      * @return
      */
     @Override
-    public boolean deleteByIds(List<Long> ids) {
-        List<CostInfo> list = new ArrayList<>();
-        LocalDateTime now = LocalDateTime.now();
-        ids.stream().forEach(id -> {
-            list.add(new CostInfo().setId(id).setStatus(StatusEnum.INVALID.getCode())
-                    .setUpdateTime(now).setUpdateUser(UserOperator.getToken()));
-        });
+    public boolean enableOrDisableCostInfo(Long id) {
+        //查询当前状态
+        QueryWrapper<CostInfo> condition = new QueryWrapper<>();
+        condition.lambda().select(CostInfo::getStatus).eq(CostInfo::getId, id);
+        CostInfo tmp = this.baseMapper.selectOne(condition);
 
-        return this.updateBatchById(list);
+        String status = "1".equals(tmp.getStatus()) ? StatusEnum.INVALID.getCode() : StatusEnum.ENABLE.getCode();
+
+        CostInfo costInfo = new CostInfo().setId(id).setStatus(status)
+                .setUpdateTime(LocalDateTime.now()).setUpdateUser(UserOperator.getToken());
+
+        return this.updateById(costInfo);
     }
 
     @Override

@@ -37,7 +37,6 @@
         FROM
         cost_info ci
         <where>
-            and ci.status = '1'
             <if test="form.name != null and form.name != ''">
                 and ci.name like concat('%',#{form.name},'%')
             </if>
@@ -50,6 +49,9 @@
                     ci.cids like concat('%',#{item},'%')
                 </foreach>
                 )
+            </if>
+            <if test="form.status !=null and form.status !=''">
+                and status = #{form.status}
             </if>
         </where>
 

@@ -10,38 +10,32 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
  * <p>
- * 产品服务对应业务类型
+ * 基础数据费用类型
  * </p>
  *
- * @author chuanmei
- * @since 2020-09-15
+ * @author 李达荣
+ * @since 2020-10-30
  */
 @Data
-public class AddProductBizForm extends Model<AddProductBizForm> {
+public class AddCostGenreForm extends Model<AddCostGenreForm> {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "主键ID,修改时必传")
+    @ApiModelProperty(value = "主键,修改时必传")
     private Long id;
 
-    @ApiModelProperty(value = "编码", required = true)
+    @ApiModelProperty(value = "费用类型代码", required = true)
     @NotEmpty(message = "idCode is required")
-    private String idCode;
+    private String code;
 
-    @ApiModelProperty(value = "业务名", required = true)
-    @NotEmpty(message = "name is required")
+    @ApiModelProperty(value = "费用类型名称", required = true)
+    @NotEmpty(message = "idCode is required")
     private String name;
-
-    @ApiModelProperty(value = "税率")
-    @NotNull(message = "taxRate is required")
-    private BigDecimal taxRate;
 
     @ApiModelProperty(value = "描述")
     private String remarks;

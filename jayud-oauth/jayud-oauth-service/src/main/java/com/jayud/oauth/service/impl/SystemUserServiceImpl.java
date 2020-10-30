@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.exceptions.ApiException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.RedisUtils;
+import com.jayud.common.UserOperator;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
@@ -108,12 +109,11 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         if(uid == null){
             redisUtils.set(user.getId().toString(),subject.getSession().getId().toString());
         }
-        redisUtils.set("loginUser",user.getName());
         cacheUser.setToken(subject.getSession().getId().toString());
         log.warn("CacheUser is {}", JSONUtil.toJsonStr(cacheUser));
         //保存登录记录
         insertLoginLog(user);
-
+        redisUtils.set(cacheUser.getToken(),user.getName());
         return cacheUser;
     }
 
@@ -164,7 +164,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             systemUser.setPassword("E10ADC3949BA59ABBE56E057F20F883E");//默认密码为:123456
             systemUser.setStatus(1);//账户为启用状态
             systemUser.setAuditStatus(1);
-            systemUser.setUpdatedUser(getLoginName());
+            systemUser.setUpdatedUser(UserOperator.getToken());
             baseMapper.updateById(systemUser);
             //创建角色前删除旧的用户角色关系
             List<Long> userIds = new ArrayList<>();
@@ -235,9 +235,9 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     @Override
     public void saveOrUpdateSystemUser(SystemUser systemUser) {
         if(systemUser.getId() == null){
-            systemUser.setCreatedUser(getLoginName());
+            systemUser.setCreatedUser(UserOperator.getToken());
         }else {
-            systemUser.setUpdatedUser(getLoginName());
+            systemUser.setUpdatedUser(UserOperator.getToken());
             systemUser.setUpdatedTime(DateUtils.getNowTime());
         }
         saveOrUpdate(systemUser);
@@ -257,7 +257,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     @Override
     public void updateIsCharge(Long departmentId) {
         SystemUser systemUser = new SystemUser();
-        systemUser.setUpdatedUser(getLoginName());
+        systemUser.setUpdatedUser(UserOperator.getToken());
         systemUser.setUpdatedTime(DateUtils.getNowTime());
         systemUser.setIsDepartmentCharge("0");
         QueryWrapper queryWrapper = new QueryWrapper();
@@ -271,15 +271,6 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     @Override
     public List<SystemUser> getByIds(List<Long> ids) {
         return this.baseMapper.selectBatchIds(ids);
-    }
-
-
-    /**
-     * 获取created_user和updated_user
-     * @return
-     */
-    private String getLoginName(){
-        return redisUtils.get("loginUser",100);
     }
 
 

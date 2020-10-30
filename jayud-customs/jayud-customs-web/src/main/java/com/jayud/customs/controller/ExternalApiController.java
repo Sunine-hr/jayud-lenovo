@@ -3,6 +3,7 @@ package com.jayud.customs.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
+import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.customs.model.bo.CustomsChangeStatusForm;
@@ -60,16 +61,6 @@ public class ExternalApiController {
 
 
     /**
-     * 获取当前登录用户
-     * @return
-     */
-    @RequestMapping(value = "/api/getLoginUser")
-    ApiResult getLoginUser(){
-        String loginUser = redisUtils.get("loginUser",100);
-        return ApiResult.ok(loginUser);
-    }
-
-    /**
      * 创建报关单
      * @param form
      * @return
@@ -106,7 +97,7 @@ public class ExternalApiController {
             OrderCustoms orderCustoms = new OrderCustoms();
             orderCustoms.setStatus(customs.getStatus());
             orderCustoms.setNeedInputCost(customs.getNeedInputCost());
-            orderCustoms.setUpdatedUser(String.valueOf(getLoginUser().getData()));
+            orderCustoms.setUpdatedUser(UserOperator.getToken());
             orderCustoms.setUpdatedTime(LocalDateTime.now());
             QueryWrapper<OrderCustoms> updateWrapper = new QueryWrapper<>();
             updateWrapper.eq(SqlConstant.ORDER_NO,customs.getOrderNo());

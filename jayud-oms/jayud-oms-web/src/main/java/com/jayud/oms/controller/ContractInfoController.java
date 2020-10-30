@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
+import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
@@ -106,14 +107,14 @@ public class ContractInfoController {
                     return CommonResult.error(400,"该合同已经存在,不能重复录入");
                 }
             }
-            contractInfo.setUpdatedUser(getLoginUser());
+            contractInfo.setUpdatedUser(UserOperator.getToken());
             contractInfo.setUpdatedTime(DateUtils.getNowTime());
         }else {
             List<ContractInfo> contractInfos = contractInfoService.findContractByCondition(param);
             if(contractInfos != null && contractInfos.size() > 0){
                 return CommonResult.error(400,"该合同已经存在,不能重复录入");
             }
-            contractInfo.setCreatedUser(getLoginUser());
+            contractInfo.setCreatedUser(UserOperator.getToken());
         }
         //处理附件
         contractInfo.setContractUrl(StringUtils.getFileStr(form.getFileViews()));
@@ -130,7 +131,7 @@ public class ContractInfoController {
             ContractInfo contractInfo = new ContractInfo();
             contractInfo.setId(id);
             contractInfo.setUpdatedTime(DateUtils.getNowTime());
-            contractInfo.setUpdatedUser(getLoginUser());
+            contractInfo.setUpdatedUser(UserOperator.getToken());
             contractInfo.setStatus("0");
             contractInfos.add(contractInfo);
         }
@@ -193,14 +194,6 @@ public class ContractInfoController {
     }
 
 
-    /**
-     * 获取当前登录用户
-     * @return
-     */
-    private String getLoginUser(){
-        String loginUser = redisUtils.get("loginUser");
-        return loginUser;
-    }
 
 }
 

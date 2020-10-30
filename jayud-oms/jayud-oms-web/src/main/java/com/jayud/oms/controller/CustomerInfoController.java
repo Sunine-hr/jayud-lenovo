@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
+import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.oms.feign.OauthClient;
@@ -68,10 +69,10 @@ public class CustomerInfoController {
         CustomerInfo customerInfo = null;
         customerInfo = ConvertUtil.convert(form,CustomerInfo.class);
         if(form.getId() != null){
-            customerInfo.setUpdatedUser(getLoginUser());
+            customerInfo.setUpdatedUser(UserOperator.getToken());
             customerInfo.setUpdatedTime(DateUtils.getNowTime());
         }else {
-            customerInfo.setCreatedUser(getLoginUser());
+            customerInfo.setCreatedUser(UserOperator.getToken());
         }
         customerInfo.setAuditStatus(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode());
         customerInfoService.saveOrUpdate(customerInfo);
@@ -86,7 +87,7 @@ public class CustomerInfoController {
             CustomerInfo customerInfo = new CustomerInfo();
             customerInfo.setId(id);
             customerInfo.setUpdatedTime(DateUtils.getNowTime());
-            customerInfo.setUpdatedUser(getLoginUser());
+            customerInfo.setUpdatedUser(UserOperator.getToken());
             customerInfo.setStatus("0");
             customerInfos.add(customerInfo);
         }
@@ -100,7 +101,7 @@ public class CustomerInfoController {
         CustomerInfo customerInfo = new CustomerInfo();
         customerInfo.setId(form.getId());
         customerInfo.setUpdatedTime(DateUtils.getNowTime());
-        customerInfo.setUpdatedUser(getLoginUser());
+        customerInfo.setUpdatedUser(UserOperator.getToken());
         CustomerInfoVO customerInfoVO = customerInfoService.getCustomerInfoById(form.getId());
         String auditStatus = String.valueOf(customerInfoVO.getAuditStatus());
         if(auditStatus == null){
@@ -250,14 +251,6 @@ public class CustomerInfoController {
         return CommonResult.success(initComboxVOS);
     }
 
-    /**
-     * 获取当前登录用户
-     * @return
-     */
-    private String getLoginUser(){
-        String loginUser = redisUtils.get("loginUser",100);
-        return loginUser;
-    }
 
 }
 

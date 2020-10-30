@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
+import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.OrderStatusEnum;
@@ -73,7 +74,7 @@ public class OrderInTransportController {
         OrderTransport orderTransport = new OrderTransport();
         orderTransport.setId(form.getOrderId());
         orderTransport.setUpdatedTime(LocalDateTime.now());
-        orderTransport.setUpdatedUser(getLoginUser());
+        orderTransport.setUpdatedUser(UserOperator.getToken());
 
         AuditInfoForm auditInfoForm = new AuditInfoForm();
         auditInfoForm.setExtId(form.getOrderId());
@@ -194,7 +195,7 @@ public class OrderInTransportController {
         OrderTransport orderTransport = new OrderTransport();
         orderTransport.setId(form.getOrderId());
         orderTransport.setUpdatedTime(LocalDateTime.now());
-        orderTransport.setUpdatedUser(getLoginUser());
+        orderTransport.setUpdatedUser(UserOperator.getToken());
 
         //记录审核信息
         AuditInfoForm auditInfoForm = new AuditInfoForm();
@@ -284,7 +285,7 @@ public class OrderInTransportController {
         OrderTransport orderTransport = new OrderTransport();
         orderTransport.setId(form.getOrderId());
         orderTransport.setUpdatedTime(LocalDateTime.now());
-        orderTransport.setUpdatedUser(getLoginUser());
+        orderTransport.setUpdatedUser(UserOperator.getToken());
 
         OprStatusForm oprStatusForm = new OprStatusForm();
         oprStatusForm.setMainOrderId(form.getMainOrderId());
@@ -310,10 +311,10 @@ public class OrderInTransportController {
             orderSendCars.setEncodeUrlName(StringUtils.getFileNameStr(form.getEncodePics()));
             orderSendCars.setStatus(OrderStatusEnum.TMS_T_2.getCode());
             if(CommonConstant.SEND_CAR.equals(form.getCmd())) {
-                orderSendCars.setCreatedUser(getLoginUser());
+                orderSendCars.setCreatedUser(UserOperator.getToken());
             }else{
                 orderSendCars.setUpdatedTime(LocalDateTime.now());
-                orderSendCars.setUpdatedUser(getLoginUser());
+                orderSendCars.setUpdatedUser(UserOperator.getToken());
             }
             //更新订单状态
             orderTransport.setVehicleSize(form.getVehicleSize());
@@ -340,7 +341,7 @@ public class OrderInTransportController {
             //更新派车信息
             orderSendCars.setStatus(form.getStatus());
             orderSendCars.setUpdatedTime(LocalDateTime.now());
-            orderSendCars.setUpdatedUser(getLoginUser());
+            orderSendCars.setUpdatedUser(UserOperator.getToken());
             //更新订单状态
             orderTransport.setStatus(form.getStatus());
             //记录操作状态
@@ -450,7 +451,7 @@ public class OrderInTransportController {
         OrderTransport orderTransport = new OrderTransport();
         orderTransport.setId(form.getOrderId());
         orderTransport.setUpdatedTime(LocalDateTime.now());
-        orderTransport.setUpdatedUser(getLoginUser());
+        orderTransport.setUpdatedUser(UserOperator.getToken());
 
         //记录审核信息
         AuditInfoForm auditInfoForm = new AuditInfoForm();
@@ -505,7 +506,7 @@ public class OrderInTransportController {
         OrderTransport orderTransport = new OrderTransport();
         orderTransport.setId(form.getOrderId());
         orderTransport.setUpdatedTime(LocalDateTime.now());
-        orderTransport.setUpdatedUser(getLoginUser());
+        orderTransport.setUpdatedUser(UserOperator.getToken());
         orderTransport.setStatus(OrderStatusEnum.TMS_T_4.getCode());
 
         //记录审核信息
@@ -528,13 +529,6 @@ public class OrderInTransportController {
         return CommonResult.success();
     }
 
-    /**
-     * 当前登录用户
-     * @return
-     */
-    private String getLoginUser(){
-        return redisUtils.get("loginUser",100);
-    }
 
 
 }

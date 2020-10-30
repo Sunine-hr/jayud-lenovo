@@ -4,6 +4,7 @@ package com.jayud.oms.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.OrderStatusEnum;
@@ -215,15 +216,15 @@ public class OrderInfoController {
         auditInfo.setAuditComment(form.getDescription());
         auditInfo.setStatusFile(StringUtils.getFileStr(form.getFileViewList()));
         auditInfo.setStatusFileName(StringUtils.getFileNameStr(form.getFileViewList()));
-        auditInfo.setAuditUser(orderInfoService.getLoginUser());
-        auditInfo.setCreatedUser(orderInfoService.getLoginUser());
+        auditInfo.setAuditUser(UserOperator.getToken());
+        auditInfo.setCreatedUser(UserOperator.getToken());
         auditInfo.setAuditTime(DateUtils.str2LocalDateTime(form.getOperatorTime(),DateUtils.DATE_TIME_PATTERN));
         auditInfo.setExtDesc(SqlConstant.ORDER_INFO);
         auditInfoService.save(auditInfo);//保存操作记录
         OrderInfo orderInfo = new OrderInfo();
         orderInfo.setId(form.getMainOrderId());
         orderInfo.setCustomsRelease(true);
-        orderInfo.setUpUser(orderInfoService.getLoginUser());
+        orderInfo.setUpUser(UserOperator.getToken());
         orderInfo.setUpTime(LocalDateTime.now());
         boolean result = orderInfoService.updateById(orderInfo);
         if(!result){

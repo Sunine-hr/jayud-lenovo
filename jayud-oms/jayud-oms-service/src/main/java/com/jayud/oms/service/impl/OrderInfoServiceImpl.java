@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.RedisUtils;
+import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.OrderStatusEnum;
@@ -86,7 +87,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderInfo.setOrderNo(oldOrder.getOrderNo());
             orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
             orderInfo.setUpTime(LocalDateTime.now());
-            orderInfo.setUpUser(getLoginUser());
+            orderInfo.setUpUser(UserOperator.getToken());
         }else {//新增
             //生成主订单号
             String orderNo = StringUtils.loadNum(CommonConstant.M,12);
@@ -99,7 +100,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
             orderInfo.setOrderNo(orderNo);
             orderInfo.setCreateTime(LocalDateTime.now());
-            orderInfo.setCreatedUser(getLoginUser());
+            orderInfo.setCreatedUser(UserOperator.getToken());
             if(CommonConstant.PRE_SUBMIT.equals(form.getCmd())) {
                 orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_2.getCode()));
             }else if(CommonConstant.SUBMIT.equals(form.getCmd()) && CommonConstant.VALUE_1.equals(form.getIsDataAll())){
@@ -203,10 +204,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 orderPaymentCost.setOrderNo(form.getOrderNo());
                 if ("preSubmit_main".equals(form.getCmd())) {
                     orderPaymentCost.setCreatedTime(LocalDateTime.now());
-                    orderPaymentCost.setCreatedUser(getLoginUser());
+                    orderPaymentCost.setCreatedUser(UserOperator.getToken());
                     orderPaymentCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_1.getCode()));
                 } else if ("submit_main".equals(form.getCmd())) {
-                    orderPaymentCost.setOptName(getLoginUser());
+                    orderPaymentCost.setOptName(UserOperator.getToken());
                     orderPaymentCost.setOptTime(LocalDateTime.now());
                     orderPaymentCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_2.getCode()));
                 }
@@ -216,10 +217,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 orderReceivableCost.setOrderNo(form.getOrderNo());
                 if ("preSubmit_main".equals(form.getCmd())) {
                     orderReceivableCost.setCreatedTime(LocalDateTime.now());
-                    orderReceivableCost.setCreatedUser(getLoginUser());
+                    orderReceivableCost.setCreatedUser(UserOperator.getToken());
                     orderReceivableCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_1.getCode()));
                 } else if ("submit_main".equals(form.getCmd())) {
-                    orderReceivableCost.setOptName(getLoginUser());
+                    orderReceivableCost.setOptName(UserOperator.getToken());
                     orderReceivableCost.setOptTime(LocalDateTime.now());
                     orderReceivableCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_2.getCode()));
                 }
@@ -663,7 +664,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_3.getCode()));
             orderInfo.setId(form.getMainOrderId());
             orderInfo.setUpTime(LocalDateTime.now());
-            orderInfo.setUpUser(getLoginUser());
+            orderInfo.setUpUser(UserOperator.getToken());
             orderInfo.setNeedInputCost(needInputCost);
             baseMapper.updateById(orderInfo);
         }
@@ -699,9 +700,4 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
 
-    @Override
-    public String getLoginUser(){
-        String loginUser = redisUtils.get("loginUser",100);
-        return loginUser;
-    }
 }

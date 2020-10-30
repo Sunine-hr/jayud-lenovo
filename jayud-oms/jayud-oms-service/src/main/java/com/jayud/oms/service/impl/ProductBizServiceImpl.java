@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.RedisUtils;
+import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.mapper.ProductBizMapper;
 import com.jayud.oms.model.bo.AddProductBizForm;
@@ -73,15 +74,14 @@ public class ProductBizServiceImpl extends ServiceImpl<ProductBizMapper, Product
      */
     @Override
     public boolean saveOrUpdateProductBiz(AddProductBizForm form) {
-        String loginUser = redisUtils.get("loginUser", 100);
         ProductBiz productBiz = ConvertUtil.convert(form, ProductBiz.class);
         if (Objects.isNull(productBiz.getId())) {
             productBiz.setCreateTime(LocalDateTime.now());
-            productBiz.setCreateUser(loginUser);
+            productBiz.setCreateUser(UserOperator.getToken());
             return this.save(productBiz);
         } else {
             productBiz.setUpdateTime(LocalDateTime.now());
-            productBiz.setUpdateUser(loginUser);
+            productBiz.setUpdateUser(UserOperator.getToken());
             return this.updateById(productBiz);
         }
     }
@@ -94,12 +94,11 @@ public class ProductBizServiceImpl extends ServiceImpl<ProductBizMapper, Product
      */
     @Override
     public boolean deleteByIds(List<Long> ids) {
-        String loginUser = redisUtils.get("loginUser", 100);
         List<ProductBiz> list = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
         ids.stream().forEach(id -> {
             list.add(new ProductBiz().setId(id).setStatus(StatusEnum.INVALID.getCode())
-                    .setUpdateTime(now).setUpdateUser(loginUser));
+                    .setUpdateTime(now).setUpdateUser(UserOperator.getToken()));
         });
         return this.updateBatchById(list);
     }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.RedisUtils;
+import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.mapper.CostTypeMapper;
 import com.jayud.oms.model.bo.AddCostTypeForm;
@@ -69,7 +70,6 @@ public class CostTypeServiceImpl extends ServiceImpl<CostTypeMapper, CostType> i
      */
     @Override
     public boolean saveOrUpdateCostType(AddCostTypeForm form) {
-        String loginUser = redisUtils.get("loginUser", 100);
         CostType costType = ConvertUtil.convert(form, CostType.class);
 
         //判断是否代收代垫， 是-费用类别后面加-Y，否则-N
@@ -78,11 +78,11 @@ public class CostTypeServiceImpl extends ServiceImpl<CostTypeMapper, CostType> i
 
         if (Objects.isNull(costType.getId())) {
             costType.setCreateTime(LocalDateTime.now());
-            costType.setCreateUser(loginUser);
+            costType.setCreateUser(UserOperator.getToken());
             return this.save(costType);
         } else {
             costType.setUpdateTime(LocalDateTime.now());
-            costType.setUpdateUser(loginUser);
+            costType.setUpdateUser(UserOperator.getToken());
             return this.updateById(costType);
         }
     }
@@ -103,12 +103,11 @@ public class CostTypeServiceImpl extends ServiceImpl<CostTypeMapper, CostType> i
      */
     @Override
     public boolean deleteByIds(List<Long> ids) {
-        String loginUser = redisUtils.get("loginUser", 100);
         List<CostType> list = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
         ids.stream().forEach(id -> {
             list.add(new CostType().setId(id).setStatus(StatusEnum.INVALID.getCode())
-                    .setUpdateTime(now).setUpdateUser(loginUser));
+                    .setUpdateTime(now).setUpdateUser(UserOperator.getToken()));
         });
         return this.updateBatchById(list);
     }

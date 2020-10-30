@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.RedisUtils;
+import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.mapper.CostInfoMapper;
 import com.jayud.oms.model.bo.AddCostInfoForm;
@@ -90,15 +91,14 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
      */
     @Override
     public boolean saveOrUpdateCostInfo(AddCostInfoForm form) {
-        String loginUser = redisUtils.get("loginUser", 100);
         CostInfo costInfo = ConvertUtil.convert(form, CostInfo.class);
         if (Objects.isNull(costInfo.getId())) {
             costInfo.setCreateTime(LocalDateTime.now());
-            costInfo.setCreateUser(loginUser);
+            costInfo.setCreateUser(UserOperator.getToken());
             return this.save(costInfo);
         } else {
             costInfo.setUpdateTime(LocalDateTime.now());
-            costInfo.setUpdateUser(loginUser);
+            costInfo.setUpdateUser(UserOperator.getToken());
             return this.updateById(costInfo);
         }
     }
@@ -120,12 +120,11 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
      */
     @Override
     public boolean deleteByIds(List<Long> ids) {
-        String loginUser = redisUtils.get("loginUser", 100);
         List<CostInfo> list = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
         ids.stream().forEach(id -> {
             list.add(new CostInfo().setId(id).setStatus(StatusEnum.INVALID.getCode())
-                    .setUpdateTime(now).setUpdateUser(loginUser));
+                    .setUpdateTime(now).setUpdateUser(UserOperator.getToken()));
         });
 
         return this.updateBatchById(list);

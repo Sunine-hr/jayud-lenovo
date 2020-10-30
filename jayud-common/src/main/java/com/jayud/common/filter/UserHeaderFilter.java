@@ -1,5 +1,6 @@
 package com.jayud.common.filter;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-@Component
+//@Component
 @WebFilter(urlPatterns = "/*", filterName = "userHeaderFilter")
 public class UserHeaderFilter implements Filter {
 

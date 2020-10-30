@@ -83,6 +83,20 @@ public class CargoNameController {
 
         ExcelWriter writer = ExcelUtil.getWriter(true);
 
+//        Map<String, String> map = MapUtil.newHashMap(true); // 重点
+//        map.put("name", "姓名");
+//        map.put("age", "年龄");
+//        map.put("score", "分数");
+//        map.put("isPass", "是否通过");
+//        map.put("examDate", "考试时间");
+//
+//        if (map != null) {
+//            map.forEach((key, value) -> {
+//                writer.addHeaderAlias(key, value);
+//            });
+//        }
+
+
         //自定义标题别名
         writer.addHeaderAlias("name", "姓名");
         writer.addHeaderAlias("age", "年龄");
@@ -94,7 +108,7 @@ public class CargoNameController {
         writer.merge(4, "一班成绩单");
 
         // 一次性写出内容，使用默认样式，强制输出标题
-        writer.write(rows);
+        writer.write(rows,true);
 
         //out为OutputStream，需要写出到的目标流
 
@@ -144,7 +158,7 @@ public class CargoNameController {
         writer.merge(lastColumn, "A类表:不存在`敏感品名`的货物表");
 
         // 一次性写出内容，使用默认样式，强制输出标题
-        writer.write(rows);
+        writer.write(rows, true);
 
         //out为OutputStream，需要写出到的目标流
 
@@ -194,7 +208,7 @@ public class CargoNameController {
         writer.merge(lastColumn, "A类表:不存在`敏感品名`的货物表");
 
         // 一次性写出内容，使用默认样式，强制输出标题
-        writer.write(rows);
+        writer.write(rows, true);
 
         //out为OutputStream，需要写出到的目标流
 
@@ -247,7 +261,7 @@ public class CargoNameController {
         writer.merge(lastColumn, "B类表:存在`敏感品名`的货物表");
 
         // 一次性写出内容，使用默认样式，强制输出标题
-        writer.write(cargoNameList);
+        writer.write(cargoNameList, true);
 
         //out为OutputStream，需要写出到的目标流
 
@@ -298,7 +312,7 @@ public class CargoNameController {
         writer.merge(lastColumn, "B类表:存在`敏感品名`的货物表");
 
         // 一次性写出内容，使用默认样式，强制输出标题
-        writer.write(cargoNameList);
+        writer.write(cargoNameList, true);
 
         //out为OutputStream，需要写出到的目标流
 
@@ -377,7 +391,7 @@ public class CargoNameController {
         writer.merge(lastColumn, "A类表:不存在`敏感品名`的货物表");
 
         // 一次性写出内容，使用默认样式，强制输出标题
-        writer.write(rows);
+        writer.write(rows, true);
 
         String name = StringUtils.toUtf8String("A类表-不存在`敏感品名`的货物表");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
@@ -415,7 +429,7 @@ public class CargoNameController {
         writer.merge(lastColumn, "B类表:存在`敏感品名`的货物表");
 
         // 一次性写出内容，使用默认样式，强制输出标题
-        writer.write(cargoNameList);
+        writer.write(cargoNameList, true);
 
         //out为OutputStream，需要写出到的目标流
 

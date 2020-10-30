@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hankcs.hanlp.HanLP;
 import com.jayud.common.CommonResult;
 import com.jayud.tools.mapper.SensitiveCommodityMapper;
 import com.jayud.tools.model.bo.QuerySensitiveCommodityForm;
@@ -14,7 +15,10 @@ import com.jayud.tools.service.ISensitiveCommodityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -37,7 +41,13 @@ public class SensitiveCommodityServiceImpl extends ServiceImpl<SensitiveCommodit
 
         QueryWrapper<SensitiveCommodity> queryWrapper = new QueryWrapper();
         if(form.getName() != null){
-            queryWrapper.like("name", form.getName());
+            String name = form.getName();
+            // 简体转香港繁体
+            String s2hkName = HanLP.s2hk(name);
+            // 香港繁体转简体
+            String hk2sName = HanLP.hk2s(name);
+            //忽略简体中文和繁体中文的模糊查询
+            queryWrapper.and(wrapper  -> wrapper.like("name", s2hkName).or().like("name", hk2sName));
         }
         List<SensitiveCommodity> list = sensitiveCommodityMapper.selectList(queryWrapper);
         return list;
@@ -73,5 +83,53 @@ public class SensitiveCommodityServiceImpl extends ServiceImpl<SensitiveCommodit
         Page<SensitiveCommodityVO> page = new Page(form.getPageNum(),form.getPageSize());
         IPage<SensitiveCommodityVO> pageInfo = sensitiveCommodityMapper.findSensitiveCommodityByPage(page, form);
         return pageInfo;
+    }
+
+    @Override
+    public void importExcelV2(List<SensitiveCommodity> list) {
+
+        //导入的list数据，先进行去重,获取去重后的数据集合disposeList
+        List<SensitiveCommodity> disposeList = new ArrayList<>();
+        Set<SensitiveCommodity> sensitiveCommoditySet = new HashSet<SensitiveCommodity>();
+        for(SensitiveCommodity sc : list){
+            if(sensitiveCommoditySet.add(sc)){
+                disposeList.add(sc);
+            };
+        }
+
+        //查询数据库的数据
+        QueryWrapper<SensitiveCommodity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("name");
+        List<SensitiveCommodity> dbList = sensitiveCommodityMapper.selectList(queryWrapper);
+
+        //需要保存的数据
+        List<SensitiveCommodity> saveList = new ArrayList<>();
+
+        //循环对比 导入的Excel数据 和 数据库数据，不存在则新增，存在则跳过
+        for(SensitiveCommodity sensitiveCommodity : disposeList){
+            String name = sensitiveCommodity.getName();
+            //导入的数据不为空，才进行数据对比判断
+            if(!"".equals(name)){
+                //对比的计数器
+                int count = 0;
+                for(SensitiveCommodity dbsensitiveCommodity : dbList){
+                    String dbName = dbsensitiveCommodity.getName();
+                    if(!name.equals(dbName)){
+                        count++;
+                    }else{
+                        //有相同的数据直接跳出循环,计数器清零
+                        count = 0;
+                        break;
+                    }
+                    if(count == dbList.size()){
+                        //代表Excel中的所有数据，在数据库中没有找到相同的记录，新增数据
+                        saveList.add(sensitiveCommodity);
+                    }
+                }
+            }
+        }
+        //保存导入的数据，excel去重，对比数据库数据，最后新增
+        this.saveBatch(saveList);
+
     }
 }

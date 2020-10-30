@@ -44,4 +44,10 @@ public interface ISensitiveCommodityService extends IService<SensitiveCommodity>
      * @return
      */
     IPage<SensitiveCommodityVO> findSensitiveCommodityByPage(QuerySensitiveCommodityForm form);
+
+    /**
+     * <p>导入品名</p>
+     * @param list
+     */
+    void importExcelV2(List<SensitiveCommodity> list);
 }

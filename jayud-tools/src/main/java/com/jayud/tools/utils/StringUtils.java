@@ -1,5 +1,9 @@
 package com.jayud.tools.utils;
 
+/**
+ * String类型，转换为 utf-8
+ * <p>下载或者导出excel，设置中文名称有用到</p>
+ */
 public class StringUtils {
 
     public static String toUtf8String(String s) {

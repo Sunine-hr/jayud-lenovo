@@ -3,6 +3,9 @@ package com.jayud.tools.utils;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+/**
+ * 数值转换
+ */
 public class MathUtils {
 
     /**

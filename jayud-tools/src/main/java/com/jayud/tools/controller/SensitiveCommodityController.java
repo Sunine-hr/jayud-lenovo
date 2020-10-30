@@ -3,6 +3,7 @@ package com.jayud.tools.controller;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.IoUtil;
+import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -10,6 +11,7 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.tools.model.bo.QuerySensitiveCommodityForm;
 import com.jayud.tools.model.bo.SensitiveCommodityForm;
+import com.jayud.tools.model.po.CargoName;
 import com.jayud.tools.model.po.SensitiveCommodity;
 import com.jayud.tools.model.po.TestBean;
 import com.jayud.tools.model.vo.SensitiveCommodityVO;
@@ -19,15 +21,15 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.InputStream;
+import java.util.*;
 
 @RestController
 @RequestMapping("/sensitivecommodity")
@@ -86,6 +88,33 @@ public class SensitiveCommodityController {
         IoUtil.close(out);
     }
 
-    //导入敏感品名数据
+    @ApiOperation(value = "导入敏感品名数据")
+    @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult importExcel(@RequestParam("file") MultipartFile file, HttpServletRequest request){
+        if (file.isEmpty()) {
+            return CommonResult.error(-1, "文件为空！");
+        }
+        // 1.获取上传文件输入流
+        InputStream inputStream = null;
+        try {
+            inputStream = file.getInputStream();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //调用用 hutool 方法读取数据 默认调用第一个sheet
+        ExcelReader excelReader = ExcelUtil.getReader(inputStream);
 
+        //配置别名
+        Map<String,String> aliasMap=new HashMap<>();
+        aliasMap.put("品名","name");
+
+        excelReader.setHeaderAlias(aliasMap);
+
+        // 第一个参数是指表头所在行，第二个参数是指从哪一行开始读取
+        List<SensitiveCommodity> list= excelReader.read(0, 1, SensitiveCommodity.class);
+
+        sensitiveCommodityService.importExcelV2(list);
+        return CommonResult.success("导入Excel成功！");
+    }
 }

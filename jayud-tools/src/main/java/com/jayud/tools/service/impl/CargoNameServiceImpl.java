@@ -38,7 +38,9 @@ public class CargoNameServiceImpl extends ServiceImpl<CargoNameMapper, CargoName
         for(int i=2; i<list.size(); i++){
             List<Object> o = list.get(i);
             CargoName cargoName = new CargoName();
-            cargoName.setXh(Long.valueOf(String.valueOf(o.get(0))));
+            if(!"".equals(String.valueOf(o.get(0)))){
+                cargoName.setXh(Long.valueOf(String.valueOf(o.get(0))));
+            }
             cargoName.setDh(String.valueOf(o.get(1)));
             cargoName.setDz(MathUtils.getBigDecimal(o.get(2)));
             cargoName.setYtdh(String.valueOf(o.get(3)));

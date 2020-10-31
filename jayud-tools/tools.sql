@@ -13,6 +13,7 @@ CREATE TABLE `sensitive_commodity`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 178 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '敏感品名表' ROW_FORMAT = DYNAMIC;
 
 
+
 -- ----------------------------
 -- Table structure for cargo_name
 -- ----------------------------
@@ -38,5 +39,6 @@ CREATE TABLE `cargo_name`  (
   `xm3` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '姓名3',
   `hm2` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '号码2',
   `bjdh` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '标记单号',
+  `user_id` int(11) NULL DEFAULT NULL COMMENT '用户ID',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 256 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '货物名称表' ROW_FORMAT = DYNAMIC;

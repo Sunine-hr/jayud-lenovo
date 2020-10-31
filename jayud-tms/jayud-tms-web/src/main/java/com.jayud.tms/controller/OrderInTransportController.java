@@ -125,8 +125,7 @@ public class OrderInTransportController {
             orderTransport.setLicensePlate(form.getLicensePlate());
             orderTransport.setHkLicensePlate(form.getHkLicensePlate());
             orderTransport.setSeamlessNo(form.getSeamlessNo());
-            orderTransport.setClearCustomsNo(form.getClearCustomsNo());
-            orderTransport.setStatus(OrderStatusEnum.HK_CLEAR_1.getCode());
+            orderTransport.setClearCustomsNo(form.getClearCustomsNo());//清关完成标识,有数据表示清关完成
 
             form.setStatus(OrderStatusEnum.HK_CLEAR_1.getCode());
             form.setStatusName(OrderStatusEnum.HK_CLEAR_1.getDesc());

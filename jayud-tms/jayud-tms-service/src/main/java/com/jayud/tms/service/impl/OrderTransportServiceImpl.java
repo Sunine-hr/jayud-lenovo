@@ -152,6 +152,12 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         for (InputOrderTakeAdrVO inputOrderTakeAdrVO : inputOrderTakeAdrVOS) {
             if(CommonConstant.VALUE_1.equals(String.valueOf(inputOrderTakeAdrVO.getOprType()))){//提货
                 orderTakeAdrForms1.add(inputOrderTakeAdrVO);
+                if(inputOrderTakeAdrVO.getPieceAmount() == null){
+                    inputOrderTakeAdrVO.setPieceAmount(0);
+                }
+                if(inputOrderTakeAdrVO.getWeight() == null){
+                    inputOrderTakeAdrVO.setWeight(0.0);
+                }
                 totalAmount = totalAmount + inputOrderTakeAdrVO.getPieceAmount();
                 totalWeight = totalWeight + inputOrderTakeAdrVO.getWeight();
             }else {

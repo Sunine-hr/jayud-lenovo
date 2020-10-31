@@ -28,9 +28,9 @@ public class CargoNameServiceImpl extends ServiceImpl<CargoNameMapper, CargoName
     CargoNameMapper cargoNameMapper;
 
     @Override
-    public void importExcel(List<List<Object>> list) {
+    public void importExcel(List<List<Object>> list, Long userId) {
         //当前登录用户Id
-        Long userId = 1L;
+        userId = (userId != null) ? userId : 1;
 
         //导入前先删除数据,根据登录用户的用户id做删除
 //        cargoNameMapper.truncateCargoName();
@@ -100,16 +100,16 @@ public class CargoNameServiceImpl extends ServiceImpl<CargoNameMapper, CargoName
     }
 
     @Override
-    public List<CargoNameSmallVO> findCargoNameListByAV2() {
+    public List<CargoNameSmallVO> findCargoNameListByAV2(Long userId) {
         //根据登录用户的Id，查询导出的数据
-        Long userId = 1L;
+        userId = (userId != null) ? userId : 1;
         return cargoNameMapper.findCargoNameListByAV2(userId);
     }
 
     @Override
-    public List<CargoNameSmallVO> findCargoNameListByBV2() {
+    public List<CargoNameSmallVO> findCargoNameListByBV2(Long userId) {
         //根据登录用户的Id，查询导出的数据
-        Long userId = 1L;
+        userId = (userId != null) ? userId : 1;
         return cargoNameMapper.findCargoNameListByBV2(userId);
     }
 

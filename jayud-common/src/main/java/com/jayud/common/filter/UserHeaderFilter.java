@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-//@Component
+@Component
 @WebFilter(urlPatterns = "/*", filterName = "userHeaderFilter")
 public class UserHeaderFilter implements Filter {
 

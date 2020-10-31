@@ -3,7 +3,6 @@ package com.jayud.tms.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
-import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.tms.model.bo.InputOrderTransportForm;
@@ -76,7 +75,7 @@ public class ExternalApiController {
             OrderTransport orderTransport = new OrderTransport();
             orderTransport.setStatus(tms.getStatus());
             orderTransport.setNeedInputCost(tms.getNeedInputCost());
-            orderTransport.setUpdatedUser(UserOperator.getToken());
+            orderTransport.setUpdatedUser(tms.getLoginUser());
             orderTransport.setUpdatedTime(LocalDateTime.now());
             QueryWrapper<OrderTransport> updateWrapper = new QueryWrapper<>();
             updateWrapper.eq(SqlConstant.ORDER_NO,tms.getOrderNo());

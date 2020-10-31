@@ -665,6 +665,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 tm.setNeedInputCost(confirmChangeStatusForm.getNeedInputCost());
                 tm.setOrderNo(confirmChangeStatusForm.getOrderNo());
                 tm.setStatus(form.getStatus());
+                tm.setLoginUser(UserOperator.getToken());
                 zgys.add(tm);
             }
 

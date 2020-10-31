@@ -3,7 +3,6 @@ package com.jayud.customs.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
-import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.customs.model.bo.CustomsChangeStatusForm;
@@ -16,7 +15,10 @@ import com.jayud.customs.service.IOrderCustomsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -94,7 +96,7 @@ public class ExternalApiController {
             OrderCustoms orderCustoms = new OrderCustoms();
             orderCustoms.setStatus(customs.getStatus());
             orderCustoms.setNeedInputCost(customs.getNeedInputCost());
-            orderCustoms.setUpdatedUser(UserOperator.getToken());
+            orderCustoms.setUpdatedUser(customs.getLoginUser());
             orderCustoms.setUpdatedTime(LocalDateTime.now());
             QueryWrapper<OrderCustoms> updateWrapper = new QueryWrapper<>();
             updateWrapper.eq(SqlConstant.ORDER_NO,customs.getOrderNo());

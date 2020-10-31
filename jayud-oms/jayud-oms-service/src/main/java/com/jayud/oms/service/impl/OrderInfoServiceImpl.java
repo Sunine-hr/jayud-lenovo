@@ -572,6 +572,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                  }else {
                      orderCustomsForm.setClassCode(OrderStatusEnum.CKBG.getCode());
                  }
+                 orderCustomsForm.setLoginUser(UserOperator.getToken());
                  Boolean result = customsClient.createOrderCustoms(orderCustomsForm).getData();
                  if (!result) {//调用失败
                      return false;
@@ -589,6 +590,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 orderTransportForm.setIsHkClear(null);
             }
             orderTransportForm.setMainOrderNo(mainOrderNo);
+            orderTransportForm.setLoginUser(UserOperator.getToken());
             Boolean result = tmsClient.createOrderTransport(orderTransportForm).getData();
             if(!result){//调用失败
                 return false;
@@ -656,6 +658,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 bg.setNeedInputCost(confirmChangeStatusForm.getNeedInputCost());
                 bg.setOrderNo(confirmChangeStatusForm.getOrderNo());
                 bg.setStatus(form.getStatus());
+                bg.setLoginUser(UserOperator.getToken());
                 bgs.add(bg);
             }else if(CommonConstant.ZGYS.equals(confirmChangeStatusForm.getOrderType())){
                 TmsChangeStatusForm tm = new TmsChangeStatusForm();

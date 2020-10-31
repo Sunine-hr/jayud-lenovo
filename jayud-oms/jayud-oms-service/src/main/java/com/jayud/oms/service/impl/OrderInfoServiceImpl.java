@@ -85,7 +85,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             OrderInfo oldOrder = baseMapper.selectById(form.getOrderId());
             orderInfo.setId(form.getOrderId());
             orderInfo.setOrderNo(oldOrder.getOrderNo());
-            orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
             orderInfo.setUpTime(LocalDateTime.now());
             orderInfo.setUpUser(UserOperator.getToken());
         }else {//新增
@@ -101,15 +100,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderInfo.setOrderNo(orderNo);
             orderInfo.setCreateTime(LocalDateTime.now());
             orderInfo.setCreatedUser(UserOperator.getToken());
-            if(CommonConstant.PRE_SUBMIT.equals(form.getCmd())) {
-                orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_2.getCode()));
-            }else if(CommonConstant.SUBMIT.equals(form.getCmd()) && CommonConstant.VALUE_1.equals(form.getIsDataAll())){
-                orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
-            }else if(CommonConstant.SUBMIT.equals(form.getCmd()) && CommonConstant.VALUE_0.equals(form.getIsDataAll())){
-                orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_4.getCode()));
-            }else {
-                orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
-            }
+        }
+        if(CommonConstant.PRE_SUBMIT.equals(form.getCmd())) {
+            orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_2.getCode()));
+        }else if(CommonConstant.SUBMIT.equals(form.getCmd()) && CommonConstant.VALUE_1.equals(form.getIsDataAll())){
+            orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
+        }else if(CommonConstant.SUBMIT.equals(form.getCmd()) && CommonConstant.VALUE_0.equals(form.getIsDataAll())){
+            orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_4.getCode()));
+        }else {
+            orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
         }
         saveOrUpdate(orderInfo);
         return orderInfo.getOrderNo();

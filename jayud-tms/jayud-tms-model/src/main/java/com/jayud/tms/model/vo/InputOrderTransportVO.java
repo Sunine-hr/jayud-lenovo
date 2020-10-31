@@ -145,6 +145,14 @@ public class InputOrderTransportVO {
     private List<InputOrderTakeAdrVO> orderTakeAdrForms2 = new ArrayList<>();
 
 
+    public String getGoodsTypeDesc() {
+        if(this.goodsType == 1){
+           return  "进口";
+        }else if(this.goodsType == 2){
+            return "出口";
+        }
+        return "";
+    }
 
 
 }

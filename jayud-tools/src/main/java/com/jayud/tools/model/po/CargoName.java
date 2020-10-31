@@ -89,6 +89,9 @@ public class CargoName extends Model<CargoName> {
     @ApiModelProperty(value = "标记单号")
     private String bjdh;
 
+    @ApiModelProperty(value = "用户ID")
+    private Long userId;
+
 
     @Override
     protected Serializable pkVal() {

@@ -1,4 +1,5 @@
 import com.alibaba.fastjson.JSONObject;
+import com.hankcs.hanlp.HanLP;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.tools.model.bo.QuerySensitiveCommodityForm;
 import com.jayud.tools.model.bo.SensitiveCommodityForm;
@@ -68,6 +69,41 @@ public class Test {
 
         System.out.println(JSONObject.toJSONString(querySensitiveCommodityForm));
 
+    }
+
+    /**
+     * 汉语言文化圈
+     */
+    @org.junit.Test
+    public void test7(){
+        // 简体转台湾繁体
+        System.out.println(HanLP.s2tw("hankcs在台湾写代码,我爱中国"));//输出：hankcs在臺灣寫程式碼,我愛中國
+        // 台湾繁体转简体
+        System.out.println(HanLP.tw2s("hankcs在臺灣寫程式碼,我愛中國"));//输出：hankcs在台湾写代码,我爱中国
+
+        //香港的业务，用香港的繁体
+        // 简体转香港繁体
+        System.out.println(HanLP.s2hk("hankcs在香港写代码,我爱中国"));//输出：hankcs在香港寫代碼,我愛中國
+        // 香港繁体转简体
+        System.out.println(HanLP.hk2s("hankcs在香港寫代碼,我愛中國"));//输出：hankcs在香港写代码,我爱中国
+
+    }
+
+    @org.junit.Test
+    public void test8(){
+        String name1 = HanLP.hk2s("扬声器");
+        System.out.println(name1);
+        String name2 = HanLP.s2hk("扬声器");
+        System.out.println(name2);
+
+    }
+
+    @org.junit.Test
+    public void test9(){
+        String name1 = HanLP.hk2s("揚聲器");
+        System.out.println(name1);
+        String name2 = HanLP.s2hk("揚聲器");
+        System.out.println(name2);
     }
 
 

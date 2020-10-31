@@ -512,8 +512,8 @@ public class OrderInTransportController {
         //记录审核信息
         AuditInfoForm auditInfoForm = new AuditInfoForm();
         auditInfoForm.setExtId(form.getOrderId());
-        auditInfoForm.setAuditStatus(form.getStatus());
-        auditInfoForm.setAuditComment(form.getDescription());
+        auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_4.getCode());
+        auditInfoForm.setAuditComment(OrderStatusEnum.TMS_T_4.getDesc());
         auditInfoForm.setExtDesc(SqlConstant.ORDER_TRANSPORT);
         auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_4.getDesc());
 

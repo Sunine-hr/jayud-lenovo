@@ -14,31 +14,31 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 费用类型
+ * 基础数据费用类型
  * </p>
  *
  * @author 李达荣
- * @since 2020-10-27
+ * @since 2020-10-30
  */
 @Data
-@ApiModel(value="CostType对象", description="费用类型")
-public class CostTypeVO {
+public class CostGenreVO {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "主键ID")
+    @ApiModelProperty(value = "主键")
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "费用名称代码")
+    @ApiModelProperty(value = "费用类型代码")
     private String code;
 
     @ApiModelProperty(value = "费用类型名称")
-    private String codeName;
+    private String name;
 
-    @ApiModelProperty(value = "是否代垫代收")
-    private Boolean isPayCollection;
+    @ApiModelProperty(value = "描述")
+    private String remarks;
 
-    @ApiModelProperty(value = "状态(0禁用 1启用)")
+    @ApiModelProperty(value = "状态（1启用，0禁用）")
     private String status;
 
     @ApiModelProperty(value = "创建时间")
@@ -48,12 +48,10 @@ public class CostTypeVO {
     private String createUser;
 
     @ApiModelProperty(value = "更新时间")
-    private LocalDateTime upTime;
+    private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "更新人")
-    private String upUser;
+    private String updateUser;
 
-    @ApiModelProperty(value = "描述")
-    private String remarks;
 
 }

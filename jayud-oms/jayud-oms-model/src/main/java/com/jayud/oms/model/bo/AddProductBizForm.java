@@ -28,7 +28,7 @@ public class AddProductBizForm extends Model<AddProductBizForm> {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "自增id")
+    @ApiModelProperty(value = "主键ID,修改时必传")
     private Long id;
 
     @ApiModelProperty(value = "编码", required = true)
@@ -42,6 +42,12 @@ public class AddProductBizForm extends Model<AddProductBizForm> {
     @ApiModelProperty(value = "税率")
     @NotNull(message = "taxRate is required")
     private BigDecimal taxRate;
+
+    @ApiModelProperty(value = "费用类型id集合（多个主键用逗号隔开）")
+    private String costGenreIds;
+
+    @ApiModelProperty(value = "默认费用类型")
+    private Long costGenreDefault;
 
     @ApiModelProperty(value = "描述")
     private String remarks;

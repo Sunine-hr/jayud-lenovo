@@ -47,12 +47,17 @@ public interface CargoNameMapper extends BaseMapper<CargoName> {
     void deleteAllCargoName();
 
     /**
+     * 根据用户id，删除货物表
+     */
+    void deleteCargoNameByUserId(Long userId);
+
+    /**
      * <p>查询A类表list集合</p>
      * <p>V2</p>
      * <p>A类表:不存在`敏感品名`的货物表</p>
      * @return
      */
-    List<CargoNameSmallVO> findCargoNameListByAV2();
+    List<CargoNameSmallVO> findCargoNameListByAV2(Long userId);
 
     /**
      * <p>查询B类表list集合</p>
@@ -60,7 +65,7 @@ public interface CargoNameMapper extends BaseMapper<CargoName> {
      * <p>B类表:存在`敏感品名`的货物表</p>
      * @return
      */
-    List<CargoNameSmallVO> findCargoNameListByBV2();
+    List<CargoNameSmallVO> findCargoNameListByBV2(Long userId);
 
     /**
      * 清空`货物名称表`

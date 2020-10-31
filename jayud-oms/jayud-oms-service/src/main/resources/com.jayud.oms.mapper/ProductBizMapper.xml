@@ -8,6 +8,8 @@
         <result column="id_code" property="idCode" />
         <result column="name" property="name" />
         <result column="tax_rate" property="taxRate" />
+        <result column="cost_genre_ids" property="costGenreIds" />
+        <result column="cost_genre_default" property="costGenreDefault" />
         <result column="sorts" property="sorts" />
         <result column="remarks" property="remarks" />
         <result column="status" property="status" />
@@ -19,7 +21,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, id_code, name, tax_rate, sorts, remarks, status, create_user, create_time, update_time, update_user
+        id, id_code, name, tax_rate, cost_genre_ids, cost_genre_default, sorts, remarks, status, create_user, create_time, update_time, update_user
     </sql>
 
 
@@ -27,7 +29,9 @@
             resultType="com.jayud.oms.model.vo.ProductBizVO">
         select
         id, id_code idCode, name,
-        tax_rate taxRate,status,sorts,
+        tax_rate taxRate,
+        cost_genre_ids costGenreIds, cost_genre_default costGenreDefault,
+        status,sorts,
         create_time createTime,
         create_user createdUser,
         update_time updateTime,
@@ -36,7 +40,7 @@
         from
         product_biz
         <where>
-            and status='1'
+
             <if test="form.name !=null and form.name !=''">
                 and name like concat('%',#{form.name},'%')
             </if>

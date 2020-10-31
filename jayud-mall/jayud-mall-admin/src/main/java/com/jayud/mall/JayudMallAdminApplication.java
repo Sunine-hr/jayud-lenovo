@@ -11,8 +11,6 @@ import org.springframework.context.annotation.ComponentScan;
  * @description:
  * @date 2020/10/23 11:29
  */
-//@SpringBootApplication(scanBasePackages = "com.jayud.mall")
-//@EnableFeignClients()
 @SpringBootApplication
 @EnableDiscoveryClient
 @ComponentScan(basePackages = {"com.jayud.common","com.jayud.mall"})

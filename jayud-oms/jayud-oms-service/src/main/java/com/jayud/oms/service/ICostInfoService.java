@@ -50,10 +50,10 @@ public interface ICostInfoService extends IService<CostInfo> {
     CostInfoVO getById(Long id);
 
     /**
-     * 更新为无效状态
+     * 更改启用/禁用状态
      *
-     * @param ids
+     * @param id
      * @return
      */
-    boolean deleteByIds(List<Long> ids);
+    boolean enableOrDisableCostInfo(Long id);
 }

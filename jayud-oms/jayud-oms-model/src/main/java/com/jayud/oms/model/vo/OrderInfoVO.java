@@ -69,6 +69,12 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "中港运输状态,用于标识驳回可编辑")
     private String subTmsStatus;
 
+    @ApiModelProperty(value = "报关状态描述,用于标识驳回可编辑")
+    private String subCustomsDesc;
+
+    @ApiModelProperty(value = "中港运输状态描述,用于标识驳回可编辑")
+    private String subTmsDesc;
+
     @ApiModelProperty(value = "是否需要录入费用")
     private Boolean needInputCost;
 
@@ -92,6 +98,14 @@ public class OrderInfoVO {
             goodsTypeDesc = CommonConstant.GOODS_TYPE_DESC_2;
         }
         return goodsTypeDesc;
+    }
+
+    public String getSubCustomsDesc() {
+        return OrderStatusEnum.getDesc(this.subCustomsStatus);
+    }
+
+    public String getSubTmsDesc() {
+        return OrderStatusEnum.getDesc(this.subTmsStatus);
     }
 
 }

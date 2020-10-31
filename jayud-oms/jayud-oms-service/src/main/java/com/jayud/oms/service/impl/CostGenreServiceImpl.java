@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -64,6 +65,7 @@ public class CostGenreServiceImpl extends ServiceImpl<CostGenreMapper, CostGenre
 
     /**
      * 更改启用/禁用费用类型状态
+     *
      * @param id
      * @return
      */
@@ -89,5 +91,13 @@ public class CostGenreServiceImpl extends ServiceImpl<CostGenreMapper, CostGenre
     public CostGenreVO getById(Long id) {
         CostGenre costGenre = this.baseMapper.selectById(id);
         return ConvertUtil.convert(costGenre, CostGenreVO.class);
+    }
+
+    /**
+     * 根据id集合查询费用类型
+     */
+    @Override
+    public List<CostGenre> getByIds(List<Long> ids) {
+        return this.baseMapper.selectBatchIds(ids);
     }
 }

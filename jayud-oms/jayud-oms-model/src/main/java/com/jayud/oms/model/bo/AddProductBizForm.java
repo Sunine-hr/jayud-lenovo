@@ -43,6 +43,12 @@ public class AddProductBizForm extends Model<AddProductBizForm> {
     @NotNull(message = "taxRate is required")
     private BigDecimal taxRate;
 
+    @ApiModelProperty(value = "费用类型id集合（多个主键用逗号隔开）")
+    private String costGenreIds;
+
+    @ApiModelProperty(value = "默认费用类型")
+    private Long costGenreDefault;
+
     @ApiModelProperty(value = "描述")
     private String remarks;
 

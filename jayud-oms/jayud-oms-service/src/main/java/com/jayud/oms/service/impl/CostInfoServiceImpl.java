@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.mapper.CostInfoMapper;
@@ -70,7 +69,7 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
                 list.add(Long.parseLong(cid));
             }
 
-            List<CostTypeVO> costTypes = this.costTypeService.findCostTypeByIds(list);
+            List<CostTypeVO> costTypes = this.costTypeService.getCostTypeByIds(list);
             //拼接费用类型
             StringBuilder sb = new StringBuilder();
             for (CostTypeVO costType : costTypes) {

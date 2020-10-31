@@ -48,7 +48,7 @@ public class CostTypeServiceImpl extends ServiceImpl<CostTypeMapper, CostType> i
      * 根据id集合查询费用类型
      */
     @Override
-    public List<CostTypeVO> findCostTypeByIds(List<Long> ids) {
+    public List<CostTypeVO> getCostTypeByIds(List<Long> ids) {
         List<CostTypeVO> list = new ArrayList<>();
         List<CostType> costTypes = this.baseMapper.selectBatchIds(ids);
         for (CostType costType : costTypes) {

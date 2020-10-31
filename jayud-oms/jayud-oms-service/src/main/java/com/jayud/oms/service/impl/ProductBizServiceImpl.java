@@ -11,18 +11,30 @@ import com.jayud.oms.mapper.ProductBizMapper;
 import com.jayud.oms.model.bo.AddProductBizForm;
 import com.jayud.oms.model.bo.QueryProductBizForm;
 import com.jayud.oms.model.enums.StatusEnum;
+import com.jayud.oms.model.po.CostGenre;
 import com.jayud.oms.model.po.ProductBiz;
+import com.jayud.oms.model.vo.CostGenreVO;
 import com.jayud.oms.model.vo.ProductBizVO;
+import com.jayud.oms.service.ICostGenreService;
 import com.jayud.oms.service.IProductBizService;
+import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 @Service
 public class ProductBizServiceImpl extends ServiceImpl<ProductBizMapper, ProductBiz> implements IProductBizService {
+
+    @Autowired
+    private ICostGenreService costGenreService;
+
 
     @Override
     public List<ProductBiz> findProductBiz() {
@@ -48,7 +60,27 @@ public class ProductBizServiceImpl extends ServiceImpl<ProductBizMapper, Product
     @Override
     public IPage<ProductBizVO> findProductBizByPage(QueryProductBizForm form) {
         Page<ProductBiz> page = new Page(form.getPageNum(), form.getPageSize());
-        return this.baseMapper.findProductBizByPage(page, form);
+        IPage<ProductBizVO> iPage = this.baseMapper.findProductBizByPage(page, form);
+        //根据费用类型id集合查询费用类型名称
+
+        for (ProductBizVO record : iPage.getRecords()) {
+            if (StringUtils.isEmpty(record.getCostGenreIds())) {
+                continue;
+            }
+            String[] tmp = record.getCostGenreIds().split(",");
+            List<Long> cids = new ArrayList<>(tmp.length);
+            for (String id : tmp) {
+                cids.add(Long.parseLong(id));
+            }
+            List<CostGenre> costGenres = this.costGenreService.getByIds(cids);
+            List<CostGenreVO> costGenreVOs = new ArrayList<>();
+            for (CostGenre costGenre : costGenres) {
+                costGenreVOs.add(ConvertUtil.convert(costGenre, CostGenreVO.class));
+            }
+            record.setCostGenreVOs(costGenreVOs);
+        }
+
+        return iPage;
     }
 
     /**
@@ -57,7 +89,22 @@ public class ProductBizServiceImpl extends ServiceImpl<ProductBizMapper, Product
     @Override
     public ProductBizVO getById(Long id) {
         ProductBiz productBiz = this.baseMapper.selectById(id);
-        return ConvertUtil.convert(productBiz, ProductBizVO.class);
+        ProductBizVO productBizVO = ConvertUtil.convert(productBiz, ProductBizVO.class);
+        if (StringUtils.isNotEmpty(productBizVO.getCostGenreIds())) {
+            String[] tmp = productBizVO.getCostGenreIds().split(",");
+            List<Long> cids = new ArrayList<>();
+            for (String cid : tmp) {
+                cids.add(Long.parseLong(cid));
+            }
+            List<CostGenre> costGenres = this.costGenreService.getByIds(cids);
+            List<CostGenreVO> costGenreVOs = new ArrayList<>();
+            for (CostGenre costGenre : costGenres) {
+                costGenreVOs.add(ConvertUtil.convert(costGenre, CostGenreVO.class));
+            }
+            productBizVO.setCostGenreVOs(costGenreVOs);
+        }
+
+        return productBizVO;
     }
 
     /**
@@ -83,6 +130,7 @@ public class ProductBizServiceImpl extends ServiceImpl<ProductBizMapper, Product
 
     /**
      * 更改启用/禁用业务类型状态
+     *
      * @param id
      * @return
      */

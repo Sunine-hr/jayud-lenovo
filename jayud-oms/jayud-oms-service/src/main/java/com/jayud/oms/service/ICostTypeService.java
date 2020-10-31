@@ -35,7 +35,7 @@ public interface ICostTypeService extends IService<CostType> {
     /**
      * 根据id集合查询费用类别
      */
-    List<CostTypeVO> findCostTypeByIds(List<Long> ids);
+    List<CostTypeVO> getCostTypeByIds(List<Long> ids);
 
     /**
      * 新增编辑费用类别

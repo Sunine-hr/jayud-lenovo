@@ -77,4 +77,7 @@ public class InputOrderTransportForm {
     @ApiModelProperty(value = "卸货地址")
     private List<InputOrderTakeAdrForm> takeAdrForms2 = new ArrayList<>();
 
+    @ApiModelProperty(value = "当前登录用户,FeignClient必传,要么就传token,否则跨系统拿不到用户")
+    private String loginUser;
+
 }

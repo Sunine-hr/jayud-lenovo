@@ -31,7 +31,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/costType")
-@Api(tags = "费用类别列表接口")
+@Api(tags = "基础数据费用类别列表接口")
 public class CostTypeController {
 
     @Autowired

@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.OrderStatusEnum;
@@ -96,7 +95,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             queryWrapper.eq("order_no",form.getOrderNo());
             orderTakeAdrService.remove(queryWrapper);//删除货物信息
             orderTransport.setUpdatedTime(LocalDateTime.now());
-            orderTransport.setUpdatedUser(UserOperator.getToken());
+            orderTransport.setUpdatedUser(form.getLoginUser());
         }else {//新增
             //生成订单号
             String orderNo = StringUtils.loadNum(CommonConstant.T,12);
@@ -108,13 +107,13 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
                 }
             }
             orderTransport.setOrderNo(orderNo);
-            orderTransport.setCreatedUser(UserOperator.getToken());
+            orderTransport.setCreatedUser(form.getLoginUser());
         }
         for (InputOrderTakeAdrForm inputOrderTakeAdrForm : orderTakeAdrForms) {
             OrderTakeAdr orderTakeAdr = ConvertUtil.convert(inputOrderTakeAdrForm,OrderTakeAdr.class);
             DeliveryAddress deliveryAddress = ConvertUtil.convert(inputOrderTakeAdrForm,DeliveryAddress.class);
             deliveryAddress.setStatus(Integer.valueOf(CommonConstant.VALUE_0));
-            deliveryAddress.setCreateUser(UserOperator.getToken());
+            deliveryAddress.setCreateUser(form.getLoginUser());
             deliveryAddressService.save(deliveryAddress);
             orderTakeAdr.setDeliveryId(deliveryAddress.getId());
             orderTakeAdr.setOrderNo(orderTransport.getOrderNo());
@@ -153,6 +152,12 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         for (InputOrderTakeAdrVO inputOrderTakeAdrVO : inputOrderTakeAdrVOS) {
             if(CommonConstant.VALUE_1.equals(String.valueOf(inputOrderTakeAdrVO.getOprType()))){//提货
                 orderTakeAdrForms1.add(inputOrderTakeAdrVO);
+                if(inputOrderTakeAdrVO.getPieceAmount() == null){
+                    inputOrderTakeAdrVO.setPieceAmount(0);
+                }
+                if(inputOrderTakeAdrVO.getWeight() == null){
+                    inputOrderTakeAdrVO.setWeight(0.0);
+                }
                 totalAmount = totalAmount + inputOrderTakeAdrVO.getPieceAmount();
                 totalWeight = totalWeight + inputOrderTakeAdrVO.getWeight();
             }else {

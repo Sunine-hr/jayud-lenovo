@@ -85,7 +85,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             OrderInfo oldOrder = baseMapper.selectById(form.getOrderId());
             orderInfo.setId(form.getOrderId());
             orderInfo.setOrderNo(oldOrder.getOrderNo());
-            orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
             orderInfo.setUpTime(LocalDateTime.now());
             orderInfo.setUpUser(UserOperator.getToken());
         }else {//新增
@@ -101,15 +100,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderInfo.setOrderNo(orderNo);
             orderInfo.setCreateTime(LocalDateTime.now());
             orderInfo.setCreatedUser(UserOperator.getToken());
-            if(CommonConstant.PRE_SUBMIT.equals(form.getCmd())) {
-                orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_2.getCode()));
-            }else if(CommonConstant.SUBMIT.equals(form.getCmd()) && CommonConstant.VALUE_1.equals(form.getIsDataAll())){
-                orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
-            }else if(CommonConstant.SUBMIT.equals(form.getCmd()) && CommonConstant.VALUE_0.equals(form.getIsDataAll())){
-                orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_4.getCode()));
-            }else {
-                orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
-            }
+        }
+        if(CommonConstant.PRE_SUBMIT.equals(form.getCmd())) {
+            orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_2.getCode()));
+        }else if(CommonConstant.SUBMIT.equals(form.getCmd()) && CommonConstant.VALUE_1.equals(form.getIsDataAll())){
+            orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
+        }else if(CommonConstant.SUBMIT.equals(form.getCmd()) && CommonConstant.VALUE_0.equals(form.getIsDataAll())){
+            orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_4.getCode()));
+        }else {
+            orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
         }
         saveOrUpdate(orderInfo);
         return orderInfo.getOrderNo();
@@ -572,6 +571,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                  }else {
                      orderCustomsForm.setClassCode(OrderStatusEnum.CKBG.getCode());
                  }
+                 orderCustomsForm.setLoginUser(UserOperator.getToken());
                  Boolean result = customsClient.createOrderCustoms(orderCustomsForm).getData();
                  if (!result) {//调用失败
                      return false;
@@ -589,6 +589,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 orderTransportForm.setIsHkClear(null);
             }
             orderTransportForm.setMainOrderNo(mainOrderNo);
+            orderTransportForm.setLoginUser(UserOperator.getToken());
             Boolean result = tmsClient.createOrderTransport(orderTransportForm).getData();
             if(!result){//调用失败
                 return false;
@@ -656,12 +657,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 bg.setNeedInputCost(confirmChangeStatusForm.getNeedInputCost());
                 bg.setOrderNo(confirmChangeStatusForm.getOrderNo());
                 bg.setStatus(form.getStatus());
+                bg.setLoginUser(UserOperator.getToken());
                 bgs.add(bg);
             }else if(CommonConstant.ZGYS.equals(confirmChangeStatusForm.getOrderType())){
                 TmsChangeStatusForm tm = new TmsChangeStatusForm();
                 tm.setNeedInputCost(confirmChangeStatusForm.getNeedInputCost());
                 tm.setOrderNo(confirmChangeStatusForm.getOrderNo());
                 tm.setStatus(form.getStatus());
+                tm.setLoginUser(UserOperator.getToken());
                 zgys.add(tm);
             }
 

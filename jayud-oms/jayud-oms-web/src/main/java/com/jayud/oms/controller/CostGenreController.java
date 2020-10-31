@@ -12,6 +12,7 @@ import com.jayud.oms.model.po.CostGenre;
 import com.jayud.oms.model.vo.CostGenreVO;
 import com.jayud.oms.model.vo.CostInfoVO;
 import com.jayud.oms.service.ICostGenreService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/costGenre")
+@Api(tags = "基础数据费用类型")
 public class CostGenreController {
 
     @Autowired

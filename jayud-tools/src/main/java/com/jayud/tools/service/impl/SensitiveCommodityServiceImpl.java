@@ -121,10 +121,11 @@ public class SensitiveCommodityServiceImpl extends ServiceImpl<SensitiveCommodit
                         count = 0;
                         break;
                     }
-                    if(count == dbList.size()){
-                        //代表Excel中的所有数据，在数据库中没有找到相同的记录，新增数据
-                        saveList.add(sensitiveCommodity);
-                    }
+                }
+                //当数据库数据为空时，或者数据库数据不存在导入的数据
+                if(count == dbList.size()){
+                    //代表Excel中的所有数据，在数据库中没有找到相同的记录，新增数据
+                    saveList.add(sensitiveCommodity);
                 }
             }
         }

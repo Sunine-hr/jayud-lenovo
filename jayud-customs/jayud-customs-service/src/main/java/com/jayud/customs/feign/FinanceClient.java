@@ -1,6 +1,7 @@
 package com.jayud.customs.feign;
 
 import com.jayud.common.CommonResult;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ public interface FinanceClient {
 
     /**
      * 推送应收单到金蝶
+     *
      * @param msg
      * @return
      */
@@ -28,10 +30,27 @@ public interface FinanceClient {
 
     /**
      * 推送应付单到金蝶
+     *
      * @param msg
      * @return
      */
     @RequestMapping(path = "/api/finance/kingdee/yunbaoguan/payable/push", method = RequestMethod.POST)
     CommonResult savePayableBill(@RequestBody Map<String, String> msg);
 
+
+    /**
+     * 直接删除应收数据
+     * @param param
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.POST, value = "/api/finance/kingdee/yunbaoguan/receivable/delete")
+    Boolean checkNRemoveReceivable(@RequestBody String param);
+
+    /**
+     * 直接删除应付数据
+     * @param param
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.POST, value = "/api/finance/kingdee/yunbaoguan/payable/delete")
+    Boolean checkNRemovePayable(@RequestBody String param);
 }

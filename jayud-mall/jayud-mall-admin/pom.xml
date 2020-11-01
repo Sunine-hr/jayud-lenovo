@@ -27,6 +27,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
+        <!--验证码功能需要用到`spring-social-config`依赖-->
+        <dependency>
+            <groupId>org.springframework.social</groupId>
+            <artifactId>spring-social-config</artifactId>
+            <version>1.1.6.RELEASE</version>
+        </dependency>
 
     </dependencies>
 

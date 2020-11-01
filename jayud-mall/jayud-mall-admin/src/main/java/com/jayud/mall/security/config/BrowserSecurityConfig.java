@@ -2,6 +2,7 @@ package com.jayud.mall.security.config;
 
 import com.jayud.mall.security.handler.MyAuthenticationFailureHandler;
 import com.jayud.mall.security.handler.MyAuthenticationSucessHandler;
+import com.jayud.mall.security.validate.code.ValidateCodeFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * <p>定义浏览器Security配置,继承WebSecurityConfigurerAdapter</p>
@@ -27,6 +29,11 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Autowired
     private MyAuthenticationFailureHandler authenticationFailureHandler;
+    /**
+     * 验证码校验过滤器
+     */
+    @Autowired
+    private ValidateCodeFilter validateCodeFilter;
 
     /**
      * <p>配置PasswordEncoder</p>
@@ -46,8 +53,8 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.formLogin() // 表单登录
-                // http.httpBasic() // HTTP Basic
+        http.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class) // 添加验证码校验过滤器
+            .formLogin() // 表单登录
                 .loginPage("/authentication/require") // 登录跳转 URL
                 .loginProcessingUrl("/login") // 处理表单登录 URL
                 .successHandler(authenticationSucessHandler) // 处理登录成功

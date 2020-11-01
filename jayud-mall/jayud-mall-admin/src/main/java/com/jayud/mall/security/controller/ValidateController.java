@@ -1,8 +1,5 @@
 package com.jayud.mall.security.controller;
 
-//import cc.mrbird.validate.code.ImageCode;
-//import org.springframework.social.connect.web.HttpSessionSessionStrategy;
-//import org.springframework.social.connect.web.SessionStrategy;
 import com.jayud.mall.security.validate.code.ImageCode;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

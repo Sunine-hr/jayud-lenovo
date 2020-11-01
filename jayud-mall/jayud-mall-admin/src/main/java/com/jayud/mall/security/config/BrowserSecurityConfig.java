@@ -105,6 +105,14 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/code/image",
                         "/session/invalid",
                         "/signout/success").permitAll() // 登录跳转 URL 无需认证
+                //放行swagger2资源
+                .antMatchers("/swagger-ui.html").permitAll()
+                .antMatchers("/swagger-resources/**").permitAll()
+                .antMatchers("/images/**").permitAll()
+                .antMatchers("/webjars/**").permitAll()
+                .antMatchers("/v2/api-docs").permitAll()
+                .antMatchers("/configuration/ui").permitAll()
+                .antMatchers("/configuration/security").permitAll()
                 .anyRequest()  // 所有请求
                 .authenticated() // 都需要认证
             .and()

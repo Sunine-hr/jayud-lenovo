@@ -96,9 +96,13 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests() // 授权配置
                 .antMatchers("/authentication/require",
                         "/login.html","/css/login.css",
-                        "/code/image").permitAll() // 登录跳转 URL 无需认证
+                        "/code/image",
+                        "/session/invalid").permitAll() // 登录跳转 URL 无需认证
                 .anyRequest()  // 所有请求
                 .authenticated() // 都需要认证
+            .and()
+                .sessionManagement() // 添加 Session管理器
+                .invalidSessionUrl("/session/invalid") // Session失效后跳转到这个链接
             .and()
                 .csrf().disable();
 

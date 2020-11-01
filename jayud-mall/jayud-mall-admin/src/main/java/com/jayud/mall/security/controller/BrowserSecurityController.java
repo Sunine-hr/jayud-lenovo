@@ -67,4 +67,14 @@ public class BrowserSecurityController {
         }
         return "访问的资源需要身份认证！";
     }
+
+    @ApiOperation(value = "session失效")
+    @GetMapping("/session/invalid")
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public String sessionInvalid(){
+        return "session已失效，请重新认证";
+    }
+
+
+
 }

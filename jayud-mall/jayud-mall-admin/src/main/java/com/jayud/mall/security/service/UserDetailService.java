@@ -10,6 +10,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+/**
+ * 自定义用户认证
+ */
 @Configuration
 public class UserDetailService implements UserDetailsService {
 

@@ -2,6 +2,7 @@ package com.jayud.mall.security.config;
 
 import com.jayud.mall.security.handler.MyAuthenticationFailureHandler;
 import com.jayud.mall.security.handler.MyAuthenticationSucessHandler;
+import com.jayud.mall.security.service.UserDetailService;
 import com.jayud.mall.security.validate.code.ValidateCodeFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +12,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+
+import javax.sql.DataSource;
 
 /**
  * <p>定义浏览器Security配置,继承WebSecurityConfigurerAdapter</p>
@@ -34,6 +39,16 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Autowired
     private ValidateCodeFilter validateCodeFilter;
+    /**
+     * 自定义用户认证
+     */
+    @Autowired
+    private UserDetailService userDetailService;
+    /**
+     * 数据源(DataSource)
+     */
+    @Autowired
+    private DataSource dataSource;
 
     /**
      * <p>配置PasswordEncoder</p>
@@ -43,6 +58,19 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    /**
+     * <p>持续的令牌库,将令牌存在数据库中</p>
+     * <p>数据库表：persistent_logins</p>
+     * <p>查看`JdbcTokenRepositoryImpl`的源码，可以看到其包含了一个`CREATE_TABLE_SQL`属性</p>
+     */
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
+        jdbcTokenRepository.setDataSource(dataSource);
+        jdbcTokenRepository.setCreateTableOnStartup(false);
+        return jdbcTokenRepository;
     }
 
     /**
@@ -59,6 +87,11 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginProcessingUrl("/login") // 处理表单登录 URL
                 .successHandler(authenticationSucessHandler) // 处理登录成功
                 .failureHandler(authenticationFailureHandler) // 处理登录失败
+            .and()
+                .rememberMe() // 添加记住我功能
+                .tokenRepository(persistentTokenRepository()) // 配置 token 持久化仓库
+                .tokenValiditySeconds(3600) // remember 过期时间，单为秒 有效期一个小时
+                .userDetailsService(userDetailService) // 处理自动登录逻辑
             .and()
                 .authorizeRequests() // 授权配置
                 .antMatchers("/authentication/require",

@@ -17,12 +17,17 @@
             <version>1.0</version>
             <scope>compile</scope>
         </dependency>
-
         <dependency>
             <groupId>com.jayud</groupId>
             <artifactId>jayud-mall-model</artifactId>
             <version>1.0</version>
         </dependency>
+        <!--spring security 用户-认证 、授权 、攻击防护 （防止伪造身份）-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

@@ -2,6 +2,7 @@ package com.jayud.mall.security.config;
 
 import com.jayud.mall.security.handler.MyAuthenticationFailureHandler;
 import com.jayud.mall.security.handler.MyAuthenticationSucessHandler;
+import com.jayud.mall.security.handler.MyLogOutSuccessHandler;
 import com.jayud.mall.security.service.UserDetailService;
 import com.jayud.mall.security.validate.code.ValidateCodeFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,11 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Autowired
     private MyAuthenticationFailureHandler authenticationFailureHandler;
+    /**
+     * 自定义退出登录行为
+     */
+    @Autowired
+    private MyLogOutSuccessHandler logOutSuccessHandler;
     /**
      * 验证码校验过滤器
      */
@@ -97,12 +103,19 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/authentication/require",
                         "/login.html","/css/login.css",
                         "/code/image",
-                        "/session/invalid").permitAll() // 登录跳转 URL 无需认证
+                        "/session/invalid",
+                        "/signout/success").permitAll() // 登录跳转 URL 无需认证
                 .anyRequest()  // 所有请求
                 .authenticated() // 都需要认证
             .and()
                 .sessionManagement() // 添加 Session管理器
                 .invalidSessionUrl("/session/invalid") // Session失效后跳转到这个链接
+            .and()
+                .logout() // 配置退出登录
+                .logoutUrl("/signout")
+//                 .logoutSuccessUrl("/signout/success")
+                .logoutSuccessHandler(logOutSuccessHandler) // 除了指定logoutUrl外，我们也可以通过logoutSuccessHandler指定退出成功处理器来处理退出成功后的逻辑
+                .deleteCookies("JSESSIONID") // 清除 名为 JSESSIONID 的 cookie
             .and()
                 .csrf().disable();
 

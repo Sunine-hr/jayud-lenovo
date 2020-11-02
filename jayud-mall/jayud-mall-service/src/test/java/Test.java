@@ -3,6 +3,7 @@ import com.alibaba.nacos.common.util.Md5Utils;
 import com.jayud.mall.model.bo.QueryRoleForm;
 import com.jayud.mall.model.bo.QueryUserForm;
 import com.jayud.mall.model.bo.SaveRoleForm;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -164,6 +165,37 @@ public class Test {
         form.setRoleName("经理");
         String json = JSONObject.toJSONString(form);
         System.out.println(json);
+    }
+
+    /**
+     * BCryptPasswordEncoder 判断密码是否相同
+     */
+    @org.junit.Test
+    public void test10() {
+        //加密
+        //BCryptPasswordEncoder encode = new BCryptPasswordEncoder();
+        //encode.encode(password);
+
+        //比较
+        //matches(CharSequence rawPassword, String encodedPassword)
+
+        String pass = "admin";
+        BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
+        String hashPass = bcryptPasswordEncoder.encode(pass.trim());
+        System.out.println(hashPass);
+
+        boolean flag = bcryptPasswordEncoder.matches("admin",hashPass);
+        System.out.println(flag);
+
+        //每次输出的hashPass 都不一样，但是最终的flag都为 true,即匹配成功。
+
+        pass = "123456";
+        hashPass = bcryptPasswordEncoder.encode(pass.trim());
+        System.out.println(hashPass);
+        hashPass = "$2a$10$HnfCQXhPiEWcO8eRNUb/guVWDsMozTpyf8Nc9qDIDloYUK7kspslK";
+        flag = bcryptPasswordEncoder.matches("123456",hashPass);
+        System.out.println(flag);
+
     }
 
 

@@ -44,14 +44,14 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         String loginname = loginForm.getLoginname();
         String password = loginForm.getPassword();
         SystemUserVO userVO = systemUserMapper.findSystemUserByLoginname(loginname);
-
-        if(userVO != null){
-            String dbPassword = userVO.getPassword();
-            if(dbPassword.equalsIgnoreCase(Md5Utils.getMD5(password.getBytes()))){
-                return userVO;
-            }
-        }
-        return null;
+        // TODO 验证密码 在Security框架里面验证
+//        if(userVO != null){
+//            String dbPassword = userVO.getPassword();
+//            if(dbPassword.equalsIgnoreCase(Md5Utils.getMD5(password.getBytes()))){
+//                return userVO;
+//            }
+//        }
+        return userVO;
     }
 
     @Override

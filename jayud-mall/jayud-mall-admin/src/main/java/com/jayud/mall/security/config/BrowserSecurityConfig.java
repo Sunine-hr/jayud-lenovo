@@ -8,6 +8,7 @@ import com.jayud.mall.security.validate.code.ValidateCodeFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -59,6 +60,7 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
     /**
      * <p>配置PasswordEncoder</p>
      * <p>该对象用于密码加密</p>
+     * <p>我这里使用BCryptPasswordEncoder，如果有需要用自定义MD5加密，自定义加密算法，实现PasswordEncoder</p>
      * @return
      */
     @Bean
@@ -87,8 +89,11 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class) // 添加验证码校验过滤器
+        http
+//                .addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class) // 添加验证码校验过滤器
             .formLogin() // 表单登录
+//                .usernameParameter("username") /* 默认值 username */
+//                .passwordParameter("password") /* 默认值 password */
                 .loginPage("/authentication/require") // 登录跳转 URL
                 .loginProcessingUrl("/login") // 处理表单登录 URL
                 .successHandler(authenticationSucessHandler) // 处理登录成功
@@ -128,4 +133,19 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable();
 
     }
+
+    /**
+     * 配置Spring Security 用户名密码认证
+     * <p>passwordEncoder()使用的是BCryptPasswordEncoder</p>
+     * <p>这里可以写自己的加密算法</p>
+     * @param auth
+     * @throws Exception
+     */
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        super.configure(auth);
+        auth.userDetailsService(userDetailService).passwordEncoder(passwordEncoder());
+
+    }
+
 }

@@ -74,4 +74,10 @@ public class SystemRoleServiceImpl extends ServiceImpl<SystemRoleMapper, SystemR
         IPage<SystemRoleVO> pageInfo = baseMapper.findRoleByPage(page, form);
         return pageInfo;
     }
+
+    @Override
+    public List<SystemRole> selectRolesByUserId(Long userId) {
+        List<SystemRole> list = roleMapper.selectRolesByUserId(userId);
+        return list;
+    }
 }

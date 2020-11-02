@@ -1,10 +1,14 @@
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.common.util.Md5Utils;
+import com.jayud.mall.model.bo.QueryQuotationTemplateFrom;
 import com.jayud.mall.model.bo.QueryRoleForm;
 import com.jayud.mall.model.bo.QueryUserForm;
 import com.jayud.mall.model.bo.SaveRoleForm;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -196,6 +200,33 @@ public class Test {
         flag = bcryptPasswordEncoder.matches("123456",hashPass);
         System.out.println(flag);
 
+    }
+
+    /**
+     * LocalDateTime
+     */
+    @org.junit.Test
+    public void test11(){
+        LocalDateTime l = LocalDateTime.now();
+        System.out.println(l);
+        System.out.println(l.toLocalTime());
+        System.out.println(l.toLocalDate());
+
+        String str = "1986-04-08 12:30:30";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime dateTime = LocalDateTime.parse(str, formatter);
+        System.out.println(dateTime);
+    }
+
+    @org.junit.Test
+    public void test12(){
+        QueryQuotationTemplateFrom form = new QueryQuotationTemplateFrom();
+        form.setNames("美西-海卡大船");
+        form.setSailTime(LocalDateTime.now());
+        form.setCutOffTime(LocalDateTime.now());
+        form.setDestinationPort("纽约州");
+        String json = JSON.toJSONString(form);
+        System.out.println(json);
     }
 
 

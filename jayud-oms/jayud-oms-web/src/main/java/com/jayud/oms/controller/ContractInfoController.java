@@ -9,6 +9,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.utils.BeanUtils;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
@@ -22,12 +23,14 @@ import com.jayud.oms.model.po.ContractInfo;
 import com.jayud.oms.model.po.CustomerInfo;
 import com.jayud.oms.model.po.ProductBiz;
 import com.jayud.oms.model.po.ProductClassify;
+import com.jayud.oms.model.po.SupplierInfo;
 import com.jayud.oms.model.vo.ContractInfoVO;
 import com.jayud.oms.model.vo.InitComboxVO;
 import com.jayud.oms.service.IContractInfoService;
 import com.jayud.oms.service.ICustomerInfoService;
 import com.jayud.oms.service.IProductBizService;
 import com.jayud.oms.service.IProductClassifyService;
+import com.jayud.oms.service.ISupplierInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +69,9 @@ public class ContractInfoController {
 
     @Autowired
     private FileClient fileClient;
+
+    @Autowired
+    private ISupplierInfoService supplierInfoService;
 
     @ApiOperation(value = "查询合同列表")
     @PostMapping(value = "/findContractInfoByPage")
@@ -142,12 +148,15 @@ public class ContractInfoController {
         contractInfoService.saveOrUpdateBatch(contractInfos);
         return CommonResult.success();
     }
+
     @ApiOperation(value = "合同管理-下拉框合并返回")
     @PostMapping(value = "/findComboxs3")
     public CommonResult<Map<String,Object>> findComboxs3(){
         Map<String,Object> resultMap = new HashMap<>();
         //客户名称
         resultMap.put("customers",initCustomer());
+        //供应商名称
+        resultMap.put("suppliers", initSupplierInfo());
         //服务类型
         resultMap.put("productClassify",initProductClassify());
         //法人主体
@@ -197,6 +206,19 @@ public class ContractInfoController {
         return CommonResult.success(initComboxVOS);
     }
 
+    @ApiOperation(value = "合同管理-下拉框-供应商")
+    @PostMapping(value = "/initSupplierInfo")
+    public CommonResult<List<InitComboxVO>> initSupplierInfo() {
+        List<SupplierInfo> supplierInfos = supplierInfoService.getApprovedSupplier(BeanUtils.convertToFieldName(SupplierInfo::getSupplierChName));
+        List<InitComboxVO> initComboxVOS = new ArrayList<>();
+        for (SupplierInfo supplierInfo : supplierInfos) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(supplierInfo.getId());
+            initComboxVO.setName(supplierInfo.getSupplierChName());
+            initComboxVOS.add(initComboxVO);
+        }
+        return CommonResult.success(initComboxVOS);
+    }
 
     @ApiOperation(value = "合同管理-下拉框-服务类型")
     @PostMapping(value = "/initProductClassify")

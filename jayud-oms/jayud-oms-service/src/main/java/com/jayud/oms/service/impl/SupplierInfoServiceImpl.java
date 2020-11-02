@@ -1,9 +1,12 @@
 package com.jayud.oms.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import com.jayud.common.UserOperator;
+import com.jayud.common.func.SFunction;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.mapper.SupplierInfoMapper;
 import com.jayud.oms.model.bo.AddSupplierInfoForm;
@@ -12,6 +15,7 @@ import com.jayud.oms.model.bo.QuerySupplierInfoForm;
 import com.jayud.oms.model.enums.AuditStatusEnum;
 import com.jayud.oms.model.enums.AuditTypeDescEnum;
 import com.jayud.oms.model.enums.SettlementTypeEnum;
+import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.AuditInfo;
 import com.jayud.oms.model.po.ProductClassify;
 import com.jayud.oms.model.po.SupplierInfo;
@@ -19,7 +23,6 @@ import com.jayud.oms.model.vo.SupplierInfoVO;
 import com.jayud.oms.service.IAuditInfoService;
 import com.jayud.oms.service.IProductClassifyService;
 import com.jayud.oms.service.ISupplierInfoService;
-import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -140,6 +144,32 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             record.setAuditStatus(AuditStatusEnum.getDesc(record.getAuditStatus()));
         }
         return iPage;
+    }
+
+
+    /**
+     * 获取启用审核通过供应商
+     */
+    @Override
+    public List<SupplierInfo> getApprovedSupplier(String... fields) {
+        QueryWrapper<SupplierInfo> condition = new QueryWrapper<>();
+        if (fields != null) {
+            for (String field : fields) {
+                condition.select(field);
+            }
+        }
+        condition.lambda().eq(SupplierInfo::getStatus, StatusEnum.ENABLE.getCode());
+        List<SupplierInfo> supplierInfos = this.baseMapper.selectList(condition);
+        //查询所有审核通过的供应商
+        List<SupplierInfo> tmp = new ArrayList<>();
+        for (SupplierInfo supplierInfo : supplierInfos) {
+            AuditInfo info = this.auditInfoService.getAuditInfoLatestByExtId(supplierInfo.getId()
+                    , AuditTypeDescEnum.ONE.getTable());
+            if (AuditStatusEnum.SUCCESS.getCode().equals(info.getAuditStatus())) {
+                tmp.add(supplierInfo);
+            }
+        }
+        return tmp;
     }
 
 

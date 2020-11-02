@@ -7,23 +7,24 @@
         <id column="id" property="id" />
         <result column="name" property="name" />
         <result column="contract_no" property="contractNo" />
-        <result column="contract_url" property="contractUrl" />
         <result column="contract_name" property="contractName" />
+        <result column="contract_url" property="contractUrl" />
         <result column="business_type" property="businessType" />
         <result column="legal_entity" property="legalEntity" />
         <result column="start_date" property="startDate" />
         <result column="end_date" property="endDate" />
         <result column="status" property="status" />
-        <result column="created_user" property="createdUser"/>
-        <result column="created_time" property="createdTime"/>
-        <result column="updated_user" property="updatedUser"/>
-        <result column="updated_time" property="updatedTime"/>
+        <result column="created_user" property="createdUser" />
+        <result column="created_time" property="createdTime" />
+        <result column="updated_user" property="updatedUser" />
+        <result column="updated_time" property="updatedTime" />
+        <result column="type" property="type" />
+        <result column="bind_id" property="bindId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-         id,name,contract_no,contract_url,contract_name,business_type,legal_entity,start_date,end_date,status,created_user,updated_user,
-         created_time,updated_time
+        id, name, contract_no, contract_name, contract_url, business_type, legal_entity, start_date, end_date, status, created_user, created_time, updated_user, updated_time, type, bind_id
     </sql>
 
     <select id="findContractInfoByPage" parameterType="com.jayud.oms.model.bo.QueryContractInfoForm" resultType="com.jayud.oms.model.vo.ContractInfoVO" >

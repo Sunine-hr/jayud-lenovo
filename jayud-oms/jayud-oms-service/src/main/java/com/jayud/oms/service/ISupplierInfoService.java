@@ -2,6 +2,7 @@ package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.func.SFunction;
 import com.jayud.oms.model.bo.AddSupplierInfoForm;
 import com.jayud.oms.model.bo.QueryAuditSupplierInfoForm;
 import com.jayud.oms.model.bo.QuerySupplierInfoForm;
@@ -40,4 +41,9 @@ public interface ISupplierInfoService extends IService<SupplierInfo> {
      * 分页查询供应商审核信息
      */
     IPage<SupplierInfoVO> findAuditSupplierInfoByPage(QueryAuditSupplierInfoForm form);
+
+    /**
+     * 获取启用审核通过供应商
+     */
+    List<SupplierInfo> getApprovedSupplier(String... fields);
 }

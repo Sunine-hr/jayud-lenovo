@@ -32,7 +32,7 @@ public class ProductClassifyController {
     @Autowired
     private IProductClassifyService productClassifyService;
 
-    @ApiOperation(value = "查询所有启用的父类产品分类")
+    @ApiOperation(value = "查询服务类型")
     @PostMapping(value = "/getEnableParentProductClassify")
     public CommonResult<List<ProductClassifyVO>> getEnableParentProductClassify(){
         List<ProductClassify> list = this.productClassifyService.getEnableParentProductClassify(StatusEnum.ENABLE.getCode());

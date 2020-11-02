@@ -7,6 +7,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.oms.model.bo.AddCostGenreForm;
 import com.jayud.oms.model.bo.QueryCostGenreForm;
+import com.jayud.oms.model.po.CostGenre;
 import com.jayud.oms.model.vo.CostGenreVO;
 import com.jayud.oms.service.ICostGenreService;
 import io.swagger.annotations.Api;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -79,6 +81,13 @@ public class CostGenreController {
         Long id = Long.parseLong(map.get("id"));
         CostGenreVO costInfo = this.costGenreService.getById(id);
         return CommonResult.success(costInfo);
+    }
+
+    @ApiModelProperty("查询所用启用费用类型")
+    @PostMapping("/getEnableCostGenre")
+    public CommonResult<List<CostGenre>> getEnableCostGenre() {
+        List<CostGenre> costGenres = this.costGenreService.getEnableCostGenre();
+        return CommonResult.success(costGenres);
     }
 }
 

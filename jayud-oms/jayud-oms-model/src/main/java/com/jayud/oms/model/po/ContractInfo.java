@@ -24,7 +24,7 @@ public class ContractInfo extends Model<ContractInfo> {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "客户名称")
+    @ApiModelProperty(value = "客户名称/供应商名称")
     private String name;
 
     @ApiModelProperty(value = "合同编号")
@@ -36,7 +36,7 @@ public class ContractInfo extends Model<ContractInfo> {
     @ApiModelProperty(value = "合同附件名称")
     private String contractName;
 
-    @ApiModelProperty(value = "业务类型")
+    @ApiModelProperty(value = "服务类型")
     private String businessType;
 
     @ApiModelProperty(value = "法人主体")
@@ -62,6 +62,12 @@ public class ContractInfo extends Model<ContractInfo> {
 
     @ApiModelProperty(value = "创建时间")
     private Timestamp createdTime;
+
+    @ApiModelProperty(value = "合同类型")
+    private String type;
+
+    @ApiModelProperty(value = "合同绑定的业务id")
+    private Long bindId;
 
 
 }

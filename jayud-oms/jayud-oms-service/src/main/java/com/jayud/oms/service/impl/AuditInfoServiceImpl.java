@@ -43,6 +43,6 @@ public class AuditInfoServiceImpl extends ServiceImpl<AuditInfoMapper, AuditInfo
      */
     @Override
     public AuditInfo getAuditInfoLatestByExtId(Long id, String tableDesc) {
-        return this.baseMapper.getLatestByExtId(id);
+        return this.baseMapper.getLatestByExtId(id, tableDesc);
     }
 }

@@ -40,7 +40,7 @@ public class CostGenreController {
     @Autowired
     private ICostGenreService costGenreService;
 
-    @ApiModelProperty("分页查询费用类型")
+    @ApiOperation("分页查询费用类型")
     @PostMapping("/findCostGenreByPage")
     public CommonResult<CommonPageResult<CostGenreVO>> findCostGenreByPage(@RequestBody QueryCostGenreForm form) {
         IPage<CostGenreVO> iPage = this.costGenreService.findCostGenreByPage(form);
@@ -83,7 +83,7 @@ public class CostGenreController {
         return CommonResult.success(costInfo);
     }
 
-    @ApiModelProperty("查询所用启用费用类型")
+    @ApiOperation("查询所用启用费用类型")
     @PostMapping("/getEnableCostGenre")
     public CommonResult<List<CostGenre>> getEnableCostGenre() {
         List<CostGenre> costGenres = this.costGenreService.getEnableCostGenre();

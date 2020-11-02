@@ -16,5 +16,5 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface AuditInfoMapper extends BaseMapper<AuditInfo> {
 
-    AuditInfo getLatestByExtId(@Param("id") Long id);
+    AuditInfo getLatestByExtId(@Param("id") Long id, @Param("tableDesc") String tableDesc);
 }

@@ -24,13 +24,16 @@
         status_file_name,ext_desc
     </sql>
 
-    <select id="getLatestByExtId" parameterType="long" resultMap="BaseResultMap">
+    <select id="getLatestByExtId"  resultMap="BaseResultMap">
         select
-             id, ext_id, audit_type_desc, audit_status, audit_comment, audit_user, created_user, audit_time, created_time,status_file,
+             id, ext_id, audit_type_desc, audit_status, audit_comment, audit_user,
+             created_user, audit_time, created_time,status_file,
         status_file_name,ext_desc
         from audit_info
         <where>
-            ext_id = ${id}
+            ext_id = #{id}
+            and
+            ext_desc=#{tableDesc}
             order by id desc
             limit 1
         </where>

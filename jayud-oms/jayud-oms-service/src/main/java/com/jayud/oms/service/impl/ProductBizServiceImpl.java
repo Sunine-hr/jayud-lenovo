@@ -115,7 +115,14 @@ public class ProductBizServiceImpl extends ServiceImpl<ProductBizMapper, Product
      */
     @Override
     public boolean saveOrUpdateProductBiz(AddProductBizForm form) {
+        //拼接费用类型id
+        StringBuilder sb = new StringBuilder();
+        for (CostGenreVO costGenreVO : form.getCostGenreVOs()) {
+            sb.append(costGenreVO.getId()).append(",");
+        }
         ProductBiz productBiz = ConvertUtil.convert(form, ProductBiz.class);
+        productBiz.setCostGenreIds(sb.substring(0, sb.length() - 1));
+
         if (Objects.isNull(productBiz.getId())) {
             productBiz.setCreateTime(LocalDateTime.now())
                     .setCreateUser(UserOperator.getToken());

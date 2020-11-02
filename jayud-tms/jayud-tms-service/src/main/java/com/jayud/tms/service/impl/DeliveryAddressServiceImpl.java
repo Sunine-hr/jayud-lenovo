@@ -2,9 +2,13 @@ package com.jayud.tms.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.tms.mapper.DeliveryAddressMapper;
+import com.jayud.tms.model.bo.QueryDeliveryAddressForm;
 import com.jayud.tms.model.po.DeliveryAddress;
+import com.jayud.tms.model.vo.DeliveryAddressVO;
 import com.jayud.tms.service.IDeliveryAddressService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +21,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class DeliveryAddressServiceImpl extends ServiceImpl<DeliveryAddressMapper, DeliveryAddress> implements IDeliveryAddressService {
 
+    @Override
+    public List<DeliveryAddressVO> findDeliveryAddress(QueryDeliveryAddressForm form) {
+        return baseMapper.findDeliveryAddress(form);
+    }
 }

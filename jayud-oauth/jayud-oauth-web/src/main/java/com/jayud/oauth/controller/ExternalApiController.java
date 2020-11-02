@@ -1,6 +1,8 @@
 package com.jayud.oauth.controller;
 
 import com.jayud.common.ApiResult;
+import com.jayud.common.CommonResult;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oauth.model.bo.AddCusAccountForm;
 import com.jayud.oauth.model.bo.OprSystemUserForm;
 import com.jayud.oauth.model.enums.StatusEnum;
@@ -8,18 +10,12 @@ import com.jayud.oauth.model.enums.SystemUserStatusEnum;
 import com.jayud.oauth.model.enums.UserTypeEnum;
 import com.jayud.oauth.model.po.SystemRole;
 import com.jayud.oauth.model.po.SystemUser;
-import com.jayud.oauth.model.vo.DepartmentVO;
-import com.jayud.oauth.model.vo.InitComboxVO;
-import com.jayud.oauth.model.vo.LegalEntityVO;
-import com.jayud.oauth.model.vo.SystemRoleVO;
+import com.jayud.oauth.model.vo.*;
 import com.jayud.oauth.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -160,6 +156,17 @@ public class ExternalApiController {
         userRoleRelationService.createRelation(form.getRoleId(),systemUser.getId());
         return ApiResult.ok();
     }
+
+    @ApiOperation(value = "根据主键集合获取系统用户信息")
+    @RequestMapping("/api/getUsersByIds")
+    public CommonResult<List<SystemUserVO>> getUsersByIds(@RequestParam("ids") List<Long> ids) {
+        List<SystemUser> users = this.userService.getByIds(ids);
+        List<SystemUserVO> vo = new ArrayList<>();
+        users.stream().forEach(tmp -> vo.add(ConvertUtil.convert(tmp, SystemUserVO.class)));
+        return CommonResult.success(vo);
+    }
+
+
 
 
 }

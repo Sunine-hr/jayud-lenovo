@@ -492,10 +492,12 @@ public class SystemUserController {
         return CommonResult.success(initComboxs);
     }
 
-    @ApiOperation(value = "根据主键集合获取系统用户信息")
-    @PostMapping("/getByIds")
-    public CommonResult<List<SystemUserVO>> getByIds(@RequestParam("ids") List<Long> ids) {
-        List<SystemUser> users = this.userService.getByIds(ids);
+    @ApiOperation(value = "获取启用系统用户")
+    @RequestMapping("/getEnableUser")
+    public CommonResult<List<SystemUserVO>> getEnableUser() {
+        Map<String,Object> map=new HashMap<>(1);
+        map.put("status",SystemUserStatusEnum.ON.getCode());
+        List<SystemUser> users = this.userService.findUserByCondition(map);
         List<SystemUserVO> vo = new ArrayList<>();
         users.stream().forEach(tmp -> vo.add(ConvertUtil.convert(tmp, SystemUserVO.class)));
         return CommonResult.success(vo);

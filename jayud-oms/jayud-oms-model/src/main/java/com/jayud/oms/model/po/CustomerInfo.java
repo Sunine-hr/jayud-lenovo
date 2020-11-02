@@ -67,7 +67,13 @@ public class CustomerInfo extends Model<CustomerInfo> {
     private Integer settlementType;
 
     @ApiModelProperty(value = "账期")
-    private Integer accountPeriod;
+    private String accountPeriod;
+
+    @ApiModelProperty(value = "税票种类")
+    private String taxType;
+
+    @ApiModelProperty(value = "税率")
+    private String taxRate;
 
     @ApiModelProperty(value = "等级")
     private Integer estate;

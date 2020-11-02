@@ -5,18 +5,20 @@ import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
-import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
+import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.enums.CustomerInfoStatusEnum;
 import com.jayud.oms.model.enums.RoleKeyEnum;
+import com.jayud.oms.model.po.AuditInfo;
 import com.jayud.oms.model.po.CustomerInfo;
 import com.jayud.oms.model.vo.CustAccountVO;
 import com.jayud.oms.model.vo.CustomerInfoVO;
 import com.jayud.oms.model.vo.InitComboxVO;
+import com.jayud.oms.service.IAuditInfoService;
 import com.jayud.oms.service.ICustomerInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -46,7 +48,7 @@ public class CustomerInfoController {
     private OauthClient oauthClient;
 
     @Autowired
-    private RedisUtils redisUtils;
+    private IAuditInfoService auditInfoService;
 
     @ApiOperation(value = "查询客户列表")
     @PostMapping(value = "/findCustomerInfoByPage")
@@ -110,30 +112,34 @@ public class CustomerInfoController {
         if(form.getAuditStatus() == null || "".equals(form.getAuditStatus())){
             return CommonResult.error(400,"参数不合法");
         }
+        //记录操作信息
+        AuditInfo auditInfo = new AuditInfo();
+        auditInfo.setExtDesc(SqlConstant.CUSTOMER_INFO);
+        auditInfo.setExtId(form.getId());
+        auditInfo.setCreatedUser(UserOperator.getToken());
+        auditInfo.setAuditComment(form.getAuditComment());
         if("0".equals(form.getAuditStatus())){//审核拒绝
             customerInfo.setAuditStatus(CustomerInfoStatusEnum.AUDIT_FAIL.getCode());
             customerInfo.setAuditComment(form.getAuditComment());
+            auditInfo.setAuditStatus(CustomerInfoStatusEnum.AUDIT_FAIL.getCode());
+            auditInfo.setAuditTypeDesc(CustomerInfoStatusEnum.AUDIT_FAIL.getDesc());
         }else if("1".equals(form.getAuditStatus())){//审核状态
             if(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode().equals(auditStatus)){//客服审核流程
-                if(form.getDepartmentId() == null || "".equals(form.getDepartmentId()) ||
-                   form.getKuId() == null || "".equals(form.getKuId())){
-                    return CommonResult.error(400,"参数不合法");
-                }
-                customerInfo.setDepartmentId(form.getDepartmentId());
-                customerInfo.setKuId(form.getKuId());
                 customerInfo.setAuditStatus(CustomerInfoStatusEnum.CW_WAIT_AUDIT.getCode());
+                auditInfo.setAuditStatus(CustomerInfoStatusEnum.CW_WAIT_AUDIT.getCode());
+                auditInfo.setAuditTypeDesc(CustomerInfoStatusEnum.CW_WAIT_AUDIT.getDesc());
             }else if(CustomerInfoStatusEnum.CW_WAIT_AUDIT.getCode().equals(auditStatus)){//财务审核流程
-                if(form.getSettlementType() == null || form.getAccountPeriod() == null){
-                    return CommonResult.error(400,"参数不合法");
-                }
-                customerInfo.setSettlementType(form.getSettlementType());
-                customerInfo.setAccountPeriod(form.getAccountPeriod());
                 customerInfo.setAuditStatus(CustomerInfoStatusEnum.ZJB_WAIT_AUDIT.getCode());
+                auditInfo.setAuditStatus(CustomerInfoStatusEnum.ZJB_WAIT_AUDIT.getCode());
+                auditInfo.setAuditTypeDesc(CustomerInfoStatusEnum.ZJB_WAIT_AUDIT.getDesc());
             }else if(CustomerInfoStatusEnum.ZJB_WAIT_AUDIT.getCode().equals(auditStatus)){//总经办审核
                 customerInfo.setAuditStatus(CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());
+                auditInfo.setAuditStatus(CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());
+                auditInfo.setAuditTypeDesc(CustomerInfoStatusEnum.AUDIT_SUCCESS.getDesc());
             }
         }
         customerInfoService.updateById(customerInfo);
+        auditInfoService.save(auditInfo);
         return CommonResult.success();
     }
 

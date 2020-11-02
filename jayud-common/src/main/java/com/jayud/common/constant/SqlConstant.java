@@ -28,5 +28,7 @@ public abstract class SqlConstant {
 
     public static final String ORDER_SEND_CARS = "order_send_cars表";
 
+    public static final String CUSTOMER_INFO = "customer_info表";
+
 
 }

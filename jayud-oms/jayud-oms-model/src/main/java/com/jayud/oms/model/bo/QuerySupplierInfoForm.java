@@ -25,9 +25,6 @@ public class QuerySupplierInfoForm extends BasePageForm {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "自增ID")
-    private Long id;
-
     @ApiModelProperty(value = "供应商代码")
     private String supplierCode;
 

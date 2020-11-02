@@ -16,9 +16,6 @@ public class QueryProductBizForm extends BasePageForm {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "自增id")
-    private Long id;
-
     @ApiModelProperty(value = "业务类型")
     private String name;
 

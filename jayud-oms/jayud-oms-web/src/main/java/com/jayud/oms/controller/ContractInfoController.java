@@ -2,11 +2,13 @@ package com.jayud.oms.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
-import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
+import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
@@ -19,11 +21,13 @@ import com.jayud.oms.model.enums.CustomerInfoStatusEnum;
 import com.jayud.oms.model.po.ContractInfo;
 import com.jayud.oms.model.po.CustomerInfo;
 import com.jayud.oms.model.po.ProductBiz;
+import com.jayud.oms.model.po.ProductClassify;
 import com.jayud.oms.model.vo.ContractInfoVO;
 import com.jayud.oms.model.vo.InitComboxVO;
 import com.jayud.oms.service.IContractInfoService;
 import com.jayud.oms.service.ICustomerInfoService;
 import com.jayud.oms.service.IProductBizService;
+import com.jayud.oms.service.IProductClassifyService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +62,7 @@ public class ContractInfoController {
     private IProductBizService productBizService;
 
     @Autowired
-    private RedisUtils redisUtils;
+    private IProductClassifyService productClassifyService;
 
     @Autowired
     private FileClient fileClient;
@@ -144,8 +148,8 @@ public class ContractInfoController {
         Map<String,Object> resultMap = new HashMap<>();
         //客户名称
         resultMap.put("customers",initCustomer());
-        //业务类型
-        resultMap.put("productBiz",initProductBiz());
+        //服务类型
+        resultMap.put("productClassify",initProductClassify());
         //法人主体
         resultMap.put("legalEntity",initLegalEntity());
         return CommonResult.success(resultMap);
@@ -193,6 +197,23 @@ public class ContractInfoController {
         return CommonResult.success(initComboxVOS);
     }
 
+
+    @ApiOperation(value = "合同管理-下拉框-服务类型")
+    @PostMapping(value = "/initProductClassify")
+    public CommonResult<List<InitComboxVO>> initProductClassify() {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(SqlConstant.F_ID, CommonConstant.VALUE_0);
+        queryWrapper.eq(SqlConstant.STATUS, CommonConstant.VALUE_1);
+        List<ProductClassify> productClassifies = productClassifyService.list(queryWrapper);
+        List<InitComboxVO> initComboxVOS = new ArrayList<>();
+        for (ProductClassify productClassify : productClassifies) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(productClassify.getId());
+            initComboxVO.setName(productClassify.getName());
+            initComboxVOS.add(initComboxVO);
+        }
+        return CommonResult.success(initComboxVOS);
+    }
 
 
 }

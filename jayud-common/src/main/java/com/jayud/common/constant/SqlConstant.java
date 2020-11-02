@@ -30,5 +30,7 @@ public abstract class SqlConstant {
 
     public static final String CUSTOMER_INFO = "customer_info表";
 
+    public static final String F_ID = "f_id";
+
 
 }

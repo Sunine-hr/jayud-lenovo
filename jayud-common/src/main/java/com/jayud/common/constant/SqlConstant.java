@@ -6,7 +6,7 @@ package com.jayud.common.constant;
  */
 public abstract class SqlConstant {
 
-    public static final String ID = "ID";
+    public static final String ID = "id";
 
     public static final String ORDER_NO = "order_no";
 
@@ -31,6 +31,8 @@ public abstract class SqlConstant {
     public static final String CUSTOMER_INFO = "customer_info表";
 
     public static final String F_ID = "f_id";
+
+    public static final String ID_CODE = "id_code";
 
 
 }

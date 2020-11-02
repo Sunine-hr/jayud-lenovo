@@ -74,7 +74,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         handleTakeAdrForms.addAll(orderTakeAdrForms2);
         for(InputOrderTakeAdrForm inputOrderTakeAdrForm : handleTakeAdrForms){
             //如果收货提货信息都不填,不保存该信息,视为恶意操作
-            if(inputOrderTakeAdrForm.getDeliveryId() == null){
+            if(inputOrderTakeAdrForm.getDeliveryId() != null){
                 orderTakeAdrForms.add(inputOrderTakeAdrForm);
             }
         }

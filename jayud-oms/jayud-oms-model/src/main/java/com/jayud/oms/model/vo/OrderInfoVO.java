@@ -15,6 +15,9 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "订单号")
     private String orderNo;
 
+    @ApiModelProperty(value = "业务类型")
+    private String bizCode;
+
     @ApiModelProperty(value = "进出口类型")
     private String goodsType;
 
@@ -79,16 +82,7 @@ public class OrderInfoVO {
     private Boolean needInputCost;
 
     public String getStatusDesc() {
-        if(OrderStatusEnum.MAIN_1.getCode().equals(this.status)){
-            statusDesc = OrderStatusEnum.MAIN_1.getDesc();
-        }else if(OrderStatusEnum.MAIN_2.getCode().equals(this.status)){
-            statusDesc = OrderStatusEnum.MAIN_2.getDesc();
-        }else if(OrderStatusEnum.MAIN_3.getCode().equals(this.status)){
-            statusDesc = OrderStatusEnum.MAIN_3.getDesc();
-        }else if(OrderStatusEnum.MAIN_4.getCode().equals(this.status)){
-            statusDesc = OrderStatusEnum.MAIN_4.getDesc();
-        }
-        return statusDesc;
+        return OrderStatusEnum.getDesc(this.status);
     }
 
     public String getGoodsTypeDesc() {

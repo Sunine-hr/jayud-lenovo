@@ -124,7 +124,7 @@
         WHERE oc.`main_order_no` = oi.`order_no`
         and oi.`status` = 1
         <if test="form.cmd == 'orderList'">
-            AND oi.`created_user` = #{form.userName}
+            AND oi.`created_user` = #{form.loginUserName}
         </if>
         <if test="form.cmd == 'confirmOrder'">
             AND oc.`status` = 'C_0'

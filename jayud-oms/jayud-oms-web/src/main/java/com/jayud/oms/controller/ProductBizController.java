@@ -69,11 +69,11 @@ public class ProductBizController {
 
     @ApiOperation(value = "根据主键获取业务类型详情,id是业务类型主键")
     @PostMapping(value = "/getProductBizById")
-    public CommonResult getProductBizById(@RequestBody Map<String, Long> map) {
-        Long id = map.get("id");
-        if (id == null) {
+    public CommonResult getProductBizById(@RequestBody Map<String, String> map) {
+        if (StringUtils.isEmpty(map.get("id"))) {
             return CommonResult.error(500, "id is required");
         }
+        Long id =Long.parseLong(map.get("id"));
         ProductBizVO productBizVO = this.productBizService.getById(id);
         return CommonResult.success(productBizVO);
     }

@@ -15,6 +15,7 @@ import com.jayud.mall.model.vo.SystemUserVO;
 import com.jayud.mall.service.ISystemUserRoleRelationService;
 import com.jayud.mall.service.ISystemUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -61,9 +62,14 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     @Override
     public void insertUser(SaveUserForm user) {
+        String pass = "123456";
+        BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
+        String password = bcryptPasswordEncoder.encode(pass.trim());
+
         SystemUser systemUser = ConvertUtil.convert(user, SystemUser.class);
         systemUser.setName(systemUser.getUserName());
-        systemUser.setPassword(Md5Utils.getMD5("123456".getBytes()).toUpperCase());
+//        systemUser.setPassword(Md5Utils.getMD5("123456".getBytes()).toUpperCase()); // MD5
+        systemUser.setPassword(password); // BCryptPasswordEncoder
 
         systemUserMapper.insert(systemUser);
         systemUser.setId(systemUser.getId());

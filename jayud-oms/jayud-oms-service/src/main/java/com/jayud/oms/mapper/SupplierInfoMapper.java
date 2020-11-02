@@ -1,8 +1,14 @@
 package com.jayud.oms.mapper;
 
-import com.jayud.oms.model.po.SupplierInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.oms.model.bo.QueryAuditSupplierInfoForm;
+import com.jayud.oms.model.bo.QuerySupplierInfoForm;
+import com.jayud.oms.model.po.SupplierInfo;
+import com.jayud.oms.model.vo.SupplierInfoVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -15,4 +21,7 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface SupplierInfoMapper extends BaseMapper<SupplierInfo> {
 
+    IPage<SupplierInfoVO> findSupplierInfoByPage(Page page, @Param(value = "form") QuerySupplierInfoForm form);
+
+    IPage<SupplierInfoVO> findAuditSupplierInfoByPage(Page page, @Param(value = "form") QueryAuditSupplierInfoForm form);
 }

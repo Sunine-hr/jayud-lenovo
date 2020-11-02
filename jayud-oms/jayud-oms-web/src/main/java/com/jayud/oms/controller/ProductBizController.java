@@ -11,6 +11,7 @@ import com.jayud.oms.model.vo.ProductBizVO;
 import com.jayud.oms.service.IProductBizService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +28,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/productBiz")
-@Api(tags = "业务类型列表接口")
+@Api(tags = "基础数据业务类型列表接口")
 public class ProductBizController {
 
     @Autowired
@@ -53,12 +54,12 @@ public class ProductBizController {
 
     @ApiOperation(value = "更改启用/禁用业务类型状态,id是业务类型主键")
     @PostMapping(value = "/enableOrDisableProductBiz")
-    public CommonResult enableOrDisableProductBiz(@RequestBody Map<String,Long> map) {
-        Long id = map.get("id");
-        if (id == null) {
+    public CommonResult enableOrDisableProductBiz(@RequestBody Map<String,String> map) {
+
+        if (StringUtils.isEmpty(map.get("id"))) {
             return CommonResult.error(500, "id is required");
         }
-
+        Long id =Long.parseLong(map.get("id"));
         if (this.productBizService.enableOrDisableProductBiz(id)) {
             return CommonResult.success();
         } else {

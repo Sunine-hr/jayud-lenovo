@@ -13,6 +13,7 @@ import com.jayud.oms.model.vo.CostTypeVO;
 import com.jayud.oms.service.ICostTypeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -57,11 +58,11 @@ public class CostTypeController {
 
     @ApiOperation(value = "更改启用/禁用费用类别状态,id是费用类别主键")
     @PostMapping(value = "/enableOrDisableCostType")
-    public CommonResult enableOrDisableCostType(@RequestBody Map<String,Long> map) {
-        Long id = map.get("id");
-        if (id == null) {
+    public CommonResult enableOrDisableCostType(@RequestBody Map<String,String> map) {
+        if (StringUtils.isEmpty(map.get("id"))) {
             return CommonResult.error(500, "id is required");
         }
+        Long id =Long.parseLong(map.get("id"));
         if (this.costTypeService.enableOrDisableCostType(id)) {
             return CommonResult.success();
         } else {
@@ -72,11 +73,11 @@ public class CostTypeController {
     @ApiOperation(value = "根据主键获取费用类别详情,")
     @PostMapping(value = "/getCostTypeById")
     @Validated
-    public CommonResult getCostTypeById(@RequestBody Map<String, Long> map) {
-        Long id = map.get("id");
-        if (id == null) {
+    public CommonResult getCostTypeById(@RequestBody Map<String, String> map) {
+        if (StringUtils.isEmpty(map.get("id"))) {
             return CommonResult.error(500, "id is required");
         }
+        Long id =Long.parseLong(map.get("id"));
         CostTypeVO costTypeVO = this.costTypeService.getById(id);
         return CommonResult.success(costTypeVO);
     }

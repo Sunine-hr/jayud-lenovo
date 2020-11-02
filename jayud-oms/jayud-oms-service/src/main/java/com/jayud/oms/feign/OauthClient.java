@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 @FeignClient(value = "jayud-oauth-web")
 public interface OauthClient {
 
@@ -64,5 +66,7 @@ public interface OauthClient {
     ApiResult saveOrUpdateCustAccount(@RequestBody AddCusAccountForm form);
 
 
+    @RequestMapping(value = "/api/getUsersByIds")
+    ApiResult getUsersByIds(@RequestParam(value = "ids") List<Long> ids);
 
 }

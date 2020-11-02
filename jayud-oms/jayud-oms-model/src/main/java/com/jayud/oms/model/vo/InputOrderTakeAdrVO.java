@@ -54,4 +54,7 @@ public class InputOrderTakeAdrVO {
     @ApiModelProperty(value = "备注")
     private String remarks;
 
+    @ApiModelProperty(value = "入仓号,送货地址特有")
+    private String enterWarehouseNo;
+
 }

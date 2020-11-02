@@ -6,6 +6,7 @@
     <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.QuotationTemplate">
         <id column="id" property="id" />
         <result column="types" property="types" />
+        <result column="sid" property="sid" />
         <result column="names" property="names" />
         <result column="pic_url" property="picUrl" />
         <result column="tid" property="tid" />
@@ -40,6 +41,7 @@
         select
         t.id,
         t.types,
+        t.sid,
         t.`names`,
         t.pic_url,
         t.tid,

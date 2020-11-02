@@ -9,10 +9,7 @@ import com.jayud.mall.service.IQuotationTemplateService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/quotationtemplate")
@@ -28,6 +25,20 @@ public class QuotationTemplateController {
         IPage<QuotationTemplateVO> pageList = quotationTemplateService.findQuotationTemplateByPage(form);
         CommonPageResult<QuotationTemplateVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
+    }
+
+    @ApiOperation(value = "禁用报价模板")
+    @PostMapping(value = "/disabledQuotationTemplate")
+    public CommonResult disabledQuotationTemplate(@RequestParam("id") Long id) {
+        quotationTemplateService.disabledQuotationTemplate(id);
+        return CommonResult.success("禁用报价模板成功！");
+    }
+
+    @ApiOperation(value = "启用报价模板")
+    @PostMapping(value = "/enableQuotationTemplate")
+    public CommonResult enableQuotationTemplate(@RequestParam("id") Long id) {
+        quotationTemplateService.enableQuotationTemplate(id);
+        return CommonResult.success("启用报价模板成功！");
     }
 
 }

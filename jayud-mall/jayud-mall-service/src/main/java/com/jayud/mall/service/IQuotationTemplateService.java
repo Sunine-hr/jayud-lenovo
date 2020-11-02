@@ -22,4 +22,16 @@ public interface IQuotationTemplateService extends IService<QuotationTemplate> {
      * @return
      */
     IPage<QuotationTemplateVO> findQuotationTemplateByPage(QueryQuotationTemplateFrom form);
+
+    /**
+     * 禁用报价模板
+     * @param id
+     */
+    void disabledQuotationTemplate(Long id);
+
+    /**
+     * 启用报价模板
+     * @param id
+     */
+    void enableQuotationTemplate(Long id);
 }

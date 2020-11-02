@@ -35,6 +35,9 @@ public class QuotationTemplate extends Model<QuotationTemplate> {
     @ApiModelProperty(value = "模板类型(1整柜 2散柜)")
     private Integer types;
 
+    @ApiModelProperty(value = "服务分类(service_group sid)")
+    private Integer sid;
+
     @ApiModelProperty(value = "报价名")
     private String names;
 

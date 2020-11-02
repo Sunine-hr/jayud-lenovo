@@ -8,6 +8,7 @@ import com.jayud.mall.model.bo.QueryQuotationTemplateFrom;
 import com.jayud.mall.model.po.QuotationTemplate;
 import com.jayud.mall.model.vo.QuotationTemplateVO;
 import com.jayud.mall.service.IQuotationTemplateService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -20,6 +21,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateMapper, QuotationTemplate> implements IQuotationTemplateService {
+
+    @Autowired
+    QuotationTemplateMapper quotationTemplateMapper;
 
     @Override
     public IPage<QuotationTemplateVO> findQuotationTemplateByPage(QueryQuotationTemplateFrom form) {
@@ -38,5 +42,19 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
         //page.addOrder(OrderItem.desc("oc.id"));
         IPage<QuotationTemplateVO> pageInfo = baseMapper.findQuotationTemplateByPage(page, form);
         return pageInfo;
+    }
+
+    @Override
+    public void disabledQuotationTemplate(Long id) {
+        QuotationTemplate quotationTemplate = quotationTemplateMapper.selectById(id);
+        quotationTemplate.setStatus("0");
+        this.saveOrUpdate(quotationTemplate);
+    }
+
+    @Override
+    public void enableQuotationTemplate(Long id) {
+        QuotationTemplate quotationTemplate = quotationTemplateMapper.selectById(id);
+        quotationTemplate.setStatus("1");
+        this.saveOrUpdate(quotationTemplate);
     }
 }

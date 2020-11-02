@@ -7,6 +7,7 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONArray;
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.ResultEnum;
@@ -260,24 +261,32 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
             if (hasReceivable) {
                 //应收单会出现一个报关单号对应多个行的情况，一般是因为柜号不一致，要区分计费
                 JSONArray jsonArray = JSONArray.parseArray(receivable);
-                if (CollectionUtil.isNotEmpty(jsonArray)){
-                    customerName = (String) ((com.alibaba.fastjson.JSONObject)jsonArray.get(0)).get("customer_name");
+                if (CollectionUtil.isNotEmpty(jsonArray)) {
+                    customerName = (String) ((com.alibaba.fastjson.JSONObject) jsonArray.get(0)).get("customer_name");
                 }
 
                 sentReceivableStatus = generateKafkaMsg("financeTest", "customs-receivable", receivable);
+            } else {
+                //如果本次推送没有应收数据，需要查看是否存在本单号的应收，如有，要删去
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.set("applyNo", form.getApplyNo());
+                financeClient.checkNRemoveReceivable(JSONUtil.toJsonStr(jsonObject));
             }
             if (hasPayable) {
                 log.debug(String.format("拼装数据完成，开始上传财务数据：customs-payable口..." + payable + "====" + payable));
                 JSONArray jsonArray = JSONArray.parseArray(payable);
-                if (CollectionUtil.isNotEmpty(jsonArray)){
+                if (CollectionUtil.isNotEmpty(jsonArray)) {
                     for (Object o : jsonArray) {
                         Map map = (Map) o;
-                        map.put("customerName",customerName);
+                        map.put("customerName", customerName);
                     }
                 }
-
                 sentPayableStatus = generateKafkaMsg("financeTest", "customs-payable", jsonArray.toJSONString());
-
+            } else {
+                //如果本次推送没有应付数据，需要查看是否存在本单号的应付，如有，要删去
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.set("applyNo", form.getApplyNo());
+                financeClient.checkNRemovePayable(JSONUtil.toJsonStr(jsonObject));
             }
 
             if (!sentPayableStatus || !sentReceivableStatus) {

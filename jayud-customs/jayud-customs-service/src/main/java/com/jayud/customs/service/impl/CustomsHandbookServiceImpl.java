@@ -53,13 +53,27 @@ public class CustomsHandbookServiceImpl implements CustomsHandbookService {
                 Method getGoodName = excelPage.getClass().getMethod("getGoodName");
                 Object invoke = getGoodName.invoke(e);
 
-                Method setMayError = excelPage.getClass().getMethod("setMayError", Boolean.class);
-                Method setReplacement = excelPage.getClass().getMethod("setReplacement", String.class);
+                Method setMayError = null;
+                Method setReplacement = null;
+                try {
+                    setMayError = excelPage.getClass().getMethod("setMayError", Boolean.class);
+                    setReplacement = excelPage.getClass().getMethod("setReplacement", String.class);
+                } catch (NoSuchMethodException noSuchMethodException) {
+//                    noSuchMethodException.printStackTrace();
+                } catch (SecurityException securityException) {
+//                    securityException.printStackTrace();
+                }
 
-                if (null != invoke && blackListMap.containsKey(invoke.toString())) {
+                if (null != invoke && blackListMap.keySet().stream().filter(p -> {
+                    return invoke.toString().contains(p.toString());
+                }).findAny().isPresent()) {
                     //命中黑名单
-                    setMayError.invoke(e, true);
-                    setReplacement.invoke(e, blackListMap.get(invoke.toString()).getReplacement());
+                    if (null != setMayError) {
+                        setMayError.invoke(e, true);
+                    }
+                    if (null != setReplacement) {
+                        setReplacement.invoke(e, blackListMap.get(invoke.toString()).getReplacement());
+                    }
                     return true;
                 } else {
                     //未命中黑名单

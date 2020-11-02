@@ -4,9 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.google.common.collect.Lists;
 import com.jayud.common.UserOperator;
-import com.jayud.common.func.SFunction;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.mapper.SupplierInfoMapper;
 import com.jayud.oms.model.bo.AddSupplierInfoForm;
@@ -30,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -154,9 +151,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
     public List<SupplierInfo> getApprovedSupplier(String... fields) {
         QueryWrapper<SupplierInfo> condition = new QueryWrapper<>();
         if (fields != null) {
-            for (String field : fields) {
-                condition.select(field);
-            }
+            condition.select(fields);
         }
         condition.lambda().eq(SupplierInfo::getStatus, StatusEnum.ENABLE.getCode());
         List<SupplierInfo> supplierInfos = this.baseMapper.selectList(condition);

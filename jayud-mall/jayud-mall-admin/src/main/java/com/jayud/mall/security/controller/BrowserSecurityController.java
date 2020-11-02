@@ -13,6 +13,7 @@ import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,6 +41,12 @@ public class BrowserSecurityController {
     @GetMapping("hello")
     public String hello() {
         return "hello spring security";
+    }
+
+    @ApiOperation(value = "测试")
+    @PostMapping(value = "/hi")
+    public String hi(){
+        return "hi mall admin";
     }
 
     @ApiOperation(value = "登录成功后跳转的地址")

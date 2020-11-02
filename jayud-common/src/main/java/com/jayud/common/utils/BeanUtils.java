@@ -2,10 +2,13 @@ package com.jayud.common.utils;
 
 import com.jayud.common.func.SFunction;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.formula.functions.T;
 
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,15 +23,6 @@ public class BeanUtils {
      */
     private static Map<Class, SerializedLambda> CLASS_LAMDBA_CACHE = new ConcurrentHashMap<>();
 
-
-    public static String[] convertToFieldName(SFunction... fns) {
-        String[] fields = new String[fns.length];
-        for (int i = 0; i < fns.length; i++) {
-            String str = convertToFieldName(fns[i]);
-            fields[i] = str;
-        }
-        return fields;
-    }
 
     /**
      * 转换方法引用为属性名
@@ -48,6 +42,19 @@ public class BeanUtils {
         }
         // 截取get/is之后的字符串并转换首字母为小写
         return StringUtils.toLowerCaseFirstOne(methodName.replace(prefix, ""));
+    }
+
+    public static <T> String[] convertToFieldName(boolean isTableField, SFunction<T>... fns) {
+        String[] fields = new String[fns.length];
+        for (int i = 0; i < fns.length; i++) {
+            String str = convertToFieldName(fns[i]);
+            if (isTableField) {
+                str = StringUtils.humpToUnderline(str);
+            }
+            fields[i] = str;
+
+        }
+        return fields;
     }
 
     /**

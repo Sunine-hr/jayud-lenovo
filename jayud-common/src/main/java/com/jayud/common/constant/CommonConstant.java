@@ -154,4 +154,12 @@ public abstract class CommonConstant {
     public static final String COMMA = ",";
 
     public static final String ID_CODE = "idCode";
+
+    public static final String DEPARTMENT_ID = "departmentId";
+
+    public static final String WORK = "work";
+
+    public static final String DEPARTMENT = "department";
+
+    public static final String ID = "id";
 }

@@ -3,6 +3,7 @@ package com.jayud.oms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
@@ -22,6 +23,7 @@ import com.jayud.oms.service.IAuditInfoService;
 import com.jayud.oms.service.ICustomerInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -164,8 +166,12 @@ public class CustomerInfoController {
     @ApiOperation(value = "客户账号管理-修改/编辑")
     @PostMapping(value = "/saveOrUpdateCusAccountInfo")
     public CommonResult saveOrUpdateCusAccountInfo(@RequestBody AddCusAccountForm form) {
-        oauthClient.saveOrUpdateCustAccount(form);
-        return CommonResult.success();
+        ApiResult result = oauthClient.saveOrUpdateCustAccount(form);
+        if(HttpStatus.SC_OK == result.getCode()){
+            return CommonResult.success();
+        }else {
+            return CommonResult.error(result.getCode(),result.getMsg());
+        }
     }
 
     @ApiOperation(value = "客户账号管理-分页获取数据")

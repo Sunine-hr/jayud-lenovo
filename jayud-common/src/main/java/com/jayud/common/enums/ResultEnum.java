@@ -37,6 +37,8 @@ public enum ResultEnum implements IResultCode {
 
 
     OPR_FAIL(10001, "操作失败"),
+
+    LOGIN_NAME_EXIST(10002,"该登录名已存在"),
     ;
     private Integer code;
     private String message;

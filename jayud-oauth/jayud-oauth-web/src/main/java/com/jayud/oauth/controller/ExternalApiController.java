@@ -1,7 +1,11 @@
 package com.jayud.oauth.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oauth.model.bo.AddCusAccountForm;
 import com.jayud.oauth.model.bo.OprSystemUserForm;
@@ -82,7 +86,9 @@ public class ExternalApiController {
     @ApiOperation(value = "获取法人主体")
     @RequestMapping(value = "/api/findLegalEntity")
     public ApiResult findLegalEntity() {
-        List<LegalEntityVO> legalEntitys = legalEntityService.findLegalEntity(new HashMap<>());
+        Map<String,String> param = new HashMap<>();
+        param.put(SqlConstant.AUDIT_STATUS, CommonConstant.VALUE_2);
+        List<LegalEntityVO> legalEntitys = legalEntityService.findLegalEntity(param);
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (LegalEntityVO legalEntityVO : legalEntitys) {
             InitComboxVO initComboxVO = new InitComboxVO();
@@ -136,6 +142,14 @@ public class ExternalApiController {
     @ApiOperation(value = "新增修改客户账户")
     @RequestMapping("/api/saveOrUpdateCustAccount")
     public ApiResult saveOrUpdateCustAccount(@RequestBody AddCusAccountForm form) {
+        //校验登录名唯一性
+        String newName = form.getName();
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("name",newName);
+        SystemUser oldSystemUser = userService.getOne(queryWrapper);
+        if(oldSystemUser != null){
+            return ApiResult.error(ResultEnum.LOGIN_NAME_EXIST.getCode(),ResultEnum.LOGIN_NAME_EXIST.getMessage());
+        }
         SystemUser systemUser = new SystemUser();
         systemUser.setName(form.getName());
         systemUser.setUserName(form.getUserName());

@@ -2,6 +2,7 @@ package com.jayud.oauth.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.CommonResult;
 import com.jayud.oauth.model.bo.AuditSystemUserForm;
 import com.jayud.oauth.model.bo.OprSystemUserForm;
 import com.jayud.oauth.model.bo.QuerySystemUserForm;
@@ -67,7 +68,7 @@ public interface ISystemUserService extends IService<SystemUser> {
      * 账号管理-删除/新增/修改
      * @param form
      */
-    void oprSystemUser(OprSystemUserForm form);
+    CommonResult oprSystemUser(OprSystemUserForm form);
 
     /**
      * 人员审核总经办

@@ -2,6 +2,7 @@ package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.mall.model.bo.QueryQuotationTemplateFrom;
+import com.jayud.mall.model.bo.QuotationTemplateForm;
 import com.jayud.mall.model.po.QuotationTemplate;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.vo.QuotationTemplateVO;
@@ -34,4 +35,16 @@ public interface IQuotationTemplateService extends IService<QuotationTemplate> {
      * @param id
      */
     void enableQuotationTemplate(Long id);
+
+    /**
+     * 保存报价模板-整柜
+     * @param form
+     */
+    void saveQuotationTemplateFull(QuotationTemplateForm form);
+
+    /**
+     * 保存报价模板-散柜
+     * @param form
+     */
+    void saveQuotationTemplateBulk(QuotationTemplateForm form);
 }

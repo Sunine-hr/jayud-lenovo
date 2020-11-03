@@ -49,14 +49,14 @@ public class QuotationTemplateVO {
     @ApiModelProperty(value = "截亏仓日期")
     private LocalDateTime jkcTime;
 
-    @ApiModelProperty(value = "货物类型(1普货 2特货)")
-    private Integer goodsType;
+    @ApiModelProperty(value = "货物类型(goods_type types=2 id),多个用逗号分隔")
+    private String gid;
 
     @ApiModelProperty(value = "集货仓库(shipping_area id),多个都号分隔")
     private String areaId;
 
-    @ApiModelProperty(value = "报价类型(1整柜 2散柜)")
-    private Integer quoteType;
+    @ApiModelProperty(value = "报价类型(goods_type types=1 id),多个用逗号分隔")
+    private String qid;
 
     @ApiModelProperty(value = "任务分组id(task_group id)")
     private Integer taskId;

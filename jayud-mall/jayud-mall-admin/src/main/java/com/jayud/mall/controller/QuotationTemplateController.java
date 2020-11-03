@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.QueryQuotationTemplateFrom;
+import com.jayud.mall.model.bo.QuotationTemplateForm;
 import com.jayud.mall.model.vo.QuotationTemplateVO;
 import com.jayud.mall.service.IQuotationTemplateService;
 import io.swagger.annotations.Api;
@@ -40,5 +41,20 @@ public class QuotationTemplateController {
         quotationTemplateService.enableQuotationTemplate(id);
         return CommonResult.success("启用报价模板成功！");
     }
+
+    @ApiOperation(value = "添加报价模板-整柜")
+    @PostMapping(value = "saveQuotationTemplateFull")
+    public CommonResult saveQuotationTemplateFull(@RequestBody QuotationTemplateForm form){
+        quotationTemplateService.saveQuotationTemplateFull(form);
+        return CommonResult.success("保存报价模板-整柜，成功！");
+    }
+
+    @ApiOperation(value = "添加报价模板-散柜")
+    @PostMapping(value = "saveQuotationTemplateBulk")
+    public CommonResult saveQuotationTemplateBulk(@RequestBody QuotationTemplateForm form){
+        quotationTemplateService.saveQuotationTemplateBulk(form);
+        return CommonResult.success("保存报价模板-散柜，成功！");
+    }
+
 
 }

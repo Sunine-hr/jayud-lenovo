@@ -3,8 +3,10 @@ package com.jayud.mall.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.QuotationTemplateMapper;
 import com.jayud.mall.model.bo.QueryQuotationTemplateFrom;
+import com.jayud.mall.model.bo.QuotationTemplateForm;
 import com.jayud.mall.model.po.QuotationTemplate;
 import com.jayud.mall.model.vo.QuotationTemplateVO;
 import com.jayud.mall.service.IQuotationTemplateService;
@@ -55,6 +57,18 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
     public void enableQuotationTemplate(Long id) {
         QuotationTemplate quotationTemplate = quotationTemplateMapper.selectById(id);
         quotationTemplate.setStatus("1");
+        this.saveOrUpdate(quotationTemplate);
+    }
+
+    @Override
+    public void saveQuotationTemplateFull(QuotationTemplateForm form) {
+        QuotationTemplate quotationTemplate = ConvertUtil.convert(form, QuotationTemplate.class);
+        this.saveOrUpdate(quotationTemplate);
+    }
+
+    @Override
+    public void saveQuotationTemplateBulk(QuotationTemplateForm form) {
+        QuotationTemplate quotationTemplate = ConvertUtil.convert(form, QuotationTemplate.class);
         this.saveOrUpdate(quotationTemplate);
     }
 }

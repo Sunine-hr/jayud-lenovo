@@ -1,10 +1,7 @@
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.common.util.Md5Utils;
-import com.jayud.mall.model.bo.QueryQuotationTemplateFrom;
-import com.jayud.mall.model.bo.QueryRoleForm;
-import com.jayud.mall.model.bo.QueryUserForm;
-import com.jayud.mall.model.bo.SaveRoleForm;
+import com.jayud.mall.model.bo.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
@@ -218,6 +215,9 @@ public class Test {
         System.out.println(dateTime);
     }
 
+    /**
+     * 查询报价模板
+     */
     @org.junit.Test
     public void test12(){
         QueryQuotationTemplateFrom form = new QueryQuotationTemplateFrom();
@@ -228,6 +228,78 @@ public class Test {
         String json = JSON.toJSONString(form);
         System.out.println(json);
     }
+
+    /**
+     * 保存报价模板-整柜
+     */
+    @org.junit.Test
+    public void test13(){
+        QuotationTemplateForm form = new QuotationTemplateForm();
+        form.setId(1L);
+        form.setTypes(1);//types 模板类型(1整柜 2散柜) 写死1
+        form.setSid(1);//服务分类(service_group sid)
+        form.setNames("美西-海卡大船");//报价名
+        form.setPicUrl("url1,url2,url3");//报价图片，多张用逗号分割
+        form.setTid(1);//运输方式(transport_way id)
+        form.setStartShipment("上海");//起运港
+        form.setDestinationPort("纽约州");//目的港
+        form.setArriveWarehouse("1,2,3,4,5");//可达仓库(fab_warehouse.id),多个用逗号分隔
+        form.setVisibleUid("1,2,3");//可见客户(0所客户，多客户时逗号分隔用户ID)
+        form.setSailTime(LocalDateTime.now());//开船日期
+        form.setCutOffTime(LocalDateTime.now());//截单日期
+        form.setJcTime(LocalDateTime.now());//截仓日期
+        form.setJkcTime(LocalDateTime.now());//截亏仓日期
+        form.setGid("3,4,5");//货物类型(1普货 2特货)
+        form.setAreaId("1,2,3,4,5");//集货仓库(shipping_area id),多个都号分隔
+        form.setQid("14,15");//报价类型(1整柜 2散柜)
+        form.setTaskId(1);//任务分组id(task_group id)
+        form.setRemarks("操作信息");//操作信息
+        form.setStatus("1");//状态(0无效 1有效)
+        form.setUserId(1);//创建人id
+        form.setUserName("admin");//创建人姓名
+        form.setCreateTime(LocalDateTime.now());//创建时间
+        form.setUpdateTime(LocalDateTime.now());//更新时间
+        String json = JSONObject.toJSONString(form);
+        System.out.println(json);
+
+    }
+
+    /**
+     * 保存报价模板-散柜
+     */
+    @org.junit.Test
+    public void test14(){
+        QuotationTemplateForm form = new QuotationTemplateForm();
+        form.setId(3L);
+        form.setTypes(2);//types 模板类型(1整柜 2散柜) 写死2
+        form.setSid(1);//服务分类(service_group sid)
+        form.setNames("美西-海卡大船");//报价名
+        form.setPicUrl("url1,url2,url3");//报价图片，多张用逗号分割
+        form.setTid(1);//运输方式(transport_way id)
+        form.setStartShipment("上海");//起运港
+        form.setDestinationPort("纽约州");//目的港
+        form.setArriveWarehouse("1,2,3,4,5");//可达仓库(fab_warehouse.id),多个用逗号分隔
+        form.setVisibleUid("1,2,3");//可见客户(0所客户，多客户时逗号分隔用户ID)
+        form.setSailTime(LocalDateTime.now());//开船日期
+        form.setCutOffTime(LocalDateTime.now());//截单日期
+        form.setJcTime(LocalDateTime.now());//截仓日期
+        form.setJkcTime(LocalDateTime.now());//截亏仓日期
+        form.setGid("3,4,5");//货物类型(1普货 2特货)
+        form.setAreaId("1,2,3,4,5");//集货仓库(shipping_area id),多个都号分隔
+        form.setQid("14,15");//报价类型(1整柜 2散柜) 写死2
+        form.setTaskId(1);//任务分组id(task_group id)
+        form.setRemarks("操作信息");//操作信息
+        form.setStatus("1");//状态(0无效 1有效)
+        form.setUserId(1);//创建人id
+        form.setUserName("admin");//创建人姓名
+        form.setCreateTime(LocalDateTime.now());//创建时间
+        form.setUpdateTime(LocalDateTime.now());//更新时间
+        String json = JSONObject.toJSONString(form);
+        System.out.println(json);
+
+    }
+
+
 
 
 }

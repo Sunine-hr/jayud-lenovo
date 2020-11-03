@@ -18,9 +18,9 @@
         <result column="cut_off_time" property="cutOffTime" />
         <result column="jc_time" property="jcTime" />
         <result column="jkc_time" property="jkcTime" />
-        <result column="goods_type" property="goodsType" />
+        <result column="gid" property="gid" />
         <result column="area_id" property="areaId" />
-        <result column="quote_type" property="quoteType" />
+        <result column="qid" property="qid" />
         <result column="task_id" property="taskId" />
         <result column="remarks" property="remarks" />
         <result column="status" property="status" />
@@ -52,9 +52,9 @@
         t.sail_time,
         t.cut_off_time,
         t.jc_time	jkc_time,
-        t.goods_type,
+        t.gid,
         t.area_id,
-        t.quote_type,
+        t.qid,
         t.task_id,
         t.remarks,
         t.`status`,

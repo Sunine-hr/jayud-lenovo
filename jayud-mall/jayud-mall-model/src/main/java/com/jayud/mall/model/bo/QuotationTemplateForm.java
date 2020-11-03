@@ -1,38 +1,18 @@
-package com.jayud.mall.model.po;
+package com.jayud.mall.model.bo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
-/**
- * <p>
- * 报价模板
- * </p>
- *
- * @author fachang.mao
- * @since 2020-11-02
- */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value="QuotationTemplate对象", description="报价模板")
-public class QuotationTemplate extends Model<QuotationTemplate> {
-
-    private static final long serialVersionUID = 1L;
+public class QuotationTemplateForm {
 
     @ApiModelProperty(value = "自增id")
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     @ApiModelProperty(value = "模板类型(1整柜 2散柜)")
+//    @NotEmpty(message = "模板类型")
     private Integer types;
 
     @ApiModelProperty(value = "服务分类(service_group sid)")
@@ -100,11 +80,5 @@ public class QuotationTemplate extends Model<QuotationTemplate> {
 
     @ApiModelProperty(value = "更新时间")
     private LocalDateTime updateTime;
-
-
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
 
 }

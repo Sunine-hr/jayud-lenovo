@@ -114,6 +114,7 @@ public class CargoNameReplaceServiceImpl extends ServiceImpl<CargoNameReplaceMap
     @Override
     public CommonResult deleteCargoNameReplace(Long id) {
         cargoNameReplaceMapper.deleteById(id);
+
         return CommonResult.success("删除`货物名称替换表`，成功！");
     }
 

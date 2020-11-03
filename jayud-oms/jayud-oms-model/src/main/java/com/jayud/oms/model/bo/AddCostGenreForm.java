@@ -30,11 +30,11 @@ public class AddCostGenreForm extends Model<AddCostGenreForm> {
     private Long id;
 
     @ApiModelProperty(value = "费用类型代码", required = true)
-    @NotEmpty(message = "idCode is required")
+    @NotEmpty(message = "code is required")
     private String code;
 
     @ApiModelProperty(value = "费用类型名称", required = true)
-    @NotEmpty(message = "idCode is required")
+    @NotEmpty(message = "name is required")
     private String name;
 
     @ApiModelProperty(value = "描述")

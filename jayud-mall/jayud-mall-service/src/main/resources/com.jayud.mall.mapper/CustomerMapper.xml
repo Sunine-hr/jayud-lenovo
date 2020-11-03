@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.CustomerMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.Customer">
+        <id column="id" property="id" />
+        <result column="bs_user_id" property="bsUserId" />
+        <result column="name_cn" property="nameCn" />
+        <result column="passwd" property="passwd" />
+        <result column="phone" property="phone" />
+        <result column="status" property="status" />
+        <result column="level" property="level" />
+        <result column="origin" property="origin" />
+        <result column="create_date" property="createDate" />
+        <result column="company" property="company" />
+        <result column="audit_status" property="auditStatus" />
+        <result column="code" property="code" />
+        <result column="name_en" property="nameEn" />
+        <result column="pay_passwd" property="payPasswd" />
+        <result column="pay_type" property="payType" />
+        <result column="currency" property="currency" />
+        <result column="salesman_id" property="salesmanId" />
+        <result column="user_name" property="userName" />
+        <result column="address" property="address" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, bs_user_id, name_cn, passwd, phone, status, level, origin, create_date, company, audit_status, code, name_en, pay_passwd, pay_type, currency, salesman_id, user_name, address
+    </sql>
+
+</mapper>

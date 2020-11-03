@@ -3,7 +3,7 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
-import com.jayud.mall.model.bo.QueryQuotationTemplateFrom;
+import com.jayud.mall.model.bo.QueryQuotationTemplateForm;
 import com.jayud.mall.model.bo.QuotationTemplateForm;
 import com.jayud.mall.model.vo.QuotationTemplateVO;
 import com.jayud.mall.service.IQuotationTemplateService;
@@ -20,9 +20,9 @@ public class QuotationTemplateController {
     @Autowired
     IQuotationTemplateService quotationTemplateService;
 
-    @ApiOperation(value = "分页查询报价模板模板")
+    @ApiOperation(value = "分页查询报价模板")
     @PostMapping("/findQuotationTemplateByPage")
-    public CommonResult<CommonPageResult<QuotationTemplateVO>> findQuotationTemplateByPage(@RequestBody QueryQuotationTemplateFrom form) {
+    public CommonResult<CommonPageResult<QuotationTemplateVO>> findQuotationTemplateByPage(@RequestBody QueryQuotationTemplateForm form) {
         IPage<QuotationTemplateVO> pageList = quotationTemplateService.findQuotationTemplateByPage(form);
         CommonPageResult<QuotationTemplateVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);

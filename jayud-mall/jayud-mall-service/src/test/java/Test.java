@@ -220,7 +220,7 @@ public class Test {
      */
     @org.junit.Test
     public void test12(){
-        QueryQuotationTemplateFrom form = new QueryQuotationTemplateFrom();
+        QueryQuotationTemplateForm form = new QueryQuotationTemplateForm();
         form.setNames("美西-海卡大船");
         form.setSailTime(LocalDateTime.now());
         form.setCutOffTime(LocalDateTime.now());
@@ -298,8 +298,6 @@ public class Test {
         System.out.println(json);
 
     }
-
-
 
 
 }

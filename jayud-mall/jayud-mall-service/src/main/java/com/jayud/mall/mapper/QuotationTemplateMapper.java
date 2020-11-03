@@ -2,7 +2,7 @@ package com.jayud.mall.mapper;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.jayud.mall.model.bo.QueryQuotationTemplateFrom;
+import com.jayud.mall.model.bo.QueryQuotationTemplateForm;
 import com.jayud.mall.model.po.QuotationTemplate;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.vo.QuotationTemplateVO;
@@ -21,5 +21,5 @@ import org.springframework.stereotype.Component;
 @Component
 public interface QuotationTemplateMapper extends BaseMapper<QuotationTemplate> {
 
-    IPage<QuotationTemplateVO> findQuotationTemplateByPage(Page<QuotationTemplateVO> page, QueryQuotationTemplateFrom form);
+    IPage<QuotationTemplateVO> findQuotationTemplateByPage(Page<QuotationTemplateVO> page, QueryQuotationTemplateForm form);
 }

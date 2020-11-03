@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.QuotationTemplateMapper;
-import com.jayud.mall.model.bo.QueryQuotationTemplateFrom;
+import com.jayud.mall.model.bo.QueryQuotationTemplateForm;
 import com.jayud.mall.model.bo.QuotationTemplateForm;
 import com.jayud.mall.model.po.QuotationTemplate;
 import com.jayud.mall.model.vo.QuotationTemplateVO;
@@ -28,7 +28,7 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
     QuotationTemplateMapper quotationTemplateMapper;
 
     @Override
-    public IPage<QuotationTemplateVO> findQuotationTemplateByPage(QueryQuotationTemplateFrom form) {
+    public IPage<QuotationTemplateVO> findQuotationTemplateByPage(QueryQuotationTemplateForm form) {
         //处理时间区间
         if(form.getSailTime() != null){
             form.setSailTimeStart(form.getSailTime().toLocalDate().toString() + " 00:00:00");

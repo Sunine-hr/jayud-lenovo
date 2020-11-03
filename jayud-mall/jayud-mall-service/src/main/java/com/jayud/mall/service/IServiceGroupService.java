@@ -1,7 +1,10 @@
 package com.jayud.mall.service;
 
-import com.jayud.mall.model.po.ServiceGroup;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.bo.ServiceGroupForm;
+import com.jayud.mall.model.po.ServiceGroup;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +15,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2020-11-03
  */
 public interface IServiceGroupService extends IService<ServiceGroup> {
+
+    /**
+     * 查询报价服务组List
+     */
+    List<ServiceGroup> findServiceGroup(ServiceGroupForm form);
 
 }

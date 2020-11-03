@@ -36,7 +36,7 @@
     </sql>
 
     <!--查询报价模板并分页-->
-    <select id="findQuotationTemplateByPage" parameterType="com.jayud.mall.model.bo.QueryQuotationTemplateFrom"
+    <select id="findQuotationTemplateByPage" parameterType="com.jayud.mall.model.bo.QueryQuotationTemplateForm"
             resultType="com.jayud.mall.model.vo.QuotationTemplateVO" >
         select
         t.id,

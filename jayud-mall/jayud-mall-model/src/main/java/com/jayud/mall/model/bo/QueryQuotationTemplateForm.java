@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Data
 @ApiModel(value = "查询报价模板参数")
-public class QueryQuotationTemplateFrom extends BasePageForm{
+public class QueryQuotationTemplateForm extends BasePageForm{
 
     @ApiModelProperty(value = "报价名")
     private String names;

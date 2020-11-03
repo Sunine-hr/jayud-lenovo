@@ -1,13 +1,15 @@
 package com.jayud.mall.model.po;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
-import java.time.LocalDateTime;
-import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -44,9 +46,11 @@ public class ServiceGroup extends Model<ServiceGroup> {
     private Integer cargoType;
 
     @ApiModelProperty(value = "描述")
+    @TableField("`describe`")
     private String describe;
 
     @ApiModelProperty(value = "状态(0无效 1有效)")
+    @TableField("`status`")
     private String status;
 
     @ApiModelProperty(value = "创建用户id")
@@ -56,7 +60,7 @@ public class ServiceGroup extends Model<ServiceGroup> {
     private String userName;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime  createTime;
+    private LocalDateTime createTime;
 
 
     @Override

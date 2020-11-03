@@ -1,15 +1,11 @@
 package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.oms.model.bo.AddCostInfoForm;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.bo.AddCostTypeForm;
-import com.jayud.oms.model.bo.QueryCostInfoForm;
 import com.jayud.oms.model.bo.QueryCostTypeForm;
 import com.jayud.oms.model.po.CostType;
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.oms.model.vo.CostInfoVO;
 import com.jayud.oms.model.vo.CostTypeVO;
-import com.jayud.oms.model.vo.ProductBizVO;
 
 import java.util.List;
 
@@ -56,4 +52,10 @@ public interface ICostTypeService extends IService<CostType> {
      * @return
      */
     boolean enableOrDisableCostType(Long id);
+
+    /**
+     * 查询所有启用费用类别
+     * @return
+     */
+    List<CostType> getEnableCostType();
 }

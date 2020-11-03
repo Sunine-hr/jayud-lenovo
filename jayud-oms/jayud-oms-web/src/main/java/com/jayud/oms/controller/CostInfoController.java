@@ -5,9 +5,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.model.bo.AddCostInfoForm;
-import com.jayud.oms.model.bo.DeleteForm;
 import com.jayud.oms.model.bo.QueryCostInfoForm;
+import com.jayud.oms.model.po.CostInfo;
 import com.jayud.oms.model.vo.CostInfoVO;
 import com.jayud.oms.service.ICostInfoService;
 import io.swagger.annotations.Api;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -62,7 +65,7 @@ public class CostInfoController {
         if (StringUtils.isEmpty(map.get("id"))) {
             return CommonResult.error(500, "id is required");
         }
-        Long id =Long.parseLong(map.get("id"));
+        Long id = Long.parseLong(map.get("id"));
         if (this.costInfoService.enableOrDisableCostInfo(id)) {
             return CommonResult.success();
         } else {
@@ -77,8 +80,16 @@ public class CostInfoController {
         if (StringUtils.isEmpty(map.get("id"))) {
             return CommonResult.error(500, "id is required");
         }
-        Long id =Long.parseLong(map.get("id"));
-        CostInfoVO costInfoVO = this.costInfoService.getById(id);
+        Long id = Long.parseLong(map.get("id"));
+        CostInfo costInfo = this.costInfoService.getById(id);
+        String[] tmps = costInfo.getCids().split(",");
+
+        List<Long> list = new ArrayList<>();
+        for (String tmp : tmps) {
+            list.add(Long.parseLong(tmp));
+        }
+        CostInfoVO costInfoVO = ConvertUtil.convert(costInfo, CostInfoVO.class);
+        costInfoVO.setCids(list);
         return CommonResult.success(costInfoVO);
     }
 }

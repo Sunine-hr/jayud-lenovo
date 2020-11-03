@@ -5,13 +5,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.model.bo.AddCostGenreForm;
 import com.jayud.oms.model.bo.QueryCostGenreForm;
 import com.jayud.oms.model.po.CostGenre;
 import com.jayud.oms.model.vo.CostGenreVO;
 import com.jayud.oms.service.ICostGenreService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -85,9 +86,14 @@ public class CostGenreController {
 
     @ApiOperation("查询所用启用费用类型")
     @PostMapping("/getEnableCostGenre")
-    public CommonResult<List<CostGenre>> getEnableCostGenre() {
+    public CommonResult<List<CostGenreVO>> getEnableCostGenre() {
         List<CostGenre> costGenres = this.costGenreService.getEnableCostGenre();
-        return CommonResult.success(costGenres);
+        List<CostGenreVO> list=new ArrayList<>();
+        for (CostGenre costGenre : costGenres) {
+            CostGenreVO costGenreVO = ConvertUtil.convert(costGenre, CostGenreVO.class);
+            list.add(costGenreVO);
+        }
+        return CommonResult.success(list);
     }
 }
 

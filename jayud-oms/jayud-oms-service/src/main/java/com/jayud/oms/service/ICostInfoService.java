@@ -1,14 +1,11 @@
 package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.bo.AddCostInfoForm;
-import com.jayud.oms.model.bo.QueryContractInfoForm;
 import com.jayud.oms.model.bo.QueryCostInfoForm;
 import com.jayud.oms.model.po.CostInfo;
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.oms.model.vo.ContractInfoVO;
 import com.jayud.oms.model.vo.CostInfoVO;
-import com.jayud.oms.model.vo.CostTypeVO;
 
 import java.util.List;
 
@@ -47,7 +44,7 @@ public interface ICostInfoService extends IService<CostInfo> {
     /**
      * 根据id查询费用名称
      */
-    CostInfoVO getById(Long id);
+//    CostInfoVO getById(Long id);
 
     /**
      * 更改启用/禁用状态

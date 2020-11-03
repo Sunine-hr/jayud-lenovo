@@ -1,6 +1,7 @@
 package com.jayud.oms.model.bo;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.jayud.oms.model.vo.CostTypeVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -8,6 +9,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -37,7 +39,11 @@ public class AddCostInfoForm {
     private String remarks;
 
     @ApiModelProperty(value = "费用类型id集合，用','隔开", required = true)
-    @NotEmpty(message = "cids is required")
-    private String cids;
+    private List<Long> cids;
+
+//    @ApiModelProperty(value = "费用类别")
+//    @NotNull(message = "cids is required")
+//    private List<CostTypeVO> costTypeVOs;
+
 
 }

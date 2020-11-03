@@ -88,7 +88,13 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
      */
     @Override
     public boolean saveOrUpdateCostInfo(AddCostInfoForm form) {
+        StringBuilder sb = new StringBuilder();
+        for (Long cid : form.getCids()) {
+            sb.append(cid).append(",");
+        }
         CostInfo costInfo = ConvertUtil.convert(form, CostInfo.class);
+        costInfo.setCids(sb.substring(0, sb.length() - 1));
+
         if (Objects.isNull(costInfo.getId())) {
             costInfo.setCreateTime(LocalDateTime.now())
                     .setCreateUser(UserOperator.getToken());
@@ -101,17 +107,18 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
         }
     }
 
-    /**
-     * 根据id查询费用名称
-     */
-    @Override
-    public CostInfoVO getById(Long id) {
-        CostInfo costInfo = this.baseMapper.selectById(id);
-        return ConvertUtil.convert(costInfo, CostInfoVO.class);
-    }
+//    /**
+//     * 根据id查询费用名称
+//     */
+//    @Override
+//    public CostInfoVO getById(Long id) {
+//        CostInfo costInfo = this.baseMapper.selectById(id);
+//        return ConvertUtil.convert(costInfo, CostInfoVO.class);
+//    }
 
     /**
      * 更改启用/禁用状态
+     *
      * @param id
      * @return
      */

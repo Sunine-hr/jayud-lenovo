@@ -1,25 +1,28 @@
 package com.jayud.oms.controller;
 
 
-import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
-import com.jayud.oms.model.bo.*;
+import com.jayud.common.utils.ConvertUtil;
+import com.jayud.oms.model.bo.AddCostTypeForm;
+import com.jayud.oms.model.bo.QueryCostTypeForm;
 import com.jayud.oms.model.po.CostType;
-import com.jayud.oms.model.vo.CostInfoVO;
 import com.jayud.oms.model.vo.CostTypeVO;
 import com.jayud.oms.service.ICostTypeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -72,7 +75,6 @@ public class CostTypeController {
 
     @ApiOperation(value = "根据主键获取费用类别详情,")
     @PostMapping(value = "/getCostTypeById")
-    @Validated
     public CommonResult getCostTypeById(@RequestBody Map<String, String> map) {
         if (StringUtils.isEmpty(map.get("id"))) {
             return CommonResult.error(500, "id is required");
@@ -80,6 +82,19 @@ public class CostTypeController {
         Long id =Long.parseLong(map.get("id"));
         CostTypeVO costTypeVO = this.costTypeService.getById(id);
         return CommonResult.success(costTypeVO);
+    }
+
+
+    @ApiOperation(value = "查询所有启用费用类别")
+    @PostMapping(value = "/getEnableCostType")
+    public CommonResult<List<CostTypeVO>> getEnableCostType() {
+        List<CostType> costTypes = this.costTypeService.getEnableCostType();
+        List<CostTypeVO> list=new ArrayList<>();
+        for (CostType costType : costTypes) {
+            CostTypeVO costGenreVO = ConvertUtil.convert(costType, CostTypeVO.class);
+            list.add(costGenreVO);
+        }
+        return CommonResult.success(list);
     }
 }
 

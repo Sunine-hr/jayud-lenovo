@@ -4,10 +4,12 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.jayud.common.CommonResult;
 import com.jayud.finance.enums.FormIDEnum;
 import com.jayud.finance.po.*;
 import com.jayud.finance.service.BaseService;
 import com.jayud.finance.service.CustomsFinanceService;
+import com.jayud.finance.service.PreloadService;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +39,24 @@ public class MsgApiProcessorController {
     @Autowired
     BaseService baseService;
     @Autowired
+    PreloadService preloadService;
+    @Autowired
     CustomsFinanceService customsFinanceService;
     @Value("${kingdee.settings.allow-delete-push}")
     Boolean allowDeletePush;
+
+    /**
+     * 刷新公司和费用项目缓存
+     *
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.POST, value = "/yunbaoguan/infp/flush")
+    @ApiOperation(value = "刷新公司和费用项目缓存")
+    public CommonResult flushInfo() {
+        preloadService.refreshCompanyRelationMap();
+        preloadService.refreshFeeRelationMap();
+        return CommonResult.success();
+    }
 
     @Deprecated
     @RequestMapping(path = "/yunbaoguan/invoice/remove", method = RequestMethod.POST)
@@ -171,6 +188,59 @@ public class MsgApiProcessorController {
         }
     }
 
+    @RequestMapping(method = RequestMethod.POST, value = "/yunbaoguan/receivable/delete")
+    @ApiOperation(value = "删除应收单")
+    public Boolean checkNRemoveReceivable(@RequestBody String param) {
+        //注意！！此处务必要验证applyNo不为空，否则会因为模糊查询""而将所有数据删除
+        String applyNo = MapUtil.getStr(JSONObject.parseObject(param).getInnerMap(), "applyNo");
+        if (applyNo.equals("")) {
+            return true;
+        }
+        Map<FormIDEnum, List<String>> existingMap = checkForReceivableDuplicateOrder(applyNo);
+        YunbaoguanPushProperties properties = new YunbaoguanPushProperties();
+        properties.setApplyNo(applyNo);
+        properties.setExistingOrders(existingMap);
+        properties = customsFinanceService.removeSpecifiedInvoice(properties);
+        properties.getUnRemovableOrders().entrySet()
+                .stream()
+                .filter(e -> {//类型中订单号不为空的才可以继续
+                    return CollectionUtil.isNotEmpty(e.getValue());
+                })
+                .forEach(e -> {//遍历内容不为空的类型，打印错误信息
+                    e.getValue().forEach(p -> {
+                        log.error("报关单号{} 的 {} 类型业务订单号 {} 状态不可删除 ", applyNo, e.getKey(), e.getValue());
+                    });
+                });
+
+        return true;
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/yunbaoguan/payable/delete")
+    @ApiOperation(value = "删除应付单")
+    public Boolean checkNRemovePayable(@RequestBody String param) {
+        //注意！！此处务必要验证applyNo不为空，否则会因为模糊查询""而将所有数据删除
+        String applyNo = MapUtil.getStr(JSONObject.parseObject(param).getInnerMap(), "applyNo");
+        if (applyNo.equals("")) {
+            return true;
+        }
+        Map<FormIDEnum, List<String>> existingMap = checkForPayableDuplicateOrder(applyNo);
+        YunbaoguanPushProperties properties = new YunbaoguanPushProperties();
+        properties.setApplyNo(applyNo);
+        properties.setExistingOrders(existingMap);
+        properties = customsFinanceService.removeSpecifiedInvoice(properties);
+        properties.getUnRemovableOrders().entrySet()
+                .stream()
+                .filter(e -> {//类型中订单号不为空的才可以继续
+                    return CollectionUtil.isNotEmpty(e.getValue());
+                })
+                .forEach(e -> {//遍历内容不为空的类型，打印错误信息
+                    e.getValue().forEach(p -> {
+                        log.error("报关单号{} 的 {} 类型业务订单号 {} 状态不可删除 ", applyNo, e.getKey(), e.getValue());
+                    });
+                });
+        return true;
+    }
+
 
     /**
      * 校验应收订单存在
@@ -211,7 +281,6 @@ public class MsgApiProcessorController {
         }
         return result;
     }
-
 
 
 }

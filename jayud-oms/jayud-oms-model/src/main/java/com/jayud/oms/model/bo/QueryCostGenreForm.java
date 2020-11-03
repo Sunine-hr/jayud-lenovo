@@ -25,9 +25,6 @@ public class QueryCostGenreForm extends BasePageForm {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "主键")
-    private Long id;
-
     @ApiModelProperty(value = "费用类型代码")
     private String code;
 

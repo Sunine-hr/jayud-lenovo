@@ -70,15 +70,18 @@ public class CostTypeServiceImpl extends ServiceImpl<CostTypeMapper, CostType> i
         CostType costType = ConvertUtil.convert(form, CostType.class);
 
         //判断是否代收代垫， 是-费用类别后面加-Y，否则-N
-        String codeName = form.getIsPayCollection() ? form.getCodeName() + "-Y" : form.getCodeName() + "-N";
-        costType.setCodeName(codeName);
+        String sign = form.getIsPayCollection() ? "-Y" : "-N";
 
         if (Objects.isNull(costType.getId())) {
-            costType.setCreateTime(LocalDateTime.now())
+            costType
+                    .setCodeName(form.getCodeName() + sign)
+                    .setCreateTime(LocalDateTime.now())
                     .setCreateUser(UserOperator.getToken());
             return this.save(costType);
         } else {
-            costType.setCode(null)
+            String str = form.getCodeName().substring(0, form.getCodeName().indexOf("-"));
+            costType.setCodeName(str + sign)
+                    .setCode(null)
                     .setUpdateTime(LocalDateTime.now())
                     .setUpdateUser(UserOperator.getToken());
             return this.updateById(costType);
@@ -96,6 +99,7 @@ public class CostTypeServiceImpl extends ServiceImpl<CostTypeMapper, CostType> i
 
     /**
      * 更改启用/禁用状态
+     *
      * @param id
      * @return
      */
@@ -115,4 +119,17 @@ public class CostTypeServiceImpl extends ServiceImpl<CostTypeMapper, CostType> i
     }
 
 
+    /**
+     * 获取启用费用类别
+     */
+    @Override
+    public List<CostType> getEnableCostType() {
+        QueryWrapper<CostType> condition = new QueryWrapper<>();
+        condition.lambda().eq(CostType::getStatus, StatusEnum.ENABLE.getCode());
+        return this.baseMapper.selectList(condition);
+    }
+
+//    public static void main(String[] args) {
+//        System.out.print( "提交测试-Y".substring(0, "提交测试-Y".indexOf("-")));
+//    }
 }

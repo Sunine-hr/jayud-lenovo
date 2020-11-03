@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.exceptions.ApiException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.enums.ResultEnum;
@@ -158,9 +159,17 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     }
 
     @Override
-    public void oprSystemUser(OprSystemUserForm form) {
+    public CommonResult oprSystemUser(OprSystemUserForm form) {
         if("update".equals(form.getCmd())) {//修改
             SystemUser systemUser = ConvertUtil.convert(form,SystemUser.class);
+            //校验登录名的唯一性
+            String newName = systemUser.getName();
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("name",newName);
+            List<SystemUser> systemUsers = baseMapper.selectList(queryWrapper);
+            if(systemUsers != null && systemUsers.size() > 0){
+                return CommonResult.error(ResultEnum.LOGIN_NAME_EXIST.getCode(),ResultEnum.LOGIN_NAME_EXIST.getMessage());
+            }
             systemUser.setPassword("E10ADC3949BA59ABBE56E057F20F883E");//默认密码为:123456
             systemUser.setStatus(1);//账户为启用状态
             systemUser.setAuditStatus(1);
@@ -177,6 +186,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             systemUser.setStatus(0);
             baseMapper.updateById(systemUser);
         }
+        return CommonResult.success();
     }
 
     @Override

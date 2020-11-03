@@ -40,7 +40,7 @@ public class StringUtils {
     public static String getCompanyName(String companyName) {
         String prefix = null; //前缀
         String suffix = null; //后缀
-        companyName = companyName.replaceAll("（", StringUtil.EMPTY_STRING).replaceAll("）",StringUtil.EMPTY_STRING);
+        companyName = companyName.replaceAll("（", StringUtil.EMPTY_STRING).replaceAll("）", StringUtil.EMPTY_STRING);
         if (org.apache.commons.lang.StringUtils.isNotBlank(companyName)) {
             if (companyName.length() <= 6 && companyName.length() >= 2) {
                 suffix = companyName.substring(companyName.length() - 2);
@@ -123,28 +123,29 @@ public class StringUtils {
 
     /**
      * 生成规定的n位随机不重复的数
+     *
      * @param randomNum 随机数长度
      * @return
      */
-    public static String loadNum(String head,int randomNum){
+    public static String loadNum(String head, int randomNum) {
         int roandm = 0;
-        char [] str = {'0','1','2','3','4','5','6','7','8','9'};
+        char[] str = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
         StringBuffer stringBuffer = new StringBuffer("");
         Random r = new Random();
-        for(int count = 0;count < randomNum;count++){
+        for (int count = 0; count < randomNum; count++) {
             //生成10以内的随机整数
             roandm = Math.abs(r.nextInt(10));
-            if(roandm>=0 || roandm<str.length){
-                stringBuffer.append(""+str[roandm]);
+            if (roandm >= 0 || roandm < str.length) {
+                stringBuffer.append("" + str[roandm]);
             }
         }
-        return head+""+stringBuffer.toString();
+        return head + "" + stringBuffer.toString();
     }
 
-    public static String generate(){
-        char[] letters = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
-                'K', 'L', 'M', 'N', 'P','Q', 'R', 'S', 'T', 'U', 'V',
-                'W', 'X', 'Y', 'Z','0','1','2','3','4','5','6','7','8','9'};
+    public static String generate() {
+        char[] letters = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+                'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
+                'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
         boolean[] flags = new boolean[letters.length];
         char[] chs = new char[6];
         for (int i = 0; i < chs.length; i++) {
@@ -162,19 +163,20 @@ public class StringUtils {
 
     /**
      * 将附件集合处理成字符串逗号拼接
+     *
      * @param fileViewList
      * @return
      */
-    public static String getFileStr(List<FileView> fileViewList){
+    public static String getFileStr(List<FileView> fileViewList) {
         String fileStr = "";
-        if(fileViewList == null || fileViewList.size() == 0){
+        if (fileViewList == null || fileViewList.size() == 0) {
             return fileStr;
         }
         StringBuilder sb = new StringBuilder();
         for (FileView fileView : fileViewList) {
             sb.append(fileView.getRelativePath()).append(",");
         }
-        if(!"".equals(String.valueOf(sb))) {
+        if (!"".equals(String.valueOf(sb))) {
             fileStr = sb.substring(0, sb.length() - 1);
         }
         return fileStr;
@@ -182,19 +184,20 @@ public class StringUtils {
 
     /**
      * 将附件集合处理成字符串逗号拼接
+     *
      * @param fileViewList
      * @return
      */
-    public static String getFileNameStr(List<FileView> fileViewList){
+    public static String getFileNameStr(List<FileView> fileViewList) {
         String fileNameStr = "";
-        if(fileViewList == null || fileViewList.size() == 0){
+        if (fileViewList == null || fileViewList.size() == 0) {
             return fileNameStr;
         }
         StringBuilder sb = new StringBuilder();
         for (FileView fileView : fileViewList) {
             sb.append(fileView.getFileName()).append(",");
         }
-        if(!"".equals(String.valueOf(sb))) {
+        if (!"".equals(String.valueOf(sb))) {
             fileNameStr = sb.substring(0, sb.length() - 1);
         }
         return fileNameStr;
@@ -202,12 +205,13 @@ public class StringUtils {
 
     /**
      * 把字符串解析成文件数组
+     *
      * @param fileStr
      * @return
      */
-    public static List<FileView> getFileViews(String fileStr,String fileNameStr,String prePath){
+    public static List<FileView> getFileViews(String fileStr, String fileNameStr, String prePath) {
         List<FileView> fileViews = new ArrayList<>();
-        if(fileStr != null && !"".equals(fileStr) && fileNameStr != null && !"".equals(fileNameStr)){
+        if (fileStr != null && !"".equals(fileStr) && fileNameStr != null && !"".equals(fileNameStr)) {
             String[] fileNameList = fileNameStr.split(",");
             String[] fileList = fileStr.split(",");
             for (int i = 0; i < fileList.length; i++) {
@@ -220,6 +224,42 @@ public class StringUtils {
         }
         return fileViews;
     }
+
+    /**
+     * 首字母转小写
+     *
+     * @param s
+     * @return
+     */
+    public static String toLowerCaseFirstOne(String s) {
+        if (Character.isLowerCase(s.charAt(0))) {
+            return s;
+        } else {
+            return Character.toLowerCase(s.charAt(0)) + s.substring(1);
+        }
+    }
+
+    /***
+     * 驼峰命名转为下划线命名
+     *
+     * @param para
+     *        驼峰命名的字符串
+     */
+
+    public static String humpToUnderline(String para) {
+        StringBuilder sb = new StringBuilder(para);
+        int temp = 0;//定位
+        if (!para.contains("_")) {
+            for (int i = 0; i < para.length(); i++) {
+                if (Character.isUpperCase(para.charAt(i))) {
+                    sb.insert(i + temp, "_");
+                    temp += 1;
+                }
+            }
+        }
+        return sb.toString().toUpperCase();
+    }
+
 
     public static void main(String[] args) {
     }

@@ -1,6 +1,7 @@
 package com.jayud.common.utils.excel;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.poi.excel.ExcelBase;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
@@ -10,6 +11,7 @@ import com.jayud.common.exception.Asserts;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.springframework.lang.NonNull;
 import org.springframework.web.multipart.MultipartFile;
@@ -114,7 +116,7 @@ public class ExcelUtils {
                                 colValue = items.get(col - 1);
                             } catch (Exception exception) {
 //                                exception.printStackTrace();
-                               log.error(exception.getMessage());
+                                log.error(exception.getMessage());
                             }
 
                             if (null == setMethod || null == colValue) {
@@ -407,6 +409,8 @@ public class ExcelUtils {
         }
         ExcelWriter bigWriter = ExcelUtil.getBigWriter();
 
+        List<Integer> colCountList = new ArrayList<>();
+
         for (int i = 0; i < sheets.size(); i++) {
             SheetDTO sheet = sheets.get(i);
             if (i == 0) {
@@ -414,6 +418,9 @@ public class ExcelUtils {
             } else {
                 bigWriter.setSheet(sheet.getSheetName());
             }
+
+            Integer colCountInThisPage = 0;
+
             //装载字段名
             Class<T> clz = sheet.getClz();
             Field[] fields = clz.getDeclaredFields();
@@ -425,8 +432,10 @@ public class ExcelUtils {
                     if (StringUtils.isNotEmpty(colProperties.name())) {
                         //标题的别名 addHeaderAlias( [字段名],[别名] )
                         bigWriter.addHeaderAlias(field.getName(), colProperties.name());
+                        colCountInThisPage++;
                     } else {
                         bigWriter.addHeaderAlias(field.getName(), field.getName());
+                        colCountInThisPage++;
                     }
                 }
 
@@ -441,15 +450,17 @@ public class ExcelUtils {
 //                List<T> dataRows = sheet.getData();
                 bigWriter.write(sheet.getData(), true);
             }
+            colCountList.add(colCountInThisPage);
         }
 
 
         List<Sheet> currentSheets = bigWriter.getSheets();
-        for (Sheet currentSheetOrigin : currentSheets) {
+        for (int i = 0; i < currentSheets.size(); i++) {
+            Sheet currentSheetOrigin = currentSheets.get(i);
+
             SXSSFSheet currentSheet = (SXSSFSheet) currentSheetOrigin;
             currentSheet.trackAllColumnsForAutoSizing();
-            int columnCount = bigWriter.getColumnCount();
-            for (int j = 0; j < columnCount; j++) {
+            for (int j = 0; j < colCountList.get(i) - 1; j++) {
                 // 调整每一列宽度
                 currentSheet.autoSizeColumn((short) j);
                 // 解决自动设置列宽中文失效的问题

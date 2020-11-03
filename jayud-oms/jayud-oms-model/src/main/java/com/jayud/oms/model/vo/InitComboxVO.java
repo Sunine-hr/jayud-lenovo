@@ -12,4 +12,7 @@ public class InitComboxVO {
     @ApiModelProperty(value = "值")
     private String name;
 
+    @ApiModelProperty(value = "是否默认")
+    private Boolean isDefault;
+
 }

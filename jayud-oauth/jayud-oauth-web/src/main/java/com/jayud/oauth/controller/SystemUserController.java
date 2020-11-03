@@ -4,20 +4,22 @@ import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oauth.model.bo.*;
 import com.jayud.oauth.model.enums.SystemUserStatusEnum;
 import com.jayud.oauth.model.enums.UserTypeEnum;
-import com.jayud.oauth.model.po.LegalEntity;
-import com.jayud.oauth.model.po.SystemRole;
-import com.jayud.oauth.model.po.SystemRoleMenuRelation;
-import com.jayud.oauth.model.po.SystemUser;
+import com.jayud.oauth.model.po.*;
 import com.jayud.oauth.model.vo.*;
 import com.jayud.oauth.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -233,8 +235,7 @@ public class SystemUserController {
     @ApiOperation(value = "账户管理-删除/修改/新增")
     @PostMapping(value = "/oprAccountSystemUser")
     public CommonResult oprAccountSystemUser(@RequestBody OprSystemUserForm form) {
-        userService.oprSystemUser(form);
-        return CommonResult.success();
+        return userService.oprSystemUser(form);
     }
 
     @ApiOperation(value = "人员审核(总经办)-审核")
@@ -272,7 +273,16 @@ public class SystemUserController {
     @ApiOperation(value = "组织架构界面-删除部门,departmentId传的是部门ID")
     @PostMapping(value = "/delDepartment")
     public CommonResult delDepartment(@RequestBody Map<String, Object> param) {
-        departmentService.removeById(MapUtil.getStr(param, "departmentId"));
+        Long departmentId = Long.valueOf(MapUtil.getStr(param, CommonConstant.DEPARTMENT_ID));
+        List<Long> departmentIds = new ArrayList<>();
+        departmentIds.add(departmentId);
+        List<DepartmentVO> departmentVOS = departmentService.findDepartment(null);
+        List<DepartmentVO> check = new ArrayList<>();
+        handleDepartIds(departmentVOS, departmentId, check);
+        for (DepartmentVO departmentVO : check) {
+            departmentIds.add(departmentVO.getId());
+        }
+        departmentService.removeByIds(departmentIds);
         return CommonResult.success();
     }
 
@@ -492,13 +502,29 @@ public class SystemUserController {
         return CommonResult.success(initComboxs);
     }
 
-    @ApiOperation(value = "根据主键集合获取系统用户信息")
-    @PostMapping("/getByIds")
-    public CommonResult<List<SystemUserVO>> getByIds(@RequestParam("ids") List<Long> ids) {
-        List<SystemUser> users = this.userService.getByIds(ids);
+    @ApiOperation(value = "获取启用系统用户")
+    @RequestMapping("/getEnableUser")
+    public CommonResult<List<SystemUserVO>> getEnableUser() {
+        Map<String,Object> map=new HashMap<>(1);
+        map.put("status",SystemUserStatusEnum.ON.getCode());
+        List<SystemUser> users = this.userService.findUserByCondition(map);
         List<SystemUserVO> vo = new ArrayList<>();
         users.stream().forEach(tmp -> vo.add(ConvertUtil.convert(tmp, SystemUserVO.class)));
         return CommonResult.success(vo);
+    }
+
+    @ApiOperation(value = "账户管理-选择姓名联动出部门和岗位,id=姓名隐藏值")
+    @PostMapping(value = "/initUserWorkInfo")
+    public CommonResult<Map<String, Object>> initUserWorkInfo(@RequestBody Map<String,Object> param) {
+        Long userId = Long.valueOf(MapUtil.getStr(param,CommonConstant.ID));
+        SystemUser systemUser = userService.getById(userId);
+        Map<String, Object> result = new HashMap<>();
+        if(systemUser == null || systemUser.getDepartmentId() == null){
+            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+        }
+        result.put(CommonConstant.WORK, systemUser.getWorkName());
+        result.put(CommonConstant.DEPARTMENT_ID,systemUser.getDepartmentId());
+        return CommonResult.success(result);
     }
 
     /**

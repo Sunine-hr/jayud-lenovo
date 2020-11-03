@@ -34,8 +34,8 @@ public class SupplierInfo extends Model<SupplierInfo> {
     @ApiModelProperty(value = "供应商代码")
     private String supplierCode;
 
-    @ApiModelProperty(value = "产品分类id")
-    private Long productClassifyId;
+    @ApiModelProperty(value = "产品分类id集合（多个用逗号隔开）")
+    private String productClassifyIds;
 
     @ApiModelProperty(value = "供应商名称(中)")
     private String supplierChName;
@@ -78,6 +78,21 @@ public class SupplierInfo extends Model<SupplierInfo> {
 
     @ApiModelProperty(value = "供外使用的认证信息ID")
     private Long extSettingId;
+
+    @ApiModelProperty(value = "结算类型")
+    private String settlementType;
+
+    @ApiModelProperty(value = "账期")
+    private String paymentDay;
+
+    @ApiModelProperty(value = "税票种类型")
+    private String taxReceipt;
+
+    @ApiModelProperty(value = "税率")
+    private String rate;
+
+    @ApiModelProperty(value = "采购员id")
+    private Long buyerId;
 
     @ApiModelProperty(value = "状态(0无效 1有效)")
     private String status;

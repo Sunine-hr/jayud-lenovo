@@ -14,7 +14,6 @@ import com.jayud.tms.mapper.OrderTransportMapper;
 import com.jayud.tms.model.bo.InputOrderTakeAdrForm;
 import com.jayud.tms.model.bo.InputOrderTransportForm;
 import com.jayud.tms.model.bo.QueryOrderTmsForm;
-import com.jayud.tms.model.po.DeliveryAddress;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.*;
@@ -22,7 +21,6 @@ import com.jayud.tms.service.IDeliveryAddressService;
 import com.jayud.tms.service.IOrderSendCarsService;
 import com.jayud.tms.service.IOrderTakeAdrService;
 import com.jayud.tms.service.IOrderTransportService;
-import io.netty.util.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -75,22 +73,14 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         handleTakeAdrForms.addAll(orderTakeAdrForms1);
         handleTakeAdrForms.addAll(orderTakeAdrForms2);
         for(InputOrderTakeAdrForm inputOrderTakeAdrForm : handleTakeAdrForms){
-            //如果收货提货信息的联系人都不填,不保存该信息,视为恶意操作
-            if(!StringUtil.isNullOrEmpty(inputOrderTakeAdrForm.getContacts())){
+            //如果收货提货信息都不填,不保存该信息,视为恶意操作
+            if(inputOrderTakeAdrForm.getDeliveryId() != null){
                 orderTakeAdrForms.add(inputOrderTakeAdrForm);
             }
         }
 
         if(orderTransport.getId() != null){//修改
-            //修改时,先把以前的收货提货地址清空
-            List<Long> ids = new ArrayList<>();
-            for (InputOrderTakeAdrForm inputOrderTakeAdrForm : orderTakeAdrForms) {
-               Long deliveryId = inputOrderTakeAdrForm.getDeliveryId();
-               ids.add(deliveryId);
-            }
-            if(ids.size() > 0) {
-                deliveryAddressService.removeByIds(ids);//删除地址信息
-            }
+            //修改时,先把以前的收货信息清空
             QueryWrapper queryWrapper = new QueryWrapper();
             queryWrapper.eq("order_no",form.getOrderNo());
             orderTakeAdrService.remove(queryWrapper);//删除货物信息
@@ -111,11 +101,6 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         }
         for (InputOrderTakeAdrForm inputOrderTakeAdrForm : orderTakeAdrForms) {
             OrderTakeAdr orderTakeAdr = ConvertUtil.convert(inputOrderTakeAdrForm,OrderTakeAdr.class);
-            DeliveryAddress deliveryAddress = ConvertUtil.convert(inputOrderTakeAdrForm,DeliveryAddress.class);
-            deliveryAddress.setStatus(Integer.valueOf(CommonConstant.VALUE_0));
-            deliveryAddress.setCreateUser(form.getLoginUser());
-            deliveryAddressService.save(deliveryAddress);
-            orderTakeAdr.setDeliveryId(deliveryAddress.getId());
             orderTakeAdr.setOrderNo(orderTransport.getOrderNo());
             orderTakeAdrService.save(orderTakeAdr);
         }

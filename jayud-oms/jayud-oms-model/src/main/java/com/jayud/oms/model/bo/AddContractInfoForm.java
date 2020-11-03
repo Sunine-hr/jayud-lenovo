@@ -16,7 +16,7 @@ public class AddContractInfoForm  {
     @ApiModelProperty(value = "主键,修改时必传")
     private Long id;
 
-    @ApiModelProperty(value = "客户名称",required = true)
+    @ApiModelProperty(value = "客户名称/供应商名称",required = true)
     @NotEmpty(message = "name is required")
     private String name;
 
@@ -46,4 +46,9 @@ public class AddContractInfoForm  {
     @NotEmpty(message = "endDate is required")
     private Date endDate;
 
+    @ApiModelProperty(value = "合同类型")
+    private String type;
+
+    @ApiModelProperty(value = "合同绑定的业务id")
+    private Long bindId;
 }

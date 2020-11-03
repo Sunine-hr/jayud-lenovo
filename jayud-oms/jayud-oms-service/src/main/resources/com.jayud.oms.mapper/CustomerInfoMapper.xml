@@ -20,6 +20,8 @@
         <result column="if_contract" property="ifContract"/>
         <result column="settlement_type" property="settlementType"/>
         <result column="account_period" property="accountPeriod"/>
+        <result column="tax_type" property="taxType"/>
+        <result column="tax_rate" property="taxRate"/>
         <result column="estate" property="estate"/>
         <result column="department_code" property="departmentCode"/>
         <result column="ku_code" property="kuCode"/>
@@ -34,7 +36,7 @@
     <sql id="Base_Column_List">
          id,name,unit_account,unit_code,id_code,types,contact,phone,address,email,legal_entity,invoice_code,tfn,
          if_contract,settlement_type,account_period,estate,department_code,ku_code,yw_code,audit_status,
-         created_user,updated_user
+         created_user,updated_user,tax_type,tax_rate
     </sql>
 
     <select id="findCustomerInfoByPage" parameterType="com.jayud.oms.model.bo.QueryCustomerInfoForm" resultType="com.jayud.oms.model.vo.CustomerInfoVO" >
@@ -129,6 +131,8 @@
         ci.`if_contract` ifContract,
         ci.`settlement_type` settlementType,
         ci.`account_period` accountPeriod,
+        ci.`tax_rate` taxRate,
+        ci.`tax_type` taxType,
         ci.`estate`,
         ci.`department_id` departmentId,
         d.`name` departmentName,

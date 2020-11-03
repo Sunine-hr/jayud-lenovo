@@ -92,9 +92,6 @@ public class OrderSendCars extends Model<OrderSendCars> {
     @ApiModelProperty(value = "状态(0-草稿 1-审核中 2-审核驳回 3-审核通过)")
     private String status;
 
-    @ApiModelProperty(value = "审核信息")
-    private Long auditInfoId;
-
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createdTime;
 

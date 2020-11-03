@@ -1,6 +1,12 @@
 package com.jayud.oauth.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
+import com.jayud.common.CommonResult;
+import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oauth.model.bo.AddCusAccountForm;
 import com.jayud.oauth.model.bo.OprSystemUserForm;
 import com.jayud.oauth.model.enums.StatusEnum;
@@ -8,18 +14,12 @@ import com.jayud.oauth.model.enums.SystemUserStatusEnum;
 import com.jayud.oauth.model.enums.UserTypeEnum;
 import com.jayud.oauth.model.po.SystemRole;
 import com.jayud.oauth.model.po.SystemUser;
-import com.jayud.oauth.model.vo.DepartmentVO;
-import com.jayud.oauth.model.vo.InitComboxVO;
-import com.jayud.oauth.model.vo.LegalEntityVO;
-import com.jayud.oauth.model.vo.SystemRoleVO;
+import com.jayud.oauth.model.vo.*;
 import com.jayud.oauth.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,7 +86,9 @@ public class ExternalApiController {
     @ApiOperation(value = "获取法人主体")
     @RequestMapping(value = "/api/findLegalEntity")
     public ApiResult findLegalEntity() {
-        List<LegalEntityVO> legalEntitys = legalEntityService.findLegalEntity(new HashMap<>());
+        Map<String,String> param = new HashMap<>();
+        param.put(SqlConstant.AUDIT_STATUS, CommonConstant.VALUE_2);
+        List<LegalEntityVO> legalEntitys = legalEntityService.findLegalEntity(param);
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (LegalEntityVO legalEntityVO : legalEntitys) {
             InitComboxVO initComboxVO = new InitComboxVO();
@@ -140,6 +142,14 @@ public class ExternalApiController {
     @ApiOperation(value = "新增修改客户账户")
     @RequestMapping("/api/saveOrUpdateCustAccount")
     public ApiResult saveOrUpdateCustAccount(@RequestBody AddCusAccountForm form) {
+        //校验登录名唯一性
+        String newName = form.getName();
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("name",newName);
+        SystemUser oldSystemUser = userService.getOne(queryWrapper);
+        if(oldSystemUser != null){
+            return ApiResult.error(ResultEnum.LOGIN_NAME_EXIST.getCode(),ResultEnum.LOGIN_NAME_EXIST.getMessage());
+        }
         SystemUser systemUser = new SystemUser();
         systemUser.setName(form.getName());
         systemUser.setUserName(form.getUserName());
@@ -160,6 +170,17 @@ public class ExternalApiController {
         userRoleRelationService.createRelation(form.getRoleId(),systemUser.getId());
         return ApiResult.ok();
     }
+
+    @ApiOperation(value = "根据主键集合获取系统用户信息")
+    @RequestMapping("/api/getUsersByIds")
+    public CommonResult<List<SystemUserVO>> getUsersByIds(@RequestParam("ids") List<Long> ids) {
+        List<SystemUser> users = this.userService.getByIds(ids);
+        List<SystemUserVO> vo = new ArrayList<>();
+        users.stream().forEach(tmp -> vo.add(ConvertUtil.convert(tmp, SystemUserVO.class)));
+        return CommonResult.success(vo);
+    }
+
+
 
 
 }

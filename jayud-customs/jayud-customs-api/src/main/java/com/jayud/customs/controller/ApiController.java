@@ -273,7 +273,7 @@ public class ApiController {
 
                     String thisRow = "i= " + i + "    passtime=" + passtime + "    CusCode18=" + cuScode + "    CusCode9=" + cusCode9;
                     infoList.add(thisRow);
-                    System.out.println(thisRow);
+//                    System.out.println(thisRow);
                     GetFinanceInfoForm getFinanceInfoForm = new GetFinanceInfoForm();
                     getFinanceInfoForm.setApplyNo(cuScode);
                     service.getFinanceInfoAndPush2Kingdee(getFinanceInfoForm);
@@ -291,7 +291,7 @@ public class ApiController {
             if (existSet.size() != targetList.size()) {
                 targetList.stream().filter(e -> !existSet.contains(e))
                         .forEach(e -> {
-                    System.out.println(e);
+                    log.info(e);
                 });
             }
 

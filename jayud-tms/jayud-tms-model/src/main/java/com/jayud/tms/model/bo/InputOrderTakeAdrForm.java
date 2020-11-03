@@ -12,22 +12,7 @@ import java.time.LocalDateTime;
 @Data
 public class InputOrderTakeAdrForm {
 
-    @ApiModelProperty(value = "联系人")
-    private String contacts;
-
-    @ApiModelProperty(value = "联系电话")
-    private String phone;
-
-    @ApiModelProperty(value = "国家名称")
-    private String countryName;
-
-    @ApiModelProperty(value = "省/州名称")
-    private String stateName;
-
-    @ApiModelProperty(value = "城市名称")
-    private String cityName;
-
-    @ApiModelProperty(value = "详细地址")
+    @ApiModelProperty(value = "提货/送货地址")
     private String address;
 
     //以上部分是加自定义地址使用

@@ -1,8 +1,9 @@
 package com.jayud.oms.mapper;
 
-import com.jayud.oms.model.po.AuditInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.oms.model.po.AuditInfo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -15,4 +16,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface AuditInfoMapper extends BaseMapper<AuditInfo> {
 
+    AuditInfo getLatestByExtId(@Param("id") Long id, @Param("tableDesc") String tableDesc);
 }

@@ -63,9 +63,6 @@ public class OrderSendCarsVO {
     @ApiModelProperty(value = "状态")
     private String status;
 
-    @ApiModelProperty(value = "审核信息")
-    private Long auditInfoId;
-
     @ApiModelProperty(value = "子订单号")
     private String orderNo;
 

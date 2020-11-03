@@ -19,7 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/customs/otherbusiness")
-@Api(tags = "报关-手册服务接口")
+@Api(tags = "报关-敏感词筛选服务接口")
 public class HandbookController {
     @Autowired
     CustomsHandbookService handbookService;
@@ -30,11 +30,11 @@ public class HandbookController {
     @PostMapping("/blacklist/name/excel")
     public void processExcel(@RequestPart(name = "file") MultipartFile file, HttpServletResponse response) {
         //todo  后续完善：可能需要根据客户名获取相应的接收实体类名，进行处理
-//        String customerName = "Xianda";
-//        String className = "BlacklistCheck" + customerName + "Form";
-
-        String customerName = "Default";
+        String customerName = "Xianda";
         String className = "BlacklistCheck" + customerName + "Form";
+
+//        String customerName = "Default";
+//        String className = "BlacklistCheck" + customerName + "Form";
 
 
         //处理请求

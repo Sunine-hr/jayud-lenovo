@@ -100,4 +100,14 @@ public class CostGenreServiceImpl extends ServiceImpl<CostGenreMapper, CostGenre
     public List<CostGenre> getByIds(List<Long> ids) {
         return this.baseMapper.selectBatchIds(ids);
     }
+
+    /**
+     * 获取启用费用类型
+     */
+    @Override
+    public List<CostGenre> getEnableCostGenre() {
+        QueryWrapper<CostGenre> condition=new QueryWrapper<>();
+        condition.lambda().eq(CostGenre::getStatus,StatusEnum.ENABLE.getCode());
+        return this.baseMapper.selectList(condition);
+    }
 }

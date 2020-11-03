@@ -46,4 +46,9 @@ public interface ICostGenreService extends IService<CostGenre> {
      * 根据id集合查询费用类型
      */
     List<CostGenre> getByIds(List<Long> ids);
+
+    /**
+     * 获取启用费用类型
+     */
+    List<CostGenre> getEnableCostGenre();
 }

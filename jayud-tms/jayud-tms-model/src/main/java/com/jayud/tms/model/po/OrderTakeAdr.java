@@ -33,7 +33,7 @@ public class OrderTakeAdr extends Model<OrderTakeAdr> {
     private String orderNo;
 
     @ApiModelProperty(value = "地址信息(delivery_address id)")
-    private Integer deliveryId;
+    private Long deliveryId;
 
     @ApiModelProperty(value = "提货日期")
     private LocalDateTime takeTime;

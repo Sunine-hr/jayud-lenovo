@@ -5,6 +5,7 @@ import com.jayud.tools.model.po.CargoName;
 import com.jayud.tools.model.vo.CargoNameSmallVO;
 import com.jayud.tools.model.vo.CargoNameVO;
 
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -68,4 +69,11 @@ public interface ICargoNameService extends IService<CargoName> {
      * 清空`货物名称表`
      */
     void truncateCargoName();
+
+    /**
+     * 导入大量数据
+     * @param inputStream
+     * @param userId
+     */
+    void importBigExcel(InputStream inputStream, Long userId);
 }

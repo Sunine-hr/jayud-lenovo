@@ -385,7 +385,9 @@ public class CargoNameController {
         writer.addHeaderAlias("zl", "重量");
         writer.addHeaderAlias("xm1", "收货人");
         writer.addHeaderAlias("js", "件数");
-        writer.addHeaderAlias("hpmc", "货品名称");
+//        writer.addHeaderAlias("hpmc", "(原)货品名称");
+//        writer.addHeaderAlias("replaceName", "替换名称");
+        writer.addHeaderAlias("showname", "货品名称");
 
         Field[] s = CargoNameSmallVO.class.getDeclaredFields();
         int lastColumn = s.length-1;
@@ -424,8 +426,9 @@ public class CargoNameController {
         writer.addHeaderAlias("zl", "重量");
         writer.addHeaderAlias("xm1", "收货人");
         writer.addHeaderAlias("js", "件数");
-        writer.addHeaderAlias("hpmc", "货品名称");
-
+//        writer.addHeaderAlias("hpmc", "(原)货品名称");
+//        writer.addHeaderAlias("replaceName", "替换名称");
+        writer.addHeaderAlias("showname", "货品名称");
         Field[] s = CargoNameSmallVO.class.getDeclaredFields();
         int lastColumn = s.length-1;
 

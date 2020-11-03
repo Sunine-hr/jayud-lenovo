@@ -17,6 +17,7 @@ import com.jayud.common.utils.DateUtils;
 import com.jayud.oauth.mapper.SystemUserMapper;
 import com.jayud.oauth.model.bo.AuditSystemUserForm;
 import com.jayud.oauth.model.bo.OprSystemUserForm;
+import com.jayud.oauth.model.bo.QueryAccountForm;
 import com.jayud.oauth.model.bo.QuerySystemUserForm;
 import com.jayud.oauth.model.enums.StatusEnum;
 import com.jayud.oauth.model.po.SystemUser;
@@ -91,30 +92,30 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         // 获取Subject实例对象，用户实例
         Subject subject = SecurityUtils.getSubject();
 
-        SystemUserVO cacheUser =  null;
+        SystemUserVO cacheUser = null;
         // 认证
         // 传到 MyShiroRealm 类中的方法进行认证
         try {
             subject.login(token);
-        }catch (ApiException e){
+        } catch (ApiException e) {
             throw e;
-        }catch(Exception e){
+        } catch (Exception e) {
             Asserts.fail(ResultEnum.LOGIN_FAIL);
         }
         // 构建缓存用户信息返回给前端
         SystemUser user = (SystemUser) subject.getPrincipals().getPrimaryPrincipal();
         //响应前端数据
-        cacheUser = ConvertUtil.convert(user,SystemUserVO.class);
+        cacheUser = ConvertUtil.convert(user, SystemUserVO.class);
         //缓存用户ID larry 2020年8月13日11:21:11
         String uid = redisUtils.get(user.getId().toString());
-        if(uid == null){
-            redisUtils.set(user.getId().toString(),subject.getSession().getId().toString());
+        if (uid == null) {
+            redisUtils.set(user.getId().toString(), subject.getSession().getId().toString());
         }
         cacheUser.setToken(subject.getSession().getId().toString());
         log.warn("CacheUser is {}", JSONUtil.toJsonStr(cacheUser));
         //保存登录记录
         insertLoginLog(user);
-        redisUtils.set(cacheUser.getToken(),user.getName());
+        redisUtils.set(cacheUser.getToken(), user.getName());
         return cacheUser;
     }
 
@@ -131,7 +132,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         Long userId = getLoginUser().getId();
         List<SystemRoleVO> roleVOS = roleService.getRoleList(userId);
         List<Long> roleIds = new ArrayList<>();
-        for (SystemRoleVO systemRoleVO:roleVOS) {
+        for (SystemRoleVO systemRoleVO : roleVOS) {
             roleIds.add(systemRoleVO.getId());
         }
         List<SystemMenuNode> systemMenuNodes = systemMenuService.roleTreeList(roleIds);
@@ -145,7 +146,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     @Override
     public IPage<SystemUserVO> getPageList(QuerySystemUserForm form) {
         //定义分页参数
-        Page<SystemUser> page = new Page(form.getPageNum(),form.getPageSize());
+        Page<SystemUser> page = new Page(form.getPageNum(), form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.asc("su.id"));
         IPage<SystemUserVO> pageInfo = this.baseMapper.getPageList(page, form);
@@ -160,15 +161,15 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     @Override
     public CommonResult oprSystemUser(OprSystemUserForm form) {
-        if("update".equals(form.getCmd())) {//修改
-            SystemUser systemUser = ConvertUtil.convert(form,SystemUser.class);
+        if ("update".equals(form.getCmd())) {//修改
+            SystemUser systemUser = ConvertUtil.convert(form, SystemUser.class);
             //校验登录名的唯一性
             String newName = systemUser.getName();
             QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.eq("name",newName);
+            queryWrapper.eq("name", newName);
             List<SystemUser> systemUsers = baseMapper.selectList(queryWrapper);
-            if(systemUsers != null && systemUsers.size() > 0){
-                return CommonResult.error(ResultEnum.LOGIN_NAME_EXIST.getCode(),ResultEnum.LOGIN_NAME_EXIST.getMessage());
+            if (systemUsers != null && systemUsers.size() > 0) {
+                return CommonResult.error(ResultEnum.LOGIN_NAME_EXIST.getCode(), ResultEnum.LOGIN_NAME_EXIST.getMessage());
             }
             systemUser.setPassword("E10ADC3949BA59ABBE56E057F20F883E");//默认密码为:123456
             systemUser.setStatus(1);//账户为启用状态
@@ -180,9 +181,9 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             userIds.add(form.getId());
             roleRelationService.removeRelationByUserId(userIds);
             //创建角色
-            roleRelationService.createRelation(form.getRoleId(),form.getId());
-        }else if("delete".equals(form.getCmd())){
-            SystemUser systemUser = ConvertUtil.convert(form,SystemUser.class);
+            roleRelationService.createRelation(form.getRoleId(), form.getId());
+        } else if ("delete".equals(form.getCmd())) {
+            SystemUser systemUser = ConvertUtil.convert(form, SystemUser.class);
             systemUser.setStatus(0);
             baseMapper.updateById(systemUser);
         }
@@ -191,11 +192,11 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     @Override
     public void auditSystemUser(AuditSystemUserForm form) {
-        SystemUser systemUser = ConvertUtil.convert(form,SystemUser.class);
+        SystemUser systemUser = ConvertUtil.convert(form, SystemUser.class);
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("audit_status", "1");
-        queryWrapper.eq("id",systemUser.getId());
-        baseMapper.update(systemUser,queryWrapper);
+        queryWrapper.eq("id", systemUser.getId());
+        baseMapper.update(systemUser, queryWrapper);
     }
 
     @Override
@@ -221,6 +222,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     /**
      * 生成组织架构树
+     *
      * @param orgStructureVOS
      * @param parentId
      * @return
@@ -230,6 +232,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
                 .filter(org -> org.getFId().equals(parentId))
                 .map(org -> covertMenuNode(org, orgStructureVOS)).collect(Collectors.toList());
     }
+
     private QueryOrgStructureVO covertMenuNode(QueryOrgStructureVO org, List<QueryOrgStructureVO> orgList) {
         //设置菜单
         org.setChildren(convertDepartTree(orgList, org.getId()));
@@ -244,9 +247,9 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     @Override
     public void saveOrUpdateSystemUser(SystemUser systemUser) {
-        if(systemUser.getId() == null){
+        if (systemUser.getId() == null) {
             systemUser.setCreatedUser(UserOperator.getToken());
-        }else {
+        } else {
             systemUser.setUpdatedUser(UserOperator.getToken());
             systemUser.setUpdatedTime(DateUtils.getNowTime());
         }
@@ -257,9 +260,9 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     public List<SystemUser> findUserByCondition(Map<String, Object> param) {
         QueryWrapper queryWrapper = new QueryWrapper();
         //queryWrapper.eq("status",1);//有效的
-        for(String key : param.keySet()){
+        for (String key : param.keySet()) {
             String value = String.valueOf(param.get(key));
-            queryWrapper.eq(key,value);
+            queryWrapper.eq(key, value);
         }
         return baseMapper.selectList(queryWrapper);
     }
@@ -271,8 +274,8 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         systemUser.setUpdatedTime(DateUtils.getNowTime());
         systemUser.setIsDepartmentCharge("0");
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("department_id",departmentId);
-        baseMapper.update(systemUser,queryWrapper);
+        queryWrapper.eq("department_id", departmentId);
+        baseMapper.update(systemUser, queryWrapper);
     }
 
     /**
@@ -283,9 +286,19 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         return this.baseMapper.selectBatchIds(ids);
     }
 
+    /**
+     * 分页查询各个模块中账户管理
+     */
+    @Override
+    public IPage<SystemUserVO> findEachModuleAccountByPage(QueryAccountForm form) {
+        Page page = new Page(form.getPageNum(), form.getPageSize());
+        return this.baseMapper.findEachModuleAccountByPage(page, form);
+    }
+
 
     /**
      * 添加登录记录
+     *
      * @param user 用户
      */
     private void insertLoginLog(SystemUser user) {

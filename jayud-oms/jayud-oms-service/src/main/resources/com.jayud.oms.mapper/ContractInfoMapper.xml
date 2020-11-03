@@ -45,6 +45,9 @@
               ) createdTimeStr
             FROM
               contract_info ci where ci.status = 1
+            <if test="form.type !=null and form.type !=''">
+                and ci.type = #{form.type}
+            </if>
             <if test="form.name != null and form.name != ''">
                 and ci.name like concat('%',#{form.name},'%')
             </if>

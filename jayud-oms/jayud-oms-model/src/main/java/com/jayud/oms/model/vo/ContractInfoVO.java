@@ -39,6 +39,9 @@ public class ContractInfoVO {
     @ApiModelProperty(value = "法人主体")
     private Long legalEntity;
 
+    @ApiModelProperty(value = "法人主体名称")
+    private String legalEntityName;
+
     @ApiModelProperty(value = "合同起期")
     private String startDate;
 

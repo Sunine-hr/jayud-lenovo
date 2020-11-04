@@ -1,6 +1,8 @@
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.common.util.Md5Utils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayud.mall.model.bo.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -17,6 +19,21 @@ import java.util.Map;
  * @date 2020/10/23 17:16
  */
 public class Test {
+
+    /**
+     * <p>object -> json</p>
+     * <p>json有顺序</p>
+     * @param t
+     */
+    private void ObjectMapperPrint(Object t){
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String s = objectMapper.writeValueAsString(t);
+            System.err.println(s);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 测试密码文本字符串是否相同

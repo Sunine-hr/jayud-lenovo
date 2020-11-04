@@ -1,30 +1,13 @@
-package com.jayud.mall.model.po;
+package com.jayud.mall.model.bo;
 
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
-import java.io.Serializable;
-
-/**
- * <p>
- * 提单任务分组
- * </p>
- *
- * @author fachang.mao
- * @since 2020-11-03
- */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value="TaskGroup对象", description="提单任务分组")
-public class TaskGroup extends Model<TaskGroup> {
-
-    private static final long serialVersionUID = 1L;
+@ApiModel(value = "提单任务分组Form")
+public class TaskGroupForm {
 
     @ApiModelProperty(value = "自增id")
     private Long id;
@@ -41,11 +24,5 @@ public class TaskGroup extends Model<TaskGroup> {
 
     @ApiModelProperty(value = "1提单任务分组 2运单任务分组")
     private Integer types;
-
-
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
 
 }

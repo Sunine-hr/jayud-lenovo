@@ -85,7 +85,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             OrderInfo oldOrder = baseMapper.selectById(form.getOrderId());
             orderInfo.setId(form.getOrderId());
             orderInfo.setOrderNo(oldOrder.getOrderNo());
-            orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
             orderInfo.setUpTime(LocalDateTime.now());
             orderInfo.setUpUser(UserOperator.getToken());
         }else {//新增
@@ -101,15 +100,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderInfo.setOrderNo(orderNo);
             orderInfo.setCreateTime(LocalDateTime.now());
             orderInfo.setCreatedUser(UserOperator.getToken());
-            if(CommonConstant.PRE_SUBMIT.equals(form.getCmd())) {
-                orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_2.getCode()));
-            }else if(CommonConstant.SUBMIT.equals(form.getCmd()) && CommonConstant.VALUE_1.equals(form.getIsDataAll())){
-                orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
-            }else if(CommonConstant.SUBMIT.equals(form.getCmd()) && CommonConstant.VALUE_0.equals(form.getIsDataAll())){
-                orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_4.getCode()));
-            }else {
-                orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
-            }
+        }
+        if(CommonConstant.PRE_SUBMIT.equals(form.getCmd())) {
+            orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_2.getCode()));
+        }else if(CommonConstant.SUBMIT.equals(form.getCmd()) && CommonConstant.VALUE_1.equals(form.getIsDataAll())){
+            orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
+        }else if(CommonConstant.SUBMIT.equals(form.getCmd()) && CommonConstant.VALUE_0.equals(form.getIsDataAll())){
+            orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_4.getCode()));
+        }else {
+            orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
         }
         saveOrUpdate(orderInfo);
         return orderInfo.getOrderNo();
@@ -309,71 +308,87 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         InputMainOrderVO inputMainOrderVO = getMainOrderById(form.getMainOrderId());
         //根据主订单ID获取子订单数量
         int customsNum = 0;//纯报关单数量
-        if (OrderStatusEnum.CBG.getCode().equals(form.getClassCode()) && inputMainOrderVO != null) {
+        if ((OrderStatusEnum.CBG.getCode().equals(form.getClassCode()) && inputMainOrderVO != null) ||
+                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode())
+        ) {
             customsNum = customsClient.getCustomsOrderNum(inputMainOrderVO.getOrderNo()).getData();
         }
         //以后有其他的会逐渐增加 TODO
         int finalCustomsNum = customsNum;
         orderStatusVOS.forEach(x -> {
-            //循环处理主流程节点
+            //循环处理主流程节点,下面有子流程得contain_state字段配置类型区分，不配置状态了
             String containState = x.getContainState();
             if (containState != null && !"".equals(containState)) {
-                //循环处理子节点，如纯报关
+                //循环处理子节点，如纯报关,出口报关,中港等
                 if (!x.getChildren().isEmpty()) {
                     for (int i = 0; i < x.getChildren().size(); i++) {
                         OrderStatusVO subOrder = x.getChildren().get(i);
                         String subContainState = subOrder.getContainState();
                         if (subContainState != null && !"".equals(subContainState)) {
-                            //原则上子订单所包含的操作状态只有一个
-                            //String[] subContainStates = subContainState.split(",");
+                            //目前规定：子订单所包含的操作状态只有一个
                             QueryWrapper subParam = new QueryWrapper();
                             subParam.eq("main_order_id", form.getMainOrderId());
                             subParam.eq("status", subContainState);
-                            queryWrapper.isNotNull("order_id");//处理已下单
+                            queryWrapper.isNotNull("order_id");
                             subParam.orderByDesc("created_time");
                             List<LogisticsTrack> subTrack = logisticsTrackService.list(subParam);//已操作的子流程
-                            //若子订单流程记录小于子订单数，说明主流程节点状态为进行中
-                            Integer sorts = x.getChildren().get(i).getSorts();
-                            if (subTrack == null || subTrack.size() == 0) {
-                                if(sorts != 1){
-                                    x.setStatus("2");
-                                }else {//如果子流程的第一个都没有已操作记录，说明主流程未进行，后面的子流程就没必要循环了
-                                    break;
-                                }
-                            } else if (subTrack != null && subTrack.size() < finalCustomsNum) {
-                                x.setStatus("2");//进行中
-                                subOrder.setStatus("2");
-                            } else {
-                                //子节点循环中最后一个流程节点未操作完毕
-                                if (!subOrder.getProcessCode().equals(x.getChildren().get(x.getChildren().size() - 1).getProcessCode())) {
+                            //此处需区分业务场景
+                            //纯报关，出口报关
+                            if (OrderStatusEnum.CBG.getCode().equals(inputMainOrderVO.getClassCode()) ||
+                                    OrderStatusEnum.CKBG.getCode().equals(containState)) {
+                                //若子订单流程记录小于子订单数，说明主流程节点状态为进行中
+                                Integer sorts = x.getChildren().get(i).getSorts();
+                                if (subTrack == null || subTrack.size() == 0) {
+                                    if (sorts != 1) {
+                                        x.setStatus("2");
+                                    } else {//如果子流程的第一个都没有已操作记录，说明主流程未进行，后面的子流程就没必要循环了
+                                        break;
+                                    }
+                                } else if (subTrack != null && subTrack.size() < finalCustomsNum) {
                                     x.setStatus("2");//进行中
+                                    subOrder.setStatus("2");
                                 } else {
-                                    x.setStatus("3");//已完成
-                                    x.setStatusChangeTime(DateUtils.getLocalToStr(subTrack.get(0).getOperatorTime()));
+                                    //子节点循环中最后一个流程节点未操作完毕
+                                    if (!subOrder.getProcessCode().equals(x.getChildren().get(x.getChildren().size() - 1).getProcessCode())) {
+                                        x.setStatus("2");//进行中
+                                    } else {
+                                        x.setStatus("3");//已完成
+                                        x.setStatusChangeTime(DateUtils.getLocalToStr(subTrack.get(0).getOperatorTime()));
+                                    }
+                                    subOrder.setStatus("3");
+                                    subOrder.setStatusChangeTime(DateUtils.getLocalToStr(subTrack.get(0).getOperatorTime()));
                                 }
-                                subOrder.setStatus("3");
-                                subOrder.setStatusChangeTime(DateUtils.getLocalToStr(subTrack.get(0).getOperatorTime()));
+                            }
+                            //中港运输除出口报关其他子流程节点
+                            else if (OrderStatusEnum.ZGYS.getCode().equals(inputMainOrderVO.getClassCode()) && !OrderStatusEnum.CKBG.getCode().equals(containState)) {
+                                if (subTrack != null && subTrack.size() > 0) {
+                                    subOrder.setStatus("3");//已完成
+                                    subOrder.setStatusChangeTime(DateUtils.getLocalToStr(subTrack.get(0).getOperatorTime()));
+                                    x.setStatus("2");//进行中
+                                    if(subOrder.getProcessCode().equals(x.getChildren().get(x.getChildren().size() - 1).getProcessCode())){
+                                        x.setStatus("3");//已完成
+                                        x.setStatusChangeTime(DateUtils.getLocalToStr(subTrack.get(0).getOperatorTime()));
+                                    }
+                                }
                             }
                         }
                     }
-                } else {//没有子节点流程的
+                } else {
+                    //没有子节点流程的，说明只要有该主流程状态得就是已完成
+                    //1.没有子节点流程得contain_state字段值为操作状态一定要配置,可为多个，如:XX1,XX2
+                    //并且XX1,XX2操作状态会保存在logistics_track表
                     String[] containStates = containState.split(",");
-                    for (int i = 0; i < containStates.length; i++) {
-                        QueryWrapper mainParam = new QueryWrapper();
-                        mainParam.eq("main_order_id", form.getMainOrderId());
-                        mainParam.eq("status", containStates[i]);
-                        queryWrapper.isNotNull("order_id");
-                        mainParam.orderByDesc("created_time");
-                        List<LogisticsTrack> subTrack = logisticsTrackService.list(mainParam);//已操作的子流程
-                        //若子订单流程记录小于子订单数，说明报关中状态为进行中
-                        if (subTrack == null || subTrack.size() == 0) {
-                            x.setStatus("2");//报关进行中
-                        } else if (subTrack != null && subTrack.size() < finalCustomsNum) {
-                            x.setStatus("2");//报关进行中
-                        } else {
-                            x.setStatus("3");
-                            x.setStatusChangeTime(DateUtils.getLocalToStr(subTrack.get(0).getOperatorTime()));
-                        }
+                    QueryWrapper mainParam = new QueryWrapper();
+                    mainParam.eq("main_order_id", form.getMainOrderId());
+                    mainParam.in("status", containStates);
+                    mainParam.isNotNull("order_id");
+                    mainParam.orderByDesc("created_time");
+                    List<LogisticsTrack> subTrack = logisticsTrackService.list(mainParam);//XX1,XX2流程是否已经操作
+                    if (subTrack != null && subTrack.size() < containStates.length) {
+                        x.setStatus("2");//进行中
+                    } else if (subTrack.size() == containStates.length) {
+                        x.setStatus("3");//已完成
+                        x.setStatusChangeTime(DateUtils.getLocalToStr(subTrack.get(0).getOperatorTime()));
                     }
                 }
             }
@@ -425,45 +440,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         String subContainState = subOrder.getContainState();
                         if (subContainState != null && !"".equals(subContainState)) {
                             QueryWrapper subParam = new QueryWrapper();
-                            subParam.eq("order_id", form.getOrderId());
+                            subParam.eq("main_order_id", form.getMainOrderId());
                             subParam.eq("status", subContainState);
                             subParam.orderByDesc("created_time");
                             List<LogisticsTrack> subTrack = logisticsTrackService.list(subParam);//已操作的子流程
-                            Integer sorts = x.getChildren().get(i).getSorts();
-                            if (subTrack == null || subTrack.size() == 0) {
-                                if (sorts != 1) {
-                                    x.setStatus("2");
-                                } else {//如果子流程的第一个都没有已操作记录，说明主流程未进行，后面的子流程就没必要循环了
-                                    break;
-                                }
-                            } else {
-                                LogisticsTrack logisticsTrack = subTrack.get(0);//最新的状态
-                                if (i == 0 && logisticsTrack != null) {
-                                    subOrder.setStatus("3");//已完成
-                                    subOrder.setStatusChangeTime(DateUtils.getLocalToStr(logisticsTrack.getOperatorTime()));
-                                } else if (i > 0 && logisticsTrack != null) {
-                                    //获取上一节点流程的创建时间
-                                    String preSubContainState = x.getChildren().get(i - 1).getContainState();
-                                    if (subContainState != null && !"".equals(subContainState)) {
-                                        String[] subContainStates = preSubContainState.split(",");
-                                        QueryWrapper preSubOrderQuery = new QueryWrapper();
-                                        preSubOrderQuery.eq("order_id", form.getOrderId());
-                                        preSubOrderQuery.in("status", subContainStates);
-                                        preSubOrderQuery.orderByDesc("created_time");
-                                        List<LogisticsTrack> preLogisticsTracks = logisticsTrackService.list(preSubOrderQuery);//已操作的主流程
-                                        if (!preLogisticsTracks.isEmpty()) {
-                                            LocalDateTime preCreateTime = preLogisticsTracks.get(0).getCreatedTime();
-                                            if (logisticsTrack.getCreatedTime().compareTo(preCreateTime) >= 0) {
-                                                subOrder.setStatus("3");//已完成
-                                                subOrder.setStatusChangeTime(DateUtils.getLocalToStr(logisticsTrack.getOperatorTime()));
-                                            }
-                                        }
-                                    }
-                                }
-                                //子节点循环中最后一个流程节点未操作完毕
-                                if (!subOrder.getProcessCode().equals(x.getChildren().get(x.getChildren().size() - 1).getProcessCode())) {
-                                    x.setStatus("2");//进行中
-                                } else {
+                            if (subTrack != null && subTrack.size() > 0) {
+                                subOrder.setStatus("3");//已完成
+                                subOrder.setStatusChangeTime(DateUtils.getLocalToStr(subTrack.get(0).getOperatorTime()));
+                                x.setStatus("2");//进行中
+                                if(subOrder.getProcessCode().equals(x.getChildren().get(x.getChildren().size() - 1).getProcessCode())){
                                     x.setStatus("3");//已完成
                                     x.setStatusChangeTime(DateUtils.getLocalToStr(subTrack.get(0).getOperatorTime()));
                                 }
@@ -472,20 +457,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     }
                 } else {//没有子节点流程的
                     String[] containStates = containState.split(",");
-                    for (int i = 0; i < containStates.length; i++) {
-                        QueryWrapper mainParam = new QueryWrapper();
-                        mainParam.eq("order_id", form.getOrderId());
-                        mainParam.eq("status", containStates[i]);
-                        queryWrapper.isNotNull("order_id");
-                        mainParam.orderByDesc("created_time");
-                        List<LogisticsTrack> subTrack = logisticsTrackService.list(mainParam);//已操作的子流程
-                        //若子订单流程记录小于子订单数，说明报关中状态为进行中
-                        if (subTrack == null || subTrack.size() == 0) {
-                            x.setStatus("2");//报关进行中
-                        } else {
-                            x.setStatus("3");
-                            x.setStatusChangeTime(DateUtils.getLocalToStr(subTrack.get(0).getOperatorTime()));
-                        }
+                    QueryWrapper mainParam = new QueryWrapper();
+                    mainParam.eq("main_order_id", form.getMainOrderId());
+                    mainParam.in("status", containStates);
+                    mainParam.orderByDesc("created_time");
+                    List<LogisticsTrack> subTrack = logisticsTrackService.list(mainParam);//已操作的子流程
+                    if (subTrack != null && subTrack.size() < containStates.length) {
+                        x.setStatus("2");//进行中
+                    } else if (subTrack.size() == containStates.length) {
+                        x.setStatus("3");//已完成
+                        x.setStatusChangeTime(DateUtils.getLocalToStr(subTrack.get(0).getOperatorTime()));
                     }
                 }
             }
@@ -590,6 +571,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                  }else {
                      orderCustomsForm.setClassCode(OrderStatusEnum.CKBG.getCode());
                  }
+                 orderCustomsForm.setLoginUser(UserOperator.getToken());
                  Boolean result = customsClient.createOrderCustoms(orderCustomsForm).getData();
                  if (!result) {//调用失败
                      return false;
@@ -607,6 +589,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 orderTransportForm.setIsHkClear(null);
             }
             orderTransportForm.setMainOrderNo(mainOrderNo);
+            orderTransportForm.setLoginUser(UserOperator.getToken());
             Boolean result = tmsClient.createOrderTransport(orderTransportForm).getData();
             if(!result){//调用失败
                 return false;
@@ -674,12 +657,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 bg.setNeedInputCost(confirmChangeStatusForm.getNeedInputCost());
                 bg.setOrderNo(confirmChangeStatusForm.getOrderNo());
                 bg.setStatus(form.getStatus());
+                bg.setLoginUser(UserOperator.getToken());
                 bgs.add(bg);
             }else if(CommonConstant.ZGYS.equals(confirmChangeStatusForm.getOrderType())){
                 TmsChangeStatusForm tm = new TmsChangeStatusForm();
                 tm.setNeedInputCost(confirmChangeStatusForm.getNeedInputCost());
                 tm.setOrderNo(confirmChangeStatusForm.getOrderNo());
                 tm.setStatus(form.getStatus());
+                tm.setLoginUser(UserOperator.getToken());
                 zgys.add(tm);
             }
 

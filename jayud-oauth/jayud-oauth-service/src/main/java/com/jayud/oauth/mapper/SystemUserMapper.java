@@ -3,6 +3,7 @@ package com.jayud.oauth.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.oauth.model.bo.QueryAccountForm;
 import com.jayud.oauth.model.bo.QuerySystemUserForm;
 import com.jayud.oauth.model.po.SystemUser;
 import com.jayud.oauth.model.vo.DepartmentChargeVO;
@@ -26,6 +27,7 @@ public interface SystemUserMapper extends BaseMapper<SystemUser> {
 
     /**
      * 获取用户列表分页
+     *
      * @param page
      * @param form
      * @return
@@ -34,6 +36,7 @@ public interface SystemUserMapper extends BaseMapper<SystemUser> {
 
     /**
      * 获取部门负责人并统计该部门员工人数
+     *
      * @param departmentId
      * @return
      */
@@ -41,8 +44,14 @@ public interface SystemUserMapper extends BaseMapper<SystemUser> {
 
     /**
      * 获取用户信息
+     *
      * @param id
      * @return
      */
     UpdateSystemUserVO getSystemUser(Long id);
+
+    /**
+     * 分页查询各个模块中账户管理
+     */
+    IPage<SystemUserVO> findEachModuleAccountByPage(Page page, @Param("form") QueryAccountForm form);
 }

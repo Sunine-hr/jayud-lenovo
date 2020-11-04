@@ -33,8 +33,12 @@ public enum ResultEnum implements IResultCode {
 
     INTERNAL_SERVER_ERROR(500, "服务内部异常"),
 
+    CANNOT_MODIFY_IN_AUDIT(700,"审核中无法修改"),
+
 
     OPR_FAIL(10001, "操作失败"),
+
+    LOGIN_NAME_EXIST(10002,"该登录名已存在"),
     ;
     private Integer code;
     private String message;

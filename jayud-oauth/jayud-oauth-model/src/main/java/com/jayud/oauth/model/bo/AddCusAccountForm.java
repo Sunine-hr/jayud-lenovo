@@ -1,5 +1,6 @@
 package com.jayud.oauth.model.bo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -36,6 +37,8 @@ public class AddCusAccountForm extends BasePageForm{
     @ApiModelProperty(value = "所属上级ID",required = true)
     @NotEmpty(message = "departmentChargeId is required")
     private Long departmentChargeId;
+
+    private String userType;
 
 
 

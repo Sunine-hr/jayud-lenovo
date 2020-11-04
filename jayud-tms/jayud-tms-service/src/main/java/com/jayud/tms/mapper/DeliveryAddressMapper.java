@@ -1,8 +1,13 @@
 package com.jayud.tms.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.tms.model.bo.QueryDeliveryAddressForm;
 import com.jayud.tms.model.po.DeliveryAddress;
+import com.jayud.tms.model.vo.DeliveryAddressVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -15,4 +20,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface DeliveryAddressMapper extends BaseMapper<DeliveryAddress> {
 
+    List<DeliveryAddressVO> findDeliveryAddress(@Param("form") QueryDeliveryAddressForm form);
 }

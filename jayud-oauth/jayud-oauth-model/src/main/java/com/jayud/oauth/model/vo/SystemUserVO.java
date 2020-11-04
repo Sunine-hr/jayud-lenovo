@@ -4,7 +4,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
- *
  * @author bocong.zheng
  */
 @Data
@@ -40,11 +39,20 @@ public class SystemUserVO {
     @ApiModelProperty(value = "角色ID")
     private Long roleId;
 
+    @ApiModelProperty(value = "角色名称")
+    private String roleName;
+
     @ApiModelProperty(value = "所属公司ID")
     private Long companyId;
 
+    @ApiModelProperty(value = "公司名称")
+    private String companyName;
+
     @ApiModelProperty(value = "所属上级ID")
     private Long superiorId;
+
+    @ApiModelProperty(value = "所属上级名称")
+    private String superiorName;
 
     @ApiModelProperty(value = "备注信息")
     private String note;

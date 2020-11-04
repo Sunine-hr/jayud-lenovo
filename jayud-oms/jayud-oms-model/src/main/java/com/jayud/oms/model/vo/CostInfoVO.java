@@ -1,16 +1,10 @@
 package com.jayud.oms.model.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -37,6 +31,9 @@ public class CostInfoVO {
     @ApiModelProperty(value = "费用名状态(0禁用 1启用)")
     private String status;
 
+    @ApiModelProperty(value = "费用类别")
+    private List<Long> cids;
+
     @ApiModelProperty(value = "描述")
     private String remarks;
 
@@ -50,10 +47,10 @@ public class CostInfoVO {
     private String createUser;
 
     @ApiModelProperty(value = "更新时间")
-    private LocalDateTime upTime;
+    private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "更新人")
-    private String upUser;
+    private String updateUser;
 
 
 }

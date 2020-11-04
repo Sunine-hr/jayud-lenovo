@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotEmpty;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -476,62 +477,7 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
      */
     @Override
     public YunbaoguanPushProperties removeSpecifiedInvoice(YunbaoguanPushProperties properties) {
-//        Map<FormIDEnum, List<String>> ordersMap = properties.getExistingOrders();
-//        String applyNo = properties.getApplyNo();
-
         return doRemove(properties);
-//
-//        HashMap<String, List<String>> unremovables = new HashMap<>();
-//        if (Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.RECEIVABLE) ||
-//                Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.ALL)) {
-//            //处理应收
-//            List<String> receivable = MapUtil.get(ordersMap, FormIDEnum.RECEIVABLE, List.class);
-//            List<String> receivableOther = MapUtil.get(ordersMap, FormIDEnum.RECEIVABLE_OTHER, List.class);
-//            if (CollectionUtil.isNotEmpty(receivable)) {
-//                List<String> unRemovableReceivable = doRemove(receivable, FormIDEnum.RECEIVABLE.getFormid());
-//                if (CollectionUtil.isNotEmpty(unRemovableReceivable)) {
-//                    unremovables.put("receivable", unRemovableReceivable);
-//                    removedAR = false;
-//                }
-//            }
-//            if (CollectionUtil.isNotEmpty(receivableOther)) {
-//                List<String> unremovableReceivableOther = doRemove(receivableOther, FormIDEnum.RECEIVABLE_OTHER.getFormid());
-//                if (CollectionUtil.isNotEmpty(unremovableReceivableOther)) {
-//                    unremovables.put("receivableOther", unremovableReceivableOther);
-//                    removedAROther = false;
-//                }
-//            }
-//        }
-//        if (Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.PAYABLE) ||
-//                Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.ALL)) {
-//            //处理应付
-//            List<String> payable = MapUtil.get(ordersMap, "payable", List.class);
-//            List<String> payableOther = MapUtil.get(ordersMap, "payableOther", List.class);
-//            if (CollectionUtil.isNotEmpty(payable)) {
-//                List<String> unremovablePayable = doRemove(payable, FormIDEnum.PAYABLE.getFormid());
-//                if (CollectionUtil.isNotEmpty(unremovablePayable)) {
-//                    unremovables.put("payable", unremovablePayable);
-//                    removedAR = false;
-//                }
-//            }
-//            if (CollectionUtil.isNotEmpty(payableOther)) {
-//                List<String> unremovablePayableOther = doRemove(payableOther, FormIDEnum.PAYABLE_OTHER.getFormid());
-//                if (CollectionUtil.isNotEmpty(unremovablePayableOther)) {
-//                    unremovables.put("payableOther", unremovablePayableOther);
-//                    removedAROther = false;
-//                }
-//            }
-//        }
-//        if (Objects.equals(invoiceTypeEnum, InvoiceTypeEnum.ALL) &&
-//                (!removedAP || !removedAR || !removedAPOther || !removedAROther)) {
-//            log.error(String.format("报关单号%s删除失败", applyNo));
-//            return null;
-//        }
-//        if (CollectionUtil.isNotEmpty(unremovables)) {
-//            return unremovables;
-//        } else {
-//            return null;
-//        }
     }
 
 
@@ -779,7 +725,10 @@ class PushOtherReceivable implements Callable<String> {
                                 case COMPANY:
                                     if (coRelationMap.containsKey(invoke.toString())) {
                                         kingdeePropertyName = getCoRelation(invoke.toString()).getKingdeeName();
-                                        kingdeePropertyCode = getCoRelation(invoke.toString()).getKingdeeCode();
+                                        Optional<String> cust = Arrays.stream(getCoRelation(invoke.toString())
+                                                .getKingdeeCode()
+                                                .split("\\|")).filter(e -> e.toLowerCase().contains("cust")).findFirst();
+                                        kingdeePropertyCode = cust.isPresent() ? cust.get() : "";
                                     } else {
                                         errorString.append(String.format("没有找到 %s 对应的金蝶公司名称", invoke.toString()));
                                         log.debug(String.format("没有找到 %s 对应的金蝶公司名称", invoke.toString()));

@@ -25,7 +25,6 @@
         <result column="remarks" property="remarks" />
         <result column="describes" property="describes" />
         <result column="status" property="status" />
-        <result column="audit_info_id" property="auditInfoId" />
         <result column="updated_time" property="updatedTime" />
         <result column="created_user" property="createdUser" />
         <result column="created_time" property="createdTime" />
@@ -36,7 +35,7 @@
     <sql id="Base_Column_List">
         id, transport_no, order_no, encode, encode_url,encode_url_name, vehicle_type, vehicle_size, cntr_no, cntr_pic,
         cntr_pic_name,supplier_info_id, license_plate, driver_name, hk_license_plate, driver_phone, driver_hk_phone,
-        warehouse_info_id,remarks, describes, status, audit_info_id, updated_time, updated_user, created_user, created_time
+        warehouse_info_id,remarks, describes, status, updated_time, updated_user, created_user, created_time
     </sql>
     <select id="getOrderSendInfo"  resultType="com.jayud.tms.model.vo.OrderSendCarsVO" >
         SELECT

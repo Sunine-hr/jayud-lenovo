@@ -13,6 +13,7 @@ CREATE TABLE `sensitive_commodity`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 178 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '敏感品名表' ROW_FORMAT = DYNAMIC;
 
 
+
 -- ----------------------------
 -- Table structure for cargo_name
 -- ----------------------------
@@ -40,3 +41,18 @@ CREATE TABLE `cargo_name`  (
   `bjdh` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '标记单号',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 256 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '货物名称表' ROW_FORMAT = DYNAMIC;
+
+-- cargo_name新加字段user_id
+ALTER TABLE `cargo_name`
+ADD COLUMN `user_id` int(11) NULL COMMENT '用户ID' AFTER `user_id`;
+
+-- 货物名称替换表
+-- DROP 和 CREATE
+DROP TABLE IF EXISTS `cargo_name_replace`;
+CREATE TABLE `cargo_name_replace`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `hpmc` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '(原)货品名称',
+	`replaceName` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '替换名称',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 256 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '货物名称替换表' ROW_FORMAT = DYNAMIC;
+

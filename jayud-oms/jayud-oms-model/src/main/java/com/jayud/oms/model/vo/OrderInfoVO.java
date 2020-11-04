@@ -15,6 +15,9 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "订单号")
     private String orderNo;
 
+    @ApiModelProperty(value = "业务类型")
+    private String bizCode;
+
     @ApiModelProperty(value = "进出口类型")
     private String goodsType;
 
@@ -69,20 +72,17 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "中港运输状态,用于标识驳回可编辑")
     private String subTmsStatus;
 
+    @ApiModelProperty(value = "报关状态描述,用于标识驳回可编辑")
+    private String subCustomsDesc;
+
+    @ApiModelProperty(value = "中港运输状态描述,用于标识驳回可编辑")
+    private String subTmsDesc;
+
     @ApiModelProperty(value = "是否需要录入费用")
     private Boolean needInputCost;
 
     public String getStatusDesc() {
-        if(OrderStatusEnum.MAIN_1.getCode().equals(this.status)){
-            statusDesc = OrderStatusEnum.MAIN_1.getDesc();
-        }else if(OrderStatusEnum.MAIN_2.getCode().equals(this.status)){
-            statusDesc = OrderStatusEnum.MAIN_2.getDesc();
-        }else if(OrderStatusEnum.MAIN_3.getCode().equals(this.status)){
-            statusDesc = OrderStatusEnum.MAIN_3.getDesc();
-        }else if(OrderStatusEnum.MAIN_4.getCode().equals(this.status)){
-            statusDesc = OrderStatusEnum.MAIN_4.getDesc();
-        }
-        return statusDesc;
+        return OrderStatusEnum.getDesc(this.status);
     }
 
     public String getGoodsTypeDesc() {
@@ -92,6 +92,14 @@ public class OrderInfoVO {
             goodsTypeDesc = CommonConstant.GOODS_TYPE_DESC_2;
         }
         return goodsTypeDesc;
+    }
+
+    public String getSubCustomsDesc() {
+        return OrderStatusEnum.getDesc(this.subCustomsStatus);
+    }
+
+    public String getSubTmsDesc() {
+        return OrderStatusEnum.getDesc(this.subTmsStatus);
     }
 
 }

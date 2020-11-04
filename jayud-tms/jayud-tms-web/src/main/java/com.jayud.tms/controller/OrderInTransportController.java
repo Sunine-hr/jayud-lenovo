@@ -125,8 +125,7 @@ public class OrderInTransportController {
             orderTransport.setLicensePlate(form.getLicensePlate());
             orderTransport.setHkLicensePlate(form.getHkLicensePlate());
             orderTransport.setSeamlessNo(form.getSeamlessNo());
-            orderTransport.setClearCustomsNo(form.getClearCustomsNo());
-            orderTransport.setStatus(OrderStatusEnum.HK_CLEAR_1.getCode());
+            orderTransport.setClearCustomsNo(form.getClearCustomsNo());//清关完成标识,有数据表示清关完成
 
             form.setStatus(OrderStatusEnum.HK_CLEAR_1.getCode());
             form.setStatusName(OrderStatusEnum.HK_CLEAR_1.getDesc());
@@ -149,6 +148,20 @@ public class OrderInTransportController {
 
             auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_13.getCode());
             auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_13.getDesc());
+
+            //车辆出仓后:中转仓卸货装货已完成
+            OprStatusForm tms11 = new OprStatusForm();
+            tms11.setMainOrderId(form.getMainOrderId());
+            tms11.setOrderId(form.getOrderId());
+            tms11.setStatus(OrderStatusEnum.TMS_T_11.getCode());
+            tms11.setStatusName(OrderStatusEnum.TMS_T_11.getDesc());
+            omsClient.saveOprStatus(tms11);
+            OprStatusForm tms12 = new OprStatusForm();
+            tms12.setMainOrderId(form.getMainOrderId());
+            tms12.setOrderId(form.getOrderId());
+            tms12.setStatus(OrderStatusEnum.TMS_T_12.getCode());
+            tms12.setStatusName(OrderStatusEnum.TMS_T_12.getDesc());
+            omsClient.saveOprStatus(tms12);
         }else if(CommonConstant.CAR_SEND.equals(form.getCmd())){//车辆派送
             orderTransport.setStatus(OrderStatusEnum.TMS_T_14.getCode());
 
@@ -221,6 +234,7 @@ public class OrderInTransportController {
             orderTransport.setId(transport.getId());
             if (OrderStatusEnum.TMS_T_7.getCode().equals(form.getStatus())) {
                 //记录操作成功状态
+                form.setOrderId(transport.getId());
                 form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
                 form.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
                 form.setStatusName(OrderStatusEnum.TMS_T_7.getDesc());
@@ -327,6 +341,7 @@ public class OrderInTransportController {
             oprStatusForm.setDescription(form.getDescribes());
 
             //记录审核信息
+            auditInfoForm.setExtDesc(SqlConstant.ORDER_TRANSPORT);
             auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_2.getCode());
             auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_2.getDesc());
             auditInfoForm.setAuditComment(form.getDescribes());
@@ -335,7 +350,7 @@ public class OrderInTransportController {
         }else if(CommonConstant.AUDIT_CAR.equals(form.getCmd())){//运输审核
             if(!(OrderStatusEnum.TMS_T_3.getCode().equals(form.getStatus()) ||
                     OrderStatusEnum.TMS_T_3_1.getCode().equals(form.getStatus())) || form.getId() == null ||
-                    form.getOrderId() == null){
+                    form.getOrderId() == null || form.getMainOrderId() == null){
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }
             //更新派车信息

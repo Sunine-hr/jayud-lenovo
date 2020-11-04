@@ -148,4 +148,18 @@ public abstract class CommonConstant {
     public static final String REJECT = "驳回";
 
     public static final String ORDER_NO = "orderNo";
+
+    public static final String BIZ_CODE = "bizCode";
+
+    public static final String COMMA = ",";
+
+    public static final String ID_CODE = "idCode";
+
+    public static final String DEPARTMENT_ID = "departmentId";
+
+    public static final String WORK = "work";
+
+    public static final String DEPARTMENT = "department";
+
+    public static final String ID = "id";
 }

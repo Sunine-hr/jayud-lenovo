@@ -17,13 +17,19 @@ public class InputPaymentCostForm {
     @NotEmpty(message = "customerName is required")
     private String customerName;
 
-    @ApiModelProperty(value = "费用类型",required = true)
+    @ApiModelProperty(value = "费用类别",required = true)
     @NotEmpty(message = "costTypeId is required")
     private Long costTypeId;
 
     @ApiModelProperty(value = "应付项目CODE",required = true)
     @NotEmpty(message = "costCode is required")
     private String costCode;
+
+    @ApiModelProperty(value = "费用类型",required = true)
+    private Long costGenreId;
+
+    @ApiModelProperty(value = "单位",required = true)
+    private String unit;
 
     @ApiModelProperty(value = "单价",required = true)
     @NotEmpty(message = "unitPrice is required")

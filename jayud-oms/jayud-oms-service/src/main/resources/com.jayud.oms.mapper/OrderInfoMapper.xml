@@ -42,6 +42,7 @@
         SELECT DISTINCT
         oi.id,
         oi.`order_no` orderNo,
+        oi.`biz_code` bizCode,
         oc.`goods_type` goodsType,
         oc.`port_code` portCode,
         oc.`port_name` portName,
@@ -72,6 +73,7 @@
         SELECT DISTINCT
         oi.id,
         oi.`order_no` orderNo,
+        oi.`biz_code` bizCode,
         ot.`goods_type` goodsType,
         ot.`port_code` portCode,
         p.`name` portName,

@@ -157,9 +157,7 @@ public class OrderInfoController {
                 takeAdrForms.addAll(takeAdrForms1);
                 takeAdrForms.addAll(takeAdrForms2);
                 for (InputOrderTakeAdrForm inputOrderTakeAdr : takeAdrForms) {
-                    if (StringUtil.isNullOrEmpty(inputOrderTakeAdr.getContacts()) || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getPhone())
-                            || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getCountryName()) || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getStateName())
-                            || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getCityName()) || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getAddress())
+                    if (inputOrderTakeAdr.getDeliveryId() == null
                             || inputOrderTakeAdr.getTakeTime() == null || inputOrderTakeAdr.getPieceAmount() == null
                             || inputOrderTakeAdr.getWeight() == null) {
                         return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());

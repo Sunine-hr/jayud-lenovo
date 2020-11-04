@@ -40,7 +40,9 @@ public class CargoNameController {
     @ApiOperation(value = "导入Excel")
     @RequestMapping(value = "/importExcelV2", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult importExcelV2(@RequestParam("file") MultipartFile file, HttpServletRequest request){
+    public CommonResult importExcelV2(@RequestParam("file") MultipartFile file,
+                                      @RequestParam(value = "userId",required=false) Long userId,
+                                      HttpServletRequest request){
         if (file.isEmpty()) {
             return CommonResult.error(-1, "文件为空！");
         }
@@ -52,11 +54,18 @@ public class CargoNameController {
             e.printStackTrace();
         }
         //调用用 hutool 方法读取数据 默认调用第一个sheet
-        ExcelReader excelReader = ExcelUtil.getReader(inputStream);
+//        ExcelReader excelReader = ExcelUtil.getReader(inputStream);
         //读取为Bean列表，Bean中的字段名为标题，字段值为标题对应的单元格值。
 //        List<CargoName> list = excelReader.readAll(CargoName.class);
-        List<List<Object>> list = excelReader.read();
-        cargoNameService.importExcel(list);
+
+//        List<List<Object>> list = excelReader.read();
+//        cargoNameService.importExcel(list, userId);
+
+        //流方式读取Excel2007-Excel07SaxReader xxx.xlsx
+        //在标准的ExcelReader中，如果数据量较大，读取Excel会非常缓慢，并有可能造成内存溢出。因此针对大数据量的Excel，Hutool封装了Sax模式的读取方式。
+        //Excel07SaxReader只支持Excel2007格式的Sax读取。
+        cargoNameService.importBigExcel(inputStream,userId);
+
         return CommonResult.success("导入Excel成功！");
     }
 
@@ -372,8 +381,9 @@ public class CargoNameController {
     @ApiOperation(value = "导出A类表Excel(A类表:不存在`敏感品名`的货物表)V2版")
     @RequestMapping(value = "/postExportExcelAV2", method = RequestMethod.GET)
     @ResponseBody
-    public void postExportExcelAV2(HttpServletResponse response){
-        List<CargoNameSmallVO> rows = cargoNameService.findCargoNameListByAV2();
+    public void postExportExcelAV2(@RequestParam(value = "userId",required=false) Long userId,
+                                   HttpServletResponse response){
+        List<CargoNameSmallVO> rows = cargoNameService.findCargoNameListByAV2(userId);
         ExcelWriter writer = ExcelUtil.getWriter(true);
 //        ExcelWriter writer = ExcelUtil.getWriter();
 
@@ -382,7 +392,9 @@ public class CargoNameController {
         writer.addHeaderAlias("zl", "重量");
         writer.addHeaderAlias("xm1", "收货人");
         writer.addHeaderAlias("js", "件数");
-        writer.addHeaderAlias("hpmc", "货品名称");
+//        writer.addHeaderAlias("hpmc", "(原)货品名称");
+//        writer.addHeaderAlias("replaceName", "替换名称");
+        writer.addHeaderAlias("showname", "货品名称");
 
         Field[] s = CargoNameSmallVO.class.getDeclaredFields();
         int lastColumn = s.length-1;
@@ -400,7 +412,7 @@ public class CargoNameController {
         ServletOutputStream out= null;
         try {
             out = response.getOutputStream();
-            writer.flush(out);
+            writer.flush(out,true);
             writer.close();
             IoUtil.close(out);
         } catch (IOException e) {
@@ -411,8 +423,9 @@ public class CargoNameController {
     @ApiOperation(value = "导出B类表Excel(B类表:存在`敏感品名`的货物表)")
     @RequestMapping(value = "/postExportExcelBV2", method = RequestMethod.GET)
     @ResponseBody
-    public void postExportExcelBV2(HttpServletResponse response) throws IOException {
-        List<CargoNameSmallVO> cargoNameList = cargoNameService.findCargoNameListByBV2();
+    public void postExportExcelBV2(@RequestParam(value = "userId",required=false) Long userId,
+                                   HttpServletResponse response) throws IOException {
+        List<CargoNameSmallVO> cargoNameList = cargoNameService.findCargoNameListByBV2(userId);
         ExcelWriter writer = ExcelUtil.getWriter(true);
 
         //自定义标题别名
@@ -420,8 +433,9 @@ public class CargoNameController {
         writer.addHeaderAlias("zl", "重量");
         writer.addHeaderAlias("xm1", "收货人");
         writer.addHeaderAlias("js", "件数");
-        writer.addHeaderAlias("hpmc", "货品名称");
-
+//        writer.addHeaderAlias("hpmc", "(原)货品名称");
+//        writer.addHeaderAlias("replaceName", "替换名称");
+        writer.addHeaderAlias("showname", "货品名称");
         Field[] s = CargoNameSmallVO.class.getDeclaredFields();
         int lastColumn = s.length-1;
 

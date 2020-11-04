@@ -11,6 +11,8 @@
         <result column="customer_code" property="customerCode" />
         <result column="customer_name" property="customerName" />
         <result column="cost_type_id" property="costTypeId" />
+        <result column="cost_genre_id" property="costGenreId" />
+        <result column="unit" property="unit" />
         <result column="cost_code" property="costCode" />
         <result column="unit_price" property="unitPrice" />
         <result column="number" property="number" />
@@ -28,7 +30,9 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, main_order_no, biz_order_no, order_no, customer_code, customer_name,cost_type_id, cost_code, unit_price, number, currency_code, amount, exchange_rate, change_amount, remarks, status, opt_name, opt_time, created_time, created_user
+        id, main_order_no, biz_order_no, order_no, customer_code, customer_name,cost_type_id, cost_code, unit_price, number,
+         currency_code, amount, exchange_rate, change_amount, remarks, status, opt_name, opt_time, created_time,
+         created_user,cost_genre_id,unit
     </sql>
 
     <select id="findReceivableCost" parameterType="com.jayud.oms.model.bo.GetCostDetailForm" resultType="com.jayud.oms.model.vo.InputReceivableCostVO" >
@@ -38,6 +42,9 @@
         orc.`customer_name` customerName ,
         orc.`cost_type_id` costTypeId,
         (SELECT ct.code_name FROM cost_type ct WHERE ct.id = orc.`cost_type_id` LIMIT 1) costType,
+        orc.`cost_genre_id` costGenreId,
+        (SELECT cg.name FROM cost_genre cg WHERE cg.id = orc.cost_genre_id LIMIT 1) costGenre,
+        orc.`unit`,
         orc.`cost_code` costCode,
         (SELECT ci.name FROM cost_info ci WHERE ci.id_code = orc.`cost_code` AND ci.types = 1 LIMIT 1) costName,
         orc.`unit_price` unitPrice,

@@ -2,11 +2,14 @@ package com.jayud.oms.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
-import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
+import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.utils.BeanUtils;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
@@ -16,14 +19,10 @@ import com.jayud.oms.model.bo.AddContractInfoForm;
 import com.jayud.oms.model.bo.DeleteForm;
 import com.jayud.oms.model.bo.QueryContractInfoForm;
 import com.jayud.oms.model.enums.CustomerInfoStatusEnum;
-import com.jayud.oms.model.po.ContractInfo;
-import com.jayud.oms.model.po.CustomerInfo;
-import com.jayud.oms.model.po.ProductBiz;
+import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.ContractInfoVO;
 import com.jayud.oms.model.vo.InitComboxVO;
-import com.jayud.oms.service.IContractInfoService;
-import com.jayud.oms.service.ICustomerInfoService;
-import com.jayud.oms.service.IProductBizService;
+import com.jayud.oms.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,61 +58,94 @@ public class ContractInfoController {
     private IProductBizService productBizService;
 
     @Autowired
-    private RedisUtils redisUtils;
+    private IProductClassifyService productClassifyService;
 
     @Autowired
     private FileClient fileClient;
 
+    @Autowired
+    private ISupplierInfoService supplierInfoService;
+
     @ApiOperation(value = "查询合同列表")
     @PostMapping(value = "/findContractInfoByPage")
-    public CommonResult<CommonPageResult<ContractInfoVO>> findCustomerInfoByPage(@RequestBody QueryContractInfoForm form) {
+    public CommonResult<CommonPageResult<ContractInfoVO>> findContractInfoByPage(
+            @Valid @RequestBody QueryContractInfoForm form) {
         IPage<ContractInfoVO> pageList = contractInfoService.findContractInfoByPage(form);
+        Object data = oauthClient.findLegalEntity().getData();
+        //法人主体
+        if (data != null) {
+            List<Map<String, Object>> maps = (List<Map<String, Object>>) data;
+
+            Map<Long, String> map = new HashMap<>();
+            for (Map<String, Object> tmp : maps) {
+                map.put(Long.valueOf(tmp.get("id").toString()), tmp.get("name").toString());
+            }
+
+            for (ContractInfoVO record : pageList.getRecords()) {
+                record.setLegalEntityName(map.get(record.getLegalEntity()));
+            }
+        }
+
         CommonPageResult<ContractInfoVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
     }
 
     @ApiOperation(value = "编辑时数据回显,id=合同ID")
     @PostMapping(value = "/getContractInfoById")
-    public CommonResult<ContractInfoVO> getContractInfoById(@RequestBody Map<String,Object> param) {
+    public CommonResult<ContractInfoVO> getContractInfoById(@RequestBody Map<String, Object> param) {
         String prePath = String.valueOf(fileClient.getBaseUrl().getData());
-        String id = MapUtil.getStr(param,"id");
+        String id = MapUtil.getStr(param, "id");
         ContractInfoVO contractInfoVO = contractInfoService.getContractInfoById(Long.parseLong(id));
-        if(contractInfoVO != null && contractInfoVO.getBusinessType() != null){
+        if (contractInfoVO != null && contractInfoVO.getBusinessType() != null) {
             String businessType = contractInfoVO.getBusinessType();
             contractInfoVO.setBusinessTypes(businessType);
         }
+
         //处理附件
-        contractInfoVO.setFileViews(StringUtils.getFileViews(contractInfoVO.getContractUrl(),contractInfoVO.getContractName(),prePath));
+        contractInfoVO.setFileViews(StringUtils.getFileViews(contractInfoVO.getContractUrl(), contractInfoVO.getContractName(), prePath));
         return CommonResult.success(contractInfoVO);
     }
 
     @ApiOperation(value = "新增编辑合同")
     @PostMapping(value = "/saveOrUpdateContractInfo")
     public CommonResult saveOrUpdateContractInfo(@RequestBody AddContractInfoForm form) {
-        ContractInfo contractInfo = ConvertUtil.convert(form,ContractInfo.class);
+        ContractInfo contractInfo = ConvertUtil.convert(form, ContractInfo.class);
+
+        String name = "";
+        //获取名称
+        switch (form.getType()) {
+            case "0":
+                name = this.customerInfoService.getById(form.getBindId()).getName();
+                break;
+            case "1":
+                name = this.supplierInfoService.getById(form.getBindId()).getSupplierChName();
+                break;
+        }
+        form.setName(name);
+
         List<Long> businessTypes = form.getBusinessTypes();
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < businessTypes.size(); i++) {
             sb.append(businessTypes.get(i)).append(",");
         }
         contractInfo.setBusinessType(sb.toString());
-        Map<String,Object> param = new HashMap<>();
-        param.put("status",1);//有效
-        param.put("contract_no",form.getContractNo());
-        if(form.getId() != null){
+        Map<String, Object> param = new HashMap<>();
+        param.put("status", 1);//有效
+        param.put("contract_no", form.getContractNo());
+        if (form.getId() != null) {
             ContractInfo oldContractInfo = contractInfoService.getById(form.getId());
-            if(oldContractInfo != null && !oldContractInfo.getContractNo().equals(form.getContractNo())){//若修改合同号了，则校重
+            if (oldContractInfo != null && !oldContractInfo.getContractNo().equals(form.getContractNo())) {//若修改合同号了，则校重
                 List<ContractInfo> contractInfos = contractInfoService.findContractByCondition(param);
-                if(contractInfos != null && contractInfos.size() > 0){
-                    return CommonResult.error(400,"该合同已经存在,不能重复录入");
+                if (contractInfos != null && contractInfos.size() > 0) {
+                    return CommonResult.error(400, "该合同已经存在,不能重复录入");
                 }
             }
             contractInfo.setUpdatedUser(UserOperator.getToken());
             contractInfo.setUpdatedTime(DateUtils.getNowTime());
-        }else {
+        } else {
             List<ContractInfo> contractInfos = contractInfoService.findContractByCondition(param);
-            if(contractInfos != null && contractInfos.size() > 0){
-                return CommonResult.error(400,"该合同已经存在,不能重复录入");
+            if (contractInfos != null && contractInfos.size() > 0) {
+                return CommonResult.error(400, "该合同已经存在,不能重复录入");
             }
             contractInfo.setCreatedUser(UserOperator.getToken());
         }
@@ -138,16 +171,19 @@ public class ContractInfoController {
         contractInfoService.saveOrUpdateBatch(contractInfos);
         return CommonResult.success();
     }
+
     @ApiOperation(value = "合同管理-下拉框合并返回")
     @PostMapping(value = "/findComboxs3")
-    public CommonResult<Map<String,Object>> findComboxs3(){
-        Map<String,Object> resultMap = new HashMap<>();
+    public CommonResult<Map<String, Object>> findComboxs3() {
+        Map<String, Object> resultMap = new HashMap<>();
         //客户名称
-        resultMap.put("customers",initCustomer());
-        //业务类型
-        resultMap.put("productBiz",initProductBiz());
+        resultMap.put("customers", initCustomer().getData());
+        //供应商名称
+        resultMap.put("suppliers", initSupplierInfo().getData());
+        //服务类型
+        resultMap.put("productClassify", initProductClassify().getData());
         //法人主体
-        resultMap.put("legalEntity",initLegalEntity());
+        resultMap.put("legalEntity", initLegalEntity().getData());
         return CommonResult.success(resultMap);
 
     }
@@ -158,7 +194,7 @@ public class ContractInfoController {
     @ApiOperation(value = "合同管理-下拉框-客户名称")
     @PostMapping(value = "/initCustomer")
     public CommonResult<List<InitComboxVO>> initCustomer() {
-        Map<String,Object> param = new HashMap<String,Object>();
+        Map<String, Object> param = new HashMap<String, Object>();
         param.put("audit_status", CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());//有效的，审核通过的客户名称
         param.put("status", "1");
         List<CustomerInfo> customerInfos = customerInfoService.findCustomerInfoByCondition(param);
@@ -175,7 +211,7 @@ public class ContractInfoController {
     @ApiOperation(value = "合同管理-下拉框-法人主体")
     @PostMapping(value = "/initLegalEntity")
     public CommonResult<List<InitComboxVO>> initLegalEntity() {
-        List<InitComboxVO> initComboxVOS = (List<InitComboxVO>)oauthClient.findLegalEntity().getData();
+        List<InitComboxVO> initComboxVOS = (List<InitComboxVO>) oauthClient.findLegalEntity().getData();
         return CommonResult.success(initComboxVOS);
     }
 
@@ -193,6 +229,38 @@ public class ContractInfoController {
         return CommonResult.success(initComboxVOS);
     }
 
+    @ApiOperation(value = "合同管理-下拉框-供应商")
+    @PostMapping(value = "/initSupplierInfo")
+    public CommonResult<List<InitComboxVO>> initSupplierInfo() {
+        List<SupplierInfo> supplierInfos = supplierInfoService.getApprovedSupplier(
+                BeanUtils.convertToFieldName(true,
+                        SupplierInfo::getId, SupplierInfo::getSupplierChName));
+        List<InitComboxVO> initComboxVOS = new ArrayList<>();
+        for (SupplierInfo supplierInfo : supplierInfos) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(supplierInfo.getId());
+            initComboxVO.setName(supplierInfo.getSupplierChName());
+            initComboxVOS.add(initComboxVO);
+        }
+        return CommonResult.success(initComboxVOS);
+    }
+
+    @ApiOperation(value = "合同管理-下拉框-服务类型")
+    @PostMapping(value = "/initProductClassify")
+    public CommonResult<List<InitComboxVO>> initProductClassify() {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(SqlConstant.F_ID, CommonConstant.VALUE_0);
+        queryWrapper.eq(SqlConstant.STATUS, CommonConstant.VALUE_1);
+        List<ProductClassify> productClassifies = productClassifyService.list(queryWrapper);
+        List<InitComboxVO> initComboxVOS = new ArrayList<>();
+        for (ProductClassify productClassify : productClassifies) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(productClassify.getId());
+            initComboxVO.setName(productClassify.getName());
+            initComboxVOS.add(initComboxVO);
+        }
+        return CommonResult.success(initComboxVOS);
+    }
 
 
 }

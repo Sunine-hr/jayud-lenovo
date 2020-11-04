@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.vo.CostGenreVO;
 import com.jayud.oms.model.vo.CostTypeVO;
 
+import java.util.List;
+
 /**
  * <p>
  * 基础数据费用类型 服务类
@@ -39,4 +41,14 @@ public interface ICostGenreService extends IService<CostGenre> {
      * 根据id查询费用类型
      */
     CostGenreVO getById(Long id);
+
+    /**
+     * 根据id集合查询费用类型
+     */
+    List<CostGenre> getByIds(List<Long> ids);
+
+    /**
+     * 获取启用费用类型
+     */
+    List<CostGenre> getEnableCostGenre();
 }

@@ -5,6 +5,7 @@ import com.jayud.tools.model.po.CargoName;
 import com.jayud.tools.model.vo.CargoNameSmallVO;
 import com.jayud.tools.model.vo.CargoNameVO;
 
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -21,7 +22,7 @@ public interface ICargoNameService extends IService<CargoName> {
      * 导入list
      * @param list
      */
-    void importExcel(List<List<Object>> list);
+    void importExcel(List<List<Object>> list, Long userId);
 
     /**
      * <p>查询A类表list集合</p>
@@ -54,7 +55,7 @@ public interface ICargoNameService extends IService<CargoName> {
      * <p>A类表:不存在`敏感品名`的货物表</p>
      * @return
      */
-    List<CargoNameSmallVO> findCargoNameListByAV2();
+    List<CargoNameSmallVO> findCargoNameListByAV2(Long userId);
 
     /**
      * <p>查询B类表list集合</p>
@@ -62,10 +63,17 @@ public interface ICargoNameService extends IService<CargoName> {
      * <p>B类表:存在`敏感品名`的货物表</p>
      * @return
      */
-    List<CargoNameSmallVO> findCargoNameListByBV2();
+    List<CargoNameSmallVO> findCargoNameListByBV2(Long userId);
 
     /**
      * 清空`货物名称表`
      */
     void truncateCargoName();
+
+    /**
+     * 导入大量数据
+     * @param inputStream
+     * @param userId
+     */
+    void importBigExcel(InputStream inputStream, Long userId);
 }

@@ -3,6 +3,7 @@ package com.jayud.oms.model.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -12,6 +13,7 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -38,6 +40,16 @@ public class ProductBizVO {
     @ApiModelProperty(value = "税率")
     private BigDecimal taxRate;
 
+    @ApiModelProperty(value = "费用类型id集合（多个主键用逗号隔开）")
+    @JsonIgnore
+    private String costGenreIds;
+
+    @ApiModelProperty(value = "费用类型集合")
+    private List<CostGenreVO> costGenreVOs;
+
+    @ApiModelProperty(value = "默认费用类型id")
+    private Long costGenreDefault;
+
     @ApiModelProperty(value = "排序值")
     private Long sorts;
 
@@ -54,9 +66,9 @@ public class ProductBizVO {
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "更新时间")
-    private LocalDateTime upTime;
+    private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "更新人")
-    private String upUser;
+    private String updateUser;
 
 }

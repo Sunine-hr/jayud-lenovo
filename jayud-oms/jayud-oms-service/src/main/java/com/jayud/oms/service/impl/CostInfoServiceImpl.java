@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.mapper.CostInfoMapper;
@@ -70,7 +69,7 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
                 list.add(Long.parseLong(cid));
             }
 
-            List<CostTypeVO> costTypes = this.costTypeService.findCostTypeByIds(list);
+            List<CostTypeVO> costTypes = this.costTypeService.getCostTypeByIds(list);
             //拼接费用类型
             StringBuilder sb = new StringBuilder();
             for (CostTypeVO costType : costTypes) {
@@ -89,7 +88,13 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
      */
     @Override
     public boolean saveOrUpdateCostInfo(AddCostInfoForm form) {
+        StringBuilder sb = new StringBuilder();
+        for (Long cid : form.getCids()) {
+            sb.append(cid).append(",");
+        }
         CostInfo costInfo = ConvertUtil.convert(form, CostInfo.class);
+        costInfo.setCids(sb.substring(0, sb.length() - 1));
+
         if (Objects.isNull(costInfo.getId())) {
             costInfo.setCreateTime(LocalDateTime.now())
                     .setCreateUser(UserOperator.getToken());
@@ -102,17 +107,18 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
         }
     }
 
-    /**
-     * 根据id查询费用名称
-     */
-    @Override
-    public CostInfoVO getById(Long id) {
-        CostInfo costInfo = this.baseMapper.selectById(id);
-        return ConvertUtil.convert(costInfo, CostInfoVO.class);
-    }
+//    /**
+//     * 根据id查询费用名称
+//     */
+//    @Override
+//    public CostInfoVO getById(Long id) {
+//        CostInfo costInfo = this.baseMapper.selectById(id);
+//        return ConvertUtil.convert(costInfo, CostInfoVO.class);
+//    }
 
     /**
      * 更改启用/禁用状态
+     *
      * @param id
      * @return
      */

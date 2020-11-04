@@ -77,21 +77,25 @@ public class OrderCommonController {
             List<InputPaymentCostForm> paymentCostForms = form.getPaymentCostList();
             List<InputReceivableCostForm> receivableCostForms = form.getReceivableCostList();
             for (InputPaymentCostForm paymentCost : paymentCostForms) {
-                if(paymentCost.getCustomerName() == null || "".equals(paymentCost.getCustomerName())
-                || paymentCost.getCostCode() == null || "".equals(paymentCost.getCostCode())
+                if(StringUtil.isNullOrEmpty(paymentCost.getCustomerName())
+                || StringUtil.isNullOrEmpty(paymentCost.getCostCode())
+                || paymentCost.getCostTypeId() == null || paymentCost.getCostGenreId() == null
+                || StringUtil.isNullOrEmpty(paymentCost.getUnit())
                 || paymentCost.getUnitPrice() == null || paymentCost.getNumber() == null
-                || paymentCost.getCurrencyCode() == null || "".equals(paymentCost.getCurrencyCode())
+                || StringUtil.isNullOrEmpty(paymentCost.getCurrencyCode())
                 || paymentCost.getAmount() == null || paymentCost.getExchangeRate() == null
                 || paymentCost.getChangeAmount() == null){
                     return CommonResult.error(400,"参数不合法");
                 }
             }
             for (InputReceivableCostForm receivableCost : receivableCostForms) {
-                if(receivableCost.getCustomerName() == null || "".equals(receivableCost.getCustomerName())
-                        || receivableCost.getCustomerCode() == null || "".equals(receivableCost.getCustomerCode())
-                        || receivableCost.getCostCode() == null || "".equals(receivableCost.getCostCode())
+                if(StringUtil.isNullOrEmpty(receivableCost.getCustomerName())
+                        || StringUtil.isNullOrEmpty(receivableCost.getCustomerCode())
+                        || StringUtil.isNullOrEmpty(receivableCost.getCostCode())
+                        || receivableCost.getCostTypeId() == null || receivableCost.getCostGenreId() == null
+                        || StringUtil.isNullOrEmpty(receivableCost.getUnit())
                         || receivableCost.getUnitPrice() == null || receivableCost.getNumber() == null
-                        || receivableCost.getCurrencyCode() == null || "".equals(receivableCost.getCurrencyCode())
+                        || StringUtil.isNullOrEmpty(receivableCost.getCurrencyCode())
                         || receivableCost.getAmount() == null || receivableCost.getExchangeRate() == null
                         || receivableCost.getChangeAmount() == null){
                     return CommonResult.error(400,"参数不合法");

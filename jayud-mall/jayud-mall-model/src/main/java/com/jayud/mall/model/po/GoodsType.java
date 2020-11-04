@@ -1,6 +1,7 @@
 package com.jayud.mall.model.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
@@ -32,6 +33,7 @@ public class GoodsType extends Model<GoodsType> {
     private Long id;
 
     @ApiModelProperty(value = "货物类型名")
+    @TableField(value = "`name`")
     private String name;
 
     @ApiModelProperty(value = "父级id")
@@ -50,6 +52,7 @@ public class GoodsType extends Model<GoodsType> {
     private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "启用状态0-禁用，1-启用")
+    @TableField(value = "`status`")
     private String status;
 
     @ApiModelProperty(value = "类型1报价类型 2货物类型")

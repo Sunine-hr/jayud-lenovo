@@ -1,7 +1,10 @@
 package com.jayud.mall.service;
 
+import com.jayud.mall.model.bo.TemplateFileForm;
 import com.jayud.mall.model.po.TemplateFile;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ITemplateFileService extends IService<TemplateFile> {
 
+    /**
+     * 查询模板对应模块信息list
+     * @param form
+     * @return
+     */
+    List<TemplateFile> findTemplateFile(TemplateFileForm form);
 }

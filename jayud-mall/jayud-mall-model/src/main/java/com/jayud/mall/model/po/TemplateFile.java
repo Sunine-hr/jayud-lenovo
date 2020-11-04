@@ -1,12 +1,14 @@
 package com.jayud.mall.model.po;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
-import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
 
 /**
  * <p>
@@ -34,11 +36,11 @@ public class TemplateFile extends Model<TemplateFile> {
     private String fileName;
 
     @ApiModelProperty(value = "是否必要(0否 1是)")
+    @TableField(value = "`options`")
     private Integer options;
 
     @ApiModelProperty(value = "描述")
     private String remarks;
-
 
     @Override
     protected Serializable pkVal() {

@@ -5,19 +5,8 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.finance.po.OrderReceivableBill">
         <id column="id" property="id" />
-        <result column="bill_no" property="billNo" />
-        <result column="begin_account_term" property="beginAccountTerm" />
-        <result column="end_account_term" property="endAccountTerm" />
-        <result column="settlement_currency" property="settlementCurrency" />
         <result column="legal_name" property="legalName" />
         <result column="customer_name" property="customerName" />
-        <result column="audit_status" property="auditStatus" />
-        <result column="make_user" property="makeUser" />
-        <result column="make_time" property="makeTime" />
-        <result column="audit_user" property="auditUser" />
-        <result column="audit_time" property="auditTime" />
-        <result column="apply_status" property="applyStatus" />
-        <result column="invoice_amount" property="invoiceAmount" />
         <result column="already_paid_amount" property="alreadyPaidAmount" />
         <result column="bill_order_num" property="billOrderNum" />
         <result column="bill_num" property="billNum" />

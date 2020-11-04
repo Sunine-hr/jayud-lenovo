@@ -40,7 +40,7 @@ public class CancelAfterVerification extends Model<CancelAfterVerification> {
     private BigDecimal realReceiveMoney;
 
     @ApiModelProperty(value = "币种")
-    private Long currencyId;
+    private String currencyCode;
 
     @ApiModelProperty(value = "汇率")
     private BigDecimal exchangeRate;

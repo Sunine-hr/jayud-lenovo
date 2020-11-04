@@ -96,6 +96,8 @@ public class OrderReceivableCost extends Model<OrderReceivableCost> {
     @ApiModelProperty(value = "创建人")
     private String createdUser;
 
+    @ApiModelProperty(value = "是否出账 1-已出账 0-未出账")
+    private String isBill;
 
     @Override
     protected Serializable pkVal() {

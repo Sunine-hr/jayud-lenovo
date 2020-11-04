@@ -7,7 +7,7 @@
         <id column="id" property="id" />
         <result column="order_no" property="orderNo" />
         <result column="bill_detail_id" property="billDetailId" />
-        <result column="currency_id" property="currencyId" />
+        <result column="currency_code" property="currencyCode" />
         <result column="cost_info_name" property="costInfoName" />
         <result column="money" property="money" />
         <result column="status" property="status" />
@@ -15,7 +15,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, order_no, bill_detail_id, currency_id, cost_info_name, money, status
+        id, order_no, bill_detail_id, currency_code, cost_info_name, money, status
     </sql>
 
 </mapper>

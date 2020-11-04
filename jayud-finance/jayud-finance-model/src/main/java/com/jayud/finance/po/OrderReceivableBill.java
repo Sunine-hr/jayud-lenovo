@@ -33,44 +33,11 @@ public class OrderReceivableBill extends Model<OrderReceivableBill> {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "账单编号")
-    private String billNo;
-
-    @ApiModelProperty(value = "开始核算期")
-    private LocalDateTime beginAccountTerm;
-
-    @ApiModelProperty(value = "结束核算期")
-    private LocalDateTime endAccountTerm;
-
-    @ApiModelProperty(value = "结算币种")
-    private Long settlementCurrency;
-
     @ApiModelProperty(value = "法人主体")
     private String legalName;
 
     @ApiModelProperty(value = "客户")
     private String customerName;
-
-    @ApiModelProperty(value = "审核状态")
-    private String auditStatus;
-
-    @ApiModelProperty(value = "生成账单人")
-    private String makeUser;
-
-    @ApiModelProperty(value = "生成账单时间")
-    private LocalDateTime makeTime;
-
-    @ApiModelProperty(value = "审核人")
-    private String auditUser;
-
-    @ApiModelProperty(value = "审核时间")
-    private LocalDateTime auditTime;
-
-    @ApiModelProperty(value = "开票状态")
-    private String applyStatus;
-
-    @ApiModelProperty(value = "开票金额")
-    private BigDecimal invoiceAmount;
 
     @ApiModelProperty(value = "已出账金额(人民币)")
     private BigDecimal alreadyPaidAmount;

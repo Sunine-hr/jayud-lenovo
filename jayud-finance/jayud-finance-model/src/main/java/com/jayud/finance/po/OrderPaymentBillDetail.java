@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -35,8 +36,20 @@ public class OrderPaymentBillDetail extends Model<OrderPaymentBillDetail> {
     @ApiModelProperty(value = "账单编号")
     private String billNo;
 
+    @ApiModelProperty(value = "开始核算期")
+    private LocalDateTime beginAccountTerm;
+
+    @ApiModelProperty(value = "结束核算期")
+    private LocalDateTime endAccountTerm;
+
+    @ApiModelProperty(value = "结算币种")
+    private String settlementCurrency;
+
     @ApiModelProperty(value = "订单编号")
     private String orderNo;
+
+    @ApiModelProperty(value = "账单编号维度的本币金额")
+    private BigDecimal localAmount;
 
     @ApiModelProperty(value = "应收费用ID")
     private Long costId;
@@ -68,11 +81,38 @@ public class OrderPaymentBillDetail extends Model<OrderPaymentBillDetail> {
     @ApiModelProperty(value = "1-有效 0-无效")
     private String status;
 
+    @ApiModelProperty(value = "审核状态")
+    private String auditStatus;
+
+    @ApiModelProperty(value = "生成账单人")
+    private String makeUser;
+
+    @ApiModelProperty(value = "生成账单时间")
+    private LocalDateTime makeTime;
+
+    @ApiModelProperty(value = "审核人")
+    private String auditUser;
+
+    @ApiModelProperty(value = "审核时间")
+    private LocalDateTime auditTime;
+
+    @ApiModelProperty(value = "是否付款申请")
+    private String applyStatus;
+
+    @ApiModelProperty(value = "付款金额")
+    private BigDecimal paymentAmount;
+
     @ApiModelProperty(value = "创建人")
     private String createdUser;
 
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createdTime;
+
+    @ApiModelProperty(value = "修改人")
+    private String updatedUser;
+
+    @ApiModelProperty(value = "修改时间")
+    private LocalDateTime updatedTime;
 
 
     @Override

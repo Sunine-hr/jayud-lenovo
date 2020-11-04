@@ -7,7 +7,7 @@
         <id column="id" property="id" />
         <result column="bill_no" property="billNo" />
         <result column="real_receive_money" property="realReceiveMoney" />
-        <result column="currency_id" property="currencyId" />
+        <result column="currency_code" property="currencyCode" />
         <result column="exchange_rate" property="exchangeRate" />
         <result column="discount_money" property="discountMoney" />
         <result column="opr_mode" property="oprMode" />
@@ -18,7 +18,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, bill_no, real_receive_money, currency_id, exchange_rate, discount_money, opr_mode, real_receive_time, created_user, created_time
+        id, bill_no, real_receive_money, currency_code, exchange_rate, discount_money, opr_mode, real_receive_time, created_user, created_time
     </sql>
 
 </mapper>

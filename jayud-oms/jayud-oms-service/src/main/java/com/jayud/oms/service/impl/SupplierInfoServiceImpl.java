@@ -90,7 +90,14 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
     @Override
     @Transactional
     public boolean saveOrUpdateSupplierInfo(AddSupplierInfoForm form) {
+        StringBuilder sb = new StringBuilder();
+        for (Long id : form.getProductClassifyIds()) {
+            sb.append(id).append(",");
+        }
+
         SupplierInfo supplierInfo = ConvertUtil.convert(form, SupplierInfo.class);
+        supplierInfo.setProductClassifyIds(sb.substring(0, sb.length() - 1));
+
         boolean isTrue;
         if (Objects.isNull(supplierInfo.getId())) {
             supplierInfo.setCreateTime(LocalDateTime.now())

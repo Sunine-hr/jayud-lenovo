@@ -10,6 +10,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.enums.AuditStatusEnum;
@@ -17,6 +18,7 @@ import com.jayud.oms.model.enums.AuditTypeDescEnum;
 import com.jayud.oms.model.enums.SettlementTypeEnum;
 import com.jayud.oms.model.enums.UserTypeEnum;
 import com.jayud.oms.model.po.AuditInfo;
+import com.jayud.oms.model.po.SupplierInfo;
 import com.jayud.oms.model.vo.EnumVO;
 import com.jayud.oms.model.vo.SupplierInfoVO;
 import com.jayud.oms.service.IAuditInfoService;
@@ -26,6 +28,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -102,6 +105,23 @@ public class SupplierInfoController {
         }
         CommonPageResult<SupplierInfoVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
+    }
+
+    @ApiOperation(value = "根据主键获取供应商信息,id是供应商id")
+    @PostMapping(value = "/getSupplierInfoById")
+    public CommonResult getSupplierInfoById(@RequestBody Map<String, String> map) {
+        if (StringUtils.isEmpty(map.get("id"))) {
+            return CommonResult.error(500, "id is required");
+        }
+        Long id = Long.parseLong(map.get("id"));
+        SupplierInfo supplierInfo = this.supplierInfoService.getById(id);
+        SupplierInfoVO supplierInfoVO = ConvertUtil.convert(supplierInfo, SupplierInfoVO.class);
+        supplierInfoVO.packageProductClassifyId(supplierInfo.getProductClassifyIds());
+        //审核意见
+        AuditInfo auditInfo = this.auditInfoService.getAuditInfoLatestByExtId(supplierInfoVO.getId(), AuditTypeDescEnum.ONE.getTable());
+        supplierInfoVO.setAuditComment(auditInfo.getAuditComment());
+
+        return CommonResult.success(supplierInfoVO);
     }
 
 

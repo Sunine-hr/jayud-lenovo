@@ -216,5 +216,12 @@ public class SupplierInfoController {
             return CommonResult.error(result.getCode(), result.getMsg());
         }
     }
+
+
+    @ApiOperation(value = "供应商账号-所属公司")
+    @PostMapping(value = "/initCompany")
+    public CommonResult initCompany() {
+        return CommonResult.success(oauthClient.getCompany().getData());
+    }
 }
 

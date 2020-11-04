@@ -35,11 +35,15 @@ public class CargoNameReplaceServiceImpl extends ServiceImpl<CargoNameReplaceMap
         QueryWrapper<CargoNameReplace> queryWrapper = new QueryWrapper<>();
         String hpmc = form.getHpmc();
         String replaceName = form.getReplaceName();
+        String name = form.getName();
         if(hpmc != null && hpmc != ""){
             queryWrapper.like("hpmc", hpmc);
         }
         if(replaceName != null && replaceName != ""){
             queryWrapper.like("replaceName", replaceName);
+        }
+        if(name != null && name != ""){
+            queryWrapper.and(wrapper -> wrapper.like("hpmc", name).or().like("replaceName", name));
         }
         List<CargoNameReplace> list = cargoNameReplaceMapper.selectList(queryWrapper);
         return list;

@@ -9,6 +9,7 @@ public class CargoNameReplaceTest {
         CargoNameReplaceForm form = new CargoNameReplaceForm();
         form.setHpmc("服饰");
         form.setReplaceName("衣服");
+        form.setName("服饰");
         String json = JSONObject.toJSONString(form);
         System.err.println(json);
     }

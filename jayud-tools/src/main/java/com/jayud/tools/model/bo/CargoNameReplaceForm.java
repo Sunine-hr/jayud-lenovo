@@ -17,4 +17,7 @@ public class CargoNameReplaceForm {
     @ApiModelProperty(value = "替换名称")
     private String replaceName;
 
+    @ApiModelProperty(value = "查询关键字(货品名称or替换名称)")
+    private String name;
+
 }

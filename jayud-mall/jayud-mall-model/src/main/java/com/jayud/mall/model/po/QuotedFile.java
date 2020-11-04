@@ -1,15 +1,17 @@
 package com.jayud.mall.model.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -41,6 +43,7 @@ public class QuotedFile extends Model<QuotedFile> {
     private String fileName;
 
     @ApiModelProperty(value = "是否必要(0否 1是)")
+    @TableField(value = "`options`")
     private Integer options;
 
     @ApiModelProperty(value = "是否审核(0否 1是)")
@@ -50,9 +53,11 @@ public class QuotedFile extends Model<QuotedFile> {
     private String templateUrl;
 
     @ApiModelProperty(value = "说明")
+    @TableField(value = "`describe`")
     private String describe;
 
     @ApiModelProperty(value = "状态(0无效 1有效)")
+    @TableField(value = "`status`")
     private String status;
 
     @ApiModelProperty(value = "创建时间")

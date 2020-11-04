@@ -1,7 +1,10 @@
 package com.jayud.mall.service;
 
+import com.jayud.mall.model.bo.QuotedFileForm;
 import com.jayud.mall.model.po.QuotedFile;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IQuotedFileService extends IService<QuotedFile> {
 
+    /**
+     * 查询报价对应的文件表list
+     * @param form
+     * @return
+     */
+    List<QuotedFile> findQuotedFile(QuotedFileForm form);
 }

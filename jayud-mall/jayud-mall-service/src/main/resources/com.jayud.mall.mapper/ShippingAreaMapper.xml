@@ -33,4 +33,48 @@
         id, warehouse_code, warehouse_name, state_code, contacts, company_name, contact_number, contact_phone, address_first, address_second, address_thirdly, pid, pname, cid, cname, zip_code, delivery_note, shipping_mark, status, user_id, user_name, create_time
     </sql>
 
+    <!--查询集货仓表并分页-->
+    <select id="findShippingAreaByPage" parameterType="com.jayud.mall.model.bo.QueryShippingAreaForm"
+            resultType="com.jayud.mall.model.po.ShippingArea" >
+        select
+        t.id,
+        t.warehouse_code,
+        t.warehouse_name,
+        t.state_code,
+        t.contacts,
+        t.company_name,
+        t.contact_number,
+        t.contact_phone,
+        t.address_first,
+        t.address_second,
+        t.address_thirdly,
+        t.pid,
+        t.pname,
+        t.cid,
+        t.cname,
+        t.zip_code,
+        t.delivery_note,
+        t.shipping_mark,
+        t.`status`,
+        t.user_id,
+        t.user_name,
+        t.create_time
+        from shipping_area t
+        WHERE
+        1 = 1
+        /*仓库代码*/
+        <if test="form.warehouseCode != null and form.warehouseCode != ''">
+            AND t.warehouse_code LIKE concat('%',#{form.warehouseCode},'%')
+        </if>
+        <if test="form.warehouseName != null and form.warehouseName != ''">
+            AND t.warehouse_name LIKE concat('%',#{form.warehouseName},'%')
+        </if>
+        <if test="form.stateCode != null and form.stateCode != ''">
+            AND t.state_code LIKE concat('%',#{form.stateCode},'%')
+        </if>
+        GROUP BY
+        t.`id`
+    </select>
+
+
 </mapper>

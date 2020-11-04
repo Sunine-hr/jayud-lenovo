@@ -1,6 +1,7 @@
 package com.jayud.mall.model.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
@@ -83,6 +84,7 @@ public class ShippingArea extends Model<ShippingArea> {
     private String shippingMark;
 
     @ApiModelProperty(value = "状态(0无效 1有效)")
+    @TableField(value = "`status`")
     private String status;
 
     @ApiModelProperty(value = "创建用户id")

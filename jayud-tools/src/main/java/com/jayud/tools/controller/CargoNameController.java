@@ -384,8 +384,8 @@ public class CargoNameController {
     public void postExportExcelAV2(@RequestParam(value = "userId",required=false) Long userId,
                                    HttpServletResponse response){
         List<CargoNameSmallVO> rows = cargoNameService.findCargoNameListByAV2(userId);
-        ExcelWriter writer = ExcelUtil.getWriter(true);
-//        ExcelWriter writer = ExcelUtil.getWriter();
+//        ExcelWriter writer = ExcelUtil.getWriter(true);
+        ExcelWriter writer = ExcelUtil.getBigWriter();
 
         //自定义标题别名
         writer.addHeaderAlias("ytdh", "圆通单号");
@@ -404,6 +404,8 @@ public class CargoNameController {
 
         // 一次性写出内容，使用默认样式，强制输出标题
         writer.write(rows, true);
+
+
 
         String name = StringUtils.toUtf8String("A类表-不存在`敏感品名`的货物表");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
@@ -426,7 +428,8 @@ public class CargoNameController {
     public void postExportExcelBV2(@RequestParam(value = "userId",required=false) Long userId,
                                    HttpServletResponse response) throws IOException {
         List<CargoNameSmallVO> cargoNameList = cargoNameService.findCargoNameListByBV2(userId);
-        ExcelWriter writer = ExcelUtil.getWriter(true);
+//        ExcelWriter writer = ExcelUtil.getWriter(true);
+        ExcelWriter writer = ExcelUtil.getBigWriter();
 
         //自定义标题别名
         writer.addHeaderAlias("ytdh", "圆通单号");

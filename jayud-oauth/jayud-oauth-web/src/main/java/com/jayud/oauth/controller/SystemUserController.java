@@ -429,6 +429,26 @@ public class SystemUserController {
         return CommonResult.success(initComboxs);
     }
 
+    /**
+     * LDR
+     * @return
+     */
+    @ApiOperation(value = "获取采购用户--下拉选框--姓名")
+    @PostMapping(value = "/initPurchaseUser")
+    public CommonResult<List<InitComboxVO>> initPurchaseUser() {
+        Map<String, Object> param = new HashMap<>();
+        param.put("status", "1");
+        List<InitComboxVO> initComboxs = new ArrayList<>();
+        List<SystemUser> systemUsers = userService.findUserByCondition(param);
+        for (SystemUser systemUser : systemUsers) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(systemUser.getId());
+            initComboxVO.setName(systemUser.getUserName());
+            initComboxs.add(initComboxVO);
+        }
+        return CommonResult.success(initComboxs);
+    }
+
     @ApiOperation(value = "账户管理-新增数据初始化-部门")
     @PostMapping(value = "/initUserDepartment")
     public CommonResult<List<InitComboxVO>> initUserDepartment() {

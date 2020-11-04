@@ -1,6 +1,7 @@
 package com.jayud.oms.model.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.oms.model.enums.AuditStatusEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.lang.StringUtils;
@@ -87,6 +88,8 @@ public class SupplierInfoVO {
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
+    @ApiModelProperty(value = "是否可以编辑")
+    public Boolean isEdit;
 
     /**
      * 组装服务类型id集合
@@ -99,5 +102,15 @@ public class SupplierInfoVO {
         for (String id : ids.split(",")) {
             this.productClassifyIds.add(Long.parseLong(id));
         }
+    }
+
+    public void setAuditStatus(String auditStatus) {
+        if (AuditStatusEnum.SUCCESS.getDesc().equals(auditStatus)
+                || AuditStatusEnum.FAIL.getDesc().equals(auditStatus)) {
+            this.isEdit = true;
+        } else {
+            this.isEdit = false;
+        }
+        this.auditStatus = auditStatus;
     }
 }

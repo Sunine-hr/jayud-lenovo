@@ -42,7 +42,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/contractInfo")
-@Api(tags = "客户管理-合同管理")
+@Api(tags = "合同管理")
 public class ContractInfoController {
 
     @Autowired

@@ -15,7 +15,7 @@ public class ContractInfoVO {
     @ApiModelProperty(value = "id")
     private Integer id;
 
-    @ApiModelProperty(value = "客户名称")
+    @ApiModelProperty(value = "客户/供应商名称")
     private String name;
 
     @ApiModelProperty(value = "合同编号")

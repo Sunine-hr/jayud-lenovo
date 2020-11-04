@@ -49,16 +49,16 @@ public class QuotedFileServiceImpl extends ServiceImpl<QuotedFileMapper, QuotedF
             queryWrapper.like("file_name", fileName);
         }
         if(options != null){
-            queryWrapper.eq("options", options);
+            queryWrapper.eq("`options`", options);
         }
         if(isCheck != null){
             queryWrapper.eq("is_check", isCheck);
         }
         if(describe != null && describe != ""){
-            queryWrapper.like("describe", describe);
+            queryWrapper.like("`describe`", describe);
         }
         if(status != null && status != ""){
-            queryWrapper.eq("status", queryWrapper);
+            queryWrapper.eq("`status`", status);
         }
         List<QuotedFile> list = quotedFileMapper.selectList(queryWrapper);
         return list;

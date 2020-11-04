@@ -1,7 +1,10 @@
 package com.jayud.mall.service;
 
-import com.jayud.mall.model.po.Customer;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.bo.QueryCustomerForm;
+import com.jayud.mall.model.po.Customer;
+import com.jayud.mall.model.vo.CustomerVO;
 
 /**
  * <p>
@@ -13,4 +16,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ICustomerService extends IService<Customer> {
 
+    /**
+     * 分页查询客户
+     * @param form
+     * @return
+     */
+    IPage<CustomerVO> findCustomerByPage(QueryCustomerForm form);
 }

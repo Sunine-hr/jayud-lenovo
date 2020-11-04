@@ -30,4 +30,7 @@
         id, bs_user_id, name_cn, passwd, phone, status, level, origin, create_date, company, audit_status, code, name_en, pay_passwd, pay_type, currency, salesman_id, user_name, address
     </sql>
 
+
+
+
 </mapper>

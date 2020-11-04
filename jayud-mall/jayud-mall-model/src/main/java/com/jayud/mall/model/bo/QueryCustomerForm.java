@@ -14,4 +14,7 @@ public class QueryCustomerForm extends BasePageForm{
     @ApiModelProperty(value = "公司名")
     private String company;
 
+    @ApiModelProperty(value = "关键字(中文名，联系人 or 公司名)")
+    private String keyword;
+
 }

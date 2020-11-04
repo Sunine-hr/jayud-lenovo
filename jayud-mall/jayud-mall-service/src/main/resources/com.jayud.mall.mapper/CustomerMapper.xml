@@ -31,6 +31,39 @@
     </sql>
 
 
-
+    <!--查询客户并分页-->
+    <select id="findCustomerByPage" parameterType="com.jayud.mall.model.bo.QueryCustomerForm"
+            resultType="com.jayud.mall.model.vo.CustomerVO" >
+        select
+        t.id,
+        t.bs_user_id,
+        t.name_cn,
+        t.passwd,
+        t.phone,
+        t.`status`,
+        t.`level`,
+        t.origin,
+        t.create_date,
+        t.company,
+        t.audit_status,
+        t.`code`,
+        t.name_en,
+        t.pay_passwd,
+        t.pay_type,
+        t.currency,
+        t.salesman_id,
+        t.user_name,
+        t.address
+        from
+        customer t
+        WHERE
+        1 = 1
+        /*关键字查询*/
+        <if test="form.keyword != null and form.keyword != ''">
+            AND ( t.`name_cn` LIKE concat('%',#{form.keyword},'%') OR t.`company` LIKE concat('%',#{form.keyword},'%') )
+        </if>
+        GROUP BY
+        t.`id`
+    </select>
 
 </mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.finance.mapper.OrderBillCostTotalMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.finance.po.OrderBillCostTotal">
+        <id column="id" property="id" />
+        <result column="order_no" property="orderNo" />
+        <result column="bill_detail_id" property="billDetailId" />
+        <result column="currency_id" property="currencyId" />
+        <result column="cost_info_name" property="costInfoName" />
+        <result column="money" property="money" />
+        <result column="status" property="status" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_no, bill_detail_id, currency_id, cost_info_name, money, status
+    </sql>
+
+</mapper>

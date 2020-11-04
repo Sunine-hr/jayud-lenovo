@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.finance.mapper.OrderPaymentBillDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.finance.po.OrderPaymentBillDetail">
+        <id column="id" property="id" />
+        <result column="bill_no" property="billNo" />
+        <result column="order_no" property="orderNo" />
+        <result column="cost_id" property="costId" />
+        <result column="created_order_time" property="createdOrderTime" />
+        <result column="start_address" property="startAddress" />
+        <result column="end_address" property="endAddress" />
+        <result column="license_plate" property="licensePlate" />
+        <result column="vehicle_size" property="vehicleSize" />
+        <result column="piece_num" property="pieceNum" />
+        <result column="weight" property="weight" />
+        <result column="yun_customs_no" property="yunCustomsNo" />
+        <result column="status" property="status" />
+        <result column="created_user" property="createdUser" />
+        <result column="created_time" property="createdTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, bill_no, order_no, cost_id, created_order_time, start_address, end_address, license plate, vehicle_size, piece_num, weight, yun_customs_no, status, created_user, created_time
+    </sql>
+
+</mapper>

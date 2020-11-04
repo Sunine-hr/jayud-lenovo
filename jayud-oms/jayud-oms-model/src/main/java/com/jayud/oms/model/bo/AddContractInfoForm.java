@@ -1,5 +1,6 @@
 package com.jayud.oms.model.bo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -40,10 +41,12 @@ public class AddContractInfoForm  {
 
     @ApiModelProperty(value = "合同起期",required = true)
     @NotEmpty(message = "startDate is required")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private Date startDate;
 
     @ApiModelProperty(value = "合同止期",required = true)
     @NotEmpty(message = "endDate is required")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private Date endDate;
 
     @ApiModelProperty(value = "合同类型 0:客户合同 1:供应商合同")

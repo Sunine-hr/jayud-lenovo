@@ -167,7 +167,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         for (SupplierInfo supplierInfo : supplierInfos) {
             AuditInfo info = this.auditInfoService.getAuditInfoLatestByExtId(supplierInfo.getId()
                     , AuditTypeDescEnum.ONE.getTable());
-            if (AuditStatusEnum.SUCCESS.getDesc().equals(info.getAuditStatus())) {
+            if (AuditStatusEnum.SUCCESS.getCode().equals(info.getAuditStatus())) {
                 tmp.add(supplierInfo);
             }
         }

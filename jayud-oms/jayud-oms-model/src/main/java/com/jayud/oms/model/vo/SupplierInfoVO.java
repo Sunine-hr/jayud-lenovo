@@ -88,6 +88,9 @@ public class SupplierInfoVO {
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
+    @ApiModelProperty(value = "客户/供应商id")
+    private Long bindId;
+
     @ApiModelProperty(value = "是否可以编辑")
     public Boolean isEdit;
 

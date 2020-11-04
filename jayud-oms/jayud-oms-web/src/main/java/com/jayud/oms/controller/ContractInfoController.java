@@ -121,7 +121,6 @@ public class ContractInfoController {
                 name = this.supplierInfoService.getById(form.getBindId()).getSupplierChName();
                 break;
         }
-        form.setName(name);
 
         List<Long> businessTypes = form.getBusinessTypes();
         StringBuilder sb = new StringBuilder();
@@ -152,6 +151,7 @@ public class ContractInfoController {
         //处理附件
         contractInfo.setContractUrl(StringUtils.getFileStr(form.getFileViews()));
         contractInfo.setContractName(StringUtils.getFileNameStr(form.getFileViews()));
+        contractInfo.setName(name);
         contractInfoService.saveOrUpdate(contractInfo);
         return CommonResult.success();
     }

@@ -55,9 +55,7 @@ public class DriverInfoController {
     @ApiOperation(value = "新增编辑司机信息")
     @PostMapping(value = "/saveOrUpdateDriverInfo")
     public CommonResult saveOrUpdateDriverInfo(@Valid @RequestBody AddDriverInfoForm form) {
-
         DriverInfo driverInfo = ConvertUtil.convert(form, DriverInfo.class);
-        //拼接附件地址
         if (this.driverInfoService.saveOrUpdateDriverInfo(driverInfo)) {
             return CommonResult.success();
         } else {

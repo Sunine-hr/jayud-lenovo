@@ -101,7 +101,11 @@ public class CargoNameReplaceController {
 
     @ApiOperation(value = "删除`货物名称替换表`")
     @PostMapping(value = "/deleteCargoNameReplace")
-    public CommonResult deleteCargoNameReplace(@RequestParam(value = "id") Long id){
+    public CommonResult deleteCargoNameReplace(@RequestBody CargoNameReplaceForm form){
+        Long id = form.getId();
+        if(id == null){
+            return CommonResult.error(-1, "删除时id不能为空");
+        }
         return cargoNameReplaceService.deleteCargoNameReplace(id);
     }
 

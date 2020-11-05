@@ -33,6 +33,18 @@ public class TestUtils {
      */
     public static void JSONObjectPrint(Object t) {
         //输出null
+        String s = JSONObject.toJSONString(t);
+        System.err.println(s);
+    }
+
+    /**
+     * <p>object -> json</p>
+     * <p>json没有顺序</p>
+     *
+     * @param t
+     */
+    public static void JSONObjectPrintNull(Object t) {
+        //输出null
         String s = JSONObject.toJSONString(t, SerializerFeature.WriteMapNullValue);
         System.err.println(s);
     }

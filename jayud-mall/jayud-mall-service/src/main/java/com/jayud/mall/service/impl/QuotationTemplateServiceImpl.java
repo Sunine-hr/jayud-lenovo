@@ -60,7 +60,7 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
         Page<QuotationTemplateVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
         //page.addOrder(OrderItem.desc("oc.id"));
-        IPage<QuotationTemplateVO> pageInfo = baseMapper.findQuotationTemplateByPage(page, form);
+        IPage<QuotationTemplateVO> pageInfo = quotationTemplateMapper.findQuotationTemplateByPage(page, form);
         return pageInfo;
     }
 

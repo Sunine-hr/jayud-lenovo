@@ -65,3 +65,18 @@ CREATE TABLE `customer_address` (
   `update_user` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '更新人',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='客户地址';
+
+-- 2020年11月5日李达荣，功能描述：中转仓库更改字段
+ALTER TABLE `warehouse_info`
+DROP COLUMN `company_name`,
+DROP COLUMN `contact_phone`,
+DROP COLUMN `country_code`,
+CHANGE COLUMN `state_code` `province` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '省' AFTER `address`,
+CHANGE COLUMN `city_code` `city` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '市' AFTER `province`,
+MODIFY COLUMN `warehouse_code` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '中转仓库代码' AFTER `id`,
+MODIFY COLUMN `warehouse_name` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '中转仓库名称' AFTER `warehouse_code`,
+ADD COLUMN `area` varchar(50) NULL COMMENT '区' AFTER `city`;
+
+-- 2020年11月5日李达荣，功能描述：中转仓库主键更long类型
+ALTER TABLE `warehouse_info`
+MODIFY COLUMN `id` bigint(11) NOT NULL AUTO_INCREMENT FIRST;

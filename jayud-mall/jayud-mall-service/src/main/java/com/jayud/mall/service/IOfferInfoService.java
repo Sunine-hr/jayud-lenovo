@@ -1,6 +1,7 @@
 package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.OfferInfoForm;
 import com.jayud.mall.model.bo.QueryOfferInfoForm;
 import com.jayud.mall.model.po.OfferInfo;
@@ -41,4 +42,12 @@ public interface IOfferInfoService extends IService<OfferInfo> {
      * @param form
      */
     void saveOfferInfo(OfferInfoForm form);
+
+    /**
+     * 查看报价信息
+     *
+     * @param id
+     * @return
+     */
+    CommonResult<OfferInfoVO> lookOfferInfo(Long id);
 }

@@ -3,15 +3,21 @@ package com.jayud.mall.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.OfferInfoMapper;
+import com.jayud.mall.mapper.ServiceGroupMapper;
 import com.jayud.mall.model.bo.OfferInfoForm;
 import com.jayud.mall.model.bo.QueryOfferInfoForm;
 import com.jayud.mall.model.po.OfferInfo;
+import com.jayud.mall.model.po.ServiceGroup;
 import com.jayud.mall.model.vo.OfferInfoVO;
 import com.jayud.mall.service.IOfferInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -27,6 +33,9 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
 
     @Autowired
     OfferInfoMapper offerInfoMapper;
+
+    @Autowired
+    ServiceGroupMapper serviceGroupMapper;
 
     @Override
     public IPage<OfferInfoVO> findOfferInfoByPage(QueryOfferInfoForm form) {
@@ -65,5 +74,20 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
     public void saveOfferInfo(OfferInfoForm form) {
         OfferInfo offerInfo = ConvertUtil.convert(form, OfferInfo.class);
         this.saveOrUpdate(offerInfo);
+    }
+
+    @Override
+    public CommonResult<OfferInfoVO> lookOfferInfo(Long id) {
+        OfferInfoVO offerInfoVO = offerInfoMapper.selectOfferInfoVO(id);
+
+        Integer sid = offerInfoVO.getSid();
+        if(sid != null){
+            ServiceGroup serviceGroup = serviceGroupMapper.selectById(sid);
+            List<ServiceGroup> serviceGroupList = new ArrayList<>();
+            serviceGroupList.add(serviceGroup);
+            offerInfoVO.setServiceGroupList(serviceGroupList);
+        }
+
+        return CommonResult.success(offerInfoVO);
     }
 }

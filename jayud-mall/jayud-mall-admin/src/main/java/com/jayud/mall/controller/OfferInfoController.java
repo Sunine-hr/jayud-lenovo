@@ -54,6 +54,13 @@ public class OfferInfoController {
         return CommonResult.success("保存报价，成功！");
     }
 
+    @ApiOperation(value = "查看报价详情")
+    @PostMapping(value = "lookOfferInfo")
+    public CommonResult<OfferInfoVO> lookOfferInfo(@RequestBody OfferInfoForm form){
+        Long id = form.getId();
+        return offerInfoService.lookOfferInfo(id);
+    }
+
 
 
 }

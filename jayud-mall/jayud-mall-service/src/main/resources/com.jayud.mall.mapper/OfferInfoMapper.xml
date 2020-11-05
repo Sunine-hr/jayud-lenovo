@@ -59,5 +59,18 @@
         t.`id`
     </select>
 
+    <!--查询报价信息-->
+    <select id="selectOfferInfoVO" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.OfferInfoVO" >
+        select
+        t.id,t.qie,t.`names`,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.`status`,t.user_id,t.user_name,t.create_time,
+        t1.sid,t1.pic_url,t1.tid,t1.start_shipment,t1.destination_port,t1.arrive_warehouse,t1.visible_uid,t1.gid,t1.area_id,t1.qid,t1.task_id,t1.remarks
+        from  offer_info t
+        LEFT JOIN quotation_template t1 on t1.id = t.qie
+        WHERE
+        t.`id` = #{id}
+    </select>
+
+
 
 </mapper>

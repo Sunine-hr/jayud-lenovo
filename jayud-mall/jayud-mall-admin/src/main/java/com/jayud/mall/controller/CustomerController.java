@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/customer")
-@Api(tags = "客户接口")
+@Api(tags = "001-客户接口")
 public class CustomerController {
 
     @Autowired
@@ -29,7 +29,5 @@ public class CustomerController {
         CommonPageResult<CustomerVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
     }
-
-
 
 }

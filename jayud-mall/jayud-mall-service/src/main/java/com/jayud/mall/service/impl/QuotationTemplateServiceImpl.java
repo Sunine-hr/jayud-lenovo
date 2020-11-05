@@ -5,13 +5,22 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.QuotationTemplateMapper;
-import com.jayud.mall.model.bo.QueryQuotationTemplateForm;
-import com.jayud.mall.model.bo.QuotationTemplateForm;
+import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.QuotationTemplate;
+import com.jayud.mall.model.po.TemplateCopeReceivable;
+import com.jayud.mall.model.po.TemplateCopeWith;
+import com.jayud.mall.model.po.TemplateFile;
 import com.jayud.mall.model.vo.QuotationTemplateVO;
 import com.jayud.mall.service.IQuotationTemplateService;
+import com.jayud.mall.service.ITemplateCopeReceivableService;
+import com.jayud.mall.service.ITemplateCopeWithService;
+import com.jayud.mall.service.ITemplateFileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -26,6 +35,15 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
 
     @Autowired
     QuotationTemplateMapper quotationTemplateMapper;
+
+    @Autowired
+    ITemplateCopeReceivableService templateCopeReceivableService;
+
+    @Autowired
+    ITemplateCopeWithService templateCopeWithService;
+
+    @Autowired
+    ITemplateFileService templateFileService;
 
     @Override
     public IPage<QuotationTemplateVO> findQuotationTemplateByPage(QueryQuotationTemplateForm form) {
@@ -61,9 +79,50 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveQuotationTemplateFull(QuotationTemplateForm form) {
         QuotationTemplate quotationTemplate = ConvertUtil.convert(form, QuotationTemplate.class);
         this.saveOrUpdate(quotationTemplate);
+        //报价模板Id
+        Long id = quotationTemplate.getId();
+        System.out.println(id);
+
+        /*应收费用明细List*/
+        List<TemplateCopeReceivableForm> templateCopeReceivableFormList = form.getTemplateCopeReceivableFormList();
+        if(templateCopeReceivableFormList.size() > 0){
+            List<TemplateCopeReceivable> list = new ArrayList<>();
+            templateCopeReceivableFormList.forEach(templateCopeReceivableForm -> {
+                TemplateCopeReceivable templateCopeReceivable = ConvertUtil.convert(templateCopeReceivableForm, TemplateCopeReceivable.class);
+                templateCopeReceivable.setQie(id.intValue());
+                list.add(templateCopeReceivable);
+            });
+            templateCopeReceivableService.saveOrUpdateBatch(list);
+        }
+
+        /*应付费用明细list*/
+        List<TemplateCopeWithForm> templateCopeWithFormList = form.getTemplateCopeWithFormList();
+        if(templateCopeWithFormList.size() > 0){
+            List<TemplateCopeWith> list = new ArrayList<>();
+            templateCopeWithFormList.forEach(templateCopeWithForm -> {
+                TemplateCopeWith templateCopeWith = ConvertUtil.convert(templateCopeWithForm, TemplateCopeWith.class);
+                templateCopeWith.setQie(id.intValue());
+                list.add(templateCopeWith);
+            });
+            templateCopeWithService.saveOrUpdateBatch(list);
+        }
+
+        /*文件信息明细list*/
+        List<TemplateFileForm> templateFileFormList = form.getTemplateFileFormList();
+        if(templateFileFormList.size() > 0){
+            List<TemplateFile> list = new ArrayList<>();
+            templateFileFormList.forEach(templateFileForm -> {
+                TemplateFile templateFile = ConvertUtil.convert(templateFileForm, TemplateFile.class);
+                templateFile.setQie(id.intValue());
+                list.add(templateFile);
+            });
+            templateFileService.saveOrUpdateBatch(list);
+        }
+
     }
 
     @Override

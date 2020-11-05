@@ -8,13 +8,13 @@ import lombok.Data;
 @ApiModel(value = "查询客户Form")
 public class QueryCustomerForm extends BasePageForm{
 
-    @ApiModelProperty(value = "中文名，联系人")
+    @ApiModelProperty(value = "中文名，联系人", position = 1)
     private String nameCn;
 
-    @ApiModelProperty(value = "公司名")
+    @ApiModelProperty(value = "公司名", position = 2)
     private String company;
 
-    @ApiModelProperty(value = "关键字(中文名，联系人 or 公司名)")
+    @ApiModelProperty(value = "关键字(中文名，联系人 or 公司名)", position = 3)
     private String keyword;
 
 }

@@ -57,6 +57,8 @@ mybatis-plus:
       id-type: auto
 swagger:
   enable: true
+  ui-config:
+    operations-sorter: method
 secure:
   ignored:
     urls: #安全路径白名单
@@ -78,5 +80,4 @@ secure:
       - /oss/upload
       - /api/**
       - /jayudAir/**
-
 

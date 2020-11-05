@@ -18,16 +18,16 @@ import javax.validation.Valid;
 import java.util.List;
 
 
+@Api(tags = "A001-南京电商后台-用户管理")
 @RestController
 @RequestMapping("/system/user")
-@Api(tags = "南京电商后台-用户管理")
 public class SystemUserController {
 
     @Autowired
     ISystemUserService userService;
 
 
-    @ApiOperation(value = "测试")
+    @ApiOperation(value = "测试", position = 1)
     @PostMapping(value = "/hi")
     public String hi(){
         return "hi mall admin";
@@ -46,14 +46,14 @@ public class SystemUserController {
 
     }
 
-    @ApiOperation(value = "查询用户list")
+    @ApiOperation(value = "查询用户list", position = 2)
     @PostMapping(value = "/getUserList")
     public CommonResult<List<SystemUserVO>> getUserList(){
         List<SystemUserVO> userList = userService.getUserList();
         return CommonResult.success(userList);
     }
 
-    @ApiOperation(value = "新增用户")
+    @ApiOperation(value = "新增用户", position = 3)
     @PostMapping(value = "/insertUser")
     public CommonResult insertUser(@Valid @RequestBody SaveUserForm userForm){
         userService.insertUser(userForm);

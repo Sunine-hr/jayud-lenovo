@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-@ApiModel(value = "应收/应付费用名称Form")
+@ApiModel(value = "应收应付费用名称Form")
 public class ReceivableCostForm {
 
     @ApiModelProperty(value = "自增ID")

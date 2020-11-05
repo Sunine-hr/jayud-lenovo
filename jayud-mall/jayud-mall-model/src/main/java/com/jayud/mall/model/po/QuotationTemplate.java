@@ -56,7 +56,7 @@ public class QuotationTemplate extends Model<QuotationTemplate> {
     @ApiModelProperty(value = "可达仓库(fab_warehouse.id),多个用逗号分隔")
     private String arriveWarehouse;
 
-    @ApiModelProperty(value = "可见客户(0所客户，多客户时逗号分隔用户ID)")
+    @ApiModelProperty(value = "可见客户(custome.id，多客户时逗号分隔用户ID)")
     private String visibleUid;
 
     @ApiModelProperty(value = "开船日期")

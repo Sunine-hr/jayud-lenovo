@@ -53,7 +53,8 @@ public class CostTypeController {
     @ApiOperation(value = "新增编辑费用类别")
     @PostMapping(value = "/saveOrUpdateCostType")
     public CommonResult saveOrUpdateCostType(@Valid @RequestBody AddCostTypeForm form) {
-        CostType costType = new CostType().setCode(form.getCode()).setCodeName(form.getCodeName());
+        CostType costType = new CostType().setId(form.getId())
+                .setCode(form.getCode()).setCodeName(form.getCodeName());
         if (this.costTypeService.checkUnique(costType)){
             return CommonResult.error(400, "名称或代码已经存在");
         }

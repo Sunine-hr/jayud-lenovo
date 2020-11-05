@@ -130,6 +130,7 @@ public class SupplierInfoController {
     @PostMapping(value = "/saveOrUpdateSupplierInfo")
     public CommonResult saveOrUpdateSupplierInfo(@Valid @RequestBody AddSupplierInfoForm form) {
         SupplierInfo supplierInfo = new SupplierInfo()
+                .setId(form.getId())
                 .setSupplierCode(form.getSupplierCode()).setSupplierChName(form.getSupplierChName());
         if (this.supplierInfoService.checkUnique(supplierInfo)) {
             return CommonResult.error(400, "名称或代码已经存在");
@@ -237,9 +238,12 @@ public class SupplierInfoController {
 
     @ApiOperation(value = "供应商账号管理-修改/编辑")
     @PostMapping(value = "/saveOrUpdateSupplierAccount")
-    public CommonResult saveOrUpdateSupplierAccount(@RequestBody AddCusAccountForm form) {
+    public CommonResult saveOrUpdateSupplierAccount(@RequestBody AddSupplierAccountForm form) {
         form.setUserType(UserTypeEnum.supplier.getCode());
-        ApiResult result = oauthClient.saveOrUpdateCustAccount(form);
+        //TODO 实体参数departmentChargeId错了，不改动源代码情况，做了特殊处理，后续再更改
+        AddCusAccountForm addCusAccountForm = ConvertUtil.convert(form, AddCusAccountForm.class);
+        addCusAccountForm.setDepartmentChargeId(form.getSuperiorId());
+        ApiResult result = oauthClient.saveOrUpdateCustAccount(addCusAccountForm);
         if (HttpStatus.SC_OK == result.getCode()) {
             return CommonResult.success();
         } else {

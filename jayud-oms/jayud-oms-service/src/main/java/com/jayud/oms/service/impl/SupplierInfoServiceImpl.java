@@ -183,8 +183,19 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
     @Override
     public boolean checkUnique(SupplierInfo supplierInfo) {
         QueryWrapper<SupplierInfo> condition = new QueryWrapper<>();
-        condition.lambda().eq(SupplierInfo::getSupplierCode, supplierInfo.getSupplierCode())
-                .or().eq(SupplierInfo::getSupplierChName, supplierInfo.getSupplierChName());
+        if (supplierInfo.getId() != null) {
+            //修改过滤自身名字
+            condition.lambda().and(tmp -> tmp.eq(SupplierInfo::getId, supplierInfo.getId())
+                    .eq(SupplierInfo::getSupplierChName, supplierInfo.getSupplierChName()));
+            int count = this.count(condition);
+            if (count > 0) {
+                //匹配到自己名称,不进行唯一校验
+                return false;
+            }
+        }
+        condition = new QueryWrapper<>();
+        condition.lambda().and(tmp -> tmp.eq(SupplierInfo::getSupplierCode, supplierInfo.getSupplierCode())
+                .or().eq(SupplierInfo::getSupplierChName, supplierInfo.getSupplierChName()));
         return this.count(condition) > 0;
     }
 

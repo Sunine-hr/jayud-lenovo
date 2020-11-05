@@ -165,6 +165,16 @@ public class ProductBizServiceImpl extends ServiceImpl<ProductBizMapper, Product
     @Override
     public boolean checkUnique(ProductBiz productBiz) {
         QueryWrapper<ProductBiz> condition = new QueryWrapper<>();
+        if (productBiz.getId() != null) {
+            //修改过滤自身名字
+            condition.lambda().and(tmp -> tmp.eq(ProductBiz::getId, productBiz.getId())
+                    .eq(ProductBiz::getName, productBiz.getName()));
+            int count = this.count(condition);
+            if (count > 0) {
+                //匹配到自己名称,不进行唯一校验
+                return false;
+            }
+        }
         condition.lambda().eq(ProductBiz::getIdCode, productBiz.getIdCode())
                 .or().eq(ProductBiz::getName, productBiz.getName());
         return this.count(condition) > 0;

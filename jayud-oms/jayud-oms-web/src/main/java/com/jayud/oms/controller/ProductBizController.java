@@ -47,7 +47,8 @@ public class ProductBizController {
     @ApiOperation(value = "新增编辑业务类型")
     @PostMapping(value = "/saveOrUpdateProductBiz")
     public CommonResult saveOrUpdateProductBiz(@Valid @RequestBody AddProductBizForm form) {
-        ProductBiz productBiz = new ProductBiz().setIdCode(form.getIdCode()).setName(form.getName());
+        ProductBiz productBiz = new ProductBiz().setId(form.getId())
+                .setIdCode(form.getIdCode()).setName(form.getName());
         if (this.productBizService.checkUnique(productBiz)) {
             return CommonResult.error(400, "名称或代码已经存在");
         }

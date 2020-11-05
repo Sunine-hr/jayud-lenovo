@@ -53,7 +53,8 @@ public class CostInfoController {
     @ApiOperation(value = "新增编辑费用名称")
     @PostMapping(value = "/saveOrUpdateCostInfo")
     public CommonResult saveOrUpdateCostInfo(@Valid @RequestBody AddCostInfoForm form) {
-        CostInfo costInfo = new CostInfo().setIdCode(form.getIdCode()).setName(form.getName());
+        CostInfo costInfo = new CostInfo().setId(form.getId())
+                .setIdCode(form.getIdCode()).setName(form.getName());
         if (this.costInfoService.checkUnique(costInfo)) {
             return CommonResult.error(400, "名称或代码已经存在");
         }

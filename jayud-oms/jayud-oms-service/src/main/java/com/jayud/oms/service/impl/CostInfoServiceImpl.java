@@ -151,6 +151,16 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
     @Override
     public boolean checkUnique(CostInfo costInfo) {
         QueryWrapper<CostInfo> condition = new QueryWrapper<>();
+        if (costInfo.getId() != null) {
+            //修改过滤自身名字
+            condition.lambda().and(tmp -> tmp.eq(CostInfo::getId, costInfo.getId())
+                    .eq(CostInfo::getName, costInfo.getName()));
+            int count = this.count(condition);
+            if (count > 0) {
+                //匹配到自己名称,不进行唯一校验
+                return false;
+            }
+        }
         condition.lambda().eq(CostInfo::getIdCode, costInfo.getIdCode())
                 .or().eq(CostInfo::getName, costInfo.getName());
         return this.count(condition) > 0;

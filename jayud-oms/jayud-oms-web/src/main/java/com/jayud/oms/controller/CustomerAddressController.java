@@ -7,12 +7,9 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.model.bo.AddCustomerAddressForm;
-import com.jayud.oms.model.bo.AddDriverInfoForm;
 import com.jayud.oms.model.bo.QueryCustomerAddressForm;
-import com.jayud.oms.model.bo.QueryDriverInfoForm;
 import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.CustomerAddress;
-import com.jayud.oms.model.po.DriverInfo;
 import com.jayud.oms.model.vo.CustomerAddressVO;
 import com.jayud.oms.model.vo.DriverInfoVO;
 import com.jayud.oms.service.ICustomerAddressService;
@@ -22,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;

@@ -11,6 +11,7 @@ import com.jayud.oms.mapper.CostTypeMapper;
 import com.jayud.oms.model.bo.AddCostTypeForm;
 import com.jayud.oms.model.bo.QueryCostTypeForm;
 import com.jayud.oms.model.enums.StatusEnum;
+import com.jayud.oms.model.po.CostInfo;
 import com.jayud.oms.model.po.CostType;
 import com.jayud.oms.model.vo.CostTypeVO;
 import com.jayud.oms.service.ICostTypeService;
@@ -137,6 +138,16 @@ public class CostTypeServiceImpl extends ServiceImpl<CostTypeMapper, CostType> i
     @Override
     public boolean checkUnique(CostType costType) {
         QueryWrapper<CostType> condition = new QueryWrapper<>();
+        if (costType.getId() != null) {
+            //修改过滤自身名字
+            condition.lambda().and(tmp -> tmp.eq(CostType::getId, costType.getId())
+                    .eq(CostType::getCodeName, costType.getCodeName()));
+            int count = this.count(condition);
+            if (count > 0) {
+                //匹配到自己名称,不进行唯一校验
+                return false;
+            }
+        }
         condition.lambda().eq(CostType::getCode, costType.getCode())
                 .or().eq(CostType::getCodeName, costType.getCodeName());
         return this.count(condition) > 0;

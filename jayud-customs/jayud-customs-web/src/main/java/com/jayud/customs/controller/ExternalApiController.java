@@ -60,16 +60,6 @@ public class ExternalApiController {
 
 
     /**
-     * 获取当前登录用户
-     * @return
-     */
-    @RequestMapping(value = "/api/getLoginUser")
-    ApiResult getLoginUser(){
-        String loginUser = redisUtils.get("loginUser",100);
-        return ApiResult.ok(loginUser);
-    }
-
-    /**
      * 创建报关单
      * @param form
      * @return
@@ -106,7 +96,7 @@ public class ExternalApiController {
             OrderCustoms orderCustoms = new OrderCustoms();
             orderCustoms.setStatus(customs.getStatus());
             orderCustoms.setNeedInputCost(customs.getNeedInputCost());
-            orderCustoms.setUpdatedUser(String.valueOf(getLoginUser().getData()));
+            orderCustoms.setUpdatedUser(customs.getLoginUser());
             orderCustoms.setUpdatedTime(LocalDateTime.now());
             QueryWrapper<OrderCustoms> updateWrapper = new QueryWrapper<>();
             updateWrapper.eq(SqlConstant.ORDER_NO,customs.getOrderNo());

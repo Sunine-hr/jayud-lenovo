@@ -63,4 +63,7 @@ public class InputOrderTakeAdrVO {
     @ApiModelProperty(value = "车型(1-3T 2-5t 3-8T 4-10T)")
     private Integer vehicleSize;
 
+    @ApiModelProperty(value = "入仓号,送货地址特有")
+    private String enterWarehouseNo;
+
 }

@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.common.RedisUtils;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.OrderStatusEnum;
@@ -15,7 +14,6 @@ import com.jayud.tms.mapper.OrderTransportMapper;
 import com.jayud.tms.model.bo.InputOrderTakeAdrForm;
 import com.jayud.tms.model.bo.InputOrderTransportForm;
 import com.jayud.tms.model.bo.QueryOrderTmsForm;
-import com.jayud.tms.model.po.DeliveryAddress;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.*;
@@ -23,7 +21,6 @@ import com.jayud.tms.service.IDeliveryAddressService;
 import com.jayud.tms.service.IOrderSendCarsService;
 import com.jayud.tms.service.IOrderTakeAdrService;
 import com.jayud.tms.service.IOrderTransportService;
-import io.netty.util.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,9 +38,6 @@ import java.util.List;
  */
 @Service
 public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper, OrderTransport> implements IOrderTransportService {
-
-    @Autowired
-    RedisUtils redisUtils;
 
     @Autowired
     IOrderTakeAdrService orderTakeAdrService;
@@ -65,7 +59,13 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             return false;
         }
         List<InputOrderTakeAdrForm> orderTakeAdrForms1 = form.getTakeAdrForms1();
+        for (InputOrderTakeAdrForm orderTakeAdrForm1 : orderTakeAdrForms1) {
+            orderTakeAdrForm1.setOprType(Integer.valueOf(CommonConstant.VALUE_1));
+        }
         List<InputOrderTakeAdrForm> orderTakeAdrForms2 = form.getTakeAdrForms2();
+        for (InputOrderTakeAdrForm orderTakeAdrForm2 : orderTakeAdrForms2) {
+            orderTakeAdrForm2.setOprType(Integer.valueOf(CommonConstant.VALUE_2));
+        }
         List<InputOrderTakeAdrForm> orderTakeAdrForms = new ArrayList<>();
 
         //值为空的不进行保存
@@ -73,27 +73,19 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         handleTakeAdrForms.addAll(orderTakeAdrForms1);
         handleTakeAdrForms.addAll(orderTakeAdrForms2);
         for(InputOrderTakeAdrForm inputOrderTakeAdrForm : handleTakeAdrForms){
-            //如果收货提货信息的联系人都不填,不保存该信息,视为恶意操作
-            if(!StringUtil.isNullOrEmpty(inputOrderTakeAdrForm.getContacts())){
+            //如果收货提货信息都不填,不保存该信息,视为恶意操作
+            if(inputOrderTakeAdrForm.getDeliveryId() != null){
                 orderTakeAdrForms.add(inputOrderTakeAdrForm);
             }
         }
 
         if(orderTransport.getId() != null){//修改
-            //修改时,先把以前的收货提货地址清空
-            List<Long> ids = new ArrayList<>();
-            for (InputOrderTakeAdrForm inputOrderTakeAdrForm : orderTakeAdrForms) {
-               Long deliveryId = inputOrderTakeAdrForm.getDeliveryId();
-               ids.add(deliveryId);
-            }
-            if(ids.size() > 0) {
-                deliveryAddressService.removeByIds(ids);//删除地址信息
-            }
+            //修改时,先把以前的收货信息清空
             QueryWrapper queryWrapper = new QueryWrapper();
             queryWrapper.eq("order_no",form.getOrderNo());
             orderTakeAdrService.remove(queryWrapper);//删除货物信息
             orderTransport.setUpdatedTime(LocalDateTime.now());
-            orderTransport.setUpdatedUser(getLoginUser());
+            orderTransport.setUpdatedUser(form.getLoginUser());
         }else {//新增
             //生成订单号
             String orderNo = StringUtils.loadNum(CommonConstant.T,12);
@@ -105,16 +97,10 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
                 }
             }
             orderTransport.setOrderNo(orderNo);
-            orderTransport.setCreatedUser(getLoginUser());
-            orderTransport.setSendCarPdfUrl("url");//TODO
+            orderTransport.setCreatedUser(form.getLoginUser());
         }
         for (InputOrderTakeAdrForm inputOrderTakeAdrForm : orderTakeAdrForms) {
             OrderTakeAdr orderTakeAdr = ConvertUtil.convert(inputOrderTakeAdrForm,OrderTakeAdr.class);
-            DeliveryAddress deliveryAddress = ConvertUtil.convert(inputOrderTakeAdrForm,DeliveryAddress.class);
-            deliveryAddress.setStatus(Integer.valueOf(CommonConstant.VALUE_0));
-            deliveryAddress.setCreateUser(getLoginUser());
-            deliveryAddressService.save(deliveryAddress);
-            orderTakeAdr.setDeliveryId(deliveryAddress.getId());
             orderTakeAdr.setOrderNo(orderTransport.getOrderNo());
             orderTakeAdrService.save(orderTakeAdr);
         }
@@ -151,6 +137,12 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         for (InputOrderTakeAdrVO inputOrderTakeAdrVO : inputOrderTakeAdrVOS) {
             if(CommonConstant.VALUE_1.equals(String.valueOf(inputOrderTakeAdrVO.getOprType()))){//提货
                 orderTakeAdrForms1.add(inputOrderTakeAdrVO);
+                if(inputOrderTakeAdrVO.getPieceAmount() == null){
+                    inputOrderTakeAdrVO.setPieceAmount(0);
+                }
+                if(inputOrderTakeAdrVO.getWeight() == null){
+                    inputOrderTakeAdrVO.setWeight(0.0);
+                }
                 totalAmount = totalAmount + inputOrderTakeAdrVO.getPieceAmount();
                 totalWeight = totalWeight + inputOrderTakeAdrVO.getWeight();
             }else {
@@ -233,11 +225,4 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         return sendCarPdfVO;
     }
 
-    /**
-     * 当前登录用户
-     * @return
-     */
-    private String getLoginUser(){
-        return redisUtils.get("loginUser",100);
-    }
 }

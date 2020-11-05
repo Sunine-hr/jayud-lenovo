@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.enums.CustomerInfoStatusEnum;
@@ -15,6 +16,7 @@ import com.jayud.oms.model.vo.CurrencyInfoVO;
 import com.jayud.oms.model.vo.InitComboxStrVO;
 import com.jayud.oms.model.vo.InitComboxVO;
 import com.jayud.oms.service.*;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +62,9 @@ public class OrderComboxController {
 
     @Autowired
     IWarehouseInfoService warehouseInfoService;
+
+    @Autowired
+    ICostGenreService costGenreService;
 
     @ApiOperation(value = "纯报关-客户,业务员,合同,业务所属部门,通关口岸")
     @PostMapping(value = "/initCombox1")
@@ -192,11 +197,8 @@ public class OrderComboxController {
             InitComboxStrVO comboxStrVO = new InitComboxStrVO();
             comboxStrVO.setCode(costInfo.getIdCode());
             comboxStrVO.setName(costInfo.getName());
-            if(costInfo.getTypes() == 1){
-                receivableCombox.add(comboxStrVO);
-            }else if(costInfo.getTypes() == 2){
-                paymentCombox.add(comboxStrVO);
-            }
+            receivableCombox.add(comboxStrVO);//后期没做应收应付项目的区分
+            paymentCombox.add(comboxStrVO);
         }
         param.put("paymentCost",paymentCombox);
         param.put("receivableCost",receivableCombox);
@@ -212,19 +214,6 @@ public class OrderComboxController {
             initComboxStrVOS.add(comboxStrVO);
         }
         param.put("currency",initComboxStrVOS);
-
-        //费用类型
-        List<InitComboxVO> costTypeComboxs = new ArrayList<>();
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("status","1");
-        List<CostType> costTypes = costTypeService.list(queryWrapper);
-        for (CostType costType : costTypes) {
-            InitComboxVO initComboxVO = new InitComboxVO();
-            initComboxVO.setName(costType.getCodeName());
-            initComboxVO.setId(costType.getId());
-            costTypeComboxs.add(initComboxVO);
-        }
-        param.put("costTypes",costTypeComboxs);
         return CommonResult.success(param);
     }
 
@@ -250,6 +239,63 @@ public class OrderComboxController {
         }
         return CommonResult.success(initComboxVOS);
     }
+
+    @ApiOperation(value = "费用类别,idCode=费用名称的隐藏值")
+    @PostMapping(value = "/initCostType")
+    public CommonResult<List<InitComboxVO>> initCostType(@RequestBody Map<String,Object> param) {
+        String idCode = MapUtil.getStr(param,CommonConstant.ID_CODE);
+        QueryWrapper queryCostInfo = new QueryWrapper();
+        queryCostInfo.eq(SqlConstant.ID_CODE,idCode);
+        CostInfo costInfo = costInfoService.getOne(queryCostInfo);
+        if(costInfo == null || StringUtil.isNullOrEmpty(costInfo.getCids())){
+            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+        }
+        String[] cids = costInfo.getCids().split(CommonConstant.COMMA);
+        List<InitComboxVO> costTypeComboxs = new ArrayList<>();
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(SqlConstant.STATUS,CommonConstant.VALUE_1);
+        queryWrapper.in(SqlConstant.ID,cids);
+        List<CostType> costTypes = costTypeService.list(queryWrapper);
+        for (CostType costType : costTypes) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setName(costType.getCodeName());
+            initComboxVO.setId(costType.getId());
+            costTypeComboxs.add(initComboxVO);
+        }
+        return CommonResult.success(costTypeComboxs);
+    }
+
+    @ApiOperation(value = "费用类型,bizCode=业务类型CODE")
+    @PostMapping(value = "/initCostGenre")
+    public CommonResult<List<InitComboxVO>> initCostGenre(@RequestBody Map<String,Object> param) {
+        String code = MapUtil.getStr(param,CommonConstant.BIZ_CODE);
+        QueryWrapper queryProductBiz = new QueryWrapper();
+        queryProductBiz.eq(SqlConstant.ID_CODE,code);
+        ProductBiz productBiz = productBizService.getOne(queryProductBiz);
+        if(productBiz == null || StringUtil.isNullOrEmpty(productBiz.getCostGenreIds())){
+            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+        }
+        String[] cids = productBiz.getCostGenreIds().split(CommonConstant.COMMA);
+        List<InitComboxVO> costTypeComboxs = new ArrayList<>();
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(SqlConstant.STATUS,CommonConstant.VALUE_1);
+        queryWrapper.in(SqlConstant.ID,cids);
+        List<CostGenre> costGenres = costGenreService.list(queryWrapper);
+        for (CostGenre costGenre : costGenres) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setName(costGenre.getName());
+            initComboxVO.setId(costGenre.getId());
+            if(productBiz.getCostGenreDefault() == costGenre.getId()){
+                initComboxVO.setIsDefault(true);
+            }else {
+                initComboxVO.setIsDefault(false);
+            }
+            costTypeComboxs.add(initComboxVO);
+        }
+        return CommonResult.success(costTypeComboxs);
+    }
+
+
 
 
 

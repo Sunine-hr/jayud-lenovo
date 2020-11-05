@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
+import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.OrderStatusEnum;
@@ -73,7 +74,7 @@ public class OrderInTransportController {
         OrderTransport orderTransport = new OrderTransport();
         orderTransport.setId(form.getOrderId());
         orderTransport.setUpdatedTime(LocalDateTime.now());
-        orderTransport.setUpdatedUser(getLoginUser());
+        orderTransport.setUpdatedUser(UserOperator.getToken());
 
         AuditInfoForm auditInfoForm = new AuditInfoForm();
         auditInfoForm.setExtId(form.getOrderId());
@@ -104,6 +105,7 @@ public class OrderInTransportController {
             if(form.getCarWeighNum() == null){
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
             }
+            orderTransport.setCarWeighNum(form.getCarWeighNum());
             orderTransport.setStatus(OrderStatusEnum.TMS_T_6.getCode());
 
             form.setStatus(OrderStatusEnum.TMS_T_6.getCode());
@@ -123,8 +125,7 @@ public class OrderInTransportController {
             orderTransport.setLicensePlate(form.getLicensePlate());
             orderTransport.setHkLicensePlate(form.getHkLicensePlate());
             orderTransport.setSeamlessNo(form.getSeamlessNo());
-            orderTransport.setClearCustomsNo(form.getClearCustomsNo());
-            orderTransport.setStatus(OrderStatusEnum.HK_CLEAR_1.getCode());
+            orderTransport.setClearCustomsNo(form.getClearCustomsNo());//清关完成标识,有数据表示清关完成
 
             form.setStatus(OrderStatusEnum.HK_CLEAR_1.getCode());
             form.setStatusName(OrderStatusEnum.HK_CLEAR_1.getDesc());
@@ -147,6 +148,20 @@ public class OrderInTransportController {
 
             auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_13.getCode());
             auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_13.getDesc());
+
+            //车辆出仓后:中转仓卸货装货已完成
+            OprStatusForm tms11 = new OprStatusForm();
+            tms11.setMainOrderId(form.getMainOrderId());
+            tms11.setOrderId(form.getOrderId());
+            tms11.setStatus(OrderStatusEnum.TMS_T_11.getCode());
+            tms11.setStatusName(OrderStatusEnum.TMS_T_11.getDesc());
+            omsClient.saveOprStatus(tms11);
+            OprStatusForm tms12 = new OprStatusForm();
+            tms12.setMainOrderId(form.getMainOrderId());
+            tms12.setOrderId(form.getOrderId());
+            tms12.setStatus(OrderStatusEnum.TMS_T_12.getCode());
+            tms12.setStatusName(OrderStatusEnum.TMS_T_12.getDesc());
+            omsClient.saveOprStatus(tms12);
         }else if(CommonConstant.CAR_SEND.equals(form.getCmd())){//车辆派送
             orderTransport.setStatus(OrderStatusEnum.TMS_T_14.getCode());
 
@@ -193,7 +208,7 @@ public class OrderInTransportController {
         OrderTransport orderTransport = new OrderTransport();
         orderTransport.setId(form.getOrderId());
         orderTransport.setUpdatedTime(LocalDateTime.now());
-        orderTransport.setUpdatedUser(getLoginUser());
+        orderTransport.setUpdatedUser(UserOperator.getToken());
 
         //记录审核信息
         AuditInfoForm auditInfoForm = new AuditInfoForm();
@@ -219,6 +234,7 @@ public class OrderInTransportController {
             orderTransport.setId(transport.getId());
             if (OrderStatusEnum.TMS_T_7.getCode().equals(form.getStatus())) {
                 //记录操作成功状态
+                form.setOrderId(transport.getId());
                 form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
                 form.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
                 form.setStatusName(OrderStatusEnum.TMS_T_7.getDesc());
@@ -247,6 +263,8 @@ public class OrderInTransportController {
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }
             orderTransport.setStatus(form.getStatus());
+            orderTransport.setGoCustomsTime(DateUtils.str2LocalDateTime(form.getGoCustomsTime(),DateUtils.DATE_TIME_PATTERN));
+
             if (OrderStatusEnum.TMS_T_9.getCode().equals(form.getStatus())) {
                 //记录操作成功状态
                 form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
@@ -281,7 +299,7 @@ public class OrderInTransportController {
         OrderTransport orderTransport = new OrderTransport();
         orderTransport.setId(form.getOrderId());
         orderTransport.setUpdatedTime(LocalDateTime.now());
-        orderTransport.setUpdatedUser(getLoginUser());
+        orderTransport.setUpdatedUser(UserOperator.getToken());
 
         OprStatusForm oprStatusForm = new OprStatusForm();
         oprStatusForm.setMainOrderId(form.getMainOrderId());
@@ -307,10 +325,10 @@ public class OrderInTransportController {
             orderSendCars.setEncodeUrlName(StringUtils.getFileNameStr(form.getEncodePics()));
             orderSendCars.setStatus(OrderStatusEnum.TMS_T_2.getCode());
             if(CommonConstant.SEND_CAR.equals(form.getCmd())) {
-                orderSendCars.setCreatedUser(getLoginUser());
+                orderSendCars.setCreatedUser(UserOperator.getToken());
             }else{
                 orderSendCars.setUpdatedTime(LocalDateTime.now());
-                orderSendCars.setUpdatedUser(getLoginUser());
+                orderSendCars.setUpdatedUser(UserOperator.getToken());
             }
             //更新订单状态
             orderTransport.setVehicleSize(form.getVehicleSize());
@@ -323,6 +341,7 @@ public class OrderInTransportController {
             oprStatusForm.setDescription(form.getDescribes());
 
             //记录审核信息
+            auditInfoForm.setExtDesc(SqlConstant.ORDER_TRANSPORT);
             auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_2.getCode());
             auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_2.getDesc());
             auditInfoForm.setAuditComment(form.getDescribes());
@@ -331,13 +350,13 @@ public class OrderInTransportController {
         }else if(CommonConstant.AUDIT_CAR.equals(form.getCmd())){//运输审核
             if(!(OrderStatusEnum.TMS_T_3.getCode().equals(form.getStatus()) ||
                     OrderStatusEnum.TMS_T_3_1.getCode().equals(form.getStatus())) || form.getId() == null ||
-                    form.getOrderId() == null){
+                    form.getOrderId() == null || form.getMainOrderId() == null){
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }
             //更新派车信息
             orderSendCars.setStatus(form.getStatus());
             orderSendCars.setUpdatedTime(LocalDateTime.now());
-            orderSendCars.setUpdatedUser(getLoginUser());
+            orderSendCars.setUpdatedUser(UserOperator.getToken());
             //更新订单状态
             orderTransport.setStatus(form.getStatus());
             //记录操作状态
@@ -447,7 +466,7 @@ public class OrderInTransportController {
         OrderTransport orderTransport = new OrderTransport();
         orderTransport.setId(form.getOrderId());
         orderTransport.setUpdatedTime(LocalDateTime.now());
-        orderTransport.setUpdatedUser(getLoginUser());
+        orderTransport.setUpdatedUser(UserOperator.getToken());
 
         //记录审核信息
         AuditInfoForm auditInfoForm = new AuditInfoForm();
@@ -502,14 +521,14 @@ public class OrderInTransportController {
         OrderTransport orderTransport = new OrderTransport();
         orderTransport.setId(form.getOrderId());
         orderTransport.setUpdatedTime(LocalDateTime.now());
-        orderTransport.setUpdatedUser(getLoginUser());
+        orderTransport.setUpdatedUser(UserOperator.getToken());
         orderTransport.setStatus(OrderStatusEnum.TMS_T_4.getCode());
 
         //记录审核信息
         AuditInfoForm auditInfoForm = new AuditInfoForm();
         auditInfoForm.setExtId(form.getOrderId());
-        auditInfoForm.setAuditStatus(form.getStatus());
-        auditInfoForm.setAuditComment(form.getDescription());
+        auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_4.getCode());
+        auditInfoForm.setAuditComment(OrderStatusEnum.TMS_T_4.getDesc());
         auditInfoForm.setExtDesc(SqlConstant.ORDER_TRANSPORT);
         auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_4.getDesc());
 
@@ -525,13 +544,6 @@ public class OrderInTransportController {
         return CommonResult.success();
     }
 
-    /**
-     * 当前登录用户
-     * @return
-     */
-    private String getLoginUser(){
-        return redisUtils.get("loginUser",100);
-    }
 
 
 }

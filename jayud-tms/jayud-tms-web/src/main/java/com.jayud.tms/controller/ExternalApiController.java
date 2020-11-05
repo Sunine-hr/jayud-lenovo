@@ -75,20 +75,13 @@ public class ExternalApiController {
             OrderTransport orderTransport = new OrderTransport();
             orderTransport.setStatus(tms.getStatus());
             orderTransport.setNeedInputCost(tms.getNeedInputCost());
-            orderTransport.setUpdatedUser(String.valueOf(getLoginUser().getData()));
+            orderTransport.setUpdatedUser(tms.getLoginUser());
             orderTransport.setUpdatedTime(LocalDateTime.now());
             QueryWrapper<OrderTransport> updateWrapper = new QueryWrapper<>();
             updateWrapper.eq(SqlConstant.ORDER_NO,tms.getOrderNo());
             orderTransportService.update(orderTransport,updateWrapper);
         }
         return ApiResult.ok();
-    }
-
-    @ApiOperation(value = "获取当前登录用户")
-    @RequestMapping(value = "/api/getLoginUser")
-    ApiResult getLoginUser(){
-        String loginUser = redisUtils.get("loginUser",100);
-        return ApiResult.ok(loginUser);
     }
 
 

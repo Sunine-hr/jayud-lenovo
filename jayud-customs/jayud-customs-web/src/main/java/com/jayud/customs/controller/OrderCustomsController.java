@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.UserOperator;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.OrderOprCmdEnum;
 import com.jayud.common.enums.OrderStatusEnum;
@@ -81,14 +82,13 @@ public class OrderCustomsController {
            StringUtil.isNullOrEmpty(form.getOperatorUser())){
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
         }
-        String loginUser = orderCustomsService.getLoginUser();
         OrderCustoms orderCustoms = new OrderCustoms();
         orderCustoms.setId(form.getOrderId());
         orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_1.getCode());
         orderCustoms.setJiedanTime(DateUtils.str2LocalDateTime(form.getOperatorTime(),DateUtils.DATE_TIME_PATTERN));
         orderCustoms.setJiedanUser(form.getOperatorUser());
         orderCustoms.setUpdatedTime(LocalDateTime.now());
-        orderCustoms.setUpdatedUser(loginUser);
+        orderCustoms.setUpdatedUser(UserOperator.getToken());
 
         //保存操作节点
         form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
@@ -129,12 +129,11 @@ public class OrderCustomsController {
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
             }
         }
-        String loginUser = orderCustomsService.getLoginUser();
         OrderCustoms orderCustoms = new OrderCustoms();
         orderCustoms.setId(form.getOrderId());
         orderCustoms.setEntrustNo(form.getEntrustNo());
         orderCustoms.setUpdatedTime(LocalDateTime.now());
-        orderCustoms.setUpdatedUser(loginUser);
+        orderCustoms.setUpdatedUser(UserOperator.getToken());
         orderCustoms.setEntrustNo(form.getEntrustNo());
         orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_2.getCode());
 
@@ -182,12 +181,11 @@ public class OrderCustomsController {
                 StringUtil.isNullOrEmpty(form.getOperatorUser())  || form.getOperatorTime() == null ){
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
         }
-        String loginUser = orderCustomsService.getLoginUser();
         OrderCustoms orderCustoms = new OrderCustoms();
         orderCustoms.setId(form.getOrderId());
         orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_3.getCode());
         orderCustoms.setUpdatedTime(LocalDateTime.now());
-        orderCustoms.setUpdatedUser(loginUser);
+        orderCustoms.setUpdatedUser(UserOperator.getToken());
 
         //保存操作节点
         form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
@@ -221,7 +219,6 @@ public class OrderCustomsController {
                 form.getMainOrderId() == null ){
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
         }
-        String loginUser = orderCustomsService.getLoginUser();
         OrderCustoms orderCustoms = new OrderCustoms();
         orderCustoms.setId(form.getOrderId());
 
@@ -285,7 +282,7 @@ public class OrderCustomsController {
             flag = false;
         }
         orderCustoms.setUpdatedTime(LocalDateTime.now());
-        orderCustoms.setUpdatedUser(loginUser);
+        orderCustoms.setUpdatedUser(UserOperator.getToken());
         boolean result = orderCustomsService.saveOrUpdate(orderCustoms);
 
         //只保存操作成功，既能推动流程的状态,便于流程节点的展示
@@ -340,7 +337,7 @@ public class OrderCustomsController {
             OrderCustoms orderCustom = new OrderCustoms();
             orderCustom.setId(temp.getId());
             orderCustom.setUpdatedTime(LocalDateTime.now());
-            orderCustom.setUpdatedUser(orderCustomsService.getLoginUser());
+            orderCustom.setUpdatedUser(UserOperator.getToken());
 
 
             //记录审核信息

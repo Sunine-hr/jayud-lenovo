@@ -1,22 +1,22 @@
 package com.jayud.oms.controller;
 
 
-import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.oms.model.bo.AddProductBizForm;
-import com.jayud.oms.model.bo.DeleteForm;
 import com.jayud.oms.model.bo.QueryProductBizForm;
 import com.jayud.oms.model.vo.ProductBizVO;
 import com.jayud.oms.service.IProductBizService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Map;
 
 /**
  * <p>
@@ -28,7 +28,7 @@ import javax.validation.Valid;
  */
 @RestController
 @RequestMapping("/productBiz")
-@Api(tags = "业务类型列表接口")
+@Api(tags = "基础数据业务类型列表接口")
 public class ProductBizController {
 
     @Autowired
@@ -52,22 +52,28 @@ public class ProductBizController {
         }
     }
 
-    @ApiOperation(value = "删除业务类型")
-    @PostMapping(value = "/deleteProductBiz")
-    public CommonResult deleteProductBiz(@Valid @RequestBody DeleteForm form) {
-        if (this.productBizService.deleteByIds(form.getIds())) {
+    @ApiOperation(value = "更改启用/禁用业务类型状态,id是业务类型主键")
+    @PostMapping(value = "/enableOrDisableProductBiz")
+    public CommonResult enableOrDisableProductBiz(@RequestBody Map<String,String> map) {
+
+        if (StringUtils.isEmpty(map.get("id"))) {
+            return CommonResult.error(500, "id is required");
+        }
+        Long id =Long.parseLong(map.get("id"));
+        if (this.productBizService.enableOrDisableProductBiz(id)) {
             return CommonResult.success();
         } else {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
     }
 
-    @ApiOperation(value = "根据主键获取业务类型详情")
-    @PostMapping(value = "/getById")
-    public CommonResult getById(@RequestParam(value = "id") Long id) {
-        if (ObjectUtil.isNull(id)){
-            return CommonResult.error(500,"id is required");
+    @ApiOperation(value = "根据主键获取业务类型详情,id是业务类型主键")
+    @PostMapping(value = "/getProductBizById")
+    public CommonResult getProductBizById(@RequestBody Map<String, String> map) {
+        if (StringUtils.isEmpty(map.get("id"))) {
+            return CommonResult.error(500, "id is required");
         }
+        Long id =Long.parseLong(map.get("id"));
         ProductBizVO productBizVO = this.productBizService.getById(id);
         return CommonResult.success(productBizVO);
     }

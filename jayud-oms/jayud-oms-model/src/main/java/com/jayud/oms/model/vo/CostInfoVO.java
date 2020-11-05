@@ -1,16 +1,11 @@
 package com.jayud.oms.model.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
-import io.swagger.annotations.ApiModel;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -34,8 +29,11 @@ public class CostInfoVO {
     @ApiModelProperty(value = "费用名")
     private String name;
 
-    @ApiModelProperty(value = "费用名状态(1启用 2无效)")
+    @ApiModelProperty(value = "费用名状态(0禁用 1启用)")
     private String status;
+
+    @ApiModelProperty(value = "费用类别")
+    private List<Long> cids;
 
     @ApiModelProperty(value = "描述")
     private String remarks;
@@ -43,17 +41,19 @@ public class CostInfoVO {
     @ApiModelProperty(value = "费用类型")
     private String codeName;
 
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "创建人")
     private String createUser;
 
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "更新时间")
-    private LocalDateTime upTime;
+    private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "更新人")
-    private String upUser;
+    private String updateUser;
 
 
 }

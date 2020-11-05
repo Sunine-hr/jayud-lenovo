@@ -51,12 +51,6 @@ public interface IOrderCustomsService extends IService<OrderCustoms> {
     IPage<CustomsOrderInfoVO> findCustomsOrderByPage(QueryCustomsOrderInfoForm form);
 
     /**
-     * 获取当前登录用户
-     * @return
-     */
-    public String getLoginUser();
-
-    /**
      * 获取订单详情
      * @param mainOrderNo
      * @return

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.mapper.CustomerAddressMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.CustomerAddress">
+        <id column="id" property="id"/>
+        <result column="type" property="type"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="contacts" property="contacts"/>
+        <result column="phone" property="phone"/>
+        <result column="province" property="province"/>
+        <result column="city" property="city"/>
+        <result column="area" property="area"/>
+        <result column="address" property="address"/>
+        <result column="postcode" property="postcode"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, type, customer_id, contacts, phone, province, city, area, address, postcode, status, create_time, create_user, update_time, update_user
+    </sql>
+
+    <select id="findCustomerAddressByPage" parameterType="com.jayud.oms.model.bo.QueryCustomerAddressForm"
+            resultType="com.jayud.oms.model.vo.CustomerAddressVO">
+        select
+        id, type, customer_id,
+        contacts, phone, province, city, area, address,
+        postcode, status,
+        create_user createUser, create_time createTime,
+        update_time updateTime, update_user updateUser
+        from
+        customer_address
+        <where>
+            <if test="form.contacts !=null and form.contacts !=''">
+                and contacts like concat("%",#{form.contacts},"%")
+            </if>
+            <if test="form.phone !=null and form.phone !=''">
+                and phone like concat("%",#{form.phone},"%")
+            </if>
+        </where>
+    </select>
+
+</mapper>

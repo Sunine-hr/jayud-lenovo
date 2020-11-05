@@ -1,5 +1,6 @@
 package com.jayud.tms.controller;
 
+import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.tms.model.vo.SendCarPdfVO;
@@ -8,7 +9,8 @@ import com.jayud.tms.service.IOrderTransportService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,9 +29,10 @@ public class PdfController {
     @Autowired
     private IOrderTransportService orderTransportService;
 
-    @ApiOperation(value = "渲染数据")
-    @GetMapping(value = "/initPdfData")
-    public CommonResult<SendCarPdfVO> initPdfData(String orderNo) {
+    @ApiOperation(value = "渲染数据,orderNo=子订单号")
+    @PostMapping(value = "/initPdfData")
+    public CommonResult<SendCarPdfVO> initPdfData(@RequestBody Map<String,Object> param) {
+        String orderNo = MapUtil.getStr(param, CommonConstant.ORDER_NO);
         SendCarPdfVO sendCarPdfVO = orderTransportService.initPdfData(orderNo, CommonConstant.ZGYS);
         return CommonResult.success(sendCarPdfVO);
     }

@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.common.RedisUtils;
+import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.mapper.CostInfoMapper;
 import com.jayud.oms.model.bo.AddCostInfoForm;
@@ -38,8 +38,6 @@ import java.util.stream.Collectors;
 public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> implements ICostInfoService {
 
     @Autowired
-    private RedisUtils redisUtils;
-    @Autowired
     private ICostTypeService costTypeService;
 
     /**
@@ -71,7 +69,7 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
                 list.add(Long.parseLong(cid));
             }
 
-            List<CostTypeVO> costTypes = this.costTypeService.findCostTypeByIds(list);
+            List<CostTypeVO> costTypes = this.costTypeService.getCostTypeByIds(list);
             //拼接费用类型
             StringBuilder sb = new StringBuilder();
             for (CostTypeVO costType : costTypes) {
@@ -90,45 +88,53 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
      */
     @Override
     public boolean saveOrUpdateCostInfo(AddCostInfoForm form) {
-        String loginUser = redisUtils.get("loginUser", 100);
+        StringBuilder sb = new StringBuilder();
+        for (Long cid : form.getCids()) {
+            sb.append(cid).append(",");
+        }
         CostInfo costInfo = ConvertUtil.convert(form, CostInfo.class);
+        costInfo.setCids(sb.substring(0, sb.length() - 1));
+
         if (Objects.isNull(costInfo.getId())) {
-            costInfo.setCreateTime(LocalDateTime.now());
-            costInfo.setCreateUser(loginUser);
+            costInfo.setCreateTime(LocalDateTime.now())
+                    .setCreateUser(UserOperator.getToken());
             return this.save(costInfo);
         } else {
-            costInfo.setUpTime(LocalDateTime.now());
-            costInfo.setUpUser(loginUser);
+            costInfo.setIdCode(null)
+                    .setUpdateTime(LocalDateTime.now())
+                    .setUpdateUser(UserOperator.getToken());
             return this.updateById(costInfo);
         }
     }
 
-    /**
-     * 根据id查询费用名称
-     */
-    @Override
-    public CostInfoVO getById(Long id) {
-        CostInfo costInfo = this.baseMapper.selectById(id);
-        return ConvertUtil.convert(costInfo, CostInfoVO.class);
-    }
+//    /**
+//     * 根据id查询费用名称
+//     */
+//    @Override
+//    public CostInfoVO getById(Long id) {
+//        CostInfo costInfo = this.baseMapper.selectById(id);
+//        return ConvertUtil.convert(costInfo, CostInfoVO.class);
+//    }
 
     /**
-     * 更新为无效状态
+     * 更改启用/禁用状态
      *
-     * @param ids
+     * @param id
      * @return
      */
     @Override
-    public boolean deleteByIds(List<Long> ids) {
-        String loginUser = redisUtils.get("loginUser", 100);
-        List<CostInfo> list = new ArrayList<>();
-        LocalDateTime now = LocalDateTime.now();
-        ids.stream().forEach(id -> {
-            list.add(new CostInfo().setId(id).setStatus(StatusEnum.INVALID.getCode())
-                    .setUpTime(now).setUpUser(loginUser));
-        });
+    public boolean enableOrDisableCostInfo(Long id) {
+        //查询当前状态
+        QueryWrapper<CostInfo> condition = new QueryWrapper<>();
+        condition.lambda().select(CostInfo::getStatus).eq(CostInfo::getId, id);
+        CostInfo tmp = this.baseMapper.selectOne(condition);
 
-        return this.updateBatchById(list);
+        String status = "1".equals(tmp.getStatus()) ? StatusEnum.INVALID.getCode() : StatusEnum.ENABLE.getCode();
+
+        CostInfo costInfo = new CostInfo().setId(id).setStatus(status)
+                .setUpdateTime(LocalDateTime.now()).setUpdateUser(UserOperator.getToken());
+
+        return this.updateById(costInfo);
     }
 
     @Override

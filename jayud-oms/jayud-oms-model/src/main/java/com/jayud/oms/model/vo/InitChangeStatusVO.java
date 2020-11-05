@@ -1,5 +1,6 @@
 package com.jayud.oms.model.vo;
 
+import com.jayud.common.constant.CommonConstant;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -21,5 +22,14 @@ public class InitChangeStatusVO {
 
     @ApiModelProperty(value = "是否需要录入费用")
     private Boolean needInputCost;
+
+    public String getOrderType() {
+        if(CommonConstant.ZGYS.equals(this.orderType)){
+            return CommonConstant.ZGYS_DESC;
+        }else if(CommonConstant.BG.equals(this.orderType)){
+            return CommonConstant.BG_DESC;
+        }
+        return "";
+    }
 
 }

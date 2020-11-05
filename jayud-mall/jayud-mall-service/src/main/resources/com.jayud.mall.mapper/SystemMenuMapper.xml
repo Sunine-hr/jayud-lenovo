@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.SystemMenuMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.SystemMenu">
+        <id column="id" property="id" />
+        <result column="parent_id" property="parentId" />
+        <result column="create_time" property="createTime" />
+        <result column="name" property="name" />
+        <result column="level" property="level" />
+        <result column="sort" property="sort" />
+        <result column="key" property="key" />
+        <result column="icon" property="icon" />
+        <result column="hidden" property="hidden" />
+        <result column="router" property="router" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, parent_id, create_time, `name`, `level`, sort, `key`, icon, hidden, router
+    </sql>
+
+    <select id="findAllMenuVO" resultType="com.jayud.mall.model.vo.SystemMenuVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM system_menu
+    </select>
+
+
+</mapper>

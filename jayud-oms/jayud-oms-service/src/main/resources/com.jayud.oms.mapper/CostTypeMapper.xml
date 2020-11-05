@@ -20,15 +20,15 @@
         select
             id, code, code_name codeName, status,
             is_pay_collection isPayCollection,
-            create_time,
-            create_user,
-            up_time,
-            up_user,
+            create_time createTime,
+            create_user createUser,
+            update_time updateTime,
+            update_user updateUser,
             remarks
         from
         cost_type
         <where>
-            and status='1'
+
             <if test="form.codeName !=null and form.codeName !=''">
                 and code_name like concat('%',#{form.codeName},'%')
             </if>

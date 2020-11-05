@@ -18,6 +18,9 @@ public class QueryCustomsOrderInfoForm extends BasePageForm{
     @ApiModelProperty(value = "委托号")
     private String entrustNo;
 
+    @ApiModelProperty(value = "当前登录用户,前台传")
+    private String loginUserName;
+
     @ApiModelProperty(value = "操作指令,cmd = confirmOrder接单 or exceptionOrder异常单 or auditFail审核不通过 or orderList订单列表 or " +
             "issueOrder打单 or toCheck复核 or declare申报 or releaseConfirm放行确认 or goCustomsConfirm 通关确认")
     private String cmd;

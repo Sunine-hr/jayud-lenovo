@@ -13,6 +13,8 @@
         <result column="customer_code" property="customerCode" />
         <result column="customer_name" property="customerName" />
         <result column="cost_type_id" property="costTypeId" />
+        <result column="cost_genre_id" property="costGenreId" />
+        <result column="unit" property="unit" />
         <result column="cost_code" property="costCode" />
         <result column="unit_price" property="unitPrice" />
         <result column="number" property="number" />
@@ -30,7 +32,9 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, main_order_no, biz_order_no, order_no, biz_code, biz_name, customer_code, customer_name,cost_type_id, cost_code, unit_price, number, currency_code, amount, exchange_rate, change_amount, remarks, status, opt_name, opt_time, created_time, created_user
+        id, main_order_no, biz_order_no, order_no, biz_code, biz_name, customer_code, customer_name,cost_type_id, cost_code,
+        unit_price, number, currency_code, amount, exchange_rate, change_amount, remarks, status, opt_name, opt_time,
+        created_time, created_user,cost_genre_id,unit
     </sql>
 
     <select id="findPaymentCost" parameterType="com.jayud.oms.model.bo.GetCostDetailForm" resultType="com.jayud.oms.model.vo.InputPaymentCostVO" >
@@ -39,6 +43,9 @@
         opc.`customer_name` customerName ,
         opc.`cost_type_id` costTypeId,
         (SELECT ct.code_name FROM cost_type ct WHERE ct.id = opc.`cost_type_id` LIMIT 1) costType,
+        opc.`cost_genre_id` costGenreId,
+        (SELECT cg.name FROM cost_genre cg WHERE cg.id = opc.cost_genre_id LIMIT 1) costGenre,
+        opc.`unit`,
         opc.`cost_code` costCode,
         (SELECT ci.name FROM cost_info ci WHERE ci.id_code = opc.`cost_code` AND ci.types = 2 LIMIT 1) costName,
         opc.`unit_price` unitPrice,

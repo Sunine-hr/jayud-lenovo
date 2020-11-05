@@ -91,5 +91,8 @@ public class InputOrderCustomsForm {
     @NotEmpty(message = "subOrders is required")
     private List<InputSubOrderCustomsForm> subOrders = new ArrayList<>();
 
+    @ApiModelProperty(value = "当前登录用户,FeignClient必传,要么就传token,否则跨系统拿不到用户")
+    private String loginUser;
+
 
 }

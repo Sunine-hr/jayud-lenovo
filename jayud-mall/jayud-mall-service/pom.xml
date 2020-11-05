@@ -10,8 +10,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>jayud-mall-service</artifactId>
-    <packaging>pom</packaging>
+    <!--<packaging>pom</packaging>-->
     <version>1.0</version>
+    <dependencies>
+        <dependency>
+            <groupId>com.jayud</groupId>
+            <artifactId>jayud-mall-model</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
     <name>jayud-mall-service</name>
     <description>南京商城项目服务</description>
 

@@ -5,6 +5,7 @@ import com.jayud.oms.model.po.ProductBiz;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class ContractInfoVO {
     @ApiModelProperty(value = "id")
     private Integer id;
 
-    @ApiModelProperty(value = "客户名称")
+    @ApiModelProperty(value = "客户/供应商名称")
     private String name;
 
     @ApiModelProperty(value = "合同编号")
@@ -39,6 +40,9 @@ public class ContractInfoVO {
     @ApiModelProperty(value = "法人主体")
     private Long legalEntity;
 
+    @ApiModelProperty(value = "法人主体名称")
+    private String legalEntityName;
+
     @ApiModelProperty(value = "合同起期")
     private String startDate;
 
@@ -50,6 +54,12 @@ public class ContractInfoVO {
 
     @ApiModelProperty(value = "创建时间")
     private String createdTimeStr;
+
+    @ApiModelProperty(value = "合同类型 0:客户合同 1:供应商合同")
+    private String type;
+
+    @ApiModelProperty(value = "合同绑定的业务id")
+    private Long bindId;
 
     public void setBusinessTypes(String businessType) {
         if(businessType != null){

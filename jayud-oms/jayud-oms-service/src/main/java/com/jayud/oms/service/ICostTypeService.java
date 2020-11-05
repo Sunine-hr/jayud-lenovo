@@ -1,15 +1,11 @@
 package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.oms.model.bo.AddCostInfoForm;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.bo.AddCostTypeForm;
-import com.jayud.oms.model.bo.QueryCostInfoForm;
 import com.jayud.oms.model.bo.QueryCostTypeForm;
 import com.jayud.oms.model.po.CostType;
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.oms.model.vo.CostInfoVO;
 import com.jayud.oms.model.vo.CostTypeVO;
-import com.jayud.oms.model.vo.ProductBizVO;
 
 import java.util.List;
 
@@ -35,7 +31,7 @@ public interface ICostTypeService extends IService<CostType> {
     /**
      * 根据id集合查询费用类别
      */
-    List<CostTypeVO> findCostTypeByIds(List<Long> ids);
+    List<CostTypeVO> getCostTypeByIds(List<Long> ids);
 
     /**
      * 新增编辑费用类别
@@ -46,14 +42,20 @@ public interface ICostTypeService extends IService<CostType> {
     boolean saveOrUpdateCostType(AddCostTypeForm form);
 
     /**
-     * 根据id查询费用类型
+     * 根据id查询费用类别
      */
     CostTypeVO getById(Long id);
 
     /**
-     * 更新为无效状态
-     * @param ids
+     * 更改启用/禁用状态
+     * @param id
      * @return
      */
-    boolean deleteByIds(List<Long> ids);
+    boolean enableOrDisableCostType(Long id);
+
+    /**
+     * 查询所有启用费用类别
+     * @return
+     */
+    List<CostType> getEnableCostType();
 }

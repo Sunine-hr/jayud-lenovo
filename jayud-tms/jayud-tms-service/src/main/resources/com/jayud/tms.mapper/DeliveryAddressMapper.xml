@@ -27,4 +27,23 @@
         post_code, warehouse_info_id, status,create_user
     </sql>
 
+    <select id="findDeliveryAddress"  parameterType="com.jayud.tms.model.bo.QueryDeliveryAddressForm" resultType="com.jayud.tms.model.vo.DeliveryAddressVO" >
+        SELECT
+        da.`id` deliveryId,
+        da.`contacts`,
+        da.`phone`,
+        da.`country_name` countryName,
+        da.`state_name` stateName,
+        da.`city_name` cityName,
+        da.`address`
+        FROM
+        delivery_address da
+        WHERE 1 = 1
+        <if test="form.contacts != null and form.contacts != ''">
+            and da.contacts like concat('%',#{form.contacts},'%')
+        </if>
+        <if test="form.phone != null and form.phone != ''">
+            and da.phone = #{form.phone}
+        </if>
+    </select>
 </mapper>

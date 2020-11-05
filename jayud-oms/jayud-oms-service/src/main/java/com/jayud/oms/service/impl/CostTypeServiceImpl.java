@@ -1,21 +1,19 @@
 package com.jayud.oms.service.impl;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.common.RedisUtils;
+import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.mapper.CostTypeMapper;
 import com.jayud.oms.model.bo.AddCostTypeForm;
 import com.jayud.oms.model.bo.QueryCostTypeForm;
 import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.CostType;
-import com.jayud.oms.model.po.ProductBiz;
 import com.jayud.oms.model.vo.CostTypeVO;
-import com.jayud.oms.model.vo.ProductBizVO;
 import com.jayud.oms.service.ICostTypeService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -33,8 +31,6 @@ import java.util.Objects;
  */
 @Service
 public class CostTypeServiceImpl extends ServiceImpl<CostTypeMapper, CostType> implements ICostTypeService {
-    @Autowired
-    private RedisUtils redisUtils;
 
     /**
      * 列表分页查询
@@ -52,7 +48,7 @@ public class CostTypeServiceImpl extends ServiceImpl<CostTypeMapper, CostType> i
      * 根据id集合查询费用类型
      */
     @Override
-    public List<CostTypeVO> findCostTypeByIds(List<Long> ids) {
+    public List<CostTypeVO> getCostTypeByIds(List<Long> ids) {
         List<CostTypeVO> list = new ArrayList<>();
         List<CostType> costTypes = this.baseMapper.selectBatchIds(ids);
         for (CostType costType : costTypes) {
@@ -71,20 +67,23 @@ public class CostTypeServiceImpl extends ServiceImpl<CostTypeMapper, CostType> i
      */
     @Override
     public boolean saveOrUpdateCostType(AddCostTypeForm form) {
-        String loginUser = redisUtils.get("loginUser", 100);
         CostType costType = ConvertUtil.convert(form, CostType.class);
 
         //判断是否代收代垫， 是-费用类别后面加-Y，否则-N
-        String codeName = form.getIsPayCollection() ? form.getCodeName() + "-Y" : form.getCodeName() + "-N";
-        costType.setCodeName(codeName);
+        String sign = form.getIsPayCollection() ? "-Y" : "-N";
 
         if (Objects.isNull(costType.getId())) {
-            costType.setCreateTime(LocalDateTime.now());
-            costType.setCreateUser(loginUser);
+            costType
+                    .setCodeName(form.getCodeName() + sign)
+                    .setCreateTime(LocalDateTime.now())
+                    .setCreateUser(UserOperator.getToken());
             return this.save(costType);
         } else {
-            costType.setUpTime(LocalDateTime.now());
-            costType.setUpUser(loginUser);
+            String str = form.getCodeName().substring(0, form.getCodeName().indexOf("-"));
+            costType.setCodeName(str + sign)
+                    .setCode(null)
+                    .setUpdateTime(LocalDateTime.now())
+                    .setUpdateUser(UserOperator.getToken());
             return this.updateById(costType);
         }
     }
@@ -99,21 +98,38 @@ public class CostTypeServiceImpl extends ServiceImpl<CostTypeMapper, CostType> i
     }
 
     /**
-     * 更新为无效状态
-     * @param ids
+     * 更改启用/禁用状态
+     *
+     * @param id
      * @return
      */
     @Override
-    public boolean deleteByIds(List<Long> ids) {
-        String loginUser = redisUtils.get("loginUser", 100);
-        List<CostType> list = new ArrayList<>();
-        LocalDateTime now = LocalDateTime.now();
-        ids.stream().forEach(id -> {
-            list.add(new CostType().setId(id).setStatus(StatusEnum.INVALID.getCode())
-                    .setUpTime(now).setUpUser(loginUser));
-        });
-        return this.updateBatchById(list);
+    public boolean enableOrDisableCostType(Long id) {
+        //查询当前状态
+        QueryWrapper<CostType> condition = new QueryWrapper<>();
+        condition.lambda().select(CostType::getStatus).eq(CostType::getId, id);
+        CostType tmp = this.baseMapper.selectOne(condition);
+
+        String status = "1".equals(tmp.getStatus()) ? StatusEnum.INVALID.getCode() : StatusEnum.ENABLE.getCode();
+
+        CostType costType = new CostType().setId(id).setStatus(status)
+                .setUpdateTime(LocalDateTime.now()).setUpdateUser(UserOperator.getToken());
+
+        return this.updateById(costType);
     }
 
 
+    /**
+     * 获取启用费用类别
+     */
+    @Override
+    public List<CostType> getEnableCostType() {
+        QueryWrapper<CostType> condition = new QueryWrapper<>();
+        condition.lambda().eq(CostType::getStatus, StatusEnum.ENABLE.getCode());
+        return this.baseMapper.selectList(condition);
+    }
+
+//    public static void main(String[] args) {
+//        System.out.print( "提交测试-Y".substring(0, "提交测试-Y".indexOf("-")));
+//    }
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
+import com.jayud.common.UserOperator;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
@@ -89,21 +90,12 @@ public class ExternalApiController {
         logisticsTrack.setEntrustNo(form.getEntrustNo());
         logisticsTrack.setGoCustomsTime(DateUtils.str2LocalDateTime(form.getGoCustomsTime(),DateUtils.DATE_TIME_PATTERN));
         logisticsTrack.setPreGoCustomsTime(DateUtils.str2LocalDateTime(form.getPreGoCustomsTime(),DateUtils.DATE_TIME_PATTERN));
-        logisticsTrack.setCreatedUser(String.valueOf(getLoginUser().getData()));
+        logisticsTrack.setCreatedUser(UserOperator.getToken());
         logisticsTrack.setCreatedTime(LocalDateTime.now());
         logisticsTrackService.saveOrUpdate(logisticsTrack);
         return ApiResult.ok();
     }
 
-    /**
-     * 获取当前登录用户
-     * @return
-     */
-    @RequestMapping(value = "/api/getLoginUser")
-    ApiResult getLoginUser(){
-        String loginUser = redisUtils.get("loginUser",100);
-        return ApiResult.ok(loginUser);
-    }
 
     /**
      * 子订单流程
@@ -129,7 +121,7 @@ public class ExternalApiController {
         auditInfo.setAuditTypeDesc(form.getAuditTypeDesc());
         auditInfo.setAuditStatus(form.getAuditStatus());
         auditInfo.setAuditComment(form.getAuditComment());
-        auditInfo.setCreatedUser(String.valueOf(getLoginUser().getData()));
+        auditInfo.setCreatedUser(UserOperator.getToken());
         auditInfo.setAuditUser(form.getAuditUser());
         auditInfo.setStatusFile(StringUtils.getFileStr(form.getFileViews()));
         auditInfo.setStatusFileName(StringUtils.getFileNameStr(form.getFileViews()));

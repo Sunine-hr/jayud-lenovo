@@ -16,7 +16,10 @@ import com.jayud.customs.model.bo.InputOrderCustomsForm;
 import com.jayud.customs.model.bo.InputSubOrderCustomsForm;
 import com.jayud.customs.model.bo.QueryCustomsOrderInfoForm;
 import com.jayud.customs.model.po.OrderCustoms;
-import com.jayud.customs.model.vo.*;
+import com.jayud.customs.model.vo.CustomsOrderInfoVO;
+import com.jayud.customs.model.vo.InputOrderCustomsVO;
+import com.jayud.customs.model.vo.InputSubOrderCustomsVO;
+import com.jayud.customs.model.vo.OrderCustomsVO;
 import com.jayud.customs.service.IOrderCustomsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -78,7 +81,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 customs.setUnitCode(subOrder.getUnitCode());
                 customs.setMainOrderNo(form.getMainOrderNo());
                 customs.setStatus(OrderStatusEnum.CUSTOMS_C_0.getCode());
-                customs.setCreatedUser(getLoginUser());
+                customs.setCreatedUser(form.getLoginUser());
                 customs.setCntrPic(StringUtils.getFileStr(form.getCntrPics()));
                 customs.setCntrPicName(StringUtils.getFileNameStr(form.getCntrPics()));
                 customs.setDescription(StringUtils.getFileStr(subOrder.getFileViews()));
@@ -129,16 +132,6 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
     }
 
 
-    /**
-     * 获取当前登录用户
-     *
-     * @return
-     */
-    @Override
-    public String getLoginUser() {
-        String loginUser = redisUtils.get("loginUser", 100);
-        return loginUser;
-    }
 
     @Override
     public InputOrderCustomsVO getOrderCustomsDetail(String mainOrderNo) {

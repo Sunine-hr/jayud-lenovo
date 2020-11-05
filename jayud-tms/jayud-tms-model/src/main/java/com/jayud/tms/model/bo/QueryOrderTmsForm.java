@@ -29,6 +29,9 @@ public class QueryOrderTmsForm extends BasePageForm{
     @ApiModelProperty(value = "作业类型")
     private String classCode;
 
+    @ApiModelProperty(value = "当前登录用户,前台传")
+    private String loginUserName;
+
     @ApiModelProperty(value = "操作指令",required = true)
     @NotEmpty(message = "cmd is required")
     private String cmd;

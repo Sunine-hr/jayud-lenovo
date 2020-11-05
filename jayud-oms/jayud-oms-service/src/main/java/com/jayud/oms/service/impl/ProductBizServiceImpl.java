@@ -12,6 +12,7 @@ import com.jayud.oms.model.bo.AddProductBizForm;
 import com.jayud.oms.model.bo.QueryProductBizForm;
 import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.CostGenre;
+import com.jayud.oms.model.po.CostType;
 import com.jayud.oms.model.po.ProductBiz;
 import com.jayud.oms.model.vo.CostGenreVO;
 import com.jayud.oms.model.vo.ProductBizVO;
@@ -154,6 +155,19 @@ public class ProductBizServiceImpl extends ServiceImpl<ProductBizMapper, Product
                 .setUpdateTime(LocalDateTime.now()).setUpdateUser(UserOperator.getToken());
 
         return this.updateById(productBiz);
+    }
+
+    /**
+     * 校验唯一性
+     *
+     * @return
+     */
+    @Override
+    public boolean checkUnique(ProductBiz productBiz) {
+        QueryWrapper<ProductBiz> condition = new QueryWrapper<>();
+        condition.lambda().eq(ProductBiz::getIdCode, productBiz.getIdCode())
+                .or().eq(ProductBiz::getName, productBiz.getName());
+        return this.count(condition) > 0;
     }
 
 }

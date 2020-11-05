@@ -34,7 +34,7 @@ public interface IVehicleInfoService extends IService<VehicleInfo> {
     /**
      * 是否存在车辆信息
      */
-    boolean isExist(VehicleInfo vehicleInfo);
+    boolean checkUnique(VehicleInfo vehicleInfo);
 
     /**
      * 根据状态获取车辆信息

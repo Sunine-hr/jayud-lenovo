@@ -63,7 +63,7 @@ public class VehicleInfoServiceImpl extends ServiceImpl<VehicleInfoMapper, Vehic
      * 是否存在车辆信息
      */
     @Override
-    public boolean isExist(VehicleInfo vehicleInfo) {
+    public boolean checkUnique(VehicleInfo vehicleInfo) {
         QueryWrapper<VehicleInfo> condition = new QueryWrapper<>();
         condition.lambda().eq(VehicleInfo::getPlateNumber, vehicleInfo.getPlateNumber());
         return this.count(condition) > 0;

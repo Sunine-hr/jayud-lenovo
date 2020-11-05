@@ -8,6 +8,7 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.model.bo.AddCostInfoForm;
 import com.jayud.oms.model.bo.QueryCostInfoForm;
+import com.jayud.oms.model.po.CostGenre;
 import com.jayud.oms.model.po.CostInfo;
 import com.jayud.oms.model.vo.CostInfoVO;
 import com.jayud.oms.service.ICostInfoService;
@@ -52,6 +53,10 @@ public class CostInfoController {
     @ApiOperation(value = "新增编辑费用名称")
     @PostMapping(value = "/saveOrUpdateCostInfo")
     public CommonResult saveOrUpdateCostInfo(@Valid @RequestBody AddCostInfoForm form) {
+        CostInfo costInfo = new CostInfo().setIdCode(form.getIdCode()).setName(form.getName());
+        if (this.costInfoService.checkUnique(costInfo)) {
+            return CommonResult.error(400, "名称或代码已经存在");
+        }
         if (this.costInfoService.saveOrUpdateCostInfo(form)) {
             return CommonResult.success();
         } else {

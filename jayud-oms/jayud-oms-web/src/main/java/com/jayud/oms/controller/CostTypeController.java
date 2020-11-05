@@ -8,6 +8,7 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.model.bo.AddCostTypeForm;
 import com.jayud.oms.model.bo.QueryCostTypeForm;
+import com.jayud.oms.model.po.CostInfo;
 import com.jayud.oms.model.po.CostType;
 import com.jayud.oms.model.vo.CostTypeVO;
 import com.jayud.oms.service.ICostTypeService;
@@ -52,6 +53,10 @@ public class CostTypeController {
     @ApiOperation(value = "新增编辑费用类别")
     @PostMapping(value = "/saveOrUpdateCostType")
     public CommonResult saveOrUpdateCostType(@Valid @RequestBody AddCostTypeForm form) {
+        CostType costType = new CostType().setCode(form.getCode()).setCodeName(form.getCodeName());
+        if (this.costTypeService.checkUnique(costType)){
+            return CommonResult.error(400, "名称或代码已经存在");
+        }
         if (this.costTypeService.saveOrUpdateCostType(form)) {
             return CommonResult.success();
         } else {

@@ -29,4 +29,6 @@ public interface IDriverInfoService extends IService<DriverInfo> {
      * @return
      */
     boolean saveOrUpdateDriverInfo(DriverInfo driverInfo);
+
+    boolean checkUnique(DriverInfo driverInfo);
 }

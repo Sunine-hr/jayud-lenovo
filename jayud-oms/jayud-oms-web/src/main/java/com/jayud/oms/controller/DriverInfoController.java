@@ -10,6 +10,7 @@ import com.jayud.oms.model.bo.AddDriverInfoForm;
 import com.jayud.oms.model.bo.QueryDriverInfoForm;
 import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.DriverInfo;
+import com.jayud.oms.model.po.VehicleInfo;
 import com.jayud.oms.model.vo.DriverInfoVO;
 import com.jayud.oms.model.vo.VehicleInfoVO;
 import com.jayud.oms.service.IDriverInfoService;
@@ -55,6 +56,9 @@ public class DriverInfoController {
     @ApiOperation(value = "新增编辑司机信息")
     @PostMapping(value = "/saveOrUpdateDriverInfo")
     public CommonResult saveOrUpdateDriverInfo(@Valid @RequestBody AddDriverInfoForm form) {
+        if (this.driverInfoService.checkUnique(new DriverInfo().setName(form.getName()))) {
+            return CommonResult.error(400, "司机姓名已存在");
+        }
         DriverInfo driverInfo = ConvertUtil.convert(form, DriverInfo.class);
         if (this.driverInfoService.saveOrUpdateDriverInfo(driverInfo)) {
             return CommonResult.success();

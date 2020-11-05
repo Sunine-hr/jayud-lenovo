@@ -36,7 +36,7 @@ public class CostTypeVO {
     @ApiModelProperty(value = "费用类型名称")
     private String codeName;
 
-    @ApiModelProperty(value = "是否代垫代收")
+    @ApiModelProperty(value = "是否代垫代收(true:是,false:否)")
     private Boolean isPayCollection;
 
     @ApiModelProperty(value = "状态(0禁用 1启用)")

@@ -106,8 +106,21 @@ public class CostGenreServiceImpl extends ServiceImpl<CostGenreMapper, CostGenre
      */
     @Override
     public List<CostGenre> getEnableCostGenre() {
-        QueryWrapper<CostGenre> condition=new QueryWrapper<>();
-        condition.lambda().eq(CostGenre::getStatus,StatusEnum.ENABLE.getCode());
+        QueryWrapper<CostGenre> condition = new QueryWrapper<>();
+        condition.lambda().eq(CostGenre::getStatus, StatusEnum.ENABLE.getCode());
         return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 校验费用类型唯一性
+     *
+     * @return
+     */
+    @Override
+    public boolean checkUnique(CostGenre costGenre) {
+        QueryWrapper<CostGenre> condition = new QueryWrapper<>();
+        condition.lambda().eq(CostGenre::getCode, costGenre.getCode())
+                .or().eq(CostGenre::getName, costGenre.getName());
+        return this.count(condition) > 0;
     }
 }

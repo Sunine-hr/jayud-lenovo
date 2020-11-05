@@ -155,12 +155,11 @@ public class ExternalApiController {
     @RequestMapping("/api/saveOrUpdateCustAccount")
     public ApiResult saveOrUpdateCustAccount(@RequestBody AddCusAccountForm form) {
         //校验登录名唯一性
-        String newName = form.getName();
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("name", newName);
-        SystemUser oldSystemUser = userService.getOne(queryWrapper);
-        if (oldSystemUser != null) {
-            return ApiResult.error(ResultEnum.LOGIN_NAME_EXIST.getCode(), ResultEnum.LOGIN_NAME_EXIST.getMessage());
+        QueryWrapper<SystemUser> queryWrapper = new QueryWrapper();
+        queryWrapper.lambda().eq(SystemUser::getName, form.getName()).eq(SystemUser::getUserName, form.getUserName());
+        int count = userService.count(queryWrapper);
+        if (count > 0) {
+            return ApiResult.error(ResultEnum.LOGIN_NAME_OR_NAME_EXIST.getCode(), ResultEnum.LOGIN_NAME_OR_NAME_EXIST.getMessage());
         }
         SystemUser systemUser = new SystemUser();
         systemUser.setName(form.getName());

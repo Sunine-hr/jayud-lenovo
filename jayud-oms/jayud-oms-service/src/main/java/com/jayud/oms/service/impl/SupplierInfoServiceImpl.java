@@ -15,6 +15,7 @@ import com.jayud.oms.model.enums.AuditTypeDescEnum;
 import com.jayud.oms.model.enums.SettlementTypeEnum;
 import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.AuditInfo;
+import com.jayud.oms.model.po.ProductBiz;
 import com.jayud.oms.model.po.ProductClassify;
 import com.jayud.oms.model.po.SupplierInfo;
 import com.jayud.oms.model.vo.SupplierInfoVO;
@@ -172,6 +173,19 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             }
         }
         return tmp;
+    }
+
+    /**
+     * 校验唯一性
+     *
+     * @return
+     */
+    @Override
+    public boolean checkUnique(SupplierInfo supplierInfo) {
+        QueryWrapper<SupplierInfo> condition = new QueryWrapper<>();
+        condition.lambda().eq(SupplierInfo::getSupplierCode, supplierInfo.getSupplierCode())
+                .or().eq(SupplierInfo::getSupplierChName, supplierInfo.getSupplierChName());
+        return this.count(condition) > 0;
     }
 
 

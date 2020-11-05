@@ -21,6 +21,7 @@ import com.jayud.oms.model.po.AuditInfo;
 import com.jayud.oms.model.po.SupplierInfo;
 import com.jayud.oms.model.vo.EnumVO;
 import com.jayud.oms.model.vo.SupplierInfoVO;
+import com.jayud.oms.model.vo.SystemUserVO;
 import com.jayud.oms.service.IAuditInfoService;
 import com.jayud.oms.service.ISupplierInfoService;
 import io.swagger.annotations.Api;
@@ -128,6 +129,12 @@ public class SupplierInfoController {
     @ApiOperation(value = "新增编辑供应商")
     @PostMapping(value = "/saveOrUpdateSupplierInfo")
     public CommonResult saveOrUpdateSupplierInfo(@Valid @RequestBody AddSupplierInfoForm form) {
+        SupplierInfo supplierInfo = new SupplierInfo()
+                .setSupplierCode(form.getSupplierCode()).setSupplierChName(form.getSupplierChName());
+        if (this.supplierInfoService.checkUnique(supplierInfo)) {
+            return CommonResult.error(400, "名称或代码已经存在");
+        }
+
         //检查审核状态是否是审核通过和审核不通过，才能进行编辑
         if (form.getId() != null) {
             AuditInfo auditInfo = this.auditInfoService.getAuditInfoLatestByExtId(form.getId(), AuditTypeDescEnum.ONE.getTable());
@@ -169,7 +176,10 @@ public class SupplierInfoController {
         AuditInfo auditInfo = new AuditInfo().setId(tmp.getId()).setAuditComment(form.getAuditComment());
 
         //根据上一个状态进行状态扭转
-        if (AuditStatusEnum.CW_WAIT.getCode().equals(tmp.getAuditStatus())) {
+        if (AuditStatusEnum.FAIL.getCode().equals(form.getAuditOperation())) {
+            //审核拒绝，不继续往下审核
+            auditInfo.setAuditStatus(FAIL.getCode());
+        } else if (AuditStatusEnum.CW_WAIT.getCode().equals(tmp.getAuditStatus())) {
             //财务审核
             auditInfo.setAuditStatus(ZJB_WAIT.getCode());
         } else {

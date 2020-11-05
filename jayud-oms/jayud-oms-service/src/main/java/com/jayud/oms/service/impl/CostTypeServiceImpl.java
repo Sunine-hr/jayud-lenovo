@@ -129,7 +129,17 @@ public class CostTypeServiceImpl extends ServiceImpl<CostTypeMapper, CostType> i
         return this.baseMapper.selectList(condition);
     }
 
-//    public static void main(String[] args) {
-//        System.out.print( "提交测试-Y".substring(0, "提交测试-Y".indexOf("-")));
-//    }
+    /**
+     * 校验唯一性
+     *
+     * @return
+     */
+    @Override
+    public boolean checkUnique(CostType costType) {
+        QueryWrapper<CostType> condition = new QueryWrapper<>();
+        condition.lambda().eq(CostType::getCode, costType.getCode())
+                .or().eq(CostType::getCodeName, costType.getCodeName());
+        return this.count(condition) > 0;
+    }
+
 }

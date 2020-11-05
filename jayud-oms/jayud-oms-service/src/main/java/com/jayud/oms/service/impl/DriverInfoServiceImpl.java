@@ -1,10 +1,12 @@
 package com.jayud.oms.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.UserOperator;
 import com.jayud.oms.model.bo.QueryDriverInfoForm;
 import com.jayud.oms.model.enums.StatusEnum;
+import com.jayud.oms.model.po.CostType;
 import com.jayud.oms.model.po.DriverInfo;
 import com.jayud.oms.mapper.DriverInfoMapper;
 import com.jayud.oms.model.vo.DriverInfoVO;
@@ -56,5 +58,12 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
                     .setUpdateUser(UserOperator.getToken());
             return this.updateById(driverInfo);
         }
+    }
+
+    @Override
+    public boolean checkUnique(DriverInfo driverInfo) {
+        QueryWrapper<DriverInfo> condition = new QueryWrapper<>();
+        condition.lambda().eq(DriverInfo::getName, driverInfo.getName());
+        return this.count(condition) > 0;
     }
 }

@@ -1,5 +1,6 @@
 package com.jayud.mall.config;
 
+import com.github.xiaoymin.swaggerbootstrapui.annotations.EnableSwaggerBootstrapUI;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
@@ -12,11 +13,13 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+
 /**
  * Swagger2配置类
  */
 @Configuration
 @EnableSwagger2
+@EnableSwaggerBootstrapUI //swagger-bootstrap-ui 增强功能
 @ConditionalOnExpression("${swagger.enable:true}")
 public class Swagger2Config {
     /**
@@ -42,6 +45,7 @@ public class Swagger2Config {
     /**
      * 创建该API的基本信息（这些基本信息会展现在文档页面中）
      * 访问地址：http://项目实际地址/swagger-ui.html
+     * 功能增强：http://项目实际地址/doc.html
      *
      * @return
      */

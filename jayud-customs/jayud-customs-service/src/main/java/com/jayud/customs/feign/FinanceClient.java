@@ -16,41 +16,47 @@ import java.util.Map;
  * @description
  * @Date: 2020-09-19 11:23
  */
-@FeignClient("jayud-finance-web")
+@FeignClient(value = "jayud-finance-web")
 public interface FinanceClient {
-
-    /**
-     * 推送应收单到金蝶
-     *
-     * @param msg
-     * @return
-     */
-    @RequestMapping(path = "/api/finance/kingdee/yunbaoguan/receivable/push", method = RequestMethod.POST)
-    CommonResult saveReceivableBill(@RequestBody Map<String, String> msg);
-
-    /**
-     * 推送应付单到金蝶
-     *
-     * @param msg
-     * @return
-     */
-    @RequestMapping(path = "/api/finance/kingdee/yunbaoguan/payable/push", method = RequestMethod.POST)
-    CommonResult savePayableBill(@RequestBody Map<String, String> msg);
+//
+//    /**
+//     * 推送应收单到金蝶
+//     *
+//     * @param msg
+//     * @return
+//     */
+//    @RequestMapping(path = "/api/finance/kingdee/yunbaoguan/receivable/push", method = RequestMethod.POST)
+//    CommonResult saveReceivableBill(@RequestBody Map<String, String> msg);
+//
+//    /**
+//     * 推送应付单到金蝶
+//     *
+//     * @param msg
+//     * @return
+//     */
+//    @RequestMapping(path = "/api/finance/kingdee/yunbaoguan/payable/push", method = RequestMethod.POST)
+//    CommonResult savePayableBill(@RequestBody Map<String, String> msg);
 
 
     /**
      * 直接删除应收数据
+     *
      * @param param
      * @return
      */
+
     @RequestMapping(method = RequestMethod.POST, value = "/api/finance/kingdee/yunbaoguan/receivable/delete")
-    Boolean checkNRemoveReceivable(@RequestBody String param);
+    Boolean checkNRemoveReceivable(@RequestBody Map<String, String> param);
 
     /**
      * 直接删除应付数据
+     *
      * @param param
      * @return
      */
+
     @RequestMapping(method = RequestMethod.POST, value = "/api/finance/kingdee/yunbaoguan/payable/delete")
-    Boolean checkNRemovePayable(@RequestBody String param);
+    Boolean checkNRemovePayable(@RequestBody Map<String, String> param);
+
+
 }

@@ -35,8 +35,8 @@ public class OrderBillCostTotal extends Model<OrderBillCostTotal> {
     @ApiModelProperty(value = "订单编号")
     private String orderNo;
 
-    @ApiModelProperty(value = "账单详情ID")
-    private Long billDetailId;
+    @ApiModelProperty(value = "账单编号")
+    private String billNo;
 
     @ApiModelProperty(value = "币种")
     private String currencyCode;

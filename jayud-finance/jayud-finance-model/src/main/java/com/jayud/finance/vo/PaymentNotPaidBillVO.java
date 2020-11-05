@@ -56,6 +56,24 @@ public class PaymentNotPaidBillVO {
     @ApiModelProperty(value = "港币")
     private BigDecimal hKDollar;
 
+    @ApiModelProperty(value = "费用类型/类别/名称维度的本币金额,不显示")
+    private BigDecimal localAmount;
+
+    @ApiModelProperty(value = "应付费用ID,不显示")
+    private Long costId;
+
+    @ApiModelProperty(value = "车型 如：3T,不显示")
+    private String vehicleSize;
+
+    @ApiModelProperty(value = "订单维度的件数,不显示")
+    private Integer pieceNum;
+
+    @ApiModelProperty(value = "订单维度的重量,不显示")
+    private Double weight;
+
+    @ApiModelProperty(value = "1-暂存 2-生成账单")
+    private String isBill;
+
 
 
 

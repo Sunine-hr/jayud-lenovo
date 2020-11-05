@@ -48,7 +48,7 @@ public class OrderPaymentBillDetail extends Model<OrderPaymentBillDetail> {
     @ApiModelProperty(value = "订单编号")
     private String orderNo;
 
-    @ApiModelProperty(value = "账单编号维度的本币金额")
+    @ApiModelProperty(value = "费用维度的本币金额")
     private BigDecimal localAmount;
 
     @ApiModelProperty(value = "应收费用ID")

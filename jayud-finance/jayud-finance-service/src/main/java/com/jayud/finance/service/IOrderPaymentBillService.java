@@ -1,6 +1,7 @@
 package com.jayud.finance.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.finance.bo.CreatePaymentBillForm;
 import com.jayud.finance.bo.QueryNotPaidBillForm;
 import com.jayud.finance.bo.QueryPaymentBillForm;
 import com.jayud.finance.bo.QueryPaymentBillNumForm;
@@ -42,4 +43,10 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
      */
     IPage<PaymentNotPaidBillVO> findNotPaidBillByPage(QueryNotPaidBillForm form);
 
+    /**
+     * 生成应付账单
+     * @param form
+     * @return
+     */
+    Boolean createPaymentBill(CreatePaymentBillForm form);
 }

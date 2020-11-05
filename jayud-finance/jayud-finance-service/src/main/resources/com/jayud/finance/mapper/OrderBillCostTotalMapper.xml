@@ -6,7 +6,7 @@
     <resultMap id="BaseResultMap" type="com.jayud.finance.po.OrderBillCostTotal">
         <id column="id" property="id" />
         <result column="order_no" property="orderNo" />
-        <result column="bill_detail_id" property="billDetailId" />
+        <result column="bill_no" property="billNo" />
         <result column="currency_code" property="currencyCode" />
         <result column="cost_info_name" property="costInfoName" />
         <result column="money" property="money" />
@@ -15,7 +15,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, order_no, bill_detail_id, currency_code, cost_info_name, money, status
+        id, order_no, bill_no, currency_code, cost_info_name, money, status
     </sql>
 
 </mapper>

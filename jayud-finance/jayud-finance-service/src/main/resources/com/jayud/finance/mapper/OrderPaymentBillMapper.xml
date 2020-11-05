@@ -51,6 +51,12 @@
             order_info oi
             LEFT JOIN order_payment_bill opb ON opb.legal_name = oi.legal_name
             AND opb.customer_name = oi.customer_name
+        <if test="form.customerName != null and form.customerName != ''">
+            and oi.customer_name like concat('%',#{form.customerName},'%')
+        </if>
+        <if test="form.legalName != null and form.legalName != ''">
+            and oi.legal_name like concat('%',#{form.legalName},'%')
+        </if>
     </select>
     <select id="findPaymentBillNum" parameterType="com.jayud.finance.bo.QueryPaymentBillNumForm" resultType="com.jayud.finance.vo.OrderPaymentBillNumVO" >
         SELECT
@@ -74,6 +80,7 @@
     </select>
 
     <select id="findNotPaidBillByPage" parameterType="com.jayud.finance.bo.QueryNotPaidBillForm" resultType="com.jayud.finance.vo.PaymentNotPaidBillVO" >
+        select * from (
         SELECT
             opc.main_order_no orderNo,
             pc.`name` classCodeDesc,
@@ -108,7 +115,7 @@
             ci.`name` costName,
             (
             SELECT
-                rmb.amount
+                sum(rmb.amount)
             FROM
                 order_payment_cost rmb
             WHERE
@@ -121,7 +128,7 @@
             ) rmb,
             (
             SELECT
-                rmb.amount
+                sum(rmb.amount)
             FROM
                 order_payment_cost rmb
             WHERE
@@ -134,7 +141,7 @@
             ) dollar,
             (
             SELECT
-                rmb.amount
+                sum(rmb.amount)
             FROM
                 order_payment_cost rmb
             WHERE
@@ -147,7 +154,7 @@
             ) euro,
             (
             SELECT
-                rmb.amount
+                sum(rmb.amount)
             FROM
                 order_payment_cost rmb
             WHERE
@@ -157,7 +164,24 @@
                 rmb.cost_code,
                 rmb.cost_genre_id,
                 rmb.cost_type_id
-            ) hKDollar
+            ) hKDollar,
+             (
+            SELECT
+                sum(rmb.change_amount)
+            FROM
+                order_payment_cost rmb
+            WHERE
+                rmb.id = opc.id
+            GROUP BY
+                rmb.cost_code,
+                rmb.cost_genre_id,
+                rmb.cost_type_id
+            ) localAmount,
+            opc.id costId,
+            ot.vehicle_size vehicleSize,
+            (select sum(ota.plate_amount) from order_take_adr ota where ota.order_no = ot.order_no) pieceNum,
+            (select sum(ota.weight) from order_take_adr ota where ota.order_no = ot.order_no)	weight,
+            opc.is_bill isBill
         FROM
             order_payment_cost opc
             LEFT JOIN order_info oi ON opc.main_order_no = oi.order_no
@@ -170,5 +194,46 @@
             LEFT JOIN cost_info ci ON opc.cost_code = ci.id_code
         WHERE
             opc.id NOT IN ( SELECT opbd.cost_id FROM order_payment_bill_detail opbd )
+            and opc.is_bill != '2') temp where 1 = 1
+        <if test="form.customerName != null and form.customerName != ''">
+            and temp.customerName like concat('%',#{form.customerName},'%')
+        </if>
+        <if test="form.startAddress != null and form.startAddress != ''">
+            and temp.startAddress like concat('%',#{form.startAddress},'%')
+        </if>
+        <if test="form.endAddress != null and form.endAddress != ''">
+            and temp.endAddress like concat('%',#{form.endAddress},'%')
+        </if>
+        <if test="form.costName != null and form.costName != ''">
+            and temp.costName like concat('%',#{form.costName},'%')
+        </if>
+        <if test="form.currencyCode == 'RMB'">
+            and temp.rmb is not null
+        </if>
+        <if test="form.currencyCode == 'MY'">
+            and temp.dollar is not null
+        </if>
+        <if test="form.currencyCode == 'GB'">
+            and temp.hKDollar is not null
+        </if>
+        <if test="form.currencyCode == 'OY'">
+            and temp.euro is not null
+        </if>
+        <if test="form.endCreatedTimeStr != null and form.endCreatedTimeStr !=''">
+            and temp.createdTimeStr <![CDATA[<=]]> #{form.endCreatedTimeStr}
+        </if>
+        <if test="form.beginCreatedTimeStr != null and form.beginCreatedTimeStr !=''">
+            and temp.createdTimeStr <![CDATA[>=]]> #{form.beginCreatedTimeStr}
+        </if>
+    </select>
+    <select id="getBillOrderNum"  resultType="java.lang.Integer" >
+       SELECT
+	        count(DISTINCT oi.order_no) billOrderNum
+       FROM
+	        order_payment_cost opc left join order_info oi on opc.main_order_no = oi.order_no
+       WHERE
+	     NOT EXISTS (SELECT 1 FROM order_payment_cost a WHERE
+	     a.is_bill != '2' and a.main_order_no = oi.order_no)
+	     and oi.legal_name = #{legalName} and oi.customer_name = #{customerName}
     </select>
 </mapper>

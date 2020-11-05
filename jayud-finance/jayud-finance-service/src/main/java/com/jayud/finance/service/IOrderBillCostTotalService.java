@@ -1,7 +1,10 @@
 package com.jayud.finance.service;
 
-import com.jayud.finance.po.OrderBillCostTotal;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.finance.po.OrderBillCostTotal;
+import com.jayud.finance.vo.OrderBillCostTotalVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IOrderBillCostTotalService extends IService<OrderBillCostTotal> {
 
+    /**
+     * 根据costIds查询对账金额信息
+     * @return
+     */
+    List<OrderBillCostTotalVO> findOrderBillCostTotal(List<Long> costIds);
 }

@@ -9,10 +9,7 @@ import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.*;
-import com.jayud.oms.model.po.AuditInfo;
-import com.jayud.oms.model.po.LogisticsTrack;
-import com.jayud.oms.model.po.SupplierInfo;
-import com.jayud.oms.model.po.WarehouseInfo;
+import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.InitComboxVO;
 import com.jayud.oms.model.vo.InputMainOrderVO;
 import com.jayud.oms.model.vo.OrderStatusVO;
@@ -48,6 +45,12 @@ public class ExternalApiController {
 
     @Autowired
     ISupplierInfoService supplierInfoService;
+
+    @Autowired
+    IOrderPaymentCostService paymentCostService;
+
+    @Autowired
+    IOrderReceivableCostService receivableCostService;
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
@@ -186,6 +189,48 @@ public class ExternalApiController {
         queryWrapper.in(SqlConstant.STATUS,form.getStatus());
         logisticsTrackService.remove(queryWrapper);
         return ApiResult.ok();
+    }
+
+    /**
+     * 应付暂存
+     */
+    @RequestMapping(value = "/api/oprCostBill")
+    ApiResult<Boolean> oprCostBill(@RequestBody OprCostBillForm form){
+        Boolean result = false;
+        if("payment".equals(form.getOprType())){
+            List<OrderPaymentCost> paymentCosts = new ArrayList<>();
+            if("pre_create".equals(form.getCmd())){//暂存应收
+                for (Long costId : form.getCostIds()) {
+                    OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
+                    orderPaymentCost.setId(costId);
+                    orderPaymentCost.setIsBill("1");//暂存
+                }
+            }else if("create".equals(form.getCmd())){//生成应收账单
+                for (Long costId : form.getCostIds()) {
+                    OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
+                    orderPaymentCost.setId(costId);
+                    orderPaymentCost.setIsBill("2");//生成对账单
+                }
+            }
+            result = paymentCostService.updateBatchById(paymentCosts);
+        }else if("receivable".equals(form.getOprType())){
+            List<OrderReceivableCost> receivableCosts = new ArrayList<>();
+            if("pre_create".equals(form.getCmd())){//暂存应付
+                for (Long costId : form.getCostIds()) {
+                    OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
+                    orderReceivableCost.setId(costId);
+                    orderReceivableCost.setIsBill("1");//暂存
+                }
+            }else if("create".equals(form.getCmd())){//生成应付账单
+                for (Long costId : form.getCostIds()) {
+                    OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
+                    orderReceivableCost.setId(costId);
+                    orderReceivableCost.setIsBill("2");//生成对账单
+                }
+            }
+            result = receivableCostService.updateBatchById(receivableCosts);
+        }
+        return ApiResult.ok(result);
     }
 
 

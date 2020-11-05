@@ -42,19 +42,11 @@ public class QuotationTemplateController {
         return CommonResult.success("启用报价模板成功！");
     }
 
-    @ApiOperation(value = "添加报价模板-整柜")
+    @ApiOperation(value = "添加报价模板")
     @PostMapping(value = "saveQuotationTemplateFull")
     public CommonResult saveQuotationTemplateFull(@RequestBody QuotationTemplateForm form){
         quotationTemplateService.saveQuotationTemplateFull(form);
-        return CommonResult.success("保存报价模板-整柜，成功！");
+        return CommonResult.success("保存报价模板，成功！");
     }
-
-    @ApiOperation(value = "添加报价模板-散柜")
-    @PostMapping(value = "saveQuotationTemplateBulk")
-    public CommonResult saveQuotationTemplateBulk(@RequestBody QuotationTemplateForm form){
-        quotationTemplateService.saveQuotationTemplateBulk(form);
-        return CommonResult.success("保存报价模板-散柜，成功！");
-    }
-
 
 }

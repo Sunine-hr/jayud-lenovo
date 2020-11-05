@@ -3,7 +3,9 @@ package com.jayud.mall.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.OfferInfoMapper;
+import com.jayud.mall.model.bo.OfferInfoForm;
 import com.jayud.mall.model.bo.QueryOfferInfoForm;
 import com.jayud.mall.model.po.OfferInfo;
 import com.jayud.mall.model.vo.OfferInfoVO;
@@ -43,5 +45,25 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
         //page.addOrder(OrderItem.desc("oc.id"));
         IPage<OfferInfoVO> pageInfo = offerInfoMapper.findOfferInfoByPage(page, form);
         return pageInfo;
+    }
+
+    @Override
+    public void disabledOfferInfo(Long id) {
+        OfferInfo offerInfo = offerInfoMapper.selectById(id);
+        offerInfo.setStatus("0");//状态(0无效 1有效)
+        this.saveOrUpdate(offerInfo);
+    }
+
+    @Override
+    public void enableOfferInfo(Long id) {
+        OfferInfo offerInfo = offerInfoMapper.selectById(id);
+        offerInfo.setStatus("1");//状态(0无效 1有效)
+        this.saveOrUpdate(offerInfo);
+    }
+
+    @Override
+    public void saveOfferInfo(OfferInfoForm form) {
+        OfferInfo offerInfo = ConvertUtil.convert(form, OfferInfo.class);
+        this.saveOrUpdate(offerInfo);
     }
 }

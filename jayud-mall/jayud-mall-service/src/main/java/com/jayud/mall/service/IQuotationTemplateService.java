@@ -37,14 +37,10 @@ public interface IQuotationTemplateService extends IService<QuotationTemplate> {
     void enableQuotationTemplate(Long id);
 
     /**
-     * 保存报价模板-整柜
+     * 保存报价模板
      * @param form
      */
     void saveQuotationTemplateFull(QuotationTemplateForm form);
 
-    /**
-     * 保存报价模板-散柜
-     * @param form
-     */
-    void saveQuotationTemplateBulk(QuotationTemplateForm form);
+
 }

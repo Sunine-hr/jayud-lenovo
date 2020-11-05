@@ -1,6 +1,7 @@
 package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.mall.model.bo.OfferInfoForm;
 import com.jayud.mall.model.bo.QueryOfferInfoForm;
 import com.jayud.mall.model.po.OfferInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -22,4 +23,22 @@ public interface IOfferInfoService extends IService<OfferInfo> {
      * @return
      */
     IPage<OfferInfoVO> findOfferInfoByPage(QueryOfferInfoForm form);
+
+    /**
+     * 禁用报价
+     * @param id
+     */
+    void disabledOfferInfo(Long id);
+
+    /**
+     * 启用报价
+     * @param id
+     */
+    void enableOfferInfo(Long id);
+
+    /**
+     * 保存报价
+     * @param form
+     */
+    void saveOfferInfo(OfferInfoForm form);
 }

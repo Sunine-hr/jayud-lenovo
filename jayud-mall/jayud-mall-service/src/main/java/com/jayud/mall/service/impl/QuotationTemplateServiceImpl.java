@@ -125,9 +125,4 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
 
     }
 
-    @Override
-    public void saveQuotationTemplateBulk(QuotationTemplateForm form) {
-        QuotationTemplate quotationTemplate = ConvertUtil.convert(form, QuotationTemplate.class);
-        this.saveOrUpdate(quotationTemplate);
-    }
 }

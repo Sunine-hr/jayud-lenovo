@@ -3,6 +3,7 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.OfferInfoForm;
 import com.jayud.mall.model.bo.QueryOfferInfoForm;
 import com.jayud.mall.model.vo.OfferInfoVO;
 import com.jayud.mall.service.IOfferInfoService;
@@ -29,6 +30,30 @@ public class OfferInfoController {
         CommonPageResult<OfferInfoVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
     }
+
+    @ApiOperation(value = "禁用报价")
+    @PostMapping(value = "/disabledOfferInfo")
+    public CommonResult disabledOfferInfo(@RequestBody OfferInfoForm form) {
+        Long id = form.getId();
+        offerInfoService.disabledOfferInfo(id);
+        return CommonResult.success("禁用报价,成功！");
+    }
+
+    @ApiOperation(value = "启用报价")
+    @PostMapping(value = "/enableOfferInfo")
+    public CommonResult enableOfferInfo(@RequestBody OfferInfoForm form) {
+        Long id = form.getId();
+        offerInfoService.enableOfferInfo(id);
+        return CommonResult.success("启用报价,成功！");
+    }
+
+    @ApiOperation(value = "添加报价")
+    @PostMapping(value = "saveOfferInfo")
+    public CommonResult saveOfferInfo(@RequestBody OfferInfoForm form){
+        offerInfoService.saveOfferInfo(form);
+        return CommonResult.success("保存报价，成功！");
+    }
+
 
 
 }

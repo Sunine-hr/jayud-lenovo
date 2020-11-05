@@ -53,8 +53,8 @@ public class VehicleInfoController {
     @ApiOperation(value = "新增编辑车辆信息")
     @PostMapping(value = "/saveOrUpdateVehicleInfo")
     public CommonResult saveOrUpdateVehicleInfo(@Valid @RequestBody AddVehicleInfoForm form) {
-
-        if (this.vehicleInfoService.checkUnique(new VehicleInfo().setPlateNumber(form.getPlateNumber()))) {
+        VehicleInfo info = new VehicleInfo().setPlateNumber(form.getPlateNumber()).setId(form.getId());
+        if (this.vehicleInfoService.checkUnique(info)) {
             return CommonResult.error(400, "大陆车牌已存在");
         }
 

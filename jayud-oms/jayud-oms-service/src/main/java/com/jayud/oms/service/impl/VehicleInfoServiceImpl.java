@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.UserOperator;
 import com.jayud.oms.model.bo.QueryVehicleInfoForm;
+import com.jayud.oms.model.po.SupplierInfo;
 import com.jayud.oms.model.po.VehicleInfo;
 import com.jayud.oms.mapper.VehicleInfoMapper;
 import com.jayud.oms.model.vo.VehicleInfoVO;
@@ -65,6 +66,17 @@ public class VehicleInfoServiceImpl extends ServiceImpl<VehicleInfoMapper, Vehic
     @Override
     public boolean checkUnique(VehicleInfo vehicleInfo) {
         QueryWrapper<VehicleInfo> condition = new QueryWrapper<>();
+        if (vehicleInfo.getId() != null) {
+            //修改过滤自身名字
+            condition.lambda().and(tmp -> tmp.eq(VehicleInfo::getId, vehicleInfo.getId())
+                    .eq(VehicleInfo::getPlateNumber, vehicleInfo.getPlateNumber()));
+            int count = this.count(condition);
+            if (count > 0) {
+                //匹配到自己名称,不进行唯一校验
+                return false;
+            }
+        }
+        condition = new QueryWrapper<>();
         condition.lambda().eq(VehicleInfo::getPlateNumber, vehicleInfo.getPlateNumber());
         return this.count(condition) > 0;
     }

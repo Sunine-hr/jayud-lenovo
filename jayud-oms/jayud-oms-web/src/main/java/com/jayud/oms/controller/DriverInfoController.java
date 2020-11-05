@@ -56,7 +56,8 @@ public class DriverInfoController {
     @ApiOperation(value = "新增编辑司机信息")
     @PostMapping(value = "/saveOrUpdateDriverInfo")
     public CommonResult saveOrUpdateDriverInfo(@Valid @RequestBody AddDriverInfoForm form) {
-        if (this.driverInfoService.checkUnique(new DriverInfo().setName(form.getName()))) {
+        DriverInfo info = new DriverInfo().setId(form.getId()).setName(form.getName());
+        if (this.driverInfoService.checkUnique(info)) {
             return CommonResult.error(400, "司机姓名已存在");
         }
         DriverInfo driverInfo = ConvertUtil.convert(form, DriverInfo.class);

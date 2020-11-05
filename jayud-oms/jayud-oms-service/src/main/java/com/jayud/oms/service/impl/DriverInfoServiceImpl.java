@@ -9,6 +9,7 @@ import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.CostType;
 import com.jayud.oms.model.po.DriverInfo;
 import com.jayud.oms.mapper.DriverInfoMapper;
+import com.jayud.oms.model.po.VehicleInfo;
 import com.jayud.oms.model.vo.DriverInfoVO;
 import com.jayud.oms.service.IDriverInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -63,6 +64,16 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
     @Override
     public boolean checkUnique(DriverInfo driverInfo) {
         QueryWrapper<DriverInfo> condition = new QueryWrapper<>();
+        if (driverInfo.getId() != null) {
+            //修改过滤自身名字
+            condition.lambda().and(tmp -> tmp.eq(DriverInfo::getId, driverInfo.getId())
+                    .eq(DriverInfo::getName, driverInfo.getName()));
+            int count = this.count(condition);
+            if (count > 0) {
+                //匹配到自己名称,不进行唯一校验
+                return false;
+            }
+        }
         condition.lambda().eq(DriverInfo::getName, driverInfo.getName());
         return this.count(condition) > 0;
     }

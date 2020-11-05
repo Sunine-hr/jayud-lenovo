@@ -268,9 +268,12 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
                 sentReceivableStatus = generateKafkaMsg("financeTest", "customs-receivable", receivable);
             } else {
                 //如果本次推送没有应收数据，需要查看是否存在本单号的应收，如有，要删去
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.set("applyNo", form.getApplyNo());
-                financeClient.checkNRemoveReceivable(JSONUtil.toJsonStr(jsonObject));
+                Map<String, String> map = new HashMap<>();
+                map.put("applyNo", form.getApplyNo());
+                Boolean aBoolean = financeClient.checkNRemoveReceivable(map);
+                if (aBoolean) {
+                    log.debug("报关单号 {} 没有应收数据，清理成功");
+                }
             }
             if (hasPayable) {
                 log.debug(String.format("拼装数据完成，开始上传财务数据：customs-payable口..." + payable + "====" + payable));
@@ -284,9 +287,12 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
                 sentPayableStatus = generateKafkaMsg("financeTest", "customs-payable", jsonArray.toJSONString());
             } else {
                 //如果本次推送没有应付数据，需要查看是否存在本单号的应付，如有，要删去
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.set("applyNo", form.getApplyNo());
-                financeClient.checkNRemovePayable(JSONUtil.toJsonStr(jsonObject));
+                Map<String, String> map = new HashMap<>();
+                map.put("applyNo", form.getApplyNo());
+                Boolean aBoolean = financeClient.checkNRemovePayable(map);
+                if (aBoolean) {
+                    log.debug("报关单号 {} 没有应付数据，清理成功");
+                }
             }
 
             if (!sentPayableStatus || !sentReceivableStatus) {

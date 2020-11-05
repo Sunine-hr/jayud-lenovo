@@ -190,9 +190,9 @@ public class MsgApiProcessorController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/yunbaoguan/receivable/delete")
     @ApiOperation(value = "删除应收单")
-    public Boolean checkNRemoveReceivable(@RequestBody String param) {
+    public Boolean checkNRemoveReceivable(@RequestBody Map<String, String> param) {
         //注意！！此处务必要验证applyNo不为空，否则会因为模糊查询""而将所有数据删除
-        String applyNo = MapUtil.getStr(JSONObject.parseObject(param).getInnerMap(), "applyNo");
+        String applyNo = MapUtil.getStr(param, "applyNo");
         if (applyNo.equals("")) {
             return true;
         }
@@ -201,25 +201,28 @@ public class MsgApiProcessorController {
         properties.setApplyNo(applyNo);
         properties.setExistingOrders(existingMap);
         properties = customsFinanceService.removeSpecifiedInvoice(properties);
-        properties.getUnRemovableOrders().entrySet()
-                .stream()
-                .filter(e -> {//类型中订单号不为空的才可以继续
-                    return CollectionUtil.isNotEmpty(e.getValue());
-                })
-                .forEach(e -> {//遍历内容不为空的类型，打印错误信息
-                    e.getValue().forEach(p -> {
-                        log.error("报关单号{} 的 {} 类型业务订单号 {} 状态不可删除 ", applyNo, e.getKey(), e.getValue());
+        Map<FormIDEnum, List<String>> unRemovableOrders = properties.getUnRemovableOrders();
+        if (null != unRemovableOrders) {
+            unRemovableOrders.entrySet()
+                    .stream()
+                    .filter(e -> {//类型中订单号不为空的才可以继续
+                        return CollectionUtil.isNotEmpty(e.getValue());
+                    })
+                    .forEach(e -> {//遍历内容不为空的类型，打印错误信息
+                        e.getValue().forEach(p -> {
+                            log.error("报关单号{} 的 {} 类型业务订单号 {} 状态不可删除 ", applyNo, e.getKey(), e.getValue());
+                        });
                     });
-                });
+        }
 
         return true;
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/yunbaoguan/payable/delete")
     @ApiOperation(value = "删除应付单")
-    public Boolean checkNRemovePayable(@RequestBody String param) {
+    public Boolean checkNRemovePayable(@RequestBody Map<String, String> param) {
         //注意！！此处务必要验证applyNo不为空，否则会因为模糊查询""而将所有数据删除
-        String applyNo = MapUtil.getStr(JSONObject.parseObject(param).getInnerMap(), "applyNo");
+        String applyNo = MapUtil.getStr(param, "applyNo");
         if (applyNo.equals("")) {
             return true;
         }
@@ -228,16 +231,19 @@ public class MsgApiProcessorController {
         properties.setApplyNo(applyNo);
         properties.setExistingOrders(existingMap);
         properties = customsFinanceService.removeSpecifiedInvoice(properties);
-        properties.getUnRemovableOrders().entrySet()
-                .stream()
-                .filter(e -> {//类型中订单号不为空的才可以继续
-                    return CollectionUtil.isNotEmpty(e.getValue());
-                })
-                .forEach(e -> {//遍历内容不为空的类型，打印错误信息
-                    e.getValue().forEach(p -> {
-                        log.error("报关单号{} 的 {} 类型业务订单号 {} 状态不可删除 ", applyNo, e.getKey(), e.getValue());
+        Map<FormIDEnum, List<String>> unRemovableOrders = properties.getUnRemovableOrders();
+        if (null != unRemovableOrders) {
+            unRemovableOrders.entrySet()
+                    .stream()
+                    .filter(e -> {//类型中订单号不为空的才可以继续
+                        return CollectionUtil.isNotEmpty(e.getValue());
+                    })
+                    .forEach(e -> {//遍历内容不为空的类型，打印错误信息
+                        e.getValue().forEach(p -> {
+                            log.error("报关单号{} 的 {} 类型业务订单号 {} 状态不可删除 ", applyNo, e.getKey(), e.getValue());
+                        });
                     });
-                });
+        }
         return true;
     }
 

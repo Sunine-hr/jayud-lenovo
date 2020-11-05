@@ -212,7 +212,7 @@
             <if test="form.companyId != null and form.companyId != ''">
                 and c.id = #{form.companyId}
             </if>
-            <if test="form.status != null and form.status != ''">
+            <if test="form.status != null">
                 and su.status = #{form.status}
             </if>
             <if test="form.name != null and form.name != ''">

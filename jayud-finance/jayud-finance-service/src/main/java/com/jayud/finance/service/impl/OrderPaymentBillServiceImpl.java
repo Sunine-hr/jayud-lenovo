@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.constant.CommonConstant;
+import com.jayud.finance.bo.QueryNotPaidBillForm;
 import com.jayud.finance.bo.QueryPaymentBillForm;
 import com.jayud.finance.bo.QueryPaymentBillNumForm;
 import com.jayud.finance.mapper.OrderPaymentBillMapper;
@@ -12,6 +13,7 @@ import com.jayud.finance.po.OrderPaymentBill;
 import com.jayud.finance.service.IOrderPaymentBillService;
 import com.jayud.finance.vo.OrderPaymentBillNumVO;
 import com.jayud.finance.vo.OrderPaymentBillVO;
+import com.jayud.finance.vo.PaymentNotPaidBillVO;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -54,5 +56,10 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         result.put(CommonConstant.LOCAL_AMOUNT_TOTAL,resultList.stream().map(OrderPaymentBillNumVO::getLocalAmount).reduce(BigDecimal.ZERO,BigDecimal::add));//本币金额合计
         result.put(CommonConstant.HE_XIAO_AMOUNT,resultList.stream().map(OrderPaymentBillNumVO::getHeXiaoAmount).reduce(BigDecimal.ZERO,BigDecimal::add));//已收金额，即财务已核销金额合计
         return result;
+    }
+
+    @Override
+    public IPage<PaymentNotPaidBillVO> findNotPaidBillByPage(QueryNotPaidBillForm form) {
+        return baseMapper.findNotPaidBillByPage(form);
     }
 }

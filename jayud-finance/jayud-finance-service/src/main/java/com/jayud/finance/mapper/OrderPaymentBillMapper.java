@@ -3,11 +3,13 @@ package com.jayud.finance.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.finance.bo.QueryNotPaidBillForm;
 import com.jayud.finance.bo.QueryPaymentBillForm;
 import com.jayud.finance.bo.QueryPaymentBillNumForm;
 import com.jayud.finance.po.OrderPaymentBill;
 import com.jayud.finance.vo.OrderPaymentBillNumVO;
 import com.jayud.finance.vo.OrderPaymentBillVO;
+import com.jayud.finance.vo.PaymentNotPaidBillVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -25,7 +27,7 @@ import java.util.List;
 public interface OrderPaymentBillMapper extends BaseMapper<OrderPaymentBill> {
 
     /**
-     * 应收出账单分页查询
+     * 应付出账单分页查询
      * @param page
      * @param form
      * @return
@@ -37,6 +39,13 @@ public interface OrderPaymentBillMapper extends BaseMapper<OrderPaymentBill> {
      * @param form
      * @return
      */
-    List<OrderPaymentBillNumVO> findPaymentBillNum(@Param("form")QueryPaymentBillNumForm form);
+    List<OrderPaymentBillNumVO> findPaymentBillNum(@Param("form") QueryPaymentBillNumForm form);
+
+    /**
+     * 应付未出账单列表分页查询
+     * @param form
+     * @return
+     */
+    IPage<PaymentNotPaidBillVO> findNotPaidBillByPage(@Param("form") QueryNotPaidBillForm form);
 
 }

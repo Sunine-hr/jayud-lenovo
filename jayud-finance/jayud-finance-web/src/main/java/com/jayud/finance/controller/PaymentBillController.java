@@ -3,10 +3,12 @@ package com.jayud.finance.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.finance.bo.QueryNotPaidBillForm;
 import com.jayud.finance.bo.QueryPaymentBillForm;
 import com.jayud.finance.bo.QueryPaymentBillNumForm;
 import com.jayud.finance.service.IOrderPaymentBillService;
 import com.jayud.finance.vo.OrderPaymentBillVO;
+import com.jayud.finance.vo.PaymentNotPaidBillVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,14 @@ public class PaymentBillController {
     public CommonResult<Map<String,Object>> findPaymentBillNum(@RequestBody @Valid QueryPaymentBillNumForm form) {
         Map<String,Object> result = billService.findPaymentBillNum(form);
         return CommonResult.success(result);
+    }
+
+    @ApiOperation(value = "未出账订单数列表")
+    @PostMapping("/findNotPaidBillByPage")
+    public CommonResult<CommonPageResult<PaymentNotPaidBillVO>> findNotPaidBillByPage(@RequestBody QueryNotPaidBillForm form) {
+        IPage<PaymentNotPaidBillVO> pageList = billService.findNotPaidBillByPage(form);
+        CommonPageResult<PaymentNotPaidBillVO> pageVO = new CommonPageResult(pageList);
+        return CommonResult.success(pageVO);
     }
 
 }

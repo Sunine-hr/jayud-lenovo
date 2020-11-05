@@ -72,4 +72,103 @@
              order_payment_bill_detail op left join order_payment_bill opb on op.bill_id = opb.id
              where opb.legal_name = #{legalName} and opb.customer_name = #{customerName}
     </select>
+
+    <select id="findNotPaidBillByPage" parameterType="com.jayud.finance.bo.QueryNotPaidBillForm" resultType="com.jayud.finance.vo.PaymentNotPaidBillVO" >
+        SELECT
+            opc.main_order_no orderNo,
+            pc.`name` classCodeDesc,
+            DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
+            oi.customer_name customerName,
+            (
+            SELECT
+                concat( da.city_name, da.address )
+            FROM
+                delivery_address da
+                LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id
+            WHERE
+                ota.order_no = ot.order_no
+                AND ota.opr_type = '1'
+                LIMIT 1
+            ) startAddress,
+            (
+            SELECT
+                concat( da.city_name, da.address )
+            FROM
+                delivery_address da
+                LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id
+            WHERE
+                ota.order_no = ot.order_no
+                AND ota.opr_type = '2'
+                LIMIT 1
+            ) endAddress,
+            concat( osc.license_plate, osc.hk_license_plate ) licensePlate,
+            ( SELECT GROUP_CONCAT( oc.yun_customs_no SEPARATOR ',' ) FROM order_customs oc WHERE oc.main_order_no = oi.order_no ) yunCustomsNo,
+            cg.`name` costGenreName,
+            ct.code_name costTypeName,
+            ci.`name` costName,
+            (
+            SELECT
+                rmb.amount
+            FROM
+                order_payment_cost rmb
+            WHERE
+                rmb.id = opc.id
+                AND rmb.currency_code = 'RMB'
+            GROUP BY
+                rmb.cost_code,
+                rmb.cost_genre_id,
+                rmb.cost_type_id
+            ) rmb,
+            (
+            SELECT
+                rmb.amount
+            FROM
+                order_payment_cost rmb
+            WHERE
+                rmb.id = opc.id
+                AND rmb.currency_code = 'MY'
+            GROUP BY
+                rmb.cost_code,
+                rmb.cost_genre_id,
+                rmb.cost_type_id
+            ) dollar,
+            (
+            SELECT
+                rmb.amount
+            FROM
+                order_payment_cost rmb
+            WHERE
+                rmb.id = opc.id
+                AND rmb.currency_code = 'OY'
+            GROUP BY
+                rmb.cost_code,
+                rmb.cost_genre_id,
+                rmb.cost_type_id
+            ) euro,
+            (
+            SELECT
+                rmb.amount
+            FROM
+                order_payment_cost rmb
+            WHERE
+                rmb.id = opc.id
+                AND rmb.currency_code = 'GB'
+            GROUP BY
+                rmb.cost_code,
+                rmb.cost_genre_id,
+                rmb.cost_type_id
+            ) hKDollar
+        FROM
+            order_payment_cost opc
+            LEFT JOIN order_info oi ON opc.main_order_no = oi.order_no
+            LEFT JOIN product_classify pc ON oi.class_code = pc.id_code
+            AND pc.f_id = '0'
+            LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
+            LEFT JOIN order_send_cars osc ON ot.order_no = osc.transport_no
+            LEFT JOIN cost_genre cg ON opc.cost_genre_id = cg.id
+            LEFT JOIN cost_type ct ON opc.cost_type_id = ct.id
+            LEFT JOIN cost_info ci ON opc.cost_code = ci.id_code
+        WHERE
+            opc.id NOT IN ( SELECT opbd.cost_id FROM order_payment_bill_detail opbd )
+    </select>
 </mapper>

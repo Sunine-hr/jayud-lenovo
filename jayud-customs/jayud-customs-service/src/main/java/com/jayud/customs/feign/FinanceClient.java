@@ -16,7 +16,7 @@ import java.util.Map;
  * @description
  * @Date: 2020-09-19 11:23
  */
-@FeignClient(value = "jayud-finance-web")
+@FeignClient("jayud-finance-web")
 public interface FinanceClient {
 //
 //    /**

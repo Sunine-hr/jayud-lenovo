@@ -23,5 +23,7 @@ public class QueryVehicleInfoForm extends BasePageForm {
     @ApiModelProperty(value = "供应商名字")
     private String supplierName;
 
+    @ApiModelProperty("状态 0 禁用 1启用")
+    private String status;
 
 }

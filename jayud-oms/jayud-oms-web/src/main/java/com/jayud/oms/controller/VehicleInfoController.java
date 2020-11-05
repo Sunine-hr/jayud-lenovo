@@ -109,5 +109,19 @@ public class VehicleInfoController {
         return CommonResult.success(initComboxVOS);
     }
 
+    @ApiOperation(value = "更改启用/禁用车辆状态,id是车辆信息主键")
+    @PostMapping(value = "/enableOrDisableVehicle")
+    public CommonResult enableOrDisableVehicle(@RequestBody Map<String,String> map) {
+        if (StringUtils.isEmpty(map.get("id"))) {
+            return CommonResult.error(500, "id is required");
+        }
+        Long id =Long.parseLong(map.get("id"));
+        if (this.vehicleInfoService.enableOrDisableVehicle(id)) {
+            return CommonResult.success();
+        } else {
+            return CommonResult.error(ResultEnum.OPR_FAIL);
+        }
+    }
+
 }
 

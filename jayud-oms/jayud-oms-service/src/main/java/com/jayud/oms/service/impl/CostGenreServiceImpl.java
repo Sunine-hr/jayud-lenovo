@@ -121,14 +121,18 @@ public class CostGenreServiceImpl extends ServiceImpl<CostGenreMapper, CostGenre
             condition.lambda().and(tmp -> tmp.eq(CostGenre::getId, costGenre.getId())
                     .eq(CostGenre::getName, costGenre.getName()));
             int count = this.count(condition);
-            if (count > 0) {
-                //匹配到自己名称,不进行唯一校验
+            //匹配到自己名称,不进行唯一校验
+            if (count == 0) {
+                condition = new QueryWrapper<>();
+                condition.lambda().eq(CostGenre::getName, costGenre.getName());
+                return this.count(condition) > 0;
+            } else {
                 return false;
             }
+        }else {
+            condition.lambda().eq(CostGenre::getCode, costGenre.getCode())
+                    .or().eq(CostGenre::getName, costGenre.getName());
+            return this.count(condition) > 0;
         }
-        condition = new QueryWrapper<>();
-        condition.lambda().eq(CostGenre::getCode, costGenre.getCode())
-                .or().eq(CostGenre::getName, costGenre.getName());
-        return this.count(condition) > 0;
     }
 }

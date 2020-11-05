@@ -74,7 +74,21 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
                 return false;
             }
         }
+        condition=new QueryWrapper<>();
         condition.lambda().eq(DriverInfo::getName, driverInfo.getName());
         return this.count(condition) > 0;
+    }
+
+    @Override
+    public boolean enableOrDisableDriver(Long id) {
+        //查询当前状态
+        QueryWrapper<DriverInfo> condition = new QueryWrapper<>();
+        condition.lambda().select(DriverInfo::getStatus).eq(DriverInfo::getId, id);
+        DriverInfo tmp = this.baseMapper.selectOne(condition);
+
+        String status = StatusEnum.ENABLE.getCode().equals(tmp.getStatus()) ? StatusEnum.INVALID.getCode() : StatusEnum.ENABLE.getCode();
+
+        DriverInfo driverInfo = new DriverInfo().setId(id).setStatus(status);
+        return this.updateById(driverInfo);
     }
 }

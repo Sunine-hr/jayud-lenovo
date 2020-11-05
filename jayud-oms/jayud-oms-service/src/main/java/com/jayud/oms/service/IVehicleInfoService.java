@@ -42,4 +42,6 @@ public interface IVehicleInfoService extends IService<VehicleInfo> {
      * @return
      */
     List<VehicleInfo> getVehicleInfoByStatus(String status);
+
+    boolean enableOrDisableVehicle(Long id);
 }

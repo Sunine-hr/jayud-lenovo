@@ -13,6 +13,7 @@ import com.jayud.oms.model.bo.QueryCostTypeForm;
 import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.CostInfo;
 import com.jayud.oms.model.po.CostType;
+import com.jayud.oms.model.po.WarehouseInfo;
 import com.jayud.oms.model.vo.CostTypeVO;
 import com.jayud.oms.service.ICostTypeService;
 import org.springframework.stereotype.Service;
@@ -143,14 +144,20 @@ public class CostTypeServiceImpl extends ServiceImpl<CostTypeMapper, CostType> i
             condition.lambda().and(tmp -> tmp.eq(CostType::getId, costType.getId())
                     .eq(CostType::getCodeName, costType.getCodeName()));
             int count = this.count(condition);
-            if (count > 0) {
-                //匹配到自己名称,不进行唯一校验
+            //匹配到自己名称,不进行唯一校验
+            if (count == 0) {
+                condition = new QueryWrapper<>();
+                condition.lambda().eq(CostType::getCodeName, costType.getCodeName());
+                return this.count(condition) > 0;
+            } else {
                 return false;
             }
+        } else {
+            condition.lambda().eq(CostType::getCode, costType.getCode())
+                    .or().eq(CostType::getCodeName, costType.getCodeName());
+            return this.count(condition) > 0;
         }
-        condition.lambda().eq(CostType::getCode, costType.getCode())
-                .or().eq(CostType::getCodeName, costType.getCodeName());
-        return this.count(condition) > 0;
+
     }
 
 }

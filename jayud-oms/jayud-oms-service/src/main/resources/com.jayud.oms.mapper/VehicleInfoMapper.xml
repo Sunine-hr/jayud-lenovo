@@ -47,7 +47,9 @@
         from
         vehicle_info w left join supplier_info s on w.supplier_id=s.id
         <where>
-            and w.status=1
+            <if test="form.status!=null and form.status!=''">
+                and w.status= #{form.status}
+            </if>
             <if test="form.plateNumber!=null and form.plateNumber!=''">
                 and w.plate_number like concat('%',#{form.plateNumber},'%')
             </if>

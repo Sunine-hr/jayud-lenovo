@@ -31,4 +31,6 @@ public interface IDriverInfoService extends IService<DriverInfo> {
     boolean saveOrUpdateDriverInfo(DriverInfo driverInfo);
 
     boolean checkUnique(DriverInfo driverInfo);
+
+    boolean enableOrDisableDriver(Long id);
 }

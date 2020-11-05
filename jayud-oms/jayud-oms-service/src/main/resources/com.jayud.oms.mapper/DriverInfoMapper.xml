@@ -40,7 +40,9 @@
         from
             driver_info d left join vehicle_info v on d.vehicle_id=v.id
         <where>
-            and d.status = 1
+            <if test="form.status!=null and form.status!=''">
+                and d.status= #{form.status}
+            </if>
             <if test="form.name!=null and form.name!=''">
                 and d.name like concat('%',#{form.name},'%')
             </if>

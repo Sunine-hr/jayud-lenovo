@@ -1,8 +1,7 @@
-package com.jayud.oms.model.po;
+package com.jayud.oms.model.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -21,16 +20,12 @@ import java.time.LocalDateTime;
  * @since 2020-11-05
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value="WarehouseInfo对象", description="仓库信息表")
-public class WarehouseInfo extends Model<VehicleInfo> {
+public class WarehouseInfoVO  {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "id", type = IdType.AUTO)
     @ApiModelProperty(value = "主键")
-    private Long id;
+    private Integer id;
 
     @ApiModelProperty(value = "中转仓库代码")
     private String warehouseCode;
@@ -68,9 +63,5 @@ public class WarehouseInfo extends Model<VehicleInfo> {
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
 
 }

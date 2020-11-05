@@ -4,27 +4,50 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.WarehouseInfo">
-        <id column="id" property="id" />
-        <result column="warehouse_code" property="warehouseCode" />
-        <result column="warehouse_name" property="warehouseName" />
-        <result column="contacts" property="contacts" />
-        <result column="company_name" property="companyName" />
-        <result column="contact_number" property="contactNumber" />
-        <result column="contact_phone" property="contactPhone" />
-        <result column="address" property="address" />
-        <result column="state_code" property="stateCode" />
-        <result column="country_code" property="countryCode" />
-        <result column="city_code" property="cityCode" />
-        <result column="zip_code" property="zipCode" />
-        <result column="status" property="status" />
-        <result column="create_user" property="createUser" />
-        <result column="create_time" property="createTime" />
+        <id column="id" property="id"/>
+        <result column="warehouse_code" property="warehouseCode"/>
+        <result column="warehouse_name" property="warehouseName"/>
+        <result column="contacts" property="contacts"/>
+        <result column="contact_number" property="contactNumber"/>
+        <result column="address" property="address"/>
+        <result column="province" property="province"/>
+        <result column="city" property="city"/>
+        <result column="area" property="area"/>
+        <result column="zip_code" property="zipCode"/>
+        <result column="status" property="status"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, warehouse_code, warehouse_name, state_code, contacts, company_name, contact_number, contact_phone, address,
-        country_code, city_code, zip_code, status, create_user, create_time
+        id, warehouse_code, warehouse_name, contacts, contact_number, address, province, city, area, zip_code, status, create_user, create_time
     </sql>
+
+    <select id="findWarehouseInfoByPage" parameterType="com.jayud.oms.model.bo.QueryWarehouseInfoForm"
+    resultType="com.jayud.oms.model.vo.WarehouseInfoVO">
+        select
+        id, warehouse_code warehouseCode, warehouse_name warehouseName,
+        contacts, contact_number contactNumber, address,
+        province, city, area, zip_code zipCode, status,
+        create_user createUser, create_time createTime
+        from
+        warehouse_info
+        <where>
+            <if test="form.warehouseName!=null and form.warehouseName!=''">
+                and w.warehouse_name like concat('%',#{form.warehouseName},'%')
+            </if>
+            <if test="form.contacts!=null and form.contacts!=''">
+                and w.contacts like concat('%',#{form.contacts},'%')
+            </if>
+            <if test="form.contactNumber!=null and form.contactNumber!=''">
+                and s.contact_number like concat('%',#{form.contactNumber},'%')
+            </if>
+            <if test="form.status!=null and form.status!=''">
+                and status= #{form.status}
+            </if>
+        </where>
+
+    </select>
 
 </mapper>

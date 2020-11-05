@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.UserOperator;
 import com.jayud.oms.model.bo.QueryVehicleInfoForm;
+import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.SupplierInfo;
 import com.jayud.oms.model.po.VehicleInfo;
 import com.jayud.oms.mapper.VehicleInfoMapper;
+import com.jayud.oms.model.po.WarehouseInfo;
 import com.jayud.oms.model.vo.VehicleInfoVO;
 import com.jayud.oms.service.IVehicleInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -49,7 +51,9 @@ public class VehicleInfoServiceImpl extends ServiceImpl<VehicleInfoMapper, Vehic
     public boolean saveOrUpdateVehicleInfo(VehicleInfo vehicleInfo) {
 
         if (Objects.isNull(vehicleInfo.getId())) {
-            vehicleInfo.setCreateTime(LocalDateTime.now())
+            vehicleInfo
+                    .setStatus(StatusEnum.ENABLE.getCode())
+                    .setCreateTime(LocalDateTime.now())
                     .setCreateUser(UserOperator.getToken());
             return this.save(vehicleInfo);
         } else {
@@ -93,6 +97,19 @@ public class VehicleInfoServiceImpl extends ServiceImpl<VehicleInfoMapper, Vehic
         QueryWrapper<VehicleInfo> condition = new QueryWrapper<>();
         condition.lambda().eq(VehicleInfo::getStatus, status);
         return this.baseMapper.selectList(condition);
+    }
+
+    @Override
+    public boolean enableOrDisableVehicle(Long id) {
+        //查询当前状态
+        QueryWrapper<VehicleInfo> condition = new QueryWrapper<>();
+        condition.lambda().select(VehicleInfo::getStatus).eq(VehicleInfo::getId, id);
+        VehicleInfo tmp = this.baseMapper.selectOne(condition);
+
+        String status = StatusEnum.ENABLE.getCode().equals(tmp.getStatus()) ? StatusEnum.INVALID.getCode() : StatusEnum.ENABLE.getCode();
+
+        VehicleInfo vehicleInfo = new VehicleInfo().setId(id).setStatus(status);
+        return this.updateById(vehicleInfo);
     }
 
 

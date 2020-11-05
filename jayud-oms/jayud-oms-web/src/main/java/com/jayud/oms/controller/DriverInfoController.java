@@ -68,20 +68,20 @@ public class DriverInfoController {
         }
     }
 
-    @ApiOperation(value = "删除司机信息,id是司机主键")
-    @PostMapping(value = "/deleteDriverInfo")
-    public CommonResult deleteDriverInfo(@RequestBody Map<String, String> map) {
-        if (StringUtils.isEmpty(map.get("id"))) {
-            return CommonResult.error(500, "id is required");
-        }
-        Long id = Long.parseLong(map.get("id"));
-        DriverInfo driverInfo = new DriverInfo().setId(id).setStatus(StatusEnum.INVALID.getCode());
-        if (this.driverInfoService.saveOrUpdateDriverInfo(driverInfo)) {
-            return CommonResult.success();
-        } else {
-            return CommonResult.error(ResultEnum.OPR_FAIL);
-        }
-    }
+//    @ApiOperation(value = "删除司机信息,id是司机主键")
+//    @PostMapping(value = "/deleteDriverInfo")
+//    public CommonResult deleteDriverInfo(@RequestBody Map<String, String> map) {
+//        if (StringUtils.isEmpty(map.get("id"))) {
+//            return CommonResult.error(500, "id is required");
+//        }
+//        Long id = Long.parseLong(map.get("id"));
+//        DriverInfo driverInfo = new DriverInfo().setId(id).setStatus(StatusEnum.INVALID.getCode());
+//        if (this.driverInfoService.saveOrUpdateDriverInfo(driverInfo)) {
+//            return CommonResult.success();
+//        } else {
+//            return CommonResult.error(ResultEnum.OPR_FAIL);
+//        }
+//    }
 
     @ApiOperation(value = "根据主键获取司机信息详情,id是司机信息主键")
     @PostMapping(value = "/getDriverInfoById")
@@ -92,6 +92,20 @@ public class DriverInfoController {
         Long id = Long.parseLong(map.get("id"));
         DriverInfo driverInfo = this.driverInfoService.getById(id);
         return CommonResult.success(ConvertUtil.convert(driverInfo, DriverInfoVO.class));
+    }
+
+    @ApiOperation(value = "更改启用/禁用车辆状态,id是车辆信息主键")
+    @PostMapping(value = "/enableOrDisableDriver")
+    public CommonResult enableOrDisableDriver(@RequestBody Map<String,String> map) {
+        if (StringUtils.isEmpty(map.get("id"))) {
+            return CommonResult.error(500, "id is required");
+        }
+        Long id =Long.parseLong(map.get("id"));
+        if (this.driverInfoService.enableOrDisableDriver(id)) {
+            return CommonResult.success();
+        } else {
+            return CommonResult.error(ResultEnum.OPR_FAIL);
+        }
     }
 }
 

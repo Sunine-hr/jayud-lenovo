@@ -156,13 +156,18 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
             condition.lambda().and(tmp -> tmp.eq(CostInfo::getId, costInfo.getId())
                     .eq(CostInfo::getName, costInfo.getName()));
             int count = this.count(condition);
-            if (count > 0) {
-                //匹配到自己名称,不进行唯一校验
+            //匹配到自己名称,不进行唯一校验
+            if (count == 0) {
+                condition = new QueryWrapper<>();
+                condition.lambda().eq(CostInfo::getName, costInfo.getName());
+                return this.count(condition) > 0;
+            } else {
                 return false;
             }
+        } else {
+            condition.lambda().eq(CostInfo::getIdCode, costInfo.getIdCode())
+                    .or().eq(CostInfo::getName, costInfo.getName());
+            return this.count(condition) > 0;
         }
-        condition.lambda().eq(CostInfo::getIdCode, costInfo.getIdCode())
-                .or().eq(CostInfo::getName, costInfo.getName());
-        return this.count(condition) > 0;
     }
 }

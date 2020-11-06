@@ -71,8 +71,6 @@ ALTER TABLE `warehouse_info`
 DROP COLUMN `company_name`,
 DROP COLUMN `contact_phone`,
 DROP COLUMN `country_code`,
-CHANGE COLUMN `state_code` `province` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '省' AFTER `address`,
-CHANGE COLUMN `city_code` `city` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '市' AFTER `province`,
 MODIFY COLUMN `warehouse_code` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '中转仓库代码' AFTER `id`,
 MODIFY COLUMN `warehouse_name` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '中转仓库名称' AFTER `warehouse_code`,
 ADD COLUMN `area` varchar(50) NULL COMMENT '区' AFTER `city`;
@@ -80,3 +78,24 @@ ADD COLUMN `area` varchar(50) NULL COMMENT '区' AFTER `city`;
 -- 2020年11月5日李达荣，功能描述：中转仓库主键更long类型
 ALTER TABLE `warehouse_info`
 MODIFY COLUMN `id` bigint(11) NOT NULL AUTO_INCREMENT FIRST;
+
+-- 2020年11月6日李达荣，功能描述：供应商更改字段名
+ALTER TABLE `supplier_info`
+CHANGE COLUMN `product_classify_id` `product_classify_ids` bigint(20) NOT NULL COMMENT '产品分类id集合（多个逗号隔开）' AFTER `supplier_code`;
+ALTER TABLE `jayud_platform`.`supplier_info`
+MODIFY COLUMN `product_classify_ids` varchar(50) NOT NULL COMMENT '产品分类id集合（多个逗号隔开）' AFTER `supplier_code`;
+
+-- 2020年11月6日李达荣，功能描述：车辆表修改字段类型，增加车辆吨位字段
+ALTER TABLE `vehicle_info`
+MODIFY COLUMN `weight` varchar(50) NULL DEFAULT NULL COMMENT '吉车重量' AFTER `card_number`,
+ADD COLUMN `vehicle_tonnage` varchar(50) NULL COMMENT '车辆吨位' AFTER `enterprise_code`;
+
+-- 2020年11月6日李达荣，功能描述：法人主体加字段
+ALTER TABLE `jayud-test`.`legal_entity`
+ADD COLUMN `legal_en_name` varchar(50) NULL COMMENT '英文名' AFTER `updated_time`,
+ADD COLUMN `phone` varchar(20) NULL COMMENT '电话' AFTER `legal_en_name`,
+ADD COLUMN `fax` varchar(50) NULL COMMENT '传真' AFTER `phone`,
+ADD COLUMN `address` varchar(50) NULL COMMENT '地址' AFTER `fax`,
+ADD COLUMN `bank` varchar(50) NULL COMMENT '开户银行' AFTER `address`,
+ADD COLUMN `account_open` varchar(50) NULL COMMENT '开户账户' AFTER `bank`,
+ADD COLUMN `tax_identification_num` varchar(50) NULL COMMENT '纳税识别号信息' AFTER `account_open`;

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.OrderInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.OrderInfo">
+        <id column="id" property="id" />
+        <result column="order_no" property="orderNo" />
+        <result column="customer_id" property="customerId" />
+        <result column="store_goods_warehouse_code" property="storeGoodsWarehouseCode" />
+        <result column="store_goods_warehouse_name" property="storeGoodsWarehouseName" />
+        <result column="destination_warehouse_code" property="destinationWarehouseCode" />
+        <result column="destination_warehouse_name" property="destinationWarehouseName" />
+        <result column="is_pick" property="isPick" />
+        <result column="status" property="status" />
+        <result column="status_name" property="statusName" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="create_user_name" property="createUserName" />
+        <result column="order_origin" property="orderOrigin" />
+        <result column="bol_no" property="bolNo" />
+        <result column="need_declare" property="needDeclare" />
+        <result column="need_clearance" property="needClearance" />
+        <result column="remark" property="remark" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_no, customer_id, store_goods_warehouse_code, store_goods_warehouse_name, destination_warehouse_code, destination_warehouse_name, is_pick, status, status_name, create_time, create_user_id, create_user_name, order_origin, bol_no, need_declare, need_clearance, remark
+    </sql>
+
+</mapper>

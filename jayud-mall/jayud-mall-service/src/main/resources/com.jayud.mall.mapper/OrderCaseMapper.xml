@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.OrderCaseMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.OrderCase">
+        <id column="id" property="id" />
+        <result column="order_id" property="orderId" />
+        <result column="carton_no" property="cartonNo" />
+        <result column="fab_no" property="fabNo" />
+        <result column="asn_length" property="asnLength" />
+        <result column="asn_width" property="asnWidth" />
+        <result column="asn_height" property="asnHeight" />
+        <result column="asn_weight" property="asnWeight" />
+        <result column="asn_volume" property="asnVolume" />
+        <result column="asn_weigh_date" property="asnWeighDate" />
+        <result column="wms_length" property="wmsLength" />
+        <result column="wms_height" property="wmsHeight" />
+        <result column="wms_width" property="wmsWidth" />
+        <result column="wms_weight" property="wmsWeight" />
+        <result column="wms_volume" property="wmsVolume" />
+        <result column="wms_weigh_date" property="wmsWeighDate" />
+        <result column="confirm_length" property="confirmLength" />
+        <result column="confirm_height" property="confirmHeight" />
+        <result column="confirm_width" property="confirmWidth" />
+        <result column="confirm_weight" property="confirmWeight" />
+        <result column="confirm_volume" property="confirmVolume" />
+        <result column="confirm_weigh_date" property="confirmWeighDate" />
+        <result column="status" property="status" />
+        <result column="remark" property="remark" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_id, carton_no, fab_no, asn_length, asn_width, asn_height, asn_weight, asn_volume, asn_weigh_date, wms_length, wms_height, wms_width, wms_weight, wms_volume, wms_weigh_date, confirm_length, confirm_height, confirm_width, confirm_weight, confirm_volume, confirm_weigh_date, status, remark
+    </sql>
+
+</mapper>

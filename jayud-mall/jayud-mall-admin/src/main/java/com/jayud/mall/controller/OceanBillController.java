@@ -36,7 +36,13 @@ public class OceanBillController {
     public CommonResult saveOceanBill(@RequestBody OceanBillForm form){
         oceanBillService.saveOceanBill(form);
         return CommonResult.success("保存提单信息，成功！");
+    }
 
+    @ApiOperation(value = "查看提单详情")
+    @PostMapping(value = "lookOceanBill")
+    public CommonResult<OceanBillVO> lookOceanBill(@RequestBody OceanBillForm form){
+        Long id = form.getId();
+        return oceanBillService.lookOceanBill(id);
     }
 
 

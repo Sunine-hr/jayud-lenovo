@@ -1,8 +1,10 @@
 package com.jayud.mall.model.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.jayud.mall.model.vo.OceanCounterCustomerRelationVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -12,6 +14,7 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -49,6 +52,7 @@ public class OceanCounter extends Model<OceanCounter> {
     private Integer cid;
 
     @ApiModelProperty(value = "状态(0无效 1有效)")
+    @TableField(value = "`status`")
     private String status;
 
     @ApiModelProperty(value = "提单id(ocean_bill id)")
@@ -56,6 +60,10 @@ public class OceanCounter extends Model<OceanCounter> {
 
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
+
+    /*关联箱号信息*/
+    @ApiModelProperty(value = "关联箱号信息list")
+    private List<OceanCounterCustomerRelationVO> oceanCounterCustomerRelationVOList;
 
 
     @Override

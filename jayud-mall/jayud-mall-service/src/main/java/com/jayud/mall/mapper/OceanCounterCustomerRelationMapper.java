@@ -2,8 +2,11 @@ package com.jayud.mall.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.po.OceanCounterCustomerRelation;
+import com.jayud.mall.model.vo.OceanCounterCustomerRelationVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +20,10 @@ import org.springframework.stereotype.Component;
 @Component
 public interface OceanCounterCustomerRelationMapper extends BaseMapper<OceanCounterCustomerRelation> {
 
+    /**
+     * 根据柜号信息，获取装柜信息list
+     * @param oceanCounterId
+     * @return
+     */
+    List<OceanCounterCustomerRelationVO> findZgxxListByOceanCounterId(Long oceanCounterId);
 }

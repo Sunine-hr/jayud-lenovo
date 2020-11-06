@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.OceanBillMapper;
+import com.jayud.mall.mapper.OceanCounterCustomerRelationMapper;
 import com.jayud.mall.mapper.OceanCounterMapper;
 import com.jayud.mall.model.bo.OceanBillForm;
 import com.jayud.mall.model.bo.OceanCounterForm;
@@ -14,6 +16,7 @@ import com.jayud.mall.model.po.OceanBill;
 import com.jayud.mall.model.po.OceanCounter;
 import com.jayud.mall.model.po.OceanCounterCustomerRelation;
 import com.jayud.mall.model.vo.OceanBillVO;
+import com.jayud.mall.model.vo.OceanCounterCustomerRelationVO;
 import com.jayud.mall.service.IOceanBillService;
 import com.jayud.mall.service.IOceanCounterCustomerRelationService;
 import com.jayud.mall.service.IOceanCounterService;
@@ -39,6 +42,9 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
 
     @Autowired
     OceanCounterMapper oceanCounterMapper;
+
+    @Autowired
+    OceanCounterCustomerRelationMapper oceanCounterCustomerRelationMapper;
 
     @Autowired
     IOceanCounterService oceanCounterService;
@@ -102,5 +108,29 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
             oceanCounterCustomerRelationService.saveOrUpdateBatch(oceanCounterCustomerRelationList);
 
         });
+    }
+
+    @Override
+    public CommonResult<OceanBillVO> lookOceanBill(Long id) {
+        //提单信息
+        OceanBill oceanBill = oceanBillMapper.selectById(id);
+        OceanBillVO oceanBillVO = ConvertUtil.convert(oceanBill, OceanBillVO.class);
+
+        //提单关联柜号信息
+        Long obId = oceanBillVO.getId();
+        QueryWrapper<OceanCounter> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("id","cntr_no","cabinet_code","volume","cost","cid","`status`","ob_id","create_time");
+        queryWrapper.eq("ob_id", obId);
+        List<OceanCounter> oceanCounterList = oceanCounterMapper.selectList(queryWrapper);
+
+        //柜号关联装柜信息
+        oceanCounterList.forEach(oceanCounter -> {
+            Long oceanCounterId = oceanCounter.getId();
+            //装柜信息list
+            List<OceanCounterCustomerRelationVO> zgxxList = oceanCounterCustomerRelationMapper.findZgxxListByOceanCounterId(oceanCounterId);
+            oceanCounter.setOceanCounterCustomerRelationVOList(zgxxList);
+        });
+        oceanBillVO.setOceanCounterList(oceanCounterList);
+        return CommonResult.success(oceanBillVO);
     }
 }

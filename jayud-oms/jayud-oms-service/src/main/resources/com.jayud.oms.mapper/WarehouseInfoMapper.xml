@@ -10,8 +10,8 @@
         <result column="contacts" property="contacts"/>
         <result column="contact_number" property="contactNumber"/>
         <result column="address" property="address"/>
-        <result column="province" property="province"/>
-        <result column="city" property="city"/>
+        <result column="state_code" property="stateCode"/>
+        <result column="city_code" property="cityCode"/>
         <result column="area" property="area"/>
         <result column="zip_code" property="zipCode"/>
         <result column="status" property="status"/>
@@ -21,7 +21,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, warehouse_code, warehouse_name, contacts, contact_number, address, province, city, area, zip_code, status, create_user, create_time
+        id, warehouse_code, warehouse_name, contacts, contact_number, address, state_code, city_code, area, zip_code, status, create_user, create_time
     </sql>
 
     <select id="findWarehouseInfoByPage" parameterType="com.jayud.oms.model.bo.QueryWarehouseInfoForm"
@@ -29,10 +29,12 @@
         select
         id, warehouse_code warehouseCode, warehouse_name warehouseName,
         contacts, contact_number contactNumber, address,
-        province, city, area, zip_code zipCode, status,
+        (select name from region_city where id=w.state_code) province,
+        (select name from region_city where id=w.city_code) city,
+        (select name from region_city where id=w.area)area, zip_code zipCode, status,
         create_user createUser, create_time createTime
         from
-        warehouse_info
+        warehouse_info w
         <where>
             <if test="form.warehouseName!=null and form.warehouseName!=''">
                 and w.warehouse_name like concat('%',#{form.warehouseName},'%')

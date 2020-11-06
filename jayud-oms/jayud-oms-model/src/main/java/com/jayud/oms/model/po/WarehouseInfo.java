@@ -48,10 +48,10 @@ public class WarehouseInfo extends Model<VehicleInfo> {
     private String address;
 
     @ApiModelProperty(value = "省")
-    private String province;
+    private String stateCode;
 
     @ApiModelProperty(value = "市")
-    private String city;
+    private String cityCode;
 
     @ApiModelProperty(value = "区")
     private String area;

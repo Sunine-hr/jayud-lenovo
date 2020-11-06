@@ -11,11 +11,14 @@ import com.jayud.oms.model.bo.AddWarehouseInfoForm;
 import com.jayud.oms.model.bo.QueryVehicleInfoForm;
 import com.jayud.oms.model.bo.QueryWarehouseInfoForm;
 import com.jayud.oms.model.enums.StatusEnum;
+import com.jayud.oms.model.po.RegionCity;
 import com.jayud.oms.model.po.VehicleInfo;
 import com.jayud.oms.model.po.WarehouseInfo;
 import com.jayud.oms.model.vo.VehicleInfoVO;
 import com.jayud.oms.model.vo.WarehouseInfoVO;
+import com.jayud.oms.service.IRegionCityService;
 import com.jayud.oms.service.IWarehouseInfoService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -37,11 +40,14 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/warehouseInfo")
+@Api(tags = "中转仓库信息")
 public class WarehouseInfoController {
 
 
     @Autowired
     private IWarehouseInfoService warehouseInfoService;
+    @Autowired
+    private IRegionCityService regionCityService;
 
     @ApiOperation(value = "分页查询中转仓库信息")
     @PostMapping(value = "/findWarehouseInfoByPage")
@@ -58,6 +64,7 @@ public class WarehouseInfoController {
         if (this.warehouseInfoService.checkUnique(info)) {
             return CommonResult.error(400, "中转仓仓库已存在");
         }
+
         WarehouseInfo warehouseInfo = ConvertUtil.convert(form, WarehouseInfo.class);
         if (this.warehouseInfoService.saveOrUpdateWarehouseInfo(warehouseInfo)) {
             return CommonResult.success();
@@ -79,11 +86,11 @@ public class WarehouseInfoController {
 
     @ApiOperation(value = "更改启用/禁用中转仓库状态,id是中转仓库信息主键")
     @PostMapping(value = "/enableOrDisableWarehouse")
-    public CommonResult enableOrDisableWarehouse(@RequestBody Map<String,String> map) {
+    public CommonResult enableOrDisableWarehouse(@RequestBody Map<String, String> map) {
         if (StringUtils.isEmpty(map.get("id"))) {
             return CommonResult.error(500, "id is required");
         }
-        Long id =Long.parseLong(map.get("id"));
+        Long id = Long.parseLong(map.get("id"));
         if (this.warehouseInfoService.enableOrDisableWarehouse(id)) {
             return CommonResult.success();
         } else {

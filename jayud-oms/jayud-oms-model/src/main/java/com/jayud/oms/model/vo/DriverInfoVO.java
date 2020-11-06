@@ -80,6 +80,10 @@ public class DriverInfoVO {
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
+    @ApiModelProperty(value = "密码（微信登录使用）")
+    private String password;
+
+
     /**
      * 暂存车牌容器
      */

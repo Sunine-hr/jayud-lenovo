@@ -3,16 +3,16 @@ package com.jayud.oms.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.UserOperator;
+import com.jayud.common.utils.MD5;
+import com.jayud.oms.mapper.DriverInfoMapper;
 import com.jayud.oms.model.bo.QueryDriverInfoForm;
 import com.jayud.oms.model.enums.StatusEnum;
-import com.jayud.oms.model.po.CostType;
 import com.jayud.oms.model.po.DriverInfo;
-import com.jayud.oms.mapper.DriverInfoMapper;
-import com.jayud.oms.model.po.VehicleInfo;
 import com.jayud.oms.model.vo.DriverInfoVO;
 import com.jayud.oms.service.IDriverInfoService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -49,6 +49,11 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
      */
     @Override
     public boolean saveOrUpdateDriverInfo(DriverInfo driverInfo) {
+        //密码MD5加密
+//        if (StringUtils.isNotEmpty(driverInfo.getPassword())) {
+//            driverInfo.setPassword(MD5.encode(driverInfo.getPassword()));
+//        }
+
         if (Objects.isNull(driverInfo.getId())) {
             driverInfo.setCreateTime(LocalDateTime.now())
                     .setCreateUser(UserOperator.getToken()).setStatus(StatusEnum.ENABLE.getCode());
@@ -74,7 +79,7 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
                 return false;
             }
         }
-        condition=new QueryWrapper<>();
+        condition = new QueryWrapper<>();
         condition.lambda().eq(DriverInfo::getName, driverInfo.getName());
         return this.count(condition) > 0;
     }

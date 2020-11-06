@@ -49,11 +49,8 @@ public class AddDriverInfoForm {
     @ApiModelProperty(value = "驾驶证")
     private String drivingNo;
 
-    @ApiModelProperty(value = "密码")
-    @NotEmpty(message = "password is required")
-    public String password;
+    //    @ApiModelProperty(value = "密码")
+//    @NotEmpty(message = "password is required")
+//    public String password;
 
-    public void setPassword(String password) {
-        this.password = MD5.encode(password);
-    }
 }

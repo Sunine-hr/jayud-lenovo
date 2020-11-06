@@ -21,4 +21,34 @@
         id, tid, supplier_code, order_id, start_code, end_code, sail_time, voyage_day, unit, create_time
     </sql>
 
+    <!--查询报价模板并分页-->
+    <select id="findOceanBillByPage" parameterType="com.jayud.mall.model.bo.QueryOceanBillForm"
+            resultType="com.jayud.mall.model.vo.OceanBillVO" >
+        select
+        t.id,t.tid,t.supplier_code,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time
+        from
+        ocean_bill t
+        WHERE
+        1 = 1
+        /*报价名*/
+        <if test="form.orderId != null and form.orderId != ''">
+            AND t.`order_id` LIKE concat('%',#{form.orderId},'%')
+        </if>
+        /*开船日期*/
+        <if test="form.sailTime != null and form.sailTimeStart != null and form.sailTimeStart != '' and form.sailTimeEnd != null and form.sailTimeEnd != '' ">
+            and t.sail_time <![CDATA[ >= ]]> #{form.sailTimeStart} AND t.sail_time <![CDATA[ <= ]]> #{form.sailTimeEnd}
+        </if>
+        /*供应商*/
+        <if test="form.supplierCode != null and form.supplierCode != ''">
+            and t.supplier_code = #{form.supplierCode}
+        </if>
+        /*目的港*/
+        <if test="form.endCode != null and form.endCode != ''">
+            AND t.`end_code` = #{form.endCode}
+        </if>
+        GROUP BY
+        t.`id`
+    </select>
+
+
 </mapper>

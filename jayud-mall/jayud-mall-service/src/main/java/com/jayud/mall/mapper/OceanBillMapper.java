@@ -1,7 +1,11 @@
 package com.jayud.mall.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.mall.model.bo.QueryOceanBillForm;
 import com.jayud.mall.model.po.OceanBill;
+import com.jayud.mall.model.vo.OceanBillVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Component;
 
@@ -17,4 +21,11 @@ import org.springframework.stereotype.Component;
 @Component
 public interface OceanBillMapper extends BaseMapper<OceanBill> {
 
+    /**
+     * 分页
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<OceanBillVO> findOceanBillByPage(Page<OceanBillVO> page, QueryOceanBillForm form);
 }

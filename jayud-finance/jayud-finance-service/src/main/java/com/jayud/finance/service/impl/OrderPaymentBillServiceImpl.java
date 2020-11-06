@@ -19,10 +19,7 @@ import com.jayud.finance.po.OrderPaymentBillDetail;
 import com.jayud.finance.service.IOrderBillCostTotalService;
 import com.jayud.finance.service.IOrderPaymentBillDetailService;
 import com.jayud.finance.service.IOrderPaymentBillService;
-import com.jayud.finance.vo.OrderBillCostTotalVO;
-import com.jayud.finance.vo.OrderPaymentBillNumVO;
-import com.jayud.finance.vo.OrderPaymentBillVO;
-import com.jayud.finance.vo.PaymentNotPaidBillVO;
+import com.jayud.finance.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -177,5 +174,31 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             result = costTotalService.saveBatch(orderBillCostTotals);
         }
         return result;
+    }
+
+    @Override
+    public List<ViewBilToOrderVO> viewPaymentBill(ViewBillForm form) {
+        List<ViewBilToOrderVO> orderList = baseMapper.viewPaymentBill(form);
+        List<ViewBillToCostClassVO> findCostClass = baseMapper.findCostClass(form);
+        for (ViewBilToOrderVO viewBillToOrder : orderList) {
+            List<ViewBillToCostClassVO> tempList = new ArrayList<>();
+            for(ViewBillToCostClassVO viewBillToCostClass : findCostClass){
+                if(viewBillToOrder.getOrderNo().equals(viewBillToCostClass.getOrderNo())){
+                   tempList.add(viewBillToCostClass);
+                }
+            }
+            viewBillToOrder.setCostClassVOList(tempList);
+        }
+        return orderList;
+    }
+
+    @Override
+    public List<SheetHeadVO> findSheetHead(ViewBillForm form) {
+        return baseMapper.findSheetHead(form);
+    }
+
+    @Override
+    public ViewBillVO getViewBill(ViewBillForm form) {
+        return null;
     }
 }

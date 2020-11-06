@@ -178,4 +178,8 @@ public abstract class CommonConstant {
     public static final String LOCAL_AMOUNT_TOTAL = "localAmountTotal";//本币金额合计
 
     public static final String HE_XIAO_AMOUNT = "heXiaoAmount";//已收金额，即财务已核销金额合计
+
+    public static final String SHEET_HEAD = "sheetHead";//表头
+
+    public static final String WHOLE_DATA = "wholeData";//全局数据
 }

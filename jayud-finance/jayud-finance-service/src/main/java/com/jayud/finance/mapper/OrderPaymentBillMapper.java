@@ -6,10 +6,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.finance.bo.QueryNotPaidBillForm;
 import com.jayud.finance.bo.QueryPaymentBillForm;
 import com.jayud.finance.bo.QueryPaymentBillNumForm;
+import com.jayud.finance.bo.ViewBillForm;
 import com.jayud.finance.po.OrderPaymentBill;
-import com.jayud.finance.vo.OrderPaymentBillNumVO;
-import com.jayud.finance.vo.OrderPaymentBillVO;
-import com.jayud.finance.vo.PaymentNotPaidBillVO;
+import com.jayud.finance.vo.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -56,5 +55,26 @@ public interface OrderPaymentBillMapper extends BaseMapper<OrderPaymentBill> {
      */
     Integer getBillOrderNum(@Param("legalName") String legalName,@Param("customerName") String customerName,@Param("cmd") String cmd);
 
+
+    /**
+     * 预览账单表头
+     * @param form
+     * @return
+     */
+    List<SheetHeadVO> findSheetHead(@Param("form") ViewBillForm form);
+
+    /**
+     * 预览账单分页查询
+     * @param form
+     * @return
+     */
+    List<ViewBilToOrderVO> viewPaymentBill(@Param("form") ViewBillForm form);
+
+    /**
+     * 查询账单明细
+     * @param form
+     * @return
+     */
+    List<ViewBillToCostClassVO> findCostClass(@Param("form") ViewBillForm form);
 
 }

@@ -3,14 +3,11 @@ package com.jayud.finance.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
-import com.jayud.finance.bo.CreatePaymentBillForm;
-import com.jayud.finance.bo.QueryNotPaidBillForm;
-import com.jayud.finance.bo.QueryPaymentBillForm;
-import com.jayud.finance.bo.QueryPaymentBillNumForm;
+import com.jayud.finance.bo.*;
 import com.jayud.finance.service.IOrderPaymentBillService;
-import com.jayud.finance.vo.OrderPaymentBillVO;
-import com.jayud.finance.vo.PaymentNotPaidBillVO;
+import com.jayud.finance.vo.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -62,5 +61,16 @@ public class PaymentBillController {
             return CommonResult.success();
         }
         return CommonResult.error(ResultEnum.OPR_FAIL.getCode(),ResultEnum.OPR_FAIL.getMessage());
+    }
+
+    @ApiOperation(value = "预览应付账单")
+    @PostMapping("/viewPaymentBill")
+    public CommonResult<Map<String,Object>> viewPaymentBill(@RequestBody @Valid ViewBillForm form) {
+        Map<String,Object> resultMap = new HashMap<>();
+        List<ViewBilToOrderVO> list = billService.viewPaymentBill(form);
+        resultMap.put(CommonConstant.LIST,list);//分页数据
+        List<SheetHeadVO> sheetHeadVOS = billService.findSheetHead(form);
+        resultMap.put(CommonConstant.SHEET_HEAD,sheetHeadVOS);//表头
+        return CommonResult.success(resultMap);
     }
 }

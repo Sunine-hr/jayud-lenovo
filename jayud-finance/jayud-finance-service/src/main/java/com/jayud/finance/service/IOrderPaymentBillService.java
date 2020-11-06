@@ -1,15 +1,12 @@
 package com.jayud.finance.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.finance.bo.CreatePaymentBillForm;
-import com.jayud.finance.bo.QueryNotPaidBillForm;
-import com.jayud.finance.bo.QueryPaymentBillForm;
-import com.jayud.finance.bo.QueryPaymentBillNumForm;
-import com.jayud.finance.po.OrderPaymentBill;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.finance.vo.OrderPaymentBillVO;
-import com.jayud.finance.vo.PaymentNotPaidBillVO;
+import com.jayud.finance.bo.*;
+import com.jayud.finance.po.OrderPaymentBill;
+import com.jayud.finance.vo.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,4 +46,23 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
      * @return
      */
     Boolean createPaymentBill(CreatePaymentBillForm form);
+
+    /**
+     * 预览账单
+     * @param form
+     * @return
+     */
+    List<ViewBilToOrderVO> viewPaymentBill(ViewBillForm form);
+
+    /**
+     * 预览账单表头
+     * @return
+     */
+    List<SheetHeadVO> findSheetHead(ViewBillForm form);
+
+    /**
+     * 预览界面的全局数据部分
+     * @return
+     */
+    ViewBillVO getViewBill(ViewBillForm form);
 }

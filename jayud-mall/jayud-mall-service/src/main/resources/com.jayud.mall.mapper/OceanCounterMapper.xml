@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.OceanCounterMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.OceanCounter">
+        <id column="id" property="id" />
+        <result column="cntr_no" property="cntrNo" />
+        <result column="cabinet_code" property="cabinetCode" />
+        <result column="volume" property="volume" />
+        <result column="cost" property="cost" />
+        <result column="cid" property="cid" />
+        <result column="status" property="status" />
+        <result column="ob_id" property="obId" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, cntr_no, cabinet_code, volume, cost, cid, status, ob_id, create_time
+    </sql>
+
+</mapper>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.OceanBillMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.OceanBill">
+        <id column="id" property="id" />
+        <result column="tid" property="tid" />
+        <result column="supplier_code" property="supplierCode" />
+        <result column="order_id" property="orderId" />
+        <result column="start_code" property="startCode" />
+        <result column="end_code" property="endCode" />
+        <result column="sail_time" property="sailTime" />
+        <result column="voyage_day" property="voyageDay" />
+        <result column="unit" property="unit" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, tid, supplier_code, order_id, start_code, end_code, sail_time, voyage_day, unit, create_time
+    </sql>
+
+</mapper>

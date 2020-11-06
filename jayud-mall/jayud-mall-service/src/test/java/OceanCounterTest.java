@@ -18,7 +18,6 @@ public class OceanCounterTest {
         form.setStatus("1");
         form.setObId(1L);
         form.setCreateTime(LocalDateTime.now());
-        form.setCustomerId(1L);
 
         TestUtils.JSONObjectPrint(form);
 

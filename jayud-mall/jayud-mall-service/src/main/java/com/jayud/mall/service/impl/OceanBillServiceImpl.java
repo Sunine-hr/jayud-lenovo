@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -80,7 +79,7 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
 
         Long obId = oceanBill.getId();
 
-        List<OceanCounterCustomerRelation> oceanCounterCustomerRelationList = new ArrayList<>();
+        //提单对应货柜信息list
         List<OceanCounterForm> oceanCounterForms = form.getOceanCounterForms();
         oceanCounterForms.forEach(oceanCounterForm -> {
             OceanCounter oceanCounter = ConvertUtil.convert(oceanCounterForm, OceanCounter.class);
@@ -88,18 +87,20 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
             //保存提单货柜信息
             oceanCounterService.saveOrUpdate(oceanCounter);
 
-            //保存提单对应货柜信息，所属的客户，关联信息
+
             Long oceanCounterId = oceanCounter.getId();
-            Long customerId = oceanCounterForm.getCustomerId();
-            //先删除
+            //保存关联信息前，先删除信息
             QueryWrapper<OceanCounterCustomerRelation> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("ocean_counter_id", oceanCounterId);
             oceanCounterCustomerRelationService.remove(queryWrapper);
-            //在保存
-            OceanCounterCustomerRelation oceanCounterCustomerRelation = new OceanCounterCustomerRelation(oceanCounterId,customerId);
-            oceanCounterCustomerRelationService.saveOrUpdate(oceanCounterCustomerRelation);
+
+            List<OceanCounterCustomerRelation> oceanCounterCustomerRelationList = oceanCounterForm.getOceanCounterCustomerRelationList();
+            oceanCounterCustomerRelationList.forEach(oceanCounterCustomerRelation -> {
+                oceanCounterCustomerRelation.setOceanCounterId(oceanCounterId);
+            });
+            //批量保存，提单对应货柜信息和客户关联表
+            oceanCounterCustomerRelationService.saveOrUpdateBatch(oceanCounterCustomerRelationList);
+
         });
-
-
     }
 }

@@ -1,5 +1,6 @@
 package com.jayud.mall.model.po;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
@@ -29,6 +30,7 @@ public class OceanCounterCustomerRelation extends Model<OceanCounterCustomerRela
 
     @ApiModelProperty(value = "主键id，自增")
     @TableId(value = "id", type = IdType.AUTO)
+    @JSONField(ordinal = 0)
     private Long id;
 
     @ApiModelProperty(value = "提单对应货柜信息id(ocean_counter id)")
@@ -39,11 +41,6 @@ public class OceanCounterCustomerRelation extends Model<OceanCounterCustomerRela
 
     @ApiModelProperty(value = "订单对应箱号信息id(order_case id)")
     private Long orderCaseId;
-
-    public OceanCounterCustomerRelation(Long oceanCounterId, Long customerId) {
-        this.oceanCounterId = oceanCounterId;
-        this.customerId = customerId;
-    }
 
     @Override
     protected Serializable pkVal() {

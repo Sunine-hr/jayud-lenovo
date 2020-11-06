@@ -1,8 +1,5 @@
 package com.jayud.mall.model.vo;
 
-import com.jayud.mall.model.bo.TemplateCopeReceivableForm;
-import com.jayud.mall.model.bo.TemplateCopeWithForm;
-import com.jayud.mall.model.bo.TemplateFileForm;
 import com.jayud.mall.model.po.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -56,8 +53,8 @@ public class OfferInfoVO {
     @ApiModelProperty(value = "报价模板-服务分类(service_group sid)", position = 13)
     private Integer sid;
 
-    @ApiModelProperty(value = "服务分类List", position = 14)
-    private List<ServiceGroup> serviceGroupList;
+    @ApiModelProperty(value = "服务分类", position = 14)
+    private ServiceGroup serviceGroup;
 
     @ApiModelProperty(value = "报价模板-报价图片，多张用逗号分割", position = 15)
     private String picUrl;
@@ -69,7 +66,7 @@ public class OfferInfoVO {
     private Integer tid;
 
     @ApiModelProperty(value = "运输方式List", position = 18)
-    private List<TransportWay> transportWayList;
+    private TransportWay transportWay;
 
     @ApiModelProperty(value = "报价模板-起运港", position = 19)
     private String startShipment;
@@ -111,21 +108,21 @@ public class OfferInfoVO {
     private Integer taskId;
 
     @ApiModelProperty(value = "任务分组List", position = 32)
-    private List<TaskGroup> taskGroupsList;
+    private TaskGroup taskGroup;
 
     @ApiModelProperty(value = "报价模板-操作信息", position = 33)
     private String remarks;
 
     /*应收费用明细List*/
     @ApiModelProperty(value = "应收费用明细List", position = 34)
-    private List<TemplateCopeReceivableForm> templateCopeReceivableFormList;
+    private List<TemplateCopeReceivable> templateCopeReceivableList;
 
     /*应付费用明细list*/
     @ApiModelProperty(value = "应付费用明细list", position = 35)
-    private List<TemplateCopeWithForm> templateCopeWithFormList;
+    private List<TemplateCopeWith> templateCopeWithList;
 
     /*文件信息明细list*/
     @ApiModelProperty(value = "文件信息明细list", position = 36)
-    private List<TemplateFileForm> templateFileFormList;
+    private List<TemplateFile> templateFileList;
 
 }

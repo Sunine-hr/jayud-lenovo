@@ -199,13 +199,13 @@ public class ExternalApiController {
         Boolean result = false;
         if("payment".equals(form.getOprType())){
             List<OrderPaymentCost> paymentCosts = new ArrayList<>();
-            if("pre_create".equals(form.getCmd())){//暂存应收
+            if(form.getCmd().contains("pre")){//暂存应收
                 for (Long costId : form.getCostIds()) {
                     OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
                     orderPaymentCost.setId(costId);
                     orderPaymentCost.setIsBill("1");//暂存
                 }
-            }else if("create".equals(form.getCmd())){//生成应收账单
+            }else{//生成应收账单
                 for (Long costId : form.getCostIds()) {
                     OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
                     orderPaymentCost.setId(costId);
@@ -215,13 +215,13 @@ public class ExternalApiController {
             result = paymentCostService.updateBatchById(paymentCosts);
         }else if("receivable".equals(form.getOprType())){
             List<OrderReceivableCost> receivableCosts = new ArrayList<>();
-            if("pre_create".equals(form.getCmd())){//暂存应付
+            if(form.getCmd().contains("pre")){//暂存应付
                 for (Long costId : form.getCostIds()) {
                     OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
                     orderReceivableCost.setId(costId);
                     orderReceivableCost.setIsBill("1");//暂存
                 }
-            }else if("create".equals(form.getCmd())){//生成应付账单
+            }else{//生成应付账单
                 for (Long costId : form.getCostIds()) {
                     OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
                     orderReceivableCost.setId(costId);

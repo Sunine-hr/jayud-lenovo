@@ -33,7 +33,7 @@ public class PaymentBillController {
 
     @ApiOperation(value = "应付出账单列表")
     @PostMapping("/findPaymentBillByPage")
-    public CommonResult<CommonPageResult<OrderPaymentBillVO>> findPaymentBillByPage(@RequestBody QueryPaymentBillForm form) {
+    public CommonResult<CommonPageResult<OrderPaymentBillVO>> findPaymentBillByPage(@RequestBody @Valid QueryPaymentBillForm form) {
         IPage<OrderPaymentBillVO> pageList = billService.findPaymentBillByPage(form);
         CommonPageResult<OrderPaymentBillVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
@@ -48,7 +48,7 @@ public class PaymentBillController {
 
     @ApiOperation(value = "未出账订单数列表")
     @PostMapping("/findNotPaidBillByPage")
-    public CommonResult<CommonPageResult<PaymentNotPaidBillVO>> findNotPaidBillByPage(@RequestBody QueryNotPaidBillForm form) {
+    public CommonResult<CommonPageResult<PaymentNotPaidBillVO>> findNotPaidBillByPage(@RequestBody @Valid QueryNotPaidBillForm form) {
         IPage<PaymentNotPaidBillVO> pageList = billService.findNotPaidBillByPage(form);
         CommonPageResult<PaymentNotPaidBillVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);

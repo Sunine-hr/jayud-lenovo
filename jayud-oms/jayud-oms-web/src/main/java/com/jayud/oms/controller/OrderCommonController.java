@@ -69,7 +69,8 @@ public class OrderCommonController {
         }
 
         if("preSubmit_sub".equals(form.getCmd()) || "submit_sub".equals(form.getCmd())){
-            if(form.getOrderNo() == null || "".equals(form.getOrderNo())){
+            if(StringUtil.isNullOrEmpty(form.getOrderNo()) || StringUtil.isNullOrEmpty(form.getSubLegalName()) ||
+               StringUtil.isNullOrEmpty(form.getSubCustomerName())){
                 return CommonResult.error(400,"参数不合法");
             }
         }

@@ -48,6 +48,12 @@ public class OrderPaymentBill extends Model<OrderPaymentBill> {
     @ApiModelProperty(value = "账单数")
     private Integer billNum;
 
+    @ApiModelProperty(value = "如果是已子订单维度出账的,则记录具体的子订单类型")
+    private String subType;
+
+    @ApiModelProperty(value = "是否以主订单维度出账的")
+    private Boolean isMain;
+
     @ApiModelProperty(value = "创建人")
     private String createdUser;
 

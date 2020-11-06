@@ -105,6 +105,9 @@ public class OrderPaymentCost extends Model<OrderPaymentCost> {
     @ApiModelProperty(value = "是否出账 1-已出账 0-未出账")
     private String isBill;
 
+    @ApiModelProperty(value = "是否汇总到主订单")
+    private Boolean isSumToMain;
+
 
     @Override
     protected Serializable pkVal() {

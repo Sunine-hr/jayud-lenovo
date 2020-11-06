@@ -10,6 +10,8 @@
         <result column="already_paid_amount" property="alreadyPaidAmount" />
         <result column="bill_order_num" property="billOrderNum" />
         <result column="bill_num" property="billNum" />
+        <result column="sub_type" property="subType" />
+        <result column="is_main" property="isMain" />
         <result column="created_user" property="createdUser" />
         <result column="created_time" property="createdTime" />
         <result column="updated_user" property="updatedUser" />
@@ -19,7 +21,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, bill_no, begin_account_term, end_account_term, settlement_currency, legal_name, customer_name, audit_status, make_user, make_time, audit_user, audit_time, apply_status, payment_amount,
-        already_paid_amount,bill_order_num, bill_num, created_user, created_time, updated_user, updated_time
+        already_paid_amount,bill_order_num, bill_num, sub_type,is_main,created_user, created_time, updated_user, updated_time
     </sql>
 
     <select id="findPaymentBillByPage" parameterType="com.jayud.finance.bo.QueryPaymentBillForm" resultType="com.jayud.finance.vo.OrderPaymentBillVO" >
@@ -36,7 +38,7 @@
                 order_payment_cost opc
             WHERE
                 opc.order_no IN ( SELECT a.order_no FROM order_info a WHERE a.legal_name = oi.legal_name AND a.customer_name = oi.customer_name )
-                AND opc.is_bill = '0'
+                AND opc.is_bill = '0' and opc.is_sum_to_main = '1'
             ) notPaidAmount,
             (
             SELECT
@@ -45,7 +47,7 @@
                 order_payment_cost opc
             WHERE
                 opc.order_no IN ( SELECT a.order_no FROM order_info a WHERE a.legal_name = oi.legal_name AND a.customer_name = oi.customer_name )
-                AND opc.is_bill = '0'
+                AND opc.is_bill = '0' and opc.is_sum_to_main = '1'
             ) notPaidOrderNum
         FROM
             order_info oi
@@ -65,10 +67,10 @@
             DATE_FORMAT( op.begin_account_term, '%Y-%m-%d' ) beginAccountTermStr,
             DATE_FORMAT( op.end_account_term, '%Y-%m-%d' ) endAccountTermStr,
             ( SELECT count( DISTINCT opbd.order_no ) FROM order_payment_bill_detail opbd WHERE opbd.bill_no = op.bill_no ) billNum,
-            ( SELECT sum( obct.money ) FROM order_bill_cost_total obct WHERE op.id = obct.bill_detail_id AND obct.currency_code = 'RMB' ) rmb,
-            ( SELECT sum( obct.money ) FROM order_bill_cost_total obct WHERE op.id = obct.bill_detail_id AND obct.currency_code = 'MY' ) dollar,
-            ( SELECT sum( obct.money ) FROM order_bill_cost_total obct WHERE op.id = obct.bill_detail_id AND obct.currency_code = 'OY' ) euro,
-            ( SELECT sum( obct.money ) FROM order_bill_cost_total obct WHERE op.id = obct.bill_detail_id AND obct.currency_code = 'GB' ) hKDollar,
+            ( SELECT sum( obct.money ) FROM order_bill_cost_total obct WHERE op.bill_no = obct.bill_no AND obct.currency_code = 'RMB' ) rmb,
+            ( SELECT sum( obct.money ) FROM order_bill_cost_total obct WHERE op.bill_no = obct.bill_no AND obct.currency_code = 'MY' ) dollar,
+            ( SELECT sum( obct.money ) FROM order_bill_cost_total obct WHERE op.bill_no = obct.bill_no AND obct.currency_code = 'OY' ) euro,
+            ( SELECT sum( obct.money ) FROM order_bill_cost_total obct WHERE op.bill_no = obct.bill_no AND obct.currency_code = 'GB' ) hKDollar,
             op.local_amount localAmount,
             (select sum(cav.real_receive_money) from cancel_after_verification cav where cav.bill_no = op.bill_no) heXiaoAmount,
             op.audit_status billStatus,
@@ -76,7 +78,7 @@
             DATE_FORMAT(op.make_time,'%Y-%m-%d %H:%i:%S') makeTimeStr
         FROM
              order_payment_bill_detail op left join order_payment_bill opb on op.bill_id = opb.id
-             where opb.legal_name = #{legalName} and opb.customer_name = #{customerName}
+             where opb.legal_name = #{legalName} and opb.customer_name = #{customerName} and opb.is_main = '1'
     </select>
 
     <select id="findNotPaidBillByPage" parameterType="com.jayud.finance.bo.QueryNotPaidBillForm" resultType="com.jayud.finance.vo.PaymentNotPaidBillVO" >
@@ -194,7 +196,7 @@
             LEFT JOIN cost_info ci ON opc.cost_code = ci.id_code
         WHERE
             opc.id NOT IN ( SELECT opbd.cost_id FROM order_payment_bill_detail opbd )
-            and opc.is_bill != '2') temp where 1 = 1
+            and opc.is_bill != '2' and opc.is_sum_to_main='1') temp where 1 = 1
         <if test="form.customerName != null and form.customerName != ''">
             and temp.customerName like concat('%',#{form.customerName},'%')
         </if>
@@ -227,13 +229,22 @@
         </if>
     </select>
     <select id="getBillOrderNum"  resultType="java.lang.Integer" >
-       SELECT
-	        count(DISTINCT oi.order_no) billOrderNum
-       FROM
-	        order_payment_cost opc left join order_info oi on opc.main_order_no = oi.order_no
-       WHERE
-	     NOT EXISTS (SELECT 1 FROM order_payment_cost a WHERE
-	     a.is_bill != '2' and a.main_order_no = oi.order_no)
-	     and oi.legal_name = #{legalName} and oi.customer_name = #{customerName}
+      SELECT
+	    count( DISTINCT opbd.order_no ) billOrderNum
+      FROM
+	    order_payment_bill_detail opbd
+	    LEFT JOIN order_payment_bill opb ON opbd.bill_id = opb.id
+      WHERE
+        opb.legal_name = #{legalName}
+        AND opb.customer_name = #{customerName}
+        <if test="form.cmd == 'main'">
+            AND opbd.is_main = '1'
+        </if>
+        <if test="form.cmd == 'zgys'">
+            AND opbd.sub_type = 'ZGYS'
+        </if>
+        <if test="form.cmd == 'bg'">
+            AND opbd.sub_type = 'BG'
+        </if>
     </select>
 </mapper>

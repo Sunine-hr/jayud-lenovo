@@ -10,6 +10,8 @@
         <result column="already_paid_amount" property="alreadyPaidAmount" />
         <result column="bill_order_num" property="billOrderNum" />
         <result column="bill_num" property="billNum" />
+        <result column="sub_type" property="subType" />
+        <result column="is_main" property="isMain" />
         <result column="created_user" property="createdUser" />
         <result column="created_time" property="createdTime" />
         <result column="updated_user" property="updatedUser" />
@@ -19,7 +21,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, bill_no, begin_account_term, end_account_term, settlement_currency, legal_name, customer_name, audit_status, make_user, make_time, audit_user, audit_time, apply_status, invoice_amount,
-        already_paid_amount,bill_order_num,bill_num,created_user, created_time, updated_user, updated_time
+        already_paid_amount,bill_order_num,bill_num,sub_type,is_main,created_user, created_time, updated_user, updated_time
     </sql>
 
 </mapper>

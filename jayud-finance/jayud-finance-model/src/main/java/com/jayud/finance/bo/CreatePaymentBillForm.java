@@ -20,8 +20,11 @@ public class CreatePaymentBillForm {
     @NotEmpty(message = "paymentBillDetailForms is required")
     private List<OrderPaymentBillDetailForm> paymentBillDetailForms;
 
-    @ApiModelProperty(value = "操作指令 cmd=pre_create暂存 or create生成账单",required = true)
-    @Pattern(regexp = "(pre_create|create)", message = "只允许填写pre_create or create")
+    @ApiModelProperty(value = "操作指令 cmd=pre_create主订单出账暂存 or create主订单生成账单" +
+            " or pre_create_zgys中港运输出账暂存 or create_zgys中港运输生成账单" +
+            " or pre_create_bg报关出账暂存 or create_bg报关生成账单",required = true)
+    @Pattern(regexp = "(pre_create|create|pre_create_zgys|create_zgys|pre_create_bg|create_bg)", message = "只允许填写pre_create or create or pre_create_zgys or create_zgys" +
+            "or pre_create_bg or create_bg")
     private String cmd;
 
 }

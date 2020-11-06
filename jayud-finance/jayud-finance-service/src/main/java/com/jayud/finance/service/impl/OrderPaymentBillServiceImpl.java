@@ -60,7 +60,14 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         Page<OrderPaymentBillVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.desc("oi.legal_name"));
-        IPage<OrderPaymentBillVO> pageInfo = baseMapper.findPaymentBillByPage(page, form);
+        IPage<OrderPaymentBillVO> pageInfo = null;
+        if("main".equals(form.getCmd())) {
+            pageInfo = baseMapper.findPaymentBillByPage(page, form);
+        }else if("zgys".equals(form.getCmd())){
+
+        }else if("bg".equals(form.getCmd())){
+
+        }
         return pageInfo;
     }
 
@@ -101,7 +108,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         }
         if(costIds.size() > 0){
             OprCostBillForm oprCostBillForm = new OprCostBillForm();
-            oprCostBillForm.setCmd("pre_create");
+            oprCostBillForm.setCmd(form.getCmd());
             oprCostBillForm.setCostIds(costIds);
             oprCostBillForm.setOprType("payment");
             result = omsClient.oprCostBill(oprCostBillForm).getData();
@@ -110,13 +117,13 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             }
         }
         //生成账单操作才是生成对账单数据
-        if("create".equals(form.getCmd())){
+        if(!form.getCmd().contains("pre")){
             //先保存对账单信息，在保存对账单详情信息
             //1.统计已出账金额alreadyPaidAmount
             BigDecimal nowBillAmount = paymentBillDetailForms.stream().map(OrderPaymentBillDetailForm::getLocalAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
             paymentBillForm.setAlreadyPaidAmount(paymentBillForm.getAlreadyPaidAmount().add(nowBillAmount));
             //2.统计已出账订单数billOrderNum
-            Integer billOrderNum = baseMapper.getBillOrderNum(paymentBillForm.getLegalName(),paymentBillForm.getCustomerName());
+            Integer billOrderNum = baseMapper.getBillOrderNum(paymentBillForm.getLegalName(),paymentBillForm.getCustomerName(),form.getCmd());
             paymentBillForm.setBillOrderNum(billOrderNum);
             //3.统计账单数billNum
             paymentBillForm.setBillOrderNum(paymentBillForm.getBillNum() + 1);
@@ -130,6 +137,15 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
                 orderPaymentBill.setId(existBill.getId());
                 orderPaymentBill.setUpdatedTime(LocalDateTime.now());
                 orderPaymentBill.setUpdatedUser(UserOperator.getToken());
+            }
+            if("create".equals(form.getCmd())){
+                orderPaymentBill.setIsMain(true);
+            }else if("create_zgys".equals(form.getCmd())){
+                orderPaymentBill.setIsMain(false);
+                orderPaymentBill.setSubType(CommonConstant.ZGYS);
+            }else if("create_bg".equals(form.getCmd())){
+                orderPaymentBill.setIsMain(false);
+                orderPaymentBill.setSubType(CommonConstant.BG);
             }
             orderPaymentBill.setCreatedUser(UserOperator.getToken());
             result = saveOrUpdate(orderPaymentBill);

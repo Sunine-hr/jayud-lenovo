@@ -12,6 +12,7 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -60,7 +61,7 @@ public class VehicleInfoVO {
     private String cardNumber;
 
     @ApiModelProperty(value = "吉车重量")
-    private Double weight;
+    private String weight;
 
     @ApiModelProperty(value = "附件,多个时用逗号分隔")
     private String files;
@@ -86,9 +87,16 @@ public class VehicleInfoVO {
     @ApiModelProperty(value = "企业代码")
     private String enterpriseCode;
 
+    @ApiModelProperty(value = "车辆吨位")
+    private String vehicleTonnage;
+
+    @ApiModelProperty(value = "是否能编辑")
+    private Boolean isExist;
+
 
     public void setCarType(Integer carType) {
         this.carType = VehicleTypeEnum.getDesc(carType);
     }
+
 
 }

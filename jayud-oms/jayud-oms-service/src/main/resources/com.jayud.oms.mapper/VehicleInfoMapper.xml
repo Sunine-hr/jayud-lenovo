@@ -4,26 +4,27 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.VehicleInfo">
-        <id column="id" property="id"/>
-        <result column="plate_number" property="plateNumber"/>
-        <result column="hk_number" property="hkNumber"/>
-        <result column="supplier_id" property="supplierId"/>
-        <result column="supplier_name" property="supplierName"/>
-        <result column="pt_company" property="ptCompany"/>
-        <result column="pt_fax" property="ptFax"/>
-        <result column="car_type" property="carType"/>
-        <result column="pt_phone" property="ptPhone"/>
-        <result column="customs_code" property="customsCode"/>
-        <result column="card_number" property="cardNumber"/>
-        <result column="weight" property="weight"/>
-        <result column="files" property="files"/>
-        <result column="status" property="status"/>
-        <result column="create_user" property="createUser"/>
-        <result column="create_time" property="createTime"/>
-        <result column="update_time" property="updateTime"/>
-        <result column="update_user" property="updateUser"/>
-        <result column="stepping_code" property="steppingCode"/>
-        <result column="enterprise_code" property="enterpriseCode"/>
+        <id column="id" property="id" />
+        <result column="plate_number" property="plateNumber" />
+        <result column="hk_number" property="hkNumber" />
+        <result column="supplier_id" property="supplierId" />
+        <result column="supplier_name" property="supplierName" />
+        <result column="pt_company" property="ptCompany" />
+        <result column="pt_fax" property="ptFax" />
+        <result column="car_type" property="carType" />
+        <result column="pt_phone" property="ptPhone" />
+        <result column="customs_code" property="customsCode" />
+        <result column="card_number" property="cardNumber" />
+        <result column="weight" property="weight" />
+        <result column="files" property="files" />
+        <result column="status" property="status" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="stepping_code" property="steppingCode" />
+        <result column="enterprise_code" property="enterpriseCode" />
+        <result column="vehicle_tonnage" property="vehicleTonnage" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -35,7 +36,9 @@
             resultType="com.jayud.oms.model.vo.VehicleInfoVO">
         select
         w.id, plate_number plateNumber,
-        hk_number hkNumber, s.supplier_ch_name supplier_name,
+        hk_number hkNumber,
+        w.supplier_id supplierId,
+        s.supplier_ch_name supplier_name,
         pt_company ptCompany,
         pt_fax ptFax, car_type carType,
         pt_phone ptPhone,
@@ -43,7 +46,8 @@
         card_number cardNumber, weight, files, w.status,
         w.create_user createUser, w.create_time createTime,
         w.update_time updateTime, w.update_user updateUser,
-        stepping_code steppingCode, enterprise_code enterpriseCode
+        stepping_code steppingCode, enterprise_code enterpriseCode,
+        vehicle_tonnage vehicleTonnage
         from
         vehicle_info w left join supplier_info s on w.supplier_id=s.id
         <where>

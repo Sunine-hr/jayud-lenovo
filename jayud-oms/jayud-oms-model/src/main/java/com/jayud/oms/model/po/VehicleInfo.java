@@ -62,7 +62,7 @@ public class VehicleInfo extends Model<VehicleInfo> {
     private String cardNumber;
 
     @ApiModelProperty(value = "吉车重量")
-    private Double weight;
+    private String weight;
 
     @ApiModelProperty(value = "附件,多个时用逗号分隔")
     private String files;
@@ -87,6 +87,9 @@ public class VehicleInfo extends Model<VehicleInfo> {
 
     @ApiModelProperty(value = "企业代码")
     private String enterpriseCode;
+
+    @ApiModelProperty(value = "车辆吨位")
+    private String vehicleTonnage;
 
 
     @Override

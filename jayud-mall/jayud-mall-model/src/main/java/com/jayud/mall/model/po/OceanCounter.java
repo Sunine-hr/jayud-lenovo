@@ -1,16 +1,17 @@
 package com.jayud.mall.model.po;
 
-import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -44,7 +45,7 @@ public class OceanCounter extends Model<OceanCounter> {
     @ApiModelProperty(value = "费用")
     private BigDecimal cost;
 
-    @ApiModelProperty(value = "币种(currency表id)")
+    @ApiModelProperty(value = "币种(currency_info 表id)")
     private Integer cid;
 
     @ApiModelProperty(value = "状态(0无效 1有效)")

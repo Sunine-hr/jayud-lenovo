@@ -1,6 +1,7 @@
 package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.mall.model.bo.OceanBillForm;
 import com.jayud.mall.model.bo.QueryOceanBillForm;
 import com.jayud.mall.model.po.OceanBill;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -22,4 +23,10 @@ public interface IOceanBillService extends IService<OceanBill> {
      * @return
      */
     IPage<OceanBillVO> findOceanBillByPage(QueryOceanBillForm form);
+
+    /**
+     * 保存提单信息
+     * @param form
+     */
+    void saveOceanBill(OceanBillForm form);
 }

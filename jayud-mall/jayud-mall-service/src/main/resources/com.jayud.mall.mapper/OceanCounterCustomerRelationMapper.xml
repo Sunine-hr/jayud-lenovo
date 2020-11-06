@@ -7,11 +7,12 @@
         <id column="id" property="id" />
         <result column="ocean_counter_id" property="oceanCounterId" />
         <result column="customer_id" property="customerId" />
+        <result column="order_case_id" property="orderCaseId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, ocean_counter_id, customer_id
+        id, ocean_counter_id, customer_id, order_case_id
     </sql>
 
 </mapper>

@@ -37,6 +37,9 @@ public class OceanCounterCustomerRelation extends Model<OceanCounterCustomerRela
     @ApiModelProperty(value = "客户id(客户表 customer id)")
     private Long customerId;
 
+    @ApiModelProperty(value = "订单对应箱号信息id(order_case id)")
+    private Long orderCaseId;
+
     public OceanCounterCustomerRelation(Long oceanCounterId, Long customerId) {
         this.oceanCounterId = oceanCounterId;
         this.customerId = customerId;

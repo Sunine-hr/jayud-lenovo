@@ -42,6 +42,16 @@ public class WarehouseInfoVO  {
     @ApiModelProperty(value = "地址")
     private String address;
 
+    @ApiModelProperty(value = "省码")
+    private Long stateCode;
+
+    @ApiModelProperty(value = "市码")
+    private Long cityCode;
+
+    @ApiModelProperty(value = "区码")
+    private Long areaCode;
+
+
     @ApiModelProperty(value = "省")
     private String province;
 
@@ -50,6 +60,7 @@ public class WarehouseInfoVO  {
 
     @ApiModelProperty(value = "区")
     private String area;
+
 
     @ApiModelProperty(value = "邮编")
     private String zipCode;

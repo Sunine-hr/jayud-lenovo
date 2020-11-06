@@ -6,15 +6,9 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.oms.model.bo.AddVehicleInfoForm;
 import com.jayud.oms.model.bo.AddWarehouseInfoForm;
-import com.jayud.oms.model.bo.QueryVehicleInfoForm;
 import com.jayud.oms.model.bo.QueryWarehouseInfoForm;
-import com.jayud.oms.model.enums.StatusEnum;
-import com.jayud.oms.model.po.RegionCity;
-import com.jayud.oms.model.po.VehicleInfo;
 import com.jayud.oms.model.po.WarehouseInfo;
-import com.jayud.oms.model.vo.VehicleInfoVO;
 import com.jayud.oms.model.vo.WarehouseInfoVO;
 import com.jayud.oms.service.IRegionCityService;
 import com.jayud.oms.service.IWarehouseInfoService;
@@ -28,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.*;
+import java.util.Map;
 
 /**
  * <p>

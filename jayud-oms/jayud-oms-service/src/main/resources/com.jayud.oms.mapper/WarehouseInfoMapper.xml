@@ -12,7 +12,7 @@
         <result column="address" property="address"/>
         <result column="state_code" property="stateCode"/>
         <result column="city_code" property="cityCode"/>
-        <result column="area" property="area"/>
+        <result column="area_code" property="areaCode"/>
         <result column="zip_code" property="zipCode"/>
         <result column="status" property="status"/>
         <result column="create_user" property="createUser"/>
@@ -31,7 +31,7 @@
         contacts, contact_number contactNumber, address,
         (select name from region_city where id=w.state_code) province,
         (select name from region_city where id=w.city_code) city,
-        (select name from region_city where id=w.area)area, zip_code zipCode, status,
+        (select name from region_city where id=w.area_code) area, zip_code zipCode, status,
         create_user createUser, create_time createTime
         from
         warehouse_info w

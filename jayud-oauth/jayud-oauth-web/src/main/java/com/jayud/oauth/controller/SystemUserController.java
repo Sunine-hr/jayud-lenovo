@@ -369,6 +369,13 @@ public class SystemUserController {
         }
         legalEntity.setAuditStatus(1L);
         legalEntity.setLegalName(form.getLegalName());
+        legalEntity.setLegalEnName(form.getLegalEnName());
+        legalEntity.setPhone(form.getPhone());
+        legalEntity.setFax(form.getFax());
+        legalEntity.setAddress(form.getAddress());
+        legalEntity.setBank(form.getBank());
+        legalEntity.setAccountOpen(form.getAccountOpen());
+        legalEntity.setTaxIdentificationNum(form.getTaxIdentificationNum());
         legalEntity.setLegalCode(form.getLegalCode());
         legalEntity.setRigisAddress(form.getRigisAddress());
         legalEntity.setSaleDepartId(form.getSaleDepartId());

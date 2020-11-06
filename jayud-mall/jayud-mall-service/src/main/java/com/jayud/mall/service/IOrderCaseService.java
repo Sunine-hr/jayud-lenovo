@@ -1,7 +1,10 @@
 package com.jayud.mall.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.mall.model.bo.QueryOrderCaseForm;
 import com.jayud.mall.model.po.OrderCase;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.vo.OrderCaseVO;
 
 /**
  * <p>
@@ -13,4 +16,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IOrderCaseService extends IService<OrderCase> {
 
+    /**
+     * 分页
+     * @param form
+     * @return
+     */
+    IPage<OrderCaseVO> findOrderCaseByPage(QueryOrderCaseForm form);
 }

@@ -35,4 +35,51 @@
         id, order_id, carton_no, fab_no, asn_length, asn_width, asn_height, asn_weight, asn_volume, asn_weigh_date, wms_length, wms_height, wms_width, wms_weight, wms_volume, wms_weigh_date, confirm_length, confirm_height, confirm_width, confirm_weight, confirm_volume, confirm_weigh_date, status, remark
     </sql>
 
+    <!--分页查询-->
+    <select id="findOrderCaseByPage" parameterType="com.jayud.mall.model.bo.QueryOrderCaseForm"
+            resultType="com.jayud.mall.model.vo.OrderCaseVO" >
+        select
+        t.id,
+        t.order_id,
+        t.carton_no,
+        t.fab_no,
+        t.asn_length,
+        t.asn_width,
+        t.asn_height,
+        t.asn_weight,
+        t.asn_volume,
+        t.asn_weigh_date,
+        t.wms_length,
+        t.wms_height,
+        t.wms_width,
+        t.wms_weight,
+        t.wms_volume,
+        t.wms_weigh_date,
+        t.confirm_length,
+        t.confirm_height,
+        t.confirm_width,
+        t.confirm_weight,
+        t.confirm_volume,
+        t.confirm_weigh_date,
+        t.`status`,
+        t.remark,
+        t1.order_no,
+        t1.customer_id,
+        t2.name_cn,
+        t2.company
+        from
+        order_case t
+        LEFT JOIN order_info t1 on t1.id = t.order_id
+        LEFT JOIN customer t2 on t2.id = t1.customer_id
+        WHERE
+        1 = 1
+        /*箱号*/
+        <if test="form.cartonNo != null and form.cartonNo != ''">
+            AND t.`carton_no` LIKE concat('%',#{form.cartonNo},'%')
+        </if>
+        GROUP BY
+        t.`id`
+    </select>
+
+
 </mapper>

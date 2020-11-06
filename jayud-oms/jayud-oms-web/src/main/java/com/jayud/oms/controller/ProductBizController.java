@@ -7,6 +7,8 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.oms.model.bo.AddProductBizForm;
 import com.jayud.oms.model.bo.QueryProductBizForm;
+import com.jayud.oms.model.po.CostInfo;
+import com.jayud.oms.model.po.ProductBiz;
 import com.jayud.oms.model.vo.ProductBizVO;
 import com.jayud.oms.service.IProductBizService;
 import io.swagger.annotations.Api;
@@ -45,6 +47,12 @@ public class ProductBizController {
     @ApiOperation(value = "新增编辑业务类型")
     @PostMapping(value = "/saveOrUpdateProductBiz")
     public CommonResult saveOrUpdateProductBiz(@Valid @RequestBody AddProductBizForm form) {
+        ProductBiz productBiz = new ProductBiz().setId(form.getId())
+                .setIdCode(form.getIdCode()).setName(form.getName());
+        if (this.productBizService.checkUnique(productBiz)) {
+            return CommonResult.error(400, "名称或代码已经存在");
+        }
+
         if (this.productBizService.saveOrUpdateProductBiz(form)) {
             return CommonResult.success();
         } else {
@@ -54,12 +62,12 @@ public class ProductBizController {
 
     @ApiOperation(value = "更改启用/禁用业务类型状态,id是业务类型主键")
     @PostMapping(value = "/enableOrDisableProductBiz")
-    public CommonResult enableOrDisableProductBiz(@RequestBody Map<String,String> map) {
+    public CommonResult enableOrDisableProductBiz(@RequestBody Map<String, String> map) {
 
         if (StringUtils.isEmpty(map.get("id"))) {
             return CommonResult.error(500, "id is required");
         }
-        Long id =Long.parseLong(map.get("id"));
+        Long id = Long.parseLong(map.get("id"));
         if (this.productBizService.enableOrDisableProductBiz(id)) {
             return CommonResult.success();
         } else {
@@ -73,7 +81,7 @@ public class ProductBizController {
         if (StringUtils.isEmpty(map.get("id"))) {
             return CommonResult.error(500, "id is required");
         }
-        Long id =Long.parseLong(map.get("id"));
+        Long id = Long.parseLong(map.get("id"));
         ProductBizVO productBizVO = this.productBizService.getById(id);
         return CommonResult.success(productBizVO);
     }

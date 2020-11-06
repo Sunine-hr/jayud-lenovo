@@ -23,7 +23,7 @@ public class UserHeaderFilter implements Filter {
     RedisUtils redisUtils;
 
     private static final Set<String> ALLOWED_PATHS = Collections.unmodifiableSet(new HashSet<>(
-            Arrays.asList("/system/user/login","/system/user/logout","/api/","swagger","api-docs")));
+            Arrays.asList("/system/user/login","/system/user/logout","/api/","swagger","api-docs","/push/finance/bylist","/push/finance","/feedback/finance/approved")));
 
 
     @Override

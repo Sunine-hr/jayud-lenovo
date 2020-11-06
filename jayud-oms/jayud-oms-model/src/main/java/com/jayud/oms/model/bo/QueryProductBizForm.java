@@ -19,4 +19,7 @@ public class QueryProductBizForm extends BasePageForm {
     @ApiModelProperty(value = "业务类型")
     private String name;
 
+    @ApiModelProperty(value = "状态 0禁用 1启用")
+    private String status;
+
 }

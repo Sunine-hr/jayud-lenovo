@@ -15,6 +15,7 @@ import com.jayud.oms.model.enums.AuditTypeDescEnum;
 import com.jayud.oms.model.enums.SettlementTypeEnum;
 import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.AuditInfo;
+import com.jayud.oms.model.po.ProductBiz;
 import com.jayud.oms.model.po.ProductClassify;
 import com.jayud.oms.model.po.SupplierInfo;
 import com.jayud.oms.model.vo.SupplierInfoVO;
@@ -90,7 +91,14 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
     @Override
     @Transactional
     public boolean saveOrUpdateSupplierInfo(AddSupplierInfoForm form) {
+        StringBuilder sb = new StringBuilder();
+        for (Long id : form.getProductClassifyIds()) {
+            sb.append(id).append(",");
+        }
+
         SupplierInfo supplierInfo = ConvertUtil.convert(form, SupplierInfo.class);
+        supplierInfo.setProductClassifyIds(sb.substring(0, sb.length() - 1));
+
         boolean isTrue;
         if (Objects.isNull(supplierInfo.getId())) {
             supplierInfo.setCreateTime(LocalDateTime.now())
@@ -165,6 +173,30 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             }
         }
         return tmp;
+    }
+
+    /**
+     * 校验唯一性
+     *
+     * @return
+     */
+    @Override
+    public boolean checkUnique(SupplierInfo supplierInfo) {
+        QueryWrapper<SupplierInfo> condition = new QueryWrapper<>();
+        if (supplierInfo.getId() != null) {
+            //修改过滤自身名字
+            condition.lambda().and(tmp -> tmp.eq(SupplierInfo::getId, supplierInfo.getId())
+                    .eq(SupplierInfo::getSupplierChName, supplierInfo.getSupplierChName()));
+            int count = this.count(condition);
+            if (count > 0) {
+                //匹配到自己名称,不进行唯一校验
+                return false;
+            }
+        }
+        condition = new QueryWrapper<>();
+        condition.lambda().and(tmp -> tmp.eq(SupplierInfo::getSupplierCode, supplierInfo.getSupplierCode())
+                .or().eq(SupplierInfo::getSupplierChName, supplierInfo.getSupplierChName()));
+        return this.count(condition) > 0;
     }
 
 

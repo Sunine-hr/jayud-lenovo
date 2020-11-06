@@ -42,7 +42,7 @@ public class CargoNameServiceImpl extends ServiceImpl<CargoNameMapper, CargoName
     /**
      * excelList
      */
-    List<List<Object>> excelList = Collections.synchronizedList(new ArrayList<List<Object>>());
+    private static List<List<Object>> excelList = Collections.synchronizedList(new ArrayList<List<Object>>());
 
     @Override
     public void importExcel(List<List<Object>> list, Long userId) {
@@ -150,6 +150,8 @@ public class CargoNameServiceImpl extends ServiceImpl<CargoNameMapper, CargoName
 
     @Override
     public void importBigExcel(InputStream inputStream, Long userId) {
+        //每次进入createRowHandler之前先清空excelList
+        excelList.clear();
         Excel07SaxReader reader = new Excel07SaxReader(createRowHandler());
         Excel07SaxReader read = reader.read(inputStream, 0);
 
@@ -196,7 +198,7 @@ public class CargoNameServiceImpl extends ServiceImpl<CargoNameMapper, CargoName
             //add cargoName
             cargoNameList.add(cargoName);
         }
-        excelList.clear();
+//        excelList.clear();
 
 //        long start = System.currentTimeMillis();
 //        this.saveBatch(cargoNameList);

@@ -17,7 +17,6 @@ import com.jayud.oms.model.vo.CostGenreVO;
 import com.jayud.oms.model.vo.ProductBizVO;
 import com.jayud.oms.service.ICostGenreService;
 import com.jayud.oms.service.IProductBizService;
-import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -154,6 +152,34 @@ public class ProductBizServiceImpl extends ServiceImpl<ProductBizMapper, Product
                 .setUpdateTime(LocalDateTime.now()).setUpdateUser(UserOperator.getToken());
 
         return this.updateById(productBiz);
+    }
+
+    /**
+     * 校验唯一性
+     *
+     * @return
+     */
+    @Override
+    public boolean checkUnique(ProductBiz productBiz) {
+        QueryWrapper<ProductBiz> condition = new QueryWrapper<>();
+        if (productBiz.getId() != null) {
+            //修改过滤自身名字
+            condition.lambda().and(tmp -> tmp.eq(ProductBiz::getId, productBiz.getId())
+                    .eq(ProductBiz::getName, productBiz.getName()));
+            int count = this.count(condition);
+            if (count == 0) {
+                condition = new QueryWrapper<>();
+                condition.lambda().eq(ProductBiz::getName, productBiz.getName());
+                return this.count(condition) > 0;
+            } else {
+                return false;
+            }
+        } else {
+            condition.lambda().eq(ProductBiz::getIdCode, productBiz.getIdCode())
+                    .or().eq(ProductBiz::getName, productBiz.getName());
+            return this.count(condition) > 0;
+        }
+
     }
 
 }

@@ -1,17 +1,14 @@
 package com.jayud.oms.model.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.swagger.annotations.ApiModel;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.oms.model.enums.AuditStatusEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
+import org.apache.commons.lang.StringUtils;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -34,6 +31,9 @@ public class SupplierInfoVO {
 
     @ApiModelProperty(value = "服务类型")
     private String productClassify;
+
+    @ApiModelProperty(value = "服务类型id集合")
+    private List<Long> productClassifyIds;
 
     @ApiModelProperty(value = "供应商名称(中)")
     private String supplierChName;
@@ -60,7 +60,6 @@ public class SupplierInfoVO {
     private String rate;
 
     @ApiModelProperty(value = "采购员id")
-    @JsonIgnore
     private Long buyerId;
 
     @ApiModelProperty(value = "采购员")
@@ -78,13 +77,43 @@ public class SupplierInfoVO {
     @ApiModelProperty(value = "创建人")
     private String createUser;
 
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "更新时间")
     private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
+    @ApiModelProperty(value = "客户/供应商id")
+    private Long bindId;
+
+    @ApiModelProperty(value = "是否可以编辑")
+    public Boolean isEdit;
+
+    /**
+     * 组装服务类型id集合
+     */
+    public void packageProductClassifyId(String ids) {
+        if (StringUtils.isEmpty(ids)) {
+            return;
+        }
+        this.productClassifyIds = new ArrayList<>();
+        for (String id : ids.split(",")) {
+            this.productClassifyIds.add(Long.parseLong(id));
+        }
+    }
+
+    public void setAuditStatus(String auditStatus) {
+        if (AuditStatusEnum.SUCCESS.getDesc().equals(auditStatus)
+                || AuditStatusEnum.FAIL.getDesc().equals(auditStatus)) {
+            this.isEdit = true;
+        } else {
+            this.isEdit = false;
+        }
+        this.auditStatus = auditStatus;
+    }
 }

@@ -40,9 +40,11 @@
         from
         product_biz
         <where>
-
             <if test="form.name !=null and form.name !=''">
                 and name like concat('%',#{form.name},'%')
+            </if>
+            <if test="form.status !=null and form.status !=''">
+                and status = #{form.status}
             </if>
         </where>
     </select>

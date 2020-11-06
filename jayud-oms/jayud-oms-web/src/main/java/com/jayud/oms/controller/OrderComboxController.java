@@ -197,11 +197,8 @@ public class OrderComboxController {
             InitComboxStrVO comboxStrVO = new InitComboxStrVO();
             comboxStrVO.setCode(costInfo.getIdCode());
             comboxStrVO.setName(costInfo.getName());
-            if(costInfo.getTypes() == 1){
-                receivableCombox.add(comboxStrVO);
-            }else if(costInfo.getTypes() == 2){
-                paymentCombox.add(comboxStrVO);
-            }
+            receivableCombox.add(comboxStrVO);//后期没做应收应付项目的区分
+            paymentCombox.add(comboxStrVO);
         }
         param.put("paymentCost",paymentCombox);
         param.put("receivableCost",receivableCombox);

@@ -28,4 +28,29 @@ public class AddLegalEntityForm {
 
     @ApiModelProperty(value = "销售部门")
     private Long saleDepartId;
+
+    @ApiModelProperty(value = "英文名")
+    private String legalEnName;
+
+    @ApiModelProperty(value = "电话")
+    @NotEmpty(message = "电话不能为空")
+    private String phone;
+
+    @ApiModelProperty(value = "传真")
+    private String fax;
+
+    @ApiModelProperty(value = "地址")
+    private String address;
+
+    @ApiModelProperty(value = "开户银行")
+    @NotEmpty(message = "开户银行不能为空")
+    private String bank;
+
+    @ApiModelProperty(value = "开户账户")
+    @NotEmpty(message = "开户账户不能为空")
+    private String accountOpen;
+
+    @ApiModelProperty(value = "纳税识别号")
+    @NotEmpty(message = "纳税识别号不能为空")
+    private String taxIdentificationNum;
 }

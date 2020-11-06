@@ -30,4 +30,7 @@ public class QueryCostTypeForm extends BasePageForm{
     @ApiModelProperty(value = "费用类别")
     private String codeName;
 
+    @ApiModelProperty(value = "状态 0禁用 1启用")
+    private String status;
+
 }

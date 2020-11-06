@@ -52,6 +52,12 @@ public class CostGenreController {
     @ApiOperation(value = "新增编辑费用类型")
     @PostMapping(value = "/saveOrUpdateCostGenre")
     public CommonResult saveOrUpdateCostGenre(@Valid @RequestBody AddCostGenreForm form) {
+        CostGenre costGenre = new CostGenre().setId(form.getId())
+                .setCode(form.getCode()).setName(form.getName());
+        if (this.costGenreService.checkUnique(costGenre)){
+            return CommonResult.error(400, "名称或代码已经存在");
+        }
+
         if (this.costGenreService.saveOrUpdateCostGenre(form)) {
             return CommonResult.success();
         } else {

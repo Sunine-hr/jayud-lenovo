@@ -51,4 +51,10 @@ public interface ICostGenreService extends IService<CostGenre> {
      * 获取启用费用类型
      */
     List<CostGenre> getEnableCostGenre();
+
+    /**
+     * 校验费用类型唯一性
+     * @return
+     */
+    boolean checkUnique(CostGenre costGenre);
 }

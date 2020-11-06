@@ -9,11 +9,8 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.model.bo.AddCostGenreForm;
 import com.jayud.oms.model.bo.QueryCostGenreForm;
 import com.jayud.oms.model.enums.StatusEnum;
-import com.jayud.oms.model.po.CostGenre;
+import com.jayud.oms.model.po.*;
 import com.jayud.oms.mapper.CostGenreMapper;
-import com.jayud.oms.model.po.CostInfo;
-import com.jayud.oms.model.po.CostType;
-import com.jayud.oms.model.po.ProductBiz;
 import com.jayud.oms.model.vo.CostGenreVO;
 import com.jayud.oms.model.vo.CostTypeVO;
 import com.jayud.oms.service.ICostGenreService;
@@ -106,8 +103,36 @@ public class CostGenreServiceImpl extends ServiceImpl<CostGenreMapper, CostGenre
      */
     @Override
     public List<CostGenre> getEnableCostGenre() {
-        QueryWrapper<CostGenre> condition=new QueryWrapper<>();
-        condition.lambda().eq(CostGenre::getStatus,StatusEnum.ENABLE.getCode());
+        QueryWrapper<CostGenre> condition = new QueryWrapper<>();
+        condition.lambda().eq(CostGenre::getStatus, StatusEnum.ENABLE.getCode());
         return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 校验费用类型唯一性
+     *
+     * @return
+     */
+    @Override
+    public boolean checkUnique(CostGenre costGenre) {
+        QueryWrapper<CostGenre> condition = new QueryWrapper<>();
+        if (costGenre.getId() != null) {
+            //修改过滤自身名字
+            condition.lambda().and(tmp -> tmp.eq(CostGenre::getId, costGenre.getId())
+                    .eq(CostGenre::getName, costGenre.getName()));
+            int count = this.count(condition);
+            //匹配到自己名称,不进行唯一校验
+            if (count == 0) {
+                condition = new QueryWrapper<>();
+                condition.lambda().eq(CostGenre::getName, costGenre.getName());
+                return this.count(condition) > 0;
+            } else {
+                return false;
+            }
+        }else {
+            condition.lambda().eq(CostGenre::getCode, costGenre.getCode())
+                    .or().eq(CostGenre::getName, costGenre.getName());
+            return this.count(condition) > 0;
+        }
     }
 }

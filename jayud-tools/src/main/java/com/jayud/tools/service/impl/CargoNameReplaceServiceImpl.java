@@ -35,11 +35,15 @@ public class CargoNameReplaceServiceImpl extends ServiceImpl<CargoNameReplaceMap
         QueryWrapper<CargoNameReplace> queryWrapper = new QueryWrapper<>();
         String hpmc = form.getHpmc();
         String replaceName = form.getReplaceName();
+        String name = form.getName();
         if(hpmc != null && hpmc != ""){
             queryWrapper.like("hpmc", hpmc);
         }
         if(replaceName != null && replaceName != ""){
             queryWrapper.like("replaceName", replaceName);
+        }
+        if(name != null && name != ""){
+            queryWrapper.and(wrapper -> wrapper.like("hpmc", name).or().like("replaceName", name));
         }
         List<CargoNameReplace> list = cargoNameReplaceMapper.selectList(queryWrapper);
         return list;
@@ -101,8 +105,21 @@ public class CargoNameReplaceServiceImpl extends ServiceImpl<CargoNameReplaceMap
         List<CargoNameReplace> list = cargoNameReplaceMapper.selectList(queryWrapper);
         CargoNameReplace cargoNameReplace = ConvertUtil.convert(form, CargoNameReplace.class);
         if(id != null){
-            this.saveOrUpdate(cargoNameReplace);
+            //修改
+            CargoNameReplace dbcargoNameReplace = cargoNameReplaceMapper.selectById(id);
+            String dbHpmc = dbcargoNameReplace.getHpmc();
+            if(hpmc.equalsIgnoreCase(dbHpmc)){
+                //原始`货品名称`没有改变，直接保存
+                this.saveOrUpdate(cargoNameReplace);
+            }else{
+                //原始`货品名称`改变之后，进行判断保存
+                if(list.size() > 0){
+                    return CommonResult.error(-1, "`货品名称`已存在,请重新输入");
+                }
+                this.saveOrUpdate(cargoNameReplace);
+            }
         }else{
+            //新增
             if(list.size() > 0){
                 return CommonResult.error(-1, "`货品名称`已存在,请重新输入");
             }

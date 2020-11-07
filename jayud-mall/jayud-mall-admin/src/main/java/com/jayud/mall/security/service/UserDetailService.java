@@ -1,9 +1,11 @@
 package com.jayud.mall.security.service;
 
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.model.bo.SystemUserLoginForm;
 import com.jayud.mall.model.po.SystemRole;
 import com.jayud.mall.model.vo.SystemUserVO;
-import com.jayud.mall.security.domain.MyUser;
+import com.jayud.mall.security.domain.AuthUser;
+import com.jayud.mall.security.domain.BaseAuthVO;
 import com.jayud.mall.security.utils.ContextHolderUtils;
 import com.jayud.mall.service.ISystemRoleService;
 import com.jayud.mall.service.ISystemUserService;
@@ -13,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,10 +22,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
-import org.springframework.security.web.savedrequest.RequestCache;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,6 +58,15 @@ public class UserDetailService implements UserDetailsService {
      * <p>前端密码</p>
      */
     private String passwordParameter = "password";
+
+    /**
+     * 获取HttpSession
+     * @return
+     */
+    public HttpSession getHttpSession() {
+        ServletRequestAttributes sa = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        return sa != null && sa.getRequest() != null ? sa.getRequest().getSession() : null;
+    }
 
     /**
      * 重写用户登录验证
@@ -101,6 +112,9 @@ public class UserDetailService implements UserDetailsService {
                 auths.add(authority);
             }
         }
+        //存放用户信息-授权用户
+        AuthUser authUser = ConvertUtil.convert(userVO, AuthUser.class);
+        getHttpSession().setAttribute(BaseAuthVO.USER_LOGIN_SESSION_KEY, authUser);
         User user = new User(userVO.getUserName(), userVO.getPassword(),
                 true, true, true, true,
                 auths);

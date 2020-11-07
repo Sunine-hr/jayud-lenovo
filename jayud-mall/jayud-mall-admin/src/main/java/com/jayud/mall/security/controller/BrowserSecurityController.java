@@ -1,11 +1,16 @@
 package com.jayud.mall.security.controller;
 
+import com.jayud.mall.security.domain.AuthUser;
+import com.jayud.mall.security.domain.BaseAuthVO;
+import com.jayud.mall.security.service.BaseService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
@@ -16,10 +21,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Collection;
 
 /**
  * 浏览器安全控制器BrowserSecurityController
@@ -37,6 +46,21 @@ public class BrowserSecurityController {
      */
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
+    /**
+     * 获取HttpSession
+     * @return
+     */
+    public HttpSession getHttpSession() {
+        ServletRequestAttributes sa = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        return sa != null && sa.getRequest() != null ? sa.getRequest().getSession() : null;
+    }
+
+    /**
+     * baseService，获取登录用户
+     */
+    @Autowired
+    BaseService baseService;
+
     @ApiOperation(value = "测试spring security")
     @GetMapping("hello")
     public String hello() {
@@ -52,6 +76,17 @@ public class BrowserSecurityController {
     @ApiOperation(value = "登录成功后跳转的地址")
     @GetMapping("index")
     public Object index(){
+        //登录成功，测试获取用户信息
+        org.springframework.security.core.userdetails.User myuser = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Collection<GrantedAuthority> authorities = myuser.getAuthorities();
+        String username = myuser.getUsername();
+        String password = myuser.getPassword();
+
+        Object token = getHttpSession().getAttribute(BaseAuthVO.USER_LOGIN_SESSION_KEY);
+        AuthUser userVO = (AuthUser) token;
+
+        AuthUser user = baseService.getUser();
+
         return SecurityContextHolder.getContext().getAuthentication();
     }
 

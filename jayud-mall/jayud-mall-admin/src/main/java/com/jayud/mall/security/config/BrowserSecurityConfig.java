@@ -90,61 +90,61 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        //配置不需要登录验证(开发时)
-        http.authorizeRequests()
-                .anyRequest()
-                .permitAll()
-            .and()
-                .logout()
-                .permitAll()
-            .and()
-                .csrf().disable();;
+//        //配置不需要登录验证(开发时)
+//        http.authorizeRequests()
+//                .anyRequest()
+//                .permitAll()
+//            .and()
+//                .logout()
+//                .permitAll()
+//            .and()
+//                .csrf().disable();;
 
         //配置需要http验证
-//        http
-////                .addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class) // 添加验证码校验过滤器
-//            .formLogin() // 表单登录
-////                .usernameParameter("username") /* 默认值 username */
-////                .passwordParameter("password") /* 默认值 password */
-//                .loginPage("/authentication/require") // 登录跳转 URL
-//                .loginProcessingUrl("/login") // 处理表单登录 URL
-//                .successHandler(authenticationSucessHandler) // 处理登录成功
-//                .failureHandler(authenticationFailureHandler) // 处理登录失败
-//            .and()
-//                .rememberMe() // 添加记住我功能
-//                .tokenRepository(persistentTokenRepository()) // 配置 token 持久化仓库
-//                .tokenValiditySeconds(3600) // remember 过期时间，单为秒 有效期一个小时
-//                .userDetailsService(userDetailService) // 处理自动登录逻辑
-//            .and()
-//                .authorizeRequests() // 授权配置
-//                .antMatchers("/authentication/require",
-//                        "/login.html","/css/login.css",
-//                        "/code/image",
-//                        "/session/invalid",
-//                        "/signout/success").permitAll() // 登录跳转 URL 无需认证
-//                //放行swagger2资源
-//                .antMatchers("/swagger-ui.html").permitAll()
-//                .antMatchers("/swagger-resources/**").permitAll()
-//                .antMatchers("/images/**").permitAll()
-//                .antMatchers("/webjars/**").permitAll()
-//                .antMatchers("/v2/api-docs").permitAll()
-//                .antMatchers("/configuration/ui").permitAll()
-//                .antMatchers("/configuration/security").permitAll()
-//                .anyRequest()  // 所有请求
-//                .authenticated() // 都需要认证
-//            .and()
-//                .sessionManagement() // 添加 Session管理器
-//                .invalidSessionUrl("/session/invalid") // Session失效后跳转到这个链接
-//            .and()
-//                .logout() // 配置退出登录
-//                .logoutUrl("/signout")
-////                 .logoutSuccessUrl("/signout/success")
-//                .logoutSuccessHandler(logOutSuccessHandler) // 除了指定logoutUrl外，我们也可以通过logoutSuccessHandler指定退出成功处理器来处理退出成功后的逻辑
-//                .deleteCookies("JSESSIONID") // 清除 名为 JSESSIONID 的 cookie
-//            .and()
-//                .csrf().disable();
-//
-//
+        http
+                .addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class) // 添加验证码校验过滤器
+            .formLogin() // 表单登录
+//                .usernameParameter("username") /* 默认值 username */
+//                .passwordParameter("password") /* 默认值 password */
+                .loginPage("/authentication/require") // 登录跳转 URL
+                .loginProcessingUrl("/login") // 处理表单登录 URL
+                .successHandler(authenticationSucessHandler) // 处理登录成功
+                .failureHandler(authenticationFailureHandler) // 处理登录失败
+            .and()
+                .rememberMe() // 添加记住我功能
+                .tokenRepository(persistentTokenRepository()) // 配置 token 持久化仓库
+                .tokenValiditySeconds(3600) // remember 过期时间，单为秒 有效期一个小时
+                .userDetailsService(userDetailService) // 处理自动登录逻辑
+            .and()
+                .authorizeRequests() // 授权配置
+                .antMatchers("/authentication/require",
+                        "/login.html","/css/login.css",
+                        "/code/image",
+                        "/session/invalid",
+                        "/signout/success").permitAll() // 登录跳转 URL 无需认证
+                //放行swagger2资源
+                .antMatchers("/swagger-ui.html").permitAll()
+                .antMatchers("/swagger-resources/**").permitAll()
+                .antMatchers("/images/**").permitAll()
+                .antMatchers("/webjars/**").permitAll()
+                .antMatchers("/v2/api-docs").permitAll()
+                .antMatchers("/configuration/ui").permitAll()
+                .antMatchers("/configuration/security").permitAll()
+                .anyRequest()  // 所有请求
+                .authenticated() // 都需要认证
+            .and()
+                .sessionManagement() // 添加 Session管理器
+                .invalidSessionUrl("/session/invalid") // Session失效后跳转到这个链接
+            .and()
+                .logout() // 配置退出登录
+                .logoutUrl("/signout")
+//                 .logoutSuccessUrl("/signout/success")
+                .logoutSuccessHandler(logOutSuccessHandler) // 除了指定logoutUrl外，我们也可以通过logoutSuccessHandler指定退出成功处理器来处理退出成功后的逻辑
+                .deleteCookies("JSESSIONID") // 清除 名为 JSESSIONID 的 cookie
+            .and()
+                .csrf().disable();
+
+
 
     }
 

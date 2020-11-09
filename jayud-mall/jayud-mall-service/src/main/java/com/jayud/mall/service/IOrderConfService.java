@@ -1,6 +1,7 @@
 package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.mall.model.bo.OrderConfForm;
 import com.jayud.mall.model.bo.QueryOrderConfForm;
 import com.jayud.mall.model.po.OrderConf;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -22,4 +23,10 @@ public interface IOrderConfService extends IService<OrderConf> {
      * @return
      */
     IPage<OrderConfVO> findOrderConfByPage(QueryOrderConfForm form);
+
+    /**
+     * 保存配载单
+     * @param form
+     */
+    void saveOrderConf(OrderConfForm form);
 }

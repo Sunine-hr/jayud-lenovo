@@ -3,6 +3,7 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.OrderConfForm;
 import com.jayud.mall.model.bo.QueryOrderConfForm;
 import com.jayud.mall.model.vo.OrderConfVO;
 import com.jayud.mall.service.IOrderConfService;
@@ -28,6 +29,13 @@ public class OrderConfController {
         IPage<OrderConfVO> pageList = orderConfService.findOrderConfByPage(form);
         CommonPageResult<OrderConfVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
+    }
+
+    @ApiOperation(value = "保存配载单")
+    @PostMapping(value = "saveOrderConf")
+    public CommonResult saveOrderConf(@RequestBody OrderConfForm form){
+        orderConfService.saveOrderConf(form);
+        return CommonResult.success("保存报价模板，成功！");
     }
 
 }

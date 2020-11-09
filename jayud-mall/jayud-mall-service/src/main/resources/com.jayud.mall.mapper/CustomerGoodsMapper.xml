@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.CustomerGoodsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.CustomerGoods">
+        <id column="id" property="id" />
+        <result column="customer_id" property="customerId" />
+        <result column="sku" property="sku" />
+        <result column="name_cn" property="nameCn" />
+        <result column="name_en" property="nameEn" />
+        <result column="image_url" property="imageUrl" />
+        <result column="barcode" property="barcode" />
+        <result column="weight" property="weight" />
+        <result column="length" property="length" />
+        <result column="width" property="width" />
+        <result column="height" property="height" />
+        <result column="is_sensitive" property="isSensitive" />
+        <result column="declared_value" property="declaredValue" />
+        <result column="declared_currency" property="declaredCurrency" />
+        <result column="material_quality" property="materialQuality" />
+        <result column="purpose" property="purpose" />
+        <result column="declare_elements" property="declareElements" />
+        <result column="hs_code" property="hsCode" />
+        <result column="data_code" property="dataCode" />
+        <result column="clearance_code" property="clearanceCode" />
+        <result column="sales_link" property="salesLink" />
+        <result column="sales_price" property="salesPrice" />
+        <result column="description" property="description" />
+        <result column="status" property="status" />
+        <result column="status_name" property="statusName" />
+        <result column="remark" property="remark" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_id, sku, name_cn, name_en, image_url, barcode, weight, length, width, height, is_sensitive, declared_value, declared_currency, material_quality, purpose, declare_elements, hs_code, data_code, clearance_code, sales_link, sales_price, description, status, status_name, remark
+    </sql>
+
+</mapper>

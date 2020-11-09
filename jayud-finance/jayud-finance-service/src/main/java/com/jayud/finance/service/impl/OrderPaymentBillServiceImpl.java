@@ -163,7 +163,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             if(!result){
                 return false;
             }
-            //开始保存费用维度的金额信息
+            //开始保存费用维度的金额信息  以结算币种进行转换后保存 TODO
             List<OrderBillCostTotal> orderBillCostTotals = new ArrayList<>();
             List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderBillCostTotal(costIds);
             for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {

@@ -41,4 +41,52 @@
         audit_time,apply_status,payment_amount,status, created_user, created_time,updated_user,updated_time,local_amount
     </sql>
 
+    <select id="findPaymentBillDetailByPage" parameterType="com.jayud.finance.bo.QueryPaymentBillDetailForm" resultType="com.jayud.finance.vo.OrderPaymentBillDetailVO" >
+        SELECT
+        opbd.bill_no billNo,
+        opb.legal_name legalName,
+        opb.customer_name customerName,
+        DATE_FORMAT(opbd.begin_account_term,'%Y-%m-%d') 	beginAccountTermStr,
+        DATE_FORMAT(opbd.end_account_term,'%Y-%m-%d') 	endAccountTermStr,
+        (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='RMB') rmb,
+        (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='MY') dollar,
+        (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='OY') euro,
+        (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='GB') hKDollar,
+        (select sum(m.money) from make_invoice m where m.opr_type = '2' and m.bill_no = opbd.bill_no and m.`status` = '1') heXiaoAmount,
+        (opbd.payment_amount - (select sum(m.money) from make_invoice m where m.opr_type = '2' and m.bill_no = opbd.bill_no and m.`status` = '1'))  notHeXiaoAmount,opbd.settlement_currency settlementCurrency,opbd.audit_status auditStatus,opbd.apply_status applyStatus,
+        opbd.make_user makeUser,
+        opbd.make_time makeTimeStr,
+        opbd.audit_user auditUser,
+        opbd.audit_time auditTimeStr,
+        (select c.created_user from cancel_after_verification c where c.bill_no = opbd.bill_no order by c.created_time desc limit 1) heXiaoUser,
+        (select c.real_receive_time from cancel_after_verification c where c.bill_no = opbd.bill_no order by c.created_time desc limit 1) heXiaoTimeStr
+        FROM
+        order_payment_bill_detail opbd
+        LEFT JOIN order_payment_bill opb ON opbd.bill_id = opb.id
+        where 1 = 1
+        <if test="form.customerName != null and form.customerName != ''">
+            and opb.customer_name like concat('%',#{form.customerName},'%')
+        </if>
+        <if test="form.legalName != null and form.legalName != ''">
+            and opb.legal_name like concat('%',#{form.legalName},'%')
+        </if>
+        <if test="form.billNo != null and form.billNo != ''">
+            and opbd.bill_no like concat('%',#{form.billNo},'%')
+        </if>
+        <if test="form.endAccountTerm != null and form.endAccountTerm !=''">
+            and opbd.end_account_term <![CDATA[<=]]> #{form.endAccountTerm}
+        </if>
+        <if test="form.beginAccountTerm != null and form.beginAccountTerm !=''">
+            and opbd.begin_account_term <![CDATA[>=]]> #{form.beginAccountTerm}
+        </if>
+        <if test="form.currencyCode != null and form.currencyCode !=''">
+            and opbd.settlement_currency <![CDATA[>=]]> #{form.currencyCode}
+        </if>
+        <if test="form.auditStatus != null and form.auditStatus !=''">
+            and opbd.audit_status <![CDATA[>=]]> #{form.auditStatus}
+        </if>
+        <if test="form.applyStatus != null and form.applyStatus !=''">
+            and opbd.apply_status <![CDATA[>=]]> #{form.applyStatus}
+        </if>
+    </select>
 </mapper>

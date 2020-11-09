@@ -60,7 +60,7 @@ public class PaymentBillController {
         if(result){
             return CommonResult.success();
         }
-        return CommonResult.error(ResultEnum.OPR_FAIL.getCode(),ResultEnum.OPR_FAIL.getMessage());
+        return CommonResult.error(ResultEnum.OPR_FAIL);
     }
 
     @ApiOperation(value = "预览应付账单")
@@ -73,4 +73,7 @@ public class PaymentBillController {
         resultMap.put(CommonConstant.SHEET_HEAD,sheetHeadVOS);//表头
         return CommonResult.success(resultMap);
     }
+
+    //编辑对账单列表
+
 }

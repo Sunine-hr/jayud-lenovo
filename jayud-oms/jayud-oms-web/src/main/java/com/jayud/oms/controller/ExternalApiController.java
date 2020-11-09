@@ -9,10 +9,8 @@ import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.*;
-import com.jayud.oms.model.po.AuditInfo;
-import com.jayud.oms.model.po.LogisticsTrack;
-import com.jayud.oms.model.po.SupplierInfo;
-import com.jayud.oms.model.po.WarehouseInfo;
+import com.jayud.oms.model.po.*;
+import com.jayud.oms.model.vo.DriverInfoLinkVO;
 import com.jayud.oms.model.vo.InitComboxVO;
 import com.jayud.oms.model.vo.InputMainOrderVO;
 import com.jayud.oms.model.vo.OrderStatusVO;
@@ -20,7 +18,10 @@ import com.jayud.oms.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -48,6 +49,9 @@ public class ExternalApiController {
 
     @Autowired
     ISupplierInfoService supplierInfoService;
+
+    @Autowired
+    IDriverInfoService driverInfoService;
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
@@ -186,6 +190,32 @@ public class ExternalApiController {
         queryWrapper.in(SqlConstant.STATUS,form.getStatus());
         logisticsTrackService.remove(queryWrapper);
         return ApiResult.ok();
+    }
+
+    @ApiOperation(value = "初始化司机下拉框")
+    @RequestMapping(value = "api/initDriver")
+    public CommonResult initDriver() {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(SqlConstant.STATUS,1);
+        List<DriverInfo> driverInfos = driverInfoService.list(queryWrapper);
+        List<InitComboxVO> initComboxVOS = new ArrayList<>();
+        for (DriverInfo driverInfo : driverInfos) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(driverInfo.getId());
+            initComboxVO.setName(driverInfo.getName());
+            initComboxVOS.add(initComboxVO);
+        }
+        return CommonResult.success(initComboxVOS);
+    }
+
+    /**
+     * 司机下拉框联动车辆供应商，大陆车牌，香港车牌，司机电话
+     * @return
+     */
+    @RequestMapping(value = "/api/initDriverInfo")
+    ApiResult initDriverInfo(@RequestParam("driverId") Long driverId){
+        DriverInfoLinkVO driverInfo = driverInfoService.getDriverInfoLink(driverId);
+        return ApiResult.ok(driverInfo);
     }
 
 

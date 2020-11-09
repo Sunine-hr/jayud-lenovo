@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.jayud</groupId>
-    <artifactId>jayud-wechat-mini-program</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>jayud-wechat-mini-program</name>
+    <artifactId>jayud-mini-app</artifactId>
+    <version>1.0</version>
+    <name>jayud-mini-app</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>

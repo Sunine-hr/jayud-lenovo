@@ -1,13 +1,13 @@
-package com.jayud.jayudwechatminiprogram;
+package com.jayud.jayudminiapp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class JayudWechatMiniProgramApplication {
+public class JayudMiniAppApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(JayudWechatMiniProgramApplication.class, args);
+        SpringApplication.run(JayudMiniAppApplication.class, args);
     }
 
 }

@@ -23,6 +23,10 @@
         <result column="salesman_id" property="salesmanId" />
         <result column="user_name" property="userName" />
         <result column="address" property="address" />
+        <result column="clearing_way" property="clearingWay"/>
+        <result column="clearing_date" property="clearingDate"/>
+        <result column="lock_date" property="lockDate"/>
+        <result column="real_date" property="realDate"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->

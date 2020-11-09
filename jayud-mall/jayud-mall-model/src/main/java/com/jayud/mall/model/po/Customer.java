@@ -29,6 +29,7 @@ public class Customer extends Model<Customer> {
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty(value = "主键id，自增")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
@@ -38,8 +39,10 @@ public class Customer extends Model<Customer> {
     @ApiModelProperty(value = "中文名，联系人")
     private String nameCn;
 
+    @ApiModelProperty(value = "密码")
     private String passwd;
 
+    @ApiModelProperty(value = "手机号")
     private String phone;
 
     @ApiModelProperty(value = "启用状态，默认为1，1是0否")
@@ -53,6 +56,7 @@ public class Customer extends Model<Customer> {
     @ApiModelProperty(value = "用户来源，后期可能会有很多用户来源，默认为1web端")
     private String origin;
 
+    @ApiModelProperty(value = "创建日期")
     private LocalDateTime createDate;
 
     @ApiModelProperty(value = "公司名")
@@ -64,10 +68,13 @@ public class Customer extends Model<Customer> {
     @TableField(value = "`code`")
     private String code;
 
+    @ApiModelProperty(value = "英文名")
     private String nameEn;
 
+    @ApiModelProperty(value = "支付密码")
     private String payPasswd;
 
+    @ApiModelProperty(value = "支付类型")
     private Integer payType;
 
     @ApiModelProperty(value = "默认结算币种，生成对账单默认选中的结算币种")
@@ -82,6 +89,17 @@ public class Customer extends Model<Customer> {
     @ApiModelProperty(value = "联系地址")
     private String address;
 
+    @ApiModelProperty(value = "结算方式")
+    private Integer clearingWay;
+
+    @ApiModelProperty(value = "结算日期")
+    private LocalDateTime clearingDate;
+
+    @ApiModelProperty(value = "锁单日期")
+    private LocalDateTime lockDate;
+
+    @ApiModelProperty(value = "实际锁单日期")
+    private  LocalDateTime realDate;
 
     @Override
     protected Serializable pkVal() {

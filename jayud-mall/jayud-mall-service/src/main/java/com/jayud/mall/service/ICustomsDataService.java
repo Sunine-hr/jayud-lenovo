@@ -1,6 +1,8 @@
 package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.CustomsDataForm;
 import com.jayud.mall.model.bo.QueryCustomsDataForm;
 import com.jayud.mall.model.po.CustomsData;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -22,4 +24,11 @@ public interface ICustomsDataService extends IService<CustomsData> {
      * @return
      */
     IPage<CustomsDataVO> findCustomsDataByPage(QueryCustomsDataForm form);
+
+    /**
+     * 保存报关资料
+     * @param form
+     * @return
+     */
+    CommonResult saveCustomsData(CustomsDataForm form);
 }

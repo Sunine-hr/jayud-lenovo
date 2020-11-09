@@ -3,6 +3,7 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.CustomsDataForm;
 import com.jayud.mall.model.bo.QueryCustomsDataForm;
 import com.jayud.mall.model.vo.CustomsDataVO;
 import com.jayud.mall.service.ICustomsDataService;
@@ -29,5 +30,12 @@ public class CustomsDataController {
         CommonPageResult<CustomsDataVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
     }
+
+    @ApiOperation(value = "保存报关资料")
+    @PostMapping("/saveCustomsData")
+    public CommonResult saveCustomsData(@RequestBody CustomsDataForm form){
+        return customsDataService.saveCustomsData(form);
+    }
+
 
 }

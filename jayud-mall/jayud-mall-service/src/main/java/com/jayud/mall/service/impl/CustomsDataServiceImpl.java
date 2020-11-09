@@ -3,7 +3,10 @@ package com.jayud.mall.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.CommonResult;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.CustomsDataMapper;
+import com.jayud.mall.model.bo.CustomsDataForm;
 import com.jayud.mall.model.bo.QueryCustomsDataForm;
 import com.jayud.mall.model.po.CustomsData;
 import com.jayud.mall.model.vo.CustomsDataVO;
@@ -33,5 +36,12 @@ public class CustomsDataServiceImpl extends ServiceImpl<CustomsDataMapper, Custo
         //page.addOrder(OrderItem.desc("oc.id"));
         IPage<CustomsDataVO> pageInfo = customsDataMapper.findCustomsDataByPage(page, form);
         return pageInfo;
+    }
+
+    @Override
+    public CommonResult saveCustomsData(CustomsDataForm form) {
+        CustomsData customsData = ConvertUtil.convert(form, CustomsData.class);
+        this.saveOrUpdate(customsData);
+        return CommonResult.success("保存报关资料，成功!");
     }
 }

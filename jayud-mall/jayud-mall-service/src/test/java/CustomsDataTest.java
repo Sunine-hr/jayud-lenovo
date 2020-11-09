@@ -1,3 +1,4 @@
+import com.jayud.mall.model.bo.CustomsDataForm;
 import com.jayud.mall.model.bo.QueryCustomsDataForm;
 import org.junit.Test;
 
@@ -12,5 +13,16 @@ public class CustomsDataTest {
         TestUtils.JSONObjectPrint(form);
 
     }
+
+    @Test
+    public void test2(){
+        CustomsDataForm form = new CustomsDataForm();
+        form.setId(1L);
+        form.setChName("毯子2020");
+        TestUtils.JSONObjectPrint(form);
+
+    }
+
+
 
 }

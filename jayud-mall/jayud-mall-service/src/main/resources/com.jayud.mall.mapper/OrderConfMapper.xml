@@ -19,4 +19,25 @@
         id, order_no, tid, harbour_code, status, user_id, user_name, create_time
     </sql>
 
+    <!--查询报价模板并分页-->
+    <select id="findOrderConfByPage" parameterType="com.jayud.mall.model.bo.QueryOrderConfForm"
+            resultType="com.jayud.mall.model.vo.OrderConfVO" >
+        select
+        t.id,t.order_no,t.tid,t.harbour_code,t.`status`,t.user_id,t.user_name,t.create_time,
+        t1.code_name tName,
+        t2.code_name harbourName
+        from order_conf t
+        LEFT JOIN transport_way t1 on t1.id = t.tid
+        LEFT JOIN harbour_info t2 on t2.id_code = t.harbour_code
+        WHERE
+        1 = 1
+        <if test="form.orderNo != null and form.orderNo != ''">
+            AND t.`order_no` LIKE concat('%',#{form.orderNo},'%')
+        </if>
+        <if test="form.harbourCode != null and form.harbourCode != ''">
+            AND t.`harbour_code` = #{form.harbourCode}
+        </if>
+    </select>
+
+
 </mapper>

@@ -1,11 +1,14 @@
 package com.jayud.mall.model.vo;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
+@ApiModel(value = "配载单信息")
 public class OrderConfVO {
 
     @ApiModelProperty(value = "自增id")
@@ -37,5 +40,14 @@ public class OrderConfVO {
 
     @ApiModelProperty(value = "目的国家name")
     private String harbourName;
+
+    /*报价信息list*/
+    @ApiModelProperty(value = "报价信息list")
+    private List<OfferInfoVO> offerInfoVOList;
+
+    /*提单信息list*/
+    @ApiModelProperty(value = "提单信息list")
+    private List<OceanBillVO> oceanBillVOList;
+
 
 }

@@ -1,6 +1,7 @@
 package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.OrderConfForm;
 import com.jayud.mall.model.bo.QueryOrderConfForm;
 import com.jayud.mall.model.po.OrderConf;
@@ -29,4 +30,11 @@ public interface IOrderConfService extends IService<OrderConf> {
      * @param form
      */
     void saveOrderConf(OrderConfForm form);
+
+    /**
+     * 查看配载详情
+     * @param id
+     * @return
+     */
+    CommonResult<OrderConfVO> lookOrderConf(Long id);
 }

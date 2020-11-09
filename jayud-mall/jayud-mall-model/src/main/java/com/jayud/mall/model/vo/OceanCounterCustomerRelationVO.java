@@ -1,9 +1,11 @@
 package com.jayud.mall.model.vo;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
+@ApiModel(value = "货柜关联箱号信息list")
 public class OceanCounterCustomerRelationVO {
 
     @ApiModelProperty(value = "主键id，自增")

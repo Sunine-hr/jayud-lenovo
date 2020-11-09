@@ -3,6 +3,7 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.OceanBillForm;
 import com.jayud.mall.model.bo.OrderConfForm;
 import com.jayud.mall.model.bo.QueryOrderConfForm;
 import com.jayud.mall.model.vo.OrderConfVO;
@@ -36,6 +37,13 @@ public class OrderConfController {
     public CommonResult saveOrderConf(@RequestBody OrderConfForm form){
         orderConfService.saveOrderConf(form);
         return CommonResult.success("保存报价模板，成功！");
+    }
+
+    @ApiOperation(value = "查看配载单详情")
+    @PostMapping(value = "lookOrderConf")
+    public CommonResult<OrderConfVO> lookOrderConf(@RequestBody OceanBillForm form){
+        Long id = form.getId();
+        return orderConfService.lookOrderConf(id);
     }
 
 }

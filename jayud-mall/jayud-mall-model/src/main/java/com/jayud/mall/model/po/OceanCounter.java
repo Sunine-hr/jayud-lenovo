@@ -62,7 +62,7 @@ public class OceanCounter extends Model<OceanCounter> {
     private LocalDateTime createTime;
 
     /*关联箱号信息*/
-    @ApiModelProperty(value = "关联箱号信息list")
+    @ApiModelProperty(value = "货柜关联箱号信息list")
     private List<OceanCounterCustomerRelationVO> oceanCounterCustomerRelationVOList;
 
 

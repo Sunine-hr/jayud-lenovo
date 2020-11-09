@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.OrderConfMapper;
 import com.jayud.mall.model.bo.OrderConfForm;
@@ -67,4 +68,11 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
         //再保存
         oceanConfDetailService.saveOrUpdateBatch(oceanConfDetailList);
     }
+
+    @Override
+    public CommonResult<OrderConfVO> lookOrderConf(Long id) {
+        return null;
+    }
+
+
 }

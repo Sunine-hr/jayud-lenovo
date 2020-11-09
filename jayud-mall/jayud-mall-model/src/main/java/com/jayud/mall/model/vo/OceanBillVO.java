@@ -1,6 +1,7 @@
 package com.jayud.mall.model.vo;
 
 import com.jayud.mall.model.po.OceanCounter;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@ApiModel(value = "提单信息")
 public class OceanBillVO {
 
 

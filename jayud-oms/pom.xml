@@ -19,6 +19,7 @@
         <module>jayud-oms-web</module>
         <module>jayud-oms-model</module>
         <module>jayud-oms-service</module>
+        <module>jayud-oms-mini-app</module>
     </modules>
 
     <dependencies>

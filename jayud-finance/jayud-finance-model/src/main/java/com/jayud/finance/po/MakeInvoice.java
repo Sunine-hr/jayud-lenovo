@@ -60,6 +60,12 @@ public class MakeInvoice extends Model<MakeInvoice> {
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createdTime;
 
+    @ApiModelProperty(value = "账单编号")
+    private String billNo;
+
+    @ApiModelProperty(value = "是否作废 1-有效 0-无效")
+    private String oprType;
+
 
     @Override
     protected Serializable pkVal() {

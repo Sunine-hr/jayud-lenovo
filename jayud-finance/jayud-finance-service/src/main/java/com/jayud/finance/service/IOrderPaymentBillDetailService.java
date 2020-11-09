@@ -1,7 +1,10 @@
 package com.jayud.finance.service;
 
-import com.jayud.finance.po.OrderPaymentBillDetail;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.finance.bo.QueryPaymentBillDetailForm;
+import com.jayud.finance.po.OrderPaymentBillDetail;
+import com.jayud.finance.vo.OrderPaymentBillDetailVO;
 
 /**
  * <p>
@@ -13,4 +16,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBillDetail> {
 
+    /**
+     * 应付对账单分页查询
+     * @param form
+     * @return
+     */
+    IPage<OrderPaymentBillDetailVO> findPaymentBillDetailByPage(QueryPaymentBillDetailForm form);
 }

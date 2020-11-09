@@ -23,14 +23,15 @@ public class AddCustomerInfoForm {
     @NotEmpty(message = "idCode is required")
     private String idCode;
 
-    @ApiModelProperty(value = "结算单位")
+    @ApiModelProperty(value = "结算单位",required = true)
+    @NotEmpty(message = "unitAccount is required")
     private String unitAccount;
 
-    @ApiModelProperty(value = "结算代码")
+    @ApiModelProperty(value = "结算代码",required = true)
+    @NotEmpty(message = "unitCode is required")
     private String unitCode;
 
     @ApiModelProperty(value = "客户类型(1同行 2电商 3货代)",required = true)
-    @NotEmpty(message = "types is required")
     @Pattern(regexp = "1|2|3",message = "types requires '1' or '2' or '3' only")
     private Integer types;
 
@@ -62,7 +63,6 @@ public class AddCustomerInfoForm {
     private String tfn;
 
     @ApiModelProperty(value = "是否有合同(0否 1是)",required = true)
-    @NotEmpty(message = "ifContract is required")
     @Pattern(regexp = "0|1",message = "ifContract requires '0' or '1' only")
     private String ifContract;
 

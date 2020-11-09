@@ -40,6 +40,7 @@ public enum ResultEnum implements IResultCode {
 
     LOGIN_NAME_EXIST(10002, "该登录名已存在"),
     LOGIN_NAME_OR_NAME_EXIST(10003, "该登录名或姓名已存在"),
+    UNIT_CODE_EXIST(10004,"该结算代码已存在"),
     ;
     private Integer code;
     private String message;

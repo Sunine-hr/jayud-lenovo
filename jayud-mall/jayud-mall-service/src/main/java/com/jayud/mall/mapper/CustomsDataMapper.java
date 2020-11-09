@@ -1,7 +1,11 @@
 package com.jayud.mall.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.mall.model.bo.QueryCustomsDataForm;
 import com.jayud.mall.model.po.CustomsData;
+import com.jayud.mall.model.vo.CustomsDataVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Component;
 
@@ -17,4 +21,11 @@ import org.springframework.stereotype.Component;
 @Component
 public interface CustomsDataMapper extends BaseMapper<CustomsData> {
 
+    /**
+     * 分页
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<CustomsDataVO> findCustomsDataByPage(Page<CustomsDataVO> page, QueryCustomsDataForm form);
 }

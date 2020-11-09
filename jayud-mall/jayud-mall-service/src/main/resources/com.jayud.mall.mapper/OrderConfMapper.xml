@@ -39,5 +39,47 @@
         </if>
     </select>
 
+    <!--查询配载单-->
+    <select id="findOrderConfById" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.OrderConfVO" >
+        select
+        t.id,t.order_no,t.tid,t.harbour_code,t.`status`,t.user_id,t.user_name,t.create_time,
+        t1.code_name tName,
+        t2.code_name harbourName
+        from order_conf t
+        LEFT JOIN transport_way t1 on t1.id = t.tid
+        LEFT JOIN harbour_info t2 on t2.id_code = t.harbour_code
+        WHERE
+        t.id = #{id}
+    </select>
+
+    <!--根据配载单id，获取报价信息-->
+    <select id="findOfferInfoVOByOrderId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.OfferInfoVO" >
+        select
+        t.id,t.qie,t.`names`,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.`status`,t.user_id,t.user_name,t.create_time,
+        CONCat(t3.start_shipment,'-',t3.destination_port) route
+        from offer_info t
+        JOIN ocean_conf_detail t1 on t1.id_code = t.id and t1.types=1
+        JOIN order_conf t2 on t2.id = t1.order_id
+        LEFT JOIN quotation_template t3 on t3.id = t.qie
+        where t2.id = #{orderId}
+    </select>
+
+    <!--据配载单id，获取提单柜号信息-->
+    <select id="findOceanCounterVOByOrderId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.OceanCounterVO" >
+        select
+        t.id,t.cntr_no,t.cabinet_code,t.volume,t.cost,t.cid,t.`status`,t.ob_id,t.create_time,
+        t1.order_id,t1.supplier_code,t1.sail_time,
+        t2.supplier_ch_name
+        from ocean_counter t
+        left join ocean_bill t1 on t1.id = t.ob_id
+        left join supplier_info t2 on t2.supplier_code = t1.supplier_code
+        left join ocean_conf_detail t3 on t3.id_code = t1.id and t3.types=2
+        left JOIN order_conf t4 on t4.id = t3.order_id
+        where t4.id = #{orderId}
+    </select>
+
 
 </mapper>

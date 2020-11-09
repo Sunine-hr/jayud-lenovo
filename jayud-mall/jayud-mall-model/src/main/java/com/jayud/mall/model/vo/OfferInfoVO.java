@@ -125,4 +125,8 @@ public class OfferInfoVO {
     @ApiModelProperty(value = "文件信息明细list", position = 36)
     private List<TemplateFile> templateFileList;
 
+    //路线
+    @ApiModelProperty(value = "路线（报价模板-起运港 到 报价模板-目的港）")
+    private String route;
+
 }

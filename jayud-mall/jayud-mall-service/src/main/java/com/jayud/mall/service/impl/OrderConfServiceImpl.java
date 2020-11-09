@@ -6,11 +6,15 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.mall.mapper.OceanCounterCustomerRelationMapper;
 import com.jayud.mall.mapper.OrderConfMapper;
 import com.jayud.mall.model.bo.OrderConfForm;
 import com.jayud.mall.model.bo.QueryOrderConfForm;
 import com.jayud.mall.model.po.OceanConfDetail;
 import com.jayud.mall.model.po.OrderConf;
+import com.jayud.mall.model.vo.OceanCounterCustomerRelationVO;
+import com.jayud.mall.model.vo.OceanCounterVO;
+import com.jayud.mall.model.vo.OfferInfoVO;
 import com.jayud.mall.model.vo.OrderConfVO;
 import com.jayud.mall.service.IOceanConfDetailService;
 import com.jayud.mall.service.IOrderConfService;
@@ -36,6 +40,9 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
 
     @Autowired
     IOceanConfDetailService oceanConfDetailService;
+
+    @Autowired
+    OceanCounterCustomerRelationMapper oceanCounterCustomerRelationMapper;
 
     @Override
     public IPage<OrderConfVO> findOrderConfByPage(QueryOrderConfForm form) {
@@ -71,7 +78,25 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
 
     @Override
     public CommonResult<OrderConfVO> lookOrderConf(Long id) {
-        return null;
+        OrderConfVO orderConfVO = orderConfMapper.findOrderConfById(id);
+
+        Long orderId = orderConfVO.getId();
+        //报价信息list
+        List<OfferInfoVO> offerInfoVOList = orderConfMapper.findOfferInfoVOByOrderId(orderId);
+        orderConfVO.setOfferInfoVOList(offerInfoVOList);
+
+        //提单柜号信息list
+        List<OceanCounterVO> oceanCounterVOList = orderConfMapper.findOceanCounterVOByOrderId(orderId);
+        //柜号关联装柜信息
+        oceanCounterVOList.forEach(oceanCounter -> {
+            Long oceanCounterId = oceanCounter.getId();
+            //装柜信息list
+            List<OceanCounterCustomerRelationVO> zgxxList = oceanCounterCustomerRelationMapper.findZgxxListByOceanCounterId(oceanCounterId);
+            oceanCounter.setOceanCounterCustomerRelationVOList(zgxxList);
+        });
+        orderConfVO.setOceanCounterVOList(oceanCounterVOList);
+
+        return CommonResult.success(orderConfVO);
     }
 
 

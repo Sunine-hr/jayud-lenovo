@@ -45,9 +45,9 @@ public class OrderConfVO {
     @ApiModelProperty(value = "报价信息list")
     private List<OfferInfoVO> offerInfoVOList;
 
-    /*提单信息list*/
-    @ApiModelProperty(value = "提单信息list")
-    private List<OceanBillVO> oceanBillVOList;
+    /*提单柜号信息list*/
+    @ApiModelProperty(value = "提单柜号信息list")
+    private List<OceanCounterVO> oceanCounterVOList;
 
 
 }

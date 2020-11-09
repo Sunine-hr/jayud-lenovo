@@ -115,16 +115,26 @@
             oi.`customer_name` customerName,
             ot.`created_user` createdUser,
             DATE_FORMAT(ot.`created_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
-            t.`goods_desc` goodsDesc,
-            t.`piece_amount` pieceAmount,
-            t.`plate_amount` plateAmount,
-            t.`weight`,
-            t.state_name stateName1,
-            t.city_name cityName1,
-            t.address address1,
-            s.state_name stateName2,
-            s.city_name cityName2,
-            s.address address2,
+        (SELECT	ota.`goods_desc` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` AND ota.`opr_type` = '1' limit 1
+        ) goodsDesc,
+        (SELECT	ota.`piece_amount` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` AND ota.`opr_type` = '1' limit 1
+        ) pieceAmount,
+        (SELECT	ota.`plate_amount` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` AND ota.`opr_type` = '1' limit 1
+        ) plateAmount,
+        (SELECT	ota.`weight` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` AND ota.`opr_type` = '1' limit 1
+        ) weight,
+        (SELECT	da.`state_name` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` AND ota.`opr_type` = '1' limit 1
+        ) stateName1,
+        (SELECT	da.`city_name` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` AND ota.`opr_type` = '1' limit 1
+        ) cityName1,
+        (SELECT	da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` AND ota.`opr_type` = '1' limit 1
+        ) address1,
+        (SELECT	da.`state_name` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` AND ota.`opr_type` = '2' limit 1
+        ) stateName2,
+        (SELECT	da.`city_name` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` AND ota.`opr_type` = '2' limit 1
+        ) cityName2,
+        (SELECT	da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` AND ota.`opr_type` = '2' limit 1
+        ) address2,
             ot.`encode`,
             ot.`vehicle_type` vehicleType,
             ot.`vehicle_size` vehicleSize,
@@ -144,14 +154,7 @@
             ON p.`id_code` = ot.`port_code`
             LEFT JOIN product_classify pc
             ON oi.`class_code` = pc.`id_code`
-            LEFT JOIN (SELECT ota.`order_no`,da.`state_name`,da.`city_name`,da.`address`,ota.`goods_desc`,ota.`piece_amount`,ota.`plate_amount`,
-            ota.`weight` FROM order_take_adr ota LEFT JOIN delivery_address da
-            ON ota.`delivery_id` = da.`id` AND ota.`opr_type` = '1' LIMIT 1) t
-            ON t.order_no = ot.`order_no`
-            LEFT JOIN (SELECT ota.`order_no`,da.`state_name`,da.`city_name`,da.`address`,ota.`goods_desc`,ota.`piece_amount`,ota.`plate_amount`,
-            ota.`weight` FROM order_take_adr ota LEFT JOIN delivery_address da
-            ON ota.`delivery_id` = da.`id` AND ota.`opr_type` = '2' LIMIT 1) s
-            ON s.order_no = ot.`order_no` where 1 = 1
+             where 1 = 1
         <if test="form.orderNo != null and form.orderNo != ''">
             and ot.order_no = #{form.orderNo}
         </if>

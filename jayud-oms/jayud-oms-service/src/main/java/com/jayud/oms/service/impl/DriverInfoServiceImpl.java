@@ -96,4 +96,17 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
         DriverInfo driverInfo = new DriverInfo().setId(id).setStatus(status);
         return this.updateById(driverInfo);
     }
+
+    /**
+     * 根据大陆手机查询用户
+     *
+     * @param phone
+     * @return
+     */
+    @Override
+    public DriverInfo getByPhone(String phone) {
+        QueryWrapper<DriverInfo> condition = new QueryWrapper<>();
+        condition.lambda().eq(DriverInfo::getPhone, phone);
+        return this.baseMapper.selectOne(condition);
+    }
 }

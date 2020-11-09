@@ -33,4 +33,6 @@ public interface IDriverInfoService extends IService<DriverInfo> {
     boolean checkUnique(DriverInfo driverInfo);
 
     boolean enableOrDisableDriver(Long id);
+
+    DriverInfo getByPhone(String phone);
 }

@@ -77,7 +77,7 @@
           osc.`remarks`,
           ot.`cntr_pic` cntrPic,
           ot.`cntr_pic_name` cntrPicName,
-          wi.`company_name` companyName,
+          wi.`warehouse_name` companyName,
           wi.`contacts`,
           wi.`contact_number` contactNumber,
           wi.`address`,

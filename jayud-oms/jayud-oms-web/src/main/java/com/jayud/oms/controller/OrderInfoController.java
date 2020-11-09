@@ -153,6 +153,10 @@ public class OrderInfoController {
                 //中港订单提货收货信息参数校验
                 List<InputOrderTakeAdrForm> takeAdrForms1 = inputOrderTransportForm.getTakeAdrForms1();
                 List<InputOrderTakeAdrForm> takeAdrForms2 = inputOrderTransportForm.getTakeAdrForms2();
+                //提货地址和送货地址分别至少存在一条数据才可提交
+                if(takeAdrForms1 == null || takeAdrForms1.size() == 0 || takeAdrForms2 == null || takeAdrForms2.size() == 0){
+                    return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+                }
                 List<InputOrderTakeAdrForm> takeAdrForms = new ArrayList<>();
                 takeAdrForms.addAll(takeAdrForms1);
                 takeAdrForms.addAll(takeAdrForms2);

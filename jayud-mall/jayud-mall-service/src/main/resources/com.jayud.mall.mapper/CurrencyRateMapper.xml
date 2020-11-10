@@ -19,4 +19,30 @@
         id, dcid, ocid, exchange_rate, status, user_id, user_name, create_time
     </sql>
 
+    <select id="findCurrencyRate" parameterType="com.jayud.mall.model.bo.QueryCurrencyRateForm"
+            resultType="com.jayud.mall.model.vo.CurrencyRateVO" >
+        select
+        t.id,t.dcid,t.ocid,t.exchange_rate,t.`status`,t.user_id,t.user_name,t.create_time,
+        t1.currency_code dcCurrencyCode,t1.currency_name dcCurrencyName,t1.country_code dcCountryCode,
+        t2.currency_code ocCurrencyCode,t2.currency_name ocCurrencyName,t2.country_code ocCountryCode,
+        CONCAT('1 ',t1.currency_code,'(',t1.currency_name,')',' = ',t.exchange_rate,' ',t2.currency_code,'(',t2.currency_name,')') rate
+        from currency_rate t
+        LEFT JOIN currency_info t1 on t1.id = t.dcid
+        LEFT JOIN currency_info t2 on t2.id = t.ocid
+        WHERE
+        1 = 1
+        <if test="form.dcid != null">
+            AND t.dcid = #{form.dcid}
+        </if>
+        <if test="form.ocid != null">
+            AND t.ocid = #{form.ocid}
+        </if>
+        <if test="form.exchangeRate != null">
+            AND t.exchange_rate = #{form.exchangeRate}
+        </if>
+        GROUP BY
+        t.`id`
+    </select>
+
+
 </mapper>

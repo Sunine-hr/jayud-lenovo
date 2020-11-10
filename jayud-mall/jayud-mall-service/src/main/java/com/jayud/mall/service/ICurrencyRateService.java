@@ -1,7 +1,11 @@
 package com.jayud.mall.service;
 
+import com.jayud.mall.model.bo.QueryCurrencyRateForm;
 import com.jayud.mall.model.po.CurrencyRate;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.vo.CurrencyRateVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +17,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ICurrencyRateService extends IService<CurrencyRate> {
 
+    /**
+     * 查询list
+     * @param form
+     * @return
+     */
+    List<CurrencyRateVO> findCurrencyRate(QueryCurrencyRateForm form);
 }

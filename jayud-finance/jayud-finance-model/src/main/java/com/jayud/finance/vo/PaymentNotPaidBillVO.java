@@ -15,7 +15,7 @@ public class PaymentNotPaidBillVO {
     private String orderNo;
 
     @ApiModelProperty(value = "业务类型")
-    private String classCodeDesc;
+    private String bizCodeDesc;
 
     @ApiModelProperty(value = "创建日期")
     private String createdTimeStr;

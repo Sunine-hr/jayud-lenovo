@@ -2,6 +2,7 @@ package com.jayud.finance.feign;
 
 
 import com.jayud.common.ApiResult;
+import com.jayud.finance.bo.AuditInfoForm;
 import com.jayud.finance.bo.OprCostBillForm;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +19,14 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/oprCostBill")
     ApiResult<Boolean> oprCostBill(@RequestBody OprCostBillForm form);
+
+    /**
+     * 记录审核信息
+     * @param form
+     * @return
+     */
+    @RequestMapping(value = "/api/saveAuditInfo")
+    ApiResult<Boolean> saveAuditInfo(@RequestBody AuditInfoForm form);
 
 
 }

@@ -197,8 +197,5 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         return baseMapper.findSheetHead(form);
     }
 
-    @Override
-    public ViewBillVO getViewBill(ViewBillForm form) {
-        return null;
-    }
+
 }

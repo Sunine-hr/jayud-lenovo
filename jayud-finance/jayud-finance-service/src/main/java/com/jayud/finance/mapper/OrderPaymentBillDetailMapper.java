@@ -1,13 +1,16 @@
 package com.jayud.finance.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.finance.bo.QueryEditBillForm;
 import com.jayud.finance.bo.QueryPaymentBillDetailForm;
 import com.jayud.finance.po.OrderPaymentBillDetail;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.jayud.finance.vo.OrderPaymentBillDetailVO;
+import com.jayud.finance.vo.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -27,4 +30,40 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
      * @return
      */
     IPage<OrderPaymentBillDetailVO> findPaymentBillDetailByPage(Page page, @Param("form") QueryPaymentBillDetailForm form);
+
+    /**
+     * 应付对账单分页查询
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<PaymentNotPaidBillVO> findEditBillByPage(Page page, @Param("form") QueryEditBillForm form);
+
+    /**
+     * 预览账单表头
+     * @param billNo
+     * @return
+     */
+    List<SheetHeadVO> findSheetHead(@Param("billNo") String billNo);
+
+    /**
+     * 预览账单分页查询
+     * @param billNo
+     * @return
+     */
+    List<ViewBilToOrderVO> viewBillDetail(@Param("billNo") String billNo);
+
+    /**
+     * 查询账单明细
+     * @param billNo
+     * @return
+     */
+    List<ViewBillToCostClassVO> findCostClass(@Param("billNo") String billNo);
+
+    /**
+     * 对账单详情的全局数据部分
+     * @param billNo
+     * @return
+     */
+    ViewBillVO getViewBill(@Param("billNo") String billNo);
 }

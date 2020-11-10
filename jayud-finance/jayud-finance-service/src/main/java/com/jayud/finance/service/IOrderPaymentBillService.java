@@ -60,9 +60,4 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
      */
     List<SheetHeadVO> findSheetHead(ViewBillForm form);
 
-    /**
-     * 预览界面的全局数据部分
-     * @return
-     */
-    ViewBillVO getViewBill(ViewBillForm form);
 }

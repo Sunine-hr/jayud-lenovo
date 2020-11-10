@@ -6,7 +6,9 @@ import lombok.Data;
 
 import java.util.List;
 
-
+/**
+ * 出对账单之前的暂存预览
+ */
 @Data
 public class ViewBillForm {
 

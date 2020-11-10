@@ -65,6 +65,9 @@ public class OrderPaymentBillDetailVO {
     @ApiModelProperty(value = "审核时间")
     private String auditTimeStr;
 
+    @ApiModelProperty(value = "审核意见")
+    private String auditComment;
+
     @ApiModelProperty(value = "核销人")
     private String heXiaoUser;
 

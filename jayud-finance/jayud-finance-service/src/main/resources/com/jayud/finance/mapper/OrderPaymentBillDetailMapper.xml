@@ -89,4 +89,165 @@
             and opbd.apply_status <![CDATA[>=]]> #{form.applyStatus}
         </if>
     </select>
+    <select id="findEditBillByPage" parameterType="com.jayud.finance.bo.QueryEditBillForm" resultType="com.jayud.finance.vo.PaymentNotPaidBillVO" >
+        SELECT
+            opc.main_order_no orderNo,
+            pb.`name` bizCodeDesc,
+            DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
+            oi.customer_name customerName,
+            (
+            SELECT
+                concat( da.city_name, da.address )
+            FROM
+                delivery_address da
+                LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id
+            WHERE
+                ota.order_no = ot.order_no
+                AND ota.opr_type = '1'
+                LIMIT 1
+            ) startAddress,
+            (
+            SELECT
+                concat( da.city_name, da.address )
+            FROM
+                delivery_address da
+                LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id
+            WHERE
+                ota.order_no = ot.order_no
+                AND ota.opr_type = '2'
+                LIMIT 1
+            ) endAddress,
+            concat( osc.license_plate, osc.hk_license_plate ) licensePlate,
+            ( SELECT GROUP_CONCAT( oc.yun_customs_no SEPARATOR ',' ) FROM order_customs oc WHERE oc.main_order_no = oi.order_no ) yunCustomsNo,
+            cg.`name` costGenreName,
+            ct.code_name costTypeName,
+            ci.`name` costName,
+            (
+            SELECT
+                sum( rmb.amount )
+            FROM
+                order_payment_cost rmb
+            WHERE
+                rmb.id = opc.id
+                AND rmb.currency_code = 'RMB'
+            GROUP BY
+                rmb.cost_code,
+                rmb.cost_genre_id,
+                rmb.cost_type_id
+            ) rmb,
+            (
+            SELECT
+                sum( rmb.amount )
+            FROM
+                order_payment_cost rmb
+            WHERE
+                rmb.id = opc.id
+                AND rmb.currency_code = 'MY'
+            GROUP BY
+                rmb.cost_code,
+                rmb.cost_genre_id,
+                rmb.cost_type_id
+            ) dollar,
+            (
+            SELECT
+                sum( rmb.amount )
+            FROM
+                order_payment_cost rmb
+            WHERE
+                rmb.id = opc.id
+                AND rmb.currency_code = 'OY'
+            GROUP BY
+                rmb.cost_code,
+                rmb.cost_genre_id,
+                rmb.cost_type_id
+            ) euro,
+            (
+            SELECT
+                sum( rmb.amount )
+            FROM
+                order_payment_cost rmb
+            WHERE
+                rmb.id = opc.id
+                AND rmb.currency_code = 'GB'
+            GROUP BY
+                rmb.cost_code,
+                rmb.cost_genre_id,
+                rmb.cost_type_id
+            ) hKDollar,
+            opc.id costId
+        FROM
+            order_payment_cost opc
+            LEFT JOIN order_info oi ON opc.main_order_no = oi.order_no
+            LEFT JOIN product_biz pb ON pb.id_code = oi.biz_code
+            LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
+            LEFT JOIN order_send_cars osc ON ot.order_no = osc.transport_no
+            LEFT JOIN cost_genre cg ON opc.cost_genre_id = cg.id
+            LEFT JOIN cost_type ct ON opc.cost_type_id = ct.id
+            LEFT JOIN cost_info ci ON opc.cost_code = ci.id_code
+        WHERE
+            opc.id IN ( SELECT opbd.cost_id FROM order_payment_bill_detail opbd WHERE opbd.bill_no = #{form.billNo} )
+    </select>
+    <select id="findSheetHead" parameterType="java.lang.String" resultType="com.jayud.finance.vo.SheetHeadVO">
+        SELECT
+        CONCAT( opc.cost_code, opc.currency_code ) NAME,
+        concat((select ci.name from cost_info ci where ci.id_code = opc.cost_code),'(',(select ci.currency_name from currency_info ci where ci.  currency_code = opc.currency_code),')') viewName,
+        sum( opc.amount )
+        FROM
+        order_payment_cost opc
+        WHERE
+        opc.id IN
+        (select opbd.cost_id from order_payment_bill_detail opbd where opbd.bill_no = #{billNo})
+        GROUP BY
+        opc.cost_code,
+        opc.currency_code
+    </select>
+    <select id="findCostClass" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewBillToCostClassVO">
+        SELECT
+            CONCAT( opc.cost_code, opc.currency_code ) NAME,
+            opc.main_order_no orderNo,
+            concat((SELECT ci.NAME FROM cost_info ci WHERE
+                    ci.id_code = opc.cost_code ),'(',(SELECT ci.currency_name FROM currency_info ci WHERE
+                    ci.currency_code = opc.currency_code ),')' ) viewName,
+            sum( opc.amount ) money
+        FROM
+            order_payment_cost opc
+        WHERE
+            opc.id IN (select opbd.cost_id from order_payment_bill_detail opbd where opbd.bill_no = #{billNo})
+        GROUP BY
+            opc.cost_code,
+            opc.currency_code,
+            opc.main_order_no
+    </select>
+    <select id="viewBillDetail" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewBilToOrderVO">
+        SELECT
+        DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
+        oi.order_no orderNo,
+        oi.customer_name customerName,
+        ( SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1') startAddress,
+        ( SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '2') endAddress,
+        (select concat(osc.license_plate,',',osc.hk_license_plate) from order_send_cars osc left join order_transport ot on osc.order_no = ot.order_no where ot.main_order_no = oi.order_no) licensePlate,
+        (select ot.vehicle_size from order_transport ot where ot.main_order_no = oi.order_no)  vehicleSize,
+        (select sum(ota.piece_amount) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1') pieceNum,
+        (select sum(ota.weight) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1') weight,
+        (select oc.yun_customs_no from order_customs oc where oc.main_order_no = oi.order_no) yunCustomsNo
+        FROM
+        order_info oi
+        where oi.order_no in
+        (select opbd.order_no from order_payment_bill_detail opbd where opbd.bill_no = #{billNo})
+    </select>
+    <select id="getViewBill" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewBillVO">
+        SELECT DISTINCT
+            opb.legal_name legalName,
+            DATE_FORMAT( opbd.begin_account_term, '%Y-%m-%d' ) beginAccountTermStr,
+            DATE_FORMAT( opbd.end_account_term, '%Y-%m-%d' ) endAccountTermStr,
+            opb.customer_name customerName,
+            opbd.bill_no billNo,
+            opbd.make_user makeUser,
+            opbd.make_time makeTimeStr
+        FROM
+            order_payment_bill opb
+            LEFT JOIN order_payment_bill_detail opbd ON opb.id = opbd.bill_id
+        WHERE
+            opbd.bill_no = #{billNo}
+    </select>
 </mapper>

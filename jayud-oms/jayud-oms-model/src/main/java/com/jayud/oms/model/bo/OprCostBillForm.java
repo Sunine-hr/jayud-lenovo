@@ -16,7 +16,7 @@ public class OprCostBillForm {
     @ApiModelProperty(value = "操作应付还是应收")
     private String oprType;
 
-    @ApiModelProperty(value = "操作指令 cmd=pre_create暂存 or create生成账单")
+    @ApiModelProperty(value = "操作指令 cmd=pre_create暂存 or create生成账单 or del删除对账单费用")
     private String cmd;
 
 }

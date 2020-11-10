@@ -32,4 +32,26 @@
         id, supplier_code, supplier_ch_name, supplier_en_name, state_code, contacts, company_name, contact_number, contact_phone, address_first, address_second, address_thirdly, pid, pname, cid, cname, zip_code, status, user_id, user_name, create_time
     </sql>
 
+    <!--查询并分页-->
+    <select id="findSupplierInfoByPage" parameterType="com.jayud.mall.model.bo.QuerySupplierInfoForm"
+            resultType="com.jayud.mall.model.vo.SupplierInfoVO" >
+        select
+        t.id,t.supplier_code,t.supplier_ch_name,t.supplier_en_name,t.state_code,t.contacts,t.company_name,t.contact_number,t.contact_phone,t.address_first,t.address_second,t.address_thirdly,t.pid,t.pname,t.cid,t.cname,t.zip_code,t.status,t.user_id,t.user_name,t.create_time
+        from supplier_info t
+        WHERE
+        1 = 1
+        <if test="form.supplierChName != null and form.supplierChName != ''">
+            AND t.supplier_ch_name LIKE CONCAT('%',#{form.supplierChName},'%')
+        </if>
+        <if test="form.supplierEnName != null and form.supplierEnName != ''">
+            AND t.supplier_en_name LIKE CONCAT('%',#{form.supplierEnName},'%')
+        </if>
+        <if test="form.status != null and form.status != '' ">
+            AND t.status = #{form.status}
+        </if>
+        GROUP BY
+        t.`id`
+    </select>
+
+
 </mapper>

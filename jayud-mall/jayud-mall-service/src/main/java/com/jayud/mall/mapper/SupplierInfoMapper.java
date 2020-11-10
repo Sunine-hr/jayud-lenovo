@@ -1,7 +1,11 @@
 package com.jayud.mall.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.mall.model.bo.QuerySupplierInfoForm;
 import com.jayud.mall.model.po.SupplierInfo;
+import com.jayud.mall.model.vo.SupplierInfoVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Component;
 
@@ -17,4 +21,11 @@ import org.springframework.stereotype.Component;
 @Component
 public interface SupplierInfoMapper extends BaseMapper<SupplierInfo> {
 
+    /**
+     * 分页查询
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<SupplierInfoVO> findSupplierInfoByPage(Page<SupplierInfoVO> page, QuerySupplierInfoForm form);
 }

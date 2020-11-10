@@ -1,8 +1,10 @@
 package com.jayud.mall.service;
 
-import com.jayud.mall.model.bo.SupplierInfoForm;
-import com.jayud.mall.model.po.SupplierInfo;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.bo.QuerySupplierInfoForm;
+import com.jayud.mall.model.po.SupplierInfo;
+import com.jayud.mall.model.vo.SupplierInfoVO;
 
 import java.util.List;
 
@@ -21,5 +23,12 @@ public interface ISupplierInfoService extends IService<SupplierInfo> {
      * @param form
      * @return
      */
-    List<SupplierInfo> findSupplierInfo(SupplierInfoForm form);
+    List<SupplierInfoVO> findSupplierInfo(QuerySupplierInfoForm form);
+
+    /**
+     * 分页查询
+     * @param form
+     * @return
+     */
+    IPage<SupplierInfoVO> findSupplierInfoByPage(QuerySupplierInfoForm form);
 }

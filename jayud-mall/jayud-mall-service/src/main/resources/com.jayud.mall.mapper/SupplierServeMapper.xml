@@ -13,11 +13,35 @@
         <result column="user_id" property="userId" />
         <result column="user__name" property="userName" />
         <result column="create_time" property="createTime" />
+        <result column="effective_date" property="effectiveDate" />
+        <result column="expiry_date" property="expiryDate" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, supplier_code, serve_code, serve_name, transport_pay, status, user_id, user__name, create_time
     </sql>
+
+    <!--查询并分页-->
+    <select id="findSupplierServeByPage" parameterType="com.jayud.mall.model.bo.QuerySupplierServeForm"
+            resultType="com.jayud.mall.model.vo.SupplierServeVO" >
+        select
+        t.id,t.supplier_code,t.serve_code,t.serve_name,t.transport_pay,t.status,t.user_id,t.user__name,t.create_time,t.effective_date,t.expiry_date
+        from supplier_serve t
+        WHERE
+        1 = 1
+        <if test="form.serveName != null and form.serveName != ''">
+            AND t.serve_name LIKE concat('%',#{form.serveName},'%')
+        </if>
+        <if test="form.transportPay != null">
+            AND t.transport_pay = #{form.transportPay}
+        </if>
+        <if test="form.supplierCode != null and form.supplierCode != ''">
+            AND t.supplier_code = #{form.supplierCode}
+        </if>
+        GROUP BY
+        t.`id`
+    </select>
+
 
 </mapper>

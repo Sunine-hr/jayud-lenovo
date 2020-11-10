@@ -1,7 +1,10 @@
 package com.jayud.mall.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.mall.model.bo.QuerySupplierServeForm;
 import com.jayud.mall.model.po.SupplierServe;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.vo.SupplierServeVO;
 
 /**
  * <p>
@@ -13,4 +16,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ISupplierServeService extends IService<SupplierServe> {
 
+    /**
+     * 分页
+     * @param form
+     * @return
+     */
+    IPage<SupplierServeVO> findSupplierServeByPage(QuerySupplierServeForm form);
 }

@@ -40,4 +40,5 @@ public interface ISupplierInfoService extends IService<SupplierInfo> {
      * @return
      */
     CommonResult saveSupplierInfo(SupplierInfoForm form);
+
 }

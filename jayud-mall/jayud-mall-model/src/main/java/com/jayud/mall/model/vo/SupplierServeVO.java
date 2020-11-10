@@ -1,34 +1,15 @@
-package com.jayud.mall.model.po;
+package com.jayud.mall.model.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
-/**
- * <p>
- * 供应商服务
- * </p>
- *
- * @author fachang.mao
- * @since 2020-11-10
- */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value="SupplierServe对象", description="供应商服务")
-public class SupplierServe extends Model<SupplierServe> {
+public class SupplierServeVO {
 
-    private static final long serialVersionUID = 1L;
-
-    @TableId(value = "id", type = IdType.AUTO)
+    @ApiModelProperty(value = "id")
     private Long id;
 
     @ApiModelProperty(value = "供应商代码")
@@ -61,9 +42,9 @@ public class SupplierServe extends Model<SupplierServe> {
     @ApiModelProperty(value = "失效日期")
     private LocalDateTime expiryDate;
 
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
+    /*供应商服务费用list*/
+    @ApiModelProperty(value = "供应商服务费用list")
+    private List<SupplierCostVO> supplierCostVOList;
+
 
 }

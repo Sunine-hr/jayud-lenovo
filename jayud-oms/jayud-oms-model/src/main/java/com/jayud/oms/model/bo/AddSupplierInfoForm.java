@@ -64,7 +64,7 @@ public class AddSupplierInfoForm {
     private String rate;
 
     @ApiModelProperty(value = "采购员id", required = true)
-    @NotNull(message = "buyerId is required")
+//    @NotNull(message = "buyerId is required")
     private Long buyerId;
 
 

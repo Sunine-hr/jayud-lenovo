@@ -2,12 +2,14 @@ package com.jayud.oms.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.oms.feign.OauthClient;
@@ -31,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -70,14 +73,31 @@ public class CustomerInfoController {
 
     @ApiOperation(value = "新增编辑客户")
     @PostMapping(value = "/saveOrUpdateCustomerInfo")
-    public CommonResult saveOrUpdateCustomerInfo(@RequestBody AddCustomerInfoForm form) {
-        CustomerInfo customerInfo = null;
-        customerInfo = ConvertUtil.convert(form, CustomerInfo.class);
+    public CommonResult saveOrUpdateCustomerInfo(@RequestBody @Valid AddCustomerInfoForm form) {
+        CustomerInfo customerInfo = ConvertUtil.convert(form, CustomerInfo.class);
+        Boolean flag = false;
         if (form.getId() != null) {
+            //校验结算代码唯一性
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("id",form.getUnitCode());
+            CustomerInfo oldCustomerInfo = customerInfoService.getOne(queryWrapper);
+            if(!oldCustomerInfo.getUnitCode().equals(form.getUnitCode())){//修改了结算代码的情况下
+                flag = true;
+            }
             customerInfo.setUpdatedUser(UserOperator.getToken());
             customerInfo.setUpdatedTime(DateUtils.getNowTime());
         } else {
+            flag = true;
             customerInfo.setCreatedUser(UserOperator.getToken());
+        }
+        if(flag){
+            //校验结算代码唯一性
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("unit_code",form.getUnitCode());
+            CustomerInfo oldCustomerInfo = customerInfoService.getOne(queryWrapper);
+            if(oldCustomerInfo != null){
+                return CommonResult.error(ResultEnum.UNIT_CODE_EXIST.getCode(),ResultEnum.UNIT_CODE_EXIST.getMessage());
+            }
         }
         customerInfo.setAuditStatus(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode());
         customerInfoService.saveOrUpdate(customerInfo);

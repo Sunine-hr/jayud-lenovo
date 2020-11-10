@@ -83,7 +83,9 @@ public class SystemUserController {
 
         //登录逻辑
         SystemUserVO userVO = userService.login(token);
-
+        if(userVO.getIsError() != null && userVO.getIsError()){
+            return CommonResult.error(ResultEnum.LOGIN_FAIL);
+        }
         return CommonResult.success(userVO);
     }
 

@@ -5,6 +5,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.tms.model.bo.AuditInfoForm;
 import com.jayud.tms.model.bo.HandleSubProcessForm;
 import com.jayud.tms.model.bo.OprStatusForm;
+import com.jayud.tms.model.vo.DriverInfoLinkVO;
 import com.jayud.tms.model.vo.InitComboxVO;
 import com.jayud.tms.model.vo.OrderStatusVO;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -63,5 +64,22 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/handleSubProcess")
     ApiResult<List<OrderStatusVO>> handleSubProcess(@RequestBody HandleSubProcessForm form);
+
+
+    /**
+     * 初始化司机下拉框
+     * @return
+     */
+    @RequestMapping(value = "/api/initDriver")
+    ApiResult<List<InitComboxVO>> initDriver();
+
+
+    /**
+     * 司机下拉框联动车辆供应商，大陆车牌，香港车牌，司机电话
+     * @return
+     */
+    @RequestMapping(value = "/api/initDriverInfo")
+    ApiResult<DriverInfoLinkVO> initDriverInfo(@RequestParam("driverId") Long driverId);
+
 
 }

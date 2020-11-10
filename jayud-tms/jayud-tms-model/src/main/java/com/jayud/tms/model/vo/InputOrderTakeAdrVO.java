@@ -9,6 +9,9 @@ import lombok.Data;
 @Data
 public class InputOrderTakeAdrVO {
 
+    @ApiModelProperty(value = "地址信息(delivery_address id)")
+    private Long deliveryId;
+
     @ApiModelProperty(value = "联系人")
     private String contacts;
 

@@ -91,6 +91,9 @@ public class VehicleInfo extends Model<VehicleInfo> {
     @ApiModelProperty(value = "车辆吨位")
     private String vehicleTonnage;
 
+    @ApiModelProperty(value = "附件名称，多个用逗号隔开")
+    private String fileName;
+
 
     @Override
     protected Serializable pkVal() {

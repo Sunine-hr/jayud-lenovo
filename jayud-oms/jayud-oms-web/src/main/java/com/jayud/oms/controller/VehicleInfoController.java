@@ -85,7 +85,9 @@ public class VehicleInfoController {
 
         VehicleInfo vehicleInfo = ConvertUtil.convert(form, VehicleInfo.class);
         //拼接附件地址
-        vehicleInfo.setFiles(com.jayud.common.utils.StringUtils.getFileStr(form.getFileViews()));
+        vehicleInfo.setFiles(com.jayud.common.utils.StringUtils.getFileStr(form.getFileViews()))
+                .setFileName(com.jayud.common.utils.StringUtils.getFileNameStr(form.getFileViews()));
+
         if (this.vehicleInfoService.saveOrUpdateVehicleInfo(vehicleInfo)) {
             return CommonResult.success();
         } else {

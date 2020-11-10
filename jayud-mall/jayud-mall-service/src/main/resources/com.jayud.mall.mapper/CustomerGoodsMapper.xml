@@ -37,4 +37,35 @@
         id, customer_id, sku, name_cn, name_en, image_url, barcode, weight, length, width, height, is_sensitive, declared_value, declared_currency, material_quality, purpose, declare_elements, hs_code, data_code, clearance_code, sales_link, sales_price, description, status, status_name, remark
     </sql>
 
+    <!--查询并分页-->
+    <select id="findCustomerGoodsByPage" parameterType="com.jayud.mall.model.bo.QueryCustomerGoodsForm"
+            resultType="com.jayud.mall.model.vo.CustomerGoodsVO" >
+        select
+        t.id,t.customer_id,t.sku,t.name_cn,t.name_en,t.image_url,t.barcode,t.weight,t.length,t.width,t.height,t.is_sensitive,t.declared_value,
+        t.declared_currency,t.material_quality,t.purpose,t.declare_elements,t.hs_code,t.data_code,t.clearance_code,t.sales_link,t.sales_price,
+        t.description,t.`status`,t.status_name,t.remark,
+        t1.name_cn customerName
+        from customer_goods t
+        left join customer t1 on t1.id = t.customer_id
+        WHERE
+        1 = 1
+        <if test="form.sku != null and form.sku != ''">
+            AND t.sku LIKE CONCAT('%',#{form.sku},'%')
+        </if>
+        <if test="form.nameCn != null and form.nameCn != ''">
+            AND t.name_cn LIKE CONCAT('%',#{form.nameCn},'%')
+        </if>
+        <if test="form.customerId != null">
+            AND t.customer_id = #{form.customerId}
+        </if>
+        <if test="form.dataCode != null and form.dataCode != ''">
+            AND t.data_code LIKE CONCAT('%',#{form.dataCode},'%')
+        </if>
+        <if test="form.clearanceCode != null and form.clearanceCode != ''">
+            AND t.clearance_code LIKE CONCAT('%',#{form.clearanceCode},'%')
+        </if>
+        GROUP BY
+        t.`id`
+    </select>
+
 </mapper>

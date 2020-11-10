@@ -11,7 +11,7 @@
         <result column="transport_pay" property="transportPay" />
         <result column="status" property="status" />
         <result column="user_id" property="userId" />
-        <result column="user__name" property="userName" />
+        <result column="user_name" property="userName" />
         <result column="create_time" property="createTime" />
         <result column="effective_date" property="effectiveDate" />
         <result column="expiry_date" property="expiryDate" />

@@ -3,7 +3,10 @@ package com.jayud.mall.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.CommonResult;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.CustomerGoodsMapper;
+import com.jayud.mall.model.bo.CustomerGoodsForm;
 import com.jayud.mall.model.bo.QueryCustomerGoodsForm;
 import com.jayud.mall.model.po.CustomerGoods;
 import com.jayud.mall.model.vo.CustomerGoodsVO;
@@ -33,5 +36,12 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
         //page.addOrder(OrderItem.desc("oc.id"));
         IPage<CustomerGoodsVO> pageInfo = customerGoodsMapper.findCustomerGoodsByPage(page, form);
         return pageInfo;
+    }
+
+    @Override
+    public CommonResult auditCustomerGoods(CustomerGoodsForm form) {
+        CustomerGoods customerGoods = ConvertUtil.convert(form, CustomerGoods.class);
+        this.saveOrUpdate(customerGoods);
+        return CommonResult.success("审核成功!");
     }
 }

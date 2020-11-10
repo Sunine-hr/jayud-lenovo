@@ -3,6 +3,7 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.CustomerGoodsForm;
 import com.jayud.mall.model.bo.QueryCustomerGoodsForm;
 import com.jayud.mall.model.vo.CustomerGoodsVO;
 import com.jayud.mall.service.ICustomerGoodsService;
@@ -29,6 +30,14 @@ public class CustomerGoodsController {
         CommonPageResult<CustomerGoodsVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
     }
+
+    @ApiOperation(value = "审核客户商品")
+    @PostMapping("/auditCustomerGoods")
+    public CommonResult auditCustomerGoods(@RequestBody CustomerGoodsForm form) {
+        return customerGoodsService.auditCustomerGoods(form);
+    }
+
+
 
 
 }

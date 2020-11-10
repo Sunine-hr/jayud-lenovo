@@ -1,6 +1,8 @@
 package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.CustomerGoodsForm;
 import com.jayud.mall.model.bo.QueryCustomerGoodsForm;
 import com.jayud.mall.model.po.CustomerGoods;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -22,4 +24,11 @@ public interface ICustomerGoodsService extends IService<CustomerGoods> {
      * @return
      */
     IPage<CustomerGoodsVO> findCustomerGoodsByPage(QueryCustomerGoodsForm form);
+
+    /**
+     *
+     * @param form
+     * @return
+     */
+    CommonResult auditCustomerGoods(CustomerGoodsForm form);
 }

@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 /**
@@ -32,7 +33,6 @@ public class AddCustomerInfoForm {
     private String unitCode;
 
     @ApiModelProperty(value = "客户类型(1同行 2电商 3货代)",required = true)
-    @Pattern(regexp = "1|2|3",message = "types requires '1' or '2' or '3' only")
     private Integer types;
 
     @ApiModelProperty(value = "联系人",required = true)
@@ -85,8 +85,7 @@ public class AddCustomerInfoForm {
     @NotEmpty(message = "departmentId is required")
     private String departmentId;
 
-    @ApiModelProperty(value = "接单部门",required = true)
-    @NotEmpty(message = "departmentName is required")
+    @ApiModelProperty(value = "接单部门")
     private String departmentName;
 
     @ApiModelProperty(value = "接单客服ID")
@@ -96,11 +95,10 @@ public class AddCustomerInfoForm {
     private String kuName;
 
     @ApiModelProperty(value = "业务员ID",required = true)
-    @NotEmpty(message = "ywId is required")
+    @NotNull(message = "ywId is required")
     private Long ywId;
 
-    @ApiModelProperty(value = "业务员",required = true)
-    @NotEmpty(message = "ywName is required")
+    @ApiModelProperty(value = "业务员")
     private String ywName;
 
 }

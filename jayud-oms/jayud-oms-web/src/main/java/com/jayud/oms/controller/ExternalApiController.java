@@ -186,7 +186,7 @@ public class ExternalApiController {
     @RequestMapping(value = "/api/delSpecOprStatus")
     ApiResult delSpecOprStatus(@RequestBody DelOprStatusForm form){
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(SqlConstant.ORDER_NO,form.getOrderId());
+        queryWrapper.eq(SqlConstant.ORDER_ID,form.getOrderId());
         queryWrapper.in(SqlConstant.STATUS,form.getStatus());
         logisticsTrackService.remove(queryWrapper);
         return ApiResult.ok();

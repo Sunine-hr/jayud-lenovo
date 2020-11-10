@@ -4,11 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.SupplierInfoMapper;
 import com.jayud.mall.model.bo.QuerySupplierInfoForm;
+import com.jayud.mall.model.bo.SupplierInfoForm;
 import com.jayud.mall.model.po.SupplierInfo;
-import com.jayud.mall.model.vo.CustomerGoodsVO;
 import com.jayud.mall.model.vo.SupplierInfoVO;
 import com.jayud.mall.service.ISupplierInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,5 +56,12 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         //page.addOrder(OrderItem.desc("oc.id"));
         IPage<SupplierInfoVO> pageInfo = supplierInfoMapper.findSupplierInfoByPage(page, form);
         return pageInfo;
+    }
+
+    @Override
+    public CommonResult saveSupplierInfo(SupplierInfoForm form) {
+        SupplierInfo supplierInfo = ConvertUtil.convert(form, SupplierInfo.class);
+        this.saveOrUpdate(supplierInfo);
+        return CommonResult.success("保存供应商，成功！");
     }
 }

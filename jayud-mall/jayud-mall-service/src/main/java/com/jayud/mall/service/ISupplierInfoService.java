@@ -2,7 +2,9 @@ package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.QuerySupplierInfoForm;
+import com.jayud.mall.model.bo.SupplierInfoForm;
 import com.jayud.mall.model.po.SupplierInfo;
 import com.jayud.mall.model.vo.SupplierInfoVO;
 
@@ -31,4 +33,11 @@ public interface ISupplierInfoService extends IService<SupplierInfo> {
      * @return
      */
     IPage<SupplierInfoVO> findSupplierInfoByPage(QuerySupplierInfoForm form);
+
+    /**
+     * 保存供应商信息
+     * @param form
+     * @return
+     */
+    CommonResult saveSupplierInfo(SupplierInfoForm form);
 }

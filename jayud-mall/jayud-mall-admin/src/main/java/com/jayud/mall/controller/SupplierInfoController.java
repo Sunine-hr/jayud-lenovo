@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.QuerySupplierInfoForm;
+import com.jayud.mall.model.bo.SupplierInfoForm;
 import com.jayud.mall.model.vo.SupplierInfoVO;
 import com.jayud.mall.service.ISupplierInfoService;
 import io.swagger.annotations.Api;
@@ -37,6 +38,12 @@ public class SupplierInfoController {
         IPage<SupplierInfoVO> pageList = supplierInfoService.findSupplierInfoByPage(form);
         CommonPageResult<SupplierInfoVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
+    }
+
+    @ApiOperation(value = "保存查询供应商信息")
+    @PostMapping("/saveSupplierInfo")
+    public CommonResult saveSupplierInfo(@RequestBody SupplierInfoForm form) {
+        return supplierInfoService.saveSupplierInfo(form);
     }
 
 

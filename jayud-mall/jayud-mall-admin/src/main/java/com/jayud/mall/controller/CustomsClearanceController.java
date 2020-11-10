@@ -3,6 +3,7 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.CustomsClearanceForm;
 import com.jayud.mall.model.bo.QueryCustomsClearanceForm;
 import com.jayud.mall.model.vo.CustomsClearanceVO;
 import com.jayud.mall.service.ICustomsClearanceService;
@@ -30,5 +31,10 @@ public class CustomsClearanceController {
         return CommonResult.success(pageVO);
     }
 
+    @ApiOperation(value = "保存清关资料")
+    @PostMapping("/saveCustomsClearance")
+    public CommonResult saveCustomsClearance(@RequestBody CustomsClearanceForm form){
+        return customsClearanceService.saveCustomsData(form);
+    }
 
 }

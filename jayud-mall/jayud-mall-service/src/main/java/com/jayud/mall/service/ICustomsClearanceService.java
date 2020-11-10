@@ -2,6 +2,8 @@ package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.CustomsClearanceForm;
 import com.jayud.mall.model.bo.QueryCustomsClearanceForm;
 import com.jayud.mall.model.po.CustomsClearance;
 import com.jayud.mall.model.vo.CustomsClearanceVO;
@@ -22,4 +24,11 @@ public interface ICustomsClearanceService extends IService<CustomsClearance> {
      * @return
      */
     IPage<CustomsClearanceVO> findCustomsClearanceByPage(QueryCustomsClearanceForm form);
+
+    /**
+     * 保存清关资料
+     * @param form
+     * @return
+     */
+    CommonResult saveCustomsData(CustomsClearanceForm form);
 }

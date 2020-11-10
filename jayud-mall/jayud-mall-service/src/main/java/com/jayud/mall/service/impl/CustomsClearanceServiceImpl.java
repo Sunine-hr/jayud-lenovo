@@ -3,7 +3,10 @@ package com.jayud.mall.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.CommonResult;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.CustomsClearanceMapper;
+import com.jayud.mall.model.bo.CustomsClearanceForm;
 import com.jayud.mall.model.bo.QueryCustomsClearanceForm;
 import com.jayud.mall.model.po.CustomsClearance;
 import com.jayud.mall.model.vo.CustomsClearanceVO;
@@ -33,5 +36,12 @@ public class CustomsClearanceServiceImpl extends ServiceImpl<CustomsClearanceMap
         //page.addOrder(OrderItem.desc("oc.id"));
         IPage<CustomsClearanceVO> pageInfo = customsClearanceMapper.findCustomsClearanceByPage(page, form);
         return pageInfo;
+    }
+
+    @Override
+    public CommonResult saveCustomsData(CustomsClearanceForm form) {
+        CustomsClearance customsClearance = ConvertUtil.convert(form, CustomsClearance.class);
+        this.saveOrUpdate(customsClearance);
+        return CommonResult.success("保存清关，成功！");
     }
 }

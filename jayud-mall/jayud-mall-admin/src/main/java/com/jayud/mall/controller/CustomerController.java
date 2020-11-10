@@ -3,6 +3,7 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.CustomerForm;
 import com.jayud.mall.model.bo.QueryCustomerForm;
 import com.jayud.mall.model.vo.CustomerVO;
 import com.jayud.mall.service.ICustomerService;
@@ -28,6 +29,12 @@ public class CustomerController {
         IPage<CustomerVO> pageList = customerService.findCustomerByPage(form);
         CommonPageResult<CustomerVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
+    }
+
+    @ApiOperation(value = "保存客户")
+    @PostMapping("/saveCustomer")
+    public CommonResult saveCustomer(@RequestBody CustomerForm form){
+        return customerService.saveCustomer(form);
     }
 
 }

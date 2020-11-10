@@ -9,6 +9,7 @@
         <result column="name_cn" property="nameCn" />
         <result column="passwd" property="passwd" />
         <result column="phone" property="phone" />
+        <result column="contact_number" property="contactNumber" />
         <result column="status" property="status" />
         <result column="level" property="level" />
         <result column="origin" property="origin" />

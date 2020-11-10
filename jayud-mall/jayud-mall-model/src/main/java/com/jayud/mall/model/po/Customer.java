@@ -45,6 +45,9 @@ public class Customer extends Model<Customer> {
     @ApiModelProperty(value = "手机号")
     private String phone;
 
+    @ApiModelProperty(value = "联系电话")
+    private String contactNumber;
+
     @ApiModelProperty(value = "启用状态，默认为1，1是0否")
     @TableField(value = "`status`")
     private Integer status;
@@ -89,17 +92,17 @@ public class Customer extends Model<Customer> {
     @ApiModelProperty(value = "联系地址")
     private String address;
 
-    @ApiModelProperty(value = "结算方式")
+    @ApiModelProperty(value = "结算方式(1票结 2月结)")
     private Integer clearingWay;
 
     @ApiModelProperty(value = "结算日期")
-    private LocalDateTime clearingDate;
+    private String clearingDate;
 
     @ApiModelProperty(value = "锁单日期")
-    private LocalDateTime lockDate;
+    private String lockDate;
 
     @ApiModelProperty(value = "实际锁单日期")
-    private  LocalDateTime realDate;
+    private  String realDate;
 
     @Override
     protected Serializable pkVal() {

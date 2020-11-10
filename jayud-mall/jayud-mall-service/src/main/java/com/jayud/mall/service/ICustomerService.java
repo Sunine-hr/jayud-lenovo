@@ -2,6 +2,8 @@ package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.CustomerForm;
 import com.jayud.mall.model.bo.QueryCustomerForm;
 import com.jayud.mall.model.po.Customer;
 import com.jayud.mall.model.vo.CustomerVO;
@@ -22,4 +24,11 @@ public interface ICustomerService extends IService<Customer> {
      * @return
      */
     IPage<CustomerVO> findCustomerByPage(QueryCustomerForm form);
+
+    /**
+     * 保存
+     * @param form
+     * @return
+     */
+    CommonResult saveCustomer(CustomerForm form);
 }

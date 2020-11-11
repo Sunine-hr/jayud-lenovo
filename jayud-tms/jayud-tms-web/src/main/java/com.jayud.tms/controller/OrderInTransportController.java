@@ -115,15 +115,10 @@ public class OrderInTransportController {
             auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_6.getDesc());
         }else if(CommonConstant.HK_CLEAR_CUSTOMS.equals(form.getCmd())) {//香港清关
             //参数校验
-            if(form.getHkSupplierId() == null || StringUtil.isNullOrEmpty(form.getHkDriverName()) ||
-               StringUtil.isNullOrEmpty(form.getHkDriverPhone()) || StringUtil.isNullOrEmpty(form.getLicensePlate()) ||
-               StringUtil.isNullOrEmpty(form.getHkLicensePlate()) || StringUtil.isNullOrEmpty(form.getSeamlessNo()) ||
+            if(form.getDriverInfoId() == null || StringUtil.isNullOrEmpty(form.getSeamlessNo()) ||
                StringUtil.isNullOrEmpty(form.getClearCustomsNo())){
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
             }
-            orderTransport.setHkSupplierId(form.getHkSupplierId());
-            orderTransport.setLicensePlate(form.getLicensePlate());
-            orderTransport.setHkLicensePlate(form.getHkLicensePlate());
             orderTransport.setSeamlessNo(form.getSeamlessNo());
             orderTransport.setClearCustomsNo(form.getClearCustomsNo());//清关完成标识,有数据表示清关完成
 

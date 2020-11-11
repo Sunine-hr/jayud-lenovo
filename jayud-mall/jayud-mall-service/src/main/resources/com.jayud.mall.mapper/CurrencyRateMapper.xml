@@ -19,6 +19,7 @@
         id, dcid, ocid, exchange_rate, status, user_id, user_name, create_time
     </sql>
 
+    <!--查询币种汇率-->
     <select id="findCurrencyRate" parameterType="com.jayud.mall.model.bo.QueryCurrencyRateForm"
             resultType="com.jayud.mall.model.vo.CurrencyRateVO" >
         select

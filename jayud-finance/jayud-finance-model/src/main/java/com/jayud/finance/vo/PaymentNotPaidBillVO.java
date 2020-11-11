@@ -56,6 +56,12 @@ public class PaymentNotPaidBillVO {
     @ApiModelProperty(value = "港币")
     private BigDecimal hKDollar;
 
+    @ApiModelProperty(value = "税率")
+    private BigDecimal taxRate;
+
+    @ApiModelProperty(value = "费用备注")
+    private String remarks;
+
     @ApiModelProperty(value = "费用类型/类别/名称维度的本币金额,不显示")
     private BigDecimal localAmount;
 

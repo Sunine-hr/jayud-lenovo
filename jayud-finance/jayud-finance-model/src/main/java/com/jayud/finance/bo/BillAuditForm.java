@@ -22,7 +22,7 @@ public class BillAuditForm {
     @NotNull(message = "billDetailId is required")
     private Long billDetailId;
 
-    @ApiModelProperty(value = "对账单编号")
+    @ApiModelProperty(value = "审核意见")
     private String auditComment;
 
     @ApiModelProperty(value = "审核状态",required = true)

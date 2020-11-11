@@ -1,0 +1,40 @@
+package com.jayud.finance.vo;
+
+import com.jayud.common.utils.FileView;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+/**
+ * 开票核销列表
+ */
+@Data
+public class MakeInvoiceVO  {
+
+
+    @ApiModelProperty(value = "票号")
+    private String invoiceNo;
+
+    @ApiModelProperty(value = "开票时间")
+    private LocalDateTime makeTime;
+
+    @ApiModelProperty(value = "发票类型")
+    private String invoiceType;
+
+    @ApiModelProperty(value = "金额")
+    private BigDecimal money;
+
+    @ApiModelProperty(value = "附件")
+    private String fileUrl;
+
+    @ApiModelProperty(value = "附件名称")
+    private String fileName;
+
+    @ApiModelProperty(value = "附件集合")
+    private List<FileView> fileViewList;
+
+
+}

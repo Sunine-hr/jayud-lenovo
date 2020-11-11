@@ -84,6 +84,12 @@ public class OrderPaymentBillDetailForm {
     @NotNull(message = "localAmount is required")
     private BigDecimal localAmount;
 
+    @ApiModelProperty(value = "税率")
+    private BigDecimal taxRate;
+
+    @ApiModelProperty(value = "费用备注")
+    private String remarks;
+
     @ApiModelProperty(value = "应付费用ID",required = true)
     @NotNull(message = "costId is required")
     private Long costId;

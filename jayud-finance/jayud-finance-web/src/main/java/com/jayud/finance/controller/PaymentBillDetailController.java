@@ -38,7 +38,7 @@ public class PaymentBillDetailController {
     @Autowired
     IOrderPaymentBillDetailService billDetailService;
 
-    @ApiOperation(value = "应付对账单列表,应付对账单审核")
+    @ApiOperation(value = "应付对账单列表,应付对账单审核列表,财务应付对账单列表")
     @PostMapping("/findPaymentBillDetailByPage")
     public CommonResult<CommonPageResult<OrderPaymentBillDetailVO>> findPaymentBillDetailByPage(@RequestBody @Valid QueryPaymentBillDetailForm form) {
         IPage<OrderPaymentBillDetailVO> pageList = billDetailService.findPaymentBillDetailByPage(form);
@@ -120,7 +120,7 @@ public class PaymentBillDetailController {
     }
 
 
-    @ApiOperation(value = "到出对账单详情")//出对账单后的
+    @ApiOperation(value = "导出对账单详情")//出对账单后的
     @RequestMapping(value = "/exportBillDetail", method = RequestMethod.GET)
     @ResponseBody
     public void exportBillDetail(@RequestParam(value = "billNo",required=true) String billNo,
@@ -171,7 +171,7 @@ public class PaymentBillDetailController {
      * @param form
      * @return
      */
-    @ApiOperation(value = "应付对账单审核")
+    @ApiOperation(value = "应付对账单审核,财务对账单审核")
     @PostMapping("/billAudit")
     public CommonResult billAudit(@RequestBody BillAuditForm form) {
         Boolean result = billDetailService.billAudit(form);
@@ -228,6 +228,14 @@ public class PaymentBillDetailController {
         IoUtil.close(out);
     }
 
+    /**
+     * 1.客服主管-应收反审核 kf_s_reject
+     * 2.客服主管-应付反审核 kf_f_reject
+     * 3.财务-应收反审核 cw_s_reject
+     * 4.财务-应付反审核 cw_f_reject
+     * @param form
+     * @return
+     */
     @ApiOperation(value = "反审核,ids=账单详情billDetailId集合")
     @PostMapping("/contraryAudit")
     public CommonResult contraryAudit(@RequestBody ListForm form) {

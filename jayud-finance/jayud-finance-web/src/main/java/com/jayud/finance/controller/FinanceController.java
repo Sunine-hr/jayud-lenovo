@@ -1,14 +1,194 @@
 package com.jayud.finance.controller;
 
+import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.poi.excel.ExcelUtil;
+import cn.hutool.poi.excel.ExcelWriter;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.CommonPageResult;
+import com.jayud.common.CommonResult;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.finance.bo.HeXiaoConfirmForm;
+import com.jayud.finance.bo.QueryEditBillForm;
+import com.jayud.finance.bo.QueryFinanceAccountForm;
+import com.jayud.finance.service.IOrderPaymentBillDetailService;
+import com.jayud.finance.util.StringUtils;
+import com.jayud.finance.vo.*;
 import io.swagger.annotations.Api;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Map;
 
 
 @RestController
 @RequestMapping("/finance/")
 @Api(tags = "财务管理模块")
 public class FinanceController {
+
+    @Autowired
+    IOrderPaymentBillDetailService billDetailService;
+
+    /**财务核算*/
+    @ApiOperation(value = "财务核算列表")
+    @PostMapping("/findFinanceAccountByPage")
+    public CommonResult<CommonPageResult<FinanceAccountVO>> findFinanceAccountByPage(@RequestBody @Valid QueryFinanceAccountForm form) {
+        IPage<FinanceAccountVO> pageList = billDetailService.findFinanceAccountByPage(form);
+        CommonPageResult<FinanceAccountVO> pageVO = new CommonPageResult(pageList);
+        return CommonResult.success(pageVO);
+    }
+    /**对账单管理*/
+    //导出应付对账单列表
+    @ApiOperation(value = "导出应付对账单列表")
+    @RequestMapping(value = "/exportBillList", method = RequestMethod.GET)
+    @ResponseBody
+    public void exportBillAuditList(@RequestParam(value = "billNo",required=true) String billNo,
+                                    HttpServletResponse response) throws IOException {
+        List<ViewBilToOrderVO> list = billDetailService.viewBillDetail(billNo);
+        ExcelWriter writer = ExcelUtil.getWriter(true);
+
+        //自定义标题别名
+        writer.addHeaderAlias("createdTimeStr", "建单日期");
+        writer.addHeaderAlias("orderNo", "订单编号");
+        writer.addHeaderAlias("customerName", "客户");
+        writer.addHeaderAlias("startAddress", "启运地");
+        writer.addHeaderAlias("endAddress", "目的地");
+        writer.addHeaderAlias("licensePlate", "车牌号");
+        writer.addHeaderAlias("vehicleSize", "车型");
+        writer.addHeaderAlias("pieceNum", "件数");
+        writer.addHeaderAlias("weight", "毛重(KGS)");
+        writer.addHeaderAlias("yunCustomsNo", "报关单号");
+        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSheetHead(billNo);
+        for (SheetHeadVO sheetHeadVO : sheetHeadVOS) {
+            writer.addHeaderAlias(sheetHeadVO.getName(), sheetHeadVO.getViewName());
+        }
+
+
+        Field[] s = ViewBilToOrderVO.class.getDeclaredFields();
+        int lastColumn = s.length-1;
+
+        // 合并单元格后的标题行，使用默认标题样式
+        writer.merge(lastColumn, "B类表:存在`敏感品名`的货物表");
+
+        // 一次性写出内容，使用默认样式，强制输出标题
+        writer.write(list, true);
+
+        //out为OutputStream，需要写出到的目标流
+
+        ServletOutputStream out=response.getOutputStream();
+        String name = StringUtils.toUtf8String("应收对账单列表");
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
+        response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
+
+        writer.flush(out);
+        writer.close();
+        IoUtil.close(out);
+    }
+    //推金碟 TODO
+
+
+    @ApiOperation(value = "应付对账单审核列表,对账单明细")
+    @PostMapping("/findFBillAuditByPage")
+    public CommonResult<CommonPageResult<PaymentNotPaidBillVO>> findFBillAuditByPage(@RequestBody @Valid QueryEditBillForm form) {
+        IPage<PaymentNotPaidBillVO> pageList = billDetailService.findFBillAuditByPage(form);
+        CommonPageResult<PaymentNotPaidBillVO> pageVO = new CommonPageResult(pageList);
+        return CommonResult.success(pageVO);
+    }
+
+    @ApiOperation(value = "导出应付对账单详情列表")
+    @RequestMapping(value = "/exportBillDetailList", method = RequestMethod.GET)
+    @ResponseBody
+    public void exportBillDetailList(@RequestParam(value = "billNo",required=true) String billNo,
+                                    HttpServletResponse response) throws IOException {
+        List<ViewBilToOrderVO> list = billDetailService.viewBillDetail(billNo);
+        ExcelWriter writer = ExcelUtil.getWriter(true);
+
+        //自定义标题别名
+        writer.addHeaderAlias("createdTimeStr", "建单日期");
+        writer.addHeaderAlias("orderNo", "订单编号");
+        writer.addHeaderAlias("customerName", "客户");
+        writer.addHeaderAlias("startAddress", "启运地");
+        writer.addHeaderAlias("endAddress", "目的地");
+        writer.addHeaderAlias("licensePlate", "车牌号");
+        writer.addHeaderAlias("vehicleSize", "车型");
+        writer.addHeaderAlias("pieceNum", "件数");
+        writer.addHeaderAlias("weight", "毛重(KGS)");
+        writer.addHeaderAlias("yunCustomsNo", "报关单号");
+        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSheetHead(billNo);
+        for (SheetHeadVO sheetHeadVO : sheetHeadVOS) {
+            writer.addHeaderAlias(sheetHeadVO.getName(), sheetHeadVO.getViewName());
+        }
+
+
+        Field[] s = ViewBilToOrderVO.class.getDeclaredFields();
+        int lastColumn = s.length-1;
+
+        // 合并单元格后的标题行，使用默认标题样式
+        writer.merge(lastColumn, "B类表:存在`敏感品名`的货物表");
+
+        // 一次性写出内容，使用默认样式，强制输出标题
+        writer.write(list, true);
+
+        //out为OutputStream，需要写出到的目标流
+
+        ServletOutputStream out=response.getOutputStream();
+        String name = StringUtils.toUtf8String("应收对账单列表");
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
+        response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
+
+        writer.flush(out);
+        writer.close();
+        IoUtil.close(out);
+    }
+
+    @ApiOperation(value = "核销确认显示列表")
+    @PostMapping("/heXiaoList")
+    public CommonResult<List<HeXiaoListVO>> heXiaoList(@RequestBody Map<String,Object> param) {
+        String billNo = MapUtil.getStr(param,"bill_no");
+        List<HeXiaoListVO> heXiaoList = billDetailService.heXiaoList(billNo);
+        return CommonResult.success(heXiaoList);
+    }
+
+    @ApiOperation(value = "核销确认")
+    @PostMapping("/heXiaoConfirm")
+    public CommonResult heXiaoConfirm(@RequestBody @Valid List<HeXiaoConfirmForm> form) {
+        Boolean result = billDetailService.heXiaoConfirm(form);
+        if(!result){
+            return CommonResult.error(ResultEnum.OPR_FAIL);
+        }
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "开票审核列表查询")
+    @PostMapping("/findFCostList")
+    public CommonResult<List<FCostVO>> findFCostList(@RequestBody Map<String,Object> param) {
+        String billNo = MapUtil.getStr(param,"bill_no");
+        List<FCostVO> fCostVOS = billDetailService.findFCostList(billNo);
+        return CommonResult.success(fCostVOS);
+    }
+    //开票审核
+
+    //开票审核列表
+
+    //开票核销
+
+    //开票作废
+
+    /**汇率管理*/
+    //汇率管理列表
+
+    //新增编辑
+
+    //删除
+
+
 
 
 

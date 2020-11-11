@@ -92,4 +92,41 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      * @return
      */
     Boolean contraryAudit(ListForm form);
+
+
+    /*****************************************************财务核算模块****************************************************/
+    /**
+     * 财务核算分页查询
+     * @param form
+     * @return
+     */
+    IPage<FinanceAccountVO> findFinanceAccountByPage(QueryFinanceAccountForm form);
+
+    /**
+     * 应付对账单分页查询
+     * @param form
+     * @return
+     */
+    IPage<PaymentNotPaidBillVO> findFBillAuditByPage(QueryEditBillForm form);
+
+    /**
+     * 核销列表
+     * @param billNo
+     * @return
+     */
+    List<HeXiaoListVO> heXiaoList(String billNo);
+
+    /**
+     * 核销确认
+     * @param form
+     * @return
+     */
+    Boolean heXiaoConfirm(List<HeXiaoConfirmForm> form);
+
+    /**
+     * 开票审核列表
+     * @param billNo
+     * @return
+     */
+    List<FCostVO> findFCostList(String billNo);
 }

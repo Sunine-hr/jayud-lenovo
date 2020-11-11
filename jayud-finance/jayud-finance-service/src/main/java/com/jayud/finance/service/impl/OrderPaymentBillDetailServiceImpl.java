@@ -6,11 +6,14 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.UserOperator;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.mapper.OrderPaymentBillDetailMapper;
+import com.jayud.finance.po.CancelAfterVerification;
 import com.jayud.finance.po.OrderPaymentBillDetail;
+import com.jayud.finance.service.ICancelAfterVerificationService;
 import com.jayud.finance.service.IOrderBillCostTotalService;
 import com.jayud.finance.service.IOrderPaymentBillDetailService;
 import com.jayud.finance.service.IOrderPaymentBillService;
@@ -41,6 +44,9 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
 
     @Autowired
     IOrderPaymentBillService orderPaymentBillService;
+
+    @Autowired
+    ICancelAfterVerificationService verificationService;
 
     @Override
     public IPage<OrderPaymentBillDetailVO> findPaymentBillDetailByPage(QueryPaymentBillDetailForm form) {
@@ -181,17 +187,83 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         return true;
     }
 
+    /**
+     * //1.客服主管-应收反审核 kf_s_reject
+     * 2.客服主管-应付反审核 kf_f_reject
+     * //3.财务-应收反审核 cw_s_reject
+     * 4.财务-应付反审核 cw_f_reject
+     *   ①未申请开票或付款的或作废的才可进行反审核
+     */
     @Override
     public Boolean contraryAudit(ListForm form) {
         List<OrderPaymentBillDetail> list = new ArrayList<>();
-        for (Long id : form.getIds()) {
-            OrderPaymentBillDetail orderPaymentBillDetail = new OrderPaymentBillDetail();
-            orderPaymentBillDetail.setId(id);
-            orderPaymentBillDetail.setAuditStatus(BillEnum.B_7.getCode());
-            orderPaymentBillDetail.setUpdatedTime(LocalDateTime.now());
-            orderPaymentBillDetail.setUpdatedUser(UserOperator.getToken());
-            list.add(orderPaymentBillDetail);
+        if("kf_f_reject".equals(form.getCmd())){
+            for (Long id : form.getIds()) {
+                OrderPaymentBillDetail orderPaymentBillDetail = new OrderPaymentBillDetail();
+                orderPaymentBillDetail.setId(id);
+                orderPaymentBillDetail.setAuditStatus(BillEnum.B_7.getCode());
+                orderPaymentBillDetail.setUpdatedTime(LocalDateTime.now());
+                orderPaymentBillDetail.setUpdatedUser(UserOperator.getToken());
+                list.add(orderPaymentBillDetail);
+            }
+        }else if("cw_f_reject".equals(form.getCmd())){
+            for (Long id : form.getIds()) {
+                OrderPaymentBillDetail orderPaymentBillDetail = new OrderPaymentBillDetail();
+                orderPaymentBillDetail.setId(id);
+                orderPaymentBillDetail.setAuditStatus(BillEnum.B_8.getCode());
+                orderPaymentBillDetail.setUpdatedTime(LocalDateTime.now());
+                orderPaymentBillDetail.setUpdatedUser(UserOperator.getToken());
+                list.add(orderPaymentBillDetail);
+            }
         }
         return updateBatchById(list);
     }
+
+    @Override
+    public IPage<FinanceAccountVO> findFinanceAccountByPage(QueryFinanceAccountForm form) {
+        //定义分页参数
+        Page<FinanceAccountVO> page = new Page(form.getPageNum(),form.getPageSize());
+        //定义排序规则
+        page.addOrder(OrderItem.desc("opc.id"));
+        IPage<FinanceAccountVO> pageInfo = baseMapper.findFinanceAccountByPage(page, form);
+        return pageInfo;
+    }
+
+    @Override
+    public IPage<PaymentNotPaidBillVO> findFBillAuditByPage(QueryEditBillForm form) {
+        //定义分页参数
+        Page<PaymentNotPaidBillVO> page = new Page(form.getPageNum(),form.getPageSize());
+        //定义排序规则
+        page.addOrder(OrderItem.desc("opc.id"));
+        IPage<PaymentNotPaidBillVO> pageInfo = baseMapper.findFBillAuditByPage(page, form);
+        return pageInfo;
+    }
+
+    @Override
+    public List<HeXiaoListVO> heXiaoList(String billNo) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("bill_no",billNo);
+        List<CancelAfterVerification> heXiaoList = verificationService.list(queryWrapper);
+        return ConvertUtil.convertList(heXiaoList,HeXiaoListVO.class);
+    }
+
+    @Override
+    public Boolean heXiaoConfirm(List<HeXiaoConfirmForm> forms) {
+        List<HeXiaoConfirmForm> addList = new ArrayList<>();
+        for (HeXiaoConfirmForm form : forms) {
+            if(form.getId() == null){
+                addList.add(form);
+            }
+        }
+        //计算本币金额,提供给前台累加
+        List<CancelAfterVerification> list = ConvertUtil.convertList(addList,CancelAfterVerification.class);
+        return verificationService.saveBatch(list);
+    }
+
+    @Override
+    public List<FCostVO> findFCostList(String billNo) {
+        return baseMapper.findFCostList(billNo);
+    }
+
+
 }

@@ -1,11 +1,13 @@
 package com.jayud.mall.model.vo;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
+@ApiModel(value="OrderInfoVO对象", description="产品订单表")
 public class OrderInfoVO {
 
     @ApiModelProperty(value = "订单ID，由系统生成")

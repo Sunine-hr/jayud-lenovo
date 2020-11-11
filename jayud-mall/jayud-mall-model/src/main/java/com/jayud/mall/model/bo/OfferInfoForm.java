@@ -1,11 +1,13 @@
 package com.jayud.mall.model.bo;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
+@ApiModel(value="OrderInfoForm对象", description="产品订单表")
 public class OfferInfoForm {
 
     @ApiModelProperty(value = "自增加id", position = 1)

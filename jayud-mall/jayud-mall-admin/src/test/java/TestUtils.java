@@ -39,7 +39,7 @@ public class TestUtils {
 
     /**
      * <p>object -> json</p>
-     * <p>json没有顺序</p>
+     * <p>json没有顺序,打印null</p>
      *
      * @param t
      */

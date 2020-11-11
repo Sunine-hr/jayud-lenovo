@@ -2,6 +2,7 @@ package com.jayud.mall.model.bo;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.jayud.mall.model.po.OceanCounterCustomerRelation;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@ApiModel(value = "柜子", description = "1提单对应1货柜(PS:之前是1提单对应N货柜)")
 public class OceanCounterForm {
 
     @ApiModelProperty(value = "自增加ID", position = 1)
@@ -50,8 +52,13 @@ public class OceanCounterForm {
 
     //提单对应货柜信息和客户关联表
     @ApiModelProperty(value = "提单对应货柜信息和客户关联表", position = 9)
-    @JSONField(ordinal = 9)
+    @JSONField(ordinal = 10)
     private List<OceanCounterCustomerRelation> oceanCounterCustomerRelationList;
+
+    //1柜子对应N运单
+    @ApiModelProperty(value = "1柜子对应N运单", position = 9)
+    @JSONField(ordinal = 11)
+    private List<OceanWaybillForm> oceanWaybillFormList;
 
 
 }

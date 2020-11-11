@@ -1,5 +1,6 @@
 import com.jayud.mall.model.bo.QuerySupplierInfoForm;
 import com.jayud.mall.model.bo.SupplierInfoForm;
+import com.jayud.mall.utils.TestUtils;
 import org.junit.Test;
 
 public class SupplierInfoTest {

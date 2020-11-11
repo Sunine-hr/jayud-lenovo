@@ -1,5 +1,6 @@
 import com.jayud.mall.model.bo.CustomerGoodsForm;
 import com.jayud.mall.model.bo.QueryCustomerGoodsForm;
+import com.jayud.mall.utils.TestUtils;
 import org.junit.Test;
 
 public class CustomerGoodsTest {

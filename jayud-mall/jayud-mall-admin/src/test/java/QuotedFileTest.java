@@ -1,4 +1,5 @@
 import com.jayud.mall.model.bo.QuotedFileForm;
+import com.jayud.mall.utils.TestUtils;
 import org.junit.Test;
 
 public class QuotedFileTest {

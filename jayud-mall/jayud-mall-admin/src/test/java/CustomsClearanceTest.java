@@ -1,5 +1,6 @@
 import com.jayud.mall.model.bo.CustomsClearanceForm;
 import com.jayud.mall.model.bo.QueryCustomsClearanceForm;
+import com.jayud.mall.utils.TestUtils;
 import org.junit.Test;
 
 public class CustomsClearanceTest {

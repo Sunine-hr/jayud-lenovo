@@ -1,4 +1,5 @@
 import com.jayud.mall.model.bo.QueryCurrencyRateForm;
+import com.jayud.mall.utils.TestUtils;
 import org.junit.Test;
 
 import java.math.BigDecimal;

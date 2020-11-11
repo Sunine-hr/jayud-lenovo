@@ -1,5 +1,6 @@
 import com.jayud.mall.model.bo.CustomsDataForm;
 import com.jayud.mall.model.bo.QueryCustomsDataForm;
+import com.jayud.mall.utils.TestUtils;
 import org.junit.Test;
 
 public class CustomsDataTest {

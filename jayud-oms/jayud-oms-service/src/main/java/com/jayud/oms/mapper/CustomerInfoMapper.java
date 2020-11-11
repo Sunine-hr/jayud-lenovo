@@ -19,6 +19,7 @@ public interface CustomerInfoMapper extends BaseMapper<CustomerInfo> {
 
     /**
      * 获取客户列表分页
+     *
      * @param page
      * @param form
      * @return
@@ -27,6 +28,7 @@ public interface CustomerInfoMapper extends BaseMapper<CustomerInfo> {
 
     /**
      * 查看客户详情
+     *
      * @param id
      * @return
      */
@@ -34,16 +36,23 @@ public interface CustomerInfoMapper extends BaseMapper<CustomerInfo> {
 
     /**
      * 获取客户账号
+     *
      * @param param
      * @return
      */
-    CustAccountVO getCustAccountByCondition(Map<String,Object> param);
+    CustAccountVO getCustAccountByCondition(Map<String, Object> param);
 
     /**
      * 客户账户列表分页查询
+     *
      * @param page
      * @param form
      * @return
      */
-    IPage<CustAccountVO>  findCustAccountByPage(Page page, @Param("form") QueryCusAccountForm form);
+    IPage<CustAccountVO> findCustAccountByPage(Page page, @Param("form") QueryCusAccountForm form);
+
+    /**
+     * 分页查询客户基础数据
+     */
+    IPage<CustomerInfoVO> findCustomerBasicsInfoByPage(Page page, @Param("form") QueryCustomerInfoForm form);
 }

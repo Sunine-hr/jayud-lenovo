@@ -64,6 +64,14 @@ public class CustomerInfoController {
         return CommonResult.success(pageVO);
     }
 
+    @ApiOperation(value = "分页查询客户基本信息列表")
+    @PostMapping(value = "/findCustomerBasicsInfoByPage")
+    public CommonResult<CommonPageResult<CustomerInfoVO>> findCustomerBasicsInfoByPage(@RequestBody QueryCustomerInfoForm form) {
+        IPage<CustomerInfoVO> pageList = customerInfoService.findCustomerBasicsInfoByPage(form);
+        CommonPageResult<CustomerInfoVO> pageVO = new CommonPageResult(pageList);
+        return CommonResult.success(pageVO);
+    }
+
     @ApiOperation(value = "查看客户详情和编辑时数据回显,id=客户ID")
     @PostMapping(value = "/getCustomerInfoById")
     public CommonResult<CustomerInfoVO> getCustomerInfoById(@RequestBody Map<String, Object> param) {

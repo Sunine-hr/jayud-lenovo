@@ -43,6 +43,9 @@
             <if test="form.phone !=null and form.phone !=''">
                 and phone like concat("%",#{form.phone},"%")
             </if>
+            <if test="form.customerId !=null">
+                and customer_id =#{form.customerId}
+            </if>
         </where>
     </select>
 

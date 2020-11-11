@@ -55,7 +55,6 @@ public class AddCustomerAddressForm {
     private String city;
 
     @ApiModelProperty(value = "区")
-    @NotEmpty(message = "area is required")
     private String area;
 
     @ApiModelProperty(value = "详细地址")

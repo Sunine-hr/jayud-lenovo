@@ -30,7 +30,11 @@
             resultType="com.jayud.oms.model.vo.CustomerAddressVO">
         select
         id, type, customer_id,
-        contacts, phone, province, city, area, address,
+        contacts, phone,
+        (select name from region_city where id=province) province,
+        (select name from region_city where id=city) city,
+        (select name from region_city where id=area) area,
+        address,
         postcode, status,
         create_user createUser, create_time createTime,
         update_time updateTime, update_user updateUser

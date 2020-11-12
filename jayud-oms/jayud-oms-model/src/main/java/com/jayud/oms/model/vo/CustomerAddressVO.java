@@ -34,14 +34,14 @@ public class CustomerAddressVO {
     @ApiModelProperty(value = "联系电话")
     private String phone;
 
-    @ApiModelProperty(value = "省")
-    private String province;
+    @ApiModelProperty(value = "省主键")
+    private Integer province;
 
-    @ApiModelProperty(value = "市")
-    private String city;
+    @ApiModelProperty(value = "市主键")
+    private Integer city;
 
-    @ApiModelProperty(value = "区")
-    private String area;
+    @ApiModelProperty(value = "区主键")
+    private Integer area;
 
     @ApiModelProperty(value = "详细地址")
     private String address;

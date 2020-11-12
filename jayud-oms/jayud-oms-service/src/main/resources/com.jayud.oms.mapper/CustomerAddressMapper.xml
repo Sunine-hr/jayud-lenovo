@@ -29,8 +29,12 @@
     <select id="findCustomerAddressByPage" parameterType="com.jayud.oms.model.bo.QueryCustomerAddressForm"
             resultType="com.jayud.oms.model.vo.CustomerAddressVO">
         select
-        id, type, customer_id,
-        contacts, phone, province, city, area, address,
+        id, type, customer_id customerId,
+        contacts, phone,
+        (select name from region_city where id=province) provinceName,
+        (select name from region_city where id=city) cityName,
+        (select name from region_city where id=area) areaName,
+        address,
         postcode, status,
         create_user createUser, create_time createTime,
         update_time updateTime, update_user updateUser

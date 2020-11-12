@@ -21,4 +21,22 @@
         id, dcid, ocid, exchange_rate, status, month, begin_valid_date, end_valid_date, created_user, created_time
     </sql>
 
+    <select id="findCurrencyRateByPage" parameterType="com.jayud.finance.bo.QueryCurrencyRateForm" resultType="com.jayud.finance.vo.CurrencyRateVO" >
+        SELECT
+        cr.id,
+        cr.`month`,
+        ci.currency_name currencyName,
+        cr.exchange_rate exchangeRate,
+        DATE_FORMAT(cr.begin_valid_date, '%Y-%m-%d') beginValidDateStr,
+        DATE_FORMAT(cr.end_valid_date, '%Y-%m-%d') endValidDateStr,
+        cr.created_user createdUser,
+        cr.created_time createdTimeStr
+        FROM
+        currency_rate cr
+        LEFT JOIN currency_info ci ON cr.ocid = ci.id
+        <if test="form.month != null and form.month != ''">
+            and cr.month = #{form.month}
+        </if>
+    </select>
+
 </mapper>

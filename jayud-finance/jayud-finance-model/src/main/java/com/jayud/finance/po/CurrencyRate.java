@@ -35,10 +35,10 @@ public class CurrencyRate extends Model<CurrencyRate> {
     private Long id;
 
     @ApiModelProperty(value = "本币(currency_info id)")
-    private Integer dcid;
+    private Long dcid;
 
     @ApiModelProperty(value = "他币(currency_info id)")
-    private Integer ocid;
+    private Long ocid;
 
     @ApiModelProperty(value = "汇率")
     private BigDecimal exchangeRate;

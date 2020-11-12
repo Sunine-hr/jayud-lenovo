@@ -1,7 +1,12 @@
 package com.jayud.finance.service;
 
-import com.jayud.finance.po.CurrencyRate;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.finance.bo.AddCurrencyManageForm;
+import com.jayud.finance.bo.AddCurrencyRateForm;
+import com.jayud.finance.bo.QueryCurrencyRateForm;
+import com.jayud.finance.po.CurrencyRate;
+import com.jayud.finance.vo.CurrencyRateVO;
 
 /**
  * <p>
@@ -13,4 +18,25 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ICurrencyRateService extends IService<CurrencyRate> {
 
+    /**
+     * 应付对账单分页查询
+     * @param form
+     * @return
+     */
+    IPage<CurrencyRateVO> findCurrencyRateByPage(QueryCurrencyRateForm form);
+
+
+    /**
+     * 新增汇率
+     * @param form
+     * @return
+     */
+    Boolean saveCurrencyRate(AddCurrencyManageForm form);
+
+    /**
+     * 编辑汇率
+     * @param form
+     * @return
+     */
+    Boolean editCurrencyRate(AddCurrencyRateForm form);
 }

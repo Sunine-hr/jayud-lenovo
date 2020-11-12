@@ -11,8 +11,11 @@ import java.math.BigDecimal;
 @Data
 public class CurrencyRateVO {
 
+    @ApiModelProperty(value = "ID")
+    private Long id;
+
     @ApiModelProperty(value = "年月")
-    private String monthStr;
+    private String month;
 
     @ApiModelProperty(value = "币种")
     private String currencyName;

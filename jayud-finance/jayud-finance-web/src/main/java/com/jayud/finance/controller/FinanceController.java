@@ -211,20 +211,6 @@ public class FinanceController {
         return CommonResult.success();
     }
 
-    /**汇率管理*/
-    //汇率管理列表
-    @ApiOperation(value = "汇率管理列表分页查询")
-    @PostMapping("/findCurrencyRateByPage")
-    public CommonResult<CommonPageResult<CurrencyRateVO>> findCurrencyRateByPage(@RequestBody QueryCurrencyRateForm form) {
-        IPage<CurrencyRateVO> pageList = null;//billDetailService.findCurrencyRateByPage(form);
-        CommonPageResult<CurrencyRateVO> pageVO = new CommonPageResult(pageList);
-        return CommonResult.success(pageVO);
-    }
-
-    //新增编辑
-
-    //删除
-
 
 
 

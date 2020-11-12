@@ -5,19 +5,19 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-@ApiModel(value = "货品名称替换Form")
+@ApiModel(value = "CargoNameReplaceForm", description = "货品名称替换Form")
 public class CargoNameReplaceForm {
 
-    @ApiModelProperty(value = "主键ID")
+    @ApiModelProperty(value = "主键ID", position = 1)
     private Long id;
 
-    @ApiModelProperty(value = "(原)货品名称")
+    @ApiModelProperty(value = "(原)货品名称", position = 2)
     private String hpmc;
 
-    @ApiModelProperty(value = "替换名称")
+    @ApiModelProperty(value = "替换名称", position = 3)
     private String replaceName;
 
-    @ApiModelProperty(value = "查询关键字(货品名称or替换名称)")
+    @ApiModelProperty(value = "查询关键字(货品名称or替换名称)", position = 4)
     private String name;
 
 }

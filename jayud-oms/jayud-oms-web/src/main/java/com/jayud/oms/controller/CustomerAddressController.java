@@ -13,6 +13,7 @@ import com.jayud.oms.model.po.CustomerAddress;
 import com.jayud.oms.model.vo.CustomerAddressVO;
 import com.jayud.oms.model.vo.DriverInfoVO;
 import com.jayud.oms.service.ICustomerAddressService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/customerAddress")
+@Api(tags = "客户地址维护")
 public class CustomerAddressController {
 
     @Autowired

@@ -68,8 +68,8 @@ public class SupplierInfoController {
     @PostMapping(value = "/findSupplierInfoByPage")
     public CommonResult<CommonPageResult<SupplierInfoVO>> findSupplierInfoByPage(@RequestBody QuerySupplierInfoForm form) {
         IPage<SupplierInfoVO> pageList = supplierInfoService.findSupplierInfoByPage(form);
-        List<Long> ids = pageList.getRecords().stream().filter(Objects::nonNull).map(SupplierInfoVO::getBuyerId).collect(Collectors.toList());
-        if (CollectionUtils.isNotEmpty(ids)) {
+        List<Long> ids = pageList.getRecords().stream().filter(tmp -> tmp.getBuyerId() != null).map(SupplierInfoVO::getBuyerId).collect(Collectors.toList());
+        if (ids.size() > 0) {
             //根据id集合查询采购员
             ApiResult result = oauthClient.getUsersByIds(ids);
 
@@ -90,8 +90,8 @@ public class SupplierInfoController {
     @PostMapping(value = "/findAuditSupplierInfoByPage")
     public CommonResult<CommonPageResult<SupplierInfoVO>> findAuditSupplierInfoByPage(@RequestBody QueryAuditSupplierInfoForm form) {
         IPage<SupplierInfoVO> pageList = supplierInfoService.findAuditSupplierInfoByPage(form);
-        List<Long> ids = pageList.getRecords().stream().filter(Objects::nonNull).map(SupplierInfoVO::getBuyerId).collect(Collectors.toList());
-        if (CollectionUtils.isNotEmpty(ids)) {
+        List<Long> ids = pageList.getRecords().stream().filter(tmp -> tmp.getBuyerId() != null).map(SupplierInfoVO::getBuyerId).collect(Collectors.toList());
+        if (ids.size() > 0) {
             //根据id集合查询采购员
             ApiResult result = oauthClient.getUsersByIds(ids);
 

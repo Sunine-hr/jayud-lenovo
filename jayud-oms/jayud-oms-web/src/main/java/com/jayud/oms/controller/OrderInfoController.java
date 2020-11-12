@@ -127,12 +127,15 @@ public class OrderInfoController {
                 inputOrderCustomsForm.setSeaTransPicName(StringUtils.getFileNameStr(inputOrderCustomsForm.getAirTransportPics()));
                 //报关订单中的子订单
                 List<InputSubOrderCustomsForm> subOrders = inputOrderCustomsForm.getSubOrders();
+                if(subOrders.size() == 0){
+                    return CommonResult.error(ResultEnum.PARAM_ERROR);
+                }
                 for (InputSubOrderCustomsForm subOrderCustomsForm : subOrders) {
                     if (StringUtil.isNullOrEmpty(subOrderCustomsForm.getOrderNo())
                             || StringUtil.isNullOrEmpty(subOrderCustomsForm.getTitle())
                             || StringUtil.isNullOrEmpty(subOrderCustomsForm.getUnitCode())
                             || StringUtil.isNullOrEmpty(subOrderCustomsForm.getIsTitle())) {
-                        return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+                        return CommonResult.error(ResultEnum.PARAM_ERROR);
                     }
                 }
             }

@@ -210,8 +210,16 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         Double totalVolume = 0.0;//总体积
         for (TakeGoodsInfoVO takeGoodsInfoVO : takeGoodsInfo1) {
             totalPieceAmount = totalPieceAmount + takeGoodsInfoVO.getPieceAmount();
-            totalWeight = totalWeight + takeGoodsInfoVO.getWeight();
-            totalVolume = totalVolume + takeGoodsInfoVO.getVolume();
+            Double weight = 0.0;
+            Double volume = 0.0;
+            if(takeGoodsInfoVO.getWeight() != null){
+                weight = takeGoodsInfoVO.getWeight();
+            }
+            if(takeGoodsInfoVO.getVolume() != null){
+                volume = takeGoodsInfoVO.getVolume();
+            }
+            totalWeight = totalWeight + weight;
+            totalVolume = totalVolume + volume;
             GoodsInfoVO goodsInfoVO = new GoodsInfoVO();
             goodsInfoVO.setGoodsDesc(takeGoodsInfoVO.getGoodsDesc());
             goodsInfoVO.setPieceAmount(takeGoodsInfoVO.getPieceAmount());

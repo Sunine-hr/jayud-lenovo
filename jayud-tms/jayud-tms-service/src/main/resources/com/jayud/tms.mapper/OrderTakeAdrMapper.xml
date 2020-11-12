@@ -33,6 +33,7 @@
           da.`state_name` stateName,
           da.`city_name` cityName,
           da.`address`,
+          ota.delivery_id deliveryId,
           DATE_FORMAT(
             ota.`take_time`,
             '%Y-%m-%d %H:%i:%S'
@@ -45,7 +46,8 @@
           ota.`volume`,
           ota.`opr_type` oprType,
           ota.`remarks`,
-          ota.`enter_warehouse_no` enterWarehouseNo
+          ota.`enter_warehouse_no` enterWarehouseNo,
+          ota.delivery_id deliveryId
         FROM
           order_take_adr ota
           LEFT JOIN delivery_address da

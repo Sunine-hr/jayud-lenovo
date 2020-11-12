@@ -15,6 +15,7 @@ import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.CurrencyInfoVO;
 import com.jayud.oms.model.vo.InitComboxStrVO;
 import com.jayud.oms.model.vo.InitComboxVO;
+import com.jayud.oms.model.vo.SystemUserVO;
 import com.jayud.oms.service.*;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
@@ -66,7 +67,7 @@ public class OrderComboxController {
     @Autowired
     ICostGenreService costGenreService;
 
-    @ApiOperation(value = "纯报关-客户,业务员,合同,业务所属部门,通关口岸")
+    @ApiOperation(value = "创建订单-客户,业务员,合同,业务所属部门,通关口岸")
     @PostMapping(value = "/initCombox1")
     public CommonResult<Map<String,Object>> initCombox1() {
         Map<String,Object> resultMap = new HashMap<>();
@@ -134,7 +135,7 @@ public class OrderComboxController {
     }
 
 
-    @ApiOperation(value = "纯报关-结算单位,idCode=客户CODE,必填")
+    @ApiOperation(value = "创建订单-客户联动业务员和结算单位,idCode=客户CODE,必填")
     @PostMapping(value = "/initUnit")
     public CommonResult<Map<String,Object>> initUnit(@RequestBody Map<String,Object> param) {
         String idCode = MapUtil.getStr(param,"idCode");
@@ -144,15 +145,30 @@ public class OrderComboxController {
         Map<String,Object> resultMap = new HashMap<>();
         param = new HashMap<>();
         param.put("id_code", idCode);
-        List<CustomerInfo > customerInfoList = customerInfoService.findCustomerInfoByCondition(param);
+        List<CustomerInfo> customerInfoList = customerInfoService.findCustomerInfoByCondition(param);
         List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
         for (CustomerInfo customerInfo : customerInfoList) {
             InitComboxStrVO comboxStrVO = new InitComboxStrVO();
             comboxStrVO.setCode(customerInfo.getUnitCode());
             comboxStrVO.setName(customerInfo.getUnitAccount());
             comboxStrVOS.add(comboxStrVO);
+            if(customerInfo.getYwId() != null) {
+                ids.add(customerInfo.getYwId());
+            }
         }
         resultMap.put("units",comboxStrVOS);
+        List<InitComboxVO> yws = new ArrayList<>();
+        if(ids.size() > 0) {
+            List<SystemUserVO> userVOS = oauthClient.getUsersByIds(ids).getData();
+            for (SystemUserVO systemUserVO : userVOS) {
+                InitComboxVO comboxVO = new InitComboxVO();
+                comboxVO.setId(systemUserVO.getId());
+                comboxVO.setName(systemUserVO.getUserName());
+                yws.add(comboxVO);
+            }
+        }
+        resultMap.put("yws",yws);
         return CommonResult.success(resultMap);
     }
 

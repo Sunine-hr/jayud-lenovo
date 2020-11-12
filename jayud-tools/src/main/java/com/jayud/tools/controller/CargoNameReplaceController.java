@@ -12,6 +12,8 @@ import com.jayud.tools.service.ICargoNameReplaceService;
 import com.jayud.tools.utils.StringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperationSupport;
+import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,13 +28,15 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/cargonamereplace")
-@Api(tags = "佳裕达小工具-货品名称替换，接口")
+@Api(tags = "货物名称替换接口")
+@ApiSort(value = 3)
 public class CargoNameReplaceController {
 
     @Autowired
     ICargoNameReplaceService cargoNameReplaceService;
 
     @ApiOperation(value = "查询敏感品名list")
+    @ApiOperationSupport(order = 1)
     @PostMapping(value = "/findCargoNameReplace")
     public CommonResult<List<CargoNameReplace>> findCargoNameReplace(@RequestBody CargoNameReplaceForm form){
         List<CargoNameReplace> userList = cargoNameReplaceService.findCargoNameReplace(form);
@@ -40,6 +44,7 @@ public class CargoNameReplaceController {
     }
 
     @ApiOperation(value = "下载货物名称替换表模板")
+    @ApiOperationSupport(order = 2)
     @RequestMapping(value = "/exportExcelTemplate", method = RequestMethod.GET)
     public void exportExcelTest(HttpServletResponse response) throws IOException {
         Map<String, Object> row1 = new LinkedHashMap<>();
@@ -62,6 +67,7 @@ public class CargoNameReplaceController {
     }
 
     @ApiOperation(value = "导入货物名称替换表")
+    @ApiOperationSupport(order = 3)
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult importExcel(@RequestParam("file") MultipartFile file, HttpServletRequest request){
@@ -93,6 +99,7 @@ public class CargoNameReplaceController {
     }
 
     @ApiOperation(value = "保存`货物名称替换表`（新增或修改）")
+    @ApiOperationSupport(order = 4)
     @PostMapping(value = "/saveCargoNameReplace")
     public CommonResult saveCargoNameReplace(@Valid @RequestBody CargoNameReplaceForm form){
         return cargoNameReplaceService.saveCargoNameReplace(form);
@@ -100,6 +107,7 @@ public class CargoNameReplaceController {
 
 
     @ApiOperation(value = "删除`货物名称替换表`")
+    @ApiOperationSupport(order = 5)
     @PostMapping(value = "/deleteCargoNameReplace")
     public CommonResult deleteCargoNameReplace(@RequestBody CargoNameReplaceForm form){
         Long id = form.getId();

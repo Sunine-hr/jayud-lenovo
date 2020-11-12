@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.oms.model.bo.QueryDriverInfoForm;
 import com.jayud.oms.model.po.DriverInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.oms.model.vo.DriverInfoLinkVO;
 import com.jayud.oms.model.vo.DriverInfoVO;
 
 /**
@@ -33,4 +34,11 @@ public interface IDriverInfoService extends IService<DriverInfo> {
     boolean checkUnique(DriverInfo driverInfo);
 
     boolean enableOrDisableDriver(Long id);
+
+    /**
+     * 司机下拉框联动车辆供应商，大陆车牌，香港车牌，司机电话
+     * @param driverId
+     * @return
+     */
+    DriverInfoLinkVO getDriverInfoLink(Long driverId);
 }

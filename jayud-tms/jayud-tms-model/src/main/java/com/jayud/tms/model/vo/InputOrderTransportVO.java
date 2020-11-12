@@ -146,10 +146,12 @@ public class InputOrderTransportVO {
 
 
     public String getGoodsTypeDesc() {
-        if(this.goodsType == 1){
-           return  "进口";
-        }else if(this.goodsType == 2){
-            return "出口";
+        if(this.goodsType != null) {
+            if (this.goodsType == 1) {
+                return "进口";
+            } else if (this.goodsType == 2) {
+                return "出口";
+            }
         }
         return "";
     }

@@ -1,7 +1,6 @@
 package com.jayud.tools.controller;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
@@ -11,14 +10,14 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.tools.model.bo.QuerySensitiveCommodityForm;
 import com.jayud.tools.model.bo.SensitiveCommodityForm;
-import com.jayud.tools.model.po.CargoName;
 import com.jayud.tools.model.po.SensitiveCommodity;
-import com.jayud.tools.model.po.TestBean;
 import com.jayud.tools.model.vo.SensitiveCommodityVO;
 import com.jayud.tools.service.ISensitiveCommodityService;
 import com.jayud.tools.utils.StringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperationSupport;
+import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,13 +32,15 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/sensitivecommodity")
-@Api(tags = "佳裕达小工具-敏感品名管理")
+@Api(tags = "敏感品名接口")
+@ApiSort(value = 1)
 public class SensitiveCommodityController {
 
     @Autowired
     ISensitiveCommodityService sensitiveCommodityService;
 
     @ApiOperation(value = "查询敏感品名list")
+    @ApiOperationSupport(order = 1)
     @PostMapping(value = "/getSensitiveCommodityList")
     public CommonResult<List<SensitiveCommodity>> getSensitiveCommodityList(@RequestBody QuerySensitiveCommodityForm form){
         List<SensitiveCommodity> userList = sensitiveCommodityService.getSensitiveCommodityList(form);
@@ -47,12 +48,14 @@ public class SensitiveCommodityController {
     }
 
     @ApiOperation(value = "保存`敏感品名`（新增或修改）")
+    @ApiOperationSupport(order = 2)
     @PostMapping(value = "/saveSensitiveCommodity")
     public CommonResult saveSensitiveCommodity(@Valid @RequestBody SensitiveCommodityForm sensitiveCommodityForm){
         return sensitiveCommodityService.saveSensitiveCommodity(sensitiveCommodityForm);
     }
 
     @ApiOperation(value = "删除`敏感品名`")
+    @ApiOperationSupport(order = 3)
     @PostMapping(value = "/deleteSensitiveCommodityById")
     public CommonResult deleteSensitiveCommodityById(@RequestParam(value = "id") Long id){
         sensitiveCommodityService.deleteSensitiveCommodityById(id);
@@ -60,6 +63,7 @@ public class SensitiveCommodityController {
     }
 
     @ApiOperation(value = "敏感品名分页查询")
+    @ApiOperationSupport(order = 4)
     @PostMapping(value = "/findSensitiveCommodityByPage")
     public CommonResult<CommonPageResult<SensitiveCommodityVO>> findSensitiveCommodityByPage(@RequestBody QuerySensitiveCommodityForm  form){
         IPage<SensitiveCommodityVO> pageList = sensitiveCommodityService.findSensitiveCommodityByPage(form);
@@ -69,6 +73,7 @@ public class SensitiveCommodityController {
 
 
     @ApiOperation(value = "下载敏感品名导入模板")
+    @ApiOperationSupport(order = 5)
     @RequestMapping(value = "/exportExcelTemplate", method = RequestMethod.GET)
     public void exportExcelTest(HttpServletResponse response) throws IOException {
         Map<String, Object> row1 = new LinkedHashMap<>();
@@ -89,6 +94,7 @@ public class SensitiveCommodityController {
     }
 
     @ApiOperation(value = "导入敏感品名数据")
+    @ApiOperationSupport(order = 6)
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult importExcel(@RequestParam("file") MultipartFile file, HttpServletRequest request){

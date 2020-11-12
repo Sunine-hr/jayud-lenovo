@@ -4,7 +4,7 @@ package com.jayud.oms.feign;
 import com.jayud.common.ApiResult;
 import com.jayud.oms.model.bo.AddCusAccountForm;
 import com.jayud.oms.model.bo.QueryAccountForm;
-import io.swagger.annotations.ApiOperation;
+import com.jayud.oms.model.vo.SystemUserVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-import java.util.Map;
 
 @FeignClient(value = "jayud-oauth-web")
 public interface OauthClient {
@@ -77,7 +76,7 @@ public interface OauthClient {
 
 
     @RequestMapping(value = "/api/getUsersByIds")
-    ApiResult getUsersByIds(@RequestParam(value = "ids") List<Long> ids);
+    ApiResult<List<SystemUserVO>> getUsersByIds(@RequestParam(value = "ids") List<Long> ids);
 
     /**
      * 获取公司信息

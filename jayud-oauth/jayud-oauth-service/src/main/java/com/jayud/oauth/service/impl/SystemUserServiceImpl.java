@@ -11,7 +11,6 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.enums.ResultEnum;
-import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.oauth.mapper.SystemUserMapper;
@@ -100,7 +99,9 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         } catch (ApiException e) {
             throw e;
         } catch (Exception e) {
-            Asserts.fail(ResultEnum.LOGIN_FAIL);
+            cacheUser = new SystemUserVO();
+            cacheUser.setIsError(true);
+            return cacheUser;
         }
         // 构建缓存用户信息返回给前端
         SystemUser user = (SystemUser) subject.getPrincipals().getPrimaryPrincipal();

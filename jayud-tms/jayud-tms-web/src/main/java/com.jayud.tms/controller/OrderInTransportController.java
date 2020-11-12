@@ -115,15 +115,10 @@ public class OrderInTransportController {
             auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_6.getDesc());
         }else if(CommonConstant.HK_CLEAR_CUSTOMS.equals(form.getCmd())) {//香港清关
             //参数校验
-            if(form.getHkSupplierId() == null || StringUtil.isNullOrEmpty(form.getHkDriverName()) ||
-               StringUtil.isNullOrEmpty(form.getHkDriverPhone()) || StringUtil.isNullOrEmpty(form.getLicensePlate()) ||
-               StringUtil.isNullOrEmpty(form.getHkLicensePlate()) || StringUtil.isNullOrEmpty(form.getSeamlessNo()) ||
+            if(form.getDriverInfoId() == null || StringUtil.isNullOrEmpty(form.getSeamlessNo()) ||
                StringUtil.isNullOrEmpty(form.getClearCustomsNo())){
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
             }
-            orderTransport.setHkSupplierId(form.getHkSupplierId());
-            orderTransport.setLicensePlate(form.getLicensePlate());
-            orderTransport.setHkLicensePlate(form.getHkLicensePlate());
             orderTransport.setSeamlessNo(form.getSeamlessNo());
             orderTransport.setClearCustomsNo(form.getClearCustomsNo());//清关完成标识,有数据表示清关完成
 
@@ -314,9 +309,15 @@ public class OrderInTransportController {
               StringUtil.isNullOrEmpty(form.getTransportNo()) || StringUtil.isNullOrEmpty(form.getOrderNo()) ||
               form.getIsHaveEncode() == null || form.getVehicleSize() == null || form.getVehicleType() == null ||
               form.getSupplierInfoId() == null || StringUtil.isNullOrEmpty(form.getLicensePlate()) ||
-              StringUtil.isNullOrEmpty(form.getDriverName()) || StringUtil.isNullOrEmpty(form.getHkLicensePlate()) ||
+              StringUtil.isNullOrEmpty(form.getDriverName()) ||
               form.getWarehouseInfoId() == null || (form.getIsHaveEncode() && StringUtil.isNullOrEmpty(form.getEncode()))){
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+            }
+            //当运输派车后在驳回时,重新编辑,再次走流程时会出现两条派车记录,原来那条作废
+            if(CommonConstant.SEND_CAR.equals(form.getCmd())) {
+                QueryWrapper removeWrapper = new QueryWrapper();
+                removeWrapper.eq("order_no", form.getOrderNo());
+                orderSendCarsService.remove(removeWrapper);
             }
             //保存派车信息
             orderSendCars.setCntrPic(StringUtils.getFileStr(form.getCntrPics()));

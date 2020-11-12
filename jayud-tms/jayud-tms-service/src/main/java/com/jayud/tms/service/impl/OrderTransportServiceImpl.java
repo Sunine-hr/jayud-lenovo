@@ -137,14 +137,16 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         for (InputOrderTakeAdrVO inputOrderTakeAdrVO : inputOrderTakeAdrVOS) {
             if(CommonConstant.VALUE_1.equals(String.valueOf(inputOrderTakeAdrVO.getOprType()))){//提货
                 orderTakeAdrForms1.add(inputOrderTakeAdrVO);
+                Integer pieceAmount = inputOrderTakeAdrVO.getPieceAmount();
+                Double weight = inputOrderTakeAdrVO.getWeight();
                 if(inputOrderTakeAdrVO.getPieceAmount() == null){
-                    inputOrderTakeAdrVO.setPieceAmount(0);
+                    pieceAmount = 0;
                 }
                 if(inputOrderTakeAdrVO.getWeight() == null){
-                    inputOrderTakeAdrVO.setWeight(0.0);
+                    weight = 0.0;
                 }
-                totalAmount = totalAmount + inputOrderTakeAdrVO.getPieceAmount();
-                totalWeight = totalWeight + inputOrderTakeAdrVO.getWeight();
+                totalAmount = totalAmount + pieceAmount;
+                totalWeight = totalWeight + weight;
             }else {
                 orderTakeAdrForms2.add(inputOrderTakeAdrVO);  //送货
             }
@@ -208,8 +210,16 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         Double totalVolume = 0.0;//总体积
         for (TakeGoodsInfoVO takeGoodsInfoVO : takeGoodsInfo1) {
             totalPieceAmount = totalPieceAmount + takeGoodsInfoVO.getPieceAmount();
-            totalWeight = totalWeight + takeGoodsInfoVO.getWeight();
-            totalVolume = totalVolume + takeGoodsInfoVO.getVolume();
+            Double weight = 0.0;
+            Double volume = 0.0;
+            if(takeGoodsInfoVO.getWeight() != null){
+                weight = takeGoodsInfoVO.getWeight();
+            }
+            if(takeGoodsInfoVO.getVolume() != null){
+                volume = takeGoodsInfoVO.getVolume();
+            }
+            totalWeight = totalWeight + weight;
+            totalVolume = totalVolume + volume;
             GoodsInfoVO goodsInfoVO = new GoodsInfoVO();
             goodsInfoVO.setGoodsDesc(takeGoodsInfoVO.getGoodsDesc());
             goodsInfoVO.setPieceAmount(takeGoodsInfoVO.getPieceAmount());

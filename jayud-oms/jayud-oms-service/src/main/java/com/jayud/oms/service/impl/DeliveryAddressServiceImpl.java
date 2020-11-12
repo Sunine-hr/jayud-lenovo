@@ -5,10 +5,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.UserOperator;
 import com.jayud.oms.model.bo.QueryCustomerAddressForm;
 import com.jayud.oms.model.enums.StatusEnum;
-import com.jayud.oms.model.po.CustomerAddress;
-import com.jayud.oms.mapper.CustomerAddressMapper;
+import com.jayud.oms.model.po.DeliveryAddress;
+import com.jayud.oms.mapper.DeliveryAddressMapper;
 import com.jayud.oms.model.vo.CustomerAddressVO;
-import com.jayud.oms.service.ICustomerAddressService;
+import com.jayud.oms.service.IDeliveryAddressService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +17,14 @@ import java.util.Objects;
 
 /**
  * <p>
- * 客户地址 服务实现类
+ * 提货地址基础数据表 服务实现类
  * </p>
  *
  * @author 李达荣
- * @since 2020-11-04
+ * @since 2020-11-12
  */
 @Service
-public class CustomerAddressServiceImpl extends ServiceImpl<CustomerAddressMapper, CustomerAddress> implements ICustomerAddressService {
+public class DeliveryAddressServiceImpl extends ServiceImpl<DeliveryAddressMapper, DeliveryAddress> implements IDeliveryAddressService {
 
     @Override
     public IPage<CustomerAddressVO> findCustomerAddressByPage(QueryCustomerAddressForm form) {
@@ -33,16 +33,14 @@ public class CustomerAddressServiceImpl extends ServiceImpl<CustomerAddressMappe
     }
 
     @Override
-    public boolean saveOrUpdateCustomerAddress(CustomerAddress customerAddress) {
-        if (Objects.isNull(customerAddress.getId())) {
-            customerAddress.setCreateTime(LocalDateTime.now())
-                    .setCreateUser(UserOperator.getToken()).setStatus(StatusEnum.ENABLE.getCode());
-            return this.save(customerAddress);
+    public boolean saveOrUpdateCustomerAddress(DeliveryAddress deliveryAddress) {
+        if (Objects.isNull(deliveryAddress.getId())) {
+            deliveryAddress.setCreateTime(LocalDateTime.now())
+                    .setCreateUser(UserOperator.getToken())
+                    .setStatus(Integer.valueOf(StatusEnum.ENABLE.getCode()));
+            return this.save(deliveryAddress);
         } else {
-            customerAddress
-                    .setUpdateTime(LocalDateTime.now())
-                    .setUpdateUser(UserOperator.getToken());
-            return this.updateById(customerAddress);
+            return this.updateById(deliveryAddress);
         }
     }
 }

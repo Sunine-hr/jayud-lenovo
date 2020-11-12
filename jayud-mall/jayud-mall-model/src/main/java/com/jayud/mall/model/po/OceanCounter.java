@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
-import com.jayud.mall.model.vo.OceanCounterCustomerRelationVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -14,7 +13,6 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * <p>
@@ -60,11 +58,6 @@ public class OceanCounter extends Model<OceanCounter> {
 
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
-
-    /*关联箱号信息*/
-    @ApiModelProperty(value = "货柜关联箱号信息list")
-    private List<OceanCounterCustomerRelationVO> oceanCounterCustomerRelationVOList;
-
 
     @Override
     protected Serializable pkVal() {

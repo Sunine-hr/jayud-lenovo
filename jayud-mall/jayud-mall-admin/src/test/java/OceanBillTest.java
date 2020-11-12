@@ -65,7 +65,7 @@ public class OceanBillTest {
         oceanCounterCustomerRelation2.setOrderCaseId(2L);
         list1.add(oceanCounterCustomerRelation2);
 
-        form1.setOceanCounterCustomerRelationList(list1);
+//        form1.setOceanCounterCustomerRelationList(list1);
 
         oceanCounterForms.add(form1);
 
@@ -92,7 +92,7 @@ public class OceanBillTest {
         oceanCounterCustomerRelation12.setOrderCaseId(4L);
         list2.add(oceanCounterCustomerRelation12);
 
-        form2.setOceanCounterCustomerRelationList(list2);
+//        form2.setOceanCounterCustomerRelationList(list2);
 
         oceanCounterForms.add(form2);
 
@@ -144,7 +144,7 @@ public class OceanBillTest {
 
         //1柜子对应N运单
         List<OceanWaybillForm> oceanWaybillFormList = oceanWaybillFormList();
-        form1.setOceanWaybillFormList(oceanWaybillFormList);
+//        form1.setOceanWaybillFormList(oceanWaybillFormList);
 
         oceanCounterForms.add(form1);
 

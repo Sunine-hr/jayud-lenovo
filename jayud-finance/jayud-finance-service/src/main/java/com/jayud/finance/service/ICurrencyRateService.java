@@ -2,6 +2,7 @@ package com.jayud.finance.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.CommonResult;
 import com.jayud.finance.bo.AddCurrencyManageForm;
 import com.jayud.finance.bo.AddCurrencyRateForm;
 import com.jayud.finance.bo.QueryCurrencyRateForm;
@@ -31,7 +32,7 @@ public interface ICurrencyRateService extends IService<CurrencyRate> {
      * @param form
      * @return
      */
-    Boolean saveCurrencyRate(AddCurrencyManageForm form);
+    CommonResult saveCurrencyRate(AddCurrencyManageForm form);
 
     /**
      * 编辑汇率

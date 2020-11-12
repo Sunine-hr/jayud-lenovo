@@ -40,11 +40,7 @@ public class CurrencyController {
     @ApiOperation(value = "新增汇率")
     @PostMapping("/saveCurrencyRate")
     public CommonResult saveCurrencyRate(@RequestBody AddCurrencyManageForm form) {
-        Boolean result = currencyRateService.saveCurrencyRate(form);
-        if(!result){
-            return CommonResult.error(ResultEnum.OPR_FAIL);
-        }
-        return CommonResult.success();
+        return currencyRateService.saveCurrencyRate(form);
     }
 
     @ApiOperation(value = "编辑汇率")

@@ -1,9 +1,11 @@
 package com.jayud.finance.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.finance.bo.AddCurrencyManageForm;
 import com.jayud.finance.bo.AddCurrencyRateForm;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -39,25 +42,45 @@ public class CurrencyRateServiceImpl extends ServiceImpl<CurrencyRateMapper, Cur
     }
 
     @Override
-    public Boolean saveCurrencyRate(AddCurrencyManageForm form) {
+    public CommonResult saveCurrencyRate(AddCurrencyManageForm form) {
+        //不允许添加相同币种的汇率
+        List<AddCurrencyRateForm> rateList = form.getRateFormList();
+        int repeatNum = rateList.stream()
+                .collect(Collectors.groupingBy(a -> a.getOcid(), Collectors.counting()))
+                .entrySet().stream().filter(entry -> entry.getValue() > 1).map(entry -> entry.getKey())
+                .collect(Collectors.toList()).size();
+        if(repeatNum != 0){
+            return CommonResult.error(10000,"不允许添加相同币种的汇率");
+        }
+        //同一个币种同一个月份只允许配置一条
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("month",form.getMonth());
         //新增的时候批量操作
         List<CurrencyRate> currencyRates = new ArrayList<>();
         for (AddCurrencyRateForm addCurrencyRateForm : form.getRateFormList()) {
+            queryWrapper.eq("ocid",addCurrencyRateForm.getOcid());
+            List<CurrencyRate> existList = baseMapper.selectList(queryWrapper);
+            if(existList != null && existList.size() > 0){
+                return CommonResult.error(10000,"该月份已存在相同币种的汇率");
+            }
             CurrencyRate currencyRate = new CurrencyRate();
             currencyRate.setOcid(addCurrencyRateForm.getOcid());
             currencyRate.setExchangeRate(addCurrencyRateForm.getExchangeRate());
-            String month = "" ;//form.getMonthDate();
-            currencyRate.setMonth(month);
+            currencyRate.setMonth(form.getMonth());
             currencyRate.setBeginValidDate(form.getBeginValidDate());
             currencyRate.setEndValidDate(form.getEndValidDate());
             currencyRate.setCreatedUser(UserOperator.getToken());
         }
-        return saveBatch(currencyRates);
+        saveBatch(currencyRates);
+        return CommonResult.success();
     }
 
     @Override
     public Boolean editCurrencyRate(AddCurrencyRateForm form) {
-        return null;
+        CurrencyRate currencyRate = new CurrencyRate();
+        currencyRate.setId(form.getId());
+        currencyRate.setExchangeRate(form.getExchangeRate());//只允许改汇率
+        return updateById(currencyRate);
     }
 
 }

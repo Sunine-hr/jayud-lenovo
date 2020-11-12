@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
@@ -15,8 +16,8 @@ import java.util.List;
 public class AddCurrencyManageForm {
 
     @ApiModelProperty(value = "XXXX-XX",required = true)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM")
-    private LocalDate monthDate;
+    @NotEmpty(message = "month is required")
+    private String month;
 
     @ApiModelProperty(value = "汇率集合",required = true)
     @NotNull(message = "rateFormList is required")

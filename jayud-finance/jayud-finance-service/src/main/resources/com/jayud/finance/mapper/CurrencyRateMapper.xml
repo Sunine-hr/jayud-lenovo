@@ -24,7 +24,7 @@
     <select id="findCurrencyRateByPage" parameterType="com.jayud.finance.bo.QueryCurrencyRateForm" resultType="com.jayud.finance.vo.CurrencyRateVO" >
         SELECT
         cr.id,
-        cr.`month`,
+        CONCAT(REPLACE(cr.`month`,'-','年'),'月') monthStr,
         ci.currency_name currencyName,
         cr.exchange_rate exchangeRate,
         DATE_FORMAT(cr.begin_valid_date, '%Y-%m-%d') beginValidDateStr,

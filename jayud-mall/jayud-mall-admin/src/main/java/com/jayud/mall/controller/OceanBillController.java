@@ -33,9 +33,8 @@ public class OceanBillController {
 
     @ApiOperation(value = "保存提单信息")
     @PostMapping("/saveOceanBill")
-    public CommonResult saveOceanBill(@RequestBody OceanBillForm form){
-        oceanBillService.saveOceanBill(form);
-        return CommonResult.success("保存提单信息，成功！");
+    public CommonResult<OceanBillVO> saveOceanBill(@RequestBody OceanBillForm form){
+        return oceanBillService.saveOceanBill(form);
     }
 
     @ApiOperation(value = "查看提单详情")

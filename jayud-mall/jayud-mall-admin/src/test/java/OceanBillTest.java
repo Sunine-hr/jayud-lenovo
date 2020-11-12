@@ -194,6 +194,26 @@ public class OceanBillTest {
         return oceanWaybillCaseRelationFormList;
     }
 
+    /**
+     * 提单保存json
+     */
+    @Test
+    public void test4(){
+        OceanBillForm form = new OceanBillForm();
+        form.setId(1L);
+        form.setTid(1);
+        form.setSupplierCode("G001");
+        form.setOrderId("DL200228H011");
+        form.setStartCode("SH");
+        form.setEndCode("NY");
+        form.setSailTime(LocalDateTime.now());
+        form.setVoyageDay(20);
+        form.setUnit(2);
+        form.setCreateTime(LocalDateTime.now());
+        TestUtils.JSONObjectPrintNull(form);
+
+    }
+
 
 
 }

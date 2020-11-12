@@ -29,7 +29,7 @@ public interface IOceanBillService extends IService<OceanBill> {
      * 保存提单信息
      * @param form
      */
-    void saveOceanBill(OceanBillForm form);
+    CommonResult<OceanBillVO> saveOceanBill(OceanBillForm form);
 
     /**
      * 查看提单详情

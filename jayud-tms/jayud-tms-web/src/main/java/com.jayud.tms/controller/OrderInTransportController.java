@@ -316,7 +316,7 @@ public class OrderInTransportController {
             //当运输派车后在驳回时,重新编辑,再次走流程时会出现两条派车记录,原来那条作废
             if(CommonConstant.SEND_CAR.equals(form.getCmd())) {
                 QueryWrapper removeWrapper = new QueryWrapper();
-                removeWrapper.eq("order_no", form.getOrderId());
+                removeWrapper.eq("order_no", form.getOrderNo());
                 orderSendCarsService.remove(removeWrapper);
             }
             //保存派车信息

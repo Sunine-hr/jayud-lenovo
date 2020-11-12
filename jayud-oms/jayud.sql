@@ -119,8 +119,14 @@ MODIFY COLUMN `area_code` bigint(20) NULL DEFAULT NULL COMMENT '区' AFTER `city
 ALTER TABLE `vehicle_info`
 ADD COLUMN `file_name` varchar(255) NULL COMMENT '附件名称，多个时用逗号隔开' AFTER `vehicle_tonnage`;
 
--- 2020年11月10日李达荣，功能描述：车辆
+-- 2020年11月10日李达荣，功能描述：供应商设置非必填
 ALTER TABLE `supplier_info`
 MODIFY COLUMN `buyer_id` bigint(20) NULL COMMENT '采购人员id' AFTER `rate`;
 
 -- sql 以上都同步到测试服务器
+
+-- 2020年11月10日李达荣，功能描述：客户维护地址字段类型更改
+ALTER TABLE `customer_address`
+MODIFY COLUMN `province` int(20) NOT NULL COMMENT '省主键' AFTER `phone`,
+MODIFY COLUMN `city` int(20) NOT NULL COMMENT '市主键' AFTER `province`,
+MODIFY COLUMN `area` int(20) NULL DEFAULT NULL COMMENT '区主键' AFTER `city`;

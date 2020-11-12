@@ -46,24 +46,23 @@ public class AddCustomerAddressForm {
     @NotEmpty(message = "phone is required")
     private String phone;
 
-    @ApiModelProperty(value = "省")
-    @NotEmpty(message = "province is required")
-    private String province;
+    @ApiModelProperty(value = "省主键")
+    @NotNull(message = "province is required")
+    private Integer province;
 
-    @ApiModelProperty(value = "市")
-    @NotEmpty(message = "city is required")
-    private String city;
+    @ApiModelProperty(value = "市主键")
+    @NotNull(message = "city is required")
+    private Integer city;
 
-    @ApiModelProperty(value = "区")
-    private String area;
+    @ApiModelProperty(value = "区主键")
+    private Integer area;
 
     @ApiModelProperty(value = "详细地址")
     @NotEmpty(message = "address is required")
     private String address;
 
     @ApiModelProperty(value = "邮编")
-    @NotEmpty(message = "postcode is required")
-    private String postcode;
+    private String postCode;
 
 
 }

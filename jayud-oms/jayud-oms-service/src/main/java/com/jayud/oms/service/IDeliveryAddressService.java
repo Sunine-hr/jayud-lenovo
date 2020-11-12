@@ -2,19 +2,19 @@ package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.oms.model.bo.QueryCustomerAddressForm;
-import com.jayud.oms.model.po.CustomerAddress;
+import com.jayud.oms.model.po.DeliveryAddress;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.vo.CustomerAddressVO;
 
 /**
  * <p>
- * 客户地址 服务类
+ * 提货地址基础数据表 服务类
  * </p>
  *
  * @author 李达荣
- * @since 2020-11-04
+ * @since 2020-11-12
  */
-public interface ICustomerAddressService extends IService<CustomerAddress> {
+public interface IDeliveryAddressService extends IService<DeliveryAddress> {
 
     /**
      * 分页查询客户地址
@@ -25,8 +25,7 @@ public interface ICustomerAddressService extends IService<CustomerAddress> {
 
     /**
      * 新增编辑客户地址
-     * @param customerAddress
      * @return
      */
-    boolean saveOrUpdateCustomerAddress(CustomerAddress customerAddress);
+    boolean saveOrUpdateCustomerAddress(DeliveryAddress deliveryAddress);
 }

@@ -1,5 +1,6 @@
 package com.jayud.tools.service.impl;
 
+import cn.hutool.poi.excel.sax.Excel03SaxReader;
 import cn.hutool.poi.excel.sax.Excel07SaxReader;
 import cn.hutool.poi.excel.sax.handler.RowHandler;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -206,6 +207,55 @@ public class CargoNameServiceImpl extends ServiceImpl<CargoNameMapper, CargoName
 //        System.out.println("插入耗时:--------------------------" + (start - end) + "--------------------------");
 //        //插入耗时:---------------------------80356--------------------------
 
+        try {
+            long start = System.currentTimeMillis();
+            this.exec(cargoNameList, 1000);
+            long end = System.currentTimeMillis();
+            System.out.println("插入耗时:--------------------------" + (start - end) + "--------------------------");
+            //插入耗时:---------------------------17776--------------------------
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void importBigExcelV3(InputStream inputStream, Long userId) {
+        //每次进入createRowHandler之前先清空excelList
+        excelList.clear();
+
+        Excel03SaxReader reader = new Excel03SaxReader(createRowHandler());
+        Excel03SaxReader  read = reader.read(inputStream, 0);
+        //当前登录用户Id
+        userId = (userId != null) ? userId : 1;
+        //导入前先删除数据,根据登录用户的用户id做删除
+        cargoNameMapper.deleteCargoNameByUserId(userId);
+        //构造插入的数据
+        List<CargoName> cargoNameList = new ArrayList<>();
+        //int i = 1，从第2行记录开是计算，跳过表头列
+        for(int i=1; i<excelList.size(); i++){
+            /**
+             //配置别名
+             Map<String,String> aliasMap=new HashMap<>();
+             aliasMap.put("运单编号", "ytdh");
+             aliasMap.put("商品名称", "hpmc");
+             aliasMap.put("件数", "js");
+             aliasMap.put("毛重KG", "zl");
+             excelReader.setHeaderAlias(aliasMap);
+             */
+            List<Object> o = excelList.get(i);
+            if(String.valueOf(o.get(0)) != null && String.valueOf(o.get(0)) != ""){
+                CargoName cargoName = new CargoName();
+                cargoName.setYtdh(String.valueOf(o.get(0)));//运单编号
+                cargoName.setHpmc(String.valueOf(o.get(1)));//商品名称
+                cargoName.setJs(Integer.valueOf(String.valueOf(o.get(2))));//件数
+                cargoName.setZl(MathUtils.getBigDecimal(o.get(3)));//毛重KG
+                //登录用户的用户Id
+                cargoName.setUserId(userId);//userid
+                //add cargoName
+                cargoNameList.add(cargoName);
+            }
+        }
         try {
             long start = System.currentTimeMillis();
             this.exec(cargoNameList, 1000);

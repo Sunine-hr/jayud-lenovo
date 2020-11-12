@@ -33,6 +33,7 @@
           da.`state_name` stateName,
           da.`city_name` cityName,
           da.`address`,
+          ota.delivery_id deliveryId,
           DATE_FORMAT(
             ota.`take_time`,
             '%Y-%m-%d %H:%i:%S'

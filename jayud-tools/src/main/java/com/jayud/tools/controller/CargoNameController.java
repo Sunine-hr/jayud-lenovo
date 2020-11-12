@@ -468,5 +468,41 @@ public class CargoNameController {
         return CommonResult.success("清空`货物名称表`成功");
     }
 
+    @ApiOperation(value = "导入Excel(V3)")
+    @ApiOperationSupport(order = 12)
+    @RequestMapping(value = "/importExcelV3", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult importExcelV3(@RequestParam("file") MultipartFile file,
+                                      @RequestParam(value = "userId",required=false) Long userId,
+                                      HttpServletRequest request){
+        if (file.isEmpty()) {
+            return CommonResult.error(-1, "文件为空！");
+        }
+        // 1.获取上传文件输入流
+        InputStream inputStream = null;
+        try {
+            inputStream = file.getInputStream();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        //调用用 hutool 方法读取数据 默认调用第一个sheet
+//        ExcelReader excelReader = ExcelUtil.getReader(inputStream);
+//        //配置别名
+//        Map<String,String> aliasMap=new HashMap<>();
+//        aliasMap.put("运单编号", "ytdh");
+//        aliasMap.put("商品名称", "hpmc");
+//        aliasMap.put("件数", "js");
+//        aliasMap.put("毛重KG", "zl");
+//        excelReader.setHeaderAlias(aliasMap);
+//        // 第一个参数是指表头所在行，第二个参数是指从哪一行开始读取
+//        List<CargoName> list= excelReader.read(0, 1, CargoName.class);
+//        System.out.println(list);
+
+        //大数据导入，不能设置别名
+        cargoNameService.importBigExcelV3(inputStream,userId);
+
+        return CommonResult.success("导入Excel成功！");
+    }
+
 
 }

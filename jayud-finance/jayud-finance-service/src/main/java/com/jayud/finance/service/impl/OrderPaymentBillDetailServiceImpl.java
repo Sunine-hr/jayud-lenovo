@@ -12,11 +12,9 @@ import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.mapper.OrderPaymentBillDetailMapper;
 import com.jayud.finance.po.CancelAfterVerification;
+import com.jayud.finance.po.MakeInvoice;
 import com.jayud.finance.po.OrderPaymentBillDetail;
-import com.jayud.finance.service.ICancelAfterVerificationService;
-import com.jayud.finance.service.IOrderBillCostTotalService;
-import com.jayud.finance.service.IOrderPaymentBillDetailService;
-import com.jayud.finance.service.IOrderPaymentBillService;
+import com.jayud.finance.service.*;
 import com.jayud.finance.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,6 +45,9 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
 
     @Autowired
     ICancelAfterVerificationService verificationService;
+
+    @Autowired
+    IMakeInvoiceService makeInvoiceService;
 
     @Override
     public IPage<OrderPaymentBillDetailVO> findPaymentBillDetailByPage(QueryPaymentBillDetailForm form) {
@@ -263,6 +264,62 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     @Override
     public List<FCostVO> findFCostList(String billNo) {
         return baseMapper.findFCostList(billNo);
+    }
+
+    @Override
+    public Boolean auditInvoice(BillAuditForm form) {
+        OrderPaymentBillDetail billDetail = new OrderPaymentBillDetail();
+        billDetail.setId(form.getBillDetailId());
+        String applyStatus = "";
+        String status = "";
+        if("0".equals(form.getAuditStatus())){
+            applyStatus = BillEnum.F_2.getCode();
+            status = BillEnum.B_6.getCode();
+        }else {
+            applyStatus = BillEnum.F_3.getCode();
+            status = BillEnum.B_6_1.getCode();
+        }
+        billDetail.setApplyStatus(applyStatus);
+        billDetail.setAuditStatus(status);
+        Integer num = baseMapper.updateById(billDetail);
+        if(num > 0){
+            //保存审核信息
+            AuditInfoForm auditInfoForm = new AuditInfoForm();
+            auditInfoForm.setExtId(form.getBillDetailId());
+            auditInfoForm.setAuditTypeDesc("付款审核");
+            auditInfoForm.setAuditStatus(applyStatus);
+            auditInfoForm.setAuditComment(form.getAuditComment());
+            auditInfoForm.setExtDesc("order_payment_bill_detail表");
+            auditInfoForm.setAuditUser(UserOperator.getToken());
+            omsClient.saveAuditInfo(auditInfoForm);
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    @Override
+    public List<MakeInvoiceVO> findInvoiceList(String billNo) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("bill_no",billNo);
+        List<MakeInvoice> makeInvoices = makeInvoiceService.list(queryWrapper);
+        return ConvertUtil.convertList(makeInvoices,MakeInvoiceVO.class);
+    }
+
+    @Override
+    public Boolean makeInvoice(MakeInvoiceForm form) {
+        MakeInvoice makeInvoic = ConvertUtil.convert(form,MakeInvoice.class);
+        return makeInvoiceService.save(makeInvoic);
+    }
+
+    @Override
+    public Boolean makeInvoiceDel(Long invoiceId) {
+        MakeInvoice makeInvoice = new MakeInvoice();
+        makeInvoice.setId(invoiceId);
+        makeInvoice.setStatus("0");
+        makeInvoice.setCreatedTime(LocalDateTime.now());
+        makeInvoice.setCreatedUser(UserOperator.getToken());
+        return makeInvoiceService.updateById(makeInvoice);
     }
 
 

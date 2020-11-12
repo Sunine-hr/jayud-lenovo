@@ -129,4 +129,32 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      * @return
      */
     List<FCostVO> findFCostList(String billNo);
+
+    /**
+     * 开票审核
+     * @param form
+     * @return
+     */
+    Boolean auditInvoice(BillAuditForm form);
+
+    /**
+     * 开票核销列表
+     * @param billNo
+     * @return
+     */
+    List<MakeInvoiceVO> findInvoiceList(String billNo);
+
+    /**
+     * 开票核销
+     * @param form
+     * @return
+     */
+    Boolean makeInvoice(MakeInvoiceForm form);
+
+    /**
+     * 开票作废
+     * @param invoiceId
+     * @return
+     */
+    Boolean makeInvoiceDel(Long invoiceId);
 }

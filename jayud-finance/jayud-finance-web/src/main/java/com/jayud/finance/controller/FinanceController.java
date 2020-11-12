@@ -8,9 +8,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
-import com.jayud.finance.bo.HeXiaoConfirmForm;
-import com.jayud.finance.bo.QueryEditBillForm;
-import com.jayud.finance.bo.QueryFinanceAccountForm;
+import com.jayud.finance.bo.*;
 import com.jayud.finance.service.IOrderPaymentBillDetailService;
 import com.jayud.finance.util.StringUtils;
 import com.jayud.finance.vo.*;
@@ -173,13 +171,45 @@ public class FinanceController {
         List<FCostVO> fCostVOS = billDetailService.findFCostList(billNo);
         return CommonResult.success(fCostVOS);
     }
-    //开票审核
 
-    //开票审核列表
+    @ApiOperation(value = "开票审核")
+    @PostMapping("/auditInvoice")
+    public CommonResult auditInvoice(@RequestBody @Valid BillAuditForm form) {
+        Boolean result = billDetailService.auditInvoice(form);
+        if (!result) {
+            return CommonResult.error(ResultEnum.OPR_FAIL);
+        }
+        return CommonResult.success();
+    }
 
-    //开票核销
+    @ApiOperation(value = "开票核销列表")
+    @PostMapping("/findInvoiceList")
+    public CommonResult<List<MakeInvoiceVO>> findInvoiceList(@RequestBody Map<String,Object> param) {
+        String billNo = MapUtil.getStr(param,"bill_no");
+        List<MakeInvoiceVO> invoiceVOS = billDetailService.findInvoiceList(billNo);
+        return CommonResult.success(invoiceVOS);
+    }
 
-    //开票作废
+    @ApiOperation(value = "开票核销")
+    @PostMapping("/makeInvoice")
+    public CommonResult makeInvoice(@RequestBody @Valid MakeInvoiceForm form) {
+        Boolean result = billDetailService.makeInvoice(form);
+        if (!result) {
+            return CommonResult.error(ResultEnum.OPR_FAIL);
+        }
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "开票作废")
+    @PostMapping("/makeInvoiceDel")
+    public CommonResult makeInvoiceDel(@RequestBody Map<String,Object> param) {
+        Long inVoiceId = Long.parseLong(MapUtil.getStr(param,"inVoiceId"));
+        Boolean result = billDetailService.makeInvoiceDel(inVoiceId);
+        if (!result) {
+            return CommonResult.error(ResultEnum.OPR_FAIL);
+        }
+        return CommonResult.success();
+    }
 
     /**汇率管理*/
     //汇率管理列表

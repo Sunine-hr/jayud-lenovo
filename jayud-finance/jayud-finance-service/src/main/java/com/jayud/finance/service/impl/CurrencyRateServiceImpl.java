@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.UserOperator;
 import com.jayud.finance.bo.AddCurrencyManageForm;
 import com.jayud.finance.bo.AddCurrencyRateForm;
 import com.jayud.finance.bo.QueryCurrencyRateForm;
@@ -41,7 +42,16 @@ public class CurrencyRateServiceImpl extends ServiceImpl<CurrencyRateMapper, Cur
     public Boolean saveCurrencyRate(AddCurrencyManageForm form) {
         //新增的时候批量操作
         List<CurrencyRate> currencyRates = new ArrayList<>();
-
+        for (AddCurrencyRateForm addCurrencyRateForm : form.getRateFormList()) {
+            CurrencyRate currencyRate = new CurrencyRate();
+            currencyRate.setOcid(addCurrencyRateForm.getOcid());
+            currencyRate.setExchangeRate(addCurrencyRateForm.getExchangeRate());
+            String month = "" ;//form.getMonthDate();
+            currencyRate.setMonth(month);
+            currencyRate.setBeginValidDate(form.getBeginValidDate());
+            currencyRate.setEndValidDate(form.getEndValidDate());
+            currencyRate.setCreatedUser(UserOperator.getToken());
+        }
         return saveBatch(currencyRates);
     }
 

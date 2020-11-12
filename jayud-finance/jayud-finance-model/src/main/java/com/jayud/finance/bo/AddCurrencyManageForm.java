@@ -18,9 +18,6 @@ public class AddCurrencyManageForm {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM")
     private LocalDate monthDate;
 
-    @ApiModelProperty(value = "XXXX年XX月",required = true)
-    private String month;
-
     @ApiModelProperty(value = "汇率集合",required = true)
     @NotNull(message = "rateFormList is required")
     private List<AddCurrencyRateForm> rateFormList;

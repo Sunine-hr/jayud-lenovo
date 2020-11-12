@@ -313,6 +313,12 @@ public class OrderInTransportController {
               form.getWarehouseInfoId() == null || (form.getIsHaveEncode() && StringUtil.isNullOrEmpty(form.getEncode()))){
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }
+            //当运输派车后在驳回时,重新编辑,再次走流程时会出现两条派车记录,原来那条作废
+            if(CommonConstant.SEND_CAR.equals(form.getCmd())) {
+                QueryWrapper removeWrapper = new QueryWrapper();
+                removeWrapper.eq("order_no", form.getOrderId());
+                orderSendCarsService.remove(removeWrapper);
+            }
             //保存派车信息
             orderSendCars.setCntrPic(StringUtils.getFileStr(form.getCntrPics()));
             orderSendCars.setCntrPicName(StringUtils.getFileNameStr(form.getCntrPics()));

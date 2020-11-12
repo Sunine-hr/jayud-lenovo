@@ -38,8 +38,8 @@
         da.`address`
         FROM
         delivery_address da
-        WHERE da.type = #{type}
-        and da.customer_id in (select ci.id from customer_info ci where ci.id_code = #{customerCode})
+        WHERE da.type = #{form.type}
+        and da.customer_id in (select ci.id from customer_info ci where ci.id_code = #{form.customerCode})
         <if test="form.contacts != null and form.contacts != ''">
             and da.contacts like concat('%',#{form.contacts},'%')
         </if>

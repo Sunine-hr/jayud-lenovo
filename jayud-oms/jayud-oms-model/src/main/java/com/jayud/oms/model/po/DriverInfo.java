@@ -52,12 +52,6 @@ public class DriverInfo extends Model<DriverInfo> {
     @ApiModelProperty(value = "驾驶证")
     private String drivingNo;
 
-    @ApiModelProperty(value = "供应商id(supplier_info id)")
-    private Long supplierId;
-
-    @ApiModelProperty(value = "供应商名字(supplier_info name)")
-    private String supplierName;
-
     @ApiModelProperty(value = "启用状态0-禁用，1-启用")
     private String status;
 

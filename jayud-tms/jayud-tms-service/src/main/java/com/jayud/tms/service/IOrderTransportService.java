@@ -2,12 +2,16 @@ package com.jayud.tms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.tms.model.bo.InputOrderTransportForm;
+import com.jayud.tms.model.bo.QueryDriverOrderTransportForm;
 import com.jayud.tms.model.bo.QueryOrderTmsForm;
 import com.jayud.tms.model.po.OrderTransport;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.tms.model.vo.DriverOrderTransportVO;
 import com.jayud.tms.model.vo.InputOrderTransportVO;
 import com.jayud.tms.model.vo.OrderTransportVO;
 import com.jayud.tms.model.vo.SendCarPdfVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -55,6 +59,13 @@ public interface IOrderTransportService extends IService<OrderTransport> {
      * @return
      */
     SendCarPdfVO initPdfData(String orderNo,String classCode);
+
+    /**
+     * 分页查询司机的中港订单信息
+     * @param form
+     * @return
+     */
+    List<DriverOrderTransportVO> getDriverOrderTransport(QueryDriverOrderTransportForm form);
 
 
 }

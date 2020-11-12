@@ -4,39 +4,53 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.tms.model.po.OrderTransport">
-        <id column="id" property="id" />
-        <result column="main_order_no" property="mainOrderNo" />
-        <result column="order_no" property="orderNo" />
-        <result column="port_code" property="portCode" />
-        <result column="goods_type" property="goodsType" />
-        <result column="vehicle_type" property="vehicleType" />
-        <result column="vehicle_size" property="vehicleSize" />
-        <result column="cntr_no" property="cntrNo" />
-        <result column="cntr_pic" property="cntrPic" />
-        <result column="cntr_pic_name" property="cntrPicName" />
-        <result column="warehouse_info_id" property="warehouseInfoId" />
-        <result column="encode" property="encode" />
-        <result column="status" property="status" />
-        <result column="is_load_goods" property="isLoadGoods" />
-        <result column="is_unload_goods" property="isUnloadGoods" />
-        <result column="unit_code" property="unitCode" />
-        <result column="legal_name" property="legalName" />
-        <result column="hk_unit_code" property="hkUnitCode" />
-        <result column="hk_legal_name" property="hkLegalName" />
-        <result column="is_hk_clear" property="isHkClear" />
-        <result column="jiedan_user" property="jiedanUser" />
-        <result column="jiedan_time" property="jiedanTime" />
-        <result column="car_weigh_num" property="carWeighNum" />
-        <result column="updated_time" property="updatedTime" />
-        <result column="updated_user" property="updatedUser" />
-        <result column="created_time" property="createdTime" />
-        <result column="created_user" property="createdUser" />
-        <result column="hk_supplier_id" property="hkSupplierId" />
-        <result column="hk_driver_name" property="hkDriverName" />
-        <result column="hk_driver_phone" property="hkDriverPhone" />
-        <result column="license_plate" property="licensePlate" />
-        <result column="hk_license_plate" property="hkLicensePlate" />
-        <result column="need_input_cost" property="needInputCost" />
+        <id column="id" property="id"/>
+        <result column="main_order_no" property="mainOrderNo"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="port_code" property="portCode"/>
+        <result column="goods_type" property="goodsType"/>
+        <result column="vehicle_type" property="vehicleType"/>
+        <result column="vehicle_size" property="vehicleSize"/>
+        <result column="cntr_no" property="cntrNo"/>
+        <result column="cntr_pic" property="cntrPic"/>
+        <result column="cntr_pic_name" property="cntrPicName"/>
+        <result column="warehouse_info_id" property="warehouseInfoId"/>
+        <result column="encode" property="encode"/>
+        <result column="status" property="status"/>
+        <result column="is_load_goods" property="isLoadGoods"/>
+        <result column="is_unload_goods" property="isUnloadGoods"/>
+        <result column="unit_code" property="unitCode"/>
+        <result column="legal_name" property="legalName"/>
+        <result column="hk_unit_code" property="hkUnitCode"/>
+        <result column="hk_legal_name" property="hkLegalName"/>
+        <result column="is_hk_clear" property="isHkClear"/>
+        <result column="jiedan_user" property="jiedanUser"/>
+        <result column="jiedan_time" property="jiedanTime"/>
+        <result column="car_weigh_num" property="carWeighNum"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="updated_user" property="updatedUser"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="hk_supplier_id" property="hkSupplierId"/>
+        <result column="hk_driver_name" property="hkDriverName"/>
+        <result column="hk_driver_phone" property="hkDriverPhone"/>
+        <result column="license_plate" property="licensePlate"/>
+        <result column="hk_license_plate" property="hkLicensePlate"/>
+        <result column="need_input_cost" property="needInputCost"/>
+    </resultMap>
+
+    <resultMap id="DriverOrderInfoVO" type="com.jayud.tms.model.vo.DriverOrderTransportVO">
+        <id column="id" property="id"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="portName" column="name"/>
+        <!--        <collection property="pickUpGoodsList" ofType="com.jayud.tms.model.vo.DriverOrderTakeAdrVO" >-->
+        <!--            <id property="id" column="orderTakeAdrId" />-->
+        <!--            <result property="contacts" column="contacts"/>-->
+        <!--            <result property="phone" column="phone"/>-->
+        <!--            <result property="takeTime" column="take_time"/>-->
+        <!--            <result property="goodsDesc" column="goods_desc"/>-->
+        <!--            <result property="oprType" column="opr_type"/>-->
+        <!--        </collection>-->
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -47,7 +61,7 @@
         hk_supplier_id,hk_driver_name,hk_driver_phone,license_plate,hk_license_plate
     </sql>
 
-    <select id="getOrderTransport"  resultType="com.jayud.tms.model.vo.InputOrderTransportVO" >
+    <select id="getOrderTransport" resultType="com.jayud.tms.model.vo.InputOrderTransportVO">
         SELECT
           ot.id,
           ot.`order_no` orderNo,
@@ -100,58 +114,61 @@
             ON osc.`warehouse_info_id` = wi.`id`
           where ot.`main_order_no` = #{mainOrderNo}
     </select>
-    <select id="findTransportOrderByPage" parameterType="com.jayud.tms.model.bo.QueryOrderTmsForm" resultType="com.jayud.tms.model.vo.OrderTransportVO" >
+    <select id="findTransportOrderByPage" parameterType="com.jayud.tms.model.bo.QueryOrderTmsForm"
+            resultType="com.jayud.tms.model.vo.OrderTransportVO">
         SELECT
-            ot.`id`,
-            oi.`id` mainOrderId,
-            oi.`order_no` mainOrderNo,
-            oi.`biz_code` bizCode,
-            ot.`order_no` orderNo,
-            p.`name` portName,
-            ot.`goods_type` goodsType,
-            oi.`status`,
-            oi.`class_code` classCode,
-            pc.`name` classCodeDesc,
-            oi.`customer_name` customerName,
-            ot.`created_user` createdUser,
-            DATE_FORMAT(ot.`created_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
-            t.`goods_desc` goodsDesc,
-            t.`piece_amount` pieceAmount,
-            t.`plate_amount` plateAmount,
-            t.`weight`,
-            t.state_name stateName1,
-            t.city_name cityName1,
-            t.address address1,
-            s.state_name stateName2,
-            s.city_name cityName2,
-            s.address address2,
-            ot.`encode`,
-            ot.`vehicle_type` vehicleType,
-            ot.`vehicle_size` vehicleSize,
-            ot.`cntr_no` cntrNo,
-            (CASE  WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
-            (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
-            ELSE FALSE
-            END) isCost,
-            oi.`need_input_cost` needInputCost,
-            ot.`status` subTmsStatus,
-            ot.`legal_name` legalName
+        ot.`id`,
+        oi.`id` mainOrderId,
+        oi.`order_no` mainOrderNo,
+        oi.`biz_code` bizCode,
+        ot.`order_no` orderNo,
+        p.`name` portName,
+        ot.`goods_type` goodsType,
+        oi.`status`,
+        oi.`class_code` classCode,
+        pc.`name` classCodeDesc,
+        oi.`customer_name` customerName,
+        ot.`created_user` createdUser,
+        DATE_FORMAT(ot.`created_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
+        t.`goods_desc` goodsDesc,
+        t.`piece_amount` pieceAmount,
+        t.`plate_amount` plateAmount,
+        t.`weight`,
+        t.state_name stateName1,
+        t.city_name cityName1,
+        t.address address1,
+        s.state_name stateName2,
+        s.city_name cityName2,
+        s.address address2,
+        ot.`encode`,
+        ot.`vehicle_type` vehicleType,
+        ot.`vehicle_size` vehicleSize,
+        ot.`cntr_no` cntrNo,
+        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
+        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
+        ELSE FALSE
+        END) isCost,
+        oi.`need_input_cost` needInputCost,
+        ot.`status` subTmsStatus,
+        ot.`legal_name` legalName
         FROM
-            order_transport ot
-            LEFT JOIN order_info oi
-            ON ot.`main_order_no` = oi.`order_no`
-            LEFT JOIN port_info p
-            ON p.`id_code` = ot.`port_code`
-            LEFT JOIN product_classify pc
-            ON oi.`class_code` = pc.`id_code`
-            LEFT JOIN (SELECT ota.`order_no`,da.`state_name`,da.`city_name`,da.`address`,ota.`goods_desc`,ota.`piece_amount`,ota.`plate_amount`,
-            ota.`weight` FROM order_take_adr ota LEFT JOIN delivery_address da
-            ON ota.`delivery_id` = da.`id` AND ota.`opr_type` = '1' LIMIT 1) t
-            ON t.order_no = ot.`order_no`
-            LEFT JOIN (SELECT ota.`order_no`,da.`state_name`,da.`city_name`,da.`address`,ota.`goods_desc`,ota.`piece_amount`,ota.`plate_amount`,
-            ota.`weight` FROM order_take_adr ota LEFT JOIN delivery_address da
-            ON ota.`delivery_id` = da.`id` AND ota.`opr_type` = '2' LIMIT 1) s
-            ON s.order_no = ot.`order_no` where 1 = 1
+        order_transport ot
+        LEFT JOIN order_info oi
+        ON ot.`main_order_no` = oi.`order_no`
+        LEFT JOIN port_info p
+        ON p.`id_code` = ot.`port_code`
+        LEFT JOIN product_classify pc
+        ON oi.`class_code` = pc.`id_code`
+        LEFT JOIN (SELECT
+        ota.`order_no`,da.`state_name`,da.`city_name`,da.`address`,ota.`goods_desc`,ota.`piece_amount`,ota.`plate_amount`,
+        ota.`weight` FROM order_take_adr ota LEFT JOIN delivery_address da
+        ON ota.`delivery_id` = da.`id` AND ota.`opr_type` = '1' LIMIT 1) t
+        ON t.order_no = ot.`order_no`
+        LEFT JOIN (SELECT
+        ota.`order_no`,da.`state_name`,da.`city_name`,da.`address`,ota.`goods_desc`,ota.`piece_amount`,ota.`plate_amount`,
+        ota.`weight` FROM order_take_adr ota LEFT JOIN delivery_address da
+        ON ota.`delivery_id` = da.`id` AND ota.`opr_type` = '2' LIMIT 1) s
+        ON s.order_no = ot.`order_no` where 1 = 1
         <if test="form.orderNo != null and form.orderNo != ''">
             and ot.order_no = #{form.orderNo}
         </if>
@@ -224,27 +241,27 @@
             OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = oi.`order_no`))
         </if>
     </select>
-    <select id="initPdfData"  resultType="com.jayud.tms.model.vo.SendCarPdfVO" >
+    <select id="initPdfData" resultType="com.jayud.tms.model.vo.SendCarPdfVO">
         SELECT
-            oi.`legal_name` legalName,
-            '' enLegalName,
-            '' tel,
-            '' fax,
-            ot.`order_no` orderNo,
-            DATE_FORMAT(
-            ot.`jiedan_time`,
-            '%Y-%m-%d %H:%i:%S'
-            ) jiedanTimeStr,
-            osc.`license_plate` licensePlate,
-            osc.`hk_license_plate` hkLicensePlate,
-            osc.`driver_phone` driverPhone,
-            osc.`vehicle_size` vehicleSize,
-            osc.`vehicle_type` vehicleType,
-            p.`name` portName,
-            ot.`goods_type` goodsType,
-            ot.`jiedan_user` jiedanUser,
-            si.`supplier_ch_name` clearCustomsAddress,
-            (SELECT su.phone FROM `system_user` su WHERE su.name = ot.`jiedan_user`) jiedanPhone
+        oi.`legal_name` legalName,
+        '' enLegalName,
+        '' tel,
+        '' fax,
+        ot.`order_no` orderNo,
+        DATE_FORMAT(
+        ot.`jiedan_time`,
+        '%Y-%m-%d %H:%i:%S'
+        ) jiedanTimeStr,
+        osc.`license_plate` licensePlate,
+        osc.`hk_license_plate` hkLicensePlate,
+        osc.`driver_phone` driverPhone,
+        osc.`vehicle_size` vehicleSize,
+        osc.`vehicle_type` vehicleType,
+        p.`name` portName,
+        ot.`goods_type` goodsType,
+        ot.`jiedan_user` jiedanUser,
+        si.`supplier_ch_name` clearCustomsAddress,
+        (SELECT su.phone FROM `system_user` su WHERE su.name = ot.`jiedan_user`) jiedanPhone
         FROM
         order_info oi
         LEFT JOIN order_transport ot
@@ -259,5 +276,38 @@
         <if test="orderNo != null and orderNo != ''">
             and ot.order_no = #{orderNo}
         </if>
+    </select>
+
+
+    <select id="getDriverOrderTransport" parameterType="com.jayud.tms.model.bo.QueryDriverOrderTransportForm"
+            resultType="com.jayud.tms.model.vo.DriverOrderTransportVO">
+        select
+        ot.id,ot.order_no orderNo,pf.name portName,ot.status
+        from
+        order_send_cars oc left join order_transport ot on oc.order_no =ot.order_no
+        left join port_info pf on pf.id_code = ot.port_code
+        <where>
+            <if test="form.status !=null and form.status !=''">
+                and ot.status = #{form.status}
+            </if>
+            <if test="form.orderNo !=null and form.orderNo !=''">
+                and ot.order_no like concat('%',#{form.orderNo},'%')
+            </if>
+            <if test="form.driverId !=null">
+                and oc.driver_info_id = #{form.driverId}
+            </if>
+            <if test="form.orderIds !=null">
+                and ot.id in
+                <foreach collection="form.orderIds" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="form.excludeOrderIds !=null and form.status !=null and form.status!=''">
+                and ot.id not in
+                <foreach collection="form.excludeOrderIds" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
     </select>
 </mapper>

@@ -170,4 +170,11 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
             return this.count(condition) > 0;
         }
     }
+
+    @Override
+    public List<CostInfo> getCostInfoByStatus(String status) {
+        QueryWrapper<CostInfo> condition = new QueryWrapper<>();
+        condition.lambda().eq(CostInfo::getStatus, status);
+        return this.baseMapper.selectList(condition);
+    }
 }

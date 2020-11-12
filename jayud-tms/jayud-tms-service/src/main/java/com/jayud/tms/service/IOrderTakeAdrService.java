@@ -2,6 +2,7 @@ package com.jayud.tms.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.tms.model.po.OrderTakeAdr;
+import com.jayud.tms.model.vo.DriverOrderTakeAdrVO;
 import com.jayud.tms.model.vo.InputOrderTakeAdrVO;
 
 import java.util.List;
@@ -19,9 +20,14 @@ public interface IOrderTakeAdrService extends IService<OrderTakeAdr> {
 
     /**
      * 获取提货信息
+     *
      * @param orderNo
      * @return
      */
     public List<InputOrderTakeAdrVO> findTakeGoodsInfo(String orderNo);
 
+    /**
+     * 根据订单编号查询司机送货/收货地址
+     */
+    List<DriverOrderTakeAdrVO> getDriverOrderTakeAdr(List<String> orderNoList);
 }

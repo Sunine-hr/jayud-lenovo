@@ -13,6 +13,7 @@ import com.jayud.common.utils.StringUtils;
 import com.jayud.tms.mapper.OrderTransportMapper;
 import com.jayud.tms.model.bo.InputOrderTakeAdrForm;
 import com.jayud.tms.model.bo.InputOrderTransportForm;
+import com.jayud.tms.model.bo.QueryDriverOrderTransportForm;
 import com.jayud.tms.model.bo.QueryOrderTmsForm;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import com.jayud.tms.model.po.OrderTransport;
@@ -21,12 +22,14 @@ import com.jayud.tms.service.IDeliveryAddressService;
 import com.jayud.tms.service.IOrderSendCarsService;
 import com.jayud.tms.service.IOrderTakeAdrService;
 import com.jayud.tms.service.IOrderTransportService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -54,8 +57,8 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 
     @Override
     public boolean createOrderTransport(InputOrderTransportForm form) {
-        OrderTransport orderTransport = ConvertUtil.convert(form,OrderTransport.class);
-        if(orderTransport == null){
+        OrderTransport orderTransport = ConvertUtil.convert(form, OrderTransport.class);
+        if (orderTransport == null) {
             return false;
         }
         List<InputOrderTakeAdrForm> orderTakeAdrForms1 = form.getTakeAdrForms1();
@@ -72,27 +75,27 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         List<InputOrderTakeAdrForm> handleTakeAdrForms = new ArrayList<>();
         handleTakeAdrForms.addAll(orderTakeAdrForms1);
         handleTakeAdrForms.addAll(orderTakeAdrForms2);
-        for(InputOrderTakeAdrForm inputOrderTakeAdrForm : handleTakeAdrForms){
+        for (InputOrderTakeAdrForm inputOrderTakeAdrForm : handleTakeAdrForms) {
             //如果收货提货信息都不填,不保存该信息,视为恶意操作
-            if(inputOrderTakeAdrForm.getDeliveryId() != null){
+            if (inputOrderTakeAdrForm.getDeliveryId() != null) {
                 orderTakeAdrForms.add(inputOrderTakeAdrForm);
             }
         }
 
-        if(orderTransport.getId() != null){//修改
+        if (orderTransport.getId() != null) {//修改
             //修改时,先把以前的收货信息清空
             QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.eq("order_no",form.getOrderNo());
+            queryWrapper.eq("order_no", form.getOrderNo());
             orderTakeAdrService.remove(queryWrapper);//删除货物信息
             orderTransport.setUpdatedTime(LocalDateTime.now());
             orderTransport.setUpdatedUser(form.getLoginUser());
-        }else {//新增
+        } else {//新增
             //生成订单号
-            String orderNo = StringUtils.loadNum(CommonConstant.T,12);
-            while (true){
-                if(!isExistOrder(orderNo)){//重复
-                    orderNo = StringUtils.loadNum(CommonConstant.T,12);
-                }else {
+            String orderNo = StringUtils.loadNum(CommonConstant.T, 12);
+            while (true) {
+                if (!isExistOrder(orderNo)) {//重复
+                    orderNo = StringUtils.loadNum(CommonConstant.T, 12);
+                } else {
                     break;
                 }
             }
@@ -100,7 +103,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             orderTransport.setCreatedUser(form.getLoginUser());
         }
         for (InputOrderTakeAdrForm inputOrderTakeAdrForm : orderTakeAdrForms) {
-            OrderTakeAdr orderTakeAdr = ConvertUtil.convert(inputOrderTakeAdrForm,OrderTakeAdr.class);
+            OrderTakeAdr orderTakeAdr = ConvertUtil.convert(inputOrderTakeAdrForm, OrderTakeAdr.class);
             orderTakeAdr.setOrderNo(orderTransport.getOrderNo());
             orderTakeAdrService.save(orderTakeAdr);
         }
@@ -114,9 +117,9 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     @Override
     public boolean isExistOrder(String orderNo) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(SqlConstant.ORDER_NO,orderNo);
+        queryWrapper.eq(SqlConstant.ORDER_NO, orderNo);
         List<OrderTransport> orderTransports = baseMapper.selectList(queryWrapper);
-        if(orderTransports == null || orderTransports.size() == 0){
+        if (orderTransports == null || orderTransports.size() == 0) {
             return true;
         }
         return false;
@@ -125,7 +128,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     @Override
     public InputOrderTransportVO getOrderTransport(String mainOrderNo) {
         InputOrderTransportVO inputOrderTransportVO = baseMapper.getOrderTransport(mainOrderNo);
-        if(inputOrderTransportVO == null){
+        if (inputOrderTransportVO == null) {
             return new InputOrderTransportVO();
         }
         //获取提货/送货地址
@@ -135,17 +138,17 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         Integer totalAmount = 0;//总件数
         Double totalWeight = 0.0;//总重量
         for (InputOrderTakeAdrVO inputOrderTakeAdrVO : inputOrderTakeAdrVOS) {
-            if(CommonConstant.VALUE_1.equals(String.valueOf(inputOrderTakeAdrVO.getOprType()))){//提货
+            if (CommonConstant.VALUE_1.equals(String.valueOf(inputOrderTakeAdrVO.getOprType()))) {//提货
                 orderTakeAdrForms1.add(inputOrderTakeAdrVO);
-                if(inputOrderTakeAdrVO.getPieceAmount() == null){
+                if (inputOrderTakeAdrVO.getPieceAmount() == null) {
                     inputOrderTakeAdrVO.setPieceAmount(0);
                 }
-                if(inputOrderTakeAdrVO.getWeight() == null){
+                if (inputOrderTakeAdrVO.getWeight() == null) {
                     inputOrderTakeAdrVO.setWeight(0.0);
                 }
                 totalAmount = totalAmount + inputOrderTakeAdrVO.getPieceAmount();
                 totalWeight = totalWeight + inputOrderTakeAdrVO.getWeight();
-            }else {
+            } else {
                 orderTakeAdrForms2.add(inputOrderTakeAdrVO);  //送货
             }
         }
@@ -159,7 +162,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     @Override
     public IPage<OrderTransportVO> findTransportOrderByPage(QueryOrderTmsForm form) {
         //定义分页参数
-        Page<OrderTransportVO> page = new Page(form.getPageNum(),form.getPageSize());
+        Page<OrderTransportVO> page = new Page(form.getPageNum(), form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.desc("ot.id"));
         IPage<OrderTransportVO> pageInfo = baseMapper.findTransportOrderByPage(page, form);
@@ -168,39 +171,39 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 
     @Override
     public SendCarPdfVO initPdfData(String orderNo, String classCode) {
-        SendCarPdfVO sendCarPdfVO = baseMapper.initPdfData(orderNo,classCode);
-        if(sendCarPdfVO == null){
+        SendCarPdfVO sendCarPdfVO = baseMapper.initPdfData(orderNo, classCode);
+        if (sendCarPdfVO == null) {
             return new SendCarPdfVO();
         }
         List<InputOrderTakeAdrVO> inputOrderTakeAdrVOS = orderTakeAdrService.findTakeGoodsInfo(orderNo);
         List<TakeGoodsInfoVO> takeGoodsInfo1 = new ArrayList<>();
         List<TakeGoodsInfoVO> takeGoodsInfo2 = new ArrayList<>();
         for (InputOrderTakeAdrVO inputOrderTakeAdrVO : inputOrderTakeAdrVOS) {
-            if(CommonConstant.VALUE_1.equals(String.valueOf(inputOrderTakeAdrVO.getOprType()))){//提货
-                takeGoodsInfo1.add(ConvertUtil.convert(inputOrderTakeAdrVO,TakeGoodsInfoVO.class));
-            }else {
-                takeGoodsInfo2.add(ConvertUtil.convert(inputOrderTakeAdrVO,TakeGoodsInfoVO.class));
+            if (CommonConstant.VALUE_1.equals(String.valueOf(inputOrderTakeAdrVO.getOprType()))) {//提货
+                takeGoodsInfo1.add(ConvertUtil.convert(inputOrderTakeAdrVO, TakeGoodsInfoVO.class));
+            } else {
+                takeGoodsInfo2.add(ConvertUtil.convert(inputOrderTakeAdrVO, TakeGoodsInfoVO.class));
             }
         }
         //提货信息
         sendCarPdfVO.setTakeInfo1(takeGoodsInfo1);
         //送货地址/联系人/联系电话/装车要求
         OrderSendCarsVO orderSendCarsVO = orderSendCarsService.getOrderSendInfo(orderNo);
-        if(orderSendCarsVO == null){
+        if (orderSendCarsVO == null) {
             return sendCarPdfVO;
         }
-        if(takeGoodsInfo2.size() > 1){//获取中转仓信息
+        if (takeGoodsInfo2.size() > 1) {//获取中转仓信息
             sendCarPdfVO.setDeliveryContacts(orderSendCarsVO.getWarehouseContacts());
-            sendCarPdfVO.setDeliveryAddress(orderSendCarsVO.getCountryName()+orderSendCarsVO.getProvinceName()+orderSendCarsVO.getCityName()+
+            sendCarPdfVO.setDeliveryAddress(orderSendCarsVO.getCountryName() + orderSendCarsVO.getProvinceName() + orderSendCarsVO.getCityName() +
                     orderSendCarsVO.getAddress());
             sendCarPdfVO.setDeliveryPhone(orderSendCarsVO.getWarehouseNumber());
-        }else if(takeGoodsInfo2.size() == 1){
-            sendCarPdfVO.setDeliveryAddress(takeGoodsInfo2.get(0).getStateName()+takeGoodsInfo2.get(0).getCityName()+
+        } else if (takeGoodsInfo2.size() == 1) {
+            sendCarPdfVO.setDeliveryAddress(takeGoodsInfo2.get(0).getStateName() + takeGoodsInfo2.get(0).getCityName() +
                     takeGoodsInfo2.get(0).getAddress());
             sendCarPdfVO.setDeliveryContacts(takeGoodsInfo2.get(0).getContacts());
             sendCarPdfVO.setDeliveryPhone(takeGoodsInfo2.get(0).getPhone());
         }
-       sendCarPdfVO.setRemarks(orderSendCarsVO.getRemarks());
+        sendCarPdfVO.setRemarks(orderSendCarsVO.getRemarks());
         //货物信息,取提货信息
         List<GoodsInfoVO> goodsInfoVOS = new ArrayList<>();
         Integer totalPieceAmount = 0;//总件数
@@ -223,6 +226,27 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         sendCarPdfVO.setTotalWeight(totalWeight);
         sendCarPdfVO.setTotalVolume(totalVolume);
         return sendCarPdfVO;
+    }
+
+    /**
+     * 分页查询司机的中港订单信息
+     *
+     * @param form
+     * @return
+     */
+    @Override
+    public List<DriverOrderTransportVO> getDriverOrderTransport(QueryDriverOrderTransportForm form) {
+        List<DriverOrderTransportVO> list = this.baseMapper.getDriverOrderTransport(form);
+        List<String> orderNoList = list.stream().map(DriverOrderTransportVO::getOrderNo).collect(Collectors.toList());
+        //查询订单提货/送货地址
+        if (CollectionUtils.isNotEmpty(orderNoList)) {
+            List<DriverOrderTakeAdrVO> adrs = this.orderTakeAdrService.getDriverOrderTakeAdr(orderNoList);
+            list.forEach(tmp -> {
+                tmp.groupAddr(adrs);
+                tmp.setTakeOrders(form.getExcludeOrderIds());
+            });
+        }
+        return list;
     }
 
 }

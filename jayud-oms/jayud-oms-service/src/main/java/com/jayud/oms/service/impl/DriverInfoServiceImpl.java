@@ -10,6 +10,7 @@ import com.jayud.oms.mapper.DriverInfoMapper;
 import com.jayud.oms.model.bo.QueryDriverInfoForm;
 import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.DriverInfo;
+import com.jayud.oms.model.vo.DriverInfoLinkVO;
 import com.jayud.oms.model.vo.DriverInfoVO;
 import com.jayud.oms.service.IDriverInfoService;
 import org.apache.commons.lang.StringUtils;
@@ -96,6 +97,11 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
         DriverInfo driverInfo = new DriverInfo().setId(id).setStatus(status);
         return this.updateById(driverInfo);
     }
+    @Override
+    public DriverInfoLinkVO getDriverInfoLink(Long driverId) {
+        return baseMapper.getDriverInfoLink(driverId);
+    }
+
 
     /**
      * 根据大陆手机查询用户

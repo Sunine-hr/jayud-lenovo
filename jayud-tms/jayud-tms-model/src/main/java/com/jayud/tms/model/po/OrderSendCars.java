@@ -104,6 +104,9 @@ public class OrderSendCars extends Model<OrderSendCars> {
     @ApiModelProperty(value = "修改时间")
     private LocalDateTime updatedTime;
 
+    @ApiModelProperty(value = "司机主键")
+    private LocalDateTime driverInfoId;
+
 
     @Override
     protected Serializable pkVal() {

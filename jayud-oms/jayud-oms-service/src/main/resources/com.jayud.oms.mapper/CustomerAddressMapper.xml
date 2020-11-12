@@ -31,9 +31,9 @@
         select
         id, type, customer_id customerId,
         contacts, phone,
-        (select name from region_city where id=province) province,
-        (select name from region_city where id=city) city,
-        (select name from region_city where id=area) area,
+        (select name from region_city where id=province) provinceName,
+        (select name from region_city where id=city) cityName,
+        (select name from region_city where id=area) areaName,
         address,
         postcode, status,
         create_user createUser, create_time createTime,

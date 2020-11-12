@@ -3,6 +3,7 @@ package com.jayud.oms.model.vo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 
 import java.time.LocalDateTime;
 
@@ -43,6 +44,15 @@ public class CustomerAddressVO {
     @ApiModelProperty(value = "区主键")
     private Integer area;
 
+    @ApiModelProperty(value = "省")
+    private String provinceName;
+
+    @ApiModelProperty(value = "市")
+    private String cityName;
+
+    @ApiModelProperty(value = "区")
+    private String areaName;
+
     @ApiModelProperty(value = "详细地址")
     private String address;
 
@@ -76,8 +86,9 @@ public class CustomerAddressVO {
      */
     public void splicingAddress() {
         StringBuilder sb = new StringBuilder();
-        sb.append(this.province).append(this.city)
-                .append(this.area).append(" ").append(this.address);
+        sb.append(this.provinceName).append(this.cityName)
+                .append(StringUtils.isEmpty(this.areaName) ? "" : this.areaName).
+                append(" ").append(this.address);
         this.address = sb.toString();
     }
 

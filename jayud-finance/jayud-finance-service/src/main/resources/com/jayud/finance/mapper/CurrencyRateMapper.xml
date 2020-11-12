@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.finance.mapper.CurrencyRateMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.finance.po.CurrencyRate">
+        <id column="id" property="id" />
+        <result column="dcid" property="dcid" />
+        <result column="ocid" property="ocid" />
+        <result column="exchange_rate" property="exchangeRate" />
+        <result column="status" property="status" />
+        <result column="month" property="month" />
+        <result column="begin_valid_date" property="beginValidDate" />
+        <result column="end_valid_date" property="endValidDate" />
+        <result column="created_user" property="createdUser" />
+        <result column="created_time" property="createdTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, dcid, ocid, exchange_rate, status, month, begin_valid_date, end_valid_date, created_user, created_time
+    </sql>
+
+</mapper>

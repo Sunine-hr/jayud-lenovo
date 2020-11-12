@@ -203,6 +203,7 @@
         </if>
         <if test="form.cmd == 'clearCustoms'">
             AND ot.`status` != 'HK_C_1' AND ot.`is_hk_clear` = '1'
+            AND oi.`status` in ('1','4')
         </if>
         <if test="form.cmd == 'T_10'">
             AND ot.`status` = 'T_9'

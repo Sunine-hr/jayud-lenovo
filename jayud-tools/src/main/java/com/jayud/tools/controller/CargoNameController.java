@@ -15,6 +15,8 @@ import com.jayud.tools.service.ICargoNameService;
 import com.jayud.tools.utils.StringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperationSupport;
+import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,13 +33,15 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/cargoname")
-@Api(tags = "佳裕达小工具-货物名称管理")
+@Api(tags = "货物名称接口")
+@ApiSort(value = 2)
 public class CargoNameController {
 
     @Autowired
     ICargoNameService cargoNameService;
 
-    @ApiOperation(value = "导入Excel")
+    @ApiOperation(value = "导入(原始档)Excel")
+    @ApiOperationSupport(order = 1)
     @RequestMapping(value = "/importExcelV2", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult importExcelV2(@RequestParam("file") MultipartFile file,
@@ -71,6 +75,7 @@ public class CargoNameController {
 
 
     @ApiOperation(value = "导出Excel测试")
+    @ApiOperationSupport(order = 2)
     @RequestMapping(value = "/exportExcelTest", method = RequestMethod.POST)
     public void exportExcelTest(HttpServletResponse response) throws IOException {
 
@@ -91,20 +96,6 @@ public class CargoNameController {
         List<TestBean> rows = CollUtil.newArrayList(bean1, bean2);
 
         ExcelWriter writer = ExcelUtil.getWriter(true);
-
-//        Map<String, String> map = MapUtil.newHashMap(true); // 重点
-//        map.put("name", "姓名");
-//        map.put("age", "年龄");
-//        map.put("score", "分数");
-//        map.put("isPass", "是否通过");
-//        map.put("examDate", "考试时间");
-//
-//        if (map != null) {
-//            map.forEach((key, value) -> {
-//                writer.addHeaderAlias(key, value);
-//            });
-//        }
-
 
         //自定义标题别名
         writer.addHeaderAlias("name", "姓名");
@@ -133,6 +124,7 @@ public class CargoNameController {
 
 
     @ApiOperation(value = "导出A类表Excel(A类表:不存在`敏感品名`的货物表)")
+    @ApiOperationSupport(order = 3)
     @RequestMapping(value = "/getExportExcelA", method = RequestMethod.GET)
     @ResponseBody
     public void getExportExcelA(HttpServletResponse response) throws IOException {
@@ -183,6 +175,7 @@ public class CargoNameController {
     }
 
     @ApiOperation(value = "导出A类表Excel(A类表:不存在`敏感品名`的货物表)")
+    @ApiOperationSupport(order = 4)
     @RequestMapping(value = "/postExportExcelA", method = RequestMethod.POST)
     @ResponseBody
     public void postExportExcelA(HttpServletResponse response) throws IOException {
@@ -236,6 +229,7 @@ public class CargoNameController {
 
 
     @ApiOperation(value = "导出B类表Excel(B类表:存在`敏感品名`的货物表)")
+    @ApiOperationSupport(order = 5)
     @RequestMapping(value = "/getExportExcelB", method = RequestMethod.GET)
     @ResponseBody
     public void getExportExcelB(HttpServletResponse response) throws IOException {
@@ -287,6 +281,7 @@ public class CargoNameController {
     }
 
     @ApiOperation(value = "导出B类表Excel(B类表:存在`敏感品名`的货物表)")
+    @ApiOperationSupport(order = 6)
     @RequestMapping(value = "/postExportExcelB", method = RequestMethod.POST)
     @ResponseBody
     public void postExportExcelB(HttpServletResponse response) throws IOException {
@@ -336,6 +331,7 @@ public class CargoNameController {
     }
 
     @ApiOperation(value = "删除所有`货物名称表`")
+    @ApiOperationSupport(order = 7)
     @RequestMapping(value = "/deleteAllCargoName", method = RequestMethod.POST)
     public CommonResult deleteAllCargoName(){
         cargoNameService.deleteAllCargoName();
@@ -344,6 +340,7 @@ public class CargoNameController {
 
     //small 小的列
     @ApiOperation(value = "导入Excel,第二版，较少的列")
+    @ApiOperationSupport(order = 8)
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult importExcel(@RequestParam("file") MultipartFile file, HttpServletRequest request){
@@ -379,6 +376,7 @@ public class CargoNameController {
 
 
     @ApiOperation(value = "导出A类表Excel(A类表:不存在`敏感品名`的货物表)V2版")
+    @ApiOperationSupport(order = 9)
     @RequestMapping(value = "/postExportExcelAV2", method = RequestMethod.GET)
     @ResponseBody
     public void postExportExcelAV2(@RequestParam(value = "userId",required=false) Long userId,
@@ -423,6 +421,7 @@ public class CargoNameController {
     }
 
     @ApiOperation(value = "导出B类表Excel(B类表:存在`敏感品名`的货物表)")
+    @ApiOperationSupport(order = 10)
     @RequestMapping(value = "/postExportExcelBV2", method = RequestMethod.GET)
     @ResponseBody
     public void postExportExcelBV2(@RequestParam(value = "userId",required=false) Long userId,
@@ -461,6 +460,7 @@ public class CargoNameController {
     }
 
     @ApiOperation(value = "清空`货物名称表`")
+    @ApiOperationSupport(order = 11)
     @RequestMapping(value = "/truncateCargoName", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult truncateCargoName(){

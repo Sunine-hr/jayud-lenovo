@@ -48,7 +48,7 @@ public class DeliveryAddressController {
 
     @ApiOperation(value = "分页查询客户地址")
     @PostMapping(value = "/findCustomerAddressByPage")
-    public CommonResult<CommonPageResult<DriverInfoVO>> findCustomerAddressByPage(@RequestBody QueryCustomerAddressForm form) {
+    public CommonResult<CommonPageResult<CustomerAddressVO>> findCustomerAddressByPage(@RequestBody QueryCustomerAddressForm form) {
         IPage<CustomerAddressVO> iPage = deliveryAddressService.findCustomerAddressByPage(form);
         iPage.getRecords().forEach(CustomerAddressVO::splicingAddress);
         return CommonResult.success(new CommonPageResult<>(iPage));

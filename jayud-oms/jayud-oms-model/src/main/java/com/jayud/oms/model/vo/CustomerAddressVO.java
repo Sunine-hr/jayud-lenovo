@@ -57,7 +57,7 @@ public class CustomerAddressVO {
     private String address;
 
     @ApiModelProperty(value = "邮编")
-    private String postcode;
+    private String postCode;
 
     @ApiModelProperty(value = "状态（0无效 1有效）")
     private String status;

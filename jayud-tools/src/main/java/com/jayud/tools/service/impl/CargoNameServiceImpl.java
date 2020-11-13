@@ -307,10 +307,8 @@ public class CargoNameServiceImpl extends ServiceImpl<CargoNameMapper, CargoName
                     BigDecimal separateBillCount = suttle.divide(b2);
                     //拆单数量(向上取整)
                     BigDecimal up = separateBillCount.setScale( 0, BigDecimal.ROUND_UP ); // 向上取整
-                    System.out.println(up);
                     //拆单数量(向下取整)
                     BigDecimal down = separateBillCount.setScale( 0, BigDecimal.ROUND_DOWN ); // 向下取整
-                    System.out.println(down);
 
                     int sign = up.compareTo(down);//如果sign=0，说明数量相等，净重被整除为整数，数据没有小数位，sign!=0，说明没有被整除
                     for(int j = 0; j < up.intValue(); j++){
@@ -360,10 +358,8 @@ public class CargoNameServiceImpl extends ServiceImpl<CargoNameMapper, CargoName
                         BigDecimal separateBillCount = suttle.divide(b2);
                         //拆单数量(向上取整)
                         BigDecimal up = separateBillCount.setScale( 0, BigDecimal.ROUND_UP ); // 向上取整
-                        System.out.println(up);
                         //拆单数量(向下取整)
                         BigDecimal down = separateBillCount.setScale( 0, BigDecimal.ROUND_DOWN ); // 向下取整
-                        System.out.println(down);
 
                         int sign = up.compareTo(down);//如果sign=0，说明数量相等，净重被整除为整数，数据没有小数位，sign!=0，说明没有被整除
 

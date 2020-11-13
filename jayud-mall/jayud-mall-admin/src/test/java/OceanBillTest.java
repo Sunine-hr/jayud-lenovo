@@ -1,5 +1,4 @@
 import com.jayud.mall.model.bo.*;
-import com.jayud.mall.model.po.OceanCounterCustomerRelation;
 import com.jayud.mall.utils.TestUtils;
 import org.junit.Test;
 
@@ -51,19 +50,19 @@ public class OceanBillTest {
         form1.setCid(1);
         form1.setStatus("1");
         form1.setObId(oceanCounterId);
-        form1.setCreateTime(LocalDateTime.now());
-
-        List<OceanCounterCustomerRelation> list1 = new ArrayList<>();
-
-        OceanCounterCustomerRelation oceanCounterCustomerRelation1 = new OceanCounterCustomerRelation();
-        oceanCounterCustomerRelation1.setCustomerId(1L);
-        oceanCounterCustomerRelation1.setOrderCaseId(1L);
-        list1.add(oceanCounterCustomerRelation1);
-
-        OceanCounterCustomerRelation oceanCounterCustomerRelation2 = new OceanCounterCustomerRelation();
-        oceanCounterCustomerRelation2.setCustomerId(1L);
-        oceanCounterCustomerRelation2.setOrderCaseId(2L);
-        list1.add(oceanCounterCustomerRelation2);
+//        form1.setCreateTime(LocalDateTime.now());
+//
+//        List<OceanCounterCustomerRelation> list1 = new ArrayList<>();
+//
+//        OceanCounterCustomerRelation oceanCounterCustomerRelation1 = new OceanCounterCustomerRelation();
+//        oceanCounterCustomerRelation1.setCustomerId(1L);
+//        oceanCounterCustomerRelation1.setOrderCaseId(1L);
+//        list1.add(oceanCounterCustomerRelation1);
+//
+//        OceanCounterCustomerRelation oceanCounterCustomerRelation2 = new OceanCounterCustomerRelation();
+//        oceanCounterCustomerRelation2.setCustomerId(1L);
+//        oceanCounterCustomerRelation2.setOrderCaseId(2L);
+//        list1.add(oceanCounterCustomerRelation2);
 
 //        form1.setOceanCounterCustomerRelationList(list1);
 
@@ -80,17 +79,17 @@ public class OceanBillTest {
         form2.setObId(oceanCounterId);
         form2.setCreateTime(LocalDateTime.now());
 
-        List<OceanCounterCustomerRelation> list2 = new ArrayList<>();
+//        List<OceanCounterCustomerRelation> list2 = new ArrayList<>();
 
-        OceanCounterCustomerRelation oceanCounterCustomerRelation11 = new OceanCounterCustomerRelation();
-        oceanCounterCustomerRelation11.setCustomerId(1L);
-        oceanCounterCustomerRelation11.setOrderCaseId(3L);
-        list2.add(oceanCounterCustomerRelation11);
+//        OceanCounterCustomerRelation oceanCounterCustomerRelation11 = new OceanCounterCustomerRelation();
+//        oceanCounterCustomerRelation11.setCustomerId(1L);
+//        oceanCounterCustomerRelation11.setOrderCaseId(3L);
+//        list2.add(oceanCounterCustomerRelation11);
 
-        OceanCounterCustomerRelation oceanCounterCustomerRelation12 = new OceanCounterCustomerRelation();
-        oceanCounterCustomerRelation12.setCustomerId(1L);
-        oceanCounterCustomerRelation12.setOrderCaseId(4L);
-        list2.add(oceanCounterCustomerRelation12);
+//        OceanCounterCustomerRelation oceanCounterCustomerRelation12 = new OceanCounterCustomerRelation();
+//        oceanCounterCustomerRelation12.setCustomerId(1L);
+//        oceanCounterCustomerRelation12.setOrderCaseId(4L);
+//        list2.add(oceanCounterCustomerRelation12);
 
 //        form2.setOceanCounterCustomerRelationList(list2);
 

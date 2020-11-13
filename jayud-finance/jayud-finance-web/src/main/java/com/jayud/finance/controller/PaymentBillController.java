@@ -30,7 +30,7 @@ public class PaymentBillController {
     @Autowired
     IOrderPaymentBillService billService;
 
-    @ApiOperation(value = "应付出账单列表")
+    @ApiOperation(value = "应付出账单列表(主订单/子订单)")
     @PostMapping("/findPaymentBillByPage")
     public CommonResult<CommonPageResult<OrderPaymentBillVO>> findPaymentBillByPage(@RequestBody @Valid QueryPaymentBillForm form) {
         IPage<OrderPaymentBillVO> pageList = billService.findPaymentBillByPage(form);
@@ -38,14 +38,14 @@ public class PaymentBillController {
         return CommonResult.success(pageVO);
     }
 
-    @ApiOperation(value = "账单数列表")
+    @ApiOperation(value = "账单数列表(主订单/子订单)")
     @PostMapping("/findPaymentBillNum")
     public CommonResult<Map<String,Object>> findPaymentBillNum(@RequestBody @Valid QueryPaymentBillNumForm form) {
         Map<String,Object> result = billService.findPaymentBillNum(form);
         return CommonResult.success(result);
     }
 
-    @ApiOperation(value = "未出账订单数列表")
+    @ApiOperation(value = "未出账订单数列表(主订单/子订单)")
     @PostMapping("/findNotPaidBillByPage")
     public CommonResult<CommonPageResult<PaymentNotPaidBillVO>> findNotPaidBillByPage(@RequestBody @Valid QueryNotPaidBillForm form) {
         IPage<PaymentNotPaidBillVO> pageList = billService.findNotPaidBillByPage(form);

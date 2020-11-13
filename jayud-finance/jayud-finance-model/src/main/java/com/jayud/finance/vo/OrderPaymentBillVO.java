@@ -12,8 +12,8 @@ public class OrderPaymentBillVO {
     @ApiModelProperty(value = "法人主体")
     private String legalName;
 
-    @ApiModelProperty(value = "客户")
-    private String customerName;
+    @ApiModelProperty(value = "供应商名称")
+    private String supplierChName;
 
     @ApiModelProperty(value = "已出账金额")
     private String alreadyPaidAmount;

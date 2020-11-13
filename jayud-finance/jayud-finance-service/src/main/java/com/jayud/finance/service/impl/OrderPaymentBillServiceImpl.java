@@ -59,11 +59,9 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         page.addOrder(OrderItem.desc("oi.legal_name"));
         IPage<OrderPaymentBillVO> pageInfo = null;
         if("main".equals(form.getCmd())) {
-            pageInfo = baseMapper.findPaymentBillByPage(page, form);
-        }else if("zgys".equals(form.getCmd())){
-
-        }else if("bg".equals(form.getCmd())){
-
+            pageInfo = baseMapper.findPaymentBillByPage(page, form);//法人主体/供应商/可汇总主订单费用的维度统计
+        }else if("zgys".equals(form.getCmd()) || "bg".equals(form.getCmd())){
+            pageInfo = baseMapper.findPaymentSubBillByPage(page, form);//法人主体/供应商/子订单费用的维度统计
         }
         return pageInfo;
     }

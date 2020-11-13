@@ -26,12 +26,20 @@ import java.util.List;
 public interface OrderPaymentBillMapper extends BaseMapper<OrderPaymentBill> {
 
     /**
-     * 应付出账单分页查询
+     * 主订单应付出账单分页查询
      * @param page
      * @param form
      * @return
      */
     IPage<OrderPaymentBillVO> findPaymentBillByPage(Page page, @Param("form") QueryPaymentBillForm form);
+
+    /**
+     * 子订单应付出账单分页查询
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<OrderPaymentBillVO> findPaymentSubBillByPage(Page page, @Param("form") QueryPaymentBillForm form);
 
     /**
      * 已生成对账单列表

@@ -26,35 +26,43 @@
 
     <select id="findPaymentBillByPage" parameterType="com.jayud.finance.bo.QueryPaymentBillForm" resultType="com.jayud.finance.vo.OrderPaymentBillVO" >
         SELECT DISTINCT
-            oi.legal_name legalName,
-            oi.customer_name customerName,
-            opb.already_paid_amount alreadyPaidAmount,
-            ifnull( opb.bill_order_num, 0 ) billOrderNum,
-            ifnull( opb.bill_num, 0 ) billNum,
-            (
-            SELECT
-                SUM( opc.change_amount )
-            FROM
-                order_payment_cost opc
-            WHERE
-                opc.order_no IN ( SELECT a.order_no FROM order_info a WHERE a.legal_name = oi.legal_name AND a.customer_name = oi.customer_name )
-                AND opc.is_bill = '0' and opc.is_sum_to_main = '1'
-            ) notPaidAmount,
-            (
-            SELECT
-                count( DISTINCT opc.order_no )
-            FROM
-                order_payment_cost opc
-            WHERE
-                opc.order_no IN ( SELECT a.order_no FROM order_info a WHERE a.legal_name = oi.legal_name AND a.customer_name = oi.customer_name )
-                AND opc.is_bill = '0' and opc.is_sum_to_main = '1'
-            ) notPaidOrderNum
+        oi.legal_name legalName,
+        opc.customer_name supplierChName,
+        ifnull( opb.already_paid_amount, 0 ) alreadyPaidAmount,
+        ifnull( opb.bill_order_num, 0 ) billOrderNum,
+        ifnull( opb.bill_num, 0 ) billNum,
+        (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where t1.is_bill = '0' AND t1.is_sum_to_main = '1' and t1.customer_name = opc.customer_name and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidAmount,
+        (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where t1.is_bill = '0' AND t1.is_sum_to_main = '1' and t1.customer_name = opc.customer_name and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidOrderNum
         FROM
-            order_info oi
-            LEFT JOIN order_payment_bill opb ON opb.legal_name = oi.legal_name
-            AND opb.customer_name = oi.customer_name
-        <if test="form.customerName != null and form.customerName != ''">
-            and oi.customer_name like concat('%',#{form.customerName},'%')
+        order_payment_cost opc
+        LEFT JOIN order_info oi ON oi.order_no = opc.main_order_no
+        left join order_payment_bill opb on opb.legal_name = oi.legal_name
+        and opb.supplier_ch_name = opc.customer_name
+        and opb.is_main = 1 where 1 = 1
+        <if test="form.supplierChName != null and form.supplierChName != ''">
+            and oi.customer_name like concat('%',#{form.supplierChName},'%')
+        </if>
+        <if test="form.legalName != null and form.legalName != ''">
+            and oi.legal_name like concat('%',#{form.legalName},'%')
+        </if>
+    </select>
+    <select id="findPaymentSubBillByPage" parameterType="com.jayud.finance.bo.QueryPaymentBillForm" resultType="com.jayud.finance.vo.OrderPaymentBillVO" >
+        SELECT DISTINCT
+        oi.legal_name legalName,
+        opc.customer_name supplierChName,
+        ifnull( opb.already_paid_amount, 0 ) alreadyPaidAmount,
+        ifnull( opb.bill_order_num, 0 ) billOrderNum,
+        ifnull( opb.bill_num, 0 ) billNum,
+        (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where t1.is_bill = '0' AND t1.is_sum_to_main = '0' and t1.customer_name = opc.customer_name and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidAmount,
+        (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where t1.is_bill = '0' AND t1.is_sum_to_main = '0' and t1.customer_name = opc.customer_name and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidOrderNum
+        FROM
+        order_payment_cost opc
+        LEFT JOIN order_info oi ON oi.order_no = opc.main_order_no
+        left join order_payment_bill opb on opb.legal_name = oi.legal_name
+        and opb.supplier_ch_name = opc.customer_name
+        and opb.is_main = 0 and opb.sub_type = #{form.cmd} where 1 = 1
+        <if test="form.supplierChName != null and form.supplierChName != ''">
+            and oi.customer_name like concat('%',#{form.supplierChName},'%')
         </if>
         <if test="form.legalName != null and form.legalName != ''">
             and oi.legal_name like concat('%',#{form.legalName},'%')
@@ -78,7 +86,16 @@
             DATE_FORMAT(op.make_time,'%Y-%m-%d %H:%i:%S') makeTimeStr
         FROM
              order_payment_bill_detail op left join order_payment_bill opb on op.bill_id = opb.id
-             where opb.legal_name = #{legalName} and opb.customer_name = #{customerName} and opb.is_main = '1'
+             where opb.legal_name = #{form.legalName} and opb.supplier_ch_name = #{form.supplierChName}
+        <if test="form.cmd == 'main'">
+             and opb.is_main = 1
+        </if>
+        <if test="form.cmd == 'zgys'">
+            and opb.is_main = 0 and opb.sub_type = 'zgys'
+        </if>
+        <if test="form.cmd == 'bg'">
+            and opb.is_main = 0 and opb.sub_type = 'bg'
+        </if>
     </select>
 
     <select id="findNotPaidBillByPage" parameterType="com.jayud.finance.bo.QueryNotPaidBillForm" resultType="com.jayud.finance.vo.PaymentNotPaidBillVO" >

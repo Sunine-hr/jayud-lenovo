@@ -22,6 +22,6 @@ public class OrderBillCostTotalServiceImpl extends ServiceImpl<OrderBillCostTota
 
     @Override
     public List<OrderBillCostTotalVO> findOrderBillCostTotal(List<Long> costIds) {
-        return null;
+        return baseMapper.findOrderBillCostTotal(costIds);
     }
 }

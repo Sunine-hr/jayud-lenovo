@@ -41,6 +41,9 @@ public class OrderBillCostTotal extends Model<OrderBillCostTotal> {
     @ApiModelProperty(value = "币种")
     private String currencyCode;
 
+    @ApiModelProperty(value = "费用ID")
+    private Long costId;
+
     @ApiModelProperty(value = "费用项")
     private String costInfoName;
 
@@ -50,6 +53,8 @@ public class OrderBillCostTotal extends Model<OrderBillCostTotal> {
     @ApiModelProperty(value = "1-有效 0-无效")
     private String status;
 
+    @ApiModelProperty(value = "1-应付 2-应收")
+    private String moneyType;
 
     @Override
     protected Serializable pkVal() {

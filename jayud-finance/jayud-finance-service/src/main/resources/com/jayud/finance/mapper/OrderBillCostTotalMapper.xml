@@ -11,11 +11,29 @@
         <result column="cost_info_name" property="costInfoName" />
         <result column="money" property="money" />
         <result column="status" property="status" />
+        <result column="money_type" property="moneyType" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, order_no, bill_no, currency_code, cost_info_name, money, status
+        id, order_no, bill_no, currency_code, cost_info_name, money, status,money_type
     </sql>
+
+    <select id="findOrderBillCostTotal" parameterType="java.util.List" resultType="com.jayud.finance.vo.OrderBillCostTotalVO">
+        SELECT
+        CONCAT( opc.cost_code, opc.currency_code ) NAME,
+        concat((select ci.name from cost_info ci where ci.id_code = opc.cost_code),'(',(select ci.currency_name from currency_info ci where ci.  currency_code = opc.currency_code),')') viewName,
+        sum( opc.amount )
+        FROM
+        order_payment_cost opc
+        WHERE
+        opc.id IN
+        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        GROUP BY
+        opc.cost_code,
+        opc.currency_code
+    </select>
 
 </mapper>

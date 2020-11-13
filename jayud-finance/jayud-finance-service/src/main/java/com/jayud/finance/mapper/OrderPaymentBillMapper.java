@@ -58,10 +58,10 @@ public interface OrderPaymentBillMapper extends BaseMapper<OrderPaymentBill> {
     /**
      * 获取已出账订单数
      * @param legalName
-     * @param customerName
+     * @param supplierChName
      * @return
      */
-    Integer getBillOrderNum(@Param("legalName") String legalName,@Param("customerName") String customerName,@Param("cmd") String cmd);
+    Integer getBillOrderNum(@Param("legalName") String legalName,@Param("supplierChName") String supplierChName,@Param("cmd") String cmd);
 
 
     /**

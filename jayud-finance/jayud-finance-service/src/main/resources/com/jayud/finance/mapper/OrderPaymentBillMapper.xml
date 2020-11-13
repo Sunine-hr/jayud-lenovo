@@ -189,16 +189,8 @@
 	    LEFT JOIN order_payment_bill opb ON opbd.bill_id = opb.id
       WHERE
         opb.legal_name = #{legalName}
-        AND opb.customer_name = #{customerName}
-        <if test="form.cmd == 'main'">
-            AND opbd.is_main = '1'
-        </if>
-        <if test="form.cmd == 'zgys'">
-            AND opbd.sub_type = 'ZGYS'
-        </if>
-        <if test="form.cmd == 'bg'">
-            AND opbd.sub_type = 'BG'
-        </if>
+        AND opb.supplier_ch_name = #{supplierChName}
+        AND opb.sub_type = #{cmd}
     </select>
     <select id="findSheetHead" parameterType="com.jayud.finance.bo.ViewBillForm" resultType="com.jayud.finance.vo.SheetHeadVO">
         SELECT

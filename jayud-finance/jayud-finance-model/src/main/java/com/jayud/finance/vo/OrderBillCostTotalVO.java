@@ -15,6 +15,9 @@ public class OrderBillCostTotalVO {
     @ApiModelProperty(value = "币种")
     private String currencyCode;
 
+    @ApiModelProperty(value = "费用ID")
+    private Long costId;
+
     @ApiModelProperty(value = "费用项")
     private String costInfoName;
 

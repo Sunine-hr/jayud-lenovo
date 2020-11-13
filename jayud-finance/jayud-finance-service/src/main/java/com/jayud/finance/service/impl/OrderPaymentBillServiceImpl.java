@@ -112,35 +112,36 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             }
         }
         //生成账单操作才是生成对账单数据
-        if(!form.getCmd().contains("pre")){
+        if("create".equals(form.getCmd())){
             //先保存对账单信息，在保存对账单详情信息
+            OrderPaymentBill orderPaymentBill = ConvertUtil.convert(paymentBillForm,OrderPaymentBill.class);
             //1.统计已出账金额alreadyPaidAmount
             BigDecimal nowBillAmount = paymentBillDetailForms.stream().map(OrderPaymentBillDetailForm::getLocalAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
-            paymentBillForm.setAlreadyPaidAmount(paymentBillForm.getAlreadyPaidAmount().add(nowBillAmount));
+            orderPaymentBill.setAlreadyPaidAmount(paymentBillForm.getAlreadyPaidAmount().add(nowBillAmount));
             //2.统计已出账订单数billOrderNum
-            Integer billOrderNum = baseMapper.getBillOrderNum(paymentBillForm.getLegalName(),paymentBillForm.getCustomerName(),form.getCmd());
-            paymentBillForm.setBillOrderNum(billOrderNum);
+            Integer billOrderNum = baseMapper.getBillOrderNum(paymentBillForm.getLegalName(),paymentBillForm.getSupplierChName(),form.getCmd());
+            orderPaymentBill.setBillOrderNum(billOrderNum);
             //3.统计账单数billNum
-            paymentBillForm.setBillOrderNum(paymentBillForm.getBillNum() + 1);
-            OrderPaymentBill orderPaymentBill = ConvertUtil.convert(paymentBillForm,OrderPaymentBill.class);
+            orderPaymentBill.setBillOrderNum(paymentBillForm.getBillNum() + 1);
+            if("main".equals(form.getSubType())){
+                orderPaymentBill.setIsMain(true);
+            }else if("zgys".equals(form.getSubType())){
+                orderPaymentBill.setIsMain(false);
+                orderPaymentBill.setSubType(form.getSubType());
+            }else if("bg".equals(form.getSubType())){
+                orderPaymentBill.setIsMain(false);
+                orderPaymentBill.setSubType(form.getSubType());
+            }
             //判断该法人主体和客户是否已经生成过账单
             QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("sub_type",form.getSubType());
             queryWrapper.eq("legal_name",paymentBillForm.getLegalName());
-            queryWrapper.eq("customer_name",paymentBillForm.getCustomerName());
+            queryWrapper.eq("supplier_ch_name",paymentBillForm.getSupplierChName());
             OrderPaymentBill existBill = baseMapper.selectOne(queryWrapper);
             if(existBill != null && existBill.getId() != null){
                 orderPaymentBill.setId(existBill.getId());
                 orderPaymentBill.setUpdatedTime(LocalDateTime.now());
                 orderPaymentBill.setUpdatedUser(UserOperator.getToken());
-            }
-            if("create".equals(form.getCmd())){
-                orderPaymentBill.setIsMain(true);
-            }else if("create_zgys".equals(form.getCmd())){
-                orderPaymentBill.setIsMain(false);
-                orderPaymentBill.setSubType(CommonConstant.ZGYS);
-            }else if("create_bg".equals(form.getCmd())){
-                orderPaymentBill.setIsMain(false);
-                orderPaymentBill.setSubType(CommonConstant.BG);
             }
             orderPaymentBill.setCreatedUser(UserOperator.getToken());
             result = saveOrUpdate(orderPaymentBill);
@@ -161,12 +162,14 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             if(!result){
                 return false;
             }
-            //开始保存费用维度的金额信息  以结算币种进行转换后保存 TODO
+            //开始保存费用维度的金额信息  以结算币种进行转换后保存
             List<OrderBillCostTotal> orderBillCostTotals = new ArrayList<>();
+            //根据费用ID统计费用信息,将原始费用信息根据结算币种进行转换
             List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderBillCostTotal(costIds);
             for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                 orderBillCostTotalVO.setBillNo(paymentBillDetailForms.get(0).getBillNo());
                 OrderBillCostTotal orderBillCostTotal = ConvertUtil.convert(orderBillCostTotalVO,OrderBillCostTotal.class);
+                orderBillCostTotal.setMoneyType("1");
                 orderBillCostTotals.add(orderBillCostTotal);
             }
             result = costTotalService.saveBatch(orderBillCostTotals);

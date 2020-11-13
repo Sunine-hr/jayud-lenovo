@@ -7,17 +7,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class JayudSecurityProperties {
 
-    public static final String JAYUD_SECURITY_PREFIX ="jayud.security";
+    public static final String JAYUD_SECURITY_PREFIX = "jayud.security";
     //允许访问的接口
-    private String[] permitAll=new String [] {};
+    private String[] permitAll = new String[]{};
     //token过期时间(秒)，默认一天
-    private int expired=60 * 60 * 24;
+    private int expired = 60 * 60 * 24;
     //token的key
-    private String header="token";
+    private String header = "token";
     //token值前缀
-    private String headerPrefix="Jayud";
+    private String headerPrefix = "Jayud";
     //设置默认用户信息
-    private String defaultUserId="";
+    private String defaultUserId = "";
     //设置开关
     private boolean authSwitch;
 
@@ -35,6 +35,9 @@ public class JayudSecurityProperties {
     }
 
     public void setPermitAll(String[] permitAll) {
+//        for (int i = 0; i < permitAll.length; i++) {
+//            permitAll[i]=permitAll[i].replace("*", "\\*");
+//        }
         this.permitAll = permitAll;
     }
 

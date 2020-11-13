@@ -15,12 +15,9 @@ import java.util.Objects;
 public class QueryDriverOrderTransportForm extends BasePageForm {
 
 
-    @ApiModelProperty(value = "订单状态 (0:全部,1:待提货(首页也是用这个状态),2:运输中,3:已完结)", required = true)
+    @ApiModelProperty(value = "订单状态 (0:全部,1:待提货(首页也是用这个状态),2:运输中,3:已完结)")
     @NotEmpty(message = "状态不能为空")
     private String status;
-
-    @ApiModelProperty(value = "后台使用，前端不用理会这个参数,司机id")
-    private Long driverId;
 
     @ApiModelProperty(value = "订单编号")
     private String orderNo;
@@ -30,6 +27,10 @@ public class QueryDriverOrderTransportForm extends BasePageForm {
 
     @ApiModelProperty(value = "后台使用，前端不用理会这个参数，排除订单信息")
     private List<Long> excludeOrderIds;
+
+    @ApiModelProperty(value = "后台使用，前端不用理会这个参数,司机id")
+    private Long driverId;
+
 
 
     public void assemblyOrder(List<Long> orderIds) {

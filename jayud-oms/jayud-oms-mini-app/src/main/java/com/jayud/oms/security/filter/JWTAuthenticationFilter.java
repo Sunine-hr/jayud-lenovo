@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
+
 public class JWTAuthenticationFilter extends BasicAuthenticationFilter {
 
     private final Set<String> allowAccessPath;

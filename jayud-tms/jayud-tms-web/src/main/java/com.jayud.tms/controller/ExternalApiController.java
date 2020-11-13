@@ -109,6 +109,13 @@ public class ExternalApiController {
         return ApiResult.ok(sendCarPdfVO);
     }
 
+
+//    @ApiOperation(value = "根据订单主键查询司机的中港订单详细信息")
+//    @RequestMapping(value = "/api/getDriverOrderTransportDetailById")
+//    public ApiResult getDriverOrderTransportDetailById(@RequestParam("orderId") Long orderId) {
+//        return ApiResult.ok(this.orderTransportService.getById(orderId));
+//    }
+
 }
 
 

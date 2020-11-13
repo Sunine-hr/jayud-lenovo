@@ -14,7 +14,7 @@ import java.util.List;
  * 司机小程序录用费用
  */
 @Data
-public class AddDriverOrderPaymentCostForm {
+public class AddDriverEmploymentFeeForm {
 
     @ApiModelProperty("中港订单id")
     @NotNull(message = "中港订单id不能为空")

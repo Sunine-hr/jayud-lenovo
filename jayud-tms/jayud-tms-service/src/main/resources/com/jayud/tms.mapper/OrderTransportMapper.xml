@@ -89,12 +89,11 @@
             ON ot.`port_code` = p.`id_code`
           LEFT JOIN order_send_cars osc
             ON osc.order_no = ot.`order_no`
-          LEFT JOIN supplier_info si
-            ON si.`id` = osc.`supplier_info_id`
           LEFT JOIN warehouse_info wi
             ON ot.warehouse_info_id = wi.`id`
 		  left join driver_info di on di.id = osc.driver_info_id
 		  left join vehicle_info vi on vi.id = di.vehicle_id
+		  LEFT JOIN supplier_info si ON si.`id` = vi.supplier_id
           where ot.`main_order_no` = #{mainOrderNo}
     </select>
     <select id="findTransportOrderByPage" parameterType="com.jayud.tms.model.bo.QueryOrderTmsForm" resultType="com.jayud.tms.model.vo.OrderTransportVO" >

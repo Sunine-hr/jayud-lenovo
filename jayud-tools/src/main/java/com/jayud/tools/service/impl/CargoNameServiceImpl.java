@@ -11,10 +11,12 @@ import com.jayud.tools.model.vo.CargoNameVO;
 import com.jayud.tools.service.ICargoNameService;
 import com.jayud.tools.thread.CargoNameThread;
 import com.jayud.tools.utils.MathUtils;
+import org.apache.poi.poifs.filesystem.FileMagic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -237,8 +239,32 @@ public class CargoNameServiceImpl extends ServiceImpl<CargoNameMapper, CargoName
         //每次进入createRowHandler之前先清空excelList
         excelList.clear();
 
-        Excel03SaxReader reader = new Excel03SaxReader(createRowHandler());
-        Excel03SaxReader  read = reader.read(inputStream, 0);
+//        Excel03SaxReader reader = new Excel03SaxReader(createRowHandler());
+//        Excel03SaxReader read = reader.read(inputStream, 0);
+
+        //判断excel是03版本还是07版本
+//        Workbook wb = WorkbookFactory.create(inputStream);
+        InputStream is = FileMagic.prepareToCheckMagic(inputStream);
+        try {
+            FileMagic fm = FileMagic.valueOf(is);
+            switch(fm) {
+                case OLE2:
+                    //excel是03版本
+                    Excel03SaxReader reader03 = new Excel03SaxReader(createRowHandler());
+                    reader03.read(is, 0);
+                    break;
+                case OOXML:
+                    //excel是07版本
+                    Excel07SaxReader reader07 = new Excel07SaxReader(createRowHandler());
+                    reader07.read(is, 0);
+                    break;
+                default:
+                    throw new IOException("Your InputStream was neither an OLE2 stream, nor an OOXML stream");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         //当前登录用户Id
         userId = (userId != null) ? userId : 1;
         //导入前先删除数据,根据登录用户的用户id做删除

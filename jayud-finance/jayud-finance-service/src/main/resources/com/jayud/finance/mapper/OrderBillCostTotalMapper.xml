@@ -21,19 +21,19 @@
 
     <select id="findOrderBillCostTotal" parameterType="java.util.List" resultType="com.jayud.finance.vo.OrderBillCostTotalVO">
         SELECT
-        CONCAT( opc.cost_code, opc.currency_code ) NAME,
-        concat((select ci.name from cost_info ci where ci.id_code = opc.cost_code),'(',(select ci.currency_name from currency_info ci where ci.  currency_code = opc.currency_code),')') viewName,
-        sum( opc.amount )
+        opc.order_no orderNo,
+        opc.currency_code currencyCode,
+        opc.id costId,
+        ci.`name` costInfoName,
+        opc.amount money
         FROM
         order_payment_cost opc
+        LEFT JOIN cost_info ci ON ci.id_code = opc.cost_code
         WHERE
         opc.id IN
         <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
-        GROUP BY
-        opc.cost_code,
-        opc.currency_code
     </select>
 
 </mapper>

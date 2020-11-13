@@ -449,6 +449,7 @@ public class SystemUserController {
     public CommonResult<List<InitComboxVO>> initPurchaseUser() {
         Map<String, Object> param = new HashMap<>();
         param.put("status", "1");
+        param.put("user_type",1);
         List<InitComboxVO> initComboxs = new ArrayList<>();
         List<SystemUser> systemUsers = userService.findUserByCondition(param);
         for (SystemUser systemUser : systemUsers) {

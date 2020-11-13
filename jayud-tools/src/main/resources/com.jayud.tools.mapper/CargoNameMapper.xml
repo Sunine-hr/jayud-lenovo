@@ -163,6 +163,7 @@
 		LEFT JOIN cargo_name_replace t3 on t1.hpmc=t3.hpmc
         where 1=1
         and t2.`name` IS NULL
+        ORDER BY t1.id
     </select>
 
     <!--B类表:存在`敏感品名`的货物表-->
@@ -178,6 +179,7 @@
         from (select * from cargo_name where user_id=#{userId}) t1
         JOIN sensitive_commodity t2 on t1.hpmc=t2.`name`
 		LEFT JOIN cargo_name_replace t3 on t1.hpmc=t3.hpmc
+		ORDER BY t1.id
     </select>
 
     <!--清空`货物名称表`-->

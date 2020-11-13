@@ -65,12 +65,12 @@ public class SendCarForm {
     private String licensePlate;
 
     @ApiModelProperty(value = "大陆司机名",required = true)
-    private String driverName;
+    private String driverInfoId;
 
     @ApiModelProperty(value = "HK车牌号",required = true)
     private String hkLicensePlate;
 
-    @ApiModelProperty(value = "仓库ID)",required = true)
+    @ApiModelProperty(value = "仓库ID",required = true)
     private Long warehouseInfoId;
 
     @ApiModelProperty(value = "司机电话")

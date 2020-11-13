@@ -55,17 +55,17 @@
           p.`name` portName,
           ot.`encode`,
           ot.`status`,
-          osc.`hk_license_plate` hkLicensePlate,
-          osc.`license_plate` licensePlate,
+          vi.hk_number hkLicensePlate,
+          vi.plate_number licensePlate,
           ot.`vehicle_size` vehicleSize,
           ot.`vehicle_type` vehicleType,
           ot.`cntr_no` cntrNo,
           ot.`warehouse_info_id` warehouseInfoId,
           si.`supplier_ch_name` supplierChName,
           '' customsNo,
-          osc.`driver_name` driverName,
-          osc.`driver_phone` driverPhone,
-          osc.`driver_hk_phone` driverHkPhone,
+          di.`name` driverName,
+          di.phone driverPhone,
+          di.hk_phone driverHkPhone,
           ot.`car_weigh_num` carWeighNum,
           ot.`seamless_no`  seamlessNo,
           ot.`clear_customs_no` clearCustomsNo,
@@ -89,10 +89,11 @@
             ON ot.`port_code` = p.`id_code`
           LEFT JOIN order_send_cars osc
             ON osc.order_no = ot.`order_no`
-          LEFT JOIN supplier_info si
-            ON si.`id` = osc.`supplier_info_id`
           LEFT JOIN warehouse_info wi
-            ON osc.`warehouse_info_id` = wi.`id`
+            ON ot.warehouse_info_id = wi.`id`
+		  left join driver_info di on di.id = osc.driver_info_id
+		  left join vehicle_info vi on vi.id = di.vehicle_id
+		  LEFT JOIN supplier_info si ON si.`id` = vi.supplier_id
           where ot.`main_order_no` = #{mainOrderNo}
     </select>
     <select id="findTransportOrderByPage" parameterType="com.jayud.tms.model.bo.QueryOrderTmsForm" resultType="com.jayud.tms.model.vo.OrderTransportVO" >
@@ -234,9 +235,9 @@
             ot.`jiedan_time`,
             '%Y-%m-%d %H:%i:%S'
             ) jiedanTimeStr,
-            osc.`license_plate` licensePlate,
-            osc.`hk_license_plate` hkLicensePlate,
-            osc.`driver_phone` driverPhone,
+            vi.plate_number licensePlate,
+            vi.hk_number hkLicensePlate,
+            di.phone driverPhone,
             osc.`vehicle_size` vehicleSize,
             osc.`vehicle_type` vehicleType,
             p.`name` portName,
@@ -254,6 +255,8 @@
         ON p.`id_code` = ot.`port_code`
         LEFT JOIN supplier_info si
         ON osc.`supplier_info_id` = si.`id`
+        left join driver_info di on di.id = osc.driver_info_id
+        left join vehicle_info vi on vi.id = di.vehicle_id
         WHERE oi.`class_code` = 'ZGYS'
         <if test="orderNo != null and orderNo != ''">
             and ot.order_no = #{orderNo}

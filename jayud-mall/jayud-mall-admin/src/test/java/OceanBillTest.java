@@ -168,8 +168,8 @@ public class OceanBillTest {
 
 
         //1运单对应N箱号
-        List<OceanWaybillCaseRelationForm> oceanWaybillCaseRelationFormList = oceanWaybillCaseRelationFormList();
-        form1.setOceanWaybillCaseRelationFormList(oceanWaybillCaseRelationFormList);
+//        List<OceanWaybillCaseRelationForm> oceanWaybillCaseRelationFormList = oceanWaybillCaseRelationFormList();
+//        form1.setOceanWaybillCaseRelationFormList(oceanWaybillCaseRelationFormList);
 
         oceanWaybillFormList.add(form1);
 

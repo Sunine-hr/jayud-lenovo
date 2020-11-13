@@ -26,7 +26,10 @@ public class OceanWaybillForm {
     private Integer oceanCounterId;
 
     //1运单对应N箱号
-    @ApiModelProperty(value = "1运单对应N箱号")
-    private List<OceanWaybillCaseRelationForm> oceanWaybillCaseRelationFormList;
+//    @ApiModelProperty(value = "1运单对应N箱号")
+//    private List<OceanWaybillCaseRelationForm> oceanWaybillCaseRelationFormList;
+
+    @ApiModelProperty(value = "1个柜子对应N个运单")
+    private List<OceanWaybillForm> oceanWaybillFormList;
 
 }

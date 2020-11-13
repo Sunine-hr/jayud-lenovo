@@ -1,6 +1,7 @@
 package com.jayud.mall.model.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
@@ -35,6 +36,7 @@ public class OceanWaybill extends Model<OceanWaybill> {
     private String waybillNo;
 
     @ApiModelProperty(value = "描述")
+    @TableField(value = "`describe`")
     private String describe;
 
     @ApiModelProperty(value = "送货信息")

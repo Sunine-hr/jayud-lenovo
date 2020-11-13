@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @ApiModel(value = "运单对应箱号关联表", description = "1运单对应N箱号")
 public class OceanWaybillCaseRelationForm {
@@ -19,5 +21,8 @@ public class OceanWaybillCaseRelationForm {
 
     @ApiModelProperty(value = "客户id(customer id)")
     private Long customerId;
+
+    @ApiModelProperty(value = "1运单对应N箱号")
+    private List<OceanWaybillCaseRelationForm> oceanWaybillCaseRelationFormList;
 
 }

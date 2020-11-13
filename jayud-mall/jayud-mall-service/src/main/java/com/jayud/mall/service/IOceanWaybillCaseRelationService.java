@@ -1,5 +1,7 @@
 package com.jayud.mall.service;
 
+import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.OceanWaybillCaseRelationForm;
 import com.jayud.mall.model.po.OceanWaybillCaseRelation;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -13,4 +15,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IOceanWaybillCaseRelationService extends IService<OceanWaybillCaseRelation> {
 
+    /**
+     * 保存-运单对应箱号接口
+     * @param form
+     * @return
+     */
+    CommonResult saveOceanWaybillCaseRelation(OceanWaybillCaseRelationForm form);
 }

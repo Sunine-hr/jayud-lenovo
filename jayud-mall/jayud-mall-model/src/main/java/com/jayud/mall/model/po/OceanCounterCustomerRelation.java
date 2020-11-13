@@ -23,7 +23,8 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="OceanCounterCustomerRelation对象", description="提单对应货柜信息和客户关联表")
+@ApiModel(value="OceanCounterCustomerRelation对象", description="提单对应货柜信息和客户关联表,")
+@Deprecated() // 表示废弃，业务更改。
 public class OceanCounterCustomerRelation extends Model<OceanCounterCustomerRelation> {
 
     private static final long serialVersionUID = 1L;

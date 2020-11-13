@@ -40,8 +40,23 @@ public class OceanWaybillServiceImpl extends ServiceImpl<OceanWaybillMapper, Oce
             }
         });
         //先删除,这里可能要做关联验证(运单、箱号)（判断，id是否存在，存在则修改，不存在则删除）
+
         QueryWrapper<OceanWaybill> queryWrapper = new QueryWrapper<>();
-        queryWrapper.notIn("id", ids);//存在的id，则不删除，使用not in
+        queryWrapper.select("id");
+        queryWrapper.eq("ocean_counter_id", oceanCounterId);
+        List<OceanWaybill> dbList = this.list(queryWrapper);
+        List<Long> dbIds = new ArrayList<>();//数据库的ids
+        dbList.forEach(oceanWaybill -> {
+            Long id = oceanWaybill.getId();
+            dbIds.add(id);
+        });
+
+        //dbIds 关于 ids 的补集（或者差集） (由属于dbIds而不属于ids的元素组成的集合，称为dbIds关于ids的相对补集)
+        dbIds.removeAll(ids); //修改时被删除的记录
+        if(dbIds.size() == 0){
+            dbIds.add(0L);
+        }
+        queryWrapper.in("id", dbIds);//查询需要删除的id
         this.remove(queryWrapper);
         //再保存
         this.saveOrUpdateBatch(oceanWaybillList);

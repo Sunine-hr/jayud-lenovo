@@ -101,122 +101,58 @@
     <select id="findNotPaidBillByPage" parameterType="com.jayud.finance.bo.QueryNotPaidBillForm" resultType="com.jayud.finance.vo.PaymentNotPaidBillVO" >
         select * from (
         SELECT
-            opc.main_order_no orderNo,
-            pc.`name` classCodeDesc,
-            DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
-            oi.customer_name customerName,
-            (
-            SELECT
-                concat( da.city_name, da.address )
-            FROM
-                delivery_address da
-                LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id
-            WHERE
-                ota.order_no = ot.order_no
-                AND ota.opr_type = '1'
-                LIMIT 1
-            ) startAddress,
-            (
-            SELECT
-                concat( da.city_name, da.address )
-            FROM
-                delivery_address da
-                LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id
-            WHERE
-                ota.order_no = ot.order_no
-                AND ota.opr_type = '2'
-                LIMIT 1
-            ) endAddress,
-            concat( osc.license_plate, osc.hk_license_plate ) licensePlate,
-            ( SELECT GROUP_CONCAT( oc.yun_customs_no SEPARATOR ',' ) FROM order_customs oc WHERE oc.main_order_no = oi.order_no ) yunCustomsNo,
-            cg.`name` costGenreName,
-            ct.code_name costTypeName,
-            ci.`name` costName,
-            (
-            SELECT
-                sum(rmb.amount)
-            FROM
-                order_payment_cost rmb
-            WHERE
-                rmb.id = opc.id
-                AND rmb.currency_code = 'RMB'
-            GROUP BY
-                rmb.cost_code,
-                rmb.cost_genre_id,
-                rmb.cost_type_id
-            ) rmb,
-            (
-            SELECT
-                sum(rmb.amount)
-            FROM
-                order_payment_cost rmb
-            WHERE
-                rmb.id = opc.id
-                AND rmb.currency_code = 'MY'
-            GROUP BY
-                rmb.cost_code,
-                rmb.cost_genre_id,
-                rmb.cost_type_id
-            ) dollar,
-            (
-            SELECT
-                sum(rmb.amount)
-            FROM
-                order_payment_cost rmb
-            WHERE
-                rmb.id = opc.id
-                AND rmb.currency_code = 'OY'
-            GROUP BY
-                rmb.cost_code,
-                rmb.cost_genre_id,
-                rmb.cost_type_id
-            ) euro,
-            (
-            SELECT
-                sum(rmb.amount)
-            FROM
-                order_payment_cost rmb
-            WHERE
-                rmb.id = opc.id
-                AND rmb.currency_code = 'GB'
-            GROUP BY
-                rmb.cost_code,
-                rmb.cost_genre_id,
-                rmb.cost_type_id
-            ) hKDollar,
-             (
-            SELECT
-                sum(rmb.change_amount)
-            FROM
-                order_payment_cost rmb
-            WHERE
-                rmb.id = opc.id
-            GROUP BY
-                rmb.cost_code,
-                rmb.cost_genre_id,
-                rmb.cost_type_id
-            ) localAmount,
-            opc.id costId,
-            ot.vehicle_size vehicleSize,
-            (select sum(ota.plate_amount) from order_take_adr ota where ota.order_no = ot.order_no) pieceNum,
-            (select sum(ota.weight) from order_take_adr ota where ota.order_no = ot.order_no)	weight,
-            opc.is_bill isBill
+        opc.main_order_no orderNo,
+        pc.`name` classCodeDesc,
+        DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
+        oi.customer_name customerName,
+        (SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id
+        WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' LIMIT 1) startAddress,
+        (SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id
+        WHERE ota.order_no = ot.order_no AND ota.opr_type = '2' LIMIT 1) endAddress,
+        concat( osc.license_plate, osc.hk_license_plate ) licensePlate,
+        ( SELECT GROUP_CONCAT( oc.yun_customs_no SEPARATOR ',' ) FROM order_customs oc WHERE oc.main_order_no = oi.order_no ) yunCustomsNo,
+        cg.`name` costGenreName,
+        ct.code_name costTypeName,
+        ci.`name` costName,
+        (SELECT sum(rmb.amount) FROM order_payment_cost rmb WHERE rmb.id = opc.id AND rmb.currency_code = 'CNY' GROUP BY
+        rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) rmb,
+        (SELECT sum(rmb.amount) FROM order_payment_cost rmb WHERE rmb.id = opc.id AND rmb.currency_code = 'USD' GROUP BY
+        rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) dollar,
+        (SELECT sum(rmb.amount) FROM order_payment_cost rmb WHERE rmb.id = opc.id AND rmb.currency_code = 'EUR' GROUP BY
+        rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) euro,
+        (SELECT sum(rmb.amount) FROM order_payment_cost rmb WHERE rmb.id = opc.id AND rmb.currency_code = 'HKD' GROUP BY
+        rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) hKDollar,
+        (SELECT sum(rmb.change_amount) FROM order_payment_cost rmb WHERE rmb.id = opc.id GROUP BY
+        rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) localAmount,
+        opc.id costId,
+        ot.vehicle_size vehicleSize,
+        (select sum(ota.plate_amount) from order_take_adr ota where ota.order_no = ot.order_no) pieceNum,
+        (select sum(ota.weight) from order_take_adr ota where ota.order_no = ot.order_no)	weight,
+        opc.is_bill isBill
         FROM
-            order_payment_cost opc
-            LEFT JOIN order_info oi ON opc.main_order_no = oi.order_no
-            LEFT JOIN product_classify pc ON oi.class_code = pc.id_code
-            AND pc.f_id = '0'
-            LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
-            LEFT JOIN order_send_cars osc ON ot.order_no = osc.transport_no
-            LEFT JOIN cost_genre cg ON opc.cost_genre_id = cg.id
-            LEFT JOIN cost_type ct ON opc.cost_type_id = ct.id
-            LEFT JOIN cost_info ci ON opc.cost_code = ci.id_code
+        order_payment_cost opc
+        LEFT JOIN order_info oi ON opc.main_order_no = oi.order_no
+        LEFT JOIN product_classify pc ON oi.class_code = pc.id_code AND pc.f_id = '0'
+        LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
+        LEFT JOIN order_send_cars osc ON ot.order_no = osc.transport_no
+        LEFT JOIN cost_genre cg ON opc.cost_genre_id = cg.id
+        LEFT JOIN cost_type ct ON opc.cost_type_id = ct.id
+        LEFT JOIN cost_info ci ON opc.cost_code = ci.id_code
         WHERE
-            opc.id NOT IN ( SELECT opbd.cost_id FROM order_payment_bill_detail opbd )
-            and opc.is_bill != '2' and opc.is_sum_to_main='1') temp where 1 = 1
-        <if test="form.customerName != null and form.customerName != ''">
-            and temp.customerName like concat('%',#{form.customerName},'%')
+        opc.id NOT IN ( SELECT opbd.cost_id FROM order_payment_bill_detail opbd )
+        and opc.is_bill != '2'
+        and opc.customer_name = #{form.supplierChName}
+        and oi.legal_name = #{form.legalName}
+        <if test="form.cmd == 'main'">
+        and opc.is_sum_to_main = 1
         </if>
+        <if test="form.cmd == 'zgys'">
+            and opc.is_sum_to_main = 0 and opc.sub_type = 'zgys'
+        </if>
+        <if test="form.cmd == 'bg'">
+            and opc.is_sum_to_main = 0 and opc.sub_type = 'bg'
+        </if>
+        ) temp where 1 = 1
         <if test="form.startAddress != null and form.startAddress != ''">
             and temp.startAddress like concat('%',#{form.startAddress},'%')
         </if>
@@ -226,16 +162,16 @@
         <if test="form.costName != null and form.costName != ''">
             and temp.costName like concat('%',#{form.costName},'%')
         </if>
-        <if test="form.currencyCode == 'RMB'">
+        <if test="form.currencyCode == 'CNY'">
             and temp.rmb is not null
         </if>
-        <if test="form.currencyCode == 'MY'">
+        <if test="form.currencyCode == 'USD'">
             and temp.dollar is not null
         </if>
-        <if test="form.currencyCode == 'GB'">
+        <if test="form.currencyCode == 'HKD'">
             and temp.hKDollar is not null
         </if>
-        <if test="form.currencyCode == 'OY'">
+        <if test="form.currencyCode == 'EUR'">
             and temp.euro is not null
         </if>
         <if test="form.endCreatedTimeStr != null and form.endCreatedTimeStr !=''">

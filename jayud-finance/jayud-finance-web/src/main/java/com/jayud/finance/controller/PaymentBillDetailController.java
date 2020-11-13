@@ -85,7 +85,7 @@ public class PaymentBillDetailController {
         return CommonResult.success(pageVO);
     }
 
-    @ApiOperation(value = "编辑对账单保存")
+    @ApiOperation(value = "客服编辑对账单保存,财务编辑对账单")
     @PostMapping("/editBill")
     public CommonResult editBill(@RequestBody EditBillForm form) {
         Boolean result = billDetailService.editBill(form);

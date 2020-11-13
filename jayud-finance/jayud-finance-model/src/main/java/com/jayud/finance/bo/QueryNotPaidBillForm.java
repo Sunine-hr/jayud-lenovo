@@ -4,14 +4,20 @@ package com.jayud.finance.bo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
 
 @Data
 public class QueryNotPaidBillForm extends BasePageForm{
 
-    @ApiModelProperty(value = "客户")
-    private String customerName;
+    @ApiModelProperty(value = "供应商",required = true)
+    @NotEmpty(message = "supplierChName is required")
+    private String supplierChName;
+
+    @ApiModelProperty(value = "法人主体",required = true)
+    @NotEmpty(message = "legalName is required")
+    private String legalName;
 
     @ApiModelProperty(value = "起运地")
     private String startAddress;

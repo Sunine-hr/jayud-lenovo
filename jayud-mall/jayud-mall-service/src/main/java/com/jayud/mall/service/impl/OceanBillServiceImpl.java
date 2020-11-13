@@ -48,9 +48,6 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     OceanWaybillMapper oceanWaybillMapper;
 
     @Autowired
-    OceanCounterCustomerRelationMapper oceanCounterCustomerRelationMapper;
-
-    @Autowired
     OceanWaybillCaseRelationMapper oceanWaybillCaseRelationMapper;
 
     @Autowired
@@ -61,9 +58,6 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
 
     @Autowired
     IOceanWaybillCaseRelationService oceanWaybillCaseRelationService;
-
-//    @Autowired
-//    IOceanCounterCustomerRelationService oceanCounterCustomerRelationService;
 
     @Override
     public IPage<OceanBillVO> findOceanBillByPage(QueryOceanBillForm form) {
@@ -113,7 +107,7 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
      * <p>1个提单对应1(N)个柜子</p>
      * <p>1个柜子对应N个运单</p>
      * <p>1个运单对应N个箱号</p>
-     * @param id
+     * @param id 提单id
      * @return
      */
     @Override

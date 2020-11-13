@@ -50,7 +50,10 @@ public class VehicleInfoVO {
     private String ptFax;
 
     @ApiModelProperty(value = "车辆类型(1吨车 2柜车)")
-    private String carType;
+    private Integer carType;
+
+    @ApiModelProperty(value = "车辆名称(1吨车 2柜车)")
+    private String carTypeName;
 
     @ApiModelProperty(value = "牌头电话")
     private String ptPhone;
@@ -98,7 +101,8 @@ public class VehicleInfoVO {
 
 
     public void setCarType(Integer carType) {
-        this.carType = VehicleTypeEnum.getDesc(carType);
+        this.carTypeName = VehicleTypeEnum.getDesc(carType);
+        this.carType = carType;
     }
 
 

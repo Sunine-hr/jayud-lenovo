@@ -34,39 +34,37 @@
     </sql>
     <select id="getOrderSendInfo"  resultType="com.jayud.tms.model.vo.OrderSendCarsVO" >
         SELECT
-          osc.`id`,
-          osc.`transport_no` transportNo,
-          osc.`encode`,
-          osc.`vehicle_size` vehicleSize,
-          osc.`vehicle_type` vehicleType,
-          osc.`cntr_no` cntrNo,
-          osc.`supplier_info_id` supplierInfoId,
-          si.`supplier_ch_name` supplierName,
-          vi.`plate_number` licensePlate,
-          di.`name` driverName,
-          osc.driver_info_id driverInfoId,
-          vi.hk_number hkLicensePlate,
-          di.phone driverPhone,
-          osc.`describes`,
-          osc.`status`,
-          osc.`order_no` orderNo,
-          osc.`remarks`,
-          osc.`warehouse_info_id` warehouseInfoId,
-          wi.`warehouse_name` warehouseName,
-          wi.`contacts` warehouseContacts,
-          wi.`contact_number` warehouseNumber,
-          '中国' countryName,
-          (SELECT rc.name FROM region_city rc WHERE rc.code = wi.`state_code` LIMIT 1) AS provinceName,
-          (SELECT rc.name FROM region_city rc WHERE rc.code = wi.`city_code` LIMIT 1) AS cityName,
-          wi.`address` address
+            osc.`id`,
+            osc.`transport_no` transportNo,
+            osc.`encode`,
+            osc.`vehicle_size` vehicleSize,
+            osc.`vehicle_type` vehicleType,
+            osc.`cntr_no` cntrNo,
+            vi.supplier_id supplierInfoId,
+            si.`supplier_ch_name` supplierName,
+            vi.`plate_number` licensePlate,
+            di.`name` driverName,
+            osc.driver_info_id driverInfoId,
+            vi.hk_number hkLicensePlate,
+            di.phone driverPhone,
+            osc.`describes`,
+            osc.`status`,
+            osc.`order_no` orderNo,
+            osc.`remarks`,
+            osc.`warehouse_info_id` warehouseInfoId,
+            wi.`warehouse_name` warehouseName,
+            wi.`contacts` warehouseContacts,
+            wi.`contact_number` warehouseNumber,
+            '中国' countryName,
+            ( SELECT rc.NAME FROM region_city rc WHERE rc.CODE = wi.`state_code` LIMIT 1 ) AS provinceName,
+            ( SELECT rc.NAME FROM region_city rc WHERE rc.CODE = wi.`city_code` LIMIT 1 ) AS cityName,
+            wi.`address` address
         FROM
-          order_send_cars osc
-          LEFT JOIN supplier_info si
-            ON osc.`supplier_info_id` = si.`id`
-          LEFT JOIN warehouse_info wi
-            ON wi.`id` = osc.`warehouse_info_id`
-		  left join driver_info di on di.id = osc.driver_info_id
-		  left join vehicle_info vi on vi.id = di.vehicle_id
-          WHERE osc.`order_no` = #{orderNo}
+            order_send_cars osc
+            LEFT JOIN warehouse_info wi ON wi.`id` = osc.`warehouse_info_id`
+            LEFT JOIN driver_info di ON di.id = osc.driver_info_id
+            LEFT JOIN vehicle_info vi ON vi.id = di.vehicle_id
+            LEFT JOIN supplier_info si ON vi.`supplier_id` = si.`id`
+            WHERE osc.`order_no` = #{orderNo}
     </select>
 </mapper>

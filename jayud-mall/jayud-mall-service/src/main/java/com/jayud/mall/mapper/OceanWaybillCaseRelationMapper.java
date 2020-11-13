@@ -2,8 +2,11 @@ package com.jayud.mall.mapper;
 
 import com.jayud.mall.model.po.OceanWaybillCaseRelation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.mall.model.vo.OceanWaybillCaseRelationVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +20,10 @@ import org.springframework.stereotype.Component;
 @Component
 public interface OceanWaybillCaseRelationMapper extends BaseMapper<OceanWaybillCaseRelation> {
 
+    /**
+     * 根据运单id，查询箱号信息list
+     * @param oceanWaybillId
+     * @return
+     */
+    List<OceanWaybillCaseRelationVO> findXhxxByOceanWaybillId(Long oceanWaybillId);
 }

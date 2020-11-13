@@ -1,6 +1,5 @@
 package com.jayud.mall.model.vo;
 
-import com.jayud.mall.model.po.OceanCounter;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -45,7 +44,7 @@ public class OceanBillVO {
 
     /*提单关联柜号信息*/
     @ApiModelProperty(value = "提单关联柜号list")
-    private List<OceanCounter> oceanCounterList;
+    private List<OceanCounterVO> oceanCounterVOList;
 
 
 }

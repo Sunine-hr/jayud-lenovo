@@ -92,7 +92,7 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
             Long oceanCounterId = oceanCounter.getId();
             //装柜信息list
             List<OceanCounterCustomerRelationVO> zgxxList = oceanCounterCustomerRelationMapper.findZgxxListByOceanCounterId(oceanCounterId);
-            oceanCounter.setOceanCounterCustomerRelationVOList(zgxxList);
+//            oceanCounter.setOceanCounterCustomerRelationVOList(zgxxList);
         });
         orderConfVO.setOceanCounterVOList(oceanCounterVOList);
 

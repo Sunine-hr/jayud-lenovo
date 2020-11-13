@@ -6,14 +6,17 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.mall.mapper.OceanBillMapper;
-import com.jayud.mall.mapper.OceanCounterCustomerRelationMapper;
-import com.jayud.mall.mapper.OceanCounterMapper;
+import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.OceanBillForm;
 import com.jayud.mall.model.bo.QueryOceanBillForm;
 import com.jayud.mall.model.po.OceanBill;
 import com.jayud.mall.model.po.OceanCounter;
+import com.jayud.mall.model.po.OceanWaybill;
+import com.jayud.mall.model.po.OceanWaybillCaseRelation;
 import com.jayud.mall.model.vo.OceanBillVO;
+import com.jayud.mall.model.vo.OceanCounterVO;
+import com.jayud.mall.model.vo.OceanWaybillCaseRelationVO;
+import com.jayud.mall.model.vo.OceanWaybillVO;
 import com.jayud.mall.service.IOceanBillService;
 import com.jayud.mall.service.IOceanCounterService;
 import com.jayud.mall.service.IOceanWaybillCaseRelationService;
@@ -42,7 +45,13 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     OceanCounterMapper oceanCounterMapper;
 
     @Autowired
+    OceanWaybillMapper oceanWaybillMapper;
+
+    @Autowired
     OceanCounterCustomerRelationMapper oceanCounterCustomerRelationMapper;
+
+    @Autowired
+    OceanWaybillCaseRelationMapper oceanWaybillCaseRelationMapper;
 
     @Autowired
     IOceanCounterService oceanCounterService;
@@ -76,7 +85,8 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
             QueryWrapper<OceanCounter> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("ob_id", obId);
             List<OceanCounter> oceanCounters = oceanCounterMapper.selectList(queryWrapper);
-            oceanBillVO.setOceanCounterList(oceanCounters);
+            List<OceanCounterVO> oceanCounterVOList = ConvertUtil.convertList(oceanCounters, OceanCounterVO.class);
+            oceanBillVO.setOceanCounterVOList(oceanCounterVOList);
         });
         return pageInfo;
     }
@@ -98,27 +108,48 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         return CommonResult.success(oceanBillVO);
     }
 
+    /**
+     * <p>查看提单</p>
+     * <p>1个提单对应1(N)个柜子</p>
+     * <p>1个柜子对应N个运单</p>
+     * <p>1个运单对应N个箱号</p>
+     * @param id
+     * @return
+     */
     @Override
     public CommonResult<OceanBillVO> lookOceanBill(Long id) {
         //提单信息
         OceanBill oceanBill = oceanBillMapper.selectById(id);
         OceanBillVO oceanBillVO = ConvertUtil.convert(oceanBill, OceanBillVO.class);
 
-        //提单关联柜号信息
+        //1个提单对应1(N)个柜子
         Long obId = oceanBillVO.getId();
         QueryWrapper<OceanCounter> queryWrapper = new QueryWrapper<>();
         queryWrapper.select("id","cntr_no","cabinet_code","volume","cost","cid","`status`","ob_id","create_time");
         queryWrapper.eq("ob_id", obId);
         List<OceanCounter> oceanCounterList = oceanCounterMapper.selectList(queryWrapper);
+        List<OceanCounterVO> oceanCounterVOList = ConvertUtil.convertList(oceanCounterList, OceanCounterVO.class);
 
-//        //柜号关联装柜信息
-//        oceanCounterList.forEach(oceanCounter -> {
-//            Long oceanCounterId = oceanCounter.getId();
-//            //装柜信息list
-//            List<OceanCounterCustomerRelationVO> zgxxList = oceanCounterCustomerRelationMapper.findZgxxListByOceanCounterId(oceanCounterId);
-//            oceanCounter.setOceanCounterCustomerRelationVOList(zgxxList);
-//        });
-//        oceanBillVO.setOceanCounterList(oceanCounterList);
+        oceanCounterVOList.forEach( oceanCounterVO -> {
+            //1个柜子对应N个运单
+            Long oceanCounterId = oceanCounterVO.getId();
+            QueryWrapper<OceanWaybill> queryWrapperOceanWaybill = new QueryWrapper<>();
+            queryWrapperOceanWaybill.eq("ocean_counter_id", oceanCounterId);
+            List<OceanWaybill> oceanWaybillList = oceanWaybillMapper.selectList(queryWrapperOceanWaybill);
+            List<OceanWaybillVO> oceanWaybillVOList = ConvertUtil.convertList(oceanWaybillList, OceanWaybillVO.class);
+
+
+            oceanWaybillVOList.forEach(oceanWaybillVO -> {
+                //1个运单对应N个箱号
+                Long oceanWaybillId = oceanWaybillVO.getId();
+                QueryWrapper<OceanWaybillCaseRelation> queryWrapperOceanWaybillCaseRelation = new QueryWrapper<>();
+                List<OceanWaybillCaseRelationVO> xhxxList =
+                        oceanWaybillCaseRelationMapper.findXhxxByOceanWaybillId(oceanWaybillId);//根据运单id，查询箱号信息list
+                oceanWaybillVO.setOceanWaybillCaseRelationVOList(xhxxList);
+            });
+            oceanCounterVO.setOceanWaybillVOList(oceanWaybillVOList);
+        });
+        oceanBillVO.setOceanCounterVOList(oceanCounterVOList);
         return CommonResult.success(oceanBillVO);
     }
 }

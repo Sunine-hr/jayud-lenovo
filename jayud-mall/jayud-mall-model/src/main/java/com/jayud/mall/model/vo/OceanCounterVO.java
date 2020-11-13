@@ -58,9 +58,8 @@ public class OceanCounterVO {
     @ApiModelProperty(value = "供应商信息-供应商名称(中)")
     private String supplierChName;
 
-    /*关联箱号信息*/
-    @ApiModelProperty(value = "货柜关联箱号信息list")
-    private List<OceanCounterCustomerRelationVO> oceanCounterCustomerRelationVOList;
-
+    //1个柜子对应N个运单
+    @ApiModelProperty(value = "1个柜子对应N个运单")
+    private List<OceanWaybillVO> oceanWaybillVOList;
 
 }

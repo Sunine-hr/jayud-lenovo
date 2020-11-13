@@ -87,7 +87,7 @@ public class CustomerInfoController {
         if (form.getId() != null) {
             //校验结算代码唯一性
             QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.eq("id",form.getUnitCode());
+            queryWrapper.eq("unit_code",form.getUnitCode());
             CustomerInfo oldCustomerInfo = customerInfoService.getOne(queryWrapper);
             if(!oldCustomerInfo.getUnitCode().equals(form.getUnitCode())){//修改了结算代码的情况下
                 flag = true;

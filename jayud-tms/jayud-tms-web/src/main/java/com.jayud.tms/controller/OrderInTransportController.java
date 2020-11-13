@@ -309,7 +309,7 @@ public class OrderInTransportController {
               StringUtil.isNullOrEmpty(form.getTransportNo()) || StringUtil.isNullOrEmpty(form.getOrderNo()) ||
               form.getIsHaveEncode() == null || form.getVehicleSize() == null || form.getVehicleType() == null ||
               form.getSupplierInfoId() == null || StringUtil.isNullOrEmpty(form.getLicensePlate()) ||
-              StringUtil.isNullOrEmpty(form.getDriverName()) ||
+              form.getDriverInfoId() == null ||
               form.getWarehouseInfoId() == null || (form.getIsHaveEncode() && StringUtil.isNullOrEmpty(form.getEncode()))){
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }

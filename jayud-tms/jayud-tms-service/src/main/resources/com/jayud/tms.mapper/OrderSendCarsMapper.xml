@@ -15,12 +15,7 @@
         <result column="cntr_no" property="cntrNo" />
         <result column="cntr_pic" property="cntrPic" />
         <result column="cntr_pic_name" property="cntrPicName" />
-        <result column="supplier_info_id" property="supplierInfoId" />
-        <result column="license_plate" property="licensePlate" />
-        <result column="driver_name" property="driverName" />
-        <result column="hk_license_plate" property="hkLicensePlate" />
-        <result column="driver_phone" property="driverPhone" />
-        <result column="driver_hk_phone" property="driverHkPhone" />
+        <result column="driver_info_info" property="driverInfoId" />
         <result column="warehouse_info_id" property="warehouseInfoId" />
         <result column="remarks" property="remarks" />
         <result column="describes" property="describes" />
@@ -34,7 +29,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, transport_no, order_no, encode, encode_url,encode_url_name, vehicle_type, vehicle_size, cntr_no, cntr_pic,
-        cntr_pic_name,supplier_info_id, license_plate, driver_name, hk_license_plate, driver_phone, driver_hk_phone,
+        cntr_pic_name, driver_info_info,
         warehouse_info_id,remarks, describes, status, updated_time, updated_user, created_user, created_time
     </sql>
     <select id="getOrderSendInfo"  resultType="com.jayud.tms.model.vo.OrderSendCarsVO" >
@@ -47,10 +42,11 @@
           osc.`cntr_no` cntrNo,
           osc.`supplier_info_id` supplierInfoId,
           si.`supplier_ch_name` supplierName,
-          osc.`license_plate` licensePlate,
-          osc.`driver_name` driverName,
-          osc.`hk_license_plate` hkLicensePlate,
-          osc.`driver_phone` driverPhone,
+          vi.`plate_number` licensePlate,
+          di.`name` driverName,
+          osc.driver_info_id driverInfoId,
+          vi.hk_number hkLicensePlate,
+          di.phone driverPhone,
           osc.`describes`,
           osc.`status`,
           osc.`order_no` orderNo,
@@ -69,6 +65,8 @@
             ON osc.`supplier_info_id` = si.`id`
           LEFT JOIN warehouse_info wi
             ON wi.`id` = osc.`warehouse_info_id`
+		  left join driver_info di on di.id = osc.driver_info_id
+		  left join vehicle_info vi on vi.id = di.vehicle_id
           WHERE osc.`order_no` = #{orderNo}
     </select>
 </mapper>

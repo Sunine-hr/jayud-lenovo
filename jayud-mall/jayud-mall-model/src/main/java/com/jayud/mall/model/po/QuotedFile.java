@@ -36,6 +36,9 @@ public class QuotedFile extends Model<QuotedFile> {
     @ApiModelProperty(value = "文件分组代码")
     private String groupCode;
 
+    @ApiModelProperty(value = "文件分组名称")
+    private String groupName;
+
     @ApiModelProperty(value = "文件代码")
     private String idCode;
 

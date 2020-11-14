@@ -6,6 +6,7 @@
     <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.QuotedFile">
         <id column="id" property="id" />
         <result column="group_code" property="groupCode" />
+        <result column="group_name" property="groupName" />
         <result column="id_code" property="idCode" />
         <result column="file_name" property="fileName" />
         <result column="options" property="options" />

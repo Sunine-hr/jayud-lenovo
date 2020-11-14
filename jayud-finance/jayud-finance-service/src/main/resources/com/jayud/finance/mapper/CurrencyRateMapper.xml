@@ -25,7 +25,8 @@
         SELECT
         cr.id,
         CONCAT(REPLACE(cr.`month`,'-','年'),'月') monthStr,
-        ci.currency_name currencyName,
+        c2.currency_name dCurrencyName,
+        ci.currency_name oCurrencyName,
         cr.exchange_rate exchangeRate,
         DATE_FORMAT(cr.begin_valid_date, '%Y-%m-%d') beginValidDateStr,
         DATE_FORMAT(cr.end_valid_date, '%Y-%m-%d') endValidDateStr,
@@ -34,6 +35,7 @@
         FROM
         currency_rate cr
         LEFT JOIN currency_info ci ON cr.ocid = ci.id
+        left join currency_info c2 on c2.id = cr.dcid
         <if test="form.month != null and form.month != ''">
             and cr.month = #{form.month}
         </if>

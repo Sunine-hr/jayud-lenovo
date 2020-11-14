@@ -152,6 +152,10 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             List<OrderPaymentBillDetail> paymentBillDetails = ConvertUtil.convertList(paymentBillDetailForms,OrderPaymentBillDetail.class);
             for (int i = 0;i<paymentBillDetails.size();i++) {
                 paymentBillDetails.get(i).setStatus("1");
+                paymentBillDetails.get(i).setBillNo(form.getBillNo());
+                paymentBillDetails.get(i).setBeginAccountTerm(form.getBeginAccountTerm());
+                paymentBillDetails.get(i).setEndAccountTerm(form.getEndAccountTerm());
+                paymentBillDetails.get(i).setSettlementCurrency(form.getSettlementCurrency());
                 paymentBillDetails.get(i).setAuditStatus(BillEnum.B_1.getCode());
                 paymentBillDetails.get(i).setCreatedOrderTime(DateUtils.str2LocalDateTime(paymentBillDetailForms.get(i).getCreatedTimeStr(),DateUtils.DATE_TIME_PATTERN));
                 paymentBillDetails.get(i).setMakeUser(UserOperator.getToken());
@@ -165,9 +169,13 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             //开始保存费用维度的金额信息  以结算币种进行转换后保存
             List<OrderBillCostTotal> orderBillCostTotals = new ArrayList<>();
             //根据费用ID统计费用信息,将原始费用信息根据结算币种进行转换
-            List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderBillCostTotal(costIds);
+            String settlementCurrency = form.getSettlementCurrency();
+            List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderBillCostTotal(costIds,settlementCurrency);
             for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
-                orderBillCostTotalVO.setBillNo(paymentBillDetailForms.get(0).getBillNo());
+                orderBillCostTotalVO.setBillNo(form.getBillNo());
+                orderBillCostTotalVO.setCurrencyCode(settlementCurrency);
+                BigDecimal money = orderBillCostTotalVO.getMoney().multiply(orderBillCostTotalVO.getExchangeRate());
+                orderBillCostTotalVO.setMoney(money);
                 OrderBillCostTotal orderBillCostTotal = ConvertUtil.convert(orderBillCostTotalVO,OrderBillCostTotal.class);
                 orderBillCostTotal.setMoneyType("1");
                 orderBillCostTotals.add(orderBillCostTotal);

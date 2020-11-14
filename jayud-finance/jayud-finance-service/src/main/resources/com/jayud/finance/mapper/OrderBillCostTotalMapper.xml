@@ -19,13 +19,20 @@
         id, order_no, bill_no, currency_code, cost_info_name, money, status,money_type
     </sql>
 
-    <select id="findOrderBillCostTotal" parameterType="java.util.List" resultType="com.jayud.finance.vo.OrderBillCostTotalVO">
+    <select id="findOrderBillCostTotal" parameterType="java.util.HashMap" resultType="com.jayud.finance.vo.OrderBillCostTotalVO">
         SELECT
         opc.order_no orderNo,
         opc.currency_code currencyCode,
         opc.id costId,
         ci.`name` costInfoName,
-        opc.amount money
+        opc.amount money, (
+        SELECT
+        cr.exchange_rate
+        FROM
+        currency_rate cr
+        WHERE
+        cr.dcid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = opc.currency_code )
+        AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = #{settlementCurrency} )) exchangeRate
         FROM
         order_payment_cost opc
         LEFT JOIN cost_info ci ON ci.id_code = opc.cost_code

@@ -24,5 +24,11 @@ public class OrderBillCostTotalVO {
     @ApiModelProperty(value = "金额")
     private BigDecimal money;
 
+    @ApiModelProperty(value = "对账编号")
+    private String billNo;
+
+    @ApiModelProperty(value = "汇率")
+    private BigDecimal exchangeRate;
+
 
 }

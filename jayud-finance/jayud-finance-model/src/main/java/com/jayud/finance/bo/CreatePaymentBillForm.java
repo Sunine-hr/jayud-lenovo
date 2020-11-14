@@ -1,11 +1,13 @@
 package com.jayud.finance.bo;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -21,6 +23,22 @@ public class CreatePaymentBillForm {
     @ApiModelProperty(value = "应付出账单详情界面部分",required = true)
     @NotEmpty(message = "paymentBillDetailForms is required")
     private List<OrderPaymentBillDetailForm> paymentBillDetailForms;
+
+    @ApiModelProperty(value = "账单编号",required = true)
+    @NotEmpty(message = "billNo is required")
+    private String billNo;
+
+    @ApiModelProperty(value = "开始核算期",required = true)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime beginAccountTerm;
+
+    @ApiModelProperty(value = "结束核算期",required = true)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime endAccountTerm;
+
+    @ApiModelProperty(value = "结算币种",required = true)
+    @NotEmpty(message = "settlementCurrency is required")
+    private String settlementCurrency;
 
     @ApiModelProperty(value = "账单类别",required = true)
     @Pattern(regexp = "(main|zgys|bg)", message = "只允许填写main or zgys or bg")

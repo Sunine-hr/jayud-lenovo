@@ -22,7 +22,8 @@ public interface OrderBillCostTotalMapper extends BaseMapper<OrderBillCostTotal>
     /**
      * 根据费用ID获取元素费用信息，并根据结算币种转换
      * @param costIds
+     * @param settlementCurrency
      * @return
      */
-    List<OrderBillCostTotalVO> findOrderBillCostTotal(@Param("costIds") List<Long> costIds);
+    List<OrderBillCostTotalVO> findOrderBillCostTotal(@Param("costIds") List<Long> costIds,@Param("settlementCurrency") String settlementCurrency);
 }

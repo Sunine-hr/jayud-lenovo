@@ -17,8 +17,11 @@ public class CurrencyRateVO {
     @ApiModelProperty(value = "年月")
     private String monthStr;
 
-    @ApiModelProperty(value = "币种")
-    private String currencyName;
+    @ApiModelProperty(value = "原始币种")
+    private String dCurrencyName;
+
+    @ApiModelProperty(value = "兑换币种")
+    private String OCurrencyName;
 
     @ApiModelProperty(value = "汇率")
     private BigDecimal exchangeRate;

@@ -1,13 +1,11 @@
 package com.jayud.finance.bo;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Data
 public class OrderPaymentBillDetailForm {
@@ -63,22 +61,6 @@ public class OrderPaymentBillDetailForm {
 
     @ApiModelProperty(value = "港币")
     private BigDecimal hKDollar;
-
-    @ApiModelProperty(value = "账单编号",required = true)
-    @NotEmpty(message = "billNo is required")
-    private String billNo;
-
-    @ApiModelProperty(value = "开始核算期",required = true)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime beginAccountTerm;
-
-    @ApiModelProperty(value = "结束核算期",required = true)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime endAccountTerm;
-
-    @ApiModelProperty(value = "结算币种",required = true)
-    @NotEmpty(message = "settlementCurrency is required")
-    private String settlementCurrency;
 
     @ApiModelProperty(value = "费用类型/类别/名称维度的本币金额",required = true)
     @NotNull(message = "localAmount is required")

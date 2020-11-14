@@ -46,7 +46,7 @@ public class CurrencyRateServiceImpl extends ServiceImpl<CurrencyRateMapper, Cur
         //不允许添加相同币种的汇率
         List<AddCurrencyRateForm> rateList = form.getRateFormList();
         int repeatNum = rateList.stream()
-                .collect(Collectors.groupingBy(a -> a.getOcid(), Collectors.counting()))
+                .collect(Collectors.groupingBy(a -> String.valueOf(a.getOcid()).concat(String.valueOf(a.getDcid())), Collectors.counting()))
                 .entrySet().stream().filter(entry -> entry.getValue() > 1).map(entry -> entry.getKey())
                 .collect(Collectors.toList()).size();
         if(repeatNum != 0){
@@ -59,12 +59,14 @@ public class CurrencyRateServiceImpl extends ServiceImpl<CurrencyRateMapper, Cur
         List<CurrencyRate> currencyRates = new ArrayList<>();
         for (AddCurrencyRateForm addCurrencyRateForm : form.getRateFormList()) {
             queryWrapper.eq("ocid",addCurrencyRateForm.getOcid());
+            queryWrapper.eq("dcid",addCurrencyRateForm.getDcid());
             List<CurrencyRate> existList = baseMapper.selectList(queryWrapper);
             if(existList != null && existList.size() > 0){
                 return CommonResult.error(10000,"该月份已存在相同币种的汇率");
             }
             CurrencyRate currencyRate = new CurrencyRate();
             currencyRate.setOcid(addCurrencyRateForm.getOcid());
+            currencyRate.setDcid(addCurrencyRateForm.getDcid());
             currencyRate.setExchangeRate(addCurrencyRateForm.getExchangeRate());
             currencyRate.setMonth(form.getMonth());
             currencyRate.setBeginValidDate(form.getBeginValidDate());

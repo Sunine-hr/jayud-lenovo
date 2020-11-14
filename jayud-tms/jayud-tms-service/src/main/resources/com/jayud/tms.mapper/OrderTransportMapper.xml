@@ -226,7 +226,7 @@
     </select>
     <select id="initPdfData"  resultType="com.jayud.tms.model.vo.SendCarPdfVO" >
         SELECT
-            oi.`legal_name` legalName,
+            ot.`legal_name` legalName,
             '' enLegalName,
             '' tel,
             '' fax,
@@ -250,13 +250,12 @@
         LEFT JOIN order_transport ot
         ON ot.`main_order_no` = oi.`order_no`
         LEFT JOIN order_send_cars osc
-        ON osc.`transport_no` = ot.`order_no`
+        ON osc.`order_no` = ot.`order_no`
         LEFT JOIN port_info p
         ON p.`id_code` = ot.`port_code`
-        LEFT JOIN supplier_info si
-        ON osc.`supplier_info_id` = si.`id`
         left join driver_info di on di.id = osc.driver_info_id
         left join vehicle_info vi on vi.id = di.vehicle_id
+        LEFT JOIN supplier_info si ON vi.supplier_id = si.`id`
         WHERE oi.`class_code` = 'ZGYS'
         <if test="orderNo != null and orderNo != ''">
             and ot.order_no = #{orderNo}

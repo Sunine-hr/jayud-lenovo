@@ -6,13 +6,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.mall.mapper.QuotationTemplateMapper;
+import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.*;
-import com.jayud.mall.model.po.QuotationTemplate;
-import com.jayud.mall.model.po.TemplateCopeReceivable;
-import com.jayud.mall.model.po.TemplateCopeWith;
-import com.jayud.mall.model.po.TemplateFile;
-import com.jayud.mall.model.vo.QuotationTemplateVO;
+import com.jayud.mall.model.po.*;
+import com.jayud.mall.model.vo.*;
 import com.jayud.mall.service.IQuotationTemplateService;
 import com.jayud.mall.service.ITemplateCopeReceivableService;
 import com.jayud.mall.service.ITemplateCopeWithService;
@@ -22,7 +19,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -37,6 +37,27 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
 
     @Autowired
     QuotationTemplateMapper quotationTemplateMapper;
+
+    @Autowired
+    FabWarehouseMapper fabWarehouseMapper;
+
+    @Autowired
+    CustomerMapper customerMapper;
+
+    @Autowired
+    GoodsTypeMapper goodsTypeMapper;
+
+    @Autowired
+    ShippingAreaMapper shippingAreaMapper;
+
+    @Autowired
+    TemplateCopeReceivableMapper templateCopeReceivableMapper;
+
+    @Autowired
+    TemplateCopeWithMapper templateCopeWithMapper;
+
+    @Autowired
+    TemplateFileMapper templateFileMapper;
 
     @Autowired
     ITemplateCopeReceivableService templateCopeReceivableService;
@@ -144,6 +165,88 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
     @Override
     public CommonResult<QuotationTemplateVO> lookQuotationTemplate(Long id) {
         QuotationTemplateVO quotationTemplateVO = quotationTemplateMapper.lookQuotationTemplate(id);
+
+        Long qie = quotationTemplateVO.getId();//报价模板id
+        //可达仓库List
+        String arriveWarehouse = quotationTemplateVO.getArriveWarehouse();
+        if(arriveWarehouse != null && arriveWarehouse != ""){
+            String[] arriveWarehouseArr = arriveWarehouse.split(",");
+            List<String> arriveWarehouseList = Arrays.asList(arriveWarehouseArr);
+            List<FabWarehouse> fabWarehouses = fabWarehouseMapper.selectBatchIds(arriveWarehouseList);
+            List<FabWarehouseVO> fabWarehouseVOList = ConvertUtil.convertList(fabWarehouses, FabWarehouseVO.class);
+            quotationTemplateVO.setFabWarehouseVOList(fabWarehouseVOList);
+        }
+
+        //可见客户list
+        String visibleUid = quotationTemplateVO.getVisibleUid();
+        if(visibleUid != null && visibleUid != ""){
+            String[] visibleUidArr = visibleUid.split(",");
+            List<String> visibleUidList = Arrays.asList(visibleUidArr);
+            List<Customer> customers = customerMapper.selectBatchIds(visibleUidList);
+            List<CustomerVO> customerVOList = ConvertUtil.convertList(customers, CustomerVO.class);
+            quotationTemplateVO.setCustomerVOList(customerVOList);
+        }
+
+        //货物类型list
+        String gid = quotationTemplateVO.getGid();
+        if(gid != null && gid != ""){
+            String[] gidArr = gid.split(",");
+            List<String> gidList = Arrays.asList(gidArr);
+            List<GoodsType> goodsTypes = goodsTypeMapper.selectBatchIds(gidList);
+            List<GoodsTypeVO> gList = ConvertUtil.convertList(goodsTypes, GoodsTypeVO.class);
+            quotationTemplateVO.setGList(gList);
+        }
+
+        //集货仓库list
+        String areaId = quotationTemplateVO.getAreaId();
+        if(areaId != null && areaId != ""){
+            String[] areaIdArr = areaId.split(",");
+            List<String> areaIdList = Arrays.asList(areaIdArr);
+            List<ShippingArea> shippingAreas = shippingAreaMapper.selectBatchIds(areaIdList);
+            List<ShippingAreaVO> shippingAreaVOList = ConvertUtil.convertList(shippingAreas, ShippingAreaVO.class);
+            quotationTemplateVO.setShippingAreaVOList(shippingAreaVOList);
+        }
+
+        //报价类型list
+        String qid = quotationTemplateVO.getQid();
+        if(qid != null && qid != ""){
+            String[] qidArr = qid.split(",");
+            List<String> qidList = Arrays.asList(qidArr);
+            List<GoodsType> goodsTypes = goodsTypeMapper.selectBatchIds(qidList);
+            List<GoodsTypeVO> qList = ConvertUtil.convertList(goodsTypes, GoodsTypeVO.class);
+            quotationTemplateVO.setQList(qList);
+        }
+
+        //报价对应应收费用明细list
+        QueryWrapper<TemplateCopeReceivable> query1 = new QueryWrapper<>();
+        query1.eq("qie", qie);
+        List<TemplateCopeReceivable> templateCopeReceivables = templateCopeReceivableMapper.selectList(query1);
+        List<TemplateCopeReceivableVO> templateCopeReceivableVOList =
+                ConvertUtil.convertList(templateCopeReceivables, TemplateCopeReceivableVO.class);
+        quotationTemplateVO.setTemplateCopeReceivableVOList(templateCopeReceivableVOList);
+
+        //报价对应应付费用明细list
+        QueryWrapper<TemplateCopeWith> query2 = new QueryWrapper<>();
+        query2.eq("qie", qie);
+        List<TemplateCopeWith> templateCopeWiths = templateCopeWithMapper.selectList(query2);
+        List<TemplateCopeWithVO> templateCopeWithVOList =
+                ConvertUtil.convertList(templateCopeWiths, TemplateCopeWithVO.class);
+        quotationTemplateVO.setTemplateCopeWithVOList(templateCopeWithVOList);
+
+        //模板对应模块信息list，文件信息
+        List<TemplateFileVO> templateFileVOList = templateFileMapper.findTemplateFileByQie(qie);
+        //分组
+        Map<String, List<TemplateFileVO>> map =
+                templateFileVOList.stream().collect(Collectors.groupingBy(TemplateFileVO::getGroupCode));
+        List<TemplateFileVO> templateFileGroup = new ArrayList<>();
+        map.forEach((k,v) -> {
+            TemplateFileVO templateFileVO = new TemplateFileVO();
+            templateFileVO.setGroupCode(k);
+            templateFileVO.setGroupName(v.get(0).getGroupName());
+            templateFileVO.setTemplateFileVOList(v);
+            templateFileGroup.add(templateFileVO);
+        });
+        quotationTemplateVO.setTemplateFileVOList(templateFileGroup);
         return CommonResult.success(quotationTemplateVO);
     }
 

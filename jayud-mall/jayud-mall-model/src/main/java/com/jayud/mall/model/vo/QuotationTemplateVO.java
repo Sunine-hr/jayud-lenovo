@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @ApiModel(value="QuotationTemplate对象", description="报价模板VO")
@@ -97,6 +98,37 @@ public class QuotationTemplateVO {
     /*提单任务分组:task_group*/
     @ApiModelProperty(value = "关联任务task_group.code_name")
     private String taskName;
+
+    /**list**/
+
+    /*可达仓库List*/
+    @ApiModelProperty(value = "可达仓库List")
+    private List<FabWarehouseVO> fabWarehouseVOList;
+
+    /*可见客户list*/
+    @ApiModelProperty(value = "可见客户list")
+    private List<CustomerVO> customerVOList;
+
+    /*货物类型list*/
+    @ApiModelProperty(value = "货物类型list")
+    private List<GoodsTypeVO> gList;
+
+    /*集货仓库list*/
+    @ApiModelProperty(value = "集货仓库list")
+    private List<ShippingAreaVO> shippingAreaVOList;
+
+    /*报价类型list*/
+    @ApiModelProperty(value = "报价类型list")
+    private List<GoodsTypeVO> qList;
+
+    /*报价对应应收费用明细list*/
+    private List<TemplateCopeReceivableVO> templateCopeReceivableVOList;
+
+    /*报价对应应付费用明细list*/
+    private List<TemplateCopeWithVO> templateCopeWithVOList;
+
+    /*模板对应模块信息list，文件信息*/
+    private List<TemplateFileVO> templateFileVOList;
 
 
 }

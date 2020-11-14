@@ -17,4 +17,17 @@
         id, qie, file_name, options, remarks
     </sql>
 
+    <!--根据`报价模板id`，查询`文件信息`-->
+    <select id="findTemplateFileByQie" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.TemplateFileVO">
+        select
+        t.id,t.qie,t.file_name,t.`options`,t.remarks,t.qf_id,
+        t1.group_code,t1.group_name
+        from template_file t
+        LEFT JOIN quoted_file t1 on t1.id = t.qf_id
+        where qie = #{qie}
+        ORDER BY t1.group_code
+
+    </select>
+
 </mapper>

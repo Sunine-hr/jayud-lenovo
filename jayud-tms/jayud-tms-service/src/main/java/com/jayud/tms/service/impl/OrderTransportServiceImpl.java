@@ -180,6 +180,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         for (InputOrderTakeAdrVO inputOrderTakeAdrVO : inputOrderTakeAdrVOS) {
             inputOrderTakeAdrVO.setVehicleSize(sendCarPdfVO.getVehicleSize());
             inputOrderTakeAdrVO.setVehicleType(sendCarPdfVO.getVehicleType());
+            inputOrderTakeAdrVO.setCntrNo(sendCarPdfVO.getCntrNo());
             if(CommonConstant.VALUE_1.equals(String.valueOf(inputOrderTakeAdrVO.getOprType()))){//提货
                 takeGoodsInfo1.add(ConvertUtil.convert(inputOrderTakeAdrVO,TakeGoodsInfoVO.class));
             }else {

@@ -43,7 +43,7 @@
                 and w.contacts like concat('%',#{form.contacts},'%')
             </if>
             <if test="form.contactNumber!=null and form.contactNumber!=''">
-                and s.contact_number like concat('%',#{form.contactNumber},'%')
+                and w.contact_number like concat('%',#{form.contactNumber},'%')
             </if>
             <if test="form.status!=null and form.status!=''">
                 and status= #{form.status}

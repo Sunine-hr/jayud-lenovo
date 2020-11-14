@@ -64,6 +64,9 @@
         <if test="form.legalName != null and form.legalName != ''">
             and le.legal_name like concat('%',#{form.legalName},'%')
         </if>
+        <if test="form.auditStatus != null and form.auditStatus != ''">
+            and le.audit_status = #{form.auditStatus}
+        </if>
     </select>
 
 </mapper>

@@ -165,7 +165,7 @@ public class OrderInfoController {
                 takeAdrForms.addAll(takeAdrForms2);
                 for (InputOrderTakeAdrForm inputOrderTakeAdr : takeAdrForms) {
                     if (inputOrderTakeAdr.getDeliveryId() == null
-                            || inputOrderTakeAdr.getTakeTime() == null || inputOrderTakeAdr.getPieceAmount() == null
+                            || inputOrderTakeAdr.getTakeTimeStr() == null || inputOrderTakeAdr.getPieceAmount() == null
                             || inputOrderTakeAdr.getWeight() == null) {
                         return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
                     }

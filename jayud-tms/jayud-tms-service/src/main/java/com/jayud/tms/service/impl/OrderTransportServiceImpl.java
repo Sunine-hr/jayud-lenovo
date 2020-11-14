@@ -101,6 +101,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         }
         for (InputOrderTakeAdrForm inputOrderTakeAdrForm : orderTakeAdrForms) {
             OrderTakeAdr orderTakeAdr = ConvertUtil.convert(inputOrderTakeAdrForm,OrderTakeAdr.class);
+            orderTakeAdr.setTakeTime(inputOrderTakeAdrForm.getTakeTimeStr());
             orderTakeAdr.setOrderNo(orderTransport.getOrderNo());
             orderTakeAdrService.save(orderTakeAdr);
         }

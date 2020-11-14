@@ -9,6 +9,7 @@
         <result column="file_name" property="fileName" />
         <result column="options" property="options" />
         <result column="remarks" property="remarks" />
+        <result column="qf_id" property="qfId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->

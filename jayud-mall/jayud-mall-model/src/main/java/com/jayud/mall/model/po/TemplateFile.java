@@ -29,10 +29,10 @@ public class TemplateFile extends Model<TemplateFile> {
     @ApiModelProperty(value = "自增id")
     private Long id;
 
-    @ApiModelProperty(value = "报价模板id(quotation_template)")
+    @ApiModelProperty(value = "报价模板id(quotation_template id)")
     private Integer qie;
 
-    @ApiModelProperty(value = "文件标题(quoted_file)")
+    @ApiModelProperty(value = "文件标题(quoted_file file_name)")
     private String fileName;
 
     @ApiModelProperty(value = "是否必要(0否 1是)")
@@ -41,6 +41,9 @@ public class TemplateFile extends Model<TemplateFile> {
 
     @ApiModelProperty(value = "描述")
     private String remarks;
+
+    @ApiModelProperty(value = "报价对应的文件id(quoted_file id)")
+    private String qfId;
 
     @Override
     protected Serializable pkVal() {

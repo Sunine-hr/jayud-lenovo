@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.QuotationTemplateMapper;
 import com.jayud.mall.model.bo.*;
@@ -138,7 +139,12 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
             //保存
             templateFileService.saveOrUpdateBatch(list);
         }
+    }
 
+    @Override
+    public CommonResult<QuotationTemplateVO> lookQuotationTemplate(Long id) {
+        QuotationTemplateVO quotationTemplateVO = quotationTemplateMapper.lookQuotationTemplate(id);
+        return CommonResult.success(quotationTemplateVO);
     }
 
 }

@@ -79,4 +79,24 @@ public class QuotationTemplateVO {
     @ApiModelProperty(value = "更新时间")
     private LocalDateTime updateTime;
 
+    /*报价服务组:service_group*/
+    @ApiModelProperty(value = "服务名称service_group.code_name")
+    private String sName;
+
+    /*运输方式:transport_way*/
+    @ApiModelProperty(value = "运输方式transport_way.code_name")
+    private String tName;
+
+    /*机场、港口信息:harbour_info*/
+    @ApiModelProperty(value = "起运港harbour_info.code_name")
+    private String startShipmentName;
+
+    @ApiModelProperty(value = "目的港harbour_info.code_name")
+    private String destinationPortName;
+
+    /*提单任务分组:task_group*/
+    @ApiModelProperty(value = "关联任务task_group.code_name")
+    private String taskName;
+
+
 }

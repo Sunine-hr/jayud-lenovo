@@ -49,4 +49,12 @@ public class QuotationTemplateController {
         return CommonResult.success("保存报价模板，成功！");
     }
 
+    @ApiOperation(value = "查看报价模板")
+    @PostMapping(value = "lookQuotationTemplate")
+    public CommonResult<QuotationTemplateVO> lookQuotationTemplate(@RequestBody QuotationTemplateForm form){
+        Long id = form.getId();
+        return quotationTemplateService.lookQuotationTemplate(id);
+    }
+
+
 }

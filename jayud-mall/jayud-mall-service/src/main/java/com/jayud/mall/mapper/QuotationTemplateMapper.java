@@ -21,5 +21,18 @@ import org.springframework.stereotype.Component;
 @Component
 public interface QuotationTemplateMapper extends BaseMapper<QuotationTemplate> {
 
+    /**
+     * 分页查看
+     * @param page
+     * @param form
+     * @return
+     */
     IPage<QuotationTemplateVO> findQuotationTemplateByPage(Page<QuotationTemplateVO> page, QueryQuotationTemplateForm form);
+
+    /**
+     * 查看报价模板
+     * @param id
+     * @return
+     */
+    QuotationTemplateVO lookQuotationTemplate(Long id);
 }

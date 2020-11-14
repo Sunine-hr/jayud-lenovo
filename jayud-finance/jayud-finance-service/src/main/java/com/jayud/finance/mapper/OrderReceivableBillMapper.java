@@ -1,8 +1,13 @@
 package com.jayud.finance.mapper;
 
-import com.jayud.finance.po.OrderReceivableBill;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.finance.bo.QueryReceiveBillForm;
+import com.jayud.finance.po.OrderReceivableBill;
+import com.jayud.finance.vo.OrderReceiveBillVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -15,4 +20,19 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface OrderReceivableBillMapper extends BaseMapper<OrderReceivableBill> {
 
+    /**
+     * 主订单应收出账单分页查询
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<OrderReceiveBillVO> findReceiveBillByPage(Page page, @Param("form") QueryReceiveBillForm form);
+
+    /**
+     * 子订单应收出账单分页查询
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<OrderReceiveBillVO> findReceiveSubBillByPage(Page page, @Param("form") QueryReceiveBillForm form);
 }

@@ -29,4 +29,8 @@ public class TemplateFileForm {
     @JSONField(ordinal = 4)
     private String remarks;
 
+    @ApiModelProperty(value = "报价对应的文件id(quoted_file id)")
+    @JSONField(ordinal = 5)
+    private Integer qfId;
+
 }

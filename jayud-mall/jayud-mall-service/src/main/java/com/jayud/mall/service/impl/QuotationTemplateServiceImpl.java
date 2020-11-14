@@ -1,5 +1,6 @@
 package com.jayud.mall.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -80,7 +81,7 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveQuotationTemplateFull(QuotationTemplateForm form) {
+    public void saveQuotationTemplate(QuotationTemplateForm form) {
         QuotationTemplate quotationTemplate = ConvertUtil.convert(form, QuotationTemplate.class);
         this.saveOrUpdate(quotationTemplate);
         //报价模板Id
@@ -89,6 +90,10 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
 
         /*应收费用明细List*/
         List<TemplateCopeReceivableForm> templateCopeReceivableFormList = form.getTemplateCopeReceivableFormList();
+        //刪除
+        QueryWrapper<TemplateCopeReceivable> queryWrapperTemplateCopeReceivable = new QueryWrapper<>();
+        queryWrapperTemplateCopeReceivable.eq("qie", id);
+        templateCopeReceivableService.remove(queryWrapperTemplateCopeReceivable);
         if(templateCopeReceivableFormList.size() > 0){
             List<TemplateCopeReceivable> list = new ArrayList<>();
             templateCopeReceivableFormList.forEach(templateCopeReceivableForm -> {
@@ -96,11 +101,16 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
                 templateCopeReceivable.setQie(id.intValue());
                 list.add(templateCopeReceivable);
             });
+            //保存
             templateCopeReceivableService.saveOrUpdateBatch(list);
         }
 
         /*应付费用明细list*/
         List<TemplateCopeWithForm> templateCopeWithFormList = form.getTemplateCopeWithFormList();
+        //刪除
+        QueryWrapper<TemplateCopeWith> queryWrapperTemplateCopeWith = new QueryWrapper<>();
+        queryWrapperTemplateCopeWith.eq("qie", id);
+        templateCopeWithService.remove(queryWrapperTemplateCopeWith);
         if(templateCopeWithFormList.size() > 0){
             List<TemplateCopeWith> list = new ArrayList<>();
             templateCopeWithFormList.forEach(templateCopeWithForm -> {
@@ -108,11 +118,16 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
                 templateCopeWith.setQie(id.intValue());
                 list.add(templateCopeWith);
             });
+            //保存
             templateCopeWithService.saveOrUpdateBatch(list);
         }
 
         /*文件信息明细list*/
         List<TemplateFileForm> templateFileFormList = form.getTemplateFileFormList();
+        //刪除
+        QueryWrapper<TemplateFile> queryWrapperTemplateFile = new QueryWrapper<>();
+        queryWrapperTemplateFile.eq("qie", id);
+        templateFileService.remove(queryWrapperTemplateFile);
         if(templateFileFormList.size() > 0){
             List<TemplateFile> list = new ArrayList<>();
             templateFileFormList.forEach(templateFileForm -> {
@@ -120,6 +135,7 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
                 templateFile.setQie(id.intValue());
                 list.add(templateFile);
             });
+            //保存
             templateFileService.saveOrUpdateBatch(list);
         }
 

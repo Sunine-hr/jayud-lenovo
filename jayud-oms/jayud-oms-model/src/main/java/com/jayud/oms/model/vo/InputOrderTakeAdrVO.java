@@ -31,7 +31,7 @@ public class InputOrderTakeAdrVO {
     private String address;
 
     @ApiModelProperty(value = "提货日期")
-    private String takeTime;
+    private String takeTimeStr;
 
     @ApiModelProperty(value = "客户")
     private String customerName;

@@ -240,6 +240,7 @@
             di.phone driverPhone,
             osc.`vehicle_size` vehicleSize,
             osc.`vehicle_type` vehicleType,
+            ot.cntr_no cntrNo,
             p.`name` portName,
             ot.`goods_type` goodsType,
             ot.`jiedan_user` jiedanUser,

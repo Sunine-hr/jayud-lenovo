@@ -57,6 +57,9 @@ public class SendCarPdfVO {
     @ApiModelProperty(value = "车型(1吨车 2柜车)")
     private Integer vehicleType;
 
+    @ApiModelProperty(value = "柜号")
+    private String cntrNo;
+
     @ApiModelProperty(value = "通关口岸")
     private String portName;
 

@@ -50,7 +50,8 @@
         END) auditStatusDesc,
         legal_en_name legalEnName,
         phone,address,bank,account_open accountOpen,
-        tax_identification_num taxIdentificationNum
+        tax_identification_num taxIdentificationNum,
+        le.fax
         FROM
         legal_entity le
         LEFT JOIN department d

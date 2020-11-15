@@ -59,5 +59,6 @@ public class InputOrderCustomsVO {
     @ApiModelProperty(value = "子订单")
     private List<InputSubOrderCustomsVO> subOrders = new ArrayList<>();
 
-
+    @ApiModelProperty(value = "审核状态")
+    private String subCustomsStatus;
 }

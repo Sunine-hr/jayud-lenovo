@@ -26,17 +26,18 @@ import java.util.List;
 @Data
 public class DriverFeedbackStatusForm extends Model<DriverFeedbackStatusForm> {
 
+
     @ApiModelProperty(value = "主订单ID")
     private Long mainOrderId;
 
     @ApiModelProperty(value = "子订单ID")
     private Long orderId;
 
-    @ApiModelProperty(value = "通关状态(T_9:通过完成,T_9_1:车辆通关查验,T_9_2:车辆通关其他异常)")
+    @ApiModelProperty(value = "车辆通关选择的通关状态(T_9:通过完成,T_9_1:车辆通关查验,T_9_2:车辆通关其他异常)")
     private String clearanceStatus;
 
-    @ApiModelProperty(value = "操作状态()")
-    private String optStatus;
+    @ApiModelProperty(value = "操作状态(0车辆提货,1车辆过磅,2车辆通关,3货物派送,4订单签收)")
+    private Integer optStatus;
 
     @ApiModelProperty(value = "操作人")
     private String operatorUser;

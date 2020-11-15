@@ -25,7 +25,8 @@ public enum DriverFeedbackStatusEnum {
     /**
      * 构造流程
      */
-    public static List<Map<String, Object>> constructionProcess(String status, DriverFeedbackStatusEnum exclude) {
+    public static List<Map<String, Object>> constructionProcess(String status,
+                                                                DriverFeedbackStatusEnum exclude, boolean isGetNode) {
         //订单当前状态
         String[] statusStr = status.split("_");
         Integer statusNum = Integer.parseInt(statusStr[1]);
@@ -82,6 +83,9 @@ public enum DriverFeedbackStatusEnum {
             tmp.put("currentState", currentState);
             tmp.put("isEdit", isEdit);
             list.add(tmp);
+            if (isGetNode && currentState) {
+                break;
+            }
         }
 
         return list;

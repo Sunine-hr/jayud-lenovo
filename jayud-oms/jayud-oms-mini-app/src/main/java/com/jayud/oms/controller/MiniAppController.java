@@ -2,12 +2,12 @@ package com.jayud.oms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.nacos.common.util.Md5Utils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.MD5;
 import com.jayud.common.utils.StringUtils;
@@ -17,7 +17,10 @@ import com.jayud.oms.model.enums.DriverFeedbackStatusEnum;
 import com.jayud.oms.model.enums.DriverOrderStatusEnum;
 import com.jayud.oms.model.enums.EmploymentFeeStatusEnum;
 import com.jayud.oms.model.enums.StatusEnum;
-import com.jayud.oms.model.po.*;
+import com.jayud.oms.model.po.CostInfo;
+import com.jayud.oms.model.po.DriverEmploymentFee;
+import com.jayud.oms.model.po.DriverInfo;
+import com.jayud.oms.model.po.DriverOrderInfo;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.security.util.SecurityUtil;
 import com.jayud.oms.service.*;
@@ -63,8 +66,6 @@ public class MiniAppController {
     private IOrderPaymentCostService orderPaymentCostService;
     @Autowired
     private IDriverEmploymentFeeService driverEmploymentFeeService;
-    @Autowired
-    private IDriverFeedbackStatusService driverFeedbackStatusService;
     @Autowired
     private IOrderInfoService orderInfoService;
 
@@ -355,23 +356,8 @@ public class MiniAppController {
         if (org.apache.commons.lang.StringUtils.isEmpty(orderNo)) {
             return CommonResult.error(ResultEnum.VALIDATE_FAILED);
         }
-        ApiResult resultOne = this.tmsClient.getOrderTransportStatus(orderNo);
-        if (!resultOne.isOk()) {
-            log.error("远程调用查询中港订单状态失败");
-            return CommonResult.error(ResultEnum.OPR_FAIL);
-        }
-        //查询送货地址数量，判断是送到中转仓库（1个以上），还是目的地（一个）
-        ApiResult resultTwo = this.tmsClient.getDeliveryAddressNum(orderNo);
-        if (!resultTwo.isOk()) {
-            log.error("远程调用查询送货地址数量失败");
-            return CommonResult.error(ResultEnum.OPR_FAIL);
-        }
-        int num = Integer.parseInt(resultTwo.getData().toString());
-        List<Map<String, Object>> responses = DriverFeedbackStatusEnum.constructionProcess(resultOne.getData().toString(),
-                num > 1 ? DriverFeedbackStatusEnum.THREE : null);
-
-
-        return CommonResult.success(responses);
+        List<Map<String, Object>> process = this.getProcess(orderNo, false);
+        return CommonResult.success(process);
     }
 
 
@@ -384,18 +370,56 @@ public class MiniAppController {
         if (!result.isOk()) {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
+        //获取主订单编号
         JSONObject json = JSONObject.parseObject(JSONObject.toJSONString(result.getData()));
         String mainOrderNo = json.getString("mainOrderNo");
-
+        String orderNo = json.getString("orderNo");
+        //获取主订单id
         Long mainOrderId = this.orderInfoService.getIdByOrderNo(mainOrderNo);
         form.setMainOrderId(mainOrderId);
-        form.get
-        switch (){
+        //获取当前流程节点状态
+        List<Map<String, Object>> process = this.getProcess(orderNo, true);
+        //判断节点状态是否和用户操作一致
+        Object currentStatus = process.get(0).get("id");
+        if (!currentStatus.equals(form.getOptStatus())) {
 
         }
+
+        //根据状态进行业务操作
+        switch (form.getOptStatus()) {
+            case 0:
+            case 1:
+            case 2:
+
+
+        }
+
 
         this.tmsClient.doDriverFeedbackStatus(form);
 
         return CommonResult.success();
+    }
+
+    /**
+     * 获取流程
+     */
+    private List<Map<String, Object>> getProcess(String orderNo, boolean isGetNot) {
+        ApiResult resultOne = this.tmsClient.getOrderTransportStatus(orderNo);
+        if (!resultOne.isOk()) {
+            log.error("远程调用查询中港订单状态失败");
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+        //查询送货地址数量，判断是送到中转仓库（1个以上），还是目的地（一个）
+        ApiResult resultTwo = this.tmsClient.getDeliveryAddressNum(orderNo);
+        if (!resultTwo.isOk()) {
+            log.error("远程调用查询送货地址数量失败");
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+        int num = Integer.parseInt(resultTwo.getData().toString());
+        List<Map<String, Object>> responses = DriverFeedbackStatusEnum.constructionProcess(resultOne.getData().toString(),
+                num > 1 ? DriverFeedbackStatusEnum.THREE : null, false);
+
+
+        return responses;
     }
 }

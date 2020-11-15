@@ -1,17 +1,11 @@
 package com.jayud.oms.model.bo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.jayud.common.utils.FileView;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,10 +33,14 @@ public class DriverFeedbackStatusForm extends Model<DriverFeedbackStatusForm> {
     @ApiModelProperty(value = "操作状态(0车辆提货,1车辆过磅,2车辆通关,3货物派送,4订单签收)")
     private Integer optStatus;
 
-    @ApiModelProperty(value = "操作人")
-    private String operatorUser;
+    @ApiModelProperty(value = "过磅数")
+    private Double carWeighNum;
+
+//    @ApiModelProperty(value = "操作人")
+//    private String operatorUser;
 
     @ApiModelProperty(value = "操作时间")
+    @NotEmpty(message = "操作时间不能为空")
     private String operatorTime;
 
     @ApiModelProperty(value = "附件")
@@ -64,4 +62,9 @@ public class DriverFeedbackStatusForm extends Model<DriverFeedbackStatusForm> {
     @ApiModelProperty(value = "预计通关时间")
     private String preGoCustomsTime;
 
+
+    @ApiModelProperty(value = "操作指令,cmd = extCustomsRelease外部报关放行,confirmOrder确认接单,carTakeGoods车辆提货,carWeigh车辆过磅, " +
+            "goCustomsAudit通过前审核，goCustomsCheck通关前复核,carGoCustoms车辆通关,hkClearCustoms香港清关,carEnterWarehouse车辆入仓," +
+            "carOutWarehouse车辆出仓,carSend车辆派送,confirmSignIn确认签收",required = true)
+    private String cmd;
 }

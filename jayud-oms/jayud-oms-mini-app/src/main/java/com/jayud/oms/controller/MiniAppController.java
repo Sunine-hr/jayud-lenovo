@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
@@ -356,7 +357,7 @@ public class MiniAppController {
         if (org.apache.commons.lang.StringUtils.isEmpty(orderNo)) {
             return CommonResult.error(ResultEnum.VALIDATE_FAILED);
         }
-        List<Map<String, Object>> process = this.getProcess(orderNo, false);
+        List<Map<String, Object>> process = this.getProcess(orderNo, false,new HashMap<>());
         return CommonResult.success(process);
     }
 
@@ -364,12 +365,14 @@ public class MiniAppController {
     @ApiOperation(value = "司机反馈状态")
     @PostMapping(value = "/doDriverFeedbackStatus")
     public CommonResult doDriverFeedbackStatus(@RequestBody DriverFeedbackStatusForm form) {
-
+        //缓存值
+        Map<String, Object> cacheValue = new HashMap<>();
         //根据中港订单编号查询主订单
         ApiResult result = this.tmsClient.getDriverOrderTransportById(form.getOrderId());
         if (!result.isOk()) {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
+
         //获取主订单编号
         JSONObject json = JSONObject.parseObject(JSONObject.toJSONString(result.getData()));
         String mainOrderNo = json.getString("mainOrderNo");
@@ -378,20 +381,40 @@ public class MiniAppController {
         Long mainOrderId = this.orderInfoService.getIdByOrderNo(mainOrderNo);
         form.setMainOrderId(mainOrderId);
         //获取当前流程节点状态
-        List<Map<String, Object>> process = this.getProcess(orderNo, true);
+        List<Map<String, Object>> process = this.getProcess(orderNo, true, cacheValue);
         //判断节点状态是否和用户操作一致
         Object currentStatus = process.get(0).get("id");
         if (!currentStatus.equals(form.getOptStatus())) {
-
+            log.warn("操作流程不一致，前台传入状态{},订单现阶段状态{}", form.getOptStatus(), currentStatus);
+            return CommonResult.error(ResultEnum.OPR_FAIL);
         }
 
         //根据状态进行业务操作
         switch (form.getOptStatus()) {
             case 0:
+                form.setCmd(CommonConstant.CAR_TAKE_GOODS);
+                break;
             case 1:
+                if (form.getCarWeighNum() == null) {
+                    return CommonResult.error(400, "请填写过磅重量");
+                }
+                form.setCmd(CommonConstant.CAR_WEIGH);
+                break;
             case 2:
-
-
+                if (form.getOptStatus() == null) {
+                    return CommonResult.error(400, "请选择通关状态");
+                }
+                form.setCmd(CommonConstant.CAR_GO_CUSTOMS);
+            case 3:
+                form.setCmd(CommonConstant.CAR_SEND);
+                break;
+            case 4:
+                if (MapUtil.getInt(cacheValue, "deliveryAddressNum") > 1) {
+                    form.setCmd(CommonConstant.CAR_ENTER_WAREHOUSE);
+                }else {
+                    form.setCmd(CommonConstant.CONFIRM_SIGN_IN);
+                }
+                break;
         }
 
 
@@ -403,7 +426,7 @@ public class MiniAppController {
     /**
      * 获取流程
      */
-    private List<Map<String, Object>> getProcess(String orderNo, boolean isGetNot) {
+    private List<Map<String, Object>> getProcess(String orderNo, boolean isGetNot, Map<String, Object> cacheValue) {
         ApiResult resultOne = this.tmsClient.getOrderTransportStatus(orderNo);
         if (!resultOne.isOk()) {
             log.error("远程调用查询中港订单状态失败");
@@ -415,11 +438,9 @@ public class MiniAppController {
             log.error("远程调用查询送货地址数量失败");
             throw new JayudBizException(ResultEnum.OPR_FAIL);
         }
+        cacheValue.put("deliveryAddressNum", resultTwo.getData());
         int num = Integer.parseInt(resultTwo.getData().toString());
-        List<Map<String, Object>> responses = DriverFeedbackStatusEnum.constructionProcess(resultOne.getData().toString(),
-                num > 1 ? DriverFeedbackStatusEnum.THREE : null, false);
-
-
-        return responses;
+        return DriverFeedbackStatusEnum.constructionProcess(resultOne.getData().toString(),
+                num > 1 ? DriverFeedbackStatusEnum.THREE : null, isGetNot);
     }
 }

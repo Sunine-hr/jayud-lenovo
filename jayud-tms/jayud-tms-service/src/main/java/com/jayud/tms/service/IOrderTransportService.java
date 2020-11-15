@@ -1,7 +1,9 @@
 package com.jayud.tms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.ApiResult;
 import com.jayud.tms.model.bo.InputOrderTransportForm;
+import com.jayud.tms.model.bo.OprStatusForm;
 import com.jayud.tms.model.bo.QueryDriverOrderTransportForm;
 import com.jayud.tms.model.bo.QueryOrderTmsForm;
 import com.jayud.tms.model.po.OrderTransport;
@@ -10,6 +12,9 @@ import com.jayud.tms.model.vo.DriverOrderTransportVO;
 import com.jayud.tms.model.vo.InputOrderTransportVO;
 import com.jayud.tms.model.vo.OrderTransportVO;
 import com.jayud.tms.model.vo.SendCarPdfVO;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
@@ -26,6 +31,7 @@ public interface IOrderTransportService extends IService<OrderTransport> {
 
     /**
      * 创建订单
+     *
      * @param form
      * @return
      */
@@ -33,6 +39,7 @@ public interface IOrderTransportService extends IService<OrderTransport> {
 
     /**
      * 订单是否存在
+     *
      * @param orderNo
      * @return
      */
@@ -40,6 +47,7 @@ public interface IOrderTransportService extends IService<OrderTransport> {
 
     /**
      * 获取订单详情
+     *
      * @param mainOrderNo
      * @return
      */
@@ -47,6 +55,7 @@ public interface IOrderTransportService extends IService<OrderTransport> {
 
     /**
      * 中港分页查询
+     *
      * @param form
      * @return
      */
@@ -54,18 +63,34 @@ public interface IOrderTransportService extends IService<OrderTransport> {
 
     /**
      * 初始化确认派车时的PDF数据
+     *
      * @param orderNo
      * @param classCode
      * @return
      */
-    SendCarPdfVO initPdfData(String orderNo,String classCode);
+    SendCarPdfVO initPdfData(String orderNo, String classCode);
 
     /**
      * 分页查询司机的中港订单信息
+     *
      * @param form
      * @return
      */
     List<DriverOrderTransportVO> getDriverOrderTransport(QueryDriverOrderTransportForm form);
 
+    /**
+     * 获取中港订单状态
+     */
+    String getOrderTransportStatus(String orderNo);
 
+    /**
+     * 司机反馈状态
+     * @param form
+     */
+    void doDriverFeedbackStatus(OprStatusForm form);
+
+    /**
+     * 小程序司机货物派送（补出仓和入仓数据）
+     */
+    void driverGoodsDelivery(OprStatusForm form);
 }

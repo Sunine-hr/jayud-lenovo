@@ -1,5 +1,6 @@
 package com.jayud.tms.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.tms.mapper.OrderTakeAdrMapper;
 import com.jayud.tms.model.po.OrderTakeAdr;
@@ -30,4 +31,18 @@ public class OrderTakeAdrServiceImpl extends ServiceImpl<OrderTakeAdrMapper, Ord
     public List<DriverOrderTakeAdrVO> getDriverOrderTakeAdr(List<String> orderNoList) {
         return this.baseMapper.getDriverOrderTakeAdr(orderNoList);
     }
+
+    /**
+     * 获取送货地址数量
+     */
+    @Override
+    public int getDeliveryAddressNum(String orderNo) {
+        QueryWrapper<OrderTakeAdr> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderTakeAdr::getOrderNo, orderNo);
+        return this.count(condition);
+    }
+
+    /**
+     * 入仓
+     */
 }

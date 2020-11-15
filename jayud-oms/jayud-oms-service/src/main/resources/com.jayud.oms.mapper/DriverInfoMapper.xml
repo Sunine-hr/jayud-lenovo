@@ -68,7 +68,8 @@
             v.plate_number licensePlate,
             v.hk_number hkLicensePlate,
             d.phone driverPhone,
-            s.supplier_code supplierCode
+            s.supplier_code supplierCode,
+            d.name driverName
         FROM
             driver_info d
             LEFT JOIN vehicle_info v ON d.vehicle_id = v.id

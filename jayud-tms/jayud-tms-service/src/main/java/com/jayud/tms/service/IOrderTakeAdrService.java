@@ -30,4 +30,9 @@ public interface IOrderTakeAdrService extends IService<OrderTakeAdr> {
      * 根据订单编号查询司机送货/收货地址
      */
     List<DriverOrderTakeAdrVO> getDriverOrderTakeAdr(List<String> orderNoList);
+
+    /**
+     * 获取送货地址数量
+     */
+    int getDeliveryAddressNum(String orderNo);
 }

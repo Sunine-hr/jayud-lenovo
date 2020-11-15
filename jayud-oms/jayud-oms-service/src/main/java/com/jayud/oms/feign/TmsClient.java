@@ -2,6 +2,7 @@ package com.jayud.oms.feign;
 
 
 import com.jayud.common.ApiResult;
+import com.jayud.oms.model.bo.DriverFeedbackStatusForm;
 import com.jayud.oms.model.bo.InputOrderTransportForm;
 import com.jayud.oms.model.bo.QueryDriverOrderTransportForm;
 import com.jayud.oms.model.bo.TmsChangeStatusForm;
@@ -13,9 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 
 /**
  * oms模块消费tms模块的接口
@@ -32,6 +31,7 @@ public interface TmsClient {
 
     /**
      * 获取中港订单详情
+     *
      * @param mainOrderNo
      * @return
      */
@@ -40,6 +40,7 @@ public interface TmsClient {
 
     /**
      * 获取中港订单号
+     *
      * @param mainOrderNo
      * @return
      */
@@ -49,6 +50,7 @@ public interface TmsClient {
 
     /**
      * 更改报关单状态
+     *
      * @param form
      * @return
      */
@@ -64,6 +66,7 @@ public interface TmsClient {
 
     /**
      * PDF派车单
+     *
      * @return
      */
     @RequestMapping(value = "/api/dispatchList")
@@ -75,4 +78,29 @@ public interface TmsClient {
     @RequestMapping(value = "/api/getDriverOrderTransportById")
     ApiResult getDriverOrderTransportById(@RequestParam("orderId") Long orderId);
 
+
+    /**
+     * 获取司机待接单数量（小程序）
+     */
+    @RequestMapping(value = "/api/getDriverPendingOrderNum")
+    ApiResult getDriverOrderTransportDetailById(@RequestParam("driverId") Long driverId
+            , @RequestParam("orderNos") List<String> orderNos);
+
+    /**
+     * 查询送货地址数量
+     */
+    @RequestMapping(value = "/api/getDeliveryAddressNum")
+    ApiResult getDeliveryAddressNum(@RequestParam("orderNo") String orderNo);
+
+    /**
+     * 获取中港订单状态
+     */
+    @RequestMapping(value = "/api/getOrderTransportStatus")
+    ApiResult getOrderTransportStatus(@RequestParam("orderNo") String orderNo);
+
+    /**
+     * 司机反馈状态
+     */
+    @RequestMapping(value = "/api/doDriverFeedbackStatus")
+    ApiResult doDriverFeedbackStatus(@RequestBody DriverFeedbackStatusForm form);
 }

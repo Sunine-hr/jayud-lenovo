@@ -8,6 +8,7 @@ import com.jayud.common.RedisUtils;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.tms.model.bo.InputOrderTransportForm;
+import com.jayud.tms.model.bo.OprStatusForm;
 import com.jayud.tms.model.bo.QueryDriverOrderTransportForm;
 import com.jayud.tms.model.bo.TmsChangeStatusForm;
 import com.jayud.tms.model.po.OrderTransport;
@@ -15,6 +16,8 @@ import com.jayud.tms.model.vo.DriverOrderTransportVO;
 import com.jayud.tms.model.vo.InitChangeStatusVO;
 import com.jayud.tms.model.vo.InputOrderTransportVO;
 import com.jayud.tms.model.vo.SendCarPdfVO;
+import com.jayud.tms.service.IOrderSendCarsService;
+import com.jayud.tms.service.IOrderTakeAdrService;
 import com.jayud.tms.service.IOrderTransportService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,6 +38,13 @@ public class ExternalApiController {
 
     @Autowired
     RedisUtils redisUtils;
+
+    @Autowired
+    private IOrderSendCarsService orderSendCarsService;
+    @Autowired
+    private IOrderTakeAdrService orderTakeAdrService;
+    @Autowired
+    private OrderInTransportController orderInTransportController;
 
 
     @ApiOperation(value = "创建中港子订单")
@@ -110,11 +120,39 @@ public class ExternalApiController {
     }
 
 
-//    @ApiOperation(value = "根据订单主键查询司机的中港订单详细信息")
-//    @RequestMapping(value = "/api/getDriverOrderTransportDetailById")
-//    public ApiResult getDriverOrderTransportDetailById(@RequestParam("orderId") Long orderId) {
-//        return ApiResult.ok(this.orderTransportService.getById(orderId));
-//    }
+    @ApiOperation(value = "获取司机待接单数量（小程序）")
+    @RequestMapping(value = "/api/getDriverPendingOrderNum")
+    public ApiResult getDriverOrderTransportDetailById(@RequestParam("driverId") Long driverId
+            , @RequestParam("orderNos") List<String> orderNos) {
+        return ApiResult.ok(this.orderSendCarsService.getDriverPendingOrderNum(driverId, orderNos));
+    }
+
+
+    @ApiOperation(value = "查询送货地址数量")
+    @RequestMapping(value = "/api/getDeliveryAddressNum")
+    public ApiResult getDeliveryAddressNum(@RequestParam("orderNo") String orderNo) {
+        return ApiResult.ok(this.orderTakeAdrService.getDeliveryAddressNum(orderNo));
+    }
+
+    @ApiOperation(value = "获取中港订单状态")
+    @RequestMapping(value = "/api/getOrderTransportStatus")
+    public ApiResult getOrderTransportStatus(@RequestParam("orderNo") String orderNo) {
+        return ApiResult.ok(this.orderTransportService.getOrderTransportStatus(orderNo));
+    }
+
+
+    @ApiOperation(value = "司机反馈状态")
+    @RequestMapping(value = "/api/doDriverFeedbackStatus")
+    public ApiResult doDriverFeedbackStatus(@RequestBody OprStatusForm form) {
+        //货物派送操作，要填补入仓和出仓数据
+        if (CommonConstant.CAR_SEND.equals(form.getCmd())) {
+            this.orderTransportService.driverGoodsDelivery(form);
+        } else {
+            this.orderTransportService.doDriverFeedbackStatus(form);
+        }
+
+        return ApiResult.ok();
+    }
 
 }
 

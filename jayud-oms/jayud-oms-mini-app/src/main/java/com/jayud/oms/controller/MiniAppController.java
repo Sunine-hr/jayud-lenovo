@@ -2,23 +2,22 @@ package com.jayud.oms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.nacos.common.util.Md5Utils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.MD5;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.TmsClient;
-import com.jayud.oms.model.bo.AddDriverEmploymentFeeForm;
-import com.jayud.oms.model.bo.AddDriverOrderTransportForm;
-import com.jayud.oms.model.bo.QueryDriverOrderTransportForm;
+import com.jayud.oms.model.bo.*;
+import com.jayud.oms.model.enums.DriverFeedbackStatusEnum;
 import com.jayud.oms.model.enums.DriverOrderStatusEnum;
 import com.jayud.oms.model.enums.EmploymentFeeStatusEnum;
 import com.jayud.oms.model.enums.StatusEnum;
-import com.jayud.oms.model.po.CostInfo;
-import com.jayud.oms.model.po.DriverEmploymentFee;
-import com.jayud.oms.model.po.DriverOrderInfo;
+import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.security.util.SecurityUtil;
 import com.jayud.oms.service.*;
@@ -64,6 +63,10 @@ public class MiniAppController {
     private IOrderPaymentCostService orderPaymentCostService;
     @Autowired
     private IDriverEmploymentFeeService driverEmploymentFeeService;
+    @Autowired
+    private IDriverFeedbackStatusService driverFeedbackStatusService;
+    @Autowired
+    private IOrderInfoService orderInfoService;
 
     @PostMapping("/getDriverOrderTransport")
     @ApiOperation(value = "查看司机中港订单")
@@ -99,8 +102,9 @@ public class MiniAppController {
     @PostMapping("/confirmOrderReceiving")
     @ApiOperation(value = "司机确认接单")
     public CommonResult confirmOrderReceiving(@Valid @RequestBody AddDriverOrderTransportForm form) {
+        Long driverId = Long.valueOf(SecurityUtil.getUserInfo());
         DriverOrderInfo driverOrderInfo = new DriverOrderInfo()
-                .setDriverId(Long.valueOf(SecurityUtil.getUserInfo()))
+                .setDriverId(driverId)
                 .setOrderId(form.getOrderId())
                 .setOrderNo(form.getOrderNo())
                 .setStatus(DriverOrderStatusEnum.IN_TRANSIT.getCode());
@@ -108,6 +112,7 @@ public class MiniAppController {
         if (tmp != null) {
             return CommonResult.error(400, "该订单已确认过接单");
         }
+
         if (this.driverOrderInfoService.saveOrUpdateDriverOrder(driverOrderInfo)) {
             return CommonResult.success();
         } else {
@@ -257,12 +262,12 @@ public class MiniAppController {
         DriverOrderInfo tmp = this.driverOrderInfoService.getByOrderId(Long.parseLong(orderId));
         if (tmp == null) {
             driverOrderTransportVO.setTakeOrders(false);
+            driverOrderTransportVO.setIsFeeSubmitted(false);
             return CommonResult.success(driverOrderTransportVO);
         } else {
             driverOrderTransportVO.setTakeOrders(true);
-            driverOrderTransportVO.setIsFeeSubmitted(false);
-        }
 
+        }
 
         //查询订单录用费用明细
         List<DriverOrderPaymentCostVO> orderPaymentCosts = this.orderPaymentCostService.getDriverOrderPaymentCost(form.getOrderNo());
@@ -283,5 +288,114 @@ public class MiniAppController {
         driverOrderTransportVO.calculateTotalCost();
 
         return CommonResult.success(driverOrderTransportVO);
+    }
+
+    @ApiOperation(value = "查询司机信息")
+    @PostMapping(value = "/getDriverInfo")
+    public CommonResult getDriverInfo() {
+        String driverId = SecurityUtil.getUserInfo();
+        DriverInfoLinkVO driverInfo = this.driverInfoService.getDriverInfoLink(Long.parseLong(driverId));
+        return CommonResult.success(driverInfo);
+    }
+
+    @ApiOperation(value = "设置新密码")
+    @PostMapping(value = "/updatePassword")
+    public CommonResult updatePassword(@Valid @RequestBody PasswordForm form) {
+        if (!form.getPassword().equals(form.getConfirmPassword())) {
+            return CommonResult.error(400, "密码不一致");
+        }
+        Long driverId = Long.parseLong(SecurityUtil.getUserInfo());
+        DriverInfo driverInfo = this.driverInfoService.getById(driverId);
+        if (!driverInfo.getPassword().equals(MD5.encode(form.getOldPassword()))) {
+            return CommonResult.error(400, "密码错误");
+        }
+        this.driverInfoService.updateById(new DriverInfo().setId(driverId)
+                .setPassword(MD5.encode(form.getPassword())));
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "查看我的订单数量")
+    @PostMapping(value = "/getMyOrderNum")
+    public CommonResult getMyOrderNum() {
+        Long driverId = Long.parseLong(SecurityUtil.getUserInfo());
+
+        List<DriverOrderInfo> driverOrderInfos = this.driverOrderInfoService
+                .getDriverOrderInfoByStatus(driverId, null);
+
+        //订单数目分组
+        Map<String, Integer> map = new HashMap<>();
+        //统计待接单
+        List<String> orderNos = new ArrayList<>();
+        for (DriverOrderInfo driverOrderInfo : driverOrderInfos) {
+            if (map.get(driverOrderInfo.getStatus()) == null) {
+                map.put(driverOrderInfo.getStatus(), 1);
+            } else {
+                map.put(driverOrderInfo.getStatus(), map.get(driverOrderInfo.getStatus() + 1));
+            }
+            orderNos.add(driverOrderInfo.getOrderNo());
+        }
+        //获取待接单数量
+        ApiResult result = this.tmsClient.getDriverOrderTransportDetailById(driverId, orderNos);
+
+        //重组数据
+        Map<String, Object> response = new HashMap<>();
+        Integer transitNum = map.get(DriverOrderStatusEnum.IN_TRANSIT.getCode());
+        Integer finishedNum = map.get(DriverOrderStatusEnum.FINISHED.getCode());
+        response.put("pending", result.getData() == null ? 0 : result.getData());
+        response.put("transitNum", transitNum == null ? 0 : transitNum);
+        response.put("finishedNum", finishedNum == null ? 0 : finishedNum);
+
+        return CommonResult.success(response);
+    }
+
+    @ApiOperation(value = "查询反馈状态,orderNo=订单编号")
+    @PostMapping(value = "/getFeedbackStatus")
+    public CommonResult getFeedbackStatus(@RequestBody Map<String, String> map) {
+        String orderNo = map.get("orderNo");
+        if (org.apache.commons.lang.StringUtils.isEmpty(orderNo)) {
+            return CommonResult.error(ResultEnum.VALIDATE_FAILED);
+        }
+        ApiResult resultOne = this.tmsClient.getOrderTransportStatus(orderNo);
+        if (!resultOne.isOk()) {
+            log.error("远程调用查询中港订单状态失败");
+            return CommonResult.error(ResultEnum.OPR_FAIL);
+        }
+        //查询送货地址数量，判断是送到中转仓库（1个以上），还是目的地（一个）
+        ApiResult resultTwo = this.tmsClient.getDeliveryAddressNum(orderNo);
+        if (!resultTwo.isOk()) {
+            log.error("远程调用查询送货地址数量失败");
+            return CommonResult.error(ResultEnum.OPR_FAIL);
+        }
+        int num = Integer.parseInt(resultTwo.getData().toString());
+        List<Map<String, Object>> responses = DriverFeedbackStatusEnum.constructionProcess(resultOne.getData().toString(),
+                num > 1 ? DriverFeedbackStatusEnum.THREE : null);
+
+
+        return CommonResult.success(responses);
+    }
+
+
+    @ApiOperation(value = "司机反馈状态")
+    @PostMapping(value = "/doDriverFeedbackStatus")
+    public CommonResult doDriverFeedbackStatus(@RequestBody DriverFeedbackStatusForm form) {
+
+        //根据中港订单编号查询主订单
+        ApiResult result = this.tmsClient.getDriverOrderTransportById(form.getOrderId());
+        if (!result.isOk()) {
+            return CommonResult.error(ResultEnum.OPR_FAIL);
+        }
+        JSONObject json = JSONObject.parseObject(JSONObject.toJSONString(result.getData()));
+        String mainOrderNo = json.getString("mainOrderNo");
+
+        Long mainOrderId = this.orderInfoService.getIdByOrderNo(mainOrderNo);
+        form.setMainOrderId(mainOrderId);
+        form.get
+        switch (){
+
+        }
+
+        this.tmsClient.doDriverFeedbackStatus(form);
+
+        return CommonResult.success();
     }
 }

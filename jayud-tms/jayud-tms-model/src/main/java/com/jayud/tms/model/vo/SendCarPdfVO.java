@@ -1,5 +1,6 @@
 package com.jayud.tms.model.vo;
 
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -114,6 +115,17 @@ public class SendCarPdfVO {
                 return "8T";
             }else if(this.vehicleSize == 4){
                 return "10T";
+            }
+        }
+        return "";
+    }
+
+    public String getGoodsType() {
+        if(!StringUtil.isNullOrEmpty(this.goodsType)){
+            if("1".equals(this.goodsType)){
+                return "进口";
+            }else if("2".equals(this.goodsType)){
+                return "出口";
             }
         }
         return "";

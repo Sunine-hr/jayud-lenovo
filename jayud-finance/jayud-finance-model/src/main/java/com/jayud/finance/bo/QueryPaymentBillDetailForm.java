@@ -8,15 +8,20 @@ import lombok.Data;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 
-
+/**
+ * 应收/应付一致
+ */
 @Data
 public class QueryPaymentBillDetailForm extends BasePageForm{
 
     @ApiModelProperty(value = "法人主体")
     private String legalName;
 
-    @ApiModelProperty(value = "客户")
+    @ApiModelProperty(value = "客户,应收时用")
     private String customerName;
+
+    @ApiModelProperty(value = "供应商,应付时用")
+    private String supplierChName;
 
     @ApiModelProperty(value = "账单编号")
     private String billNo;

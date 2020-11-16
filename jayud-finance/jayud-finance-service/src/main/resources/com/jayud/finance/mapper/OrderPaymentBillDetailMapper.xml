@@ -45,7 +45,7 @@
         SELECT
         opbd.bill_no billNo,
         opb.legal_name legalName,
-        opb.customer_name customerName,
+        opb.supplier_ch_name supplierChName,
         DATE_FORMAT(opbd.begin_account_term,'%Y-%m-%d') 	beginAccountTermStr,
         DATE_FORMAT(opbd.end_account_term,'%Y-%m-%d') 	endAccountTermStr,
         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='RMB') rmb,

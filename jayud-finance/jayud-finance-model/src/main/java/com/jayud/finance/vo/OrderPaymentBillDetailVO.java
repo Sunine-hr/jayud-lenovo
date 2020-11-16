@@ -6,7 +6,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 /**
- * 应付对账单
+ * 应付/应收一致对账单
  */
 @Data
 public class OrderPaymentBillDetailVO {
@@ -17,8 +17,11 @@ public class OrderPaymentBillDetailVO {
     @ApiModelProperty(value = "法人主体")
     private String legalName;
 
-    @ApiModelProperty(value = "客户")
+    @ApiModelProperty(value = "客户,应收时取值")
     private String customerName;
+
+    @ApiModelProperty(value = "供应商,应付时取值")
+    private String supplierChName;
 
     @ApiModelProperty(value = "开始核算期 年月日")
     private String beginAccountTermStr;

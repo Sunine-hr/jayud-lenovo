@@ -244,7 +244,7 @@
             ot.cntr_no cntrNo,
             p.`name` portName,
             ot.`goods_type` goodsType,
-            ot.`jiedan_user` jiedanUser,
+            '' jiedanUser,
             si.`supplier_ch_name` clearCustomsAddress,
             (SELECT su.phone FROM `system_user` su WHERE su.name = ot.`jiedan_user`) jiedanPhone
         FROM

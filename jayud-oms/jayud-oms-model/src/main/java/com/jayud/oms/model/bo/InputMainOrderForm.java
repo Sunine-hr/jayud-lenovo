@@ -56,5 +56,8 @@ public class InputMainOrderForm {
     @ApiModelProperty(value = "操作指令,前台忽略")
     private String cmd;
 
+    @ApiModelProperty(value = "审核状态")
+    private Integer status;
+
 
 }

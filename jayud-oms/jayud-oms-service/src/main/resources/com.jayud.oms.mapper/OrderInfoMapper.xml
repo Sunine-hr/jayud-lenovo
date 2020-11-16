@@ -224,7 +224,8 @@
             oi.`class_code` classCode,
             oi.`unit_code` unitCode,
             oi.`unit_account` unitAccount,
-            oi.`is_data_all` isDataAll
+            oi.`is_data_all` isDataAll,
+            oi.`status` status
         FROM
             order_info oi WHERE 1 = 1
         <if test="idValue != null and idValue != ''">

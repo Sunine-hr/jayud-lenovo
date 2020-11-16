@@ -283,7 +283,7 @@
     <select id="findCustomerBasicsInfoByPage" parameterType="com.jayud.oms.model.bo.QueryCustomerInfoForm"
             resultType="com.jayud.oms.model.vo.CustomerInfoVO">
         select
-        id,name,id_code idCode,contact,phone,address,email,created_time createdTime
+        id,name,id_code idCode,contact,phone,address,email,created_time createdTimeStr
         from customer_info
         <where>
             audit_status = 10

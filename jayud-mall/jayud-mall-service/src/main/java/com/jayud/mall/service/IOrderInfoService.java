@@ -60,4 +60,11 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     CommonResult<OrderClearanceFileVO> onPassOrderClearanceFile(Long id);
+
+    /**
+     * 订单管理-查看货物信息
+     * @param id
+     * @return
+     */
+    CommonResult<OrderInfoVO> lookOrderInfoGoods(Long id);
 }

@@ -72,6 +72,14 @@ public class OrderInfoController {
         return orderInfoService.onPassOrderClearanceFile(id);
     }
 
+    //订单管理-查看货物信息
+    @ApiOperation(value = "订单管理-查看货物信息")
+    @PostMapping("/lookOrderInfoGoods")
+    public CommonResult<OrderInfoVO> lookOrderInfoGoods(@RequestBody OrderInfoForm form){
+        Long id = form.getId();
+        return orderInfoService.lookOrderInfoGoods(id);
+    }
+
 
 
 

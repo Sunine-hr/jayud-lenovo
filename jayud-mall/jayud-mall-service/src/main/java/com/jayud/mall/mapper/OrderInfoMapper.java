@@ -30,9 +30,9 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
     IPage<OrderInfoVO> findOrderInfoByPage(Page<OrderInfoVO> page, QueryOrderInfoForm form);
 
     /**
-     * 查询订单文件
+     * 查询订单
      * @param id
      * @return
      */
-    OrderInfoVO lookOrderInfoFile(Long id);
+    OrderInfoVO lookOrderInfoById(Long id);
 }

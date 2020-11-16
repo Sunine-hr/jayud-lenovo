@@ -63,7 +63,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Override
     public CommonResult<OrderInfoVO> lookOrderInfoFile(Long id) {
-        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoFile(id);
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(id);
         Long orderId = orderInfoVO.getId();//订单Id
 
         //订单对应报关文件list
@@ -118,5 +118,18 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderClearanceFileService.saveOrUpdate(orderClearanceFile);
         OrderClearanceFileVO orderClearanceFileVO = ConvertUtil.convert(orderClearanceFile, OrderClearanceFileVO.class);
         return CommonResult.success(orderClearanceFileVO);
+    }
+
+    @Override
+    public CommonResult<OrderInfoVO> lookOrderInfoGoods(Long id) {
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(id);
+        Long orderId = orderInfoVO.getId();//订单Id
+
+
+
+
+
+
+        return CommonResult.success(orderInfoVO);
     }
 }

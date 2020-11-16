@@ -45,7 +45,7 @@
         t.`id`
     </select>
 
-    <select id="lookOrderInfoFile" parameterType="java.lang.Long"
+    <select id="lookOrderInfoById" parameterType="java.lang.Long"
         resultType="com.jayud.mall.model.vo.OrderInfoVO">
         select
         t.id,t.order_no,t.customer_id,t.store_goods_warehouse_code,t.store_goods_warehouse_name,t.destination_warehouse_code,t.destination_warehouse_name,

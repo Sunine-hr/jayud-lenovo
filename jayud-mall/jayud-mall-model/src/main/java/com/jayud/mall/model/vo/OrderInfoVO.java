@@ -73,4 +73,9 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "订单对应清关文件list")
     private List<OrderClearanceFileVO> orderClearanceFileVOList;
 
+    /*订单商品list*/
+//    private List<>
+
+
+
 }

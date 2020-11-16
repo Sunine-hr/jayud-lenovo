@@ -462,7 +462,7 @@ public class OrderInTransportController {
     @PostMapping(value = "/rejectOrder")
     public CommonResult rejectOrder(@RequestBody RejectOrderForm form) {
         if (form.getOrderId() == null || StringUtil.isNullOrEmpty(form.getCmd())) {
-            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         OrderTransport orderTransport = new OrderTransport();
         orderTransport.setId(form.getOrderId());
@@ -475,7 +475,14 @@ public class OrderInTransportController {
         auditInfoForm.setExtDesc(SqlConstant.ORDER_TRANSPORT);
 
         //删除操作流程记录
-
+        OrderTransport orderTransport1 = orderTransportService.getById(form.getOrderId());
+        if(orderTransport1 == null){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        //删除派车信息
+        QueryWrapper removeWrapper = new QueryWrapper();
+        removeWrapper.eq("order_no",orderTransport1.getOrderNo());
+        orderSendCarsService.remove(removeWrapper);
         if (OrderStatusEnum.TMS_T_1_1.getCode().equals(form.getCmd())) {//确认接单驳回
             orderTransport.setStatus(OrderStatusEnum.TMS_T_1_1.getCode());
 

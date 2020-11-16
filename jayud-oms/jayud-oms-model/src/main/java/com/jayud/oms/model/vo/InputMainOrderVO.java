@@ -64,4 +64,7 @@ public class InputMainOrderVO {
     @ApiModelProperty(value = "报关资料是否齐全 1-齐全 0-不齐全")
     private String isDataAll;
 
+    @ApiModelProperty(value = "审核状态")
+    private Integer status;
+
 }

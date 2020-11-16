@@ -559,12 +559,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
         String classCode = inputMainOrderForm.getClassCode();//订单类型
         String selectedServer = inputMainOrderForm.getSelectedServer();//所选服务
-        //纯报关和出口报关并且订单状态为驳回(C_1_1)或为空或为待接单
+        //纯报关和出口报关并且订单状态为驳回(C_1_1)或为空或为暂存待补全的待接单
         if(OrderStatusEnum.CBG.getCode().equals(classCode) ||
                 selectedServer.contains(OrderStatusEnum.CKBG.getCode())){
             InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
             if(StringUtil.isNullOrEmpty(orderCustomsForm.getSubCustomsStatus()) ||
-                    OrderStatusEnum.CUSTOMS_C_0.getCode().equals(orderCustomsForm.getSubCustomsStatus()) ||
+                    (OrderStatusEnum.CUSTOMS_C_0.getCode().equals(orderCustomsForm.getSubCustomsStatus()) &&
+                     (OrderStatusEnum.MAIN_2.getCode().equals(inputMainOrderForm.getStatus()) ||
+                      OrderStatusEnum.MAIN_4.getCode().equals(inputMainOrderForm.getStatus()) ||
+                      inputMainOrderForm.getStatus() == null)) ||
                     OrderStatusEnum.CUSTOMS_C_1_1.getCode().equals(orderCustomsForm.getSubCustomsStatus())) {
                 //如果没有生成子订单则不调用
                 if (orderCustomsForm.getSubOrders() != null && orderCustomsForm.getSubOrders().size() >= 0) {

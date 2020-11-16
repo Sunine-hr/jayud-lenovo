@@ -2,6 +2,7 @@ package com.jayud.finance.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.CommonResult;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.po.OrderPaymentBillDetail;
 import com.jayud.finance.vo.*;
@@ -24,6 +25,13 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      * @return
      */
     IPage<OrderPaymentBillDetailVO> findPaymentBillDetailByPage(QueryPaymentBillDetailForm form);
+
+    /**
+     * 提交财务
+     * @param form
+     * @return
+     */
+    CommonResult submitFCw(ListForm form);
 
     /**
      * 付款申请

@@ -46,6 +46,116 @@ public class PaymentBillDetailController {
         return CommonResult.success(pageVO);
     }
 
+    @ApiOperation(value = "提交财务ids=billDetailId集合,必须客服主管审核通过,状态为B_2")
+    @PostMapping("/submitFCw")
+    public CommonResult submitFCw(@RequestBody @Valid ListForm form){
+        return billDetailService.submitFCw(form);
+    }
+
+    @ApiOperation(value = "导出应付对账单列表")
+    @RequestMapping(value = "/exportBill", method = RequestMethod.GET)
+    @ResponseBody
+    public void exportBill(@RequestParam(value = "form",required = true) QueryPaymentBillDetailForm form,
+                                 HttpServletResponse response) throws IOException {
+        //获取数据
+        IPage<OrderPaymentBillDetailVO> pageList = billDetailService.findPaymentBillDetailByPage(form);
+        CommonPageResult<OrderPaymentBillDetailVO> pageVO = new CommonPageResult(pageList);
+        List<OrderPaymentBillDetailVO> list = pageVO.getList();
+
+        ExcelWriter writer = ExcelUtil.getWriter(true);
+
+        //自定义标题别名
+        writer.addHeaderAlias("createdTimeStr", "建单日期");
+        writer.addHeaderAlias("orderNo", "订单编号");
+        writer.addHeaderAlias("customerName", "客户");
+        writer.addHeaderAlias("startAddress", "启运地");
+        writer.addHeaderAlias("endAddress", "目的地");
+        writer.addHeaderAlias("licensePlate", "车牌号");
+        writer.addHeaderAlias("vehicleSize", "车型");
+        writer.addHeaderAlias("pieceNum", "件数");
+        writer.addHeaderAlias("weight", "毛重(KGS)");
+        writer.addHeaderAlias("yunCustomsNo", "报关单号");
+        /*@ApiModelProperty(value = "账单编号")
+        private String billNo;
+
+        @ApiModelProperty(value = "法人主体")
+        private String legalName;
+
+        @ApiModelProperty(value = "客户,应收时取值")
+        private String customerName;
+
+        @ApiModelProperty(value = "供应商,应付时取值")
+        private String supplierChName;
+
+        @ApiModelProperty(value = "开始核算期 年月日")
+        private String beginAccountTermStr;
+
+        @ApiModelProperty(value = "结束核算期 年月日")
+        private String endAccountTermStr;
+
+        @ApiModelProperty(value = "人民币")
+        private BigDecimal rmb;
+
+        @ApiModelProperty(value = "美元")
+        private BigDecimal dollar;
+
+        @ApiModelProperty(value = "欧元")
+        private BigDecimal euro;
+
+        @ApiModelProperty(value = "港币")
+        private BigDecimal hKDollar;
+
+        @ApiModelProperty(value = "核销金额")
+        private BigDecimal heXiaoAmount;
+
+        @ApiModelProperty(value = "未核销金额")
+        private BigDecimal notHeXiaoAmount;
+
+        @ApiModelProperty(value = "结算币种")
+        private String settlementCurrency;
+
+        @ApiModelProperty(value = "审核状态")
+        private String auditStatus;
+
+        @ApiModelProperty(value = "付款申请")
+        private String applyStatus;
+
+        @ApiModelProperty(value = "生成账单人")
+        private String makeUser;
+
+        @ApiModelProperty(value = "生成账单时间")
+        private String makeTimeStr;
+
+        @ApiModelProperty(value = "审核人")
+        private String auditUser;
+
+        @ApiModelProperty(value = "审核时间")
+        private String auditTimeStr;
+
+        @ApiModelProperty(value = "审核意见")
+        private String auditComment;
+
+        @ApiModelProperty(value = "核销人")
+        private String heXiaoUser;
+
+        @ApiModelProperty(value = "核销时间")
+        private String heXiaoTimeStr;*/
+
+        // 一次性写出内容，使用默认样式，强制输出标题
+        writer.write(list, true);
+
+        //out为OutputStream，需要写出到的目标流
+        ServletOutputStream out = response.getOutputStream();
+        String name = StringUtils.toUtf8String("应付对账单");
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
+        response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
+
+        writer.flush(out);
+        writer.close();
+        IoUtil.close(out);
+    }
+
+
     @ApiOperation(value = "付款申请")
     @PostMapping("/applyPayment")
     public CommonResult applyPayment(@RequestBody @Valid ApplyPaymentForm form) {
@@ -165,6 +275,7 @@ public class PaymentBillDetailController {
         writer.close();
         IoUtil.close(out);
     }
+
 
     /***
      * 对账单审核模块

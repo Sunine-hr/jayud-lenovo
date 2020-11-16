@@ -43,15 +43,16 @@
 
     <select id="findPaymentBillDetailByPage" parameterType="com.jayud.finance.bo.QueryPaymentBillDetailForm" resultType="com.jayud.finance.vo.OrderPaymentBillDetailVO" >
         SELECT
+        opbd.id billDetailId,
         opbd.bill_no billNo,
         opb.legal_name legalName,
         opb.supplier_ch_name supplierChName,
         DATE_FORMAT(opbd.begin_account_term,'%Y-%m-%d') 	beginAccountTermStr,
         DATE_FORMAT(opbd.end_account_term,'%Y-%m-%d') 	endAccountTermStr,
-        (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='RMB') rmb,
-        (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='MY') dollar,
-        (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='OY') euro,
-        (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='GB') hKDollar,
+        (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='CNY') rmb,
+        (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='USD') dollar,
+        (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='EUR') euro,
+        (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='HKD') hKDollar,
         (select sum(m.money) from make_invoice m where m.opr_type = '2' and m.bill_no = opbd.bill_no and m.`status` = '1') heXiaoAmount,
         (opbd.payment_amount - (select sum(m.money) from make_invoice m where m.opr_type = '2' and m.bill_no = opbd.bill_no and m.`status` = '1'))  notHeXiaoAmount,opbd.settlement_currency settlementCurrency,opbd.audit_status auditStatus,opbd.apply_status applyStatus,
         opbd.make_user makeUser,
@@ -64,8 +65,8 @@
         order_payment_bill_detail opbd
         LEFT JOIN order_payment_bill opb ON opbd.bill_id = opb.id
         where 1 = 1
-        <if test="form.customerName != null and form.customerName != ''">
-            and opb.customer_name like concat('%',#{form.customerName},'%')
+        <if test="form.supplierChName != null and form.supplierChName != ''">
+            and opb.supplier_ch_name like concat('%',#{form.supplierChName},'%')
         </if>
         <if test="form.legalName != null and form.legalName != ''">
             and opb.legal_name like concat('%',#{form.legalName},'%')
@@ -80,13 +81,13 @@
             and opbd.begin_account_term <![CDATA[>=]]> #{form.beginAccountTerm}
         </if>
         <if test="form.currencyCode != null and form.currencyCode !=''">
-            and opbd.settlement_currency <![CDATA[>=]]> #{form.currencyCode}
+            and opbd.settlement_currency = #{form.currencyCode}
         </if>
         <if test="form.auditStatus != null and form.auditStatus !=''">
-            and opbd.audit_status <![CDATA[>=]]> #{form.auditStatus}
+            and opbd.audit_status = #{form.auditStatus}
         </if>
         <if test="form.applyStatus != null and form.applyStatus !=''">
-            and opbd.apply_status <![CDATA[>=]]> #{form.applyStatus}
+            and opbd.apply_status = #{form.applyStatus}
         </if>
     </select>
     <select id="findEditBillByPage" parameterType="com.jayud.finance.bo.QueryEditBillForm" resultType="com.jayud.finance.vo.PaymentNotPaidBillVO" >

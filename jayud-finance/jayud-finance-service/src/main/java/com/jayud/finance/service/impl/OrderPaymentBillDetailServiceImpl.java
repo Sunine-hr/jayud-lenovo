@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
+import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
@@ -54,10 +56,40 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         //定义分页参数
         Page<OrderPaymentBillDetailVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
-        page.addOrder(OrderItem.desc("opc.id"));
+        page.addOrder(OrderItem.desc("opbd.created_time"));
         IPage<OrderPaymentBillDetailVO> pageInfo = baseMapper.findPaymentBillDetailByPage(page, form);
         return pageInfo;
     }
+
+    @Override
+    public CommonResult submitFCw(ListForm form) {
+        //校验数据状态
+        List<OrderPaymentBillDetail> billDetails = baseMapper.selectBatchIds(form.getIds());
+        for (OrderPaymentBillDetail billDetail : billDetails) {
+            if(!BillEnum.B_2.getCode().equals(billDetail.getAuditStatus())){
+                return CommonResult.error(ResultEnum.OPR_FAIL);
+            }
+        }
+        for (Long id : form.getIds()) {
+            OrderPaymentBillDetail orderPaymentBillDetail = new OrderPaymentBillDetail();
+            orderPaymentBillDetail.setId(id);
+            orderPaymentBillDetail.setAuditStatus(BillEnum.B_3.getCode());
+            orderPaymentBillDetail.setUpdatedTime(LocalDateTime.now());
+            orderPaymentBillDetail.setUpdatedUser(UserOperator.getToken());
+            updateById(orderPaymentBillDetail);
+
+            //保存操作记录
+            AuditInfoForm auditInfoForm = new AuditInfoForm();
+            auditInfoForm.setExtId(id);
+            auditInfoForm.setAuditTypeDesc("提交财务");
+            auditInfoForm.setAuditStatus(BillEnum.B_3.getCode());
+            auditInfoForm.setExtDesc("order_payment_bill_detail表");
+            auditInfoForm.setAuditUser(UserOperator.getToken());
+            omsClient.saveAuditInfo(auditInfoForm);
+        }
+        return CommonResult.success();
+    }
+
 
     @Override
     public Boolean applyPayment(ApplyPaymentForm form) {

@@ -63,13 +63,13 @@ public class ReceiveBillController {
         return CommonResult.error(ResultEnum.OPR_FAIL);
     }
 
-    @ApiOperation(value = "预览应付账单")
+    @ApiOperation(value = "预览应收账单")
     @PostMapping("/viewReceiveBill")
     public CommonResult<Map<String,Object>> viewReceiveBill(@RequestBody @Valid ViewBillForm form) {
         Map<String,Object> resultMap = new HashMap<>();
-        List<ViewBilToOrderVO> list = null;//billService.viewReceiveBill(form);
+        List<ViewBilToOrderVO> list = billService.viewReceiveBill(form);
         resultMap.put(CommonConstant.LIST,list);//分页数据
-        List<SheetHeadVO> sheetHeadVOS = null;//billService.viewReceiveBill(form);
+        List<SheetHeadVO> sheetHeadVOS = billService.findSheetHead(form);
         resultMap.put(CommonConstant.SHEET_HEAD,sheetHeadVOS);//表头
         return CommonResult.success(resultMap);
     }

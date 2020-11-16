@@ -181,4 +181,70 @@
             and temp.createdTimeStr <![CDATA[>=]]> #{form.beginCreatedTimeStr}
         </if>
     </select>
+    <select id="getBillOrderNum"  resultType="java.lang.Integer" >
+      SELECT
+	    count( DISTINCT orbd.order_no ) billOrderNum
+      FROM
+	    order_receivable_bill_detail orbd
+	    LEFT JOIN order_receivable_bill orb ON orbd.bill_id = orb.id
+      WHERE
+        orb.legal_name = #{legalName}
+        AND orb.customer_name = #{customerName}
+        AND orb.sub_type = #{cmd}
+    </select>
+    <select id="findSheetHead" parameterType="com.jayud.finance.bo.ViewBillForm" resultType="com.jayud.finance.vo.SheetHeadVO">
+        SELECT
+        CONCAT( orc.cost_code, orc.currency_code ) NAME,
+        concat((select ci.name from cost_info ci where ci.id_code = orc.cost_code),'(',(select ci.currency_name from currency_info ci where ci.  currency_code = orc.currency_code),')') viewName,
+        sum( orc.amount )
+        FROM
+        order_receivable_cost orc
+        WHERE
+        orc.id IN
+        <foreach collection="form.costIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        GROUP BY
+        orc.cost_code,
+        orc.currency_code
+    </select>
+    <select id="findCostClass" parameterType="com.jayud.finance.bo.ViewBillForm" resultType="com.jayud.finance.vo.ViewBillToCostClassVO">
+        SELECT
+        CONCAT( orc.cost_code, orc.currency_code ) NAME,
+        orc.main_order_no orderNo,
+        concat((SELECT ci.NAME FROM cost_info ci WHERE ci.id_code = orc.cost_code),'(',(
+        SELECT ci.currency_name FROM currency_info ci WHERE ci.currency_code = orc.currency_code),')') viewName,
+        sum( orc.amount ) money
+        FROM
+        order_receivable_cost orc
+        WHERE
+        orc.id IN
+        <foreach collection="form.costIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        GROUP BY
+        orc.cost_code,
+        orc.currency_code,
+        orc.main_order_no
+    </select>
+    <select id="viewReceiveBill" parameterType="com.jayud.finance.bo.ViewBillForm" resultType="com.jayud.finance.vo.ViewBilToOrderVO">
+        SELECT
+        DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
+        oi.order_no orderNo,
+        oi.customer_name customerName,
+        ( SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' limit 1) startAddress,
+        ( SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '2' limit 1) endAddress,
+        (select concat(vi.plate_number,',',vi.hk_number) from order_send_cars osc left join order_transport ot on osc.order_no = ot.order_no left join driver_info di on di.id = osc.driver_info_id left join vehicle_info vi on vi.id = di.vehicle_id where ot.main_order_no = oi.order_no) licensePlate,
+        (select ot.vehicle_size from order_transport ot where ot.main_order_no = oi.order_no)  vehicleSize,
+        (select sum(ota.piece_amount) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1') pieceNum,
+        (select sum(ota.weight) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1') weight,
+        (select GROUP_CONCAT(oc.yun_customs_no,',') from order_customs oc where oc.main_order_no = oi.order_no) yunCustomsNo
+        FROM
+        order_info oi
+        where oi.order_no in (select orc.order_no from order_receivable_cost orc where orc.id in
+        <foreach collection="form.costIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        )
+    </select>
 </mapper>

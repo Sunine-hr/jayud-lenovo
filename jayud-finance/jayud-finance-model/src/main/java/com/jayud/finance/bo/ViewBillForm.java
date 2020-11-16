@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 public class ViewBillForm {
 
-    @ApiModelProperty(value = "应付出账单界面部分")
+    @ApiModelProperty(value = "应付/应收出账单界面部分")
     private List<Long> costIds;
 
 

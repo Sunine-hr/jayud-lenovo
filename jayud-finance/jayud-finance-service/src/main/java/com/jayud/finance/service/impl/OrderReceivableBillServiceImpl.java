@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.utils.ConvertUtil;
@@ -11,15 +12,13 @@ import com.jayud.common.utils.DateUtils;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.feign.OmsClient;
-import com.jayud.finance.po.OrderBillCostTotal;
-import com.jayud.finance.po.OrderPaymentBill;
-import com.jayud.finance.po.OrderPaymentBillDetail;
-import com.jayud.finance.po.OrderReceivableBill;
 import com.jayud.finance.mapper.OrderReceivableBillMapper;
+import com.jayud.finance.po.OrderBillCostTotal;
+import com.jayud.finance.po.OrderReceivableBill;
+import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.service.IOrderBillCostTotalService;
-import com.jayud.finance.service.IOrderPaymentBillDetailService;
+import com.jayud.finance.service.IOrderReceivableBillDetailService;
 import com.jayud.finance.service.IOrderReceivableBillService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.finance.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,7 +45,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
     OmsClient omsClient;
 
     @Autowired
-    IOrderPaymentBillDetailService paymentBillDetailService;
+    IOrderReceivableBillDetailService receivableBillDetailService;
 
     @Autowired
     IOrderBillCostTotalService costTotalService;
@@ -92,20 +91,20 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
     }
 
     @Override
-    public Boolean createPaymentBill(CreatePaymentBillForm form) {
-        OrderPaymentBillForm paymentBillForm = form.getPaymentBillForm();//账单信息
-        List<OrderPaymentBillDetailForm> paymentBillDetailForms = form.getPaymentBillDetailForms();//账单详细信息
+    public Boolean createReceiveBill(CreateReceiveBillForm form) {
+        OrderReceiveBillForm receiveBillForm = form.getReceiveBillForm();//账单信息
+        List<OrderReceiveBillDetailForm> receiveBillDetailForms = form.getReceiveBillDetailForms();//账单详细信息
         Boolean result = true;
-        //无论暂存还是生成账单都需要修改order_payment_cost表的is_bill
+        //无论暂存还是生成账单都需要修改order_receivable_cost表的is_bill
         List<Long> costIds = new ArrayList<>();
-        for (OrderPaymentBillDetailForm paymentBillDetail : paymentBillDetailForms) {
-            costIds.add(paymentBillDetail.getCostId());
+        for (OrderReceiveBillDetailForm receiveBillDetailForm : receiveBillDetailForms) {
+            costIds.add(receiveBillDetailForm.getCostId());
         }
         if(costIds.size() > 0){
             OprCostBillForm oprCostBillForm = new OprCostBillForm();
             oprCostBillForm.setCmd(form.getCmd());
             oprCostBillForm.setCostIds(costIds);
-            oprCostBillForm.setOprType("payment");
+            oprCostBillForm.setOprType("receivable");
             result = omsClient.oprCostBill(oprCostBillForm).getData();
             if(!result){
                 return false;
@@ -114,55 +113,55 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         //生成账单操作才是生成对账单数据
         if("create".equals(form.getCmd())){
             //先保存对账单信息，在保存对账单详情信息
-            OrderPaymentBill orderPaymentBill = ConvertUtil.convert(paymentBillForm,OrderPaymentBill.class);
+            OrderReceivableBill orderReceivableBill = ConvertUtil.convert(receiveBillForm,OrderReceivableBill.class);
             //1.统计已出账金额alreadyPaidAmount
-            BigDecimal nowBillAmount = paymentBillDetailForms.stream().map(OrderPaymentBillDetailForm::getLocalAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
-            orderPaymentBill.setAlreadyPaidAmount(paymentBillForm.getAlreadyPaidAmount().add(nowBillAmount));
+            BigDecimal nowBillAmount = receiveBillDetailForms.stream().map(OrderReceiveBillDetailForm::getLocalAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
+            orderReceivableBill.setAlreadyPaidAmount(receiveBillForm.getAlreadyPaidAmount().add(nowBillAmount));
             //2.统计已出账订单数billOrderNum
-            Integer billOrderNum = null;//baseMapper.getBillOrderNum(paymentBillForm.getLegalName(),paymentBillForm.getSupplierChName(),form.getCmd());
-            orderPaymentBill.setBillOrderNum(billOrderNum);
+            Integer billOrderNum = baseMapper.getBillOrderNum(receiveBillForm.getLegalName(),receiveBillForm.getCustomerName(),form.getCmd());
+            orderReceivableBill.setBillOrderNum(billOrderNum);
             //3.统计账单数billNum
-            orderPaymentBill.setBillOrderNum(paymentBillForm.getBillNum() + 1);
+            orderReceivableBill.setBillOrderNum(receiveBillForm.getBillNum() + 1);
             if("main".equals(form.getSubType())){
-                orderPaymentBill.setIsMain(true);
+                orderReceivableBill.setIsMain(true);
             }else if("zgys".equals(form.getSubType())){
-                orderPaymentBill.setIsMain(false);
-                orderPaymentBill.setSubType(form.getSubType());
+                orderReceivableBill.setIsMain(false);
+                orderReceivableBill.setSubType(form.getSubType());
             }else if("bg".equals(form.getSubType())){
-                orderPaymentBill.setIsMain(false);
-                orderPaymentBill.setSubType(form.getSubType());
+                orderReceivableBill.setIsMain(false);
+                orderReceivableBill.setSubType(form.getSubType());
             }
             //判断该法人主体和客户是否已经生成过账单
             QueryWrapper queryWrapper = new QueryWrapper();
             queryWrapper.eq("sub_type",form.getSubType());
-            queryWrapper.eq("legal_name",paymentBillForm.getLegalName());
-            queryWrapper.eq("supplier_ch_name",paymentBillForm.getSupplierChName());
-            OrderPaymentBill existBill = null;//baseMapper.selectOne(queryWrapper);
+            queryWrapper.eq("legal_name",receiveBillForm.getLegalName());
+            queryWrapper.eq("customer_name",receiveBillForm.getCustomerName());
+            OrderReceivableBill existBill = baseMapper.selectOne(queryWrapper);
             if(existBill != null && existBill.getId() != null){
-                orderPaymentBill.setId(existBill.getId());
-                orderPaymentBill.setUpdatedTime(LocalDateTime.now());
-                orderPaymentBill.setUpdatedUser(UserOperator.getToken());
+                orderReceivableBill.setId(existBill.getId());
+                orderReceivableBill.setUpdatedTime(LocalDateTime.now());
+                orderReceivableBill.setUpdatedUser(UserOperator.getToken());
             }
-            orderPaymentBill.setCreatedUser(UserOperator.getToken());
+            orderReceivableBill.setCreatedUser(UserOperator.getToken());
             result = saveOrUpdate(null);
             if(!result){
                 return false;
             }
             //开始保存对账单详情数据
-            List<OrderPaymentBillDetail> paymentBillDetails = ConvertUtil.convertList(paymentBillDetailForms,OrderPaymentBillDetail.class);
-            for (int i = 0;i<paymentBillDetails.size();i++) {
-                paymentBillDetails.get(i).setStatus("1");
-                paymentBillDetails.get(i).setBillNo(form.getBillNo());
-                paymentBillDetails.get(i).setBeginAccountTerm(form.getBeginAccountTerm());
-                paymentBillDetails.get(i).setEndAccountTerm(form.getEndAccountTerm());
-                paymentBillDetails.get(i).setSettlementCurrency(form.getSettlementCurrency());
-                paymentBillDetails.get(i).setAuditStatus(BillEnum.B_1.getCode());
-                paymentBillDetails.get(i).setCreatedOrderTime(DateUtils.str2LocalDateTime(paymentBillDetailForms.get(i).getCreatedTimeStr(),DateUtils.DATE_TIME_PATTERN));
-                paymentBillDetails.get(i).setMakeUser(UserOperator.getToken());
-                paymentBillDetails.get(i).setMakeTime(LocalDateTime.now());
-                paymentBillDetails.get(i).setCreatedUser(UserOperator.getToken());
+            List<OrderReceivableBillDetail> receivableBillDetails = ConvertUtil.convertList(receiveBillDetailForms,OrderReceivableBillDetail.class);
+            for (int i = 0;i<receivableBillDetails.size();i++) {
+                receivableBillDetails.get(i).setStatus("1");
+                receivableBillDetails.get(i).setBillNo(form.getBillNo());
+                receivableBillDetails.get(i).setBeginAccountTerm(form.getBeginAccountTerm());
+                receivableBillDetails.get(i).setEndAccountTerm(form.getEndAccountTerm());
+                receivableBillDetails.get(i).setSettlementCurrency(form.getSettlementCurrency());
+                receivableBillDetails.get(i).setAuditStatus(BillEnum.B_1.getCode());
+                receivableBillDetails.get(i).setCreatedOrderTime(DateUtils.str2LocalDateTime(receiveBillDetailForms.get(i).getCreatedTimeStr(),DateUtils.DATE_TIME_PATTERN));
+                receivableBillDetails.get(i).setMakeUser(UserOperator.getToken());
+                receivableBillDetails.get(i).setMakeTime(LocalDateTime.now());
+                receivableBillDetails.get(i).setCreatedUser(UserOperator.getToken());
             }
-            result = paymentBillDetailService.saveBatch(paymentBillDetails);
+            result = receivableBillDetailService.saveBatch(receivableBillDetails);
             if(!result){
                 return false;
             }
@@ -170,7 +169,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             List<OrderBillCostTotal> orderBillCostTotals = new ArrayList<>();
             //根据费用ID统计费用信息,将原始费用信息根据结算币种进行转换
             String settlementCurrency = form.getSettlementCurrency();
-            List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderBillCostTotal(costIds,settlementCurrency);
+            List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds,settlementCurrency);
             for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                 orderBillCostTotalVO.setBillNo(form.getBillNo());
                 orderBillCostTotalVO.setCurrencyCode(settlementCurrency);
@@ -186,9 +185,9 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
     }
 
     @Override
-    public List<ViewBilToOrderVO> viewPaymentBill(ViewBillForm form) {
-        List<ViewBilToOrderVO> orderList = null;//baseMapper.viewPaymentBill(form);
-        List<ViewBillToCostClassVO> findCostClass = null;//baseMapper.findCostClass(form);
+    public List<ViewBilToOrderVO> viewReceiveBill(ViewBillForm form) {
+        List<ViewBilToOrderVO> orderList = baseMapper.viewReceiveBill(form);
+        List<ViewBillToCostClassVO> findCostClass = baseMapper.findCostClass(form);
         for (ViewBilToOrderVO viewBillToOrder : orderList) {
             List<ViewBillToCostClassVO> tempList = new ArrayList<>();
             for(ViewBillToCostClassVO viewBillToCostClass : findCostClass){
@@ -203,6 +202,6 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
 
     @Override
     public List<SheetHeadVO> findSheetHead(ViewBillForm form) {
-        return null;//baseMapper.findSheetHead(form);
+        return baseMapper.findSheetHead(form);
     }
 }

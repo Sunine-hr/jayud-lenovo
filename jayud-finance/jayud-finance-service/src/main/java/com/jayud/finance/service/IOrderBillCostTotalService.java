@@ -20,5 +20,11 @@ public interface IOrderBillCostTotalService extends IService<OrderBillCostTotal>
      * 根据costIds查询对账金额信息,原始费用表的
      * @return
      */
-    List<OrderBillCostTotalVO> findOrderBillCostTotal(List<Long> costIds,String settlementCurrency);
+    List<OrderBillCostTotalVO> findOrderFBillCostTotal(List<Long> costIds,String settlementCurrency);
+
+    /**
+     * 根据costIds查询对账金额信息,原始费用表的
+     * @return
+     */
+    List<OrderBillCostTotalVO> findOrderSBillCostTotal(List<Long> costIds,String settlementCurrency);
 }

@@ -16,13 +16,13 @@ import java.util.List;
 @Data
 public class CreateReceiveBillForm {
 
-    @ApiModelProperty(value = "应付出账单界面部分",required = true)
-    @NotEmpty(message = "paymentBillForm is required")
-    private OrderPaymentBillForm paymentBillForm;
+    @ApiModelProperty(value = "应收出账单界面部分",required = true)
+    @NotEmpty(message = "receiveBillForm is required")
+    private OrderReceiveBillForm receiveBillForm;
 
-    @ApiModelProperty(value = "应付出账单详情界面部分",required = true)
-    @NotEmpty(message = "paymentBillDetailForms is required")
-    private List<OrderPaymentBillDetailForm> paymentBillDetailForms;
+    @ApiModelProperty(value = "应收出账单详情界面部分",required = true)
+    @NotEmpty(message = "receiveBillDetailForms is required")
+    private List<OrderReceiveBillDetailForm> receiveBillDetailForms;
 
     @ApiModelProperty(value = "账单编号",required = true)
     @NotEmpty(message = "billNo is required")

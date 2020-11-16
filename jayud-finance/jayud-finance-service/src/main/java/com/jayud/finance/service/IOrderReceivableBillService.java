@@ -45,14 +45,14 @@ public interface IOrderReceivableBillService extends IService<OrderReceivableBil
      * @param form
      * @return
      */
-    Boolean createPaymentBill(CreatePaymentBillForm form);
+    Boolean createReceiveBill(CreateReceiveBillForm form);
 
     /**
      * 预览账单
      * @param form
      * @return
      */
-    List<ViewBilToOrderVO> viewPaymentBill(ViewBillForm form);
+    List<ViewBilToOrderVO> viewReceiveBill(ViewBillForm form);
 
     /**
      * 预览账单表头

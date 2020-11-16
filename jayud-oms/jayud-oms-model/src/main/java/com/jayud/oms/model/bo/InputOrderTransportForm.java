@@ -80,4 +80,7 @@ public class InputOrderTransportForm {
     @ApiModelProperty(value = "当前登录用户,FeignClient必传,要么就传token,否则跨系统拿不到用户")
     private String loginUser;
 
+    @ApiModelProperty(value = "审核状态")
+    private String subTmsStatus;
+
 }

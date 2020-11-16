@@ -144,6 +144,12 @@ public class InputOrderTransportVO {
     @ApiModelProperty(value = "卸货地址")
     private List<InputOrderTakeAdrVO> orderTakeAdrForms2 = new ArrayList<>();
 
+    @ApiModelProperty(value = "审核状态")
+    private String subTmsStatus;
+
+    public String getSubTmsStatus() {
+        return subTmsStatus = this.status;
+    }
 
     public String getGoodsTypeDesc() {
         if(this.goodsType != null) {

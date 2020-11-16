@@ -146,6 +146,8 @@ public class InputOrderTransportVO {
     @ApiModelProperty(value = "卸货地址")
     private List<InputOrderTakeAdrVO> orderTakeAdrForms2 = new ArrayList<>();
 
+    @ApiModelProperty(value = "审核状态")
+    private String subTmsStatus;
 
     public String getGoodsTypeDesc() {
         if(CommonConstant.VALUE_1.equals(this.goodsType)){

@@ -64,4 +64,8 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    /*报关服务文件*/
+
+    /*清关服务文件*/
+
 }

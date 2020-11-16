@@ -3,6 +3,7 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.OrderInfoForm;
 import com.jayud.mall.model.bo.QueryOrderInfoForm;
 import com.jayud.mall.model.vo.OrderInfoVO;
 import com.jayud.mall.service.IOrderInfoService;
@@ -30,8 +31,12 @@ public class OrderInfoController {
         return CommonResult.success(pageVO);
     }
 
-    //订单管理-审核文件
-//    public CommonResult<>
+    @ApiOperation(value = "订单管理-查看审核文件")
+    @PostMapping("/lookOrderInfoFile")
+    public CommonResult<OrderInfoVO> lookOrderInfoFile(@RequestBody OrderInfoForm form){
+        Long id = form.getId();
+        return orderInfoService.lookOrderInfoFile(id);
+    }
 
 
 

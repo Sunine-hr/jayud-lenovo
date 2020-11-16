@@ -1,6 +1,7 @@
 package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.QueryOrderInfoForm;
 import com.jayud.mall.model.po.OrderInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -22,4 +23,11 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     IPage<OrderInfoVO> findOrderInfoByPage(QueryOrderInfoForm form);
+
+    /**
+     * 订单管理-查看审核文件
+     * @param id
+     * @return
+     */
+    CommonResult<OrderInfoVO> lookOrderInfoFile(Long id);
 }

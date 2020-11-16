@@ -28,4 +28,11 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      * @return
      */
     IPage<OrderInfoVO> findOrderInfoByPage(Page<OrderInfoVO> page, QueryOrderInfoForm form);
+
+    /**
+     * 查询订单文件
+     * @param id
+     * @return
+     */
+    OrderInfoVO lookOrderInfoFile(Long id);
 }

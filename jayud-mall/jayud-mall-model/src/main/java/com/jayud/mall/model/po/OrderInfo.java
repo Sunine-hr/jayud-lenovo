@@ -27,7 +27,7 @@ public class OrderInfo extends Model<OrderInfo> {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "订单ID，由系统生成")
-    private String id;
+    private Long id;
 
     @ApiModelProperty(value = "订单号")
     private String orderNo;

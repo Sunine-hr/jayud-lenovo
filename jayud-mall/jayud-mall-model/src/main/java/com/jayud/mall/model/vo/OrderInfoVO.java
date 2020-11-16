@@ -5,13 +5,14 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @ApiModel(value="OrderInfoVO对象", description="产品订单表")
 public class OrderInfoVO {
 
     @ApiModelProperty(value = "订单ID，由系统生成")
-    private String id;
+    private Long id;
 
     @ApiModelProperty(value = "订单号")
     private String orderNo;
@@ -64,8 +65,12 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "备注")
     private String remark;
 
-    /*报关服务文件*/
+    /*订单对应报关文件：order_customs_file*/
+    @ApiModelProperty(value = "订单对应报关文件list")
+    private List<OrderCustomsFileVO> orderCustomsFileVOList;
 
-    /*清关服务文件*/
+    /*订单对应清关文件：order_clearance_file*/
+    @ApiModelProperty(value = "订单对应清关文件list")
+    private List<OrderClearanceFileVO> orderClearanceFileVOList;
 
 }

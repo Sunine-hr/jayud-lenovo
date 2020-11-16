@@ -136,6 +136,13 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
             List<GoodsType> goodsTypes = goodsTypeMapper.selectBatchIds(gidList);
             List<GoodsTypeVO> gList = ConvertUtil.convertList(goodsTypes, GoodsTypeVO.class);
             offerInfoVO.setGList(gList);
+            //货物类型名称
+            if(gList.size() > 0){
+                GoodsTypeVO goodsTypeVO = gList.get(0);
+                Integer fid = goodsTypeVO.getFid();
+                GoodsType goodsType = goodsTypeMapper.selectById(fid);
+                offerInfoVO.setGName(goodsType.getName());
+            }
         }
         //集货仓库list
         String areaId = offerInfoVO.getAreaId();
@@ -154,6 +161,14 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
             List<GoodsType> goodsTypes = goodsTypeMapper.selectBatchIds(qidList);
             List<GoodsTypeVO> qList = ConvertUtil.convertList(goodsTypes, GoodsTypeVO.class);
             offerInfoVO.setQList(qList);
+            //报价类型名称
+            if(qList.size() > 0){
+                GoodsTypeVO goodsTypeVO = qList.get(0);
+                Integer fid = goodsTypeVO.getFid();
+                GoodsType goodsType = goodsTypeMapper.selectById(fid);
+                offerInfoVO.setQName(goodsType.getName());
+            }
+
         }
         //报价对应应收费用明细list
         QueryWrapper<TemplateCopeReceivable> query1 = new QueryWrapper<>();

@@ -142,5 +142,11 @@ public class OfferInfoVO {
     @ApiModelProperty(value = "配载单，关联查询报价信息-路线")
     private String route;
 
+    /*货物类型(goods_type types=2 id)*/
+    private String gName;
+
+    /*报价类型(goods_type types=1 id)*/
+    private String qName;
+
 
 }

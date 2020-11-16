@@ -93,9 +93,6 @@ public class CustomerInfoVO {
     @ApiModelProperty(value = "创建时间")
     private String createdTimeStr;
 
-    @ApiModelProperty(value = "创建时间")
-    private String createdTime;
-
     @ApiModelProperty(value = "审核意见")
     private String auditComment;
 

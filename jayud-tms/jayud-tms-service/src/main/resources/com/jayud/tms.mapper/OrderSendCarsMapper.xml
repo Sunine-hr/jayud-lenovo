@@ -56,8 +56,8 @@
             wi.`contacts` warehouseContacts,
             wi.`contact_number` warehouseNumber,
             '中国' countryName,
-            ( SELECT rc.NAME FROM region_city rc WHERE rc.CODE = wi.`state_code` LIMIT 1 ) AS provinceName,
-            ( SELECT rc.NAME FROM region_city rc WHERE rc.CODE = wi.`city_code` LIMIT 1 ) AS cityName,
+            ( SELECT rc.NAME FROM region_city rc WHERE rc.id = wi.state_code LIMIT 1 ) AS provinceName,
+            ( SELECT rc.NAME FROM region_city rc WHERE rc.id = wi.city_code LIMIT 1 ) AS cityName,
             wi.`address` address
         FROM
             order_send_cars osc

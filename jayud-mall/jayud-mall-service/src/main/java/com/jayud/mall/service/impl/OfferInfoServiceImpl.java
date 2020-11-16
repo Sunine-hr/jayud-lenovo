@@ -10,13 +10,16 @@ import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.OfferInfoForm;
 import com.jayud.mall.model.bo.QueryOfferInfoForm;
 import com.jayud.mall.model.po.*;
-import com.jayud.mall.model.vo.OfferInfoVO;
+import com.jayud.mall.model.vo.*;
 import com.jayud.mall.service.IOfferInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -105,90 +108,82 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
     @Override
     public CommonResult<OfferInfoVO> lookOfferInfo(Long id) {
         OfferInfoVO offerInfoVO = offerInfoMapper.selectOfferInfoVO(id);
-        //服务名称
-        Integer sid = offerInfoVO.getSid();
-        if(sid != null){
-            ServiceGroup serviceGroup = serviceGroupMapper.selectById(sid);
-            offerInfoVO.setServiceGroup(serviceGroup);
-        }
-        //报价图片
-        String picUrl = offerInfoVO.getPicUrl();
-        if(picUrl != null && picUrl != ""){
-            String[] split = picUrl.split(",");
-            List<String> picUrlList = Arrays.asList(split);
-            offerInfoVO.setPicUrlList(picUrlList);
-        }
-        //运输方式
-        Integer tid = offerInfoVO.getTid();
-        if(tid != null){
-            TransportWay transportWay = transportWayMapper.selectById(tid);
-            offerInfoVO.setTransportWay(transportWay);
-        }
-        //可达仓库
+        Integer qie = offerInfoVO.getQie();//报价模板id
+
+        //可达仓库List
         String arriveWarehouse = offerInfoVO.getArriveWarehouse();
         if(arriveWarehouse != null && arriveWarehouse != ""){
-            String[] split = arriveWarehouse.split(",");
-            List<String> list = Arrays.asList(split);
-            List<FabWarehouse> fabWarehouses = fabWarehouseMapper.selectBatchIds(list);
-            offerInfoVO.setFabWarehouseList(fabWarehouses);
+            String[] arriveWarehouseArr = arriveWarehouse.split(",");
+            List<String> arriveWarehouseList = Arrays.asList(arriveWarehouseArr);
+            List<FabWarehouse> fabWarehouses = fabWarehouseMapper.selectBatchIds(arriveWarehouseList);
+            List<FabWarehouseVO> fabWarehouseVOList = ConvertUtil.convertList(fabWarehouses, FabWarehouseVO.class);
+            offerInfoVO.setFabWarehouseVOList(fabWarehouseVOList);
         }
-        //可见客户
+        //可见客户list
         String visibleUid = offerInfoVO.getVisibleUid();
         if(visibleUid != null && visibleUid != ""){
-            String[] split = visibleUid.split(",");
-            List<String> strings = Arrays.asList(split);
-            List<Customer> customers = customerMapper.selectBatchIds(strings);
-            offerInfoVO.setCustomerList(customers);
+            String[] visibleUidArr = visibleUid.split(",");
+            List<String> visibleUidList = Arrays.asList(visibleUidArr);
+            List<Customer> customers = customerMapper.selectBatchIds(visibleUidList);
+            List<CustomerVO> customerVOList = ConvertUtil.convertList(customers, CustomerVO.class);
+            offerInfoVO.setCustomerVOList(customerVOList);
         }
-        //货物类型
+        //货物类型list
         String gid = offerInfoVO.getGid();
         if(gid != null && gid != ""){
-            String[] split = gid.split(",");
-            List<String> strings = Arrays.asList(split);
-            List<GoodsType> goodsTypes = goodsTypeMapper.selectBatchIds(strings);
-            offerInfoVO.setGList(goodsTypes);
+            String[] gidArr = gid.split(",");
+            List<String> gidList = Arrays.asList(gidArr);
+            List<GoodsType> goodsTypes = goodsTypeMapper.selectBatchIds(gidList);
+            List<GoodsTypeVO> gList = ConvertUtil.convertList(goodsTypes, GoodsTypeVO.class);
+            offerInfoVO.setGList(gList);
         }
-        //集货仓库
+        //集货仓库list
         String areaId = offerInfoVO.getAreaId();
         if(areaId != null && areaId != ""){
-            String[] split = areaId.split(",");
-            List<String> strings = Arrays.asList(split);
-            List<ShippingArea> shippingAreas = shippingAreaMapper.selectBatchIds(strings);
-            offerInfoVO.setShippingAreaList(shippingAreas);
+            String[] areaIdArr = areaId.split(",");
+            List<String> areaIdList = Arrays.asList(areaIdArr);
+            List<ShippingArea> shippingAreas = shippingAreaMapper.selectBatchIds(areaIdList);
+            List<ShippingAreaVO> shippingAreaVOList = ConvertUtil.convertList(shippingAreas, ShippingAreaVO.class);
+            offerInfoVO.setShippingAreaVOList(shippingAreaVOList);
         }
-        //报价类型
+        //报价类型list
         String qid = offerInfoVO.getQid();
         if(qid != null && qid != ""){
-            String[] split = qid.split(",");
-            List<String> strings = Arrays.asList(split);
-            List<GoodsType> goodsTypes = goodsTypeMapper.selectBatchIds(strings);
-            offerInfoVO.setQList(goodsTypes);
+            String[] qidArr = qid.split(",");
+            List<String> qidList = Arrays.asList(qidArr);
+            List<GoodsType> goodsTypes = goodsTypeMapper.selectBatchIds(qidList);
+            List<GoodsTypeVO> qList = ConvertUtil.convertList(goodsTypes, GoodsTypeVO.class);
+            offerInfoVO.setQList(qList);
         }
-        //任务分组
-        Integer taskId = offerInfoVO.getTaskId();
-        if(taskId != null){
-            TaskGroup taskGroup = taskGroupMapper.selectById(taskId);
-            offerInfoVO.setTaskGroup(taskGroup);
-        }
-        //报价关联的报价模板Id
-        Integer qie = offerInfoVO.getQie();
-        //应收费用list
-        QueryWrapper<TemplateCopeReceivable> queryWrapper1 = new QueryWrapper<>();
-        queryWrapper1.eq("qie", qie);
-        List<TemplateCopeReceivable> templateCopeReceivables = templateCopeReceivableMapper.selectList(queryWrapper1);
-        offerInfoVO.setTemplateCopeReceivableList(templateCopeReceivables);
+        //报价对应应收费用明细list
+        QueryWrapper<TemplateCopeReceivable> query1 = new QueryWrapper<>();
+        query1.eq("qie", qie);
+        List<TemplateCopeReceivable> templateCopeReceivables = templateCopeReceivableMapper.selectList(query1);
+        List<TemplateCopeReceivableVO> templateCopeReceivableVOList =
+                ConvertUtil.convertList(templateCopeReceivables, TemplateCopeReceivableVO.class);
+        offerInfoVO.setTemplateCopeReceivableVOList(templateCopeReceivableVOList);
+        //报价对应应付费用明细list
+        QueryWrapper<TemplateCopeWith> query2 = new QueryWrapper<>();
+        query2.eq("qie", qie);
+        List<TemplateCopeWith> templateCopeWiths = templateCopeWithMapper.selectList(query2);
+        List<TemplateCopeWithVO> templateCopeWithVOList =
+                ConvertUtil.convertList(templateCopeWiths, TemplateCopeWithVO.class);
+        offerInfoVO.setTemplateCopeWithVOList(templateCopeWithVOList);
 
-        //应付费用list
-        QueryWrapper<TemplateCopeWith> queryWrapper2 = new QueryWrapper<>();
-        queryWrapper2.eq("qie", qie);
-        List<TemplateCopeWith> templateCopeWiths = templateCopeWithMapper.selectList(queryWrapper2);
-        offerInfoVO.setTemplateCopeWithList(templateCopeWiths);
-
-        //文件信息list
-        QueryWrapper<TemplateFile> queryWrapper3 = new QueryWrapper<>();
-        queryWrapper3.eq("qie", qie);
-        List<TemplateFile> TemplateFiles = templateFileMapper.selectList(queryWrapper3);
-        offerInfoVO.setTemplateFileList(TemplateFiles);
+        //模板对应模块信息list，文件信息
+        List<TemplateFileVO> templateFileVOList = templateFileMapper.findTemplateFileByQie(Long.valueOf(qie));
+        //分组
+        Map<String, List<TemplateFileVO>> map =
+                templateFileVOList.stream().collect(Collectors.groupingBy(TemplateFileVO::getGroupCode));
+        List<TemplateFileVO> templateFileGroup = new ArrayList<>();
+        map.forEach((k,v) -> {
+            TemplateFileVO templateFileVO = new TemplateFileVO();
+            templateFileVO.setGroupCode(k);
+            templateFileVO.setGroupName(v.get(0).getGroupName());
+            templateFileVO.setTemplateFileVOList(v);
+            templateFileGroup.add(templateFileVO);
+        });
+        offerInfoVO.setTemplateFileVOList(templateFileGroup);
 
         return CommonResult.success(offerInfoVO);
     }

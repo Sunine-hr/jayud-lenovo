@@ -65,6 +65,15 @@
         order_payment_bill_detail opbd
         LEFT JOIN order_payment_bill opb ON opbd.bill_id = opb.id
         where 1 = 1
+        <if test="form.cmd == 'main_statement'">
+            and opb.is_main = 1
+        </if>
+        <if test="form.cmd == 'zgys_statement'">
+            and opb.is_main = 0 and opb.sub_type = 'zgys'
+        </if>
+        <if test="form.cmd == 'bg_statement'">
+            and opb.is_main = 0 and opb.sub_type = 'bg'
+        </if>
         <if test="form.supplierChName != null and form.supplierChName != ''">
             and opb.supplier_ch_name like concat('%',#{form.supplierChName},'%')
         </if>
@@ -95,86 +104,18 @@
             opc.main_order_no orderNo,
             pb.`name` bizCodeDesc,
             DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
-            oi.customer_name customerName,
-            (
-            SELECT
-                concat( da.city_name, da.address )
-            FROM
-                delivery_address da
-                LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id
-            WHERE
-                ota.order_no = ot.order_no
-                AND ota.opr_type = '1'
-                LIMIT 1
-            ) startAddress,
-            (
-            SELECT
-                concat( da.city_name, da.address )
-            FROM
-                delivery_address da
-                LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id
-            WHERE
-                ota.order_no = ot.order_no
-                AND ota.opr_type = '2'
-                LIMIT 1
-            ) endAddress,
-            concat( osc.license_plate, osc.hk_license_plate ) licensePlate,
+            opc.customer_name supplierChName,
+            (SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' LIMIT 1) startAddress,
+            (SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id WHERE ota.order_no = ot.order_no AND ota.opr_type = '2' LIMIT 1) endAddress,
+            concat( vi.plate_number, vi.hk_number ) licensePlate,
             ( SELECT GROUP_CONCAT( oc.yun_customs_no SEPARATOR ',' ) FROM order_customs oc WHERE oc.main_order_no = oi.order_no ) yunCustomsNo,
             cg.`name` costGenreName,
             ct.code_name costTypeName,
             ci.`name` costName,
-            (
-            SELECT
-                sum( rmb.amount )
-            FROM
-                order_payment_cost rmb
-            WHERE
-                rmb.id = opc.id
-                AND rmb.currency_code = 'RMB'
-            GROUP BY
-                rmb.cost_code,
-                rmb.cost_genre_id,
-                rmb.cost_type_id
-            ) rmb,
-            (
-            SELECT
-                sum( rmb.amount )
-            FROM
-                order_payment_cost rmb
-            WHERE
-                rmb.id = opc.id
-                AND rmb.currency_code = 'MY'
-            GROUP BY
-                rmb.cost_code,
-                rmb.cost_genre_id,
-                rmb.cost_type_id
-            ) dollar,
-            (
-            SELECT
-                sum( rmb.amount )
-            FROM
-                order_payment_cost rmb
-            WHERE
-                rmb.id = opc.id
-                AND rmb.currency_code = 'OY'
-            GROUP BY
-                rmb.cost_code,
-                rmb.cost_genre_id,
-                rmb.cost_type_id
-            ) euro,
-            (
-            SELECT
-                sum( rmb.amount )
-            FROM
-                order_payment_cost rmb
-            WHERE
-                rmb.id = opc.id
-                AND rmb.currency_code = 'GB'
-            GROUP BY
-                rmb.cost_code,
-                rmb.cost_genre_id,
-                rmb.cost_type_id
-            ) hKDollar,
+            (SELECT sum( rmb.amount ) FROM order_payment_cost rmb WHERE rmb.id = opc.id AND rmb.currency_code = 'CNY' GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) rmb,
+            (SELECT sum( rmb.amount ) FROM order_payment_cost rmb WHERE rmb.id = opc.id AND rmb.currency_code = 'USD' GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) dollar,
+            (SELECT sum( rmb.amount ) FROM order_payment_cost rmb WHERE rmb.id = opc.id AND rmb.currency_code = 'EUR' GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) euro,
+            (SELECT sum( rmb.amount ) FROM order_payment_cost rmb WHERE rmb.id = opc.id AND rmb.currency_code = 'HKD' GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) hKDollar,
             opc.id costId
         FROM
             order_payment_cost opc
@@ -182,6 +123,8 @@
             LEFT JOIN product_biz pb ON pb.id_code = oi.biz_code
             LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
             LEFT JOIN order_send_cars osc ON ot.order_no = osc.transport_no
+			left join driver_info di on di.id = osc.driver_info_id
+			left join vehicle_info vi on vi.id = di.vehicle_id
             LEFT JOIN cost_genre cg ON opc.cost_genre_id = cg.id
             LEFT JOIN cost_type ct ON opc.cost_type_id = ct.id
             LEFT JOIN cost_info ci ON opc.cost_code = ci.id_code

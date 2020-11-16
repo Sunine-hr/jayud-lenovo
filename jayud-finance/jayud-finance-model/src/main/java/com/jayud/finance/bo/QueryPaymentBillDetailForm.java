@@ -26,11 +26,11 @@ public class QueryPaymentBillDetailForm extends BasePageForm{
     @ApiModelProperty(value = "账单编号")
     private String billNo;
 
-    @ApiModelProperty(value = "开始核算期",required = true)
+    @ApiModelProperty(value = "开始核算期")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime beginAccountTerm;
 
-    @ApiModelProperty(value = "结束核算期",required = true)
+    @ApiModelProperty(value = "结束核算期")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endAccountTerm;
 
@@ -43,8 +43,9 @@ public class QueryPaymentBillDetailForm extends BasePageForm{
     @ApiModelProperty(value = "付款申请")
     private String applyStatus;
 
-    @ApiModelProperty(value = "操作指令 cmd=main对账单 or statement_audit对账单审核",required = true)
-    @Pattern(regexp = "(statement|statement_audit)", message = "只允许填写statement or statement_audit ")
+    @ApiModelProperty(value = "操作指令 cmd=main_statement/zgys_statement/bg_statement对账单 or statement_audit对账单审核",required = true)
+    @Pattern(regexp = "(main_statement|zgys_statement|bg_statement|statement_audit)", message = "只允许填写main_statement or zgys_statement " +
+            "or bg_statement or statement_audit ")
     private String cmd;
 
 }

@@ -100,6 +100,15 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         orderPaymentBillDetail.setAuditStatus(BillEnum.B_5.getCode());
         orderPaymentBillDetail.setUpdatedTime(LocalDateTime.now());
         orderPaymentBillDetail.setUpdatedUser(UserOperator.getToken());
+
+        //保存操作记录
+        AuditInfoForm auditInfoForm = new AuditInfoForm();
+        auditInfoForm.setExtId(form.getBillDetailId());
+        auditInfoForm.setAuditTypeDesc("付款申请确认");
+        auditInfoForm.setAuditStatus(BillEnum.B_5.getCode());
+        auditInfoForm.setExtDesc("order_payment_bill_detail表");
+        auditInfoForm.setAuditUser(UserOperator.getToken());
+        omsClient.saveAuditInfo(auditInfoForm);
         return updateById(orderPaymentBillDetail);
     }
 

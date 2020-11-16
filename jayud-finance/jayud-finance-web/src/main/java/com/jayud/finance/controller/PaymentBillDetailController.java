@@ -65,81 +65,27 @@ public class PaymentBillDetailController {
         ExcelWriter writer = ExcelUtil.getWriter(true);
 
         //自定义标题别名
-        writer.addHeaderAlias("createdTimeStr", "建单日期");
-        writer.addHeaderAlias("orderNo", "订单编号");
-        writer.addHeaderAlias("customerName", "客户");
-        writer.addHeaderAlias("startAddress", "启运地");
-        writer.addHeaderAlias("endAddress", "目的地");
-        writer.addHeaderAlias("licensePlate", "车牌号");
-        writer.addHeaderAlias("vehicleSize", "车型");
-        writer.addHeaderAlias("pieceNum", "件数");
-        writer.addHeaderAlias("weight", "毛重(KGS)");
-        writer.addHeaderAlias("yunCustomsNo", "报关单号");
-        /*@ApiModelProperty(value = "账单编号")
-        private String billNo;
-
-        @ApiModelProperty(value = "法人主体")
-        private String legalName;
-
-        @ApiModelProperty(value = "客户,应收时取值")
-        private String customerName;
-
-        @ApiModelProperty(value = "供应商,应付时取值")
-        private String supplierChName;
-
-        @ApiModelProperty(value = "开始核算期 年月日")
-        private String beginAccountTermStr;
-
-        @ApiModelProperty(value = "结束核算期 年月日")
-        private String endAccountTermStr;
-
-        @ApiModelProperty(value = "人民币")
-        private BigDecimal rmb;
-
-        @ApiModelProperty(value = "美元")
-        private BigDecimal dollar;
-
-        @ApiModelProperty(value = "欧元")
-        private BigDecimal euro;
-
-        @ApiModelProperty(value = "港币")
-        private BigDecimal hKDollar;
-
-        @ApiModelProperty(value = "核销金额")
-        private BigDecimal heXiaoAmount;
-
-        @ApiModelProperty(value = "未核销金额")
-        private BigDecimal notHeXiaoAmount;
-
-        @ApiModelProperty(value = "结算币种")
-        private String settlementCurrency;
-
-        @ApiModelProperty(value = "审核状态")
-        private String auditStatus;
-
-        @ApiModelProperty(value = "付款申请")
-        private String applyStatus;
-
-        @ApiModelProperty(value = "生成账单人")
-        private String makeUser;
-
-        @ApiModelProperty(value = "生成账单时间")
-        private String makeTimeStr;
-
-        @ApiModelProperty(value = "审核人")
-        private String auditUser;
-
-        @ApiModelProperty(value = "审核时间")
-        private String auditTimeStr;
-
-        @ApiModelProperty(value = "审核意见")
-        private String auditComment;
-
-        @ApiModelProperty(value = "核销人")
-        private String heXiaoUser;
-
-        @ApiModelProperty(value = "核销时间")
-        private String heXiaoTimeStr;*/
+        writer.addHeaderAlias("billNo", "账单编号");
+        writer.addHeaderAlias("legalName", "法人主体");
+        writer.addHeaderAlias("supplierChName", "供应商");
+        writer.addHeaderAlias("beginAccountTermStr", "开始核算期");
+        writer.addHeaderAlias("endAccountTermStr", "结束核算期");
+        writer.addHeaderAlias("rmb", "人民币");
+        writer.addHeaderAlias("dollar", "美元");
+        writer.addHeaderAlias("euro", "欧元");
+        writer.addHeaderAlias("hKDollar", "港币");
+        writer.addHeaderAlias("heXiaoAmount", "已付金额");
+        writer.addHeaderAlias("notHeXiaoAmount", "未付金额");
+        writer.addHeaderAlias("settlementCurrency", "结算币种");
+        writer.addHeaderAlias("auditStatus", "状态");
+        writer.addHeaderAlias("auditStatus", "付款申请");
+        writer.addHeaderAlias("makeUser", "制单人");
+        writer.addHeaderAlias("makeTimeStr", "制单时间");
+        writer.addHeaderAlias("auditUser", "审核人");
+        writer.addHeaderAlias("auditTimeStr", "审核时间");
+        writer.addHeaderAlias("auditComment", "审核意见");
+        writer.addHeaderAlias("heXiaoUser", "核销人");
+        writer.addHeaderAlias("heXiaoTimeStr", "核销时间");
 
         // 一次性写出内容，使用默认样式，强制输出标题
         writer.write(list, true);
@@ -216,7 +162,7 @@ public class PaymentBillDetailController {
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "对账单详情")//出对账单后的
+    @ApiOperation(value = "对账单详情")
     @PostMapping("/viewBillDetail")
     public CommonResult<Map<String,Object>> viewBillDetail(@RequestBody @Valid ViewBillDetailForm form) {
         Map<String,Object> resultMap = new HashMap<>();
@@ -230,7 +176,7 @@ public class PaymentBillDetailController {
     }
 
 
-    @ApiOperation(value = "导出对账单详情")//出对账单后的
+    @ApiOperation(value = "导出对账单详情")
     @RequestMapping(value = "/exportBillDetail", method = RequestMethod.GET)
     @ResponseBody
     public void exportBillDetail(@RequestParam(value = "billNo",required=true) String billNo,

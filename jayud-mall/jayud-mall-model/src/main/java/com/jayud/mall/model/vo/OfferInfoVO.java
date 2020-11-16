@@ -127,13 +127,20 @@ public class OfferInfoVO {
     private List<GoodsTypeVO> qList;
 
     /*报价对应应收费用明细list*/
+    @ApiModelProperty(value = "报价对应应收费用明细list")
     private List<TemplateCopeReceivableVO> templateCopeReceivableVOList;
 
     /*报价对应应付费用明细list*/
+    @ApiModelProperty(value = "报价对应应付费用明细list")
     private List<TemplateCopeWithVO> templateCopeWithVOList;
 
     /*模板对应模块信息list，文件信息*/
+    @ApiModelProperty(value = "模板对应模块信息list，文件信息")
     private List<TemplateFileVO> templateFileVOList;
+
+    /*配载单，关联查询报价信息-路线*/
+    @ApiModelProperty(value = "配载单，关联查询报价信息-路线")
+    private String route;
 
 
 }

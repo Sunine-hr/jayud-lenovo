@@ -36,7 +36,7 @@ public class OrderConfController {
     @PostMapping(value = "saveOrderConf")
     public CommonResult saveOrderConf(@RequestBody OrderConfForm form){
         orderConfService.saveOrderConf(form);
-        return CommonResult.success("保存报价模板，成功！");
+        return CommonResult.success("保存配载单，成功！");
     }
 
     @ApiOperation(value = "查看配载单详情")

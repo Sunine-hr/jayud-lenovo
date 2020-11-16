@@ -58,11 +58,13 @@
             resultType="com.jayud.mall.model.vo.OfferInfoVO" >
         select
         t.id,t.qie,t.`names`,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.`status`,t.user_id,t.user_name,t.create_time,
-        CONCat(t3.start_shipment,'-',t3.destination_port) route
+        CONCat(t4.code_name,'-',t5.code_name) route
         from offer_info t
         JOIN ocean_conf_detail t1 on t1.id_code = t.id and t1.types=1
         JOIN order_conf t2 on t2.id = t1.order_id
         LEFT JOIN quotation_template t3 on t3.id = t.qie
+        LEFT JOIN harbour_info t4 on t4.id_code = t3.start_shipment
+        LEFT JOIN harbour_info t5 on t5.id_code = t3.destination_port
         where t2.id = #{orderId}
     </select>
 

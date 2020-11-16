@@ -84,7 +84,15 @@ public class MsgApiProcessorController {
         log.debug("金蝶接收到报关应收数据：{}", reqMsg);
 
         //feign调用之前确保从列表中取出单行数据且非空，因此此处不需再校验
-        List<CustomsReceivable> customsReceivable = JSONObject.parseArray(reqMsg, CustomsReceivable.class);
+        //解析数据，获取应收的数据实体
+        JSONArray receivableArray = JSONObject.parseArray(reqMsg);
+        List<CustomsReceivable> customsReceivable = new ArrayList<>();
+        for (Object o : receivableArray) {
+            JSONObject jsonObject = (JSONObject) o;
+            CustomsReceivable data = jsonObject.toJavaObject(CustomsReceivable.class);
+            data.setOriginData(jsonObject);
+            customsReceivable.add(data);
+        }
 
         //重单校验,只要金蝶中有数据就不能再次推送
         Optional<CustomsReceivable> first = customsReceivable.stream().filter(Objects::nonNull).findFirst();

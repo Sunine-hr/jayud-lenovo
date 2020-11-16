@@ -201,6 +201,11 @@ public class CustomsReceivable {
     @ApiModelProperty(value = "保税核注清单")
     private BigDecimal hzqdCost;
 
+    @JsonProperty("BSQBGF")
+    @SerializedName("BSQBGF")
+    @ApiModelProperty(value = "保税区报关费")
+    private BigDecimal bsqbgfCode;
+
     @JsonProperty("GS")
     @SerializedName("GS")
     @ApiModelProperty(value = "关税")

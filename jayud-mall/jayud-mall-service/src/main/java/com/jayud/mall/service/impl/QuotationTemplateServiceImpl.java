@@ -235,14 +235,18 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
 
         //模板对应模块信息list，文件信息
         List<TemplateFileVO> templateFileVOList = templateFileMapper.findTemplateFileByQie(qie);
-        //分组
+        //根据类型分组
         Map<String, List<TemplateFileVO>> map =
-                templateFileVOList.stream().collect(Collectors.groupingBy(TemplateFileVO::getGroupCode));
+                templateFileVOList.stream().collect(Collectors.groupingBy(TemplateFileVO::getTypes));
         List<TemplateFileVO> templateFileGroup = new ArrayList<>();
         map.forEach((k,v) -> {
             TemplateFileVO templateFileVO = new TemplateFileVO();
             templateFileVO.setGroupCode(k);
-            templateFileVO.setGroupName(v.get(0).getGroupName());
+            if(k.equalsIgnoreCase("1")){
+                templateFileVO.setGroupName("报关服务");
+            }else if(k.equalsIgnoreCase("2")){
+                templateFileVO.setGroupName("清关服务");
+            }
             templateFileVO.setTemplateFileVOList(v);
             templateFileGroup.add(templateFileVO);
         });

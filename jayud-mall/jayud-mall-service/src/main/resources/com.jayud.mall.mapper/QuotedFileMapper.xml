@@ -15,6 +15,7 @@
         <result column="describe" property="describe" />
         <result column="status" property="status" />
         <result column="create_time" property="createTime" />
+        <result column="types" property="types" />
     </resultMap>
 
     <!-- 通用查询结果列 -->

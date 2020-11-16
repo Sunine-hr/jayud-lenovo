@@ -22,12 +22,11 @@
             resultType="com.jayud.mall.model.vo.TemplateFileVO">
         select
         t.id,t.qie,t.file_name,t.`options`,t.remarks,t.qf_id,
-        t1.group_code,t1.group_name
+        t1.group_code,t1.group_name,t1.types
         from template_file t
         LEFT JOIN quoted_file t1 on t1.id = t.qf_id
         where qie = #{qie}
-        ORDER BY t1.group_code
-
+        ORDER BY t1.types ASC,t1.group_code ASC,t.qf_id ASC
     </select>
 
 </mapper>

@@ -35,6 +35,9 @@ public class TemplateFileVO {
     @ApiModelProperty(value = "文件分组名称")
     private String groupName;
 
+    @ApiModelProperty(value = "类型 1报关服务 2清关服务")
+    private String types;
+
     /*按类型分组：买单报关，独立报关*/
     private List<TemplateFileVO> templateFileVOList;
 

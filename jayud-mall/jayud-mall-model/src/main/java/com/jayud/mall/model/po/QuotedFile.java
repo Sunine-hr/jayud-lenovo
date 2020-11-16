@@ -66,6 +66,9 @@ public class QuotedFile extends Model<QuotedFile> {
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "类型 1报关服务 2清关服务")
+    private String types;
+
 
     @Override
     protected Serializable pkVal() {

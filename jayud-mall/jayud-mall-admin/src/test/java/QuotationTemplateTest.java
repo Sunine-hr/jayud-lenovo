@@ -219,6 +219,9 @@ public class QuotationTemplateTest {
      */
     private List<TemplateFileForm> getTemplateFileFormList(Integer qie) {
         List<TemplateFileForm> list = new ArrayList<>();
+
+        /**报关服务**/
+
         //电子委托书
         TemplateFileForm form1 = new TemplateFileForm();
 //        form1.setId(1L);
@@ -281,6 +284,68 @@ public class QuotationTemplateTest {
         form6.setQfId(6);
         list.add(form6);
 
+        /**清关服务**/
+        //电子委托书
+        TemplateFileForm form7 = new TemplateFileForm();
+//        form1.setId(1L);
+        form7.setQie(qie);
+        form7.setFileName("电子委托书");
+        form7.setOptions(1);
+        form7.setRemarks("买单报关");
+        form7.setQfId(7);
+        list.add(form7);
+
+        //装箱清单
+        TemplateFileForm form8 = new TemplateFileForm();
+//        form2.setId(2L);
+        form8.setQie(qie);
+        form8.setFileName("装箱清单");
+        form8.setOptions(1);
+        form8.setRemarks("买单报关");
+        form8.setQfId(8);
+        list.add(form8);
+
+        //出入境证明
+        TemplateFileForm form9 = new TemplateFileForm();
+//        form3.setId(3L);
+        form9.setQie(qie);
+        form9.setFileName("出入境证明");
+        form9.setOptions(1);
+        form9.setRemarks("买单报关");
+        form9.setQfId(9);
+        list.add(form9);
+
+
+        /**********************************************/
+        //电子委托书
+        TemplateFileForm form10 = new TemplateFileForm();
+//        form1.setId(1L);
+        form10.setQie(qie);
+        form10.setFileName("电子委托书");
+        form10.setOptions(1);
+        form10.setRemarks("独立报关");
+        form10.setQfId(10);
+        list.add(form10);
+
+        //装箱清单
+        TemplateFileForm form11 = new TemplateFileForm();
+//        form2.setId(2L);
+        form11.setQie(qie);
+        form11.setFileName("装箱清单");
+        form11.setOptions(1);
+        form11.setRemarks("独立报关");
+        form11.setQfId(11);
+        list.add(form11);
+
+        //出入境证明
+        TemplateFileForm form12 = new TemplateFileForm();
+//        form3.setId(3L);
+        form12.setQie(qie);
+        form12.setFileName("出入境证明");
+        form12.setOptions(1);
+        form12.setRemarks("独立报关");
+        form12.setQfId(12);
+        list.add(form12);
 
         return list;
     }

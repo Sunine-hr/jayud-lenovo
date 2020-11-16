@@ -23,6 +23,7 @@ import com.jayud.oauth.model.po.SystemUser;
 import com.jayud.oauth.model.po.SystemUserLoginLog;
 import com.jayud.oauth.model.vo.*;
 import com.jayud.oauth.service.*;
+import io.netty.util.internal.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -166,13 +167,15 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             SystemUser systemUser = ConvertUtil.convert(form, SystemUser.class);
             //校验登录名的唯一性
             SystemUser systemUser1 = baseMapper.selectById(form.getId());
-            if(!systemUser1.getName().equals(form.getName())){//修改了登录名的情况下
-                String newName = systemUser.getName();
-                QueryWrapper queryWrapper = new QueryWrapper();
-                queryWrapper.eq("name", newName);
-                List<SystemUser> systemUsers = baseMapper.selectList(queryWrapper);
-                if (systemUsers != null && systemUsers.size() > 0) {
-                    return CommonResult.error(ResultEnum.LOGIN_NAME_EXIST.getCode(), ResultEnum.LOGIN_NAME_EXIST.getMessage());
+            if(!StringUtil.isNullOrEmpty(systemUser1.getName())) {
+                if (!systemUser1.getName().equals(form.getName())) {//修改了登录名的情况下
+                    String newName = systemUser.getName();
+                    QueryWrapper queryWrapper = new QueryWrapper();
+                    queryWrapper.eq("name", newName);
+                    List<SystemUser> systemUsers = baseMapper.selectList(queryWrapper);
+                    if (systemUsers != null && systemUsers.size() > 0) {
+                        return CommonResult.error(ResultEnum.LOGIN_NAME_EXIST.getCode(), ResultEnum.LOGIN_NAME_EXIST.getMessage());
+                    }
                 }
             }
             systemUser.setPassword("E10ADC3949BA59ABBE56E057F20F883E");//默认密码为:123456

@@ -2,8 +2,11 @@ package com.jayud.mall.mapper;
 
 import com.jayud.mall.model.po.OrderShop;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.mall.model.vo.OrderShopVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +20,10 @@ import org.springframework.stereotype.Component;
 @Component
 public interface OrderShopMapper extends BaseMapper<OrderShop> {
 
+    /**
+     * 根据订单id，获取订单商品
+     * @param orderId
+     * @return
+     */
+    List<OrderShopVO> findOrderShopByOrderId(Long orderId);
 }

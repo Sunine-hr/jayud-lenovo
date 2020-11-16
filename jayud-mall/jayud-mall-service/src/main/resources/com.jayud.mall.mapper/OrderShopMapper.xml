@@ -16,4 +16,20 @@
         id, order_id, good_id, quantity, create_time
     </sql>
 
+    <!--根据订单id，获取订单商品-->
+    <select id="findOrderShopByOrderId" parameterType="java.lang.Long"
+        resultType="com.jayud.mall.model.vo.OrderShopVO" >
+        select
+        t.id,t.order_id,t.good_id,t.quantity,t.create_time,
+        t2.sku,
+        t2.hs_code,
+        t2.name_cn
+        from order_shop t
+        LEFT JOIN order_info t1 on t1.id = t.order_id
+        LEFT JOIN customer_goods t2 on t2.id = t.good_id
+        WHERE t1.id = #{orderId}
+        ORDER BY t1.id
+    </select>
+
+
 </mapper>

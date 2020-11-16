@@ -74,7 +74,8 @@ public class OrderInfoVO {
     private List<OrderClearanceFileVO> orderClearanceFileVOList;
 
     /*订单商品list*/
-//    private List<>
+    @ApiModelProperty(value = "订单商品list")
+    private List<OrderShopVO> orderShopVOList;
 
 
 

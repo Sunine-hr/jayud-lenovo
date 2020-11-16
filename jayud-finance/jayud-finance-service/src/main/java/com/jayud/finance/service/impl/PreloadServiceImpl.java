@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -42,7 +43,8 @@ public class PreloadServiceImpl implements PreloadService {
 
         String compJson = redisUtils.get(yunbaoguanCompKey);
         if (StringUtils.isNotEmpty(compJson)) {
-            coRelationMap = (Map<String, CustomsFinanceCoRelation>) JSONObject.parseObject(compJson, Map.class);
+            Map<String, JSONObject> map = JSONObject.parseObject(compJson, Map.class);
+            coRelationMap = map.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().toJavaObject(CustomsFinanceCoRelation.class)));
         } else {
             coRelationMap = refreshCompanyRelationMap();
         }
@@ -58,7 +60,8 @@ public class PreloadServiceImpl implements PreloadService {
 
         String feeJson = redisUtils.get(yunbaoguanFeeKey);
         if (StringUtils.isNotEmpty(feeJson)) {
-            feeRelationMap = (Map<String, CustomsFinanceFeeRelation>) JSONObject.parseObject(feeJson, Map.class);
+            Map<String, JSONObject> map = (Map<String, JSONObject>) JSONObject.parseObject(feeJson, Map.class);
+            feeRelationMap = map.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().toJavaObject(CustomsFinanceFeeRelation.class)));
         } else {
             feeRelationMap = refreshFeeRelationMap();
         }

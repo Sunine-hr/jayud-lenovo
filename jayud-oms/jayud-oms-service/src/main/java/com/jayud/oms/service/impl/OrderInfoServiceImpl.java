@@ -564,8 +564,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 selectedServer.contains(OrderStatusEnum.CKBG.getCode())){
             InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
             if(StringUtil.isNullOrEmpty(orderCustomsForm.getSubCustomsStatus()) ||
-                    OrderStatusEnum.CUSTOMS_C_0.equals(orderCustomsForm.getSubCustomsStatus()) ||
-                    OrderStatusEnum.CUSTOMS_C_1_1.equals(orderCustomsForm.getSubCustomsStatus())) {
+                    OrderStatusEnum.CUSTOMS_C_0.getCode().equals(orderCustomsForm.getSubCustomsStatus()) ||
+                    OrderStatusEnum.CUSTOMS_C_1_1.getCode().equals(orderCustomsForm.getSubCustomsStatus())) {
                 //如果没有生成子订单则不调用
                 if (orderCustomsForm.getSubOrders() != null && orderCustomsForm.getSubOrders().size() >= 0) {
                     orderCustomsForm.setMainOrderNo(mainOrderNo);
@@ -587,11 +587,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             //创建中港订单信息
             InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
             if(StringUtil.isNullOrEmpty(orderTransportForm.getSubTmsStatus()) ||
-               OrderStatusEnum.TMS_T_0.equals(orderTransportForm.getSubTmsStatus()) ||
-               OrderStatusEnum.TMS_T_1_1.equals(orderTransportForm.getSubTmsStatus()) ||
-               OrderStatusEnum.TMS_T_2_1.equals(orderTransportForm.getSubTmsStatus()) ||
-               OrderStatusEnum.TMS_T_3_2.equals(orderTransportForm.getSubTmsStatus()) ||
-               OrderStatusEnum.TMS_T_4_1.equals(orderTransportForm.getSubTmsStatus())) {
+               OrderStatusEnum.TMS_T_0.getCode().equals(orderTransportForm.getSubTmsStatus()) ||
+               OrderStatusEnum.TMS_T_1_1.getCode().equals(orderTransportForm.getSubTmsStatus()) ||
+               OrderStatusEnum.TMS_T_2_1.getCode().equals(orderTransportForm.getSubTmsStatus()) ||
+               OrderStatusEnum.TMS_T_3_2.getCode().equals(orderTransportForm.getSubTmsStatus()) ||
+               OrderStatusEnum.TMS_T_4_1.getCode().equals(orderTransportForm.getSubTmsStatus())) {
                 if (!selectedServer.contains(OrderStatusEnum.XGQG.getCode())) {
                     //若没有选择香港清关,则情况香港清关信息，避免信息有误
                     orderTransportForm.setHkLegalName(null);

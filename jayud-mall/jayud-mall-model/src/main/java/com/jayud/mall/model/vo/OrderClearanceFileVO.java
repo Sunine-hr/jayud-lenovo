@@ -1,7 +1,5 @@
 package com.jayud.mall.model.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -31,5 +29,8 @@ public class OrderClearanceFileVO {
 
     @ApiModelProperty(value = "说明")
     private String describe;
+
+    @ApiModelProperty(value = "审核状态(0审核不通过  1审核通过)")
+    private Integer auditStatus;
 
 }

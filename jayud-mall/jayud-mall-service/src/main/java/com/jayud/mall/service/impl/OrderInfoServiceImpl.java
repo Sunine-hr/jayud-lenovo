@@ -16,6 +16,8 @@ import com.jayud.mall.model.po.OrderInfo;
 import com.jayud.mall.model.vo.OrderClearanceFileVO;
 import com.jayud.mall.model.vo.OrderCustomsFileVO;
 import com.jayud.mall.model.vo.OrderInfoVO;
+import com.jayud.mall.service.IOrderClearanceFileService;
+import com.jayud.mall.service.IOrderCustomsFileService;
 import com.jayud.mall.service.IOrderInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,6 +43,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Autowired
     OrderClearanceFileMapper orderClearanceFileMapper;
+
+    @Autowired
+    IOrderCustomsFileService orderCustomsFileService;
+
+    @Autowired
+    IOrderClearanceFileService orderClearanceFileService;
 
 
     @Override
@@ -74,5 +82,41 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 ConvertUtil.convertList(orderClearanceFiles, OrderClearanceFileVO.class);
         orderInfoVO.setOrderClearanceFileVOList(orderClearanceFileVOList);
         return CommonResult.success(orderInfoVO);
+    }
+
+    @Override
+    public CommonResult<OrderCustomsFileVO> passOrderCustomsFile(Long id) {
+        OrderCustomsFile orderCustomsFile = orderCustomsFileMapper.selectById(id);
+        orderCustomsFile.setAuditStatus(1);//审核状态(0审核不通过  1审核通过)
+        orderCustomsFileService.saveOrUpdate(orderCustomsFile);
+        OrderCustomsFileVO orderCustomsFileVO = ConvertUtil.convert(orderCustomsFile, OrderCustomsFileVO.class);
+        return CommonResult.success(orderCustomsFileVO);
+    }
+
+    @Override
+    public CommonResult<OrderClearanceFileVO> passOrderClearanceFile(Long id) {
+        OrderClearanceFile orderClearanceFile = orderClearanceFileService.getById(id);
+        orderClearanceFile.setAuditStatus(1);//审核状态(0审核不通过  1审核通过)
+        orderClearanceFileService.saveOrUpdate(orderClearanceFile);
+        OrderClearanceFileVO orderClearanceFileVO = ConvertUtil.convert(orderClearanceFile, OrderClearanceFileVO.class);
+        return CommonResult.success(orderClearanceFileVO);
+    }
+
+    @Override
+    public CommonResult<OrderCustomsFileVO> onPassCustomsFile(Long id) {
+        OrderCustomsFile orderCustomsFile = orderCustomsFileMapper.selectById(id);
+        orderCustomsFile.setAuditStatus(0);//审核状态(0审核不通过  1审核通过)
+        orderCustomsFileService.saveOrUpdate(orderCustomsFile);
+        OrderCustomsFileVO orderCustomsFileVO = ConvertUtil.convert(orderCustomsFile, OrderCustomsFileVO.class);
+        return CommonResult.success(orderCustomsFileVO);
+    }
+
+    @Override
+    public CommonResult<OrderClearanceFileVO> onPassOrderClearanceFile(Long id) {
+        OrderClearanceFile orderClearanceFile = orderClearanceFileService.getById(id);
+        orderClearanceFile.setAuditStatus(0);//审核状态(0审核不通过  1审核通过)
+        orderClearanceFileService.saveOrUpdate(orderClearanceFile);
+        OrderClearanceFileVO orderClearanceFileVO = ConvertUtil.convert(orderClearanceFile, OrderClearanceFileVO.class);
+        return CommonResult.success(orderClearanceFileVO);
     }
 }

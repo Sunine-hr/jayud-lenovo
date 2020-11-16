@@ -30,4 +30,7 @@ public class OrderCustomsFileVO {
     @ApiModelProperty(value = "说明")
     private String describe;
 
+    @ApiModelProperty(value = "审核状态(0审核不通过  1审核通过)")
+    private Integer auditStatus;
+
 }

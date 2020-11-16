@@ -5,6 +5,8 @@ import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.QueryOrderInfoForm;
 import com.jayud.mall.model.po.OrderInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.vo.OrderClearanceFileVO;
+import com.jayud.mall.model.vo.OrderCustomsFileVO;
 import com.jayud.mall.model.vo.OrderInfoVO;
 
 /**
@@ -30,4 +32,32 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     CommonResult<OrderInfoVO> lookOrderInfoFile(Long id);
+
+    /**
+     * 审核通过-订单对应报关文件
+     * @param id
+     * @return
+     */
+    CommonResult<OrderCustomsFileVO> passOrderCustomsFile(Long id);
+
+    /**
+     * 审核通过-订单对应清关文件
+     * @param id
+     * @return
+     */
+    CommonResult<OrderClearanceFileVO> passOrderClearanceFile(Long id);
+
+    /**
+     * 审核不通过-订单对应报关文件
+     * @param id
+     * @return
+     */
+    CommonResult<OrderCustomsFileVO> onPassCustomsFile(Long id);
+
+    /**
+     * 审核不通过-订单对应清关文件
+     * @param id
+     * @return
+     */
+    CommonResult<OrderClearanceFileVO> onPassOrderClearanceFile(Long id);
 }

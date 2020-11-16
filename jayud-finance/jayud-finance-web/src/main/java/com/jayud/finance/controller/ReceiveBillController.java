@@ -41,22 +41,22 @@ public class ReceiveBillController {
     @ApiOperation(value = "账单数列表(主订单/子订单)")
     @PostMapping("/findReceiveBillNum")
     public CommonResult<Map<String,Object>> findReceiveBillNum(@RequestBody @Valid QueryReceiveBillNumForm form) {
-        Map<String,Object> result = null;//billService.findReceiveBillNum(form);
+        Map<String,Object> result = billService.findReceiveBillNum(form);
         return CommonResult.success(result);
     }
 
     @ApiOperation(value = "未出账订单数列表(主订单/子订单)")
     @PostMapping("/findNotPaidBillByPage")
     public CommonResult<CommonPageResult<ReceiveNotPaidBillVO>> findNotPaidBillByPage(@RequestBody @Valid QueryNotPaidBillForm form) {
-        IPage<ReceiveNotPaidBillVO> pageList = null;//billService.findNotPaidBillByPage(form);
+        IPage<ReceiveNotPaidBillVO> pageList = billService.findNotPaidBillByPage(form);
         CommonPageResult<ReceiveNotPaidBillVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
     }
 
-    @ApiOperation(value = "暂存和生成应付账单")
+    @ApiOperation(value = "暂存和生成应收账单")
     @PostMapping("/createBill")
     public CommonResult createReceiveBill(@RequestBody @Valid CreateReceiveBillForm form) {
-        Boolean result = null;//billService.createReceiveBill(form);
+        Boolean result = billService.createReceiveBill(form);
         if(result){
             return CommonResult.success();
         }

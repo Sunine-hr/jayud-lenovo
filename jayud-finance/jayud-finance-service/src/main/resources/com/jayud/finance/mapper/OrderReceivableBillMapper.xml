@@ -67,4 +67,118 @@
             and oi.legal_name like concat('%',#{form.legalName},'%')
         </if>
     </select>
+    <select id="findReceiveBillNum" parameterType="com.jayud.finance.bo.QueryReceiveBillNumForm" resultType="com.jayud.finance.vo.OrderPaymentBillNumVO" >
+        SELECT
+        DISTINCT
+        op.bill_no billNo,
+        DATE_FORMAT( op.begin_account_term, '%Y-%m-%d' ) beginAccountTermStr,
+        DATE_FORMAT( op.end_account_term, '%Y-%m-%d' ) endAccountTermStr,
+        ( SELECT count( DISTINCT opbd.order_no ) FROM order_payment_bill_detail opbd WHERE opbd.bill_no = op.bill_no ) billNum,
+        ( SELECT sum( obct.money ) FROM order_bill_cost_total obct WHERE op.bill_no = obct.bill_no AND obct.currency_code = 'RMB' ) rmb,
+        ( SELECT sum( obct.money ) FROM order_bill_cost_total obct WHERE op.bill_no = obct.bill_no AND obct.currency_code = 'MY' ) dollar,
+        ( SELECT sum( obct.money ) FROM order_bill_cost_total obct WHERE op.bill_no = obct.bill_no AND obct.currency_code = 'OY' ) euro,
+        ( SELECT sum( obct.money ) FROM order_bill_cost_total obct WHERE op.bill_no = obct.bill_no AND obct.currency_code = 'GB' ) hKDollar,
+        op.local_amount localAmount,
+        (select sum(cav.real_receive_money) from cancel_after_verification cav where cav.bill_no = op.bill_no) heXiaoAmount,
+        op.audit_status billStatus,
+        op.make_user makeUser,
+        DATE_FORMAT(op.make_time,'%Y-%m-%d %H:%i:%S') makeTimeStr
+        FROM
+        order_receivable_bill_detail op left join order_receivable_bill orb on op.bill_id = orb.id
+        where opb.legal_name = #{form.legalName} and opb.customer_name = #{form.customerName}
+        <if test="form.cmd == 'main'">
+            and orb.is_main = 1
+        </if>
+        <if test="form.cmd == 'zgys'">
+            and orb.is_main = 0 and orb.sub_type = 'zgys'
+        </if>
+        <if test="form.cmd == 'bg'">
+            and orb.is_main = 0 and orb.sub_type = 'bg'
+        </if>
+    </select>
+    <select id="findNotPaidBillByPage" parameterType="com.jayud.finance.bo.QueryNotPaidBillForm" resultType="com.jayud.finance.vo.ReceiveNotPaidBillVO" >
+        select * from (
+        SELECT
+        orc.main_order_no orderNo,
+        pc.`name` classCodeDesc,
+        DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
+        oi.customer_name customerName,
+        (SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id
+        WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' LIMIT 1) startAddress,
+        (SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id
+        WHERE ota.order_no = ot.order_no AND ota.opr_type = '2' LIMIT 1) endAddress,
+        concat( vi.plate_number, vi.hk_number ) licensePlate,
+        ( SELECT GROUP_CONCAT( oc.yun_customs_no SEPARATOR ',' ) FROM order_customs oc WHERE oc.main_order_no = oi.order_no ) yunCustomsNo,
+        cg.`name` costGenreName,
+        ct.code_name costTypeName,
+        ci.`name` costName,
+        (SELECT sum(rmb.amount) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'CNY' GROUP BY
+        rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) rmb,
+        (SELECT sum(rmb.amount) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'USD' GROUP BY
+        rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) dollar,
+        (SELECT sum(rmb.amount) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'EUR' GROUP BY
+        rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) euro,
+        (SELECT sum(rmb.amount) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'HKD' GROUP BY
+        rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) hKDollar,
+        (SELECT sum(rmb.change_amount) FROM order_receivable_cost rmb WHERE rmb.id = orc.id GROUP BY
+        rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) localAmount,
+        orc.id costId,
+        ot.vehicle_size vehicleSize,
+        (select sum(ota.plate_amount) from order_take_adr ota where ota.order_no = ot.order_no) pieceNum,
+        (select sum(ota.weight) from order_take_adr ota where ota.order_no = ot.order_no)	weight,
+        orc.is_bill isBill
+        FROM
+        order_receivable_cost orc
+        LEFT JOIN order_info oi ON orc.main_order_no = oi.order_no
+        LEFT JOIN product_classify pc ON oi.class_code = pc.id_code AND pc.f_id = '0'
+        LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
+        LEFT JOIN order_send_cars osc ON ot.order_no = osc.transport_no
+        left join driver_info di on di.id = osc.driver_info_id
+        left join vehicle_info vi on vi.id = di.vehicle_id
+        LEFT JOIN cost_genre cg ON orc.cost_genre_id = cg.id
+        LEFT JOIN cost_type ct ON orc.cost_type_id = ct.id
+        LEFT JOIN cost_info ci ON orc.cost_code = ci.id_code
+        WHERE
+        orc.id NOT IN ( SELECT orbd.cost_id FROM order_receivable_bill_detail orbd )
+        and orc.is_bill != '2'
+        and opc.customer_name = #{form.customerName}
+        and oi.legal_name = #{form.legalName}
+        <if test="form.cmd == 'main'">
+            and orc.is_sum_to_main = 1
+        </if>
+        <if test="form.cmd == 'zgys'">
+            and orc.is_sum_to_main = 0 and orc.sub_type = 'zgys'
+        </if>
+        <if test="form.cmd == 'bg'">
+            and orc.is_sum_to_main = 0 and orc.sub_type = 'bg'
+        </if>
+        ) temp where 1 = 1
+        <if test="form.startAddress != null and form.startAddress != ''">
+            and temp.startAddress like concat('%',#{form.startAddress},'%')
+        </if>
+        <if test="form.endAddress != null and form.endAddress != ''">
+            and temp.endAddress like concat('%',#{form.endAddress},'%')
+        </if>
+        <if test="form.costName != null and form.costName != ''">
+            and temp.costName like concat('%',#{form.costName},'%')
+        </if>
+        <if test="form.currencyCode == 'CNY'">
+            and temp.rmb is not null
+        </if>
+        <if test="form.currencyCode == 'USD'">
+            and temp.dollar is not null
+        </if>
+        <if test="form.currencyCode == 'HKD'">
+            and temp.hKDollar is not null
+        </if>
+        <if test="form.currencyCode == 'EUR'">
+            and temp.euro is not null
+        </if>
+        <if test="form.endCreatedTimeStr != null and form.endCreatedTimeStr !=''">
+            and temp.createdTimeStr <![CDATA[<=]]> #{form.endCreatedTimeStr}
+        </if>
+        <if test="form.beginCreatedTimeStr != null and form.beginCreatedTimeStr !=''">
+            and temp.createdTimeStr <![CDATA[>=]]> #{form.beginCreatedTimeStr}
+        </if>
+    </select>
 </mapper>

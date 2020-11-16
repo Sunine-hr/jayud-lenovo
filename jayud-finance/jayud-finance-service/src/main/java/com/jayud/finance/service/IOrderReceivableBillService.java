@@ -31,14 +31,14 @@ public interface IOrderReceivableBillService extends IService<OrderReceivableBil
      * @param form
      * @return
      */
-    Map<String,Object> findPaymentBillNum(QueryPaymentBillNumForm form);
+    Map<String,Object> findReceiveBillNum(QueryReceiveBillNumForm form);
 
     /**
-     * 查询应付未出账单列表
+     * 查询应收未出账单列表
      * @param form
      * @return
      */
-    IPage<PaymentNotPaidBillVO> findNotPaidBillByPage(QueryNotPaidBillForm form);
+    IPage<ReceiveNotPaidBillVO> findNotPaidBillByPage(QueryNotPaidBillForm form);
 
     /**
      * 生成应付账单

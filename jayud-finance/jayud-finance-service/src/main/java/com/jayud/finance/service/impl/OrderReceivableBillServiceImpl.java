@@ -67,8 +67,8 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
     }
 
     @Override
-    public Map<String, Object> findPaymentBillNum(QueryPaymentBillNumForm form) {
-        List<OrderPaymentBillNumVO> resultList = null;//baseMapper.findPaymentBillNum(form);
+    public Map<String, Object> findReceiveBillNum(QueryReceiveBillNumForm form) {
+        List<OrderPaymentBillNumVO> resultList = baseMapper.findReceiveBillNum(form);
         Map<String, Object> result = new HashMap<>();
         result.put(CommonConstant.LIST,resultList);
         result.put(CommonConstant.BILL_NUM_TOTAL,resultList.stream().collect(Collectors.summarizingInt(OrderPaymentBillNumVO::getBillNum)));//订单数合计
@@ -82,12 +82,12 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
     }
 
     @Override
-    public IPage<PaymentNotPaidBillVO> findNotPaidBillByPage(QueryNotPaidBillForm form) {
+    public IPage<ReceiveNotPaidBillVO> findNotPaidBillByPage(QueryNotPaidBillForm form) {
         //定义分页参数
         Page<PaymentNotPaidBillVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.desc("temp.costId"));
-        IPage<PaymentNotPaidBillVO> pageInfo = null;//baseMapper.findNotPaidBillByPage(page, form);
+        IPage<ReceiveNotPaidBillVO> pageInfo = baseMapper.findNotPaidBillByPage(page, form);
         return pageInfo;
     }
 

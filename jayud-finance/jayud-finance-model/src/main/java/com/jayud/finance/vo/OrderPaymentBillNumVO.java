@@ -6,7 +6,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 /**
- * 账单数列表
+ * 账单数列表(应付应收一致)
  */
 @Data
 public class OrderPaymentBillNumVO {

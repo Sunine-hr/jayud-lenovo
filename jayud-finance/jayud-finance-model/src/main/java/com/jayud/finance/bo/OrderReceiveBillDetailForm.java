@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @Data
-public class OrderPaymentBillDetailForm {
+public class OrderReceiveBillDetailForm {
 
     @ApiModelProperty(value = "订单编号",required = true)
     @NotEmpty(message = "orderNo is required")
@@ -22,9 +22,9 @@ public class OrderPaymentBillDetailForm {
     @NotEmpty(message = "createdTimeStr is required")
     private String createdTimeStr;
 
-    @ApiModelProperty(value = "供应商",required = true)
-    @NotEmpty(message = "supplierChName is required")
-    private String supplierChName;
+    @ApiModelProperty(value = "客户",required = true)
+    @NotEmpty(message = "customerName is required")
+    private String customerName;
 
     @ApiModelProperty(value = "起运地,纯报关没有")
     private String startAddress;

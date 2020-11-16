@@ -11,9 +11,11 @@ import javax.validation.constraints.Pattern;
 @Data
 public class QueryNotPaidBillForm extends BasePageForm{
 
-    @ApiModelProperty(value = "供应商",required = true)
-    @NotEmpty(message = "supplierChName is required")
+    @ApiModelProperty(value = "供应商,应付必填")
     private String supplierChName;
+
+    @ApiModelProperty(value = "客户名称,应收必填")
+    private String customerName;
 
     @ApiModelProperty(value = "法人主体",required = true)
     @NotEmpty(message = "legalName is required")

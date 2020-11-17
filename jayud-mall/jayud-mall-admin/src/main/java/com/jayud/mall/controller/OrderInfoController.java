@@ -3,10 +3,7 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
-import com.jayud.mall.model.bo.OrderClearanceFileForm;
-import com.jayud.mall.model.bo.OrderCustomsFileForm;
-import com.jayud.mall.model.bo.OrderInfoForm;
-import com.jayud.mall.model.bo.QueryOrderInfoForm;
+import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.vo.OrderClearanceFileVO;
 import com.jayud.mall.model.vo.OrderCustomsFileVO;
 import com.jayud.mall.model.vo.OrderInfoVO;
@@ -18,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/orderinfo")
@@ -78,6 +77,13 @@ public class OrderInfoController {
     public CommonResult<OrderInfoVO> lookOrderInfoGoods(@RequestBody OrderInfoForm form){
         Long id = form.getId();
         return orderInfoService.lookOrderInfoGoods(id);
+    }
+
+    @ApiOperation(value = "订单管理-修改订单箱号(长宽高等)")
+    @PostMapping("/updateOrderCase")
+    public CommonResult updateOrderCase(@RequestBody List<OrderCaseForm> list){
+        orderInfoService.updateOrderCase(list);
+        return CommonResult.success("保存箱号信息，成功！");
     }
 
 

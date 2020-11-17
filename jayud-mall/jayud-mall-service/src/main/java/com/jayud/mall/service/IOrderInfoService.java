@@ -2,12 +2,15 @@ package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.OrderCaseForm;
 import com.jayud.mall.model.bo.QueryOrderInfoForm;
 import com.jayud.mall.model.po.OrderInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.vo.OrderClearanceFileVO;
 import com.jayud.mall.model.vo.OrderCustomsFileVO;
 import com.jayud.mall.model.vo.OrderInfoVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -67,4 +70,10 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     CommonResult<OrderInfoVO> lookOrderInfoGoods(Long id);
+
+    /**
+     * 订单管理-修改订单箱号(长宽高等)
+     * @param list
+     */
+    void updateOrderCase(List<OrderCaseForm> list);
 }

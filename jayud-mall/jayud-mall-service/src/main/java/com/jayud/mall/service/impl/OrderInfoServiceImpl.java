@@ -7,11 +7,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.*;
+import com.jayud.mall.model.bo.OrderCaseForm;
 import com.jayud.mall.model.bo.QueryOrderInfoForm;
+import com.jayud.mall.model.po.OrderCase;
 import com.jayud.mall.model.po.OrderClearanceFile;
 import com.jayud.mall.model.po.OrderCustomsFile;
 import com.jayud.mall.model.po.OrderInfo;
 import com.jayud.mall.model.vo.*;
+import com.jayud.mall.service.IOrderCaseService;
 import com.jayud.mall.service.IOrderClearanceFileService;
 import com.jayud.mall.service.IOrderCustomsFileService;
 import com.jayud.mall.service.IOrderInfoService;
@@ -51,6 +54,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Autowired
     IOrderClearanceFileService orderClearanceFileService;
+
+    @Autowired
+    IOrderCaseService orderCaseService;
 
 
     @Override
@@ -136,5 +142,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderInfoVO.setOrderCaseVOList(orderCaseVOList);
 
         return CommonResult.success(orderInfoVO);
+    }
+
+    @Override
+    public void updateOrderCase(List<OrderCaseForm> list) {
+        List<OrderCase> orderCaseList = ConvertUtil.convertList(list, OrderCase.class);
+        orderCaseService.saveOrUpdateBatch(orderCaseList);
     }
 }

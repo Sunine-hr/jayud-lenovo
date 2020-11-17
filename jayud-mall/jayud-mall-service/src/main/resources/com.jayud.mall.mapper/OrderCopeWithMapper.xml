@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.OrderCopeWithMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.OrderCopeWith">
+        <id column="id" property="id" />
+        <result column="order_id" property="orderId" />
+        <result column="cost_name" property="costName" />
+        <result column="supplier_code" property="supplierCode" />
+        <result column="amount" property="amount" />
+        <result column="cid" property="cid" />
+        <result column="remarks" property="remarks" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_id, cost_name, supplier_code, amount, cid, remarks
+    </sql>
+
+</mapper>

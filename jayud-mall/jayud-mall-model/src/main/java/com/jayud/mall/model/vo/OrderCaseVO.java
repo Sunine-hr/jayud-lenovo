@@ -100,6 +100,24 @@ public class OrderCaseVO {
     @ApiModelProperty(value = "公司名", position = 28)
     private String company;
 
+    /**订单箱号配载信息**/
+    /*运单表：ocean_waybill*/
+    @ApiModelProperty(value = "运单号")
+    private String waybillNo;
+
+    /*提单对应货柜信息：ocean_counter*/
+    @ApiModelProperty(value = "柜号")
+    private String cntrNo;
+
+    /*提单表：ocean_bill*/
+    @ApiModelProperty(value = "提单号(供应商提供)")
+    private String oceanBillNo;
+
+    /*配载单:order_conf*/
+    @ApiModelProperty(value = "配载单号")
+    private String orderConfNo;
+
+
 
 
 }

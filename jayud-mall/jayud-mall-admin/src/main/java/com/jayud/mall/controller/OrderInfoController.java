@@ -86,7 +86,13 @@ public class OrderInfoController {
         return CommonResult.success("保存箱号信息，成功！");
     }
 
-
+    //订单管理-查看配载信息
+    @ApiOperation(value = "订单管理-查看配载信息")
+    @PostMapping("/lookOrderInfoConf")
+    public CommonResult<OrderInfoVO> lookOrderInfoConf(@RequestBody OrderInfoForm form){
+        Long id = form.getId();
+        return orderInfoService.lookOrderInfoConf(id);
+    }
 
 
 }

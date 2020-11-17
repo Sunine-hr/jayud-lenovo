@@ -149,4 +149,19 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<OrderCase> orderCaseList = ConvertUtil.convertList(list, OrderCase.class);
         orderCaseService.saveOrUpdateBatch(orderCaseList);
     }
+
+    @Override
+    public CommonResult<OrderInfoVO> lookOrderInfoConf(Long id) {
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(id);
+        Long orderId = orderInfoVO.getId();//订单Id
+
+        /*订单对应箱号配载信息:order_case、order_conf*/
+        List<OrderCaseVO> orderCaseVOList = orderCaseMapper.findOrderCaseConfByOrderId(orderId);
+        orderInfoVO.setOrderCaseVOList(orderCaseVOList);
+
+        return CommonResult.success(orderInfoVO);
+    }
+
+
+
 }

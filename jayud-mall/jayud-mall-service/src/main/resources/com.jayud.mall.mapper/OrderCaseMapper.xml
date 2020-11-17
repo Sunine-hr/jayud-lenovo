@@ -96,12 +96,17 @@
 
     <!--根据订单id，查询订单箱号，以及订单箱号的配载信息（运单号->柜号->提单号->配载单号）-->
     <select id="findOrderCaseConfByOrderId" parameterType="java.lang.Long"
-            resultType="com.jayud.mall.model.vo.OrderCaseVO">
+            resultType="com.jayud.mall.model.vo.OrderCaseConfVO">
         select
         t.id,t.carton_no,t.confirm_volume,
         t2.waybill_no,
         t3.cntr_no,
-        t4.order_id oceanBillNo,
+        t4.order_id oceanBillNo,t4.sail_time,t4.voyage_day,t4.unit,
+				(case t4.unit
+				when '1' then DATE_ADD(t4.sail_time, INTERVAL t4.voyage_day HOUR)
+				when '2' then DATE_ADD(t4.sail_time, INTERVAL t4.voyage_day DAY)
+				when '3' then DATE_ADD(t4.sail_time, INTERVAL t4.voyage_day MONTH)
+				else null end) as expectedReach,
         t6.order_no orderConfNo
         from order_case t
         LEFT JOIN ocean_waybill_case_relation t1 on t1.order_case_id = t.id

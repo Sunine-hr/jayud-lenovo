@@ -50,6 +50,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     OrderCopeWithMapper orderCopeWithMapper;
 
     @Autowired
+    OrderPickMapper orderPickMapper;
+
+    @Autowired
     IOrderCustomsFileService orderCustomsFileService;
 
     @Autowired
@@ -163,8 +166,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         Long orderId = orderInfoVO.getId();//订单Id
 
         /*订单对应箱号配载信息:order_case、order_conf*/
-        List<OrderCaseVO> orderCaseVOList = orderCaseMapper.findOrderCaseConfByOrderId(orderId);
-        orderInfoVO.setOrderCaseVOList(orderCaseVOList);
+        List<OrderCaseConfVO> orderCaseConfVOList = orderCaseMapper.findOrderCaseConfByOrderId(orderId);
+        orderInfoVO.setOrderCaseConfVOList(orderCaseConfVOList);
 
         return CommonResult.success(orderInfoVO);
     }
@@ -226,12 +229,43 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderInfoVO.setOrderCaseVOList(orderCaseVOList);
 
         /**提货信息**/
+        List<OrderPickVO> orderPickVOList = orderPickMapper.findOrderPickByOrderId(orderId);
+        orderInfoVO.setOrderPickVOList(orderPickVOList);
 
+        /**配载信息**/
+        /*订单对应箱号配载信息:order_case、order_conf*/
+        List<OrderCaseConfVO> orderCaseConfVOList = orderCaseMapper.findOrderCaseConfByOrderId(orderId);
+        orderInfoVO.setOrderCaseConfVOList(orderCaseConfVOList);
 
+        /**费用信息**/
+        /*订单对应应收费用明细:order_cope_receivable*/
+        List<OrderCopeReceivableVO> orderCopeReceivableVOList =
+                orderCopeReceivableMapper.findOrderCopeReceivableByOrderId(orderId);
+        orderInfoVO.setOrderCopeReceivableVOList(orderCopeReceivableVOList);
 
+        /*订单对应应付费用明细:order_cope_with*/
+        List<OrderCopeWithVO> orderCopeWithVOList =
+                orderCopeWithMapper.findOrderCopeWithByOrderId(orderId);
+        orderInfoVO.setOrderCopeWithVOList(orderCopeWithVOList);
 
+        /**文件信息**/
+        //订单对应报关文件list
+        QueryWrapper<OrderCustomsFile> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("order_id", orderId);
+        List<OrderCustomsFile> orderCustomsFiles = orderCustomsFileMapper.selectList(queryWrapper1);
+        List<OrderCustomsFileVO> orderCustomsFileVOList =
+                ConvertUtil.convertList(orderCustomsFiles, OrderCustomsFileVO.class);
+        orderInfoVO.setOrderCustomsFileVOList(orderCustomsFileVOList);
 
-        return null;
+        //订单对应清关文件list
+        QueryWrapper<OrderClearanceFile> queryWrapper2 = new QueryWrapper<>();
+        queryWrapper2.eq("order_id", orderId);
+        List<OrderClearanceFile> orderClearanceFiles = orderClearanceFileMapper.selectList(queryWrapper2);
+        List<OrderClearanceFileVO> orderClearanceFileVOList =
+                ConvertUtil.convertList(orderClearanceFiles, OrderClearanceFileVO.class);
+        orderInfoVO.setOrderClearanceFileVOList(orderClearanceFileVOList);
+
+        return CommonResult.success(orderInfoVO);
     }
 
 

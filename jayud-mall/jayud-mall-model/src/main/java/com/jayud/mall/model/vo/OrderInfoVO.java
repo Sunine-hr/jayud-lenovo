@@ -81,6 +81,9 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "订单箱号list")
     private List<OrderCaseVO> orderCaseVOList;
 
+    /*订单对应箱号配载信息:order_case、order_conf*/
+    private List<OrderCaseConfVO> orderCaseConfVOList;
+
     /*订单对应应收费用明细:order_cope_receivable*/
     @ApiModelProperty(value = "订单对应应收费用明细list")
     private List<OrderCopeReceivableVO> orderCopeReceivableVOList;
@@ -88,6 +91,11 @@ public class OrderInfoVO {
     /*订单对应应付费用明细:order_cope_with*/
     @ApiModelProperty(value = "订单对应应付费用明细list")
     private List<OrderCopeWithVO> orderCopeWithVOList;
+
+    /*订单对应提货信息表：order_pick*/
+    @ApiModelProperty(value = "订单对应提货信息表list")
+    private List<OrderPickVO> orderPickVOList;
+
 
 
 

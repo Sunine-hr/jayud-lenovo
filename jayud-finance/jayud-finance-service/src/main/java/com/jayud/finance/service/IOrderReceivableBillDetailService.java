@@ -3,11 +3,9 @@ package com.jayud.finance.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.CommonResult;
-import com.jayud.finance.bo.ApplyInvoiceForm;
-import com.jayud.finance.bo.ListForm;
-import com.jayud.finance.bo.QueryPaymentBillDetailForm;
+import com.jayud.finance.bo.*;
 import com.jayud.finance.po.OrderReceivableBillDetail;
-import com.jayud.finance.vo.OrderPaymentBillDetailVO;
+import com.jayud.finance.vo.*;
 
 import java.util.List;
 
@@ -55,5 +53,59 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      * @return
      */
     Boolean applyInvoiceCancel(String billNo);
+
+    /**
+     * 编辑对账单分页查询
+     * @param form
+     * @return
+     */
+    IPage<PaymentNotPaidBillVO> findEditSBillByPage(QueryEditBillForm form);
+
+    /**
+     * 编辑对账单保存
+     * @param form
+     * @return
+     */
+    Boolean editSBill(EditSBillForm form);
+
+    /**
+     * 编辑对账单提交
+     * @param billNo
+     * @return
+     */
+    Boolean editSBillSubmit(String billNo);
+
+    /**
+     * 对账单详情
+     * @param billNo
+     * @return
+     */
+    List<ViewBilToOrderVO> viewSBillDetail(String billNo);
+
+    /**
+     * 对账单详情表头
+     * @return
+     */
+    List<SheetHeadVO> findSSheetHead(String billNo);
+
+    /**
+     * 对账单详情的全局数据部分
+     * @return
+     */
+    ViewBillVO getViewSBill(String billNo);
+
+    /**
+     * 应收对账单审核
+     * @param form
+     * @return
+     */
+    Boolean billSAudit(BillAuditForm form);
+
+    /**
+     * 应收反审核
+     * @param form
+     * @return
+     */
+    Boolean contrarySAudit(ListForm form);
 
 }

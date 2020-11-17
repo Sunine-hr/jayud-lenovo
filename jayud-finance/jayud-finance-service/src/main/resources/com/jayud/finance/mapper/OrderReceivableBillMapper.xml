@@ -181,7 +181,7 @@
             and temp.createdTimeStr <![CDATA[>=]]> #{form.beginCreatedTimeStr}
         </if>
     </select>
-    <select id="getBillOrderNum"  resultType="java.lang.Integer" >
+    <select id="getSBillOrderNum"  resultType="java.lang.Integer" >
       SELECT
 	    count( DISTINCT orbd.order_no ) billOrderNum
       FROM

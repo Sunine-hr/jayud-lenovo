@@ -6,7 +6,9 @@ import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 
-
+/**
+ * 应收/应付一致
+ */
 @Data
 public class QueryEditBillForm extends BasePageForm{
 

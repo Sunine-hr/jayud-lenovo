@@ -8,17 +8,15 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.finance.bo.ApplyInvoiceForm;
-import com.jayud.finance.bo.ListForm;
-import com.jayud.finance.bo.QueryPaymentBillDetailForm;
+import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.service.IOrderReceivableBillDetailService;
 import com.jayud.finance.util.StringUtils;
-import com.jayud.finance.vo.ExportOrderSBillDetailVO;
-import com.jayud.finance.vo.OrderPaymentBillDetailVO;
+import com.jayud.finance.vo.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +26,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -139,19 +139,19 @@ public class ReceiveBillDetailController {
         }
         return CommonResult.success();
     }
-/*
-    @ApiOperation(value = "编辑对账单列表")
-    @PostMapping("/findEditBillByPage")
-    public CommonResult<CommonPageResult<PaymentNotPaidBillVO>> findEditBillByPage(@RequestBody QueryEditBillForm form) {
-        IPage<PaymentNotPaidBillVO> pageList = billDetailService.findEditBillByPage(form);
+
+    @ApiOperation(value = "编辑对账单列表,费用维度的")
+    @PostMapping("/findEditSBillByPage")
+    public CommonResult<CommonPageResult<PaymentNotPaidBillVO>> findEditSBillByPage(@RequestBody QueryEditBillForm form) {
+        IPage<PaymentNotPaidBillVO> pageList = billDetailService.findEditSBillByPage(form);
         CommonPageResult<PaymentNotPaidBillVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
     }
 
     @ApiOperation(value = "客服编辑对账单保存,财务编辑对账单")
-    @PostMapping("/editBill")
-    public CommonResult editBill(@RequestBody EditBillForm form) {
-        Boolean result = billDetailService.editBill(form);
+    @PostMapping("/editSBill")
+    public CommonResult editSBill(@RequestBody EditSBillForm form) {
+        Boolean result = billDetailService.editSBill(form);
         if(!result){
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
@@ -159,10 +159,10 @@ public class ReceiveBillDetailController {
     }
 
     @ApiOperation(value = "编辑对账单提交,billNo = 账单编号")
-    @PostMapping("/editBillSubmit")
-    public CommonResult editBillSubmit(@RequestBody Map<String,Object> param) {
+    @PostMapping("/editSBillSubmit")
+    public CommonResult editSBillSubmit(@RequestBody Map<String,Object> param) {
         String billNo = MapUtil.getStr(param,"billNo");
-        Boolean result = billDetailService.editBillSubmit(billNo);
+        Boolean result = billDetailService.editSBillSubmit(billNo);
         if(!result){
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
@@ -170,25 +170,25 @@ public class ReceiveBillDetailController {
     }
 
     @ApiOperation(value = "对账单详情，对账单审核详情")
-    @PostMapping("/viewBillDetail")
-    public CommonResult<Map<String,Object>> viewBillDetail(@RequestBody @Valid ViewBillDetailForm form) {
+    @PostMapping("/viewSBillDetail")
+    public CommonResult<Map<String,Object>> viewSBillDetail(@RequestBody @Valid ViewBillDetailForm form) {
         Map<String,Object> resultMap = new HashMap<>();
-        List<ViewBilToOrderVO> list = billDetailService.viewBillDetail(form.getBillNo());
+        List<ViewBilToOrderVO> list = billDetailService.viewSBillDetail(form.getBillNo());
         resultMap.put(CommonConstant.LIST,list);//分页数据
-        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSheetHead(form.getBillNo());
+        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHead(form.getBillNo());
         resultMap.put(CommonConstant.SHEET_HEAD,sheetHeadVOS);//表头
-        ViewBillVO viewBillVO = billDetailService.getViewBill(form.getBillNo());
+        ViewBillVO viewBillVO = billDetailService.getViewSBill(form.getBillNo());
         resultMap.put(CommonConstant.WHOLE_DATA,viewBillVO);//全局数据
         return CommonResult.success(resultMap);
     }
 
 
     @ApiOperation(value = "导出对账单详情,待开发")
-    @RequestMapping(value = "/exportBillDetail", method = RequestMethod.GET)
+    @RequestMapping(value = "/exportSBillDetail", method = RequestMethod.GET)
     @ResponseBody
-    public void exportBillDetail(@RequestParam(value = "billNo",required=true) String billNo,
+    public void exportSBillDetail(@RequestParam(value = "billNo",required=true) String billNo,
                                    HttpServletResponse response) throws IOException {
-        List<ViewBilToOrderVO> list = billDetailService.viewBillDetail(billNo);
+        List<ViewBilToOrderVO> list = billDetailService.viewSBillDetail(billNo);
         ExcelWriter writer = ExcelUtil.getWriter(true);
 
         //自定义标题别名
@@ -202,7 +202,7 @@ public class ReceiveBillDetailController {
         writer.addHeaderAlias("pieceNum", "件数");
         writer.addHeaderAlias("weight", "毛重(KGS)");
         writer.addHeaderAlias("yunCustomsNo", "报关单号");
-        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSheetHead(billNo);
+        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHead(billNo);
         for (SheetHeadVO sheetHeadVO : sheetHeadVOS) {
             writer.addHeaderAlias(sheetHeadVO.getName(), sheetHeadVO.getViewName());
         }
@@ -220,7 +220,7 @@ public class ReceiveBillDetailController {
         //out为OutputStream，需要写出到的目标流
 
         ServletOutputStream out=response.getOutputStream();
-        String name = StringUtils.toUtf8String("客户应付对账单");
+        String name = StringUtils.toUtf8String("客户应收对账单");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
         response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
 
@@ -234,32 +234,31 @@ public class ReceiveBillDetailController {
      * @param form
      * @return
      */
-/*
-    @ApiOperation(value = "应付对账单审核,财务对账单审核")
-    @PostMapping("/billAudit")
-    public CommonResult billAudit(@RequestBody BillAuditForm form) {
-        Boolean result = billDetailService.billAudit(form);
+    @ApiOperation(value = "应收对账单审核,财务对账单审核")
+    @PostMapping("/billSAudit")
+    public CommonResult billSAudit(@RequestBody BillAuditForm form) {
+        Boolean result = billDetailService.billSAudit(form);
         if(!result){
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "导出应付对账单审核列表")
-    @RequestMapping(value = "/exportAuditBill", method = RequestMethod.GET)
+    @ApiOperation(value = "导出应收对账单审核列表")
+    @RequestMapping(value = "/exportAuditSBill", method = RequestMethod.GET)
     @ResponseBody
-    public void exportAuditBill(QueryPaymentBillDetailForm form,
+    public void exportAuditSBill(QueryPaymentBillDetailForm form,
                            HttpServletResponse response) throws IOException {
         //获取数据
-        List<OrderPaymentBillDetailVO> initList = billDetailService.findPaymentBillDetail(form);
-        List<ExportOrderFBillDetailVO> list = ConvertUtil.convertList(initList,ExportOrderFBillDetailVO.class);
+        List<OrderPaymentBillDetailVO> initList = billDetailService.findReceiveBillDetail(form);
+        List<ExportOrderSBillDetailVO> list = ConvertUtil.convertList(initList,ExportOrderSBillDetailVO.class);
 
         ExcelWriter writer = ExcelUtil.getWriter(true);
 
         //自定义标题别名
         writer.addHeaderAlias("billNo", "账单编号");
         writer.addHeaderAlias("legalName", "法人主体");
-        writer.addHeaderAlias("supplierChName", "供应商");
+        writer.addHeaderAlias("customerName", "客服");
         writer.addHeaderAlias("beginAccountTermStr", "开始核算期");
         writer.addHeaderAlias("endAccountTermStr", "结束核算期");
         writer.addHeaderAlias("rmb", "人民币");
@@ -284,7 +283,7 @@ public class ReceiveBillDetailController {
 
         //out为OutputStream，需要写出到的目标流
         ServletOutputStream out = response.getOutputStream();
-        String name = StringUtils.toUtf8String("应付对账单审核列表");
+        String name = StringUtils.toUtf8String("应收对账单审核列表");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
         response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
 
@@ -301,19 +300,17 @@ public class ReceiveBillDetailController {
      * @param form
      * @return
      */
-    /*
     @ApiOperation(value = "反审核,billNos=账单编号集合")
-    @PostMapping("/contraryAudit")
-    public CommonResult contraryAudit(@RequestBody ListForm form) {
+    @PostMapping("/contrarySAudit")
+    public CommonResult contrarySAudit(@RequestBody ListForm form) {
         if(form.getBillNos() == null || form.getBillNos().size() == 0){
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        Boolean result = billDetailService.contraryAudit(form);
+        Boolean result = billDetailService.contrarySAudit(form);
         if(!result){
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
         return CommonResult.success();
     }
-*/
 
 }

@@ -59,4 +59,13 @@ public interface IOrderReceivableBillService extends IService<OrderReceivableBil
      * @return
      */
     List<SheetHeadVO> findSheetHead(ViewBillForm form);
+
+    /**
+     * 已出账订单数
+     * @param legalName
+     * @param customerName
+     * @param cmd
+     * @return
+     */
+    Integer getSBillOrderNum(String legalName,String customerName,String cmd);
 }

@@ -6,6 +6,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 /**
+ * 应收/应付保持一致
  * 未出账订单数列表
  */
 @Data
@@ -20,8 +21,11 @@ public class PaymentNotPaidBillVO {
     @ApiModelProperty(value = "创建日期")
     private String createdTimeStr;
 
-    @ApiModelProperty(value = "供应商")
+    @ApiModelProperty(value = "供应商，应付时用")
     private String supplierChName;
+
+    @ApiModelProperty(value = "客户,应收是用")
+    private String customerName;
 
     @ApiModelProperty(value = "起运地")
     private String startAddress;

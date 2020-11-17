@@ -18,4 +18,17 @@
         id, order_id, cost_name, supplier_code, amount, cid, remarks
     </sql>
 
+    <select id="findOrderCopeWithByOrderId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.OrderCopeWithVO">
+        select
+        t.id,t.order_id,t.cost_name,t.supplier_code,t.amount,t.cid,t.remarks,
+        t1.supplier_ch_name,
+        t2.currency_code,t2.currency_name
+        from order_cope_with t
+        LEFT JOIN supplier_info t1 on t1.supplier_code = t.supplier_code
+        LEFT JOIN currency_info t2 on t2.id = t.cid
+        WHERE t.order_id = #{orderId}
+
+    </select>
+
 </mapper>

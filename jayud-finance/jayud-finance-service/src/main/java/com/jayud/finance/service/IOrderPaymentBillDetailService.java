@@ -49,10 +49,10 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
     /**
      * 付款申请作废
-     * @param billDetailId
+     * @param billNo
      * @return
      */
-    Boolean applyPaymentCancel(Long billDetailId);
+    Boolean applyPaymentCancel(String billNo);
 
     /**
      * 编辑对账单分页查询

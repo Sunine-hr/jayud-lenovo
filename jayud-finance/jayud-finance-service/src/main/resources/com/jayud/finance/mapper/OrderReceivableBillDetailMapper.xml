@@ -41,4 +41,63 @@
         audit_time,apply_status,invoice_amount,status, created_user, created_time,updated_user,updated_time,local_amount
     </sql>
 
+    <select id="findReceiveBillDetailByPage" parameterType="com.jayud.finance.bo.QueryPaymentBillDetailForm" resultType="com.jayud.finance.vo.OrderPaymentBillDetailVO" >
+        SELECT distinct
+        orbd.id billDetailId,
+        orbd.bill_no billNo,
+        orb.legal_name legalName,
+        orb.customer_name customerName,
+        DATE_FORMAT(orbd.begin_account_term,'%Y-%m-%d') 	beginAccountTermStr,
+        DATE_FORMAT(orbd.end_account_term,'%Y-%m-%d') 	endAccountTermStr,
+        (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='CNY') rmb,
+        (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='USD') dollar,
+        (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='EUR') euro,
+        (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='HKD') hKDollar,
+        (select sum(m.money) from make_invoice m where m.opr_type = '2' and m.bill_no = orbd.bill_no and m.`status` = '1') heXiaoAmount,
+        (orbd.invoice_amount - (select sum(m.money) from make_invoice m where m.opr_type = '2' and m.bill_no = orbd.bill_no and m.`status` = '1'))  notHeXiaoAmount,orbd.settlement_currency settlementCurrency,orbd.audit_status auditStatus,orbd.apply_status applyStatus,
+        orbd.make_user makeUser,
+        orbd.make_time makeTimeStr,
+        orbd.audit_user auditUser,
+        orbd.audit_time auditTimeStr,
+        (select c.created_user from cancel_after_verification c where c.bill_no = orbd.bill_no order by c.created_time desc limit 1) heXiaoUser,
+        (select c.real_receive_time from cancel_after_verification c where c.bill_no = orbd.bill_no order by c.created_time desc limit 1) heXiaoTimeStr
+        FROM
+        order_receivable_bill_detail orbd
+        LEFT JOIN order_receivable_bill orb ON orbd.bill_id = orb.id
+        where 1 = 1
+        <if test="form.cmd == 'main_statement'">
+            and orb.is_main = 1
+        </if>
+        <if test="form.cmd == 'zgys_statement'">
+            and orb.is_main = 0 and orb.sub_type = 'zgys'
+        </if>
+        <if test="form.cmd == 'bg_statement'">
+            and orb.is_main = 0 and orb.sub_type = 'bg'
+        </if>
+        <if test="form.customerName != null and form.customerName != ''">
+            and orb.customer_name like concat('%',#{form.customerName},'%')
+        </if>
+        <if test="form.legalName != null and form.legalName != ''">
+            and orb.legal_name like concat('%',#{form.legalName},'%')
+        </if>
+        <if test="form.billNo != null and form.billNo != ''">
+            and orbd.bill_no like concat('%',#{form.billNo},'%')
+        </if>
+        <if test="form.endAccountTerm != null and form.endAccountTerm !=''">
+            and orbd.end_account_term <![CDATA[<=]]> #{form.endAccountTerm}
+        </if>
+        <if test="form.beginAccountTerm != null and form.beginAccountTerm !=''">
+            and orbd.begin_account_term <![CDATA[>=]]> #{form.beginAccountTerm}
+        </if>
+        <if test="form.currencyCode != null and form.currencyCode !=''">
+            and orbd.settlement_currency = #{form.currencyCode}
+        </if>
+        <if test="form.auditStatus != null and form.auditStatus !=''">
+            and orbd.audit_status = #{form.auditStatus}
+        </if>
+        <if test="form.applyStatus != null and form.applyStatus !=''">
+            and orbd.apply_status = #{form.applyStatus}
+        </if>
+    </select>
+
 </mapper>

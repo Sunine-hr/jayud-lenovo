@@ -9,14 +9,14 @@ import java.math.BigDecimal;
 
 
 @Data
-public class ApplyPaymentForm {
+public class ApplyInvoiceForm {
 
     @ApiModelProperty(value = "账单编号",required = true)
     @NotNull(message = "billNo is required")
     private String billNo;
 
-    @ApiModelProperty(value = "申请付款金额",required = true)
-    @NotNull(message = "paymentAmount is required")
-    private BigDecimal paymentAmount;
+    @ApiModelProperty(value = "开票金额",required = true)
+    @NotNull(message = "invoiceAmount is required")
+    private BigDecimal invoiceAmount;
 
 }

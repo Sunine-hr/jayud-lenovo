@@ -110,7 +110,6 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     @Override
     public Boolean applyPayment(ApplyPaymentForm form) {
         OrderPaymentBillDetail orderPaymentBillDetail = new OrderPaymentBillDetail();
-        orderPaymentBillDetail.setId(form.getBillDetailId());
         orderPaymentBillDetail.setPaymentAmount(form.getPaymentAmount());
         orderPaymentBillDetail.setApplyStatus(BillEnum.F_1.getCode());
         orderPaymentBillDetail.setAuditStatus(BillEnum.B_5.getCode());
@@ -119,23 +118,28 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
 
         //保存操作记录
         AuditInfoForm auditInfoForm = new AuditInfoForm();
-        auditInfoForm.setExtId(form.getBillDetailId());
+        auditInfoForm.setExtUniqueFlag(form.getBillNo());
         auditInfoForm.setAuditTypeDesc("付款申请确认");
         auditInfoForm.setAuditStatus(BillEnum.B_5.getCode());
-        auditInfoForm.setExtDesc("order_payment_bill_detail表");
+        auditInfoForm.setExtDesc("order_payment_bill_detail表bill_no");
         auditInfoForm.setAuditUser(UserOperator.getToken());
         omsClient.saveAuditInfo(auditInfoForm);
-        return updateById(orderPaymentBillDetail);
+
+        QueryWrapper updateWrapper = new QueryWrapper();
+        updateWrapper.eq("bill_no",form.getBillNo());
+        return update(orderPaymentBillDetail,updateWrapper);
     }
 
     @Override
-    public Boolean applyPaymentCancel(Long billDetailId) {
+    public Boolean applyPaymentCancel(String billNo) {
         OrderPaymentBillDetail orderPaymentBillDetail = new OrderPaymentBillDetail();
-        orderPaymentBillDetail.setId(billDetailId);
         orderPaymentBillDetail.setApplyStatus(BillEnum.F_4.getCode());
         orderPaymentBillDetail.setUpdatedTime(LocalDateTime.now());
         orderPaymentBillDetail.setUpdatedUser(UserOperator.getToken());
-        return updateById(orderPaymentBillDetail);
+
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("bill_no",billNo);
+        return update(orderPaymentBillDetail,queryWrapper);
     }
 
     @Override

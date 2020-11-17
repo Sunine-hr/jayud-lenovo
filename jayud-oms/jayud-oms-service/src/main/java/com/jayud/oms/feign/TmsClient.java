@@ -6,6 +6,7 @@ import com.jayud.oms.model.bo.DriverFeedbackStatusForm;
 import com.jayud.oms.model.bo.InputOrderTransportForm;
 import com.jayud.oms.model.bo.QueryDriverOrderTransportForm;
 import com.jayud.oms.model.bo.TmsChangeStatusForm;
+import com.jayud.oms.model.vo.DriverOrderTakeAdrVO;
 import com.jayud.oms.model.vo.InitChangeStatusVO;
 import com.jayud.oms.model.vo.InputOrderTransportVO;
 import io.swagger.annotations.ApiOperation;
@@ -103,4 +104,18 @@ public interface TmsClient {
      */
     @RequestMapping(value = "/api/doDriverFeedbackStatus")
     ApiResult doDriverFeedbackStatus(@RequestBody DriverFeedbackStatusForm form);
+
+
+    /**
+     * 查询提货/收货地址
+     */
+    @RequestMapping(value = "/api/getDriverOrderTakeAdrByOrderNo")
+    public ApiResult<List<DriverOrderTakeAdrVO>> getDriverOrderTakeAdrByOrderNo(@RequestParam("orderNo") List<String> orderNo
+            , @RequestParam("oprType") Integer oprType);
+
+    /**
+     * 查询派车信息
+     */
+    @RequestMapping(value = "/api/getOrderSendCarsByOrderNo")
+    public ApiResult getOrderSendCarsByOrderNo(@RequestParam("orderNo") String orderNo);
 }

@@ -70,10 +70,15 @@
         FROM
         order_take_adr ota
         LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
-        WHERE ota.`order_no` in
-        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+        <where>
+            <if test="oprType!=null">
+                and ota.opr_type = #{oprType}
+            </if>
+                and ota.`order_no` in
+            <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
     </select>
 
 </mapper>

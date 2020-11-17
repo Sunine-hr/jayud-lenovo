@@ -31,5 +31,6 @@ public interface OrderTakeAdrMapper extends BaseMapper<OrderTakeAdr> {
     /**
      * 根据订单编号查询司机送货/收货地址
      */
-    List<DriverOrderTakeAdrVO> getDriverOrderTakeAdr(List<String> orderNoList);
+    List<DriverOrderTakeAdrVO> getDriverOrderTakeAdr(@Param("list") List<String> orderNoList
+            , @Param("oprType") Integer oprType);
 }

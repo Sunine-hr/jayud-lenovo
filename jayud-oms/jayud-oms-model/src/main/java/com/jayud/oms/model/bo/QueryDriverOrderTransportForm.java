@@ -9,6 +9,7 @@ import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Data
 public class QueryDriverOrderTransportForm extends BasePageForm {
@@ -32,7 +33,7 @@ public class QueryDriverOrderTransportForm extends BasePageForm {
 
 
 
-    public void assemblyOrder(List<Long> orderIds) {
+    public void assemblyOrder(Set<Long> orderIds) {
         if (CollectionUtils.isEmpty(orderIds)) {
             return;
         }

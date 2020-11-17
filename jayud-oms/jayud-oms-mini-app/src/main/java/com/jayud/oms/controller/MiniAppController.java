@@ -1,6 +1,7 @@
 package com.jayud.oms.controller;
 
 import cn.hutool.core.map.MapUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -18,10 +19,7 @@ import com.jayud.oms.model.enums.DriverFeedbackStatusEnum;
 import com.jayud.oms.model.enums.DriverOrderStatusEnum;
 import com.jayud.oms.model.enums.EmploymentFeeStatusEnum;
 import com.jayud.oms.model.enums.StatusEnum;
-import com.jayud.oms.model.po.CostInfo;
-import com.jayud.oms.model.po.DriverEmploymentFee;
-import com.jayud.oms.model.po.DriverInfo;
-import com.jayud.oms.model.po.DriverOrderInfo;
+import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.security.util.SecurityUtil;
 import com.jayud.oms.service.*;
@@ -39,10 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -70,6 +65,11 @@ public class MiniAppController {
     private IDriverEmploymentFeeService driverEmploymentFeeService;
     @Autowired
     private IOrderInfoService orderInfoService;
+    @Autowired
+    private IWarehouseInfoService warehouseInfoService;
+    @Autowired
+    private IRegionCityService regionCityService;
+
 
     @PostMapping("/getDriverOrderTransport")
     @ApiOperation(value = "查看司机中港订单")
@@ -81,12 +81,16 @@ public class MiniAppController {
             //查询所有订单
             status = null;
         }
+        if (DriverOrderStatusEnum.PENDING.getCode().equals(form.getStatus())) {
+            status = DriverOrderStatusEnum.IN_TRANSIT.getCode();
+        }
         //根据状态查询司机接单信息，如果没有代表还有没有接单
         List<DriverOrderInfo> driverOrderInfos = this.driverOrderInfoService.getDriverOrderInfoByStatus(form.getDriverId(), status);
 
-        List<Long> orderIds = driverOrderInfos.stream().map(DriverOrderInfo::getOrderId).collect(Collectors.toList());
+        Map<Long, DriverOrderInfo> map = driverOrderInfos.stream().collect(Collectors.toMap(DriverOrderInfo::getOrderId, tmp -> tmp));
+
         //组装订单
-        form.assemblyOrder(orderIds);
+        form.assemblyOrder(map.keySet());
 
         //查询中港订单信息
         ApiResult result = tmsClient.getDriverOrderTransport(form);
@@ -101,6 +105,13 @@ public class MiniAppController {
                     driverOrderTransportVO.setIsFeeSubmitted(true);
                 } else {
                     driverOrderTransportVO.setIsFeeSubmitted(false);
+                }
+                //是否已完成反馈状态
+                DriverOrderInfo driverOrderInfo = map.get(driverOrderTransportVO.getId());
+                if (driverOrderInfo != null && DriverOrderStatusEnum.FINISHED.getCode().equals(driverOrderInfo.getStatus())) {
+                    driverOrderTransportVO.setIsFeedbackFinish(true);
+                } else {
+                    driverOrderTransportVO.setIsFeedbackFinish(false);
                 }
             }
         }
@@ -223,15 +234,16 @@ public class MiniAppController {
     public CommonResult feeSubmission(@RequestBody Map<String, String> map) {
         //获取司机供应商
         Long driverId = Long.parseLong(SecurityUtil.getUserInfo());
-        String orderId = map.get("orderId");
-        String orderNo = map.get("orderNo");
-        if (org.apache.commons.lang.StringUtils.isEmpty(orderId) ||
+        Long orderId = MapUtil.getLong(map, "orderId");
+        String orderNo = MapUtil.getStr(map, "orderNo");
+        if (orderId == null ||
                 org.apache.commons.lang.StringUtils.isEmpty(orderNo)) {
             return CommonResult.error(ResultEnum.VALIDATE_FAILED);
         }
+
         //查询是否存在录用费用项
-        if (!this.driverEmploymentFeeService.isExist(driverId,
-                Long.parseLong(orderId), EmploymentFeeStatusEnum.SUBMIT.getCode())) {
+        if (!this.driverEmploymentFeeService.isExist(driverId, orderId,
+                EmploymentFeeStatusEnum.SUBMIT.getCode())) {
             return CommonResult.error(400, "不存在录用费用项,不能费用提交");
         }
         //查询所有提交的费用项
@@ -242,9 +254,7 @@ public class MiniAppController {
         return CommonResult.success();
     }
 
-    /**
-     * 查询司机的中港订单详情
-     */
+
     @PostMapping("/getDriverOrderTransportDetail")
     @ApiOperation(value = "根据订单编号查询司机的中港订单详情 orderNo=订单编号,orderId=订单id")
     public CommonResult<DriverOrderTransportVO> getDriverOrderTransportDetail(@RequestBody Map<String, String> map) {
@@ -380,6 +390,9 @@ public class MiniAppController {
         if (!result.isOk()) {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
+        if (this.driverOrderInfoService.isExistOrder(form.getOrderId())) {
+            return CommonResult.error(400, "请先接单,才能进行后续操作");
+        }
 
         //获取主订单编号
         JSONObject json = JSONObject.parseObject(JSONObject.toJSONString(result.getData()));
@@ -442,6 +455,47 @@ public class MiniAppController {
         return CommonResult.success();
     }
 
+    @ApiOperation(value = "查询签收地址 orderNo=中港订单编号")
+    @PostMapping(value = "/getSignatureAddress")
+    public CommonResult getSignatureAddress(@RequestBody Map<String, String> map) {
+        String orderNo = map.get("orderNo");
+        if (org.apache.commons.lang.StringUtils.isEmpty(orderNo)) {
+            return CommonResult.error(ResultEnum.VALIDATE_FAILED);
+        }
+        //查询送货地址
+        ApiResult<List<DriverOrderTakeAdrVO>> result = this.tmsClient.getDriverOrderTakeAdrByOrderNo(Arrays.asList(orderNo), 2);
+        if (!result.isOk()) {
+            log.warn("查询送货地址失败");
+            return CommonResult.error(ResultEnum.OPR_FAIL);
+        }
+        List<DriverOrderTakeAdrVO> orderTakeAdrVOs = result.getData();
+        Map<String, Object> response = new HashMap<>();
+        if (orderTakeAdrVOs.size() == 1) { //只有一个送货地址，取送货地址
+            String address = orderTakeAdrVOs.get(0).getAddress();
+            response.put("address", address);
+            return CommonResult.success(response);
+        }
+        //送货地址大于一个，取中转仓地址
+        //查询派车单
+        result = this.tmsClient.getOrderSendCarsByOrderNo(orderNo);
+        if (!result.isOk()) {
+            log.warn("查询派车单信息失败");
+            return CommonResult.error(ResultEnum.OPR_FAIL);
+        }
+        JSONObject json = JSONObject.parseObject(JSONObject.toJSONString(result.getData()));
+        Long warehouseInfoId = json.getLong("warehouseInfoId");
+
+        WarehouseInfo warehouseInfo = this.warehouseInfoService.getById(warehouseInfoId);
+        //查询中转仓地址名称
+        Collection<RegionCity> regionCities = regionCityService.listByIds(Arrays.asList(warehouseInfo.getStateCode(), warehouseInfo.getCityCode(), warehouseInfo.getAreaCode()));
+        //拼接地址
+        StringBuilder sb = new StringBuilder();
+        regionCities.forEach(tmp -> sb.append(tmp.getName()));
+        response.put("address", sb.append(warehouseInfo.getAddress()));
+        return CommonResult.success(response);
+    }
+
+
     /**
      * 获取流程
      */
@@ -462,4 +516,6 @@ public class MiniAppController {
         return DriverFeedbackStatusEnum.constructionProcess(resultOne.getData().toString(),
                 num > 1 ? DriverFeedbackStatusEnum.THREE : null, isGetNot);
     }
+
+
 }

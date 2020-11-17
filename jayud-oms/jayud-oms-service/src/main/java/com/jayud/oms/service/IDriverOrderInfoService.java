@@ -30,4 +30,9 @@ public interface IDriverOrderInfoService extends IService<DriverOrderInfo> {
      * 修改司机接单状态
      */
     boolean updateStatus(Long orderId,String status);
+
+    /**
+     * 订单信息是否存在
+     */
+    boolean isExistOrder(Long orderId);
 }

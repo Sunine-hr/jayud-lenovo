@@ -1,14 +1,19 @@
 package com.jayud.oms.model.bo;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import static com.jayud.common.utils.DateUtils.DATE_TIME_PATTERN;
 
 /**
  * <p>
@@ -41,8 +46,8 @@ public class DriverFeedbackStatusForm extends Model<DriverFeedbackStatusForm> {
 //    private String operatorUser;
 
     @ApiModelProperty(value = "操作时间")
-    @NotEmpty(message = "操作时间不能为空")
-    private String operatorTime;
+//    @NotEmpty(message = "操作时间不能为空")
+    private String operatorTime= DateUtils.format(new Date(),DATE_TIME_PATTERN);
 
 //    @ApiModelProperty(value = "附件")
 //    private String statusPic;

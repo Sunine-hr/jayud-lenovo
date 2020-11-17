@@ -1,9 +1,7 @@
 package com.jayud.tms.controller;
 
-import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
-import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
@@ -11,22 +9,22 @@ import com.jayud.tms.model.bo.InputOrderTransportForm;
 import com.jayud.tms.model.bo.OprStatusForm;
 import com.jayud.tms.model.bo.QueryDriverOrderTransportForm;
 import com.jayud.tms.model.bo.TmsChangeStatusForm;
+import com.jayud.tms.model.po.OrderSendCars;
 import com.jayud.tms.model.po.OrderTransport;
-import com.jayud.tms.model.vo.DriverOrderTransportVO;
-import com.jayud.tms.model.vo.InitChangeStatusVO;
-import com.jayud.tms.model.vo.InputOrderTransportVO;
-import com.jayud.tms.model.vo.SendCarPdfVO;
+import com.jayud.tms.model.vo.*;
 import com.jayud.tms.service.IOrderSendCarsService;
 import com.jayud.tms.service.IOrderTakeAdrService;
 import com.jayud.tms.service.IOrderTransportService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 
 @RestController
@@ -154,6 +152,21 @@ public class ExternalApiController {
         return ApiResult.ok();
     }
 
+
+    @ApiOperation(value = "查询提货/收货地址")
+    @RequestMapping(value = "/api/getDriverOrderTakeAdrByOrderNo")
+    public ApiResult<List<DriverOrderTakeAdrVO>> getDriverOrderTakeAdrByOrderNo(@RequestParam("orderNo") List<String> orderNo
+            , @RequestParam("oprType") Integer oprType) {
+        List<DriverOrderTakeAdrVO> orderTakeAdrs = this.orderTakeAdrService.getDriverOrderTakeAdr(orderNo, oprType);
+        return ApiResult.ok(orderTakeAdrs);
+    }
+
+    @ApiOperation(value = "查询派车信息")
+    @RequestMapping(value = "/api/getOrderSendCarsByOrderNo")
+    public ApiResult<OrderSendCars> getOrderSendCarsByOrderNo(@RequestParam("orderNo") String orderNo) {
+        OrderSendCars orderSendCars = this.orderSendCarsService.getOrderSendCarsByOrderNo(orderNo);
+        return ApiResult.ok(orderSendCars);
+    }
 }
 
 

@@ -29,7 +29,7 @@ public class DriverOrderInfoServiceImpl extends ServiceImpl<DriverOrderInfoMappe
     public List<DriverOrderInfo> getDriverOrderInfoByStatus(Long driverId, String status) {
         QueryWrapper<DriverOrderInfo> condition = new QueryWrapper<>();
         condition.lambda().eq(DriverOrderInfo::getDriverId, driverId);
-        if (!StringUtils.isEmpty(status)) {
+        if (status != null) {
             condition.lambda().eq(DriverOrderInfo::getStatus, status);
         }
         return this.baseMapper.selectList(condition);
@@ -61,5 +61,14 @@ public class DriverOrderInfoServiceImpl extends ServiceImpl<DriverOrderInfoMappe
         QueryWrapper<DriverOrderInfo> condition = new QueryWrapper<>();
         condition.lambda().eq(DriverOrderInfo::getOrderId, orderId);
         return this.update(new DriverOrderInfo().setStatus(status), condition);
+    }
+
+    /**
+     * 订单信息是否存在
+     */
+    @Override
+    public boolean isExistOrder(Long orderId) {
+
+        return false;
     }
 }

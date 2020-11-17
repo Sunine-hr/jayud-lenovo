@@ -17,8 +17,14 @@ public interface IRegionCityService extends IService<RegionCity> {
 
     /**
      * 级联查询
+     *
      * @param id
      * @return
      */
     List<RegionCity> cascadeQueryRegionCity(Long id);
+
+//    /**
+//     * 获取地址名称
+//     */
+//    List<RegionCity> getAddrName(Long... id);
 }

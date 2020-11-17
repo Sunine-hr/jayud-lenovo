@@ -34,5 +34,15 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
         return this.count(condition);
     }
 
+    /**
+     * 根据订单编号获取
+     */
+    @Override
+    public OrderSendCars getOrderSendCarsByOrderNo(String orderNo) {
+        QueryWrapper<OrderSendCars> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderSendCars::getOrderNo, orderNo);
+        return this.baseMapper.selectOne(condition);
+    }
+
 
 }

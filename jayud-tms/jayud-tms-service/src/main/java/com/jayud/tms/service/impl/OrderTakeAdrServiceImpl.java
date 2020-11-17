@@ -28,8 +28,8 @@ public class OrderTakeAdrServiceImpl extends ServiceImpl<OrderTakeAdrMapper, Ord
     }
 
     @Override
-    public List<DriverOrderTakeAdrVO> getDriverOrderTakeAdr(List<String> orderNoList) {
-        return this.baseMapper.getDriverOrderTakeAdr(orderNoList);
+    public List<DriverOrderTakeAdrVO> getDriverOrderTakeAdr(List<String> orderNoList,Integer oprType) {
+        return this.baseMapper.getDriverOrderTakeAdr(orderNoList,oprType);
     }
 
     /**
@@ -43,6 +43,16 @@ public class OrderTakeAdrServiceImpl extends ServiceImpl<OrderTakeAdrMapper, Ord
     }
 
     /**
-     * 入仓
+     * 根据订单编号获取地址
      */
+    @Override
+    public List<OrderTakeAdr> getOrderTakeAdrByOrderNo(String orderNo, Integer oprType) {
+        QueryWrapper<OrderTakeAdr> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderTakeAdr::getOrderNo, orderNo);
+        if (oprType != null) {
+            condition.lambda().eq(OrderTakeAdr::getOprType, oprType);
+        }
+        return this.baseMapper.selectList(condition);
+    }
+
 }

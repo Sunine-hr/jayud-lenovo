@@ -243,7 +243,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         List<String> orderNoList = list.stream().map(DriverOrderTransportVO::getOrderNo).collect(Collectors.toList());
         //查询订单提货/送货地址
         if (CollectionUtils.isNotEmpty(orderNoList)) {
-            List<DriverOrderTakeAdrVO> adrs = this.orderTakeAdrService.getDriverOrderTakeAdr(orderNoList);
+            List<DriverOrderTakeAdrVO> adrs = this.orderTakeAdrService.getDriverOrderTakeAdr(orderNoList, null);
             list.forEach(tmp -> {
                 tmp.groupAddr(adrs);
                 tmp.setTakeOrders(form.getOrderIds() == null ? form.getExcludeOrderIds() : form.getOrderIds());

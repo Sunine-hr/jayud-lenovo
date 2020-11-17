@@ -18,6 +18,7 @@ public interface IOrderSendCarsService extends IService<OrderSendCars> {
 
     /**
      * 获取派车及仓库信息
+     *
      * @param orderNo
      * @return
      */
@@ -27,5 +28,10 @@ public interface IOrderSendCarsService extends IService<OrderSendCars> {
      * 获取司机待接单数量
      */
     public int getDriverPendingOrderNum(Long driverId, List<String> orderNos);
+
+    /**
+     * 根据订单编号获取
+     */
+    public OrderSendCars getOrderSendCarsByOrderNo(String orderNo);
 
 }

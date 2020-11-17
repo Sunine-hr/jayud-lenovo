@@ -78,6 +78,9 @@ public class DriverOrderTransportVO {
     @ApiModelProperty(value = "费用总计(查看详细信息才会有数据)")
     List<Map<String, String>> totalCost;
 
+    @ApiModelProperty(value = "是否完成反馈状态")
+    private Boolean isFeedbackFinish;
+
 
     /**
      * 计算总费用

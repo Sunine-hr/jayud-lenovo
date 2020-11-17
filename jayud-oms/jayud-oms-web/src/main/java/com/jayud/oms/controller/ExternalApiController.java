@@ -201,11 +201,20 @@ public class ExternalApiController {
         if("payment".equals(form.getOprType())){
             List<OrderPaymentCost> paymentCosts = new ArrayList<>();
             if(form.getCmd().contains("pre")){//暂存应收
+                List<OrderPaymentCost> delCosts = new ArrayList<>();
                 for (Long costId : form.getCostIds()) {
                     OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
                     orderPaymentCost.setId(costId);
                     orderPaymentCost.setIsBill("1");//暂存
+                    paymentCosts.add(orderPaymentCost);
+
+                    OrderPaymentCost delCost = new OrderPaymentCost();
+                    delCost.setId(costId);
+                    delCost.setIsBill("0");//未出账
+                    delCosts.add(delCost);
                 }
+                //把原来暂存的清除,更新未出账
+                paymentCostService.updateBatchById(delCosts);
             }else if("del".equals(form.getCmd())){//删除对账单
                 for (Long costId : form.getCostIds()) {
                     OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
@@ -223,11 +232,20 @@ public class ExternalApiController {
         }else if("receivable".equals(form.getOprType())){
             List<OrderReceivableCost> receivableCosts = new ArrayList<>();
             if(form.getCmd().contains("pre")){//暂存应付
+                List<OrderReceivableCost> delCosts = new ArrayList<>();
                 for (Long costId : form.getCostIds()) {
                     OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
                     orderReceivableCost.setId(costId);
                     orderReceivableCost.setIsBill("1");//暂存
+                    receivableCosts.add(orderReceivableCost);
+
+                    OrderReceivableCost delCost = new OrderReceivableCost();
+                    delCost.setId(costId);
+                    delCost.setIsBill("0");//未出账
+                    delCosts.add(delCost);
                 }
+                //把原来暂存的清除,更新未出账
+                receivableCostService.updateBatchById(delCosts);
             }else if("del".equals(form.getCmd())){//删除对账单
                 for (Long costId : form.getCostIds()) {
                     OrderReceivableCost orderReceivableCost = new OrderReceivableCost();

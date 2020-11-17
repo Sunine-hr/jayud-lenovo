@@ -42,7 +42,7 @@
     </sql>
 
     <select id="findPaymentBillDetailByPage" parameterType="com.jayud.finance.bo.QueryPaymentBillDetailForm" resultType="com.jayud.finance.vo.OrderPaymentBillDetailVO" >
-        SELECT
+        SELECT distinct
         opbd.id billDetailId,
         opbd.bill_no billNo,
         opb.legal_name legalName,

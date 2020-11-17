@@ -83,4 +83,18 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     CommonResult<OrderInfoVO> lookOrderInfoConf(Long id);
+
+    /**
+     * 订单管理-修改配载信息
+     * @param list
+     * @return
+     */
+    CommonResult updateOrderCaseConf(List<OrderCaseForm> list);
+
+    /**
+     * 订单管理-查看费用信息
+     * @param id
+     * @return
+     */
+    CommonResult<OrderInfoVO> lookOrderInfoCost(Long id);
 }

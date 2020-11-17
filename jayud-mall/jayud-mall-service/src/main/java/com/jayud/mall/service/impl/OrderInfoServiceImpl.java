@@ -162,6 +162,20 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return CommonResult.success(orderInfoVO);
     }
 
+    @Override
+    public CommonResult updateOrderCaseConf(List<OrderCaseForm> list) {
+        return null;
+    }
+
+    @Override
+    public CommonResult<OrderInfoVO> lookOrderInfoCost(Long id) {
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(id);
+        Long orderId = orderInfoVO.getId();//订单Id
+
+        /*订单对应费用信息*/
+
+        return CommonResult.success(orderInfoVO);
+    }
 
 
 }

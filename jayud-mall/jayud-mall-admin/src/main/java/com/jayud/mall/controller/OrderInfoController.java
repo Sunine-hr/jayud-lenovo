@@ -94,5 +94,21 @@ public class OrderInfoController {
         return orderInfoService.lookOrderInfoConf(id);
     }
 
+    //订单管理-修改配载信息
+    @ApiOperation(value = "订单管理-修改配载信息(待完成)")
+    @PostMapping("/updateOrderCaseConf")
+    public CommonResult updateOrderCaseConf(@RequestBody List<OrderCaseForm> list){
+        orderInfoService.updateOrderCaseConf(list);
+        return CommonResult.success("订单管理-修改配载信息(待完成)");
+    }
+
+    //订单管理-查看费用信息
+    @ApiOperation(value = "订单管理-查看费用信息")
+    @PostMapping("/lookOrderInfoCost")
+    public CommonResult<OrderInfoVO> lookOrderInfoCost(@RequestBody OrderInfoForm form){
+        Long id = form.getId();
+        return orderInfoService.lookOrderInfoCost(id);
+    }
+
 
 }

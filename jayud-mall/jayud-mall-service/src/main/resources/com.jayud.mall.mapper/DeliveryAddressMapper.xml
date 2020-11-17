@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.DeliveryAddressMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.DeliveryAddress">
+        <id column="id" property="id" />
+        <result column="customer_id" property="customerId" />
+        <result column="contacts" property="contacts" />
+        <result column="phone" property="phone" />
+        <result column="country_code" property="countryCode" />
+        <result column="country_name" property="countryName" />
+        <result column="state_code" property="stateCode" />
+        <result column="state_name" property="stateName" />
+        <result column="city_code" property="cityCode" />
+        <result column="city_name" property="cityName" />
+        <result column="address" property="address" />
+        <result column="address2" property="address2" />
+        <result column="address3" property="address3" />
+        <result column="zip_code" property="zipCode" />
+        <result column="warehouse_code" property="warehouseCode" />
+        <result column="warehouse_name" property="warehouseName" />
+        <result column="status" property="status" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_id, contacts, phone, country_code, country_name, state_code, state_name, city_code, city_name, address, address2, address3, zip_code, warehouse_code, warehouse_name, status
+    </sql>
+
+</mapper>

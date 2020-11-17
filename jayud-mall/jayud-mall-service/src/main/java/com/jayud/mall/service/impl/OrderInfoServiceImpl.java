@@ -212,5 +212,27 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return CommonResult.success("修改订单费用信息成功！");
     }
 
+    @Override
+    public CommonResult<OrderInfoVO> lookOrderInfoDetails(Long id) {
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(id);
+        Long orderId = orderInfoVO.getId();//订单Id
+        /**货物信息**/
+        /*订单对应商品：order_shop*/
+        List<OrderShopVO> orderShopVOList = orderShopMapper.findOrderShopByOrderId(orderId);
+        orderInfoVO.setOrderShopVOList(orderShopVOList);
+
+        /*订单对应箱号信息:order_case*/
+        List<OrderCaseVO> orderCaseVOList = orderCaseMapper.findOrderShopByOrderId(orderId);
+        orderInfoVO.setOrderCaseVOList(orderCaseVOList);
+
+        /**提货信息**/
+
+
+
+
+
+        return null;
+    }
+
 
 }

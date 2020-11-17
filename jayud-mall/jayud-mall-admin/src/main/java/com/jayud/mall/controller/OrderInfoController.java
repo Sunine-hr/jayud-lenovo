@@ -118,5 +118,13 @@ public class OrderInfoController {
         return orderInfoService.updateOrderInfoCost(form);
     }
 
+    //订单管理-查看订单详细
+    @ApiOperation(value = "订单管理-查看订单详细")
+    @PostMapping("/lookOrderInfoDetails")
+    public CommonResult<OrderInfoVO> lookOrderInfoDetails(@RequestBody OrderInfoForm form){
+        Long id = form.getId();
+        return orderInfoService.lookOrderInfoDetails(id);
+    }
+
 
 }

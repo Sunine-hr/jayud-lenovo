@@ -9,18 +9,18 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.mapper.OrderPaymentBillDetailMapper;
-import com.jayud.finance.po.CancelAfterVerification;
-import com.jayud.finance.po.MakeInvoice;
-import com.jayud.finance.po.OrderPaymentBillDetail;
+import com.jayud.finance.po.*;
 import com.jayud.finance.service.*;
 import com.jayud.finance.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +51,9 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     @Autowired
     IMakeInvoiceService makeInvoiceService;
 
+    @Autowired
+    IOrderBillCostTotalService costTotalService;
+
     @Override
     public IPage<OrderPaymentBillDetailVO> findPaymentBillDetailByPage(QueryPaymentBillDetailForm form) {
         //定义分页参数
@@ -62,28 +65,41 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     }
 
     @Override
+    public List<OrderPaymentBillDetailVO> findPaymentBillDetail(QueryPaymentBillDetailForm form) {
+        return baseMapper.findPaymentBillDetailByPage(form);
+    }
+
+
+    @Override
     public CommonResult submitFCw(ListForm form) {
+        //参数校验
+        if(form.getBillNos() == null || form.getBillNos().size() == 0){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
         //校验数据状态
-        List<OrderPaymentBillDetail> billDetails = baseMapper.selectBatchIds(form.getIds());
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.in("bill_no",form.getBillNos());
+        List<OrderPaymentBillDetail> billDetails = baseMapper.selectList(queryWrapper);
         for (OrderPaymentBillDetail billDetail : billDetails) {
             if(!BillEnum.B_2.getCode().equals(billDetail.getAuditStatus())){
                 return CommonResult.error(ResultEnum.OPR_FAIL);
             }
         }
-        for (Long id : form.getIds()) {
+        for (String billNo : form.getBillNos()) {
             OrderPaymentBillDetail orderPaymentBillDetail = new OrderPaymentBillDetail();
-            orderPaymentBillDetail.setId(id);
             orderPaymentBillDetail.setAuditStatus(BillEnum.B_3.getCode());
             orderPaymentBillDetail.setUpdatedTime(LocalDateTime.now());
             orderPaymentBillDetail.setUpdatedUser(UserOperator.getToken());
-            updateById(orderPaymentBillDetail);
+            QueryWrapper updateWrapper = new QueryWrapper();
+            updateWrapper.eq("bill_no",billNo);
+            update(orderPaymentBillDetail,updateWrapper);
 
-            //保存操作记录
+            //保存操作记录in
             AuditInfoForm auditInfoForm = new AuditInfoForm();
-            auditInfoForm.setExtId(id);
+            auditInfoForm.setExtUniqueFlag(billNo);
             auditInfoForm.setAuditTypeDesc("提交财务");
             auditInfoForm.setAuditStatus(BillEnum.B_3.getCode());
-            auditInfoForm.setExtDesc("order_payment_bill_detail表");
+            auditInfoForm.setExtDesc("order_payment_bill_detail表bill_no");
             auditInfoForm.setAuditUser(UserOperator.getToken());
             omsClient.saveAuditInfo(auditInfoForm);
         }
@@ -134,6 +150,13 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
 
     @Override
     public Boolean editBill(EditBillForm form) {
+        //如果该账单编号下的现有订单都删除光了，不处理，让她重新出账
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("bill_no",form.getBillNo());
+        List<OrderPaymentBillDetail> paymentBillDetailList = baseMapper.selectList(queryWrapper);
+        if(paymentBillDetailList.size() == 0){
+            return false;
+        }
         //处理需要删除的费用
         List<Long> delCostIds = form.getDelCostIds();
         if(delCostIds.size() > 0){
@@ -152,26 +175,100 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         }
         //处理要新增的费用
         if(form.getPaymentBillDetailForms().size() > 0) {
-            CreatePaymentBillForm billForm = new CreatePaymentBillForm();
-            billForm.setCmd("create");
-            billForm.setPaymentBillDetailForms(form.getPaymentBillDetailForms());
-            OrderPaymentBillForm orderPaymentBillForm = new OrderPaymentBillForm();
-            //根据账单号构建信息
-            //TODO
-            billForm.setPaymentBillForm(orderPaymentBillForm);
-            orderPaymentBillService.createPaymentBill(billForm);
+            Boolean result = true;
+            List<OrderPaymentBillDetailForm> paymentBillDetailForms = form.getPaymentBillDetailForms();//账单详细信息
+            OrderPaymentBill orderPaymentBill = orderPaymentBillService.getById(form.getBillId());//获取账单信息
+            //生成账单需要修改order_payment_cost表的is_bill
+            List<Long> costIds = new ArrayList<>();
+            for (OrderPaymentBillDetailForm paymentBillDetail : paymentBillDetailForms) {
+                costIds.add(paymentBillDetail.getCostId());
+            }
+            if(costIds.size() > 0){
+                OprCostBillForm oprCostBillForm = new OprCostBillForm();
+                oprCostBillForm.setCmd("create");//这里的保存相当于生成对账单
+                oprCostBillForm.setCostIds(costIds);
+                oprCostBillForm.setOprType("payment");
+                result = omsClient.oprCostBill(oprCostBillForm).getData();
+                if(!result){
+                    return false;
+                }
+            }
+            //生成对账单数据
+            //对现有账单信息进行修改
+            //1.统计已出账金额alreadyPaidAmount
+            BigDecimal nowBillAmount = paymentBillDetailForms.stream().map(OrderPaymentBillDetailForm::getLocalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+            orderPaymentBill.setAlreadyPaidAmount(orderPaymentBill.getAlreadyPaidAmount().add(nowBillAmount));
+            //2.统计已出账订单数billOrderNum
+            Integer billOrderNum = orderPaymentBillService.getBillOrderNum(orderPaymentBill.getLegalName(), orderPaymentBill.getSupplierChName(), "create");
+            orderPaymentBill.setBillOrderNum(billOrderNum);
+            //3.统计账单数billNum
+            orderPaymentBill.setBillOrderNum(orderPaymentBill.getBillNum() + 1);
+            orderPaymentBill.setUpdatedTime(LocalDateTime.now());
+            orderPaymentBill.setUpdatedUser(UserOperator.getToken());
+            result = orderPaymentBillService.updateById(orderPaymentBill);
+            if (!result) {
+                return false;
+            }
+            //开始保存对账单详情数据
+            //获取剩余旧数据的状态和结算期和结算币种,账单编号维度
+            OrderPaymentBillDetail oldFBillDetail = paymentBillDetailList.get(0);
+            List<OrderPaymentBillDetail> paymentBillDetails = ConvertUtil.convertList(paymentBillDetailForms, OrderPaymentBillDetail.class);
+            for (int i = 0; i < paymentBillDetails.size(); i++) {
+                paymentBillDetails.get(i).setStatus("1");
+                paymentBillDetails.get(i).setBillNo(form.getBillNo());
+                paymentBillDetails.get(i).setBeginAccountTerm(oldFBillDetail.getBeginAccountTerm());
+                paymentBillDetails.get(i).setEndAccountTerm(oldFBillDetail.getEndAccountTerm());
+                paymentBillDetails.get(i).setSettlementCurrency(oldFBillDetail.getSettlementCurrency());
+                paymentBillDetails.get(i).setAuditStatus(oldFBillDetail.getAuditStatus());
+                paymentBillDetails.get(i).setCreatedOrderTime(DateUtils.str2LocalDateTime(paymentBillDetailForms.get(i).getCreatedTimeStr(), DateUtils.DATE_TIME_PATTERN));
+                paymentBillDetails.get(i).setMakeUser(UserOperator.getToken());
+                paymentBillDetails.get(i).setMakeTime(LocalDateTime.now());
+                paymentBillDetails.get(i).setCreatedUser(UserOperator.getToken());
+            }
+            result = saveBatch(paymentBillDetails);
+            if (!result) {
+                return false;
+            }
+            //开始保存费用维度的金额信息  以结算币种进行转换后保存
+            List<OrderBillCostTotal> orderBillCostTotals = new ArrayList<>();
+            //根据费用ID统计费用信息,将原始费用信息根据结算币种进行转换
+            String settlementCurrency = oldFBillDetail.getSettlementCurrency();
+            List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderFBillCostTotal(costIds, settlementCurrency);
+            for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
+                orderBillCostTotalVO.setBillNo(form.getBillNo());
+                orderBillCostTotalVO.setCurrencyCode(settlementCurrency);
+                BigDecimal money = orderBillCostTotalVO.getMoney().multiply(orderBillCostTotalVO.getExchangeRate());
+                orderBillCostTotalVO.setMoney(money);
+                OrderBillCostTotal orderBillCostTotal = ConvertUtil.convert(orderBillCostTotalVO, OrderBillCostTotal.class);
+                orderBillCostTotal.setMoneyType("1");
+                orderBillCostTotals.add(orderBillCostTotal);
+            }
+            result = costTotalService.saveBatch(orderBillCostTotals);
+            if (!result) {
+                return false;
+            }
         }
         return true;
     }
 
     @Override
-    public Boolean editBillSubmit(Long billDetailId) {
+    public Boolean editBillSubmit(String billNo) {
+        //保存操作记录
+        AuditInfoForm auditInfoForm = new AuditInfoForm();
+        auditInfoForm.setExtUniqueFlag(billNo);
+        auditInfoForm.setAuditTypeDesc("编辑对账单提交财务审核");
+        auditInfoForm.setAuditStatus(BillEnum.B_3.getCode());
+        auditInfoForm.setExtDesc("order_payment_bill_detail表bill_no");
+        auditInfoForm.setAuditUser(UserOperator.getToken());
+        omsClient.saveAuditInfo(auditInfoForm);
+
         OrderPaymentBillDetail orderPaymentBillDetail = new OrderPaymentBillDetail();
-        orderPaymentBillDetail.setId(billDetailId);
         orderPaymentBillDetail.setAuditStatus(BillEnum.B_3.getCode());
         orderPaymentBillDetail.setUpdatedTime(LocalDateTime.now());
         orderPaymentBillDetail.setUpdatedUser(UserOperator.getToken());
-        return updateById(orderPaymentBillDetail);
+        QueryWrapper updateWrapper = new QueryWrapper();
+        updateWrapper.eq("bill_no",billNo);
+        return update(orderPaymentBillDetail,updateWrapper);
     }
 
     @Override
@@ -203,7 +300,6 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     @Override
     public Boolean billAudit(BillAuditForm form) {
         OrderPaymentBillDetail orderPaymentBillDetail = new OrderPaymentBillDetail();
-        orderPaymentBillDetail.setId(form.getBillDetailId());
         String auditStatus = "";
         if("0".equals(form.getAuditStatus())){
             auditStatus = BillEnum.B_2.getCode();
@@ -213,17 +309,19 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         orderPaymentBillDetail.setAuditStatus(auditStatus);
         orderPaymentBillDetail.setUpdatedTime(LocalDateTime.now());
         orderPaymentBillDetail.setUpdatedUser(UserOperator.getToken());
-        Boolean result = updateById(orderPaymentBillDetail);
+        QueryWrapper updateWrapper = new QueryWrapper();
+        updateWrapper.eq("bill_no",form.getBillNo());
+        Boolean result = update(orderPaymentBillDetail,updateWrapper);
         if(!result){
             return false;
         }
         //记录审核信息
         AuditInfoForm auditInfoForm = new AuditInfoForm();
-        auditInfoForm.setExtId(form.getBillDetailId());
+        auditInfoForm.setExtUniqueFlag(form.getBillNo());
         auditInfoForm.setAuditTypeDesc("应付对账单审核");
         auditInfoForm.setAuditStatus(auditStatus);
         auditInfoForm.setAuditComment(form.getAuditComment());
-        auditInfoForm.setExtDesc("order_payment_bill_detail表");
+        auditInfoForm.setExtDesc("order_payment_bill_detail表bill_no");
         auditInfoForm.setAuditUser(UserOperator.getToken());
         omsClient.saveAuditInfo(auditInfoForm);
         return true;
@@ -238,27 +336,28 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
      */
     @Override
     public Boolean contraryAudit(ListForm form) {
-        List<OrderPaymentBillDetail> list = new ArrayList<>();
         if("kf_f_reject".equals(form.getCmd())){
-            for (Long id : form.getIds()) {
+            for (String billNo : form.getBillNos()) {
                 OrderPaymentBillDetail orderPaymentBillDetail = new OrderPaymentBillDetail();
-                orderPaymentBillDetail.setId(id);
                 orderPaymentBillDetail.setAuditStatus(BillEnum.B_7.getCode());
                 orderPaymentBillDetail.setUpdatedTime(LocalDateTime.now());
                 orderPaymentBillDetail.setUpdatedUser(UserOperator.getToken());
-                list.add(orderPaymentBillDetail);
+                QueryWrapper updateWrapper = new QueryWrapper();
+                updateWrapper.eq("bill_no",billNo);
+                update(orderPaymentBillDetail,updateWrapper);
             }
         }else if("cw_f_reject".equals(form.getCmd())){
-            for (Long id : form.getIds()) {
+            for (String billNo : form.getBillNos()) {
                 OrderPaymentBillDetail orderPaymentBillDetail = new OrderPaymentBillDetail();
-                orderPaymentBillDetail.setId(id);
                 orderPaymentBillDetail.setAuditStatus(BillEnum.B_8.getCode());
                 orderPaymentBillDetail.setUpdatedTime(LocalDateTime.now());
                 orderPaymentBillDetail.setUpdatedUser(UserOperator.getToken());
-                list.add(orderPaymentBillDetail);
+                QueryWrapper updateWrapper = new QueryWrapper();
+                updateWrapper.eq("bill_no",billNo);
+                update(orderPaymentBillDetail,updateWrapper);
             }
         }
-        return updateBatchById(list);
+        return true;
     }
 
     @Override
@@ -310,7 +409,6 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     @Override
     public Boolean auditInvoice(BillAuditForm form) {
         OrderPaymentBillDetail billDetail = new OrderPaymentBillDetail();
-        billDetail.setId(form.getBillDetailId());
         String applyStatus = "";
         String status = "";
         if("0".equals(form.getAuditStatus())){
@@ -322,15 +420,17 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         }
         billDetail.setApplyStatus(applyStatus);
         billDetail.setAuditStatus(status);
-        Integer num = baseMapper.updateById(billDetail);
+        QueryWrapper updateWrapper = new QueryWrapper();
+        updateWrapper.eq("bill_no",form.getBillNo());
+        Integer num = baseMapper.update(billDetail,updateWrapper);
         if(num > 0){
             //保存审核信息
             AuditInfoForm auditInfoForm = new AuditInfoForm();
-            auditInfoForm.setExtId(form.getBillDetailId());
+            auditInfoForm.setExtUniqueFlag(form.getBillNo());
             auditInfoForm.setAuditTypeDesc("付款审核");
             auditInfoForm.setAuditStatus(applyStatus);
             auditInfoForm.setAuditComment(form.getAuditComment());
-            auditInfoForm.setExtDesc("order_payment_bill_detail表");
+            auditInfoForm.setExtDesc("order_payment_bill_detail表bill_no");
             auditInfoForm.setAuditUser(UserOperator.getToken());
             omsClient.saveAuditInfo(auditInfoForm);
             return true;

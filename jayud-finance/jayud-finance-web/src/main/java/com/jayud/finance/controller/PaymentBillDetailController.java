@@ -9,6 +9,7 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.po.OrderPaymentBillDetail;
@@ -46,7 +47,7 @@ public class PaymentBillDetailController {
         return CommonResult.success(pageVO);
     }
 
-    @ApiOperation(value = "提交财务ids=billDetailId集合,必须客服主管审核通过,状态为B_2")
+    @ApiOperation(value = "提交财务 billNos=账单编号集合,必须客服主管审核通过,状态为B_2")
     @PostMapping("/submitFCw")
     public CommonResult submitFCw(@RequestBody @Valid ListForm form){
         return billDetailService.submitFCw(form);
@@ -55,12 +56,11 @@ public class PaymentBillDetailController {
     @ApiOperation(value = "导出应付对账单列表")
     @RequestMapping(value = "/exportBill", method = RequestMethod.GET)
     @ResponseBody
-    public void exportBill(@RequestParam(value = "form",required = true) QueryPaymentBillDetailForm form,
+    public void exportBill(QueryPaymentBillDetailForm form,
                                  HttpServletResponse response) throws IOException {
         //获取数据
-        IPage<OrderPaymentBillDetailVO> pageList = billDetailService.findPaymentBillDetailByPage(form);
-        CommonPageResult<OrderPaymentBillDetailVO> pageVO = new CommonPageResult(pageList);
-        List<OrderPaymentBillDetailVO> list = pageVO.getList();
+        List<OrderPaymentBillDetailVO> initList = billDetailService.findPaymentBillDetail(form);
+        List<ExportOrderFBillDetailVO> list = ConvertUtil.convertList(initList,ExportOrderFBillDetailVO.class);
 
         ExcelWriter writer = ExcelUtil.getWriter(true);
 
@@ -78,7 +78,7 @@ public class PaymentBillDetailController {
         writer.addHeaderAlias("notHeXiaoAmount", "未付金额");
         writer.addHeaderAlias("settlementCurrency", "结算币种");
         writer.addHeaderAlias("auditStatus", "状态");
-        writer.addHeaderAlias("auditStatus", "付款申请");
+        writer.addHeaderAlias("applyStatus", "付款申请");
         writer.addHeaderAlias("makeUser", "制单人");
         writer.addHeaderAlias("makeTimeStr", "制单时间");
         writer.addHeaderAlias("auditUser", "审核人");
@@ -151,18 +151,18 @@ public class PaymentBillDetailController {
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "编辑对账单保存,billDetailId = 账单详情ID")
+    @ApiOperation(value = "编辑对账单提交,billNo = 账单编号")
     @PostMapping("/editBillSubmit")
     public CommonResult editBillSubmit(@RequestBody Map<String,Object> param) {
-        Long billDetailId = Long.parseLong(MapUtil.getStr(param,"billDetailId"));
-        Boolean result = billDetailService.editBillSubmit(billDetailId);
+        String billNo = MapUtil.getStr(param,"billNo");
+        Boolean result = billDetailService.editBillSubmit(billNo);
         if(!result){
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "对账单详情")
+    @ApiOperation(value = "对账单详情，对账单审核详情")
     @PostMapping("/viewBillDetail")
     public CommonResult<Map<String,Object>> viewBillDetail(@RequestBody @Valid ViewBillDetailForm form) {
         Map<String,Object> resultMap = new HashMap<>();
@@ -176,7 +176,7 @@ public class PaymentBillDetailController {
     }
 
 
-    @ApiOperation(value = "导出对账单详情")
+    @ApiOperation(value = "导出对账单详情,待开发")
     @RequestMapping(value = "/exportBillDetail", method = RequestMethod.GET)
     @ResponseBody
     public void exportBillDetail(@RequestParam(value = "billNo",required=true) String billNo,
@@ -238,44 +238,45 @@ public class PaymentBillDetailController {
         return CommonResult.success();
     }
 
-    //导出对账单审核列表
-    @ApiOperation(value = "到出对账单详情")
-    @RequestMapping(value = "/exportBillAuditList", method = RequestMethod.GET)
+    @ApiOperation(value = "导出应付对账单审核列表")
+    @RequestMapping(value = "/exportAuditBill", method = RequestMethod.GET)
     @ResponseBody
-    public void exportBillAuditList(@RequestParam(value = "billNo",required=true) String billNo,
-                                 HttpServletResponse response) throws IOException {
-        List<ViewBilToOrderVO> list = billDetailService.viewBillDetail(billNo);
+    public void exportAuditBill(QueryPaymentBillDetailForm form,
+                           HttpServletResponse response) throws IOException {
+        //获取数据
+        List<OrderPaymentBillDetailVO> initList = billDetailService.findPaymentBillDetail(form);
+        List<ExportOrderFBillDetailVO> list = ConvertUtil.convertList(initList,ExportOrderFBillDetailVO.class);
+
         ExcelWriter writer = ExcelUtil.getWriter(true);
 
         //自定义标题别名
-        writer.addHeaderAlias("createdTimeStr", "建单日期");
-        writer.addHeaderAlias("orderNo", "订单编号");
-        writer.addHeaderAlias("customerName", "客户");
-        writer.addHeaderAlias("startAddress", "启运地");
-        writer.addHeaderAlias("endAddress", "目的地");
-        writer.addHeaderAlias("licensePlate", "车牌号");
-        writer.addHeaderAlias("vehicleSize", "车型");
-        writer.addHeaderAlias("pieceNum", "件数");
-        writer.addHeaderAlias("weight", "毛重(KGS)");
-        writer.addHeaderAlias("yunCustomsNo", "报关单号");
-        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSheetHead(billNo);
-        for (SheetHeadVO sheetHeadVO : sheetHeadVOS) {
-            writer.addHeaderAlias(sheetHeadVO.getName(), sheetHeadVO.getViewName());
-        }
-
-
-        Field[] s = ViewBilToOrderVO.class.getDeclaredFields();
-        int lastColumn = s.length-1;
-
-        // 合并单元格后的标题行，使用默认标题样式
-        writer.merge(lastColumn, "B类表:存在`敏感品名`的货物表");
+        writer.addHeaderAlias("billNo", "账单编号");
+        writer.addHeaderAlias("legalName", "法人主体");
+        writer.addHeaderAlias("supplierChName", "供应商");
+        writer.addHeaderAlias("beginAccountTermStr", "开始核算期");
+        writer.addHeaderAlias("endAccountTermStr", "结束核算期");
+        writer.addHeaderAlias("rmb", "人民币");
+        writer.addHeaderAlias("dollar", "美元");
+        writer.addHeaderAlias("euro", "欧元");
+        writer.addHeaderAlias("hKDollar", "港币");
+        writer.addHeaderAlias("heXiaoAmount", "已付金额");
+        writer.addHeaderAlias("notHeXiaoAmount", "未付金额");
+        writer.addHeaderAlias("settlementCurrency", "结算币种");
+        writer.addHeaderAlias("auditStatus", "状态");
+        writer.addHeaderAlias("applyStatus", "付款申请");
+        writer.addHeaderAlias("makeUser", "制单人");
+        writer.addHeaderAlias("makeTimeStr", "制单时间");
+        writer.addHeaderAlias("auditUser", "审核人");
+        writer.addHeaderAlias("auditTimeStr", "审核时间");
+        writer.addHeaderAlias("auditComment", "审核意见");
+        writer.addHeaderAlias("heXiaoUser", "核销人");
+        writer.addHeaderAlias("heXiaoTimeStr", "核销时间");
 
         // 一次性写出内容，使用默认样式，强制输出标题
         writer.write(list, true);
 
         //out为OutputStream，需要写出到的目标流
-
-        ServletOutputStream out=response.getOutputStream();
+        ServletOutputStream out = response.getOutputStream();
         String name = StringUtils.toUtf8String("应付对账单审核列表");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
         response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
@@ -293,9 +294,12 @@ public class PaymentBillDetailController {
      * @param form
      * @return
      */
-    @ApiOperation(value = "反审核,ids=账单详情billDetailId集合")
+    @ApiOperation(value = "反审核,billNos=账单编号集合")
     @PostMapping("/contraryAudit")
     public CommonResult contraryAudit(@RequestBody ListForm form) {
+        if(form.getBillNos() == null || form.getBillNos().size() == 0){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
         Boolean result = billDetailService.contraryAudit(form);
         if(!result){
             return CommonResult.error(ResultEnum.OPR_FAIL);

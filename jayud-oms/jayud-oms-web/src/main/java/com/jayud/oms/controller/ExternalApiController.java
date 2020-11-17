@@ -120,6 +120,7 @@ public class ExternalApiController {
     ApiResult<Boolean> saveAuditInfo(@RequestBody AuditInfoForm form){
         AuditInfo auditInfo = new AuditInfo();
         auditInfo.setExtId(form.getExtId());
+        auditInfo.setExtUniqueFlag(form.getExtUniqueFlag());//目前只有账单编号
         auditInfo.setExtDesc(form.getExtDesc());
         auditInfo.setAuditTypeDesc(form.getAuditTypeDesc());
         auditInfo.setAuditStatus(form.getAuditStatus());

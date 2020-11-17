@@ -27,6 +27,13 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
     IPage<OrderPaymentBillDetailVO> findPaymentBillDetailByPage(QueryPaymentBillDetailForm form);
 
     /**
+     * 导出使用
+     * @param form
+     * @return
+     */
+    List<OrderPaymentBillDetailVO> findPaymentBillDetail(QueryPaymentBillDetailForm form);
+
+    /**
      * 提交财务
      * @param form
      * @return
@@ -63,10 +70,10 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
     /**
      * 编辑对账单提交
-     * @param billDetailId
+     * @param billNo
      * @return
      */
-    Boolean editBillSubmit(Long billDetailId);
+    Boolean editBillSubmit(String billNo);
 
     /**
      * 对账单详情
@@ -102,7 +109,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
     Boolean contraryAudit(ListForm form);
 
 
-    /*****************************************************财务核算模块****************************************************/
+    //财务核算模块
     /**
      * 财务核算分页查询
      * @param form

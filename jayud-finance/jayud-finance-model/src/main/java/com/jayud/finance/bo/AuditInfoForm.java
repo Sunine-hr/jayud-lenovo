@@ -13,6 +13,10 @@ public class AuditInfoForm {
     @ApiModelProperty(value = "被审核表的ID")
     private Long extId;
 
+    //因为账单的审核都是以账单编号为维度进行审核的，而表是最细的费用类型为维度
+    @ApiModelProperty(value = "被审核表唯一标识,比如账单号")
+    private String extUniqueFlag;
+
     @ApiModelProperty(value = "审核类别描述")
     private String auditTypeDesc;
 

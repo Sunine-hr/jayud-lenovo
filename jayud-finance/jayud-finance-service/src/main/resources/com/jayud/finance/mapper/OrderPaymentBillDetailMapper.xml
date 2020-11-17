@@ -167,13 +167,14 @@
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         oi.order_no orderNo,
         oi.customer_name customerName,
-        ( SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1') startAddress,
-        ( SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '2') endAddress,
-        (select concat(osc.license_plate,',',osc.hk_license_plate) from order_send_cars osc left join order_transport ot on osc.order_no = ot.order_no where ot.main_order_no = oi.order_no) licensePlate,
+        ( SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' limit 1) startAddress,
+        ( SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '2' limit 1) endAddress,
+        (select concat(vi.plate_number,',',vi.hk_number) from order_send_cars osc left join order_transport ot on osc.order_no = ot.order_no left join driver_info di on di.id = osc.driver_info_id
+		left join vehicle_info vi on vi.id = di.vehicle_id	where ot.main_order_no = oi.order_no) licensePlate,
         (select ot.vehicle_size from order_transport ot where ot.main_order_no = oi.order_no)  vehicleSize,
         (select sum(ota.piece_amount) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1') pieceNum,
         (select sum(ota.weight) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1') weight,
-        (select oc.yun_customs_no from order_customs oc where oc.main_order_no = oi.order_no) yunCustomsNo
+        (select oc.yun_customs_no from order_customs oc where oc.main_order_no = oi.order_no limit 1) yunCustomsNo
         FROM
         order_info oi
         where oi.order_no in
@@ -184,7 +185,7 @@
             opb.legal_name legalName,
             DATE_FORMAT( opbd.begin_account_term, '%Y-%m-%d' ) beginAccountTermStr,
             DATE_FORMAT( opbd.end_account_term, '%Y-%m-%d' ) endAccountTermStr,
-            opb.customer_name customerName,
+            opb.supplier_ch_name customerName,
             opbd.bill_no billNo,
             opbd.make_user makeUser,
             opbd.make_time makeTimeStr

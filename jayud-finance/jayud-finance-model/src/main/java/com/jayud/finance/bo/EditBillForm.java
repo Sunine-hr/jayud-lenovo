@@ -16,6 +16,10 @@ public class EditBillForm {
     @NotEmpty(message = "billNo is required")
     private String billNo;
 
+    @ApiModelProperty(value = "对账单主表ID",required = true)
+    @NotNull(message = "billId is required")
+    private Long billId;
+
     @ApiModelProperty(value = "被删除的费用集合",required = true)
     @NotNull(message = "delCostIds is required")
     private List<Long> delCostIds;

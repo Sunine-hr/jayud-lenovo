@@ -119,7 +119,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             BigDecimal nowBillAmount = paymentBillDetailForms.stream().map(OrderPaymentBillDetailForm::getLocalAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
             orderPaymentBill.setAlreadyPaidAmount(paymentBillForm.getAlreadyPaidAmount().add(nowBillAmount));
             //2.统计已出账订单数billOrderNum
-            Integer billOrderNum = baseMapper.getBillOrderNum(paymentBillForm.getLegalName(),paymentBillForm.getSupplierChName(),form.getCmd());
+            Integer billOrderNum = getBillOrderNum(paymentBillForm.getLegalName(),paymentBillForm.getSupplierChName(),form.getCmd());
             orderPaymentBill.setBillOrderNum(billOrderNum);
             //3.统计账单数billNum
             orderPaymentBill.setBillOrderNum(paymentBillForm.getBillNum() + 1);
@@ -204,6 +204,11 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
     @Override
     public List<SheetHeadVO> findSheetHead(ViewBillForm form) {
         return baseMapper.findSheetHead(form);
+    }
+
+    @Override
+    public Integer getBillOrderNum(String legalName, String supplierChName, String cmd) {
+        return baseMapper.getBillOrderNum(legalName,supplierChName,cmd);
     }
 
 

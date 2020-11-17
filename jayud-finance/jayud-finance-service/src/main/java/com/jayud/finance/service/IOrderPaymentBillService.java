@@ -60,4 +60,13 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
      */
     List<SheetHeadVO> findSheetHead(ViewBillForm form);
 
+    /**
+     * 已出账订单数
+     * @param legalName
+     * @param supplierChName
+     * @param cmd
+     * @return
+     */
+    Integer getBillOrderNum(String legalName,String supplierChName,String cmd);
+
 }

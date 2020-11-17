@@ -33,6 +33,13 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
     IPage<OrderPaymentBillDetailVO> findPaymentBillDetailByPage(Page page, @Param("form") QueryPaymentBillDetailForm form);
 
     /**
+     * 导出应付对账单分页查询
+     * @param form
+     * @return
+     */
+    List<OrderPaymentBillDetailVO> findPaymentBillDetailByPage(@Param("form") QueryPaymentBillDetailForm form);
+
+    /**
      * 应付对账单分页查询
      * @param page
      * @param form

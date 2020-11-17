@@ -9,6 +9,7 @@ import com.jayud.mall.model.vo.OrderCustomsFileVO;
 import com.jayud.mall.model.vo.OrderInfoVO;
 import com.jayud.mall.service.IOrderInfoService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -108,6 +109,13 @@ public class OrderInfoController {
     public CommonResult<OrderInfoVO> lookOrderInfoCost(@RequestBody OrderInfoForm form){
         Long id = form.getId();
         return orderInfoService.lookOrderInfoCost(id);
+    }
+
+    //订单管理-修改费用信息
+    @ApiModelProperty(value = "订单管理-修改费用信息")
+    @PostMapping("/updateOrderInfoCost")
+    public CommonResult updateOrderInfoCost(@RequestBody OrderInfoCostForm form){
+        return orderInfoService.updateOrderInfoCost(form);
     }
 
 

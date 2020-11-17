@@ -7,16 +7,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.*;
-import com.jayud.mall.model.bo.OrderCaseForm;
-import com.jayud.mall.model.bo.QueryOrderInfoForm;
+import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.*;
 import com.jayud.mall.model.vo.*;
-import com.jayud.mall.service.IOrderCaseService;
-import com.jayud.mall.service.IOrderClearanceFileService;
-import com.jayud.mall.service.IOrderCustomsFileService;
-import com.jayud.mall.service.IOrderInfoService;
+import com.jayud.mall.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -60,6 +57,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Autowired
     IOrderCaseService orderCaseService;
+
+    @Autowired
+    IOrderCopeReceivableService orderCopeReceivableService;
+
+    @Autowired
+    IOrderCopeWithService orderCopeWithService;
+
 
 
     @Override
@@ -186,6 +190,26 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderInfoVO.setOrderCopeWithVOList(orderCopeWithVOList);
 
         return CommonResult.success(orderInfoVO);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CommonResult updateOrderInfoCost(OrderInfoCostForm form) {
+        /*订单对应应收费用明细*/
+        List<OrderCopeReceivableForm> orderCopeReceivableVOList = form.getOrderCopeReceivableVOList();
+        if(orderCopeReceivableVOList != null && orderCopeReceivableVOList.size() > 0){
+            List<OrderCopeReceivable> orderCopeReceivables =
+                    ConvertUtil.convertList(orderCopeReceivableVOList, OrderCopeReceivable.class);
+            orderCopeReceivableService.saveOrUpdateBatch(orderCopeReceivables);
+        }
+        /*订单对应应付费用明细*/
+        List<OrderCopeWithForm> orderCopeWithVOList = form.getOrderCopeWithVOList();
+        if(orderCopeWithVOList != null && orderCopeWithVOList.size() > 0){
+            List<OrderCopeWith> orderCopeWiths =
+                    ConvertUtil.convertList(orderCopeWithVOList, OrderCopeWith.class);
+            orderCopeWithService.saveOrUpdateBatch(orderCopeWiths);
+        }
+        return CommonResult.success("修改订单费用信息成功！");
     }
 
 

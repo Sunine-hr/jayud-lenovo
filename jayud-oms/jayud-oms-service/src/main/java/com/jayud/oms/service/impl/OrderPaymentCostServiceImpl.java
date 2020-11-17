@@ -32,4 +32,14 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
     public List<DriverOrderPaymentCostVO> getDriverOrderPaymentCost(String orderNo) {
         return this.baseMapper.getDriverOrderPaymentCost(orderNo);
     }
+
+    /**
+     * 判断是否司机已经提交费用
+     */
+    @Override
+    public boolean isCostSubmitted(String orderNo) {
+        QueryWrapper<OrderPaymentCost> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderPaymentCost::getOrderNo, orderNo);
+        return this.count(condition) > 0;
+    }
 }

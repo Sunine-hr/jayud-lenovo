@@ -246,9 +246,15 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             List<DriverOrderTakeAdrVO> adrs = this.orderTakeAdrService.getDriverOrderTakeAdr(orderNoList);
             list.forEach(tmp -> {
                 tmp.groupAddr(adrs);
-                tmp.setTakeOrders(form.getExcludeOrderIds());
+                tmp.setTakeOrders(form.getOrderIds() == null ? form.getExcludeOrderIds() : form.getOrderIds());
+            });
+            //组装提货和送货地址
+            list.forEach(tmp -> {
+                tmp.assemblyAddr();
+                tmp.assemblyGoodsName();
             });
         }
+
         return list;
     }
 
@@ -294,12 +300,13 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
                 orderTransport.setCarWeighNum(form.getCarWeighNum());
                 break;
             case CommonConstant.CAR_GO_CUSTOMS://车辆通关
-                orderTransport.setStatus(form.getStatus());
-                if (OrderStatusEnum.TMS_T_9_2.getCode().equals(form.getStatus())) {
-                    orderTransport.setGoCustomsTime(DateUtils.str2LocalDateTime(form.getPreGoCustomsTime(), DateUtils.DATE_TIME_PATTERN));
-                } else {
-                    orderTransport.setGoCustomsTime(DateUtils.str2LocalDateTime(form.getGoCustomsTime(), DateUtils.DATE_TIME_PATTERN));
+                code = form.getStatus();
+                if (OrderStatusEnum.TMS_T_9_1.getCode().equals(form.getStatus())) {
+                    orderTransport.setPreGoCustomsTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN));
+                } else if (OrderStatusEnum.TMS_T_9_2.getCode().equals(form.getStatus())) {
+                    orderTransport.setGoCustomsTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN));
                 }
+
                 if (OrderStatusEnum.TMS_T_9.getCode().equals(form.getStatus())) {
                     //记录操作成功状态
                     desc = OrderStatusEnum.TMS_T_9.getDesc();

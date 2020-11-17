@@ -36,14 +36,38 @@ public class DriverOrderTransportVO {
     @ApiModelProperty(value = "订单状态")
     private String status;
 
+    @ApiModelProperty(value = "省（提货）")
+    private String pickUpProvince;
+
+    @ApiModelProperty(value = "市（提货）")
+    private String pickUpCity;
+
+    @ApiModelProperty(value = "区(提货)")
+    private String pickUpArea;
+
+    @ApiModelProperty(value = "省（送货）")
+    private String receivingProvince;
+
+    @ApiModelProperty(value = "市（送货）")
+    private String receivingCity;
+
+    @ApiModelProperty(value = "区(送货)")
+    private String receivingArea;
+
+    @ApiModelProperty(value = "货物信息")
+    private String goodsDesc;
+
+    @ApiModelProperty(value = "中港订单时间")
+    private String time;
+
     @ApiModelProperty(value = "提货信息")
-    private List<DriverOrderTakeAdrVO> pickUpGoodsLis = new ArrayList<>();
+    private List<DriverOrderTakeAdrVO> pickUpGoodsList = new ArrayList<>();
 
     @ApiModelProperty(value = "送货信息")
-    private List<DriverOrderTakeAdrVO> receivingGoodsList = new ArrayList<>();
+    private DriverOrderTakeAdrVO receivingGoods;
 
     @ApiModelProperty(value = "是否接单")
-    private boolean isTakeOrders;
+    private Boolean acceptOrder;
 
     @ApiModelProperty(value = "录用费用明细(查看详细信息才会有数据)")
     private List<DriverOrderPaymentCostVO> employmentFeeDetails = new ArrayList<>();
@@ -76,11 +100,12 @@ public class DriverOrderTransportVO {
         totalCost = new ArrayList<>();
         map.forEach((k, v) -> {
             Map<String, String> tmp = new HashMap<>();
-            tmp.put("desc",k + "总计");
-            tmp.put("totalAmount",v + k);
+            tmp.put("desc", k + "总计");
+            tmp.put("totalAmount", v + k);
             totalCost.add(tmp);
         });
     }
+
 
     public void setStatus(String status) {
         this.status = OrderStatusEnum.getDesc(status);

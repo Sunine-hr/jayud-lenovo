@@ -32,4 +32,9 @@ public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
      */
     List<DriverOrderPaymentCostVO>  getDriverOrderPaymentCost(String orderNo);
 
+    /**
+     * 判断是否司机已经提交费用
+     */
+    boolean isCostSubmitted(String orderNo);
+
 }

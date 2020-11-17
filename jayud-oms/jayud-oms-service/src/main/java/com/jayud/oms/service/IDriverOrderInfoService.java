@@ -25,4 +25,9 @@ public interface IDriverOrderInfoService extends IService<DriverOrderInfo> {
     boolean saveOrUpdateDriverOrder(DriverOrderInfo driverOrderInfo);
 
     DriverOrderInfo getByOrderId(Long orderId);
+
+    /**
+     * 修改司机接单状态
+     */
+    boolean updateStatus(Long orderId,String status);
 }

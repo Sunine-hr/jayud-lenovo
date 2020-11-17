@@ -47,5 +47,19 @@ public class DriverOrderTakeAdrVO {
     @ApiModelProperty(value = "类型(1提货 2收货)")
     private Integer oprType;
 
+    @ApiModelProperty(value = "省")
+    private String province;
 
+    @ApiModelProperty(value = "市")
+    private String city;
+
+    @ApiModelProperty(value = "区")
+    private String area;
+
+    @ApiModelProperty(value = "详细地址")
+    private String address;
+
+    public void setAddress(String address) {
+        this.address = this.province + this.city + this.area + address;
+    }
 }

@@ -6,7 +6,6 @@ import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -39,21 +38,19 @@ public class QueryDriverOrderTransportForm extends BasePageForm {
         }
 
         //首页待接货，排除已经接单订单状态是待接货
-        //运输中页面，
         switch (Objects.requireNonNull(DriverOrderStatusEnum.getEnumObj(this.status))) {
             case ALL:
-                excludeOrderIds = new ArrayList<>();
-                this.status = null;
-                excludeOrderIds.addAll(orderIds);
+                this.excludeOrderIds = new ArrayList<>();
+                this.excludeOrderIds.addAll(orderIds);
                 break;
             case PENDING:
-                excludeOrderIds = new ArrayList<>();
-                excludeOrderIds.addAll(orderIds);
+                this.excludeOrderIds = new ArrayList<>();
+                this.excludeOrderIds.addAll(orderIds);
                 break;
             case IN_TRANSIT:
             case FINISHED:
-                orderIds = new ArrayList<>();
-                orderIds.addAll(orderIds);
+                this.orderIds = new ArrayList<>();
+                this.orderIds.addAll(orderIds);
                 break;
             default:
         }

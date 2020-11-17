@@ -97,7 +97,7 @@ public class ExternalApiController {
     }
 
 
-    @ApiOperation(value = "分页查询司机的中港订单信息")
+    @ApiOperation(value = "查询司机的中港订单信息")
     @RequestMapping(value = "/api/getDriverOrderTransport")
     public ApiResult getDriverOrderTransport(@RequestBody QueryDriverOrderTransportForm form) {
         //状态转换成中港订单

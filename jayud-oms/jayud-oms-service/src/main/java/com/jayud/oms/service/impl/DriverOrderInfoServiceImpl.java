@@ -1,10 +1,10 @@
 package com.jayud.oms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.jayud.oms.model.po.DriverOrderInfo;
-import com.jayud.oms.mapper.DriverOrderInfoMapper;
-import com.jayud.oms.service.IDriverOrderInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.oms.mapper.DriverOrderInfoMapper;
+import com.jayud.oms.model.po.DriverOrderInfo;
+import com.jayud.oms.service.IDriverOrderInfoService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -51,5 +51,15 @@ public class DriverOrderInfoServiceImpl extends ServiceImpl<DriverOrderInfoMappe
         QueryWrapper<DriverOrderInfo> condition = new QueryWrapper<>();
         condition.lambda().eq(DriverOrderInfo::getOrderId, orderId);
         return this.baseMapper.selectOne(condition);
+    }
+
+    /**
+     * 修改司机接单状态
+     */
+    @Override
+    public boolean updateStatus(Long orderId, String status) {
+        QueryWrapper<DriverOrderInfo> condition = new QueryWrapper<>();
+        condition.lambda().eq(DriverOrderInfo::getOrderId, orderId);
+        return this.update(new DriverOrderInfo().setStatus(status), condition);
     }
 }

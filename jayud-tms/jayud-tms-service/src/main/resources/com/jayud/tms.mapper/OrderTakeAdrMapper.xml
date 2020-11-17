@@ -53,7 +53,7 @@
             WHERE ota.`order_no` = #{orderNo}
     </select>
 
-    <select id="getDriverOrderTakeAdr"  resultType="com.jayud.tms.model.vo.DriverOrderTakeAdrVO">
+    <select id="getDriverOrderTakeAdr" resultType="com.jayud.tms.model.vo.DriverOrderTakeAdrVO">
         SELECT
         ota.id,
         ota.order_no orderNo,
@@ -62,7 +62,11 @@
         da.`address`,
         take_time takeTime,
         ota.`goods_desc` goodsDesc,
-        ota.opr_type oprType
+        ota.opr_type oprType,
+        (select name from region_city where id=da.province) province,
+        (select name from region_city where id=da.city) city,
+        (select name from region_city where id=da.area) area,
+        address
         FROM
         order_take_adr ota
         LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`

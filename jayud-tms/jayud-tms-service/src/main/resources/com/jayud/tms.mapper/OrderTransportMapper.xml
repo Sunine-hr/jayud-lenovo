@@ -91,7 +91,6 @@
           osc.`remarks`,
           ot.`cntr_pic` cntrPic,
           ot.`cntr_pic_name` cntrPicName,
-          wi.`company_name` companyName,
           wi.`contacts`,
           wi.`contact_number` contactNumber,
           wi.`address`,
@@ -282,10 +281,16 @@
     <select id="getDriverOrderTransport" parameterType="com.jayud.tms.model.bo.QueryDriverOrderTransportForm"
             resultType="com.jayud.tms.model.vo.DriverOrderTransportVO">
         select
-        ot.id,ot.order_no orderNo,pf.name portName,ot.status
+        ot.id,ot.order_no orderNo,pf.name portName,ot.status,
+        ot.created_time time,
+        (select name from region_city where id=w.state_code) receivingProvince,
+        (select name from region_city where id=w.city_code) receivingCity,
+        (select name from region_city where id=w.area_code) receivingArea,
+        w.address,w.contacts,w.contact_number contactNumber
         from
         order_send_cars oc left join order_transport ot on oc.order_no =ot.order_no
         left join port_info pf on pf.id_code = ot.port_code
+        left join warehouse_info w on oc.warehouse_info_id= w.id
         <where>
             <if test="form.status !=null and form.status !=''">
                 and ot.status = #{form.status}

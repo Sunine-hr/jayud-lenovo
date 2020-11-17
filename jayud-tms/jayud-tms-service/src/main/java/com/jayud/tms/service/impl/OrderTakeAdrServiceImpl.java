@@ -38,7 +38,7 @@ public class OrderTakeAdrServiceImpl extends ServiceImpl<OrderTakeAdrMapper, Ord
     @Override
     public int getDeliveryAddressNum(String orderNo) {
         QueryWrapper<OrderTakeAdr> condition = new QueryWrapper<>();
-        condition.lambda().eq(OrderTakeAdr::getOrderNo, orderNo);
+        condition.lambda().eq(OrderTakeAdr::getOrderNo, orderNo).eq(OrderTakeAdr::getOprType, 2);
         return this.count(condition);
     }
 

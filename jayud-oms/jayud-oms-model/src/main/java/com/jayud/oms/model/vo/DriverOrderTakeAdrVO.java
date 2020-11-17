@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 /**
  * <p>
  * 订单对应收货地址
@@ -41,5 +39,16 @@ public class DriverOrderTakeAdrVO {
     @ApiModelProperty(value = "类型(1提货 2收货)")
     private Integer oprType;
 
+    @ApiModelProperty(value = "省")
+    private String province;
+
+    @ApiModelProperty(value = "市")
+    private String city;
+
+    @ApiModelProperty(value = "区")
+    private String area;
+
+    @ApiModelProperty(value = "详细地址")
+    private String address;
 
 }

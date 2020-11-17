@@ -29,6 +29,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -72,7 +73,7 @@ public class MiniAppController {
 
     @PostMapping("/getDriverOrderTransport")
     @ApiOperation(value = "查看司机中港订单")
-    public CommonResult getDriverOrderTransport(@Valid @RequestBody QueryDriverOrderTransportForm form) {
+    public CommonResult<List<DriverOrderTransportVO>> getDriverOrderTransport(@Valid @RequestBody QueryDriverOrderTransportForm form) {
 
         form.setDriverId(Long.valueOf(SecurityUtil.getUserInfo()));
         String status = form.getStatus();
@@ -87,18 +88,25 @@ public class MiniAppController {
         //组装订单
         form.assemblyOrder(orderIds);
 
-        //查全部，要已经接单数据带过去
-
-        //查询待接单,把已经接单订单带到排除id集合里面
-        //查询
-        //在首页，先查询司机接单表信息，看是否存在数据，把已经接单信息排除掉，剩下就是待接单信息，
-        // 要传待接单状态，然后进行转换状态去查询
-        Object data = tmsClient.getDriverOrderTransport(form).getData();
-        List<DriverOrderTransportVO> tmp = null;
-        if (data != null) {
-            tmp = (List<DriverOrderTransportVO>) data;
+        //查询中港订单信息
+        ApiResult result = tmsClient.getDriverOrderTransport(form);
+        Gson gson = new Gson();
+        Type type = new TypeToken<ApiResult<List<DriverOrderTransportVO>>>() {
+        }.getType();
+        ApiResult<List<DriverOrderTransportVO>> data = gson.fromJson(gson.toJson(result), type);
+        List<DriverOrderTransportVO> tmps = data.getData();
+        if (tmps != null) {
+            for (DriverOrderTransportVO driverOrderTransportVO : tmps) {
+                if (this.orderPaymentCostService.isCostSubmitted(driverOrderTransportVO.getOrderNo())) {
+                    driverOrderTransportVO.setIsFeeSubmitted(true);
+                } else {
+                    driverOrderTransportVO.setIsFeeSubmitted(false);
+                }
+            }
         }
-        return CommonResult.success(tmp);
+
+
+        return CommonResult.success(tmps);
     }
 
     @PostMapping("/confirmOrderReceiving")
@@ -133,7 +141,7 @@ public class MiniAppController {
 
     @PostMapping("/initEmploymentFeeBox")
     @ApiOperation(value = "录用费用下拉选项")
-    public CommonResult initEmploymentFeeBox() {
+    public CommonResult<Map<String, List<InitComboxStrVO>>> initEmploymentFeeBox() {
         List<CostInfo> costInfos = this.costInfoService.getCostInfoByStatus(StatusEnum.ENABLE.getCode());
         List<InitComboxStrVO> boxOne = new ArrayList<>();
         for (CostInfo costInfo : costInfos) {
@@ -153,7 +161,7 @@ public class MiniAppController {
             comboxStrVO.setNote(currencyInfo.getExchangeRate());
             initComboxStrVOS.add(comboxStrVO);
         }
-        Map<String, Object> map = new HashMap<>();
+        Map<String, List<InitComboxStrVO>> map = new HashMap<>();
         map.put("costInfos", boxOne);
         map.put("currencys", initComboxStrVOS);
 
@@ -239,7 +247,7 @@ public class MiniAppController {
      */
     @PostMapping("/getDriverOrderTransportDetail")
     @ApiOperation(value = "根据订单编号查询司机的中港订单详情 orderNo=订单编号,orderId=订单id")
-    public CommonResult getDriverOrderTransportDetail(@RequestBody Map<String, String> map) {
+    public CommonResult<DriverOrderTransportVO> getDriverOrderTransportDetail(@RequestBody Map<String, String> map) {
         QueryDriverOrderTransportForm form = new QueryDriverOrderTransportForm();
         form.setOrderNo(map.get("orderNo"));
         String orderId = map.get("orderId");
@@ -263,11 +271,11 @@ public class MiniAppController {
         DriverOrderTransportVO driverOrderTransportVO = datas.get(0);
         DriverOrderInfo tmp = this.driverOrderInfoService.getByOrderId(Long.parseLong(orderId));
         if (tmp == null) {
-            driverOrderTransportVO.setTakeOrders(false);
+            driverOrderTransportVO.setAcceptOrder(false);
             driverOrderTransportVO.setIsFeeSubmitted(false);
             return CommonResult.success(driverOrderTransportVO);
         } else {
-            driverOrderTransportVO.setTakeOrders(true);
+            driverOrderTransportVO.setAcceptOrder(true);
 
         }
 
@@ -357,7 +365,7 @@ public class MiniAppController {
         if (org.apache.commons.lang.StringUtils.isEmpty(orderNo)) {
             return CommonResult.error(ResultEnum.VALIDATE_FAILED);
         }
-        List<Map<String, Object>> process = this.getProcess(orderNo, false,new HashMap<>());
+        List<Map<String, Object>> process = this.getProcess(orderNo, false, new HashMap<>());
         return CommonResult.success(process);
     }
 
@@ -383,10 +391,16 @@ public class MiniAppController {
         //获取当前流程节点状态
         List<Map<String, Object>> process = this.getProcess(orderNo, true, cacheValue);
         //判断节点状态是否和用户操作一致
-        Object currentStatus = process.get(0).get("id");
+        Map<String, Object> map = process.get(0);
+        Integer currentStatus = MapUtil.getInt(map, "id");
+        Boolean isEdit = MapUtil.getBool(map, "isEdit");
         if (!currentStatus.equals(form.getOptStatus())) {
             log.warn("操作流程不一致，前台传入状态{},订单现阶段状态{}", form.getOptStatus(), currentStatus);
             return CommonResult.error(ResultEnum.OPR_FAIL);
+        } else {
+            if (!isEdit) {
+                return CommonResult.error(400, "数据已提交");
+            }
         }
 
         //根据状态进行业务操作
@@ -401,25 +415,30 @@ public class MiniAppController {
                 form.setCmd(CommonConstant.CAR_WEIGH);
                 break;
             case 2:
-                if (form.getOptStatus() == null) {
+                if (org.apache.commons.lang.StringUtils.isEmpty(form.getStatus())) {
                     return CommonResult.error(400, "请选择通关状态");
                 }
                 form.setCmd(CommonConstant.CAR_GO_CUSTOMS);
+                break;
             case 3:
                 form.setCmd(CommonConstant.CAR_SEND);
                 break;
             case 4:
                 if (MapUtil.getInt(cacheValue, "deliveryAddressNum") > 1) {
                     form.setCmd(CommonConstant.CAR_ENTER_WAREHOUSE);
-                }else {
+                } else {
                     form.setCmd(CommonConstant.CONFIRM_SIGN_IN);
                 }
-                break;
+                //执行反馈状态操作
+                if (HttpStatus.SC_OK == this.tmsClient.doDriverFeedbackStatus(form).getCode()) {
+                    //修改司机接单状态
+                    this.driverOrderInfoService.updateStatus(form.getOrderId(), DriverOrderStatusEnum.FINISHED.getCode());
+                    return CommonResult.success();
+                } else {
+                    return CommonResult.error(ResultEnum.OPR_FAIL);
+                }
         }
-
-
         this.tmsClient.doDriverFeedbackStatus(form);
-
         return CommonResult.success();
     }
 

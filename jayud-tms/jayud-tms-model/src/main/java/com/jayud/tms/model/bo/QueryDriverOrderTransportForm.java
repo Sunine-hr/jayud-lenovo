@@ -35,6 +35,8 @@ public class QueryDriverOrderTransportForm extends BasePageForm {
             case "1":
                 this.status = OrderStatusEnum.TMS_T_4.getCode();
                 break;
+            default:
+                this.status=null;
         }
     }
 }

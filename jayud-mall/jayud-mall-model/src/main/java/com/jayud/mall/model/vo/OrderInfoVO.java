@@ -77,6 +77,10 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "订单商品list")
     private List<OrderShopVO> orderShopVOList;
 
+    /*订单对应箱号信息:order_case*/
+    @ApiModelProperty(value = "订单箱号list")
+    private List<OrderCaseVO> orderCaseVOList;
+
 
 
 }

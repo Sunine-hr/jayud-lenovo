@@ -9,6 +9,8 @@ import com.jayud.mall.model.vo.OrderCaseVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * <p>
  * 订单对应箱号信息 Mapper 接口
@@ -29,4 +31,10 @@ public interface OrderCaseMapper extends BaseMapper<OrderCase> {
      */
     IPage<OrderCaseVO> findOrderCaseByPage(Page<OrderCaseVO> page, QueryOrderCaseForm form);
 
+    /**
+     * 根据订单id，查询订单箱号
+     * @param orderId
+     * @return
+     */
+    List<OrderCaseVO> findOrderShopByOrderId(Long orderId);
 }

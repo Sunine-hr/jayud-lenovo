@@ -82,6 +82,10 @@ public class OrderCaseVO {
     @ApiModelProperty(value = "备注", position = 24)
     private String remark;
 
+    /*客户预报长宽高*/
+    @ApiModelProperty(value = "客户预报长宽高")
+    private String asnLwg;
+
     /*订单信息*/
     @ApiModelProperty(value = "订单号", position = 25)
     private String orderNo;
@@ -95,6 +99,7 @@ public class OrderCaseVO {
 
     @ApiModelProperty(value = "公司名", position = 28)
     private String company;
+
 
 
 }

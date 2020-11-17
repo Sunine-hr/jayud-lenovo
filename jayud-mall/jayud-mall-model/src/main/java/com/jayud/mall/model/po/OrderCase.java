@@ -1,15 +1,17 @@
 package com.jayud.mall.model.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -41,55 +43,55 @@ public class OrderCase extends Model<OrderCase> {
     private String fabNo;
 
     @ApiModelProperty(value = "客户测量的长度，单位cm")
-    private Double asnLength;
+    private BigDecimal asnLength;
 
     @ApiModelProperty(value = "客户测量的重量，单位kg")
-    private Double asnWidth;
+    private BigDecimal asnWidth;
 
     @ApiModelProperty(value = "客户测量的高度，单位cm")
-    private Double asnHeight;
+    private BigDecimal asnHeight;
 
     @ApiModelProperty(value = "客户测量的重量，单位kg")
-    private Double asnWeight;
+    private BigDecimal asnWeight;
 
     @ApiModelProperty(value = "预报长宽高计算得到的体积，单位m³")
-    private Double asnVolume;
+    private BigDecimal asnVolume;
 
     @ApiModelProperty(value = "客户填写时间")
     private LocalDateTime asnWeighDate;
 
     @ApiModelProperty(value = "仓库测量的长度，单位cm")
-    private Double wmsLength;
+    private BigDecimal wmsLength;
 
     @ApiModelProperty(value = "仓库测量的高度，单位cm")
-    private Double wmsHeight;
+    private BigDecimal wmsHeight;
 
     @ApiModelProperty(value = "仓库测量的宽度，单位cm")
-    private Double wmsWidth;
+    private BigDecimal wmsWidth;
 
     @ApiModelProperty(value = "仓库测量的重量，单位kg")
-    private Double wmsWeight;
+    private BigDecimal wmsWeight;
 
     @ApiModelProperty(value = "仓库计量长宽高得到的体积，单位m³")
-    private Double wmsVolume;
+    private BigDecimal wmsVolume;
 
     @ApiModelProperty(value = "仓库测量时间")
     private LocalDateTime wmsWeighDate;
 
     @ApiModelProperty(value = "最终确认重量，单位kg")
-    private Double confirmLength;
+    private BigDecimal confirmLength;
 
     @ApiModelProperty(value = "最终确认高度，单位cm")
-    private Double confirmHeight;
+    private BigDecimal confirmHeight;
 
     @ApiModelProperty(value = "最终确认宽度，单位cm")
-    private Double confirmWidth;
+    private BigDecimal confirmWidth;
 
     @ApiModelProperty(value = "最终确认重量，单位cm")
-    private Double confirmWeight;
+    private BigDecimal confirmWeight;
 
     @ApiModelProperty(value = "最终确认体积，单位 m³")
-    private Double confirmVolume;
+    private BigDecimal confirmVolume;
 
     @ApiModelProperty(value = "最终确定时间")
     private LocalDateTime confirmWeighDate;

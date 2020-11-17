@@ -6,18 +6,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.mall.mapper.OrderClearanceFileMapper;
-import com.jayud.mall.mapper.OrderCustomsFileMapper;
-import com.jayud.mall.mapper.OrderInfoMapper;
-import com.jayud.mall.mapper.OrderShopMapper;
+import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.QueryOrderInfoForm;
 import com.jayud.mall.model.po.OrderClearanceFile;
 import com.jayud.mall.model.po.OrderCustomsFile;
 import com.jayud.mall.model.po.OrderInfo;
-import com.jayud.mall.model.vo.OrderClearanceFileVO;
-import com.jayud.mall.model.vo.OrderCustomsFileVO;
-import com.jayud.mall.model.vo.OrderInfoVO;
-import com.jayud.mall.model.vo.OrderShopVO;
+import com.jayud.mall.model.vo.*;
 import com.jayud.mall.service.IOrderClearanceFileService;
 import com.jayud.mall.service.IOrderCustomsFileService;
 import com.jayud.mall.service.IOrderInfoService;
@@ -48,6 +42,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Autowired
     OrderShopMapper orderShopMapper;
+
+    @Autowired
+    OrderCaseMapper orderCaseMapper;
 
     @Autowired
     IOrderCustomsFileService orderCustomsFileService;
@@ -134,7 +131,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<OrderShopVO> orderShopVOList = orderShopMapper.findOrderShopByOrderId(orderId);
         orderInfoVO.setOrderShopVOList(orderShopVOList);
 
-        /**/
+        /*订单对应箱号信息:order_case*/
+        List<OrderCaseVO> orderCaseVOList = orderCaseMapper.findOrderShopByOrderId(orderId);
+        orderInfoVO.setOrderCaseVOList(orderCaseVOList);
 
         return CommonResult.success(orderInfoVO);
     }

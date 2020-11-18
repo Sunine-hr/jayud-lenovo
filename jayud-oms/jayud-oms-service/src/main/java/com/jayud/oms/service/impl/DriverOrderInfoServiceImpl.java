@@ -3,13 +3,15 @@ package com.jayud.oms.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.oms.mapper.DriverOrderInfoMapper;
+import com.jayud.oms.model.enums.DriverFeedbackStatusEnum;
+import com.jayud.oms.model.enums.DriverOrderStatusEnum;
 import com.jayud.oms.model.po.DriverOrderInfo;
 import com.jayud.oms.service.IDriverOrderInfoService;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -68,7 +70,23 @@ public class DriverOrderInfoServiceImpl extends ServiceImpl<DriverOrderInfoMappe
      */
     @Override
     public boolean isExistOrder(Long orderId) {
+        QueryWrapper<DriverOrderInfo> condition = new QueryWrapper<>();
+        condition.lambda().eq(DriverOrderInfo::getOrderId, orderId);
+        return this.count(condition) > 0;
+    }
 
-        return false;
+    @Override
+    public void synchronizeTmsStatus(Map<String, Object> processNode, Long orderId) {
+        //查询流程节点是否完成
+        if (DriverFeedbackStatusEnum.FOUR.getCode().equals(processNode.get("id"))
+                && !Boolean.parseBoolean(processNode.get("isEdit").toString())) {
+            //同步状态
+            DriverOrderInfo driverOrderInfo = this.getByOrderId(orderId);
+            if (!DriverOrderStatusEnum.FINISHED.getCode().equals(driverOrderInfo.getStatus())) {
+                this.saveOrUpdateDriverOrder(new DriverOrderInfo().setId(driverOrderInfo.getId())
+                        .setStatus(DriverOrderStatusEnum.FINISHED.getCode()));
+
+            }
+        }
     }
 }

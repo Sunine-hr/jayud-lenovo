@@ -90,7 +90,7 @@ public interface IOrderTransportService extends IService<OrderTransport> {
     void doDriverFeedbackStatus(OprStatusForm form);
 
     /**
-     * 小程序司机货物派送（补出仓和入仓数据）
+     * 小程序司机车辆通关（补出仓和入仓数据）,送货地址只有一个时候才做这个操作
      */
-    void driverGoodsDelivery(OprStatusForm form);
+    void driverCustomsClearanceVehicles(OprStatusForm form);
 }

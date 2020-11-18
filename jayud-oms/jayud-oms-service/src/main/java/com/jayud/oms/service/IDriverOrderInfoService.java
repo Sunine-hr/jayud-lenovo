@@ -4,6 +4,7 @@ import com.jayud.oms.model.po.DriverOrderInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -29,10 +30,15 @@ public interface IDriverOrderInfoService extends IService<DriverOrderInfo> {
     /**
      * 修改司机接单状态
      */
-    boolean updateStatus(Long orderId,String status);
+    boolean updateStatus(Long orderId, String status);
 
     /**
      * 订单信息是否存在
      */
     boolean isExistOrder(Long orderId);
+
+    /**
+     * 同步中港订单状态
+     */
+    void synchronizeTmsStatus(Map<String, Object> processNode, Long orderId);
 }

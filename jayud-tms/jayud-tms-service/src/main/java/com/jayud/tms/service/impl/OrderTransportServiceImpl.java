@@ -62,8 +62,8 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 
     @Override
     public boolean createOrderTransport(InputOrderTransportForm form) {
-        OrderTransport orderTransport = ConvertUtil.convert(form,OrderTransport.class);
-        if(orderTransport == null){
+        OrderTransport orderTransport = ConvertUtil.convert(form, OrderTransport.class);
+        if (orderTransport == null) {
             return false;
         }
         List<InputOrderTakeAdrForm> orderTakeAdrForms1 = form.getTakeAdrForms1();
@@ -80,27 +80,27 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         List<InputOrderTakeAdrForm> handleTakeAdrForms = new ArrayList<>();
         handleTakeAdrForms.addAll(orderTakeAdrForms1);
         handleTakeAdrForms.addAll(orderTakeAdrForms2);
-        for(InputOrderTakeAdrForm inputOrderTakeAdrForm : handleTakeAdrForms){
+        for (InputOrderTakeAdrForm inputOrderTakeAdrForm : handleTakeAdrForms) {
             //如果收货提货信息都不填,不保存该信息,视为恶意操作
-            if(inputOrderTakeAdrForm.getDeliveryId() != null){
+            if (inputOrderTakeAdrForm.getDeliveryId() != null) {
                 orderTakeAdrForms.add(inputOrderTakeAdrForm);
             }
         }
 
-        if(orderTransport.getId() != null){//修改
+        if (orderTransport.getId() != null) {//修改
             //修改时,先把以前的收货信息清空
             QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.eq("order_no",form.getOrderNo());
+            queryWrapper.eq("order_no", form.getOrderNo());
             orderTakeAdrService.remove(queryWrapper);//删除货物信息
             orderTransport.setUpdatedTime(LocalDateTime.now());
             orderTransport.setUpdatedUser(form.getLoginUser());
-        }else {//新增
+        } else {//新增
             //生成订单号
-            String orderNo = StringUtils.loadNum(CommonConstant.T,12);
-            while (true){
-                if(!isExistOrder(orderNo)){//重复
-                    orderNo = StringUtils.loadNum(CommonConstant.T,12);
-                }else {
+            String orderNo = StringUtils.loadNum(CommonConstant.T, 12);
+            while (true) {
+                if (!isExistOrder(orderNo)) {//重复
+                    orderNo = StringUtils.loadNum(CommonConstant.T, 12);
+                } else {
                     break;
                 }
             }
@@ -108,7 +108,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             orderTransport.setCreatedUser(form.getLoginUser());
         }
         for (InputOrderTakeAdrForm inputOrderTakeAdrForm : orderTakeAdrForms) {
-            OrderTakeAdr orderTakeAdr = ConvertUtil.convert(inputOrderTakeAdrForm,OrderTakeAdr.class);
+            OrderTakeAdr orderTakeAdr = ConvertUtil.convert(inputOrderTakeAdrForm, OrderTakeAdr.class);
             orderTakeAdr.setTakeTime(inputOrderTakeAdrForm.getTakeTimeStr());
             orderTakeAdr.setOrderNo(orderTransport.getOrderNo());
             orderTakeAdrService.save(orderTakeAdr);
@@ -123,9 +123,9 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     @Override
     public boolean isExistOrder(String orderNo) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(SqlConstant.ORDER_NO,orderNo);
+        queryWrapper.eq(SqlConstant.ORDER_NO, orderNo);
         List<OrderTransport> orderTransports = baseMapper.selectList(queryWrapper);
-        if(orderTransports == null || orderTransports.size() == 0){
+        if (orderTransports == null || orderTransports.size() == 0) {
             return true;
         }
         return false;
@@ -144,19 +144,19 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         Integer totalAmount = 0;//总件数
         Double totalWeight = 0.0;//总重量
         for (InputOrderTakeAdrVO inputOrderTakeAdrVO : inputOrderTakeAdrVOS) {
-            if(CommonConstant.VALUE_1.equals(String.valueOf(inputOrderTakeAdrVO.getOprType()))){//提货
+            if (CommonConstant.VALUE_1.equals(String.valueOf(inputOrderTakeAdrVO.getOprType()))) {//提货
                 orderTakeAdrForms1.add(inputOrderTakeAdrVO);
                 Integer pieceAmount = inputOrderTakeAdrVO.getPieceAmount();
                 Double weight = inputOrderTakeAdrVO.getWeight();
-                if(inputOrderTakeAdrVO.getPieceAmount() == null){
+                if (inputOrderTakeAdrVO.getPieceAmount() == null) {
                     pieceAmount = 0;
                 }
-                if(inputOrderTakeAdrVO.getWeight() == null){
+                if (inputOrderTakeAdrVO.getWeight() == null) {
                     weight = 0.0;
                 }
                 totalAmount = totalAmount + pieceAmount;
                 totalWeight = totalWeight + weight;
-            }else {
+            } else {
                 orderTakeAdrForms2.add(inputOrderTakeAdrVO);  //送货
             }
         }
@@ -170,7 +170,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     @Override
     public IPage<OrderTransportVO> findTransportOrderByPage(QueryOrderTmsForm form) {
         //定义分页参数
-        Page<OrderTransportVO> page = new Page(form.getPageNum(),form.getPageSize());
+        Page<OrderTransportVO> page = new Page(form.getPageNum(), form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.desc("ot.id"));
         IPage<OrderTransportVO> pageInfo = baseMapper.findTransportOrderByPage(page, form);
@@ -179,10 +179,10 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 
     @Override
     public SendCarPdfVO initPdfData(String orderNo, String classCode) {
-        SendCarPdfVO sendCarPdfVO = baseMapper.initPdfData(orderNo,classCode);
+        SendCarPdfVO sendCarPdfVO = baseMapper.initPdfData(orderNo, classCode);
         //香港清关地址又说不要了BUG-237
         sendCarPdfVO.setClearCustomsAddress("");
-        if(sendCarPdfVO == null){
+        if (sendCarPdfVO == null) {
             return new SendCarPdfVO();
         }
         List<InputOrderTakeAdrVO> inputOrderTakeAdrVOS = orderTakeAdrService.findTakeGoodsInfo(orderNo);
@@ -192,35 +192,35 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             inputOrderTakeAdrVO.setVehicleSize(sendCarPdfVO.getVehicleSize());
             inputOrderTakeAdrVO.setVehicleType(sendCarPdfVO.getVehicleType());
             inputOrderTakeAdrVO.setCntrNo(sendCarPdfVO.getCntrNo());
-            if(CommonConstant.VALUE_1.equals(String.valueOf(inputOrderTakeAdrVO.getOprType()))){//提货
-                takeGoodsInfo1.add(ConvertUtil.convert(inputOrderTakeAdrVO,TakeGoodsInfoVO.class));
-            }else {
-                takeGoodsInfo2.add(ConvertUtil.convert(inputOrderTakeAdrVO,TakeGoodsInfoVO.class));
+            if (CommonConstant.VALUE_1.equals(String.valueOf(inputOrderTakeAdrVO.getOprType()))) {//提货
+                takeGoodsInfo1.add(ConvertUtil.convert(inputOrderTakeAdrVO, TakeGoodsInfoVO.class));
+            } else {
+                takeGoodsInfo2.add(ConvertUtil.convert(inputOrderTakeAdrVO, TakeGoodsInfoVO.class));
             }
         }
         //提货信息
         sendCarPdfVO.setTakeInfo1(takeGoodsInfo1);
         //送货地址/联系人/联系电话/装车要求
         OrderSendCarsVO orderSendCarsVO = orderSendCarsService.getOrderSendInfo(orderNo);
-        if(orderSendCarsVO == null){
+        if (orderSendCarsVO == null) {
             return sendCarPdfVO;
         }
-        if(takeGoodsInfo2.size() > 1){//获取中转仓信息
+        if (takeGoodsInfo2.size() > 1) {//获取中转仓信息
             sendCarPdfVO.setDeliveryContacts(orderSendCarsVO.getWarehouseContacts());
             String provinceName = orderSendCarsVO.getProvinceName() == null ? "" : orderSendCarsVO.getProvinceName();
-            String cityName = orderSendCarsVO.getCityName() == null ? "":orderSendCarsVO.getCityName();
-            String address = orderSendCarsVO.getAddress() == null ?"":orderSendCarsVO.getAddress();
-            sendCarPdfVO.setDeliveryAddress(orderSendCarsVO.getCountryName()+provinceName+cityName+address);
+            String cityName = orderSendCarsVO.getCityName() == null ? "" : orderSendCarsVO.getCityName();
+            String address = orderSendCarsVO.getAddress() == null ? "" : orderSendCarsVO.getAddress();
+            sendCarPdfVO.setDeliveryAddress(orderSendCarsVO.getCountryName() + provinceName + cityName + address);
             sendCarPdfVO.setDeliveryPhone(orderSendCarsVO.getWarehouseNumber());
-        }else if(takeGoodsInfo2.size() == 1){
+        } else if (takeGoodsInfo2.size() == 1) {
             String provinceName = takeGoodsInfo2.get(0).getStateName() == null ? "" : takeGoodsInfo2.get(0).getStateName();
-            String cityName = takeGoodsInfo2.get(0).getCityName() == null ? "":takeGoodsInfo2.get(0).getCityName();
-            String address = takeGoodsInfo2.get(0).getAddress() == null ?"":takeGoodsInfo2.get(0).getAddress();
-            sendCarPdfVO.setDeliveryAddress(provinceName+cityName+address);
+            String cityName = takeGoodsInfo2.get(0).getCityName() == null ? "" : takeGoodsInfo2.get(0).getCityName();
+            String address = takeGoodsInfo2.get(0).getAddress() == null ? "" : takeGoodsInfo2.get(0).getAddress();
+            sendCarPdfVO.setDeliveryAddress(provinceName + cityName + address);
             sendCarPdfVO.setDeliveryContacts(takeGoodsInfo2.get(0).getContacts());
             sendCarPdfVO.setDeliveryPhone(takeGoodsInfo2.get(0).getPhone());
         }
-       sendCarPdfVO.setRemarks(orderSendCarsVO.getRemarks());
+        sendCarPdfVO.setRemarks(orderSendCarsVO.getRemarks());
         //货物信息,取提货信息
         List<GoodsInfoVO> goodsInfoVOS = new ArrayList<>();
         Integer totalPieceAmount = 0;//总件数
@@ -230,10 +230,10 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             totalPieceAmount = totalPieceAmount + takeGoodsInfoVO.getPieceAmount();
             Double weight = 0.0;
             Double volume = 0.0;
-            if(takeGoodsInfoVO.getWeight() != null){
+            if (takeGoodsInfoVO.getWeight() != null) {
                 weight = takeGoodsInfoVO.getWeight();
             }
-            if(takeGoodsInfoVO.getVolume() != null){
+            if (takeGoodsInfoVO.getVolume() != null) {
                 volume = takeGoodsInfoVO.getVolume();
             }
             totalWeight = totalWeight + weight;
@@ -403,21 +403,24 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     }
 
     /**
-     * 小程序司机货物派送（补出仓和入仓数据）
+     * 小程序司机车辆通关（补出仓和入仓数据）,送货地址只有一个时候才做这个操作
      */
     @Override
     @Transactional
-    public void driverGoodsDelivery(OprStatusForm form) {
+    public void driverCustomsClearanceVehicles(OprStatusForm form) {
+        //车辆通关
         String cmd = form.getCmd();
+        form.setCmd(cmd);
+        this.doDriverFeedbackStatus(form);
+
         //车辆入仓数据
         form.setCmd(CommonConstant.CAR_ENTER_WAREHOUSE);
         this.doDriverFeedbackStatus(form);
         //车辆出仓数据
         form.setCmd(CommonConstant.CAR_OUT_WAREHOUSE);
         this.doDriverFeedbackStatus(form);
-        //车辆派送
-        form.setCmd(cmd);
-        this.doDriverFeedbackStatus(form);
+
+
     }
 
 

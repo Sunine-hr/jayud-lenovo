@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
@@ -123,7 +124,14 @@ public class MiniAppController {
                 } else {
                     driverOrderTransportVO.setIsFeedbackFinish(false);
                 }
+                //获取节点
+                List<Map<String, Object>> process = this.getProcess(driverOrderTransportVO.getOrderNo(),
+                        OrderStatusEnum.getCode(driverOrderTransportVO.getStatus()), true, new HashMap<>());
+                //当完成签收时同步数据
+                this.driverOrderInfoService.synchronizeTmsStatus(process.get(0), driverOrderTransportVO.getId());
             }
+
+
         }
 
 
@@ -381,7 +389,7 @@ public class MiniAppController {
         if (org.apache.commons.lang.StringUtils.isEmpty(orderNo)) {
             return CommonResult.error(ResultEnum.VALIDATE_FAILED);
         }
-        List<Map<String, Object>> process = this.getProcess(orderNo, false, new HashMap<>());
+        List<Map<String, Object>> process = this.getProcess(orderNo, null, false, new HashMap<>());
         return CommonResult.success(process);
     }
 
@@ -396,7 +404,7 @@ public class MiniAppController {
         if (!result.isOk()) {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
-        if (this.driverOrderInfoService.isExistOrder(form.getOrderId())) {
+        if (!this.driverOrderInfoService.isExistOrder(form.getOrderId())) {
             return CommonResult.error(400, "请先接单,才能进行后续操作");
         }
 
@@ -408,7 +416,7 @@ public class MiniAppController {
         Long mainOrderId = this.orderInfoService.getIdByOrderNo(mainOrderNo);
         form.setMainOrderId(mainOrderId);
         //获取当前流程节点状态
-        List<Map<String, Object>> process = this.getProcess(orderNo, true, cacheValue);
+        List<Map<String, Object>> process = this.getProcess(orderNo, json.getString("status"), true, cacheValue);
         //判断节点状态是否和用户操作一致
         Map<String, Object> map = process.get(0);
         Integer currentStatus = MapUtil.getInt(map, "id");
@@ -438,6 +446,7 @@ public class MiniAppController {
                     return CommonResult.error(400, "请选择通关状态");
                 }
                 form.setCmd(CommonConstant.CAR_GO_CUSTOMS);
+                form.setNextCmd(CommonConstant.CAR_SEND);
                 break;
             case 3:
                 form.setCmd(CommonConstant.CAR_SEND);
@@ -469,7 +478,7 @@ public class MiniAppController {
             return CommonResult.error(ResultEnum.VALIDATE_FAILED);
         }
         //查询送货地址
-        ApiResult<List<DriverOrderTakeAdrVO>> result = this.tmsClient.getDriverOrderTakeAdrByOrderNo(Arrays.asList(orderNo), 2);
+        ApiResult<List<DriverOrderTakeAdrVO>> result = this.tmsClient.getDriverOrderTakeAdrByOrderNo(Collections.singletonList(orderNo), 2);
         if (!result.isOk()) {
             log.warn("查询送货地址失败");
             return CommonResult.error(ResultEnum.OPR_FAIL);
@@ -505,12 +514,16 @@ public class MiniAppController {
     /**
      * 获取流程
      */
-    private List<Map<String, Object>> getProcess(String orderNo, boolean isGetNot, Map<String, Object> cacheValue) {
-        ApiResult resultOne = this.tmsClient.getOrderTransportStatus(orderNo);
-        if (!resultOne.isOk()) {
-            log.error("远程调用查询中港订单状态失败");
-            throw new JayudBizException(ResultEnum.OPR_FAIL);
+    private List<Map<String, Object>> getProcess(String orderNo, String status, boolean isGetNot, Map<String, Object> cacheValue) {
+        if (status == null) {
+            ApiResult resultOne = this.tmsClient.getOrderTransportStatus(orderNo);
+            if (!resultOne.isOk()) {
+                log.error("远程调用查询中港订单状态失败");
+                throw new JayudBizException(ResultEnum.OPR_FAIL);
+            }
+            status = resultOne.getData().toString();
         }
+
         //查询送货地址数量，判断是送到中转仓库（1个以上），还是目的地（一个）
         ApiResult resultTwo = this.tmsClient.getDeliveryAddressNum(orderNo);
         if (!resultTwo.isOk()) {
@@ -519,7 +532,7 @@ public class MiniAppController {
         }
         cacheValue.put("deliveryAddressNum", resultTwo.getData());
         int num = Integer.parseInt(resultTwo.getData().toString());
-        return DriverFeedbackStatusEnum.constructionProcess(resultOne.getData().toString(),
+        return DriverFeedbackStatusEnum.constructionProcess(status,
                 num > 1 ? DriverFeedbackStatusEnum.THREE : null, isGetNot);
     }
 

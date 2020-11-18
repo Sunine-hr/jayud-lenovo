@@ -143,8 +143,8 @@ public class ExternalApiController {
     @RequestMapping(value = "/api/doDriverFeedbackStatus")
     public ApiResult doDriverFeedbackStatus(@RequestBody OprStatusForm form) {
         //货物派送操作，要填补入仓和出仓数据
-        if (CommonConstant.CAR_SEND.equals(form.getCmd())) {
-            this.orderTransportService.driverGoodsDelivery(form);
+        if (CommonConstant.CAR_SEND.equals(form.getNextCmd())) {
+            this.orderTransportService.driverCustomsClearanceVehicles(form);
         } else {
             this.orderTransportService.doDriverFeedbackStatus(form);
         }

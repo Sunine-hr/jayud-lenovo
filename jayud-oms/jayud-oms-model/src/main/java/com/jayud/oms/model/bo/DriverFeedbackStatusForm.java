@@ -73,4 +73,7 @@ public class DriverFeedbackStatusForm extends Model<DriverFeedbackStatusForm> {
             "goCustomsAudit通过前审核，goCustomsCheck通关前复核,carGoCustoms车辆通关,hkClearCustoms香港清关,carEnterWarehouse车辆入仓," +
             "carOutWarehouse车辆出仓,carSend车辆派送,confirmSignIn确认签收", required = true)
     private String cmd;
+
+    @ApiModelProperty(value = "下一步指令")
+    private String nextCmd;
 }

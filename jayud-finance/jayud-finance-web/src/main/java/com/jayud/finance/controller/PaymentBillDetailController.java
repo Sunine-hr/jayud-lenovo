@@ -149,21 +149,10 @@ public class PaymentBillDetailController {
         return CommonResult.success(pageVO);
     }
 
-    @ApiOperation(value = "客服编辑对账单保存,财务编辑对账单")
+    @ApiOperation(value = "客服编辑对账单保存或提交,财务编辑对账单保存或提交")
     @PostMapping("/editBill")
     public CommonResult editBill(@RequestBody EditBillForm form) {
         Boolean result = billDetailService.editBill(form);
-        if(!result){
-            return CommonResult.error(ResultEnum.OPR_FAIL);
-        }
-        return CommonResult.success();
-    }
-
-    @ApiOperation(value = "编辑对账单提交,billNo = 账单编号")
-    @PostMapping("/editBillSubmit")
-    public CommonResult editBillSubmit(@RequestBody Map<String,Object> param) {
-        String billNo = MapUtil.getStr(param,"billNo");
-        Boolean result = billDetailService.editBillSubmit(billNo);
         if(!result){
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }

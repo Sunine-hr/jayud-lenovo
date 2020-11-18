@@ -162,11 +162,15 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             return false;
         }
         //处理需要删除的费用
-        List<Long> delCostIds = form.getDelCostIds();
+        List<OrderPaymentBillDetailForm> delCosts = form.getDelCosts();
+        List<Long> delCostIds = new ArrayList<>();
+        for (OrderPaymentBillDetailForm billDetail : delCosts) {
+            delCostIds.add(billDetail.getCostId());
+        }
         if(delCostIds.size() > 0){
             QueryWrapper removeWrapper = new QueryWrapper();
             removeWrapper.eq("bill_no",form.getBillNo());
-            removeWrapper.in("costId",form.getDelCostIds());
+            removeWrapper.in("costId",delCostIds);
             remove(removeWrapper);
 
             //相应的费用录入也需要做记录
@@ -223,16 +227,20 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 paymentBillDetails.get(i).setBeginAccountTerm(oldFBillDetail.getBeginAccountTerm());
                 paymentBillDetails.get(i).setEndAccountTerm(oldFBillDetail.getEndAccountTerm());
                 paymentBillDetails.get(i).setSettlementCurrency(oldFBillDetail.getSettlementCurrency());
-                paymentBillDetails.get(i).setAuditStatus(oldFBillDetail.getAuditStatus());
+                paymentBillDetails.get(i).setAuditStatus("edit_no_commit");
                 paymentBillDetails.get(i).setCreatedOrderTime(DateUtils.str2LocalDateTime(paymentBillDetailForms.get(i).getCreatedTimeStr(), DateUtils.DATE_TIME_PATTERN));
                 paymentBillDetails.get(i).setMakeUser(UserOperator.getToken());
                 paymentBillDetails.get(i).setMakeTime(LocalDateTime.now());
                 paymentBillDetails.get(i).setCreatedUser(UserOperator.getToken());
             }
-            result = saveBatch(paymentBillDetails);
+            result = saveOrUpdateBatch(paymentBillDetails);
             if (!result) {
                 return false;
             }
+            //删除旧的费用
+            QueryWrapper removeWrapper = new QueryWrapper();
+            removeWrapper.in("cost_id",costIds);
+            costTotalService.remove(removeWrapper);
             //开始保存费用维度的金额信息  以结算币种进行转换后保存
             List<OrderBillCostTotal> orderBillCostTotals = new ArrayList<>();
             //根据费用ID统计费用信息,将原始费用信息根据结算币种进行转换
@@ -251,6 +259,9 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             if (!result) {
                 return false;
             }
+        }
+        if("submit".equals(form.getCmd())){//提交
+            editBillSubmit(form.getBillNo());
         }
         return true;
     }

@@ -153,11 +153,15 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             return false;
         }
         //处理需要删除的费用
-        List<Long> delCostIds = form.getDelCostIds();
+        List<OrderReceiveBillDetailForm> delCosts = form.getDelCosts();
+        List<Long> delCostIds = new ArrayList<>();
+        for (OrderReceiveBillDetailForm billDetail : delCosts) {
+            delCostIds.add(billDetail.getCostId());
+        }
         if(delCostIds.size() > 0){
             QueryWrapper removeWrapper = new QueryWrapper();
             removeWrapper.eq("bill_no",form.getBillNo());
-            removeWrapper.in("costId",form.getDelCostIds());
+            removeWrapper.in("costId",delCostIds);
             remove(removeWrapper);
 
             //相应的费用录入也需要做记录
@@ -214,16 +218,20 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 receiveBillDetails.get(i).setBeginAccountTerm(oldSBillDetail.getBeginAccountTerm());
                 receiveBillDetails.get(i).setEndAccountTerm(oldSBillDetail.getEndAccountTerm());
                 receiveBillDetails.get(i).setSettlementCurrency(oldSBillDetail.getSettlementCurrency());
-                receiveBillDetails.get(i).setAuditStatus(oldSBillDetail.getAuditStatus());
+                receiveBillDetails.get(i).setAuditStatus("edit_no_commit");//编辑保存未提交的，给前台做区分
                 receiveBillDetails.get(i).setCreatedOrderTime(DateUtils.str2LocalDateTime(receiveBillDetailForms.get(i).getCreatedTimeStr(), DateUtils.DATE_TIME_PATTERN));
                 receiveBillDetails.get(i).setMakeUser(UserOperator.getToken());
                 receiveBillDetails.get(i).setMakeTime(LocalDateTime.now());
                 receiveBillDetails.get(i).setCreatedUser(UserOperator.getToken());
             }
-            result = saveBatch(receiveBillDetails);
+            result = saveOrUpdateBatch(receiveBillDetails);
             if (!result) {
                 return false;
             }
+            //删除旧的费用
+            QueryWrapper removeWrapper = new QueryWrapper();
+            removeWrapper.in("cost_id",costIds);
+            costTotalService.remove(removeWrapper);
             //开始保存费用维度的金额信息  以结算币种进行转换后保存
             List<OrderBillCostTotal> orderBillCostTotals = new ArrayList<>();
             //根据费用ID统计费用信息,将原始费用信息根据结算币种进行转换
@@ -242,6 +250,9 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             if (!result) {
                 return false;
             }
+        }
+        if("submit".equals(form.getCmd())){//提交
+            editSBillSubmit(form.getBillNo());
         }
         return true;
     }

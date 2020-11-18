@@ -158,17 +158,6 @@ public class ReceiveBillDetailController {
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "编辑对账单提交,billNo = 账单编号")
-    @PostMapping("/editSBillSubmit")
-    public CommonResult editSBillSubmit(@RequestBody Map<String,Object> param) {
-        String billNo = MapUtil.getStr(param,"billNo");
-        Boolean result = billDetailService.editSBillSubmit(billNo);
-        if(!result){
-            return CommonResult.error(ResultEnum.OPR_FAIL);
-        }
-        return CommonResult.success();
-    }
-
     @ApiOperation(value = "对账单详情，对账单审核详情")
     @PostMapping("/viewSBillDetail")
     public CommonResult<Map<String,Object>> viewSBillDetail(@RequestBody @Valid ViewBillDetailForm form) {

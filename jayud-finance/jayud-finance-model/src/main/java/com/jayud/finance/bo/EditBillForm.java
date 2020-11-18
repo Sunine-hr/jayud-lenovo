@@ -6,6 +6,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 
@@ -21,12 +22,16 @@ public class EditBillForm {
     private Long billId;
 
     @ApiModelProperty(value = "被删除的费用集合",required = true)
-    @NotNull(message = "delCostIds is required")
-    private List<Long> delCostIds;
+    @NotNull(message = "delCosts is required")
+    private List<OrderPaymentBillDetailForm> delCosts;
 
     @ApiModelProperty(value = "新增的费用集合",required = true)
     @NotEmpty(message = "paymentBillDetailForms is required")
     private List<OrderPaymentBillDetailForm> paymentBillDetailForms;
+
+    @ApiModelProperty(value = "操作指令",required = true)
+    @Pattern(regexp = "(save|submit)", message = "只允许填写save or submit")
+    private String cmd;
 
 
 }

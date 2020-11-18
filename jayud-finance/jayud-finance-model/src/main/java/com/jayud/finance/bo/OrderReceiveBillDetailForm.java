@@ -10,6 +10,9 @@ import java.math.BigDecimal;
 @Data
 public class OrderReceiveBillDetailForm {
 
+    @ApiModelProperty(value = "账单详情ID,有则必传")
+    private Long billDetailId;
+
     @ApiModelProperty(value = "订单编号",required = true)
     @NotEmpty(message = "orderNo is required")
     private String orderNo;

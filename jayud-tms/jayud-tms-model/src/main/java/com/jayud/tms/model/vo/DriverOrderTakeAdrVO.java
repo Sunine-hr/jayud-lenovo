@@ -1,14 +1,10 @@
 package com.jayud.tms.model.vo;
 
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
+import org.apache.commons.lang.StringUtils;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -60,6 +56,8 @@ public class DriverOrderTakeAdrVO {
     private String address;
 
     public void setAddress(String address) {
-        this.address = this.province + this.city + this.area + address;
+        this.address = this.province + this.city
+                + (StringUtils.isEmpty(this.area) ? "" : this.area)
+                + address;
     }
 }

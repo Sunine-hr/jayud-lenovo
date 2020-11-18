@@ -2,7 +2,6 @@ package com.jayud.tms.model.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.jayud.common.enums.OrderStatusEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
@@ -108,8 +107,8 @@ public class DriverOrderTransportVO {
         if (receivingGoodsList.size() == 1) {
             DriverOrderTakeAdrVO receivingGoods = receivingGoodsList.get(0);
             this.receivingProvince = receivingGoods.getProvince();
-            this.receivingCity = receivingGoods.getCity();
-            this.receivingArea = receivingGoods.getArea();
+            this.receivingCity = StringUtils.isEmpty(receivingGoods.getArea()) ? receivingGoods.getProvince() : receivingGoods.getCity();
+            this.receivingArea = StringUtils.isEmpty(receivingGoods.getArea()) ? receivingGoods.getCity() : receivingGoods.getArea();
             this.receivingGoods = receivingGoods;
         }
         if (receivingGoodsList.size() > 1) {
@@ -124,8 +123,8 @@ public class DriverOrderTransportVO {
         if (!CollectionUtils.isEmpty(pickUpGoodsList)) {
             DriverOrderTakeAdrVO pickUpGoods = pickUpGoodsList.get(0);
             this.pickUpProvince = pickUpGoods.getProvince();
-            this.pickUpCity = pickUpGoods.getCity();
-            this.pickUpArea = pickUpGoods.getArea();
+            this.pickUpCity = StringUtils.isEmpty(pickUpGoods.getArea()) ? pickUpGoods.getProvince() : pickUpGoods.getCity();
+            this.pickUpArea = StringUtils.isEmpty(pickUpGoods.getArea()) ? pickUpGoods.getCity() : pickUpGoods.getArea();
         }
     }
 

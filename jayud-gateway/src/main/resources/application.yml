@@ -90,3 +90,10 @@ spring:
           filters:
             - StripPrefix=1
             - IgnoreGlobalFilterFactor
+        - id: jayud-oms-mini-app    #佳裕达小程序服务端
+          uri: lb://jayud-oms-mini-app  # uri以lb://开头（后面接的服务名称)
+          predicates:
+            - Path=/jayudOmsMiniApp/**
+          filters:
+            - StripPrefix=1
+            - IgnoreGlobalFilterFactor

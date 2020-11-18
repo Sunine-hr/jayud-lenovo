@@ -99,3 +99,29 @@ ADD COLUMN `address` varchar(50) NULL COMMENT '地址' AFTER `fax`,
 ADD COLUMN `bank` varchar(50) NULL COMMENT '开户银行' AFTER `address`,
 ADD COLUMN `account_open` varchar(50) NULL COMMENT '开户账户' AFTER `bank`,
 ADD COLUMN `tax_identification_num` varchar(50) NULL COMMENT '纳税识别号信息' AFTER `account_open`;
+
+
+-- 以上已同步
+-- 2020年11月11日李达荣，功能描述：录用费用增加文件字段
+ALTER TABLE `order_payment_cost`
+ADD COLUMN `file_name` varchar(255) NULL COMMENT '多个文件，用逗号隔开' AFTER `created_user`,
+ADD COLUMN `files` varchar(255) NULL COMMENT '多个文件路径,用逗号隔开' AFTER `file_name`;
+
+
+CREATE TABLE `driver_employment_fee` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '司机录用费用id',
+  `driver_id` bigint(20) NOT NULL COMMENT '司机id',
+  `main_order_no` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '主订单',
+  `order_id` bigint(20) NOT NULL COMMENT '中港订单id',
+  `order_no` varchar(50) NOT NULL COMMENT '订单编码',
+  `cost_code` varchar(255) NOT NULL COMMENT '费用代码',
+  `amount` decimal(20,2) NOT NULL COMMENT '费用金额',
+  `currency_code` varchar(255) NOT NULL COMMENT '币种代码',
+  `file_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '多个文件，用逗号隔开',
+  `files` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '多个文件路径,用逗号隔开',
+  `supplier_code` varchar(255) NOT NULL COMMENT '供应商代码',
+  `supplier_name` varchar(255) NOT NULL COMMENT '供应商',
+  `status` char(10) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '状态(0:待提交，1:已提交)',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='司机录入费用表(小程序使用)';

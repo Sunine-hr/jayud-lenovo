@@ -5,15 +5,16 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.mapper.OrderTransportMapper;
-import com.jayud.tms.model.bo.InputOrderTakeAdrForm;
-import com.jayud.tms.model.bo.InputOrderTransportForm;
-import com.jayud.tms.model.bo.QueryOrderTmsForm;
+import com.jayud.tms.model.bo.*;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.*;
@@ -21,12 +22,17 @@ import com.jayud.tms.service.IDeliveryAddressService;
 import com.jayud.tms.service.IOrderSendCarsService;
 import com.jayud.tms.service.IOrderTakeAdrService;
 import com.jayud.tms.service.IOrderTransportService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -50,6 +56,8 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 
     @Autowired
     IOrderSendCarsService orderSendCarsService;
+    @Autowired
+    OmsClient omsClient;
 
 
     @Override
@@ -125,7 +133,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     @Override
     public InputOrderTransportVO getOrderTransport(String mainOrderNo) {
         InputOrderTransportVO inputOrderTransportVO = baseMapper.getOrderTransport(mainOrderNo);
-        if(inputOrderTransportVO == null){
+        if (inputOrderTransportVO == null) {
             return new InputOrderTransportVO();
         }
         //获取提货/送货地址
@@ -226,5 +234,173 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         sendCarPdfVO.setTotalVolume(totalVolume);
         return sendCarPdfVO;
     }
+
+    /**
+     * 分页查询司机的中港订单信息
+     *
+     * @param form
+     * @return
+     */
+    @Override
+    public List<DriverOrderTransportVO> getDriverOrderTransport(QueryDriverOrderTransportForm form) {
+        //状态集
+        List<String> status = Arrays.asList(OrderStatusEnum.TMS_T_4.getCode(),
+                OrderStatusEnum.TMS_T_5.getCode(),
+                OrderStatusEnum.TMS_T_6.getCode(),
+                OrderStatusEnum.TMS_T_7.getCode(),
+                OrderStatusEnum.TMS_T_7_1.getCode(),
+                OrderStatusEnum.TMS_T_8.getCode(),
+                OrderStatusEnum.TMS_T_8_1.getCode(),
+                OrderStatusEnum.TMS_T_9.getCode(),
+                OrderStatusEnum.TMS_T_9_1.getCode(),
+                OrderStatusEnum.TMS_T_9_2.getCode(),
+                OrderStatusEnum.TMS_T_10.getCode(),
+                OrderStatusEnum.TMS_T_11.getCode(),
+                OrderStatusEnum.TMS_T_12.getCode(),
+                OrderStatusEnum.TMS_T_13.getCode(),
+                OrderStatusEnum.TMS_T_14.getCode(),
+                OrderStatusEnum.TMS_T_15.getCode());
+
+        List<DriverOrderTransportVO> list = this.baseMapper.getDriverOrderTransport(form, status);
+
+        List<String> orderNoList = list.stream().filter(Objects::nonNull).map(DriverOrderTransportVO::getOrderNo).collect(Collectors.toList());
+        //查询订单提货/送货地址
+        if (CollectionUtils.isNotEmpty(orderNoList)) {
+            List<DriverOrderTakeAdrVO> adrs = this.orderTakeAdrService.getDriverOrderTakeAdr(orderNoList, null);
+            list.forEach(tmp -> {
+                tmp.setStatus(OrderStatusEnum.getDesc(tmp.getStatus()));
+                tmp.groupAddr(adrs);
+                tmp.setTakeOrders(form.getOrderIds() == null ? form.getExcludeOrderIds() : form.getOrderIds());
+            });
+            //组装提货和送货地址
+            list.forEach(tmp -> {
+                tmp.assemblyAddr();
+                tmp.assemblyGoodsName();
+            });
+        }
+
+        return list;
+    }
+
+    /**
+     * 获取中港订单状态
+     */
+    @Override
+    public String getOrderTransportStatus(String orderNo) {
+        QueryWrapper<OrderTransport> condition = new QueryWrapper<>();
+        condition.lambda().select(OrderTransport::getStatus).eq(OrderTransport::getOrderNo, orderNo);
+        return this.getOne(condition).getStatus();
+    }
+
+    /**
+     * 司机反馈状态
+     *
+     * @param form
+     */
+    @Override
+    public void doDriverFeedbackStatus(OprStatusForm form) {
+        OrderTransport orderTransport = new OrderTransport();
+        orderTransport.setId(form.getOrderId());
+        orderTransport.setUpdatedTime(LocalDateTime.now());
+        orderTransport.setUpdatedUser(UserOperator.getToken());
+
+        AuditInfoForm auditInfoForm = new AuditInfoForm();
+        auditInfoForm.setExtId(form.getOrderId());
+        auditInfoForm.setExtDesc(SqlConstant.ORDER_TRANSPORT);
+        auditInfoForm.setAuditComment(form.getDescription());
+        auditInfoForm.setAuditUser(form.getOperatorUser());
+        auditInfoForm.setFileViews(form.getFileViewList());
+
+        String code = "";
+        String desc = "";
+        switch (form.getCmd()) {
+            case CommonConstant.CAR_TAKE_GOODS://车辆提货
+                code = OrderStatusEnum.TMS_T_5.getCode();
+                desc = OrderStatusEnum.TMS_T_5.getDesc();
+                break;
+            case CommonConstant.CAR_WEIGH://车辆过磅
+                code = OrderStatusEnum.TMS_T_6.getCode();
+                desc = OrderStatusEnum.TMS_T_6.getDesc();
+                orderTransport.setCarWeighNum(form.getCarWeighNum());
+                break;
+            case CommonConstant.CAR_GO_CUSTOMS://车辆通关
+                code = form.getStatus();
+                if (OrderStatusEnum.TMS_T_9_1.getCode().equals(form.getStatus())) {
+                    orderTransport.setPreGoCustomsTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN));
+                } else if (OrderStatusEnum.TMS_T_9_2.getCode().equals(form.getStatus())) {
+                    orderTransport.setGoCustomsTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN));
+                }
+
+                if (OrderStatusEnum.TMS_T_9.getCode().equals(form.getStatus())) {
+                    //记录操作成功状态
+                    desc = OrderStatusEnum.TMS_T_9.getDesc();
+                }
+                auditInfoForm.setAuditTypeDesc(CommonConstant.CAR_GO_CUSTOMS_DESC);
+                break;
+            case CommonConstant.CAR_ENTER_WAREHOUSE://车辆入仓
+                code = OrderStatusEnum.TMS_T_10.getCode();
+                desc = OrderStatusEnum.TMS_T_10.getDesc();
+                break;
+            case CommonConstant.CAR_OUT_WAREHOUSE://车辆出仓
+                code = OrderStatusEnum.TMS_T_13.getCode();
+                desc = OrderStatusEnum.TMS_T_13.getDesc();
+
+                //车辆出仓后:中转仓卸货装货已完成
+                OprStatusForm tms11 = new OprStatusForm();
+                tms11.setMainOrderId(form.getMainOrderId());
+                tms11.setOrderId(form.getOrderId());
+                tms11.setStatus(OrderStatusEnum.TMS_T_11.getCode());
+                tms11.setStatusName(OrderStatusEnum.TMS_T_11.getDesc());
+                omsClient.saveOprStatus(tms11);
+                OprStatusForm tms12 = new OprStatusForm();
+                tms12.setMainOrderId(form.getMainOrderId());
+                tms12.setOrderId(form.getOrderId());
+                tms12.setStatus(OrderStatusEnum.TMS_T_12.getCode());
+                tms12.setStatusName(OrderStatusEnum.TMS_T_12.getDesc());
+                omsClient.saveOprStatus(tms12);
+                break;
+            case CommonConstant.CAR_SEND: //车辆派送
+                code = OrderStatusEnum.TMS_T_14.getCode();
+                desc = OrderStatusEnum.TMS_T_14.getDesc();
+                break;
+            case CommonConstant.CONFIRM_SIGN_IN://确认签收
+                code = OrderStatusEnum.TMS_T_15.getCode();
+                desc = OrderStatusEnum.TMS_T_15.getDesc();
+                break;
+        }
+
+        orderTransport.setStatus(code);
+        form.setStatus(code);
+        form.setStatusName(desc);
+        auditInfoForm.setAuditStatus(code);
+        auditInfoForm.setAuditTypeDesc(desc);
+
+        //记录操作状态
+        form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
+        form.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
+        omsClient.saveOprStatus(form);
+        omsClient.saveAuditInfo(auditInfoForm);
+        boolean result = orderTransportService.saveOrUpdate(orderTransport);
+
+    }
+
+    /**
+     * 小程序司机货物派送（补出仓和入仓数据）
+     */
+    @Override
+    @Transactional
+    public void driverGoodsDelivery(OprStatusForm form) {
+        String cmd = form.getCmd();
+        //车辆入仓数据
+        form.setCmd(CommonConstant.CAR_ENTER_WAREHOUSE);
+        this.doDriverFeedbackStatus(form);
+        //车辆出仓数据
+        form.setCmd(CommonConstant.CAR_OUT_WAREHOUSE);
+        this.doDriverFeedbackStatus(form);
+        //车辆派送
+        form.setCmd(cmd);
+        this.doDriverFeedbackStatus(form);
+    }
+
 
 }

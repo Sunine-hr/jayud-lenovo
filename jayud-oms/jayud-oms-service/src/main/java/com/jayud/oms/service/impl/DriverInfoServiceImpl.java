@@ -111,7 +111,7 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
     @Override
     public DriverInfo getByPhone(String phone) {
         QueryWrapper<DriverInfo> condition = new QueryWrapper<>();
-        condition.lambda().eq(DriverInfo::getPhone, phone).eq(DriverInfo::getIsMain, "1");
+        condition.lambda().eq(DriverInfo::getPhone, phone);
         return this.baseMapper.selectOne(condition);
     }
 

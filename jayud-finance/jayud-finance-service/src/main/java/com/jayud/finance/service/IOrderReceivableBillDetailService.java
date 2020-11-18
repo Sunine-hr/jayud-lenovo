@@ -108,4 +108,26 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      */
     Boolean contrarySAudit(ListForm form);
 
+   //财务核算模块
+    /**
+     * 应收对账单分页查询
+     * @param form
+     * @return
+     */
+    IPage<PaymentNotPaidBillVO> findSBillAuditByPage(QueryFBillAuditForm form);
+
+    /**
+     * 导出 对账单明细
+     * @param form
+     * @return
+     */
+    List<PaymentNotPaidBillVO> findSBillAudit(QueryFBillAuditForm form);
+
+    /**
+     * 开票审核列表
+     * @param billNo
+     * @return
+     */
+    List<FCostVO> findSCostList(String billNo);
+
 }

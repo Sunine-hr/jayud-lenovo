@@ -6,7 +6,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 /**
- * 开票审核列表
+ * 开票/付款一致审核列表
  */
 @Data
 public class FCostVO {

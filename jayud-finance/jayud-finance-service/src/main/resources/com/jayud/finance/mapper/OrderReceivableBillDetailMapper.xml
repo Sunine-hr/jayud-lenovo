@@ -195,4 +195,90 @@
         WHERE
             orbd.bill_no = #{billNo}
     </select>
+    <select id="findSBillAuditByPage" parameterType="com.jayud.finance.bo.QueryFBillAuditForm" resultType="com.jayud.finance.vo.PaymentNotPaidBillVO">
+        select * from (
+        SELECT
+        oi.order_no orderNo,
+        oi.biz_code bizCode,
+        (select pb.`name` from product_biz pb where pb.id_code = oi.biz_code) bizCodeDesc,
+        oi.create_time createdTimeStr,
+        oi.customer_name customerName,
+        (SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id =
+        ota.delivery_id
+        left join order_transport ot on ot.order_no = ota.order_no WHERE ot.main_order_no = oi.order_no and ota.opr_type
+        = '1' LIMIT 1) startAddress,
+        (SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id =
+        ota.delivery_id
+        left join order_transport ot on ot.order_no = ota.order_no where ot.main_order_no = oi.order_no and ota.opr_type
+        = '2' LIMIT 1) endAddress,
+        (select concat( vi.plate_number, vi.hk_number ) from order_send_cars osc left join order_transport ot
+        on osc.order_no = ot.order_no left join driver_info di on di.id = osc.driver_info_id left join vehicle_info vi on vi.id = di.vehicle_id where ot.main_order_no = oi.order_no) licensePlate,
+        (select oc.yun_customs_no from order_customs oc where oc.main_order_no = oi.order_no) yunCustomsNo,
+        (select cg.`name` from cost_genre cg where cg.id = orc.cost_genre_id) costGenreName,
+        orc.cost_genre_id,
+        (select ct.code_name from cost_type ct where ct.id = orc.cost_type_id) costTypeName,
+        (select ci.`name` from cost_info ci where ci.id_code = orc.cost_code) costName,
+        (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = orbd.cost_id and
+        obct.money_type='1' and obct.currency_code = 'CNY') rmb,
+        (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = orbd.cost_id and
+        obct.money_type='1' and obct.currency_code = 'USD') dollar,
+        (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = orbd.cost_id and
+        obct.money_type='1' and obct.currency_code = 'EUR') euro,
+        (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = orbd.cost_id and
+        obct.money_type='1' and obct.currency_code = 'HKD') hKDollar,
+        (select pb.tax_rate from product_biz pb where pb.id_code = oi.biz_code) taxRate,
+        orbd.remarks
+        FROM
+        order_receivable_bill_detail orbd
+        left join order_receivable_bill orb on orbd.bill_id = orb.id
+        left join order_info oi on oi.order_no = orbd.order_no
+        left join order_receivable_cost orc on orc.id = orbd.cost_id
+        where orbd.bill_no = #{form.billNo}
+        ) temp
+        <if test="form.orderNo != null and form.orderNo != ''">
+            and temp.orderNo = #{form.orderNo}
+        </if>
+        <if test="form.bizCode != null and form.bizCode != ''">
+            and temp.bizCode = #{form.bizCode}
+        </if>
+        <if test="form.startAddress != null and form.startAddress != ''">
+            and temp.startAddress like concat('%',#{form.startAddress},'%')
+        </if>
+        <if test="form.endAddress != null and form.endAddress != ''">
+            and temp.endAddress like concat('%',#{form.endAddress},'%')
+        </if>
+        <if test="form.costTypeName != null and form.costTypeName != ''">
+            and temp.costTypeName like concat('%',#{form.costTypeName},'%')
+        </if>
+        <if test="form.costName != null and form.costName != ''">
+            and temp.costName like concat('%',#{form.costName},'%')
+        </if>
+        <if test="form.costGenreId != null">
+            and temp.costGenreId = #{form.costGenreId}
+        </if>
+        <if test="form.endCreateTimeStr != null and form.endCreateTimeStr !=''">
+            and temp.createdTimeStr <![CDATA[<=]]> #{form.endCreateTimeStr}
+        </if>
+        <if test="form.beginCreateTimeStr != null and form.beginCreateTimeStr !=''">
+            and temp.createdTimeStr <![CDATA[<=]]> #{form.beginCreateTimeStr}
+        </if>
+    </select>
+    <select id="findSCostList" parameterType="java.lang.String" resultType="com.jayud.finance.vo.FCostVO">
+        SELECT
+            orc.customer_name customerName,
+            (select cg.`name` from cost_genre cg where cg.id = orc.cost_genre_id) costGenreName,
+            (select ci.`name` from cost_info ci where ci.id_code = orc.cost_code) costName,
+            orc.unit_price unitPrice,
+            orc.number,
+            (select ci.currency_name from currency_info ci where ci.currency_code = orc.currency_code) currencyName,
+            orc.amount,
+            orc.exchange_rate exchangeRate,
+            orc.change_amount changeAmount,
+            orc.remarks
+        FROM
+            order_receivable_cost orc
+            LEFT JOIN order_receivable_bill_detail orbd ON orc.id = orbd.cost_id
+        WHERE
+            orbd.bill_no = #{billNo}
+    </select>
 </mapper>

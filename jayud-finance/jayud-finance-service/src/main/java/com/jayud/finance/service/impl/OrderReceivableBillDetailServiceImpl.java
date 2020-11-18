@@ -348,4 +348,25 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         return true;
     }
 
+    @Override
+    public IPage<PaymentNotPaidBillVO> findSBillAuditByPage(QueryFBillAuditForm form) {
+        //定义分页参数
+        Page<PaymentNotPaidBillVO> page = new Page(form.getPageNum(),form.getPageSize());
+        //定义排序规则
+        page.addOrder(OrderItem.desc("orc.id"));
+        IPage<PaymentNotPaidBillVO> pageInfo = baseMapper.findSBillAuditByPage(page, form);
+        return pageInfo;
+    }
+
+    @Override
+    public List<PaymentNotPaidBillVO> findSBillAudit(QueryFBillAuditForm form) {
+        return baseMapper.findSBillAuditByPage(form);
+    }
+
+
+    @Override
+    public List<FCostVO> findSCostList(String billNo) {
+        return baseMapper.findSCostList(billNo);
+    }
+
 }

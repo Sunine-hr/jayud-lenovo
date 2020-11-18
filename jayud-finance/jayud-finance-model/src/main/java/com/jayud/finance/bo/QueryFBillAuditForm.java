@@ -7,7 +7,7 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 
 /**
- * 应收对账单审核列表
+ * 应收/应付一致 对账单审核列表
  */
 @Data
 public class QueryFBillAuditForm extends BasePageForm{

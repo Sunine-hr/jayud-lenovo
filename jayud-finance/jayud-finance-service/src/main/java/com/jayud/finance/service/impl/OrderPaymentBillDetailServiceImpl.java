@@ -381,7 +381,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
 
 
     @Override
-    public IPage<PaymentNotPaidBillVO> findFBillAuditByPage(QueryEditBillForm form) {
+    public IPage<PaymentNotPaidBillVO> findFBillAuditByPage(QueryFBillAuditForm form) {
         //定义分页参数
         Page<PaymentNotPaidBillVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
@@ -389,6 +389,12 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         IPage<PaymentNotPaidBillVO> pageInfo = baseMapper.findFBillAuditByPage(page, form);
         return pageInfo;
     }
+
+    @Override
+    public List<PaymentNotPaidBillVO> findFBillAudit(QueryFBillAuditForm form) {
+        return baseMapper.findFBillAuditByPage(form);
+    }
+
 
     @Override
     public List<HeXiaoListVO> heXiaoList(String billNo) {

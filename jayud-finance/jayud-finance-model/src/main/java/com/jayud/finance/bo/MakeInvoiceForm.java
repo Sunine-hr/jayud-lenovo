@@ -17,6 +17,9 @@ public class MakeInvoiceForm {
     @ApiModelProperty(value = "开票ID")
     private Long id;
 
+    @ApiModelProperty(value = "账单编号")
+    private String billNo;
+
     @ApiModelProperty(value = "票号")
     private String invoiceNo;
 

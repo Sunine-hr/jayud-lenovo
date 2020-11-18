@@ -129,7 +129,14 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      * @param form
      * @return
      */
-    IPage<PaymentNotPaidBillVO> findFBillAuditByPage(QueryEditBillForm form);
+    IPage<PaymentNotPaidBillVO> findFBillAuditByPage(QueryFBillAuditForm form);
+
+    /**
+     * 导出 对账单明细
+     * @param form
+     * @return
+     */
+    List<PaymentNotPaidBillVO> findFBillAudit(QueryFBillAuditForm form);
 
     /**
      * 核销列表
@@ -146,7 +153,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
     Boolean heXiaoConfirm(List<HeXiaoConfirmForm> form);
 
     /**
-     * 开票审核列表
+     * 付款审核列表
      * @param billNo
      * @return
      */

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.finance.bo.QueryEditBillForm;
+import com.jayud.finance.bo.QueryFBillAuditForm;
 import com.jayud.finance.bo.QueryFinanceAccountForm;
 import com.jayud.finance.bo.QueryPaymentBillDetailForm;
 import com.jayud.finance.po.OrderPaymentBillDetail;
@@ -96,10 +97,17 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
      * @param form
      * @return
      */
-    IPage<PaymentNotPaidBillVO> findFBillAuditByPage(Page page,@Param("form") QueryEditBillForm form);
+    IPage<PaymentNotPaidBillVO> findFBillAuditByPage(Page page,@Param("form") QueryFBillAuditForm form);
 
     /**
-     * 开票审核列表
+     * 导出应付对账单分页查询
+     * @param form
+     * @return
+     */
+    List<PaymentNotPaidBillVO> findFBillAuditByPage(@Param("form") QueryFBillAuditForm form);
+
+    /**
+     * 付款审核列表
      * @param billNo
      * @return
      */

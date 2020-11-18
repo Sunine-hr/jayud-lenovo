@@ -69,4 +69,11 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
      */
     Integer getBillOrderNum(String legalName,String supplierChName,String cmd);
 
+    /**
+     * 账单号是否存在
+     * @param billNo
+     * @return
+     */
+    Boolean isExistBillNo(String billNo);
+
 }

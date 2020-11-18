@@ -104,6 +104,10 @@ public abstract class CommonConstant {
      * 生成派车单号
      */
     public static final String P = "P";
+    /**
+     * 生成账单号
+     */
+    public static final String B = "B";
 
     public static final String VALUE_1 = "1";
 

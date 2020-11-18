@@ -16,9 +16,11 @@ import com.jayud.finance.mapper.OrderPaymentBillMapper;
 import com.jayud.finance.po.OrderBillCostTotal;
 import com.jayud.finance.po.OrderPaymentBill;
 import com.jayud.finance.po.OrderPaymentBillDetail;
+import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.service.IOrderBillCostTotalService;
 import com.jayud.finance.service.IOrderPaymentBillDetailService;
 import com.jayud.finance.service.IOrderPaymentBillService;
+import com.jayud.finance.service.IOrderReceivableBillDetailService;
 import com.jayud.finance.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,6 +49,9 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
 
     @Autowired
     IOrderPaymentBillDetailService paymentBillDetailService;
+
+    @Autowired
+    IOrderReceivableBillDetailService receivableBillDetailService;
 
     @Autowired
     IOrderBillCostTotalService costTotalService;
@@ -209,6 +214,27 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
     @Override
     public Integer getBillOrderNum(String legalName, String supplierChName, String cmd) {
         return baseMapper.getBillOrderNum(legalName,supplierChName,cmd);
+    }
+
+    @Override
+    public Boolean isExistBillNo(String billNo) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("bill_no",billNo);
+        List<OrderPaymentBillDetail> fBillDetails = list(queryWrapper);
+        List<OrderReceivableBillDetail> sBillDetails = receivableBillDetailService.list(queryWrapper);
+        Integer resultFCount = 0;
+        Integer resultSCount = 0;
+        if(fBillDetails != null){
+            resultFCount = fBillDetails.size();
+        }
+        if(sBillDetails != null){
+            resultSCount = sBillDetails.size();
+        }
+        Integer resultCount = resultFCount + resultSCount;
+        if(resultCount > 0){
+            return true;
+        }
+        return false;
     }
 
 

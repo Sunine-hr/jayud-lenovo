@@ -5,6 +5,7 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.service.IOrderPaymentBillService;
 import com.jayud.finance.vo.*;
@@ -62,6 +63,21 @@ public class PaymentBillController {
         }
         return CommonResult.error(ResultEnum.OPR_FAIL);
     }
+
+    @ApiOperation(value = "生成账单编号,应收应付公用")
+    @PostMapping("/createBillNo")
+    public CommonResult<String> createBillNo() {
+        String billNo = StringUtils.loadNum(CommonConstant.B,12);
+        while (true){
+            if(!billService.isExistBillNo(billNo)){//重复
+                billNo = StringUtils.loadNum(CommonConstant.B,12);
+            }else {
+                break;
+            }
+        }
+        return CommonResult.success(billNo);
+    }
+
 
     @ApiOperation(value = "预览应付账单")
     @PostMapping("/viewPaymentBill")

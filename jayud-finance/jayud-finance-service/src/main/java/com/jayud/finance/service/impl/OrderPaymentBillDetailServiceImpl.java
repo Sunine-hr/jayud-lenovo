@@ -395,35 +395,13 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         return baseMapper.findFBillAuditByPage(form);
     }
 
-
-    @Override
-    public List<HeXiaoListVO> heXiaoList(String billNo) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("bill_no",billNo);
-        List<CancelAfterVerification> heXiaoList = verificationService.list(queryWrapper);
-        return ConvertUtil.convertList(heXiaoList,HeXiaoListVO.class);
-    }
-
-    @Override
-    public Boolean heXiaoConfirm(List<HeXiaoConfirmForm> forms) {
-        List<HeXiaoConfirmForm> addList = new ArrayList<>();
-        for (HeXiaoConfirmForm form : forms) {
-            if(form.getId() == null){
-                addList.add(form);
-            }
-        }
-        //计算本币金额,提供给前台累加
-        List<CancelAfterVerification> list = ConvertUtil.convertList(addList,CancelAfterVerification.class);
-        return verificationService.saveBatch(list);
-    }
-
     @Override
     public List<FCostVO> findFCostList(String billNo) {
         return baseMapper.findFCostList(billNo);
     }
 
     @Override
-    public Boolean auditInvoice(BillAuditForm form) {
+    public Boolean auditFInvoice(BillAuditForm form) {
         OrderPaymentBillDetail billDetail = new OrderPaymentBillDetail();
         String applyStatus = "";
         String status = "";
@@ -453,30 +431,6 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         }else{
             return false;
         }
-    }
-
-    @Override
-    public List<MakeInvoiceVO> findInvoiceList(String billNo) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("bill_no",billNo);
-        List<MakeInvoice> makeInvoices = makeInvoiceService.list(queryWrapper);
-        return ConvertUtil.convertList(makeInvoices,MakeInvoiceVO.class);
-    }
-
-    @Override
-    public Boolean makeInvoice(MakeInvoiceForm form) {
-        MakeInvoice makeInvoic = ConvertUtil.convert(form,MakeInvoice.class);
-        return makeInvoiceService.save(makeInvoic);
-    }
-
-    @Override
-    public Boolean makeInvoiceDel(Long invoiceId) {
-        MakeInvoice makeInvoice = new MakeInvoice();
-        makeInvoice.setId(invoiceId);
-        makeInvoice.setStatus("0");
-        makeInvoice.setCreatedTime(LocalDateTime.now());
-        makeInvoice.setCreatedUser(UserOperator.getToken());
-        return makeInvoiceService.updateById(makeInvoice);
     }
 
 

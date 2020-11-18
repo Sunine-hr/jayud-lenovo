@@ -130,4 +130,11 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      */
     List<FCostVO> findSCostList(String billNo);
 
+    /**
+     * 开票审核
+     * @param form
+     * @return
+     */
+    Boolean auditSInvoice(BillAuditForm form);
+
 }

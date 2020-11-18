@@ -369,4 +369,38 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         return baseMapper.findSCostList(billNo);
     }
 
+    @Override
+    public Boolean auditSInvoice(BillAuditForm form) {
+        OrderReceivableBillDetail billDetail = new OrderReceivableBillDetail();
+        String applyStatus = "";
+        String status = "";
+        if("0".equals(form.getAuditStatus())){
+            applyStatus = BillEnum.F_2.getCode();
+            status = BillEnum.B_6.getCode();
+        }else {
+            applyStatus = BillEnum.F_3.getCode();
+            status = BillEnum.B_6_1.getCode();
+        }
+        billDetail.setApplyStatus(applyStatus);
+        billDetail.setAuditStatus(status);
+        QueryWrapper updateWrapper = new QueryWrapper();
+        updateWrapper.eq("bill_no",form.getBillNo());
+        Integer num = baseMapper.update(billDetail,updateWrapper);
+        if(num > 0){
+            //保存审核信息
+            AuditInfoForm auditInfoForm = new AuditInfoForm();
+            auditInfoForm.setExtUniqueFlag(form.getBillNo());
+            auditInfoForm.setAuditTypeDesc("收款审核");
+            auditInfoForm.setAuditStatus(applyStatus);
+            auditInfoForm.setAuditComment(form.getAuditComment());
+            auditInfoForm.setExtDesc("order_receivable_bill_detail表bill_no");
+            auditInfoForm.setAuditUser(UserOperator.getToken());
+            omsClient.saveAuditInfo(auditInfoForm);
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+
 }

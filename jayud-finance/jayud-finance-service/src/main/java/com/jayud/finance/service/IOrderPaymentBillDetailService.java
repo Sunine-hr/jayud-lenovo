@@ -139,20 +139,6 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
     List<PaymentNotPaidBillVO> findFBillAudit(QueryFBillAuditForm form);
 
     /**
-     * 核销列表
-     * @param billNo
-     * @return
-     */
-    List<HeXiaoListVO> heXiaoList(String billNo);
-
-    /**
-     * 核销确认
-     * @param form
-     * @return
-     */
-    Boolean heXiaoConfirm(List<HeXiaoConfirmForm> form);
-
-    /**
      * 付款审核列表
      * @param billNo
      * @return
@@ -160,30 +146,10 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
     List<FCostVO> findFCostList(String billNo);
 
     /**
-     * 开票审核
+     * 付款审核
      * @param form
      * @return
      */
-    Boolean auditInvoice(BillAuditForm form);
+    Boolean auditFInvoice(BillAuditForm form);
 
-    /**
-     * 开票核销列表
-     * @param billNo
-     * @return
-     */
-    List<MakeInvoiceVO> findInvoiceList(String billNo);
-
-    /**
-     * 开票核销
-     * @param form
-     * @return
-     */
-    Boolean makeInvoice(MakeInvoiceForm form);
-
-    /**
-     * 开票作废
-     * @param invoiceId
-     * @return
-     */
-    Boolean makeInvoiceDel(Long invoiceId);
 }

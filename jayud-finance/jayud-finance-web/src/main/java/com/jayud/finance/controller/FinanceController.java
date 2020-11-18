@@ -9,6 +9,8 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.finance.bo.*;
+import com.jayud.finance.service.ICancelAfterVerificationService;
+import com.jayud.finance.service.IMakeInvoiceService;
 import com.jayud.finance.service.IOrderPaymentBillDetailService;
 import com.jayud.finance.service.IOrderReceivableBillDetailService;
 import com.jayud.finance.util.StringUtils;
@@ -36,6 +38,12 @@ public class FinanceController {
 
     @Autowired
     IOrderReceivableBillDetailService receivableBillDetailService;
+
+    @Autowired
+    ICancelAfterVerificationService verificationService;//核销
+
+    @Autowired
+    IMakeInvoiceService makeInvoiceService;//开票
 
     /**财务核算*/
     @ApiOperation(value = "财务核算列表")
@@ -200,14 +208,14 @@ public class FinanceController {
     @PostMapping("/heXiaoList")
     public CommonResult<List<HeXiaoListVO>> heXiaoList(@RequestBody Map<String,Object> param) {
         String billNo = MapUtil.getStr(param,"bill_no");
-        List<HeXiaoListVO> heXiaoList = paymentBillDetailService.heXiaoList(billNo);
+        List<HeXiaoListVO> heXiaoList = verificationService.heXiaoList(billNo);
         return CommonResult.success(heXiaoList);
     }
 
     @ApiOperation(value = "核销确认")
     @PostMapping("/heXiaoConfirm")
     public CommonResult heXiaoConfirm(@RequestBody @Valid List<HeXiaoConfirmForm> form) {
-        Boolean result = paymentBillDetailService.heXiaoConfirm(form);
+        Boolean result = verificationService.heXiaoConfirm(form);
         if(!result){
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
@@ -230,10 +238,20 @@ public class FinanceController {
         return CommonResult.success(fCostVOS);
     }
 
+    @ApiOperation(value = "付款审核")
+    @PostMapping("/auditFInvoice")
+    public CommonResult auditFInvoice(@RequestBody @Valid BillAuditForm form) {
+        Boolean result = paymentBillDetailService.auditFInvoice(form);
+        if (!result) {
+            return CommonResult.error(ResultEnum.OPR_FAIL);
+        }
+        return CommonResult.success();
+    }
+
     @ApiOperation(value = "开票审核")
-    @PostMapping("/auditInvoice")
-    public CommonResult auditInvoice(@RequestBody @Valid BillAuditForm form) {
-        Boolean result = paymentBillDetailService.auditInvoice(form);
+    @PostMapping("/auditSInvoice")
+    public CommonResult auditSInvoice(@RequestBody @Valid BillAuditForm form) {
+        Boolean result = receivableBillDetailService.auditSInvoice(form);
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
@@ -244,14 +262,14 @@ public class FinanceController {
     @PostMapping("/findInvoiceList")
     public CommonResult<List<MakeInvoiceVO>> findInvoiceList(@RequestBody Map<String,Object> param) {
         String billNo = MapUtil.getStr(param,"bill_no");
-        List<MakeInvoiceVO> invoiceVOS = paymentBillDetailService.findInvoiceList(billNo);
+        List<MakeInvoiceVO> invoiceVOS = makeInvoiceService.findInvoiceList(billNo);
         return CommonResult.success(invoiceVOS);
     }
 
     @ApiOperation(value = "开票核销，付款核销")
     @PostMapping("/makeInvoice")
     public CommonResult makeInvoice(@RequestBody @Valid MakeInvoiceForm form) {
-        Boolean result = paymentBillDetailService.makeInvoice(form);
+        Boolean result = makeInvoiceService.makeInvoice(form);
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
@@ -262,7 +280,7 @@ public class FinanceController {
     @PostMapping("/makeInvoiceDel")
     public CommonResult makeInvoiceDel(@RequestBody Map<String,Object> param) {
         Long inVoiceId = Long.parseLong(MapUtil.getStr(param,"invoiceId"));
-        Boolean result = paymentBillDetailService.makeInvoiceDel(inVoiceId);
+        Boolean result = makeInvoiceService.makeInvoiceDel(inVoiceId);
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }

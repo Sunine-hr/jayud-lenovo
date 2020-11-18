@@ -1,7 +1,11 @@
 package com.jayud.finance.service;
 
-import com.jayud.finance.po.MakeInvoice;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.finance.bo.MakeInvoiceForm;
+import com.jayud.finance.po.MakeInvoice;
+import com.jayud.finance.vo.MakeInvoiceVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +17,24 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IMakeInvoiceService extends IService<MakeInvoice> {
 
+    /**
+     * 开票核销列表
+     * @param billNo
+     * @return
+     */
+    List<MakeInvoiceVO> findInvoiceList(String billNo);
+
+    /**
+     * 开票核销
+     * @param form
+     * @return
+     */
+    Boolean makeInvoice(MakeInvoiceForm form);
+
+    /**
+     * 开票作废
+     * @param invoiceId
+     * @return
+     */
+    Boolean makeInvoiceDel(Long invoiceId);
 }

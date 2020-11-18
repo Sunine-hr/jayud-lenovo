@@ -29,7 +29,7 @@
         <module>jayud-freight-air</module>
         <module>jayud-mall</module>
         <module>jayud-tools</module>
-        <module>jayud-mini-app</module>
+
 
     </modules>
     <parent>

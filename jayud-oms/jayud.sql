@@ -125,14 +125,3 @@ CREATE TABLE `driver_employment_fee` (
   `create_time` datetime NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='司机录入费用表(小程序使用)';
-
-
-CREATE TABLE `driver_feedback_status` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `driver_id` bigint(20) NOT NULL COMMENT '司机id',
-  `order_no` varchar(50) NOT NULL COMMENT '订单编号',
-  `status` char(10) NOT NULL COMMENT '状态（0车辆提货,1车辆过磅,2车辆通关,3货物派送,4订单签收）',
-  `opt_time` datetime NOT NULL COMMENT '操作时间',
-  `type` char(10) NOT NULL COMMENT '反馈状态类型（0送到目的地，1送到中转仓）',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='司机反馈状态操作表';

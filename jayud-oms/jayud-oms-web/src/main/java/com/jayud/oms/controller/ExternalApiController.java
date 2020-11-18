@@ -10,6 +10,7 @@ import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.*;
+import com.jayud.oms.model.vo.InitComboxStrVO;
 import com.jayud.oms.model.vo.InitComboxVO;
 import com.jayud.oms.model.vo.InputMainOrderVO;
 import com.jayud.oms.model.vo.OrderStatusVO;
@@ -17,7 +18,10 @@ import com.jayud.oms.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -51,6 +55,9 @@ public class ExternalApiController {
 
     @Autowired
     IOrderReceivableCostService receivableCostService;
+
+    @Autowired
+    ICurrencyInfoService currencyInfoService;
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
@@ -262,6 +269,22 @@ public class ExternalApiController {
             result = receivableCostService.updateBatchById(receivableCosts);
         }
         return ApiResult.ok(result);
+    }
+
+    @ApiOperation(value = "币种")
+    @RequestMapping(value = "api/initCurrencyInfo")
+    public ApiResult initCurrencyInfo() {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(SqlConstant.STATUS,1);
+        List<CurrencyInfo> currencyInfos = currencyInfoService.list(queryWrapper);
+        List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
+        for (CurrencyInfo currencyInfo : currencyInfos) {
+            InitComboxStrVO initComboxVO = new InitComboxStrVO();
+            initComboxVO.setCode(currencyInfo.getCountryCode());
+            initComboxVO.setName(currencyInfo.getCurrencyName());
+            initComboxStrVOS.add(initComboxVO);
+        }
+        return ApiResult.ok(initComboxStrVOS);
     }
 
 

@@ -8,8 +8,10 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.finance.bo.AddCurrencyManageForm;
 import com.jayud.finance.bo.AddCurrencyRateForm;
 import com.jayud.finance.bo.QueryCurrencyRateForm;
+import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.service.ICurrencyRateService;
 import com.jayud.finance.vo.CurrencyRateVO;
+import com.jayud.finance.vo.InitComboxStrVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -28,6 +31,9 @@ public class CurrencyController {
 
     @Autowired
     ICurrencyRateService currencyRateService;
+
+    @Autowired
+    OmsClient omsClient;
 
     @ApiOperation(value = "汇率管理列表分页查询")
     @PostMapping("/findCurrencyRateByPage")
@@ -59,6 +65,12 @@ public class CurrencyController {
         Long id = Long.parseLong(MapUtil.getStr(param,"id"));
         currencyRateService.removeById(id);
         return CommonResult.success();
+    }
+
+    @ApiOperation(value = "币种下拉框")
+    @PostMapping("/initCurrencyInfo")
+    public CommonResult<List<InitComboxStrVO>> initCurrencyInfo() {
+        return CommonResult.success(omsClient.initCurrencyInfo().getData());
     }
 
 

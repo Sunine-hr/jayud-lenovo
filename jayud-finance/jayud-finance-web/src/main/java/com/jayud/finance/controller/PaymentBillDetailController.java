@@ -54,7 +54,7 @@ public class PaymentBillDetailController {
         return billDetailService.submitFCw(form);
     }
 
-    @ApiOperation(value = "导出应付对账单列表")
+    @ApiOperation(value = "导出应付对账单列表,导出财务应付对账单列表")
     @RequestMapping(value = "/exportFBill", method = RequestMethod.GET)
     @ResponseBody
     public void exportFBill(QueryPaymentBillDetailForm form,
@@ -87,6 +87,7 @@ public class PaymentBillDetailController {
         writer.addHeaderAlias("auditComment", "审核意见");
         writer.addHeaderAlias("heXiaoUser", "核销人");
         writer.addHeaderAlias("heXiaoTimeStr", "核销时间");
+        writer.addHeaderAlias("pushKingdeeCount", "推金蝶次数");//导出财务应付对账单列表才有
 
         // 一次性写出内容，使用默认样式，强制输出标题
         writer.write(list, true);

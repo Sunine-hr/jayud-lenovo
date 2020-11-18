@@ -118,6 +118,13 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
     IPage<FinanceAccountVO> findFinanceAccountByPage(QueryFinanceAccountForm form);
 
     /**
+     * 导出财务核算分页查询
+     * @param form
+     * @return
+     */
+    List<FinanceAccountVO> findFinanceAccount(QueryFinanceAccountForm form);
+
+    /**
      * 应付对账单分页查询
      * @param form
      * @return

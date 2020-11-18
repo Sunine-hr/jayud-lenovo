@@ -60,7 +60,8 @@
         opbd.audit_user auditUser,
         opbd.audit_time auditTimeStr,
         (select c.created_user from cancel_after_verification c where c.bill_no = opbd.bill_no order by c.created_time desc limit 1) heXiaoUser,
-        (select c.real_receive_time from cancel_after_verification c where c.bill_no = opbd.bill_no order by c.created_time desc limit 1) heXiaoTimeStr
+        (select c.real_receive_time from cancel_after_verification c where c.bill_no = opbd.bill_no order by c.created_time desc limit 1) heXiaoTimeStr,
+        opbd.push_kingdee_count
         FROM
         order_payment_bill_detail opbd
         LEFT JOIN order_payment_bill opb ON opbd.bill_id = opb.id

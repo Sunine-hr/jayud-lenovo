@@ -84,6 +84,13 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
     IPage<FinanceAccountVO> findFinanceAccountByPage(Page page, @Param("form") QueryFinanceAccountForm form);
 
     /**
+     * 导出财务核算分页查询
+     * @param form
+     * @return
+     */
+    List<FinanceAccountVO> findFinanceAccountByPage(@Param("form") QueryFinanceAccountForm form);
+
+    /**
      * 应付对账单分页查询
      * @param page
      * @param form

@@ -40,7 +40,7 @@ public class QueryPaymentBillDetailForm extends BasePageForm{
     @ApiModelProperty(value = "审核状态")
     private String auditStatus;
 
-    @ApiModelProperty(value = "付款申请")
+    @ApiModelProperty(value = "付款申请/开票申请")
     private String applyStatus;
 
     @ApiModelProperty(value = "操作指令 cmd=main_statement/zgys_statement/bg_statement对账单 or statement_audit对账单审核",required = true)

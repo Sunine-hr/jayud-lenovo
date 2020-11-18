@@ -74,6 +74,9 @@ public class ExportOrderFBillDetailVO {
     @ApiModelProperty(value = "核销时间")
     private String heXiaoTimeStr;
 
+    @ApiModelProperty(value = "推金蝶次数")
+    private Integer pushKingdeeCount;
+
 
 
 

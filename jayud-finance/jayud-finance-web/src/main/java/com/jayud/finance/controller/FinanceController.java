@@ -42,46 +42,50 @@ public class FinanceController {
         CommonPageResult<FinanceAccountVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
     }
-    /**对账单管理*/
-    //导出应付对账单列表
-    @ApiOperation(value = "导出应付对账单列表")
-    @RequestMapping(value = "/exportBillList", method = RequestMethod.GET)
+
+    @ApiOperation(value = "导出财务核算列表")
+    @RequestMapping(value = "/exportCwBill", method = RequestMethod.GET)
     @ResponseBody
-    public void exportBillAuditList(@RequestParam(value = "billNo",required=true) String billNo,
-                                    HttpServletResponse response) throws IOException {
-        List<ViewBilToOrderVO> list = billDetailService.viewBillDetail(billNo);
+    public void exportCwBill(QueryFinanceAccountForm form,
+                            HttpServletResponse response) throws IOException {
+        //获取数据
+        List<FinanceAccountVO> list = billDetailService.findFinanceAccount(form);
+
         ExcelWriter writer = ExcelUtil.getWriter(true);
 
         //自定义标题别名
-        writer.addHeaderAlias("createdTimeStr", "建单日期");
-        writer.addHeaderAlias("orderNo", "订单编号");
+        writer.addHeaderAlias("orderNo", "订单号");
+        writer.addHeaderAlias("createTimeStr", "创建时间");
+        writer.addHeaderAlias("legalName", "法人主体");
         writer.addHeaderAlias("customerName", "客户");
-        writer.addHeaderAlias("startAddress", "启运地");
-        writer.addHeaderAlias("endAddress", "目的地");
-        writer.addHeaderAlias("licensePlate", "车牌号");
-        writer.addHeaderAlias("vehicleSize", "车型");
-        writer.addHeaderAlias("pieceNum", "件数");
-        writer.addHeaderAlias("weight", "毛重(KGS)");
-        writer.addHeaderAlias("yunCustomsNo", "报关单号");
-        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSheetHead(billNo);
-        for (SheetHeadVO sheetHeadVO : sheetHeadVOS) {
-            writer.addHeaderAlias(sheetHeadVO.getName(), sheetHeadVO.getViewName());
-        }
-
-
-        Field[] s = ViewBilToOrderVO.class.getDeclaredFields();
-        int lastColumn = s.length-1;
-
-        // 合并单元格后的标题行，使用默认标题样式
-        writer.merge(lastColumn, "B类表:存在`敏感品名`的货物表");
+        writer.addHeaderAlias("customerCode", "客户代码");
+        writer.addHeaderAlias("ywName", "业务员");
+        writer.addHeaderAlias("sBillNo", "应收账单号");
+        writer.addHeaderAlias("sAccountTermStr", "应收核算期");
+        writer.addHeaderAlias("sRmb", "应收人民币");
+        writer.addHeaderAlias("sDollar", "应收美元");
+        writer.addHeaderAlias("sEuro", "应收欧元");
+        writer.addHeaderAlias("sHkDollar", "应收港币");
+        writer.addHeaderAlias("sLocalAmount", "应收本币金额");
+        writer.addHeaderAlias("sStatus", "应收对账单状态");
+        writer.addHeaderAlias("sCostStatus", "应收费用状态");
+        writer.addHeaderAlias("fBillNo", "应付账单号");
+        writer.addHeaderAlias("fAccountTermStr", "应付核算期");
+        writer.addHeaderAlias("fRmb", "应付人民币");
+        writer.addHeaderAlias("fDollar", "应付美元");
+        writer.addHeaderAlias("fEuro", "应付欧元");
+        writer.addHeaderAlias("fHkDollar", "应付港币");
+        writer.addHeaderAlias("fLocalAmount", "应付本币金额");
+        writer.addHeaderAlias("fCostStatus", "应付费用状态");
+        writer.addHeaderAlias("fStatus", "应付对账单状态");
+        writer.addHeaderAlias("profit", "利润(人民币)");
 
         // 一次性写出内容，使用默认样式，强制输出标题
         writer.write(list, true);
 
         //out为OutputStream，需要写出到的目标流
-
-        ServletOutputStream out=response.getOutputStream();
-        String name = StringUtils.toUtf8String("应收对账单列表");
+        ServletOutputStream out = response.getOutputStream();
+        String name = StringUtils.toUtf8String("财务核算列表");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
         response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
 
@@ -89,6 +93,8 @@ public class FinanceController {
         writer.close();
         IoUtil.close(out);
     }
+
+    /**对账单管理*/
     //推金碟 TODO
 
 

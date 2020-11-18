@@ -121,7 +121,7 @@ public class ReceiveBillDetailController {
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "付款申请作废,billNo=列表里面取")
+    @ApiOperation(value = "开票申请作废,billNo=列表里面取")
     @PostMapping("/applyInvoiceCancel")
     public CommonResult applyInvoiceCancel(@RequestBody Map<String,Object> param) {
         String billNo = MapUtil.getStr(param, "billNo");

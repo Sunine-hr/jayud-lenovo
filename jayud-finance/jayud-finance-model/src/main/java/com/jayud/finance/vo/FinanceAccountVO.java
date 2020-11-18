@@ -32,11 +32,8 @@ public class FinanceAccountVO {
     @ApiModelProperty(value = "应收账单号")
     private String sBillNo;
 
-    @ApiModelProperty(value = "应收开始核算期")
-    private String sBeginAccountTermStr;
-
-    @ApiModelProperty(value = "应收结束核算期")
-    private String sEndAccountTermStr;
+    @ApiModelProperty(value = "应收核算期")
+    private String sAccountTermStr;
 
     @ApiModelProperty(value = "应收人民币")
     private BigDecimal sRmb;
@@ -62,11 +59,8 @@ public class FinanceAccountVO {
     @ApiModelProperty(value = "应付账单号")
     private String fBillNo;
 
-    @ApiModelProperty(value = "应付开始核算期")
-    private String fBeginAccountTermStr;
-
-    @ApiModelProperty(value = "应付结束核算期")
-    private String fEndAccountTermStr;
+    @ApiModelProperty(value = "应付核算期")
+    private String fAccountTermStr;
 
     @ApiModelProperty(value = "应付人民币")
     private BigDecimal fRmb;

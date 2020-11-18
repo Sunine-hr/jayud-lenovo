@@ -51,6 +51,9 @@ public class OrderSendCarsVO {
     @ApiModelProperty(value = "大陆司机名")
     private String driverName;
 
+    @ApiModelProperty(value = "司机ID")
+    private Long driverInfoId;
+
     @ApiModelProperty(value = "HK车牌号")
     private String hkLicensePlate;
 

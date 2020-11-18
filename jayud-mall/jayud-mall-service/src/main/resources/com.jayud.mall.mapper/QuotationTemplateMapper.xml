@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.QuotationTemplateMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.QuotationTemplate">
+        <id column="id" property="id" />
+        <result column="types" property="types" />
+        <result column="sid" property="sid" />
+        <result column="names" property="names" />
+        <result column="pic_url" property="picUrl" />
+        <result column="tid" property="tid" />
+        <result column="start_shipment" property="startShipment" />
+        <result column="destination_port" property="destinationPort" />
+        <result column="arrive_warehouse" property="arriveWarehouse" />
+        <result column="visible_uid" property="visibleUid" />
+        <result column="sail_time" property="sailTime" />
+        <result column="cut_off_time" property="cutOffTime" />
+        <result column="jc_time" property="jcTime" />
+        <result column="jkc_time" property="jkcTime" />
+        <result column="gid" property="gid" />
+        <result column="area_id" property="areaId" />
+        <result column="qid" property="qid" />
+        <result column="task_id" property="taskId" />
+        <result column="remarks" property="remarks" />
+        <result column="status" property="status" />
+        <result column="user_id" property="userId" />
+        <result column="user_name" property="userName" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, types, names, pic_url, tid, start_shipment, destination_port, arrive_warehouse, visible_uid, sail_time, cut_off_time, jc_time, jkc_time, goods_type, area_id, quote_type, task_id, remarks, status, user_id, user_name, create_time, update_time
+    </sql>
+
+    <!--查询报价模板并分页-->
+    <select id="findQuotationTemplateByPage" parameterType="com.jayud.mall.model.bo.QueryQuotationTemplateForm"
+            resultType="com.jayud.mall.model.vo.QuotationTemplateVO" >
+        select
+        t.id,
+        t.types,
+        t.sid,
+        t.`names`,
+        t.pic_url,
+        t.tid,
+        t.start_shipment,
+        t.destination_port,
+        t.arrive_warehouse,
+        t.visible_uid,
+        t.sail_time,
+        t.cut_off_time,
+        t.jc_time	jkc_time,
+        t.gid,
+        t.area_id,
+        t.qid,
+        t.task_id,
+        t.remarks,
+        t.`status`,
+        t.user_id,
+        t.user_name,
+        t.create_time,
+        t.update_time
+        from quotation_template t
+        WHERE
+        1 = 1
+        /*报价名*/
+        <if test="form.names != null and form.names != ''">
+            AND t.`names` LIKE concat('%',#{form.names},'%')
+        </if>
+        /*开船日期*/
+        <if test="form.sailTime != null and form.sailTimeStart != null and form.sailTimeStart != '' and form.sailTimeEnd != null and form.sailTimeEnd != '' ">
+            and t.sail_time <![CDATA[ >= ]]> #{form.sailTimeStart} AND t.sail_time <![CDATA[ <= ]]> #{form.sailTimeEnd}
+        </if>
+        /*截单日期*/
+        <if test="form.cutOffTime != null and form.cutOffTimeStart != null and form.cutOffTimeStart != '' and form.cutOffTimeEnd != null and form.cutOffTimeEnd != '' ">
+            and t.cut_off_time <![CDATA[ >= ]]> #{form.cutOffTimeStart} AND t.cut_off_time <![CDATA[ <= ]]> #{form.cutOffTimeEnd}
+        </if>
+        /*目的港*/
+        <if test="form.destinationPort != null and form.destinationPort != ''">
+            AND t.`destination_port` LIKE concat('%',#{form.destinationPort},'%')
+        </if>
+        GROUP BY
+        t.`id`
+    </select>
+
+
+</mapper>

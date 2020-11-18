@@ -82,5 +82,21 @@
         sr.`id`
     </select>
 
+    <select id="selectRolesByUserId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.po.SystemRole" >
+        select
+        t.id,
+        t.bs_user_id,
+        t.role_name,
+        t.type,
+        t.role_describe,
+        t.create_by,
+        t.create_time,
+        t.update_by,
+        t.update_time
+        from system_role t
+        join system_user_role_relation t1 on t1.role_id = t.id and user_id=#{userId}
+    </select>
+
 
 </mapper>

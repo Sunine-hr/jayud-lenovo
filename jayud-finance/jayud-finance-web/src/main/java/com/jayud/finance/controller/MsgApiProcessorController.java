@@ -50,7 +50,7 @@ public class MsgApiProcessorController {
      *
      * @return
      */
-    @RequestMapping(method = RequestMethod.POST, value = "/yunbaoguan/infp/flush")
+    @RequestMapping(method = RequestMethod.POST, value = "/yunbaoguan/info/flush")
     @ApiOperation(value = "刷新公司和费用项目缓存")
     public CommonResult flushInfo() {
         preloadService.refreshCompanyRelationMap();

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.CustomerMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.Customer">
+        <id column="id" property="id" />
+        <result column="bs_user_id" property="bsUserId" />
+        <result column="name_cn" property="nameCn" />
+        <result column="passwd" property="passwd" />
+        <result column="phone" property="phone" />
+        <result column="status" property="status" />
+        <result column="level" property="level" />
+        <result column="origin" property="origin" />
+        <result column="create_date" property="createDate" />
+        <result column="company" property="company" />
+        <result column="audit_status" property="auditStatus" />
+        <result column="code" property="code" />
+        <result column="name_en" property="nameEn" />
+        <result column="pay_passwd" property="payPasswd" />
+        <result column="pay_type" property="payType" />
+        <result column="currency" property="currency" />
+        <result column="salesman_id" property="salesmanId" />
+        <result column="user_name" property="userName" />
+        <result column="address" property="address" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, bs_user_id, name_cn, passwd, phone, status, level, origin, create_date, company, audit_status, code, name_en, pay_passwd, pay_type, currency, salesman_id, user_name, address
+    </sql>
+
+
+    <!--查询客户并分页-->
+    <select id="findCustomerByPage" parameterType="com.jayud.mall.model.bo.QueryCustomerForm"
+            resultType="com.jayud.mall.model.vo.CustomerVO" >
+        select
+        t.id,
+        t.bs_user_id,
+        t.name_cn,
+        t.passwd,
+        t.phone,
+        t.`status`,
+        t.`level`,
+        t.origin,
+        t.create_date,
+        t.company,
+        t.audit_status,
+        t.`code`,
+        t.name_en,
+        t.pay_passwd,
+        t.pay_type,
+        t.currency,
+        t.salesman_id,
+        t.user_name,
+        t.address
+        from
+        customer t
+        WHERE
+        1 = 1
+        /*关键字查询*/
+        <if test="form.keyword != null and form.keyword != ''">
+            AND ( t.`name_cn` LIKE concat('%',#{form.keyword},'%') OR t.`company` LIKE concat('%',#{form.keyword},'%') )
+        </if>
+        GROUP BY
+        t.`id`
+    </select>
+
+</mapper>

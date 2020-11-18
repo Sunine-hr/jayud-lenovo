@@ -9,6 +9,8 @@ import com.jayud.mall.model.vo.SystemRoleVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * <p>
  * 系统角色表 Mapper 接口
@@ -48,4 +50,11 @@ public interface SystemRoleMapper extends BaseMapper<SystemRole> {
      * @return
      */
     IPage<SystemRoleVO> findRoleByPage(Page<SystemRoleVO> page, QueryRoleForm form);
+
+    /**
+     * 根据用户Id，查询用户角色
+     * @param userId
+     * @return
+     */
+    List<SystemRole> selectRolesByUserId(Long userId);
 }

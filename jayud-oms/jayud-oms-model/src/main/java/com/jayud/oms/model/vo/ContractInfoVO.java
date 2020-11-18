@@ -1,11 +1,10 @@
 package com.jayud.oms.model.vo;
 
 import com.jayud.common.utils.FileView;
-import com.jayud.oms.model.po.ProductBiz;
+import com.jayud.oms.model.po.ProductClassify;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,7 +61,7 @@ public class ContractInfoVO {
     private Long bindId;
 
     public void setBusinessTypes(String businessType) {
-        if(businessType != null){
+        if (businessType != null) {
             String[] strList = businessType.split(",");
             for (String str : strList) {
                 businessTypes.add(Long.parseLong(str));
@@ -73,12 +72,12 @@ public class ContractInfoVO {
     /**
      * 构建合同业务类型
      */
-    public void buildViewBusinessType(List<ProductBiz> productBizs){
+    public void buildViewBusinessType(List<ProductClassify> productBizs) {
         StringBuilder sb = new StringBuilder();
         for (Long str : businessTypes) {
-            for (ProductBiz productBiz : productBizs) {
-                if (str.equals(productBiz.getId())) {
-                    sb.append(productBiz.getName() + ",");
+            for (ProductClassify productClassify : productBizs) {
+                if (str.equals(productClassify.getId())) {
+                    sb.append(productClassify.getName() + ",");
                 }
             }
         }

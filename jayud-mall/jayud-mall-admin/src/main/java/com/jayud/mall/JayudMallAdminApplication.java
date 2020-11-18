@@ -3,6 +3,7 @@ package com.jayud.mall;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
@@ -11,9 +12,9 @@ import org.springframework.context.annotation.ComponentScan;
  * @description:
  * @date 2020/10/23 11:29
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.jayud.mall")
 @EnableDiscoveryClient
-@ComponentScan(basePackages = {"com.jayud.common","com.jayud.mall"})
+@EnableFeignClients
 public class JayudMallAdminApplication {
 
     public static void main(String[] args) {

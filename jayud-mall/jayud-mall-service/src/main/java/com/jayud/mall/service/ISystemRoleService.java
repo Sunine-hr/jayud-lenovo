@@ -7,6 +7,8 @@ import com.jayud.mall.model.bo.SaveRoleForm;
 import com.jayud.mall.model.po.SystemRole;
 import com.jayud.mall.model.vo.SystemRoleVO;
 
+import java.util.List;
+
 /**
  * <p>
  * 系统角色表 服务类
@@ -42,4 +44,13 @@ public interface ISystemRoleService extends IService<SystemRole> {
      * @return
      */
     IPage<SystemRoleVO> findRoleByPage(QueryRoleForm form);
+
+    /**
+     * 根据用户Id，查询角色
+     * @param userId
+     * @return
+     */
+    List<SystemRole> selectRolesByUserId(Long userId);
+
+
 }

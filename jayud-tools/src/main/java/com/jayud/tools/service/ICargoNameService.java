@@ -76,4 +76,11 @@ public interface ICargoNameService extends IService<CargoName> {
      * @param userId
      */
     void importBigExcel(InputStream inputStream, Long userId);
+
+    /**
+     * 导入大量数据V3
+     * @param inputStream
+     * @param userId
+     */
+    void importBigExcelV3(InputStream inputStream, Long userId);
 }

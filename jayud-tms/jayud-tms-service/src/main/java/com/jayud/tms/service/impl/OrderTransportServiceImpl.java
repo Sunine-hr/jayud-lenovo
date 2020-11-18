@@ -109,6 +109,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         }
         for (InputOrderTakeAdrForm inputOrderTakeAdrForm : orderTakeAdrForms) {
             OrderTakeAdr orderTakeAdr = ConvertUtil.convert(inputOrderTakeAdrForm,OrderTakeAdr.class);
+            orderTakeAdr.setTakeTime(inputOrderTakeAdrForm.getTakeTimeStr());
             orderTakeAdr.setOrderNo(orderTransport.getOrderNo());
             orderTakeAdrService.save(orderTakeAdr);
         }
@@ -179,6 +180,8 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     @Override
     public SendCarPdfVO initPdfData(String orderNo, String classCode) {
         SendCarPdfVO sendCarPdfVO = baseMapper.initPdfData(orderNo,classCode);
+        //香港清关地址又说不要了BUG-237
+        sendCarPdfVO.setClearCustomsAddress("");
         if(sendCarPdfVO == null){
             return new SendCarPdfVO();
         }
@@ -186,6 +189,9 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         List<TakeGoodsInfoVO> takeGoodsInfo1 = new ArrayList<>();
         List<TakeGoodsInfoVO> takeGoodsInfo2 = new ArrayList<>();
         for (InputOrderTakeAdrVO inputOrderTakeAdrVO : inputOrderTakeAdrVOS) {
+            inputOrderTakeAdrVO.setVehicleSize(sendCarPdfVO.getVehicleSize());
+            inputOrderTakeAdrVO.setVehicleType(sendCarPdfVO.getVehicleType());
+            inputOrderTakeAdrVO.setCntrNo(sendCarPdfVO.getCntrNo());
             if(CommonConstant.VALUE_1.equals(String.valueOf(inputOrderTakeAdrVO.getOprType()))){//提货
                 takeGoodsInfo1.add(ConvertUtil.convert(inputOrderTakeAdrVO,TakeGoodsInfoVO.class));
             }else {
@@ -201,12 +207,16 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         }
         if(takeGoodsInfo2.size() > 1){//获取中转仓信息
             sendCarPdfVO.setDeliveryContacts(orderSendCarsVO.getWarehouseContacts());
-            sendCarPdfVO.setDeliveryAddress(orderSendCarsVO.getCountryName()+orderSendCarsVO.getProvinceName()+orderSendCarsVO.getCityName()+
-                    orderSendCarsVO.getAddress());
+            String provinceName = orderSendCarsVO.getProvinceName() == null ? "" : orderSendCarsVO.getProvinceName();
+            String cityName = orderSendCarsVO.getCityName() == null ? "":orderSendCarsVO.getCityName();
+            String address = orderSendCarsVO.getAddress() == null ?"":orderSendCarsVO.getAddress();
+            sendCarPdfVO.setDeliveryAddress(orderSendCarsVO.getCountryName()+provinceName+cityName+address);
             sendCarPdfVO.setDeliveryPhone(orderSendCarsVO.getWarehouseNumber());
         }else if(takeGoodsInfo2.size() == 1){
-            sendCarPdfVO.setDeliveryAddress(takeGoodsInfo2.get(0).getStateName()+takeGoodsInfo2.get(0).getCityName()+
-                    takeGoodsInfo2.get(0).getAddress());
+            String provinceName = takeGoodsInfo2.get(0).getStateName() == null ? "" : takeGoodsInfo2.get(0).getStateName();
+            String cityName = takeGoodsInfo2.get(0).getCityName() == null ? "":takeGoodsInfo2.get(0).getCityName();
+            String address = takeGoodsInfo2.get(0).getAddress() == null ?"":takeGoodsInfo2.get(0).getAddress();
+            sendCarPdfVO.setDeliveryAddress(provinceName+cityName+address);
             sendCarPdfVO.setDeliveryContacts(takeGoodsInfo2.get(0).getContacts());
             sendCarPdfVO.setDeliveryPhone(takeGoodsInfo2.get(0).getPhone());
         }
@@ -218,8 +228,16 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         Double totalVolume = 0.0;//总体积
         for (TakeGoodsInfoVO takeGoodsInfoVO : takeGoodsInfo1) {
             totalPieceAmount = totalPieceAmount + takeGoodsInfoVO.getPieceAmount();
-            totalWeight = totalWeight + takeGoodsInfoVO.getWeight();
-            totalVolume = totalVolume + takeGoodsInfoVO.getVolume();
+            Double weight = 0.0;
+            Double volume = 0.0;
+            if(takeGoodsInfoVO.getWeight() != null){
+                weight = takeGoodsInfoVO.getWeight();
+            }
+            if(takeGoodsInfoVO.getVolume() != null){
+                volume = takeGoodsInfoVO.getVolume();
+            }
+            totalWeight = totalWeight + weight;
+            totalVolume = totalVolume + volume;
             GoodsInfoVO goodsInfoVO = new GoodsInfoVO();
             goodsInfoVO.setGoodsDesc(takeGoodsInfoVO.getGoodsDesc());
             goodsInfoVO.setPieceAmount(takeGoodsInfoVO.getPieceAmount());

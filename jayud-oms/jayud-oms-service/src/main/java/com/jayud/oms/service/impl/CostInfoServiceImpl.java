@@ -17,6 +17,7 @@ import com.jayud.oms.model.vo.CostInfoVO;
 import com.jayud.oms.model.vo.CostTypeVO;
 import com.jayud.oms.service.ICostInfoService;
 import com.jayud.oms.service.ICostTypeService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,6 +58,10 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
             condition.lambda().select(CostType::getId).like(CostType::getCodeName, form.getCostType());
             List<CostType> tmps = this.costTypeService.getBaseMapper().selectList(condition);
             ids = tmps.stream().map(e -> String.valueOf(e.getId())).collect(Collectors.toList());
+            if (CollectionUtils.isEmpty(ids)){
+                ids=new ArrayList<>();
+                ids.add("-1");
+            }
         }
 
 

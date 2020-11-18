@@ -56,5 +56,6 @@ public interface OrderTransportMapper extends BaseMapper<OrderTransport> {
     /**
      * 分页查询司机的中港订单信息
      */
-    List<DriverOrderTransportVO> getDriverOrderTransport(@Param("form") QueryDriverOrderTransportForm form);
+    List<DriverOrderTransportVO> getDriverOrderTransport(@Param("form") QueryDriverOrderTransportForm form,
+                                                         @Param("status") List<String> status);
 }

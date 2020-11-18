@@ -89,7 +89,7 @@ public class DriverOrderTransportVO {
 
 
     public void setStatus(String status) {
-        this.status = OrderStatusEnum.getDesc(status);
+        this.status = status;
     }
 
     public void groupAddr(List<DriverOrderTakeAdrVO> list) {

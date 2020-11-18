@@ -29,7 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -239,12 +241,32 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
      */
     @Override
     public List<DriverOrderTransportVO> getDriverOrderTransport(QueryDriverOrderTransportForm form) {
-        List<DriverOrderTransportVO> list = this.baseMapper.getDriverOrderTransport(form);
-        List<String> orderNoList = list.stream().map(DriverOrderTransportVO::getOrderNo).collect(Collectors.toList());
+        //状态集
+        List<String> status = Arrays.asList(OrderStatusEnum.TMS_T_4.getCode(),
+                OrderStatusEnum.TMS_T_5.getCode(),
+                OrderStatusEnum.TMS_T_6.getCode(),
+                OrderStatusEnum.TMS_T_7.getCode(),
+                OrderStatusEnum.TMS_T_7_1.getCode(),
+                OrderStatusEnum.TMS_T_8.getCode(),
+                OrderStatusEnum.TMS_T_8_1.getCode(),
+                OrderStatusEnum.TMS_T_9.getCode(),
+                OrderStatusEnum.TMS_T_9_1.getCode(),
+                OrderStatusEnum.TMS_T_9_2.getCode(),
+                OrderStatusEnum.TMS_T_10.getCode(),
+                OrderStatusEnum.TMS_T_11.getCode(),
+                OrderStatusEnum.TMS_T_12.getCode(),
+                OrderStatusEnum.TMS_T_13.getCode(),
+                OrderStatusEnum.TMS_T_14.getCode(),
+                OrderStatusEnum.TMS_T_15.getCode());
+
+        List<DriverOrderTransportVO> list = this.baseMapper.getDriverOrderTransport(form, status);
+
+        List<String> orderNoList = list.stream().filter(Objects::nonNull).map(DriverOrderTransportVO::getOrderNo).collect(Collectors.toList());
         //查询订单提货/送货地址
         if (CollectionUtils.isNotEmpty(orderNoList)) {
             List<DriverOrderTakeAdrVO> adrs = this.orderTakeAdrService.getDriverOrderTakeAdr(orderNoList, null);
             list.forEach(tmp -> {
+                tmp.setStatus(OrderStatusEnum.getDesc(tmp.getStatus()));
                 tmp.groupAddr(adrs);
                 tmp.setTakeOrders(form.getOrderIds() == null ? form.getExcludeOrderIds() : form.getOrderIds());
             });

@@ -42,5 +42,10 @@ public interface IDriverInfoService extends IService<DriverInfo> {
      */
     public DriverInfoLinkVO getDriverInfoLink(Long driverId);
 
+    /**
+     * 根据司机大陆手机查询用户
+     * @param phone
+     * @return
+     */
     DriverInfo getByPhone(String phone);
 }

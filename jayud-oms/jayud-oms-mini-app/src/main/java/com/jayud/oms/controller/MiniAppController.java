@@ -11,6 +11,7 @@ import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.MD5;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.TmsClient;
@@ -39,6 +40,8 @@ import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.jayud.common.utils.DateUtils.DATE_TIME_PATTERN;
 
 /**
  * 微信小程序
@@ -77,6 +80,7 @@ public class MiniAppController {
 
         form.setDriverId(Long.valueOf(SecurityUtil.getUserInfo()));
         String status = form.getStatus();
+        List<DriverOrderTransportVO> tmps = new ArrayList<>();
         if (DriverOrderStatusEnum.ALL.getCode().equals(form.getStatus())) {
             //查询所有订单
             status = null;
@@ -86,6 +90,12 @@ public class MiniAppController {
         }
         //根据状态查询司机接单信息，如果没有代表还有没有接单
         List<DriverOrderInfo> driverOrderInfos = this.driverOrderInfoService.getDriverOrderInfoByStatus(form.getDriverId(), status);
+        if (CollectionUtils.isEmpty(driverOrderInfos)) {
+            if (DriverOrderStatusEnum.IN_TRANSIT.getCode().equals(form.getStatus())
+                    || DriverOrderStatusEnum.FINISHED.getCode().equals(form.getStatus())) {
+                return CommonResult.success(tmps);
+            }
+        }
 
         Map<Long, DriverOrderInfo> map = driverOrderInfos.stream().collect(Collectors.toMap(DriverOrderInfo::getOrderId, tmp -> tmp));
 
@@ -98,7 +108,7 @@ public class MiniAppController {
         Type type = new TypeToken<ApiResult<List<DriverOrderTransportVO>>>() {
         }.getType();
         ApiResult<List<DriverOrderTransportVO>> data = gson.fromJson(gson.toJson(result), type);
-        List<DriverOrderTransportVO> tmps = data.getData();
+        tmps = data.getData();
         if (tmps != null) {
             for (DriverOrderTransportVO driverOrderTransportVO : tmps) {
                 if (this.orderPaymentCostService.isCostSubmitted(driverOrderTransportVO.getOrderNo())) {
@@ -347,11 +357,7 @@ public class MiniAppController {
         //统计待接单
         List<String> orderNos = new ArrayList<>();
         for (DriverOrderInfo driverOrderInfo : driverOrderInfos) {
-            if (map.get(driverOrderInfo.getStatus()) == null) {
-                map.put(driverOrderInfo.getStatus(), 1);
-            } else {
-                map.put(driverOrderInfo.getStatus(), map.get(driverOrderInfo.getStatus() + 1));
-            }
+            map.merge(driverOrderInfo.getStatus(), 1, Integer::sum);
             orderNos.add(driverOrderInfo.getOrderNo());
         }
         //获取待接单数量
@@ -412,7 +418,7 @@ public class MiniAppController {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         } else {
             if (!isEdit) {
-                return CommonResult.error(400, "数据已提交");
+                return CommonResult.error(400, "正在审核中，请等待审核结果");
             }
         }
 
@@ -515,6 +521,17 @@ public class MiniAppController {
         int num = Integer.parseInt(resultTwo.getData().toString());
         return DriverFeedbackStatusEnum.constructionProcess(resultOne.getData().toString(),
                 num > 1 ? DriverFeedbackStatusEnum.THREE : null, isGetNot);
+    }
+
+    @ApiOperation(value = "消息通知")
+    @PostMapping(value = "/messageNotice")
+    public CommonResult messageNotice() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("date", DateUtils.format(new Date(), DATE_TIME_PATTERN));
+        map.put("headline", "佳裕达物流科技");
+        map.put("subhead", "关于国庆节、中秋节放假");
+        map.put("message", "国庆节、中秋节放假安排....");
+        return CommonResult.success(map);
     }
 
 

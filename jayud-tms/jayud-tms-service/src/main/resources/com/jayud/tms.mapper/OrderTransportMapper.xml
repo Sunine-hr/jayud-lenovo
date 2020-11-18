@@ -313,6 +313,10 @@
                     #{item}
                 </foreach>
             </if>
+            and ot.status in
+            <foreach collection="status" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
         </where>
     </select>
 </mapper>

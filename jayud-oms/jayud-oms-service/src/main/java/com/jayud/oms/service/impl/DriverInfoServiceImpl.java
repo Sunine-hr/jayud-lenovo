@@ -97,6 +97,7 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
         DriverInfo driverInfo = new DriverInfo().setId(id).setStatus(status);
         return this.updateById(driverInfo);
     }
+
     @Override
     public DriverInfoLinkVO getDriverInfoLink(Long driverId) {
         return baseMapper.getDriverInfoLink(driverId);
@@ -104,7 +105,7 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
 
 
     /**
-     * 根据大陆手机查询用户
+     * 根据司机大陆手机查询用户
      *
      * @param phone
      * @return
@@ -112,7 +113,7 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
     @Override
     public DriverInfo getByPhone(String phone) {
         QueryWrapper<DriverInfo> condition = new QueryWrapper<>();
-        condition.lambda().eq(DriverInfo::getPhone, phone);
+        condition.lambda().eq(DriverInfo::getPhone, phone).eq(DriverInfo::getIsMain, "1");
         return this.baseMapper.selectOne(condition);
     }
 }

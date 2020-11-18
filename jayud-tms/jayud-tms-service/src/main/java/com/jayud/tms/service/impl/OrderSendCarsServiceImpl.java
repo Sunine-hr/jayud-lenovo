@@ -6,6 +6,7 @@ import com.jayud.tms.mapper.OrderSendCarsMapper;
 import com.jayud.tms.model.vo.OrderSendCarsVO;
 import com.jayud.tms.service.IOrderSendCarsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,8 +30,10 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
     @Override
     public int getDriverPendingOrderNum(Long driverId, List<String> orderNos) {
         QueryWrapper<OrderSendCars> condition = new QueryWrapper<>();
-        condition.lambda().eq(OrderSendCars::getDriverInfoId, driverId)
-                .notIn(OrderSendCars::getOrderNo, orderNos);
+        condition.lambda().eq(OrderSendCars::getDriverInfoId, driverId);
+        if (CollectionUtils.isNotEmpty(orderNos)) {
+            condition.lambda().notIn(OrderSendCars::getOrderNo, orderNos);
+        }
         return this.count(condition);
     }
 

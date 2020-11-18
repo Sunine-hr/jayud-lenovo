@@ -198,46 +198,42 @@
 
     <!--财务管理模块-->
     <select id="findFinanceAccountByPage" parameterType="com.jayud.finance.bo.QueryFinanceAccountForm" resultType="com.jayud.finance.vo.FinanceAccountVO">
-        select temp.orderNo,temp.createTimeStr,temp.legalName,temp.customerCode,temp.customerName,temp.ywName,temp.sBillNo,temp.sBeginAccountTermStr,temp.sEndAccountTermStr,temp.sRmb,temp.sDollar,temp.sEuro,temp.sHkDollar,temp.sLocalAmount,temp.sStatus,
+        select temp.orderNo,temp.createTimeStr,temp.legalName,temp.customerCode,temp.customerName,temp.ywName,temp.sBillNo,temp.sAccountTermStr,temp.sRmb,temp.sDollar,temp.sEuro,temp.sHkDollar,temp.sLocalAmount,temp.sStatus,
         (case (select sum(cav.local_money) from cancel_after_verification cav where cav.bill_no = temp.sBillNo)
         when temp.sLocalAmount
         THEN '已核销'
         else '未核销' END)
-         sCostStatus,
-        temp.fBillNo,temp.fBeginAccountTermStr,temp.fEndAccountTermStr,temp.fRmb,temp.fDollar,temp.fEuro,temp.fHkDollar,temp.fLocalAmount,temp.fStatus,(case (select sum(cav.local_money) from cancel_after_verification cav where cav.bill_no = temp.fBillNo)
+        sCostStatus,
+        temp.fBillNo,temp.fAccountTermStr,temp.fRmb,temp.fDollar,temp.fEuro,temp.fHkDollar,temp.fLocalAmount,temp.fStatus,(case (select sum(cav.local_money) from cancel_after_verification cav where cav.bill_no = temp.fBillNo)
         when temp.sLocalAmount
         THEN '已核销'
         else '未核销' END)
-         fCostStatus, (temp.sLocalAmount - temp.fLocalAmount) profit from (
+        fCostStatus, (temp.sLocalAmount - temp.fLocalAmount) profit from (
         SELECT
-            oi.order_no orderNo,
-            oi.create_time createTimeStr,
-            oi.legal_name legalName,
-            oi.customer_code customerCode,
-            oi.customer_name customerName,
-            oi.biz_uname ywName,
-            orbd.bill_no sBillNo,
-            orbd.begin_account_term sBeginAccountTermStr,
-            orbd.end_account_term sEndAccountTermStr,
-            (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no = orbd.bill_no and obct.currency_code = 'RMB' and obct.money_type='2') sRmb,
-            (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no = orbd.bill_no and obct.currency_code = 'MY' and obct.money_type='2') sDollar,
-            (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no = orbd.bill_no and obct.currency_code = 'OY' and obct.money_type='2') sEuro,
-            (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no = orbd.bill_no and obct.currency_code = 'GB' and obct.money_type='2') sHkDollar,
-            (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no = orbd.bill_no and obct.currency_code = 'GB' and obct.money_type='2') sLocalAmount,
-            orbd.audit_status sStatus,
-            opbd.bill_no fBillNo,
-            opbd.begin_account_term fBeginAccountTermStr,
-            opbd.end_account_term fEndAccountTermStr,
-            (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no = opbd.bill_no and obct.currency_code = 'RMB' and obct.money_type='1') fRmb,
-            (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no = opbd.bill_no and obct.currency_code = 'MY' and obct.money_type='1') fDollar,
-            (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no = opbd.bill_no and obct.currency_code = 'OY' and obct.money_type='1') fEuro,
-            (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no = opbd.bill_no and obct.currency_code = 'GB' and obct.money_type='1') fHkDollar,
-            (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no = opbd.bill_no and obct.currency_code = 'GB' and obct.money_type='1') fLocalAmount,
-            opbd.audit_status fStatus
+        oi.order_no orderNo,
+        oi.create_time createTimeStr,
+        oi.legal_name legalName,
+        oi.customer_code customerCode,
+        oi.customer_name customerName,
+        oi.biz_uname ywName,
+        concat((select distinct orbd.bill_no from order_receivable_bill_detail orbd where orbd.order_no = oi.order_no)) sBillNo,
+        concat((select distinct concat(orbd.begin_account_term,'至',orbd.end_account_term) from order_receivable_bill_detail orbd where orbd.order_no = oi.order_no)) sAccountTermStr,
+        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_receivable_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'CNY' and obct.money_type='2') sRmb,
+        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_receivable_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'USD' and obct.money_type='2') sDollar,
+        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_receivable_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'EUR' and obct.money_type='2') sEuro,
+        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_receivable_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'HKD' and obct.money_type='2') sHkDollar,
+        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_receivable_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'CNY' and obct.money_type='2') sLocalAmount,
+        (select orbd.audit_status from order_receivable_bill_detail orbd where orbd.bill_no in (select distinct orbd.bill_no from order_receivable_bill_detail orbd where orbd.order_no = oi.order_no)) sStatus,
+        concat((select distinct opbd.bill_no from order_payment_bill_detail opbd where opbd.order_no = oi.order_no)) fBillNo,
+        concat((select distinct concat(opbd.begin_account_term,'至',opbd.end_account_term) from order_payment_bill_detail opbd where opbd.order_no = oi.order_no)) fAccountTermStr,
+        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_payment_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'CNY' and obct.money_type='1') fRmb,
+        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_payment_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'USD' and obct.money_type='1') fDollar,
+        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_payment_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'EUR' and obct.money_type='1') fEuro,
+        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_payment_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'HKD' and obct.money_type='1') fHkDollar,
+        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_payment_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'CNY' and obct.money_type='1') fLocalAmount,
+        (select opbd.audit_status from order_payment_bill_detail opbd where opbd.bill_no in (select distinct opbd.bill_no from order_payment_bill_detail opbd where opbd.order_no = oi.order_no)) fStatus
         FROM
-            order_info oi
-            left join order_payment_bill_detail opbd on oi.order_no = opbd.order_no
-            left join order_receivable_bill_detail orbd on oi.order_no = opbd.order_no) temp
+        order_info oi ) temp
         where 1 = 1
         <if test="form.orderNo != null and form.orderNo != ''">
             and temp.orderNo = #{form.orderNo}
@@ -262,12 +258,6 @@
         </if>
         <if test="form.fStatus != null and form.fStatus !=''">
             and temp.fStatus = #{form.fStatus}
-        </if>
-        <if test="form.beginAccountTermStr != null and form.beginAccountTermStr !=''">
-            and temp.beginAccountTermStr <![CDATA[>=]]> #{form.beginAccountTermStr}
-        </if>
-        <if test="form.endAccountTermStr != null and form.endAccountTermStr !=''">
-            and temp.endAccountTermStr <![CDATA[<=]]> #{form.endAccountTermStr}
         </if>
         <if test="form.createTimeStr != null and form.createTimeStr !=''">
             and temp.createTimeStr = #{form.createTimeStr}

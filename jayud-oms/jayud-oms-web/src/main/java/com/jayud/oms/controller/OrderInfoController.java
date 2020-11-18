@@ -127,12 +127,15 @@ public class OrderInfoController {
                 inputOrderCustomsForm.setSeaTransPicName(StringUtils.getFileNameStr(inputOrderCustomsForm.getAirTransportPics()));
                 //报关订单中的子订单
                 List<InputSubOrderCustomsForm> subOrders = inputOrderCustomsForm.getSubOrders();
+                if(subOrders.size() == 0){
+                    return CommonResult.error(ResultEnum.PARAM_ERROR);
+                }
                 for (InputSubOrderCustomsForm subOrderCustomsForm : subOrders) {
                     if (StringUtil.isNullOrEmpty(subOrderCustomsForm.getOrderNo())
                             || StringUtil.isNullOrEmpty(subOrderCustomsForm.getTitle())
                             || StringUtil.isNullOrEmpty(subOrderCustomsForm.getUnitCode())
                             || StringUtil.isNullOrEmpty(subOrderCustomsForm.getIsTitle())) {
-                        return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+                        return CommonResult.error(ResultEnum.PARAM_ERROR);
                     }
                 }
             }
@@ -153,12 +156,16 @@ public class OrderInfoController {
                 //中港订单提货收货信息参数校验
                 List<InputOrderTakeAdrForm> takeAdrForms1 = inputOrderTransportForm.getTakeAdrForms1();
                 List<InputOrderTakeAdrForm> takeAdrForms2 = inputOrderTransportForm.getTakeAdrForms2();
+                //提货地址和送货地址分别至少存在一条数据才可提交
+                if(takeAdrForms1 == null || takeAdrForms1.size() == 0 || takeAdrForms2 == null || takeAdrForms2.size() == 0){
+                    return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+                }
                 List<InputOrderTakeAdrForm> takeAdrForms = new ArrayList<>();
                 takeAdrForms.addAll(takeAdrForms1);
                 takeAdrForms.addAll(takeAdrForms2);
                 for (InputOrderTakeAdrForm inputOrderTakeAdr : takeAdrForms) {
                     if (inputOrderTakeAdr.getDeliveryId() == null
-                            || inputOrderTakeAdr.getTakeTime() == null || inputOrderTakeAdr.getPieceAmount() == null
+                            || inputOrderTakeAdr.getTakeTimeStr() == null || inputOrderTakeAdr.getPieceAmount() == null
                             || inputOrderTakeAdr.getWeight() == null) {
                         return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
                     }

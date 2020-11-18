@@ -74,6 +74,8 @@ DROP COLUMN `country_code`,
 MODIFY COLUMN `warehouse_code` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '中转仓库代码' AFTER `id`,
 MODIFY COLUMN `warehouse_name` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '中转仓库名称' AFTER `warehouse_code`,
 ADD COLUMN `area` varchar(50) NULL COMMENT '区' AFTER `city`;
+ALTER TABLE `jayud-test`.`warehouse_info`
+CHANGE COLUMN `area` `area_code` bigint(20) NULL DEFAULT NULL COMMENT '区' AFTER `city_code`;
 
 -- 2020年11月5日李达荣，功能描述：中转仓库主键更long类型
 ALTER TABLE `warehouse_info`
@@ -91,7 +93,7 @@ MODIFY COLUMN `weight` varchar(50) NULL DEFAULT NULL COMMENT '吉车重量' AFTE
 ADD COLUMN `vehicle_tonnage` varchar(50) NULL COMMENT '车辆吨位' AFTER `enterprise_code`;
 
 -- 2020年11月6日李达荣，功能描述：法人主体加字段
-ALTER TABLE `jayud-test`.`legal_entity`
+ALTER TABLE `legal_entity`
 ADD COLUMN `legal_en_name` varchar(50) NULL COMMENT '英文名' AFTER `updated_time`,
 ADD COLUMN `phone` varchar(20) NULL COMMENT '电话' AFTER `legal_en_name`,
 ADD COLUMN `fax` varchar(50) NULL COMMENT '传真' AFTER `phone`,
@@ -99,3 +101,66 @@ ADD COLUMN `address` varchar(50) NULL COMMENT '地址' AFTER `fax`,
 ADD COLUMN `bank` varchar(50) NULL COMMENT '开户银行' AFTER `address`,
 ADD COLUMN `account_open` varchar(50) NULL COMMENT '开户账户' AFTER `bank`,
 ADD COLUMN `tax_identification_num` varchar(50) NULL COMMENT '纳税识别号信息' AFTER `account_open`;
+
+-- 2020年11月6日李达荣，功能描述：中转仓更改字段类型
+ALTER TABLE `warehouse_info`
+MODIFY COLUMN `state_code` bigint(20) NULL DEFAULT NULL COMMENT '省' AFTER `address`,
+MODIFY COLUMN `city_code` bigint(20) NULL DEFAULT NULL COMMENT '市' AFTER `state_code`,
+MODIFY COLUMN `area_code` bigint(20) NULL DEFAULT NULL COMMENT '区' AFTER `city_code`;
+
+
+
+-- 2020年11月6日李达荣，功能描述：主订单基础数据表增加接单法人id
+-- ALTER TABLE `jayud-test`.`order_info`
+-- ADD COLUMN `legal_entity_id` bigint(20) NULL DEFAULT NULL COMMENT '接单法人id' AFTER `up_user`;
+
+
+-- 2020年11月10日李达荣，功能描述：车辆表增加字段
+ALTER TABLE `vehicle_info`
+ADD COLUMN `file_name` varchar(255) NULL COMMENT '附件名称，多个时用逗号隔开' AFTER `vehicle_tonnage`;
+
+-- 2020年11月10日李达荣，功能描述：供应商设置非必填
+ALTER TABLE `supplier_info`
+MODIFY COLUMN `buyer_id` bigint(20) NULL COMMENT '采购人员id' AFTER `rate`;
+
+
+-- 2020年11月10日李达荣，功能描述：客户维护地址字段类型更改
+ALTER TABLE `customer_address`
+MODIFY COLUMN `province` int(20) NOT NULL COMMENT '省主键' AFTER `phone`,
+MODIFY COLUMN `city` int(20) NOT NULL COMMENT '市主键' AFTER `province`,
+MODIFY COLUMN `area` int(20) NULL DEFAULT NULL COMMENT '区主键' AFTER `city`;
+
+-- 2020年11月10日李达荣，功能描述：送货/收货地址增加字段
+ALTER TABLE `delivery_address`
+ADD COLUMN `type` char(10) NULL COMMENT '地址类型（0 提货地址 1送货地址）' AFTER `create_time`,
+ADD COLUMN `province` int(20) NOT NULL COMMENT '省主键' AFTER `type`,
+ADD COLUMN `city` int(20) NOT NULL COMMENT '市主键' AFTER `province`,
+ADD COLUMN `area` int(20) NULL DEFAULT NULL COMMENT '区主键' AFTER `city`;
+
+-- sql 以上都同步到测试服务器
+
+
+-- 以上已同步
+-- 2020年11月11日李达荣，功能描述：录用费用增加文件字段
+ALTER TABLE `order_payment_cost`
+ADD COLUMN `file_name` varchar(255) NULL COMMENT '多个文件，用逗号隔开' AFTER `created_user`,
+ADD COLUMN `files` varchar(255) NULL COMMENT '多个文件路径,用逗号隔开' AFTER `file_name`;
+
+
+CREATE TABLE `driver_employment_fee` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '司机录用费用id',
+  `driver_id` bigint(20) NOT NULL COMMENT '司机id',
+  `main_order_no` varchar(50)  NOT NULL COMMENT '主订单',
+  `order_id` bigint(20) NOT NULL COMMENT '中港订单id',
+  `order_no` varchar(50) NOT NULL COMMENT '订单编码',
+  `cost_code` varchar(255) NOT NULL COMMENT '费用代码',
+  `amount` decimal(20,2) NOT NULL COMMENT '费用金额',
+  `currency_code` varchar(255) NOT NULL COMMENT '币种代码',
+  `file_name` varchar(255)  DEFAULT NULL COMMENT '多个文件，用逗号隔开',
+  `files` varchar(255) DEFAULT NULL COMMENT '多个文件路径,用逗号隔开',
+  `supplier_code` varchar(255) NOT NULL COMMENT '供应商代码',
+  `supplier_name` varchar(255) NOT NULL COMMENT '供应商',
+  `status` char(10)  DEFAULT NULL COMMENT '状态(0:待提交，1:已提交)',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='司机录入费用表(小程序使用)';

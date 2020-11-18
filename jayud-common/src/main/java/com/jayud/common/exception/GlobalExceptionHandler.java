@@ -95,4 +95,15 @@ public class GlobalExceptionHandler {
         }
         return HttpStatus.valueOf(statusCode);
     }
+
+    @ExceptionHandler(JayudBizException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public BaseApiResult handleJayudBizException(JayudBizException e) {
+        log.warn(e.getMessage(), e);
+
+        int code = e.getCode();
+        String msg = e.getMessage();
+
+        return new ApiResult(code, msg);
+    }
 }

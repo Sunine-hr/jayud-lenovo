@@ -3,6 +3,7 @@ package com.jayud.oms.model.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.oms.model.enums.VehicleTypeEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -49,7 +50,10 @@ public class VehicleInfoVO {
     private String ptFax;
 
     @ApiModelProperty(value = "车辆类型(1吨车 2柜车)")
-    private String carType;
+    private Integer carType;
+
+    @ApiModelProperty(value = "车辆名称(1吨车 2柜车)")
+    private String carTypeName;
 
     @ApiModelProperty(value = "牌头电话")
     private String ptPhone;
@@ -73,9 +77,11 @@ public class VehicleInfoVO {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "更新时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "更新人")
@@ -95,7 +101,8 @@ public class VehicleInfoVO {
 
 
     public void setCarType(Integer carType) {
-        this.carType = VehicleTypeEnum.getDesc(carType);
+        this.carTypeName = VehicleTypeEnum.getDesc(carType);
+        this.carType = carType;
     }
 
 

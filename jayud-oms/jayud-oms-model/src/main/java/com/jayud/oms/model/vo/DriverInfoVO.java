@@ -98,7 +98,7 @@ public class DriverInfoVO {
     }
 
     public void setHkNumber(String hkNumber) {
-        list.add(hkNumber == null ? "" : hkNumber);
+        list.add(hkNumber);
     }
 
     /**
@@ -106,6 +106,11 @@ public class DriverInfoVO {
      */
     public void splicingPlateNumber() {
         StringBuilder sb = new StringBuilder();
-        this.carNumber = sb.append(list.get(0)).append("/").append(list.get(1)).toString();
+        if (list.size() == 2) {
+            this.carNumber = sb.append(list.get(0)).append("/").append(list.get(1)).toString();
+        } else {
+            this.carNumber = sb.append(list.get(0)).toString();
+        }
+
     }
 }

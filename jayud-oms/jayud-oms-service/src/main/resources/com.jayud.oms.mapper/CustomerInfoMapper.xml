@@ -4,17 +4,17 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.CustomerInfo">
-        <id column="id" property="id" />
-        <result column="name" property="name" />
-        <result column="unit_account" property="unitAccount" />
-        <result column="unit_code" property="unitCode" />
-        <result column="id_code" property="idCode" />
-        <result column="types" property="types" />
-        <result column="contact" property="contact" />
-        <result column="phone" property="phone" />
-        <result column="address" property="address" />
-        <result column="email" property="email" />
-        <result column="legal_entity" property="legalEntity" />
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="unit_account" property="unitAccount"/>
+        <result column="unit_code" property="unitCode"/>
+        <result column="id_code" property="idCode"/>
+        <result column="types" property="types"/>
+        <result column="contact" property="contact"/>
+        <result column="phone" property="phone"/>
+        <result column="address" property="address"/>
+        <result column="email" property="email"/>
+        <result column="legal_entity" property="legalEntity"/>
         <result column="invoice_code" property="invoiceCode"/>
         <result column="tfn" property="tfn"/>
         <result column="if_contract" property="ifContract"/>
@@ -39,66 +39,67 @@
          created_user,updated_user,tax_type,tax_rate
     </sql>
 
-    <select id="findCustomerInfoByPage" parameterType="com.jayud.oms.model.bo.QueryCustomerInfoForm" resultType="com.jayud.oms.model.vo.CustomerInfoVO" >
+    <select id="findCustomerInfoByPage" parameterType="com.jayud.oms.model.bo.QueryCustomerInfoForm"
+            resultType="com.jayud.oms.model.vo.CustomerInfoVO">
         SELECT
-          ci.id,
-          ci.name,
-          ci.`unit_account` unitAccount,
-          ci.`unit_code` unitCode,
-          ci.`id_code` idCode,
-          ci.`types`,
-          ci.`contact`,
-          ci.`phone`,
-          ci.`address`,
-          ci.`email`,
-          ci.`legal_entity` legalEntity,
-          ci.`invoice_code` invoiceCode,
-          ci.`tfn`,
-          ci.`if_contract` ifContract,
-          ci.`settlement_type` settlementType,
-          ci.`account_period` accountPeriod,
-          ci.`estate`,
-          ci.`department_id` departmentId,
-          d.`name` departmentName,
-          ci.`ku_id` kuId,
-          su1.`user_name` kuName,
-          ci.`yw_id` ywId,
-          su2.`user_name` ywName,
-          ci.`audit_status` auditStatus,
-          (
-            CASE
-              ci.`audit_status`
-              WHEN '0'
-              THEN '待客服审核'
-              WHEN '1'
-              THEN '待财务审核'
-              WHEN '2'
-              THEN '待总经办审核'
-              WHEN '10'
-              THEN '审核通过'
-              WHEN '11'
-              THEN '审核拒绝'
-            END
-          ) auditStatusDesc,
-          ci.`created_user` createdUser,
-          DATE_FORMAT(
-            ci.`created_time`,
-            '%Y-%m-%d %H:%i:%S'
-          ) createdTimeStr,
-          ci.`updated_user` updatedUser,
-          ci.`audit_comment` auditComment,
-          DATE_FORMAT(
-            ci.`updated_time`,
-            '%Y-%m-%d %H:%i:%S'
-          ) updatedTimeStr
+        ci.id,
+        ci.name,
+        ci.`unit_account` unitAccount,
+        ci.`unit_code` unitCode,
+        ci.`id_code` idCode,
+        ci.`types`,
+        ci.`contact`,
+        ci.`phone`,
+        ci.`address`,
+        ci.`email`,
+        ci.`legal_entity` legalEntity,
+        ci.`invoice_code` invoiceCode,
+        ci.`tfn`,
+        ci.`if_contract` ifContract,
+        ci.`settlement_type` settlementType,
+        ci.`account_period` accountPeriod,
+        ci.`estate`,
+        ci.`department_id` departmentId,
+        d.`name` departmentName,
+        ci.`ku_id` kuId,
+        su1.`user_name` kuName,
+        ci.`yw_id` ywId,
+        su2.`user_name` ywName,
+        ci.`audit_status` auditStatus,
+        (
+        CASE
+        ci.`audit_status`
+        WHEN '0'
+        THEN '待客服审核'
+        WHEN '1'
+        THEN '待财务审核'
+        WHEN '2'
+        THEN '待总经办审核'
+        WHEN '10'
+        THEN '审核通过'
+        WHEN '11'
+        THEN '审核拒绝'
+        END
+        ) auditStatusDesc,
+        ci.`created_user` createdUser,
+        DATE_FORMAT(
+        ci.`created_time`,
+        '%Y-%m-%d %H:%i:%S'
+        ) createdTimeStr,
+        ci.`updated_user` updatedUser,
+        ci.`audit_comment` auditComment,
+        DATE_FORMAT(
+        ci.`updated_time`,
+        '%Y-%m-%d %H:%i:%S'
+        ) updatedTimeStr
         FROM
-          customer_info ci
-          LEFT JOIN department d
-            ON ci.`department_id` = d.`id`
-          LEFT JOIN `system_user` su1
-            ON su1.`id` = ci.`ku_id`
-          LEFT JOIN `system_user` su2
-            ON su2.`id` = ci.`yw_id` where  ci.`status` = 1
+        customer_info ci
+        LEFT JOIN department d
+        ON ci.`department_id` = d.`id`
+        LEFT JOIN `system_user` su1
+        ON su1.`id` = ci.`ku_id`
+        LEFT JOIN `system_user` su2
+        ON su2.`id` = ci.`yw_id` where ci.`status` = 1
         <if test="form.name != null and form.name != ''">
             and ci.name like concat('%',#{form.name},'%')
         </if>
@@ -113,7 +114,7 @@
         </if>
     </select>
 
-    <select id="getCustomerInfoById"  resultType="com.jayud.oms.model.vo.CustomerInfoVO" >
+    <select id="getCustomerInfoById" resultType="com.jayud.oms.model.vo.CustomerInfoVO">
         SELECT
         ci.id,
         ci.name,
@@ -179,7 +180,7 @@
     </select>
 
     <!--客户账户管理-->
-    <select id="getCustAccountByCondition"  resultType="com.jayud.oms.model.vo.CustAccountVO" >
+    <select id="getCustAccountByCondition" resultType="com.jayud.oms.model.vo.CustAccountVO">
         SELECT
         su.id,
         su.name,
@@ -224,7 +225,8 @@
         WHERE su.user_type = '2' and su.id = #{id}
     </select>
 
-    <select id="findCustAccountByPage" resultType="com.jayud.oms.model.vo.CustAccountVO" parameterType="com.jayud.oms.model.bo.QueryCusAccountForm">
+    <select id="findCustAccountByPage" resultType="com.jayud.oms.model.vo.CustAccountVO"
+            parameterType="com.jayud.oms.model.bo.QueryCusAccountForm">
         SELECT
         su.id,
         su.name,
@@ -278,5 +280,19 @@
         </if>
     </select>
 
-
+    <select id="findCustomerBasicsInfoByPage" parameterType="com.jayud.oms.model.bo.QueryCustomerInfoForm"
+            resultType="com.jayud.oms.model.vo.CustomerInfoVO">
+        select
+        id,name,id_code idCode,contact,phone,address,email,created_time createdTimeStr
+        from customer_info
+        <where>
+            audit_status = 10
+            <if test="form.name != null and form.name != ''">
+                and name like concat('%',#{form.name},'%')
+            </if>
+            <if test="form.idCode != null and form.idCode != ''">
+                and id_code like concat('%',#{form.idCode},'%')
+            </if>
+        </where>
+    </select>
 </mapper>

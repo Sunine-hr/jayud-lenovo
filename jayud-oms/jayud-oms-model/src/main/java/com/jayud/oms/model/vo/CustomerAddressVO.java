@@ -1,15 +1,10 @@
 package com.jayud.oms.model.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
-import io.swagger.annotations.ApiModel;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
+import org.apache.commons.lang.StringUtils;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -40,44 +35,60 @@ public class CustomerAddressVO {
     @ApiModelProperty(value = "联系电话")
     private String phone;
 
+    @ApiModelProperty(value = "省主键")
+    private Integer province;
+
+    @ApiModelProperty(value = "市主键")
+    private Integer city;
+
+    @ApiModelProperty(value = "区主键")
+    private Integer area;
+
     @ApiModelProperty(value = "省")
-    private String province;
+    private String provinceName;
 
     @ApiModelProperty(value = "市")
-    private String city;
+    private String cityName;
 
     @ApiModelProperty(value = "区")
-    private String area;
+    private String areaName;
 
     @ApiModelProperty(value = "详细地址")
     private String address;
 
     @ApiModelProperty(value = "邮编")
-    private String postcode;
+    private String postCode;
 
     @ApiModelProperty(value = "状态（0无效 1有效）")
     private String status;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "创建人")
     private String createUser;
 
     @ApiModelProperty(value = "更新时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
 
+//    public void setType(String type) {
+//        this.type = AddressTypeEnum.getDesc(type);
+//    }
+
     /**
      * 拼装详细地址
      */
     public void splicingAddress() {
         StringBuilder sb = new StringBuilder();
-        sb.append(this.province).append(this.city)
-                .append(this.area).append(" ").append(this.address);
+        sb.append(this.provinceName).append(this.cityName)
+                .append(StringUtils.isEmpty(this.areaName) ? "" : this.areaName).
+                append(" ").append(this.address);
         this.address = sb.toString();
     }
 

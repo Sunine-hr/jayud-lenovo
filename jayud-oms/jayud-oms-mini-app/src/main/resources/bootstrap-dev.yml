@@ -1,0 +1,5 @@
+jayud:
+  nacos:
+    server-addr: 113.100.140.250:8848
+    config:
+      namespace: 65ed253a-22cf-49e9-8e95-72402f722631

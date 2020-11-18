@@ -5,14 +5,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.UserOperator;
-import com.jayud.common.utils.MD5;
 import com.jayud.oms.mapper.DriverInfoMapper;
 import com.jayud.oms.model.bo.QueryDriverInfoForm;
 import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.DriverInfo;
+import com.jayud.oms.model.vo.DriverInfoLinkVO;
 import com.jayud.oms.model.vo.DriverInfoVO;
 import com.jayud.oms.service.IDriverInfoService;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -96,4 +95,24 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
         DriverInfo driverInfo = new DriverInfo().setId(id).setStatus(status);
         return this.updateById(driverInfo);
     }
+
+    @Override
+    public DriverInfoLinkVO getDriverInfoLink(Long driverId) {
+        return baseMapper.getDriverInfoLink(driverId);
+    }
+
+
+    /**
+     * 根据司机大陆手机查询用户
+     *
+     * @param phone
+     * @return
+     */
+    @Override
+    public DriverInfo getByPhone(String phone) {
+        QueryWrapper<DriverInfo> condition = new QueryWrapper<>();
+        condition.lambda().eq(DriverInfo::getPhone, phone).eq(DriverInfo::getIsMain, "1");
+        return this.baseMapper.selectOne(condition);
+    }
+
 }

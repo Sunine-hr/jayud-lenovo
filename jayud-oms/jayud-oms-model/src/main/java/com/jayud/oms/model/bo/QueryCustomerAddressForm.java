@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -30,5 +31,9 @@ public class QueryCustomerAddressForm extends BasePageForm {
 
     @ApiModelProperty(value = "联系电话")
     private String phone;
+
+    @ApiModelProperty(value = "客户主键")
+    @NotNull(message = "客户主键不能为空")
+    private Long customerId;
 
 }

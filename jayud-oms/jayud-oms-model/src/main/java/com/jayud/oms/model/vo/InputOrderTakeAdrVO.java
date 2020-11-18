@@ -9,6 +9,9 @@ import lombok.Data;
 @Data
 public class InputOrderTakeAdrVO {
 
+    @ApiModelProperty(value = "地址信息(delivery_address id)")
+    private Long deliveryId;
+
     @ApiModelProperty(value = "联系人")
     private String contacts;
 
@@ -28,7 +31,7 @@ public class InputOrderTakeAdrVO {
     private String address;
 
     @ApiModelProperty(value = "提货日期")
-    private String takeTime;
+    private String takeTimeStr;
 
     @ApiModelProperty(value = "客户")
     private String customerName;

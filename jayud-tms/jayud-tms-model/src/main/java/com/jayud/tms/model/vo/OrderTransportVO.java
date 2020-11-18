@@ -48,7 +48,7 @@ public class OrderTransportVO {
     private String vehicleType;
 
     @ApiModelProperty(value = "车型尺寸")
-    private String vehicleSize;
+    private Integer vehicleSize;
 
     @ApiModelProperty(value = "柜号")
     private String cntrNo;

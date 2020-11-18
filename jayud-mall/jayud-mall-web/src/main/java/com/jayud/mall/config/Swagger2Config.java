@@ -51,8 +51,8 @@ public class Swagger2Config {
      */
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("佳裕达物流系统-南京电商后台")
-                .description("佳裕达物流系统后台文档-南京电商后台")
+                .title("佳裕达物流系统-南京电商C端(客户端)-电商版")
+                .description("佳裕达物流系统后台文档-南京电商C端(客户端)-电商版")
                 .version("1.0")
                 .build();
     }

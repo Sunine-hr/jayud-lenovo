@@ -48,6 +48,16 @@ public class OfferInfoVO {
     @ApiModelProperty(value = "报价-创建时间", position = 12)
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "预计到达时间")
+    private LocalDateTime estimatedTime;
+
+    @ApiModelProperty(value = "操作信息")
+    private String remarks;
+
+    /*航程*/
+    @ApiModelProperty(value = "航程(预计到达时间estimated_time - 开船日期sail_time)")
+    private String voyageDay;
+
     /**关联字段显示**/
     /*报价模板quotation_template*/
     @ApiModelProperty(value = "服务分类(service_group sid)")
@@ -84,7 +94,7 @@ public class OfferInfoVO {
     private Integer taskId;
 
     @ApiModelProperty(value = "操作信息")
-    private String remarks;
+    private String templateRemarks;
 
     /*报价服务组:service_group*/
     @ApiModelProperty(value = "服务名称service_group.code_name")
@@ -147,6 +157,8 @@ public class OfferInfoVO {
 
     /*报价类型(goods_type types=1 id)*/
     private String qName;
+
+
 
 
 }

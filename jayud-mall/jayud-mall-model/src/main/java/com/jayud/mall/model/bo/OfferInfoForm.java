@@ -46,4 +46,12 @@ public class OfferInfoForm {
     @ApiModelProperty(value = "创建时间", position = 12)
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "预计到达时间")
+    private LocalDateTime estimatedTime;
+
+    @ApiModelProperty(value = "操作信息")
+    private String remarks;
+
+
+
 }

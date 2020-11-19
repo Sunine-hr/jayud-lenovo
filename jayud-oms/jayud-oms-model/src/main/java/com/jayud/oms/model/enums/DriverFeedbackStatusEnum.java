@@ -78,7 +78,7 @@ public enum DriverFeedbackStatusEnum {
             boolean currentState = false;
             boolean isEdit = false;
             //寻找操作流程节点
-            if (num.equals(statusNum) || (steps.length > 1 && steps[1].equals(statusNum))) {
+            if (num.equals(statusNum) || (steps.length > 1 && Integer.valueOf(steps[1]).equals(statusNum))) {
                 if (statusStr.length > 2) {
                     //如何存在审核，应该停留在上一个状态，并且修改当前状态
                     list.get(i - 1).put("currentState", true);

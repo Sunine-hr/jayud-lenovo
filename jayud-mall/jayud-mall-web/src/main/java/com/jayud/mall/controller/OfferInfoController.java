@@ -3,6 +3,7 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.OfferInfoForm;
 import com.jayud.mall.model.bo.QueryOfferInfoFareForm;
 import com.jayud.mall.model.vo.OfferInfoVO;
 import com.jayud.mall.service.IOfferInfoService;
@@ -29,6 +30,15 @@ public class OfferInfoController {
         CommonPageResult<OfferInfoVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
     }
+
+    @ApiOperation(value = "查看运价服务详情")
+    @PostMapping("/lookOfferInfoFare")
+    public CommonResult<OfferInfoVO> lookOfferInfoFare(@RequestBody OfferInfoForm form) {
+        Long id = form.getId();
+        OfferInfoVO offerInfoVO = offerInfoService.lookOfferInfoFare(id);
+        return CommonResult.success(offerInfoVO);
+    }
+
 
 
 

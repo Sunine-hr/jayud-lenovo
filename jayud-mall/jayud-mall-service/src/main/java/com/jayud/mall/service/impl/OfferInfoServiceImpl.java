@@ -222,4 +222,53 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
         });
         return pageInfo;
     }
+
+    @Override
+    public OfferInfoVO lookOfferInfoFare(Long id) {
+        OfferInfoVO offerInfoVO = offerInfoMapper.lookOfferInfoFare(id);
+        Integer qie = offerInfoVO.getQie();//报价模板id
+
+        /*订柜尺寸：海运费规格*/
+        List<TemplateCopeReceivableVO> templateCopeReceivableVOList =
+                templateCopeReceivableMapper.findTemplateCopeReceivableByQie(qie);
+        offerInfoVO.setTemplateCopeReceivableVOList(templateCopeReceivableVOList);
+
+        /*集货仓库*/
+        String areaId = offerInfoVO.getAreaId();
+        if(areaId != null && areaId != ""){
+            String[] areaIdArr = areaId.split(",");
+            List<String> areaIdList = Arrays.asList(areaIdArr);
+            List<ShippingArea> shippingAreas = shippingAreaMapper.selectBatchIds(areaIdList);
+            List<ShippingAreaVO> shippingAreaVOList = ConvertUtil.convertList(shippingAreas, ShippingAreaVO.class);
+            offerInfoVO.setShippingAreaVOList(shippingAreaVOList);
+        }
+
+        /*货物类型*/
+        String gid = offerInfoVO.getGid();
+        if(gid != null && gid != ""){
+            String[] gidArr = gid.split(",");
+            List<String> gidList = Arrays.asList(gidArr);
+            List<GoodsType> goodsTypes = goodsTypeMapper.selectBatchIds(gidList);
+            List<GoodsTypeVO> gList = ConvertUtil.convertList(goodsTypes, GoodsTypeVO.class);
+            offerInfoVO.setGList(gList);
+            //货物类型名称
+            if(gList.size() > 0){
+                GoodsTypeVO goodsTypeVO = gList.get(0);
+                Integer fid = goodsTypeVO.getFid();
+                GoodsType goodsType = goodsTypeMapper.selectById(fid);
+                offerInfoVO.setGName(goodsType.getName());
+            }
+        }
+
+        /*目的地仓库：可达仓库*/
+        String arriveWarehouse = offerInfoVO.getArriveWarehouse();
+        if(arriveWarehouse != null && arriveWarehouse != ""){
+            String[] arriveWarehouseArr = arriveWarehouse.split(",");
+            List<String> arriveWarehouseList = Arrays.asList(arriveWarehouseArr);
+            List<FabWarehouse> fabWarehouses = fabWarehouseMapper.selectBatchIds(arriveWarehouseList);
+            List<FabWarehouseVO> fabWarehouseVOList = ConvertUtil.convertList(fabWarehouses, FabWarehouseVO.class);
+            offerInfoVO.setFabWarehouseVOList(fabWarehouseVOList);
+        }
+        return offerInfoVO;
+    }
 }

@@ -58,4 +58,11 @@ public interface IOfferInfoService extends IService<OfferInfo> {
      * @return
      */
     IPage<OfferInfoVO> findOfferInfoFareByPage(QueryOfferInfoFareForm form);
+
+    /**
+     * 查看运价服务详情
+     * @param id
+     * @return
+     */
+    OfferInfoVO lookOfferInfoFare(Long id);
 }

@@ -44,4 +44,11 @@ public interface OfferInfoMapper extends BaseMapper<OfferInfo> {
      * @return
      */
     IPage<OfferInfoVO> findOfferInfoFareByPage(Page<OfferInfoVO> page, QueryOfferInfoFareForm form);
+
+    /**
+     * 查看运价详情
+     * @param id
+     * @return
+     */
+    OfferInfoVO lookOfferInfoFare(Long id);
 }

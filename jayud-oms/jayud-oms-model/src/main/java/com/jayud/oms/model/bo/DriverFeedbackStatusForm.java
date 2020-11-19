@@ -47,7 +47,7 @@ public class DriverFeedbackStatusForm extends Model<DriverFeedbackStatusForm> {
 
     @ApiModelProperty(value = "操作时间")
 //    @NotEmpty(message = "操作时间不能为空")
-    private String operatorTime= DateUtils.format(new Date(),DATE_TIME_PATTERN);
+    private String operatorTime;
 
 //    @ApiModelProperty(value = "附件")
 //    private String statusPic;

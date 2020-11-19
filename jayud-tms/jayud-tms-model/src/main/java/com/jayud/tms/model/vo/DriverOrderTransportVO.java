@@ -135,7 +135,9 @@ public class DriverOrderTransportVO {
         StringBuilder sb = new StringBuilder();
         this.pickUpGoodsList.stream().filter(tmp -> StringUtils.isNotBlank(tmp.getGoodsDesc()))
                 .forEach(tmp -> sb.append(tmp.getGoodsDesc()).append("+"));
-        this.goodsDesc = sb.substring(0, sb.length() - 1);
+        if (sb.length() != 0) {
+            this.goodsDesc = sb.substring(0, sb.length() - 1);
+        }
     }
 
     /**

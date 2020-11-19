@@ -5,6 +5,7 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.OfferInfoForm;
 import com.jayud.mall.model.bo.QueryOfferInfoFareForm;
+import com.jayud.mall.model.vo.FabWarehouseVO;
 import com.jayud.mall.model.vo.OfferInfoVO;
 import com.jayud.mall.service.IOfferInfoService;
 import io.swagger.annotations.Api;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/offerinfo")
@@ -48,6 +51,15 @@ public class OfferInfoController {
         return CommonResult.success(offerInfoVO);
     }
 
+
+    //目的地仓库，可达仓库
+    @ApiModelProperty(value = "查询运价，目的地仓库(可达仓库)")
+    @PostMapping("/findFabWarehouse")
+    public CommonResult<List<FabWarehouseVO>> findFabWarehouse(@RequestBody OfferInfoForm form){
+        Long id = form.getId();
+        List<FabWarehouseVO> fabWarehouseVOList = offerInfoService.findFabWarehouse(id);
+        return CommonResult.success(fabWarehouseVOList);
+    }
 
 
 

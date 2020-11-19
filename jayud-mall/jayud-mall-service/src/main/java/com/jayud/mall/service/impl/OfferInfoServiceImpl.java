@@ -288,4 +288,20 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
 
         return offerInfoVO;
     }
+
+    @Override
+    public List<FabWarehouseVO> findFabWarehouse(Long id) {
+        OfferInfoVO offerInfoVO = offerInfoMapper.lookOfferInfoFare(id);
+        Integer qie = offerInfoVO.getQie();//报价模板id
+        List<FabWarehouseVO> fabWarehouseVOList = new ArrayList<>();
+        //可达仓库List
+        String arriveWarehouse = offerInfoVO.getArriveWarehouse();
+        if(arriveWarehouse != null && arriveWarehouse != ""){
+            String[] arriveWarehouseArr = arriveWarehouse.split(",");
+            List<String> arriveWarehouseList = Arrays.asList(arriveWarehouseArr);
+            List<FabWarehouse> fabWarehouses = fabWarehouseMapper.selectBatchIds(arriveWarehouseList);
+            fabWarehouseVOList = ConvertUtil.convertList(fabWarehouses, FabWarehouseVO.class);
+        }
+        return fabWarehouseVOList;
+    }
 }

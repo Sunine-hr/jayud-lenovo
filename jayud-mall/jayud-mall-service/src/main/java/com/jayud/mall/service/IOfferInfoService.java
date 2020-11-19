@@ -7,7 +7,10 @@ import com.jayud.mall.model.bo.QueryOfferInfoFareForm;
 import com.jayud.mall.model.bo.QueryOfferInfoForm;
 import com.jayud.mall.model.po.OfferInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.vo.FabWarehouseVO;
 import com.jayud.mall.model.vo.OfferInfoVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -72,4 +75,11 @@ public interface IOfferInfoService extends IService<OfferInfo> {
      * @return
      */
     OfferInfoVO purchaseOrders(Long id);
+
+    /**
+     * 查询运价单的可达仓库
+     * @param id
+     * @return
+     */
+    List<FabWarehouseVO> findFabWarehouse(Long id);
 }

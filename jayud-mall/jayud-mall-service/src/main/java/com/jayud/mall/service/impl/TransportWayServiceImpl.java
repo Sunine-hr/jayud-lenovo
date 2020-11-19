@@ -2,9 +2,11 @@ package com.jayud.mall.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.TransportWayMapper;
 import com.jayud.mall.model.bo.TransportWayForm;
 import com.jayud.mall.model.po.TransportWay;
+import com.jayud.mall.model.vo.TransportWayVO;
 import com.jayud.mall.service.ITransportWayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +29,7 @@ public class TransportWayServiceImpl extends ServiceImpl<TransportWayMapper, Tra
 
 
     @Override
-    public List<TransportWay> findTransportWay(TransportWayForm form) {
+    public List<TransportWayVO> findTransportWay(TransportWayForm form) {
         QueryWrapper<TransportWay> queryWrapper = new QueryWrapper<>();
         String idCode = form.getIdCode();
         String codeName = form.getCodeName();
@@ -42,6 +44,7 @@ public class TransportWayServiceImpl extends ServiceImpl<TransportWayMapper, Tra
             queryWrapper.eq("status", status);
         }
         List<TransportWay> list = transportWayMapper.selectList(queryWrapper);
-        return list;
+        List<TransportWayVO> transportWayVOS = ConvertUtil.convertList(list, TransportWayVO.class);
+        return transportWayVOS;
     }
 }

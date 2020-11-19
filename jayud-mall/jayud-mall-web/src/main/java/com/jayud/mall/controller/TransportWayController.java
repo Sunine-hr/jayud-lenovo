@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/transportway")
-@Api(tags = "运输方式接口")
+@Api(tags = "C端-运输方式接口")
 public class TransportWayController {
 
     @Autowired
@@ -28,6 +28,7 @@ public class TransportWayController {
         List<TransportWayVO> list = transportWayService.findTransportWay(form);
         return CommonResult.success(list);
     }
+
 
 
 }

@@ -194,7 +194,7 @@
         AND opb.supplier_ch_name = #{supplierChName}
         AND opb.sub_type = #{cmd}
     </select>
-    <select id="findSheetHead" parameterType="com.jayud.finance.bo.ViewBillForm" resultType="com.jayud.finance.vo.SheetHeadVO">
+    <select id="findSheetHead" parameterType="java.util.List" resultType="com.jayud.finance.vo.SheetHeadVO">
         SELECT
             CONCAT( opc.cost_code, opc.currency_code ) NAME,
             concat((select ci.name from cost_info ci where ci.id_code = opc.cost_code),'(',(select ci.currency_name from currency_info ci where ci.  currency_code = opc.currency_code),')') viewName,
@@ -203,14 +203,14 @@
             order_payment_cost opc
         WHERE
             opc.id IN
-        <foreach collection="form.costIds" index="index" item="item" open="(" separator="," close=")">
+        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
         GROUP BY
             opc.cost_code,
             opc.currency_code
     </select>
-    <select id="findCostClass" parameterType="com.jayud.finance.bo.ViewBillForm" resultType="com.jayud.finance.vo.ViewBillToCostClassVO">
+    <select id="findCostClass" parameterType="java.util.List" resultType="com.jayud.finance.vo.ViewBillToCostClassVO">
         SELECT
             CONCAT( opc.cost_code, opc.currency_code ) NAME,
             opc.main_order_no orderNo,
@@ -237,7 +237,7 @@
             order_payment_cost opc
         WHERE
             opc.id IN
-        <foreach collection="form.costIds" index="index" item="item" open="(" separator="," close=")">
+        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
         GROUP BY
@@ -245,7 +245,7 @@
             opc.currency_code,
             opc.main_order_no
     </select>
-    <select id="viewPaymentBill" parameterType="com.jayud.finance.bo.ViewBillForm" resultType="com.jayud.finance.vo.ViewBilToOrderVO">
+    <select id="viewPaymentBill" parameterType="java.util.List" resultType="com.jayud.finance.vo.ViewBilToOrderVO">
         SELECT
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         oi.order_no orderNo,
@@ -260,7 +260,7 @@
         FROM
         order_info oi
         where oi.order_no in (select opc.order_no from order_payment_cost opc where opc.id in
-        <foreach collection="form.costIds" index="index" item="item" open="(" separator="," close=")">
+        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
         )

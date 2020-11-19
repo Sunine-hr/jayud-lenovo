@@ -185,9 +185,9 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
     }
 
     @Override
-    public List<ViewBilToOrderVO> viewReceiveBill(ViewBillForm form) {
-        List<ViewBilToOrderVO> orderList = baseMapper.viewReceiveBill(form);
-        List<ViewBillToCostClassVO> findCostClass = baseMapper.findCostClass(form);
+    public List<ViewBilToOrderVO> viewReceiveBill(List<Long> costIds) {
+        List<ViewBilToOrderVO> orderList = baseMapper.viewReceiveBill(costIds);
+        List<ViewBillToCostClassVO> findCostClass = baseMapper.findCostClass(costIds);
         for (ViewBilToOrderVO viewBillToOrder : orderList) {
             List<ViewBillToCostClassVO> tempList = new ArrayList<>();
             for(ViewBillToCostClassVO viewBillToCostClass : findCostClass){
@@ -201,8 +201,8 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
     }
 
     @Override
-    public List<SheetHeadVO> findSheetHead(ViewBillForm form) {
-        return baseMapper.findSheetHead(form);
+    public List<SheetHeadVO> findSheetHead(List<Long> costIds) {
+        return baseMapper.findSheetHead(costIds);
     }
 
     @Override

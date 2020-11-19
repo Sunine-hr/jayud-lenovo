@@ -192,7 +192,7 @@
         AND orb.customer_name = #{customerName}
         AND orb.sub_type = #{cmd}
     </select>
-    <select id="findSheetHead" parameterType="com.jayud.finance.bo.ViewBillForm" resultType="com.jayud.finance.vo.SheetHeadVO">
+    <select id="findSheetHead" parameterType="java.util.List" resultType="com.jayud.finance.vo.SheetHeadVO">
         SELECT
         CONCAT( orc.cost_code, orc.currency_code ) NAME,
         concat((select ci.name from cost_info ci where ci.id_code = orc.cost_code),'(',(select ci.currency_name from currency_info ci where ci.  currency_code = orc.currency_code),')') viewName,
@@ -201,14 +201,14 @@
         order_receivable_cost orc
         WHERE
         orc.id IN
-        <foreach collection="form.costIds" index="index" item="item" open="(" separator="," close=")">
+        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
         GROUP BY
         orc.cost_code,
         orc.currency_code
     </select>
-    <select id="findCostClass" parameterType="com.jayud.finance.bo.ViewBillForm" resultType="com.jayud.finance.vo.ViewBillToCostClassVO">
+    <select id="findCostClass" parameterType="java.util.List" resultType="com.jayud.finance.vo.ViewBillToCostClassVO">
         SELECT
         CONCAT( orc.cost_code, orc.currency_code ) NAME,
         orc.main_order_no orderNo,
@@ -219,7 +219,7 @@
         order_receivable_cost orc
         WHERE
         orc.id IN
-        <foreach collection="form.costIds" index="index" item="item" open="(" separator="," close=")">
+        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
         GROUP BY
@@ -227,7 +227,7 @@
         orc.currency_code,
         orc.main_order_no
     </select>
-    <select id="viewReceiveBill" parameterType="com.jayud.finance.bo.ViewBillForm" resultType="com.jayud.finance.vo.ViewBilToOrderVO">
+    <select id="viewReceiveBill" parameterType="java.util.List" resultType="com.jayud.finance.vo.ViewBilToOrderVO">
         SELECT
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         oi.order_no orderNo,
@@ -242,7 +242,7 @@
         FROM
         order_info oi
         where oi.order_no in (select orc.order_no from order_receivable_cost orc where orc.id in
-        <foreach collection="form.costIds" index="index" item="item" open="(" separator="," close=")">
+        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
         )

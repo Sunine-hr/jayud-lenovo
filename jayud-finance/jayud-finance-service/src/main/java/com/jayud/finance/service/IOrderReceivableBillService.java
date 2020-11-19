@@ -49,16 +49,16 @@ public interface IOrderReceivableBillService extends IService<OrderReceivableBil
 
     /**
      * 预览账单
-     * @param form
+     * @param costIds
      * @return
      */
-    List<ViewBilToOrderVO> viewReceiveBill(ViewBillForm form);
+    List<ViewBilToOrderVO> viewReceiveBill(List<Long> costIds);
 
     /**
      * 预览账单表头
      * @return
      */
-    List<SheetHeadVO> findSheetHead(ViewBillForm form);
+    List<SheetHeadVO> findSheetHead(List<Long> costIds);
 
     /**
      * 已出账订单数

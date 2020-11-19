@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,11 +66,16 @@ public class ReceiveBillController {
 
     @ApiOperation(value = "预览应收账单")
     @PostMapping("/viewReceiveBill")
-    public CommonResult<Map<String,Object>> viewReceiveBill(@RequestBody @Valid ViewBillForm form) {
+    public CommonResult<Map<String,Object>> viewReceiveBill(@RequestBody @Valid ViewSBillForm form) {
+        List<OrderReceiveBillDetailForm> billDetailForms = form.getBillDetailForms();
+        List<Long> costIds = new ArrayList<>();
+        for (OrderReceiveBillDetailForm billDetailForm : billDetailForms) {
+            costIds.add(billDetailForm.getCostId());
+        }
         Map<String,Object> resultMap = new HashMap<>();
-        List<ViewBilToOrderVO> list = billService.viewReceiveBill(form);
+        List<ViewBilToOrderVO> list = billService.viewReceiveBill(costIds);
         resultMap.put(CommonConstant.LIST,list);//分页数据
-        List<SheetHeadVO> sheetHeadVOS = billService.findSheetHead(form);
+        List<SheetHeadVO> sheetHeadVOS = billService.findSheetHead(costIds);
         resultMap.put(CommonConstant.SHEET_HEAD,sheetHeadVOS);//表头
         return CommonResult.success(resultMap);
     }

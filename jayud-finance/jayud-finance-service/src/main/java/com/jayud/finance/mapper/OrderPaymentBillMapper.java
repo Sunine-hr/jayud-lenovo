@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.finance.bo.QueryNotPaidBillForm;
 import com.jayud.finance.bo.QueryPaymentBillForm;
 import com.jayud.finance.bo.QueryPaymentBillNumForm;
-import com.jayud.finance.bo.ViewBillForm;
 import com.jayud.finance.po.OrderPaymentBill;
 import com.jayud.finance.vo.*;
 import org.apache.ibatis.annotations.Mapper;
@@ -66,23 +65,23 @@ public interface OrderPaymentBillMapper extends BaseMapper<OrderPaymentBill> {
 
     /**
      * 预览账单表头
-     * @param form
+     * @param costIds
      * @return
      */
-    List<SheetHeadVO> findSheetHead(@Param("form") ViewBillForm form);
+    List<SheetHeadVO> findSheetHead(@Param("costIds") List<Long> costIds);
 
     /**
      * 预览账单分页查询
-     * @param form
+     * @param costIds
      * @return
      */
-    List<ViewBilToOrderVO> viewPaymentBill(@Param("form") ViewBillForm form);
+    List<ViewBilToOrderVO> viewPaymentBill(@Param("costIds") List<Long> costIds);
 
     /**
      * 查询账单明细
-     * @param form
+     * @param costIds
      * @return
      */
-    List<ViewBillToCostClassVO> findCostClass(@Param("form") ViewBillForm form);
+    List<ViewBillToCostClassVO> findCostClass(@Param("costIds") List<Long> costIds);
 
 }

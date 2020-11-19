@@ -76,6 +76,8 @@ public class DriverEmploymentFeeServiceImpl extends ServiceImpl<DriverEmployment
         LocalDateTime now = LocalDateTime.now();
         for (DriverEmploymentFee driverEmploymentFee : driverEmploymentFees) {
             OrderPaymentCost paymentCost = ConvertUtil.convert(driverEmploymentFee, OrderPaymentCost.class);
+            paymentCost.setCustomerCode(driverEmploymentFee.getSupplierCode())
+                    .setCustomerName(driverEmploymentFee.getSupplierName());
 
             DriverEmploymentFee employmentFee = new DriverEmploymentFee()
                     .setId(driverEmploymentFee.getId())

@@ -59,7 +59,7 @@ public enum DriverFeedbackStatusEnum {
             Integer num = Integer.parseInt(steps[0]);
             //获取下一步
             DriverFeedbackStatusEnum nextStepEnum = i == tmps.size() - 1 ? value : tmps.get(i + 1);
-            Integer nextNum = Integer.parseInt(nextStepEnum.getStep());
+            Integer nextNum = Integer.parseInt(nextStepEnum.getStep().split("-")[0]);
 
             if (isTransferBin) {
                 if (value.equals(DriverFeedbackStatusEnum.FOUR)) {

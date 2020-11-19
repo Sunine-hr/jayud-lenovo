@@ -412,14 +412,15 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         String cmd = form.getCmd();
         form.setCmd(cmd);
         this.doDriverFeedbackStatus(form);
-
-        //车辆入仓数据
-        form.setCmd(CommonConstant.CAR_ENTER_WAREHOUSE);
-        this.doDriverFeedbackStatus(form);
-        //车辆出仓数据
-        form.setCmd(CommonConstant.CAR_OUT_WAREHOUSE);
-        this.doDriverFeedbackStatus(form);
-
+        //只有审核通过才走下面流程
+        if (OrderStatusEnum.TMS_T_9.getCode().equals(form.getStatus())) {
+            //车辆入仓数据
+            form.setCmd(CommonConstant.CAR_ENTER_WAREHOUSE);
+            this.doDriverFeedbackStatus(form);
+            //车辆出仓数据
+            form.setCmd(CommonConstant.CAR_OUT_WAREHOUSE);
+            this.doDriverFeedbackStatus(form);
+        }
 
     }
 

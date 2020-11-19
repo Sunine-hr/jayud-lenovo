@@ -3,7 +3,7 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
-import com.jayud.mall.model.bo.QueryOfferInfoForm;
+import com.jayud.mall.model.bo.QueryOfferInfoFareForm;
 import com.jayud.mall.model.vo.OfferInfoVO;
 import com.jayud.mall.service.IOfferInfoService;
 import io.swagger.annotations.Api;
@@ -23,9 +23,9 @@ public class OfferInfoController {
     IOfferInfoService offerInfoService;
 
     @ApiOperation(value = "分页查询报价(运价)")
-    @PostMapping("/findOfferInfoByPage")
-    public CommonResult<CommonPageResult<OfferInfoVO>> findOfferInfoByPage(@RequestBody QueryOfferInfoForm form) {
-        IPage<OfferInfoVO> pageList = offerInfoService.findOfferInfoByPage(form);
+    @PostMapping("/findOfferInfoFareByPage")
+    public CommonResult<CommonPageResult<OfferInfoVO>> findOfferInfoFareByPage(@RequestBody QueryOfferInfoFareForm form) {
+        IPage<OfferInfoVO> pageList = offerInfoService.findOfferInfoFareByPage(form);
         CommonPageResult<OfferInfoVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
     }

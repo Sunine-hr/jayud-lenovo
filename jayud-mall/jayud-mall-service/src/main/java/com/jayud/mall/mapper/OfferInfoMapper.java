@@ -3,6 +3,7 @@ package com.jayud.mall.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.mall.model.bo.QueryOfferInfoFareForm;
 import com.jayud.mall.model.bo.QueryOfferInfoForm;
 import com.jayud.mall.model.po.OfferInfo;
 import com.jayud.mall.model.vo.OfferInfoVO;
@@ -35,4 +36,12 @@ public interface OfferInfoMapper extends BaseMapper<OfferInfo> {
      * @return
      */
     OfferInfoVO selectOfferInfoVO(Long id);
+
+    /**
+     * 分页查询报价(运价)
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<OfferInfoVO> findOfferInfoFareByPage(Page<OfferInfoVO> page, QueryOfferInfoFareForm form);
 }

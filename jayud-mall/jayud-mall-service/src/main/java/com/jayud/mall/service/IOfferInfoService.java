@@ -3,6 +3,7 @@ package com.jayud.mall.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.OfferInfoForm;
+import com.jayud.mall.model.bo.QueryOfferInfoFareForm;
 import com.jayud.mall.model.bo.QueryOfferInfoForm;
 import com.jayud.mall.model.po.OfferInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -50,4 +51,11 @@ public interface IOfferInfoService extends IService<OfferInfo> {
      * @return
      */
     CommonResult<OfferInfoVO> lookOfferInfo(Long id);
+
+    /**
+     * 分页查询报价(运价)
+     * @param form
+     * @return
+     */
+    IPage<OfferInfoVO> findOfferInfoFareByPage(QueryOfferInfoFareForm form);
 }

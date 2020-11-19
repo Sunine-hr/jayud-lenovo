@@ -8,6 +8,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.OfferInfoForm;
+import com.jayud.mall.model.bo.QueryOfferInfoFareForm;
 import com.jayud.mall.model.bo.QueryOfferInfoForm;
 import com.jayud.mall.model.po.*;
 import com.jayud.mall.model.vo.*;
@@ -201,5 +202,15 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
         offerInfoVO.setTemplateFileVOList(templateFileGroup);
 
         return CommonResult.success(offerInfoVO);
+    }
+
+    @Override
+    public IPage<OfferInfoVO> findOfferInfoFareByPage(QueryOfferInfoFareForm form) {
+        //定义分页参数
+        Page<OfferInfoVO> page = new Page(form.getPageNum(),form.getPageSize());
+        //定义排序规则
+        //page.addOrder(OrderItem.desc("oc.id"));
+        IPage<OfferInfoVO> pageInfo = offerInfoMapper.findOfferInfoFareByPage(page, form);
+        return pageInfo;
     }
 }

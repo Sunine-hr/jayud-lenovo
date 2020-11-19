@@ -58,6 +58,10 @@ public class OfferInfoVO {
     @ApiModelProperty(value = "航程(预计到达时间estimated_time - 开船日期sail_time)")
     private String voyageDay;
 
+    /*起运港-->目的港*/
+    @ApiModelProperty(value = "起运港-->目的港")
+    private String shipRoute;
+
     /**关联字段显示**/
     /*报价模板quotation_template*/
     @ApiModelProperty(value = "服务分类(service_group sid)")

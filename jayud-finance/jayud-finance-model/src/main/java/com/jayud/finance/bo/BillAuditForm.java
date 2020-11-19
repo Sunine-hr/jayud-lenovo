@@ -20,7 +20,7 @@ public class BillAuditForm {
     @ApiModelProperty(value = "审核意见")
     private String auditComment;
 
-    @ApiModelProperty(value = "审核状态",required = true)
+    @ApiModelProperty(value = "审核状态 0-通过 1-不通过",required = true)
     @Pattern(regexp = "(0|1)", message = "只允许填写0-通过 1-不通过")
     private String auditStatus;
 

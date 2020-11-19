@@ -29,7 +29,7 @@ public class EditSBillForm {
     @NotEmpty(message = "receiveBillDetailForms is required")
     private List<OrderReceiveBillDetailForm> receiveBillDetailForms;
 
-    @ApiModelProperty(value = "操作指令",required = true)
+    @ApiModelProperty(value = "操作指令cmd=save保存 submit提交",required = true)
     @Pattern(regexp = "(save|submit)", message = "只允许填写save or submit")
     private String cmd;
 

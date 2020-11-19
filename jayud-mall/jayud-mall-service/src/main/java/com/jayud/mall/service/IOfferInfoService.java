@@ -1,12 +1,12 @@
 package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.OfferInfoForm;
 import com.jayud.mall.model.bo.QueryOfferInfoFareForm;
 import com.jayud.mall.model.bo.QueryOfferInfoForm;
 import com.jayud.mall.model.po.OfferInfo;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.vo.FabWarehouseVO;
 import com.jayud.mall.model.vo.OfferInfoVO;
 
@@ -82,4 +82,5 @@ public interface IOfferInfoService extends IService<OfferInfo> {
      * @return
      */
     List<FabWarehouseVO> findFabWarehouse(Long id);
+
 }

@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -23,55 +24,55 @@ public class OrderCaseVO {
     private String fabNo;
 
     @ApiModelProperty(value = "客户测量的长度，单位cm", position = 5)
-    private Double asnLength;
+    private BigDecimal asnLength;
 
-    @ApiModelProperty(value = "客户测量的重量，单位kg", position = 6)
-    private Double asnWidth;
+    @ApiModelProperty(value = "客户测量的宽，单位cm", position = 6)
+    private BigDecimal asnWidth;
 
     @ApiModelProperty(value = "客户测量的高度，单位cm", position = 7)
-    private Double asnHeight;
+    private BigDecimal asnHeight;
 
     @ApiModelProperty(value = "客户测量的重量，单位kg", position = 8)
-    private Double asnWeight;
+    private BigDecimal asnWeight;
 
     @ApiModelProperty(value = "预报长宽高计算得到的体积，单位m³", position = 9)
-    private Double asnVolume;
+    private BigDecimal asnVolume;
 
     @ApiModelProperty(value = "客户填写时间", position = 10)
     private LocalDateTime asnWeighDate;
 
     @ApiModelProperty(value = "仓库测量的长度，单位cm", position = 11)
-    private Double wmsLength;
+    private BigDecimal wmsLength;
 
     @ApiModelProperty(value = "仓库测量的高度，单位cm", position = 12)
-    private Double wmsHeight;
+    private BigDecimal wmsHeight;
 
     @ApiModelProperty(value = "仓库测量的宽度，单位cm", position = 13)
-    private Double wmsWidth;
+    private BigDecimal wmsWidth;
 
     @ApiModelProperty(value = "仓库测量的重量，单位kg", position = 14)
-    private Double wmsWeight;
+    private BigDecimal wmsWeight;
 
     @ApiModelProperty(value = "仓库计量长宽高得到的体积，单位m³", position = 15)
-    private Double wmsVolume;
+    private BigDecimal wmsVolume;
 
     @ApiModelProperty(value = "仓库测量时间", position = 16)
     private LocalDateTime wmsWeighDate;
 
     @ApiModelProperty(value = "最终确认重量，单位kg", position = 17)
-    private Double confirmLength;
+    private BigDecimal confirmLength;
 
     @ApiModelProperty(value = "最终确认高度，单位cm", position = 18)
-    private Double confirmHeight;
+    private BigDecimal confirmHeight;
 
     @ApiModelProperty(value = "最终确认宽度，单位cm", position = 19)
-    private Double confirmWidth;
+    private BigDecimal confirmWidth;
 
     @ApiModelProperty(value = "最终确认重量，单位cm", position = 20)
-    private Double confirmWeight;
+    private BigDecimal confirmWeight;
 
     @ApiModelProperty(value = "最终确认体积，单位 m³", position = 21)
-    private Double confirmVolume;
+    private BigDecimal confirmVolume;
 
     @ApiModelProperty(value = "最终确定时间", position = 22)
     private LocalDateTime confirmWeighDate;
@@ -116,8 +117,6 @@ public class OrderCaseVO {
     /*配载单:order_conf*/
     @ApiModelProperty(value = "配载单号")
     private String orderConfNo;
-
-
 
 
 }

@@ -67,6 +67,9 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
     @Autowired
     TemplateFileMapper templateFileMapper;
 
+    @Autowired
+    OrderCaseMapper orderCaseMapper;
+
     @Override
     public IPage<OfferInfoVO> findOfferInfoByPage(QueryOfferInfoForm form) {
         //处理时间区间
@@ -304,4 +307,5 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
         }
         return fabWarehouseVOList;
     }
+
 }

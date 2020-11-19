@@ -8,6 +8,7 @@ import com.jayud.mall.model.bo.QueryOfferInfoFareForm;
 import com.jayud.mall.model.vo.OfferInfoVO;
 import com.jayud.mall.service.IOfferInfoService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,6 +39,15 @@ public class OfferInfoController {
         OfferInfoVO offerInfoVO = offerInfoService.lookOfferInfoFare(id);
         return CommonResult.success(offerInfoVO);
     }
+
+    @ApiModelProperty(value = "去下单-确认订单(查看选择运价)")
+    @PostMapping("/purchaseOrders")
+    public CommonResult<OfferInfoVO> purchaseOrders(@RequestBody OfferInfoForm form){
+        Long id = form.getId();
+        OfferInfoVO offerInfoVO = offerInfoService.purchaseOrders(id);
+        return CommonResult.success(offerInfoVO);
+    }
+
 
 
 

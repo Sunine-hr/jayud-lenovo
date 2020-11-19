@@ -215,10 +215,10 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
         List<OfferInfoVO> records = pageInfo.getRecords();
         records.forEach(offerInfoVO -> {
             Integer qie = offerInfoVO.getQie();
-            /*查询运价的规格：报价对应应收费用明细*/
-            List<TemplateCopeReceivableVO> templateCopeReceivableVOList =
-                    templateCopeReceivableMapper.findTemplateCopeReceivableByQie(qie);
-            offerInfoVO.setTemplateCopeReceivableVOList(templateCopeReceivableVOList);
+            /*查询运价的规格：报价对应应收费用明细，海运费，尺寸*/
+            List<TemplateCopeReceivableVO> oceanFeeList =
+                    templateCopeReceivableMapper.findTemplateCopeReceivableOceanFeeByQie(qie);
+            offerInfoVO.setOceanFeeList(oceanFeeList);
         });
         return pageInfo;
     }
@@ -229,9 +229,9 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
         Integer qie = offerInfoVO.getQie();//报价模板id
 
         /*订柜尺寸：海运费规格*/
-        List<TemplateCopeReceivableVO> templateCopeReceivableVOList =
-                templateCopeReceivableMapper.findTemplateCopeReceivableByQie(qie);
-        offerInfoVO.setTemplateCopeReceivableVOList(templateCopeReceivableVOList);
+        List<TemplateCopeReceivableVO> oceanFeeList =
+                templateCopeReceivableMapper.findTemplateCopeReceivableOceanFeeByQie(qie);
+        offerInfoVO.setOceanFeeList(oceanFeeList);
 
         /*集货仓库*/
         String areaId = offerInfoVO.getAreaId();
@@ -269,6 +269,23 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
             List<FabWarehouseVO> fabWarehouseVOList = ConvertUtil.convertList(fabWarehouses, FabWarehouseVO.class);
             offerInfoVO.setFabWarehouseVOList(fabWarehouseVOList);
         }
+        return offerInfoVO;
+    }
+
+    @Override
+    public OfferInfoVO purchaseOrders(Long id) {
+        OfferInfoVO offerInfoVO = offerInfoMapper.lookOfferInfoFare(id);
+        Integer qie = offerInfoVO.getQie();//报价模板id
+        /*订柜尺寸：海运费规格*/
+        List<TemplateCopeReceivableVO> oceanFeeList =
+                templateCopeReceivableMapper.findTemplateCopeReceivableOceanFeeByQie(qie);
+        offerInfoVO.setOceanFeeList(oceanFeeList);
+
+        /*集货仓库：陆运费规格*/
+        List<TemplateCopeReceivableVO> inlandFeeList =
+                templateCopeReceivableMapper.findTemplateCopeReceivableInlandFeeListByQie(qie);
+        offerInfoVO.setInlandFeeList(inlandFeeList);
+
         return offerInfoVO;
     }
 }

@@ -162,6 +162,14 @@ public class OfferInfoVO {
     /*报价类型(goods_type types=1 id)*/
     private String qName;
 
+    //海运费：订柜尺寸(应收费用明细)
+    @ApiModelProperty(value = "海运费：订柜尺寸(应收费用明细)")
+    private List<TemplateCopeReceivableVO> oceanFeeList;
+
+    //内陆费：集货仓库(应收费用明细)
+    @ApiModelProperty(value = "内陆费：集货仓库(应收费用明细)")
+    private List<TemplateCopeReceivableVO> inlandFeeList;
+
 
 
 }

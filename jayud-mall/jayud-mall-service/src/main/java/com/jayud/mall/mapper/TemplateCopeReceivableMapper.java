@@ -21,9 +21,16 @@ import java.util.List;
 public interface TemplateCopeReceivableMapper extends BaseMapper<TemplateCopeReceivable> {
 
     /**
-     * 根据报价模板id，查询应收费用明细（海运）
+     * 根据报价模板id，查询应收费用明细（海运费）
      * @param qie
      * @return
      */
-    List<TemplateCopeReceivableVO> findTemplateCopeReceivableByQie(Integer qie);
+    List<TemplateCopeReceivableVO> findTemplateCopeReceivableOceanFeeByQie(Integer qie);
+
+    /**
+     * 根据报价模板id，查询应收费用明细（内陆费）
+     * @param qie
+     * @return
+     */
+    List<TemplateCopeReceivableVO> findTemplateCopeReceivableInlandFeeListByQie(Integer qie);
 }

@@ -65,4 +65,11 @@ public interface IOfferInfoService extends IService<OfferInfo> {
      * @return
      */
     OfferInfoVO lookOfferInfoFare(Long id);
+
+    /**
+     * 去下单-确认订单(查看选择运价)
+     * @param id
+     * @return
+     */
+    OfferInfoVO purchaseOrders(Long id);
 }

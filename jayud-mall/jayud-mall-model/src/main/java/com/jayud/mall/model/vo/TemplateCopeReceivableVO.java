@@ -44,4 +44,14 @@ public class TemplateCopeReceivableVO {
     @ApiModelProperty(value = "描述")
     private String remarks;
 
+    /*currency_code	*/
+    @ApiModelProperty(value = "币种代码")
+    private String currencyCode;
+
+    /*amountFormat*/
+    @ApiModelProperty(value = "金额格式化")
+    private String amountFormat;
+
+
+
 }

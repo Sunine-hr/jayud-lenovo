@@ -211,6 +211,15 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
         //定义排序规则
         //page.addOrder(OrderItem.desc("oc.id"));
         IPage<OfferInfoVO> pageInfo = offerInfoMapper.findOfferInfoFareByPage(page, form);
+
+        List<OfferInfoVO> records = pageInfo.getRecords();
+        records.forEach(offerInfoVO -> {
+            Integer qie = offerInfoVO.getQie();
+            /*查询运价的规格：报价对应应收费用明细*/
+            List<TemplateCopeReceivableVO> templateCopeReceivableVOList =
+                    templateCopeReceivableMapper.findTemplateCopeReceivableByQie(qie);
+            offerInfoVO.setTemplateCopeReceivableVOList(templateCopeReceivableVOList);
+        });
         return pageInfo;
     }
 }

@@ -1,7 +1,5 @@
 package com.jayud.mall.model.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -11,7 +9,6 @@ import java.math.BigDecimal;
 public class CustomerGoodsVO {
 
     @ApiModelProperty(value = "主键id，自增")
-    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     @ApiModelProperty(value = "客户ID")
@@ -33,22 +30,28 @@ public class CustomerGoodsVO {
     private String barcode;
 
     @ApiModelProperty(value = "重量")
-    private Double weight;
+    private BigDecimal weight;
 
     @ApiModelProperty(value = "长")
-    private Double length;
+    private BigDecimal length;
 
     @ApiModelProperty(value = "宽")
-    private Double width;
+    private BigDecimal width;
 
     @ApiModelProperty(value = "高")
-    private Double height;
+    private BigDecimal height;
 
     @ApiModelProperty(value = "是否敏感货物，1是0否，默认为0")
     private Boolean isSensitive;
 
+    @ApiModelProperty(value = "商品类型(1普货 2特货)")
+    private Integer types;
+
+    @ApiModelProperty(value = "商品类型name(1普货 2特货)")
+    private String typesName;
+
     @ApiModelProperty(value = "申报价值")
-    private Double declaredValue;
+    private BigDecimal declaredValue;
 
     @ApiModelProperty(value = "申报价值的货币")
     private String declaredCurrency;
@@ -74,8 +77,11 @@ public class CustomerGoodsVO {
     @ApiModelProperty(value = "销售链接")
     private String salesLink;
 
-    @ApiModelProperty(value = "销售价值")
+    @ApiModelProperty(value = "销售价格")
     private BigDecimal salesPrice;
+
+    @ApiModelProperty(value = "销售价格的货币单位")
+    private String salesPriceCurrency;
 
     @ApiModelProperty(value = "商品描述")
     private String description;

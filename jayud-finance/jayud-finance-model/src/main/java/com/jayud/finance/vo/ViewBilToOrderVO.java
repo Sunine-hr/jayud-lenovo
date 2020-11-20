@@ -3,9 +3,6 @@ package com.jayud.finance.vo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * 账单列表预览
  */
@@ -41,9 +38,6 @@ public class ViewBilToOrderVO {
 
     @ApiModelProperty(value = "报关单号")
     private String yunCustomsNo;
-
-    @ApiModelProperty(value = "费用明细")
-    private List<ViewBillToCostClassVO> costClassVOList = new ArrayList<>();
 
 
 }

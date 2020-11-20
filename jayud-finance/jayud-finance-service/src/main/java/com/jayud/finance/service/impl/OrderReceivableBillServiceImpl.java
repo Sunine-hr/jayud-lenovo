@@ -19,10 +19,12 @@ import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.service.IOrderBillCostTotalService;
 import com.jayud.finance.service.IOrderReceivableBillDetailService;
 import com.jayud.finance.service.IOrderReceivableBillService;
+import com.jayud.finance.util.ReflectUtil;
 import com.jayud.finance.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -186,22 +188,62 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
     @Override
     public List<ViewBilToOrderVO> viewReceiveBill(List<Long> costIds) {
         List<ViewBilToOrderVO> orderList = baseMapper.viewReceiveBill(costIds);
+        List<ViewBilToOrderVO> newOrderList = new ArrayList<>();
         List<ViewBillToCostClassVO> findCostClass = baseMapper.findCostClass(costIds);
         for (ViewBilToOrderVO viewBillToOrder : orderList) {
-            List<ViewBillToCostClassVO> tempList = new ArrayList<>();
             for(ViewBillToCostClassVO viewBillToCostClass : findCostClass){
                 if(viewBillToOrder.getOrderNo().equals(viewBillToCostClass.getOrderNo())){
-                    tempList.add(viewBillToCostClass);
+                    try {
+                        String addProperties = "";
+                        String addValue = "";
+                        Map<String,Object> propertiesMap = new HashMap<String,Object>();
+                        Class cls = viewBillToCostClass.getClass();
+                        Field[] fields = cls.getDeclaredFields();
+                        for (int i = 0; i < fields.length; i++) {
+                            Field f = fields[i];
+                            f.setAccessible(true);
+                            if("name".equals(f.getName())){
+                                addProperties = String.valueOf(f.get(viewBillToCostClass));//待新增得属性
+                            }
+                            if("money".equals(f.getName())){
+                                addValue = String.valueOf(f.get(viewBillToCostClass));//待新增属性得值
+                            }
+                            propertiesMap.put(addProperties, addValue);
+                        }
+                        viewBillToOrder = (ViewBilToOrderVO) ReflectUtil.getObject(viewBillToOrder, propertiesMap);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
                 }
             }
-            viewBillToOrder.setCostClassVOList(tempList);
+            newOrderList.add(viewBillToOrder);
         }
-        return orderList;
+        return newOrderList;
     }
 
     @Override
     public List<SheetHeadVO> findSheetHead(List<Long> costIds) {
-        return baseMapper.findSheetHead(costIds);
+        List<SheetHeadVO> allHeadList = new ArrayList<>();
+        List<SheetHeadVO> fixHeadList = new ArrayList<>();
+        try {
+            ViewBilToOrderHeadVO viewBilToOrderVO = new ViewBilToOrderHeadVO();
+            Class cls = viewBilToOrderVO.getClass();
+            Field[] fields = cls.getDeclaredFields();
+            for (int i = 0; i < fields.length; i++) {
+                Field f = fields[i];
+                f.setAccessible(true);
+                SheetHeadVO sheetHeadVO = new SheetHeadVO();
+                sheetHeadVO.setName(f.getName());
+                sheetHeadVO.setViewName(String.valueOf(f.get(viewBilToOrderVO)));
+                fixHeadList.add(sheetHeadVO);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        List<SheetHeadVO> dynamicHeadList = baseMapper.findSheetHead(costIds);
+        allHeadList.addAll(fixHeadList);
+        allHeadList.addAll(dynamicHeadList);
+        return allHeadList;
     }
 
     @Override

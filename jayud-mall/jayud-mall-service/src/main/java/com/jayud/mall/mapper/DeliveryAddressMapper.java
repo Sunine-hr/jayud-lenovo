@@ -1,7 +1,11 @@
 package com.jayud.mall.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.mall.model.bo.QueryDeliveryAddressForm;
 import com.jayud.mall.model.po.DeliveryAddress;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.mall.model.vo.DeliveryAddressVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Component;
 
@@ -17,4 +21,11 @@ import org.springframework.stereotype.Component;
 @Component
 public interface DeliveryAddressMapper extends BaseMapper<DeliveryAddress> {
 
+    /**
+     * 分页查询
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<DeliveryAddressVO> findDeliveryAddressByPage(Page<DeliveryAddressVO> page, QueryDeliveryAddressForm form);
 }

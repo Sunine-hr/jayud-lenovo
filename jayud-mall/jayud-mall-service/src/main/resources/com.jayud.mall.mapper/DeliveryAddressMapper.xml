@@ -28,4 +28,23 @@
         id, customer_id, contacts, phone, country_code, country_name, state_code, state_name, city_code, city_name, address, address2, address3, zip_code, warehouse_code, warehouse_name, status
     </sql>
 
+    <select id="findDeliveryAddressByPage" parameterType="com.jayud.mall.model.bo.QueryDeliveryAddressForm"
+            resultType="com.jayud.mall.model.vo.DeliveryAddressVO">
+        SELECT
+        id,t.customer_id,t.types,t.contacts,t.phone,t.country_code,t.country_name,t.state_code,t.state_name,t.city_code,t.city_name,t.address,t.address2,t.address3,t.zip_code,t.warehouse_code,t.warehouse_name,t.`status`
+        FROM delivery_address t
+        WHERE
+        1=1
+        <if test="form.types != null ">
+            AND t.types = #{form.types}
+        </if>
+        <if test="form.contacts != null and form.contacts != ''">
+            AND t.contacts LIKE concat('%',#{form.contacts},'%')
+        </if>
+        <if test="form.phone != null and form.phone != ''">
+            AND t.phone LIKE concat('%',#{form.phone},'%')
+        </if>
+
+    </select>
+
 </mapper>

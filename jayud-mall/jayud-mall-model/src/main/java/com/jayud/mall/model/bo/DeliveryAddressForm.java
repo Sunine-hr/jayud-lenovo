@@ -1,34 +1,12 @@
-package com.jayud.mall.model.po;
+package com.jayud.mall.model.bo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
-import java.io.Serializable;
-
-/**
- * <p>
- * 提货地址基础数据表
- * </p>
- *
- * @author fachang.mao
- * @since 2020-11-17
- */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value="DeliveryAddress对象", description="提货、收货地址基础数据表")
-public class DeliveryAddress extends Model<DeliveryAddress> {
-
-    private static final long serialVersionUID = 1L;
+public class DeliveryAddressForm {
 
     @ApiModelProperty(value = "自增id")
-    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     @ApiModelProperty(value = "客户ID(customer id)")
@@ -81,10 +59,5 @@ public class DeliveryAddress extends Model<DeliveryAddress> {
 
     @ApiModelProperty(value = "启用状态0-禁用，1-启用")
     private Integer status;
-
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
 
 }

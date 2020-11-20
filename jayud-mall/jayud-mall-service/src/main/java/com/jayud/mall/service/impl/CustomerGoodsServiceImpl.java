@@ -44,4 +44,12 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
         this.saveOrUpdate(customerGoods);
         return CommonResult.success("审核成功!");
     }
+
+    @Override
+    public CustomerGoodsVO saveCustomerGoods(CustomerGoodsForm form) {
+        CustomerGoods customerGoods = ConvertUtil.convert(form, CustomerGoods.class);
+        this.saveOrUpdate(customerGoods);
+        CustomerGoodsVO customerGoodsVO = ConvertUtil.convert(customerGoods, CustomerGoodsVO.class);
+        return customerGoodsVO;
+    }
 }

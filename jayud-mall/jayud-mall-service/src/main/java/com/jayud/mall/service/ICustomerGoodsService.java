@@ -26,9 +26,16 @@ public interface ICustomerGoodsService extends IService<CustomerGoods> {
     IPage<CustomerGoodsVO> findCustomerGoodsByPage(QueryCustomerGoodsForm form);
 
     /**
-     *
+     * 审核客户商品
      * @param form
      * @return
      */
     CommonResult auditCustomerGoods(CustomerGoodsForm form);
+
+    /**
+     * 保存客户商品
+     * @param form
+     * @return
+     */
+    CustomerGoodsVO saveCustomerGoods(CustomerGoodsForm form);
 }

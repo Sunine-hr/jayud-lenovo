@@ -36,6 +36,12 @@ public class DriverOrderTakeAdrVO {
     @ApiModelProperty(value = "货物描述")
     private String goodsDesc;
 
+    @ApiModelProperty(value = "件数")
+    private String pieceAmount;
+
+    @ApiModelProperty(value = "重量")
+    private String weight;
+
     @ApiModelProperty(value = "类型(1提货 2收货)")
     private Integer oprType;
 

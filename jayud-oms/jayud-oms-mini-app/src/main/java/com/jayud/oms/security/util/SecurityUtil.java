@@ -68,14 +68,13 @@ public class SecurityUtil {
     }
 
 
-
     /**
      * 登出
      */
     public static Boolean logout(String id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null) {
-            redisService.delete(securityProperties.getHeaderPrefix().trim() + id);
+            redisService.delete(securityProperties.getHeaderPrefix().trim() + "_MINI_TOKEN_" + id);
             new SecurityContextLogoutHandler().logout(HttpUtil.getHttpRequestServletContext(),
                     HttpUtil.getHttpResponseServletContext(), auth);
             return true;
@@ -106,7 +105,6 @@ public class SecurityUtil {
     public static String getToken(String id) {
         return (String) redisService.get(securityProperties.getHeaderPrefix().trim() + "_MINI_TOKEN_" + id);
     }
-
 
 
 }

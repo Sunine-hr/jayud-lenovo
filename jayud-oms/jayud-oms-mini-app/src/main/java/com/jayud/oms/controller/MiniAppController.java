@@ -513,6 +513,13 @@ public class MiniAppController {
     }
 
 
+    @ApiOperation(value = "登出")
+    @PostMapping(value = "/logOut")
+    public CommonResult logOut() {
+        SecurityUtil.logout(SecurityUtil.getUserInfo());
+        return CommonResult.success();
+    }
+
     /**
      * 获取流程
      */

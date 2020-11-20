@@ -68,7 +68,9 @@
         (select name from region_city where id=da.province) province,
         (select name from region_city where id=da.city) city,
         (select name from region_city where id=da.area) area,
-        address
+        address,
+        piece_amount pieceAmount,
+        weight
         FROM
         order_take_adr ota
         LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`

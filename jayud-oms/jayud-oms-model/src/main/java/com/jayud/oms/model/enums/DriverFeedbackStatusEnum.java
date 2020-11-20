@@ -119,6 +119,10 @@ public enum DriverFeedbackStatusEnum {
         for (int i = 0; i < processList.size(); i++) {
             String node = processList.get(i);
             if (node.equals(status)) {
+                if (OrderStatusEnum.TMS_T_9_1.getCode().equals(status) ||
+                        OrderStatusEnum.TMS_T_9_2.getCode().equals(status)) {
+                    return 5;
+                }
                 return i;
             }
         }

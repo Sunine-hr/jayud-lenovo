@@ -2,6 +2,10 @@ package com.jayud.mall.service;
 
 import com.jayud.mall.model.po.OrderPick;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.vo.DeliveryAddressVO;
+import com.jayud.mall.model.vo.OrderPickVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +17,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IOrderPickService extends IService<OrderPick> {
 
+    /**
+     * 批量创建-订单对应提货地址
+     * @param form
+     * @return
+     */
+    List<OrderPickVO> createOrderPickList(List<DeliveryAddressVO> form);
 }

@@ -8,6 +8,8 @@ import com.jayud.mall.model.po.CustomerGoods;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.vo.CustomerGoodsVO;
 
+import java.util.List;
+
 /**
  * <p>
  * 客户商品表 服务类
@@ -38,4 +40,10 @@ public interface ICustomerGoodsService extends IService<CustomerGoods> {
      * @return
      */
     CustomerGoodsVO saveCustomerGoods(CustomerGoodsForm form);
+
+    /**
+     * 批量保存-客户商品
+     * @param list
+     */
+    void batchSaveCustomerGoods(List<CustomerGoodsVO> list);
 }

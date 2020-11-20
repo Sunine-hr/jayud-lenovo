@@ -14,6 +14,8 @@ import com.jayud.mall.service.ICustomerGoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * <p>
  * 客户商品表 服务实现类
@@ -51,5 +53,21 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
         this.saveOrUpdate(customerGoods);
         CustomerGoodsVO customerGoodsVO = ConvertUtil.convert(customerGoods, CustomerGoodsVO.class);
         return customerGoodsVO;
+    }
+
+    @Override
+    public void batchSaveCustomerGoods(List<CustomerGoodsVO> list) {
+        list.forEach(customerGoodsVO -> {
+            String typesName = customerGoodsVO.getTypesName();
+            customerGoodsVO.setCustomerId(1);//客户id
+            customerGoodsVO.setStatus(0);
+            if(typesName != null && typesName.equalsIgnoreCase("普货")){
+                customerGoodsVO.setTypes(1);
+            }else if(typesName != null && typesName.equalsIgnoreCase("特货")){
+                customerGoodsVO.setTypes(2);
+            }
+        });
+        List<CustomerGoods> customerGoods = ConvertUtil.convertList(list, CustomerGoods.class);
+        this.saveOrUpdateBatch(customerGoods);
     }
 }

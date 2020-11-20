@@ -21,4 +21,7 @@ public class QueryCustomerGoodsForm extends BasePageForm {
     @ApiModelProperty(value = "清关编码(customs_clearance id_code)")
     private String clearanceCode;
 
+    @ApiModelProperty(value = "审核状态代码：1-审核通过，0-等待审核，-1-审核不通过")
+    private Integer status;
+
 }

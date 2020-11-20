@@ -41,9 +41,9 @@
     <select id="findCustomerGoodsByPage" parameterType="com.jayud.mall.model.bo.QueryCustomerGoodsForm"
             resultType="com.jayud.mall.model.vo.CustomerGoodsVO" >
         select
-        t.id,t.customer_id,t.sku,t.name_cn,t.name_en,t.image_url,t.barcode,t.weight,t.length,t.width,t.height,t.is_sensitive,t.declared_value,
-        t.declared_currency,t.material_quality,t.purpose,t.declare_elements,t.hs_code,t.data_code,t.clearance_code,t.sales_link,t.sales_price,
-        t.description,t.`status`,t.status_name,t.remark,
+        t.id,t.customer_id,t.sku,t.name_cn,t.name_en,t.image_url,t.barcode,t.weight,t.length,t.width,t.height,t.is_sensitive,t.types,
+        t.declared_value,t.declared_currency,t.material_quality,t.purpose,t.declare_elements,t.hs_code,t.data_code,t.clearance_code,t.sales_link,
+        t.sales_price,t.sales_price_currency,t.description,t.`status`,t.status_name,t.remark,
         t1.name_cn customerName
         from customer_goods t
         left join customer t1 on t1.id = t.customer_id
@@ -63,6 +63,9 @@
         </if>
         <if test="form.clearanceCode != null and form.clearanceCode != ''">
             AND t.clearance_code LIKE CONCAT('%',#{form.clearanceCode},'%')
+        </if>
+        <if test="form.status != null">
+            AND t.status = #{form.status}
         </if>
         GROUP BY
         t.`id`

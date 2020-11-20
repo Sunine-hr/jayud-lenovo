@@ -95,5 +95,12 @@ public class CustomerGoodsController {
         return CommonResult.success(list);
     }
 
+    @ApiOperation(value = "批量保存-客户商品")
+    @PostMapping(value = "/batchSaveCustomerGoods")
+    public CommonResult batchSaveCustomerGoods(@RequestBody List<CustomerGoodsVO> list){
+        customerGoodsService.batchSaveCustomerGoods(list);
+        return CommonResult.success("批量保存-客户商品，成功！");
+    }
+
 
 }

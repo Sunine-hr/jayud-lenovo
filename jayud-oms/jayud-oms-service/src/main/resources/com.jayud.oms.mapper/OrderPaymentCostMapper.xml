@@ -4,30 +4,30 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.OrderPaymentCost">
-        <id column="id" property="id" />
-        <result column="main_order_no" property="mainOrderNo" />
-        <result column="biz_order_no" property="bizOrderNo" />
-        <result column="order_no" property="orderNo" />
-        <result column="biz_code" property="bizCode" />
-        <result column="biz_name" property="bizName" />
-        <result column="customer_code" property="customerCode" />
-        <result column="customer_name" property="customerName" />
-        <result column="cost_type_id" property="costTypeId" />
-        <result column="cost_genre_id" property="costGenreId" />
-        <result column="unit" property="unit" />
-        <result column="cost_code" property="costCode" />
-        <result column="unit_price" property="unitPrice" />
-        <result column="number" property="number" />
-        <result column="currency_code" property="currencyCode" />
-        <result column="amount" property="amount" />
-        <result column="exchange_rate" property="exchangeRate" />
-        <result column="change_amount" property="changeAmount" />
-        <result column="remarks" property="remarks" />
-        <result column="status" property="status" />
-        <result column="opt_name" property="optName" />
-        <result column="opt_time" property="optTime" />
-        <result column="created_time" property="createdTime" />
-        <result column="created_user" property="createdUser" />
+        <id column="id" property="id"/>
+        <result column="main_order_no" property="mainOrderNo"/>
+        <result column="biz_order_no" property="bizOrderNo"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="biz_code" property="bizCode"/>
+        <result column="biz_name" property="bizName"/>
+        <result column="customer_code" property="customerCode"/>
+        <result column="customer_name" property="customerName"/>
+        <result column="cost_type_id" property="costTypeId"/>
+        <result column="cost_genre_id" property="costGenreId"/>
+        <result column="unit" property="unit"/>
+        <result column="cost_code" property="costCode"/>
+        <result column="unit_price" property="unitPrice"/>
+        <result column="number" property="number"/>
+        <result column="currency_code" property="currencyCode"/>
+        <result column="amount" property="amount"/>
+        <result column="exchange_rate" property="exchangeRate"/>
+        <result column="change_amount" property="changeAmount"/>
+        <result column="remarks" property="remarks"/>
+        <result column="status" property="status"/>
+        <result column="opt_name" property="optName"/>
+        <result column="opt_time" property="optTime"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="created_user" property="createdUser"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -37,7 +37,8 @@
         created_time, created_user,cost_genre_id,unit
     </sql>
 
-    <select id="findPaymentCost" parameterType="com.jayud.oms.model.bo.GetCostDetailForm" resultType="com.jayud.oms.model.vo.InputPaymentCostVO" >
+    <select id="findPaymentCost" parameterType="com.jayud.oms.model.bo.GetCostDetailForm"
+            resultType="com.jayud.oms.model.vo.InputPaymentCostVO">
         SELECT
         opc.`id`,
         opc.`customer_name` customerName ,
@@ -51,7 +52,8 @@
         opc.`unit_price` unitPrice,
         opc.`number`,
         opc.`currency_code` currencyCode,
-        (SELECT ci.currency_name FROM currency_info ci WHERE ci.currency_code = opc.`currency_code` LIMIT 1) currencyName,
+        (SELECT ci.currency_name FROM currency_info ci WHERE ci.currency_code = opc.`currency_code` LIMIT 1)
+        currencyName,
         opc.`amount`,
         opc.`change_amount` changeAmount,
         opc.`exchange_rate` exchangeRate,
@@ -70,6 +72,25 @@
             and opc.`status` in ('2','3')
             and opc.`order_no` != '' and opc.`order_no` is not null
         </if>
+    </select>
+
+    <select id="getDriverOrderPaymentCost" parameterType="string"
+            resultType="com.jayud.oms.model.vo.DriverOrderPaymentCostVO">
+        select
+        oc.id,
+        oc.order_no orderNo,
+        ci.currency_name currency,
+        c.name costName,
+        oc.amount,
+        oc.files,
+        oc.file_name fileName
+        from
+        order_payment_cost oc
+        left join currency_info ci on oc.currency_code=ci.currency_code
+        left join cost_info c on c.id_code=oc.cost_code
+        <where>
+            and oc.order_no =#{orderNo}
+        </where>
     </select>
 
 </mapper>

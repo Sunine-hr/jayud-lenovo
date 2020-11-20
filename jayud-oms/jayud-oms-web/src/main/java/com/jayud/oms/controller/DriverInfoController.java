@@ -57,6 +57,11 @@ public class DriverInfoController {
         if (this.driverInfoService.checkUnique(info)) {
             return CommonResult.error(400, "司机姓名已存在");
         }
+        //校验手机是否存在
+        DriverInfo tmp = this.driverInfoService.getByPhone(form.getPhone());
+        if (tmp != null && !tmp.getId().equals(form.getId())) {
+            return CommonResult.error(400, "已经存在司机号码");
+        }
 
 //        if (form.getId() != null) {
 //            DriverInfo old = driverInfoService.getById(form.getId());

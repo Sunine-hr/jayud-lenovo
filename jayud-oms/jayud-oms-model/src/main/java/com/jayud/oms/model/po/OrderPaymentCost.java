@@ -102,6 +102,11 @@ public class OrderPaymentCost extends Model<OrderPaymentCost> {
     @ApiModelProperty(value = "创建人")
     private String createdUser;
 
+    @ApiModelProperty(value = "附件路径,多个时用逗号分隔")
+    private String files;
+
+    @ApiModelProperty(value = "附件名称,多个时用逗号分隔")
+    private String fileName;
 
     @Override
     protected Serializable pkVal() {

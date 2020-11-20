@@ -100,4 +100,19 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
     public DriverInfoLinkVO getDriverInfoLink(Long driverId) {
         return baseMapper.getDriverInfoLink(driverId);
     }
+
+
+    /**
+     * 根据司机大陆手机查询用户
+     *
+     * @param phone
+     * @return
+     */
+    @Override
+    public DriverInfo getByPhone(String phone) {
+        QueryWrapper<DriverInfo> condition = new QueryWrapper<>();
+        condition.lambda().eq(DriverInfo::getPhone, phone);
+        return this.baseMapper.selectOne(condition);
+    }
+
 }

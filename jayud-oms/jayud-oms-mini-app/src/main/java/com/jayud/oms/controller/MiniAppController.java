@@ -1,7 +1,6 @@
 package com.jayud.oms.controller;
 
 import cn.hutool.core.map.MapUtil;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -128,7 +127,10 @@ public class MiniAppController {
                 List<Map<String, Object>> process = this.getProcess(driverOrderTransportVO.getOrderNo(),
                         OrderStatusEnum.getCode(driverOrderTransportVO.getStatus()), true, new HashMap<>());
                 //当完成签收时同步数据
-                this.driverOrderInfoService.synchronizeTmsStatus(process.get(0), driverOrderTransportVO.getId());
+                if (process.size() != 0) {
+                    this.driverOrderInfoService.synchronizeTmsStatus(process.get(0), driverOrderTransportVO.getId());
+                }
+
             }
 
 

@@ -201,11 +201,16 @@
             sum( opc.amount )
         FROM
             order_payment_cost opc
-        WHERE
-            opc.id IN
-        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+        WHERE 1 = 1
+        <if test="costIds != null and costIds.size>0">
+            and opc.id IN
+            <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="costIds = null or costIds.size == 0">
+           and 1 = 0
+        </if>
         GROUP BY
             opc.cost_code,
             opc.currency_code
@@ -235,11 +240,16 @@
             sum( opc.amount ) money
         FROM
             order_payment_cost opc
-        WHERE
-            opc.id IN
-        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+        WHERE 1 = 1
+        <if test="costIds != null and costIds.size>0">
+            and opc.id IN
+            <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="costIds = null or costIds.size == 0">
+            and 1 = 0
+        </if>
         GROUP BY
             opc.cost_code,
             opc.currency_code,
@@ -259,10 +269,16 @@
         (select GROUP_CONCAT(oc.yun_customs_no,',') from order_customs oc where oc.main_order_no = oi.order_no) yunCustomsNo
         FROM
         order_info oi
-        where oi.order_no in (select opc.order_no from order_payment_cost opc where opc.id in
-        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+        where oi.order_no in (select opc.order_no from order_payment_cost opc where 1 = 1
+        <if test="costIds != null and costIds.size>0">
+            and opc.id IN
+            <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="costIds = null or costIds.size == 0">
+            and 1 = 0
+        </if>
         )
     </select>
 </mapper>

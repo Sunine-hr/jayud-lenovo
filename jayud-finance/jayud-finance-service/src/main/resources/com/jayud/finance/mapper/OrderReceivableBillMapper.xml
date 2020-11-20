@@ -45,7 +45,7 @@
             and oi.legal_name like concat('%',#{form.legalName},'%')
         </if>
     </select>
-    <select id="findPaymentSubBillByPage" parameterType="com.jayud.finance.bo.QueryPaymentBillForm" resultType="com.jayud.finance.vo.OrderPaymentBillVO" >
+    <select id="findReceiveSubBillByPage" parameterType="com.jayud.finance.bo.QueryPaymentBillForm" resultType="com.jayud.finance.vo.OrderPaymentBillVO" >
         SELECT DISTINCT
         oi.legal_name legalName,
         orc.customer_name customerName,
@@ -85,7 +85,7 @@
         DATE_FORMAT(op.make_time,'%Y-%m-%d %H:%i:%S') makeTimeStr
         FROM
         order_receivable_bill_detail op left join order_receivable_bill orb on op.bill_id = orb.id
-        where opb.legal_name = #{form.legalName} and opb.customer_name = #{form.customerName}
+        where orb.legal_name = #{form.legalName} and orb.customer_name = #{form.customerName}
         <if test="form.cmd == 'main'">
             and orb.is_main = 1
         </if>

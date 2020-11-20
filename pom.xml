@@ -30,6 +30,7 @@
         <module>jayud-mall</module>
         <module>jayud-tools</module>
 
+
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

@@ -57,16 +57,20 @@
             </if>
         </where>
     </select>
+
     <select id="getDriverInfoLink" parameterType="java.lang.Long"  resultType="com.jayud.oms.model.vo.DriverInfoLinkVO">
          SELECT
             v.supplier_id supplierInfoId,
             s.supplier_ch_name supplierName,
             v.plate_number licensePlate,
             v.hk_number hkLicensePlate,
-            d.phone driverPhone
+            d.phone driverPhone,
+            s.supplier_code supplierCode,
+            d.name driverName
         FROM
             driver_info d
             LEFT JOIN vehicle_info v ON d.vehicle_id = v.id
             LEFT JOIN supplier_info s ON s.id = v.supplier_id where d.id = #{driverId}
     </select>
+
 </mapper>

@@ -66,4 +66,6 @@ public class OprStatusForm {
             "carOutWarehouse车辆出仓,carSend车辆派送,confirmSignIn确认签收",required = true)
     private String cmd;
 
+    @ApiModelProperty(value = "下一步指令")
+    private String nextCmd;
 }

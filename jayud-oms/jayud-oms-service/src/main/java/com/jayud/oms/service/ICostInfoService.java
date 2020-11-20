@@ -60,4 +60,6 @@ public interface ICostInfoService extends IService<CostInfo> {
      * @return
      */
     boolean checkUnique(CostInfo costInfo);
+
+    List<CostInfo> getCostInfoByStatus(String status);
 }

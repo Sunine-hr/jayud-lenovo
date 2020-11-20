@@ -21,5 +21,9 @@ public class DriverInfoLinkVO {
     @ApiModelProperty(value = "司机大陆电话")
     private String driverPhone;
 
+    @ApiModelProperty(value = "供应商代码")
+    private String supplierCode;
 
+    @ApiModelProperty(value = "司机名称")
+    private String driverName;
 }

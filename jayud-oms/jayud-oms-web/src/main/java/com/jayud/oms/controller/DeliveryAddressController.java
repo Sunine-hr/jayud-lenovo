@@ -60,19 +60,15 @@ public class DeliveryAddressController {
         DeliveryAddress deliveryAddress = ConvertUtil.convert(form, DeliveryAddress.class);
 
         //查询省，市代码,默认国家代码
-        if (form.getId() == null) {
-            {
-                RegionCity province = regionCityService.getById(form.getProvince());
-                RegionCity city = regionCityService.getById(form.getCity());
-                deliveryAddress.setCountryName("中国")
-                        .setCountryCode(56)
-                        .setStateCode(province.getCode())
-                        .setStateName(province.getName())
-                        .setCityCode(city.getCode())
-                        .setCityName(city.getName());
+        RegionCity province = regionCityService.getById(form.getProvince());
+        RegionCity city = regionCityService.getById(form.getCity());
+        deliveryAddress.setCountryName("中国")
+                .setCountryCode(56)
+                .setStateCode(province.getCode())
+                .setStateName(province.getName())
+                .setCityCode(city.getCode())
+                .setCityName(city.getName());
 
-            }
-        }
 
         if (this.deliveryAddressService.saveOrUpdateCustomerAddress(deliveryAddress)) {
             return CommonResult.success();

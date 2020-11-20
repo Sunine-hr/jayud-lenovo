@@ -3,6 +3,7 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.DeliveryAddressForm;
 import com.jayud.mall.model.bo.QueryDeliveryAddressForm;
 import com.jayud.mall.model.vo.DeliveryAddressVO;
 import com.jayud.mall.service.IDeliveryAddressService;
@@ -28,6 +29,12 @@ public class DeliveryAddressController {
         IPage<DeliveryAddressVO> pageList = deliveryAddressService.findDeliveryAddressByPage(form);
         CommonPageResult<DeliveryAddressVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
+    }
+
+    @ApiOperation(value = "保存-提货、收货地址")
+    @PostMapping("/saveDeliveryAddress")
+    public CommonResult<DeliveryAddressVO> saveDeliveryAddress(@RequestBody DeliveryAddressForm form){
+        return deliveryAddressService.saveDeliveryAddress(form);
     }
 
 

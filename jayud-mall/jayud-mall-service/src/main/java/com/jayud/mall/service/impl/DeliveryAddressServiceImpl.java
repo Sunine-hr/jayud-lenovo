@@ -3,7 +3,10 @@ package com.jayud.mall.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.CommonResult;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.DeliveryAddressMapper;
+import com.jayud.mall.model.bo.DeliveryAddressForm;
 import com.jayud.mall.model.bo.QueryDeliveryAddressForm;
 import com.jayud.mall.model.po.DeliveryAddress;
 import com.jayud.mall.model.vo.DeliveryAddressVO;
@@ -33,5 +36,13 @@ public class DeliveryAddressServiceImpl extends ServiceImpl<DeliveryAddressMappe
         //page.addOrder(OrderItem.desc("oc.id"));
         IPage<DeliveryAddressVO> pageInfo = deliveryAddressMapper.findDeliveryAddressByPage(page, form);
         return pageInfo;
+    }
+
+    @Override
+    public CommonResult<DeliveryAddressVO> saveDeliveryAddress(DeliveryAddressForm form) {
+        DeliveryAddress deliveryAddress = ConvertUtil.convert(form, DeliveryAddress.class);
+        this.saveOrUpdate(deliveryAddress);
+        DeliveryAddressVO deliveryAddressVO = ConvertUtil.convert(deliveryAddress, DeliveryAddressVO.class);
+        return CommonResult.success(deliveryAddressVO);
     }
 }

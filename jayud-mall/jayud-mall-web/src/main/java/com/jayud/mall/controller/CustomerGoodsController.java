@@ -7,13 +7,13 @@ import com.jayud.mall.model.bo.CustomerGoodsForm;
 import com.jayud.mall.model.bo.QueryCustomerGoodsForm;
 import com.jayud.mall.model.vo.CustomerGoodsVO;
 import com.jayud.mall.service.ICustomerGoodsService;
+import com.jayud.mall.utils.ExcelTemplateUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/customergoods")
@@ -36,6 +36,12 @@ public class CustomerGoodsController {
     public CommonResult<CustomerGoodsVO> saveCustomerGoods(@RequestBody CustomerGoodsForm form){
         CustomerGoodsVO customerGoodsVO = customerGoodsService.saveCustomerGoods(form);
         return CommonResult.success(customerGoodsVO);
+    }
+
+    @ApiOperation(value = "下载Excel模板-客户商品")
+    @RequestMapping(value = "/downloadExcelTemplateByCustomerGoods", method = RequestMethod.GET)
+    public void downloadExcelTemplateByCustomerGoods(HttpServletResponse response){
+        new ExcelTemplateUtil().downloadExcel(response, "customer_goods.xlsx", "客户商品导入模板.xlsx");
     }
 
 

@@ -4,6 +4,7 @@ package com.jayud.finance.bo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ import java.util.List;
 public class ViewSBillForm {
 
     @ApiModelProperty(value = "应收出账单界面部分")
-    private List<OrderReceiveBillDetailForm> billDetailForms;
+    private List<OrderReceiveBillDetailForm> billDetailForms = new ArrayList<>();
 
 
 }

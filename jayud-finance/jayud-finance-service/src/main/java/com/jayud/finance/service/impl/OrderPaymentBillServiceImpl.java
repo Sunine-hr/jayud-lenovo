@@ -220,7 +220,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
     public Boolean isExistBillNo(String billNo) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("bill_no",billNo);
-        List<OrderPaymentBillDetail> fBillDetails = list(queryWrapper);
+        List<OrderPaymentBillDetail> fBillDetails = paymentBillDetailService.list(queryWrapper);
         List<OrderReceivableBillDetail> sBillDetails = receivableBillDetailService.list(queryWrapper);
         Integer resultFCount = 0;
         Integer resultSCount = 0;

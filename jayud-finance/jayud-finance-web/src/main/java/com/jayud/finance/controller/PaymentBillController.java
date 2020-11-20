@@ -70,7 +70,7 @@ public class PaymentBillController {
     public CommonResult<String> createBillNo() {
         String billNo = StringUtils.loadNum(CommonConstant.B,12);
         while (true){
-            if(!billService.isExistBillNo(billNo)){//重复
+            if(billService.isExistBillNo(billNo)){//重复
                 billNo = StringUtils.loadNum(CommonConstant.B,12);
             }else {
                 break;

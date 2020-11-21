@@ -447,8 +447,10 @@ public class MiniAppController {
                 if (org.apache.commons.lang.StringUtils.isEmpty(form.getStatus())) {
                     return CommonResult.error(400, "请选择通关状态");
                 }
+                if (MapUtil.getInt(cacheValue, "deliveryAddressNum") == 1) {//送到目的地址，要补入仓出仓数据
+                    form.setNextCmd(CommonConstant.CAR_SEND);
+                }
                 form.setCmd(CommonConstant.CAR_GO_CUSTOMS);
-                form.setNextCmd(CommonConstant.CAR_SEND);
                 break;
             case 3:
                 form.setCmd(CommonConstant.CAR_SEND);

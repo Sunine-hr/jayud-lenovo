@@ -114,11 +114,23 @@ public class DriverOrderTransportVO {
         if (receivingGoodsList.size() > 1) {
             receivingGoods = new DriverOrderTakeAdrVO();
             receivingGoods.setProvince(this.receivingProvince);
-            receivingGoods.setCity(StringUtils.isEmpty(receivingGoods.getArea()) ? this.receivingProvince : this.receivingCity);
-            receivingGoods.setArea(StringUtils.isEmpty(receivingGoods.getArea()) ? this.receivingCity : this.receivingArea);
+            String city = "";
+            String area = "";
+            if (StringUtils.isEmpty(this.receivingArea)) {
+                city = this.receivingProvince;
+                area = this.receivingCity;
+            } else {
+                city = this.receivingCity;
+                area = this.receivingArea;
+            }
+            receivingGoods.setCity(city);
+            receivingGoods.setArea(area);
             receivingGoods.setAddress(this.address);
             receivingGoods.setPhone(this.contactNumber);
             receivingGoods.setContacts(this.contacts);
+            //外部送货地址
+            this.receivingCity = city;
+            this.receivingArea = area;
         }
         if (!CollectionUtils.isEmpty(pickUpGoodsList)) {
             DriverOrderTakeAdrVO pickUpGoods = pickUpGoodsList.get(0);

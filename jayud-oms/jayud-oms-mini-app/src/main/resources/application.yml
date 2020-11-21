@@ -85,5 +85,6 @@ jayud:
       - /swagger-resources/configuration/security
       - /swagger-ui.html
       - /webjars/**
+    expired: 31536000
 
 

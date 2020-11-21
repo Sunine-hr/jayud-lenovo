@@ -114,8 +114,8 @@ public class DriverOrderTransportVO {
         if (receivingGoodsList.size() > 1) {
             receivingGoods = new DriverOrderTakeAdrVO();
             receivingGoods.setProvince(this.receivingProvince);
-            receivingGoods.setCity(StringUtils.isEmpty(receivingGoods.getArea()) ? this.receivingProvince : this.receivingCity);
-            receivingGoods.setArea(StringUtils.isEmpty(receivingGoods.getArea()) ? this.receivingCity : this.receivingArea);
+            receivingGoods.setCity(StringUtils.isEmpty(this.receivingArea) ? this.receivingProvince : this.receivingCity);
+            receivingGoods.setArea(StringUtils.isEmpty(this.receivingArea) ? this.receivingCity : this.receivingArea);
             receivingGoods.setAddress(this.address);
             receivingGoods.setPhone(this.contactNumber);
             receivingGoods.setContacts(this.contacts);

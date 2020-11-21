@@ -22,4 +22,9 @@
         id, name_code, name_text, prefix, suffix, count, number_length, number_format, types, number_time, status
     </sql>
 
+    <!--根据`单号编号code`，获取生成的`单号`-->
+    <select id="getOrderNoByCode" parameterType="java.lang.String" resultType="java.lang.String">
+        select numberGenerated(#{code}) orderNo;
+    </select>
+
 </mapper>

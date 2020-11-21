@@ -13,4 +13,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface INumberGeneratedService extends IService<NumberGenerated> {
 
+    /**
+     * 根据`单号编号code`，获取生成的`单号`
+     * @return
+     */
+    String getOrderNoByCode(String code);
 }

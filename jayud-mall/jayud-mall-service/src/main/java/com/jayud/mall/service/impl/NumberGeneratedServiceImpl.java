@@ -4,6 +4,7 @@ import com.jayud.mall.model.po.NumberGenerated;
 import com.jayud.mall.mapper.NumberGeneratedMapper;
 import com.jayud.mall.service.INumberGeneratedService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -17,4 +18,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class NumberGeneratedServiceImpl extends ServiceImpl<NumberGeneratedMapper, NumberGenerated> implements INumberGeneratedService {
 
+    @Autowired
+    NumberGeneratedMapper numberGeneratedMapper;
+
+    @Override
+    public String getOrderNoByCode(String code) {
+        return numberGeneratedMapper.getOrderNoByCode(code);
+    }
 }

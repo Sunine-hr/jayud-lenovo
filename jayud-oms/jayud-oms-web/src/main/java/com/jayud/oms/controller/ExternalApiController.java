@@ -280,11 +280,27 @@ public class ExternalApiController {
         List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
         for (CurrencyInfo currencyInfo : currencyInfos) {
             InitComboxStrVO initComboxVO = new InitComboxStrVO();
-            initComboxVO.setCode(currencyInfo.getCountryCode());
+            initComboxVO.setCode(currencyInfo.getCurrencyCode());
             initComboxVO.setName(currencyInfo.getCurrencyName());
             initComboxStrVOS.add(initComboxVO);
         }
         return ApiResult.ok(initComboxStrVOS);
+    }
+
+    @ApiOperation(value = "币种")
+    @RequestMapping(value = "api/initCurrencyInfo2")
+    public ApiResult initCurrencyInfo2() {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(SqlConstant.STATUS,1);
+        List<CurrencyInfo> currencyInfos = currencyInfoService.list(queryWrapper);
+        List<InitComboxVO> initComboxVOS = new ArrayList<>();
+        for (CurrencyInfo currencyInfo : currencyInfos) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(currencyInfo.getId());
+            initComboxVO.setName(currencyInfo.getCurrencyName());
+            initComboxVOS.add(initComboxVO);
+        }
+        return ApiResult.ok(initComboxVOS);
     }
 
 

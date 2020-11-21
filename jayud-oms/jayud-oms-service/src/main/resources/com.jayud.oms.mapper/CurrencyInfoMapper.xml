@@ -7,16 +7,14 @@
         <id column="id" property="id" />
         <result column="currency_code" property="currencyCode" />
         <result column="currency_name" property="currencyName" />
-        <result column="country_code" property="countryCode" />
         <result column="status" property="status" />
-        <result column="user_id" property="userId" />
-        <result column="user_name" property="userName" />
+        <result column="create_user" property="createUser" />
         <result column="create_time" property="createTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, currency_code, currency_name, country_code, status, user_id, user_name, create_time
+        id, currency_code, currency_name, status, create_user, create_time
     </sql>
 
     <select id="findCurrencyInfo"  resultType="com.jayud.oms.model.vo.CurrencyInfoVO" >

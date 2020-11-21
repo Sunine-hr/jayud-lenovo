@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.CommonResult;
 import com.jayud.finance.bo.AddCurrencyManageForm;
-import com.jayud.finance.bo.AddCurrencyRateForm;
+import com.jayud.finance.bo.EditCurrencyRateForm;
 import com.jayud.finance.bo.QueryCurrencyRateForm;
 import com.jayud.finance.po.CurrencyRate;
 import com.jayud.finance.vo.CurrencyRateVO;
@@ -39,5 +39,5 @@ public interface ICurrencyRateService extends IService<CurrencyRate> {
      * @param form
      * @return
      */
-    Boolean editCurrencyRate(AddCurrencyRateForm form);
+    Boolean editCurrencyRate(EditCurrencyRateForm form);
 }

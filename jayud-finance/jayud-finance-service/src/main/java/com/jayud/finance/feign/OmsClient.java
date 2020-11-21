@@ -5,6 +5,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.finance.bo.AuditInfoForm;
 import com.jayud.finance.bo.OprCostBillForm;
 import com.jayud.finance.vo.InitComboxStrVO;
+import com.jayud.finance.vo.InitComboxVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +38,13 @@ public interface OmsClient {
      */
     @RequestMapping(value = "api/initCurrencyInfo")
     ApiResult<List<InitComboxStrVO>> initCurrencyInfo();
+
+    /**
+     * 币种
+     * @return
+     */
+    @RequestMapping(value = "api/initCurrencyInfo2")
+    ApiResult<List<InitComboxVO>> initCurrencyInfo2();
 
 
 }

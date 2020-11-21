@@ -6,12 +6,13 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.finance.bo.AddCurrencyManageForm;
-import com.jayud.finance.bo.AddCurrencyRateForm;
+import com.jayud.finance.bo.EditCurrencyRateForm;
 import com.jayud.finance.bo.QueryCurrencyRateForm;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.service.ICurrencyRateService;
 import com.jayud.finance.vo.CurrencyRateVO;
 import com.jayud.finance.vo.InitComboxStrVO;
+import com.jayud.finance.vo.InitComboxVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -45,13 +47,13 @@ public class CurrencyController {
 
     @ApiOperation(value = "新增汇率")
     @PostMapping("/saveCurrencyRate")
-    public CommonResult saveCurrencyRate(@RequestBody AddCurrencyManageForm form) {
+    public CommonResult saveCurrencyRate(@RequestBody @Valid AddCurrencyManageForm form) {
         return currencyRateService.saveCurrencyRate(form);
     }
 
     @ApiOperation(value = "编辑汇率")
     @PostMapping("/editCurrencyRate")
-    public CommonResult editCurrencyRate(@RequestBody AddCurrencyRateForm form) {
+    public CommonResult editCurrencyRate(@RequestBody @Valid EditCurrencyRateForm form) {
         Boolean result = currencyRateService.editCurrencyRate(form);
         if(!result){
             return CommonResult.error(ResultEnum.OPR_FAIL);
@@ -67,10 +69,16 @@ public class CurrencyController {
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "币种下拉框")
+    @ApiOperation(value = "币种下拉框,隐藏值是CODE")
     @PostMapping("/initCurrencyInfo")
     public CommonResult<List<InitComboxStrVO>> initCurrencyInfo() {
         return CommonResult.success(omsClient.initCurrencyInfo().getData());
+    }
+
+    @ApiOperation(value = "币种下拉框,隐藏值是ID")
+    @PostMapping("/initCurrencyInfo2")
+    public CommonResult<List<InitComboxVO>> initCurrencyInfo2() {
+        return CommonResult.success(omsClient.initCurrencyInfo2().getData());
     }
 
 

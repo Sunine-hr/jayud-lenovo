@@ -9,9 +9,6 @@ import java.math.BigDecimal;
 @Data
 public class AddCurrencyRateForm {
 
-    @ApiModelProperty(value = "ID,修改时需")
-    private Long id;
-
     @ApiModelProperty(value = "右边兑换币种",required = true)
     @NotNull(message = "ocid is required")
     private Long ocid;

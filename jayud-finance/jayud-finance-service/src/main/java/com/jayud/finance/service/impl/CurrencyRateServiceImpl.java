@@ -9,6 +9,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.finance.bo.AddCurrencyManageForm;
 import com.jayud.finance.bo.AddCurrencyRateForm;
+import com.jayud.finance.bo.EditCurrencyRateForm;
 import com.jayud.finance.bo.QueryCurrencyRateForm;
 import com.jayud.finance.mapper.CurrencyRateMapper;
 import com.jayud.finance.po.CurrencyRate;
@@ -36,7 +37,7 @@ public class CurrencyRateServiceImpl extends ServiceImpl<CurrencyRateMapper, Cur
         //定义分页参数
         Page<CurrencyRateVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
-        page.addOrder(OrderItem.desc("opc.id"));
+        page.addOrder(OrderItem.desc("cr.id"));
         IPage<CurrencyRateVO> pageInfo = baseMapper.findCurrencyRateByPage(page, form);
         return pageInfo;
     }
@@ -78,10 +79,12 @@ public class CurrencyRateServiceImpl extends ServiceImpl<CurrencyRateMapper, Cur
     }
 
     @Override
-    public Boolean editCurrencyRate(AddCurrencyRateForm form) {
+    public Boolean editCurrencyRate(EditCurrencyRateForm form) {
         CurrencyRate currencyRate = new CurrencyRate();
         currencyRate.setId(form.getId());
-        currencyRate.setExchangeRate(form.getExchangeRate());//只允许改汇率
+        currencyRate.setExchangeRate(form.getExchangeRate());//只允许改汇率和有效期
+        currencyRate.setBeginValidDate(form.getBeginValidDate());
+        currencyRate.setEndValidDate(form.getEndValidDate());
         return updateById(currencyRate);
     }
 

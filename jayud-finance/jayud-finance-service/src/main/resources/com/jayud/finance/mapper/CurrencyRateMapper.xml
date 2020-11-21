@@ -36,6 +36,7 @@
         currency_rate cr
         LEFT JOIN currency_info ci ON cr.ocid = ci.id
         left join currency_info c2 on c2.id = cr.dcid
+        where 1 = 1
         <if test="form.month != null and form.month != ''">
             and cr.month = #{form.month}
         </if>

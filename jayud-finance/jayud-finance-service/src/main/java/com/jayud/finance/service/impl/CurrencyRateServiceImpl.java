@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.finance.bo.AddCurrencyManageForm;
 import com.jayud.finance.bo.AddCurrencyRateForm;
 import com.jayud.finance.bo.EditCurrencyRateForm;
@@ -70,9 +71,10 @@ public class CurrencyRateServiceImpl extends ServiceImpl<CurrencyRateMapper, Cur
             currencyRate.setDcid(addCurrencyRateForm.getDcid());
             currencyRate.setExchangeRate(addCurrencyRateForm.getExchangeRate());
             currencyRate.setMonth(form.getMonth());
-            currencyRate.setBeginValidDate(form.getBeginValidDate());
-            currencyRate.setEndValidDate(form.getEndValidDate());
+            currencyRate.setBeginValidDate(DateUtils.stringToLocalDate(form.getBeginValidDate(),DateUtils.DATE_PATTERN));
+            currencyRate.setEndValidDate(DateUtils.stringToLocalDate(form.getEndValidDate(),DateUtils.DATE_PATTERN));
             currencyRate.setCreatedUser(UserOperator.getToken());
+            currencyRates.add(currencyRate);
         }
         saveBatch(currencyRates);
         return CommonResult.success();
@@ -83,8 +85,8 @@ public class CurrencyRateServiceImpl extends ServiceImpl<CurrencyRateMapper, Cur
         CurrencyRate currencyRate = new CurrencyRate();
         currencyRate.setId(form.getId());
         currencyRate.setExchangeRate(form.getExchangeRate());//只允许改汇率和有效期
-        currencyRate.setBeginValidDate(form.getBeginValidDate());
-        currencyRate.setEndValidDate(form.getEndValidDate());
+        currencyRate.setBeginValidDate(DateUtils.stringToLocalDate(form.getBeginValidDate(),DateUtils.DATE_PATTERN));
+        currencyRate.setEndValidDate(DateUtils.stringToLocalDate(form.getEndValidDate(),DateUtils.DATE_PATTERN));
         return updateById(currencyRate);
     }
 

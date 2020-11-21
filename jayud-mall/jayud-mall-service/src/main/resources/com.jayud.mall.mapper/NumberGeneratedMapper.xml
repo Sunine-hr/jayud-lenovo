@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.NumberGeneratedMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.NumberGenerated">
+        <id column="id" property="id" />
+        <result column="name_code" property="nameCode" />
+        <result column="name_text" property="nameText" />
+        <result column="prefix" property="prefix" />
+        <result column="suffix" property="suffix" />
+        <result column="count" property="count" />
+        <result column="number_length" property="numberLength" />
+        <result column="number_format" property="numberFormat" />
+        <result column="types" property="types" />
+        <result column="number_time" property="numberTime" />
+        <result column="status" property="status" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name_code, name_text, prefix, suffix, count, number_length, number_format, types, number_time, status
+    </sql>
+
+</mapper>

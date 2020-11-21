@@ -139,7 +139,7 @@ ADD COLUMN `area` int(20) NULL DEFAULT NULL COMMENT '区主键' AFTER `city`;
 
 -- sql 以上都同步到测试服务器
 
-
+-- 小程序开发使用的表
 
 -- 2020年11月11日李达荣，功能描述：录用费用增加文件字段
 ALTER TABLE `order_payment_cost`

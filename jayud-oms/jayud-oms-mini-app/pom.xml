@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging>
     <artifactId>jayud-oms-mini-app</artifactId>
-    <name>微信小程序</name>
+    <name>jayud-oms-mini-app</name>
 
     <dependencies>
         <dependency>

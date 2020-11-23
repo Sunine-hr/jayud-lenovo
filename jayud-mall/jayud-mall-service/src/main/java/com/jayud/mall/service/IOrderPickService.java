@@ -1,7 +1,7 @@
 package com.jayud.mall.service;
 
-import com.jayud.mall.model.po.OrderPick;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.po.OrderPick;
 import com.jayud.mall.model.vo.DeliveryAddressVO;
 import com.jayud.mall.model.vo.OrderPickVO;
 

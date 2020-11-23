@@ -22,7 +22,7 @@ public class OrderPickController {
     @Autowired
     IOrderPickService orderPickService;
 
-    @ApiModelProperty(value = "批量创建-订单对应提货地址")
+    @ApiModelProperty(value = "批量创建-订单对应提货地址(进仓单号)")
     @PostMapping("/createOrderPickList")
     public CommonResult<List<OrderPickVO>> createOrderPickList(@RequestBody List<DeliveryAddressVO> form){
         List<OrderPickVO> orderPickVOList = orderPickService.createOrderPickList(form);

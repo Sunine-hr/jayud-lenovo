@@ -33,6 +33,9 @@ public class OrderPickForm {
     @ApiModelProperty(value = "总箱数")
     private Integer totalCarton;
 
+    @ApiModelProperty(value = "备注")
+    private String remark;
+
     @ApiModelProperty(value = "提货地址id(delivery_address id)")
     private Integer addressId;
 

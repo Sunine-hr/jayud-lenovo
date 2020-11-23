@@ -60,7 +60,7 @@ public interface OrderPaymentBillMapper extends BaseMapper<OrderPaymentBill> {
      * @param supplierChName
      * @return
      */
-    Integer getBillOrderNum(@Param("legalName") String legalName,@Param("supplierChName") String supplierChName,@Param("cmd") String cmd);
+    Integer getBillOrderNum(@Param("legalName") String legalName,@Param("supplierChName") String supplierChName,@Param("subType") String subType);
 
 
     /**

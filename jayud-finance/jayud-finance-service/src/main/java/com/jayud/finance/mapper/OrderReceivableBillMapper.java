@@ -60,7 +60,7 @@ public interface OrderReceivableBillMapper extends BaseMapper<OrderReceivableBil
      * @param customerName
      * @return
      */
-    Integer getSBillOrderNum(@Param("legalName") String legalName,@Param("customerName") String customerName,@Param("cmd") String cmd);
+    Integer getSBillOrderNum(@Param("legalName") String legalName,@Param("customerName") String customerName,@Param("subType") String subType);
 
     /**
      * 预览账单表头

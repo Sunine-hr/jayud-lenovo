@@ -118,20 +118,18 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             BigDecimal nowBillAmount = receiveBillDetailForms.stream().map(OrderReceiveBillDetailForm::getLocalAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
             orderReceivableBill.setAlreadyPaidAmount(receiveBillForm.getAlreadyPaidAmount().add(nowBillAmount));
             //2.统计已出账订单数billOrderNum
-            Integer billOrderNum = getSBillOrderNum(receiveBillForm.getLegalName(),receiveBillForm.getCustomerName(),form.getCmd());
+            Integer billOrderNum = getSBillOrderNum(receiveBillForm.getLegalName(),receiveBillForm.getCustomerName(),form.getSubType());
             orderReceivableBill.setBillOrderNum(billOrderNum);
             //3.统计账单数billNum
             orderReceivableBill.setBillOrderNum(receiveBillForm.getBillNum() + 1);
             if("main".equals(form.getSubType())){
                 orderReceivableBill.setIsMain(true);
-                orderReceivableBill.setSubType(form.getSubType());
             }else if("zgys".equals(form.getSubType())){
                 orderReceivableBill.setIsMain(false);
-                orderReceivableBill.setSubType(form.getSubType());
             }else if("bg".equals(form.getSubType())){
                 orderReceivableBill.setIsMain(false);
-                orderReceivableBill.setSubType(form.getSubType());
             }
+            orderReceivableBill.setSubType(form.getSubType());
             //判断该法人主体和客户是否已经生成过账单
             QueryWrapper queryWrapper = new QueryWrapper();
             queryWrapper.eq("sub_type",form.getSubType());
@@ -175,9 +173,11 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                 orderBillCostTotalVO.setBillNo(form.getBillNo());
                 orderBillCostTotalVO.setCurrencyCode(settlementCurrency);
-                BigDecimal money = orderBillCostTotalVO.getMoney().multiply(orderBillCostTotalVO.getExchangeRate());
+                BigDecimal localMoney = orderBillCostTotalVO.getMoney();//本币金额
+                BigDecimal money = localMoney.multiply(orderBillCostTotalVO.getExchangeRate());
                 orderBillCostTotalVO.setMoney(money);
                 OrderBillCostTotal orderBillCostTotal = ConvertUtil.convert(orderBillCostTotalVO,OrderBillCostTotal.class);
+                orderBillCostTotal.setLocalMoney(localMoney);
                 orderBillCostTotal.setMoneyType("1");
                 orderBillCostTotals.add(orderBillCostTotal);
             }
@@ -257,7 +257,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
 
 
     @Override
-    public Integer getSBillOrderNum(String legalName, String customerName, String cmd) {
-        return baseMapper.getSBillOrderNum(legalName,customerName,cmd);
+    public Integer getSBillOrderNum(String legalName, String customerName, String subType) {
+        return baseMapper.getSBillOrderNum(legalName,customerName,subType);
     }
 }

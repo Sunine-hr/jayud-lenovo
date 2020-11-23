@@ -47,8 +47,11 @@ public class OrderBillCostTotal extends Model<OrderBillCostTotal> {
     @ApiModelProperty(value = "费用项")
     private String costInfoName;
 
-    @ApiModelProperty(value = "金额")
+    @ApiModelProperty(value = "金额,根据结算币种计算的金额，以费用项为维度")
     private BigDecimal money;
+
+    @ApiModelProperty(value = "本币金额")
+    private BigDecimal localMoney;
 
     @ApiModelProperty(value = "1-有效 0-无效")
     private String status;

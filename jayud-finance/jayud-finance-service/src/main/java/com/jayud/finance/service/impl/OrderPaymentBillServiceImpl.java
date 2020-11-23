@@ -126,7 +126,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             BigDecimal nowBillAmount = paymentBillDetailForms.stream().map(OrderPaymentBillDetailForm::getLocalAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
             orderPaymentBill.setAlreadyPaidAmount(paymentBillForm.getAlreadyPaidAmount().add(nowBillAmount));
             //2.统计已出账订单数billOrderNum
-            Integer billOrderNum = getBillOrderNum(paymentBillForm.getLegalName(),paymentBillForm.getSupplierChName(),form.getCmd());
+            Integer billOrderNum = getBillOrderNum(paymentBillForm.getLegalName(),paymentBillForm.getSupplierChName(),form.getSubType());
             orderPaymentBill.setBillOrderNum(billOrderNum);
             //3.统计账单数billNum
             orderPaymentBill.setBillOrderNum(paymentBillForm.getBillNum() + 1);
@@ -181,9 +181,11 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                 orderBillCostTotalVO.setBillNo(form.getBillNo());
                 orderBillCostTotalVO.setCurrencyCode(settlementCurrency);
-                BigDecimal money = orderBillCostTotalVO.getMoney().multiply(orderBillCostTotalVO.getExchangeRate());
+                BigDecimal localMoney = orderBillCostTotalVO.getMoney();//本币金额
+                BigDecimal money = localMoney.multiply(orderBillCostTotalVO.getExchangeRate());
                 orderBillCostTotalVO.setMoney(money);
                 OrderBillCostTotal orderBillCostTotal = ConvertUtil.convert(orderBillCostTotalVO,OrderBillCostTotal.class);
+                orderBillCostTotal.setLocalMoney(localMoney);
                 orderBillCostTotal.setMoneyType("1");
                 orderBillCostTotals.add(orderBillCostTotal);
             }
@@ -262,8 +264,8 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
     }
 
     @Override
-    public Integer getBillOrderNum(String legalName, String supplierChName, String cmd) {
-        return baseMapper.getBillOrderNum(legalName,supplierChName,cmd);
+    public Integer getBillOrderNum(String legalName, String supplierChName, String subType) {
+        return baseMapper.getBillOrderNum(legalName,supplierChName,subType);
     }
 
     @Override

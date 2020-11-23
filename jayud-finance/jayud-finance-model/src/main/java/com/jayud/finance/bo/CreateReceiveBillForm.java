@@ -40,4 +40,7 @@ public class CreateReceiveBillForm {
     @Pattern(regexp = "(pre_create|create)", message = "只允许填写pre_create or create")
     private String cmd;
 
+    @ApiModelProperty(value = "登录用户",required = true)
+    private String loginUserName;
+
 }

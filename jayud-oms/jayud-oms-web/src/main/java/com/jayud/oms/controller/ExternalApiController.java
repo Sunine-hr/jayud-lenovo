@@ -227,12 +227,14 @@ public class ExternalApiController {
                     OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
                     orderPaymentCost.setId(costId);
                     orderPaymentCost.setIsBill("0");//未出账
+                    paymentCosts.add(orderPaymentCost);
                 }
             }else{//生成应收账单
                 for (Long costId : form.getCostIds()) {
                     OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
                     orderPaymentCost.setId(costId);
                     orderPaymentCost.setIsBill("2");//生成对账单
+                    paymentCosts.add(orderPaymentCost);
                 }
             }
             result = paymentCostService.updateBatchById(paymentCosts);
@@ -258,12 +260,14 @@ public class ExternalApiController {
                     OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
                     orderReceivableCost.setId(costId);
                     orderReceivableCost.setIsBill("0");//未出账
+                    receivableCosts.add(orderReceivableCost);
                 }
             }else{//生成应付账单
                 for (Long costId : form.getCostIds()) {
                     OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
                     orderReceivableCost.setId(costId);
                     orderReceivableCost.setIsBill("2");//生成对账单
+                    receivableCosts.add(orderReceivableCost);
                 }
             }
             result = receivableCostService.updateBatchById(receivableCosts);

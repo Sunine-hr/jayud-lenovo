@@ -30,58 +30,58 @@ public class FinanceAccountVO {
     private String ywName;
 
     @ApiModelProperty(value = "应收账单号")
-    private String sBillNo;
+    private String recBillNo;
 
     @ApiModelProperty(value = "应收核算期")
-    private String sAccountTermStr;
+    private String recAccountTermStr;
 
     @ApiModelProperty(value = "应收人民币")
-    private BigDecimal sRmb;
+    private BigDecimal recRmb;
 
     @ApiModelProperty(value = "应收美元")
-    private BigDecimal sDollar;
+    private BigDecimal recDollar;
 
     @ApiModelProperty(value = "应收欧元")
-    private BigDecimal sEuro;
+    private BigDecimal recEuro;
 
     @ApiModelProperty(value = "应收港币")
-    private BigDecimal sHkDollar;
+    private BigDecimal recHkDollar;
 
     @ApiModelProperty(value = "应收本币金额")
-    private BigDecimal sLocalAmount;
+    private BigDecimal recLocalAmount;
 
     @ApiModelProperty(value = "应收对账单状态")
-    private String sStatus;
+    private String recStatus;
 
     @ApiModelProperty(value = "应收费用状态")
-    private String sCostStatus;
+    private String recCostStatus;
 
     @ApiModelProperty(value = "应付账单号")
-    private String fBillNo;
+    private String payBillNo;
 
     @ApiModelProperty(value = "应付核算期")
-    private String fAccountTermStr;
+    private String payAccountTermStr;
 
     @ApiModelProperty(value = "应付人民币")
-    private BigDecimal fRmb;
+    private BigDecimal payRmb;
 
     @ApiModelProperty(value = "应付美元")
-    private BigDecimal fDollar;
+    private BigDecimal payDollar;
 
     @ApiModelProperty(value = "应付欧元")
-    private BigDecimal fEuro;
+    private BigDecimal payEuro;
 
     @ApiModelProperty(value = "应付港币")
-    private BigDecimal fHkDollar;
+    private BigDecimal payHkDollar;
 
     @ApiModelProperty(value = "应付本币金额")
-    private BigDecimal fLocalAmount;
+    private BigDecimal payLocalAmount;
 
     @ApiModelProperty(value = "应付费用状态")
-    private String fCostStatus;
+    private String payCostStatus;
 
     @ApiModelProperty(value = "应付对账单状态")
-    private String fStatus;
+    private String payStatus;
 
     @ApiModelProperty(value = "利润(人民币)")
     private String profit;

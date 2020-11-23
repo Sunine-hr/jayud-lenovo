@@ -134,11 +134,10 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
                 orderPaymentBill.setIsMain(true);
             }else if("zgys".equals(form.getSubType())){
                 orderPaymentBill.setIsMain(false);
-                orderPaymentBill.setSubType(form.getSubType());
             }else if("bg".equals(form.getSubType())){
                 orderPaymentBill.setIsMain(false);
-                orderPaymentBill.setSubType(form.getSubType());
             }
+            orderPaymentBill.setSubType(form.getSubType());
             //判断该法人主体和客户是否已经生成过账单
             QueryWrapper queryWrapper = new QueryWrapper();
             queryWrapper.eq("sub_type",form.getSubType());
@@ -160,14 +159,15 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             for (int i = 0;i<paymentBillDetails.size();i++) {
                 paymentBillDetails.get(i).setStatus("1");
                 paymentBillDetails.get(i).setBillNo(form.getBillNo());
-                paymentBillDetails.get(i).setBeginAccountTerm(form.getBeginAccountTerm());
-                paymentBillDetails.get(i).setEndAccountTerm(form.getEndAccountTerm());
+                paymentBillDetails.get(i).setBeginAccountTerm(DateUtils.str2LocalDateTime(form.getBeginAccountTermStr(),DateUtils.DATE_TIME_PATTERN));
+                paymentBillDetails.get(i).setEndAccountTerm(DateUtils.str2LocalDateTime(form.getEndAccountTermStr(),DateUtils.DATE_TIME_PATTERN));
                 paymentBillDetails.get(i).setSettlementCurrency(form.getSettlementCurrency());
                 paymentBillDetails.get(i).setAuditStatus(BillEnum.B_1.getCode());
-                paymentBillDetails.get(i).setCreatedOrderTime(DateUtils.str2LocalDateTime(paymentBillDetailForms.get(i).getCreatedTimeStr(),DateUtils.DATE_TIME_PATTERN));
-                paymentBillDetails.get(i).setMakeUser(UserOperator.getToken());
+                paymentBillDetails.get(i).setCreatedOrderTime(DateUtils.convert2Date(paymentBillDetailForms.get(i).getCreatedTimeStr(),DateUtils.DATE_PATTERN));
+                paymentBillDetails.get(i).setMakeUser(form.getLoginUserName());
                 paymentBillDetails.get(i).setMakeTime(LocalDateTime.now());
-                paymentBillDetails.get(i).setCreatedUser(UserOperator.getToken());
+                paymentBillDetails.get(i).setCreatedUser(form.getLoginUserName());
+                paymentBillDetails.get(i).setBillId(orderPaymentBill.getId());
             }
             result = paymentBillDetailService.saveBatch(paymentBillDetails);
             if(!result){

@@ -234,7 +234,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 paymentBillDetails.get(i).setEndAccountTerm(oldFBillDetail.getEndAccountTerm());
                 paymentBillDetails.get(i).setSettlementCurrency(oldFBillDetail.getSettlementCurrency());
                 paymentBillDetails.get(i).setAuditStatus("edit_no_commit");
-                paymentBillDetails.get(i).setCreatedOrderTime(DateUtils.str2LocalDateTime(paymentBillDetailForms.get(i).getCreatedTimeStr(), DateUtils.DATE_TIME_PATTERN));
+                paymentBillDetails.get(i).setCreatedOrderTime(DateUtils.convert2Date(paymentBillDetailForms.get(i).getCreatedTimeStr(),DateUtils.DATE_PATTERN));
                 paymentBillDetails.get(i).setMakeUser(UserOperator.getToken());
                 paymentBillDetails.get(i).setMakeTime(LocalDateTime.now());
                 paymentBillDetails.get(i).setCreatedUser(UserOperator.getToken());

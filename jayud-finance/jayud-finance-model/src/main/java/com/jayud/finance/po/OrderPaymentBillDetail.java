@@ -12,6 +12,7 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * <p>
@@ -58,7 +59,7 @@ public class OrderPaymentBillDetail extends Model<OrderPaymentBillDetail> {
     private Long costId;
 
     @ApiModelProperty(value = "建单日期")
-    private LocalDateTime createdOrderTime;
+    private Date createdOrderTime;
 
     @ApiModelProperty(value = "起运地")
     private String startAddress;

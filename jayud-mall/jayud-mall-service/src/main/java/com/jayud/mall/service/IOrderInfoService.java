@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.OrderCaseForm;
 import com.jayud.mall.model.bo.OrderInfoCostForm;
+import com.jayud.mall.model.bo.OrderInfoForm;
 import com.jayud.mall.model.bo.QueryOrderInfoForm;
 import com.jayud.mall.model.po.OrderInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -112,4 +113,18 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     CommonResult<OrderInfoVO> lookOrderInfoDetails(Long id);
+
+    /**
+     * 订单下单-暂存订单
+     * @param form
+     * @return
+     */
+    CommonResult<OrderInfoVO> temporaryStorageOrderInfo(OrderInfoForm form);
+
+    /**
+     * 订单下单-提交订单
+     * @param form
+     * @return
+     */
+    CommonResult<OrderInfoVO> submitOrderInfo(OrderInfoForm form);
 }

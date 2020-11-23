@@ -6,11 +6,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.mall.enums.OrderEnum;
 import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.*;
 import com.jayud.mall.model.vo.*;
 import com.jayud.mall.service.*;
+import com.jayud.mall.utils.SnowflakeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,6 +62,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Autowired
     IOrderCaseService orderCaseService;
+
+    @Autowired
+    IOrderShopService orderShopService;
+
+    @Autowired
+    IOrderPickService orderPickService;
 
     @Autowired
     IOrderCopeReceivableService orderCopeReceivableService;
@@ -266,6 +274,63 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderInfoVO.setOrderClearanceFileVOList(orderClearanceFileVOList);
 
         return CommonResult.success(orderInfoVO);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CommonResult<OrderInfoVO> temporaryStorageOrderInfo(OrderInfoForm form) {
+        //保存-产品订单表：order_info
+        OrderInfo orderInfo = ConvertUtil.convert(form, OrderInfo.class);
+
+        //判断订单号是否存在，不存在则新增
+        String orderNo = form.getOrderNo();
+        if(orderNo == null || orderNo == ""){
+            orderNo = String.valueOf(SnowflakeUtils.getOrderNo());//雪花算法生成订单id
+            orderInfo.setOrderNo(orderNo);
+        }
+        orderInfo.setStatus(OrderEnum.DRAFT.getCode());//订单状态
+        orderInfo.setStatusName(OrderEnum.DRAFT.getName());//订单名称
+        this.saveOrUpdate(orderInfo);
+
+        //保存-订单对应箱号信息:order_case
+        List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
+        List<OrderCase> orderCaseList = ConvertUtil.convertList(orderCaseVOList, OrderCase.class);
+        orderCaseList.forEach(orderCase -> {
+            orderCase.setOrderId(orderInfo.getId().intValue());
+        });
+        QueryWrapper<OrderCase> orderCaseQueryWrapper = new QueryWrapper<>();
+        orderCaseQueryWrapper.eq("order_id", orderInfo.getId());
+        orderCaseService.remove(orderCaseQueryWrapper);
+        orderCaseService.saveOrUpdateBatch(orderCaseList);
+
+        //保存-订单对应商品：order_shop
+        List<OrderShopVO> orderShopVOList = form.getOrderShopVOList();
+        List<OrderShop> orderShopList = ConvertUtil.convertList(orderShopVOList, OrderShop.class);
+        orderShopList.forEach(orderShop -> {
+            orderShop.setOrderId(orderInfo.getId().intValue());
+        });
+        QueryWrapper<OrderShop> orderShopQueryWrapper = new QueryWrapper<>();
+        orderShopQueryWrapper.eq("order_id", orderInfo.getId());
+        orderShopService.remove(orderShopQueryWrapper);
+        orderShopService.saveOrUpdateBatch(orderShopList);
+
+        //保存-订单对应提货信息表：order_pick
+        List<OrderPickVO> orderPickVOList = form.getOrderPickVOList();
+        List<OrderPick> orderPickList = ConvertUtil.convertList(orderPickVOList, OrderPick.class);
+        orderPickList.forEach(orderPick -> {
+            orderPick.setOrderId(orderInfo.getId());
+        });
+        QueryWrapper<OrderPick> orderPickQueryWrapper = new QueryWrapper<>();
+        orderPickQueryWrapper.eq("order_id", orderInfo.getId());
+        orderPickService.remove(orderPickQueryWrapper);
+        orderPickService.saveOrUpdateBatch(orderPickList);
+
+        return CommonResult.success(ConvertUtil.convert(orderInfo, OrderInfoVO.class));
+    }
+
+    @Override
+    public CommonResult<OrderInfoVO> submitOrderInfo(OrderInfoForm form) {
+        return null;
     }
 
 

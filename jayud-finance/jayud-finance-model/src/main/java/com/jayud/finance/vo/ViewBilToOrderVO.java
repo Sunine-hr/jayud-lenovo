@@ -1,7 +1,12 @@
 package com.jayud.finance.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * 账单列表预览
@@ -39,5 +44,37 @@ public class ViewBilToOrderVO {
     @ApiModelProperty(value = "报关单号")
     private String yunCustomsNo;
 
+
+    @ApiModelProperty(value = "费用项")
+    @JsonIgnore
+    private LinkedHashMap<String, String> costItems;
+
+    @ApiModelProperty(value = "合计费用")
+    @JsonIgnore
+    private List<String> totalCost;
+
+    public List<String> getStrList() {
+        List<String> valueStr = new ArrayList<>();
+        valueStr.add(this.createdTimeStr);
+        valueStr.add(this.orderNo);
+        valueStr.add(this.customerName);
+        valueStr.add(this.startAddress);
+        valueStr.add(this.endAddress);
+        valueStr.add(this.licensePlate);
+        valueStr.add(this.vehicleSize);
+        valueStr.add(this.pieceNum == null ? "0" : this.pieceNum.toString());
+        valueStr.add(this.weight == null ? "0" : this.weight.toString());
+        valueStr.add(this.yunCustomsNo);
+
+        costItems.forEach((k, v) -> {
+            valueStr.add(v);
+        });
+
+        return valueStr;
+    }
+
+    public void calculateCost(){
+
+    }
 
 }

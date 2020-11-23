@@ -141,7 +141,7 @@
         WHERE
         orc.id NOT IN ( SELECT orbd.cost_id FROM order_receivable_bill_detail orbd )
         and orc.is_bill != '2'
-        and orc.customer_name = #{form.customerName}
+        and oi.customer_name = #{form.customerName}
         and oi.legal_name = #{form.legalName}
         <if test="form.cmd == 'main'">
             and orc.is_sum_to_main = 1

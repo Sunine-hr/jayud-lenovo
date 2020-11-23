@@ -78,7 +78,7 @@ public class OrderCommonController {
             List<InputPaymentCostForm> paymentCostForms = form.getPaymentCostList();
             List<InputReceivableCostForm> receivableCostForms = form.getReceivableCostList();
             for (InputPaymentCostForm paymentCost : paymentCostForms) {
-                if(StringUtil.isNullOrEmpty(paymentCost.getCustomerName())
+                if(StringUtil.isNullOrEmpty(paymentCost.getCustomerCode())
                 || StringUtil.isNullOrEmpty(paymentCost.getCostCode())
                 || paymentCost.getCostTypeId() == null || paymentCost.getCostGenreId() == null
                 || StringUtil.isNullOrEmpty(paymentCost.getUnit())
@@ -90,8 +90,7 @@ public class OrderCommonController {
                 }
             }
             for (InputReceivableCostForm receivableCost : receivableCostForms) {
-                if(StringUtil.isNullOrEmpty(receivableCost.getCustomerName())
-                        || StringUtil.isNullOrEmpty(receivableCost.getCustomerCode())
+                if(StringUtil.isNullOrEmpty(receivableCost.getCustomerCode())
                         || StringUtil.isNullOrEmpty(receivableCost.getCostCode())
                         || receivableCost.getCostTypeId() == null || receivableCost.getCostGenreId() == null
                         || StringUtil.isNullOrEmpty(receivableCost.getUnit())

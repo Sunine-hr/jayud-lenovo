@@ -41,7 +41,8 @@
             resultType="com.jayud.oms.model.vo.InputPaymentCostVO">
         SELECT
         opc.`id`,
-        opc.`customer_name` customerName ,
+        opc.`customer_code` customerCode ,
+        si.supplier_ch_name customerName,
         opc.`cost_type_id` costTypeId,
         (SELECT ct.code_name FROM cost_type ct WHERE ct.id = opc.`cost_type_id` LIMIT 1) costType,
         opc.`cost_genre_id` costGenreId,
@@ -61,6 +62,7 @@
         opc.`status`
         FROM
         order_payment_cost opc
+        left join supplier_info si on si.supplier_code = opc.customer_code
         where opc.`main_order_no` = #{form.mainOrderNo}
         <if test="form.cmd == 'main_cost_audit'">
             and opc.`status` in ('2','3')

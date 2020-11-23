@@ -17,10 +17,6 @@ public class InputReceivableCostForm {
     @NotEmpty(message = "customerCode is required")
     private String customerCode;
 
-    @ApiModelProperty(value = "客户名称",required = true)
-    @NotEmpty(message = "customerName is required")
-    private String customerName;
-
     @ApiModelProperty(value = "应收项目CODE",required = true)
     @NotEmpty(message = "costCode is required")
     private String costCode;

@@ -249,18 +249,13 @@
     </select>
     <select id="getViewBillByCostIds" parameterType="java.util.List" resultType="com.jayud.finance.vo.ViewBillVO">
         SELECT DISTINCT
-            orb.legal_name legalName,
-            DATE_FORMAT( orbd.begin_account_term, '%Y-%m-%d' ) beginAccountTermStr,
-            DATE_FORMAT( orbd.end_account_term, '%Y-%m-%d' ) endAccountTermStr,
-            orb.customer_name customerName,
-            orbd.bill_no billNo,
-            orbd.make_user makeUser,
-            orbd.make_time makeTimeStr
+        oi.legal_name legalName,
+        oi.customer_name customerName
         FROM
-            order_receivable_bill orb
-            LEFT JOIN order_receivable_bill_detail orbd ON orb.id = orbd.bill_id
+        order_info oi
+        LEFT JOIN order_receivable_cost orc ON oi.order_no = orc.main_order_no
         WHERE
-            orbd.cost_id in
+        orc.id IN
          <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
          #{item}
          </foreach>

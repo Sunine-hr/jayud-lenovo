@@ -7,10 +7,7 @@ import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.service.IOrderReceivableBillService;
-import com.jayud.finance.vo.OrderReceiveBillVO;
-import com.jayud.finance.vo.ReceiveNotPaidBillVO;
-import com.jayud.finance.vo.SheetHeadVO;
-import com.jayud.finance.vo.ViewBilToOrderVO;
+import com.jayud.finance.vo.*;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -93,6 +90,8 @@ public class ReceiveBillController {
         resultMap.put(CommonConstant.LIST,list);//分页数据
         List<SheetHeadVO> sheetHeadVOS = billService.findSheetHead(costIds);
         resultMap.put(CommonConstant.SHEET_HEAD,sheetHeadVOS);//表头
+        ViewBillVO viewBillVO = billService.getViewBillByCostIds(costIds);
+        resultMap.put(CommonConstant.WHOLE_DATA,viewBillVO);//全局数据
         return CommonResult.success(resultMap);
     }
 

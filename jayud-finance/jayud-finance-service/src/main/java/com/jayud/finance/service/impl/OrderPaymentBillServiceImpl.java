@@ -248,9 +248,17 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             e.printStackTrace();
         }
         List<SheetHeadVO> dynamicHeadList = baseMapper.findSheetHead(costIds);
+        for (SheetHeadVO sheetHead : dynamicHeadList) {
+            sheetHead.setName(sheetHead.getName().toLowerCase());
+        }
         allHeadList.addAll(fixHeadList);
         allHeadList.addAll(dynamicHeadList);
         return allHeadList;
+    }
+
+    @Override
+    public ViewBillVO getViewBillByCostIds(List<Long> costIds) {
+        return baseMapper.getViewBillByCostIds(costIds);
     }
 
     @Override

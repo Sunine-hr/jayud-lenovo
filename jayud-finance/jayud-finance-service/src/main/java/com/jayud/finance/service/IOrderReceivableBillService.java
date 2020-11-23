@@ -61,6 +61,12 @@ public interface IOrderReceivableBillService extends IService<OrderReceivableBil
     List<SheetHeadVO> findSheetHead(List<Long> costIds);
 
     /**
+     * 预览账单全局数据
+     * @return
+     */
+    ViewBillVO getViewBillByCostIds(List<Long> costIds);
+
+    /**
      * 已出账订单数
      * @param legalName
      * @param customerName

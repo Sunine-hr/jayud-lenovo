@@ -281,4 +281,22 @@
         </if>
         )
     </select>
+    <select id="getViewBillByCostIds" parameterType="java.util.List" resultType="com.jayud.finance.vo.ViewBillVO">
+        SELECT DISTINCT
+            opb.legal_name legalName,
+            DATE_FORMAT( opbd.begin_account_term, '%Y-%m-%d' ) beginAccountTermStr,
+            DATE_FORMAT( opbd.end_account_term, '%Y-%m-%d' ) endAccountTermStr,
+            opb.supplier_ch_name customerName,
+            opbd.bill_no billNo,
+            opbd.make_user makeUser,
+            opbd.make_time makeTimeStr
+        FROM
+            order_payment_bill opb
+            LEFT JOIN order_payment_bill_detail opbd ON opb.id = opbd.bill_id
+        WHERE
+            opbd.cost_id in
+        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 </mapper>

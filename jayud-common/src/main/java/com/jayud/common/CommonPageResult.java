@@ -12,17 +12,17 @@ import java.util.List;
  */
 @Getter
 public class CommonPageResult<T> {
-    @ApiModelProperty("页码")
+    @ApiModelProperty(value = "页码", position = 1)
     private Long pageNum;
-    @ApiModelProperty("页长")
+    @ApiModelProperty(value = "页长", position = 2)
     private Long pageSize;
-    @ApiModelProperty("总记录数")
+    @ApiModelProperty(value = "总记录数", position = 3)
     private Long total;
-    @ApiModelProperty("是否有下一页")
+    @ApiModelProperty(value = "是否有下一页", position = 4)
     private Boolean hasNextPage;
-    @ApiModelProperty("列表内容")
+    @ApiModelProperty(value = "列表内容", position = 5)
     private List<T> list;
-    @ApiModelProperty("总页数")
+    @ApiModelProperty(value = "总页数", position = 6)
     private Long totalPages;
 
     public CommonPageResult(IPage pageInfo) {

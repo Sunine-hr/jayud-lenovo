@@ -52,20 +52,8 @@ public class OprStatusForm {
     @ApiModelProperty(value = "过磅数")
     private Double carWeighNum;
 
-    @ApiModelProperty(value = "车辆供应商ID")
-    private Long hkSupplierId;
-
-    @ApiModelProperty(value = "香港清关司机名称")
-    private String hkDriverName;
-
-    @ApiModelProperty(value = "香港清关司机电话")
-    private String hkDriverPhone;
-
-    @ApiModelProperty(value = "香港清关大陆车牌")
-    private String licensePlate;
-
-    @ApiModelProperty(value = "香港清关香港车牌")
-    private String hkLicensePlate;
+    @ApiModelProperty(value = "香港清关司机ID")
+    private Long driverInfoId;
 
     @ApiModelProperty(value = "无缝单号")
     private String seamlessNo;
@@ -78,4 +66,6 @@ public class OprStatusForm {
             "carOutWarehouse车辆出仓,carSend车辆派送,confirmSignIn确认签收",required = true)
     private String cmd;
 
+    @ApiModelProperty(value = "下一步指令")
+    private String nextCmd;
 }

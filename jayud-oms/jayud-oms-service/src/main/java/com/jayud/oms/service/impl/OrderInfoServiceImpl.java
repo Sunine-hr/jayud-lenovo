@@ -569,40 +569,54 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
         String classCode = inputMainOrderForm.getClassCode();//订单类型
         String selectedServer = inputMainOrderForm.getSelectedServer();//所选服务
-        //纯报关和出口报关
+        //纯报关和出口报关并且订单状态为驳回(C_1_1)或为空或为暂存待补全的待接单
         if(OrderStatusEnum.CBG.getCode().equals(classCode) ||
                 selectedServer.contains(OrderStatusEnum.CKBG.getCode())){
             InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
-            //如果没有生成子订单则不调用
-            if(orderCustomsForm.getSubOrders() != null && orderCustomsForm.getSubOrders().size() >= 0) {
-                 orderCustomsForm.setMainOrderNo(mainOrderNo);
-                 if(OrderStatusEnum.CBG.getCode().equals(classCode)) {
-                     orderCustomsForm.setClassCode(OrderStatusEnum.CBG.getCode());
-                 }else {
-                     orderCustomsForm.setClassCode(OrderStatusEnum.CKBG.getCode());
-                 }
-                 orderCustomsForm.setLoginUser(UserOperator.getToken());
-                 Boolean result = customsClient.createOrderCustoms(orderCustomsForm).getData();
-                 if (!result) {//调用失败
-                     return false;
-                 }
+            if(StringUtil.isNullOrEmpty(orderCustomsForm.getSubCustomsStatus()) ||
+                    (OrderStatusEnum.CUSTOMS_C_0.getCode().equals(orderCustomsForm.getSubCustomsStatus()) &&
+                     (OrderStatusEnum.MAIN_2.getCode().equals(inputMainOrderForm.getStatus()) ||
+                      OrderStatusEnum.MAIN_4.getCode().equals(inputMainOrderForm.getStatus()) ||
+                      inputMainOrderForm.getStatus() == null)) ||
+                    OrderStatusEnum.CUSTOMS_C_1_1.getCode().equals(orderCustomsForm.getSubCustomsStatus())) {
+                //如果没有生成子订单则不调用
+                if (orderCustomsForm.getSubOrders() != null && orderCustomsForm.getSubOrders().size() >= 0) {
+                    orderCustomsForm.setMainOrderNo(mainOrderNo);
+                    if (OrderStatusEnum.CBG.getCode().equals(classCode)) {
+                        orderCustomsForm.setClassCode(OrderStatusEnum.CBG.getCode());
+                    } else {
+                        orderCustomsForm.setClassCode(OrderStatusEnum.CKBG.getCode());
+                    }
+                    orderCustomsForm.setLoginUser(UserOperator.getToken());
+                    Boolean result = customsClient.createOrderCustoms(orderCustomsForm).getData();
+                    if (!result) {//调用失败
+                        return false;
+                    }
+                }
             }
         }
-        //中港运输
+        //中港运输并且并且订单状态为驳回或为空或为待接单
         if(OrderStatusEnum.ZGYS.getCode().equals(classCode)){
             //创建中港订单信息
             InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
-            if(!selectedServer.contains(OrderStatusEnum.XGQG.getCode())) {
-                //若没有选择香港清关,则情况香港清关信息，避免信息有误
-                orderTransportForm.setHkLegalName(null);
-                orderTransportForm.setHkUnitCode(null);
-                orderTransportForm.setIsHkClear(null);
-            }
-            orderTransportForm.setMainOrderNo(mainOrderNo);
-            orderTransportForm.setLoginUser(UserOperator.getToken());
-            Boolean result = tmsClient.createOrderTransport(orderTransportForm).getData();
-            if(!result){//调用失败
-                return false;
+            if(StringUtil.isNullOrEmpty(orderTransportForm.getSubTmsStatus()) ||
+               OrderStatusEnum.TMS_T_0.getCode().equals(orderTransportForm.getSubTmsStatus()) ||
+               OrderStatusEnum.TMS_T_1_1.getCode().equals(orderTransportForm.getSubTmsStatus()) ||
+               OrderStatusEnum.TMS_T_2_1.getCode().equals(orderTransportForm.getSubTmsStatus()) ||
+               OrderStatusEnum.TMS_T_3_2.getCode().equals(orderTransportForm.getSubTmsStatus()) ||
+               OrderStatusEnum.TMS_T_4_1.getCode().equals(orderTransportForm.getSubTmsStatus())) {
+                if (!selectedServer.contains(OrderStatusEnum.XGQG.getCode())) {
+                    //若没有选择香港清关,则情况香港清关信息，避免信息有误
+                    orderTransportForm.setHkLegalName(null);
+                    orderTransportForm.setHkUnitCode(null);
+                    orderTransportForm.setIsHkClear(null);
+                }
+                orderTransportForm.setMainOrderNo(mainOrderNo);
+                orderTransportForm.setLoginUser(UserOperator.getToken());
+                Boolean result = tmsClient.createOrderTransport(orderTransportForm).getData();
+                if (!result) {//调用失败
+                    return false;
+                }
             }
         }
         //内陆运输和深圳中转仓

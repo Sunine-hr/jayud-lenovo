@@ -4,26 +4,26 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.oauth.model.po.SystemUser">
-        <id column="id" property="id" />
-        <result column="name" property="name" />
-        <result column="password" property="password" />
-        <result column="user_name" property="userName" />
-        <result column="en_user_name" property="enUserName" />
-        <result column="phone" property="phone" />
-        <result column="department_id" property="departmentId" />
-        <result column="work_id" property="workId" />
-        <result column="work_name" property="workName" />
-        <result column="company_id" property="companyId" />
-        <result column="superior_id" property="superiorId" />
-        <result column="login_time" property="loginTime" />
-        <result column="audit_status" property="auditStatus" />
-        <result column="status" property="status" />
-        <result column="note" property="note" />
-        <result column="created_time" property="createdTime" />
-        <result column="created_user" property="createdUser" />
-        <result column="created_time" property="createdTime" />
-        <result column="updated_time" property="updatedTime" />
-        <result column="updated_user" property="updatedUser" />
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="password" property="password"/>
+        <result column="user_name" property="userName"/>
+        <result column="en_user_name" property="enUserName"/>
+        <result column="phone" property="phone"/>
+        <result column="department_id" property="departmentId"/>
+        <result column="work_id" property="workId"/>
+        <result column="work_name" property="workName"/>
+        <result column="company_id" property="companyId"/>
+        <result column="superior_id" property="superiorId"/>
+        <result column="login_time" property="loginTime"/>
+        <result column="audit_status" property="auditStatus"/>
+        <result column="status" property="status"/>
+        <result column="note" property="note"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="updated_user" property="updatedUser"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -44,7 +44,8 @@
         system_user.note
     </sql>
 
-    <select id="getPageList" parameterType="com.jayud.oauth.model.bo.QuerySystemUserForm" resultType="com.jayud.oauth.model.vo.QuerySystemUserVO" >
+    <select id="getPageList" parameterType="com.jayud.oauth.model.bo.QuerySystemUserForm"
+            resultType="com.jayud.oauth.model.vo.QuerySystemUserVO">
         SELECT
         su.id,
         su.name,
@@ -116,7 +117,7 @@
         </if>
     </select>
 
-    <select id="findOrgStructureCharge"  resultType="com.jayud.oauth.model.vo.DepartmentChargeVO" >
+    <select id="findOrgStructureCharge" resultType="com.jayud.oauth.model.vo.DepartmentChargeVO">
         SELECT
           su.id,
           su.user_name userName,
@@ -132,7 +133,7 @@
             AND su.`is_department_charge` = '1'
     </select>
 
-    <select id="findUserByRoleId"  resultType="java.util.Map" >
+    <select id="findUserByRoleId" resultType="java.util.Map">
         SELECT
           su.id,
           su.user_name userName
@@ -141,7 +142,7 @@
         WHERE su.`role_id` = #{roleId}
     </select>
 
-    <select id="getSystemUser"  resultType="com.jayud.oauth.model.vo.UpdateSystemUserVO" >
+    <select id="getSystemUser" resultType="com.jayud.oauth.model.vo.UpdateSystemUserVO">
         SELECT
           su.id,
           su.`name`,
@@ -179,5 +180,48 @@
         WHERE su.`id` = #{id}
     </select>
 
+
+    <select id="findEachModuleAccountByPage" parameterType="com.jayud.oauth.model.bo.QueryAccountForm"
+            resultType = "com.jayud.oauth.model.vo.SystemUserVO">
+        SELECT
+        su.id,
+        su.name,
+        su.`en_user_name` enUserName,
+        su.`user_name` userName,
+        sr.`name` roleName,
+        -- sr.`id` roleId,
+        c.`company_name` companyName,
+        -- ci.id companyId,
+        (SELECT
+        t.user_name
+        FROM
+        `system_user` t
+        WHERE t.id = su.`superior_id`) superiorName,
+        su.`created_time` createdTime,
+        su.`created_user` createdUser,
+        su.status
+        FROM
+        `system_user` su
+        LEFT JOIN system_user_role_relation surr
+        ON su.`id` = surr.`user_id`
+        LEFT JOIN system_role sr
+        ON surr.`role_id` = sr.`id`
+        LEFT JOIN company c
+        ON su.`company_id` = c.`id`
+        <where>
+            <if test="form.companyId != null and form.companyId != ''">
+                and c.id = #{form.companyId}
+            </if>
+            <if test="form.status != null">
+                and su.status = #{form.status}
+            </if>
+            <if test="form.name != null and form.name != ''">
+                and su.name like concat('%',#{form.name},'%')
+            </if>
+            <if test="form.userType !=null and form.userType!=''">
+                and su.user_type=#{form.userType}
+            </if>
+        </where>
+    </select>
 
 </mapper>

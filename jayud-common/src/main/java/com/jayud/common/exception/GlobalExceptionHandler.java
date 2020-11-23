@@ -3,6 +3,7 @@ package com.jayud.common.exception;
 import com.jayud.common.BaseApiResult;
 import com.jayud.common.VivoApiResult;
 import com.jayud.common.ApiResult;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.ShiroException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
  * 参数验证统一异常处理
  */
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
     private final String vivoBasePackage = "com.jayud.airfreight.controller.ReceiveVivoController";
     private final String vivoBaseRequestmap = "/airfreight/fromVivo";
@@ -82,7 +84,8 @@ public class GlobalExceptionHandler {
         if (request.getRequestURI().contains(vivoBaseRequestmap)) {
             return new VivoApiResult(ex.getMessage());
         }
-        return new ApiResult(getStatus(request).value(), ex.getMessage());
+        log.error(ex.getCause().getMessage(), ex);
+        return new ApiResult(getStatus(request).value(), ex.getCause().getMessage());
     }
 
     private HttpStatus getStatus(HttpServletRequest request) {
@@ -91,5 +94,16 @@ public class GlobalExceptionHandler {
             return HttpStatus.INTERNAL_SERVER_ERROR;
         }
         return HttpStatus.valueOf(statusCode);
+    }
+
+    @ExceptionHandler(JayudBizException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public BaseApiResult handleJayudBizException(JayudBizException e) {
+        log.warn(e.getMessage(), e);
+
+        int code = e.getCode();
+        String msg = e.getMessage();
+
+        return new ApiResult(code, msg);
     }
 }

@@ -63,7 +63,7 @@ public class ContractInfo extends Model<ContractInfo> {
     @ApiModelProperty(value = "创建时间")
     private Timestamp createdTime;
 
-    @ApiModelProperty(value = "合同类型")
+    @ApiModelProperty(value = "合同类型 0:客户合同 1:供应商合同")
     private String type;
 
     @ApiModelProperty(value = "合同绑定的业务id")

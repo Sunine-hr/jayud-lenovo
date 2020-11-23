@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.mapper.DriverInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.DriverInfo">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="is_main" property="isMain"/>
+        <result column="hk_phone" property="hkPhone"/>
+        <result column="phone" property="phone"/>
+        <result column="vehicle_id" property="vehicleId"/>
+        <result column="id_no" property="idNo"/>
+        <result column="driving_no" property="drivingNo"/>
+        <result column="status" property="status"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="password" property="password"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name, is_main, hk_phone, phone, vehicle_id, id_no, driving_no, status, create_user, create_time, update_time, update_user, password
+    </sql>
+
+    <select id="findDriverInfoByPage" parameterType="com.jayud.oms.model.bo.QueryDriverInfoForm"
+            resultType="com.jayud.oms.model.vo.DriverInfoVO">
+        select
+            d.id, name, is_main isMain, hk_phone hkPhone,
+            phone, vehicle_id vehicleId, id_no idNo, driving_no drivingNo, d.status,
+            d.create_user createUser, d.create_time createTime,
+            d.update_time updateTime, d.update_user updateUser,
+            v.plate_number plateNumber,
+            v.hk_number hkNumber
+        from
+            driver_info d left join vehicle_info v on d.vehicle_id=v.id
+        <where>
+            <if test="form.status!=null and form.status!=''">
+                and d.status= #{form.status}
+            </if>
+            <if test="form.name!=null and form.name!=''">
+                and d.name like concat('%',#{form.name},'%')
+            </if>
+            <if test="form.phone!=null and form.phone!=''">
+                and
+                (d.phone like concat('%',#{form.phone},'%')
+                or
+                d.hk_phone like concat('%',#{form.phone},'%'))
+            </if>
+            <if test="form.carNumber!=null and form.carNumber!=''">
+                and
+                (v.plate_number like concat('%',#{form.carNumber},'%')
+                or
+                v.hk_number like concat('%',#{form.carNumber},'%'))
+            </if>
+        </where>
+    </select>
+
+    <select id="getDriverInfoLink" parameterType="java.lang.Long"  resultType="com.jayud.oms.model.vo.DriverInfoLinkVO">
+         SELECT
+            v.supplier_id supplierInfoId,
+            s.supplier_ch_name supplierName,
+            v.plate_number licensePlate,
+            v.hk_number hkLicensePlate,
+            d.phone driverPhone,
+            s.supplier_code supplierCode,
+            d.name driverName
+        FROM
+            driver_info d
+            LEFT JOIN vehicle_info v ON d.vehicle_id = v.id
+            LEFT JOIN supplier_info s ON s.id = v.supplier_id where d.id = #{driverId}
+    </select>
+
+</mapper>

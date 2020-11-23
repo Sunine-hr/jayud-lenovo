@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.bo.AddCostTypeForm;
 import com.jayud.oms.model.bo.QueryCostTypeForm;
+import com.jayud.oms.model.po.CostGenre;
 import com.jayud.oms.model.po.CostType;
 import com.jayud.oms.model.vo.CostTypeVO;
 
@@ -58,4 +59,10 @@ public interface ICostTypeService extends IService<CostType> {
      * @return
      */
     List<CostType> getEnableCostType();
+
+    /**
+     * 校验唯一性
+     * @return
+     */
+    boolean checkUnique(CostType costType);
 }

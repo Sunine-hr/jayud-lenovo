@@ -7,6 +7,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.MD5;
 import com.jayud.oauth.model.bo.*;
 import com.jayud.oauth.model.enums.SystemUserStatusEnum;
 import com.jayud.oauth.model.enums.UserTypeEnum;
@@ -82,7 +83,9 @@ public class SystemUserController {
 
         //登录逻辑
         SystemUserVO userVO = userService.login(token);
-
+        if(userVO.getIsError() != null && userVO.getIsError()){
+            return CommonResult.error(ResultEnum.LOGIN_FAIL);
+        }
         return CommonResult.success(userVO);
     }
 
@@ -368,6 +371,13 @@ public class SystemUserController {
         }
         legalEntity.setAuditStatus(1L);
         legalEntity.setLegalName(form.getLegalName());
+        legalEntity.setLegalEnName(form.getLegalEnName());
+        legalEntity.setPhone(form.getPhone());
+        legalEntity.setFax(form.getFax());
+        legalEntity.setAddress(form.getAddress());
+        legalEntity.setBank(form.getBank());
+        legalEntity.setAccountOpen(form.getAccountOpen());
+        legalEntity.setTaxIdentificationNum(form.getTaxIdentificationNum());
         legalEntity.setLegalCode(form.getLegalCode());
         legalEntity.setRigisAddress(form.getRigisAddress());
         legalEntity.setSaleDepartId(form.getSaleDepartId());
@@ -418,6 +428,28 @@ public class SystemUserController {
     public CommonResult<List<InitComboxVO>> initUserAccount() {
         Map<String, Object> param = new HashMap<>();
         param.put("status", "0");
+        List<InitComboxVO> initComboxs = new ArrayList<>();
+        List<SystemUser> systemUsers = userService.findUserByCondition(param);
+        for (SystemUser systemUser : systemUsers) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(systemUser.getId());
+            initComboxVO.setName(systemUser.getUserName());
+            initComboxs.add(initComboxVO);
+        }
+        return CommonResult.success(initComboxs);
+    }
+
+    /**
+     * LDR
+     *
+     * @return
+     */
+    @ApiOperation(value = "获取采购用户--下拉选框--姓名")
+    @PostMapping(value = "/initPurchaseUser")
+    public CommonResult<List<InitComboxVO>> initPurchaseUser() {
+        Map<String, Object> param = new HashMap<>();
+        param.put("status", "1");
+        param.put("user_type",1);
         List<InitComboxVO> initComboxs = new ArrayList<>();
         List<SystemUser> systemUsers = userService.findUserByCondition(param);
         for (SystemUser systemUser : systemUsers) {
@@ -505,8 +537,8 @@ public class SystemUserController {
     @ApiOperation(value = "获取启用系统用户")
     @RequestMapping("/getEnableUser")
     public CommonResult<List<SystemUserVO>> getEnableUser() {
-        Map<String,Object> map=new HashMap<>(1);
-        map.put("status",SystemUserStatusEnum.ON.getCode());
+        Map<String, Object> map = new HashMap<>(1);
+        map.put("status", SystemUserStatusEnum.ON.getCode());
         List<SystemUser> users = this.userService.findUserByCondition(map);
         List<SystemUserVO> vo = new ArrayList<>();
         users.stream().forEach(tmp -> vo.add(ConvertUtil.convert(tmp, SystemUserVO.class)));
@@ -515,15 +547,15 @@ public class SystemUserController {
 
     @ApiOperation(value = "账户管理-选择姓名联动出部门和岗位,id=姓名隐藏值")
     @PostMapping(value = "/initUserWorkInfo")
-    public CommonResult<Map<String, Object>> initUserWorkInfo(@RequestBody Map<String,Object> param) {
-        Long userId = Long.valueOf(MapUtil.getStr(param,CommonConstant.ID));
+    public CommonResult<Map<String, Object>> initUserWorkInfo(@RequestBody Map<String, Object> param) {
+        Long userId = Long.valueOf(MapUtil.getStr(param, CommonConstant.ID));
         SystemUser systemUser = userService.getById(userId);
         Map<String, Object> result = new HashMap<>();
-        if(systemUser == null || systemUser.getDepartmentId() == null){
-            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+        if (systemUser == null || systemUser.getDepartmentId() == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
         result.put(CommonConstant.WORK, systemUser.getWorkName());
-        result.put(CommonConstant.DEPARTMENT_ID,systemUser.getDepartmentId());
+        result.put(CommonConstant.DEPARTMENT_ID, systemUser.getDepartmentId());
         return CommonResult.success(result);
     }
 
@@ -536,6 +568,33 @@ public class SystemUserController {
         return userService.getLoginUser().getName();
     }
 
+
+    @ApiOperation(value = "重置密码")
+    @PostMapping(value = "/resetPassword")
+    public CommonResult resetPassword(@Valid @RequestBody ResetUserPasswordForm form) {
+        if (!form.getPassword().equals(form.getConfirmPassword())) {
+            return CommonResult.error(400, "两个密码不相同");
+        }
+        SystemUser user = new SystemUser().setId(form.getId()).setPassword(MD5.encode(form.getPassword()));
+        this.userService.saveOrUpdateSystemUser(user);
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "修改密码")
+    @PostMapping(value = "/updatePassword")
+    public CommonResult updatePassword(@Valid @RequestBody UpdateUserPasswordForm form) {
+        if (!form.getPassword().equals(form.getConfirmPassword())) {
+            return CommonResult.error(400, "两个密码不相同");
+        }
+        String oldPassWord = MD5.encode(form.getOldPassword());
+        if (!this.userService.getById(form.getId()).getPassword().equals(oldPassWord)) {
+            return CommonResult.error(400,"密码错误");
+        }
+
+        SystemUser user = new SystemUser().setId(form.getId()).setPassword(MD5.encode(form.getPassword()));
+        this.userService.saveOrUpdateSystemUser(user);
+        return CommonResult.success();
+    }
 
 }
 

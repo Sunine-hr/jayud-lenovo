@@ -3,6 +3,7 @@ package com.jayud.oms.model.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -35,18 +36,20 @@ public class CostTypeVO {
     @ApiModelProperty(value = "费用类型名称")
     private String codeName;
 
-    @ApiModelProperty(value = "是否代垫代收")
+    @ApiModelProperty(value = "是否代垫代收(true:是,false:否)")
     private Boolean isPayCollection;
 
     @ApiModelProperty(value = "状态(0禁用 1启用)")
     private String status;
 
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "创建人")
     private String createUser;
 
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "更新时间")
     private LocalDateTime upTime;
 

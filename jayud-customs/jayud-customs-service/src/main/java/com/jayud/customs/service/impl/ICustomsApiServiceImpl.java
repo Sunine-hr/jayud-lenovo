@@ -7,7 +7,6 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONArray;
-import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.ResultEnum;
@@ -33,10 +32,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * api接口服务实现类
@@ -238,16 +234,22 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
         //应收为列显示费用，但可能存在多行应收对应同一个报关单
         Boolean hasReceivable = false;
         Boolean hasPayable = false;
+        JSONArray receivableArray = new JSONArray();
+        //暂不修改应收单的实体收发
+        List<CustomsPayable> payableArray = new ArrayList<>();
+
+        //云报关应付单的数据结构不允许使用实体进行收发，需要利用数据表和map进行匹配
         try {
-            List<CustomsReceivable> receivableArray = JSONArray.parseArray(receivable, CustomsReceivable.class);
+            receivableArray = JSONArray.parseArray(receivable);
             if (!CollectionUtil.isEmpty(receivableArray)) {
                 hasReceivable = true;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         try {
-            List<CustomsPayable> payableArray = JSONArray.parseArray(payable, CustomsPayable.class);
+            payableArray = JSONArray.parseArray(payable, CustomsPayable.class);
             if (!CollectionUtil.isEmpty(payableArray)) {
                 hasPayable = true;
             }
@@ -260,33 +262,27 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
             String customerName = "";
             if (hasReceivable) {
                 //应收单会出现一个报关单号对应多个行的情况，一般是因为柜号不一致，要区分计费
-                JSONArray jsonArray = JSONArray.parseArray(receivable);
-                if (CollectionUtil.isNotEmpty(jsonArray)) {
-                    customerName = (String) ((com.alibaba.fastjson.JSONObject) jsonArray.get(0)).get("customer_name");
-                }
-
                 sentReceivableStatus = generateKafkaMsg("financeTest", "customs-receivable", receivable);
             } else {
                 //如果本次推送没有应收数据，需要查看是否存在本单号的应收，如有，要删去
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.set("applyNo", form.getApplyNo());
-                financeClient.checkNRemoveReceivable(JSONUtil.toJsonStr(jsonObject));
+                Map<String, String> map = new HashMap<>();
+                map.put("applyNo", form.getApplyNo());
+                Boolean aBoolean = financeClient.checkNRemoveReceivable(map);
+                if (aBoolean) {
+                    log.debug("报关单号 {} 没有应收数据，清理成功");
+                }
             }
             if (hasPayable) {
                 log.debug(String.format("拼装数据完成，开始上传财务数据：customs-payable口..." + payable + "====" + payable));
-                JSONArray jsonArray = JSONArray.parseArray(payable);
-                if (CollectionUtil.isNotEmpty(jsonArray)) {
-                    for (Object o : jsonArray) {
-                        Map map = (Map) o;
-                        map.put("customerName", customerName);
-                    }
-                }
-                sentPayableStatus = generateKafkaMsg("financeTest", "customs-payable", jsonArray.toJSONString());
+                sentPayableStatus = generateKafkaMsg("financeTest", "customs-payable", payable);
             } else {
                 //如果本次推送没有应付数据，需要查看是否存在本单号的应付，如有，要删去
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.set("applyNo", form.getApplyNo());
-                financeClient.checkNRemovePayable(JSONUtil.toJsonStr(jsonObject));
+                Map<String, String> map = new HashMap<>();
+                map.put("applyNo", form.getApplyNo());
+                Boolean aBoolean = financeClient.checkNRemovePayable(map);
+                if (aBoolean) {
+                    log.debug("报关单号 {} 没有应付数据，清理成功");
+                }
             }
 
             if (!sentPayableStatus || !sentReceivableStatus) {
@@ -298,6 +294,7 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
             }
         }
     }
+
 
     private Boolean generateKafkaMsg(String topic, String key, String msg) {
         Map<String, String> msgMap = new HashMap<>();

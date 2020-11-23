@@ -6,7 +6,7 @@
     <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.SupplierInfo">
         <id column="id" property="id" />
         <result column="supplier_code" property="supplierCode" />
-        <result column="product_classify_id" property="productClassifyId" />
+        <result column="product_classify_id" property="productClassifyIds" />
         <result column="supplier_ch_name" property="supplierChName" />
         <result column="supplier_en_name" property="supplierEnName" />
         <result column="state_code" property="stateCode" />
@@ -23,7 +23,6 @@
         <result column="ext_setting_id" property="extSettingId" />
         <result column="settlement_type" property="settlementType" />
         <result column="payment_day" property="paymentDay" />
-        <result column="after_the_vote" property="afterTheVote" />
         <result column="tax_receipt" property="taxReceipt" />
         <result column="rate" property="rate" />
         <result column="buyer_id" property="buyerId" />

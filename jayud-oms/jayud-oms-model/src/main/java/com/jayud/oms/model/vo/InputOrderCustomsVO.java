@@ -62,5 +62,8 @@ public class InputOrderCustomsVO {
     @ApiModelProperty(value = "所有附件集合")
     private List<FileView> allPics = new ArrayList<>();
 
+    @ApiModelProperty(value = "审核状态")
+    private String subCustomsStatus;
+
 
 }

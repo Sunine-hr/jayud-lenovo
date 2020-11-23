@@ -26,7 +26,7 @@ public class InputOrderTakeAdrForm {
 
     @ApiModelProperty(value = "提货日期")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime takeTime;
+    private LocalDateTime takeTimeStr;
 
     @ApiModelProperty(value = "货物描述")
     private String goodsDesc;

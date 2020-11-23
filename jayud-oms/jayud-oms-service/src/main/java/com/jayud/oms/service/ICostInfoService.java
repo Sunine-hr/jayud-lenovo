@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.bo.AddCostInfoForm;
 import com.jayud.oms.model.bo.QueryCostInfoForm;
+import com.jayud.oms.model.po.CostGenre;
 import com.jayud.oms.model.po.CostInfo;
 import com.jayud.oms.model.vo.CostInfoVO;
 
@@ -53,4 +54,12 @@ public interface ICostInfoService extends IService<CostInfo> {
      * @return
      */
     boolean enableOrDisableCostInfo(Long id);
+
+    /**
+     * 校验唯一性
+     * @return
+     */
+    boolean checkUnique(CostInfo costInfo);
+
+    List<CostInfo> getCostInfoByStatus(String status);
 }

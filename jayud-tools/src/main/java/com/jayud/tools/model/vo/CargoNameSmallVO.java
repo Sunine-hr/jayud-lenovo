@@ -20,7 +20,13 @@ public class CargoNameSmallVO {
     @ApiModelProperty(value = "件数")
     private Integer js;
 
+//    @ApiModelProperty(value = "(原)货品名称")
+//    private String hpmc;
+//
+//    @ApiModelProperty(value = "替换名称")
+//    private String replaceName;
+
     @ApiModelProperty(value = "货品名称")
-    private String hpmc;
+    private String showname;
 
 }

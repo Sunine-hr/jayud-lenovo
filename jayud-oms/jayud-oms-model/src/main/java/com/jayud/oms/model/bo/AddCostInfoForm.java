@@ -38,7 +38,7 @@ public class AddCostInfoForm {
     @ApiModelProperty(value = "描述")
     private String remarks;
 
-    @ApiModelProperty(value = "费用类型id集合，用','隔开", required = true)
+    @ApiModelProperty(value = "费用类型id集合", required = true)
     private List<Long> cids;
 
 //    @ApiModelProperty(value = "费用类别")

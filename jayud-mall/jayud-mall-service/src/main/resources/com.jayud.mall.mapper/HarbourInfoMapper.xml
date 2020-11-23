@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.HarbourInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.HarbourInfo">
+        <id column="id" property="id" />
+        <result column="id_code" property="idCode" />
+        <result column="code_name" property="codeName" />
+        <result column="code_name_en" property="codeNameEn" />
+        <result column="state_code" property="stateCode" />
+        <result column="address_first" property="addressFirst" />
+        <result column="address_second" property="addressSecond" />
+        <result column="address_thirdly" property="addressThirdly" />
+        <result column="pid" property="pid" />
+        <result column="pname" property="pname" />
+        <result column="cid" property="cid" />
+        <result column="cname" property="cname" />
+        <result column="zip_code" property="zipCode" />
+        <result column="genre" property="genre" />
+        <result column="status" property="status" />
+        <result column="user_id" property="userId" />
+        <result column="user_name" property="userName" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, id_code, code_name, code_name_en, state_code, address_first, address_second, address_thirdly, pid, pname, cid, cname, zip_code, genre, status, user_id, user_name, create_time
+    </sql>
+
+</mapper>

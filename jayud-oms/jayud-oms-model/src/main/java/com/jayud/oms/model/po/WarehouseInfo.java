@@ -17,49 +17,44 @@ import java.time.LocalDateTime;
  * 仓库信息表
  * </p>
  *
- * @author chuanmei
- * @since 2020-10-16
+ * @author 
+ * @since 2020-11-05
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value="WarehouseInfo对象", description="仓库信息表")
-public class WarehouseInfo extends Model<WarehouseInfo> {
+public class WarehouseInfo extends Model<VehicleInfo> {
 
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
+    @ApiModelProperty(value = "主键")
     private Long id;
 
-    @ApiModelProperty(value = "仓库代码")
+    @ApiModelProperty(value = "中转仓库代码")
     private String warehouseCode;
 
-    @ApiModelProperty(value = "仓库名称")
+    @ApiModelProperty(value = "中转仓库名称")
     private String warehouseName;
 
     @ApiModelProperty(value = "联系人")
     private String contacts;
 
-    @ApiModelProperty(value = "公司名称")
-    private String companyName;
-
     @ApiModelProperty(value = "联系电话")
     private String contactNumber;
-
-    @ApiModelProperty(value = "联系手机")
-    private String contactPhone;
 
     @ApiModelProperty(value = "地址")
     private String address;
 
-    @ApiModelProperty(value = "省代码")
-    private String stateCode;
+    @ApiModelProperty(value = "省")
+    private Long stateCode;
 
-    @ApiModelProperty(value = "国家代码")
-    private String countryCode;
+    @ApiModelProperty(value = "市")
+    private Long cityCode;
 
-    @ApiModelProperty(value = "城市名")
-    private String cityCode;
+    @ApiModelProperty(value = "区")
+    private Long areaCode;
 
     @ApiModelProperty(value = "邮编")
     private String zipCode;
@@ -72,7 +67,6 @@ public class WarehouseInfo extends Model<WarehouseInfo> {
 
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
-
 
     @Override
     protected Serializable pkVal() {

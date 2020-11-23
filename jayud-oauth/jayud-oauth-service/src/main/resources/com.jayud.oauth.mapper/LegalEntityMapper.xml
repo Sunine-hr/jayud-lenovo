@@ -4,47 +4,58 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.oauth.model.po.LegalEntity">
-        <id column="id" property="id" />
-        <result column="legal_name" property="legalName" />
-        <result column="legal_code" property="legalCode" />
-        <result column="rigis_address" property="rigisAddress" />
-        <result column="sale_depart_id" property="saleDepartId" />
-        <result column="audit_status" property="auditStatus" />
-        <result column="audit_comment" property="auditComment" />
-        <result column="created_time" property="createdTime" />
-        <result column="created_user" property="createdUser" />
-        <result column="created_time" property="createdTime" />
-        <result column="updated_time" property="updatedTime" />
-        <result column="updated_user" property="updatedUser" />
+        <id column="id" property="id"/>
+        <result column="legal_name" property="legalName"/>
+        <result column="legal_code" property="legalCode"/>
+        <result column="rigis_address" property="rigisAddress"/>
+        <result column="sale_depart_id" property="saleDepartId"/>
+        <result column="audit_comment" property="auditComment"/>
+        <result column="audit_status" property="auditStatus"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_user" property="updatedUser"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="legal_en_name" property="legalEnName"/>
+        <result column="phone" property="phone"/>
+        <result column="fax" property="fax"/>
+        <result column="address" property="address"/>
+        <result column="bank" property="bank"/>
+        <result column="account_open" property="accountOpen"/>
+        <result column="tax_identification_num" property="taxIdentificationNum"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id,legal_name,legal_code,rigis_address,sale_depart_id,audit_status,audit_comment
+        id, legal_name, legal_code, rigis_address, sale_depart_id, audit_comment, audit_status, created_user, created_time, updated_user, updated_time, legal_en_name, phone, fax, address, bank, account_open, tax_identification_num
     </sql>
 
-    <select id="findLegalEntityByPage" parameterType="com.jayud.oauth.model.bo.QueryLegalEntityForm" resultType="com.jayud.oauth.model.vo.LegalEntityVO" >
+    <select id="findLegalEntityByPage" parameterType="com.jayud.oauth.model.bo.QueryLegalEntityForm"
+            resultType="com.jayud.oauth.model.vo.LegalEntityVO">
         SELECT
-          le.`id`,
-          le.`legal_code` legalCode,
-          le.`legal_name` legalName,
-          le.`rigis_address` rigisAddress,
-          d.`name` saleDepartName,
-          d.id saleDepartId,
-          le.`audit_status` auditStatus,
-          le.`audit_comment` auditComment,
-          (CASE
-          le.`audit_status`
-          WHEN 0
-          THEN '审核拒绝'
-          WHEN 1
-          THEN '待审核'
-          WHEN 2 THEN '审核通过'
-          END) auditStatusDesc
+        le.`id`,
+        le.`legal_code` legalCode,
+        le.`legal_name` legalName,
+        le.`rigis_address` rigisAddress,
+        d.`name` saleDepartName,
+        d.id saleDepartId,
+        le.`audit_status` auditStatus,
+        le.`audit_comment` auditComment,
+        (CASE
+        le.`audit_status`
+        WHEN 0
+        THEN '审核拒绝'
+        WHEN 1
+        THEN '待审核'
+        WHEN 2 THEN '审核通过'
+        END) auditStatusDesc,
+        legal_en_name legalEnName,
+        phone,address,bank,account_open accountOpen,
+        tax_identification_num taxIdentificationNum,
+        le.fax
         FROM
-          legal_entity le
-          LEFT JOIN department d
-            ON le.`sale_depart_id` = d.`id` WHERE 1=1
+        legal_entity le
+        LEFT JOIN department d
+        ON le.`sale_depart_id` = d.`id` WHERE 1=1
         <if test="form.cmd == 'cw'">
             and le.audit_status in (0,1,2)
         </if>
@@ -52,7 +63,10 @@
             and le.audit_status in (1)
         </if>
         <if test="form.legalName != null and form.legalName != ''">
-        and le.legal_name like concat('%',#{form.legalName},'%')
+            and le.legal_name like concat('%',#{form.legalName},'%')
+        </if>
+        <if test="form.auditStatus != null and form.auditStatus != ''">
+            and le.audit_status = #{form.auditStatus}
         </if>
     </select>
 

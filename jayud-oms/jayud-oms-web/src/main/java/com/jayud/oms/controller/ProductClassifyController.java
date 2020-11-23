@@ -8,6 +8,7 @@ import com.jayud.oms.model.po.ProductClassify;
 import com.jayud.oms.model.vo.ProductClassifyVO;
 import com.jayud.oms.service.IProductClassifyService;
 import com.jayud.oms.service.ISupplierInfoService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +28,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/productClassify")
+@Api("服务管理")
 public class ProductClassifyController {
 
     @Autowired

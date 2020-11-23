@@ -10,12 +10,14 @@ import com.jayud.oms.mapper.CostInfoMapper;
 import com.jayud.oms.model.bo.AddCostInfoForm;
 import com.jayud.oms.model.bo.QueryCostInfoForm;
 import com.jayud.oms.model.enums.StatusEnum;
+import com.jayud.oms.model.po.CostGenre;
 import com.jayud.oms.model.po.CostInfo;
 import com.jayud.oms.model.po.CostType;
 import com.jayud.oms.model.vo.CostInfoVO;
 import com.jayud.oms.model.vo.CostTypeVO;
 import com.jayud.oms.service.ICostInfoService;
 import com.jayud.oms.service.ICostTypeService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,6 +58,10 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
             condition.lambda().select(CostType::getId).like(CostType::getCodeName, form.getCostType());
             List<CostType> tmps = this.costTypeService.getBaseMapper().selectList(condition);
             ids = tmps.stream().map(e -> String.valueOf(e.getId())).collect(Collectors.toList());
+            if (CollectionUtils.isEmpty(ids)){
+                ids=new ArrayList<>();
+                ids.add("-1");
+            }
         }
 
 
@@ -140,5 +146,40 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
     @Override
     public List<CostInfo> findCostInfo() {
         return baseMapper.selectList(null);
+    }
+
+    /**
+     * 校验唯一性
+     *
+     * @return
+     */
+    @Override
+    public boolean checkUnique(CostInfo costInfo) {
+        QueryWrapper<CostInfo> condition = new QueryWrapper<>();
+        if (costInfo.getId() != null) {
+            //修改过滤自身名字
+            condition.lambda().and(tmp -> tmp.eq(CostInfo::getId, costInfo.getId())
+                    .eq(CostInfo::getName, costInfo.getName()));
+            int count = this.count(condition);
+            //匹配到自己名称,不进行唯一校验
+            if (count == 0) {
+                condition = new QueryWrapper<>();
+                condition.lambda().eq(CostInfo::getName, costInfo.getName());
+                return this.count(condition) > 0;
+            } else {
+                return false;
+            }
+        } else {
+            condition.lambda().eq(CostInfo::getIdCode, costInfo.getIdCode())
+                    .or().eq(CostInfo::getName, costInfo.getName());
+            return this.count(condition) > 0;
+        }
+    }
+
+    @Override
+    public List<CostInfo> getCostInfoByStatus(String status) {
+        QueryWrapper<CostInfo> condition = new QueryWrapper<>();
+        condition.lambda().eq(CostInfo::getStatus, status);
+        return this.baseMapper.selectList(condition);
     }
 }

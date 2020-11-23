@@ -1,0 +1,20 @@
+package com.jayud.mall.model.bo;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+@Data
+@ApiModel(value = "查询客户Form")
+public class QueryCustomerForm extends BasePageForm{
+
+    @ApiModelProperty(value = "中文名，联系人", position = 1)
+    private String nameCn;
+
+    @ApiModelProperty(value = "公司名", position = 2)
+    private String company;
+
+    @ApiModelProperty(value = "关键字(中文名，联系人 or 公司名)", position = 3)
+    private String keyword;
+
+}

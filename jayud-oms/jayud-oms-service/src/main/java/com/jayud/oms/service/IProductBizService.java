@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.bo.AddProductBizForm;
 import com.jayud.oms.model.bo.QueryProductBizForm;
+import com.jayud.oms.model.po.CostGenre;
 import com.jayud.oms.model.po.ProductBiz;
 import com.jayud.oms.model.vo.ProductBizVO;
 
@@ -57,4 +58,9 @@ public interface IProductBizService extends IService<ProductBiz> {
      */
     boolean enableOrDisableProductBiz(Long id);
 
+    /**
+     * 校验唯一性
+     * @return
+     */
+    boolean checkUnique(ProductBiz productBiz);
 }

@@ -155,23 +155,31 @@
         t1.zl,
         t1.xm1,
         t1.js,
-        t1.hpmc
+        t1.hpmc,
+		t3.replaceName,
+		IFNULL(t3.replaceName,t1.hpmc) showname
         from (select * from cargo_name where user_id=#{userId}) t1
         LEFT JOIN sensitive_commodity t2 on t1.hpmc=t2.`name`
+		LEFT JOIN cargo_name_replace t3 on t1.hpmc=t3.hpmc
         where 1=1
         and t2.`name` IS NULL
+        ORDER BY t1.id
     </select>
 
     <!--B类表:存在`敏感品名`的货物表-->
     <select id="findCargoNameListByBV2" parameterType="Long" resultType="com.jayud.tools.model.vo.CargoNameSmallVO">
-        select
+		select
         t1.ytdh,
         t1.zl,
         t1.xm1,
         t1.js,
-        t1.hpmc
+        t1.hpmc,
+		t3.replaceName,
+		IFNULL(t3.replaceName,t1.hpmc) showname
         from (select * from cargo_name where user_id=#{userId}) t1
         JOIN sensitive_commodity t2 on t1.hpmc=t2.`name`
+		LEFT JOIN cargo_name_replace t3 on t1.hpmc=t3.hpmc
+		ORDER BY t1.id
     </select>
 
     <!--清空`货物名称表`-->

@@ -34,6 +34,7 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -63,25 +64,16 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
     public Boolean pushReceivable(List<CustomsReceivable> customsReceivable, YunbaoguanPushProperties properties) {
 
         Map<String, CustomsFinanceCoRelation> coRelationMap = preloadService.getCompanyRelationMap();
-        Map<String, CustomsFinanceFeeRelation> feeRelationMap = preloadService.getFeeRelationMap();
-
+        //代码逻辑修改后，此处将原有的name-entity的map转为code-entiry的map进而进行比对
+        Map<String, CustomsFinanceFeeRelation> feeRelationMap = preloadService.getFeeRelationMap()
+                .values()
+                .stream().collect(Collectors.toMap(e -> e.getYunbaoguanCode(), e -> e));
 
         if (CollectionUtil.isEmpty(feeRelationMap) || CollectionUtil.isEmpty(coRelationMap)) {
             return false;
         }
 
         //完成预加载数据后判断是否有需要剔除无法重送的数据
-        //todo 应收 与 其他应收 在循环中判断当前客户是否可写入
-//        if (CollectionUtil.isNotEmpty(unremovables)) {
-//            customsReceivable = Lists.newArrayList(customsReceivable);
-//            Iterator<CustomsReceivable> iterator = customsReceivable.iterator();
-//            while (iterator.hasNext()) {
-//                CustomsReceivable next = iterator.next();
-//                if (coRelationMap.containsKey(next.getCustomerName())) {
-//                    iterator.remove();
-//                }
-//            }
-//        }
         Map<FormIDEnum, List<String>> unremovables = properties.getUnRemovableCompName();
         List<String> unremovableReceivableOther = null;
         List<String> unremovableReceivable = null;
@@ -108,54 +100,39 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
             //写入费用项
             log.debug("1.开始拼装应收明细...");
             List<APARDetailForm> list = new ArrayList<>();
-            Class<? extends CustomsReceivable> clz = item.getClass();
-            Field[] fields = clz.getDeclaredFields();
 
-            for (Field field : fields) {
-                String name = field.getName();
+            for (Map.Entry<String, Object> entry : item.getOriginData().getInnerMap().entrySet()) {
 
-                //找到实体类中带isFee注解的数据
-                if (Objects.nonNull(field.getDeclaredAnnotation(IsFee.class))) {
-                    //读出注解@ApiModelProperty中的中文释义进行匹配
-                    try {
-                        Method getMethod = clz.getMethod("get" + name.substring(0, 1).toUpperCase() + name.substring(1));
-                        Object invoke = getMethod.invoke(item);
-                        //费用项为零不记录
-                        if (Objects.isNull(invoke) || Objects.equals("0.00", invoke.toString())) {
-                            continue;
-                        }
-                        ApiModelProperty annotation = field.getAnnotation(ApiModelProperty.class);
-
-
-                        CustomsFinanceFeeRelation customsFinanceFeeRelation = getRelationMapItem(annotation.value(), feeRelationMap, CustomsFinanceFeeRelation.class);
-
-                        if (Objects.isNull(customsFinanceFeeRelation)) {
-                            //费用无法对应金蝶,记录
-                            errorString.append(String.format("云报关费用项%s无法匹配金蝶费用项;", annotation.value()));
-                            log.error(String.format("云报关费用项%s无法匹配金蝶费用项;", annotation.value()));
-                        }
-                        APARDetailForm feeItem = new APARDetailForm();
-                        feeItem.setExpenseName(customsFinanceFeeRelation.getKingdeeName());
-                        feeItem.setExpenseTypeName(customsFinanceFeeRelation.getType());
-                        feeItem.setExpenseCategoryName(customsFinanceFeeRelation.getCategory());
-                        feeItem.setPriceQty(BigDecimal.ONE);
-                        //处理费用类别为代垫税金的数据
-                        if ((Objects.equals(customsFinanceFeeRelation.getCategory(), "代垫税金"))) {
-                            feeItem.setTaxRate(BigDecimal.ZERO);
-                            //如果代垫税金项目的应收款不为零，那么将要对本行进行特殊应收款项的处理
-                            if (!Objects.equals("0.00", invoke.toString())) {
-                                hasOtherReceivable = true;
-                            }
-                            continue;
-                        } else {
-                            feeItem.setTaxRate(new BigDecimal(customsFinanceFeeRelation.getTaxRate()));
-                        }
-                        feeItem.setTaxPrice(new BigDecimal(invoke.toString()));
-                        list.add(feeItem);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                //直接将entry跟费用项表比对,如果费用关系表没有此code，且该项金额为零，跳过此项可继续
+                if (!feeRelationMap.containsKey(entry.getKey()) || Objects.equals("0.00", entry.getValue().toString())) {
+                    continue;
                 }
+
+                CustomsFinanceFeeRelation customsFinanceFeeRelation = getRelationMapItem(entry.getKey(), feeRelationMap, CustomsFinanceFeeRelation.class);
+                if (Objects.isNull(customsFinanceFeeRelation)) {
+                    //费用无法对应金蝶,记录
+                    errorString.append(String.format("云报关费用项%s无法匹配金蝶费用项;", entry.getKey()));
+                    log.error(String.format("云报关费用项%s无法匹配金蝶费用项;", entry.getKey()));
+                }
+                APARDetailForm feeItem = new APARDetailForm();
+                feeItem.setExpenseName(customsFinanceFeeRelation.getKingdeeName());
+                feeItem.setExpenseTypeName(customsFinanceFeeRelation.getType());
+                feeItem.setExpenseCategoryName(customsFinanceFeeRelation.getCategory());
+                feeItem.setPriceQty(BigDecimal.ONE);
+                //处理费用类别为代垫税金的数据
+                if ((Objects.equals(customsFinanceFeeRelation.getCategory(), "代垫税金"))) {
+                    feeItem.setTaxRate(BigDecimal.ZERO);
+                    //如果代垫税金项目的应收款不为零，那么将要对本行进行特殊应收款项的处理
+                    if (!Objects.equals("0.00", entry.getValue().toString())) {
+                        hasOtherReceivable = true;
+                    }
+                    continue;
+                } else {
+                    feeItem.setTaxRate(new BigDecimal(customsFinanceFeeRelation.getTaxRate()));
+                }
+                feeItem.setTaxPrice(new BigDecimal(entry.getValue().toString()));
+                list.add(feeItem);
+
             }
 
             //处理可能的其他应收单
@@ -682,13 +659,14 @@ class PushOtherReceivable implements Callable<String> {
 
                 BigDecimal totalValue = BigDecimal.ZERO;
 
+
+                //装载数据头
                 for (Field field : declaredFields) {
                     HeadProperty headProperty = field.getAnnotation(HeadProperty.class);
                     IsFee feeProperty = field.getAnnotation(IsFee.class);
                     if (Objects.isNull(headProperty) && Objects.isNull(feeProperty)) {
                         continue;
                     }
-                    //装载数据头
                     if (Objects.nonNull(headProperty)) {
                         //获取传参进入的数据
                         Method method = null;
@@ -717,6 +695,7 @@ class PushOtherReceivable implements Callable<String> {
                                 .isNotEmpty(headProperty.otherName())
                                 ? headProperty.otherName()
                                 : headProperty.name();
+
                         //判定是否需要对属性进行转码为金蝶的专有数据
                         String kingdeePropertyName = "";
                         String kingdeePropertyCode = "";
@@ -758,64 +737,58 @@ class PushOtherReceivable implements Callable<String> {
                                 } else {
                                     root.put(propertyName, setWrapper(root.get(propertyName), kingdeePropertyName));
                                 }
-
                             } else {
                                 root.put(propertyName, kingdeePropertyCode);
                             }
                         }
                     }
-                    //装载明细
-                    if (Objects.nonNull(feeProperty)) {
-                        JSONObject entity = null;
-                        try {
-                            entity = FileUtil.getMapFromJsonFile("json/OtherReceivableDetailModel.json");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        if (Objects.isNull(entity)) {
-                            log.error("读取其他应收模板文件失败");
-                            errorString.append("读取其他应收模板文件失败;");
-                        }
-                        //获取数据
-                        ApiModelProperty feeName = field.getAnnotation(ApiModelProperty.class);
-                        if (Objects.nonNull(feeName)) {
-                            if (feeRelationMap.containsKey(feeName.value()) && Objects.equals(getFeeRelation(feeName.value()).getCategory(), "代垫税金")) {
-                                CustomsFinanceFeeRelation customsFinanceFeeRelation = getFeeRelation(feeName.value());
-                                entity.put("FCOSTID", setWrapper(entity.get("FCOSTID"), customsFinanceFeeRelation.getKingdeeCode()));
-                                entity.put("F_JYD_Assistant", setWrapper(entity.get("F_JYD_Assistant"), customsFinanceFeeRelation.getCategoryCode()));
-                                entity.put("F_JYD_Assistant1", setWrapper(entity.get("F_JYD_Assistant1"), customsFinanceFeeRelation.getTypeCode()));
-                                entity.put("FCOMMENT", applyNo);
-                                String fieldName = field.getName();
-                                Method method = null;
-                                try {
-                                    method = clz.getMethod("get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1));
-                                } catch (NoSuchMethodException e) {
-                                    e.printStackTrace();
-                                }
-                                Object invoke = null;
-                                if (null != method) {
-                                    try {
-                                        invoke = method.invoke(customsReceivable);
-                                    } catch (IllegalAccessException e) {
-                                        e.printStackTrace();
-                                    } catch (InvocationTargetException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                                if (null != invoke && !Objects.equals(invoke.toString(), "0.00")) {
-                                    BigDecimal cost = new BigDecimal(invoke.toString());
-                                    entity.put("FTAXAMOUNTFOR", cost);
-                                    entity.put("FAMOUNTFOR_D", cost);
-                                    entity.put("FTAXAMOUNT_D", cost);
-                                    totalValue = totalValue.add(cost);
-                                } else {
-                                    continue;
-                                }
-                                details.add(entity);
+                }
+
+
+                //装载明细
+                for (Map.Entry<String, Object> entry : customsReceivable.getOriginData().getInnerMap().entrySet()) {
+                    String code = entry.getKey();
+
+                    //判定是否跳过此次
+                    if (!feeRelationMap.containsKey(code) || entry.getValue().equals("0.00")) {
+                        continue;
+                    }
+
+                    //获取数据模板
+                    JSONObject entity = null;
+                    try {
+                        entity = FileUtil.getMapFromJsonFile("json/OtherReceivableDetailModel.json");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    if (Objects.isNull(entity)) {
+                        log.error("读取其他应收模板文件失败");
+                        errorString.append("读取其他应收模板文件失败;");
+                    }
+
+                    //获取数据
+                    if (Objects.nonNull(code)) {
+                        if (feeRelationMap.containsKey(code) && Objects.equals(getFeeRelation(code).getCategory(), "代垫税金")) {
+                            CustomsFinanceFeeRelation customsFinanceFeeRelation = getFeeRelation(code);
+                            entity.put("FCOSTID", setWrapper(entity.get("FCOSTID"), customsFinanceFeeRelation.getKingdeeCode()));
+                            entity.put("F_JYD_Assistant", setWrapper(entity.get("F_JYD_Assistant"), customsFinanceFeeRelation.getCategoryCode()));
+                            entity.put("F_JYD_Assistant1", setWrapper(entity.get("F_JYD_Assistant1"), customsFinanceFeeRelation.getTypeCode()));
+                            entity.put("FCOMMENT", applyNo);
+
+                            if (StringUtils.isNotEmpty(entry.getValue().toString()) && !Objects.equals(entry.getValue().toString(), "0.00")) {
+                                BigDecimal cost = new BigDecimal(entry.getValue().toString());
+                                entity.put("FTAXAMOUNTFOR", cost);
+                                entity.put("FAMOUNTFOR_D", cost);
+                                entity.put("FTAXAMOUNT_D", cost);
+                                totalValue = totalValue.add(cost);
+                            } else {
+                                continue;
                             }
+                            details.add(entity);
                         }
                     }
                 }
+
 
                 //将明细数据装入root
                 root.put("FEntity", details);

@@ -20,15 +20,15 @@ public class CommonResult<T> implements Serializable {
     private static final long serialVersionUID = 3068837394742385883L;
 
     /** 错误码. */
-    @ApiModelProperty(value = "返回码", dataType = "Integer")
+    @ApiModelProperty(value = "返回码", dataType = "Integer", position = 1)
     private Integer code;
 
     /** 提示信息. */
-    @ApiModelProperty(value = "提示信息", dataType = "String")
+    @ApiModelProperty(value = "提示信息", dataType = "String", position = 2)
     private String msg;
 
     /** 具体内容. */
-    @ApiModelProperty(value = "具体内容")
+    @ApiModelProperty(value = "具体内容", position = 3)
     private T data;
 
     /**

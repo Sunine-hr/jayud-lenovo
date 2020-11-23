@@ -11,11 +11,11 @@ public enum ResultEnum implements IResultCode {
 
     SUCCESS(0, "成功"),
 
-    PARAM_ERROR(1,"参数不正确"),
+    PARAM_ERROR(1, "参数不正确"),
 
-    UPDATE_ERROR(2,"更新数据失败"),
+    UPDATE_ERROR(2, "更新数据失败"),
 
-    SAVE_ERROR(3,"更新数据失败"),
+    SAVE_ERROR(3, "更新数据失败"),
 
     LOGIN_FAIL(25, "登录失败, 登录信息不正确"),
 
@@ -33,12 +33,14 @@ public enum ResultEnum implements IResultCode {
 
     INTERNAL_SERVER_ERROR(500, "服务内部异常"),
 
-    CANNOT_MODIFY_IN_AUDIT(700,"审核中无法修改"),
+    CANNOT_MODIFY_IN_AUDIT(700, "审核中无法修改"),
 
 
     OPR_FAIL(10001, "操作失败"),
 
-    LOGIN_NAME_EXIST(10002,"该登录名已存在"),
+    LOGIN_NAME_EXIST(10002, "该登录名已存在"),
+    UNIT_CODE_EXIST(10004,"该结算代码已存在"),
+    NAME_EXIST(10003, "姓名已存在"),
     ;
     private Integer code;
     private String message;

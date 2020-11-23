@@ -160,7 +160,7 @@
             AND oc.`status` = 'C_4'
         </if>
         <if test="form.cmd == 'goCustomsConfirm'">
-            AND oc.`status` = 'C_5'
+            AND oc.`status` = 'C_5' and oc.class_code = 'CBG'
         </if>
     </select>
 

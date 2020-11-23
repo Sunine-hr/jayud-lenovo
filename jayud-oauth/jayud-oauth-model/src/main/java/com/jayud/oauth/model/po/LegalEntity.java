@@ -50,4 +50,24 @@ public class LegalEntity {
     @ApiModelProperty(value = "修改时间")
     private LocalDateTime updatedTime;
 
+    @ApiModelProperty(value = "英文名")
+    private String legalEnName;
+
+    @ApiModelProperty(value = "电话")
+    private String phone;
+
+    @ApiModelProperty(value = "传真")
+    private String fax;
+
+    @ApiModelProperty(value = "地址")
+    private String address;
+
+    @ApiModelProperty(value = "开户银行")
+    private String bank;
+
+    @ApiModelProperty(value = "开户账户")
+    private String accountOpen;
+
+    @ApiModelProperty(value = "纳税识别号信息")
+    private String taxIdentificationNum;
 }

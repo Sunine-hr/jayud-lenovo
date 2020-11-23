@@ -34,6 +34,32 @@ public class OrderInfoController {
         return orderInfoService.submitOrderInfo(form);
     }
 
+    //订单列表-草稿-提交
+    @ApiModelProperty(value = "订单列表-草稿-提交")
+    @PostMapping("/draftSubmitOrderInfo")
+    public CommonResult<OrderInfoVO> draftSubmitOrderInfo(@RequestBody OrderInfoForm form){
+        return orderInfoService.draftSubmitOrderInfo(form);
+    }
+
+    //订单列表-草稿-取消
+    @ApiModelProperty(value = "订单列表-草稿-取消")
+    @PostMapping("/draftCancelOrderInfo")
+    public CommonResult<OrderInfoVO> draftCancelOrderInfo(@RequestBody OrderInfoForm form){
+        return orderInfoService.draftCancelOrderInfo(form);
+    }
+
+    //订单列表-查看订单详情
+    @ApiModelProperty(value = "订单列表-查看订单详情")
+    @PostMapping("/lookOrderInfo")
+    public CommonResult<OrderInfoVO> lookOrderInfo(@RequestBody OrderInfoForm form){
+        return orderInfoService.lookOrderInfo(form);
+    }
+
+    //订单列表-账单确认
+
+
+
+
 
 
 

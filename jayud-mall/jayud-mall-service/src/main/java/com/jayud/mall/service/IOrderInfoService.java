@@ -127,4 +127,28 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     CommonResult<OrderInfoVO> submitOrderInfo(OrderInfoForm form);
+
+    /**
+     * 订单列表-草稿-提交
+     * @param form
+     * @return
+     */
+    CommonResult<OrderInfoVO> draftSubmitOrderInfo(OrderInfoForm form);
+
+    /**
+     * 订单列表-草稿-提交
+     * @param form
+     * @return
+     */
+    CommonResult<OrderInfoVO> draftCancelOrderInfo(OrderInfoForm form);
+
+    /**
+     * 订单列表-查看订单详情
+     * @param form
+     * @return
+     */
+    CommonResult<OrderInfoVO> lookOrderInfo(OrderInfoForm form);
+
+
+
 }

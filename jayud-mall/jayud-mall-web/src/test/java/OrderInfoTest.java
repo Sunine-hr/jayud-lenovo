@@ -155,5 +155,16 @@ public class OrderInfoTest {
         System.out.println(now);
     }
 
+    /**
+     * 草稿-提交和取消
+     */
+    @Test
+    public void test3(){
+        OrderInfoForm form = new OrderInfoForm();
+        form.setId(1L);
+        TestUtils.JSONObjectPrint(form);
+
+    }
+
 
 }

@@ -381,5 +381,35 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     }
 
+    @Override
+    public CommonResult<OrderInfoVO> draftSubmitOrderInfo(OrderInfoForm form) {
+        Long id = form.getId();
+        OrderInfo orderInfo = this.getById(id);
+        orderInfo.setStatus(OrderEnum.SUBMITTED.getCode());
+        orderInfo.setStatusName(OrderEnum.SUBMITTED.getName());
+        this.saveOrUpdate(orderInfo);
+        OrderInfoVO orderInfoVO = ConvertUtil.convert(orderInfo, OrderInfoVO.class);
+        return CommonResult.success(orderInfoVO);
+    }
+
+    @Override
+    public CommonResult<OrderInfoVO> draftCancelOrderInfo(OrderInfoForm form) {
+        Long id = form.getId();
+        OrderInfo orderInfo = this.getById(id);
+        orderInfo.setStatus(OrderEnum.CANCELED.getCode());
+        orderInfo.setStatusName(OrderEnum.CANCELED.getName());
+        this.saveOrUpdate(orderInfo);
+        OrderInfoVO orderInfoVO = ConvertUtil.convert(orderInfo, OrderInfoVO.class);
+        return CommonResult.success(orderInfoVO);
+    }
+
+    @Override
+    public CommonResult<OrderInfoVO> lookOrderInfo(OrderInfoForm form) {
+        Long id = form.getId();
+        OrderInfo orderInfo = this.getById(id);
+        OrderInfoVO orderInfoVO = ConvertUtil.convert(orderInfo, OrderInfoVO.class);
+        return CommonResult.success(orderInfoVO);
+    }
+
 
 }

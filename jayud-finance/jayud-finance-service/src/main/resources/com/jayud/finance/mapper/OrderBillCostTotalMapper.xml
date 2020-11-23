@@ -48,14 +48,14 @@
         orc.currency_code currencyCode,
         orc.id costId,
         ci.`name` costInfoName,
-        orc.amount money, (
+        orc.amount money, ifnull((
         SELECT
         cr.exchange_rate
         FROM
         currency_rate cr
         WHERE
         cr.dcid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = orc.currency_code )
-        AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code ='' )) exchangeRate
+        AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code ='' )),0) exchangeRate
         FROM
         order_receivable_cost orc
         LEFT JOIN cost_info ci ON orc.cost_code = ci.id_code

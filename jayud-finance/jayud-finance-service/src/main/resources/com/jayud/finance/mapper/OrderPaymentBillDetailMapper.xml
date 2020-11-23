@@ -5,6 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.finance.po.OrderPaymentBillDetail">
         <id column="id" property="id" />
+        <result column="bill_id" property="billId" />
         <result column="bill_no" property="billNo" />
         <result column="begin_account_term" property="beginAccountTerm" />
         <result column="end_account_term" property="endAccountTerm" />
@@ -36,7 +37,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, bill_no, begin_account_term,end_account_term,settlement_currency,order_no, cost_id, created_order_time, start_address,
+        id, bill_id,bill_no, begin_account_term,end_account_term,settlement_currency,order_no, cost_id, created_order_time, start_address,
         end_address, license plate, vehicle_size, piece_num, weight, yun_customs_no, audit_status,make_user,make_time,audit_user,
         audit_time,apply_status,payment_amount,status, created_user, created_time,updated_user,updated_time,local_amount
     </sql>

@@ -33,6 +33,9 @@ public class OrderPaymentBillDetail extends Model<OrderPaymentBillDetail> {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    @ApiModelProperty(value = "应收对账单ID")
+    private Long billId;
+
     @ApiModelProperty(value = "账单编号")
     private String billNo;
 

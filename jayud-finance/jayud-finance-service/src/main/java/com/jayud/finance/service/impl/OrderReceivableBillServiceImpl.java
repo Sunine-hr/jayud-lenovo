@@ -124,6 +124,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             orderReceivableBill.setBillOrderNum(receiveBillForm.getBillNum() + 1);
             if("main".equals(form.getSubType())){
                 orderReceivableBill.setIsMain(true);
+                orderReceivableBill.setSubType(form.getSubType());
             }else if("zgys".equals(form.getSubType())){
                 orderReceivableBill.setIsMain(false);
                 orderReceivableBill.setSubType(form.getSubType());
@@ -156,10 +157,11 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
                 receivableBillDetails.get(i).setEndAccountTerm(DateUtils.str2LocalDateTime(form.getEndAccountTermStr(),DateUtils.DATE_TIME_PATTERN));
                 receivableBillDetails.get(i).setSettlementCurrency(form.getSettlementCurrency());
                 receivableBillDetails.get(i).setAuditStatus(BillEnum.B_1.getCode());
-                receivableBillDetails.get(i).setCreatedOrderTime(DateUtils.stringToDate(receiveBillDetailForms.get(i).getCreatedTimeStr(),DateUtils.DATE_PATTERN));
+                receivableBillDetails.get(i).setCreatedOrderTime(DateUtils.convert2Date(receiveBillDetailForms.get(i).getCreatedTimeStr(),DateUtils.DATE_PATTERN));
                 receivableBillDetails.get(i).setMakeUser(form.getLoginUserName());
                 receivableBillDetails.get(i).setMakeTime(LocalDateTime.now());
                 receivableBillDetails.get(i).setCreatedUser(form.getLoginUserName());
+                receivableBillDetails.get(i).setBillId(orderReceivableBill.getId());
             }
             result = receivableBillDetailService.saveBatch(receivableBillDetails);
             if(!result){

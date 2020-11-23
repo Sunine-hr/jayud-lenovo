@@ -7,7 +7,11 @@ import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.service.IOrderReceivableBillService;
-import com.jayud.finance.vo.*;
+import com.jayud.finance.vo.OrderReceiveBillVO;
+import com.jayud.finance.vo.ReceiveNotPaidBillVO;
+import com.jayud.finance.vo.SheetHeadVO;
+import com.jayud.finance.vo.ViewBilToOrderVO;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +61,18 @@ public class ReceiveBillController {
     @ApiOperation(value = "暂存和生成应收账单")
     @PostMapping("/createBill")
     public CommonResult createReceiveBill(@RequestBody @Valid CreateReceiveBillForm form) {
+        //参数校验
+        if("create".equals(form.getCmd())){
+            OrderReceiveBillForm receiveBillForm = form.getReceiveBillForm();
+            if(receiveBillForm == null || StringUtil.isNullOrEmpty(receiveBillForm.getLegalName()) || StringUtil.isNullOrEmpty(receiveBillForm.getCustomerName()) ||
+               receiveBillForm.getBillOrderNum() == null || receiveBillForm.getAlreadyPaidAmount() == null ||  receiveBillForm.getBillNum() == null ||
+               StringUtil.isNullOrEmpty(form.getBillNo()) || StringUtil.isNullOrEmpty(form.getBeginAccountTermStr()) ||
+               StringUtil.isNullOrEmpty(form.getEndAccountTermStr()) || StringUtil.isNullOrEmpty(form.getSettlementCurrency()) ||
+               StringUtil.isNullOrEmpty(form.getSubType()) || (!("main".equals(form.getSubType()) || "zgys".equals(form.getSubType()) ||
+               "bg".equals(form.getSubType())))){
+                return CommonResult.error(ResultEnum.PARAM_ERROR);
+            }
+        }
         Boolean result = billService.createReceiveBill(form);
         if(result){
             return CommonResult.success();

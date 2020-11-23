@@ -18,8 +18,8 @@ public class OrderReceiveBillDetailForm {
     private String orderNo;
 
     @ApiModelProperty(value = "业务类型",required = true)
-    @NotEmpty(message = "classCodeDesc is required")
-    private String classCodeDesc;
+    @NotEmpty(message = "bizCodeDesc is required")
+    private String bizCodeDesc;
 
     @ApiModelProperty(value = "创建日期",required = true)
     @NotEmpty(message = "createdTimeStr is required")

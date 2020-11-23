@@ -249,16 +249,16 @@
             and temp.ywName like concat('%',#{form.ywName},'%')
         </if>
         <if test="form.sStatus != null and form.sStatus !=''">
-            and temp.sStatus = #{form.sStatus}
+            and temp.sStatus = #{form.recStatus}
         </if>
         <if test="form.sCostStatus != null and form.sCostStatus !=''">
-            and temp.sCostStatus = #{form.sCostStatus}
+            and temp.sCostStatus = #{form.recCostStatus}
         </if>
         <if test="form.fCostStatus != null and form.fCostStatus !=''">
-            and temp.fCostStatus = #{form.fCostStatus}
+            and temp.fCostStatus = #{form.payCostStatus}
         </if>
         <if test="form.fStatus != null and form.fStatus !=''">
-            and temp.fStatus = #{form.fStatus}
+            and temp.fStatus = #{form.payStatus}
         </if>
         <if test="form.createTimeStr != null and form.createTimeStr !=''">
             and temp.createTimeStr = #{form.createTimeStr}

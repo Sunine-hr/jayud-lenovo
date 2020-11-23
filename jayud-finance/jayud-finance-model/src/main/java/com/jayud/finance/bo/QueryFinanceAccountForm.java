@@ -23,16 +23,16 @@ public class QueryFinanceAccountForm extends BasePageForm{
     private String ywName;
 
     @ApiModelProperty(value = "应收对账单状态")
-    private String sStatus;
+    private String recStatus;
 
     @ApiModelProperty(value = "应收费用状态")
-    private String sCostStatus;
+    private String recCostStatus;
 
     @ApiModelProperty(value = "应付费用状态")
-    private String fCostStatus;
+    private String payCostStatus;
 
     @ApiModelProperty(value = "应付对账单状态")
-    private String fStatus;
+    private String payStatus;
 
     @ApiModelProperty(value = "创建时间")
     private String createTimeStr;

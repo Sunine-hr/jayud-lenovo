@@ -211,6 +211,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 orderPaymentCost.setMainOrderNo(inputOrderVO.getOrderNo());
                 orderPaymentCost.setOrderNo(form.getOrderNo());
                 orderPaymentCost.setIsSumToMain(isSumToMain);
+                orderPaymentCost.setIsBill("0");//未出账
                 if ("preSubmit_main".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())) {
                     orderPaymentCost.setCreatedTime(LocalDateTime.now());
                     orderPaymentCost.setCreatedUser(UserOperator.getToken());
@@ -224,6 +225,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             for (OrderReceivableCost orderReceivableCost : orderReceivableCosts) {//应收费用
                 orderReceivableCost.setMainOrderNo(inputOrderVO.getOrderNo());
                 orderReceivableCost.setOrderNo(form.getOrderNo());
+                orderReceivableCost.setIsSumToMain(isSumToMain);
+                orderReceivableCost.setIsBill("0");//未出账
                 if ("preSubmit_main".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())) {
                     orderReceivableCost.setCreatedTime(LocalDateTime.now());
                     orderReceivableCost.setCreatedUser(UserOperator.getToken());

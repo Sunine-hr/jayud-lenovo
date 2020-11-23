@@ -1,13 +1,12 @@
 package com.jayud.finance.bo;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -16,12 +15,12 @@ import java.util.List;
 @Data
 public class CreateReceiveBillForm {
 
+    @Valid
     @ApiModelProperty(value = "应收出账单界面部分",required = true)
-    @NotEmpty(message = "receiveBillForm is required")
     private OrderReceiveBillForm receiveBillForm;
 
+    @Valid
     @ApiModelProperty(value = "应收出账单详情界面部分",required = true)
-    @NotEmpty(message = "receiveBillDetailForms is required")
     private List<OrderReceiveBillDetailForm> receiveBillDetailForms;
 
     @ApiModelProperty(value = "账单编号",required = true)
@@ -29,12 +28,12 @@ public class CreateReceiveBillForm {
     private String billNo;
 
     @ApiModelProperty(value = "开始核算期",required = true)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime beginAccountTerm;
+    @NotEmpty(message = "beginAccountTermStr is required")
+    private String beginAccountTermStr;
 
     @ApiModelProperty(value = "结束核算期",required = true)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime endAccountTerm;
+    @NotEmpty(message = "endAccountTermStr is required")
+    private String endAccountTermStr;
 
     @ApiModelProperty(value = "结算币种",required = true)
     @NotEmpty(message = "settlementCurrency is required")

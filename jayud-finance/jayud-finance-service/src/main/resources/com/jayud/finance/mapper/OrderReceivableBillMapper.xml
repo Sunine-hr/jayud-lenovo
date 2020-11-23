@@ -100,7 +100,7 @@
         select * from (
         SELECT
         orc.main_order_no orderNo,
-        pc.`name` classCodeDesc,
+        pb.`name` bizCodeDesc,
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         oi.customer_name customerName,
         (SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id
@@ -130,9 +130,9 @@
         FROM
         order_receivable_cost orc
         LEFT JOIN order_info oi ON orc.main_order_no = oi.order_no
-        LEFT JOIN product_classify pc ON oi.class_code = pc.id_code AND pc.f_id = '0'
+        LEFT JOIN product_biz pb ON pb.id_code = oi.biz_code
         LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
-        LEFT JOIN order_send_cars osc ON ot.order_no = osc.transport_no
+        LEFT JOIN order_send_cars osc ON ot.order_no = osc.order_no
         left join driver_info di on di.id = osc.driver_info_id
         left join vehicle_info vi on vi.id = di.vehicle_id
         LEFT JOIN cost_genre cg ON orc.cost_genre_id = cg.id

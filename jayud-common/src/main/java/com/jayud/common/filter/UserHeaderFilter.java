@@ -1,8 +1,8 @@
 package com.jayud.common.filter;
 
-import com.alibaba.fastjson.JSONObject;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -58,8 +58,10 @@ public class UserHeaderFilter implements Filter {
         }
         else {
             String token = request.getHeader("token");
-            String user = redisUtils.get(token,10000l);
-            UserOperator.setToken(user);
+            if (StringUtils.isNotEmpty(token)) {
+                String user = redisUtils.get(token,10000l);
+                UserOperator.setToken(user);
+            }
         }
         chain.doFilter(req, res);
     }

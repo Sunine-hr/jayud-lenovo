@@ -199,17 +199,17 @@
 
     <!--财务管理模块-->
     <select id="findFinanceAccountByPage" parameterType="com.jayud.finance.bo.QueryFinanceAccountForm" resultType="com.jayud.finance.vo.FinanceAccountVO">
-        select temp.orderNo,temp.createTimeStr,temp.legalName,temp.customerCode,temp.customerName,temp.ywName,temp.sBillNo,temp.sAccountTermStr,temp.sRmb,temp.sDollar,temp.sEuro,temp.sHkDollar,temp.sLocalAmount,temp.sStatus,
-        (case (select sum(cav.local_money) from cancel_after_verification cav where cav.bill_no = temp.sBillNo)
-        when temp.sLocalAmount
+        select temp.orderNo,temp.createTimeStr,temp.legalName,temp.customerCode,temp.customerName,temp.ywName,temp.recBillNo,temp.recAccountTermStr,temp.recRmb,temp.recDollar,temp.recEuro,temp.recHkDollar,temp.recLocalAmount,temp.recStatus,
+        (case (select sum(cav.local_money) from cancel_after_verification cav where cav.bill_no = temp.recBillNo)
+        when temp.recLocalAmount
         THEN '已核销'
         else '未核销' END)
-        sCostStatus,
-        temp.fBillNo,temp.fAccountTermStr,temp.fRmb,temp.fDollar,temp.fEuro,temp.fHkDollar,temp.fLocalAmount,temp.fStatus,(case (select sum(cav.local_money) from cancel_after_verification cav where cav.bill_no = temp.fBillNo)
-        when temp.sLocalAmount
+        recCostStatus,
+        temp.payBillNo,temp.payAccountTermStr,temp.payRmb,temp.payDollar,temp.payEuro,temp.payHkDollar,temp.payLocalAmount,temp.payStatus,(case (select sum(cav.local_money) from cancel_after_verification cav where cav.bill_no = temp.payBillNo)
+        when temp.recLocalAmount
         THEN '已核销'
         else '未核销' END)
-        fCostStatus, (temp.sLocalAmount - temp.fLocalAmount) profit from (
+        payCostStatus, (temp.recLocalAmount - temp.payLocalAmount) profit from (
         SELECT
         oi.order_no orderNo,
         oi.create_time createTimeStr,

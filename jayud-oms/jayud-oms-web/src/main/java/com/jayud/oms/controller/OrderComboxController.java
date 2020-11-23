@@ -7,6 +7,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.utils.BeanUtils;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.enums.CustomerInfoStatusEnum;
@@ -66,6 +67,9 @@ public class OrderComboxController {
 
     @Autowired
     ICostGenreService costGenreService;
+
+    @Autowired
+    ISupplierInfoService supplierInfoService;
 
     @ApiOperation(value = "创建订单-客户,业务员,合同,业务所属部门,通关口岸")
     @PostMapping(value = "/initCombox1")
@@ -158,6 +162,19 @@ public class OrderComboxController {
             }
         }
         resultMap.put("units",comboxStrVOS);
+
+        List<SupplierInfo> supplierInfos = supplierInfoService.getApprovedSupplier(
+                BeanUtils.convertToFieldName(true,
+                        SupplierInfo::getId, SupplierInfo::getSupplierChName));
+        List<InitComboxStrVO> supplierStrVOS = new ArrayList<>();
+        for (SupplierInfo supplierInfo : supplierInfos) {
+            InitComboxStrVO comboxStrVO = new InitComboxStrVO();
+            comboxStrVO.setCode(supplierInfo.getSupplierCode());
+            comboxStrVO.setName(supplierInfo.getSupplierChName());
+            supplierStrVOS.add(comboxStrVO);
+        }
+        resultMap.put("supplierInfos",comboxStrVOS);//下拉供应商
+
         List<InitComboxVO> yws = new ArrayList<>();
         if(ids.size() > 0) {
             List<SystemUserVO> userVOS = oauthClient.getUsersByIds(ids).getData();

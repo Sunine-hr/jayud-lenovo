@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
-import com.jayud.common.UserOperator;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.finance.bo.AddCurrencyManageForm;
 import com.jayud.finance.bo.AddCurrencyRateForm;
@@ -73,7 +72,7 @@ public class CurrencyRateServiceImpl extends ServiceImpl<CurrencyRateMapper, Cur
             currencyRate.setMonth(form.getMonth());
             currencyRate.setBeginValidDate(DateUtils.stringToLocalDate(form.getBeginValidDate(),DateUtils.DATE_PATTERN));
             currencyRate.setEndValidDate(DateUtils.stringToLocalDate(form.getEndValidDate(),DateUtils.DATE_PATTERN));
-            currencyRate.setCreatedUser(UserOperator.getToken());
+            currencyRate.setCreatedUser(form.getLoginUserName());
             currencyRates.add(currencyRate);
         }
         saveBatch(currencyRates);

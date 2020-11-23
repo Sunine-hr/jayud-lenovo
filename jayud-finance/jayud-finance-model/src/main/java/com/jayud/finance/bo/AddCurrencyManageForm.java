@@ -29,4 +29,7 @@ public class AddCurrencyManageForm {
     @NotEmpty(message = "endValidDate is required")
     private String endValidDate;
 
+    @ApiModelProperty(value = "登录用户",required = true)
+    private String loginUserName;
+
 }

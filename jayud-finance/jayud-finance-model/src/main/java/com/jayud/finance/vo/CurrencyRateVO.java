@@ -17,6 +17,15 @@ public class CurrencyRateVO {
     @ApiModelProperty(value = "年月")
     private String monthStr;
 
+    @ApiModelProperty(value = "年月")
+    private String month;
+
+    @ApiModelProperty(value = "原始币种ID")
+    private Long dcid;
+
+    @ApiModelProperty(value = "兑换币种ID")
+    private Long ocid;
+
     @ApiModelProperty(value = "原始币种")
     private String dCurrencyName;
 

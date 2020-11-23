@@ -25,6 +25,9 @@
         SELECT
         cr.id,
         CONCAT(REPLACE(cr.`month`,'-','年'),'月') monthStr,
+        cr.`month`,
+        cr.dcid,
+        cr.ocid,
         c2.currency_name dCurrencyName,
         ci.currency_name oCurrencyName,
         cr.exchange_rate exchangeRate,

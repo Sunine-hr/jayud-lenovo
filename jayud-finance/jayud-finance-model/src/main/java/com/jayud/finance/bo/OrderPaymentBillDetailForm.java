@@ -15,8 +15,8 @@ public class OrderPaymentBillDetailForm {
     private String orderNo;
 
     @ApiModelProperty(value = "业务类型",required = true)
-    @NotEmpty(message = "classCodeDesc is required")
-    private String classCodeDesc;
+    @NotEmpty(message = "bizCodeDesc is required")
+    private String bizCodeDesc;
 
     @ApiModelProperty(value = "创建日期",required = true)
     @NotEmpty(message = "createdTimeStr is required")
@@ -76,16 +76,13 @@ public class OrderPaymentBillDetailForm {
     @NotNull(message = "costId is required")
     private Long costId;
 
-    @ApiModelProperty(value = "车型 如：3T",required = true)
-    @NotEmpty(message = "vehicleSize is required")
+    @ApiModelProperty(value = "车型 如：3T,纯报关没有")
     private String vehicleSize;
 
-    @ApiModelProperty(value = "订单维度的件数",required = true)
-    @NotNull(message = "pieceNum is required")
+    @ApiModelProperty(value = "订单维度的件数,纯报关没有")
     private Integer pieceNum;
 
-    @ApiModelProperty(value = "订单维度的重量",required = true)
-    @NotNull(message = "weight is required")
+    @ApiModelProperty(value = "订单维度的重量,纯报关没有")
     private Double weight;
 
 }

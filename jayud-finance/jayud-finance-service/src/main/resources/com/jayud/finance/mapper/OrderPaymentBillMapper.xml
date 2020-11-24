@@ -31,8 +31,8 @@
         ifnull( opb.already_paid_amount, 0 ) alreadyPaidAmount,
         ifnull( opb.bill_order_num, 0 ) billOrderNum,
         ifnull( opb.bill_num, 0 ) billNum,
-        (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where t1.is_bill = '0' AND t1.is_sum_to_main = '1' and t1.customer_code = opc.customer_code and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidAmount,
-        (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where t1.is_bill = '0' AND t1.is_sum_to_main = '1' and t1.customer_code = opc.customer_code and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidOrderNum
+        (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '1' and t1.customer_code = opc.customer_code and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidAmount,
+        (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '1' and t1.customer_code = opc.customer_code and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidOrderNum
         FROM
         order_payment_cost opc
         left join supplier_info si on si.supplier_code = opc.customer_code
@@ -257,11 +257,12 @@
             opc.currency_code,
             opc.main_order_no
     </select>
-    <select id="viewPaymentBill" parameterType="java.util.List" resultType="com.jayud.finance.vo.ViewBilToOrderVO">
+    <select id="viewPaymentBill" parameterType="java.util.List" resultType="com.jayud.finance.vo.ViewFBilToOrderVO">
         SELECT
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         oi.order_no orderNo,
-        oi.customer_name customerName,
+        t.order_no subOrderNo,
+        si.supplier_ch_name supplierChName,
         ( SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' limit 1) startAddress,
         ( SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '2' limit 1) endAddress,
         (select concat(vi.plate_number,',',vi.hk_number) from order_send_cars osc left join order_transport ot on osc.order_no = ot.order_no left join driver_info di on di.id = osc.driver_info_id left join vehicle_info vi on vi.id = di.vehicle_id where ot.main_order_no = oi.order_no) licensePlate,
@@ -271,7 +272,9 @@
         (select GROUP_CONCAT(oc.yun_customs_no,',') from order_customs oc where oc.main_order_no = oi.order_no) yunCustomsNo
         FROM
         order_info oi
-        where oi.order_no in (select opc.order_no from order_payment_cost opc where 1 = 1
+        left join order_payment_cost t on oi.order_no = t.main_order_no
+        left join supplier_info si on si.supplier_code = t.customer_code
+        where oi.order_no in (select opc.main_order_no from order_payment_cost opc where 1 = 1
         <if test="costIds != null and costIds.size>0">
             and opc.id IN
             <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">

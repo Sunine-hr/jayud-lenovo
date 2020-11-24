@@ -89,7 +89,7 @@ public class PaymentBillController {
             costIds.add(billDetailForm.getCostId());
         }
         Map<String,Object> resultMap = new HashMap<>();
-        List<ViewBilToOrderVO> list = billService.viewPaymentBill(costIds);
+        List<ViewFBilToOrderVO> list = billService.viewPaymentBill(costIds);
         resultMap.put(CommonConstant.LIST,list);//分页数据
         List<SheetHeadVO> sheetHeadVOS = billService.findSheetHead(costIds);
         resultMap.put(CommonConstant.SHEET_HEAD,sheetHeadVOS);//表头

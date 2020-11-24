@@ -4,10 +4,10 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
- * 应收账单列表预览
+ * 应付账单列表预览
  */
 @Data
-public class ViewBilToOrderVO {
+public class ViewFBilToOrderVO {
 
     @ApiModelProperty(value = "创建日期")
     private String createdTimeStr;
@@ -18,8 +18,8 @@ public class ViewBilToOrderVO {
     @ApiModelProperty(value = "子订单编号")
     private String subOrderNo;
 
-    @ApiModelProperty(value = "结算单位")
-    private String unitAccount;
+    @ApiModelProperty(value = "供应商")
+    private String supplierChName;
 
     @ApiModelProperty(value = "起运地")
     private String startAddress;

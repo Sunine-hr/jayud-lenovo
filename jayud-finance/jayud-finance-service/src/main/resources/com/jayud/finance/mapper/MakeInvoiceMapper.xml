@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.finance.mapper.MakeInvoiceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.finance.po.MakeInvoice">
+        <id column="id" property="id" />
+        <result column="invoice_no" property="invoiceNo" />
+        <result column="make_time" property="makeTime" />
+        <result column="invoice_type" property="invoiceType" />
+        <result column="money" property="money" />
+        <result column="file_url" property="fileUrl" />
+        <result column="file_name" property="fileName" />
+        <result column="status" property="status" />
+        <result column="created_user" property="createdUser" />
+        <result column="created_time" property="createdTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, invoice_no, make_time, invoice_type, money, file_url, file_name, status, created_user, created_time
+    </sql>
+
+</mapper>

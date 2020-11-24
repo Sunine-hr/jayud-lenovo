@@ -32,6 +32,9 @@ public class AuditInfo extends Model<AuditInfo> {
     @ApiModelProperty(value = "被审核表的ID")
     private Long extId;
 
+    @ApiModelProperty(value = "被审核表唯一标识,比如账单号")
+    private String extUniqueFlag;
+
     @ApiModelProperty(value = "被审核表描述")
     private String extDesc;
 

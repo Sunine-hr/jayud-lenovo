@@ -13,9 +13,9 @@ public class InputPaymentCostForm {
     @ApiModelProperty(value = "应付主键ID,修改时传")
     private Long id;
 
-    @ApiModelProperty(value = "应付客户名称用户自填",required = true)
-    @NotEmpty(message = "customerName is required")
-    private String customerName;
+    @ApiModelProperty(value = "应付客户名称用户自填改为了下拉供应商",required = true)
+    @NotEmpty(message = "customerCode is required")
+    private String customerCode;
 
     @ApiModelProperty(value = "费用类别",required = true)
     @NotEmpty(message = "costTypeId is required")

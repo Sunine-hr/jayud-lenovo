@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.finance.mapper.OrderBillCostTotalMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.finance.po.OrderBillCostTotal">
+        <id column="id" property="id" />
+        <result column="order_no" property="orderNo" />
+        <result column="bill_no" property="billNo" />
+        <result column="currency_code" property="currencyCode" />
+        <result column="cost_info_name" property="costInfoName" />
+        <result column="money" property="money" />
+        <result column="status" property="status" />
+        <result column="money_type" property="moneyType" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_no, bill_no, currency_code, cost_info_name, money, status,money_type
+    </sql>
+
+    <select id="findOrderFBillCostTotal" parameterType="java.util.HashMap" resultType="com.jayud.finance.vo.OrderBillCostTotalVO">
+        SELECT
+        opc.order_no orderNo,
+        opc.currency_code currencyCode,
+        opc.id costId,
+        ci.`name` costInfoName,
+        opc.amount money, ifnull((
+        SELECT
+        cr.exchange_rate
+        FROM
+        currency_rate cr
+        WHERE
+        cr.dcid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = opc.currency_code )
+        AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = #{settlementCurrency} )),0) exchangeRate
+        FROM
+        order_payment_cost opc
+        LEFT JOIN cost_info ci ON ci.id_code = opc.cost_code
+        WHERE
+        opc.id IN
+        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <select id="findOrderSBillCostTotal" parameterType="java.util.HashMap" resultType="com.jayud.finance.vo.OrderBillCostTotalVO">
+        SELECT
+        orc.order_no orderNo,
+        orc.currency_code currencyCode,
+        orc.id costId,
+        ci.`name` costInfoName,
+        orc.amount money, ifnull((
+        SELECT
+        cr.exchange_rate
+        FROM
+        currency_rate cr
+        WHERE
+        cr.dcid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = orc.currency_code )
+        AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code ='' )),0) exchangeRate
+        FROM
+        order_receivable_cost orc
+        LEFT JOIN cost_info ci ON orc.cost_code = ci.id_code
+        WHERE
+        orc.id IN
+        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+</mapper>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.finance.mapper.CurrencyRateMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.finance.po.CurrencyRate">
+        <id column="id" property="id" />
+        <result column="dcid" property="dcid" />
+        <result column="ocid" property="ocid" />
+        <result column="exchange_rate" property="exchangeRate" />
+        <result column="status" property="status" />
+        <result column="month" property="month" />
+        <result column="begin_valid_date" property="beginValidDate" />
+        <result column="end_valid_date" property="endValidDate" />
+        <result column="created_user" property="createdUser" />
+        <result column="created_time" property="createdTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, dcid, ocid, exchange_rate, status, month, begin_valid_date, end_valid_date, created_user, created_time
+    </sql>
+
+    <select id="findCurrencyRateByPage" parameterType="com.jayud.finance.bo.QueryCurrencyRateForm" resultType="com.jayud.finance.vo.CurrencyRateVO" >
+        SELECT
+        cr.id,
+        CONCAT(REPLACE(cr.`month`,'-','年'),'月') monthStr,
+        cr.`month`,
+        cr.dcid,
+        cr.ocid,
+        c2.currency_name dCurrencyName,
+        ci.currency_name oCurrencyName,
+        cr.exchange_rate exchangeRate,
+        DATE_FORMAT(cr.begin_valid_date, '%Y-%m-%d') beginValidDateStr,
+        DATE_FORMAT(cr.end_valid_date, '%Y-%m-%d') endValidDateStr,
+        cr.created_user createdUser,
+        cr.created_time createdTimeStr
+        FROM
+        currency_rate cr
+        LEFT JOIN currency_info ci ON cr.ocid = ci.id
+        left join currency_info c2 on c2.id = cr.dcid
+        where 1 = 1
+        <if test="form.month != null and form.month != ''">
+            and cr.month = #{form.month}
+        </if>
+    </select>
+
+</mapper>

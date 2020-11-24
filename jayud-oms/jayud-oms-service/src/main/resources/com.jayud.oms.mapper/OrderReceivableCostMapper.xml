@@ -39,7 +39,7 @@
         SELECT
         orc.`id`,
         orc.`customer_code` customerCode,
-        orc.`customer_name` customerName ,
+        ci.unit_account customerName ,
         orc.`cost_type_id` costTypeId,
         (SELECT ct.code_name FROM cost_type ct WHERE ct.id = orc.`cost_type_id` LIMIT 1) costType,
         orc.`cost_genre_id` costGenreId,
@@ -58,6 +58,7 @@
         orc.`status`
         FROM
         order_receivable_cost orc
+        left join customer_info ci on orc.customer_code = ci.unit_code
         where orc.`main_order_no` = #{form.mainOrderNo}
         <if test="form.cmd == 'main_cost_audit'">
             and orc.`status` in ('2','3')

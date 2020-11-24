@@ -121,7 +121,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             Integer billOrderNum = getSBillOrderNum(receiveBillForm.getLegalName(),receiveBillForm.getUnitAccount(),form.getSubType());
             orderReceivableBill.setBillOrderNum(billOrderNum);
             //3.统计账单数billNum
-            orderReceivableBill.setBillOrderNum(receiveBillForm.getBillNum() + 1);
+            orderReceivableBill.setBillNum(receiveBillForm.getBillNum() + 1);
             if("main".equals(form.getSubType())){
                 orderReceivableBill.setIsMain(true);
             }else if("zgys".equals(form.getSubType())){

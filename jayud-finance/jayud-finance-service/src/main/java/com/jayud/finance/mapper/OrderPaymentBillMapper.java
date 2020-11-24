@@ -75,7 +75,7 @@ public interface OrderPaymentBillMapper extends BaseMapper<OrderPaymentBill> {
      * @param costIds
      * @return
      */
-    List<ViewBilToOrderVO> viewPaymentBill(@Param("costIds") List<Long> costIds);
+    List<ViewFBilToOrderVO> viewPaymentBill(@Param("costIds") List<Long> costIds);
 
     /**
      * 查询账单明细

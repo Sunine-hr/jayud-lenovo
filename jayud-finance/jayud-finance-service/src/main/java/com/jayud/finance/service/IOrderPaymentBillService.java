@@ -52,7 +52,7 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
      * @param costIds
      * @return
      */
-    List<ViewBilToOrderVO> viewPaymentBill(List<Long> costIds);
+    List<ViewFBilToOrderVO> viewPaymentBill(List<Long> costIds);
 
     /**
      * 预览账单表头

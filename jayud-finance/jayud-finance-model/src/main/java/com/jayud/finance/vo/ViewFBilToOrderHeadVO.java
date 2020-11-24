@@ -3,10 +3,10 @@ package com.jayud.finance.vo;
 import lombok.Data;
 
 /**
- * 应收账单列表预览表头字段
+ * 应付账单列表预览表头字段
  */
 @Data
-public class ViewBilToOrderHeadVO {
+public class ViewFBilToOrderHeadVO {
 
     private String createdTimeStr = "创建日期";
 
@@ -14,7 +14,7 @@ public class ViewBilToOrderHeadVO {
 
     private String subOrderNo = "子订单编号";
 
-    private String unitAccount = "结算单位";
+    private String supplierChName = "供应商";
 
     private String startAddress = "起运地";
 

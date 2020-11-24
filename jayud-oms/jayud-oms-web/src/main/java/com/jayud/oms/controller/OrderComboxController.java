@@ -165,7 +165,7 @@ public class OrderComboxController {
 
         List<SupplierInfo> supplierInfos = supplierInfoService.getApprovedSupplier(
                 BeanUtils.convertToFieldName(true,
-                        SupplierInfo::getId, SupplierInfo::getSupplierChName));
+                        SupplierInfo::getId, SupplierInfo::getSupplierChName,SupplierInfo::getSupplierCode));
         List<InitComboxStrVO> supplierStrVOS = new ArrayList<>();
         for (SupplierInfo supplierInfo : supplierInfos) {
             InitComboxStrVO comboxStrVO = new InitComboxStrVO();
@@ -173,7 +173,7 @@ public class OrderComboxController {
             comboxStrVO.setName(supplierInfo.getSupplierChName());
             supplierStrVOS.add(comboxStrVO);
         }
-        resultMap.put("supplierInfos",comboxStrVOS);//下拉供应商
+        resultMap.put("supplierInfos",supplierStrVOS);//下拉供应商
 
         List<InitComboxVO> yws = new ArrayList<>();
         if(ids.size() > 0) {

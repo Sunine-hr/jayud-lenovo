@@ -361,11 +361,22 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     @Override
     public Boolean billAudit(BillAuditForm form) {
         OrderPaymentBillDetail orderPaymentBillDetail = new OrderPaymentBillDetail();
+        AuditInfoForm auditInfoForm = new AuditInfoForm();
         String auditStatus = "";
-        if("0".equals(form.getAuditStatus())){
-            auditStatus = BillEnum.B_2.getCode();
-        }else if("1".equals(form.getAuditStatus())){
-            auditStatus = BillEnum.B_2_1.getCode();
+        if("audit".equals(form.getCmd())) {
+            if ("0".equals(form.getAuditStatus())) {
+                auditStatus = BillEnum.B_2.getCode();
+            } else if ("1".equals(form.getAuditStatus())) {
+                auditStatus = BillEnum.B_2_1.getCode();
+            }
+            auditInfoForm.setAuditTypeDesc("应付对账单审核");
+        }else if("cw_audit".equals(form.getCmd())){//财务对账单审核
+            if ("0".equals(form.getAuditStatus())) {
+                auditStatus = BillEnum.B_4.getCode();
+            } else if ("1".equals(form.getAuditStatus())) {
+                auditStatus = BillEnum.B_4_1.getCode();
+            }
+            auditInfoForm.setAuditTypeDesc("财务对账单审核");
         }
         orderPaymentBillDetail.setAuditStatus(auditStatus);
         orderPaymentBillDetail.setUpdatedTime(LocalDateTime.now());
@@ -377,13 +388,11 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             return false;
         }
         //记录审核信息
-        AuditInfoForm auditInfoForm = new AuditInfoForm();
         auditInfoForm.setExtUniqueFlag(form.getBillNo());
-        auditInfoForm.setAuditTypeDesc("应付对账单审核");
         auditInfoForm.setAuditStatus(auditStatus);
         auditInfoForm.setAuditComment(form.getAuditComment());
         auditInfoForm.setExtDesc("order_payment_bill_detail表bill_no");
-        auditInfoForm.setAuditUser(UserOperator.getToken());
+        auditInfoForm.setAuditUser(form.getLoginUserName());
         omsClient.saveAuditInfo(auditInfoForm);
         return true;
     }

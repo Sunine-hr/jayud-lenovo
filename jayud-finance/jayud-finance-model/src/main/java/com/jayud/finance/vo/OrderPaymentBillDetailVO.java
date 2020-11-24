@@ -13,9 +13,6 @@ import java.math.BigDecimal;
 @Data
 public class OrderPaymentBillDetailVO {
 
-    @ApiModelProperty(value = "账单详情ID")
-    private Long billDetailId;
-
     @ApiModelProperty(value = "账单编号")
     private String billNo;
 

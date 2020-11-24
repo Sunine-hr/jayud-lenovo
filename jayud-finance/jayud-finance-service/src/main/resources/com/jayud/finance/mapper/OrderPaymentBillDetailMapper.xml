@@ -44,7 +44,6 @@
 
     <select id="findPaymentBillDetailByPage" parameterType="com.jayud.finance.bo.QueryPaymentBillDetailForm" resultType="com.jayud.finance.vo.OrderPaymentBillDetailVO" >
         SELECT distinct
-        opbd.id billDetailId,
         opbd.bill_no billNo,
         opb.legal_name legalName,
         opb.supplier_ch_name supplierChName,
@@ -190,7 +189,7 @@
             opb.legal_name legalName,
             DATE_FORMAT( opbd.begin_account_term, '%Y-%m-%d' ) beginAccountTermStr,
             DATE_FORMAT( opbd.end_account_term, '%Y-%m-%d' ) endAccountTermStr,
-            opb.supplier_ch_name customerName,
+            (select oi.customer_name from order_info oi where oi.order_no = opbd.order_no) customerName,
             opbd.bill_no billNo,
             opbd.make_user makeUser,
             opbd.make_time makeTimeStr

@@ -118,7 +118,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             BigDecimal nowBillAmount = receiveBillDetailForms.stream().map(OrderReceiveBillDetailForm::getLocalAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
             orderReceivableBill.setAlreadyPaidAmount(receiveBillForm.getAlreadyPaidAmount().add(nowBillAmount));
             //2.统计已出账订单数billOrderNum
-            Integer billOrderNum = getSBillOrderNum(receiveBillForm.getLegalName(),receiveBillForm.getCustomerName(),form.getSubType());
+            Integer billOrderNum = getSBillOrderNum(receiveBillForm.getLegalName(),receiveBillForm.getUnitAccount(),form.getSubType());
             orderReceivableBill.setBillOrderNum(billOrderNum);
             //3.统计账单数billNum
             orderReceivableBill.setBillOrderNum(receiveBillForm.getBillNum() + 1);
@@ -134,7 +134,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             QueryWrapper queryWrapper = new QueryWrapper();
             queryWrapper.eq("sub_type",form.getSubType());
             queryWrapper.eq("legal_name",receiveBillForm.getLegalName());
-            queryWrapper.eq("customer_name",receiveBillForm.getCustomerName());
+            queryWrapper.eq("unit_account",receiveBillForm.getUnitAccount());
             OrderReceivableBill existBill = baseMapper.selectOne(queryWrapper);
             if(existBill != null && existBill.getId() != null){
                 orderReceivableBill.setId(existBill.getId());
@@ -257,7 +257,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
 
 
     @Override
-    public Integer getSBillOrderNum(String legalName, String customerName, String subType) {
-        return baseMapper.getSBillOrderNum(legalName,customerName,subType);
+    public Integer getSBillOrderNum(String legalName, String unitAccount, String subType) {
+        return baseMapper.getSBillOrderNum(legalName,unitAccount,subType);
     }
 }

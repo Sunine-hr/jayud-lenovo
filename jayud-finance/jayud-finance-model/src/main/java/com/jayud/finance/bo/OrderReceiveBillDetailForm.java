@@ -25,9 +25,9 @@ public class OrderReceiveBillDetailForm {
     @NotEmpty(message = "createdTimeStr is required")
     private String createdTimeStr;
 
-    @ApiModelProperty(value = "客户",required = true)
-    @NotEmpty(message = "customerName is required")
-    private String customerName;
+    @ApiModelProperty(value = "结算单位",required = true)
+    @NotEmpty(message = "unitAccount is required")
+    private String unitAccount;
 
     @ApiModelProperty(value = "起运地,纯报关没有")
     private String startAddress;

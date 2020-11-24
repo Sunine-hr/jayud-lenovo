@@ -14,9 +14,9 @@ public class OrderReceiveBillForm {
     @NotEmpty(message = "legalName is required")
     private String legalName;
 
-    @ApiModelProperty(value = "客户",required = true)
-    @NotEmpty(message = "customerName is required")
-    private String customerName;
+    @ApiModelProperty(value = "结算单位",required = true)
+    @NotEmpty(message = "unitAccount is required")
+    private String unitAccount;
 
     @ApiModelProperty(value = "已出账金额(人民币)",required = true)
     @NotNull(message = "alreadyPaidAmount is required")

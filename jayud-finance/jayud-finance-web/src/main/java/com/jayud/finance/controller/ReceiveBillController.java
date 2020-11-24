@@ -61,7 +61,7 @@ public class ReceiveBillController {
         //参数校验
         if("create".equals(form.getCmd())){
             OrderReceiveBillForm receiveBillForm = form.getReceiveBillForm();
-            if(receiveBillForm == null || StringUtil.isNullOrEmpty(receiveBillForm.getLegalName()) || StringUtil.isNullOrEmpty(receiveBillForm.getCustomerName()) ||
+            if(receiveBillForm == null || StringUtil.isNullOrEmpty(receiveBillForm.getLegalName()) || StringUtil.isNullOrEmpty(receiveBillForm.getUnitAccount()) ||
                receiveBillForm.getBillOrderNum() == null || receiveBillForm.getAlreadyPaidAmount() == null ||  receiveBillForm.getBillNum() == null ||
                StringUtil.isNullOrEmpty(form.getBillNo()) || StringUtil.isNullOrEmpty(form.getBeginAccountTermStr()) ||
                StringUtil.isNullOrEmpty(form.getEndAccountTermStr()) || StringUtil.isNullOrEmpty(form.getSettlementCurrency()) ||

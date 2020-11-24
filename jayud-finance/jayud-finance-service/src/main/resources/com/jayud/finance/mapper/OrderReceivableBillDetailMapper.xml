@@ -66,14 +66,23 @@
         order_receivable_bill_detail orbd
         LEFT JOIN order_receivable_bill orb ON orbd.bill_id = orb.id
         where 1 = 1
-        <if test="form.cmd == 'main_statement' or form.cmd == 'statement_audit' or form.cmd == 'cw_statement'">
+        <if test="form.cmd == 'main_statement' or form.cmd == 'cw_statement'">
             and orb.is_main = 1
         </if>
-        <if test="form.cmd == 'zgys_statement' or form.cmd == 'zgys_statement_audit' or form.cmd == 'zgys_cw_statement'">
+        <if test="form.cmd == 'statement_audit'">
+            and orb.is_main = 1 and orbd.audit_status = 'B_1'
+        </if>
+        <if test="form.cmd == 'zgys_statement' or form.cmd == 'zgys_cw_statement'">
             and orb.is_main = 0 and orb.sub_type = 'zgys'
         </if>
-        <if test="form.cmd == 'bg_statement' or form.cmd == 'bg_statement_audit' or form.cmd == 'bg_cw_statement'">
+        <if test="form.cmd == 'zgys_statement_audit'">
+            and orb.is_main = 0 and orb.sub_type = 'zgys' and orbd.audit_status = 'B_1'
+        </if>
+        <if test="form.cmd == 'bg_statement' or form.cmd == 'bg_cw_statement'">
             and orb.is_main = 0 and orb.sub_type = 'bg'
+        </if>
+        <if test="form.cmd == 'bg_statement_audit'">
+            and orb.is_main = 0 and orb.sub_type = 'bg' and orbd.audit_status = 'B_1'
         </if>
         <if test="form.unitAccount != null and form.unitAccount != ''">
             and orb.unit_account like concat('%',#{form.unitAccount},'%')

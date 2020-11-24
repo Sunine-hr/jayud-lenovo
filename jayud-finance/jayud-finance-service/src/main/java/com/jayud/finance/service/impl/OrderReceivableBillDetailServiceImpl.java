@@ -202,7 +202,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             BigDecimal nowBillAmount = receiveBillDetailForms.stream().map(OrderReceiveBillDetailForm::getLocalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
             orderReceivableBill.setAlreadyPaidAmount(orderReceivableBill.getAlreadyPaidAmount().add(nowBillAmount));
             //2.统计已出账订单数billOrderNum
-            Integer billOrderNum = receivableBillService.getSBillOrderNum(orderReceivableBill.getLegalName(), orderReceivableBill.getCustomerName(), "create");
+            Integer billOrderNum = receivableBillService.getSBillOrderNum(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), "create");
             orderReceivableBill.setBillOrderNum(billOrderNum);
             //3.统计账单数billNum
             orderReceivableBill.setBillOrderNum(orderReceivableBill.getBillNum() + 1);

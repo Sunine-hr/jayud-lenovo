@@ -36,8 +36,8 @@ public class OrderReceivableBill extends Model<OrderReceivableBill> {
     @ApiModelProperty(value = "法人主体")
     private String legalName;
 
-    @ApiModelProperty(value = "客户")
-    private String customerName;
+    @ApiModelProperty(value = "结算单位名称")
+    private String unitAccount;
 
     @ApiModelProperty(value = "已出账金额(人民币)")
     private BigDecimal alreadyPaidAmount;

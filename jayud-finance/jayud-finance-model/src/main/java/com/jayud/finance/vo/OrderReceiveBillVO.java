@@ -12,8 +12,8 @@ public class OrderReceiveBillVO {
     @ApiModelProperty(value = "法人主体")
     private String legalName;
 
-    @ApiModelProperty(value = "客户")
-    private String customerName;
+    @ApiModelProperty(value = "结算单位")
+    private String unitAccount;
 
     @ApiModelProperty(value = "已出账金额")
     private String alreadyPaidAmount;

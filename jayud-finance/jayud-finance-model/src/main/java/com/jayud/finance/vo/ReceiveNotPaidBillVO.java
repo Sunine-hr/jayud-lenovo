@@ -20,8 +20,8 @@ public class ReceiveNotPaidBillVO {
     @ApiModelProperty(value = "创建日期")
     private String createdTimeStr;
 
-    @ApiModelProperty(value = "客户")
-    private String customerName;
+    @ApiModelProperty(value = "结算单位")
+    private String unitAccount;
 
     @ApiModelProperty(value = "起运地")
     private String startAddress;

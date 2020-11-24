@@ -15,8 +15,11 @@ public class ViewBilToOrderVO {
     @ApiModelProperty(value = "订单编号")
     private String orderNo;
 
-    @ApiModelProperty(value = "客户")
-    private String customerName;
+    @ApiModelProperty(value = "子订单编号")
+    private String subOrderNo;
+
+    @ApiModelProperty(value = "结算单位")
+    private String unitAccount;
 
     @ApiModelProperty(value = "起运地")
     private String startAddress;

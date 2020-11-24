@@ -58,9 +58,9 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         page.addOrder(OrderItem.desc("oi.legal_name"));
         IPage<OrderReceiveBillVO> pageInfo = null;
         if("main".equals(form.getCmd())) {
-            pageInfo = baseMapper.findReceiveBillByPage(page, form);//法人主体/客户/可汇总主订单费用的维度统计
+            pageInfo = baseMapper.findReceiveBillByPage(page, form);//法人主体/结算单位/可汇总主订单费用的维度统计
         }else if("zgys".equals(form.getCmd()) || "bg".equals(form.getCmd())){
-            pageInfo = baseMapper.findReceiveSubBillByPage(page, form);//法人主体/客户/子订单费用的维度统计
+            pageInfo = baseMapper.findReceiveSubBillByPage(page, form);//法人主体/结算单位/子订单费用的维度统计
         }
         return pageInfo;
     }

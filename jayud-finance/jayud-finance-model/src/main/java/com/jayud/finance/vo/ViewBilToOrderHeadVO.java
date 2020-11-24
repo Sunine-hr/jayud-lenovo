@@ -12,7 +12,9 @@ public class ViewBilToOrderHeadVO {
 
     private String orderNo = "订单编号";
 
-    private String customerName = "客户";
+    private String subOrderNo = "子订单编号";
+
+    private String unitAccount = "结算单位";
 
     private String startAddress = "起运地";
 

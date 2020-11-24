@@ -129,7 +129,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             Integer billOrderNum = getBillOrderNum(paymentBillForm.getLegalName(),paymentBillForm.getSupplierChName(),form.getSubType());
             orderPaymentBill.setBillOrderNum(billOrderNum);
             //3.统计账单数billNum
-            orderPaymentBill.setBillOrderNum(paymentBillForm.getBillNum() + 1);
+            orderPaymentBill.setBillNum(paymentBillForm.getBillNum() + 1);
             if("main".equals(form.getSubType())){
                 orderPaymentBill.setIsMain(true);
             }else if("zgys".equals(form.getSubType())){

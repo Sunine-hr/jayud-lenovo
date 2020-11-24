@@ -56,7 +56,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         //定义分页参数
         Page<OrderPaymentBillDetailVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
-        page.addOrder(OrderItem.desc("orbd.created_time"));
+        page.addOrder(OrderItem.desc("orbd.make_time"));
         IPage<OrderPaymentBillDetailVO> pageInfo = baseMapper.findReceiveBillDetailByPage(page, form);
         return pageInfo;
     }

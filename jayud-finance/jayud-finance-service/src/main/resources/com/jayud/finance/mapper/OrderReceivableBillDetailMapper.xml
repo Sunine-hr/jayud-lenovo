@@ -47,7 +47,7 @@
         orbd.id billDetailId,
         orbd.bill_no billNo,
         orb.legal_name legalName,
-        orb.customer_name customerName,
+        orb.unit_account unitAccount,
         DATE_FORMAT(orbd.begin_account_term,'%Y-%m-%d') 	beginAccountTermStr,
         DATE_FORMAT(orbd.end_account_term,'%Y-%m-%d') 	endAccountTermStr,
         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='CNY') rmb,
@@ -55,7 +55,8 @@
         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='EUR') euro,
         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='HKD') hKDollar,
         (select sum(m.money) from make_invoice m where m.opr_type = '2' and m.bill_no = orbd.bill_no and m.`status` = '1') heXiaoAmount,
-        (orbd.invoice_amount - (select sum(m.money) from make_invoice m where m.opr_type = '2' and m.bill_no = orbd.bill_no and m.`status` = '1'))  notHeXiaoAmount,orbd.settlement_currency settlementCurrency,orbd.audit_status auditStatus,orbd.apply_status applyStatus,
+        (orbd.invoice_amount - (select sum(m.money) from make_invoice m where m.opr_type = '2' and m.bill_no = orbd.bill_no and m.`status` = '1'))  notHeXiaoAmount,
+        (select cur.currency_name from currency_info cur where cur.currency_code = orbd.settlement_currency) settlementCurrency,orbd.audit_status auditStatus,orbd.apply_status applyStatus,
         orbd.make_user makeUser,
         orbd.make_time makeTimeStr,
         orbd.audit_user auditUser,
@@ -75,8 +76,8 @@
         <if test="form.cmd == 'bg_statement'">
             and orb.is_main = 0 and orb.sub_type = 'bg'
         </if>
-        <if test="form.customerName != null and form.customerName != ''">
-            and orb.customer_name like concat('%',#{form.customerName},'%')
+        <if test="form.unitAccount != null and form.unitAccount != ''">
+            and orb.unit_account like concat('%',#{form.unitAccount},'%')
         </if>
         <if test="form.legalName != null and form.legalName != ''">
             and orb.legal_name like concat('%',#{form.legalName},'%')

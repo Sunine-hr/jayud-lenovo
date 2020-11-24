@@ -18,7 +18,7 @@ public class QueryPaymentBillDetailForm extends BasePageForm{
     private String legalName;
 
     @ApiModelProperty(value = "客户,应收时用")
-    private String customerName;
+    private String unitAccount;
 
     @ApiModelProperty(value = "供应商,应付时用")
     private String supplierChName;

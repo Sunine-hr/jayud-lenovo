@@ -1,5 +1,7 @@
 package com.jayud.finance.vo;
 
+import com.jayud.finance.enums.BillEnum;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -21,7 +23,7 @@ public class OrderPaymentBillDetailVO {
     private String legalName;
 
     @ApiModelProperty(value = "客户,应收时取值")
-    private String customerName;
+    private String unitAccount;
 
     @ApiModelProperty(value = "供应商,应付时取值")
     private String supplierChName;
@@ -56,6 +58,9 @@ public class OrderPaymentBillDetailVO {
     @ApiModelProperty(value = "审核状态")
     private String auditStatus;
 
+    @ApiModelProperty(value = "审核状态描述")
+    private String auditStatusDesc;
+
     @ApiModelProperty(value = "付款申请")
     private String applyStatus;
 
@@ -82,6 +87,13 @@ public class OrderPaymentBillDetailVO {
 
     @ApiModelProperty(value = "推金蝶次数")
     private Integer pushKingdeeCount;
+
+    public String getAuditStatusDesc() {
+        if(!StringUtil.isNullOrEmpty(this.auditStatus)){
+            auditStatusDesc = BillEnum.getDesc(this.auditStatus);
+        }
+        return "";
+    }
 
 
 }

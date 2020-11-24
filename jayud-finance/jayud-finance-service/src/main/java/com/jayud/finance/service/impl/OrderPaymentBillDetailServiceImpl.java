@@ -326,42 +326,6 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     }
 
     @Override
-    public List<ViewBilToOrderVO> viewBillDetailInfo(String billNo) {
-        List<ViewBilToOrderVO> orderList = baseMapper.viewBillDetail(billNo);
-        List<ViewBilToOrderVO> newOrderList = new ArrayList<>();
-        List<ViewBillToCostClassVO> findCostClass = baseMapper.findCostClass(billNo);
-        for (ViewBilToOrderVO viewBillToOrder : orderList) {
-            for (ViewBillToCostClassVO viewBillToCostClass : findCostClass) {
-                if (viewBillToOrder.getOrderNo().equals(viewBillToCostClass.getOrderNo())) {
-                    try {
-                        String addProperties = "";
-                        String addValue = "";
-                        LinkedHashMap<String, String> propertiesMap = new LinkedHashMap<String, String>();
-                        Class cls = viewBillToCostClass.getClass();
-                        Field[] fields = cls.getDeclaredFields();
-                        for (int i = 0; i < fields.length; i++) {
-                            Field f = fields[i];
-                            f.setAccessible(true);
-                            if ("name".equals(f.getName())) {
-                                addProperties = String.valueOf(f.get(viewBillToCostClass));//待新增得属性
-                            }
-                            if ("money".equals(f.getName())) {
-                                addValue = String.valueOf(f.get(viewBillToCostClass));//待新增属性得值
-                            }
-                            propertiesMap.put(addProperties, addValue);
-                        }
-                        viewBillToOrder.setCostItems(propertiesMap);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            newOrderList.add(viewBillToOrder);
-        }
-        return newOrderList;
-    }
-
-    @Override
     public List<SheetHeadVO> findSheetHead(String billNo) {
         List<SheetHeadVO> allHeadList = new ArrayList<>();
         List<SheetHeadVO> fixHeadList = new ArrayList<>();

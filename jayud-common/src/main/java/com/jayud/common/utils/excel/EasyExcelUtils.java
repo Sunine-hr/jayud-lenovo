@@ -12,9 +12,11 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.RegionUtil;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.apache.poi.ss.usermodel.BorderStyle.THIN;
@@ -158,7 +160,7 @@ public class EasyExcelUtils {
 //            return ++rowNum;
 //        }
 
-        if (entity.getTableDada() == null) {
+        if (entity.getTableData() == null) {
             return ++rowNum;
         }
 
@@ -170,11 +172,11 @@ public class EasyExcelUtils {
         cellStyle.setBorderRight(THIN);
         cellStyle.setBorderLeft(THIN);
 
-        JSONArray tableDadas = entity.getTableDada();
+        JSONArray tableDatas = entity.getTableData();
 
         AtomicInteger j = new AtomicInteger();
-        for (int i = 0; i < tableDadas.size(); i++) {
-            JSONObject datas = tableDadas.getJSONObject(i);
+        for (int i = 0; i < tableDatas.size(); i++) {
+            JSONObject datas = tableDatas.getJSONObject(i);
             Row row = sheet.createRow(rowNum);
             row.setHeight((short) 800);
 
@@ -191,7 +193,7 @@ public class EasyExcelUtils {
 
     private static Integer tableTotal(EasyExcelEntity entity, Sheet sheet, Workbook workbook, Integer rowNum) {
 
-        if (CollectionUtils.isEmpty(entity.getTotalData())) {
+        if (entity.getTotalData() == null) {
             return rowNum;
         }
 
@@ -207,18 +209,29 @@ public class EasyExcelUtils {
         cellStyle.setBorderRight(THIN);
         cellStyle.setBorderLeft(THIN);
 
+        CellRangeAddress cellAddresses = new CellRangeAddress(rowNum, rowNum, 0, entity.getTotalIndex());
+
+        RegionUtil.setBorderBottom(BorderStyle.THIN, cellAddresses, sheet);
+        RegionUtil.setBorderTop(BorderStyle.THIN, cellAddresses, sheet);
+        RegionUtil.setBorderLeft(BorderStyle.THIN, cellAddresses, sheet);
+        RegionUtil.setBorderRight(BorderStyle.THIN, cellAddresses, sheet);
+
+        sheet.addMergedRegionUnsafe(cellAddresses);
+
         cell0.setCellStyle(cellStyle);
-        sheet.addMergedRegionUnsafe(new CellRangeAddress(rowNum, rowNum, 0, entity.getTotalIndex()));
 
-        List<String> totalDatas = entity.getTotalData();
-        int index = entity.getTotalIndex() + 1;
-        for (int i = 0; i < totalDatas.size(); i++) {
-            Cell cell = row.createCell(index);
-            cell.setCellStyle(cellStyle);
-            cell.setCellValue(totalDatas.get(i));
-            ++index;
-        }
+        Map<String, BigDecimal> totalDatas = entity.getTotalData();
+        AtomicInteger index = new AtomicInteger(entity.getTotalIndex() + 1);
 
+        entity.getTableHead().forEach((k, v) -> {
+            BigDecimal cost = totalDatas.get(k);
+            if (cost != null) {
+                Cell cell = row.createCell(index.get());
+                cell.setCellStyle(cellStyle);
+                cell.setCellValue(cost.toString());
+                index.incrementAndGet();
+            }
+        });
 
         return ++rowNum;
     }

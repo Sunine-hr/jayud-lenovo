@@ -92,11 +92,6 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
     List<ViewBilToOrderVO> viewBillDetail(String billNo);
 
     /**
-     * 对账单详情(费用项用map包装)
-     */
-    public List<ViewBilToOrderVO> viewBillDetailInfo(String billNo);
-
-    /**
      * 对账单详情表头
      *
      * @return

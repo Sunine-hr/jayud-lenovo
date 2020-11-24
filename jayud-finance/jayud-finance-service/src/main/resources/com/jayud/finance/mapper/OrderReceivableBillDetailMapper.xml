@@ -67,13 +67,13 @@
         order_receivable_bill_detail orbd
         LEFT JOIN order_receivable_bill orb ON orbd.bill_id = orb.id
         where 1 = 1
-        <if test="form.cmd == 'main_statement'">
+        <if test="form.cmd == 'main_statement' or form.cmd == 'statement_audit' or form.cmd == 'cw_statement'">
             and orb.is_main = 1
         </if>
-        <if test="form.cmd == 'zgys_statement'">
+        <if test="form.cmd == 'zgys_statement' or form.cmd == 'zgys_statement_audit' or form.cmd == 'zgys_cw_statement'">
             and orb.is_main = 0 and orb.sub_type = 'zgys'
         </if>
-        <if test="form.cmd == 'bg_statement'">
+        <if test="form.cmd == 'bg_statement' or form.cmd == 'bg_statement_audit' or form.cmd == 'bg_cw_statement'">
             and orb.is_main = 0 and orb.sub_type = 'bg'
         </if>
         <if test="form.unitAccount != null and form.unitAccount != ''">
@@ -165,10 +165,11 @@
             orc.main_order_no
     </select>
     <select id="viewSBillDetail" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewBilToOrderVO">
-        SELECT
+         SELECT
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         oi.order_no orderNo,
-        oi.customer_name customerName,
+        (select orc.order_no from order_receivable_cost orc where orc.id = orbd.cost_id) subOrderNo,
+        orb.unit_account unitAccount,
         ( SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' limit 1) startAddress,
         ( SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '2' limit 1) endAddress,
         (select concat(vi.plate_number,',',vi.hk_number) from order_send_cars osc left join order_transport ot on osc.order_no = ot.order_no left join driver_info di on di.id = osc.driver_info_id
@@ -179,8 +180,9 @@
         (select oc.yun_customs_no from order_customs oc where oc.main_order_no = oi.order_no limit 1) yunCustomsNo
         FROM
         order_info oi
-        where oi.order_no in
-        (select orbd.order_no from order_receivable_bill_detail orbd where orbd.bill_no = #{billNo})
+		left join order_receivable_bill_detail orbd on orbd.order_no = oi.order_no
+		left join order_receivable_bill orb on orb.id = orbd.bill_id
+        where orbd.bill_no = #{billNo}
     </select>
     <select id="getViewSBill" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewBillVO">
         SELECT DISTINCT

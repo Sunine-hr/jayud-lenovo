@@ -68,13 +68,13 @@
         order_payment_bill_detail opbd
         LEFT JOIN order_payment_bill opb ON opbd.bill_id = opb.id
         where 1 = 1
-        <if test="form.cmd == 'main_statement'">
+        <if test="form.cmd == 'main_statement' or form.cmd == 'statement_audit' or form.cmd == 'cw_statement'">
             and opb.is_main = 1
         </if>
-        <if test="form.cmd == 'zgys_statement'">
+        <if test="form.cmd == 'zgys_statement' or form.cmd == 'zgys_statement_audit' or form.cmd == 'zgys_cw_statement'">
             and opb.is_main = 0 and opb.sub_type = 'zgys'
         </if>
-        <if test="form.cmd == 'bg_statement'">
+        <if test="form.cmd == 'bg_statement' or form.cmd == 'bg_statement_audit' or form.cmd == 'bg_cw_statement'">
             and opb.is_main = 0 and opb.sub_type = 'bg'
         </if>
         <if test="form.supplierChName != null and form.supplierChName != ''">
@@ -165,11 +165,12 @@
             opc.currency_code,
             opc.main_order_no
     </select>
-    <select id="viewBillDetail" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewBilToOrderVO">
+    <select id="viewBillDetail" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewFBilToOrderVO">
         SELECT
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         oi.order_no orderNo,
-        oi.customer_name customerName,
+		(select opc.order_no from order_payment_cost opc where opc.id = opbd.cost_id) subOrderNo,
+        opb.supplier_ch_name supplierChName,
         ( SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' limit 1) startAddress,
         ( SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '2' limit 1) endAddress,
         (select concat(vi.plate_number,',',vi.hk_number) from order_send_cars osc left join order_transport ot on osc.order_no = ot.order_no left join driver_info di on di.id = osc.driver_info_id
@@ -180,8 +181,9 @@
         (select oc.yun_customs_no from order_customs oc where oc.main_order_no = oi.order_no limit 1) yunCustomsNo
         FROM
         order_info oi
-        where oi.order_no in
-        (select opbd.order_no from order_payment_bill_detail opbd where opbd.bill_no = #{billNo})
+		LEFT JOIN order_payment_bill_detail opbd on opbd.order_no = oi.order_no
+		left join order_payment_bill opb on opb.id = opbd.bill_id
+        where opbd.bill_no = #{billNo}
     </select>
     <select id="getViewBill" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewBillVO">
         SELECT DISTINCT

@@ -43,9 +43,10 @@ public class QueryPaymentBillDetailForm extends BasePageForm{
     @ApiModelProperty(value = "付款申请/开票申请")
     private String applyStatus;
 
-    @ApiModelProperty(value = "操作指令 cmd=main_statement/zgys_statement/bg_statement对账单 or statement_audit对账单审核",required = true)
-    @Pattern(regexp = "(main_statement|zgys_statement|bg_statement|statement_audit)", message = "只允许填写main_statement or zgys_statement " +
-            "or bg_statement or statement_audit ")
+    @ApiModelProperty(value = "操作指令 cmd=main_statement/zgys_statement/bg_statement对账单 or statement_audit/zgys_statement_audit/bg_statement_audit对账单审核 or" +
+            " cw_statement/zgys_cw_statement/bg_cw_statement财务对账单",required = true)
+    @Pattern(regexp = "(main_statement|zgys_statement|bg_statement|statement_audit|zgys_statement_audit|bg_statement_audit|" +
+            "cw_statement|zgys_cw_statement|bg_cw_statement)", message = "只允许填写特定值")
     private String cmd;
 
 }

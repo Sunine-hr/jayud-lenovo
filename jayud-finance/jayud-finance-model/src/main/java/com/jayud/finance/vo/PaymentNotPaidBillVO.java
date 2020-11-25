@@ -24,8 +24,8 @@ public class PaymentNotPaidBillVO {
     @ApiModelProperty(value = "供应商，应付时用")
     private String supplierChName;
 
-    @ApiModelProperty(value = "客户,应收是用")
-    private String customerName;
+    @ApiModelProperty(value = "结算单位,应收是用")
+    private String unitAccount;
 
     @ApiModelProperty(value = "起运地")
     private String startAddress;

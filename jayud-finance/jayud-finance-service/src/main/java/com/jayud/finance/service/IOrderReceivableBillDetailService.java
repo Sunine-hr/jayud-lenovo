@@ -71,9 +71,10 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
     /**
      * 编辑对账单提交
      * @param billNo
+     * @param loginUserName
      * @return
      */
-    Boolean editSBillSubmit(String billNo);
+    Boolean editSBillSubmit(String billNo,String loginUserName);
 
     /**
      * 对账单详情

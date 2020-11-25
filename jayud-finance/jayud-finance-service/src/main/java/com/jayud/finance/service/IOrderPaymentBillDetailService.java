@@ -71,9 +71,10 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
     /**
      * 编辑对账单提交
      * @param billNo
+     * @param loginUserName
      * @return
      */
-    Boolean editBillSubmit(String billNo);
+    Boolean editBillSubmit(String billNo,String loginUserName);
 
     /**
      * 对账单详情

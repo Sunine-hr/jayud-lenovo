@@ -114,7 +114,7 @@
             orc.main_order_no orderNo,
             pb.`name` bizCodeDesc,
             DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
-            orc.customer_name customerName,
+            cus.unit_account unitAccount,
             (SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' LIMIT 1) startAddress,
             (SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id WHERE ota.order_no = ot.order_no AND ota.opr_type = '2' LIMIT 1) endAddress,
             concat( vi.plate_number, vi.hk_number ) licensePlate,
@@ -129,6 +129,7 @@
             orc.id costId
         FROM
             order_receivable_cost orc
+			left join customer_info cus on cus.unit_code = orc.customer_code
             LEFT JOIN order_info oi ON orc.main_order_no = oi.order_no
             LEFT JOIN product_biz pb ON pb.id_code = oi.biz_code
             LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no

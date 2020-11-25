@@ -156,6 +156,12 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         if(receivableBillDetails.size() == 0){
             return false;
         }
+        //可编辑的条件：客服主管审核对账单不通过,客服主管反审核对账单，财务审核对账单不通过，财务反审核
+        OrderReceivableBillDetail existObject = receivableBillDetails.get(0);
+        if((!BillEnum.B_2_1.getCode().equals(existObject.getAuditStatus()) || BillEnum.B_7.getCode().equals(existObject.getAuditStatus()) ||
+           BillEnum.B_8.getCode().equals(existObject.getAuditStatus()) || BillEnum.B_4_1.getCode().equals(existObject.getAuditStatus()))){
+            return false;
+        }
         //处理需要删除的费用
         List<OrderReceiveBillDetailForm> delCosts = form.getDelCosts();
         List<Long> delCostIds = new ArrayList<>();
@@ -205,9 +211,9 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             Integer billOrderNum = receivableBillService.getSBillOrderNum(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), "create");
             orderReceivableBill.setBillOrderNum(billOrderNum);
             //3.统计账单数billNum
-            orderReceivableBill.setBillOrderNum(orderReceivableBill.getBillNum() + 1);
+            orderReceivableBill.setBillNum(orderReceivableBill.getBillNum() + 1);
             orderReceivableBill.setUpdatedTime(LocalDateTime.now());
-            orderReceivableBill.setUpdatedUser(UserOperator.getToken());
+            orderReceivableBill.setUpdatedUser(form.getLoginUserName());
             result = receivableBillService.updateById(orderReceivableBill);
             if (!result) {
                 return false;
@@ -224,9 +230,9 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 receiveBillDetails.get(i).setSettlementCurrency(oldSBillDetail.getSettlementCurrency());
                 receiveBillDetails.get(i).setAuditStatus("edit_no_commit");//编辑保存未提交的，给前台做区分
                 receiveBillDetails.get(i).setCreatedOrderTime(DateUtils.stringToDate(receiveBillDetailForms.get(i).getCreatedTimeStr(),DateUtils.DATE_PATTERN));
-                receiveBillDetails.get(i).setMakeUser(UserOperator.getToken());
+                receiveBillDetails.get(i).setMakeUser(form.getLoginUserName());
                 receiveBillDetails.get(i).setMakeTime(LocalDateTime.now());
-                receiveBillDetails.get(i).setCreatedUser(UserOperator.getToken());
+                receiveBillDetails.get(i).setCreatedUser(form.getLoginUserName());
             }
             result = saveOrUpdateBatch(receiveBillDetails);
             if (!result) {
@@ -244,10 +250,12 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                 orderBillCostTotalVO.setBillNo(form.getBillNo());
                 orderBillCostTotalVO.setCurrencyCode(settlementCurrency);
-                BigDecimal money = orderBillCostTotalVO.getMoney().multiply(orderBillCostTotalVO.getExchangeRate());
+                BigDecimal localMoney = orderBillCostTotalVO.getMoney();//本币金额
+                BigDecimal money = localMoney.multiply(orderBillCostTotalVO.getExchangeRate());
                 orderBillCostTotalVO.setMoney(money);
                 OrderBillCostTotal orderBillCostTotal = ConvertUtil.convert(orderBillCostTotalVO, OrderBillCostTotal.class);
-                orderBillCostTotal.setMoneyType("1");
+                orderBillCostTotal.setLocalMoney(localMoney);
+                orderBillCostTotal.setMoneyType("2");
                 orderBillCostTotals.add(orderBillCostTotal);
             }
             result = costTotalService.saveBatch(orderBillCostTotals);
@@ -256,26 +264,26 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             }
         }
         if("submit".equals(form.getCmd())){//提交
-            editSBillSubmit(form.getBillNo());
+            editSBillSubmit(form.getBillNo(),form.getLoginUserName());
         }
         return true;
     }
 
     @Override
-    public Boolean editSBillSubmit(String billNo) {
+    public Boolean editSBillSubmit(String billNo,String loginUserName) {
         //保存操作记录
         AuditInfoForm auditInfoForm = new AuditInfoForm();
         auditInfoForm.setExtUniqueFlag(billNo);
-        auditInfoForm.setAuditTypeDesc("编辑对账单提交财务审核");
-        auditInfoForm.setAuditStatus(BillEnum.B_3.getCode());
+        auditInfoForm.setAuditTypeDesc("编辑对账单提交到客服主管审核");
+        auditInfoForm.setAuditStatus(BillEnum.B_1.getCode());
         auditInfoForm.setExtDesc("order_receivable_bill_detail表bill_no");
-        auditInfoForm.setAuditUser(UserOperator.getToken());
+        auditInfoForm.setAuditUser(loginUserName);
         omsClient.saveAuditInfo(auditInfoForm);
 
         OrderReceivableBillDetail orderReceivableBillDetail = new OrderReceivableBillDetail();
-        orderReceivableBillDetail.setAuditStatus(BillEnum.B_3.getCode());
+        orderReceivableBillDetail.setAuditStatus(BillEnum.B_1.getCode());
         orderReceivableBillDetail.setUpdatedTime(LocalDateTime.now());
-        orderReceivableBillDetail.setUpdatedUser(UserOperator.getToken());
+        orderReceivableBillDetail.setUpdatedUser(loginUserName);
         QueryWrapper updateWrapper = new QueryWrapper();
         updateWrapper.eq("bill_no",billNo);
         return update(orderReceivableBillDetail,updateWrapper);

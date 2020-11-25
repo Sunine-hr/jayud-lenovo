@@ -60,7 +60,7 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
      * @param billNo
      * @return
      */
-    List<ViewBilToOrderVO> viewBillDetail(@Param("billNo") String billNo);
+    List<ViewFBilToOrderVO> viewBillDetail(@Param("billNo") String billNo);
 
     /**
      * 查询账单明细

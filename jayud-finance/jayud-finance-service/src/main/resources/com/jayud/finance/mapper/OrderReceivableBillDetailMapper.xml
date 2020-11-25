@@ -44,10 +44,9 @@
 
     <select id="findReceiveBillDetailByPage" parameterType="com.jayud.finance.bo.QueryPaymentBillDetailForm" resultType="com.jayud.finance.vo.OrderPaymentBillDetailVO" >
         SELECT distinct
-        orbd.id billDetailId,
         orbd.bill_no billNo,
         orb.legal_name legalName,
-        orb.customer_name customerName,
+        orb.unit_account unitAccount,
         DATE_FORMAT(orbd.begin_account_term,'%Y-%m-%d') 	beginAccountTermStr,
         DATE_FORMAT(orbd.end_account_term,'%Y-%m-%d') 	endAccountTermStr,
         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='CNY') rmb,
@@ -55,7 +54,8 @@
         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='EUR') euro,
         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='HKD') hKDollar,
         (select sum(m.money) from make_invoice m where m.opr_type = '2' and m.bill_no = orbd.bill_no and m.`status` = '1') heXiaoAmount,
-        (orbd.invoice_amount - (select sum(m.money) from make_invoice m where m.opr_type = '2' and m.bill_no = orbd.bill_no and m.`status` = '1'))  notHeXiaoAmount,orbd.settlement_currency settlementCurrency,orbd.audit_status auditStatus,orbd.apply_status applyStatus,
+        (orbd.invoice_amount - (select sum(m.money) from make_invoice m where m.opr_type = '2' and m.bill_no = orbd.bill_no and m.`status` = '1'))  notHeXiaoAmount,
+        (select cur.currency_name from currency_info cur where cur.currency_code = orbd.settlement_currency) settlementCurrency,orbd.audit_status auditStatus,orbd.apply_status applyStatus,
         orbd.make_user makeUser,
         orbd.make_time makeTimeStr,
         orbd.audit_user auditUser,
@@ -66,17 +66,26 @@
         order_receivable_bill_detail orbd
         LEFT JOIN order_receivable_bill orb ON orbd.bill_id = orb.id
         where 1 = 1
-        <if test="form.cmd == 'main_statement'">
+        <if test="form.cmd == 'main_statement' or form.cmd == 'cw_statement'">
             and orb.is_main = 1
         </if>
-        <if test="form.cmd == 'zgys_statement'">
+        <if test="form.cmd == 'statement_audit'">
+            and orb.is_main = 1 and orbd.audit_status in ('B_1','B_2')
+        </if>
+        <if test="form.cmd == 'zgys_statement' or form.cmd == 'zgys_cw_statement'">
             and orb.is_main = 0 and orb.sub_type = 'zgys'
         </if>
-        <if test="form.cmd == 'bg_statement'">
+        <if test="form.cmd == 'zgys_statement_audit'">
+            and orb.is_main = 0 and orb.sub_type = 'zgys' and orbd.audit_status in ('B_1','B_2')
+        </if>
+        <if test="form.cmd == 'bg_statement' or form.cmd == 'bg_cw_statement'">
             and orb.is_main = 0 and orb.sub_type = 'bg'
         </if>
-        <if test="form.customerName != null and form.customerName != ''">
-            and orb.customer_name like concat('%',#{form.customerName},'%')
+        <if test="form.cmd == 'bg_statement_audit'">
+            and orb.is_main = 0 and orb.sub_type = 'bg' and orbd.audit_status in ('B_1','B_2')
+        </if>
+        <if test="form.unitAccount != null and form.unitAccount != ''">
+            and orb.unit_account like concat('%',#{form.unitAccount},'%')
         </if>
         <if test="form.legalName != null and form.legalName != ''">
             and orb.legal_name like concat('%',#{form.legalName},'%')
@@ -105,7 +114,7 @@
             orc.main_order_no orderNo,
             pb.`name` bizCodeDesc,
             DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
-            orc.customer_name customerName,
+            cus.unit_account unitAccount,
             (SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' LIMIT 1) startAddress,
             (SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id WHERE ota.order_no = ot.order_no AND ota.opr_type = '2' LIMIT 1) endAddress,
             concat( vi.plate_number, vi.hk_number ) licensePlate,
@@ -120,6 +129,7 @@
             orc.id costId
         FROM
             order_receivable_cost orc
+			left join customer_info cus on cus.unit_code = orc.customer_code
             LEFT JOIN order_info oi ON orc.main_order_no = oi.order_no
             LEFT JOIN product_biz pb ON pb.id_code = oi.biz_code
             LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
@@ -164,10 +174,11 @@
             orc.main_order_no
     </select>
     <select id="viewSBillDetail" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewBilToOrderVO">
-        SELECT
+         SELECT
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         oi.order_no orderNo,
-        oi.customer_name customerName,
+        (select orc.order_no from order_receivable_cost orc where orc.id = orbd.cost_id) subOrderNo,
+        orb.unit_account unitAccount,
         ( SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' limit 1) startAddress,
         ( SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '2' limit 1) endAddress,
         (select concat(vi.plate_number,',',vi.hk_number) from order_send_cars osc left join order_transport ot on osc.order_no = ot.order_no left join driver_info di on di.id = osc.driver_info_id
@@ -178,15 +189,16 @@
         (select oc.yun_customs_no from order_customs oc where oc.main_order_no = oi.order_no limit 1) yunCustomsNo
         FROM
         order_info oi
-        where oi.order_no in
-        (select orbd.order_no from order_receivable_bill_detail orbd where orbd.bill_no = #{billNo})
+		left join order_receivable_bill_detail orbd on orbd.order_no = oi.order_no
+		left join order_receivable_bill orb on orb.id = orbd.bill_id
+        where orbd.bill_no = #{billNo}
     </select>
     <select id="getViewSBill" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewBillVO">
         SELECT DISTINCT
             orb.legal_name legalName,
             DATE_FORMAT( orbd.begin_account_term, '%Y-%m-%d' ) beginAccountTermStr,
             DATE_FORMAT( orbd.end_account_term, '%Y-%m-%d' ) endAccountTermStr,
-            orb.customer_name customerName,
+            (select oi.customer_name from order_info oi where oi.order_no = orbd.order_no) customerName,
             orbd.bill_no billNo,
             orbd.make_user makeUser,
             orbd.make_time makeTimeStr

@@ -50,7 +50,7 @@ public class ReceiveBillDetailController {
 
     @ApiOperation(value = "提交财务 billNos=账单编号集合,必须客服主管审核通过,状态为B_2")
     @PostMapping("/submitSCw")
-    public CommonResult submitSCw(@RequestBody @Valid ListForm form){
+    public CommonResult submitSCw(@RequestBody ListForm form){
         return billDetailService.submitSCw(form);
     }
 
@@ -226,11 +226,7 @@ public class ReceiveBillDetailController {
     @ApiOperation(value = "应收对账单审核,财务对账单审核")
     @PostMapping("/billSAudit")
     public CommonResult billSAudit(@RequestBody BillAuditForm form) {
-        Boolean result = billDetailService.billSAudit(form);
-        if(!result){
-            return CommonResult.error(ResultEnum.OPR_FAIL);
-        }
-        return CommonResult.success();
+        return billDetailService.billSAudit(form);
     }
 
     @ApiOperation(value = "导出应收对账单审核列表")
@@ -295,11 +291,7 @@ public class ReceiveBillDetailController {
         if(form.getBillNos() == null || form.getBillNos().size() == 0){
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        Boolean result = billDetailService.contrarySAudit(form);
-        if(!result){
-            return CommonResult.error(ResultEnum.OPR_FAIL);
-        }
-        return CommonResult.success();
+       return billDetailService.contrarySAudit(form);
     }
 
 }

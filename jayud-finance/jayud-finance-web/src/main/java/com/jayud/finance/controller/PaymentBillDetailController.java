@@ -50,7 +50,7 @@ public class PaymentBillDetailController {
 
     @ApiOperation(value = "提交财务 billNos=账单编号集合,必须客服主管审核通过,状态为B_2")
     @PostMapping("/submitFCw")
-    public CommonResult submitFCw(@RequestBody @Valid ListForm form){
+    public CommonResult submitFCw(@RequestBody ListForm form){
         return billDetailService.submitFCw(form);
     }
 
@@ -163,7 +163,7 @@ public class PaymentBillDetailController {
     @PostMapping("/viewBillDetail")
     public CommonResult<Map<String,Object>> viewBillDetail(@RequestBody @Valid ViewBillDetailForm form) {
         Map<String,Object> resultMap = new HashMap<>();
-        List<ViewBilToOrderVO> list = billDetailService.viewBillDetail(form.getBillNo());
+        List<ViewFBilToOrderVO> list = billDetailService.viewBillDetail(form.getBillNo());
         resultMap.put(CommonConstant.LIST,list);//分页数据
         List<SheetHeadVO> sheetHeadVOS = billDetailService.findSheetHead(form.getBillNo());
         resultMap.put(CommonConstant.SHEET_HEAD,sheetHeadVOS);//表头
@@ -178,7 +178,7 @@ public class PaymentBillDetailController {
     @ResponseBody
     public void exportBillDetail(@RequestParam(value = "billNo",required=true) String billNo,
                                    HttpServletResponse response) throws IOException {
-        List<ViewBilToOrderVO> list = billDetailService.viewBillDetail(billNo);
+        List<ViewFBilToOrderVO> list = billDetailService.viewBillDetail(billNo);
         ExcelWriter writer = ExcelUtil.getWriter(true);
 
         //自定义标题别名
@@ -228,11 +228,7 @@ public class PaymentBillDetailController {
     @ApiOperation(value = "应付对账单审核,财务对账单审核")
     @PostMapping("/billAudit")
     public CommonResult billAudit(@RequestBody BillAuditForm form) {
-        Boolean result = billDetailService.billAudit(form);
-        if(!result){
-            return CommonResult.error(ResultEnum.OPR_FAIL);
-        }
-        return CommonResult.success();
+        return billDetailService.billAudit(form);
     }
 
     @ApiOperation(value = "导出应付对账单审核列表")
@@ -297,11 +293,7 @@ public class PaymentBillDetailController {
         if(form.getBillNos() == null || form.getBillNos().size() == 0){
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        Boolean result = billDetailService.contraryAudit(form);
-        if(!result){
-            return CommonResult.error(ResultEnum.OPR_FAIL);
-        }
-        return CommonResult.success();
+        return billDetailService.contraryAudit(form);
     }
 
 }

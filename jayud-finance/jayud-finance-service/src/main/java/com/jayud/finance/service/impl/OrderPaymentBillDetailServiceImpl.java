@@ -65,7 +65,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         //定义分页参数
         Page<OrderPaymentBillDetailVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
-        page.addOrder(OrderItem.desc("opbd.created_time"));
+        page.addOrder(OrderItem.desc("opbd.make_time"));
         IPage<OrderPaymentBillDetailVO> pageInfo = baseMapper.findPaymentBillDetailByPage(page, form);
         return pageInfo;
     }
@@ -88,14 +88,14 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         List<OrderPaymentBillDetail> billDetails = baseMapper.selectList(queryWrapper);
         for (OrderPaymentBillDetail billDetail : billDetails) {
             if(!BillEnum.B_2.getCode().equals(billDetail.getAuditStatus())){
-                return CommonResult.error(ResultEnum.OPR_FAIL);
+                return CommonResult.error(10001,"不符合操作条件");
             }
         }
         for (String billNo : form.getBillNos()) {
             OrderPaymentBillDetail orderPaymentBillDetail = new OrderPaymentBillDetail();
             orderPaymentBillDetail.setAuditStatus(BillEnum.B_3.getCode());
             orderPaymentBillDetail.setUpdatedTime(LocalDateTime.now());
-            orderPaymentBillDetail.setUpdatedUser(UserOperator.getToken());
+            orderPaymentBillDetail.setUpdatedUser(form.getLoginUserName());
             QueryWrapper updateWrapper = new QueryWrapper();
             updateWrapper.eq("bill_no",billNo);
             update(orderPaymentBillDetail,updateWrapper);
@@ -106,7 +106,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             auditInfoForm.setAuditTypeDesc("提交财务");
             auditInfoForm.setAuditStatus(BillEnum.B_3.getCode());
             auditInfoForm.setExtDesc("order_payment_bill_detail表bill_no");
-            auditInfoForm.setAuditUser(UserOperator.getToken());
+            auditInfoForm.setAuditUser(form.getLoginUserName());
             omsClient.saveAuditInfo(auditInfoForm);
         }
         return CommonResult.success();
@@ -167,6 +167,12 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         if(paymentBillDetailList.size() == 0){
             return false;
         }
+        //可编辑的条件：客服主管审核对账单不通过,客服主管反审核对账单，财务审核对账单不通过，财务反审核
+        OrderPaymentBillDetail existObject = paymentBillDetailList.get(0);
+        if((!BillEnum.B_2_1.getCode().equals(existObject.getAuditStatus()) || BillEnum.B_7.getCode().equals(existObject.getAuditStatus()) ||
+                BillEnum.B_8.getCode().equals(existObject.getAuditStatus()) || BillEnum.B_4_1.getCode().equals(existObject.getAuditStatus()))){
+            return false;
+        }
         //处理需要删除的费用
         List<OrderPaymentBillDetailForm> delCosts = form.getDelCosts();
         List<Long> delCostIds = new ArrayList<>();
@@ -216,9 +222,9 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             Integer billOrderNum = orderPaymentBillService.getBillOrderNum(orderPaymentBill.getLegalName(), orderPaymentBill.getSupplierChName(), "create");
             orderPaymentBill.setBillOrderNum(billOrderNum);
             //3.统计账单数billNum
-            orderPaymentBill.setBillOrderNum(orderPaymentBill.getBillNum() + 1);
+            orderPaymentBill.setBillNum(orderPaymentBill.getBillNum() + 1);
             orderPaymentBill.setUpdatedTime(LocalDateTime.now());
-            orderPaymentBill.setUpdatedUser(UserOperator.getToken());
+            orderPaymentBill.setUpdatedUser(form.getLoginUserName());
             result = orderPaymentBillService.updateById(orderPaymentBill);
             if (!result) {
                 return false;
@@ -235,9 +241,9 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 paymentBillDetails.get(i).setSettlementCurrency(oldFBillDetail.getSettlementCurrency());
                 paymentBillDetails.get(i).setAuditStatus("edit_no_commit");
                 paymentBillDetails.get(i).setCreatedOrderTime(DateUtils.convert2Date(paymentBillDetailForms.get(i).getCreatedTimeStr(),DateUtils.DATE_PATTERN));
-                paymentBillDetails.get(i).setMakeUser(UserOperator.getToken());
+                paymentBillDetails.get(i).setMakeUser(form.getLoginUserName());
                 paymentBillDetails.get(i).setMakeTime(LocalDateTime.now());
-                paymentBillDetails.get(i).setCreatedUser(UserOperator.getToken());
+                paymentBillDetails.get(i).setCreatedUser(form.getLoginUserName());
             }
             result = saveOrUpdateBatch(paymentBillDetails);
             if (!result) {
@@ -255,9 +261,11 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                 orderBillCostTotalVO.setBillNo(form.getBillNo());
                 orderBillCostTotalVO.setCurrencyCode(settlementCurrency);
-                BigDecimal money = orderBillCostTotalVO.getMoney().multiply(orderBillCostTotalVO.getExchangeRate());
+                BigDecimal localMoney = orderBillCostTotalVO.getMoney();//本币金额
+                BigDecimal money = localMoney.multiply(orderBillCostTotalVO.getExchangeRate());
                 orderBillCostTotalVO.setMoney(money);
                 OrderBillCostTotal orderBillCostTotal = ConvertUtil.convert(orderBillCostTotalVO, OrderBillCostTotal.class);
+                orderBillCostTotal.setLocalMoney(localMoney);
                 orderBillCostTotal.setMoneyType("1");
                 orderBillCostTotals.add(orderBillCostTotal);
             }
@@ -267,37 +275,37 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             }
         }
         if("submit".equals(form.getCmd())){//提交
-            editBillSubmit(form.getBillNo());
+            editBillSubmit(form.getBillNo(),form.getLoginUserName());
         }
         return true;
     }
 
     @Override
-    public Boolean editBillSubmit(String billNo) {
+    public Boolean editBillSubmit(String billNo,String loginUserName) {
         //保存操作记录
         AuditInfoForm auditInfoForm = new AuditInfoForm();
         auditInfoForm.setExtUniqueFlag(billNo);
-        auditInfoForm.setAuditTypeDesc("编辑对账单提交财务审核");
-        auditInfoForm.setAuditStatus(BillEnum.B_3.getCode());
+        auditInfoForm.setAuditTypeDesc("编辑对账单提交到客服主管审核");
+        auditInfoForm.setAuditStatus(BillEnum.B_1.getCode());
         auditInfoForm.setExtDesc("order_payment_bill_detail表bill_no");
-        auditInfoForm.setAuditUser(UserOperator.getToken());
+        auditInfoForm.setAuditUser(loginUserName);
         omsClient.saveAuditInfo(auditInfoForm);
 
         OrderPaymentBillDetail orderPaymentBillDetail = new OrderPaymentBillDetail();
-        orderPaymentBillDetail.setAuditStatus(BillEnum.B_3.getCode());
+        orderPaymentBillDetail.setAuditStatus(BillEnum.B_1.getCode());
         orderPaymentBillDetail.setUpdatedTime(LocalDateTime.now());
-        orderPaymentBillDetail.setUpdatedUser(UserOperator.getToken());
+        orderPaymentBillDetail.setUpdatedUser(loginUserName);
         QueryWrapper updateWrapper = new QueryWrapper();
         updateWrapper.eq("bill_no",billNo);
         return update(orderPaymentBillDetail,updateWrapper);
     }
 
     @Override
-    public List<ViewBilToOrderVO> viewBillDetail(String billNo) {
-        List<ViewBilToOrderVO> orderList = baseMapper.viewBillDetail(billNo);
-        List<ViewBilToOrderVO> newOrderList = new ArrayList<>();
+    public List<ViewFBilToOrderVO> viewBillDetail(String billNo) {
+        List<ViewFBilToOrderVO> orderList = baseMapper.viewBillDetail(billNo);
+        List<ViewFBilToOrderVO> newOrderList = new ArrayList<>();
         List<ViewBillToCostClassVO> findCostClass = baseMapper.findCostClass(billNo);
-        for (ViewBilToOrderVO viewBillToOrder : orderList) {
+        for (ViewFBilToOrderVO viewBillToOrder : orderList) {
             for(ViewBillToCostClassVO viewBillToCostClass : findCostClass){
                 if(viewBillToOrder.getOrderNo().equals(viewBillToCostClass.getOrderNo())){
                     try {
@@ -317,7 +325,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                             }
                             propertiesMap.put(addProperties, addValue);
                         }
-                        viewBillToOrder = (ViewBilToOrderVO) ReflectUtil.getObject(viewBillToOrder, propertiesMap);
+                        viewBillToOrder = (ViewFBilToOrderVO) ReflectUtil.getObject(viewBillToOrder, propertiesMap);
                     }catch (Exception e){
                         e.printStackTrace();
                     }
@@ -333,7 +341,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         List<SheetHeadVO> allHeadList = new ArrayList<>();
         List<SheetHeadVO> fixHeadList = new ArrayList<>();
         try {
-            ViewBilToOrderHeadVO viewBilToOrderVO = new ViewBilToOrderHeadVO();
+            ViewFBilToOrderHeadVO viewBilToOrderVO = new ViewFBilToOrderHeadVO();
             Class cls = viewBilToOrderVO.getClass();
             Field[] fields = cls.getDeclaredFields();
             for (int i = 0; i < fields.length; i++) {
@@ -348,6 +356,9 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             e.printStackTrace();
         }
         List<SheetHeadVO> dynamicHeadList = baseMapper.findSheetHead(billNo);
+        for (SheetHeadVO sheetHead : dynamicHeadList) {
+            sheetHead.setName(sheetHead.getName().toLowerCase());
+        }
         allHeadList.addAll(fixHeadList);
         allHeadList.addAll(dynamicHeadList);
         return allHeadList;
@@ -359,13 +370,35 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     }
 
     @Override
-    public Boolean billAudit(BillAuditForm form) {
+    public CommonResult billAudit(BillAuditForm form) {
+        //审核条件
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("bill_no",form.getBillNo());
+        List<OrderPaymentBillDetail> existList = baseMapper.selectList(queryWrapper);
+        OrderPaymentBillDetail existObject = existList.get(0);
         OrderPaymentBillDetail orderPaymentBillDetail = new OrderPaymentBillDetail();
+        AuditInfoForm auditInfoForm = new AuditInfoForm();
         String auditStatus = "";
-        if("0".equals(form.getAuditStatus())){
-            auditStatus = BillEnum.B_2.getCode();
-        }else if("1".equals(form.getAuditStatus())){
-            auditStatus = BillEnum.B_2_1.getCode();
+        if("audit".equals(form.getCmd())) {
+            if(!BillEnum.B_1.getCode().equals(existObject.getAuditStatus())){
+                return CommonResult.error(100001,"不符合审核条件");
+            }
+            if ("0".equals(form.getAuditStatus())) {
+                auditStatus = BillEnum.B_2.getCode();
+            } else if ("1".equals(form.getAuditStatus())) {
+                auditStatus = BillEnum.B_2_1.getCode();
+            }
+            auditInfoForm.setAuditTypeDesc("应付对账单审核");
+        }else if("cw_audit".equals(form.getCmd())){//财务对账单审核
+            if(!BillEnum.B_3.getCode().equals(existObject.getAuditStatus())){
+                return CommonResult.error(100001,"不符合审核条件");
+            }
+            if ("0".equals(form.getAuditStatus())) {
+                auditStatus = BillEnum.B_4.getCode();
+            } else if ("1".equals(form.getAuditStatus())) {
+                auditStatus = BillEnum.B_4_1.getCode();
+            }
+            auditInfoForm.setAuditTypeDesc("财务对账单审核");
         }
         orderPaymentBillDetail.setAuditStatus(auditStatus);
         orderPaymentBillDetail.setUpdatedTime(LocalDateTime.now());
@@ -374,18 +407,16 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         updateWrapper.eq("bill_no",form.getBillNo());
         Boolean result = update(orderPaymentBillDetail,updateWrapper);
         if(!result){
-            return false;
+            return CommonResult.error(ResultEnum.OPR_FAIL);
         }
         //记录审核信息
-        AuditInfoForm auditInfoForm = new AuditInfoForm();
         auditInfoForm.setExtUniqueFlag(form.getBillNo());
-        auditInfoForm.setAuditTypeDesc("应付对账单审核");
         auditInfoForm.setAuditStatus(auditStatus);
         auditInfoForm.setAuditComment(form.getAuditComment());
         auditInfoForm.setExtDesc("order_payment_bill_detail表bill_no");
-        auditInfoForm.setAuditUser(UserOperator.getToken());
+        auditInfoForm.setAuditUser(form.getLoginUserName());
         omsClient.saveAuditInfo(auditInfoForm);
-        return true;
+        return CommonResult.success();
     }
 
     /**
@@ -396,8 +427,17 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
      *   ①未申请开票或付款的或作废的才可进行反审核
      */
     @Override
-    public Boolean contraryAudit(ListForm form) {
+    public CommonResult contraryAudit(ListForm form) {
+        //反审核条件
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.in("bill_no",form.getBillNos());
+        List<OrderPaymentBillDetail> existList = baseMapper.selectList(queryWrapper);
         if("kf_f_reject".equals(form.getCmd())){
+            for (OrderPaymentBillDetail existObject : existList) {
+                if(!BillEnum.B_2.getCode().equals(existObject.getAuditStatus())){
+                    return CommonResult.error(10001,"存在不符合操作条件的数据");
+                }
+            }
             for (String billNo : form.getBillNos()) {
                 OrderPaymentBillDetail orderPaymentBillDetail = new OrderPaymentBillDetail();
                 orderPaymentBillDetail.setAuditStatus(BillEnum.B_7.getCode());
@@ -408,6 +448,11 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 update(orderPaymentBillDetail,updateWrapper);
             }
         }else if("cw_f_reject".equals(form.getCmd())){
+            for (OrderPaymentBillDetail existObject : existList) {
+                if(!BillEnum.B_5_1.getCode().equals(existObject.getAuditStatus())){
+                    return CommonResult.error(10001,"存在不符合操作条件的数据");
+                }
+            }
             for (String billNo : form.getBillNos()) {
                 OrderPaymentBillDetail orderPaymentBillDetail = new OrderPaymentBillDetail();
                 orderPaymentBillDetail.setAuditStatus(BillEnum.B_8.getCode());
@@ -418,7 +463,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 update(orderPaymentBillDetail,updateWrapper);
             }
         }
-        return true;
+        return CommonResult.success();
     }
 
     @Override

@@ -71,16 +71,17 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
     /**
      * 编辑对账单提交
      * @param billNo
+     * @param loginUserName
      * @return
      */
-    Boolean editBillSubmit(String billNo);
+    Boolean editBillSubmit(String billNo,String loginUserName);
 
     /**
      * 对账单详情
      * @param billNo
      * @return
      */
-    List<ViewBilToOrderVO> viewBillDetail(String billNo);
+    List<ViewFBilToOrderVO> viewBillDetail(String billNo);
 
     /**
      * 对账单详情表头
@@ -99,14 +100,14 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      * @param form
      * @return
      */
-    Boolean billAudit(BillAuditForm form);
+    CommonResult billAudit(BillAuditForm form);
 
     /**
      * 反审核
      * @param form
      * @return
      */
-    Boolean contraryAudit(ListForm form);
+    CommonResult contraryAudit(ListForm form);
 
 
     //财务核算模块

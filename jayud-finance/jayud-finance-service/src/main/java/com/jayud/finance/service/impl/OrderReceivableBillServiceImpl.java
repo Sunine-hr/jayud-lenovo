@@ -178,7 +178,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
                 orderBillCostTotalVO.setMoney(money);
                 OrderBillCostTotal orderBillCostTotal = ConvertUtil.convert(orderBillCostTotalVO,OrderBillCostTotal.class);
                 orderBillCostTotal.setLocalMoney(localMoney);
-                orderBillCostTotal.setMoneyType("1");
+                orderBillCostTotal.setMoneyType("2");
                 orderBillCostTotals.add(orderBillCostTotal);
             }
             result = costTotalService.saveBatch(orderBillCostTotals);

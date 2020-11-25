@@ -71,9 +71,10 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
     /**
      * 编辑对账单提交
      * @param billNo
+     * @param loginUserName
      * @return
      */
-    Boolean editSBillSubmit(String billNo);
+    Boolean editSBillSubmit(String billNo,String loginUserName);
 
     /**
      * 对账单详情
@@ -99,14 +100,14 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      * @param form
      * @return
      */
-    Boolean billSAudit(BillAuditForm form);
+    CommonResult billSAudit(BillAuditForm form);
 
     /**
      * 应收反审核
      * @param form
      * @return
      */
-    Boolean contrarySAudit(ListForm form);
+    CommonResult contrarySAudit(ListForm form);
 
    //财务核算模块
     /**

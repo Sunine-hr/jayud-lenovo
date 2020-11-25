@@ -16,8 +16,11 @@ public class ListForm {
     @ApiModelProperty(value = "账单编号集合")
     private List<String> billNos;
 
-    @ApiModelProperty(value = "操作指令")
+    @ApiModelProperty(value = "操作指令 cmd=kf_f_reject客服反审核 cw_f_reject财务反审核")
     private String cmd;
+
+    @ApiModelProperty(value = "当前登录用户")
+    private String loginUserName;
 
 
 }

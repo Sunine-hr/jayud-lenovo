@@ -33,5 +33,8 @@ public class EditSBillForm {
     @Pattern(regexp = "(save|submit)", message = "只允许填写save or submit")
     private String cmd;
 
+    @ApiModelProperty(value = "当前登录用户",required = true)
+    private String loginUserName;
+
 
 }

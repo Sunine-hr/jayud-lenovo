@@ -24,5 +24,12 @@ public class BillAuditForm {
     @Pattern(regexp = "(0|1)", message = "只允许填写0-通过 1-不通过")
     private String auditStatus;
 
+    @ApiModelProperty(value = "操作指令 cmd = audit or cw_audit",required = true)
+    @Pattern(regexp = "(audit|cw_audit)", message = "只允许填写audit or cw_audit")
+    private String cmd;
+
+    @ApiModelProperty(value = "当前登录用户",required = true)
+    private String loginUserName;
+
 
 }

@@ -28,8 +28,6 @@ import java.util.Date;
 public  class RsaEncryptUtil {
     /**
      * C#中通过FromXmlString属性加载的是XML形式,而JAVA中用到的是解析后的PEM格式的字符串,总之读取证书中信息无非是转换方式问题
-     *
-//     * @param args
      */
 //    public static void main(String[] args) {
 //        CryptPair info = new CryptPair();
@@ -55,28 +53,58 @@ public  class RsaEncryptUtil {
 //            e.printStackTrace();
 //        }
 //    }
-    public static String getEncryptedPassword(String username, String password, String vivoPublicKey) throws NoSuchPaddingException, NoSuchAlgorithmException, IOException, BadPaddingException, IllegalBlockSizeException, InvalidKeyException, InvalidKeySpecException {
+
+    /**
+     * 获取加密后的字符串（password字符串）
+     * @param password 被加密的字符串
+     * @param vivoPublicKey 用于加密的公钥
+     * @return
+     * @throws NoSuchPaddingException
+     * @throws NoSuchAlgorithmException
+     * @throws IOException
+     * @throws BadPaddingException
+     * @throws IllegalBlockSizeException
+     * @throws InvalidKeyException
+     * @throws InvalidKeySpecException
+     */
+    public static String getEncryptedPassword( String password, String vivoPublicKey) throws NoSuchPaddingException, NoSuchAlgorithmException, IOException, BadPaddingException, IllegalBlockSizeException, InvalidKeyException, InvalidKeySpecException {
         CryptPair info = new CryptPair();
-        info.setPassword("123456");
+        info.setPassword(password);
         info.setTimeStamp(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
         String infoStr = JSONUtil.toJsonStr(info);
         return encrypt(infoStr,vivoPublicKey);
     }
 
+    /**
+     * 实际加密算法
+     * @param info 封装的password+时间密钥对
+     * @param vivoPublicKey 加密用的公钥
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     * @throws NoSuchPaddingException
+     * @throws InvalidKeyException
+     * @throws IOException
+     * @throws BadPaddingException
+     * @throws IllegalBlockSizeException
+     */
     private static String encrypt(String info,String vivoPublicKey) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IOException, BadPaddingException, IllegalBlockSizeException {
+        //由于C#编码问题，读取配置文件中的C#公钥要对xml进行读取，此处直接正则抓取了
         String xmlModulus = ReUtil.get("(?<=\\<Modulus\\>)\\S+(?=\\<\\/Modulus\\>)", vivoPublicKey, 0);
         String xmlExponentString = ReUtil.get("(?<=\\<Exponent\\>)\\S+(?=\\<\\/Exponent\\>)", vivoPublicKey, 0);
 
-
+        //将C#的编码方式换成JAVA的编码方式
         byte[] moduleBytes = Base64.decode(xmlModulus);
         byte[] exponentBytes = Base64.decode(xmlExponentString);
         BigInteger modulus = new BigInteger(1, moduleBytes);
         BigInteger exponent = new BigInteger(1, exponentBytes);
 
+        //获取java使用的RSA公钥
         RSAPublicKeySpec rsaPublicKey = new RSAPublicKeySpec(modulus, exponent);
         KeyFactory factory = KeyFactory.getInstance("RSA");
         PublicKey publicKey = factory.generatePublic(rsaPublicKey);
 
+        //使用RSA方式加密
         Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.ENCRYPT_MODE, publicKey);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -90,9 +118,7 @@ public  class RsaEncryptUtil {
             if (readSize <= 0) {
                 break;
             }
-
             byte[] temp = Arrays.copyOf(buffer, readSize);
-
             byte[] bytes = cipher.doFinal(temp);
             outputStream.write(bytes, 0, bytes.length);
         }
@@ -100,6 +126,11 @@ public  class RsaEncryptUtil {
         return result;
     }
 
+    /**
+     * 利用私钥对传过来的信息进行解密并返回解密后的字节数组
+     * @param encrypted
+     * @return
+     */
     private static byte[] Dencrypt(byte[] encrypted) {
         try {
             //解密用的私钥

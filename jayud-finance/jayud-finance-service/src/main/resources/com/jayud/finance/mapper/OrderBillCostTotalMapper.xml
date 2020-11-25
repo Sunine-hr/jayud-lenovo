@@ -55,7 +55,7 @@
         currency_rate cr
         WHERE
         cr.dcid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = orc.currency_code )
-        AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code ='' )),0) exchangeRate
+        AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = #{settlementCurrency} ) ORDER BY cr.created_time desc limit 1),0) exchangeRate
         FROM
         order_receivable_cost orc
         LEFT JOIN cost_info ci ON orc.cost_code = ci.id_code

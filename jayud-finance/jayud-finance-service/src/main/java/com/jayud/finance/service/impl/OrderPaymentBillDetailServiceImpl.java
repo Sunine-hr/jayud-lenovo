@@ -293,11 +293,11 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     }
 
     @Override
-    public List<ViewBilToOrderVO> viewBillDetail(String billNo) {
-        List<ViewBilToOrderVO> orderList = baseMapper.viewBillDetail(billNo);
-        List<ViewBilToOrderVO> newOrderList = new ArrayList<>();
+    public List<ViewFBilToOrderVO> viewBillDetail(String billNo) {
+        List<ViewFBilToOrderVO> orderList = baseMapper.viewBillDetail(billNo);
+        List<ViewFBilToOrderVO> newOrderList = new ArrayList<>();
         List<ViewBillToCostClassVO> findCostClass = baseMapper.findCostClass(billNo);
-        for (ViewBilToOrderVO viewBillToOrder : orderList) {
+        for (ViewFBilToOrderVO viewBillToOrder : orderList) {
             for(ViewBillToCostClassVO viewBillToCostClass : findCostClass){
                 if(viewBillToOrder.getOrderNo().equals(viewBillToCostClass.getOrderNo())){
                     try {
@@ -317,7 +317,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                             }
                             propertiesMap.put(addProperties, addValue);
                         }
-                        viewBillToOrder = (ViewBilToOrderVO) ReflectUtil.getObject(viewBillToOrder, propertiesMap);
+                        viewBillToOrder = (ViewFBilToOrderVO) ReflectUtil.getObject(viewBillToOrder, propertiesMap);
                     }catch (Exception e){
                         e.printStackTrace();
                     }

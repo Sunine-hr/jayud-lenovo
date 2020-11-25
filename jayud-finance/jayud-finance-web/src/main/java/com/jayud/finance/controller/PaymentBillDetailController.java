@@ -163,7 +163,7 @@ public class PaymentBillDetailController {
     @PostMapping("/viewBillDetail")
     public CommonResult<Map<String,Object>> viewBillDetail(@RequestBody @Valid ViewBillDetailForm form) {
         Map<String,Object> resultMap = new HashMap<>();
-        List<ViewBilToOrderVO> list = billDetailService.viewBillDetail(form.getBillNo());
+        List<ViewFBilToOrderVO> list = billDetailService.viewBillDetail(form.getBillNo());
         resultMap.put(CommonConstant.LIST,list);//分页数据
         List<SheetHeadVO> sheetHeadVOS = billDetailService.findSheetHead(form.getBillNo());
         resultMap.put(CommonConstant.SHEET_HEAD,sheetHeadVOS);//表头
@@ -178,7 +178,7 @@ public class PaymentBillDetailController {
     @ResponseBody
     public void exportBillDetail(@RequestParam(value = "billNo",required=true) String billNo,
                                    HttpServletResponse response) throws IOException {
-        List<ViewBilToOrderVO> list = billDetailService.viewBillDetail(billNo);
+        List<ViewFBilToOrderVO> list = billDetailService.viewBillDetail(billNo);
         ExcelWriter writer = ExcelUtil.getWriter(true);
 
         //自定义标题别名

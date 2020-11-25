@@ -153,4 +153,18 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      */
     Boolean auditFInvoice(BillAuditForm form);
 
+    /**
+     *编辑保存确定
+     * @param costIds
+     * @return
+     */
+    Boolean editFSaveConfirm(List<Long> costIds);
+
+    /**
+     * 编辑删除
+     * @param costIds
+     * @return
+     */
+    Boolean editFDel(List<Long> costIds);
+
 }

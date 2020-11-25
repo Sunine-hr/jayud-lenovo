@@ -74,4 +74,11 @@ public interface IOrderReceivableBillService extends IService<OrderReceivableBil
      * @return
      */
     Integer getSBillOrderNum(String legalName,String customerName,String cmd);
+
+    /**
+     * 从删除的costIds里面挑出那种保存确定的数据
+     * @param costIds
+     * @return
+     */
+    List<Long> findSaveConfirmData(List<Long> costIds);
 }

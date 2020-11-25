@@ -260,4 +260,11 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
     public Integer getSBillOrderNum(String legalName, String unitAccount, String subType) {
         return baseMapper.getSBillOrderNum(legalName,unitAccount,subType);
     }
+
+    @Override
+    public List<Long> findSaveConfirmData(List<Long> costIds) {
+        return baseMapper.findSaveConfirmData(costIds);
+    }
+
+
 }

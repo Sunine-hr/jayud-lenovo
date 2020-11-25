@@ -289,5 +289,10 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         return false;
     }
 
+    @Override
+    public List<Long> findSaveConfirmData(List<Long> costIds) {
+        return baseMapper.findSaveConfirmData(costIds);
+    }
+
 
 }

@@ -89,4 +89,11 @@ public interface OrderReceivableBillMapper extends BaseMapper<OrderReceivableBil
      * @return
      */
     List<ViewBillToCostClassVO> findCostClass(@Param("costIds") List<Long> costIds);
+
+    /**
+     * 从删除的costIds里面挑出那种保存确定的数据
+     * @param costIds
+     * @return
+     */
+    List<Long> findSaveConfirmData(@Param("costIds") List<Long> costIds);
 }

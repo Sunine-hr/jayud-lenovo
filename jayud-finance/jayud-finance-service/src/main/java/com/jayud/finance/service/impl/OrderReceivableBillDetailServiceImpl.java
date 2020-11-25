@@ -31,6 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.stream.Collectors.toList;
+
 /**
  * <p>
  *  服务实现类
@@ -500,6 +502,33 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         }else{
             return false;
         }
+    }
+
+    @Override
+    public Boolean editSSaveConfirm(List<Long> costIds) {
+        //在录入费用表的is_bill做标识为save_confirm
+        return omsClient.editSaveConfirm(costIds,"receivable","save_confirm").getData();
+    }
+
+    @Override
+    public Boolean editSDel(List<Long> costIds) {
+        //从删除的costIds里面挑出那种保存确定的数据,回滚到未出账状态
+        List<Long> saveConfirmIds = receivableBillService.findSaveConfirmData(costIds);
+        Boolean result = omsClient.editSaveConfirm(saveConfirmIds,"receivable","edit_del").getData();
+        if(!result){
+            return false;
+        }
+        //已存在的数据删除,只在账单详情表做记录
+        List<Long> editDelIds = costIds.stream().filter(item -> !saveConfirmIds.contains(item)).collect(toList());
+        OrderReceivableBillDetail receivableBillDetail = new OrderReceivableBillDetail();
+        receivableBillDetail.setAuditStatus("edit_del");//持续操作中的过度状态
+        QueryWrapper updateWrapper = new QueryWrapper();
+        updateWrapper.in("cost_id",editDelIds);
+        result = update(receivableBillDetail,updateWrapper);
+        if(!result){
+            return false;
+        }
+        return true;
     }
 
 

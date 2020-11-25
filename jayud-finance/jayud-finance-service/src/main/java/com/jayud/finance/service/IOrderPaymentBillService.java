@@ -82,4 +82,11 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
      */
     Boolean isExistBillNo(String billNo);
 
+    /**
+     * 从删除的costIds里面挑出那种保存确定的数据
+     * @param costIds
+     * @return
+     */
+    List<Long> findSaveConfirmData(List<Long> costIds);
+
 }

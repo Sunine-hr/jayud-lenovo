@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -147,6 +148,44 @@ public class PaymentBillDetailController {
         IPage<PaymentNotPaidBillVO> pageList = billDetailService.findEditBillByPage(form);
         CommonPageResult<PaymentNotPaidBillVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
+    }
+
+    @ApiOperation(value = "编辑保存确定")
+    @PostMapping("/editFSaveConfirm")
+    public CommonResult editFSaveConfirm(@RequestBody EditBillForm form) {
+        //参数校验
+        List<OrderPaymentBillDetailForm> paymentBillDetailForms = form.getPaymentBillDetailForms();
+        if(paymentBillDetailForms == null || paymentBillDetailForms.size() == 0){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        List<Long> costIds = new ArrayList<>();
+        for (OrderPaymentBillDetailForm formObject : paymentBillDetailForms) {
+            costIds.add(formObject.getCostId());
+        }
+        Boolean result = billDetailService.editFSaveConfirm(costIds);
+        if(!result){
+            return CommonResult.error(ResultEnum.OPR_FAIL);
+        }
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "编辑删除")
+    @PostMapping("/editFDel")
+    public CommonResult editFDel(@RequestBody EditBillForm form) {
+        //参数校验
+        List<OrderPaymentBillDetailForm> delCosts = form.getDelCosts();
+        if(delCosts == null || delCosts.size() == 0){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        List<Long> costIds = new ArrayList<>();
+        for (OrderPaymentBillDetailForm formObject : delCosts) {
+            costIds.add(formObject.getCostId());
+        }
+        Boolean result = billDetailService.editFDel(costIds);
+        if(!result){
+            return CommonResult.error(ResultEnum.OPR_FAIL);
+        }
+        return CommonResult.success();
     }
 
     @ApiOperation(value = "客服编辑对账单保存或提交,财务编辑对账单保存或提交")

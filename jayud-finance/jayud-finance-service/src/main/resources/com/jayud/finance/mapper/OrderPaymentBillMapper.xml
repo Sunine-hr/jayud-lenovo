@@ -299,4 +299,16 @@
             #{item}
         </foreach>
     </select>
+    <select id="findSaveConfirmData" parameterType="java.util.List" resultType="java.util.List">
+        SELECT
+        count( 1 )
+        FROM
+        order_payment_cost opc
+        WHERE
+        opc.is_bill = 'save_confirm'
+        AND opc.id
+        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 </mapper>

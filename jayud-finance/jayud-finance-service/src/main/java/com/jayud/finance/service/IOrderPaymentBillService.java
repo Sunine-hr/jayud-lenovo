@@ -6,6 +6,7 @@ import com.jayud.finance.bo.*;
 import com.jayud.finance.po.OrderPaymentBill;
 import com.jayud.finance.vo.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -70,10 +71,28 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
      * 已出账订单数
      * @param legalName
      * @param supplierChName
-     * @param cmd
+     * @param subType
      * @return
      */
-    Integer getBillOrderNum(String legalName,String supplierChName,String cmd);
+    Integer getBillOrderNum(String legalName,String supplierChName,String subType);
+
+    /**
+     * 统计已出账金额alreadyPaidAmount
+     * @param legalName
+     * @param supplierChName
+     * @param subType
+     * @return
+     */
+    BigDecimal getAlreadyPaidAmount(String legalName, String supplierChName, String subType);
+
+    /**
+     * 统计账单数billNum
+     * @param legalName
+     * @param supplierChName
+     * @param subType
+     * @return
+     */
+    Integer getBillNum(String legalName, String supplierChName, String subType);
 
     /**
      * 账单号是否存在

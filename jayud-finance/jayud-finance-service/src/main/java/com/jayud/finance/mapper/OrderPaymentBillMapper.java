@@ -11,6 +11,7 @@ import com.jayud.finance.vo.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -62,6 +63,21 @@ public interface OrderPaymentBillMapper extends BaseMapper<OrderPaymentBill> {
      */
     Integer getBillOrderNum(@Param("legalName") String legalName,@Param("supplierChName") String supplierChName,@Param("subType") String subType);
 
+    /**
+     * 统计已出账金额alreadyPaidAmount
+     * @param legalName
+     * @param supplierChName
+     * @return
+     */
+    BigDecimal getAlreadyPaidAmount(@Param("legalName") String legalName, @Param("supplierChName") String supplierChName, @Param("subType") String subType);
+
+    /**
+     * 统计账单数billNum
+     * @param legalName
+     * @param supplierChName
+     * @return
+     */
+    Integer getBillNum(@Param("legalName") String legalName,@Param("supplierChName") String supplierChName,@Param("subType") String subType);
 
     /**
      * 预览账单表头

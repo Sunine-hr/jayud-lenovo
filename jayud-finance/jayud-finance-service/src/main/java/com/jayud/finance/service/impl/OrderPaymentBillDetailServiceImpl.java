@@ -202,8 +202,10 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             OrderPaymentBill orderPaymentBill = orderPaymentBillService.getById(form.getBillId());//获取账单信息
             //生成账单需要修改order_payment_cost表的is_bill
             List<Long> costIds = new ArrayList<>();
+            List<String> orderNos = new ArrayList<>(); //为了统计已出账订单数
             for (OrderPaymentBillDetailForm paymentBillDetail : paymentBillDetailForms) {
                 costIds.add(paymentBillDetail.getCostId());
+                orderNos.add(paymentBillDetail.getOrderNo());
             }
             if(costIds.size() > 0){
                 OprCostBillForm oprCostBillForm = new OprCostBillForm();
@@ -217,14 +219,27 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             }
             //生成对账单数据
             //对现有账单信息进行修改
+            OrderPaymentBill subTypeObject = orderPaymentBillService.getById(existObject.getBillId());
+            String subType = subTypeObject.getSubType();
             //1.统计已出账金额alreadyPaidAmount
             BigDecimal nowBillAmount = paymentBillDetailForms.stream().map(OrderPaymentBillDetailForm::getLocalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-            orderPaymentBill.setAlreadyPaidAmount(orderPaymentBill.getAlreadyPaidAmount().add(nowBillAmount));
+            BigDecimal alreadyPaidAmount = orderPaymentBillService.getAlreadyPaidAmount(orderPaymentBill.getLegalName(), orderPaymentBill.getSupplierChName(), subType);
+            orderPaymentBill.setAlreadyPaidAmount(alreadyPaidAmount.add(nowBillAmount));
             //2.统计已出账订单数billOrderNum
-            Integer billOrderNum = orderPaymentBillService.getBillOrderNum(orderPaymentBill.getLegalName(), orderPaymentBill.getSupplierChName(), "create");
-            orderPaymentBill.setBillOrderNum(billOrderNum);
+            List<String> validOrders = new ArrayList<>();
+            for (String orderNo : orderNos) {
+                QueryWrapper queryWrapper1 = new QueryWrapper();
+                queryWrapper1.eq("order_no",orderNo);
+                List<OrderPaymentBillDetail> orderNoOjects= list(queryWrapper1);
+                if(orderNoOjects == null || orderNoOjects.size() == 0){
+                    validOrders.add(orderNo);
+                }
+            }
+            Integer nowBillOrderNum = validOrders.size();
+            Integer billOrderNum = orderPaymentBillService.getBillOrderNum(orderPaymentBill.getLegalName(), orderPaymentBill.getSupplierChName(), subType);
+            orderPaymentBill.setBillOrderNum(billOrderNum + nowBillOrderNum);
             //3.统计账单数billNum
-            orderPaymentBill.setBillNum(orderPaymentBill.getBillNum() + 1);
+            orderPaymentBill.setBillNum(orderPaymentBill.getBillNum());
             orderPaymentBill.setUpdatedTime(LocalDateTime.now());
             orderPaymentBill.setUpdatedUser(form.getLoginUserName());
             result = orderPaymentBillService.updateById(orderPaymentBill);

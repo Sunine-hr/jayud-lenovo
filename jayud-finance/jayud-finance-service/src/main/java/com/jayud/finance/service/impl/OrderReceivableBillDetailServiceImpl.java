@@ -151,7 +151,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
 
     @Override
     public Boolean editSBill(EditSBillForm form) {
-        //如果该账单编号下的现有订单都删除光了，不处理，让她重新出账
+        //该账单编号下必须有账单信息才可编辑
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("bill_no",form.getBillNo());
         List<OrderReceivableBillDetail> receivableBillDetails = baseMapper.selectList(queryWrapper);
@@ -171,18 +171,18 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             delCostIds.add(billDetail.getCostId());
         }
         if(delCostIds.size() > 0){
+            //1.对账单相应的详情信息做删除
             QueryWrapper removeWrapper = new QueryWrapper();
             removeWrapper.eq("bill_no",form.getBillNo());
             removeWrapper.in("costId",delCostIds);
             remove(removeWrapper);
 
-            //相应的费用录入也需要做记录
+            //2.相应的费用录入也需要做记录
             OprCostBillForm oprCostBillForm = new OprCostBillForm();
             oprCostBillForm.setCmd("del");
             oprCostBillForm.setOprType("receivable");
             oprCostBillForm.setCostIds(delCostIds);
             omsClient.oprCostBill(oprCostBillForm);
-
         }
         //处理要新增的费用
         if(form.getReceiveBillDetailForms().size() > 0) {
@@ -191,8 +191,10 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             OrderReceivableBill orderReceivableBill = receivableBillService.getById(form.getBillId());//获取账单信息
             //生成账单需要修改order_receivable_cost表的is_bill
             List<Long> costIds = new ArrayList<>();
+            List<String> orderNos = new ArrayList<>(); //为了统计已出账订单数
             for (OrderReceiveBillDetailForm receiveBillDetail : receiveBillDetailForms) {
                 costIds.add(receiveBillDetail.getCostId());
+                orderNos.add(receiveBillDetail.getOrderNo());
             }
             if(costIds.size() > 0){
                 OprCostBillForm oprCostBillForm = new OprCostBillForm();
@@ -206,14 +208,28 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             }
             //生成对账单数据
             //对现有账单信息进行修改
+            OrderReceivableBill subTypeObject = receivableBillService.getById(existObject.getBillId());
+            String subType = subTypeObject.getSubType();
             //1.统计已出账金额alreadyPaidAmount
             BigDecimal nowBillAmount = receiveBillDetailForms.stream().map(OrderReceiveBillDetailForm::getLocalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-            orderReceivableBill.setAlreadyPaidAmount(orderReceivableBill.getAlreadyPaidAmount().add(nowBillAmount));
+            BigDecimal alreadyPaidAmount = receivableBillService.getSAlreadyPaidAmount(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), subType);
+            orderReceivableBill.setAlreadyPaidAmount(alreadyPaidAmount.add(nowBillAmount));
             //2.统计已出账订单数billOrderNum
-            Integer billOrderNum = receivableBillService.getSBillOrderNum(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), "create");
-            orderReceivableBill.setBillOrderNum(billOrderNum);
+            List<String> validOrders = new ArrayList<>();
+            for (String orderNo : orderNos) {
+                QueryWrapper queryWrapper1 = new QueryWrapper();
+                queryWrapper1.eq("order_no",orderNo);
+                List<OrderReceivableBillDetail> orderNoOjects= list(queryWrapper1);
+                if(orderNoOjects == null || orderNoOjects.size() == 0){
+                    validOrders.add(orderNo);
+                }
+            }
+            Integer nowBillOrderNum = validOrders.size();
+            Integer billOrderNum = receivableBillService.getSBillOrderNum(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), subType);
+            orderReceivableBill.setBillOrderNum(billOrderNum + nowBillOrderNum);
             //3.统计账单数billNum
-            orderReceivableBill.setBillNum(orderReceivableBill.getBillNum() + 1);
+            Integer billNum = receivableBillService.getSBillNum(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), subType);
+            orderReceivableBill.setBillNum(billNum);
             orderReceivableBill.setUpdatedTime(LocalDateTime.now());
             orderReceivableBill.setUpdatedUser(form.getLoginUserName());
             result = receivableBillService.updateById(orderReceivableBill);

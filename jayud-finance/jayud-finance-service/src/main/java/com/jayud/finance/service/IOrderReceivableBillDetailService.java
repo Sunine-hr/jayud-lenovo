@@ -106,7 +106,7 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      * @param form
      * @return
      */
-    Boolean contrarySAudit(ListForm form);
+    CommonResult contrarySAudit(ListForm form);
 
    //财务核算模块
     /**

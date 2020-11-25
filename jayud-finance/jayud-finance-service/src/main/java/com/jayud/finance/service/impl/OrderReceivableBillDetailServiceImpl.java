@@ -361,7 +361,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         AuditInfoForm auditInfoForm = new AuditInfoForm();
         String auditStatus = "";
         if("audit".equals(form.getCmd())) {
-            if(!BillEnum.B_1.equals(existObject.getAuditStatus())){
+            if(!BillEnum.B_1.getCode().equals(existObject.getAuditStatus())){
                 return CommonResult.error(100001,"不符合审核条件");
             }
             if ("0".equals(form.getAuditStatus())) {
@@ -371,7 +371,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             }
             auditInfoForm.setAuditTypeDesc("应收对账单审核");
         }else if("cw_audit".equals(form.getCmd())){//财务对账单审核
-            if(!BillEnum.B_3.equals(existObject.getAuditStatus())){
+            if(!BillEnum.B_3.getCode().equals(existObject.getAuditStatus())){
                 return CommonResult.error(100001,"不符合审核条件");
             }
             if ("0".equals(form.getAuditStatus())) {
@@ -401,8 +401,17 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
     }
 
     @Override
-    public Boolean contrarySAudit(ListForm form) {
+    public CommonResult contrarySAudit(ListForm form) {
+        //反审核条件
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.in("bill_no",form.getBillNos());
+        List<OrderReceivableBillDetail> existList = baseMapper.selectList(queryWrapper);
         if("kf_f_reject".equals(form.getCmd())){
+            for (OrderReceivableBillDetail existObject : existList) {
+                if(!BillEnum.B_2.getCode().equals(existObject.getAuditStatus())){
+                    return CommonResult.error(10001,"存在不符合操作条件的数据");
+                }
+            }
             for (String billNo : form.getBillNos()) {
                 OrderReceivableBillDetail orderReceivableBillDetail = new OrderReceivableBillDetail();
                 orderReceivableBillDetail.setAuditStatus(BillEnum.B_7.getCode());
@@ -413,6 +422,11 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 update(orderReceivableBillDetail,updateWrapper);
             }
         }else if("cw_f_reject".equals(form.getCmd())){
+            for (OrderReceivableBillDetail existObject : existList) {
+                if(!BillEnum.B_5_1.getCode().equals(existObject.getAuditStatus())){
+                    return CommonResult.error(10001,"存在不符合操作条件的数据");
+                }
+            }
             for (String billNo : form.getBillNos()) {
                 OrderReceivableBillDetail orderReceivableBillDetail = new OrderReceivableBillDetail();
                 orderReceivableBillDetail.setAuditStatus(BillEnum.B_8.getCode());
@@ -423,7 +437,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 update(orderReceivableBillDetail,updateWrapper);
             }
         }
-        return true;
+        return CommonResult.success();
     }
 
     @Override

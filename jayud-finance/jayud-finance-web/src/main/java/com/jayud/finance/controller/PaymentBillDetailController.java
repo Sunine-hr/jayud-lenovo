@@ -293,11 +293,7 @@ public class PaymentBillDetailController {
         if(form.getBillNos() == null || form.getBillNos().size() == 0){
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        Boolean result = billDetailService.contraryAudit(form);
-        if(!result){
-            return CommonResult.error(ResultEnum.OPR_FAIL);
-        }
-        return CommonResult.success();
+        return billDetailService.contraryAudit(form);
     }
 
 }

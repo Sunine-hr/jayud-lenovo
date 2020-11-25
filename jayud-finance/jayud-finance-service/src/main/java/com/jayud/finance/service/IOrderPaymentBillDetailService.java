@@ -106,7 +106,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      * @param form
      * @return
      */
-    Boolean contraryAudit(ListForm form);
+    CommonResult contraryAudit(ListForm form);
 
 
     //财务核算模块

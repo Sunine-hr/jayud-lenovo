@@ -372,7 +372,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         AuditInfoForm auditInfoForm = new AuditInfoForm();
         String auditStatus = "";
         if("audit".equals(form.getCmd())) {
-            if(!BillEnum.B_1.equals(existObject.getAuditStatus())){
+            if(!BillEnum.B_1.getCode().equals(existObject.getAuditStatus())){
                 return CommonResult.error(100001,"不符合审核条件");
             }
             if ("0".equals(form.getAuditStatus())) {
@@ -382,7 +382,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             }
             auditInfoForm.setAuditTypeDesc("应付对账单审核");
         }else if("cw_audit".equals(form.getCmd())){//财务对账单审核
-            if(!BillEnum.B_3.equals(existObject.getAuditStatus())){
+            if(!BillEnum.B_3.getCode().equals(existObject.getAuditStatus())){
                 return CommonResult.error(100001,"不符合审核条件");
             }
             if ("0".equals(form.getAuditStatus())) {
@@ -419,8 +419,17 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
      *   ①未申请开票或付款的或作废的才可进行反审核
      */
     @Override
-    public Boolean contraryAudit(ListForm form) {
+    public CommonResult contraryAudit(ListForm form) {
+        //反审核条件
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.in("bill_no",form.getBillNos());
+        List<OrderPaymentBillDetail> existList = baseMapper.selectList(queryWrapper);
         if("kf_f_reject".equals(form.getCmd())){
+            for (OrderPaymentBillDetail existObject : existList) {
+                if(!BillEnum.B_2.getCode().equals(existObject.getAuditStatus())){
+                    return CommonResult.error(10001,"存在不符合操作条件的数据");
+                }
+            }
             for (String billNo : form.getBillNos()) {
                 OrderPaymentBillDetail orderPaymentBillDetail = new OrderPaymentBillDetail();
                 orderPaymentBillDetail.setAuditStatus(BillEnum.B_7.getCode());
@@ -431,6 +440,11 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 update(orderPaymentBillDetail,updateWrapper);
             }
         }else if("cw_f_reject".equals(form.getCmd())){
+            for (OrderPaymentBillDetail existObject : existList) {
+                if(!BillEnum.B_5_1.getCode().equals(existObject.getAuditStatus())){
+                    return CommonResult.error(10001,"存在不符合操作条件的数据");
+                }
+            }
             for (String billNo : form.getBillNos()) {
                 OrderPaymentBillDetail orderPaymentBillDetail = new OrderPaymentBillDetail();
                 orderPaymentBillDetail.setAuditStatus(BillEnum.B_8.getCode());
@@ -441,7 +455,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 update(orderPaymentBillDetail,updateWrapper);
             }
         }
-        return true;
+        return CommonResult.success();
     }
 
     @Override

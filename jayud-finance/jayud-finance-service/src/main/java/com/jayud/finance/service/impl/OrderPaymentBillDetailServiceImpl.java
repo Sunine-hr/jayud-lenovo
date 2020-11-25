@@ -333,7 +333,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         List<SheetHeadVO> allHeadList = new ArrayList<>();
         List<SheetHeadVO> fixHeadList = new ArrayList<>();
         try {
-            ViewBilToOrderHeadVO viewBilToOrderVO = new ViewBilToOrderHeadVO();
+            ViewFBilToOrderHeadVO viewBilToOrderVO = new ViewFBilToOrderHeadVO();
             Class cls = viewBilToOrderVO.getClass();
             Field[] fields = cls.getDeclaredFields();
             for (int i = 0; i < fields.length; i++) {
@@ -348,6 +348,9 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             e.printStackTrace();
         }
         List<SheetHeadVO> dynamicHeadList = baseMapper.findSheetHead(billNo);
+        for (SheetHeadVO sheetHead : dynamicHeadList) {
+            sheetHead.setName(sheetHead.getName().toLowerCase());
+        }
         allHeadList.addAll(fixHeadList);
         allHeadList.addAll(dynamicHeadList);
         return allHeadList;
@@ -359,11 +362,19 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     }
 
     @Override
-    public Boolean billAudit(BillAuditForm form) {
+    public CommonResult billAudit(BillAuditForm form) {
+        //审核条件
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("bill_no",form.getBillNo());
+        List<OrderPaymentBillDetail> existList = baseMapper.selectList(queryWrapper);
+        OrderPaymentBillDetail existObject = existList.get(0);
         OrderPaymentBillDetail orderPaymentBillDetail = new OrderPaymentBillDetail();
         AuditInfoForm auditInfoForm = new AuditInfoForm();
         String auditStatus = "";
         if("audit".equals(form.getCmd())) {
+            if(!BillEnum.B_1.equals(existObject.getAuditStatus())){
+                return CommonResult.error(100001,"不符合审核条件");
+            }
             if ("0".equals(form.getAuditStatus())) {
                 auditStatus = BillEnum.B_2.getCode();
             } else if ("1".equals(form.getAuditStatus())) {
@@ -371,6 +382,9 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             }
             auditInfoForm.setAuditTypeDesc("应付对账单审核");
         }else if("cw_audit".equals(form.getCmd())){//财务对账单审核
+            if(!BillEnum.B_3.equals(existObject.getAuditStatus())){
+                return CommonResult.error(100001,"不符合审核条件");
+            }
             if ("0".equals(form.getAuditStatus())) {
                 auditStatus = BillEnum.B_4.getCode();
             } else if ("1".equals(form.getAuditStatus())) {
@@ -385,7 +399,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         updateWrapper.eq("bill_no",form.getBillNo());
         Boolean result = update(orderPaymentBillDetail,updateWrapper);
         if(!result){
-            return false;
+            return CommonResult.error(ResultEnum.OPR_FAIL);
         }
         //记录审核信息
         auditInfoForm.setExtUniqueFlag(form.getBillNo());
@@ -394,7 +408,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         auditInfoForm.setExtDesc("order_payment_bill_detail表bill_no");
         auditInfoForm.setAuditUser(form.getLoginUserName());
         omsClient.saveAuditInfo(auditInfoForm);
-        return true;
+        return CommonResult.success();
     }
 
     /**

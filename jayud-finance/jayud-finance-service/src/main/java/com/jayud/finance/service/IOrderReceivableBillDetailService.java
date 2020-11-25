@@ -99,7 +99,7 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      * @param form
      * @return
      */
-    Boolean billSAudit(BillAuditForm form);
+    CommonResult billSAudit(BillAuditForm form);
 
     /**
      * 应收反审核

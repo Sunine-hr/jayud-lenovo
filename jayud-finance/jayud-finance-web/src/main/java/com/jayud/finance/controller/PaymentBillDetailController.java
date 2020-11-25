@@ -228,11 +228,7 @@ public class PaymentBillDetailController {
     @ApiOperation(value = "应付对账单审核,财务对账单审核")
     @PostMapping("/billAudit")
     public CommonResult billAudit(@RequestBody BillAuditForm form) {
-        Boolean result = billDetailService.billAudit(form);
-        if(!result){
-            return CommonResult.error(ResultEnum.OPR_FAIL);
-        }
-        return CommonResult.success();
+        return billDetailService.billAudit(form);
     }
 
     @ApiOperation(value = "导出应付对账单审核列表")

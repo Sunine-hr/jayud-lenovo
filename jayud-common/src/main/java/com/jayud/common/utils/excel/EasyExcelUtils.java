@@ -7,9 +7,11 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.RegionUtil;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -36,8 +38,6 @@ public class EasyExcelUtils {
         Workbook workbook = writeWorkbookHolder.getWorkbook();
         Sheet sheet = workbook.createSheet(entity.getSheetName() == null ? "sheel" : entity.getSheetName());
 
-        setColumnWidth(entity, sheet);
-
         //当前行
         Integer rowNum = 0;
         //表格顶部标题
@@ -55,7 +55,10 @@ public class EasyExcelUtils {
         //顶部数据
         rowNum = setTop(entity, sheet, workbook, rowNum);
 
+        setColumnWidth(entity,sheet);
 
+        // 处理中文不能自动调整列宽的问题
+//        setSizeColumn(sheet,entity.getTableHead().size());
 //        workbook.write(out);
 //        workbook.close();
 
@@ -69,7 +72,11 @@ public class EasyExcelUtils {
         if (tableHeads == null) {
             return;
         }
-        for (int i = 0; i < tableHeads.size(); i++) {
+        SXSSFSheet tmp = (SXSSFSheet) sheet;
+        tmp.trackAllColumnsForAutoSizing();
+        for (int i = 1; i <= tableHeads.size(); i++) {
+//            sheet.autoSizeColumn((short) i); //调整第一列宽度
+//            sheet.setColumnWidth((short) i, sheet.getColumnWidth(i) * 17 / 10);
             sheet.setColumnWidth(i, 5000);
         }
 
@@ -174,16 +181,23 @@ public class EasyExcelUtils {
 
         JSONArray tableDatas = entity.getTableData();
 
-        AtomicInteger j = new AtomicInteger();
+
         for (int i = 0; i < tableDatas.size(); i++) {
             JSONObject datas = tableDatas.getJSONObject(i);
             Row row = sheet.createRow(rowNum);
             row.setHeight((short) 800);
-
+            AtomicInteger j = new AtomicInteger();
             entity.getTableHead().forEach((k, v) -> {
-                Cell cell = row.createCell(j.get());
+                int cellNum = j.get();
+                Cell cell = row.createCell(cellNum);
                 cell.setCellStyle(cellStyle);
-                cell.setCellValue(datas.getString(k));
+                String data = datas.getString(k);
+                if (entity.getTotalIndex() != null) { //费用等与空返回0
+                    if (cellNum > entity.getTotalIndex()) {
+                        data = data == null ? "0" : data;
+                    }
+                }
+                cell.setCellValue(data);
                 j.incrementAndGet();
             });
             ++rowNum;
@@ -319,5 +333,33 @@ public class EasyExcelUtils {
 //        easyExcelEntity.setTableHead(Arrays.asList("序号", "建单日期", "订单编号", "客户"
 //                , "启运地", "目的地", "车牌号", "车型", "件数", "毛重(KGS)", "报关单号"));
         demo.autoGeneration("d://Demo1.xlsx", easyExcelEntity);
+    }
+
+
+    // 自适应宽度(中文支持)
+    public static void setSizeColumn(Sheet sheet, int size) {
+        for (int columnNum = 1; columnNum <=size; columnNum++) {
+            int columnWidth = sheet.getColumnWidth(columnNum) / 256;
+            for (int rowNum = 1; rowNum <= sheet.getLastRowNum(); rowNum++) {
+                Row currentRow;
+                //当前行未被使用过
+                if (sheet.getRow(rowNum) == null) {
+                    currentRow = sheet.createRow(rowNum);
+                } else {
+                    currentRow = sheet.getRow(rowNum);
+                }
+
+                if (currentRow.getCell(columnNum) != null) {
+                    Cell currentCell = currentRow.getCell(columnNum);
+                    if (currentCell.getCellType() == CellType.STRING) {
+                        int length = currentCell.getStringCellValue().getBytes().length;
+                        if (columnWidth < length) {
+                            columnWidth = length;
+                        }
+                    }
+                }
+            }
+            sheet.setColumnWidth(columnNum, columnWidth * 256);
+        }
     }
 }

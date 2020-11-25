@@ -189,24 +189,7 @@ public class PaymentBillDetailController {
 
         JSONArray datas = JSONArray.parseArray(JSON.toJSONString(list));
 
-//        List<List<String>> datas = new ArrayList<>();
-//        for (ViewBilToOrderVO viewBilToOrderVO : list) {
-//            datas.add(viewBilToOrderVO.getStrList());
-//        }
-//        ExcelWriter writer = ExcelUtil.getWriter(true);
-
         ViewBillVO viewBillVO = billDetailService.getViewBill(billNo);
-//        //自定义标题别名
-//        writer.addHeaderAlias("createdTimeStr", "建单日期");
-//        writer.addHeaderAlias("orderNo", "订单编号");
-//        writer.addHeaderAlias("customerName", "客户");
-//        writer.addHeaderAlias("startAddress", "启运地");
-//        writer.addHeaderAlias("endAddress", "目的地");
-//        writer.addHeaderAlias("licensePlate", "车牌号");
-//        writer.addHeaderAlias("vehicleSize", "车型");
-//        writer.addHeaderAlias("pieceNum", "件数");
-//        writer.addHeaderAlias("weight", "毛重(KGS)");
-//        writer.addHeaderAlias("yunCustomsNo", "报关单号");
 
         //头部数据重组
         List<SheetHeadVO> sheetHeadVOS = billDetailService.findSheetHead(billNo);
@@ -252,7 +235,7 @@ public class PaymentBillDetailController {
                 if (costTotal.get(k) == null) {
                     costTotal.put(k, cost);
                 } else {
-                    costTotal.put(k, costTotal.get(k).add(cost));
+                    costTotal.put(k, costTotal.get(k).add(cost == null ? new BigDecimal(0) : cost));
                 }
             });
 

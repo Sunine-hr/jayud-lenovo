@@ -97,8 +97,10 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         Boolean result = true;
         //无论暂存还是生成账单都需要修改order_receivable_cost表的is_bill
         List<Long> costIds = new ArrayList<>();
+        List<String> orderNos = new ArrayList<>(); //为了统计已出账订单数
         for (OrderReceiveBillDetailForm receiveBillDetailForm : receiveBillDetailForms) {
             costIds.add(receiveBillDetailForm.getCostId());
+            orderNos.add(receiveBillDetailForm.getOrderNo());
         }
         if(costIds.size() > 0){
             OprCostBillForm oprCostBillForm = new OprCostBillForm();
@@ -116,12 +118,24 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             OrderReceivableBill orderReceivableBill = ConvertUtil.convert(receiveBillForm,OrderReceivableBill.class);
             //1.统计已出账金额alreadyPaidAmount
             BigDecimal nowBillAmount = receiveBillDetailForms.stream().map(OrderReceiveBillDetailForm::getLocalAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
-            orderReceivableBill.setAlreadyPaidAmount(receiveBillForm.getAlreadyPaidAmount().add(nowBillAmount));
+            BigDecimal alreadyPaidAmount = getSAlreadyPaidAmount(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), form.getSubType());
+            orderReceivableBill.setAlreadyPaidAmount(alreadyPaidAmount.add(nowBillAmount));
             //2.统计已出账订单数billOrderNum
-            Integer billOrderNum = getSBillOrderNum(receiveBillForm.getLegalName(),receiveBillForm.getUnitAccount(),form.getSubType());
-            orderReceivableBill.setBillOrderNum(billOrderNum);
+            List<String> validOrders = new ArrayList<>();
+            for (String orderNo : orderNos) {
+                QueryWrapper queryWrapper1 = new QueryWrapper();
+                queryWrapper1.eq("order_no",orderNo);
+                List<OrderReceivableBillDetail> orderNoOjects= list(queryWrapper1);
+                if(orderNoOjects == null || orderNoOjects.size() == 0){
+                    validOrders.add(orderNo);
+                }
+            }
+            Integer nowBillOrderNum = validOrders.size();
+            Integer billOrderNum = getSBillOrderNum(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), form.getSubType());
+            orderReceivableBill.setBillOrderNum(billOrderNum + nowBillOrderNum);
             //3.统计账单数billNum
-            orderReceivableBill.setBillNum(receiveBillForm.getBillNum() + 1);
+            Integer billNum = getSBillNum(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), form.getSubType());
+            orderReceivableBill.setBillNum(billNum + 1);
             if("main".equals(form.getSubType())){
                 orderReceivableBill.setIsMain(true);
             }else if("zgys".equals(form.getSubType())){
@@ -260,4 +274,22 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
     public Integer getSBillOrderNum(String legalName, String unitAccount, String subType) {
         return baseMapper.getSBillOrderNum(legalName,unitAccount,subType);
     }
+
+    @Override
+    public BigDecimal getSAlreadyPaidAmount(String legalName, String unitAccount, String subType) {
+        return baseMapper.getSAlreadyPaidAmount(legalName,unitAccount,subType);
+    }
+
+    @Override
+    public Integer getSBillNum(String legalName, String unitAccount, String subType) {
+        return baseMapper.getSBillNum(legalName,unitAccount,subType);
+    }
+
+
+    @Override
+    public List<Long> findSaveConfirmData(List<Long> costIds) {
+        return baseMapper.findSaveConfirmData(costIds);
+    }
+
+
 }

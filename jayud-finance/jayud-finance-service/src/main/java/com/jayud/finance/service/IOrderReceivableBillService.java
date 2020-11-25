@@ -6,6 +6,7 @@ import com.jayud.finance.po.OrderReceivableBill;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.finance.vo.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -69,9 +70,34 @@ public interface IOrderReceivableBillService extends IService<OrderReceivableBil
     /**
      * 已出账订单数
      * @param legalName
-     * @param customerName
-     * @param cmd
+     * @param unitAccount
+     * @param subType
      * @return
      */
-    Integer getSBillOrderNum(String legalName,String customerName,String cmd);
+    Integer getSBillOrderNum(String legalName,String unitAccount,String subType);
+
+    /**
+     * 统计已出账金额alreadyPaidAmount
+     * @param legalName
+     * @param unitAccount
+     * @param subType
+     * @return
+     */
+    BigDecimal getSAlreadyPaidAmount(String legalName, String unitAccount, String subType);
+
+    /**
+     * 统计账单数billNum
+     * @param legalName
+     * @param unitAccount
+     * @param subType
+     * @return
+     */
+    Integer getSBillNum(String legalName, String unitAccount, String subType);
+
+    /**
+     * 从删除的costIds里面挑出那种保存确定的数据
+     * @param costIds
+     * @return
+     */
+    List<Long> findSaveConfirmData(List<Long> costIds);
 }

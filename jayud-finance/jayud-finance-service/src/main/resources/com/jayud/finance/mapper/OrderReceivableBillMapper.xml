@@ -194,6 +194,28 @@
         AND orb.unit_account = #{unitAccount}
         AND orb.sub_type = #{subType}
     </select>
+    <select id="getSAlreadyPaidAmount"  resultType="java.math.BigDecimal" >
+      SELECT
+	    ifnull(sum(orbd.local_amount),0) billOrderNum
+      FROM
+	    order_receivable_bill_detail orbd
+	    LEFT JOIN order_receivable_bill orb ON orbd.bill_id = orb.id
+      WHERE
+        orb.legal_name = #{legalName}
+        AND orb.unit_account = #{unitAccount}
+        AND orb.sub_type = #{subType}
+    </select>
+    <select id="getSBillNum"  resultType="java.lang.Integer" >
+      SELECT
+	    count( DISTINCT orbd.bill_no ) billOrderNum
+      FROM
+	    order_receivable_bill_detail orbd
+	    LEFT JOIN order_receivable_bill orb ON orbd.bill_id = orb.id
+      WHERE
+        orb.legal_name = #{legalName}
+        AND orb.unit_account = #{unitAccount}
+        AND orb.sub_type = #{subType}
+    </select>
     <select id="findSheetHead" parameterType="java.util.List" resultType="com.jayud.finance.vo.SheetHeadVO">
         SELECT
         CONCAT( orc.cost_code, orc.currency_code ) NAME,
@@ -264,5 +286,17 @@
          <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
          #{item}
          </foreach>
+    </select>
+    <select id="findSaveConfirmData" parameterType="java.util.List" resultType="java.util.List">
+        SELECT
+        count( 1 )
+        FROM
+        order_receivable_cost orc
+        WHERE
+        orc.is_bill = 'save_confirm'
+        AND orc.id
+        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </select>
 </mapper>

@@ -333,6 +333,48 @@ public class ExternalApiController {
         return ApiResult.ok(initComboxVOS);
     }
 
+    /**
+     * 编辑保存确定
+     * @param costIds
+     * @param oprType 应付还是应收
+     * @return
+     */
+    @ApiOperation(value = "编辑保存确定")
+    @RequestMapping(value = "api/editSaveConfirm")
+    public ApiResult editSaveConfirm(@RequestParam(value = "costIds") List<Long> costIds,@RequestParam(value = "oprType") String oprType,
+                                      @RequestParam("cmd") String cmd){
+        if("save_confirm".equals(cmd)) {
+            if ("receivable".equals(oprType)) {
+                OrderReceivableCost receivableCost = new OrderReceivableCost();
+                receivableCost.setIsBill("save_confirm");//持续操作中的过度状态
+                QueryWrapper updateWrapper = new QueryWrapper();
+                updateWrapper.in("id", costIds);
+                receivableCostService.update(receivableCost, updateWrapper);
+            } else if ("payment".equals(oprType)) {
+                OrderPaymentCost paymentCost = new OrderPaymentCost();
+                paymentCost.setIsBill("save_confirm");//持续操作中的过度状态
+                QueryWrapper updateWrapper = new QueryWrapper();
+                updateWrapper.in("id", costIds);
+                paymentCostService.update(paymentCost, updateWrapper);
+            }
+        }else if("edit_del".equals(cmd)){
+            if ("receivable".equals(oprType)) {
+                OrderReceivableCost receivableCost = new OrderReceivableCost();
+                receivableCost.setIsBill("0");//从save_confirm状态回滚到未出账-0状态
+                QueryWrapper updateWrapper = new QueryWrapper();
+                updateWrapper.in("id", costIds);
+                receivableCostService.update(receivableCost, updateWrapper);
+            } else if ("payment".equals(oprType)) {
+                OrderPaymentCost paymentCost = new OrderPaymentCost();
+                paymentCost.setIsBill("0");//从save_confirm状态回滚到未出账-0状态
+                QueryWrapper updateWrapper = new QueryWrapper();
+                updateWrapper.in("id", costIds);
+                paymentCostService.update(paymentCost, updateWrapper);
+            }
+        }
+        return ApiResult.ok(true);
+    }
+
 
 }
 

@@ -9,6 +9,7 @@ import com.jayud.finance.vo.InitComboxVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -45,6 +46,16 @@ public interface OmsClient {
      */
     @RequestMapping(value = "api/initCurrencyInfo2")
     ApiResult<List<InitComboxVO>> initCurrencyInfo2();
+
+    /**
+     * 编辑保存确定
+     * @param costIds
+     * @param oprType 是应付还是应收
+     * @return
+     */
+    @RequestMapping(value = "api/editSSaveConfirm")
+    ApiResult<Boolean> editSaveConfirm(@RequestParam(value = "costIds") List<Long> costIds,@RequestParam("oprType") String oprType,
+                                        @RequestParam("cmd") String cmd);
 
 
 }

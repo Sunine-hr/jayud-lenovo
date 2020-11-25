@@ -31,6 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.stream.Collectors.toList;
+
 /**
  * <p>
  *  服务实现类
@@ -200,8 +202,10 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             OrderPaymentBill orderPaymentBill = orderPaymentBillService.getById(form.getBillId());//获取账单信息
             //生成账单需要修改order_payment_cost表的is_bill
             List<Long> costIds = new ArrayList<>();
+            List<String> orderNos = new ArrayList<>(); //为了统计已出账订单数
             for (OrderPaymentBillDetailForm paymentBillDetail : paymentBillDetailForms) {
                 costIds.add(paymentBillDetail.getCostId());
+                orderNos.add(paymentBillDetail.getOrderNo());
             }
             if(costIds.size() > 0){
                 OprCostBillForm oprCostBillForm = new OprCostBillForm();
@@ -215,14 +219,27 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             }
             //生成对账单数据
             //对现有账单信息进行修改
+            OrderPaymentBill subTypeObject = orderPaymentBillService.getById(existObject.getBillId());
+            String subType = subTypeObject.getSubType();
             //1.统计已出账金额alreadyPaidAmount
             BigDecimal nowBillAmount = paymentBillDetailForms.stream().map(OrderPaymentBillDetailForm::getLocalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-            orderPaymentBill.setAlreadyPaidAmount(orderPaymentBill.getAlreadyPaidAmount().add(nowBillAmount));
+            BigDecimal alreadyPaidAmount = orderPaymentBillService.getAlreadyPaidAmount(orderPaymentBill.getLegalName(), orderPaymentBill.getSupplierChName(), subType);
+            orderPaymentBill.setAlreadyPaidAmount(alreadyPaidAmount.add(nowBillAmount));
             //2.统计已出账订单数billOrderNum
-            Integer billOrderNum = orderPaymentBillService.getBillOrderNum(orderPaymentBill.getLegalName(), orderPaymentBill.getSupplierChName(), "create");
-            orderPaymentBill.setBillOrderNum(billOrderNum);
+            List<String> validOrders = new ArrayList<>();
+            for (String orderNo : orderNos) {
+                QueryWrapper queryWrapper1 = new QueryWrapper();
+                queryWrapper1.eq("order_no",orderNo);
+                List<OrderPaymentBillDetail> orderNoOjects= list(queryWrapper1);
+                if(orderNoOjects == null || orderNoOjects.size() == 0){
+                    validOrders.add(orderNo);
+                }
+            }
+            Integer nowBillOrderNum = validOrders.size();
+            Integer billOrderNum = orderPaymentBillService.getBillOrderNum(orderPaymentBill.getLegalName(), orderPaymentBill.getSupplierChName(), subType);
+            orderPaymentBill.setBillOrderNum(billOrderNum + nowBillOrderNum);
             //3.统计账单数billNum
-            orderPaymentBill.setBillNum(orderPaymentBill.getBillNum() + 1);
+            orderPaymentBill.setBillNum(orderPaymentBill.getBillNum());
             orderPaymentBill.setUpdatedTime(LocalDateTime.now());
             orderPaymentBill.setUpdatedUser(form.getLoginUserName());
             result = orderPaymentBillService.updateById(orderPaymentBill);
@@ -533,6 +550,33 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         }else{
             return false;
         }
+    }
+
+    @Override
+    public Boolean editFSaveConfirm(List<Long> costIds) {
+        //在录入费用表的is_bill做标识为save_confirm
+        return omsClient.editSaveConfirm(costIds,"payment","save_confirm").getData();
+    }
+
+    @Override
+    public Boolean editFDel(List<Long> costIds) {
+        //从删除的costIds里面挑出那种保存确定的数据,回滚到未出账状态
+        List<Long> saveConfirmIds = orderPaymentBillService.findSaveConfirmData(costIds);
+        Boolean result = omsClient.editSaveConfirm(saveConfirmIds,"payment","edit_del").getData();
+        if(!result){
+            return false;
+        }
+        //已存在的数据删除,只在账单详情表做记录
+        List<Long> editDelIds = costIds.stream().filter(item -> !saveConfirmIds.contains(item)).collect(toList());
+        OrderPaymentBillDetail paymentBillDetail = new OrderPaymentBillDetail();
+        paymentBillDetail.setAuditStatus("edit_del");//持续操作中的过度状态
+        QueryWrapper updateWrapper = new QueryWrapper();
+        updateWrapper.in("cost_id",editDelIds);
+        result = update(paymentBillDetail,updateWrapper);
+        if(!result){
+            return false;
+        }
+        return true;
     }
 
 

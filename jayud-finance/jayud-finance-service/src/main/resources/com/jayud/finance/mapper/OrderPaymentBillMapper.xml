@@ -196,6 +196,28 @@
         AND opb.supplier_ch_name = #{supplierChName}
         AND opb.sub_type = #{subType}
     </select>
+    <select id="getAlreadyPaidAmount"  resultType="java.math.BigDecimal" >
+      SELECT
+	    ifnull(sum(opbd.local_amount),0) billOrderNum
+      FROM
+	    order_payment_bill_detail opbd
+	    LEFT JOIN order_payment_bill opb ON opbd.bill_id = opb.id
+      WHERE
+        opb.legal_name = #{legalName}
+        AND opb.supplier_ch_name = #{supplierChName}
+        AND opb.sub_type = #{subType}
+    </select>
+    <select id="getBillNum"  resultType="java.lang.Integer" >
+      SELECT
+	    count( DISTINCT opbd.bill_no ) billOrderNum
+      FROM
+	    order_payment_bill_detail opbd
+	    LEFT JOIN order_payment_bill opb ON opbd.bill_id = opb.id
+      WHERE
+        opb.legal_name = #{legalName}
+        AND opb.supplier_ch_name = #{supplierChName}
+        AND opb.sub_type = #{subType}
+    </select>
     <select id="findSheetHead" parameterType="java.util.List" resultType="com.jayud.finance.vo.SheetHeadVO">
         SELECT
             CONCAT( opc.cost_code, opc.currency_code ) NAME,
@@ -295,6 +317,18 @@
         LEFT JOIN order_payment_cost opc ON oi.order_no = opc.main_order_no
         WHERE
         opc.id IN
+        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <select id="findSaveConfirmData" parameterType="java.util.List" resultType="java.util.List">
+        SELECT
+        count( 1 )
+        FROM
+        order_payment_cost opc
+        WHERE
+        opc.is_bill = 'save_confirm'
+        AND opc.id
         <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>

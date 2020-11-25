@@ -138,4 +138,18 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      */
     Boolean auditSInvoice(BillAuditForm form);
 
+    /**
+     *编辑保存确定
+     * @param costIds
+     * @return
+     */
+    Boolean editSSaveConfirm(List<Long> costIds);
+
+    /**
+     * 编辑删除
+     * @param costIds
+     * @return
+     */
+    Boolean editSDel(List<Long> costIds);
+
 }

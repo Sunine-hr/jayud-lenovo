@@ -87,7 +87,7 @@ public class OrderPaymentBillDetailVO {
 
     public String getAuditStatusDesc() {
         if(!StringUtil.isNullOrEmpty(this.auditStatus)){
-            auditStatusDesc = BillEnum.getDesc(this.auditStatus);
+            return BillEnum.getDesc(this.auditStatus);
         }
         return "";
     }

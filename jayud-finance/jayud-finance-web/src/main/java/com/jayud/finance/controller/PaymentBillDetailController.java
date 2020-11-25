@@ -50,7 +50,7 @@ public class PaymentBillDetailController {
 
     @ApiOperation(value = "提交财务 billNos=账单编号集合,必须客服主管审核通过,状态为B_2")
     @PostMapping("/submitFCw")
-    public CommonResult submitFCw(@RequestBody @Valid ListForm form){
+    public CommonResult submitFCw(@RequestBody ListForm form){
         return billDetailService.submitFCw(form);
     }
 

@@ -106,6 +106,12 @@ public class OrderReceivableBillDetail extends Model<OrderReceivableBillDetail> 
     @ApiModelProperty(value = "1-有效 0-无效")
     private String status;
 
+    @ApiModelProperty(value = "费用维度的税率")
+    private BigDecimal taxRate;
+
+    @ApiModelProperty(value = "备注,财务编辑时录得")
+    private String remarks;
+
     @ApiModelProperty(value = "创建人")
     private String createdUser;
 

@@ -111,6 +111,7 @@
     </select>
     <select id="findEditSBillByPage" parameterType="com.jayud.finance.bo.QueryEditBillForm" resultType="com.jayud.finance.vo.PaymentNotPaidBillVO" >
         SELECT
+            orbd1.id billDetailId,
             orc.main_order_no orderNo,
             pb.`name` bizCodeDesc,
             DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
@@ -220,11 +221,12 @@
     <select id="findSBillAuditByPage" parameterType="com.jayud.finance.bo.QueryFBillAuditForm" resultType="com.jayud.finance.vo.PaymentNotPaidBillVO">
         select * from (
         SELECT
+        orbd.id billDetailId,
         oi.order_no orderNo,
         oi.biz_code bizCode,
         (select pb.`name` from product_biz pb where pb.id_code = oi.biz_code) bizCodeDesc,
         oi.create_time createdTimeStr,
-        oi.customer_name customerName,
+        orb.unit_account unitAccount,
         (SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id =
         ota.delivery_id
         left join order_transport ot on ot.order_no = ota.order_no WHERE ot.main_order_no = oi.order_no and ota.opr_type
@@ -235,19 +237,19 @@
         = '2' LIMIT 1) endAddress,
         (select concat( vi.plate_number, vi.hk_number ) from order_send_cars osc left join order_transport ot
         on osc.order_no = ot.order_no left join driver_info di on di.id = osc.driver_info_id left join vehicle_info vi on vi.id = di.vehicle_id where ot.main_order_no = oi.order_no) licensePlate,
-        (select oc.yun_customs_no from order_customs oc where oc.main_order_no = oi.order_no) yunCustomsNo,
+        (select GROUP_CONCAT(oc.yun_customs_no) from order_customs oc where oc.main_order_no = oi.order_no group by oc.main_order_no) yunCustomsNo,
         (select cg.`name` from cost_genre cg where cg.id = orc.cost_genre_id) costGenreName,
         orc.cost_genre_id,
         (select ct.code_name from cost_type ct where ct.id = orc.cost_type_id) costTypeName,
         (select ci.`name` from cost_info ci where ci.id_code = orc.cost_code) costName,
         (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = orbd.cost_id and
-        obct.money_type='1' and obct.currency_code = 'CNY') rmb,
+        obct.money_type='2' and obct.currency_code = 'CNY') rmb,
         (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = orbd.cost_id and
-        obct.money_type='1' and obct.currency_code = 'USD') dollar,
+        obct.money_type='2' and obct.currency_code = 'USD') dollar,
         (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = orbd.cost_id and
-        obct.money_type='1' and obct.currency_code = 'EUR') euro,
+        obct.money_type='2' and obct.currency_code = 'EUR') euro,
         (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = orbd.cost_id and
-        obct.money_type='1' and obct.currency_code = 'HKD') hKDollar,
+        obct.money_type='2' and obct.currency_code = 'HKD') hKDollar,
         (select pb.tax_rate from product_biz pb where pb.id_code = oi.biz_code) taxRate,
         orbd.remarks
         FROM

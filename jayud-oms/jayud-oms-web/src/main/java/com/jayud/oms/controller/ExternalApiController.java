@@ -379,6 +379,36 @@ public class ExternalApiController {
         return ApiResult.ok(true);
     }
 
+    /**
+     * 提交财务审核时，财务可能编辑费用类型
+     * @param forms
+     * @param cmd
+     * @return
+     */
+    @RequestMapping(value = "api/oprCostGenreByCw")
+    ApiResult<Boolean> oprCostGenreByCw(@RequestParam("forms") List<OrderCostForm> forms,@RequestParam("cmd") String cmd){
+        if ("receivable".equals(cmd)) {
+            for (OrderCostForm orderCost : forms) {
+                OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
+                orderReceivableCost.setId(orderCost.getCostId());
+                orderReceivableCost.setCostGenreId(orderCost.getCostGenreId());
+                orderReceivableCost.setOptName(orderCost.getLoginUserName());
+                orderReceivableCost.setOptTime(LocalDateTime.now());
+                receivableCostService.updateById(orderReceivableCost);
+            }
+        } else if ("payment".equals(cmd)) {
+            for (OrderCostForm orderCost : forms) {
+                OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
+                orderPaymentCost.setId(orderCost.getCostId());
+                orderPaymentCost.setCostGenreId(orderCost.getCostGenreId());
+                orderPaymentCost.setOptName(orderCost.getLoginUserName());
+                orderPaymentCost.setOptTime(LocalDateTime.now());
+                paymentCostService.updateById(orderPaymentCost);
+            }
+        }
+        return ApiResult.ok(true);
+    }
+
 
 }
 

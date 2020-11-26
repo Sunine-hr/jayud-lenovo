@@ -112,6 +112,7 @@
     </select>
     <select id="findEditBillByPage" parameterType="com.jayud.finance.bo.QueryEditBillForm" resultType="com.jayud.finance.vo.PaymentNotPaidBillVO" >
         SELECT
+            opbd1.id billDetailId,
             opc.main_order_no orderNo,
             pb.`name` bizCodeDesc,
             DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,

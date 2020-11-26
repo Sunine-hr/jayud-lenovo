@@ -26,8 +26,8 @@ public class EditSBillForm {
     @NotEmpty(message = "receiveBillDetailForms is required")
     private List<OrderReceiveBillDetailForm> receiveBillDetailForms = new ArrayList<>();
 
-    @ApiModelProperty(value = "操作指令cmd=save保存 submit提交",required = true)
-    @Pattern(regexp = "(save|submit)", message = "只允许填写save or submit")
+    @ApiModelProperty(value = "操作指令cmd=save保存 submit提交 cw_save财务暂存",required = true)
+    @Pattern(regexp = "(save|submit|cw_save)", message = "只允许填写save or submit")
     private String cmd;
 
     @ApiModelProperty(value = "当前登录用户",required = true)

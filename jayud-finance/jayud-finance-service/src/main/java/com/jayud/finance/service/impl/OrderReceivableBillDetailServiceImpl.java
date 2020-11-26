@@ -151,144 +151,171 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
 
     @Override
     public Boolean editSBill(EditSBillForm form) {
+        List<OrderReceiveBillDetailForm> receiveBillDetailForms = form.getReceiveBillDetailForms();//账单详细信息
         //该账单编号下必须有账单信息才可编辑
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("bill_no",form.getBillNo());
+        queryWrapper.eq("bill_no", form.getBillNo());
         List<OrderReceivableBillDetail> receivableBillDetails = baseMapper.selectList(queryWrapper);
-        if(receivableBillDetails.size() == 0){
+        if (receivableBillDetails.size() == 0) {
             return false;
         }
-        //可编辑的条件：客服主管审核对账单不通过,客服主管反审核对账单，财务审核对账单不通过，财务反审核
         OrderReceivableBillDetail existObject = receivableBillDetails.get(0);
-        if(!(BillEnum.B_2_1.getCode().equals(existObject.getAuditStatus()) || BillEnum.B_7.getCode().equals(existObject.getAuditStatus()) ||
-           BillEnum.B_8.getCode().equals(existObject.getAuditStatus()) || BillEnum.B_4_1.getCode().equals(existObject.getAuditStatus())
-          || "edit_del".equals(existObject.getAuditStatus())//流程过度状态-编辑删除
-          || "edit_no_commit".equals(existObject.getAuditStatus())//流程过度状态-编辑提交
-         )){
-            return false;
-        }
-        //处理需要删除的费用
-        //获取删除标识的账单详情
-        queryWrapper.eq("audit_status","edit_del");
-        List<OrderReceivableBillDetail> delCosts = baseMapper.selectList(queryWrapper);
-        List<Long> delCostIds = new ArrayList<>();
-        for (OrderReceivableBillDetail billDetail : delCosts) {
-            delCostIds.add(billDetail.getCostId());
-        }
-        if(delCostIds.size() > 0){
-            //1.对账单相应的详情信息做删除
-            QueryWrapper removeWrapper = new QueryWrapper();
-            removeWrapper.eq("bill_no",form.getBillNo());
-            removeWrapper.in("cost_id",delCostIds);
-            remove(removeWrapper);
-
-            //2.相应的费用录入也需要做记录
-            OprCostBillForm oprCostBillForm = new OprCostBillForm();
-            oprCostBillForm.setCmd("del");
-            oprCostBillForm.setOprType("receivable");
-            oprCostBillForm.setCostIds(delCostIds);
-            omsClient.oprCostBill(oprCostBillForm);
-        }
-        //处理要新增的费用
-        if(form.getReceiveBillDetailForms().size() > 0) {
-            Boolean result = true;
-            List<OrderReceiveBillDetailForm> receiveBillDetailForms = form.getReceiveBillDetailForms();//账单详细信息
-            OrderReceivableBill orderReceivableBill = receivableBillService.getById(existObject.getBillId());//获取账单信息
-            //生成账单需要修改order_receivable_cost表的is_bill
-            List<Long> costIds = new ArrayList<>();
-            List<String> orderNos = new ArrayList<>(); //为了统计已出账订单数
-            for (OrderReceiveBillDetailForm receiveBillDetail : receiveBillDetailForms) {
-                costIds.add(receiveBillDetail.getCostId());
-                orderNos.add(receiveBillDetail.getOrderNo());
+        //客服保存/提交
+        if("save".equals(form.getCmd()) || "submit".equals(form.getCmd())) {
+            //可编辑的条件：客服主管审核对账单不通过,客服主管反审核对账单，财务审核对账单不通过，财务反审核
+            if (!(BillEnum.B_2_1.getCode().equals(existObject.getAuditStatus()) || BillEnum.B_7.getCode().equals(existObject.getAuditStatus()) ||
+                    BillEnum.B_8.getCode().equals(existObject.getAuditStatus()) || BillEnum.B_4_1.getCode().equals(existObject.getAuditStatus())
+                    || "edit_del".equals(existObject.getAuditStatus())//流程过度状态-编辑删除
+                    || "edit_no_commit".equals(existObject.getAuditStatus())//流程过度状态-编辑提交
+            )) {
+                return false;
             }
-            if(costIds.size() > 0){
+            //处理需要删除的费用
+            //获取删除标识的账单详情
+            queryWrapper.eq("audit_status", "edit_del");
+            List<OrderReceivableBillDetail> delCosts = baseMapper.selectList(queryWrapper);
+            List<Long> delCostIds = new ArrayList<>();
+            for (OrderReceivableBillDetail billDetail : delCosts) {
+                delCostIds.add(billDetail.getCostId());
+            }
+            if (delCostIds.size() > 0) {
+                //1.对账单相应的详情信息做删除
+                QueryWrapper removeWrapper = new QueryWrapper();
+                removeWrapper.eq("bill_no", form.getBillNo());
+                removeWrapper.in("cost_id", delCostIds);
+                remove(removeWrapper);
+
+                //2.相应的费用录入也需要做记录
                 OprCostBillForm oprCostBillForm = new OprCostBillForm();
-                oprCostBillForm.setCmd("create");//这里的保存相当于生成对账单
-                oprCostBillForm.setCostIds(costIds);
+                oprCostBillForm.setCmd("del");
                 oprCostBillForm.setOprType("receivable");
-                result = omsClient.oprCostBill(oprCostBillForm).getData();
-                if(!result){
+                oprCostBillForm.setCostIds(delCostIds);
+                omsClient.oprCostBill(oprCostBillForm);
+            }
+            //处理要新增的费用
+            if (receiveBillDetailForms.size() > 0) {
+                Boolean result = true;
+                OrderReceivableBill orderReceivableBill = receivableBillService.getById(existObject.getBillId());//获取账单信息
+                //生成账单需要修改order_receivable_cost表的is_bill
+                List<Long> costIds = new ArrayList<>();
+                List<String> orderNos = new ArrayList<>(); //为了统计已出账订单数
+                for (OrderReceiveBillDetailForm receiveBillDetail : receiveBillDetailForms) {
+                    costIds.add(receiveBillDetail.getCostId());
+                    orderNos.add(receiveBillDetail.getOrderNo());
+                }
+                if (costIds.size() > 0) {
+                    OprCostBillForm oprCostBillForm = new OprCostBillForm();
+                    oprCostBillForm.setCmd("create");//这里的保存相当于生成对账单
+                    oprCostBillForm.setCostIds(costIds);
+                    oprCostBillForm.setOprType("receivable");
+                    result = omsClient.oprCostBill(oprCostBillForm).getData();
+                    if (!result) {
+                        return false;
+                    }
+                }
+                //生成对账单数据
+                //对现有账单信息进行修改
+                OrderReceivableBill subTypeObject = receivableBillService.getById(existObject.getBillId());
+                String subType = subTypeObject.getSubType();
+                //1.统计已出账金额alreadyPaidAmount
+                BigDecimal nowBillAmount = receiveBillDetailForms.stream().map(OrderReceiveBillDetailForm::getLocalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+                BigDecimal alreadyPaidAmount = receivableBillService.getSAlreadyPaidAmount(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), subType);
+                orderReceivableBill.setAlreadyPaidAmount(alreadyPaidAmount.add(nowBillAmount));
+                //2.统计已出账订单数billOrderNum
+                List<String> validOrders = new ArrayList<>();
+                for (String orderNo : orderNos) {
+                    QueryWrapper queryWrapper1 = new QueryWrapper();
+                    queryWrapper1.eq("order_no", orderNo);
+                    List<OrderReceivableBillDetail> orderNoOjects = list(queryWrapper1);
+                    if (orderNoOjects == null || orderNoOjects.size() == 0) {
+                        validOrders.add(orderNo);
+                    }
+                }
+                Integer nowBillOrderNum = validOrders.size();
+                Integer billOrderNum = receivableBillService.getSBillOrderNum(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), subType);
+                orderReceivableBill.setBillOrderNum(billOrderNum + nowBillOrderNum);
+                //3.统计账单数billNum
+                Integer billNum = receivableBillService.getSBillNum(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), subType);
+                orderReceivableBill.setBillNum(billNum);
+                orderReceivableBill.setUpdatedTime(LocalDateTime.now());
+                orderReceivableBill.setUpdatedUser(form.getLoginUserName());
+                result = receivableBillService.updateById(orderReceivableBill);
+                if (!result) {
+                    return false;
+                }
+                //开始保存对账单详情数据
+                //获取剩余旧数据的状态和结算期和结算币种,账单编号维度
+                OrderReceivableBillDetail oldSBillDetail = receivableBillDetails.get(0);
+                List<OrderReceivableBillDetail> receiveBillDetails = ConvertUtil.convertList(receiveBillDetailForms, OrderReceivableBillDetail.class);
+                for (int i = 0; i < receiveBillDetails.size(); i++) {
+                    receiveBillDetails.get(i).setStatus("1");
+                    receiveBillDetails.get(i).setBillNo(form.getBillNo());
+                    receiveBillDetails.get(i).setBillId(existObject.getBillId());
+                    receiveBillDetails.get(i).setBeginAccountTerm(oldSBillDetail.getBeginAccountTerm());
+                    receiveBillDetails.get(i).setEndAccountTerm(oldSBillDetail.getEndAccountTerm());
+                    receiveBillDetails.get(i).setSettlementCurrency(oldSBillDetail.getSettlementCurrency());
+                    receiveBillDetails.get(i).setAuditStatus("edit_no_commit");//编辑保存未提交的，给前台做区分
+                    receiveBillDetails.get(i).setCreatedOrderTime(DateUtils.stringToDate(receiveBillDetailForms.get(i).getCreatedTimeStr(), DateUtils.DATE_PATTERN));
+                    receiveBillDetails.get(i).setMakeUser(form.getLoginUserName());
+                    receiveBillDetails.get(i).setMakeTime(LocalDateTime.now());
+                    receiveBillDetails.get(i).setCreatedUser(form.getLoginUserName());
+                }
+                result = saveOrUpdateBatch(receiveBillDetails);
+                if (!result) {
+                    return false;
+                }
+                //删除旧的费用
+                QueryWrapper removeWrapper = new QueryWrapper();
+                removeWrapper.in("cost_id", costIds);
+                costTotalService.remove(removeWrapper);
+                //开始保存费用维度的金额信息  以结算币种进行转换后保存
+                List<OrderBillCostTotal> orderBillCostTotals = new ArrayList<>();
+                //根据费用ID统计费用信息,将原始费用信息根据结算币种进行转换
+                String settlementCurrency = oldSBillDetail.getSettlementCurrency();
+                List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, settlementCurrency);
+                for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
+                    orderBillCostTotalVO.setBillNo(form.getBillNo());
+                    orderBillCostTotalVO.setCurrencyCode(settlementCurrency);
+                    BigDecimal localMoney = orderBillCostTotalVO.getMoney();//本币金额
+                    BigDecimal money = localMoney.multiply(orderBillCostTotalVO.getExchangeRate());
+                    orderBillCostTotalVO.setMoney(money);
+                    OrderBillCostTotal orderBillCostTotal = ConvertUtil.convert(orderBillCostTotalVO, OrderBillCostTotal.class);
+                    orderBillCostTotal.setLocalMoney(localMoney);
+                    orderBillCostTotal.setMoneyType("2");
+                    orderBillCostTotals.add(orderBillCostTotal);
+                }
+                result = costTotalService.saveBatch(orderBillCostTotals);
+                if (!result) {
                     return false;
                 }
             }
-            //生成对账单数据
-            //对现有账单信息进行修改
-            OrderReceivableBill subTypeObject = receivableBillService.getById(existObject.getBillId());
-            String subType = subTypeObject.getSubType();
-            //1.统计已出账金额alreadyPaidAmount
-            BigDecimal nowBillAmount = receiveBillDetailForms.stream().map(OrderReceiveBillDetailForm::getLocalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-            BigDecimal alreadyPaidAmount = receivableBillService.getSAlreadyPaidAmount(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), subType);
-            orderReceivableBill.setAlreadyPaidAmount(alreadyPaidAmount.add(nowBillAmount));
-            //2.统计已出账订单数billOrderNum
-            List<String> validOrders = new ArrayList<>();
-            for (String orderNo : orderNos) {
-                QueryWrapper queryWrapper1 = new QueryWrapper();
-                queryWrapper1.eq("order_no",orderNo);
-                List<OrderReceivableBillDetail> orderNoOjects= list(queryWrapper1);
-                if(orderNoOjects == null || orderNoOjects.size() == 0){
-                    validOrders.add(orderNo);
-                }
-            }
-            Integer nowBillOrderNum = validOrders.size();
-            Integer billOrderNum = receivableBillService.getSBillOrderNum(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), subType);
-            orderReceivableBill.setBillOrderNum(billOrderNum + nowBillOrderNum);
-            //3.统计账单数billNum
-            Integer billNum = receivableBillService.getSBillNum(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), subType);
-            orderReceivableBill.setBillNum(billNum);
-            orderReceivableBill.setUpdatedTime(LocalDateTime.now());
-            orderReceivableBill.setUpdatedUser(form.getLoginUserName());
-            result = receivableBillService.updateById(orderReceivableBill);
-            if (!result) {
-                return false;
-            }
-            //开始保存对账单详情数据
-            //获取剩余旧数据的状态和结算期和结算币种,账单编号维度
-            OrderReceivableBillDetail oldSBillDetail = receivableBillDetails.get(0);
-            List<OrderReceivableBillDetail> receiveBillDetails = ConvertUtil.convertList(receiveBillDetailForms, OrderReceivableBillDetail.class);
-            for (int i = 0; i < receiveBillDetails.size(); i++) {
-                receiveBillDetails.get(i).setStatus("1");
-                receiveBillDetails.get(i).setBillNo(form.getBillNo());
-                receiveBillDetails.get(i).setBillId(existObject.getBillId());
-                receiveBillDetails.get(i).setBeginAccountTerm(oldSBillDetail.getBeginAccountTerm());
-                receiveBillDetails.get(i).setEndAccountTerm(oldSBillDetail.getEndAccountTerm());
-                receiveBillDetails.get(i).setSettlementCurrency(oldSBillDetail.getSettlementCurrency());
-                receiveBillDetails.get(i).setAuditStatus("edit_no_commit");//编辑保存未提交的，给前台做区分
-                receiveBillDetails.get(i).setCreatedOrderTime(DateUtils.stringToDate(receiveBillDetailForms.get(i).getCreatedTimeStr(),DateUtils.DATE_PATTERN));
-                receiveBillDetails.get(i).setMakeUser(form.getLoginUserName());
-                receiveBillDetails.get(i).setMakeTime(LocalDateTime.now());
-                receiveBillDetails.get(i).setCreatedUser(form.getLoginUserName());
-            }
-            result = saveOrUpdateBatch(receiveBillDetails);
-            if (!result) {
-                return false;
-            }
-            //删除旧的费用
-            QueryWrapper removeWrapper = new QueryWrapper();
-            removeWrapper.in("cost_id",costIds);
-            costTotalService.remove(removeWrapper);
-            //开始保存费用维度的金额信息  以结算币种进行转换后保存
-            List<OrderBillCostTotal> orderBillCostTotals = new ArrayList<>();
-            //根据费用ID统计费用信息,将原始费用信息根据结算币种进行转换
-            String settlementCurrency = oldSBillDetail.getSettlementCurrency();
-            List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, settlementCurrency);
-            for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
-                orderBillCostTotalVO.setBillNo(form.getBillNo());
-                orderBillCostTotalVO.setCurrencyCode(settlementCurrency);
-                BigDecimal localMoney = orderBillCostTotalVO.getMoney();//本币金额
-                BigDecimal money = localMoney.multiply(orderBillCostTotalVO.getExchangeRate());
-                orderBillCostTotalVO.setMoney(money);
-                OrderBillCostTotal orderBillCostTotal = ConvertUtil.convert(orderBillCostTotalVO, OrderBillCostTotal.class);
-                orderBillCostTotal.setLocalMoney(localMoney);
-                orderBillCostTotal.setMoneyType("2");
-                orderBillCostTotals.add(orderBillCostTotal);
-            }
-            result = costTotalService.saveBatch(orderBillCostTotals);
-            if (!result) {
-                return false;
-            }
         }
-        if("submit".equals(form.getCmd())){//提交
+        if("submit".equals(form.getCmd())){//客服提交
             editSBillSubmit(form.getBillNo(),form.getLoginUserName());
+        }
+        if("cw_save".equals(form.getCmd())){//财务编辑
+            List<OrderReceivableBillDetail> receiveBillDetails = new ArrayList<>();
+            List<OrderCostForm> orderCostForms = new ArrayList<>();
+            for (OrderReceiveBillDetailForm receiveBillDetailForm : receiveBillDetailForms) {
+                OrderReceivableBillDetail receivableBillDetail = new OrderReceivableBillDetail();
+                receivableBillDetail.setId(receiveBillDetailForm.getBillDetailId());
+                receivableBillDetail.setTaxRate(receiveBillDetailForm.getTaxRate());//税率
+                receivableBillDetail.setRemarks(receiveBillDetailForm.getRemarks());//备注
+                receivableBillDetail.setUpdatedTime(LocalDateTime.now());
+                receivableBillDetail.setUpdatedUser(form.getLoginUserName());
+                receivableBillDetails.add(receivableBillDetail);
+
+                OrderCostForm orderCostForm = new OrderCostForm();
+                orderCostForm.setLoginUserName(form.getLoginUserName());
+                orderCostForm.setCostGenreId(receiveBillDetailForm.getCostGenreId());
+                orderCostForm.setCostId(receiveBillDetailForm.getCostId());
+                orderCostForms.add(orderCostForm);
+            }
+            Boolean result = updateBatchById(receiveBillDetails);
+            if (!result) {
+                return false;
+            }
+            omsClient.oprCostGenreByCw(orderCostForms,"receivable");
         }
         return true;
     }
@@ -477,7 +504,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         //定义分页参数
         Page<PaymentNotPaidBillVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
-        page.addOrder(OrderItem.desc("orc.id"));
+        page.addOrder(OrderItem.desc("temp.createdTimeStr"));
         IPage<PaymentNotPaidBillVO> pageInfo = baseMapper.findSBillAuditByPage(page, form);
         return pageInfo;
     }

@@ -286,6 +286,14 @@ public class ReceiveBillDetailController {
         entity.setTotalData(costTotal);
         entity.setTotalIndex(9);
 
+        //尾部
+        List<String> bottomData = new ArrayList<>();
+        bottomData.add(" " + EasyExcelUtils.SPLIT_SYMBOL + "制 单 人:" + viewBillVO.getMakeUser());
+        bottomData.add(" " + EasyExcelUtils.SPLIT_SYMBOL + "制单时间:" + viewBillVO.getMakeTimeStr());
+        bottomData.add(" " + EasyExcelUtils.SPLIT_SYMBOL + "审 单 人:" + viewBillVO.getMakeUser());
+        bottomData.add(" " + EasyExcelUtils.SPLIT_SYMBOL + "审单时间:" + viewBillVO.getMakeTimeStr());
+        entity.setBottomData(bottomData);
+
         Workbook workbook = EasyExcelUtils.autoGeneration("", entity);
 
 

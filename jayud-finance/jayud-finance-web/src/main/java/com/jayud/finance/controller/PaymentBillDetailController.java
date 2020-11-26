@@ -198,8 +198,7 @@ public class PaymentBillDetailController {
     public CommonResult editBill(@RequestBody EditBillForm form) {
         //参数校验
         if(StringUtil.isNullOrEmpty(form.getBillNo()) || StringUtil.isNullOrEmpty(form.getCmd())
-                || StringUtil.isNullOrEmpty(form.getLoginUserName()) || form.getPaymentBillDetailForms() == null ||
-                form.getPaymentBillDetailForms().size() == 0){
+                || StringUtil.isNullOrEmpty(form.getLoginUserName()) ){
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         Boolean result = billDetailService.editBill(form);

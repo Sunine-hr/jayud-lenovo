@@ -129,9 +129,11 @@
             (SELECT sum( rmb.amount ) FROM order_payment_cost rmb WHERE rmb.id = opc.id AND rmb.currency_code = 'HKD' GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) hKDollar,
             opc.id costId,
             opc.is_bill isBill,
-            ifnull(opc.change_amount,0) localAmount
+            ifnull(opc.change_amount,0) localAmount,
+            opbd1.audit_status auditStatus
         FROM
             order_payment_cost opc
+            left join order_payment_bill_detail opbd1 on opbd1.cost_id = opc.id
 			left join supplier_info si on si.supplier_code = opc.customer_code
             LEFT JOIN order_info oi ON opc.main_order_no = oi.order_no
             LEFT JOIN product_biz pb ON pb.id_code = oi.biz_code

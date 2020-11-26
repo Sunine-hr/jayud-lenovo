@@ -122,15 +122,17 @@
             cg.`name` costGenreName,
             ct.code_name costTypeName,
             ci.`name` costName,
-            (SELECT sum( rmb.amount ) FROM order_payment_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'CNY' GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) rmb,
-            (SELECT sum( rmb.amount ) FROM order_payment_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'USD' GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) dollar,
-            (SELECT sum( rmb.amount ) FROM order_payment_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'EUR' GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) euro,
-            (SELECT sum( rmb.amount ) FROM order_payment_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'HKD' GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) hKDollar,
+            (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'CNY' GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) rmb,
+            (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'USD' GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) dollar,
+            (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'EUR' GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) euro,
+            (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'HKD' GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) hKDollar,
             orc.id costId,
             orc.is_bill isBill,
-            ifnull(orc.change_amount,0) localAmount
+            ifnull(orc.change_amount,0) localAmount,
+            orbd1.audit_status auditStatus
         FROM
             order_receivable_cost orc
+            left join order_receivable_bill_detail orbd1 on orbd1.cost_id = orc.id
 			left join customer_info cus on cus.unit_code = orc.customer_code
             LEFT JOIN order_info oi ON orc.main_order_no = oi.order_no
             LEFT JOIN product_biz pb ON pb.id_code = oi.biz_code

@@ -160,8 +160,11 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         }
         //可编辑的条件：客服主管审核对账单不通过,客服主管反审核对账单，财务审核对账单不通过，财务反审核
         OrderReceivableBillDetail existObject = receivableBillDetails.get(0);
-        if((!BillEnum.B_2_1.getCode().equals(existObject.getAuditStatus()) || BillEnum.B_7.getCode().equals(existObject.getAuditStatus()) ||
-           BillEnum.B_8.getCode().equals(existObject.getAuditStatus()) || BillEnum.B_4_1.getCode().equals(existObject.getAuditStatus()))){
+        if(!(BillEnum.B_2_1.getCode().equals(existObject.getAuditStatus()) || BillEnum.B_7.getCode().equals(existObject.getAuditStatus()) ||
+           BillEnum.B_8.getCode().equals(existObject.getAuditStatus()) || BillEnum.B_4_1.getCode().equals(existObject.getAuditStatus())
+          || "edit_del".equals(existObject.getAuditStatus())//流程过度状态-编辑删除
+          || "edit_no_commit".equals(existObject.getAuditStatus())//流程过度状态-编辑提交
+         )){
             return false;
         }
         //处理需要删除的费用
@@ -176,7 +179,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             //1.对账单相应的详情信息做删除
             QueryWrapper removeWrapper = new QueryWrapper();
             removeWrapper.eq("bill_no",form.getBillNo());
-            removeWrapper.in("costId",delCostIds);
+            removeWrapper.in("cost_id",delCostIds);
             remove(removeWrapper);
 
             //2.相应的费用录入也需要做记录
@@ -245,6 +248,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             for (int i = 0; i < receiveBillDetails.size(); i++) {
                 receiveBillDetails.get(i).setStatus("1");
                 receiveBillDetails.get(i).setBillNo(form.getBillNo());
+                receiveBillDetails.get(i).setBillId(existObject.getBillId());
                 receiveBillDetails.get(i).setBeginAccountTerm(oldSBillDetail.getBeginAccountTerm());
                 receiveBillDetails.get(i).setEndAccountTerm(oldSBillDetail.getEndAccountTerm());
                 receiveBillDetails.get(i).setSettlementCurrency(oldSBillDetail.getSettlementCurrency());

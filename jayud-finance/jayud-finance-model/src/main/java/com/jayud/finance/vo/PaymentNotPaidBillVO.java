@@ -84,6 +84,9 @@ public class PaymentNotPaidBillVO {
     @ApiModelProperty(value = "1-暂存 2-生成账单")
     private String isBill;
 
+    @ApiModelProperty(value = "对账单明细状态")
+    private String auditStatus;
+
 
 
 

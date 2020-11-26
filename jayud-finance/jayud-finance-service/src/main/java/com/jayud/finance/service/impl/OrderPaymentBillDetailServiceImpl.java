@@ -171,8 +171,11 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         }
         //可编辑的条件：客服主管审核对账单不通过,客服主管反审核对账单，财务审核对账单不通过，财务反审核
         OrderPaymentBillDetail existObject = paymentBillDetailList.get(0);
-        if((!BillEnum.B_2_1.getCode().equals(existObject.getAuditStatus()) || BillEnum.B_7.getCode().equals(existObject.getAuditStatus()) ||
-                BillEnum.B_8.getCode().equals(existObject.getAuditStatus()) || BillEnum.B_4_1.getCode().equals(existObject.getAuditStatus()))){
+        if(!(BillEnum.B_2_1.getCode().equals(existObject.getAuditStatus()) || BillEnum.B_7.getCode().equals(existObject.getAuditStatus()) ||
+                BillEnum.B_8.getCode().equals(existObject.getAuditStatus()) || BillEnum.B_4_1.getCode().equals(existObject.getAuditStatus())
+                || "edit_del".equals(existObject.getAuditStatus())//流程过度状态-编辑删除
+                || "edit_no_commit".equals(existObject.getAuditStatus())//流程过度状态-编辑提交
+         )){
             return false;
         }
         //处理需要删除的费用
@@ -186,7 +189,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         if(delCostIds.size() > 0){
             QueryWrapper removeWrapper = new QueryWrapper();
             removeWrapper.eq("bill_no",form.getBillNo());
-            removeWrapper.in("costId",delCostIds);
+            removeWrapper.in("cost_id",delCostIds);
             remove(removeWrapper);
 
             //相应的费用录入也需要做记录
@@ -255,6 +258,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             for (int i = 0; i < paymentBillDetails.size(); i++) {
                 paymentBillDetails.get(i).setStatus("1");
                 paymentBillDetails.get(i).setBillNo(form.getBillNo());
+                paymentBillDetails.get(i).setBillId(existObject.getBillId());
                 paymentBillDetails.get(i).setBeginAccountTerm(oldFBillDetail.getBeginAccountTerm());
                 paymentBillDetails.get(i).setEndAccountTerm(oldFBillDetail.getEndAccountTerm());
                 paymentBillDetails.get(i).setSettlementCurrency(oldFBillDetail.getSettlementCurrency());

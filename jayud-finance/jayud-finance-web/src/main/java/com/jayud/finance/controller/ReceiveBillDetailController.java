@@ -35,10 +35,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 
 
 @RestController
@@ -290,8 +288,13 @@ public class ReceiveBillDetailController {
         entity.setTotalData(costTotal);
         entity.setTotalIndex(9);
 
-        // 合并单元格后的标题行，使用默认标题样式
-        writer.merge(lastColumn, "B类表:存在`敏感品名`的货物表");
+        //尾部
+        List<String> bottomData = new ArrayList<>();
+        bottomData.add(" " + EasyExcelUtils.SPLIT_SYMBOL + "制 单 人:" + viewBillVO.getMakeUser());
+        bottomData.add(" " + EasyExcelUtils.SPLIT_SYMBOL + "制单时间:" + viewBillVO.getMakeTimeStr());
+        bottomData.add(" " + EasyExcelUtils.SPLIT_SYMBOL + "审 单 人:" + viewBillVO.getMakeUser());
+        bottomData.add(" " + EasyExcelUtils.SPLIT_SYMBOL + "审单时间:" + viewBillVO.getMakeTimeStr());
+        entity.setBottomData(bottomData);
 
         Workbook workbook = EasyExcelUtils.autoGeneration("", entity);
 

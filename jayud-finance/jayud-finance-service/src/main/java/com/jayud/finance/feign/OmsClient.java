@@ -53,8 +53,8 @@ public interface OmsClient {
      * @param oprType 是应付还是应收
      * @return
      */
-    @RequestMapping(value = "api/editSSaveConfirm")
-    ApiResult<Boolean> editSaveConfirm(@RequestParam(value = "costIds") List<Long> costIds,@RequestParam("oprType") String oprType,
+    @RequestMapping(value = "api/editSaveConfirm")
+    ApiResult<Boolean> editSaveConfirm(@RequestParam("costIds") List<Long> costIds,@RequestParam("oprType") String oprType,
                                         @RequestParam("cmd") String cmd);
 
 

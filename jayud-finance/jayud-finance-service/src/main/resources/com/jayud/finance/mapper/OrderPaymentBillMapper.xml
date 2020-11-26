@@ -323,7 +323,7 @@
     </select>
     <select id="findSaveConfirmData" parameterType="java.util.List" resultType="java.util.List">
         SELECT
-        count( 1 )
+        opc.id
         FROM
         order_payment_cost opc
         WHERE

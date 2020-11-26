@@ -341,8 +341,8 @@ public class ExternalApiController {
      */
     @ApiOperation(value = "编辑保存确定")
     @RequestMapping(value = "api/editSaveConfirm")
-    public ApiResult editSaveConfirm(@RequestParam(value = "costIds") List<Long> costIds,@RequestParam(value = "oprType") String oprType,
-                                      @RequestParam("cmd") String cmd){
+    public ApiResult editSaveConfirm(@RequestParam("costIds") List<Long> costIds,@RequestParam("oprType") String oprType,
+                                     @RequestParam("cmd") String cmd){
         if("save_confirm".equals(cmd)) {
             if ("receivable".equals(oprType)) {
                 OrderReceivableCost receivableCost = new OrderReceivableCost();

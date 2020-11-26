@@ -562,9 +562,12 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     public Boolean editFDel(List<Long> costIds) {
         //从删除的costIds里面挑出那种保存确定的数据,回滚到未出账状态
         List<Long> saveConfirmIds = orderPaymentBillService.findSaveConfirmData(costIds);
-        Boolean result = omsClient.editSaveConfirm(saveConfirmIds,"payment","edit_del").getData();
-        if(!result){
-            return false;
+        Boolean result = true;
+        if(saveConfirmIds != null && saveConfirmIds.size() > 0) {
+            result = omsClient.editSaveConfirm(saveConfirmIds, "payment", "edit_del").getData();
+            if (!result) {
+                return false;
+            }
         }
         //已存在的数据删除,只在账单详情表做记录
         List<Long> editDelIds = costIds.stream().filter(item -> !saveConfirmIds.contains(item)).collect(toList());

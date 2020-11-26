@@ -126,7 +126,8 @@
             (SELECT sum( rmb.amount ) FROM order_payment_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'USD' GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) dollar,
             (SELECT sum( rmb.amount ) FROM order_payment_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'EUR' GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) euro,
             (SELECT sum( rmb.amount ) FROM order_payment_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'HKD' GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) hKDollar,
-            orc.id costId
+            orc.id costId,
+            orc.is_bill isBill
         FROM
             order_receivable_cost orc
 			left join customer_info cus on cus.unit_code = orc.customer_code
@@ -140,7 +141,12 @@
             LEFT JOIN cost_type ct ON orc.cost_type_id = ct.id
             LEFT JOIN cost_info ci ON orc.cost_code = ci.id_code
         WHERE
-            orc.id IN ( SELECT orbd.cost_id FROM order_receivable_bill_detail orbd WHERE orbd.bill_no = #{form.billNo} )
+            orc.id IN ( SELECT orbd.cost_id FROM order_receivable_bill_detail orbd WHERE orbd.audit_status !='edit_del' and orbd.bill_no = #{form.billNo} )
+            or
+            (orc.is_bill = 'save_confirm' and
+              oi.legal_name = (select orb1.legal_name from order_receivable_bill orb1 left join order_receivable_bill_detail orbd1 on orb1.id = orbd1.bill_id where orbd1.bill_no = #{form.billNo} limit 1)
+              and cus.unit_account = (select orb1.unit_account from order_receivable_bill orb1 left join order_receivable_bill_detail orbd1 on orb1.id = orbd1.bill_id where orbd1.bill_no = #{form.billNo} limit 1)
+            )
     </select>
     <select id="findSSheetHead" parameterType="java.lang.String" resultType="com.jayud.finance.vo.SheetHeadVO">
         SELECT

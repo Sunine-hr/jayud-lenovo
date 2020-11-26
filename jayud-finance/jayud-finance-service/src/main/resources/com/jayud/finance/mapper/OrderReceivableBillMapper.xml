@@ -287,14 +287,14 @@
          #{item}
          </foreach>
     </select>
-    <select id="findSaveConfirmData" parameterType="java.util.List" resultType="java.util.List">
+    <select id="findSaveConfirmData" parameterType="java.util.List" resultType="java.lang.Long">
         SELECT
         orc.id
         FROM
         order_receivable_cost orc
         WHERE
         orc.is_bill = 'save_confirm'
-        AND orc.id
+        AND orc.id in
         <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>

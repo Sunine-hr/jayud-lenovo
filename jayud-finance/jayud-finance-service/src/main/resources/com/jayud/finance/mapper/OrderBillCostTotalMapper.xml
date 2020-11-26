@@ -32,7 +32,7 @@
         currency_rate cr
         WHERE
         cr.dcid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = opc.currency_code )
-        AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = #{settlementCurrency} )),0) exchangeRate
+        AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = #{settlementCurrency} ) limit 1),0) exchangeRate
         FROM
         order_payment_cost opc
         LEFT JOIN cost_info ci ON ci.id_code = opc.cost_code

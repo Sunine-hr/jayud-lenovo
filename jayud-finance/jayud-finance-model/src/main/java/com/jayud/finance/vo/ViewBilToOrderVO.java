@@ -1,7 +1,12 @@
 package com.jayud.finance.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * 应收账单列表预览
@@ -41,6 +46,10 @@ public class ViewBilToOrderVO {
 
     @ApiModelProperty(value = "报关单号")
     private String yunCustomsNo;
+
+    @ApiModelProperty(value = "合计费用")
+    @JsonIgnore
+    private List<String> totalCost;
 
 
 }

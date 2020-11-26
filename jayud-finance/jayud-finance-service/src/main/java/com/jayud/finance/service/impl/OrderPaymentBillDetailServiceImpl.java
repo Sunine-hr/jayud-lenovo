@@ -162,7 +162,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
 
     @Override
     public Boolean editBill(EditBillForm form) {
-        //如果该账单编号下的现有订单都删除光了，不处理，让她重新出账
+        //该账单编号下必须有账单信息才可编辑
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("bill_no",form.getBillNo());
         List<OrderPaymentBillDetail> paymentBillDetailList = baseMapper.selectList(queryWrapper);
@@ -176,9 +176,11 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             return false;
         }
         //处理需要删除的费用
-        List<OrderPaymentBillDetailForm> delCosts = form.getDelCosts();
+        //获取删除标识的账单详情
+        queryWrapper.eq("audit_status","edit_del");
+        List<OrderPaymentBillDetail> delCosts = baseMapper.selectList(queryWrapper);
         List<Long> delCostIds = new ArrayList<>();
-        for (OrderPaymentBillDetailForm billDetail : delCosts) {
+        for (OrderPaymentBillDetail billDetail : delCosts) {
             delCostIds.add(billDetail.getCostId());
         }
         if(delCostIds.size() > 0){
@@ -199,7 +201,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         if(form.getPaymentBillDetailForms().size() > 0) {
             Boolean result = true;
             List<OrderPaymentBillDetailForm> paymentBillDetailForms = form.getPaymentBillDetailForms();//账单详细信息
-            OrderPaymentBill orderPaymentBill = orderPaymentBillService.getById(form.getBillId());//获取账单信息
+            OrderPaymentBill orderPaymentBill = orderPaymentBillService.getById(existObject.getBillId());//获取账单信息
             //生成账单需要修改order_payment_cost表的is_bill
             List<Long> costIds = new ArrayList<>();
             List<String> orderNos = new ArrayList<>(); //为了统计已出账订单数
@@ -571,13 +573,15 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         }
         //已存在的数据删除,只在账单详情表做记录
         List<Long> editDelIds = costIds.stream().filter(item -> !saveConfirmIds.contains(item)).collect(toList());
-        OrderPaymentBillDetail paymentBillDetail = new OrderPaymentBillDetail();
-        paymentBillDetail.setAuditStatus("edit_del");//持续操作中的过度状态
-        QueryWrapper updateWrapper = new QueryWrapper();
-        updateWrapper.in("cost_id",editDelIds);
-        result = update(paymentBillDetail,updateWrapper);
-        if(!result){
-            return false;
+        if(editDelIds != null && editDelIds.size() > 0) {
+            OrderPaymentBillDetail paymentBillDetail = new OrderPaymentBillDetail();
+            paymentBillDetail.setAuditStatus("edit_del");//持续操作中的过度状态
+            QueryWrapper updateWrapper = new QueryWrapper();
+            updateWrapper.in("cost_id", editDelIds);
+            result = update(paymentBillDetail, updateWrapper);
+            if (!result) {
+                return false;
+            }
         }
         return true;
     }

@@ -23,6 +23,7 @@ import com.jayud.finance.po.OrderPaymentBillDetail;
 import com.jayud.finance.service.IOrderPaymentBillDetailService;
 import com.jayud.finance.util.StringUtils;
 import com.jayud.finance.vo.*;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -33,11 +34,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 
 
 @RestController
@@ -198,6 +196,12 @@ public class PaymentBillDetailController {
     @ApiOperation(value = "客服编辑对账单保存或提交,财务编辑对账单保存或提交")
     @PostMapping("/editBill")
     public CommonResult editBill(@RequestBody EditBillForm form) {
+        //参数校验
+        if(StringUtil.isNullOrEmpty(form.getBillNo()) || StringUtil.isNullOrEmpty(form.getCmd())
+                || StringUtil.isNullOrEmpty(form.getLoginUserName()) || form.getPaymentBillDetailForms() == null ||
+                form.getPaymentBillDetailForms().size() == 0){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
         Boolean result = billDetailService.editBill(form);
         if(!result){
             return CommonResult.error(ResultEnum.OPR_FAIL);
@@ -224,7 +228,7 @@ public class PaymentBillDetailController {
     @ResponseBody
     public void exportBillDetail(@RequestParam(value = "billNo", required = true) String billNo,
                                  HttpServletResponse response) throws IOException {
-        List<ViewBilToOrderVO> list = billDetailService.viewBillDetail(billNo);
+        List<ViewFBilToOrderVO> list = billDetailService.viewBillDetail(billNo);
 
         TypeUtils.compatibleWithJavaBean = true;
 

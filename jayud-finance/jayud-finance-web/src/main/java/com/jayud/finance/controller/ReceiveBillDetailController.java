@@ -23,6 +23,7 @@ import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.service.IOrderReceivableBillDetailService;
 import com.jayud.finance.util.StringUtils;
 import com.jayud.finance.vo.*;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -197,6 +198,12 @@ public class ReceiveBillDetailController {
     @ApiOperation(value = "客服编辑对账单保存,财务编辑对账单")
     @PostMapping("/editSBill")
     public CommonResult editSBill(@RequestBody EditSBillForm form) {
+        //参数校验
+        if(StringUtil.isNullOrEmpty(form.getBillNo()) || StringUtil.isNullOrEmpty(form.getCmd())
+        || StringUtil.isNullOrEmpty(form.getLoginUserName()) || form.getReceiveBillDetailForms() == null ||
+        form.getReceiveBillDetailForms().size() == 0){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
         Boolean result = billDetailService.editSBill(form);
         if(!result){
             return CommonResult.error(ResultEnum.OPR_FAIL);

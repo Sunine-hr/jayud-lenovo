@@ -165,9 +165,11 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             return false;
         }
         //处理需要删除的费用
-        List<OrderReceiveBillDetailForm> delCosts = form.getDelCosts();
+        //获取删除标识的账单详情
+        queryWrapper.eq("audit_status","edit_del");
+        List<OrderReceivableBillDetail> delCosts = baseMapper.selectList(queryWrapper);
         List<Long> delCostIds = new ArrayList<>();
-        for (OrderReceiveBillDetailForm billDetail : delCosts) {
+        for (OrderReceivableBillDetail billDetail : delCosts) {
             delCostIds.add(billDetail.getCostId());
         }
         if(delCostIds.size() > 0){
@@ -188,7 +190,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         if(form.getReceiveBillDetailForms().size() > 0) {
             Boolean result = true;
             List<OrderReceiveBillDetailForm> receiveBillDetailForms = form.getReceiveBillDetailForms();//账单详细信息
-            OrderReceivableBill orderReceivableBill = receivableBillService.getById(form.getBillId());//获取账单信息
+            OrderReceivableBill orderReceivableBill = receivableBillService.getById(existObject.getBillId());//获取账单信息
             //生成账单需要修改order_receivable_cost表的is_bill
             List<Long> costIds = new ArrayList<>();
             List<String> orderNos = new ArrayList<>(); //为了统计已出账订单数
@@ -539,13 +541,15 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         }
         //已存在的数据删除,只在账单详情表做记录
         List<Long> editDelIds = costIds.stream().filter(item -> !saveConfirmIds.contains(item)).collect(toList());
-        OrderReceivableBillDetail receivableBillDetail = new OrderReceivableBillDetail();
-        receivableBillDetail.setAuditStatus("edit_del");//持续操作中的过度状态
-        QueryWrapper updateWrapper = new QueryWrapper();
-        updateWrapper.in("cost_id",editDelIds);
-        result = update(receivableBillDetail,updateWrapper);
-        if(!result){
-            return false;
+        if(editDelIds != null && editDelIds.size() > 0) {
+            OrderReceivableBillDetail receivableBillDetail = new OrderReceivableBillDetail();
+            receivableBillDetail.setAuditStatus("edit_del");//持续操作中的过度状态
+            QueryWrapper updateWrapper = new QueryWrapper();
+            updateWrapper.in("cost_id", editDelIds);
+            result = update(receivableBillDetail, updateWrapper);
+            if(!result){
+                return false;
+            }
         }
         return true;
     }

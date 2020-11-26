@@ -10,6 +10,9 @@ import java.math.BigDecimal;
 @Data
 public class OrderPaymentBillDetailForm {
 
+    @ApiModelProperty(value = "账单详情ID,有则必传")
+    private Long billDetailId;
+
     @ApiModelProperty(value = "订单编号",required = true)
     @NotEmpty(message = "orderNo is required")
     private String orderNo;
@@ -41,6 +44,10 @@ public class OrderPaymentBillDetailForm {
     @ApiModelProperty(value = "费用类型",required = true)
     @NotEmpty(message = "costGenreName is required")
     private String costGenreName;
+
+    @ApiModelProperty(value = "费用类型ID",required = true)
+    @NotEmpty(message = "costGenreId is required")
+    private Long costGenreId;
 
     @ApiModelProperty(value = "费用类别",required = true)
     @NotEmpty(message = "costTypeName is required")

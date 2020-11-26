@@ -201,11 +201,7 @@ public class PaymentBillDetailController {
                 || StringUtil.isNullOrEmpty(form.getLoginUserName()) ){
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        Boolean result = billDetailService.editBill(form);
-        if(!result){
-            return CommonResult.error(ResultEnum.OPR_FAIL);
-        }
-        return CommonResult.success();
+        return billDetailService.editBill(form);
     }
 
     @ApiOperation(value = "对账单详情，对账单审核详情")

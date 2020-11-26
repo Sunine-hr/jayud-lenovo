@@ -73,7 +73,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      * @param form
      * @return
      */
-    Boolean editBill(EditBillForm form);
+    CommonResult editBill(EditBillForm form);
 
     /**
      * 编辑对账单提交

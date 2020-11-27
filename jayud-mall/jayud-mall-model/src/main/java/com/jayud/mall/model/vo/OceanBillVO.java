@@ -42,6 +42,9 @@ public class OceanBillVO {
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "任务分组id(提单任务task_group id)")
+    private Integer taskId;
+
     /*提单关联柜号信息*/
     @ApiModelProperty(value = "提单关联柜号list")
     private List<OceanCounterVO> oceanCounterVOList;

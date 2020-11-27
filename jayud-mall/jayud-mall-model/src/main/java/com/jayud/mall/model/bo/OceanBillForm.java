@@ -52,9 +52,13 @@ public class OceanBillForm {
     @JSONField(ordinal = 9)
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "任务分组id(提单任务task_group id)")
+    @JSONField(ordinal = 10)
+    private Integer taskId;
+
     //1提单对应1货柜，(PS:之前是1提单对应N货柜，现在还是用list，不改了，限制list的大小为1)
     @ApiModelProperty(value = "提单对应货柜信息list")
-    @JSONField(ordinal = 10)
+    @JSONField(ordinal = 11)
     private List<OceanCounterForm> oceanCounterForms;
 
 }

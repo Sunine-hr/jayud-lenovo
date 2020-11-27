@@ -16,13 +16,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/taskgroup")
-@Api(tags = "提单任务分组接口")
+@Api(tags = "任务分组接口")
 public class TaskGroupController {
 
     @Autowired
     ITaskGroupService taskGroupService;
 
-    @ApiOperation(value = "查询提单任务分组List")
+    @ApiOperation(value = "查询任务分组List")
     @PostMapping("/findTaskGroup")
     public CommonResult<List<TaskGroup>> findTaskGroup(@RequestBody TaskGroupForm form) {
         List<TaskGroup> list = taskGroupService.findTaskGroup(form);

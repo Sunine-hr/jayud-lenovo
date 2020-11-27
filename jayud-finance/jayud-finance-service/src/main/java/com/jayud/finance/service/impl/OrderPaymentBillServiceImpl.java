@@ -110,7 +110,20 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             costIds.add(paymentBillDetail.getCostId());
             orderNos.add(paymentBillDetail.getOrderNo());
         }
+        String settlementCurrency = form.getSettlementCurrency();
+        List<OrderBillCostTotalVO> orderBillCostTotalVOS = new ArrayList<>();
         if(costIds.size() > 0){
+            //校验是否配置了相应币种的汇率
+            //根据费用ID统计费用信息,将原始费用信息根据结算币种进行转换
+            if("create".equals(form.getCmd())) {
+                orderBillCostTotalVOS = costTotalService.findOrderFBillCostTotal(costIds, settlementCurrency);
+                for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
+                    BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();//如果费率为0，则抛异常回滚数据
+                    if (exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0) {
+                        return false;
+                    }
+                }
+            }
             OprCostBillForm oprCostBillForm = new OprCostBillForm();
             oprCostBillForm.setCmd(form.getCmd());
             oprCostBillForm.setCostIds(costIds);
@@ -133,7 +146,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             for (String orderNo : orderNos) {
                 QueryWrapper queryWrapper1 = new QueryWrapper();
                 queryWrapper1.eq("order_no",orderNo);
-                List<OrderPaymentBillDetail> orderNoOjects= list(queryWrapper1);
+                List<OrderPaymentBillDetail> orderNoOjects= paymentBillDetailService.list(queryWrapper1);
                 if(orderNoOjects == null || orderNoOjects.size() == 0){
                     validOrders.add(orderNo);
                 }
@@ -189,9 +202,6 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             }
             //开始保存费用维度的金额信息  以结算币种进行转换后保存
             List<OrderBillCostTotal> orderBillCostTotals = new ArrayList<>();
-            //根据费用ID统计费用信息,将原始费用信息根据结算币种进行转换
-            String settlementCurrency = form.getSettlementCurrency();
-            List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderFBillCostTotal(costIds,settlementCurrency);
             for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                 orderBillCostTotalVO.setBillNo(form.getBillNo());
                 orderBillCostTotalVO.setCurrencyCode(settlementCurrency);

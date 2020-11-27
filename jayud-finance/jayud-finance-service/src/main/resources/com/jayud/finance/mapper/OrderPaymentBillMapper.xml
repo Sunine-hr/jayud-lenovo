@@ -321,14 +321,14 @@
             #{item}
         </foreach>
     </select>
-    <select id="findSaveConfirmData" parameterType="java.util.List" resultType="java.util.List">
+    <select id="findSaveConfirmData" parameterType="java.util.List" resultType="java.lang.Long">
         SELECT
-        count( 1 )
+        opc.id
         FROM
         order_payment_cost opc
         WHERE
         opc.is_bill = 'save_confirm'
-        AND opc.id
+        AND opc.id in
         <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>

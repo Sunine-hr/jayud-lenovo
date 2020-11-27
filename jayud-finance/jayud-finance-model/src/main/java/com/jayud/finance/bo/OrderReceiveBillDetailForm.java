@@ -45,6 +45,10 @@ public class OrderReceiveBillDetailForm {
     @NotEmpty(message = "costGenreName is required")
     private String costGenreName;
 
+    @ApiModelProperty(value = "费用类型ID",required = true)
+    @NotEmpty(message = "costGenreId is required")
+    private Long costGenreId;
+
     @ApiModelProperty(value = "费用类别",required = true)
     @NotEmpty(message = "costTypeName is required")
     private String costTypeName;

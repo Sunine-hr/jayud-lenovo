@@ -29,8 +29,8 @@
         ifnull( orb.already_paid_amount, 0 ) alreadyPaidAmount,
         ifnull( orb.bill_order_num, 0 ) billOrderNum,
         ifnull( orb.bill_num, 0 ) billNum,
-        (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '1' and t1.customer_name = orc.customer_name  and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidAmount,
-        (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '1' and t1.customer_name = orc.customer_name and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidOrderNum
+        (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '1' and t1.customer_code = orc.customer_code  and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidAmount,
+        (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '1' and t1.customer_code = orc.customer_code and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidOrderNum
         FROM
         order_receivable_cost orc
         left join customer_info ci on ci.unit_code = orc.customer_code
@@ -287,14 +287,14 @@
          #{item}
          </foreach>
     </select>
-    <select id="findSaveConfirmData" parameterType="java.util.List" resultType="java.util.List">
+    <select id="findSaveConfirmData" parameterType="java.util.List" resultType="java.lang.Long">
         SELECT
-        count( 1 )
+        orc.id
         FROM
         order_receivable_cost orc
         WHERE
         orc.is_bill = 'save_confirm'
-        AND orc.id
+        AND orc.id in
         <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>

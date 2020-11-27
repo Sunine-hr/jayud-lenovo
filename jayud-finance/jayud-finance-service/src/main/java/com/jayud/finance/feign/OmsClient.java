@@ -4,6 +4,7 @@ package com.jayud.finance.feign;
 import com.jayud.common.ApiResult;
 import com.jayud.finance.bo.AuditInfoForm;
 import com.jayud.finance.bo.OprCostBillForm;
+import com.jayud.finance.bo.OrderCostForm;
 import com.jayud.finance.vo.InitComboxStrVO;
 import com.jayud.finance.vo.InitComboxVO;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -53,9 +54,18 @@ public interface OmsClient {
      * @param oprType 是应付还是应收
      * @return
      */
-    @RequestMapping(value = "api/editSSaveConfirm")
-    ApiResult<Boolean> editSaveConfirm(@RequestParam(value = "costIds") List<Long> costIds,@RequestParam("oprType") String oprType,
+    @RequestMapping(value = "api/editSaveConfirm")
+    ApiResult<Boolean> editSaveConfirm(@RequestParam("costIds") List<Long> costIds,@RequestParam("oprType") String oprType,
                                         @RequestParam("cmd") String cmd);
+
+    /**
+     * 提交财务审核时，财务可能编辑费用类型
+     * @param forms
+     * @param cmd
+     * @return
+     */
+    @RequestMapping(value = "api/oprCostGenreByCw")
+    ApiResult<Boolean> oprCostGenreByCw(@RequestBody List<OrderCostForm> forms,@RequestParam("cmd") String cmd);
 
 
 }

@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author chuanmei
@@ -21,6 +21,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
     /**
      * 应付对账单分页查询
+     *
      * @param form
      * @return
      */
@@ -28,6 +29,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
     /**
      * 导出使用
+     *
      * @param form
      * @return
      */
@@ -35,6 +37,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
     /**
      * 提交财务
+     *
      * @param form
      * @return
      */
@@ -42,6 +45,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
     /**
      * 付款申请
+     *
      * @param form
      * @return
      */
@@ -49,6 +53,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
     /**
      * 付款申请作废
+     *
      * @param billNo
      * @return
      */
@@ -56,6 +61,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
     /**
      * 编辑对账单分页查询
+     *
      * @param form
      * @return
      */
@@ -63,13 +69,15 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
     /**
      * 编辑对账单保存
+     *
      * @param form
      * @return
      */
-    Boolean editBill(EditBillForm form);
+    CommonResult editBill(EditBillForm form);
 
     /**
      * 编辑对账单提交
+     *
      * @param billNo
      * @param loginUserName
      * @return
@@ -78,6 +86,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
     /**
      * 对账单详情
+     *
      * @param billNo
      * @return
      */
@@ -85,18 +94,21 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
     /**
      * 对账单详情表头
+     *
      * @return
      */
     List<SheetHeadVO> findSheetHead(String billNo);
 
     /**
      * 对账单详情的全局数据部分
+     *
      * @return
      */
     ViewBillVO getViewBill(String billNo);
 
     /**
      * 应付对账单审核
+     *
      * @param form
      * @return
      */
@@ -104,6 +116,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
     /**
      * 反审核
+     *
      * @param form
      * @return
      */
@@ -111,8 +124,10 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
 
     //财务核算模块
+
     /**
      * 财务核算分页查询
+     *
      * @param form
      * @return
      */
@@ -120,6 +135,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
     /**
      * 导出财务核算分页查询
+     *
      * @param form
      * @return
      */
@@ -127,6 +143,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
     /**
      * 应付对账单分页查询
+     *
      * @param form
      * @return
      */
@@ -134,6 +151,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
     /**
      * 导出 对账单明细
+     *
      * @param form
      * @return
      */
@@ -141,6 +159,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
     /**
      * 付款审核列表
+     *
      * @param billNo
      * @return
      */
@@ -148,6 +167,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
     /**
      * 付款审核
+     *
      * @param form
      * @return
      */

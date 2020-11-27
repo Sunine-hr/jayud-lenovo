@@ -10,6 +10,10 @@ import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.*;
+import com.jayud.oms.model.vo.DriverInfoLinkVO;
+import com.jayud.oms.model.vo.InitComboxVO;
+import com.jayud.oms.model.vo.InputMainOrderVO;
+import com.jayud.oms.model.vo.OrderStatusVO;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
 import io.swagger.annotations.Api;
@@ -341,8 +345,8 @@ public class ExternalApiController {
      */
     @ApiOperation(value = "编辑保存确定")
     @RequestMapping(value = "api/editSaveConfirm")
-    public ApiResult editSaveConfirm(@RequestParam(value = "costIds") List<Long> costIds,@RequestParam(value = "oprType") String oprType,
-                                      @RequestParam("cmd") String cmd){
+    public ApiResult editSaveConfirm(@RequestParam("costIds") List<Long> costIds,@RequestParam("oprType") String oprType,
+                                     @RequestParam("cmd") String cmd){
         if("save_confirm".equals(cmd)) {
             if ("receivable".equals(oprType)) {
                 OrderReceivableCost receivableCost = new OrderReceivableCost();
@@ -370,6 +374,36 @@ public class ExternalApiController {
                 QueryWrapper updateWrapper = new QueryWrapper();
                 updateWrapper.in("id", costIds);
                 paymentCostService.update(paymentCost, updateWrapper);
+            }
+        }
+        return ApiResult.ok(true);
+    }
+
+    /**
+     * 提交财务审核时，财务可能编辑费用类型
+     * @param forms
+     * @param cmd
+     * @return
+     */
+    @RequestMapping(value = "api/oprCostGenreByCw")
+    ApiResult<Boolean> oprCostGenreByCw(@RequestBody List<OrderCostForm> forms,@RequestParam("cmd") String cmd){
+        if ("receivable".equals(cmd)) {
+            for (OrderCostForm orderCost : forms) {
+                OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
+                orderReceivableCost.setId(orderCost.getCostId());
+                orderReceivableCost.setCostGenreId(orderCost.getCostGenreId());
+                orderReceivableCost.setOptName(orderCost.getLoginUserName());
+                orderReceivableCost.setOptTime(LocalDateTime.now());
+                receivableCostService.updateById(orderReceivableCost);
+            }
+        } else if ("payment".equals(cmd)) {
+            for (OrderCostForm orderCost : forms) {
+                OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
+                orderPaymentCost.setId(orderCost.getCostId());
+                orderPaymentCost.setCostGenreId(orderCost.getCostGenreId());
+                orderPaymentCost.setOptName(orderCost.getLoginUserName());
+                orderPaymentCost.setOptTime(LocalDateTime.now());
+                paymentCostService.updateById(orderPaymentCost);
             }
         }
         return ApiResult.ok(true);

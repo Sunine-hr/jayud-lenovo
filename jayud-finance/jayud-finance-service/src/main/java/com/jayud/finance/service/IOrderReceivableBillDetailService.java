@@ -66,7 +66,7 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      * @param form
      * @return
      */
-    Boolean editSBill(EditSBillForm form);
+    CommonResult editSBill(EditSBillForm form);
 
     /**
      * 编辑对账单提交

@@ -9,6 +9,11 @@ import java.util.Objects;
 @AllArgsConstructor
 public enum BillEnum {
 
+    //客服编辑业务:进入编辑界面-删除/添加(勾选-确定)-暂存/提交-进入到客服主管审核,真实的业务场景是一个连贯的动作,但是为了配合前台解决一系列的问题,得加以下几个状态。
+    //edit_del:删除,账单详情表的audit_status
+    //edit_no_commit:暂存,账单详情表audit_status
+    //save_confirm:添加(勾选-确定),录入费用表is_bill
+
     //账单状态
     B_1("B_1","生成对账单"),//客服
     B_2("B_2","审核对账单"),//客服主管

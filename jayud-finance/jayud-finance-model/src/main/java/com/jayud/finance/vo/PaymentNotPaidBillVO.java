@@ -12,6 +12,9 @@ import java.math.BigDecimal;
 @Data
 public class PaymentNotPaidBillVO {
 
+    @ApiModelProperty(value = "账单详情ID")
+    private Long billDetailId;
+
     @ApiModelProperty(value = "订单编号")
     private String orderNo;
 
@@ -41,6 +44,9 @@ public class PaymentNotPaidBillVO {
 
     @ApiModelProperty(value = "费用类型")
     private String costGenreName;
+
+    @ApiModelProperty(value = "费用类型ID")
+    private Long costGenreId;
 
     @ApiModelProperty(value = "费用类别")
     private String costTypeName;
@@ -83,6 +89,9 @@ public class PaymentNotPaidBillVO {
 
     @ApiModelProperty(value = "1-暂存 2-生成账单")
     private String isBill;
+
+    @ApiModelProperty(value = "对账单明细状态")
+    private String auditStatus;
 
 
 

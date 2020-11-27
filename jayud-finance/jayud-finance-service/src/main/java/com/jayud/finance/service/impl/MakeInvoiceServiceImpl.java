@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
+import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
@@ -46,7 +48,7 @@ public class MakeInvoiceServiceImpl extends ServiceImpl<MakeInvoiceMapper, MakeI
     @Override
     public List<MakeInvoiceVO> findInvoiceList(String billNo) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("bill_no",billNo);
+        queryWrapper.eq(SqlConstant.BILL_NO,billNo);
         List<MakeInvoice> makeInvoices = list(queryWrapper);
         return ConvertUtil.convertList(makeInvoices,MakeInvoiceVO.class);
     }
@@ -55,21 +57,21 @@ public class MakeInvoiceServiceImpl extends ServiceImpl<MakeInvoiceMapper, MakeI
     public CommonResult makeInvoice(MakeInvoiceListForm form) {
         //只有开票/付款申请审核-B_6才允许开票/付款核销
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("bill_no",form.getBillNo());
-        String oprType = "";//1-开票 2-收票
-        if("receivable".equals(form.getCmd())){
-            oprType = "1";
+        queryWrapper.eq(SqlConstant.BILL_NO,form.getBillNo());
+        String oprType = CommonConstant.DOUBLE_QUOTE;//1-开票 2-收票
+        if(CommonConstant.RECEIVABLE.equals(form.getCmd())){
+            oprType = CommonConstant.VALUE_1;
             List<OrderReceivableBillDetail> receivableBillDetails = receivableBillDetailService.list(queryWrapper);
             OrderReceivableBillDetail receivableBillDetail = receivableBillDetails.get(0);
             if(!BillEnum.B_6.getCode().equals(receivableBillDetail.getAuditStatus())){
-                return CommonResult.error(10001,"开票申请审核通过才可操作");
+                return CommonResult.error(ResultEnum.MAKE_INVOICE_CONDITION_1);
             }
-        }else if("payment".equals(form.getCmd())){
-            oprType = "2";
+        }else if(CommonConstant.PAYMENT.equals(form.getCmd())){
+            oprType = CommonConstant.VALUE_2;
             List<OrderPaymentBillDetail> paymentBillDetails = paymentBillDetailService.list(queryWrapper);
             OrderPaymentBillDetail paymentBillDetail = paymentBillDetails.get(0);
             if(!BillEnum.B_6.getCode().equals(paymentBillDetail.getAuditStatus())){
-                return CommonResult.error(10001,"付款申请审核通过才可操作");
+                return CommonResult.error(ResultEnum.MAKE_INVOICE_CONDITION_2);
             }
         }
         List<MakeInvoiceForm> makeInvoiceForms = form.getMakeInvoices();
@@ -82,7 +84,7 @@ public class MakeInvoiceServiceImpl extends ServiceImpl<MakeInvoiceMapper, MakeI
             makeInvoice.setMakeTime(DateUtils.str2LocalDateTime(makeInvoiceForm.getMakeTimeStr(),DateUtils.DATE_TIME_PATTERN));
             makeInvoice.setFileUrl(StringUtils.getFileStr(makeInvoiceForm.getFileViewList()));
             makeInvoice.setFileName(StringUtils.getFileNameStr(makeInvoiceForm.getFileViewList()));
-            makeInvoice.setStatus("1");//有效
+            makeInvoice.setStatus(CommonConstant.VALUE_1);//有效
             makeInvoice.setCreatedUser(form.getLoginUserName());
             makeInvoice.setOprType(oprType);
             makeInvoices.add(makeInvoice);
@@ -98,7 +100,7 @@ public class MakeInvoiceServiceImpl extends ServiceImpl<MakeInvoiceMapper, MakeI
     public Boolean makeInvoiceDel(Long invoiceId) {
         MakeInvoice makeInvoice = new MakeInvoice();
         makeInvoice.setId(invoiceId);
-        makeInvoice.setStatus("0");
+        makeInvoice.setStatus(CommonConstant.VALUE_0);
         makeInvoice.setCreatedTime(LocalDateTime.now());
         makeInvoice.setCreatedUser(UserOperator.getToken());
         return updateById(makeInvoice);

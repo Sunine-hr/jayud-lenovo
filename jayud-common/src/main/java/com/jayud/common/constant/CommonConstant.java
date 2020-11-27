@@ -186,4 +186,10 @@ public abstract class CommonConstant {
     public static final String SHEET_HEAD = "sheetHead";//表头
 
     public static final String WHOLE_DATA = "wholeData";//全局数据
+
+    public static final String DOUBLE_QUOTE = "";//双引号
+
+    public static final String RECEIVABLE = "receivable";//应收标识
+
+    public static final String PAYMENT = "payment";//应付标识
 }

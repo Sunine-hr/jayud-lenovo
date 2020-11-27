@@ -34,5 +34,7 @@ public abstract class SqlConstant {
 
     public static final String ID_CODE = "id_code";
 
+    public static final String BILL_NO = "bill_no";//账单编号
+
 
 }

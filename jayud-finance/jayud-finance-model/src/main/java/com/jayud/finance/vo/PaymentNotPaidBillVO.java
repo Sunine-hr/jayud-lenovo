@@ -45,6 +45,9 @@ public class PaymentNotPaidBillVO {
     @ApiModelProperty(value = "费用类型")
     private String costGenreName;
 
+    @ApiModelProperty(value = "费用类型ID")
+    private Long costGenreId;
+
     @ApiModelProperty(value = "费用类别")
     private String costTypeName;
 

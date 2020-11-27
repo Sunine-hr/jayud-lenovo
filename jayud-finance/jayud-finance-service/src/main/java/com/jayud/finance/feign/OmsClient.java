@@ -65,7 +65,7 @@ public interface OmsClient {
      * @return
      */
     @RequestMapping(value = "api/oprCostGenreByCw")
-    ApiResult<Boolean> oprCostGenreByCw(@RequestParam("forms") List<OrderCostForm> forms,@RequestParam("cmd") String cmd);
+    ApiResult<Boolean> oprCostGenreByCw(@RequestBody List<OrderCostForm> forms,@RequestParam("cmd") String cmd);
 
 
 }

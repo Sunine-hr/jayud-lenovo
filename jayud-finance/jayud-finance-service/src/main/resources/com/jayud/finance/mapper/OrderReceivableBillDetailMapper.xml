@@ -66,23 +66,32 @@
         order_receivable_bill_detail orbd
         LEFT JOIN order_receivable_bill orb ON orbd.bill_id = orb.id
         where 1 = 1
-        <if test="form.cmd == 'main_statement' or form.cmd == 'cw_statement'">
+        <if test="form.cmd == 'main_statement'">
             and orb.is_main = 1
         </if>
         <if test="form.cmd == 'statement_audit'">
             and orb.is_main = 1 and orbd.audit_status in ('B_1','B_2')
         </if>
-        <if test="form.cmd == 'zgys_statement' or form.cmd == 'zgys_cw_statement'">
+        <if test="form.cmd == 'cw_statement'">
+            and orb.is_main = 1 and orbd.audit_status in ('B_3','B_5','B_5_1')
+        </if>
+        <if test="form.cmd == 'zgys_statement'">
             and orb.is_main = 0 and orb.sub_type = 'zgys'
         </if>
         <if test="form.cmd == 'zgys_statement_audit'">
             and orb.is_main = 0 and orb.sub_type = 'zgys' and orbd.audit_status in ('B_1','B_2')
         </if>
-        <if test="form.cmd == 'bg_statement' or form.cmd == 'bg_cw_statement'">
+        <if test="form.cmd == 'zgys_cw_statement'">
+            and orb.is_main = 0 and orbd.audit_status in ('B_3','B_5','B_5_1')
+        </if>
+        <if test="form.cmd == 'bg_statement'">
             and orb.is_main = 0 and orb.sub_type = 'bg'
         </if>
         <if test="form.cmd == 'bg_statement_audit'">
             and orb.is_main = 0 and orb.sub_type = 'bg' and orbd.audit_status in ('B_1','B_2')
+        </if>
+        <if test="form.cmd == 'bg_cw_statement'">
+            and orb.is_main = 0 and orbd.audit_status in ('B_3','B_5','B_5_1')
         </if>
         <if test="form.unitAccount != null and form.unitAccount != ''">
             and orb.unit_account like concat('%',#{form.unitAccount},'%')
@@ -121,6 +130,7 @@
             concat( vi.plate_number, vi.hk_number ) licensePlate,
             ( SELECT GROUP_CONCAT( oc.yun_customs_no SEPARATOR ',' ) FROM order_customs oc WHERE oc.main_order_no = oi.order_no ) yunCustomsNo,
             cg.`name` costGenreName,
+            orc.cost_genre_id costGenreId,
             ct.code_name costTypeName,
             ci.`name` costName,
             (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'CNY' GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) rmb,
@@ -240,6 +250,7 @@
         (select GROUP_CONCAT(oc.yun_customs_no) from order_customs oc where oc.main_order_no = oi.order_no group by oc.main_order_no) yunCustomsNo,
         (select cg.`name` from cost_genre cg where cg.id = orc.cost_genre_id) costGenreName,
         orc.cost_genre_id,
+        orc.id costId,
         (select ct.code_name from cost_type ct where ct.id = orc.cost_type_id) costTypeName,
         (select ci.`name` from cost_info ci where ci.id_code = orc.cost_code) costName,
         (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = orbd.cost_id and

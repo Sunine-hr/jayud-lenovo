@@ -305,7 +305,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 receivableBillDetail.setRemarks(receiveBillDetailForm.getRemarks());//备注
                 receivableBillDetail.setUpdatedTime(LocalDateTime.now());
                 receivableBillDetail.setUpdatedUser(form.getLoginUserName());
-                receivableBillDetails.add(receivableBillDetail);
+                receiveBillDetails.add(receivableBillDetail);
 
                 OrderCostForm orderCostForm = new OrderCostForm();
                 orderCostForm.setLoginUserName(form.getLoginUserName());

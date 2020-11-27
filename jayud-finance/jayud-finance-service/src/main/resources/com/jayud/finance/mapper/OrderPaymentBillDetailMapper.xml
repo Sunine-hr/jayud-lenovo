@@ -122,6 +122,7 @@
             concat( vi.plate_number, vi.hk_number ) licensePlate,
             ( SELECT GROUP_CONCAT( oc.yun_customs_no SEPARATOR ',' ) FROM order_customs oc WHERE oc.main_order_no = oi.order_no ) yunCustomsNo,
             cg.`name` costGenreName,
+            opc.cost_genre_id costGenreId,
             ct.code_name costTypeName,
             ci.`name` costName,
             (SELECT sum( rmb.amount ) FROM order_payment_cost rmb WHERE rmb.id = opc.id AND rmb.currency_code = 'CNY' GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) rmb,
@@ -308,6 +309,7 @@
             (select oc.yun_customs_no from order_customs oc where oc.main_order_no = oi.order_no) yunCustomsNo,
             (select cg.`name` from cost_genre cg where cg.id = opc.cost_genre_id) costGenreName,
             opc.cost_genre_id,
+            opc.id costId,
             (select ct.code_name from cost_type ct where ct.id = opc.cost_type_id) costTypeName,
             (select ci.`name` from cost_info ci where ci.id_code = opc.cost_code) costName,
             (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = opbd.cost_id and

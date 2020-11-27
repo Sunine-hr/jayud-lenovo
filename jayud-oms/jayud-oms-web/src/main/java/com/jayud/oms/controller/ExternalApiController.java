@@ -386,7 +386,7 @@ public class ExternalApiController {
      * @return
      */
     @RequestMapping(value = "api/oprCostGenreByCw")
-    ApiResult<Boolean> oprCostGenreByCw(@RequestParam("forms") List<OrderCostForm> forms,@RequestParam("cmd") String cmd){
+    ApiResult<Boolean> oprCostGenreByCw(@RequestBody List<OrderCostForm> forms,@RequestParam("cmd") String cmd){
         if ("receivable".equals(cmd)) {
             for (OrderCostForm orderCost : forms) {
                 OrderReceivableCost orderReceivableCost = new OrderReceivableCost();

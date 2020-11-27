@@ -523,7 +523,15 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
     }
 
     @Override
-    public Boolean auditSInvoice(BillAuditForm form) {
+    public CommonResult auditSInvoice(BillAuditForm form) {
+        //是否可以操作付款审核
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("bill_no",form.getBillNo());
+        List<OrderReceivableBillDetail> billDetails = baseMapper.selectList(queryWrapper);
+        OrderReceivableBillDetail receivableBillDetail = billDetails.get(0);
+        if(!BillEnum.B_5.getCode().equals(receivableBillDetail.getAuditStatus())){
+            return CommonResult.error(10001,"不符合操作条件");
+        }
         OrderReceivableBillDetail billDetail = new OrderReceivableBillDetail();
         String applyStatus = "";
         String status = "";
@@ -549,9 +557,9 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             auditInfoForm.setExtDesc("order_receivable_bill_detail表bill_no");
             auditInfoForm.setAuditUser(UserOperator.getToken());
             omsClient.saveAuditInfo(auditInfoForm);
-            return true;
+            return CommonResult.success();
         }else{
-            return false;
+            return CommonResult.error(ResultEnum.OPR_FAIL);
         }
     }
 

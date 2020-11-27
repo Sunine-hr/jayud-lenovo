@@ -241,21 +241,13 @@ public class FinanceController {
     @ApiOperation(value = "付款审核")
     @PostMapping("/auditFInvoice")
     public CommonResult auditFInvoice(@RequestBody @Valid BillAuditForm form) {
-        Boolean result = paymentBillDetailService.auditFInvoice(form);
-        if (!result) {
-            return CommonResult.error(ResultEnum.OPR_FAIL);
-        }
-        return CommonResult.success();
+        return paymentBillDetailService.auditFInvoice(form);
     }
 
     @ApiOperation(value = "开票审核")
     @PostMapping("/auditSInvoice")
     public CommonResult auditSInvoice(@RequestBody @Valid BillAuditForm form) {
-        Boolean result = receivableBillDetailService.auditSInvoice(form);
-        if (!result) {
-            return CommonResult.error(ResultEnum.OPR_FAIL);
-        }
-        return CommonResult.success();
+        return receivableBillDetailService.auditSInvoice(form);
     }
 
     @ApiOperation(value = "开票核销列表,付款核销列表 bill_no=账单编号")
@@ -268,12 +260,8 @@ public class FinanceController {
 
     @ApiOperation(value = "开票核销，付款核销")
     @PostMapping("/makeInvoice")
-    public CommonResult makeInvoice(@RequestBody @Valid MakeInvoiceForm form) {
-        Boolean result = makeInvoiceService.makeInvoice(form);
-        if (!result) {
-            return CommonResult.error(ResultEnum.OPR_FAIL);
-        }
-        return CommonResult.success();
+    public CommonResult makeInvoice(@RequestBody @Valid MakeInvoiceListForm form) {
+        return makeInvoiceService.makeInvoice(form);
     }
 
     @ApiOperation(value = "开票核销作废,付款核销作废 invoiceId开票ID或付款ID")

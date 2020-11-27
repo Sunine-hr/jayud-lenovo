@@ -171,7 +171,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      * @param form
      * @return
      */
-    Boolean auditFInvoice(BillAuditForm form);
+    CommonResult auditFInvoice(BillAuditForm form);
 
     /**
      *编辑保存确定

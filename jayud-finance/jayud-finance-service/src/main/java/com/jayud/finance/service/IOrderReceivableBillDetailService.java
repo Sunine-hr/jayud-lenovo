@@ -136,7 +136,7 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      * @param form
      * @return
      */
-    Boolean auditSInvoice(BillAuditForm form);
+    CommonResult auditSInvoice(BillAuditForm form);
 
     /**
      *编辑保存确定

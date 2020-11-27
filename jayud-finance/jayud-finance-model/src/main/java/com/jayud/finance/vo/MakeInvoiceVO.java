@@ -14,6 +14,8 @@ import java.util.List;
 @Data
 public class MakeInvoiceVO  {
 
+    @ApiModelProperty(value = "开票/付款ID")
+    private Long invoiceId;
 
     @ApiModelProperty(value = "票号")
     private String invoiceNo;
@@ -35,6 +37,9 @@ public class MakeInvoiceVO  {
 
     @ApiModelProperty(value = "附件集合")
     private List<FileView> fileViewList;
+
+    @ApiModelProperty(value = "是否作废 1-没作废 0-作废")
+    private String status;
 
 
 }

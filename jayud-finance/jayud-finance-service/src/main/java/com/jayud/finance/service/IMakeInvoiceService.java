@@ -1,7 +1,8 @@
 package com.jayud.finance.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.finance.bo.MakeInvoiceForm;
+import com.jayud.common.CommonResult;
+import com.jayud.finance.bo.MakeInvoiceListForm;
 import com.jayud.finance.po.MakeInvoice;
 import com.jayud.finance.vo.MakeInvoiceVO;
 
@@ -29,7 +30,7 @@ public interface IMakeInvoiceService extends IService<MakeInvoice> {
      * @param form
      * @return
      */
-    Boolean makeInvoice(MakeInvoiceForm form);
+    CommonResult makeInvoice(MakeInvoiceListForm form);
 
     /**
      * 开票作废

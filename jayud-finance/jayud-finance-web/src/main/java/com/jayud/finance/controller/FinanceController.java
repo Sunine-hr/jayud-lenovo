@@ -250,10 +250,10 @@ public class FinanceController {
         return receivableBillDetailService.auditSInvoice(form);
     }
 
-    @ApiOperation(value = "开票核销列表,付款核销列表 bill_no=账单编号")
+    @ApiOperation(value = "开票核销列表,付款核销列表 billNo=账单编号")
     @PostMapping("/findInvoiceList")
     public CommonResult<List<MakeInvoiceVO>> findInvoiceList(@RequestBody Map<String,Object> param) {
-        String billNo = MapUtil.getStr(param,"bill_no");
+        String billNo = MapUtil.getStr(param,"billNo");
         List<MakeInvoiceVO> invoiceVOS = makeInvoiceService.findInvoiceList(billNo);
         return CommonResult.success(invoiceVOS);
     }

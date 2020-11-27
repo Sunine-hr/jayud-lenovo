@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -64,6 +65,22 @@ public class OrderInfoVO {
 
     @ApiModelProperty(value = "备注")
     private String remark;
+
+    //订单补充计费重信息
+    @ApiModelProperty(value = "收费重(KG)")
+    private BigDecimal chargeWeight;
+
+    @ApiModelProperty(value = "材积重(KG)")
+    private BigDecimal volumeWeight;
+
+    @ApiModelProperty(value = "实际重量(KG)")
+    private BigDecimal actualWeight;
+
+    @ApiModelProperty(value = "实际体积(m3)")
+    private BigDecimal actualVolume;
+
+    @ApiModelProperty(value = "总箱数")
+    private Integer totalCartons;
 
     /*订单对应报关文件：order_customs_file*/
     @ApiModelProperty(value = "订单对应报关文件list")

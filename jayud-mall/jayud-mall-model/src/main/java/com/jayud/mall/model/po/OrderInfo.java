@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -79,6 +80,22 @@ public class OrderInfo extends Model<OrderInfo> {
 
     @ApiModelProperty(value = "备注")
     private String remark;
+
+    //订单补充计费重信息
+    @ApiModelProperty(value = "收费重(KG)")
+    private BigDecimal chargeWeight;
+
+    @ApiModelProperty(value = "材积重(KG)")
+    private BigDecimal volumeWeight;
+
+    @ApiModelProperty(value = "实际重量(KG)")
+    private BigDecimal actualWeight;
+
+    @ApiModelProperty(value = "实际体积(m3)")
+    private BigDecimal actualVolume;
+
+    @ApiModelProperty(value = "总箱数")
+    private Integer totalCartons;
 
 
     @Override

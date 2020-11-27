@@ -22,6 +22,12 @@
         <result column="need_declare" property="needDeclare" />
         <result column="need_clearance" property="needClearance" />
         <result column="remark" property="remark" />
+        <result column="charge_weight" property="chargeWeight" />
+        <result column="volume_weight" property="volumeWeight" />
+        <result column="actual_weight" property="actualWeight" />
+        <result column="actual_volume" property="actualVolume" />
+        <result column="total_cartons" property="totalCartons" />
+
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -34,7 +40,8 @@
             resultType="com.jayud.mall.model.vo.OrderInfoVO" >
         select
         t.id,t.order_no,t.customer_id,t.store_goods_warehouse_code,t.store_goods_warehouse_name,t.destination_warehouse_code,t.destination_warehouse_name,
-        t.is_pick,t.`status`,t.status_name,t.create_time,t.create_user_id,t.create_user_name,t.order_origin,t.bol_no,t.need_declare,t.need_clearance,t.remark
+        t.is_pick,t.`status`,t.status_name,t.create_time,t.create_user_id,t.create_user_name,t.order_origin,t.bol_no,t.need_declare,t.need_clearance,t.remark,
+        t.charge_weight,t.volume_weight,t.actual_weight,t.actual_volume,t.total_cartons
         from order_info t
         WHERE
         1 = 1
@@ -49,7 +56,8 @@
         resultType="com.jayud.mall.model.vo.OrderInfoVO">
         select
         t.id,t.order_no,t.customer_id,t.store_goods_warehouse_code,t.store_goods_warehouse_name,t.destination_warehouse_code,t.destination_warehouse_name,
-        t.is_pick,t.`status`,t.status_name,t.create_time,t.create_user_id,t.create_user_name,t.order_origin,t.bol_no,t.need_declare,t.need_clearance,t.remark
+        t.is_pick,t.`status`,t.status_name,t.create_time,t.create_user_id,t.create_user_name,t.order_origin,t.bol_no,t.need_declare,t.need_clearance,t.remark,
+        t.charge_weight,t.volume_weight,t.actual_weight,t.actual_volume,t.total_cartons
         from order_info t
         where t.id = #{id}
     </select>

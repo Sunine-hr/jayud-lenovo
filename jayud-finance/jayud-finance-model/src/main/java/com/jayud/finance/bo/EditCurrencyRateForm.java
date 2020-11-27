@@ -3,7 +3,6 @@ package com.jayud.finance.bo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
@@ -29,12 +28,5 @@ public class EditCurrencyRateForm {
     @NotEmpty(message = "month is required")
     private String month;*/
 
-    @ApiModelProperty(value = "有效期开始时间",required = true)
-    @NotEmpty(message = "beginValidDate is required")
-    private String beginValidDate;
-
-    @ApiModelProperty(value = "有效期结束时间",required = true)
-    @NotEmpty(message = "endValidDate is required")
-    private String endValidDate;
 
 }

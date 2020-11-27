@@ -11,7 +11,6 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -48,12 +47,6 @@ public class CurrencyRate extends Model<CurrencyRate> {
 
     @ApiModelProperty(value = "年月")
     private String month;
-
-    @ApiModelProperty(value = "有效期开始时间")
-    private LocalDate beginValidDate;
-
-    @ApiModelProperty(value = "有效期结束时间")
-    private LocalDate endValidDate;
 
     @ApiModelProperty(value = "创建人")
     private String createdUser;

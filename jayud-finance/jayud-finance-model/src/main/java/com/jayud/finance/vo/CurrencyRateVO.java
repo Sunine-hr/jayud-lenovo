@@ -30,16 +30,10 @@ public class CurrencyRateVO {
     private String dCurrencyName;
 
     @ApiModelProperty(value = "兑换币种")
-    private String OCurrencyName;
+    private String oCurrencyName;
 
     @ApiModelProperty(value = "汇率")
     private BigDecimal exchangeRate;
-
-    @ApiModelProperty(value = "有效期开始时间")
-    private String beginValidDateStr;
-
-    @ApiModelProperty(value = "有效期结束时间")
-    private String endValidDateStr;
 
     @ApiModelProperty(value = "创建人")
     private String createdUser;

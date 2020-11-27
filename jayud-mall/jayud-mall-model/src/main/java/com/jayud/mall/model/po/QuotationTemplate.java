@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -82,6 +83,9 @@ public class QuotationTemplate extends Model<QuotationTemplate> {
 
     @ApiModelProperty(value = "任务分组id(task_group id)")
     private Integer taskId;
+
+    @ApiModelProperty(value = "计泡系数(默认6000)")
+    private BigDecimal bubbleCoefficient;
 
     @ApiModelProperty(value = "操作信息")
     private String remarks;

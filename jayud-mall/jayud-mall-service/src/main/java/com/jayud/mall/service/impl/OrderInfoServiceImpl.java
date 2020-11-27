@@ -339,9 +339,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderNo = String.valueOf(SnowflakeUtils.getOrderNo());//雪花算法生成订单id
             orderInfo.setOrderNo(orderNo);
         }
-        //SUBMITTED(1, "已提交"),
-        orderInfo.setStatus(OrderEnum.SUBMITTED.getCode());//订单状态
-        orderInfo.setStatusName(OrderEnum.SUBMITTED.getName());//订单名称
+        //PLACED_AN_ORDER(10, "已下单：编辑、查看订单详情 "),
+        orderInfo.setStatus(OrderEnum.PLACED_AN_ORDER.getCode());//订单状态
+        orderInfo.setStatusName(OrderEnum.PLACED_AN_ORDER.getName());//订单名称
         this.saveOrUpdate(orderInfo);
 
         //保存-订单对应箱号信息:order_case
@@ -385,8 +385,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     public CommonResult<OrderInfoVO> draftSubmitOrderInfo(OrderInfoForm form) {
         Long id = form.getId();
         OrderInfo orderInfo = this.getById(id);
-        orderInfo.setStatus(OrderEnum.SUBMITTED.getCode());
-        orderInfo.setStatusName(OrderEnum.SUBMITTED.getName());
+        //PLACED_AN_ORDER(10, "已下单：编辑、查看订单详情 "),
+        orderInfo.setStatus(OrderEnum.PLACED_AN_ORDER.getCode());
+        orderInfo.setStatusName(OrderEnum.PLACED_AN_ORDER.getName());
         this.saveOrUpdate(orderInfo);
         OrderInfoVO orderInfoVO = ConvertUtil.convert(orderInfo, OrderInfoVO.class);
         return CommonResult.success(orderInfoVO);
@@ -406,9 +407,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public CommonResult<OrderInfoVO> lookOrderInfo(OrderInfoForm form) {
         Long id = form.getId();
-        OrderInfo orderInfo = this.getById(id);
-        OrderInfoVO orderInfoVO = ConvertUtil.convert(orderInfo, OrderInfoVO.class);
-        return CommonResult.success(orderInfoVO);
+//        OrderInfo orderInfo = this.getById(id);
+//        OrderInfoVO orderInfoVO = ConvertUtil.convert(orderInfo, OrderInfoVO.class);
+//        return CommonResult.success(orderInfoVO);
+
+
+
+
+
+        return null;
     }
 
 

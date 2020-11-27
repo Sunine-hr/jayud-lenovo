@@ -13,7 +13,6 @@ public enum OrderEnum {
     //订单状态枚举
     CANCELED(-1, "已取消 查看详情"),
     DRAFT(0, "草稿-----提交、取消、查看订单详情（后台不记录数据）"),
-    SUBMITTED(1, "已提交"),
     PLACED_AN_ORDER(10, "已下单：编辑、查看订单详情 "),
     RECEIVED(20, "已收货：编辑、查看订单详情"),
     ORDER_CONFIRMATION(30, "订单确认：确认计柜重（不可修改订单信息）"),

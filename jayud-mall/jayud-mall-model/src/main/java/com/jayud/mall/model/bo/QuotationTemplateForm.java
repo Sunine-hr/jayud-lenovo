@@ -4,6 +4,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -84,6 +85,9 @@ public class QuotationTemplateForm {
     @ApiModelProperty(value = "任务分组id(task_group id)")
     @JSONField(ordinal = 17)
     private Integer taskId;
+
+    @ApiModelProperty(value = "计泡系数(默认6000)")
+    private BigDecimal bubbleCoefficient;
 
     @ApiModelProperty(value = "操作信息")
     @JSONField(ordinal = 18)

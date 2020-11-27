@@ -22,6 +22,7 @@
         <result column="area_id" property="areaId" />
         <result column="qid" property="qid" />
         <result column="task_id" property="taskId" />
+        <result column="bubble_coefficient" property="bubbleCoefficient" />
         <result column="remarks" property="remarks" />
         <result column="status" property="status" />
         <result column="user_id" property="userId" />
@@ -40,7 +41,7 @@
             resultType="com.jayud.mall.model.vo.QuotationTemplateVO" >
         select
         t.id,t.types,t.sid,t.`names`,t.pic_url,t.tid,t.start_shipment,t.destination_port,
-        t.arrive_warehouse,t.visible_uid,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.gid,t.area_id,t.qid,t.task_id,
+        t.arrive_warehouse,t.visible_uid,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.gid,t.area_id,t.qid,t.task_id,t.bubble_coefficient,
         t.remarks,t.`status`,t.user_id,t.user_name,t.create_time,t.update_time,
         t1.code_name sName,
         t2.code_name tName,
@@ -75,7 +76,7 @@
             resultType="com.jayud.mall.model.vo.QuotationTemplateVO" >
         select
         t.id,t.types,t.sid,t.`names`,t.pic_url,t.tid,t.start_shipment,t.destination_port,
-        t.arrive_warehouse,t.visible_uid,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.gid,t.area_id,t.qid,t.task_id,
+        t.arrive_warehouse,t.visible_uid,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.gid,t.area_id,t.qid,t.task_id,t.bubble_coefficient,
         t.remarks,t.`status`,t.user_id,t.user_name,t.create_time,t.update_time,
         t1.code_name sName,
         t2.code_name tName,

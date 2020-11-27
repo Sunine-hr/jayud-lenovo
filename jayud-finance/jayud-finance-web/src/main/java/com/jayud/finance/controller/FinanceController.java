@@ -264,10 +264,10 @@ public class FinanceController {
         return makeInvoiceService.makeInvoice(form);
     }
 
-    @ApiOperation(value = "开票核销作废,付款核销作废 invoice_id开票ID或付款ID")
+    @ApiOperation(value = "开票核销作废,付款核销作废 invoiceId开票ID或付款ID")
     @PostMapping("/makeInvoiceDel")
     public CommonResult makeInvoiceDel(@RequestBody Map<String,Object> param) {
-        Long inVoiceId = Long.parseLong(MapUtil.getStr(param,"invoice_id"));
+        Long inVoiceId = Long.parseLong(MapUtil.getStr(param,"invoiceId"));
         Boolean result = makeInvoiceService.makeInvoiceDel(inVoiceId);
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL);

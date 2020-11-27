@@ -1,7 +1,7 @@
 package com.jayud.finance.mapper;
 
-import com.jayud.finance.po.MakeInvoice;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.finance.po.MakeInvoice;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

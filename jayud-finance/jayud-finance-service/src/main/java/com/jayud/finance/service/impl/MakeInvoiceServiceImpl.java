@@ -24,6 +24,7 @@ import com.jayud.finance.vo.MakeInvoiceVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,14 +56,16 @@ public class MakeInvoiceServiceImpl extends ServiceImpl<MakeInvoiceMapper, MakeI
 
     @Override
     public CommonResult makeInvoice(MakeInvoiceListForm form) {
-        //只有开票/付款申请审核-B_6才允许开票/付款核销
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq(SqlConstant.BILL_NO,form.getBillNo());
+        BigDecimal totalHeXiaoMoney = new BigDecimal("0");//申请金额，即可核销总金额
+        //只有开票/付款申请审核-B_6才允许开票/付款核销
         String oprType = CommonConstant.DOUBLE_QUOTE;//1-开票 2-收票
         if(CommonConstant.RECEIVABLE.equals(form.getCmd())){
             oprType = CommonConstant.VALUE_1;
             List<OrderReceivableBillDetail> receivableBillDetails = receivableBillDetailService.list(queryWrapper);
             OrderReceivableBillDetail receivableBillDetail = receivableBillDetails.get(0);
+            totalHeXiaoMoney = receivableBillDetail.getInvoiceAmount();
             if(!BillEnum.B_6.getCode().equals(receivableBillDetail.getAuditStatus())){
                 return CommonResult.error(ResultEnum.MAKE_INVOICE_CONDITION_1);
             }
@@ -70,10 +73,25 @@ public class MakeInvoiceServiceImpl extends ServiceImpl<MakeInvoiceMapper, MakeI
             oprType = CommonConstant.VALUE_2;
             List<OrderPaymentBillDetail> paymentBillDetails = paymentBillDetailService.list(queryWrapper);
             OrderPaymentBillDetail paymentBillDetail = paymentBillDetails.get(0);
+            totalHeXiaoMoney = paymentBillDetail.getPaymentAmount();
             if(!BillEnum.B_6.getCode().equals(paymentBillDetail.getAuditStatus())){
                 return CommonResult.error(ResultEnum.MAKE_INVOICE_CONDITION_2);
             }
         }
+        //如果申请金额<已保存核销金额+本次新增的,则不允许在添加
+        List<MakeInvoice> existInvoices = baseMapper.selectList(queryWrapper);
+        BigDecimal existHeXiaoMoney = new BigDecimal("0");//已经核销金额,并且是未作废的
+        for (MakeInvoice existInvoice : existInvoices) {
+            existHeXiaoMoney = existHeXiaoMoney.add(existInvoice.getMoney());
+        }
+        BigDecimal willHeXiaoMoney = new BigDecimal("0");//本次新增核销的金额
+        for (MakeInvoiceForm makeInvoiceForm : form.getMakeInvoices()) {
+            willHeXiaoMoney = willHeXiaoMoney.add(makeInvoiceForm.getMoney());
+        }
+        if(totalHeXiaoMoney.compareTo(existHeXiaoMoney.add(willHeXiaoMoney)) == -1){
+            return CommonResult.error(ResultEnum.MAKE_INVOICE_CONDITION_3);
+        }
+
         List<MakeInvoiceForm> makeInvoiceForms = form.getMakeInvoices();
         List<MakeInvoice> makeInvoices = new ArrayList<>();
         for(MakeInvoiceForm makeInvoiceForm : makeInvoiceForms){

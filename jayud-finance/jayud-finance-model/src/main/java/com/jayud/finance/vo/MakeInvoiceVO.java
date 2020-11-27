@@ -1,5 +1,6 @@
 package com.jayud.finance.vo;
 
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,13 +16,16 @@ import java.util.List;
 public class MakeInvoiceVO  {
 
     @ApiModelProperty(value = "开票/付款ID")
-    private Long invoiceId;
+    private Long id;
 
     @ApiModelProperty(value = "票号")
     private String invoiceNo;
 
     @ApiModelProperty(value = "开票时间")
     private LocalDateTime makeTime;
+
+    @ApiModelProperty(value = "开票时间")
+    private String makeTimeStr;
 
     @ApiModelProperty(value = "发票类型")
     private String invoiceType;
@@ -40,6 +44,13 @@ public class MakeInvoiceVO  {
 
     @ApiModelProperty(value = "是否作废 1-没作废 0-作废")
     private String status;
+
+    public String getMakeTimeStr() {
+        if(this.makeTime != null){
+            return DateUtils.getLocalToStr(this.makeTime);
+        }
+        return "";
+    }
 
 
 }

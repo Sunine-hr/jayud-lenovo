@@ -78,7 +78,7 @@ public interface SystemUserMapper extends BaseMapper<SystemUser> {
 
     /**
      * 重置用户密码
-     * @param id
+     * @param resetUserPwdForm
      */
     void resetPassword(ResetUserPwdForm resetUserPwdForm);
 

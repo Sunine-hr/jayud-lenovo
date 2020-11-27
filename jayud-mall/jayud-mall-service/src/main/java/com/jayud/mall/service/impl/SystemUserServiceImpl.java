@@ -1,6 +1,5 @@
 package com.jayud.mall.service.impl;
 
-import com.alibaba.nacos.common.util.Md5Utils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -123,10 +122,14 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     @Override
     public void resetPassword(Long id) {
-        String password = "123456";
+        String pass = "123456";
         ResetUserPwdForm resetUserPwdForm = new ResetUserPwdForm();
         resetUserPwdForm.setId(id);
-        resetUserPwdForm.setPassword(Md5Utils.getMD5(password.getBytes()).toUpperCase());
+
+        BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
+        String password = bcryptPasswordEncoder.encode(pass.trim());
+        //resetUserPwdForm.setPassword(Md5Utils.getMD5(password.getBytes()).toUpperCase()); //MD5
+        resetUserPwdForm.setPassword(password);//BCryptPasswordEncoder
         systemUserMapper.resetPassword(resetUserPwdForm);
     }
 

@@ -77,7 +77,9 @@ public class DriverEmploymentFeeServiceImpl extends ServiceImpl<DriverEmployment
         for (DriverEmploymentFee driverEmploymentFee : driverEmploymentFees) {
             OrderPaymentCost paymentCost = ConvertUtil.convert(driverEmploymentFee, OrderPaymentCost.class);
             paymentCost.setCustomerCode(driverEmploymentFee.getSupplierCode())
-                    .setCustomerName(driverEmploymentFee.getSupplierName());
+                    .setCustomerName(driverEmploymentFee.getSupplierName())
+                    .setSubType("zgys");
+
 
             DriverEmploymentFee employmentFee = new DriverEmploymentFee()
                     .setId(driverEmploymentFee.getId())

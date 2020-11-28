@@ -1,7 +1,11 @@
 package com.jayud.mall.service;
 
-import com.jayud.mall.model.po.OperationTeam;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.bo.OperationTeamForm;
+import com.jayud.mall.model.po.OperationTeam;
+import com.jayud.mall.model.vo.OperationTeamVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +17,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IOperationTeamService extends IService<OperationTeam> {
 
+    /**
+     * 查询-运营(服务)小组list
+     * @param form
+     * @return
+     */
+    List<OperationTeamVO> findOperationTeam(OperationTeamForm form);
 }

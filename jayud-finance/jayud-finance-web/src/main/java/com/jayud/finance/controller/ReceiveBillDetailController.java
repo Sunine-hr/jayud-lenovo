@@ -60,7 +60,7 @@ public class ReceiveBillDetailController {
         return billDetailService.submitSCw(form);
     }
 
-    @ApiOperation(value = "导出应收对账单列表")
+    @ApiOperation(value = "导出应收对账单列表,导出财务应付对账单列表")
     @RequestMapping(value = "/exportSBill", method = RequestMethod.GET)
     @ResponseBody
     public void exportSBill(QueryPaymentBillDetailForm form,
@@ -217,7 +217,7 @@ public class ReceiveBillDetailController {
     }
 
 
-    @ApiOperation(value = "导出对账单详情,待开发")
+    @ApiOperation(value = "导出对账单详情")
     @RequestMapping(value = "/exportSBillDetail", method = RequestMethod.GET)
     @ResponseBody
     public void exportSBillDetail(@RequestParam(value = "billNo",required=true) String billNo,

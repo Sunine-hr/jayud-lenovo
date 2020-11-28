@@ -102,6 +102,9 @@ public class OrderReceivableCost extends Model<OrderReceivableCost> {
     @ApiModelProperty(value = "是否汇总到主订单")
     private Boolean isSumToMain;
 
+    @ApiModelProperty(value = "录用费用类型")
+    private String subType;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

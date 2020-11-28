@@ -218,7 +218,7 @@ public class PaymentBillDetailController {
     }
 
 
-    @ApiOperation(value = "导出对账单详情,待开发")
+    @ApiOperation(value = "导出对账单详情")
     @RequestMapping(value = "/exportBillDetail", method = RequestMethod.GET)
     @ResponseBody
     public void exportBillDetail(@RequestParam(value = "billNo", required = true) String billNo,

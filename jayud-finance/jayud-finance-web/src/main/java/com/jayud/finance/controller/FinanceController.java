@@ -7,6 +7,7 @@ import cn.hutool.poi.excel.ExcelWriter;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.service.ICancelAfterVerificationService;
@@ -24,6 +25,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -116,10 +118,14 @@ public class FinanceController {
 
     @ApiOperation(value = "应收对账单审核列表,对账单明细")
     @PostMapping("/findSBillAuditByPage")
-    public CommonResult<CommonPageResult<PaymentNotPaidBillVO>> findSBillAuditByPage(@RequestBody @Valid QueryFBillAuditForm form) {
+    public CommonResult<Map<String,Object>> findSBillAuditByPage(@RequestBody @Valid QueryFBillAuditForm form) {
         IPage<PaymentNotPaidBillVO> pageList = receivableBillDetailService.findSBillAuditByPage(form);
         CommonPageResult<PaymentNotPaidBillVO> pageVO = new CommonPageResult(pageList);
-        return CommonResult.success(pageVO);
+        Map<String,Object> resultMap = new HashMap<>();
+        resultMap.put("pageList",pageVO);//列表
+        ViewBillVO viewBillVO = receivableBillDetailService.getViewSBill(form.getBillNo());
+        resultMap.put(CommonConstant.WHOLE_DATA,viewBillVO);//全局数据
+        return CommonResult.success(resultMap);
     }
 
     @ApiOperation(value = "导出应付对账单明细列表")
@@ -279,9 +285,9 @@ public class FinanceController {
      * @param form
      * @return
      */
-    @PostMapping("/pushReceivable")
+    @PostMapping("/pushReceivable billNos = 编号集合")
     @ApiOperation(value = "推送应收单")
-    public CommonResult saveReceivableBill(@RequestBody ReceivableHeaderForm form) {
+    public CommonResult saveReceivableBill(@RequestBody ListForm form) {
        // TODO return service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), reqForm);
         return null;
     }
@@ -293,8 +299,8 @@ public class FinanceController {
      * @return
      */
     @PostMapping("/pushPayment")
-    @ApiOperation(value = "推送应付单")
-    public CommonResult savePayableBill(@RequestBody PayableHeaderForm form) {
+    @ApiOperation(value = "推送应付单 billNos = 编号集合")
+    public CommonResult savePayableBill(@RequestBody ListForm form) {
         //TODO return service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), reqForm);
         return null;
     }

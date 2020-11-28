@@ -72,8 +72,7 @@
         SELECT
         DISTINCT
         op.bill_no billNo,
-        DATE_FORMAT( op.begin_account_term, '%Y-%m-%d' ) beginAccountTermStr,
-        DATE_FORMAT( op.end_account_term, '%Y-%m-%d' ) endAccountTermStr,
+        DATE_FORMAT( op.account_term, '%Y-%m-%d' ) accountTermStr,
         ( SELECT count( DISTINCT opbd.order_no ) FROM order_payment_bill_detail opbd WHERE opbd.bill_no = op.bill_no ) billNum,
         ( SELECT ifnull(sum( obct.money ),0) FROM order_bill_cost_total obct WHERE op.bill_no = obct.bill_no AND obct.currency_code = 'CNY' ) rmb,
         ( SELECT ifnull(sum( obct.money ),0) FROM order_bill_cost_total obct WHERE op.bill_no = obct.bill_no AND obct.currency_code = 'USD' ) dollar,

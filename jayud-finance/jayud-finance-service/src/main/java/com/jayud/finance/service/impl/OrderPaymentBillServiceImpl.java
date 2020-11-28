@@ -186,8 +186,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             for (int i = 0;i<paymentBillDetails.size();i++) {
                 paymentBillDetails.get(i).setStatus("1");
                 paymentBillDetails.get(i).setBillNo(form.getBillNo());
-                paymentBillDetails.get(i).setBeginAccountTerm(DateUtils.str2LocalDateTime(form.getBeginAccountTermStr(),DateUtils.DATE_TIME_PATTERN));
-                paymentBillDetails.get(i).setEndAccountTerm(DateUtils.str2LocalDateTime(form.getEndAccountTermStr(),DateUtils.DATE_TIME_PATTERN));
+                paymentBillDetails.get(i).setAccountTerm(form.getAccountTermStr());
                 paymentBillDetails.get(i).setSettlementCurrency(form.getSettlementCurrency());
                 paymentBillDetails.get(i).setAuditStatus(BillEnum.B_1.getCode());
                 paymentBillDetails.get(i).setCreatedOrderTime(DateUtils.convert2Date(paymentBillDetailForms.get(i).getCreatedTimeStr(),DateUtils.DATE_PATTERN));

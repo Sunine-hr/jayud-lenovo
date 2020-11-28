@@ -251,8 +251,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                     receiveBillDetails.get(i).setStatus("1");
                     receiveBillDetails.get(i).setBillNo(form.getBillNo());
                     receiveBillDetails.get(i).setBillId(existObject.getBillId());
-                    receiveBillDetails.get(i).setBeginAccountTerm(existObject.getBeginAccountTerm());
-                    receiveBillDetails.get(i).setEndAccountTerm(existObject.getEndAccountTerm());
+                    receiveBillDetails.get(i).setAccountTerm(existObject.getAccountTerm());
                     receiveBillDetails.get(i).setSettlementCurrency(settlementCurrency);
                     receiveBillDetails.get(i).setAuditStatus("edit_no_commit");//编辑保存未提交的，给前台做区分
                     receiveBillDetails.get(i).setCreatedOrderTime(DateUtils.stringToDate(receiveBillDetailForms.get(i).getCreatedTimeStr(), DateUtils.DATE_PATTERN));

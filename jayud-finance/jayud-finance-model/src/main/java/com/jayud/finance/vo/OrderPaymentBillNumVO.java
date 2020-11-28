@@ -16,11 +16,8 @@ public class OrderPaymentBillNumVO {
     @ApiModelProperty(value = "账单编号")
     private String billNo;
 
-    @ApiModelProperty(value = "开始核算期 年月日")
-    private String beginAccountTermStr;
-
-    @ApiModelProperty(value = "结束核算期 年月日")
-    private String endAccountTermStr;
+    @ApiModelProperty(value = "核算期 年月")
+    private String accountTermStr;
 
     @ApiModelProperty(value = "账单编号维度下的订单数")
     private Integer billNum;

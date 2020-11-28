@@ -178,8 +178,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             for (int i = 0;i<receivableBillDetails.size();i++) {
                 receivableBillDetails.get(i).setStatus("1");
                 receivableBillDetails.get(i).setBillNo(form.getBillNo());
-                receivableBillDetails.get(i).setBeginAccountTerm(DateUtils.str2LocalDateTime(form.getBeginAccountTermStr(),DateUtils.DATE_TIME_PATTERN));
-                receivableBillDetails.get(i).setEndAccountTerm(DateUtils.str2LocalDateTime(form.getEndAccountTermStr(),DateUtils.DATE_TIME_PATTERN));
+                receivableBillDetails.get(i).setAccountTerm(form.getAccountTermStr());
                 receivableBillDetails.get(i).setSettlementCurrency(form.getSettlementCurrency());
                 receivableBillDetails.get(i).setAuditStatus(BillEnum.B_1.getCode());
                 receivableBillDetails.get(i).setCreatedOrderTime(DateUtils.convert2Date(receiveBillDetailForms.get(i).getCreatedTimeStr(),DateUtils.DATE_PATTERN));

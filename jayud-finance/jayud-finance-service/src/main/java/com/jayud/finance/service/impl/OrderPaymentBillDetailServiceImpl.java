@@ -261,8 +261,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                     paymentBillDetails.get(i).setStatus("1");
                     paymentBillDetails.get(i).setBillNo(form.getBillNo());
                     paymentBillDetails.get(i).setBillId(existObject.getBillId());
-                    paymentBillDetails.get(i).setBeginAccountTerm(existObject.getBeginAccountTerm());
-                    paymentBillDetails.get(i).setEndAccountTerm(existObject.getEndAccountTerm());
+                    paymentBillDetails.get(i).setAccountTerm(existObject.getAccountTerm());
                     paymentBillDetails.get(i).setSettlementCurrency(settlementCurrency);
                     paymentBillDetails.get(i).setAuditStatus("edit_no_commit");
                     paymentBillDetails.get(i).setCreatedOrderTime(DateUtils.convert2Date(paymentBillDetailForms.get(i).getCreatedTimeStr(), DateUtils.DATE_PATTERN));

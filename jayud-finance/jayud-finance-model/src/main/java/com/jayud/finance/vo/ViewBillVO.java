@@ -12,11 +12,8 @@ public class ViewBillVO {
     @ApiModelProperty(value = "接单法人(第一行,FR,公司名称)")
     private String legalName;
 
-    @ApiModelProperty(value = "开始核算期")
-    private String beginAccountTermStr;
-
-    @ApiModelProperty(value = "结束核算期")
-    private String endAccountTermStr;
+    @ApiModelProperty(value = "核算期")
+    private String accountTermStr;
 
     @ApiModelProperty(value = "客户")
     private String customerName;

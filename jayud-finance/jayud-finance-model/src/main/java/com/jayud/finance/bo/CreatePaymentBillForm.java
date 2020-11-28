@@ -24,11 +24,8 @@ public class CreatePaymentBillForm {
     @ApiModelProperty(value = "账单编号,生成账单时必传")
     private String billNo;
 
-    @ApiModelProperty(value = "开始核算期,生成账单时必传")
-    private String beginAccountTermStr;
-
-    @ApiModelProperty(value = "结束核算期,生成账单时必传")
-    private String endAccountTermStr;
+    @ApiModelProperty(value = "核算期,生成账单时必传")
+    private String accountTermStr;
 
     @ApiModelProperty(value = "结算币种,生成账单时必传")
     private String settlementCurrency;

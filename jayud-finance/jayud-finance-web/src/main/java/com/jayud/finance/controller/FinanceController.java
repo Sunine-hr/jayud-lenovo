@@ -207,7 +207,7 @@ public class FinanceController {
     @ApiOperation(value = "核销列表")
     @PostMapping("/heXiaoList")
     public CommonResult<List<HeXiaoListVO>> heXiaoList(@RequestBody Map<String,Object> param) {
-        String billNo = MapUtil.getStr(param,"bill_no");
+        String billNo = MapUtil.getStr(param,"billNo");
         List<HeXiaoListVO> heXiaoList = verificationService.heXiaoList(billNo);
         return CommonResult.success(heXiaoList);
     }

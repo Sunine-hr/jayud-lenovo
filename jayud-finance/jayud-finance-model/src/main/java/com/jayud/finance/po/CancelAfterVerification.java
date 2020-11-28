@@ -55,7 +55,7 @@ public class CancelAfterVerification extends Model<CancelAfterVerification> {
     private LocalDateTime realReceiveTime;
 
     @ApiModelProperty(value = "本币金额")
-    private BigDecimal localAmount;
+    private BigDecimal localMoney;
 
     @ApiModelProperty(value = "创建人")
     private String createdUser;

@@ -9,6 +9,8 @@ import com.jayud.finance.bo.QueryCurrencyRateForm;
 import com.jayud.finance.po.CurrencyRate;
 import com.jayud.finance.vo.CurrencyRateVO;
 
+import java.math.BigDecimal;
+
 /**
  * <p>
  * 币种汇率 服务类
@@ -40,4 +42,12 @@ public interface ICurrencyRateService extends IService<CurrencyRate> {
      * @return
      */
     Boolean editCurrencyRate(EditCurrencyRateForm form);
+
+    /**
+     * 根据原始币种和兑换币种获取汇率
+     * @param oCode
+     * @param dCode
+     * @return
+     */
+    BigDecimal getExchangeRate(String oCode,String dCode);
 }

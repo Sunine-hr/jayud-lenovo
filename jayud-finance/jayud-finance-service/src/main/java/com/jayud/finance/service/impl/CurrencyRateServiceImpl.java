@@ -16,6 +16,7 @@ import com.jayud.finance.service.ICurrencyRateService;
 import com.jayud.finance.vo.CurrencyRateVO;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -83,5 +84,11 @@ public class CurrencyRateServiceImpl extends ServiceImpl<CurrencyRateMapper, Cur
         currencyRate.setExchangeRate(form.getExchangeRate());//只允许改汇率
         return updateById(currencyRate);
     }
+
+    @Override
+    public BigDecimal getExchangeRate(String oCode, String dCode) {
+        return baseMapper.getExchangeRate(oCode,dCode);
+    }
+
 
 }

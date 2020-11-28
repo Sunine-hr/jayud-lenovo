@@ -18,6 +18,9 @@ public class MakeInvoiceVO  {
     @ApiModelProperty(value = "开票/付款ID")
     private Long id;
 
+    @ApiModelProperty(value = "账单编号")
+    private String billNo;
+
     @ApiModelProperty(value = "票号")
     private String invoiceNo;
 

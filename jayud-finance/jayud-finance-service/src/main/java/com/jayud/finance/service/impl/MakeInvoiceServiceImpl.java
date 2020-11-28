@@ -79,6 +79,9 @@ public class MakeInvoiceServiceImpl extends ServiceImpl<MakeInvoiceMapper, MakeI
             }
         }
         //如果申请金额<已保存核销金额+本次新增的,则不允许在添加
+        if(totalHeXiaoMoney == null){
+            totalHeXiaoMoney = new BigDecimal("0");
+        }
         List<MakeInvoice> existInvoices = baseMapper.selectList(queryWrapper);
         BigDecimal existHeXiaoMoney = new BigDecimal("0");//已经核销金额,并且是未作废的
         for (MakeInvoice existInvoice : existInvoices) {

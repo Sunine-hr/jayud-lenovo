@@ -214,12 +214,8 @@ public class FinanceController {
 
     @ApiOperation(value = "核销确认")
     @PostMapping("/heXiaoConfirm")
-    public CommonResult heXiaoConfirm(@RequestBody @Valid List<HeXiaoConfirmForm> form) {
-        Boolean result = verificationService.heXiaoConfirm(form);
-        if(!result){
-            return CommonResult.error(ResultEnum.OPR_FAIL);
-        }
-        return CommonResult.success();
+    public CommonResult heXiaoConfirm(@RequestBody @Valid HeXiaoConfirmListForm form) {
+        return verificationService.heXiaoConfirm(form);
     }
 
     @ApiOperation(value = "付款审核列表 billNo = 账单编号")
@@ -277,6 +273,31 @@ public class FinanceController {
 
 
 
+    /**
+     * 推送应收单到金蝶
+     *
+     * @param form
+     * @return
+     */
+    @PostMapping("/pushReceivable")
+    @ApiOperation(value = "推送应收单")
+    public CommonResult saveReceivableBill(@RequestBody ReceivableHeaderForm form) {
+       // TODO return service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), reqForm);
+        return null;
+    }
+
+    /**
+     * 推送应付单到金蝶
+     *
+     * @param form
+     * @return
+     */
+    @PostMapping("/pushPayment")
+    @ApiOperation(value = "推送应付单")
+    public CommonResult savePayableBill(@RequestBody PayableHeaderForm form) {
+        //TODO return service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), reqForm);
+        return null;
+    }
 
 
 }

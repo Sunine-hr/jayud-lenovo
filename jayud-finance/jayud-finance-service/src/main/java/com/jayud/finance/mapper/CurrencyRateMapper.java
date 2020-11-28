@@ -10,6 +10,8 @@ import com.jayud.finance.vo.CurrencyRateVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
+
 /**
  * <p>
  * 币种汇率 Mapper 接口
@@ -28,4 +30,12 @@ public interface CurrencyRateMapper extends BaseMapper<CurrencyRate> {
      * @return
      */
     IPage<CurrencyRateVO> findCurrencyRateByPage(Page page, @Param("form") QueryCurrencyRateForm form);
+
+    /**
+     * 根据原始币种和兑换币种获取汇率
+     * @param oCode
+     * @param dCode
+     * @return
+     */
+    BigDecimal getExchangeRate(@Param("oCode") String oCode,@Param("dCode")String dCode);
 }

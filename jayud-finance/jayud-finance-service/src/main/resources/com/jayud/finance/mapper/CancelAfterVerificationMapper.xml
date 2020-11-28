@@ -12,13 +12,14 @@
         <result column="discount_money" property="discountMoney" />
         <result column="opr_mode" property="oprMode" />
         <result column="real_receive_time" property="realReceiveTime" />
+        <result column="local_money" property="localAmount" />
         <result column="created_user" property="createdUser" />
         <result column="created_time" property="createdTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, bill_no, real_receive_money, currency_code, exchange_rate, discount_money, opr_mode, real_receive_time, created_user, created_time
+        id, bill_no, real_receive_money, currency_code, exchange_rate, discount_money, opr_mode, real_receive_time,local_money, created_user, created_time
     </sql>
 
 </mapper>

@@ -19,4 +19,41 @@
         id, task_type, task_id, operation_team_id, member_user_id, status, creator, creation_time
     </sql>
 
+    <!--查看-任务成员关系表list-->
+    <select id="findTaskMemberRelation" parameterType="com.jayud.mall.model.bo.TaskMemberRelationForm"
+            resultType="com.jayud.mall.model.vo.TaskMemberRelationVO">
+        select
+        t.id,t.task_type,t.task_id,t.operation_team_id,t.member_user_id,t.`status`,t.creator,t.creation_time,
+        t1.task_code billTaskCode,t1.task_name billTaskName,
+        t2.task_code waybillTaskCode,t2.task_name waybillTaskName,
+        t3.group_code operationGroupCode,t3.group_name operationGroupName,
+        t4.`name` memberUserName
+        from
+        task_member_relation t
+        LEFT JOIN bill_task t1 on t1.id = t.task_id AND t.task_type = 1
+        LEFT JOIN waybill_task t2 on t2.id = t.task_id AND t.task_type = 2
+        LEFT JOIN operation_team t3 on t3.id = t.operation_team_id
+        LEFT JOIN system_user t4 on t4.id = t.member_user_id
+        WHERE
+        1=1
+        <if test="form.id != null">
+            AND t.id = #{form.id}
+        </if>
+        <if test="form.taskType != null and form.taskType != ''">
+            AND t.task_type = #{form.taskType}
+        </if>
+        <if test="form.taskId != null">
+            AND t.task_id = #{form.taskId}
+        </if>
+        <if test="form.operationTeamId != null">
+            AND t.operation_team_id = #{form.operationTeamId}
+        </if>
+        <if test="form.memberUserId != null">
+            AND t.member_user_id = #{form.memberUserId}
+        </if>
+        <if test="form.status != null and form.status != ''">
+            AND t.`status` = #{form.status}
+        </if>
+    </select>
+
 </mapper>

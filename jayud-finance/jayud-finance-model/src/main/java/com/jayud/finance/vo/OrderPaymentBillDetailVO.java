@@ -25,11 +25,8 @@ public class OrderPaymentBillDetailVO {
     @ApiModelProperty(value = "供应商,应付时取值")
     private String supplierChName;
 
-    @ApiModelProperty(value = "开始核算期 年月日")
-    private String beginAccountTermStr;
-
-    @ApiModelProperty(value = "结束核算期 年月日")
-    private String endAccountTermStr;
+    @ApiModelProperty(value = "核算期 年月")
+    private String accountTermStr;
 
     @ApiModelProperty(value = "人民币")
     private BigDecimal rmb;

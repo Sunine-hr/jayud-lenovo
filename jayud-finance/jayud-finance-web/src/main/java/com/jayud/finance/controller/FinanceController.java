@@ -10,10 +10,8 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.finance.bo.*;
-import com.jayud.finance.service.ICancelAfterVerificationService;
-import com.jayud.finance.service.IMakeInvoiceService;
-import com.jayud.finance.service.IOrderPaymentBillDetailService;
-import com.jayud.finance.service.IOrderReceivableBillDetailService;
+import com.jayud.finance.enums.FormIDEnum;
+import com.jayud.finance.service.*;
 import com.jayud.finance.util.StringUtils;
 import com.jayud.finance.vo.*;
 import io.swagger.annotations.Api;
@@ -46,6 +44,9 @@ public class FinanceController {
 
     @Autowired
     IMakeInvoiceService makeInvoiceService;//开票
+
+    @Autowired
+    KingdeeService service;
 
     /**财务核算*/
     @ApiOperation(value = "财务核算列表")
@@ -288,8 +289,8 @@ public class FinanceController {
     @PostMapping("/pushReceivable billNos = 编号集合")
     @ApiOperation(value = "推送应收单")
     public CommonResult saveReceivableBill(@RequestBody ListForm form) {
-       // TODO return service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), reqForm);
-        return null;
+        ReceivableHeaderForm reqForm = null;//TODO
+       return service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), reqForm);
     }
 
     /**
@@ -301,8 +302,8 @@ public class FinanceController {
     @PostMapping("/pushPayment")
     @ApiOperation(value = "推送应付单 billNos = 编号集合")
     public CommonResult savePayableBill(@RequestBody ListForm form) {
-        //TODO return service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), reqForm);
-        return null;
+        PayableHeaderForm reqForm = null;//TODO
+        return service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), reqForm);
     }
 
 

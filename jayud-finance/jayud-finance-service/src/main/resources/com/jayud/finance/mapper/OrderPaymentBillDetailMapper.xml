@@ -7,8 +7,7 @@
         <id column="id" property="id" />
         <result column="bill_id" property="billId" />
         <result column="bill_no" property="billNo" />
-        <result column="begin_account_term" property="beginAccountTerm" />
-        <result column="end_account_term" property="endAccountTerm" />
+        <result column="account_term" property="accountTerm" />
         <result column="settlement_currency" property="settlementCurrency" />
         <result column="order_no" property="orderNo" />
         <result column="local_amount" property="localAmount" />
@@ -37,7 +36,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, bill_id,bill_no, begin_account_term,end_account_term,settlement_currency,order_no, cost_id, created_order_time, start_address,
+        id, bill_id,bill_no, account_term,settlement_currency,order_no, cost_id, created_order_time, start_address,
         end_address, license plate, vehicle_size, piece_num, weight, yun_customs_no, audit_status,make_user,make_time,audit_user,
         audit_time,apply_status,payment_amount,status, created_user, created_time,updated_user,updated_time,local_amount
     </sql>
@@ -47,8 +46,7 @@
         opbd.bill_no billNo,
         opb.legal_name legalName,
         opb.supplier_ch_name supplierChName,
-        DATE_FORMAT(opbd.begin_account_term,'%Y-%m-%d') 	beginAccountTermStr,
-        DATE_FORMAT(opbd.end_account_term,'%Y-%m-%d') 	endAccountTermStr,
+        DATE_FORMAT(opbd.account_term,'%Y-%m-%d') 	accountTermStr,
         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='CNY') rmb,
         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='USD') dollar,
         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='EUR') euro,
@@ -67,23 +65,32 @@
         order_payment_bill_detail opbd
         LEFT JOIN order_payment_bill opb ON opbd.bill_id = opb.id
         where 1 = 1
-        <if test="form.cmd == 'main_statement' or form.cmd == 'cw_statement'">
+        <if test="form.cmd == 'main_statement'">
             and opb.is_main = 1
         </if>
         <if test="form.cmd == 'statement_audit'">
             and opb.is_main = 1 and opbd.audit_status in ('B_1','B_2')
         </if>
-        <if test="form.cmd == 'zgys_statement' or form.cmd == 'zgys_cw_statement'">
+        <if test="form.cmd == 'cw_statement'">
+            and opb.is_main = 1 and opbd.audit_status in ('B_3','B_5','B_5_1')
+        </if>
+        <if test="form.cmd == 'zgys_statement'">
             and opb.is_main = 0 and opb.sub_type = 'zgys'
         </if>
         <if test="form.cmd == 'zgys_statement_audit'">
             and opb.is_main = 0 and opb.sub_type = 'zgys' and opbd.audit_status IN ('B_1','B_2')
         </if>
-        <if test="form.cmd == 'bg_statement' or form.cmd == 'bg_cw_statement'">
+        <if test="form.cmd == 'zgys_cw_statement'">
+            and opb.is_main = 0 and opb.sub_type = 'zgys' and opbd.audit_status in ('B_3','B_5','B_5_1')
+        </if>
+        <if test="form.cmd == 'bg_statement'">
             and opb.is_main = 0 and opb.sub_type = 'bg'
         </if>
         <if test="form.cmd == 'bg_statement_audit'">
             and opb.is_main = 0 and opb.sub_type = 'bg' and opbd.audit_status IN ('B_1','B_2')
+        </if>
+        <if test="form.cmd == 'bg_cw_statement'">
+            and opb.is_main = 0 and opb.sub_type = 'bg' and opbd.audit_status in ('B_3','B_5','B_5_1')
         </if>
         <if test="form.supplierChName != null and form.supplierChName != ''">
             and opb.supplier_ch_name like concat('%',#{form.supplierChName},'%')

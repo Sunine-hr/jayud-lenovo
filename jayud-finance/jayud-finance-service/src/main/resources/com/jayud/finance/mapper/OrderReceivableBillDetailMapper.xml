@@ -7,8 +7,7 @@
         <id column="id" property="id" />
         <result column="bill_id" property="billId" />
         <result column="bill_no" property="billNo" />
-        <result column="begin_account_term" property="beginAccountTerm" />
-        <result column="end_account_term" property="endAccountTerm" />
+        <result column="account_term" property="accountTerm" />
         <result column="settlement_currency" property="settlementCurrency" />
         <result column="order_no" property="orderNo" />
         <result column="local_amount" property="localAmount" />
@@ -37,7 +36,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, bill_id,bill_no, order_no,begin_account_term,end_account_term,settlement_currency, cost_id, created_order_time, start_address,
+        id, bill_id,bill_no, order_no,account_term,settlement_currency, cost_id, created_order_time, start_address,
         end_address, license plate, vehicle_size, piece_num, weight, yun_customs_no, audit_status,make_user,make_time,audit_user,
         audit_time,apply_status,invoice_amount,status, created_user, created_time,updated_user,updated_time,local_amount
     </sql>
@@ -47,8 +46,7 @@
         orbd.bill_no billNo,
         orb.legal_name legalName,
         orb.unit_account unitAccount,
-        DATE_FORMAT(orbd.begin_account_term,'%Y-%m-%d') 	beginAccountTermStr,
-        DATE_FORMAT(orbd.end_account_term,'%Y-%m-%d') 	endAccountTermStr,
+        DATE_FORMAT(orbd.account_term,'%Y-%m') 	accountTermStr,
         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='CNY') rmb,
         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='USD') dollar,
         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='EUR') euro,

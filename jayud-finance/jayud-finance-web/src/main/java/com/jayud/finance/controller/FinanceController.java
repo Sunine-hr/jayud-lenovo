@@ -116,10 +116,14 @@ public class FinanceController {
     /**对账单管理*/
     @ApiOperation(value = "应付对账单审核列表,对账单明细")
     @PostMapping("/findFBillAuditByPage")
-    public CommonResult<CommonPageResult<PaymentNotPaidBillVO>> findFBillAuditByPage(@RequestBody @Valid QueryFBillAuditForm form) {
+    public CommonResult<Map<String,Object>> findFBillAuditByPage(@RequestBody @Valid QueryFBillAuditForm form) {
         IPage<PaymentNotPaidBillVO> pageList = paymentBillDetailService.findFBillAuditByPage(form);
         CommonPageResult<PaymentNotPaidBillVO> pageVO = new CommonPageResult(pageList);
-        return CommonResult.success(pageVO);
+        Map<String,Object> resultMap = new HashMap<>();
+        resultMap.put("pageList",pageVO);//列表
+        ViewBillVO viewBillVO = receivableBillDetailService.getViewSBill(form.getBillNo());
+        resultMap.put(CommonConstant.WHOLE_DATA,viewBillVO);//全局数据
+        return CommonResult.success(resultMap);
     }
 
     @ApiOperation(value = "应收对账单审核列表,对账单明细")

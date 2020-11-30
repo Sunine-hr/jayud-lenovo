@@ -18,8 +18,8 @@ public class InputCostForm {
     @ApiModelProperty(value = "子订单法人主体")
     private String subLegalName;
 
-    @ApiModelProperty(value = "子订单客户")
-    private String subCustomerName;
+    @ApiModelProperty(value = "子订单结算单位CODE")
+    private String subUnitCode;
 
     @ApiModelProperty(value = "应付费用", required = true)
     private List<InputPaymentCostForm> paymentCostList;

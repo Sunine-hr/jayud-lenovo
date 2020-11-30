@@ -258,7 +258,7 @@
         obct.money_type='2' and obct.currency_code = 'EUR') euro,
         (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = orbd.cost_id and
         obct.money_type='2' and obct.currency_code = 'HKD') hKDollar,
-        (select pb.tax_rate from product_biz pb where pb.id_code = oi.biz_code) taxRate,
+        orbd.tax_rate taxRate,
         orbd.remarks
         FROM
         order_receivable_bill_detail orbd

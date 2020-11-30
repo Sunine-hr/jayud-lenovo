@@ -98,6 +98,10 @@
           oc.`status` status,
           oi.`customer_name` customerName,
           oi.customer_code customerCode,
+          oi.legal_name legalName,
+          oi.unit_code unitCode,
+          oc.legal_name subLegalName,
+          oc.unit_code subUnitCode,
           '' goodsInfo,
           oc.`encode`,
           oc.`description` fileStr,
@@ -167,6 +171,10 @@
         </if>
         <if test="form.cmd == 'goCustomsConfirm'">
             AND oc.`status` = 'C_5' and oc.class_code = 'CBG'
+        </if>
+        <if test="form.cmd == 'costAudit'">
+            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = oi.`order_no`)
+            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = oi.`order_no`))
         </if>
     </select>
 

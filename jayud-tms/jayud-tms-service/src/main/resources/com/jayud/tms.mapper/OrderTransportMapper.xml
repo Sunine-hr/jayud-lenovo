@@ -142,7 +142,10 @@
             END) isCost,
             oi.`need_input_cost` needInputCost,
             ot.`status` subTmsStatus,
-            ot.`legal_name` legalName
+            oi.legal_name legalName,
+            oi.unit_code unitCode,
+            ot.`legal_name` subLegalName,
+            ot.unit_code subUnitCode
         FROM
             order_transport ot
             LEFT JOIN order_info oi

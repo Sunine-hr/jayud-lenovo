@@ -203,8 +203,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
            if("preSubmit_main".equals(form.getCmd()) || "submit_main".equals(form.getCmd())){//入主订单费用
                form.setOrderNo(null);//表中是通过有没有子订单来判断这条数据是主订单的费用还是子订单的费用
             }else {//入子订单费用
-               if(!(inputOrderVO.getLegalName().equals(form.getSubLegalName()) && inputOrderVO.getCustomerName().equals(form.getSubCustomerName()))){
-                   isSumToMain = false;//主，子订单的法人主体和客户不一致则不能汇总到主订单
+               if(!(inputOrderVO.getLegalName().equals(form.getSubLegalName()) && inputOrderVO.getUnitCode().equals(form.getSubUnitCode()))){
+                   isSumToMain = false;//主，子订单的法人主体和结算单位不一致则不能汇总到主订单
                }
            }
             for (OrderPaymentCost orderPaymentCost : orderPaymentCosts) {//应付费用

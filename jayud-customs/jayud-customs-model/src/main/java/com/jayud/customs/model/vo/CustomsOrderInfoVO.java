@@ -45,6 +45,18 @@ public class CustomsOrderInfoVO {
     @ApiModelProperty(value = "客户名称code")
     private String customerCode;
 
+    @ApiModelProperty(value = "法人主体")
+    private String legalName;
+
+    @ApiModelProperty(value = "结算单位")
+    private String unitCode;
+
+    @ApiModelProperty(value = "子订单法人主体")
+    private String subLegalName;
+
+    @ApiModelProperty(value = "子订单结算单位")
+    private String subUnitCode;
+
     @ApiModelProperty(value = "货物信息")
     private String goodsInfo;
 

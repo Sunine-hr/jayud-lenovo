@@ -28,6 +28,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -121,7 +122,7 @@ public class FinanceController {
         CommonPageResult<PaymentNotPaidBillVO> pageVO = new CommonPageResult(pageList);
         Map<String,Object> resultMap = new HashMap<>();
         resultMap.put("pageList",pageVO);//列表
-        ViewBillVO viewBillVO = receivableBillDetailService.getViewSBill(form.getBillNo());
+        ViewBillVO viewBillVO = paymentBillDetailService.getViewBill(form.getBillNo());
         resultMap.put(CommonConstant.WHOLE_DATA,viewBillVO);//全局数据
         return CommonResult.success(resultMap);
     }
@@ -355,6 +356,27 @@ public class FinanceController {
             service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), reqForm);
         }
         return CommonResult.success();
+    }
+
+    @ApiOperation(value = "费用状态下拉框")
+    @PostMapping(value = "/initBillStatus")
+    public CommonResult<List<InitComboxStrVO>> initBillStatus() {
+        List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
+        for (BillEnum billEnum : BillEnum.values()) {
+            if(BillEnum.B_1.getCode().equals(billEnum.getCode()) || BillEnum.B_2.getCode().equals(billEnum.getCode()) ||
+               BillEnum.B_2_1.getCode().equals(billEnum.getCode()) || BillEnum.B_3.getCode().equals(billEnum.getCode()) ||
+               BillEnum.B_4.getCode().equals(billEnum.getCode()) || BillEnum.B_4_1.getCode().equals(billEnum.getCode()) ||
+               BillEnum.B_5.getCode().equals(billEnum.getCode()) || BillEnum.B_5_1.getCode().equals(billEnum.getCode()) ||
+               BillEnum.B_6.getCode().equals(billEnum.getCode()) || BillEnum.B_6_1.getCode().equals(billEnum.getCode()) ||
+               BillEnum.B_7.getCode().equals(billEnum.getCode()) || BillEnum.B_8.getCode().equals(billEnum.getCode()) ||
+               BillEnum.B_9.getCode().equals(billEnum.getCode())){
+                InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+                initComboxStrVO.setCode(billEnum.getCode());
+                initComboxStrVO.setName(billEnum.getDesc());
+                comboxStrVOS.add(initComboxStrVO);
+            }
+        }
+        return CommonResult.success(comboxStrVOS);
     }
 
 

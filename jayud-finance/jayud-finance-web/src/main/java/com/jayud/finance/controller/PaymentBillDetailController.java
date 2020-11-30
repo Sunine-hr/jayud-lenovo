@@ -237,7 +237,7 @@ public class PaymentBillDetailController {
         for (int i = 0; i < sheetHeadVOS.size(); i++) {
             SheetHeadVO sheetHeadVO = sheetHeadVOS.get(i);
             headMap.put(sheetHeadVO.getName(), sheetHeadVO.getViewName());
-            if (i > 9) {
+            if (i > 10) {
                 dynamicHead.put(sheetHeadVO.getName(), sheetHeadVO.getViewName());
             }
         }
@@ -279,7 +279,7 @@ public class PaymentBillDetailController {
 
         }
         entity.setTotalData(costTotal);
-        entity.setTotalIndex(9);
+        entity.setTotalIndex(10);
 
 
         //尾部

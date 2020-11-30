@@ -3,10 +3,7 @@ package com.jayud.finance.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.jayud.finance.bo.QueryEditBillForm;
-import com.jayud.finance.bo.QueryFBillAuditForm;
-import com.jayud.finance.bo.QueryFinanceAccountForm;
-import com.jayud.finance.bo.QueryPaymentBillDetailForm;
+import com.jayud.finance.bo.*;
 import com.jayud.finance.po.OrderPaymentBillDetail;
 import com.jayud.finance.vo.*;
 import org.apache.ibatis.annotations.Mapper;
@@ -112,4 +109,11 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
      * @return
      */
     List<FCostVO> findFCostList(@Param("billNo") String billNo);
+
+    /**
+     * 获取推送金蝶的应付数据
+     * @param billNo
+     * @return
+     */
+    PayableHeaderForm getPayableHeaderForm(@Param("billNo") String billNo);
 }

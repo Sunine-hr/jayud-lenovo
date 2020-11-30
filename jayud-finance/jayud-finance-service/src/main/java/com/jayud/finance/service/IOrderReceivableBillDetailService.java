@@ -152,4 +152,11 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      */
     Boolean editSDel(List<Long> costIds);
 
+    /**
+     * 获取推送金蝶的应收数据
+     * @param billNo
+     * @return
+     */
+    ReceivableHeaderForm getReceivableHeaderForm(String billNo);
+
 }

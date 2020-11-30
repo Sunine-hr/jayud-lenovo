@@ -187,4 +187,11 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      */
     Boolean editFDel(List<Long> costIds);
 
+    /**
+     * 获取推送金蝶的应付数据
+     * @param billNo
+     * @return
+     */
+    PayableHeaderForm getPayableHeaderForm(String billNo);
+
 }

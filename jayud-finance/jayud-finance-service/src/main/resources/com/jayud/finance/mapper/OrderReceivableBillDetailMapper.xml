@@ -313,4 +313,24 @@
         WHERE
             orbd.bill_no = #{billNo}
     </select>
+    <select id="getReceivableHeaderForm" parameterType="java.lang.String" resultType="com.jayud.finance.bo.ReceivableHeaderForm">
+        SELECT
+            oi.customer_name customerName,
+            ci.unit_account settleOrgName,
+            orbd.settlement_currency currency,
+            d.`name` saleDeptName,
+            (case when orc.sub_type = 'main' then orc.main_order_no
+             when orc.sub_type = 'zgys' or orc.sub_type = 'bg' then orc.order_no
+             else ''
+             end) businessNo,
+            orbd.bill_no billNo,
+            orbd.account_term businessDate
+        FROM
+            order_receivable_cost orc
+            left join order_info oi on oi.order_no = orc.main_order_no
+          left join order_receivable_bill_detail orbd on orbd.cost_id = orc.id
+            left join department d on d.id = oi.biz_belong_depart
+            left join customer_info ci on ci.unit_code = orc.customer_code
+        where orbd.bill_no = #{billNo}
+    </select>
 </mapper>

@@ -23,6 +23,7 @@ public class OrderInfoTest {
 
         form.setOrderNo("780469814253850624");//订单号
         form.setCustomerId(1);
+        form.setOfferInfoId(1);
         form.setStoreGoodsWarehouseCode("SH");
         form.setStoreGoodsWarehouseName("上海仓");
         form.setDestinationWarehouseCode("YMX1");

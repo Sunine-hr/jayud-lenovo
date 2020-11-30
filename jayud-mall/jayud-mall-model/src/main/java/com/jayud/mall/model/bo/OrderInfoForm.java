@@ -21,6 +21,9 @@ public class OrderInfoForm {
     @ApiModelProperty(value = "客户ID，对应customer.id")
     private Integer customerId;
 
+    @ApiModelProperty(value = "报价id(offer_info id)")
+    private Integer offerInfoId;
+
     @ApiModelProperty(value = "集货仓库代码 warehouse.code")
     private String storeGoodsWarehouseCode;
 

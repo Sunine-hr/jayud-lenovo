@@ -4,16 +4,21 @@ import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.finance.bo.*;
+import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.enums.FormIDEnum;
+import com.jayud.finance.po.OrderPaymentBillDetail;
+import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.service.*;
 import com.jayud.finance.util.StringUtils;
 import com.jayud.finance.vo.*;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -289,8 +294,29 @@ public class FinanceController {
     @PostMapping("/pushReceivable billNos = 编号集合")
     @ApiOperation(value = "推送应收单")
     public CommonResult saveReceivableBill(@RequestBody ListForm form) {
-        ReceivableHeaderForm reqForm = null;//TODO
-       return service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), reqForm);
+        //校验是否可推送金蝶
+        //1.必须财务已审核通过
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.in("bill_no",form.getBillNos());
+        List<OrderReceivableBillDetail> receivableBillDetails = receivableBillDetailService.list(queryWrapper);
+        StringBuilder sb = new StringBuilder("账单编号:");
+        Boolean flag = false;
+        for (OrderReceivableBillDetail receivableBillDetail : receivableBillDetails) {
+            if(StringUtil.isNullOrEmpty(receivableBillDetail.getAuditStatus()) || !BillEnum.B_6.getCode().equals(receivableBillDetail.getAuditStatus())){
+                flag = true;
+                sb.append(receivableBillDetail.getBillNo());
+            }
+        }
+        sb.append("财务未审核通过,不能推送金蝶");
+        if(flag) {
+            return CommonResult.error(10001, sb.toString());
+        }
+        //构建数据，推金蝶
+        for (OrderReceivableBillDetail receivableBillDetail : receivableBillDetails) {
+            ReceivableHeaderForm reqForm = new ReceivableHeaderForm();
+            service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), reqForm);
+        }
+        return CommonResult.success();
     }
 
     /**
@@ -302,8 +328,29 @@ public class FinanceController {
     @PostMapping("/pushPayment")
     @ApiOperation(value = "推送应付单 billNos = 编号集合")
     public CommonResult savePayableBill(@RequestBody ListForm form) {
-        PayableHeaderForm reqForm = null;//TODO
-        return service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), reqForm);
+        //校验是否可推送金蝶
+        //1.必须财务已审核通过
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.in("bill_no",form.getBillNos());
+        List<OrderPaymentBillDetail> paymentBillDetailList = paymentBillDetailService.list(queryWrapper);
+        StringBuilder sb = new StringBuilder("账单编号:");
+        Boolean flag = false;
+        for (OrderPaymentBillDetail paymentBillDetail : paymentBillDetailList) {
+            if(StringUtil.isNullOrEmpty(paymentBillDetail.getAuditStatus()) || !BillEnum.B_6.getCode().equals(paymentBillDetail.getAuditStatus())){
+                flag = true;
+                sb.append(paymentBillDetail.getBillNo());
+            }
+        }
+        sb.append("财务未审核通过,不能推送金蝶");
+        if(flag) {
+            return CommonResult.error(10001, sb.toString());
+        }
+        //构建数据，推金蝶
+        for (OrderPaymentBillDetail paymentBillDetail : paymentBillDetailList) {
+            PayableHeaderForm reqForm = new PayableHeaderForm();
+            service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), reqForm);
+        }
+        return CommonResult.success();
     }
 
 

@@ -42,6 +42,9 @@ public class CustomsOrderInfoVO {
     @ApiModelProperty(value = "客户名称")
     private String customerName;
 
+    @ApiModelProperty(value = "客户名称code")
+    private String customerCode;
+
     @ApiModelProperty(value = "货物信息")
     private String goodsInfo;
 
@@ -83,6 +86,12 @@ public class CustomsOrderInfoVO {
 
     @ApiModelProperty(value = "订单类型")
     private String classCode;
+
+    @ApiModelProperty(value = "是否有费用详情")
+    private boolean isCost;
+
+    @ApiModelProperty(value = "是否需要录入费用")
+    private Boolean needInputCost;
 
     public void setGoodsTypeDesc(Integer goodsType){
         if(goodsType == 1){

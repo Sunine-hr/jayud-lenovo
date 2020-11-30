@@ -27,5 +27,33 @@ public class CustomerForm {
     @ApiModelProperty(value = "联系地址")
     private String address;
 
+    @ApiModelProperty(value = "营业执照url")
+    private String businessLicenseUrl;
+
+    @ApiModelProperty(value = "结算方式(1票结 2月结)")
+    private Integer clearingWay;
+
+    @ApiModelProperty(value = "结算日期")
+    private String clearingDate;
+
+    @ApiModelProperty(value = "锁单日期")
+    private String lockDate;
+
+    @ApiModelProperty(value = "实际锁单日期")
+    private String realDate;
+
+    /*审核*/
+    @ApiModelProperty(value = "审核状态(0待审核1审核通过2审核不通过，默认为0）")
+    private Integer auditStatus;
+
+    @ApiModelProperty(value = "业务员Id，system_user.id")
+    private Integer salesmanId;
+
+    @ApiModelProperty(value = "运营(服务)小组id(operation_team id)")
+    private Long operationTeamId;
+
+    @ApiModelProperty(value = "备注")
+    private String remark;
+
 
 }

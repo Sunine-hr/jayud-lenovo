@@ -14,4 +14,16 @@ public class CustomerTest {
 
     }
 
+    @Test
+    public void test2(){
+        CustomerForm form = new CustomerForm();
+        form.setId(1);
+        form.setAuditStatus(1);
+        form.setSalesmanId(149);
+        form.setOperationTeamId(1L);
+        form.setRemark("这个是我`吴提柜`审核的哈~");
+        TestUtils.JSONObjectPrint(form);
+    }
+
+
 }

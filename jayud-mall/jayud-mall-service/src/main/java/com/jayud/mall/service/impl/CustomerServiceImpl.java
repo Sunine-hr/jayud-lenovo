@@ -45,4 +45,14 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         this.saveOrUpdate(customer);
         return CommonResult.success("保存客户，成功！");
     }
+
+    @Override
+    public CommonResult<CustomerVO> auditCustomer(CustomerForm form) {
+        Customer customer = ConvertUtil.convert(form, Customer.class);
+        this.saveOrUpdate(customer);
+        CustomerVO customerVO = ConvertUtil.convert(customer, CustomerVO.class);
+        return CommonResult.success(customerVO);
+    }
+
+
 }

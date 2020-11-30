@@ -31,4 +31,11 @@ public interface ICustomerService extends IService<Customer> {
      * @return
      */
     CommonResult saveCustomer(CustomerForm form);
+
+    /**
+     * 审核-客户
+     * @param form
+     * @return
+     */
+    CommonResult<CustomerVO> auditCustomer(CustomerForm form);
 }

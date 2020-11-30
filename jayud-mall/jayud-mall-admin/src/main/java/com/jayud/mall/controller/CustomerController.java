@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/customer")
-@Api(tags = "客户接口")
+@Api(tags = "后台-客户接口")
 public class CustomerController {
 
     @Autowired
     ICustomerService customerService;
 
-    @ApiOperation(value = "分页查询客户")
+    @ApiOperation(value = "分页查询-客户列表")
     @PostMapping("/findCustomerByPage")
     public CommonResult<CommonPageResult<CustomerVO>> findCustomerByPage(@RequestBody QueryCustomerForm form) {
         IPage<CustomerVO> pageList = customerService.findCustomerByPage(form);
@@ -31,10 +31,16 @@ public class CustomerController {
         return CommonResult.success(pageVO);
     }
 
-    @ApiOperation(value = "保存客户")
+    @ApiOperation(value = "编辑-保存客户")
     @PostMapping("/saveCustomer")
     public CommonResult saveCustomer(@RequestBody CustomerForm form){
         return customerService.saveCustomer(form);
+    }
+
+    @ApiOperation(value = "审核-客户")
+    @PostMapping("/auditCustomer")
+    public CommonResult<CustomerVO> auditCustomer(@RequestBody CustomerForm form){
+        return customerService.auditCustomer(form);
     }
 
 }

@@ -110,6 +110,7 @@
             oi.`class_code` classCode,
             pc.`name` classCodeDesc,
             oi.`customer_name` customerName,
+            oi.`customer_code` customerCode,
             ot.`created_user` createdUser,
             DATE_FORMAT(ot.`created_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
         (SELECT	ota.`goods_desc` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1

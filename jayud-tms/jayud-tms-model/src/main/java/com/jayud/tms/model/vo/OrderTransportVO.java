@@ -41,6 +41,9 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "客户名称")
     private String customerName;
 
+    @ApiModelProperty(value = "客户名称CODE")
+    private String customerCode;
+
     @ApiModelProperty(value = "六联单号")
     private String encode;
 

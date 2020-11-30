@@ -1,7 +1,10 @@
 package com.jayud.mall.service;
 
-import com.jayud.mall.model.po.WaybillTask;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.po.WaybillTask;
+import com.jayud.mall.model.vo.WaybillTaskVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +15,12 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2020-11-27
  */
 public interface IWaybillTaskService extends IService<WaybillTask> {
+
+    /**
+     * 根据报价id，查询运单任务信息list
+     * @param OfferInfoId   报价id
+     * @return
+     */
+    List<WaybillTaskVO> findWaybillTaskByOfferInfoId(Integer OfferInfoId);
 
 }

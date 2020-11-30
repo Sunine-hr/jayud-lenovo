@@ -75,7 +75,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Autowired
     IOrderCopeWithService orderCopeWithService;
 
-
+    @Autowired
+    IWaybillTaskRelevanceService waybillTaskRelevanceService;
 
     @Override
     public IPage<OrderInfoVO> findOrderInfoByPage(QueryOrderInfoForm form) {
@@ -329,6 +330,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult<OrderInfoVO> submitOrderInfo(OrderInfoForm form) {
         //保存-产品订单表：order_info
         OrderInfo orderInfo = ConvertUtil.convert(form, OrderInfo.class);
@@ -343,6 +345,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderInfo.setStatus(OrderEnum.PLACED_AN_ORDER.getCode());//订单状态
         orderInfo.setStatusName(OrderEnum.PLACED_AN_ORDER.getName());//订单名称
         this.saveOrUpdate(orderInfo);
+
+        //提交订单，创建任务
+        List<WaybillTaskRelevanceVO> waybillTaskRelevanceVOS =
+                waybillTaskRelevanceService.saveWaybillTaskRelevance(orderInfo);
 
         //保存-订单对应箱号信息:order_case
         List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
@@ -389,6 +395,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderInfo.setStatus(OrderEnum.PLACED_AN_ORDER.getCode());
         orderInfo.setStatusName(OrderEnum.PLACED_AN_ORDER.getName());
         this.saveOrUpdate(orderInfo);
+
+        //提交订单，创建任务
+        List<WaybillTaskRelevanceVO> waybillTaskRelevanceVOS =
+                waybillTaskRelevanceService.saveWaybillTaskRelevance(orderInfo);
+
         OrderInfoVO orderInfoVO = ConvertUtil.convert(orderInfo, OrderInfoVO.class);
         return CommonResult.success(orderInfoVO);
     }

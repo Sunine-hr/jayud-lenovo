@@ -26,4 +26,44 @@
         id, group_code, task_code, task_name, sort, days, day_flag, operators, minutes, score, remarks, status, user_id, user_name, create_time
     </sql>
 
+    <!--根据报价id，查询运单任务信息list-->
+    <select id="findWaybillTaskByOfferInfoId" parameterType="java.lang.Integer"
+            resultType="com.jayud.mall.model.vo.WaybillTaskVO">
+        select
+        t.id,t.group_code,t.task_code,t.task_name,t.sort,t.days,t.day_flag,t.operators,t.minutes,t.score,t.remarks,t.`status`,t.user_id,t.user_name,t.create_time,
+        t1.id_code,t1.code_name,
+        t2.`names` quotationTemplateName,
+        t3.`names` offerInfoName,
+        t4.order_no,
+        t5.company,
+        t6.id operationTeamId,
+        t7.member_user_id memberUserId,t7.memberUserName
+        from
+        waybill_task t
+        LEFT JOIN task_group t1 on t1.id_code = t.group_code AND t1.types=2
+        LEFT JOIN quotation_template t2 ON t2.task_id = t1.id
+        LEFT JOIN offer_info t3 ON t3.qie = t2.id
+        LEFT JOIN order_info t4 ON t4.offer_info_id = t3.id
+        LEFT JOIN customer t5 ON t5.id = t4.customer_id
+        LEFT JOIN operation_team t6 ON t6.id = t5.operation_team_id
+        LEFT JOIN (
+        select
+        t.id,t.task_type,t.task_id,t.operation_team_id,t.member_user_id,t.`status`,t.creator,t.creation_time,
+        t1.task_code billTaskCode,t1.task_name billTaskName,
+        t2.task_code waybillTaskCode,t2.task_name waybillTaskName,
+        t3.group_code operationGroupCode,t3.group_name operationGroupName,
+        t4.`name` memberUserName
+        from
+        task_member_relation t
+        LEFT JOIN bill_task t1 on t1.id = t.task_id AND t.task_type = 1
+        LEFT JOIN waybill_task t2 on t2.id = t.task_id AND t.task_type = 2
+        LEFT JOIN operation_team t3 on t3.id = t.operation_team_id
+        LEFT JOIN system_user t4 on t4.id = t.member_user_id
+        ) t7 ON t7.task_id = t.id AND t7.waybillTaskCode = t.task_code AND t7.waybillTaskName = t.task_name AND t7.operation_team_id = t5.operation_team_id
+        WHERE t3.id = #{offerInfoId}
+        ORDER BY t.sort ASC
+
+
+    </select>
+
 </mapper>

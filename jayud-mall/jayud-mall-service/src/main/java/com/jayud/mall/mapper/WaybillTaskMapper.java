@@ -2,8 +2,12 @@ package com.jayud.mall.mapper;
 
 import com.jayud.mall.model.po.WaybillTask;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.mall.model.vo.WaybillTaskVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +21,10 @@ import org.springframework.stereotype.Component;
 @Component
 public interface WaybillTaskMapper extends BaseMapper<WaybillTask> {
 
+    /**
+     * 根据报价id，查询运单任务信息list
+     * @param offerInfoId 报价id
+     * @return
+     */
+    List<WaybillTaskVO> findWaybillTaskByOfferInfoId(@Param(value = "offerInfoId") Integer offerInfoId);
 }

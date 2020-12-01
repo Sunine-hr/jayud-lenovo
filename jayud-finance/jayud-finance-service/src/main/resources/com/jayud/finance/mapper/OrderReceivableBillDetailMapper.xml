@@ -173,6 +173,20 @@
         GROUP BY
         orc.cost_code,
         orc.currency_code
+
+        union
+
+        SELECT
+        concat('T',orc.currency_code) NAME,
+        concat('合计(',(select ci.currency_name from currency_info ci where ci.  currency_code = orc.currency_code),')') viewName,
+        sum( orc.amount )
+        FROM
+        order_receivable_cost orc
+        WHERE
+        orc.id IN
+        (select orbd.cost_id from order_receivable_bill_detail orbd where orbd.bill_no = #{billNo})
+        GROUP BY
+        orc.currency_code
     </select>
     <select id="findSCostClass" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewBillToCostClassVO">
         SELECT
@@ -188,6 +202,20 @@
             orc.id IN (select orbd.cost_id from order_receivable_bill_detail orbd where orbd.bill_no = #{billNo})
         GROUP BY
             orc.cost_code,
+            orc.currency_code,
+            orc.main_order_no
+         union
+        SELECT
+            concat('T',orc.currency_code) NAME,
+            orc.main_order_no orderNo,
+            concat('合计(',(SELECT ci.currency_name FROM currency_info ci WHERE
+                    ci.currency_code = orc.currency_code ),')' ) viewName,
+            sum( orc.amount ) money
+        FROM
+            order_receivable_cost orc
+        WHERE
+            orc.id IN (select orbd.cost_id from order_receivable_bill_detail orbd where orbd.bill_no = #{billNo})
+        GROUP BY
             orc.currency_code,
             orc.main_order_no
     </select>

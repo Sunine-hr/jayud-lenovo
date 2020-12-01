@@ -238,29 +238,35 @@
         GROUP BY
             opc.cost_code,
             opc.currency_code
+
+        union
+
+        SELECT
+        concat('T',opc.currency_code) NAME,
+        concat('合计(',(select ci.currency_name from currency_info ci where ci.  currency_code = opc.currency_code),')') viewName,
+        sum( opc.amount )
+        FROM
+        order_payment_cost opc
+        WHERE 1 = 1
+        <if test="costIds != null and costIds.size>0">
+            and opc.id IN
+            <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="costIds = null or costIds.size == 0">
+            and 1 = 0
+        </if>
+        GROUP BY
+        opc.currency_code
     </select>
     <select id="findCostClass" parameterType="java.util.List" resultType="com.jayud.finance.vo.ViewBillToCostClassVO">
         SELECT
             CONCAT( opc.cost_code, opc.currency_code ) NAME,
             opc.main_order_no orderNo,
-            concat((
-                SELECT
-                    ci.NAME
-                FROM
-                    cost_info ci
-                WHERE
-                    ci.id_code = opc.cost_code
-                    ),
-                '(',(
-                SELECT
-                    ci.currency_name
-                FROM
-                    currency_info ci
-                WHERE
-                    ci.currency_code = opc.currency_code
-                ),
-                ')'
-            ) viewName,
+            concat((SELECT ci.NAME FROM cost_info ci WHERE
+                    ci.id_code = opc.cost_code),'(',(SELECT ci.currency_name FROM currency_info ci WHERE
+                    ci.currency_code = opc.currency_code),')') viewName,
             sum( opc.amount ) money
         FROM
             order_payment_cost opc
@@ -278,6 +284,28 @@
             opc.cost_code,
             opc.currency_code,
             opc.main_order_no
+        union
+        SELECT
+        CONCAT( 'T', opc.currency_code ) NAME,
+        opc.main_order_no orderNo,
+        concat('合计(',(SELECT ci.currency_name FROM currency_info ci WHERE
+        ci.currency_code = opc.currency_code),')') viewName,
+        sum( opc.amount ) money
+        FROM
+        order_payment_cost opc
+        WHERE 1 = 1
+        <if test="costIds != null and costIds.size>0">
+            and opc.id IN
+            <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="costIds = null or costIds.size == 0">
+            and 1 = 0
+        </if>
+        GROUP BY
+        opc.currency_code,
+        opc.main_order_no
     </select>
     <select id="viewPaymentBill" parameterType="java.util.List" resultType="com.jayud.finance.vo.ViewFBilToOrderVO">
         SELECT

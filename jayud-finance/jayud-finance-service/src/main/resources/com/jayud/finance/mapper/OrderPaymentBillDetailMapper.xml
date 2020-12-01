@@ -176,6 +176,20 @@
         GROUP BY
         opc.cost_code,
         opc.currency_code
+
+        union
+
+		SELECT
+        concat('T',opc.currency_code) NAME,
+        concat('合计(',(select ci.currency_name from currency_info ci where ci.  currency_code = opc.currency_code),')') viewName,
+        sum( opc.amount )
+        FROM
+        order_payment_cost opc
+        WHERE
+        opc.id IN
+        (select opbd.cost_id from order_payment_bill_detail opbd where opbd.bill_no = #{billNo})
+        GROUP BY
+        opc.currency_code
     </select>
     <select id="findCostClass" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewBillToCostClassVO">
         SELECT
@@ -191,6 +205,20 @@
             opc.id IN (select opbd.cost_id from order_payment_bill_detail opbd where opbd.bill_no = #{billNo})
         GROUP BY
             opc.cost_code,
+            opc.currency_code,
+            opc.main_order_no
+        union
+         SELECT
+            CONCAT( 'T', opc.currency_code ) NAME,
+            opc.main_order_no orderNo,
+            concat('(',(SELECT ci.currency_name FROM currency_info ci WHERE
+                    ci.currency_code = opc.currency_code ),')' ) viewName,
+            sum( opc.amount ) money
+        FROM
+            order_payment_cost opc
+        WHERE
+            opc.id IN (select opbd.cost_id from order_payment_bill_detail opbd where opbd.bill_no = #{billNo})
+        GROUP BY
             opc.currency_code,
             opc.main_order_no
     </select>

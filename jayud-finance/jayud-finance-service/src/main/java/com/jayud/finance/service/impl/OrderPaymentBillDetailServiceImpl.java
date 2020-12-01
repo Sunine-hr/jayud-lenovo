@@ -261,8 +261,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                     paymentBillDetails.get(i).setStatus("1");
                     paymentBillDetails.get(i).setBillNo(form.getBillNo());
                     paymentBillDetails.get(i).setBillId(existObject.getBillId());
-                    paymentBillDetails.get(i).setBeginAccountTerm(existObject.getBeginAccountTerm());
-                    paymentBillDetails.get(i).setEndAccountTerm(existObject.getEndAccountTerm());
+                    paymentBillDetails.get(i).setAccountTerm(existObject.getAccountTerm());
                     paymentBillDetails.get(i).setSettlementCurrency(settlementCurrency);
                     paymentBillDetails.get(i).setAuditStatus("edit_no_commit");
                     paymentBillDetails.get(i).setCreatedOrderTime(DateUtils.convert2Date(paymentBillDetailForms.get(i).getCreatedTimeStr(), DateUtils.DATE_PATTERN));
@@ -281,7 +280,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 //开始保存费用维度的金额信息  以结算币种进行转换后保存
                 List<OrderBillCostTotal> orderBillCostTotals = new ArrayList<>();
                 //根据费用ID统计费用信息,将原始费用信息根据结算币种进行转换
-                List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderFBillCostTotal(costIds, settlementCurrency);
+                List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderFBillCostTotal(costIds, settlementCurrency,existObject.getAccountTerm());
                 for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                     orderBillCostTotalVO.setBillNo(form.getBillNo());
                     orderBillCostTotalVO.setCurrencyCode(settlementCurrency);
@@ -539,7 +538,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         //定义分页参数
         Page<PaymentNotPaidBillVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
-        page.addOrder(OrderItem.desc("opc.id"));
+        page.addOrder(OrderItem.desc("temp.createTimeStr"));
         IPage<PaymentNotPaidBillVO> pageInfo = baseMapper.findFBillAuditByPage(page, form);
         return pageInfo;
     }
@@ -555,7 +554,15 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     }
 
     @Override
-    public Boolean auditFInvoice(BillAuditForm form) {
+    public CommonResult auditFInvoice(BillAuditForm form) {
+        //是否可以操作付款审核
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("bill_no",form.getBillNo());
+        List<OrderPaymentBillDetail> billDetails = baseMapper.selectList(queryWrapper);
+        OrderPaymentBillDetail paymentBillDetail = billDetails.get(0);
+        if(!BillEnum.B_5.getCode().equals(paymentBillDetail.getAuditStatus())){
+            return CommonResult.error(10001,"不符合操作条件");
+        }
         OrderPaymentBillDetail billDetail = new OrderPaymentBillDetail();
         String applyStatus = "";
         String status = "";
@@ -581,9 +588,9 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             auditInfoForm.setExtDesc("order_payment_bill_detail表bill_no");
             auditInfoForm.setAuditUser(UserOperator.getToken());
             omsClient.saveAuditInfo(auditInfoForm);
-            return true;
+            return CommonResult.success();
         }else{
-            return false;
+            return CommonResult.error(ResultEnum.OPR_FAIL);
         }
     }
 
@@ -617,6 +624,11 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             }
         }
         return true;
+    }
+
+    @Override
+    public PayableHeaderForm getPayableHeaderForm(String billNo) {
+        return baseMapper.getPayableHeaderForm(billNo);
     }
 
 

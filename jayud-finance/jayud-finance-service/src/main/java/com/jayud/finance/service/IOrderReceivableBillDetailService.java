@@ -136,7 +136,7 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      * @param form
      * @return
      */
-    Boolean auditSInvoice(BillAuditForm form);
+    CommonResult auditSInvoice(BillAuditForm form);
 
     /**
      *编辑保存确定
@@ -151,5 +151,12 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      * @return
      */
     Boolean editSDel(List<Long> costIds);
+
+    /**
+     * 获取推送金蝶的应收数据
+     * @param billNo
+     * @return
+     */
+    ReceivableHeaderForm getReceivableHeaderForm(String billNo);
 
 }

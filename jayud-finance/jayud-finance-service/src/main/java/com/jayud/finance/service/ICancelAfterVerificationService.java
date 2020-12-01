@@ -1,8 +1,9 @@
 package com.jayud.finance.service;
 
-import com.jayud.finance.bo.HeXiaoConfirmForm;
-import com.jayud.finance.po.CancelAfterVerification;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.CommonResult;
+import com.jayud.finance.bo.HeXiaoConfirmListForm;
+import com.jayud.finance.po.CancelAfterVerification;
 import com.jayud.finance.vo.HeXiaoListVO;
 
 import java.util.List;
@@ -29,5 +30,5 @@ public interface ICancelAfterVerificationService extends IService<CancelAfterVer
      * @param form
      * @return
      */
-    Boolean heXiaoConfirm(List<HeXiaoConfirmForm> form);
+    CommonResult heXiaoConfirm(HeXiaoConfirmListForm form);
 }

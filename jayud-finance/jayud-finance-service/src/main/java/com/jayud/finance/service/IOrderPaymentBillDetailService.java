@@ -171,7 +171,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      * @param form
      * @return
      */
-    Boolean auditFInvoice(BillAuditForm form);
+    CommonResult auditFInvoice(BillAuditForm form);
 
     /**
      *编辑保存确定
@@ -186,5 +186,12 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      * @return
      */
     Boolean editFDel(List<Long> costIds);
+
+    /**
+     * 获取推送金蝶的应付数据
+     * @param billNo
+     * @return
+     */
+    PayableHeaderForm getPayableHeaderForm(String billNo);
 
 }

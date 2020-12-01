@@ -41,6 +41,9 @@ public enum ResultEnum implements IResultCode {
     LOGIN_NAME_EXIST(10002, "该登录名已存在"),
     UNIT_CODE_EXIST(10004,"该结算代码已存在"),
     NAME_EXIST(10003, "姓名已存在"),
+    MAKE_INVOICE_CONDITION_1(10004, "开票申请审核通过才可操作"),
+    MAKE_INVOICE_CONDITION_2(10005, "付款申请审核通过才可操作"),
+    MAKE_INVOICE_CONDITION_3(10006, "核销总金额超过申请金额"),
     ;
     private Integer code;
     private String message;

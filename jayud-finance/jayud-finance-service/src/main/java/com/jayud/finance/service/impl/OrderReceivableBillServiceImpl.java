@@ -108,7 +108,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             //校验是否配置了相应币种的汇率
             //根据费用ID统计费用信息,将原始费用信息根据结算币种进行转换
             if("create".equals(form.getCmd())) {
-                orderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, settlementCurrency);
+                orderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, settlementCurrency,form.getAccountTermStr());
                 for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                     BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();//如果费率为0，则抛异常回滚数据
                     if (exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0) {
@@ -178,8 +178,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             for (int i = 0;i<receivableBillDetails.size();i++) {
                 receivableBillDetails.get(i).setStatus("1");
                 receivableBillDetails.get(i).setBillNo(form.getBillNo());
-                receivableBillDetails.get(i).setBeginAccountTerm(DateUtils.str2LocalDateTime(form.getBeginAccountTermStr(),DateUtils.DATE_TIME_PATTERN));
-                receivableBillDetails.get(i).setEndAccountTerm(DateUtils.str2LocalDateTime(form.getEndAccountTermStr(),DateUtils.DATE_TIME_PATTERN));
+                receivableBillDetails.get(i).setAccountTerm(form.getAccountTermStr());
                 receivableBillDetails.get(i).setSettlementCurrency(form.getSettlementCurrency());
                 receivableBillDetails.get(i).setAuditStatus(BillEnum.B_1.getCode());
                 receivableBillDetails.get(i).setCreatedOrderTime(DateUtils.convert2Date(receiveBillDetailForms.get(i).getCreatedTimeStr(),DateUtils.DATE_PATTERN));

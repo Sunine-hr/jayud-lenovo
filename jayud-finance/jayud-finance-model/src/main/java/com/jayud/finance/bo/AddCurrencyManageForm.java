@@ -21,14 +21,6 @@ public class AddCurrencyManageForm {
     @ApiModelProperty(value = "汇率集合",required = true)
     private List<AddCurrencyRateForm> rateFormList;
 
-    @ApiModelProperty(value = "有效期开始时间",required = true)
-    @NotEmpty(message = "beginValidDate is required")
-    private String beginValidDate;
-
-    @ApiModelProperty(value = "有效期结束时间",required = true)
-    @NotEmpty(message = "endValidDate is required")
-    private String endValidDate;
-
     @ApiModelProperty(value = "登录用户",required = true)
     private String loginUserName;
 

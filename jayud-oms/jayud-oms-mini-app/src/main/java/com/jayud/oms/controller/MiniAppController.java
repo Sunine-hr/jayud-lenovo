@@ -214,7 +214,7 @@ public class MiniAppController {
         //查询是否费用提交
         if (this.driverEmploymentFeeService.isExist(driverId,
                 form.getOrderId(), EmploymentFeeStatusEnum.SUBMITTED.getCode())) {
-            return CommonResult.error(400, "改订单费用已提交,无法录用费用");
+            return CommonResult.error(400, "该订单费用已提交,无法录用费用");
         }
 
         //根据中港订单编号查询主订单

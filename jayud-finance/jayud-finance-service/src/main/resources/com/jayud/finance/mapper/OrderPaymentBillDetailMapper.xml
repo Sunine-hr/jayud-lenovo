@@ -7,8 +7,7 @@
         <id column="id" property="id" />
         <result column="bill_id" property="billId" />
         <result column="bill_no" property="billNo" />
-        <result column="begin_account_term" property="beginAccountTerm" />
-        <result column="end_account_term" property="endAccountTerm" />
+        <result column="account_term" property="accountTerm" />
         <result column="settlement_currency" property="settlementCurrency" />
         <result column="order_no" property="orderNo" />
         <result column="local_amount" property="localAmount" />
@@ -28,6 +27,8 @@
         <result column="audit_time" property="auditTime" />
         <result column="apply_status" property="applyStatus" />
         <result column="payment_amount" property="paymentAmount" />
+        <result column="tax_rate" property="taxRate" />
+        <result column="remarks" property="remarks" />
         <result column="status" property="status" />
         <result column="created_user" property="createdUser" />
         <result column="created_time" property="createdTime" />
@@ -37,7 +38,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, bill_id,bill_no, begin_account_term,end_account_term,settlement_currency,order_no, cost_id, created_order_time, start_address,
+        id, bill_id,bill_no, account_term,settlement_currency,order_no, cost_id, created_order_time, start_address,
         end_address, license plate, vehicle_size, piece_num, weight, yun_customs_no, audit_status,make_user,make_time,audit_user,
         audit_time,apply_status,payment_amount,status, created_user, created_time,updated_user,updated_time,local_amount
     </sql>
@@ -47,8 +48,7 @@
         opbd.bill_no billNo,
         opb.legal_name legalName,
         opb.supplier_ch_name supplierChName,
-        DATE_FORMAT(opbd.begin_account_term,'%Y-%m-%d') 	beginAccountTermStr,
-        DATE_FORMAT(opbd.end_account_term,'%Y-%m-%d') 	endAccountTermStr,
+        DATE_FORMAT(opbd.account_term,'%Y-%m-%d') 	accountTermStr,
         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='CNY') rmb,
         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='USD') dollar,
         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='EUR') euro,
@@ -67,23 +67,32 @@
         order_payment_bill_detail opbd
         LEFT JOIN order_payment_bill opb ON opbd.bill_id = opb.id
         where 1 = 1
-        <if test="form.cmd == 'main_statement' or form.cmd == 'cw_statement'">
+        <if test="form.cmd == 'main_statement'">
             and opb.is_main = 1
         </if>
         <if test="form.cmd == 'statement_audit'">
             and opb.is_main = 1 and opbd.audit_status in ('B_1','B_2')
         </if>
-        <if test="form.cmd == 'zgys_statement' or form.cmd == 'zgys_cw_statement'">
+        <if test="form.cmd == 'cw_statement'">
+            and opb.is_main = 1 and opbd.audit_status in ('B_3','B_5','B_5_1')
+        </if>
+        <if test="form.cmd == 'zgys_statement'">
             and opb.is_main = 0 and opb.sub_type = 'zgys'
         </if>
         <if test="form.cmd == 'zgys_statement_audit'">
             and opb.is_main = 0 and opb.sub_type = 'zgys' and opbd.audit_status IN ('B_1','B_2')
         </if>
-        <if test="form.cmd == 'bg_statement' or form.cmd == 'bg_cw_statement'">
+        <if test="form.cmd == 'zgys_cw_statement'">
+            and opb.is_main = 0 and opb.sub_type = 'zgys' and opbd.audit_status in ('B_3','B_5','B_5_1')
+        </if>
+        <if test="form.cmd == 'bg_statement'">
             and opb.is_main = 0 and opb.sub_type = 'bg'
         </if>
         <if test="form.cmd == 'bg_statement_audit'">
             and opb.is_main = 0 and opb.sub_type = 'bg' and opbd.audit_status IN ('B_1','B_2')
+        </if>
+        <if test="form.cmd == 'bg_cw_statement'">
+            and opb.is_main = 0 and opb.sub_type = 'bg' and opbd.audit_status in ('B_3','B_5','B_5_1')
         </if>
         <if test="form.supplierChName != null and form.supplierChName != ''">
             and opb.supplier_ch_name like concat('%',#{form.supplierChName},'%')
@@ -208,8 +217,7 @@
     <select id="getViewBill" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewBillVO">
         SELECT DISTINCT
             opb.legal_name legalName,
-            DATE_FORMAT( opbd.begin_account_term, '%Y-%m-%d' ) beginAccountTermStr,
-            DATE_FORMAT( opbd.end_account_term, '%Y-%m-%d' ) endAccountTermStr,
+            DATE_FORMAT( opbd.account_term, '%Y-%m' ) accountTermStr,
             (select oi.customer_name from order_info oi where oi.order_no = opbd.order_no) customerName,
             opbd.bill_no billNo,
             opbd.make_user makeUser,
@@ -229,20 +237,21 @@
         THEN '已核销'
         else '未核销' END)
         recCostStatus,
-        temp.payBillNo,temp.payAccountTermStr,temp.payRmb,temp.payDollar,temp.payEuro,temp.payHkDollar,temp.payLocalAmount,temp.payStatus,(case (select sum(cav.local_money) from cancel_after_verification cav where cav.bill_no = temp.payBillNo)
+        temp.payBillNo,temp.payAccountTermStr,temp.payRmb,temp.payDollar,temp.payEuro,temp.payHkDollar,temp.payLocalAmount,temp.payStatus,
+        (case (select sum(cav.local_money) from cancel_after_verification cav where cav.bill_no = temp.payBillNo)
         when temp.recLocalAmount
         THEN '已核销'
         else '未核销' END)
         payCostStatus, (temp.recLocalAmount - temp.payLocalAmount) profit from (
         SELECT
         oi.order_no orderNo,
-        oi.create_time createTimeStr,
+        DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createTimeStr,
         oi.legal_name legalName,
         oi.customer_code customerCode,
         oi.customer_name customerName,
         oi.biz_uname ywName,
         concat((select distinct orbd.bill_no from order_receivable_bill_detail orbd where orbd.order_no = oi.order_no)) recBillNo,
-        concat((select distinct concat(orbd.begin_account_term,'至',orbd.end_account_term) from order_receivable_bill_detail orbd where orbd.order_no = oi.order_no)) recAccountTermStr,
+        concat((select distinct orbd.account_term from order_receivable_bill_detail orbd where orbd.order_no = oi.order_no)) recAccountTermStr,
         (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_receivable_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'CNY' and obct.money_type='2') recRmb,
         (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_receivable_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'USD' and obct.money_type='2') recDollar,
         (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_receivable_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'EUR' and obct.money_type='2') recEuro,
@@ -250,7 +259,7 @@
         (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_receivable_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'CNY' and obct.money_type='2') recLocalAmount,
         (select orbd.audit_status from order_receivable_bill_detail orbd where orbd.bill_no in (select distinct orbd.bill_no from order_receivable_bill_detail orbd where orbd.order_no = oi.order_no)) recStatus,
         concat((select distinct opbd.bill_no from order_payment_bill_detail opbd where opbd.order_no = oi.order_no)) payBillNo,
-        concat((select distinct concat(opbd.begin_account_term,'至',opbd.end_account_term) from order_payment_bill_detail opbd where opbd.order_no = oi.order_no)) payAccountTermStr,
+        concat((select distinct opbd.account_term from order_payment_bill_detail opbd where opbd.order_no = oi.order_no)) payAccountTermStr,
         (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_payment_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'CNY' and obct.money_type='1') payRmb,
         (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_payment_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'USD' and obct.money_type='1') payDollar,
         (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_payment_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'EUR' and obct.money_type='1') payEuro,
@@ -276,10 +285,16 @@
             and temp.recStatus = #{form.recStatus}
         </if>
         <if test="form.recCostStatus != null and form.recCostStatus !=''">
-            and temp.recCostStatus = #{form.recCostStatus}
+            and (case (select sum(cav.local_money) from cancel_after_verification cav where cav.bill_no = temp.recBillNo)
+            when temp.recLocalAmount
+            THEN '已核销'
+            else '未核销' END) = #{form.recCostStatus}
         </if>
         <if test="form.payCostStatus != null and form.payCostStatus !=''">
-            and temp.payCostStatus = #{form.payCostStatus}
+            and (case (select sum(cav.local_money) from cancel_after_verification cav where cav.bill_no = temp.payBillNo)
+            when temp.recLocalAmount
+            THEN '已核销'
+            else '未核销' END) = #{form.payCostStatus}
         </if>
         <if test="form.payStatus != null and form.payStatus !=''">
             and temp.payStatus = #{form.payStatus}
@@ -287,10 +302,17 @@
         <if test="form.createTimeStr != null and form.createTimeStr !=''">
             and temp.createTimeStr = #{form.createTimeStr}
         </if>
+        <if test="form.recAccountTermStr != null and form.recAccountTermStr !=''">
+            and temp.recAccountTermStr = #{form.recAccountTermStr}
+        </if>
+        <if test="form.payAccountTermStr != null and form.payAccountTermStr !=''">
+            and temp.payAccountTermStr = #{form.payAccountTermStr}
+        </if>
     </select>
     <select id="findFBillAuditByPage" parameterType="com.jayud.finance.bo.QueryFBillAuditForm" resultType="com.jayud.finance.vo.PaymentNotPaidBillVO">
         select * from (
             SELECT
+            opbd.id billDetailId,
             oi.order_no orderNo,
             oi.biz_code bizCode,
             (select pb.`name` from product_biz pb where pb.id_code = oi.biz_code) bizCodeDesc,
@@ -306,7 +328,7 @@
             = '2' LIMIT 1) endAddress,
             (select concat( vi.plate_number, vi.hk_number ) from order_send_cars osc left join order_transport ot
             on osc.order_no = ot.order_no left join driver_info di on di.id = osc.driver_info_id left join vehicle_info vi on vi.id = di.vehicle_id where ot.main_order_no = oi.order_no) licensePlate,
-            (select oc.yun_customs_no from order_customs oc where oc.main_order_no = oi.order_no) yunCustomsNo,
+            (select GROUP_CONCAT(oc.yun_customs_no) from order_customs oc where oc.main_order_no = oi.order_no GROUP BY OC.main_order_no) yunCustomsNo,
             (select cg.`name` from cost_genre cg where cg.id = opc.cost_genre_id) costGenreName,
             opc.cost_genre_id,
             opc.id costId,
@@ -320,8 +342,9 @@
             obct.money_type='1' and obct.currency_code = 'EUR') euro,
             (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = opbd.cost_id and
             obct.money_type='1' and obct.currency_code = 'HKD') hKDollar,
-            (select pb.tax_rate from product_biz pb where pb.id_code = oi.biz_code) taxRate,
-            opbd.remarks
+            opbd.tax_rate taxRate,
+            opbd.remarks,
+            opbd.created_time createTimeStr
             FROM
             order_payment_bill_detail opbd left join order_payment_bill opb on opbd.bill_id = opb.id
             left join order_info oi on oi.order_no = opbd.order_no
@@ -373,5 +396,25 @@
             LEFT JOIN order_payment_bill_detail opbd ON opc.id = opbd.cost_id
         WHERE
             opbd.bill_no = #{billNo}
+    </select>
+    <select id="getPayableHeaderForm" parameterType="java.lang.String" resultType="com.jayud.finance.bo.PayableHeaderForm">
+        SELECT
+            oi.customer_name customerName,
+            si.supplier_ch_name settleOrgName,
+            opbd.settlement_currency currency,
+            d.`name` saleDeptName,
+            (case when opc.sub_type = 'main' then opc.main_order_no
+             when opc.sub_type = 'zgys' or opc.sub_type = 'bg' then opc.order_no
+             else ''
+             end) businessNo,
+            opbd.bill_no billNo,
+            opbd.account_term businessDate
+        FROM
+            order_payment_cost opc
+            left join order_info oi on oi.order_no = opc.main_order_no
+          left join order_payment_bill_detail opbd on opbd.cost_id = opc.id
+            left join department d on d.id = oi.biz_belong_depart
+            left join supplier_info si on si.supplier_code = opc.customer_code
+        where opbd.bill_no = #{billNo}
     </select>
 </mapper>

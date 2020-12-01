@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
-import com.jayud.common.utils.DateUtils;
 import com.jayud.finance.bo.AddCurrencyManageForm;
 import com.jayud.finance.bo.AddCurrencyRateForm;
 import com.jayud.finance.bo.EditCurrencyRateForm;
@@ -17,6 +16,7 @@ import com.jayud.finance.service.ICurrencyRateService;
 import com.jayud.finance.vo.CurrencyRateVO;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -70,8 +70,6 @@ public class CurrencyRateServiceImpl extends ServiceImpl<CurrencyRateMapper, Cur
             currencyRate.setDcid(addCurrencyRateForm.getDcid());
             currencyRate.setExchangeRate(addCurrencyRateForm.getExchangeRate());
             currencyRate.setMonth(form.getMonth());
-            currencyRate.setBeginValidDate(DateUtils.stringToLocalDate(form.getBeginValidDate(),DateUtils.DATE_PATTERN));
-            currencyRate.setEndValidDate(DateUtils.stringToLocalDate(form.getEndValidDate(),DateUtils.DATE_PATTERN));
             currencyRate.setCreatedUser(form.getLoginUserName());
             currencyRates.add(currencyRate);
         }
@@ -83,10 +81,14 @@ public class CurrencyRateServiceImpl extends ServiceImpl<CurrencyRateMapper, Cur
     public Boolean editCurrencyRate(EditCurrencyRateForm form) {
         CurrencyRate currencyRate = new CurrencyRate();
         currencyRate.setId(form.getId());
-        currencyRate.setExchangeRate(form.getExchangeRate());//只允许改汇率和有效期
-        currencyRate.setBeginValidDate(DateUtils.stringToLocalDate(form.getBeginValidDate(),DateUtils.DATE_PATTERN));
-        currencyRate.setEndValidDate(DateUtils.stringToLocalDate(form.getEndValidDate(),DateUtils.DATE_PATTERN));
+        currencyRate.setExchangeRate(form.getExchangeRate());//只允许改汇率
         return updateById(currencyRate);
     }
+
+    @Override
+    public BigDecimal getExchangeRate(String oCode, String dCode) {
+        return baseMapper.getExchangeRate(oCode,dCode);
+    }
+
 
 }

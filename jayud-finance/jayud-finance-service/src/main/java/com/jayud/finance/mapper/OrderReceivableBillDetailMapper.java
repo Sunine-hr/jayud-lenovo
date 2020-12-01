@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.finance.bo.QueryEditBillForm;
 import com.jayud.finance.bo.QueryFBillAuditForm;
 import com.jayud.finance.bo.QueryPaymentBillDetailForm;
+import com.jayud.finance.bo.ReceivableHeaderForm;
 import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.finance.vo.*;
@@ -96,4 +97,11 @@ public interface OrderReceivableBillDetailMapper extends BaseMapper<OrderReceiva
      * @return
      */
     List<FCostVO> findSCostList(@Param("billNo") String billNo);
+
+    /**
+     * 获取推送金蝶的应收数据
+     * @param billNo
+     * @return
+     */
+    ReceivableHeaderForm getReceivableHeaderForm(@Param("billNo") String billNo);
 }

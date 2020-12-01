@@ -41,6 +41,9 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "客户名称")
     private String customerName;
 
+    @ApiModelProperty(value = "客户名称CODE")
+    private String customerCode;
+
     @ApiModelProperty(value = "六联单号")
     private String encode;
 
@@ -67,6 +70,15 @@ public class OrderTransportVO {
 
     @ApiModelProperty(value = "法人主体")
     private String legalName;
+
+    @ApiModelProperty(value = "结算单位")
+    private String unitCode;
+
+    @ApiModelProperty(value = "子订单法人主体")
+    private String subLegalName;
+
+    @ApiModelProperty(value = "子订单结算单位")
+    private String subUnitCode;
 
     //货物信息
     @ApiModelProperty(value = "货物描述")

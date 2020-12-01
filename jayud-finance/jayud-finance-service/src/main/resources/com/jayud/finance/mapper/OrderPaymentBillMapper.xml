@@ -31,15 +31,15 @@
         ifnull( opb.already_paid_amount, 0 ) alreadyPaidAmount,
         ifnull( opb.bill_order_num, 0 ) billOrderNum,
         ifnull( opb.bill_num, 0 ) billNum,
-        (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '1' and t1.customer_code = opc.customer_code and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidAmount,
-        (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '1' and t1.customer_code = opc.customer_code and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidOrderNum
+        (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '1' and t1.status = '3' and t1.customer_code = opc.customer_code and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidAmount,
+        (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '1' and t1.status = '3' and t1.customer_code = opc.customer_code and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidOrderNum
         FROM
         order_payment_cost opc
         left join supplier_info si on si.supplier_code = opc.customer_code
         LEFT JOIN order_info oi ON oi.order_no = opc.main_order_no
         left join order_payment_bill opb on opb.legal_name = oi.legal_name
         and opb.supplier_ch_name = si.supplier_ch_name
-        and opb.is_main = 1 and opb.sub_type = #{form.cmd} where 1 = 1
+        where opc.is_sum_to_main = 1
         <if test="form.supplierChName != null and form.supplierChName != ''">
             and si.supplier_ch_name like concat('%',#{form.supplierChName},'%')
         </if>
@@ -54,14 +54,14 @@
         ifnull( opb.already_paid_amount, 0 ) alreadyPaidAmount,
         ifnull( opb.bill_order_num, 0 ) billOrderNum,
         ifnull( opb.bill_num, 0 ) billNum,
-        (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where t1.is_bill = '0' AND t1.is_sum_to_main = '0' and t1.customer_name = opc.customer_name and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidAmount,
-        (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where t1.is_bill = '0' AND t1.is_sum_to_main = '0' and t1.customer_name = opc.customer_name and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidOrderNum
+        (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where t1.is_bill = '0' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type=#{form.cmd} and t1.customer_name = opc.customer_name and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidAmount,
+        (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where t1.is_bill = '0' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type=#{form.cmd} and t1.customer_name = opc.customer_name and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidOrderNum
         FROM
         order_payment_cost opc
         LEFT JOIN order_info oi ON oi.order_no = opc.main_order_no
         left join order_payment_bill opb on opb.legal_name = oi.legal_name
         and opb.supplier_ch_name = opc.customer_name
-        and opb.is_main = 0 and opb.sub_type = #{form.cmd} where 1 = 1
+        where opc.is_sum_to_main = 0 and opc.sub_type = #{form.cmd}
         <if test="form.supplierChName != null and form.supplierChName != ''">
             and oi.customer_name like concat('%',#{form.supplierChName},'%')
         </if>
@@ -73,8 +73,7 @@
         SELECT
           DISTINCT
             op.bill_no billNo,
-            DATE_FORMAT( op.begin_account_term, '%Y-%m-%d' ) beginAccountTermStr,
-            DATE_FORMAT( op.end_account_term, '%Y-%m-%d' ) endAccountTermStr,
+            DATE_FORMAT( op.account_term, '%Y-%m' ) accountTermStr,
             ( SELECT count( DISTINCT opbd.order_no ) FROM order_payment_bill_detail opbd WHERE opbd.bill_no = op.bill_no ) billNum,
             ( SELECT sum( obct.money ) FROM order_bill_cost_total obct WHERE op.bill_no = obct.bill_no AND obct.currency_code = 'CNY' ) rmb,
             ( SELECT sum( obct.money ) FROM order_bill_cost_total obct WHERE op.bill_no = obct.bill_no AND obct.currency_code = 'USD' ) dollar,
@@ -296,9 +295,9 @@
         order_info oi
         left join order_payment_cost t on oi.order_no = t.main_order_no
         left join supplier_info si on si.supplier_code = t.customer_code
-        where oi.order_no in (select opc.main_order_no from order_payment_cost opc where 1 = 1
+        where 1 = 1
         <if test="costIds != null and costIds.size>0">
-            and opc.id IN
+            and t.id IN
             <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
@@ -306,7 +305,6 @@
         <if test="costIds = null or costIds.size == 0">
             and 1 = 0
         </if>
-        )
     </select>
     <select id="getViewBillByCostIds" parameterType="java.util.List" resultType="com.jayud.finance.vo.ViewBillVO">
         SELECT DISTINCT

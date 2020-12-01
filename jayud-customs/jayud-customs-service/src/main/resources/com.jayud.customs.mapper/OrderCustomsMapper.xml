@@ -97,6 +97,11 @@
           oc.`port_name` portName,
           oc.`status` status,
           oi.`customer_name` customerName,
+          oi.customer_code customerCode,
+          oi.legal_name legalName,
+          oi.unit_code unitCode,
+          oc.legal_name subLegalName,
+          oc.unit_code subUnitCode,
           '' goodsInfo,
           oc.`encode`,
           oc.`description` fileStr,
@@ -117,7 +122,12 @@
             '' yunCustomsNo,
             oi.`biz_code` bizCode,
             oi.`class_code` classCode,
-            oi.`id` mainOrderId
+            oi.`id` mainOrderId,
+            (CASE  WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
+            (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
+            ELSE FALSE
+            END) isCost,
+            oi.`need_input_cost` needInputCost
         FROM
           order_customs oc,
           order_info oi
@@ -161,6 +171,10 @@
         </if>
         <if test="form.cmd == 'goCustomsConfirm'">
             AND oc.`status` = 'C_5' and oc.class_code = 'CBG'
+        </if>
+        <if test="form.cmd == 'costAudit'">
+            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = oi.order_no AND opc.`status` = '2')
+            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = oi.order_no AND orc.`status` = '2'))
         </if>
     </select>
 

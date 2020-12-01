@@ -75,8 +75,7 @@ public class PaymentBillDetailController {
         writer.addHeaderAlias("billNo", "账单编号");
         writer.addHeaderAlias("legalName", "法人主体");
         writer.addHeaderAlias("supplierChName", "供应商");
-        writer.addHeaderAlias("beginAccountTermStr", "开始核算期");
-        writer.addHeaderAlias("endAccountTermStr", "结束核算期");
+        writer.addHeaderAlias("accountTermStr", "核算期");
         writer.addHeaderAlias("rmb", "人民币");
         writer.addHeaderAlias("dollar", "美元");
         writer.addHeaderAlias("euro", "欧元");
@@ -218,7 +217,7 @@ public class PaymentBillDetailController {
     }
 
 
-    @ApiOperation(value = "导出对账单详情,待开发")
+    @ApiOperation(value = "导出对账单详情")
     @RequestMapping(value = "/exportBillDetail", method = RequestMethod.GET)
     @ResponseBody
     public void exportBillDetail(@RequestParam(value = "billNo", required = true) String billNo,
@@ -238,7 +237,7 @@ public class PaymentBillDetailController {
         for (int i = 0; i < sheetHeadVOS.size(); i++) {
             SheetHeadVO sheetHeadVO = sheetHeadVOS.get(i);
             headMap.put(sheetHeadVO.getName(), sheetHeadVO.getViewName());
-            if (i > 9) {
+            if (i > 10) {
                 dynamicHead.put(sheetHeadVO.getName(), sheetHeadVO.getViewName());
             }
         }
@@ -251,8 +250,7 @@ public class PaymentBillDetailController {
         titles.add("客户应收款对帐单");
         StringBuilder sb = new StringBuilder();
         titles.add(sb.append("对账日期:")
-                .append(viewBillVO.getBeginAccountTermStr()).append("到")
-                .append(viewBillVO.getEndAccountTermStr()).toString());
+                .append(viewBillVO.getAccountTermStr()).toString());
         entity.setTitle(titles);
         //组装台头
         List<String> stageHeads = new ArrayList<>();
@@ -281,7 +279,7 @@ public class PaymentBillDetailController {
 
         }
         entity.setTotalData(costTotal);
-        entity.setTotalIndex(9);
+        entity.setTotalIndex(10);
 
 
         //尾部
@@ -343,8 +341,7 @@ public class PaymentBillDetailController {
         writer.addHeaderAlias("billNo", "账单编号");
         writer.addHeaderAlias("legalName", "法人主体");
         writer.addHeaderAlias("supplierChName", "供应商");
-        writer.addHeaderAlias("beginAccountTermStr", "开始核算期");
-        writer.addHeaderAlias("endAccountTermStr", "结束核算期");
+        writer.addHeaderAlias("accountTermStr", "核算期");
         writer.addHeaderAlias("rmb", "人民币");
         writer.addHeaderAlias("dollar", "美元");
         writer.addHeaderAlias("euro", "欧元");

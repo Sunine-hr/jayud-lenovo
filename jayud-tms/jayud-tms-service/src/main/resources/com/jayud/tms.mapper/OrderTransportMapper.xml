@@ -110,6 +110,7 @@
             oi.`class_code` classCode,
             pc.`name` classCodeDesc,
             oi.`customer_name` customerName,
+            oi.`customer_code` customerCode,
             ot.`created_user` createdUser,
             DATE_FORMAT(ot.`created_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
         (SELECT	ota.`goods_desc` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
@@ -142,7 +143,10 @@
             END) isCost,
             oi.`need_input_cost` needInputCost,
             ot.`status` subTmsStatus,
-            ot.`legal_name` legalName
+            oi.legal_name legalName,
+            oi.unit_code unitCode,
+            ot.`legal_name` subLegalName,
+            ot.unit_code subUnitCode
         FROM
             order_transport ot
             LEFT JOIN order_info oi
@@ -220,9 +224,9 @@
             AND ot.`status` = 'T_14'
         </if>
         <if test="form.cmd == 'costAudit'">
-            AND oi.`status` = '1'
-            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = oi.`order_no`)
-            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = oi.`order_no`))
+            and oi.`status` IN (1,4)
+            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = oi.order_no AND opc.`status` = '2')
+            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = oi.order_no AND orc.`status` = '2'))
         </if>
     </select>
     <select id="initPdfData"  resultType="com.jayud.tms.model.vo.SendCarPdfVO" >

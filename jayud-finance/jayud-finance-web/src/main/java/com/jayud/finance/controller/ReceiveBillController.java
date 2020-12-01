@@ -63,8 +63,7 @@ public class ReceiveBillController {
             OrderReceiveBillForm receiveBillForm = form.getReceiveBillForm();
             if(receiveBillForm == null || StringUtil.isNullOrEmpty(receiveBillForm.getLegalName()) || StringUtil.isNullOrEmpty(receiveBillForm.getUnitAccount()) ||
                receiveBillForm.getBillOrderNum() == null || receiveBillForm.getAlreadyPaidAmount() == null ||  receiveBillForm.getBillNum() == null ||
-               StringUtil.isNullOrEmpty(form.getBillNo()) || StringUtil.isNullOrEmpty(form.getBeginAccountTermStr()) ||
-               StringUtil.isNullOrEmpty(form.getEndAccountTermStr()) || StringUtil.isNullOrEmpty(form.getSettlementCurrency()) ||
+               StringUtil.isNullOrEmpty(form.getBillNo()) || StringUtil.isNullOrEmpty(form.getAccountTermStr()) || StringUtil.isNullOrEmpty(form.getSettlementCurrency()) ||
                StringUtil.isNullOrEmpty(form.getSubType()) || (!("main".equals(form.getSubType()) || "zgys".equals(form.getSubType()) ||
                "bg".equals(form.getSubType())))){
                 return CommonResult.error(ResultEnum.PARAM_ERROR);

@@ -1,14 +1,12 @@
 package com.jayud.finance.bo;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * 核销
@@ -44,8 +42,8 @@ public class HeXiaoConfirmForm {
     private String oprMode;
 
     @ApiModelProperty(value = "实际收款实际",required = true)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime realReceiveTime;
+    @NotEmpty(message = "realReceiveTimeStr is required")
+    private String realReceiveTimeStr;
 
 
 }

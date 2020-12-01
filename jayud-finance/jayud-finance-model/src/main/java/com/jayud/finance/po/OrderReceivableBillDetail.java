@@ -40,11 +40,8 @@ public class OrderReceivableBillDetail extends Model<OrderReceivableBillDetail> 
     @ApiModelProperty(value = "账单编号")
     private String billNo;
 
-    @ApiModelProperty(value = "开始核算期")
-    private LocalDateTime beginAccountTerm;
-
-    @ApiModelProperty(value = "结束核算期")
-    private LocalDateTime endAccountTerm;
+    @ApiModelProperty(value = "核算期")
+    private String accountTerm;
 
     @ApiModelProperty(value = "结算币种")
     private String settlementCurrency;

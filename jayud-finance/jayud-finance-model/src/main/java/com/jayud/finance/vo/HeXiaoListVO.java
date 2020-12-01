@@ -1,6 +1,7 @@
 package com.jayud.finance.vo;
 
 
+import com.jayud.common.utils.DateUtils;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 public class HeXiaoListVO {
 
     @ApiModelProperty(value = "核销ID")
-    private Long heXiaoId;
+    private Long id;
 
     @ApiModelProperty(value = "对账单编号")
     private String billNo;
@@ -34,8 +35,18 @@ public class HeXiaoListVO {
     @ApiModelProperty(value = "核销方式")
     private String oprMode;
 
-    @ApiModelProperty(value = "实际收款实际")
+    @ApiModelProperty(value = "实际收款时间")
     private LocalDateTime realReceiveTime;
+
+    @ApiModelProperty(value = "实际收款时间显示")
+    private String realReceiveTimeStr;
+
+    public String getRealReceiveTimeStr() {
+        if(this.realReceiveTime != null){
+            return DateUtils.getLocalToStr(this.realReceiveTime);
+        }
+        return "";
+    }
 
 
 }

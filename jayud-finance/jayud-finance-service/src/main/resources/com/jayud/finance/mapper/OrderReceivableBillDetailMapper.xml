@@ -7,8 +7,7 @@
         <id column="id" property="id" />
         <result column="bill_id" property="billId" />
         <result column="bill_no" property="billNo" />
-        <result column="begin_account_term" property="beginAccountTerm" />
-        <result column="end_account_term" property="endAccountTerm" />
+        <result column="account_term" property="accountTerm" />
         <result column="settlement_currency" property="settlementCurrency" />
         <result column="order_no" property="orderNo" />
         <result column="local_amount" property="localAmount" />
@@ -37,7 +36,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, bill_id,bill_no, order_no,begin_account_term,end_account_term,settlement_currency, cost_id, created_order_time, start_address,
+        id, bill_id,bill_no, order_no,account_term,settlement_currency, cost_id, created_order_time, start_address,
         end_address, license plate, vehicle_size, piece_num, weight, yun_customs_no, audit_status,make_user,make_time,audit_user,
         audit_time,apply_status,invoice_amount,status, created_user, created_time,updated_user,updated_time,local_amount
     </sql>
@@ -47,8 +46,7 @@
         orbd.bill_no billNo,
         orb.legal_name legalName,
         orb.unit_account unitAccount,
-        DATE_FORMAT(orbd.begin_account_term,'%Y-%m-%d') 	beginAccountTermStr,
-        DATE_FORMAT(orbd.end_account_term,'%Y-%m-%d') 	endAccountTermStr,
+        DATE_FORMAT(orbd.account_term,'%Y-%m') 	accountTermStr,
         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='CNY') rmb,
         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='USD') dollar,
         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='EUR') euro,
@@ -73,7 +71,7 @@
             and orb.is_main = 1 and orbd.audit_status in ('B_1','B_2')
         </if>
         <if test="form.cmd == 'cw_statement'">
-            and orb.is_main = 1 and orbd.audit_status in ('B_3','B_5','B_5_1')
+            and orb.is_main = 1 and orbd.audit_status in ('B_3','B_5','B_5_1','B_6')
         </if>
         <if test="form.cmd == 'zgys_statement'">
             and orb.is_main = 0 and orb.sub_type = 'zgys'
@@ -82,7 +80,7 @@
             and orb.is_main = 0 and orb.sub_type = 'zgys' and orbd.audit_status in ('B_1','B_2')
         </if>
         <if test="form.cmd == 'zgys_cw_statement'">
-            and orb.is_main = 0 and orbd.audit_status in ('B_3','B_5','B_5_1')
+            and orb.is_main = 0 and orbd.audit_status in ('B_3','B_5','B_5_1','B_6')
         </if>
         <if test="form.cmd == 'bg_statement'">
             and orb.is_main = 0 and orb.sub_type = 'bg'
@@ -91,7 +89,7 @@
             and orb.is_main = 0 and orb.sub_type = 'bg' and orbd.audit_status in ('B_1','B_2')
         </if>
         <if test="form.cmd == 'bg_cw_statement'">
-            and orb.is_main = 0 and orbd.audit_status in ('B_3','B_5','B_5_1')
+            and orb.is_main = 0 and orbd.audit_status in ('B_3','B_5','B_5_1','B_6')
         </if>
         <if test="form.unitAccount != null and form.unitAccount != ''">
             and orb.unit_account like concat('%',#{form.unitAccount},'%')
@@ -216,8 +214,7 @@
     <select id="getViewSBill" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewBillVO">
         SELECT DISTINCT
             orb.legal_name legalName,
-            DATE_FORMAT( orbd.begin_account_term, '%Y-%m-%d' ) beginAccountTermStr,
-            DATE_FORMAT( orbd.end_account_term, '%Y-%m-%d' ) endAccountTermStr,
+            DATE_FORMAT( orbd.account_term, '%Y-%m-%d' ) accountTermStr,
             (select oi.customer_name from order_info oi where oi.order_no = orbd.order_no) customerName,
             orbd.bill_no billNo,
             orbd.make_user makeUser,
@@ -261,7 +258,7 @@
         obct.money_type='2' and obct.currency_code = 'EUR') euro,
         (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = orbd.cost_id and
         obct.money_type='2' and obct.currency_code = 'HKD') hKDollar,
-        (select pb.tax_rate from product_biz pb where pb.id_code = oi.biz_code) taxRate,
+        orbd.tax_rate taxRate,
         orbd.remarks
         FROM
         order_receivable_bill_detail orbd
@@ -315,5 +312,25 @@
             LEFT JOIN order_receivable_bill_detail orbd ON orc.id = orbd.cost_id
         WHERE
             orbd.bill_no = #{billNo}
+    </select>
+    <select id="getReceivableHeaderForm" parameterType="java.lang.String" resultType="com.jayud.finance.bo.ReceivableHeaderForm">
+        SELECT
+            oi.customer_name customerName,
+            ci.unit_account settleOrgName,
+            orbd.settlement_currency currency,
+            d.`name` saleDeptName,
+            (case when orc.sub_type = 'main' then orc.main_order_no
+             when orc.sub_type = 'zgys' or orc.sub_type = 'bg' then orc.order_no
+             else ''
+             end) businessNo,
+            orbd.bill_no billNo,
+            orbd.account_term businessDate
+        FROM
+            order_receivable_cost orc
+            left join order_info oi on oi.order_no = orc.main_order_no
+          left join order_receivable_bill_detail orbd on orbd.cost_id = orc.id
+            left join department d on d.id = oi.biz_belong_depart
+            left join customer_info ci on ci.unit_code = orc.customer_code
+        where orbd.bill_no = #{billNo}
     </select>
 </mapper>

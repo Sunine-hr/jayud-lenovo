@@ -245,7 +245,7 @@
     <select id="getViewBill" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewBillVO">
         SELECT DISTINCT
             opb.legal_name legalName,
-            DATE_FORMAT( opbd.account_term, '%Y-%m' ) accountTermStr,
+            opbd.account_term accountTermStr,
             (select oi.customer_name from order_info oi where oi.order_no = opbd.order_no) customerName,
             opbd.bill_no billNo,
             opbd.make_user makeUser,

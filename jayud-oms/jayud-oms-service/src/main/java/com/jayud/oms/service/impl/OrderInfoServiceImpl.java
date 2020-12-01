@@ -198,13 +198,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 paymentCostService.remove(queryWrapper);
                 receivableCostService.remove(queryWrapper);
             }
-            //当录入的是子订单费用,且主/子订单的法人主体和客户不相等时,不可汇总到主订单
-            Boolean isSumToMain = true;
+            //当录入的是子订单费用,且主/子订单的法人主体和结算单位不相等时,不可汇总到主订单
+            Boolean isSumToMain = true;//1
            if("preSubmit_main".equals(form.getCmd()) || "submit_main".equals(form.getCmd())){//入主订单费用
                form.setOrderNo(null);//表中是通过有没有子订单来判断这条数据是主订单的费用还是子订单的费用
             }else {//入子订单费用
                if(!(inputOrderVO.getLegalName().equals(form.getSubLegalName()) && inputOrderVO.getUnitCode().equals(form.getSubUnitCode()))){
-                   isSumToMain = false;//主，子订单的法人主体和结算单位不一致则不能汇总到主订单
+                   isSumToMain = false;//0-主，子订单的法人主体和结算单位不一致则不能汇总到主订单
                }
            }
             for (OrderPaymentCost orderPaymentCost : orderPaymentCosts) {//应付费用

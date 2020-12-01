@@ -116,7 +116,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             //校验是否配置了相应币种的汇率
             //根据费用ID统计费用信息,将原始费用信息根据结算币种进行转换
             if("create".equals(form.getCmd())) {
-                orderBillCostTotalVOS = costTotalService.findOrderFBillCostTotal(costIds, settlementCurrency);
+                orderBillCostTotalVOS = costTotalService.findOrderFBillCostTotal(costIds, settlementCurrency,form.getAccountTermStr());
                 for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                     BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();//如果费率为0，则抛异常回滚数据
                     if (exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0) {

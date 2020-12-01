@@ -39,7 +39,7 @@
         LEFT JOIN order_info oi ON oi.order_no = opc.main_order_no
         left join order_payment_bill opb on opb.legal_name = oi.legal_name
         and opb.supplier_ch_name = si.supplier_ch_name
-        and opb.is_main = 1 and opb.sub_type = #{form.cmd} where 1 = 1
+        where opb.is_main = 1 and opb.sub_type = #{form.cmd}
         <if test="form.supplierChName != null and form.supplierChName != ''">
             and si.supplier_ch_name like concat('%',#{form.supplierChName},'%')
         </if>
@@ -61,7 +61,7 @@
         LEFT JOIN order_info oi ON oi.order_no = opc.main_order_no
         left join order_payment_bill opb on opb.legal_name = oi.legal_name
         and opb.supplier_ch_name = opc.customer_name
-        and opb.is_main = 0 and opb.sub_type = #{form.cmd} where 1 = 1
+        where opb.is_main = 0 and opb.sub_type = #{form.cmd}
         <if test="form.supplierChName != null and form.supplierChName != ''">
             and oi.customer_name like concat('%',#{form.supplierChName},'%')
         </if>
@@ -295,9 +295,9 @@
         order_info oi
         left join order_payment_cost t on oi.order_no = t.main_order_no
         left join supplier_info si on si.supplier_code = t.customer_code
-        where oi.order_no in (select opc.main_order_no from order_payment_cost opc where 1 = 1
+        where 1 = 1
         <if test="costIds != null and costIds.size>0">
-            and opc.id IN
+            and t.id IN
             <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
@@ -305,7 +305,6 @@
         <if test="costIds = null or costIds.size == 0">
             and 1 = 0
         </if>
-        )
     </select>
     <select id="getViewBillByCostIds" parameterType="java.util.List" resultType="com.jayud.finance.vo.ViewBillVO">
         SELECT DISTINCT

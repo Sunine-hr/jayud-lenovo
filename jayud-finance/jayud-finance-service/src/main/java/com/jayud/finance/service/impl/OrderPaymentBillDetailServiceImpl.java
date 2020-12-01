@@ -280,7 +280,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 //开始保存费用维度的金额信息  以结算币种进行转换后保存
                 List<OrderBillCostTotal> orderBillCostTotals = new ArrayList<>();
                 //根据费用ID统计费用信息,将原始费用信息根据结算币种进行转换
-                List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderFBillCostTotal(costIds, settlementCurrency);
+                List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderFBillCostTotal(costIds, settlementCurrency,existObject.getAccountTerm());
                 for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                     orderBillCostTotalVO.setBillNo(form.getBillNo());
                     orderBillCostTotalVO.setCurrencyCode(settlementCurrency);

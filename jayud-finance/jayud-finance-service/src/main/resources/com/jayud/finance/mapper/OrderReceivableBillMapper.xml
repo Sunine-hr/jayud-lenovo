@@ -60,7 +60,7 @@
         LEFT JOIN order_info oi ON oi.order_no = orc.main_order_no
         left join order_receivable_bill orb on orb.legal_name = oi.legal_name
         and orb.unit_account = orc.customer_name
-        where orc.is_sum_to_main = 0 and orc.sub_type = #{form.cmd}
+        where orb.is_main = 0 and orc.sub_type = #{form.cmd}
         <if test="form.unitAccount != null and form.unitAccount != ''">
             and orb.unit_account like concat('%',#{form.unitAccount},'%')
         </if>
@@ -267,11 +267,16 @@
         order_info oi
         left join order_receivable_cost orc on orc.main_order_no = oi.order_no
         left join customer_info ci on ci.unit_code = orc.customer_code
-        where oi.order_no in (select orc.main_order_no from order_receivable_cost orc where orc.id in
-        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
-            #{item}
-        </foreach>
-        )
+        where 1 = 1
+        <if test="costIds != null and costIds.size>0">
+            and orc.id in
+            <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="costIds = null or costIds.size == 0">
+            and 1 = 0
+        </if>
     </select>
     <select id="getViewBillByCostIds" parameterType="java.util.List" resultType="com.jayud.finance.vo.ViewBillVO">
         SELECT DISTINCT

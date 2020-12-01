@@ -173,8 +173,8 @@
             AND oc.`status` = 'C_5' and oc.class_code = 'CBG'
         </if>
         <if test="form.cmd == 'costAudit'">
-            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = oi.`order_no`)
-            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = oi.`order_no`))
+            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = oi.order_no AND opc.`status` = '2')
+            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = oi.order_no AND orc.`status` = '2'))
         </if>
     </select>
 

@@ -224,9 +224,9 @@
             AND ot.`status` = 'T_14'
         </if>
         <if test="form.cmd == 'costAudit'">
-            AND oi.`status` = '1'
-            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = oi.`order_no`)
-            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = oi.`order_no`))
+            and oi.`status` IN (1,4)
+            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = oi.order_no AND opc.`status` = '2')
+            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = oi.order_no AND orc.`status` = '2'))
         </if>
     </select>
     <select id="initPdfData"  resultType="com.jayud.tms.model.vo.SendCarPdfVO" >

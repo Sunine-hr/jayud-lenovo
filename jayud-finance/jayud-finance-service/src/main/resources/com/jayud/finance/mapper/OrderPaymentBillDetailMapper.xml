@@ -237,14 +237,15 @@
         THEN '已核销'
         else '未核销' END)
         recCostStatus,
-        temp.payBillNo,temp.payAccountTermStr,temp.payRmb,temp.payDollar,temp.payEuro,temp.payHkDollar,temp.payLocalAmount,temp.payStatus,(case (select sum(cav.local_money) from cancel_after_verification cav where cav.bill_no = temp.payBillNo)
+        temp.payBillNo,temp.payAccountTermStr,temp.payRmb,temp.payDollar,temp.payEuro,temp.payHkDollar,temp.payLocalAmount,temp.payStatus,
+        (case (select sum(cav.local_money) from cancel_after_verification cav where cav.bill_no = temp.payBillNo)
         when temp.recLocalAmount
         THEN '已核销'
         else '未核销' END)
         payCostStatus, (temp.recLocalAmount - temp.payLocalAmount) profit from (
         SELECT
         oi.order_no orderNo,
-        oi.create_time createTimeStr,
+        DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createTimeStr,
         oi.legal_name legalName,
         oi.customer_code customerCode,
         oi.customer_name customerName,
@@ -284,16 +285,28 @@
             and temp.recStatus = #{form.recStatus}
         </if>
         <if test="form.recCostStatus != null and form.recCostStatus !=''">
-            and temp.recCostStatus = #{form.recCostStatus}
+            and (case (select sum(cav.local_money) from cancel_after_verification cav where cav.bill_no = temp.recBillNo)
+            when temp.recLocalAmount
+            THEN '已核销'
+            else '未核销' END) = #{form.recCostStatus}
         </if>
         <if test="form.payCostStatus != null and form.payCostStatus !=''">
-            and temp.payCostStatus = #{form.payCostStatus}
+            and (case (select sum(cav.local_money) from cancel_after_verification cav where cav.bill_no = temp.payBillNo)
+            when temp.recLocalAmount
+            THEN '已核销'
+            else '未核销' END) = #{form.payCostStatus}
         </if>
         <if test="form.payStatus != null and form.payStatus !=''">
             and temp.payStatus = #{form.payStatus}
         </if>
         <if test="form.createTimeStr != null and form.createTimeStr !=''">
             and temp.createTimeStr = #{form.createTimeStr}
+        </if>
+        <if test="form.recAccountTermStr != null and form.recAccountTermStr !=''">
+            and temp.recAccountTermStr = #{form.recAccountTermStr}
+        </if>
+        <if test="form.payAccountTermStr != null and form.payAccountTermStr !=''">
+            and temp.payAccountTermStr = #{form.payAccountTermStr}
         </if>
     </select>
     <select id="findFBillAuditByPage" parameterType="com.jayud.finance.bo.QueryFBillAuditForm" resultType="com.jayud.finance.vo.PaymentNotPaidBillVO">

@@ -62,7 +62,7 @@
         and orb.unit_account = orc.customer_name
         where orc.is_sum_to_main = 0 and orc.sub_type = #{form.cmd}
         <if test="form.unitAccount != null and form.unitAccount != ''">
-            and orb.unit_account like concat('%',#{form.unitAccount},'%')
+            and ci.unit_account like concat('%',#{form.unitAccount},'%')
         </if>
         <if test="form.legalName != null and form.legalName != ''">
             and oi.legal_name like concat('%',#{form.legalName},'%')

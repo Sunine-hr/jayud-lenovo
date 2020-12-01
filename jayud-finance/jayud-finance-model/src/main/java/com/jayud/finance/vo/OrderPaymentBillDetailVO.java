@@ -89,5 +89,12 @@ public class OrderPaymentBillDetailVO {
         return "";
     }
 
+    public String getApplyStatus() {
+        if(!StringUtil.isNullOrEmpty(this.applyStatus)){
+            return BillEnum.getDesc(this.applyStatus);
+        }
+        return "";
+    }
+
 
 }

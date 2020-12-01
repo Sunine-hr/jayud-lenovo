@@ -46,7 +46,7 @@
         orbd.bill_no billNo,
         orb.legal_name legalName,
         orb.unit_account unitAccount,
-        DATE_FORMAT(orbd.account_term,'%Y-%m') 	accountTermStr,
+        orbd.account_term accountTermStr,
         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='CNY') rmb,
         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='USD') dollar,
         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='EUR') euro,

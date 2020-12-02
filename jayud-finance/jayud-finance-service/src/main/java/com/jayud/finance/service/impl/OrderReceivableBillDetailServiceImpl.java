@@ -359,7 +359,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                             Field f = fields[i];
                             f.setAccessible(true);
                             if("name".equals(f.getName())){
-                                addProperties = String.valueOf(f.get(viewBillToCostClass));//待新增得属性
+                                addProperties = String.valueOf(f.get(viewBillToCostClass)).toLowerCase();//待新增得属性
                             }
                             if("money".equals(f.getName())){
                                 addValue = String.valueOf(f.get(viewBillToCostClass));//待新增属性得值

@@ -83,7 +83,7 @@ public class ReceiveBillDetailController {
         writer.addHeaderAlias("heXiaoAmount", "已付金额");
         writer.addHeaderAlias("notHeXiaoAmount", "未付金额");
         writer.addHeaderAlias("settlementCurrency", "结算币种");
-        writer.addHeaderAlias("auditStatus", "状态");
+        writer.addHeaderAlias("auditStatusDesc", "状态");
         writer.addHeaderAlias("applyStatus", "付款申请");
         writer.addHeaderAlias("makeUser", "制单人");
         writer.addHeaderAlias("makeTimeStr", "制单时间");
@@ -92,6 +92,7 @@ public class ReceiveBillDetailController {
         writer.addHeaderAlias("auditComment", "审核意见");
         writer.addHeaderAlias("heXiaoUser", "核销人");
         writer.addHeaderAlias("heXiaoTimeStr", "核销时间");
+        writer.addHeaderAlias("pushKingdeeCount", "推金蝶次数");//导出财务应收对账单列表才有
 
         // 一次性写出内容，使用默认样式，强制输出标题
         writer.write(list, true);

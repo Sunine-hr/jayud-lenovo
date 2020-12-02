@@ -83,7 +83,7 @@ public class PaymentBillDetailController {
         writer.addHeaderAlias("heXiaoAmount", "已付金额");
         writer.addHeaderAlias("notHeXiaoAmount", "未付金额");
         writer.addHeaderAlias("settlementCurrency", "结算币种");
-        writer.addHeaderAlias("auditStatus", "状态");
+        writer.addHeaderAlias("auditStatusDesc", "状态");
         writer.addHeaderAlias("applyStatus", "付款申请");
         writer.addHeaderAlias("makeUser", "制单人");
         writer.addHeaderAlias("makeTimeStr", "制单时间");

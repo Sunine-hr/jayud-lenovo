@@ -27,12 +27,6 @@ public class CustomerInfo extends Model<CustomerInfo> {
     @ApiModelProperty(value = "客户名")
     private String name;
 
-    @ApiModelProperty(value = "结算单位")
-    private String unitAccount;
-
-    @ApiModelProperty(value = "结算代码")
-    private String unitCode;
-
     @ApiModelProperty(value = "客户代码")
     private String idCode;
 

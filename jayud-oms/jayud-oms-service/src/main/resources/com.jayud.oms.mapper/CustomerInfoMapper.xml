@@ -6,8 +6,6 @@
     <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.CustomerInfo">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
-        <result column="unit_account" property="unitAccount"/>
-        <result column="unit_code" property="unitCode"/>
         <result column="id_code" property="idCode"/>
         <result column="types" property="types"/>
         <result column="contact" property="contact"/>
@@ -34,7 +32,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-         id,name,unit_account,unit_code,id_code,types,contact,phone,address,email,legal_entity,invoice_code,tfn,
+         id,name,id_code,types,contact,phone,address,email,legal_entity,invoice_code,tfn,
          if_contract,settlement_type,account_period,estate,department_code,ku_code,yw_code,audit_status,
          created_user,updated_user,tax_type,tax_rate
     </sql>

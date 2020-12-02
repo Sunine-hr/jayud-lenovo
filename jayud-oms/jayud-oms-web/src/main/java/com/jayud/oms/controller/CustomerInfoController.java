@@ -24,6 +24,7 @@ import com.jayud.oms.model.vo.CustomerInfoVO;
 import com.jayud.oms.model.vo.InitComboxVO;
 import com.jayud.oms.service.IAuditInfoService;
 import com.jayud.oms.service.ICustomerInfoService;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.httpclient.HttpStatus;
@@ -83,33 +84,28 @@ public class CustomerInfoController {
     @PostMapping(value = "/saveOrUpdateCustomerInfo")
     public CommonResult saveOrUpdateCustomerInfo(@RequestBody @Valid AddCustomerInfoForm form) {
         CustomerInfo customerInfo = ConvertUtil.convert(form, CustomerInfo.class);
-        Boolean flag = false;
         if (form.getId() != null) {
-            //校验结算代码唯一性
-            QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.eq("unit_code",form.getUnitCode());
-            CustomerInfo oldCustomerInfo = customerInfoService.getOne(queryWrapper);
-            if(!oldCustomerInfo.getUnitCode().equals(form.getUnitCode())){//修改了结算代码的情况下
-                flag = true;
-            }
             customerInfo.setUpdatedUser(UserOperator.getToken());
             customerInfo.setUpdatedTime(DateUtils.getNowTime());
         } else {
-            flag = true;
             customerInfo.setCreatedUser(UserOperator.getToken());
-        }
-        if(flag){
-            //校验结算代码唯一性
-            QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.eq("unit_code",form.getUnitCode());
-            CustomerInfo oldCustomerInfo = customerInfoService.getOne(queryWrapper);
-            if(oldCustomerInfo != null){
-                return CommonResult.error(ResultEnum.UNIT_CODE_EXIST.getCode(),ResultEnum.UNIT_CODE_EXIST.getMessage());
-            }
         }
         customerInfo.setAuditStatus(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode());
         customerInfoService.saveOrUpdate(customerInfo);
         return CommonResult.success();
+    }
+
+    @ApiOperation(value = "二期优化:新增和编辑时校验客户名称是否存在")
+    @PostMapping(value = "/existCustomerName")
+    public CommonResult<List<CustomerInfo>> existCustomerName(@RequestBody Map<String,Object> param) {
+        String customerName = MapUtil.getStr(param, "name");
+        if(StringUtil.isNullOrEmpty(customerName)){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("name",customerName);
+        List<CustomerInfo> customerInfos = customerInfoService.list(queryWrapper);
+        return CommonResult.success(customerInfos);
     }
 
     @ApiOperation(value = "删除客户信息")

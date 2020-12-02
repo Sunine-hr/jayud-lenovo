@@ -152,7 +152,7 @@ public class OrderComboxController {
         List<CustomerInfo> customerInfoList = customerInfoService.findCustomerInfoByCondition(param);
         List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
         List<Long> ids = new ArrayList<>();
-        for (CustomerInfo customerInfo : customerInfoList) {
+        /*for (CustomerInfo customerInfo : customerInfoList) {
             InitComboxStrVO comboxStrVO = new InitComboxStrVO();
             comboxStrVO.setCode(customerInfo.getUnitCode());
             comboxStrVO.setName(customerInfo.getUnitAccount());
@@ -160,7 +160,7 @@ public class OrderComboxController {
             if(customerInfo.getYwId() != null) {
                 ids.add(customerInfo.getYwId());
             }
-        }
+        }*/
         resultMap.put("units",comboxStrVOS);
 
         List<SupplierInfo> supplierInfos = supplierInfoService.getApprovedSupplier(

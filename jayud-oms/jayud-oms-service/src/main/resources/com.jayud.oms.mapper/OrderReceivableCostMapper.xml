@@ -46,7 +46,7 @@
         (SELECT cg.name FROM cost_genre cg WHERE cg.id = orc.cost_genre_id LIMIT 1) costGenre,
         orc.`unit`,
         orc.`cost_code` costCode,
-        (SELECT ci.name FROM cost_info ci WHERE ci.id_code = orc.`cost_code` AND ci.types = 1 LIMIT 1) costName,
+        (SELECT ci.name FROM cost_info ci WHERE ci.id_code = orc.`cost_code` LIMIT 1) costName,
         orc.`unit_price` unitPrice,
         orc.`number`,
         orc.`currency_code` currencyCode,

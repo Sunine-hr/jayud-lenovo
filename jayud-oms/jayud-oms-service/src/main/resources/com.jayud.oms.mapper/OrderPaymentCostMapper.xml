@@ -49,7 +49,7 @@
         (SELECT cg.name FROM cost_genre cg WHERE cg.id = opc.cost_genre_id LIMIT 1) costGenre,
         opc.`unit`,
         opc.`cost_code` costCode,
-        (SELECT ci.name FROM cost_info ci WHERE ci.id_code = opc.`cost_code` AND ci.types = 2 LIMIT 1) costName,
+        (SELECT ci.name FROM cost_info ci WHERE ci.id_code = opc.`cost_code` LIMIT 1) costName,
         opc.`unit_price` unitPrice,
         opc.`number`,
         opc.`currency_code` currencyCode,

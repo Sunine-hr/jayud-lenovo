@@ -13,10 +13,7 @@ import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.enums.CustomerInfoStatusEnum;
 import com.jayud.oms.model.enums.RoleKeyEnum;
 import com.jayud.oms.model.po.*;
-import com.jayud.oms.model.vo.CurrencyInfoVO;
-import com.jayud.oms.model.vo.InitComboxStrVO;
-import com.jayud.oms.model.vo.InitComboxVO;
-import com.jayud.oms.model.vo.SystemUserVO;
+import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
@@ -143,24 +140,22 @@ public class OrderComboxController {
     @PostMapping(value = "/initUnit")
     public CommonResult<Map<String,Object>> initUnit(@RequestBody Map<String,Object> param) {
         String idCode = MapUtil.getStr(param,"idCode");
-        if(idCode != null && "".equals(idCode)){
-            return CommonResult.error(400,"参数不合法");
+        if(StringUtil.isNullOrEmpty(idCode)){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         Map<String,Object> resultMap = new HashMap<>();
-        param = new HashMap<>();
-        param.put("id_code", idCode);
-        List<CustomerInfo> customerInfoList = customerInfoService.findCustomerInfoByCondition(param);
+        List<CustomerInfoVO> customerInfoList = customerInfoService.findUnitInfoByCode(idCode);
         List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
         List<Long> ids = new ArrayList<>();
-        /*for (CustomerInfo customerInfo : customerInfoList) {
+        for (CustomerInfoVO customerInfo : customerInfoList) {
             InitComboxStrVO comboxStrVO = new InitComboxStrVO();
-            comboxStrVO.setCode(customerInfo.getUnitCode());
-            comboxStrVO.setName(customerInfo.getUnitAccount());
+            comboxStrVO.setCode(customerInfo.getIdCode());
+            comboxStrVO.setName(customerInfo.getName());
             comboxStrVOS.add(comboxStrVO);
             if(customerInfo.getYwId() != null) {
                 ids.add(customerInfo.getYwId());
             }
-        }*/
+        }
         resultMap.put("units",comboxStrVOS);
 
         List<SupplierInfo> supplierInfos = supplierInfoService.getApprovedSupplier(

@@ -293,4 +293,11 @@
             </if>
         </where>
     </select>
+
+    <select id="findUnitInfoByCode" parameterType="java.lang.String" resultType="com.jayud.oms.model.vo.CustomerInfoVO">
+        select ci.id_code idCode,ci.`name` from customer_info ci
+        where ci.id in
+           (select cru.unit_id from customer_info c left join customer_rela_unit cru on c.id = cru.customer_info_id
+            where c.id_code = #{idCode})
+    </select>
 </mapper>

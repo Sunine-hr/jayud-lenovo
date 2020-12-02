@@ -61,4 +61,11 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
      * 分页查询客户基本信息
      */
     IPage<CustomerInfoVO> findCustomerBasicsInfoByPage(QueryCustomerInfoForm form);
+
+    /**
+     * 根据客户CODE获取结算单位
+     * @param idCode
+     * @return
+     */
+    List<CustomerInfoVO> findUnitInfoByCode(String idCode);
 }

@@ -3,14 +3,15 @@ package com.jayud.oms.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.oms.model.bo.QueryCusAccountForm;
 import com.jayud.oms.model.bo.QueryCustomerInfoForm;
 import com.jayud.oms.model.po.CustomerInfo;
-import com.jayud.oms.model.vo.CustomerInfoVO;
-import com.jayud.oms.model.bo.QueryCusAccountForm;
 import com.jayud.oms.model.vo.CustAccountVO;
+import com.jayud.oms.model.vo.CustomerInfoVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -55,5 +56,12 @@ public interface CustomerInfoMapper extends BaseMapper<CustomerInfo> {
      * 分页查询客户基础数据
      */
     IPage<CustomerInfoVO> findCustomerBasicsInfoByPage(Page page, @Param("form") QueryCustomerInfoForm form);
+
+    /**
+     * 根据客户CODE获取结算单位
+     * @param idCode
+     * @return
+     */
+    List<CustomerInfoVO> findUnitInfoByCode(@Param("idCode") String idCode);
 
 }

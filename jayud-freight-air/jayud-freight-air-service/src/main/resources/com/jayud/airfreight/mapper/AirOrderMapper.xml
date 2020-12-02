@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.airfreight.mapper.AirOrderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.airfreight.model.po.AirOrder">
+        <id column="id" property="id"/>
+        <result column="main_order_no" property="mainOrderNo"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="third_party_order_no" property="thirdPartyOrderNo"/>
+        <result column="status" property="status"/>
+        <result column="process_status" property="processStatus"/>
+        <result column="settlement_unit_code" property="settlementUnitCode"/>
+        <result column="imp_and_exp_type" property="impAndExpType"/>
+        <result column="terms" property="terms"/>
+        <result column="port_departure_code" property="portDepartureCode"/>
+        <result column="port_destination_code" property="portDestinationCode"/>
+        <result column="overseas_suppliers_code" property="overseasSuppliersCode"/>
+        <result column="proxy_service_type" property="proxyServiceType"/>
+        <result column="good_time" property="goodTime"/>
+        <result column="is_freight_collect" property="isFreightCollect"/>
+        <result column="is_other_expenses_paid" property="isOtherExpensesPaid"/>
+        <result column="is_dangerous_goods" property="isDangerousGoods"/>
+        <result column="is_charged" property="isCharged"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, main_order_no, order_no, third_party_order_no, status, process_status, settlement_unit_code, imp_and_exp_type, terms, port_departure_code, port_destination_code, overseas_suppliers_code, proxy_service_type, good_time, is_freight_collect, is_other_expenses_paid, is_dangerous_goods, is_charged, create_user, create_time, update_user, update_time
+    </sql>
+
+    <select id="findByPage" parameterType="com.jayud.airfreight.model.bo.QueryAirOrderForm"
+            resultType="com.jayud.airfreight.model.vo.AirOrderFormVO">
+        select
+        a.id,
+        a.main_order_no mainOrderNo,
+        a.order_no orderNo,a.status,
+        a.process_status processStatus,
+        a.imp_and_exp_type impAndExpType,
+        a.terms,
+        ap.name port_departure,
+        ap1.name port_destination,
+        a.create_user createUser, a.create_time createTime
+        FROM
+        `air_order` a
+        left join air_port ap on ap.`code`=a.port_departure_code
+        left join air_port ap1 on ap1.`code`=a.port_destination_code
+        <where>
+            <if test="form.portDeparture !=null and form.portDeparture!=''">
+                and ap.name like concat('%',#{form.portDeparture},'%')
+            </if>
+            <if test="form.portDestination !=null and form.portDestination!=''">
+                and ap1.name like concat('%',#{form.portDestination},'%')
+            </if>
+            <if test="form.customerName!=null and form.customerName!=''">
+                a.main_order_no IN
+                <foreach collection="form.mainOrderNos" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="form.status !=null and form.status!=''">
+                and a.status = #{form.status}
+            </if>
+            <if test="form.createTime !=null and form.createTime!=''">
+                and a.create_time = #{form.createTime}
+            </if>
+            order by a.id desc
+        </where>
+
+    </select>
+
+</mapper>

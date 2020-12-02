@@ -599,5 +599,10 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         return baseMapper.getReceivableHeaderForm(billNo);
     }
 
+    @Override
+    public List<APARDetailForm> findReceivableHeaderDetail(String billNo) {
+        return baseMapper.findReceivableHeaderDetail(billNo);
+    }
+
 
 }

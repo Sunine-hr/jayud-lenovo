@@ -361,4 +361,18 @@
             left join customer_info ci on ci.unit_code = orc.customer_code
         where orbd.bill_no = #{billNo}
     </select>
+    <select id="findReceivableHeaderDetail" parameterType="java.lang.String" resultType="com.jayud.finance.bo.APARDetailForm">
+        SELECT
+            ( SELECT ci.NAME FROM cost_info ci WHERE ci.id_code = orc.cost_code ) expenseName,
+            ( SELECT code_name FROM cost_type ct WHERE ct.id = orc.cost_type_id ) expenseCategoryName,
+            ( SELECT cg.NAME FROM cost_genre cg WHERE cg.id = orc.cost_genre_id ) expenseTypeName,
+            orc.number,
+            orc.unit_price taxPrice,
+            orbd.tax_rate taxRate
+        FROM
+            order_receivable_bill_detail orbd
+            LEFT JOIN order_receivable_cost orc ON orbd.cost_id = orc.id
+        WHERE
+            orbd.bill_no = #{billNo}
+    </select>
 </mapper>

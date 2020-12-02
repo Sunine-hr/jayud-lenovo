@@ -159,4 +159,11 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      */
     ReceivableHeaderForm getReceivableHeaderForm(String billNo);
 
+    /**
+     * 获取推送金蝶的应收详细数据
+     * @param billNo
+     * @return
+     */
+    List<APARDetailForm> findReceivableHeaderDetail(String billNo);
+
 }

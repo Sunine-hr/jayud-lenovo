@@ -319,7 +319,8 @@ public class FinanceController {
         //构建数据，推金蝶
         for (OrderReceivableBillDetail receivableBillDetail : receivableBillDetails) {
             ReceivableHeaderForm reqForm = receivableBillDetailService.getReceivableHeaderForm(receivableBillDetail.getBillNo());
-            //费用详情 TODO
+            List<APARDetailForm> entityDetail = receivableBillDetailService.findReceivableHeaderDetail(receivableBillDetail.getBillNo());
+            reqForm.setEntityDetail(entityDetail);
             service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), reqForm);
         }
         return CommonResult.success();
@@ -354,8 +355,8 @@ public class FinanceController {
         //构建数据，推金蝶
         for (OrderPaymentBillDetail paymentBillDetail : paymentBillDetailList) {
             PayableHeaderForm reqForm = paymentBillDetailService.getPayableHeaderForm(paymentBillDetail.getBillNo());
-
-            //费用详情 TODO
+            List<APARDetailForm> entityDetail = paymentBillDetailService.findPayableHeaderDetail(paymentBillDetail.getBillNo());
+            reqForm.setEntityDetail(entityDetail);
             service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), reqForm);
         }
         return CommonResult.success();

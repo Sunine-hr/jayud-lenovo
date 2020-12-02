@@ -445,4 +445,18 @@
             left join supplier_info si on si.supplier_code = opc.customer_code
         where opbd.bill_no = #{billNo}
     </select>
+    <select id="findPayableHeaderDetail" parameterType="java.lang.String" resultType="com.jayud.finance.bo.APARDetailForm">
+        SELECT
+            ( SELECT ci.NAME FROM cost_info ci WHERE ci.id_code = opc.cost_code ) expenseName,
+            ( SELECT code_name FROM cost_type ct WHERE ct.id = opc.cost_type_id ) expenseCategoryName,
+            ( SELECT cg.NAME FROM cost_genre cg WHERE cg.id = opc.cost_genre_id ) expenseTypeName,
+            opc.number,
+            opc.unit_price taxPrice,
+            opbd.tax_rate taxRate
+        FROM
+            order_payment_bill_detail opbd
+            LEFT JOIN order_payment_cost opc ON opbd.cost_id = opc.id
+        WHERE
+            opbd.bill_no = #{billNo}
+    </select>
 </mapper>

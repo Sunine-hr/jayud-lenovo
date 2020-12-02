@@ -67,7 +67,7 @@ public class ExternalApiController {
     @RequestMapping(value = "/api/oprMainOrder")
     public ApiResult oprMainOrder(@RequestBody InputMainOrderForm form) {
         String result = orderInfoService.oprMainOrder(form);
-        if(result != null){
+        if (result != null) {
             return ApiResult.ok(result);
         }
         return ApiResult.error();
@@ -76,14 +76,14 @@ public class ExternalApiController {
 
     @ApiOperation(value = "获取主订单信息")
     @RequestMapping(value = "/api/getMainOrderById")
-    ApiResult getMainOrderById(@RequestParam(value = "id") Long id){
+    ApiResult getMainOrderById(@RequestParam(value = "id") Long id) {
         InputMainOrderVO inputOrderVO = orderInfoService.getMainOrderById(id);
         return ApiResult.ok(inputOrderVO);
     }
 
     @ApiOperation(value = "获取主订单ID")
     @RequestMapping(value = "/api/getIdByOrderNo")
-    ApiResult getIdByOrderNo(@RequestParam(value = "orderNo") String orderNo){
+    ApiResult getIdByOrderNo(@RequestParam(value = "orderNo") String orderNo) {
         Long mainOrderId = orderInfoService.getIdByOrderNo(orderNo);
         return ApiResult.ok(mainOrderId);
     }
@@ -91,19 +91,19 @@ public class ExternalApiController {
 
     @ApiOperation(value = "保存操作状态")
     @RequestMapping(value = "/api/saveOprStatus")
-    ApiResult saveOprStatus(@RequestBody OprStatusForm form){
+    ApiResult saveOprStatus(@RequestBody OprStatusForm form) {
         LogisticsTrack logisticsTrack = new LogisticsTrack();
         logisticsTrack.setMainOrderId(form.getMainOrderId());
         logisticsTrack.setOrderId(form.getOrderId());
         logisticsTrack.setStatus(form.getStatus());
         logisticsTrack.setStatusName(form.getStatusName());
         logisticsTrack.setOperatorUser(form.getOperatorUser());
-        logisticsTrack.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(),DateUtils.DATE_TIME_PATTERN));
+        logisticsTrack.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN));
         logisticsTrack.setStatusPic(form.getStatusPic());
         logisticsTrack.setDescription(form.getDescription());
         logisticsTrack.setEntrustNo(form.getEntrustNo());
-        logisticsTrack.setGoCustomsTime(DateUtils.str2LocalDateTime(form.getGoCustomsTime(),DateUtils.DATE_TIME_PATTERN));
-        logisticsTrack.setPreGoCustomsTime(DateUtils.str2LocalDateTime(form.getPreGoCustomsTime(),DateUtils.DATE_TIME_PATTERN));
+        logisticsTrack.setGoCustomsTime(DateUtils.str2LocalDateTime(form.getGoCustomsTime(), DateUtils.DATE_TIME_PATTERN));
+        logisticsTrack.setPreGoCustomsTime(DateUtils.str2LocalDateTime(form.getPreGoCustomsTime(), DateUtils.DATE_TIME_PATTERN));
         logisticsTrack.setCreatedUser(UserOperator.getToken());
         logisticsTrack.setCreatedTime(LocalDateTime.now());
         logisticsTrackService.saveOrUpdate(logisticsTrack);
@@ -113,22 +113,24 @@ public class ExternalApiController {
 
     /**
      * 子订单流程
+     *
      * @param form
      * @return
      */
     @RequestMapping(value = "/api/handleSubProcess")
-    ApiResult handleSubProcess(@RequestBody HandleSubProcessForm form){
+    ApiResult handleSubProcess(@RequestBody HandleSubProcessForm form) {
         List<OrderStatusVO> orderStatusVOS = orderInfoService.handleSubProcess(form);
         return ApiResult.ok(orderStatusVOS);
     }
 
     /**
      * 记录审核信息
+     *
      * @param form
      * @return
      */
     @RequestMapping(value = "/api/saveAuditInfo")
-    ApiResult<Boolean> saveAuditInfo(@RequestBody AuditInfoForm form){
+    ApiResult<Boolean> saveAuditInfo(@RequestBody AuditInfoForm form) {
         AuditInfo auditInfo = new AuditInfo();
         auditInfo.setExtId(form.getExtId());
         auditInfo.setExtUniqueFlag(form.getExtUniqueFlag());//目前只有账单编号
@@ -150,7 +152,7 @@ public class ExternalApiController {
     @RequestMapping(value = "api/initWarehouseInfo")
     public CommonResult initWarehouseInfo() {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(SqlConstant.STATUS,1);
+        queryWrapper.eq(SqlConstant.STATUS, 1);
         List<WarehouseInfo> warehouseInfos = warehouseInfoService.list(queryWrapper);
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (WarehouseInfo warehouseInfo : warehouseInfos) {
@@ -166,7 +168,7 @@ public class ExternalApiController {
     @RequestMapping(value = "api/initSupplierInfo")
     public CommonResult initSupplierInfo() {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(SqlConstant.STATUS,1);
+        queryWrapper.eq(SqlConstant.STATUS, 1);
         List<SupplierInfo> supplierInfos = supplierInfoService.list(queryWrapper);
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (SupplierInfo supplierInfo : supplierInfos) {
@@ -180,25 +182,27 @@ public class ExternalApiController {
 
     /**
      * 删除前面操作成功的记录
+     *
      * @param orderId
      * @return
      */
     @RequestMapping(value = "api/delOprStatus")
-    ApiResult delOprStatus(@RequestParam("orderId") Long orderId){
+    ApiResult delOprStatus(@RequestParam("orderId") Long orderId) {
         logisticsTrackService.removeById(orderId);
         return ApiResult.ok();
     }
 
     /**
      * 删除特定单的操作流程
+     *
      * @param form
      * @return
      */
     @RequestMapping(value = "/api/delSpecOprStatus")
-    ApiResult delSpecOprStatus(@RequestBody DelOprStatusForm form){
+    ApiResult delSpecOprStatus(@RequestBody DelOprStatusForm form) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(SqlConstant.ORDER_ID,form.getOrderId());
-        queryWrapper.in(SqlConstant.STATUS,form.getStatus());
+        queryWrapper.eq(SqlConstant.ORDER_ID, form.getOrderId());
+        queryWrapper.in(SqlConstant.STATUS, form.getStatus());
         logisticsTrackService.remove(queryWrapper);
         return ApiResult.ok();
     }
@@ -207,7 +211,7 @@ public class ExternalApiController {
     @RequestMapping(value = "api/initDriver")
     public CommonResult initDriver() {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(SqlConstant.STATUS,1);
+        queryWrapper.eq(SqlConstant.STATUS, 1);
         List<DriverInfo> driverInfos = driverInfoService.list(queryWrapper);
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (DriverInfo driverInfo : driverInfos) {
@@ -221,10 +225,11 @@ public class ExternalApiController {
 
     /**
      * 司机下拉框联动车辆供应商，大陆车牌，香港车牌，司机电话
+     *
      * @return
      */
     @RequestMapping(value = "/api/initDriverInfo")
-    ApiResult initDriverInfo(@RequestParam("driverId") Long driverId){
+    ApiResult initDriverInfo(@RequestParam("driverId") Long driverId) {
         DriverInfoLinkVO driverInfo = driverInfoService.getDriverInfoLink(driverId);
         return ApiResult.ok(driverInfo);
     }
@@ -233,11 +238,11 @@ public class ExternalApiController {
      * 应付暂存
      */
     @RequestMapping(value = "/api/oprCostBill")
-    ApiResult<Boolean> oprCostBill(@RequestBody OprCostBillForm form){
+    ApiResult<Boolean> oprCostBill(@RequestBody OprCostBillForm form) {
         Boolean result = false;
-        if("payment".equals(form.getOprType())){
+        if ("payment".equals(form.getOprType())) {
             List<OrderPaymentCost> paymentCosts = new ArrayList<>();
-            if(form.getCmd().contains("pre")){//暂存应收
+            if (form.getCmd().contains("pre")) {//暂存应收
                 List<OrderPaymentCost> delCosts = new ArrayList<>();
                 for (Long costId : form.getCostIds()) {
                     OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
@@ -252,14 +257,14 @@ public class ExternalApiController {
                 }
                 //把原来暂存的清除,更新未出账
                 paymentCostService.updateBatchById(delCosts);
-            }else if("del".equals(form.getCmd())){//删除对账单
+            } else if ("del".equals(form.getCmd())) {//删除对账单
                 for (Long costId : form.getCostIds()) {
                     OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
                     orderPaymentCost.setId(costId);
                     orderPaymentCost.setIsBill("0");//未出账
                     paymentCosts.add(orderPaymentCost);
                 }
-            }else{//生成应收账单
+            } else {//生成应收账单
                 for (Long costId : form.getCostIds()) {
                     OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
                     orderPaymentCost.setId(costId);
@@ -268,9 +273,9 @@ public class ExternalApiController {
                 }
             }
             result = paymentCostService.updateBatchById(paymentCosts);
-        }else if("receivable".equals(form.getOprType())){
+        } else if ("receivable".equals(form.getOprType())) {
             List<OrderReceivableCost> receivableCosts = new ArrayList<>();
-            if(form.getCmd().contains("pre")){//暂存应付
+            if (form.getCmd().contains("pre")) {//暂存应付
                 List<OrderReceivableCost> delCosts = new ArrayList<>();
                 for (Long costId : form.getCostIds()) {
                     OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
@@ -285,14 +290,14 @@ public class ExternalApiController {
                 }
                 //把原来暂存的清除,更新未出账
                 receivableCostService.updateBatchById(delCosts);
-            }else if("del".equals(form.getCmd())){//删除对账单
+            } else if ("del".equals(form.getCmd())) {//删除对账单
                 for (Long costId : form.getCostIds()) {
                     OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
                     orderReceivableCost.setId(costId);
                     orderReceivableCost.setIsBill("0");//未出账
                     receivableCosts.add(orderReceivableCost);
                 }
-            }else{//生成应付账单
+            } else {//生成应付账单
                 for (Long costId : form.getCostIds()) {
                     OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
                     orderReceivableCost.setId(costId);
@@ -309,7 +314,7 @@ public class ExternalApiController {
     @RequestMapping(value = "api/initCurrencyInfo")
     public ApiResult initCurrencyInfo() {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(SqlConstant.STATUS,1);
+        queryWrapper.eq(SqlConstant.STATUS, 1);
         List<CurrencyInfo> currencyInfos = currencyInfoService.list(queryWrapper);
         List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
         for (CurrencyInfo currencyInfo : currencyInfos) {
@@ -325,7 +330,7 @@ public class ExternalApiController {
     @RequestMapping(value = "api/initCurrencyInfo2")
     public ApiResult initCurrencyInfo2() {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(SqlConstant.STATUS,1);
+        queryWrapper.eq(SqlConstant.STATUS, 1);
         List<CurrencyInfo> currencyInfos = currencyInfoService.list(queryWrapper);
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (CurrencyInfo currencyInfo : currencyInfos) {
@@ -339,15 +344,16 @@ public class ExternalApiController {
 
     /**
      * 编辑保存确定
+     *
      * @param costIds
      * @param oprType 应付还是应收
      * @return
      */
     @ApiOperation(value = "编辑保存确定")
     @RequestMapping(value = "api/editSaveConfirm")
-    public ApiResult editSaveConfirm(@RequestParam("costIds") List<Long> costIds,@RequestParam("oprType") String oprType,
-                                     @RequestParam("cmd") String cmd){
-        if("save_confirm".equals(cmd)) {
+    public ApiResult editSaveConfirm(@RequestParam("costIds") List<Long> costIds, @RequestParam("oprType") String oprType,
+                                     @RequestParam("cmd") String cmd) {
+        if ("save_confirm".equals(cmd)) {
             if ("receivable".equals(oprType)) {
                 OrderReceivableCost receivableCost = new OrderReceivableCost();
                 receivableCost.setIsBill("save_confirm");//持续操作中的过度状态
@@ -361,7 +367,7 @@ public class ExternalApiController {
                 updateWrapper.in("id", costIds);
                 paymentCostService.update(paymentCost, updateWrapper);
             }
-        }else if("edit_del".equals(cmd)){
+        } else if ("edit_del".equals(cmd)) {
             if ("receivable".equals(oprType)) {
                 OrderReceivableCost receivableCost = new OrderReceivableCost();
                 receivableCost.setIsBill("0");//从save_confirm状态回滚到未出账-0状态
@@ -381,12 +387,13 @@ public class ExternalApiController {
 
     /**
      * 提交财务审核时，财务可能编辑费用类型
+     *
      * @param forms
      * @param cmd
      * @return
      */
     @RequestMapping(value = "api/oprCostGenreByCw")
-    ApiResult<Boolean> oprCostGenreByCw(@RequestBody List<OrderCostForm> forms,@RequestParam("cmd") String cmd){
+    ApiResult<Boolean> oprCostGenreByCw(@RequestBody List<OrderCostForm> forms, @RequestParam("cmd") String cmd) {
         if ("receivable".equals(cmd)) {
             for (OrderCostForm orderCost : forms) {
                 OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
@@ -410,6 +417,23 @@ public class ExternalApiController {
     }
 
 
+    /**
+     * 根据客户名称获取订单信息
+     */
+    @RequestMapping(value = "/api/mainOrder/getByCustomerName")
+    public ApiResult<OrderInfo> getByCustomerName(@RequestParam("customerName") String customerName) {
+        List<OrderInfo> orderList = this.orderInfoService.getByCustomerName(customerName);
+        return ApiResult.ok(orderList);
+    }
+
+    /**
+     * 根据主订单集合查询主订单信息
+     */
+    @RequestMapping(value = "/api/mainOrder/getByOrderNos")
+    public ApiResult getByOrderNos(@RequestParam("orderNos") List<String> orderNos) {
+        List<OrderInfo> orders = this.orderInfoService.getByOrderNos(orderNos);
+        return ApiResult.ok(orders);
+    }
 }
 
 

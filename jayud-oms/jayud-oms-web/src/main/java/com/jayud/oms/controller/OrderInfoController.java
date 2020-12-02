@@ -48,15 +48,15 @@ public class OrderInfoController {
 
     @ApiOperation(value = "外部报关放行/通过前审核/订单列表/费用审核")
     @PostMapping("/findOrderInfoByPage")
-    public CommonResult<Map<String,Object>> findOrderInfoByPage(@RequestBody QueryOrderInfoForm form) {
+    public CommonResult<Map<String, Object>> findOrderInfoByPage(@RequestBody QueryOrderInfoForm form) {
         IPage<OrderInfoVO> pageList = orderInfoService.findOrderInfoByPage(form);
         CommonPageResult<OrderInfoVO> pageVO = new CommonPageResult(pageList);
         OrderDataCountVO orderDataCountVO = orderInfoService.countOrderData();
-        Map<String,Object> resultMap = new HashMap<>();
-        resultMap.put(CommonConstant.PAGE_LIST,pageVO);//分页数据
-        resultMap.put(CommonConstant.ALL_COUNT,orderDataCountVO.getAllCount());//所有订单数量
-        resultMap.put(CommonConstant.PRE_SUBMIT_COUNT,orderDataCountVO.getPreSubmitCount());//暂存数量
-        resultMap.put(CommonConstant.DATA_NOT_ALL_COUNT,orderDataCountVO.getDataNotAllCount());//待补全数据量
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put(CommonConstant.PAGE_LIST, pageVO);//分页数据
+        resultMap.put(CommonConstant.ALL_COUNT, orderDataCountVO.getAllCount());//所有订单数量
+        resultMap.put(CommonConstant.PRE_SUBMIT_COUNT, orderDataCountVO.getPreSubmitCount());//暂存数量
+        resultMap.put(CommonConstant.DATA_NOT_ALL_COUNT, orderDataCountVO.getDataNotAllCount());//待补全数据量
         return CommonResult.success(resultMap);
     }
 
@@ -77,11 +77,11 @@ public class OrderInfoController {
 
     @ApiOperation(value = "客户-创建订单暂存和提交")
     @PostMapping("/createOrder")
-    public CommonResult createOrder(@RequestBody InputOrderForm form){
+    public CommonResult createOrder(@RequestBody InputOrderForm form) {
         //通用参数校验
-        if(form == null || StringUtil.isNullOrEmpty(form.getCmd()) ||
-           form.getOrderForm() == null || "".equals(form.getOrderForm())){
-            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+        if (form == null || StringUtil.isNullOrEmpty(form.getCmd()) ||
+                form.getOrderForm() == null || "".equals(form.getOrderForm())) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
         //主订单参数校验
         InputMainOrderForm inputMainOrderForm = form.getOrderForm();
@@ -100,7 +100,7 @@ public class OrderInfoController {
                 && inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode()))) {
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
-        if(CommonConstant.SUBMIT.equals(form.getCmd())) {
+        if (CommonConstant.SUBMIT.equals(form.getCmd())) {
             //1.报关资料是否齐全 1-齐全 0-不齐全 齐全时校验报关数据
             //2.纯报关时校验数据
             if (CommonConstant.VALUE_1.equals(inputMainOrderForm.getIsDataAll()) ||
@@ -127,7 +127,7 @@ public class OrderInfoController {
                 inputOrderCustomsForm.setSeaTransPicName(StringUtils.getFileNameStr(inputOrderCustomsForm.getAirTransportPics()));
                 //报关订单中的子订单
                 List<InputSubOrderCustomsForm> subOrders = inputOrderCustomsForm.getSubOrders();
-                if(subOrders.size() == 0){
+                if (subOrders.size() == 0) {
                     return CommonResult.error(ResultEnum.PARAM_ERROR);
                 }
                 for (InputSubOrderCustomsForm subOrderCustomsForm : subOrders) {
@@ -157,7 +157,7 @@ public class OrderInfoController {
                 List<InputOrderTakeAdrForm> takeAdrForms1 = inputOrderTransportForm.getTakeAdrForms1();
                 List<InputOrderTakeAdrForm> takeAdrForms2 = inputOrderTransportForm.getTakeAdrForms2();
                 //提货地址和送货地址分别至少存在一条数据才可提交
-                if(takeAdrForms1 == null || takeAdrForms1.size() == 0 || takeAdrForms2 == null || takeAdrForms2.size() == 0){
+                if (takeAdrForms1 == null || takeAdrForms1.size() == 0 || takeAdrForms2 == null || takeAdrForms2.size() == 0) {
                     return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
                 }
                 List<InputOrderTakeAdrForm> takeAdrForms = new ArrayList<>();
@@ -171,18 +171,28 @@ public class OrderInfoController {
                     }
                 }
                 //清关参数校验
-                if(inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.XGQG.getCode())){
-                    if(StringUtil.isNullOrEmpty(inputOrderTransportForm.getHkLegalName()) ||
-                       StringUtil.isNullOrEmpty(inputOrderTransportForm.getHkUnitCode()) ||
-                       StringUtil.isNullOrEmpty(inputOrderTransportForm.getIsHkClear())){
+                if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.XGQG.getCode())) {
+                    if (StringUtil.isNullOrEmpty(inputOrderTransportForm.getHkLegalName()) ||
+                            StringUtil.isNullOrEmpty(inputOrderTransportForm.getHkUnitCode()) ||
+                            StringUtil.isNullOrEmpty(inputOrderTransportForm.getIsHkClear())) {
                         return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
                     }
                 }
             }
+            //空运
+            if (OrderStatusEnum.KY.getCode().equals(inputMainOrderForm.getClassCode())) {
+                InputAirOrderForm airOrderForm = form.getAirOrderForm();
+                if (!airOrderForm.checkCreateOrder()) {
+                    return CommonResult.error(ResultEnum.PARAM_ERROR);
+                }
+            }
+
         }
+
+        //空运校验参数
         boolean result = orderInfoService.createOrder(form);
-        if(!result) {
-            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(),ResultEnum.OPR_FAIL.getMessage());
+        if (!result) {
+            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
         return CommonResult.success();
     }
@@ -198,8 +208,8 @@ public class OrderInfoController {
     @PostMapping("/changeStatus")
     public CommonResult changeStatus(@RequestBody @Valid ChangeStatusListForm form) {
         Boolean result = orderInfoService.changeStatus(form);
-        if(!result){
-            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(),ResultEnum.OPR_FAIL.getMessage());
+        if (!result) {
+            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
         return CommonResult.success();
     }
@@ -208,9 +218,9 @@ public class OrderInfoController {
     @ApiOperation(value = "外部报关放行")
     @PostMapping(value = "/outCustomsRelease")
     public CommonResult outCustomsRelease(@RequestBody OprStatusForm form) {
-        if(form.getMainOrderId() == null || StringUtil.isNullOrEmpty(form.getOperatorUser()) ||
-                StringUtil.isNullOrEmpty(form.getOperatorTime())){
-            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+        if (form.getMainOrderId() == null || StringUtil.isNullOrEmpty(form.getOperatorUser()) ||
+                StringUtil.isNullOrEmpty(form.getOperatorTime())) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
         //外部报关放行:1.对主订单放行  2.随时可操作  3.没有出口报关的中港运输的单才可进行外部报关放行,有出口报关的就进行报关模块的报关放行
         //外部报关放行不体现在流程节点中
@@ -223,7 +233,7 @@ public class OrderInfoController {
         auditInfo.setStatusFileName(StringUtils.getFileNameStr(form.getFileViewList()));
         auditInfo.setAuditUser(UserOperator.getToken());
         auditInfo.setCreatedUser(UserOperator.getToken());
-        auditInfo.setAuditTime(DateUtils.str2LocalDateTime(form.getOperatorTime(),DateUtils.DATE_TIME_PATTERN));
+        auditInfo.setAuditTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN));
         auditInfo.setExtDesc(SqlConstant.ORDER_INFO);
         auditInfoService.save(auditInfo);//保存操作记录
         OrderInfo orderInfo = new OrderInfo();
@@ -232,13 +242,11 @@ public class OrderInfoController {
         orderInfo.setUpUser(UserOperator.getToken());
         orderInfo.setUpTime(LocalDateTime.now());
         boolean result = orderInfoService.updateById(orderInfo);
-        if(!result){
-            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(),ResultEnum.OPR_FAIL.getMessage());
+        if (!result) {
+            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
         return CommonResult.success();
     }
-
-
 
 
 }

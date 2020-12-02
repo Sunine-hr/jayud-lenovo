@@ -55,4 +55,5 @@ public interface CustomerInfoMapper extends BaseMapper<CustomerInfo> {
      * 分页查询客户基础数据
      */
     IPage<CustomerInfoVO> findCustomerBasicsInfoByPage(Page page, @Param("form") QueryCustomerInfoForm form);
+
 }

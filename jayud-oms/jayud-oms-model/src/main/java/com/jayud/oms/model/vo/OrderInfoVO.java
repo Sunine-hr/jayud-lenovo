@@ -78,6 +78,14 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "中港运输状态描述,用于标识驳回可编辑")
     private String subTmsDesc;
 
+
+    @ApiModelProperty(value = "空运状态,用于标识驳回可编辑")
+    private String subAirStatus;
+
+    @ApiModelProperty(value = "空运状态描述,用于标识驳回可编辑")
+    private String subAirDesc;
+
+
     @ApiModelProperty(value = "是否需要录入费用")
     private Boolean needInputCost;
 
@@ -100,6 +108,11 @@ public class OrderInfoVO {
 
     public String getSubTmsDesc() {
         return OrderStatusEnum.getDesc(this.subTmsStatus);
+    }
+
+    public void setSubAirStatus(String subAirStatus) {
+        this.subAirStatus = subAirStatus;
+        this.subAirDesc=OrderStatusEnum.getDesc(this.subAirStatus);
     }
 
 }

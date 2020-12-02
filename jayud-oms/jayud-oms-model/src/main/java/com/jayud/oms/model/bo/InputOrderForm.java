@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class InputOrderForm {
 
-    @ApiModelProperty(value = "主订单",required = true)
+    @ApiModelProperty(value = "主订单", required = true)
     private InputMainOrderForm orderForm;
 
     @ApiModelProperty(value = "报关单")
@@ -16,7 +16,10 @@ public class InputOrderForm {
     @ApiModelProperty(value = "中港")
     private InputOrderTransportForm orderTransportForm;
 
-    @ApiModelProperty(value = "操作指令:cmd=preSubmit or submit",required = true)
+    @ApiModelProperty(value = "空运")
+    private InputAirOrderForm airOrderForm;
+
+    @ApiModelProperty(value = "操作指令:cmd=preSubmit or submit", required = true)
     private String cmd;
 
 }

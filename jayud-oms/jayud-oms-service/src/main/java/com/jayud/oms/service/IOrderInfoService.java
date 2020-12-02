@@ -2,11 +2,14 @@ package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.ApiResult;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.OrderInfo;
 import com.jayud.oms.model.vo.*;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -20,6 +23,7 @@ public interface IOrderInfoService extends IService<OrderInfo> {
 
     /**
      * 操作主订单
+     *
      * @param form
      * @return
      */
@@ -27,6 +31,7 @@ public interface IOrderInfoService extends IService<OrderInfo> {
 
     /**
      * 订单是否存在
+     *
      * @param orderNo
      * @return
      */
@@ -34,6 +39,7 @@ public interface IOrderInfoService extends IService<OrderInfo> {
 
     /**
      * 分页查询未提交订单
+     *
      * @param form
      * @return
      */
@@ -42,6 +48,7 @@ public interface IOrderInfoService extends IService<OrderInfo> {
 
     /**
      * 根据主键获取主订单信息
+     *
      * @param idValue
      * @return
      */
@@ -49,6 +56,7 @@ public interface IOrderInfoService extends IService<OrderInfo> {
 
     /**
      * 获取主订单主键
+     *
      * @param orderNo
      * @return
      */
@@ -56,6 +64,7 @@ public interface IOrderInfoService extends IService<OrderInfo> {
 
     /**
      * 录入费用
+     *
      * @param form
      * @return
      */
@@ -63,6 +72,7 @@ public interface IOrderInfoService extends IService<OrderInfo> {
 
     /**
      * 获取费用详情
+     *
      * @param form
      * @return
      */
@@ -70,6 +80,7 @@ public interface IOrderInfoService extends IService<OrderInfo> {
 
     /**
      * 审核费用
+     *
      * @param form
      * @return
      */
@@ -77,6 +88,7 @@ public interface IOrderInfoService extends IService<OrderInfo> {
 
     /**
      * 获取主订单流程节点
+     *
      * @param form
      * @return
      */
@@ -84,6 +96,7 @@ public interface IOrderInfoService extends IService<OrderInfo> {
 
     /**
      * 获取子订单流程节点
+     *
      * @param form
      * @return
      */
@@ -91,6 +104,7 @@ public interface IOrderInfoService extends IService<OrderInfo> {
 
     /**
      * 订单详情
+     *
      * @param form
      * @return
      */
@@ -98,6 +112,7 @@ public interface IOrderInfoService extends IService<OrderInfo> {
 
     /**
      * 创建订单
+     *
      * @param form
      * @return
      */
@@ -105,6 +120,7 @@ public interface IOrderInfoService extends IService<OrderInfo> {
 
     /**
      * 查询主订单下面的所有子订单
+     *
      * @param form
      * @return
      */
@@ -112,6 +128,7 @@ public interface IOrderInfoService extends IService<OrderInfo> {
 
     /**
      * 确认更改状态
+     *
      * @param form
      * @return
      */
@@ -119,9 +136,18 @@ public interface IOrderInfoService extends IService<OrderInfo> {
 
     /**
      * 统计订单数据
+     *
      * @return
      */
     OrderDataCountVO countOrderData();
 
+    /**
+     * 根据客户名称获取订单信息
+     */
+    List<OrderInfo> getByCustomerName(String customerName);
 
+    /**
+     * 根据主订单集合查询主订单信息
+     */
+    List<OrderInfo> getByOrderNos(List<String> orderNos);
 }

@@ -21,4 +21,6 @@ public interface ICurrencyInfoService extends IService<CurrencyInfo> {
      * @return
      */
     List<CurrencyInfoVO> findCurrencyInfo();
+
+
 }

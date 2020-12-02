@@ -142,6 +142,7 @@
         WHERE
         orc.id NOT IN ( SELECT orbd.cost_id FROM order_receivable_bill_detail orbd )
         and orc.is_bill != '2'
+        and orc.`status` = '3'
         and c.unit_account = #{form.unitAccount}
         and oi.legal_name = #{form.legalName}
         <if test="form.cmd == 'main'">

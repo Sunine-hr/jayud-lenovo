@@ -145,6 +145,7 @@
         WHERE
         opc.id NOT IN ( SELECT opbd.cost_id FROM order_payment_bill_detail opbd )
         and opc.is_bill != '2'
+        and opc.`status` = '3'
         and si.supplier_ch_name = #{form.supplierChName}
         and oi.legal_name = #{form.legalName}
         <if test="form.cmd == 'main'">

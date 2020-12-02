@@ -3,6 +3,8 @@ package com.jayud.common.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -11,11 +13,14 @@ public enum OrderStatusEnum {
 
     //业务单类型
     CBG("CBG", "纯报关"),
+    KY("KY", "空运"),
     ZGYS("ZGYS", "中港运输"),
     NLYS("NLYS", "内陆运输"),
     SZZZC("SZZZC", "深圳中转仓"),
     CKBG("CKBG", "出口报关"),
     XGQG("XGQG", "香港清关"),
+    KYDD("KYDD", "空运订单"),
+
 
     //主订单状态
     MAIN_1("1", "正常"),
@@ -72,6 +77,20 @@ public enum OrderStatusEnum {
     TMS_T_14("T_14", "车辆派送"),
     TMS_T_15("T_15", "确认签收"),
 
+
+    //空运订单状态流程节点
+    AIR_A_0("A_0", "待接单"),
+    AIR_A_1("A_1", "空运接单"),
+    AIR_A_1_1("A_1_1", "空运接单驳回"),
+    AIR_A_2("A_2", "空运订舱"),
+    AIR_A_2_1("A_2_1", "订舱驳回"),
+    AIR_A_3("A_3", "订单入仓"),
+    AIR_A_4("A_4", "确认提单"),
+    AIR_A_5("A_5", "确认离港"),
+    AIR_A_6("A_6", "确认到港"),
+    AIR_A_7("A_7", "海外代理"),
+    AIR_A_8("A_8", "确认签收"),
+
     //外部报关放行
     EXT_CUSTOMS_RELEASE("E_C_0", "外部报关放行"),
 
@@ -105,5 +124,39 @@ public enum OrderStatusEnum {
             }
         }
         return "";
+    }
+
+    /**
+     * 获取空运下个节点
+     * 如果是驳回状态就是当前状态
+     */
+    public static OrderStatusEnum getAirOrderPreStatus(String currentStatus) {
+
+        if (AIR_A_2_1.getCode().equals(currentStatus)) {
+            return OrderStatusEnum.AIR_A_2_1;
+        }
+
+        List<OrderStatusEnum> statusEnums = new ArrayList<>();
+        statusEnums.add(AIR_A_0);
+        statusEnums.add(AIR_A_1);
+        statusEnums.add(AIR_A_2);
+        statusEnums.add(AIR_A_3);
+        statusEnums.add(AIR_A_4);
+        statusEnums.add(AIR_A_5);
+        statusEnums.add(AIR_A_6);
+        statusEnums.add(AIR_A_7);
+        statusEnums.add(AIR_A_8);
+
+        for (int i = 0; i < statusEnums.size(); i++) {
+            OrderStatusEnum orderStatusEnum = statusEnums.get(i);
+            if (orderStatusEnum.getCode().equals(currentStatus)) {
+                if (i == 0) {
+                    return AIR_A_0;
+                }
+                return statusEnums.get(i - 1);
+            }
+        }
+
+        return null;
     }
 }

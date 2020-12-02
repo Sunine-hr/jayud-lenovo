@@ -7,7 +7,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.RegionUtil;
@@ -55,7 +54,7 @@ public class EasyExcelUtils {
         //顶部数据
         rowNum = setTop(entity, sheet, workbook, rowNum);
 
-        setColumnWidth(entity,sheet);
+        setColumnWidth(entity, sheet);
 
         // 处理中文不能自动调整列宽的问题
 //        setSizeColumn(sheet,entity.getTableHead().size());
@@ -338,7 +337,7 @@ public class EasyExcelUtils {
 
     // 自适应宽度(中文支持)
     public static void setSizeColumn(Sheet sheet, int size) {
-        for (int columnNum = 1; columnNum <=size; columnNum++) {
+        for (int columnNum = 1; columnNum <= size; columnNum++) {
             int columnWidth = sheet.getColumnWidth(columnNum) / 256;
             for (int rowNum = 1; rowNum <= sheet.getLastRowNum(); rowNum++) {
                 Row currentRow;

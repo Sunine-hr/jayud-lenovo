@@ -2,6 +2,7 @@ package com.jayud.airfreight.mapper;
 
 import com.jayud.airfreight.model.po.GeneralApiLog;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
@@ -11,6 +12,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author william.chen
  * @since 2020-09-17
  */
+@Mapper
 public interface GeneralApiLogMapper extends BaseMapper<GeneralApiLog> {
 
 }

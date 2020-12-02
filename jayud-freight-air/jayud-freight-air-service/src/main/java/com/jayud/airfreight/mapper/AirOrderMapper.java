@@ -1,0 +1,26 @@
+package com.jayud.airfreight.mapper;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.airfreight.model.bo.QueryAirOrderForm;
+import com.jayud.airfreight.model.po.AirOrder;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.airfreight.model.vo.AirOrderFormVO;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+/**
+ * <p>
+ * 空运订单表 Mapper 接口
+ * </p>
+ *
+ * @author 李达荣
+ * @since 2020-11-30
+ */
+@Mapper
+public interface AirOrderMapper extends BaseMapper<AirOrder> {
+
+    IPage<AirOrderFormVO> findByPage(Page page, @Param("form") QueryAirOrderForm form);
+}

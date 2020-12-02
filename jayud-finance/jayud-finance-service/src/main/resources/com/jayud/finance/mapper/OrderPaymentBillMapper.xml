@@ -309,7 +309,7 @@
         opc.main_order_no
     </select>
     <select id="viewPaymentBill" parameterType="java.util.List" resultType="com.jayud.finance.vo.ViewFBilToOrderVO">
-        SELECT
+        SELECT DISTINCT
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         oi.order_no orderNo,
         t.order_no subOrderNo,

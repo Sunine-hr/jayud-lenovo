@@ -3,6 +3,8 @@ package com.jayud.oms.model.vo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * <p>
  * 币种
@@ -22,7 +24,7 @@ public class CurrencyInfoVO {
     private String currencyName;
 
     @ApiModelProperty(value = "他币与人民币的汇率")
-    private String exchangeRate;
+    private BigDecimal exchangeRate;
 
 
 }

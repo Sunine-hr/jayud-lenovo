@@ -21,7 +21,7 @@
         SELECT
             ci.`currency_name` currencyName,
             ci.`currency_code` currencyCode,
-            t1.exchange_rate
+            t1.exchange_rate exchangeRate
         FROM
             currency_info ci
             LEFT JOIN currency_rate t1 ON ci.`id` = t1.`ocid`
@@ -29,7 +29,7 @@
         WHERE
             ci.`status` = 1
             AND t1.`status` = 1
-            and t1.`month` = (select max(t2.`month`) from currency_rate t2 where t1.ocid = t2.ocid and t1.dcid = t2.dcid GROUP BY t2.dcid,t2.ocid)
+            and t1.`month` = #{createdTimeStr}
     </select>
 
 </mapper>

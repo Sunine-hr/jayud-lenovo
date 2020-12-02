@@ -184,12 +184,11 @@ public class MiniAppController {
 
         //币种
         List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
-        List<CurrencyInfoVO> currencyInfos = currencyInfoService.findCurrencyInfo();
-        for (CurrencyInfoVO currencyInfo : currencyInfos) {
+        List<CurrencyInfo> currencyInfos = currencyInfoService.list();
+        for (CurrencyInfo currencyInfo : currencyInfos) {
             InitComboxStrVO comboxStrVO = new InitComboxStrVO();
             comboxStrVO.setCode(currencyInfo.getCurrencyCode());
             comboxStrVO.setName(currencyInfo.getCurrencyName());
-            comboxStrVO.setNote(currencyInfo.getExchangeRate());
             initComboxStrVOS.add(comboxStrVO);
         }
         Map<String, List<InitComboxStrVO>> map = new HashMap<>();

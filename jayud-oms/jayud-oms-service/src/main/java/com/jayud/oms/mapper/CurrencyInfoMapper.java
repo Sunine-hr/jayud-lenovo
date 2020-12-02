@@ -4,6 +4,7 @@ import com.jayud.oms.model.po.CurrencyInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.oms.model.vo.CurrencyInfoVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -18,5 +19,5 @@ import java.util.List;
 @Mapper
 public interface CurrencyInfoMapper extends BaseMapper<CurrencyInfo> {
 
-    List<CurrencyInfoVO> findCurrencyInfo();
+    List<CurrencyInfoVO> findCurrencyInfo(@Param("createdTimeStr") String createdTimeStr);
 }

@@ -221,8 +221,12 @@ public class OrderComboxController {
 
     @ApiOperation(value = "录入费用:应收/付项目/币种 ")
     @PostMapping(value = "/initCost")
-    public CommonResult initCost() {
-        Map<String,Object> param = new HashMap<>();
+    public CommonResult initCost(@RequestBody Map<String,Object> param) {
+        String createdTimeStr = MapUtil.getStr(param,"createdTimeStr");
+        if(StringUtil.isNullOrEmpty(createdTimeStr)){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        Map<String,Object> result = new HashMap<>();
         List<CostInfo> costInfos = costInfoService.findCostInfo();//费用项目
         List<InitComboxStrVO> paymentCombox = new ArrayList<>();
         List<InitComboxStrVO> receivableCombox = new ArrayList<>();
@@ -233,21 +237,21 @@ public class OrderComboxController {
             receivableCombox.add(comboxStrVO);//后期没做应收应付项目的区分
             paymentCombox.add(comboxStrVO);
         }
-        param.put("paymentCost",paymentCombox);
-        param.put("receivableCost",receivableCombox);
+        result.put("paymentCost",paymentCombox);
+        result.put("receivableCost",receivableCombox);
 
         //币种
         List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
-        List<CurrencyInfoVO> currencyInfos = currencyInfoService.findCurrencyInfo();
+        List<CurrencyInfoVO> currencyInfos = currencyInfoService.findCurrencyInfo(createdTimeStr);
         for (CurrencyInfoVO currencyInfo : currencyInfos) {
             InitComboxStrVO comboxStrVO = new InitComboxStrVO();
             comboxStrVO.setCode(currencyInfo.getCurrencyCode());
             comboxStrVO.setName(currencyInfo.getCurrencyName());
-            comboxStrVO.setNote(currencyInfo.getExchangeRate());
+            comboxStrVO.setNote(String.valueOf(currencyInfo.getExchangeRate()));
             initComboxStrVOS.add(comboxStrVO);
         }
-        param.put("currency",initComboxStrVOS);
-        return CommonResult.success(param);
+        result.put("currency",initComboxStrVOS);
+        return CommonResult.success(result);
     }
 
     @ApiOperation(value = "操作员")

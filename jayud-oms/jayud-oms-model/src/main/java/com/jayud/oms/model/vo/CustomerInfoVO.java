@@ -12,14 +12,8 @@ public class CustomerInfoVO {
     @ApiModelProperty(value = "一级客户名称")
     private String name;
 
-    @ApiModelProperty(value = "结算单位")
-    private String unitAccount;
-
     @ApiModelProperty(value = "客户代码")
     private String idCode;
-
-    @ApiModelProperty(value = "结算代码")
-    private String unitCode;
 
     @ApiModelProperty(value = "客户类型(1同行 2电商 3货代)")
     private Integer types;

@@ -13,6 +13,7 @@
         <result column="address" property="address"/>
         <result column="email" property="email"/>
         <result column="legal_entity" property="legalEntity"/>
+        <result column="legal_entity_id" property="legalEntityId"/>
         <result column="invoice_code" property="invoiceCode"/>
         <result column="tfn" property="tfn"/>
         <result column="if_contract" property="ifContract"/>
@@ -32,7 +33,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-         id,name,id_code,types,contact,phone,address,email,legal_entity,invoice_code,tfn,
+         id,name,id_code,types,contact,phone,address,email,legal_entity,legal_entity_id,invoice_code,tfn,
          if_contract,settlement_type,account_period,estate,department_code,ku_code,yw_code,audit_status,
          created_user,updated_user,tax_type,tax_rate
     </sql>
@@ -42,8 +43,6 @@
         SELECT
         ci.id,
         ci.name,
-        ci.`unit_account` unitAccount,
-        ci.`unit_code` unitCode,
         ci.`id_code` idCode,
         ci.`types`,
         ci.`contact`,

@@ -41,9 +41,9 @@ public class AddCustomerInfoForm {
     @ApiModelProperty(value = "邮箱")
     private String email;
 
-    @ApiModelProperty(value = "法人主体",required = true)
-    @NotEmpty(message = "legalEntity is required")
-    private String legalEntity;
+    @ApiModelProperty(value = "法人主体ID",required = true)
+    @NotNull(message = "legalEntityId is required")
+    private Long legalEntityId;
 
     @ApiModelProperty(value = "发票抬头",required = true)
     @NotEmpty(message = "invoiceCode is required")

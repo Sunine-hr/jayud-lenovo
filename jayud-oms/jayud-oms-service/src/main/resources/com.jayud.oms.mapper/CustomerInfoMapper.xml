@@ -119,8 +119,8 @@
         ci.`phone`,
         ci.`address`,
         ci.`email`,
-        (select le.legal_name from legal_entity le where le.id = ci.legal_entity_id) legalEntity,
-		ci.legal_entity_id legalEntityId,
+        (select GROUP_CONCAT(concat(le.id,':',le.legal_name)) from legal_entity le
+        left join customer_rela_legal orl on le.id = orl.legal_entity_id where orl.customer_info_id = ci.id group by ci.id) legalEntityStr,
         ci.`tfn`,
         ci.`if_contract` ifContract,
         ci.`settlement_type` settlementType,

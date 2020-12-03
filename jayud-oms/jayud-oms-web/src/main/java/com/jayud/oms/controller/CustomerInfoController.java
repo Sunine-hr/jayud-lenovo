@@ -24,6 +24,7 @@ import com.jayud.oms.model.vo.CustomerInfoVO;
 import com.jayud.oms.model.vo.InitComboxVO;
 import com.jayud.oms.service.IAuditInfoService;
 import com.jayud.oms.service.ICustomerInfoService;
+import com.jayud.oms.service.ICustomerRelaLegalService;
 import com.jayud.oms.service.ICustomerRelaUnitService;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
@@ -61,6 +62,9 @@ public class CustomerInfoController {
     @Autowired
     private ICustomerRelaUnitService customerRelaUnitService;
 
+    @Autowired
+    private ICustomerRelaLegalService customerRelaLegalService;
+
     @ApiOperation(value = "查询客户列表")
     @PostMapping(value = "/findCustomerInfoByPage")
     public CommonResult<CommonPageResult<CustomerInfoVO>> findCustomerInfoByPage(@RequestBody QueryCustomerInfoForm form) {
@@ -95,7 +99,9 @@ public class CustomerInfoController {
             customerInfo.setCreatedUser(UserOperator.getToken());
         }
         customerInfo.setAuditStatus(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode());
-        customerInfoService.saveOrUpdate(customerInfo);
+        customerInfoService.saveOrUpdate(customerInfo);//保存客户信息
+        form.setId(customerInfo.getId());
+        customerRelaLegalService.saveCusRelLegal(form);//保存客户和法人主体关系
         return CommonResult.success();
     }
 

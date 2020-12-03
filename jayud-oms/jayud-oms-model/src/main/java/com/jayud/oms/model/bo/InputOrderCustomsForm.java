@@ -39,7 +39,7 @@ public class InputOrderCustomsForm {
     @ApiModelProperty(value = "柜号上传附件地址数组集合")
     private List<FileView> cntrPics = new ArrayList<>();
 
-    @ApiModelProperty(value = "六联单号")
+    @ApiModelProperty(value = "六联单号",required = true)
     private String encode;
 
     @ApiModelProperty(value = "六联单号附件,前台忽略")
@@ -81,8 +81,8 @@ public class InputOrderCustomsForm {
     @ApiModelProperty(value = "是否代垫税金1-是 0-否")
     private String isAgencyTax;
 
-    @ApiModelProperty(value = "接单法人")
-    private String legalName;
+    @ApiModelProperty(value = "接单法人ID")
+    private Long legalEntityId;
 
     @ApiModelProperty(value = "报关类型 CBG-纯报关 CKBG-出口报关,前台忽略")
     private String classCode;

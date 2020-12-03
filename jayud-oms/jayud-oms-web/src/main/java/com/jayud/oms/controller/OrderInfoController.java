@@ -112,9 +112,15 @@ public class OrderInfoController {
                         StringUtil.isNullOrEmpty(inputOrderCustomsForm.getPortName()) ||
                         inputOrderCustomsForm.getGoodsType() == null ||
                         StringUtil.isNullOrEmpty(inputOrderCustomsForm.getBizModel()) ||
-                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getLegalName()) ||
+                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getEncode()) || //六联单号
+                        inputOrderCustomsForm.getLegalEntityId() == null ||
                         inputOrderCustomsForm.getSubOrders() == null) {
-                    return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+                    return CommonResult.error(ResultEnum.PARAM_ERROR);
+                }
+                //六联单号必须为13位的纯数字
+                String encode = inputOrderCustomsForm.getEncode();
+                if(!(encode.matches("[0-9]{1,}") && encode.length() ==  13)){
+                    return CommonResult.error(ResultEnum.ENCODE_PURE_NUMBERS);
                 }
                 //附件处理
                 inputOrderCustomsForm.setCntrPic(StringUtils.getFileStr(inputOrderCustomsForm.getCntrPics()));
@@ -156,17 +162,21 @@ public class OrderInfoController {
                 //中港订单提货收货信息参数校验
                 List<InputOrderTakeAdrForm> takeAdrForms1 = inputOrderTransportForm.getTakeAdrForms1();
                 List<InputOrderTakeAdrForm> takeAdrForms2 = inputOrderTransportForm.getTakeAdrForms2();
-                //提货地址和送货地址分别至少存在一条数据才可提交
-                if (takeAdrForms1 == null || takeAdrForms1.size() == 0 || takeAdrForms2 == null || takeAdrForms2.size() == 0) {
+                //提货地址必填
+                if (takeAdrForms1 == null || takeAdrForms1.size() == 0) {
                     return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
                 }
                 List<InputOrderTakeAdrForm> takeAdrForms = new ArrayList<>();
-                takeAdrForms.addAll(takeAdrForms1);
-                takeAdrForms.addAll(takeAdrForms2);
+                if(takeAdrForms1.size() > 0){
+                    takeAdrForms.addAll(takeAdrForms1);
+                }
+                if(takeAdrForms2.size() > 0) {
+                    takeAdrForms.addAll(takeAdrForms2);
+                }
                 for (InputOrderTakeAdrForm inputOrderTakeAdr : takeAdrForms) {
                     if (inputOrderTakeAdr.getDeliveryId() == null
                             || inputOrderTakeAdr.getTakeTimeStr() == null || inputOrderTakeAdr.getPieceAmount() == null
-                            || inputOrderTakeAdr.getWeight() == null) {
+                            || inputOrderTakeAdr.getWeight() == null || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getGoodsDesc())) {
                         return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
                     }
                 }

@@ -6,6 +6,8 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 新增客户信息界面
@@ -14,7 +16,7 @@ import javax.validation.constraints.Pattern;
 public class AddCustomerInfoForm {
 
     @ApiModelProperty(value = "主键ID,修改时必传")
-    private Integer id;
+    private Long id;
 
     @ApiModelProperty(value = "客户名称",required = true)
     @NotEmpty(message = "name is required")
@@ -41,9 +43,9 @@ public class AddCustomerInfoForm {
     @ApiModelProperty(value = "邮箱")
     private String email;
 
-    @ApiModelProperty(value = "法人主体ID",required = true)
-    @NotNull(message = "legalEntityId is required")
-    private Long legalEntityId;
+    @ApiModelProperty(value = "法人主体ID集合",required = true)
+    @NotNull(message = "legalEntityIds is required")
+    private List<Long> legalEntityIds = new ArrayList<>();
 
     @ApiModelProperty(value = "纳税号",required = true)
     @NotEmpty(message = "tfn is required")
@@ -87,5 +89,8 @@ public class AddCustomerInfoForm {
 
     @ApiModelProperty(value = "业务员")
     private String ywName;
+
+    @ApiModelProperty(value = "当前登录用户,前台传",required = true)
+    private String loginUserName;
 
 }

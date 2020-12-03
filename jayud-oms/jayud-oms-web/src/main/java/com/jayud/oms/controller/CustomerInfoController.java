@@ -205,6 +205,11 @@ public class CustomerInfoController {
                 auditInfo.setAuditStatus(CustomerInfoStatusEnum.CW_WAIT_AUDIT.getCode());
                 auditInfo.setAuditTypeDesc(CustomerInfoStatusEnum.CW_WAIT_AUDIT.getDesc());
             } else if (CustomerInfoStatusEnum.CW_WAIT_AUDIT.getCode().equals(auditStatus)) {//财务审核流程
+                //客户代码此处必填项
+                if(StringUtil.isNullOrEmpty(form.getIdCode())){
+                    return CommonResult.error(ResultEnum.OPR_FAIL);
+                }
+                customerInfo.setIdCode(form.getIdCode());
                 customerInfo.setAuditStatus(CustomerInfoStatusEnum.ZJB_WAIT_AUDIT.getCode());
                 auditInfo.setAuditStatus(CustomerInfoStatusEnum.ZJB_WAIT_AUDIT.getCode());
                 auditInfo.setAuditTypeDesc(CustomerInfoStatusEnum.ZJB_WAIT_AUDIT.getDesc());

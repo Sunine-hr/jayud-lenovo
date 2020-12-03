@@ -24,4 +24,7 @@ public class AuditCustomerInfoForm {
     @ApiModelProperty(value = "审核意见")
     private String auditComment;
 
+    @ApiModelProperty(value = "客户代码,财务审核时必填")
+    private String idCode;
+
 }

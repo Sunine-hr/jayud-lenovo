@@ -33,8 +33,8 @@ public class CustomerInfoVO {
     @ApiModelProperty(value = "法人主体")
     private String legalEntity;
 
-    @ApiModelProperty(value = "发票抬头")
-    private String invoiceCode;
+    @ApiModelProperty(value = "法人主体ID")
+    private Long legalEntityId;
 
     @ApiModelProperty(value = "纳税号")
     private String tfn;

@@ -356,7 +356,7 @@
             = '2' LIMIT 1) endAddress,
             (select concat( vi.plate_number, vi.hk_number ) from order_send_cars osc left join order_transport ot
             on osc.order_no = ot.order_no left join driver_info di on di.id = osc.driver_info_id left join vehicle_info vi on vi.id = di.vehicle_id where ot.main_order_no = oi.order_no) licensePlate,
-            (select GROUP_CONCAT(oc.yun_customs_no) from order_customs oc where oc.main_order_no = oi.order_no GROUP BY OC.main_order_no) yunCustomsNo,
+            (select GROUP_CONCAT(oc.yun_customs_no) from order_customs oc where oc.main_order_no = oi.order_no GROUP BY oc.main_order_no) yunCustomsNo,
             (select cg.`name` from cost_genre cg where cg.id = opc.cost_genre_id) costGenreName,
             opc.cost_genre_id,
             opc.id costId,
@@ -370,7 +370,7 @@
             obct.money_type='1' and obct.currency_code = 'EUR') euro,
             (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = opbd.cost_id and
             obct.money_type='1' and obct.currency_code = 'HKD') hKDollar,
-            opbd.tax_rate taxRate,
+            ifnull(opbd.tax_rate,(select pb.tax_rate from product_biz pb where pb.id_code = oi.biz_code)) taxRate,
             opbd.remarks,
             opbd.created_time createTimeStr
             FROM

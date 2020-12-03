@@ -1,7 +1,7 @@
 package com.jayud.oms.service;
 
 import com.jayud.oms.model.bo.ConfirmRelateUnitForm;
-import com.jayud.oms.po.CustomerRelaUnit;
+import com.jayud.oms.model.po.CustomerRelaUnit;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.oms.mapper.CustomerRelaUnitMapper;
 import com.jayud.oms.model.bo.ConfirmRelateUnitForm;
 import com.jayud.oms.model.bo.CustomerInfoForm;
-import com.jayud.oms.po.CustomerRelaUnit;
+import com.jayud.oms.model.po.CustomerRelaUnit;
 import com.jayud.oms.service.ICustomerRelaUnitService;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package com.jayud.oms.po;
+package com.jayud.oms.model.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;

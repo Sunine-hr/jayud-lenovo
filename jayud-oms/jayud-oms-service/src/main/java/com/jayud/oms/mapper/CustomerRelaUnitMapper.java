@@ -1,6 +1,6 @@
 package com.jayud.oms.mapper;
 
-import com.jayud.oms.po.CustomerRelaUnit;
+import com.jayud.oms.model.po.CustomerRelaUnit;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

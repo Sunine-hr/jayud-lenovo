@@ -79,6 +79,9 @@ public class LogisticsTrack extends Model<LogisticsTrack> {
     @ApiModelProperty(value = "操作时间")
     private LocalDateTime operatorTime;
 
+    @ApiModelProperty(value = "业务类型(0:空运,1:纯报关,2:中港运输)")
+    private Integer type;
+
 
     @Override
     protected Serializable pkVal() {

@@ -296,8 +296,8 @@ public class FinanceController {
      * @param form
      * @return
      */
-    @PostMapping("/pushReceivable billNos = 编号集合")
-    @ApiOperation(value = "推送应收单")
+    @PostMapping("/pushReceivable")
+    @ApiOperation(value = "推送应收单,billNos = 编号集合")
     public CommonResult saveReceivableBill(@RequestBody ListForm form) {
         //校验是否可推送金蝶
         //1.必须财务已审核通过

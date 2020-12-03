@@ -51,9 +51,6 @@ public class CustomerInfo extends Model<CustomerInfo> {
     @ApiModelProperty(value = "法人主体ID")
     private Long legalEntityId;
 
-    @ApiModelProperty(value = "发票抬头")
-    private String invoiceCode;
-
     @ApiModelProperty(value = "纳税号")
     private String tfn;
 

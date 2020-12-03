@@ -45,10 +45,6 @@ public class AddCustomerInfoForm {
     @NotNull(message = "legalEntityId is required")
     private Long legalEntityId;
 
-    @ApiModelProperty(value = "发票抬头",required = true)
-    @NotEmpty(message = "invoiceCode is required")
-    private String invoiceCode;
-
     @ApiModelProperty(value = "纳税号",required = true)
     @NotEmpty(message = "tfn is required")
     private String tfn;

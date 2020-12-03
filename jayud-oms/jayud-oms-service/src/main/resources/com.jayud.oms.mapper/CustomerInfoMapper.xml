@@ -14,7 +14,6 @@
         <result column="email" property="email"/>
         <result column="legal_entity" property="legalEntity"/>
         <result column="legal_entity_id" property="legalEntityId"/>
-        <result column="invoice_code" property="invoiceCode"/>
         <result column="tfn" property="tfn"/>
         <result column="if_contract" property="ifContract"/>
         <result column="settlement_type" property="settlementType"/>
@@ -33,7 +32,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-         id,name,id_code,types,contact,phone,address,email,legal_entity,legal_entity_id,invoice_code,tfn,
+         id,name,id_code,types,contact,phone,address,email,legal_entity,legal_entity_id,tfn,
          if_contract,settlement_type,account_period,estate,department_code,ku_code,yw_code,audit_status,
          created_user,updated_user,tax_type,tax_rate
     </sql>
@@ -50,7 +49,6 @@
         ci.`address`,
         ci.`email`,
         ci.`legal_entity` legalEntity,
-        ci.`invoice_code` invoiceCode,
         ci.`tfn`,
         ci.`if_contract` ifContract,
         ci.`settlement_type` settlementType,
@@ -123,7 +121,6 @@
         ci.`email`,
         (select le.legal_name from legal_entity le where le.id = ci.legal_entity_id) legalEntity,
 		ci.legal_entity_id legalEntityId,
-        ci.`invoice_code` invoiceCode,
         ci.`tfn`,
         ci.`if_contract` ifContract,
         ci.`settlement_type` settlementType,
@@ -293,7 +290,7 @@
     </select>
 
     <select id="findUnitInfoByCode" parameterType="java.lang.String" resultType="com.jayud.oms.model.vo.CustomerInfoVO">
-        select ci.id_code idCode,ci.`name` from customer_info ci
+        select ci.id,ci.id_code idCode,ci.`name` from customer_info ci
         where ci.id in
            (select cru.unit_id from customer_info c left join customer_rela_unit cru on c.id = cru.customer_info_id
             where c.id_code = #{idCode})

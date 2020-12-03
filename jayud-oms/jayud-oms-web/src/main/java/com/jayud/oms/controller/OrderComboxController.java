@@ -136,25 +136,33 @@ public class OrderComboxController {
     }
 
 
-    @ApiOperation(value = "创建订单-客户联动业务员和结算单位,idCode=客户CODE,必填")
+    @ApiOperation(value = "二期优化现有接口:创建订单-客户联动业务员和结算单位,idCode=客户CODE,必填")
     @PostMapping(value = "/initUnit")
     public CommonResult<Map<String,Object>> initUnit(@RequestBody Map<String,Object> param) {
         String idCode = MapUtil.getStr(param,"idCode");
         if(StringUtil.isNullOrEmpty(idCode)){
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
+        //根据客户CODE获取客户信息
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("id_code",idCode);
+        CustomerInfo customer = customerInfoService.getOne(queryWrapper);
         Map<String,Object> resultMap = new HashMap<>();
+        //根据客户获取结算单位
         List<CustomerInfoVO> customerInfoList = customerInfoService.findUnitInfoByCode(idCode);
         List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
-        List<Long> ids = new ArrayList<>();
         for (CustomerInfoVO customerInfo : customerInfoList) {
             InitComboxStrVO comboxStrVO = new InitComboxStrVO();
             comboxStrVO.setCode(customerInfo.getIdCode());
             comboxStrVO.setName(customerInfo.getName());
             comboxStrVOS.add(comboxStrVO);
-            if(customerInfo.getYwId() != null) {
-                ids.add(customerInfo.getYwId());
-            }
+        }
+        //如果没有结算单位,客户本身作为结算单位
+        if(comboxStrVOS.size() == 0){
+            InitComboxStrVO comboxStrVO = new InitComboxStrVO();
+            comboxStrVO.setCode(customer.getIdCode());
+            comboxStrVO.setName(customer.getName());
+            comboxStrVOS.add(comboxStrVO);
         }
         resultMap.put("units",comboxStrVOS);
 
@@ -170,7 +178,10 @@ public class OrderComboxController {
         }
         resultMap.put("supplierInfos",supplierStrVOS);//下拉供应商
 
+        //根据客户获取业务员
         List<InitComboxVO> yws = new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
+        ids.add(customer.getYwId());
         if(ids.size() > 0) {
             List<SystemUserVO> userVOS = oauthClient.getUsersByIds(ids).getData();
             for (SystemUserVO systemUserVO : userVOS) {
@@ -181,6 +192,11 @@ public class OrderComboxController {
             }
         }
         resultMap.put("yws",yws);
+
+        //根据客户获取业务员部门
+        resultMap.put("departmentId",customer.getDepartmentId());
+        //根据客户获取接单法人
+        resultMap.put("legalEntityId",customer.getLegalEntityId());
         return CommonResult.success(resultMap);
     }
 

@@ -226,16 +226,10 @@
             sum( opc.amount )
         FROM
             order_payment_cost opc
-        WHERE 1 = 1
-        <if test="costIds != null and costIds.size>0">
-            and opc.id IN
-            <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </if>
-        <if test="costIds = null or costIds.size == 0">
-           and 1 = 0
-        </if>
+        WHERE opc.id IN
+        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         GROUP BY
             opc.cost_code,
             opc.currency_code
@@ -248,16 +242,10 @@
         sum( opc.amount )
         FROM
         order_payment_cost opc
-        WHERE 1 = 1
-        <if test="costIds != null and costIds.size>0">
-            and opc.id IN
+        WHERE opc.id IN
             <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
-        </if>
-        <if test="costIds = null or costIds.size == 0">
-            and 1 = 0
-        </if>
         GROUP BY
         opc.currency_code
     </select>
@@ -271,16 +259,11 @@
             sum( opc.amount ) money
         FROM
             order_payment_cost opc
-        WHERE 1 = 1
-        <if test="costIds != null and costIds.size>0">
-            and opc.id IN
-            <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </if>
-        <if test="costIds = null or costIds.size == 0">
-            and 1 = 0
-        </if>
+        WHERE
+        opc.id IN
+        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         GROUP BY
             opc.cost_code,
             opc.currency_code,
@@ -294,16 +277,11 @@
         sum( opc.amount ) money
         FROM
         order_payment_cost opc
-        WHERE 1 = 1
-        <if test="costIds != null and costIds.size>0">
-            and opc.id IN
-            <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </if>
-        <if test="costIds = null or costIds.size == 0">
-            and 1 = 0
-        </if>
+        WHERE
+        opc.id IN
+        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         GROUP BY
         opc.currency_code,
         opc.main_order_no

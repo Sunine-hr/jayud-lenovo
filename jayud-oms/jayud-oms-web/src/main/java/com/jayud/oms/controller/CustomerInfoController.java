@@ -24,6 +24,7 @@ import com.jayud.oms.model.vo.CustomerInfoVO;
 import com.jayud.oms.model.vo.InitComboxVO;
 import com.jayud.oms.service.IAuditInfoService;
 import com.jayud.oms.service.ICustomerInfoService;
+import com.jayud.oms.service.ICustomerRelaUnitService;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -56,6 +57,9 @@ public class CustomerInfoController {
 
     @Autowired
     private IAuditInfoService auditInfoService;
+
+    @Autowired
+    private ICustomerRelaUnitService customerRelaUnitService;
 
     @ApiOperation(value = "查询客户列表")
     @PostMapping(value = "/findCustomerInfoByPage")
@@ -95,7 +99,7 @@ public class CustomerInfoController {
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "二期优化:新增和编辑时校验客户名称是否存在")
+    @ApiOperation(value = "二期优化:新增和编辑时校验客户名称是否存在,name=客户姓名")
     @PostMapping(value = "/existCustomerName")
     public CommonResult<List<CustomerInfo>> existCustomerName(@RequestBody Map<String,Object> param) {
         String customerName = MapUtil.getStr(param, "name");
@@ -103,12 +107,12 @@ public class CustomerInfoController {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("name",customerName);
+        queryWrapper.like("name",customerName);
         List<CustomerInfo> customerInfos = customerInfoService.list(queryWrapper);
         return CommonResult.success(customerInfos);
     }
 
-    @ApiOperation(value = "删除客户信息")
+    @ApiOperation(value = "二期优化:删除客户信息(禁用)")
     @PostMapping(value = "/delCustomerInfo")
     public CommonResult delCustomerInfo(@RequestBody DeleteForm form) {
         List<CustomerInfo> customerInfos = new ArrayList<>();
@@ -123,6 +127,51 @@ public class CustomerInfoController {
         customerInfoService.saveOrUpdateBatch(customerInfos);
         return CommonResult.success();
     }
+
+    @ApiOperation(value = "二期优化:已关联客户(结算单位)列表,id = 客户ID")
+    @PostMapping(value = "/relateUnitList")
+    public CommonResult<List<CustomerInfoVO>> relateUnitList(@RequestBody Map<String,Object> param) {
+        Long id = Long.valueOf(MapUtil.getStr(param, "id"));
+        if(id == null){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        List<CustomerInfoVO> customerInfoVOS = customerInfoService.relateUnitList(id);
+        return CommonResult.success(customerInfoVOS);
+    }
+
+    @ApiOperation(value = "二期优化:删除已关联客户(结算单位)列表,customerInfoId=客户ID,unitId=关联客户ID")
+    @PostMapping(value = "/delRelateUnitList")
+    public CommonResult delRelateUnitList(@RequestBody Map<String,Object> param) {
+        Long customerInfoId = Long.valueOf(MapUtil.getStr(param, "customerInfoId"));
+        Long unitId = Long.valueOf(MapUtil.getStr(param, "unitId"));
+        if(customerInfoId == null || unitId == null){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        QueryWrapper removeWrapper = new QueryWrapper();
+        removeWrapper.eq("customer_info_id",customerInfoId);
+        removeWrapper.eq("unit_id",unitId);
+        customerRelaUnitService.remove(removeWrapper);
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "二期优化:关联客户(结算单位)列表")
+    @PostMapping(value = "/findRelateUnitList")
+    public CommonResult<List<CustomerInfoVO>> findRelateUnitList(@RequestBody QueryRelUnitInfoListForm form) {
+        List<CustomerInfoVO> customerInfoVOS = customerInfoService.findRelateUnitList(form);
+        return CommonResult.success(customerInfoVOS);
+    }
+
+    @ApiOperation(value = "二期优化:确认关联客户(结算单位)")
+    @PostMapping(value = "/confirmRelateUnit")
+    public CommonResult<List<CustomerInfoVO>> confirmRelateUnit(@RequestBody ConfirmRelateUnitForm form) {
+        Boolean result = customerRelaUnitService.confirmRelateUnit(form);
+        if(!result){
+            return CommonResult.error(ResultEnum.OPR_FAIL);
+        }
+        return CommonResult.success();
+    }
+
+
 
     @ApiOperation(value = "审核客户信息")
     @PostMapping(value = "/auditCustomerInfo")

@@ -7,7 +7,7 @@ import lombok.Data;
 public class CustomerInfoVO {
 
     @ApiModelProperty(value = "id")
-    private Integer id;
+    private Long id;
 
     @ApiModelProperty(value = "一级客户名称")
     private String name;

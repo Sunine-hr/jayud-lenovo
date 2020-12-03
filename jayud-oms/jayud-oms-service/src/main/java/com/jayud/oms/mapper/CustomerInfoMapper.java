@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.oms.model.bo.QueryCusAccountForm;
 import com.jayud.oms.model.bo.QueryCustomerInfoForm;
+import com.jayud.oms.model.bo.QueryRelUnitInfoListForm;
 import com.jayud.oms.model.po.CustomerInfo;
 import com.jayud.oms.model.vo.CustAccountVO;
 import com.jayud.oms.model.vo.CustomerInfoVO;
@@ -64,4 +65,17 @@ public interface CustomerInfoMapper extends BaseMapper<CustomerInfo> {
      */
     List<CustomerInfoVO> findUnitInfoByCode(@Param("idCode") String idCode);
 
+    /**
+     * 根据客户ID获取结算单位
+     * @param id
+     * @return
+     */
+    List<CustomerInfoVO> relateUnitList(@Param("id") Long id);
+
+    /**
+     * 查询审核通过的关联客户,并且没有关联当前客户的
+     * @param form
+     * @return
+     */
+    List<CustomerInfoVO> findRelateUnitList(@Param("form")QueryRelUnitInfoListForm form);
 }

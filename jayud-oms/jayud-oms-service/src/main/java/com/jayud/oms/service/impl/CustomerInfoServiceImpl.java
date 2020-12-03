@@ -6,13 +6,14 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.oms.model.bo.QueryCustomerInfoForm;
-import com.jayud.oms.model.po.CustomerInfo;
-import com.jayud.oms.model.vo.CustomerInfoVO;
-import com.jayud.oms.model.bo.QueryCusAccountForm;
-import com.jayud.oms.service.ICustomerInfoService;
-import com.jayud.oms.model.vo.CustAccountVO;
 import com.jayud.oms.mapper.CustomerInfoMapper;
+import com.jayud.oms.model.bo.QueryCusAccountForm;
+import com.jayud.oms.model.bo.QueryCustomerInfoForm;
+import com.jayud.oms.model.bo.QueryRelUnitInfoListForm;
+import com.jayud.oms.model.po.CustomerInfo;
+import com.jayud.oms.model.vo.CustAccountVO;
+import com.jayud.oms.model.vo.CustomerInfoVO;
+import com.jayud.oms.service.ICustomerInfoService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -75,5 +76,14 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         return baseMapper.findUnitInfoByCode(idCode);
     }
 
+    @Override
+    public List<CustomerInfoVO> relateUnitList(Long id) {
+        return baseMapper.relateUnitList(id);
+    }
+
+    @Override
+    public List<CustomerInfoVO> findRelateUnitList(QueryRelUnitInfoListForm form) {
+        return baseMapper.findRelateUnitList(form);
+    }
 
 }

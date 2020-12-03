@@ -323,6 +323,12 @@ public class OrderComboxController {
         return CommonResult.success(costTypeComboxs);
     }
 
+    @ApiOperation(value = "二期优化:法人主体")
+    @PostMapping(value = "/initLegalEntity")
+    public CommonResult<List<InitComboxVO>> initLegalEntity() {
+        return CommonResult.success(oauthClient.findLegalEntity().getData());
+    }
+
 
 
 

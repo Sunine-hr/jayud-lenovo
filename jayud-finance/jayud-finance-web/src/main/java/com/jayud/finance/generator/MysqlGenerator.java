@@ -26,11 +26,11 @@ import java.util.Map;
 public class MysqlGenerator {
 
     public static void main(String[] args) {
-        String[] models = {"jayud-finance\\jayud-finance-model",
-                "jayud-finance\\jayud-finance-service",
-                "jayud-finance\\jayud-finance-web"};
+        String[] models = {"jayud-oms\\jayud-oms-model",
+                "jayud-oms\\jayud-oms-service",
+                "jayud-oms\\jayud-oms-web"};
         for (String model : models) {
-            shell(model,"customs_finance_push_log");
+            shell(model,"customer_rela_unit");
 //            shell(model,"customs_finance_fee_relation");
 
         }
@@ -50,7 +50,7 @@ public class MysqlGenerator {
         gc.setBaseResultMap(true);// XML ResultMap
         gc.setBaseColumnList(true);// XML columList
         gc.setSwagger2(true);
-        gc.setAuthor("william.chen");
+        gc.setAuthor("chuanmei");
 
         // 自定义文件命名，注意 %s 会自动填充表实体属性！
         gc.setMapperName("%sMapper");
@@ -64,9 +64,9 @@ public class MysqlGenerator {
         DataSourceConfig dsc = new DataSourceConfig();
         dsc.setDbType(DbType.MYSQL);
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
-        dsc.setUsername("root");
-        dsc.setPassword("Root!!2020");
-        dsc.setUrl("jdbc:mysql://113.100.140.250:8098/jayud_platform?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC");
+        dsc.setUsername("jayudtest");
+        dsc.setPassword("jayudtest");
+        dsc.setUrl("jdbc:mysql://rm-wz9m40gpm90c230wobo.mysql.rds.aliyuncs.com/jayud_oms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC");
         mpg.setDataSource(dsc);
 
         // 策略配置
@@ -79,7 +79,7 @@ public class MysqlGenerator {
         String pack = "";
         // 包配置
         PackageConfig pc = new PackageConfig();
-        pc.setParent("com.jayud.finance");
+        pc.setParent("com.jayud.oms");
         pc.setEntity("po");
         pc.setController("controller");
         pc.setMapper("mapper");
@@ -103,7 +103,7 @@ public class MysqlGenerator {
                 @Override
                 public String outputFile(TableInfo tableInfo) {
                     //生成mapperXml的路径配置
-                    return path + "/src/main/resources/com/jayud/finance/mapper"
+                    return path + "/src/main/resources/com/jayud/oms/mapper"
                             + "/" + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
                 }
             });

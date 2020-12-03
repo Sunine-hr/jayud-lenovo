@@ -4,6 +4,7 @@ package com.jayud.oms.feign;
 import com.jayud.common.ApiResult;
 import com.jayud.oms.model.bo.AddCusAccountForm;
 import com.jayud.oms.model.bo.QueryAccountForm;
+import com.jayud.oms.model.vo.InitComboxVO;
 import com.jayud.oms.model.vo.SystemUserVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,7 +40,7 @@ public interface OauthClient {
      * @return
      */
     @RequestMapping(value = "/api/findLegalEntity", method = RequestMethod.GET)
-    ApiResult findLegalEntity();
+    ApiResult<List<InitComboxVO>> findLegalEntity();
 
 
     /**

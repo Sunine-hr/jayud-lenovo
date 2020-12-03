@@ -212,7 +212,7 @@
         LEFT JOIN port_info p ON ot.port_code = p.id_code
         LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`
         WHERE oi.`class_code` = 'ZGYS'
-        AND ot.`status` = 'T_6'
+        AND (ot.`status` = 'T_6' or (ot.`status` = 'T_5' AND ot.is_vehicle_weigh = 1))
         AND (oi.`customs_release` = 1
         OR
         ((SELECT COUNT(1) FROM logistics_track lt WHERE lt.`main_order_id` = oi.`id` AND lt.`status`='C_5') =

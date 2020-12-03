@@ -149,7 +149,7 @@ public class OrderInfoController {
                         inputOrderTransportForm.getVehicleType() == null ||
                         inputOrderTransportForm.getVehicleSize() == null ||
                         inputOrderTransportForm.getWarehouseInfoId() == null ||
-                        StringUtil.isNullOrEmpty(inputOrderTransportForm.getLegalName()) ||
+                        inputOrderTransportForm.getLegalEntityId() == null ||
                         StringUtil.isNullOrEmpty(inputOrderTransportForm.getUnitCode())) {
                     return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
                 }

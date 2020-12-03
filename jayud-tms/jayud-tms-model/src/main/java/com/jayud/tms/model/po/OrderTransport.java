@@ -77,6 +77,9 @@ public class OrderTransport extends Model<OrderTransport> {
     @ApiModelProperty(value = "接单法人")
     private String legalName;
 
+    @ApiModelProperty(value = "接单法人ID")
+    private Long legalEntityId;
+
     @ApiModelProperty(value = "香港清关结算单位,选择了香港清关必填")
     private String hkUnitCode;
 

@@ -15,12 +15,12 @@
         <result column="cntr_pic" property="cntrPic" />
         <result column="cntr_pic_name" property="cntrPicName" />
         <result column="warehouse_info_id" property="warehouseInfoId" />
-        <result column="encode" property="encode" />
         <result column="status" property="status" />
         <result column="is_load_goods" property="isLoadGoods" />
         <result column="is_unload_goods" property="isUnloadGoods" />
         <result column="unit_code" property="unitCode" />
         <result column="legal_name" property="legalName" />
+        <result column="legal_entity_id" property="legalEntityId" />
         <result column="hk_unit_code" property="hkUnitCode" />
         <result column="hk_legal_name" property="hkLegalName" />
         <result column="is_hk_clear" property="isHkClear" />
@@ -37,7 +37,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, main_order_no, order_no, port_code, goods_type, vehicle_type, vehicle_size, cntr_no, cntr_pic, cntrPicName,
-        warehouse_info_id, encode, status, is_load_goods, is_unload_goods,unit_code, hk_unit_code,hk_legal_name,is_hk_clear,
+        warehouse_info_id, status, is_load_goods, is_unload_goods,unit_code, hk_unit_code,hk_legal_name,legal_entity_id,is_hk_clear,
         updated_time, updated_user, created_time,created_user,jiedan_user,jiedan_time,car_weigh_num,legal_name,need_input_cost,
         driver_info_id
     </sql>
@@ -53,7 +53,6 @@
           ot.`port_code` portCode,
           ot.`unit_code` unitCode,
           p.`name` portName,
-          ot.`encode`,
           ot.`status`,
           vi.hk_number hkLicensePlate,
           vi.plate_number licensePlate,

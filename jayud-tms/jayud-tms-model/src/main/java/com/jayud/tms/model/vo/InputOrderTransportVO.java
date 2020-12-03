@@ -38,11 +38,11 @@ public class InputOrderTransportVO {
     @ApiModelProperty("接单法人")
     private String legalName;
 
+    @ApiModelProperty("接单法人ID")
+    private Long legalEntityId;
+
     @ApiModelProperty(value = "通关口岸")
     private String portName;
-
-    @ApiModelProperty(value = "六联单号")
-    private String encode;
 
     @ApiModelProperty(value = "状态")
     private String status;

@@ -26,9 +26,6 @@ public class InputOrderTransportForm {
     @ApiModelProperty(value = "货物流向",required = true)
     private Integer goodsType;
 
-    @ApiModelProperty(value = "六联单号")
-    private String encode;
-
     @ApiModelProperty(value = "车型(1吨车 2柜车)",required = true)
     private Integer vehicleType;
 
@@ -56,8 +53,8 @@ public class InputOrderTransportForm {
     @ApiModelProperty(value = "1-卸货 0-不需要卸货")
     private String isUnloadGoods;
 
-    @ApiModelProperty(value = "接单法人",required = true)
-    private String legalName;
+    @ApiModelProperty(value = "接单法人ID",required = true)
+    private Long legalEntityId;
 
     @ApiModelProperty(value = "结算单位",required = true)
     private String unitCode;

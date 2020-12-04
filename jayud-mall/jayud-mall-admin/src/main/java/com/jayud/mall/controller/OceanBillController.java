@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/oceanbill")
-@Api(tags = "提单接口")
+@Api(tags = "后端-提单接口")
 public class OceanBillController {
 
     @Autowired

@@ -61,6 +61,8 @@ public class ReceiveVivoController {
                 //主订单设置客户名称
                 mainOrderForm.setCustomerName(customerInfo.getStr("name"));
                 mainOrderForm.setCustomerCode(customerInfo.getStr("idCode"));
+                mainOrderForm.setClassCode(OrderStatusEnum.KY.getCode());
+                mainOrderForm.setSelectedServer(OrderStatusEnum.KYDD.getCode());
                 //TODO 不清楚接单法人和结算单位是否要传
                 //组装空运订单
                 AddAirOrderForm addAirOrderForm = form.convertAddAirOrderForm();
@@ -68,6 +70,7 @@ public class ReceiveVivoController {
                 orderForm.setAirOrderForm(addAirOrderForm);
                 //暂存订单
                 result = this.omsClient.holdOrder(orderForm);
+                //TODO 保存第三方字段
                 break;
             default:
                 return VivoApiResult.error("暂时只支持空运");

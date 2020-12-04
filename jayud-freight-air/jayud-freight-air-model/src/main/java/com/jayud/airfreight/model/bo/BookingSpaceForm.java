@@ -3,6 +3,7 @@ package com.jayud.airfreight.model.bo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
+import com.jayud.airfreight.model.enums.AirOrderTermsEnum;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.CreateUserTypeEnum;
 import com.jayud.common.enums.OrderAddressEnum;
@@ -235,7 +236,7 @@ public class BookingSpaceForm {
         addAirOrderForm.setThirdPartyOrderNo(this.bookingNo);
         addAirOrderForm.setPortDepartureCode(this.portOfDeparture.substring(2, 5));
         addAirOrderForm.setPortDestinationCode(this.portOfDestination.substring(2, 5));
-        addAirOrderForm.setTerms(Integer.valueOf(this.tradeTerms));
+        addAirOrderForm.setTerms(AirOrderTermsEnum.getCode(this.tradeTerms));
         addAirOrderForm.setCreateUserType(CreateUserTypeEnum.VIVO.getCode());
         //发货地址信息
         AddOrderAddressForm shippingAddress = new AddOrderAddressForm();
@@ -246,7 +247,7 @@ public class BookingSpaceForm {
         AddOrderAddressForm consignee = new AddOrderAddressForm();
         consignee.setCompany(this.consignee);
         consignee.setAddress(this.consigneeAddress);
-        shippingAddress.setType(OrderAddressEnum.RECEIVING_GOODS.getCode());
+        consignee.setType(OrderAddressEnum.RECEIVING_GOODS.getCode());
         //货品信息
         AddGoodsForm addGoodsForm = new AddGoodsForm();
         addGoodsForm.setVolume(Double.valueOf(this.totalVolume));
@@ -264,7 +265,7 @@ public class BookingSpaceForm {
     }
 
     public static void main(String[] args) {
-        String s="HHHKG";
+        String s = "HHHKG";
         System.out.println(s.substring(2, 5));
     }
 }

@@ -64,5 +64,11 @@ public class AddCustomerAddressForm {
     @ApiModelProperty(value = "邮编")
     private String postCode;
 
+    @ApiModelProperty(value = "传真")
+    private String fax;
+
+    @ApiModelProperty(value = "邮箱")
+    private String mailbox;
+
 
 }

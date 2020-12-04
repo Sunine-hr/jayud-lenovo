@@ -87,6 +87,12 @@ public class DeliveryAddress extends Model<DeliveryAddress> {
     @ApiModelProperty(value = "区主键")
     private Integer area;
 
+    @ApiModelProperty(value = "传真")
+    private String fax;
+
+    @ApiModelProperty(value = "邮箱")
+    private String mailbox;
+
 
     @Override
     protected Serializable pkVal() {

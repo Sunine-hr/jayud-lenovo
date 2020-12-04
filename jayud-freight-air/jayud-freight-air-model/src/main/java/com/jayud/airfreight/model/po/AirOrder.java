@@ -3,8 +3,10 @@ package com.jayud.airfreight.model.po;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.time.LocalDateTime;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -22,7 +24,7 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="AirOrder对象", description="空运订单表")
+@ApiModel(value = "AirOrder对象", description = "空运订单表")
 public class AirOrder extends Model<AirOrder> {
 
     private static final long serialVersionUID = 1L;
@@ -64,11 +66,11 @@ public class AirOrder extends Model<AirOrder> {
     @ApiModelProperty(value = "目的港代码")
     private String portDestinationCode;
 
-    @ApiModelProperty(value = "海外供应商代码")
-    private String overseasSuppliersCode;
+    @ApiModelProperty(value = "海外供应商id")
+    private Long overseasSuppliersId;
 
     @ApiModelProperty(value = "代理服务类型（0:清关,1:配送）")
-    private Integer proxyServiceType;
+    private String proxyServiceType;
 
     @ApiModelProperty(value = "货好时间")
     private LocalDateTime goodTime;
@@ -97,6 +99,8 @@ public class AirOrder extends Model<AirOrder> {
     @ApiModelProperty(value = "更新时间")
     private LocalDateTime updateTime;
 
+    @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo)")
+    private Integer createUserType;
 
     @Override
     protected Serializable pkVal() {

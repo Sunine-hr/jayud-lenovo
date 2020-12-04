@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.airfreight.mapper.AirBookingMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.airfreight.model.po.AirBooking">
+        <id column="id" property="id" />
+        <result column="status" property="status" />
+        <result column="air_order_no" property="airOrderNo" />
+        <result column="air_order_id" property="airOrderId" />
+        <result column="agent_supplier_id" property="agentSupplierId" />
+        <result column="warehousing_no" property="warehousingNo" />
+        <result column="main_no" property="mainNo" />
+        <result column="sub_no" property="subNo" />
+        <result column="cut_off_date" property="cutOffDate" />
+        <result column="airline_company" property="airlineCompany" />
+        <result column="flight" property="flight" />
+        <result column="etd" property="etd" />
+        <result column="atd" property="atd" />
+        <result column="eta" property="eta" />
+        <result column="ata" property="ata" />
+        <result column="delivery_address" property="deliveryAddress" />
+        <result column="file_path" property="filePath" />
+        <result column="file_name" property="fileName" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, status, air_order_no, air_order_id, agent_supplier_id, warehousing_no, main_no, sub_no, cut_off_date, airline_company, flight, etd, atd, eta, ata, delivery_address, file_path, file_name, create_user, create_time, update_user, update_time
+    </sql>
+
+</mapper>

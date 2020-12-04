@@ -25,10 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -164,7 +161,7 @@ public class ExternalApiController {
             }
         } else {
             queryWrapper.lambda().eq(SystemUser::getUserName, form.getUserName()).or().eq(SystemUser::getName, form.getName());
-            if (this.userService.count(queryWrapper)>0) {
+            if (this.userService.count(queryWrapper) > 0) {
                 return ApiResult.error(ResultEnum.LOGIN_NAME_EXIST.getCode(), ResultEnum.LOGIN_NAME_EXIST.getMessage());
             }
         }
@@ -262,6 +259,12 @@ public class ExternalApiController {
         return ApiResult.ok(userVO);
     }
 
+    @ApiOperation("根据登录名查询用户信息")
+    @RequestMapping(value = "/api/getSystemUserByName")
+    public ApiResult getSystemUserByName(@RequestParam("name") String name) {
+        SystemUser systemUser = this.userService.selectByName(name);
+        return ApiResult.ok(systemUser);
+    }
 }
 
 

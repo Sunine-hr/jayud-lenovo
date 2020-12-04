@@ -5,7 +5,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.airfreight.feign.OmsClient;
+import com.jayud.airfreight.model.bo.AirProcessOptForm;
 import com.jayud.airfreight.model.bo.QueryAirOrderForm;
+import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.airfreight.model.po.Goods;
 import com.jayud.airfreight.model.vo.AirOrderFormVO;
 import com.jayud.airfreight.service.IAirOrderService;
@@ -16,6 +18,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.JayudBizException;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -63,11 +67,8 @@ public class AirOrderController {
 
         //获取下个节点状态
         OrderStatusEnum statusEnum = OrderStatusEnum.getAirOrderPreStatus(form.getStatus());
-        if (statusEnum == null) {
-            log.warn("不存在这个状态");
-            return CommonResult.error(ResultEnum.OPR_FAIL);
-        }
-        form.setStatus(statusEnum.getCode());
+
+        form.setStatus(statusEnum == null ? null : statusEnum.getCode());
 
         IPage<AirOrderFormVO> page = this.airOrderService.findByPage(form);
         if (page.getRecords().size() == 0) {
@@ -88,15 +89,68 @@ public class AirOrderController {
         for (AirOrderFormVO record : records) {
             //组装商品信息
             record.assemblyGoodsInfo(goods);
-            //客户名称
-            record.assemblyCustomerName(result.getData());
+            //拼装主订单信息
+            record.assemblyMainOrderData(result.getData());
         }
         return CommonResult.success(new CommonPageResult(page));
     }
 
-    /**
-     * 空运流程操作
-     */
+
+    //操作指令,cmd = 1-空运接单,2-空运订舱,3-订单入仓," +
+    //            "4-确认提单,5-确认离港，6-确认到港,7-海外代理,8-确认签收
+    @ApiOperation(value = "执行空运流程操作")
+    @PostMapping(value = "/doAirProcessOpt")
+    public CommonResult doAirProcessOpt(@RequestBody AirProcessOptForm form) {
+        if (form.getMainOrderId() == null || form.getOrderId() == null) {
+            log.warn("空运订单编号/空运订单id必填");
+            return CommonResult.error(ResultEnum.VALIDATE_FAILED);
+        }
+        //空运订单信息
+        AirOrder airOrder = this.airOrderService.getById(form.getOrderId());
+        if (airOrder.getProcessStatus() == 1) {
+            return CommonResult.error(400, "该订单已经完成");
+        }
+        OrderStatusEnum statusEnum = OrderStatusEnum.getAirOrderNextStatus(airOrder.getStatus());
+        if (statusEnum == null) {
+            log.error("执行空运流程操作失败,超出流程之外 data={}", airOrder.toString());
+            return CommonResult.error(ResultEnum.OPR_FAIL);
+        }
+        //校验参数
+        form.checkProcessOpt(statusEnum);
+        form.setStatus(statusEnum.getCode());
+        //指令操作
+        switch (statusEnum) {
+            case AIR_A_1: //空运接单
+                this.airOrderService.updateProcessStatus(new AirOrder(), form);
+                break;
+            case AIR_A_2: //订舱
+                this.airOrderService.doAirBookingOpt(form);
+                //推送订舱消息
+                break;
+            case AIR_A_3: //订单入仓
+                this.airOrderService.updateProcessStatus(new AirOrder(), form);
+                break;
+            case AIR_A_4: //确认提单
+            case AIR_A_5: //确认离港
+            case AIR_A_6: //确认到港
+                this.airOrderService.doAirBookingOpt(form);
+                break;
+            case AIR_A_7: //海外代理
+                StringBuilder sb = new StringBuilder();
+                form.getProxyServiceType().forEach(e -> sb.append(e).append(","));
+                this.airOrderService.updateProcessStatus(new AirOrder()
+                        .setOverseasSuppliersId(form.getAgentSupplierId())
+                        .setProxyServiceType(sb.substring(0, sb.length() - 1)), form);
+                break;
+            case AIR_A_8: //确认签收
+                this.airOrderService.updateProcessStatus(new AirOrder(), form);
+                break;
+        }
+        //发送跟踪信息
+
+        return CommonResult.success();
+    }
+
 
 }
 

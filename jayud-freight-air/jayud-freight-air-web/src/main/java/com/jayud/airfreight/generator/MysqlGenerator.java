@@ -30,7 +30,7 @@ public class MysqlGenerator {
                 "jayud-freight-air\\jayud-freight-air-service",
                 "jayud-freight-air\\jayud-freight-air-web"};
         for (String model : models) {
-            shell(model,"air_port");
+            shell(model,"air_booking");
 
         }
     }
@@ -65,7 +65,7 @@ public class MysqlGenerator {
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
         dsc.setUsername("jayudtest");
         dsc.setPassword("jayudtest");
-        dsc.setUrl("jdbc:mysql://rm-wz9m40gpm90c230wobo.mysql.rds.aliyuncs.com/jayud-test");
+        dsc.setUrl("jdbc:mysql://rm-wz9m40gpm90c230wobo.mysql.rds.aliyuncs.com/jayud_oms");
         mpg.setDataSource(dsc);
 
         // 策略配置

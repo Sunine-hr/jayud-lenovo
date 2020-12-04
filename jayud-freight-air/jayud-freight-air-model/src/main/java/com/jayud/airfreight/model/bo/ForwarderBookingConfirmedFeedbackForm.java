@@ -32,11 +32,11 @@ public class ForwarderBookingConfirmedFeedbackForm {
     @ApiModelProperty(value = "货代订单号")
     @Length(max = 50, message = "货代订单号字段最大长度为50")
     private String forwarderBookingno;
-    @JsonProperty("Shipping_order")
-    @SerializedName( "Shipping_order")
-    @ApiModelProperty(value = "S/O 船单号")
-    @Length(max = 50, message = "S/O 船单号字段最大长度为50")
-    private String shippingOrder;
+//    @JsonProperty("Shipping_order")
+//    @SerializedName( "Shipping_order")
+//    @ApiModelProperty(value = "S/O 船单号")
+//    @Length(max = 50, message = "S/O 船单号字段最大长度为50")
+//    private String shippingOrder;
     @ApiModelProperty(value = "交货仓库代码")
     @NotNull(message = "交货仓库代码不可为空")
     @JsonProperty("Delivery_warehouse_code")

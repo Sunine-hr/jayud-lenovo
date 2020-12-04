@@ -3,9 +3,11 @@ package com.jayud.airfreight.model.vo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.airfreight.model.enums.AirOrderTermsEnum;
 import com.jayud.airfreight.model.po.Goods;
 import com.jayud.common.enums.BusinessTypeEnum;
+import com.jayud.common.enums.OrderStatusEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -30,6 +32,9 @@ public class AirOrderFormVO {
 
     @ApiModelProperty(value = "主订单编号")
     private String mainOrderNo;
+
+    @ApiModelProperty(value = "主订单id")
+    private String mainOrderId;
 
     @ApiModelProperty(value = "空运订单编号")
     private String orderNo;
@@ -59,12 +64,14 @@ public class AirOrderFormVO {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
     @ApiModelProperty(value = "更新时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "流程状态(0:进行中,1:完成)")
@@ -90,7 +97,7 @@ public class AirOrderFormVO {
     /**
      * @param customerObjs 远程客户对象集合
      */
-    public void assemblyCustomerName(Object customerObjs) {
+    public void assemblyMainOrderData(Object customerObjs) {
         if (customerObjs == null) {
             return;
         }
@@ -99,10 +106,17 @@ public class AirOrderFormVO {
             JSONObject json = mainOrders.getJSONObject(i);
             if (this.mainOrderNo.equals(json.getString("orderNo"))) { //主订单配对
                 this.customerName = json.getString("customerName");
+                this.mainOrderId = json.getString("id");
+                break;
             }
         }
+
     }
 
+
+    public void setStatus(String status) {
+        this.status = OrderStatusEnum.getDesc(status);
+    }
 
     public void setTerms(Integer terms) {
         this.terms = AirOrderTermsEnum.getDesc(terms);

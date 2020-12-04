@@ -2,27 +2,28 @@
 CREATE TABLE `air_booking` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `status` char(10) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '状态(0:确认,1:待确认)',
-  `order_no` varchar(50) NOT NULL COMMENT '空运订单编号',
-  `agent_supplier_id` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '代理供应商id',
-  `warehousing_no` varchar(20) NOT NULL COMMENT '入仓号',
-  `main_no` varchar(20) DEFAULT NULL COMMENT '主单号',
-  `sub_no` varchar(20) DEFAULT NULL COMMENT '分单号',
+  `air_order_no` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '空运订单编号',
+  `air_order_id` bigint(20) DEFAULT NULL COMMENT '空运订单id',
+  `agent_supplier_id` bigint(20) NOT NULL COMMENT '代理供应商id',
+  `warehousing_no` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '入仓号',
+  `main_no` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '主单号',
+  `sub_no` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '分单号',
   `cut_off_date` datetime DEFAULT NULL COMMENT '截关日期',
-  `airline_company` varchar(50) DEFAULT NULL COMMENT '航空公司',
-  `flight` varchar(50) DEFAULT NULL COMMENT '航班',
+  `airline_company` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '航空公司',
+  `flight` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '航班',
   `etd` datetime DEFAULT NULL COMMENT '预计离港时间',
   `atd` datetime DEFAULT NULL COMMENT '实际离岗时间',
   `eta` datetime DEFAULT NULL COMMENT '预计到港时间',
   `ata` datetime DEFAULT NULL COMMENT '实际到港时间',
-  `delivery_address` varchar(100) NOT NULL COMMENT '交仓地址',
-  `file_path` varchar(255) DEFAULT NULL COMMENT '文件路径(多个逗号隔开)',
-  `file_name` varchar(255) DEFAULT NULL COMMENT '文件名称(多个逗号隔开)',
+  `delivery_address` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '交仓地址',
+  `file_path` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '文件路径(多个逗号隔开)',
+  `file_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '文件名称(多个逗号隔开)',
   `create_user` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '创建人(登录用户)',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_user` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='空运订舱表';
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='空运订舱表';
 
 
 CREATE TABLE `air_extension_field` (
@@ -50,8 +51,8 @@ CREATE TABLE `air_order` (
   `terms` int(10) DEFAULT NULL COMMENT '贸易方式(0:CIF,1:DUU,2:FOB,3:DDP)',
   `port_departure_code` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '起运港代码',
   `port_destination_code` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '目的港代码',
-  `overseas_suppliers_code` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '海外供应商代码',
-  `proxy_service_type` int(20) DEFAULT NULL COMMENT '代理服务类型（0:清关,1:配送）',
+  `overseas_suppliers_id` bigint(20) DEFAULT NULL COMMENT '海外供应商id',
+  `proxy_service_type` varchar(20) DEFAULT NULL COMMENT '代理服务类型（0:清关,1:配送）多个逗号隔开',
   `good_time` datetime DEFAULT NULL COMMENT '货好时间',
   `is_freight_collect` tinyint(1) DEFAULT NULL COMMENT '运费是否到付(1代表true,0代表false)',
   `is_other_expenses_paid` tinyint(1) DEFAULT NULL COMMENT '其他费用是否到付(1代表true,0代表false)',
@@ -61,6 +62,7 @@ CREATE TABLE `air_order` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_user` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `create_user_type` int(5) DEFAULT NULL COMMENT '创建人的类型(0:本系统,1:vivo)',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='空运订单表';
 

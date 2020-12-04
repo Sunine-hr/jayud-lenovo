@@ -152,5 +152,28 @@ public class AirOrderController {
     }
 
 
+    @ApiOperation(value = "接单驳回")
+    @PostMapping(value = "/receivingOrdersReject")
+    public CommonResult receivingOrdersReject(@RequestBody AirProcessOptForm form) {
+        //接单驳回
+
+        //根据id批量删除物流轨迹表
+
+        //修改订单驳回状态
+
+        //主订单可以进行编辑
+
+        //编辑完状态更改为待接单状态
+
+        return null;
+    }
+
+    @ApiOperation(value = "订舱驳回")
+    @PostMapping(value = "/bookingRejected")
+    public CommonResult bookingRejected(@RequestBody AirProcessOptForm form) {
+        //修改空运订单状态为接单状态
+        //把物流轨迹表,删除之前订舱信息
+        return null;
+    }
 }
 

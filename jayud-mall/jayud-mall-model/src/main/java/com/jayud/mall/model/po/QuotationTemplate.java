@@ -57,6 +57,9 @@ public class QuotationTemplate extends Model<QuotationTemplate> {
     @ApiModelProperty(value = "可达仓库(fab_warehouse.id),多个用逗号分隔")
     private String arriveWarehouse;
 
+    @ApiModelProperty(value = "可见客户(0公开 1指定客户)")
+    private Integer visibleCustomer;
+
     @ApiModelProperty(value = "可见客户(custome.id，多客户时逗号分隔用户ID)")
     private String visibleUid;
 
@@ -72,11 +75,17 @@ public class QuotationTemplate extends Model<QuotationTemplate> {
     @ApiModelProperty(value = "截亏仓日期")
     private LocalDateTime jkcTime;
 
+    @ApiModelProperty(value = "货物类型(1普货 2特货)")
+    private Integer gidtype;
+
     @ApiModelProperty(value = "货物类型(goods_type types=2 id),多个用逗号分隔")
     private String gid;
 
     @ApiModelProperty(value = "集货仓库(shipping_area id),多个都号分隔")
     private String areaId;
+
+    @ApiModelProperty(value = "报价类型(13整柜 18散柜)")
+    private Integer qidtype;
 
     @ApiModelProperty(value = "报价类型(goods_type types=1 id),多个用逗号分隔")
     private String qid;

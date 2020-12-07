@@ -25,24 +25,24 @@ public class QuotationTemplateTest {
         form.setTypes(1);//模板类型(1整柜 2散柜)
         form.setSid(1);//服务分类(service_group sid)
         form.setNames("美西-海卡大船A");//报价名
-        form.setPicUrl("url1,url2,url3");//报价图片，多张用逗号分割
+//        form.setPicUrl("url1,url2,url3");//报价图片，多张用逗号分割
         form.setTid(1);//运输方式(transport_way id)
         form.setStartShipment("上海");//起运港
         form.setDestinationPort("纽约");//目的港
-        form.setArriveWarehouse("1,2,3");//可达仓库(fab_warehouse.id),多个用逗号分隔
-        form.setVisibleUid("1,2,3");//可见客户(0所客户，多客户时逗号分隔用户ID)
+//        form.setArriveWarehouse("1,2,3");//可达仓库(fab_warehouse.id),多个用逗号分隔
+//        form.setVisibleUid("1,2,3");//可见客户(0所客户，多客户时逗号分隔用户ID)
         form.setSailTime(LocalDateTime.now());//开船日期
         form.setCutOffTime(LocalDateTime.now());//截单日期
         form.setJcTime(LocalDateTime.now());//截仓日期
         form.setJkcTime(LocalDateTime.now());//截亏仓日期
-        form.setGid("3,4,5");//货物类型(goods_type types=2 id),多个用逗号分隔
+//        form.setGid("3,4,5");//货物类型(goods_type types=2 id),多个用逗号分隔
                         //3     带磁      普货
                         //4     带电      普货
                         //5     粉末      普货
-        form.setAreaId("1,2");//集货仓库(shipping_area id),多个都号分隔           内陆费的规格项
+//        form.setAreaId("1,2");//集货仓库(shipping_area id),多个都号分隔           内陆费的规格项
                         //1 苏州仓
                         //2 上海仓
-        form.setQid("14,15,16");//报价类型(goods_type types=1 id),多个用逗号分隔   海运费的规格项
+//        form.setQid("14,15,16");//报价类型(goods_type types=1 id),多个用逗号分隔   海运费的规格项
                         //14    20GP    整柜
                         //15    40GP    整柜
                         //16    40HC    整柜

@@ -36,6 +36,9 @@ public class QuotationTemplateVO {
     @ApiModelProperty(value = "可达仓库(fab_warehouse.id),多个用逗号分隔")
     private String arriveWarehouse;
 
+    @ApiModelProperty(value = "可见客户(0公开 1指定客户)")
+    private Integer visibleCustomer;
+
     @ApiModelProperty(value = "可见客户(0所客户，多客户时逗号分隔用户ID)")
     private String visibleUid;
 

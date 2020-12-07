@@ -36,7 +36,7 @@
         left join customer_info ci on ci.unit_code = orc.customer_code
         LEFT JOIN order_info oi ON oi.order_no = orc.main_order_no
         left join order_receivable_bill orb on orb.legal_name = oi.legal_name
-        and orb.unit_account = orc.customer_name
+        and orb.unit_account = ci.`name`
         where orc.is_sum_to_main = 1 and orc.status = '3'
         <if test="form.unitAccount != null and form.unitAccount != ''">
             and ci.unit_account like concat('%',#{form.unitAccount},'%')

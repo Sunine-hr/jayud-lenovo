@@ -1,5 +1,6 @@
 package com.jayud.airfreight.service;
 
+import cn.hutool.json.JSONObject;
 import com.jayud.airfreight.model.bo.ForwarderBookingConfirmedFeedbackForm;
 import com.jayud.airfreight.model.bo.ForwarderLadingFileForm;
 import com.jayud.airfreight.model.bo.ForwarderLadingInfoForm;
@@ -8,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 /**
  * vivo数据接口服务
+ *
  * @author william
  * @description
  * @Date: 2020-09-14 13:47
@@ -48,4 +50,9 @@ public interface VivoService {
      * @return
      */
     boolean forwarderLadingInfo(ForwarderLadingInfoForm form);
+
+    /**
+     * 根据登录用户查询客户信息
+     */
+    public JSONObject getCustomerInfoByLoginUserName();
 }

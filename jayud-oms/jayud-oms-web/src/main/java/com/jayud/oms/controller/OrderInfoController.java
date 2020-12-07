@@ -189,17 +189,16 @@ public class OrderInfoController {
                     }
                 }
             }
-            //空运
+            //空运校验参数
             if (OrderStatusEnum.KY.getCode().equals(inputMainOrderForm.getClassCode())) {
                 InputAirOrderForm airOrderForm = form.getAirOrderForm();
                 if (!airOrderForm.checkCreateOrder()) {
                     return CommonResult.error(ResultEnum.PARAM_ERROR);
                 }
             }
-
         }
 
-        //空运校验参数
+
         boolean result = orderInfoService.createOrder(form);
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());

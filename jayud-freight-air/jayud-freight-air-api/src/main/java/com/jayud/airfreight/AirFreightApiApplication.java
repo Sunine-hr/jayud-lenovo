@@ -4,6 +4,8 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
@@ -14,6 +16,8 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.jayud.common","com.jayud.airfreight"})
 @MapperScan(basePackages = {"com.jayud.airfreight.mapper"})
+@EnableDiscoveryClient
+@EnableFeignClients
 public class AirFreightApiApplication {
     public static void main(String[] args) {
         SpringApplication.run(AirFreightApiApplication.class, args);

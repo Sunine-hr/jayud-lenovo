@@ -43,8 +43,8 @@ public class GeneralApiLog extends Model<GeneralApiLog> {
     @ApiModelProperty(value = "访问方IP")
     private String ipAddress;
 
-    @ApiModelProperty(value = "访问用户id")
-    private Integer userId;
+    @ApiModelProperty(value = "登录用户名称")
+    private String loginUser;
 
     @ApiModelProperty(value = "处理时间")
     private Integer timeSpan;

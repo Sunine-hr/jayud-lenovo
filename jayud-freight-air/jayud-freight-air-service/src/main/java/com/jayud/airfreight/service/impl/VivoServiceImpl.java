@@ -3,19 +3,29 @@ package com.jayud.airfreight.service.impl;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.http.Header;
 import cn.hutool.http.HttpRequest;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.google.gson.Gson;
+import com.jayud.airfreight.feign.OauthClient;
+import com.jayud.airfreight.feign.OmsClient;
 import com.jayud.airfreight.model.bo.ForwarderBookingConfirmedFeedbackForm;
 import com.jayud.airfreight.model.bo.ForwarderLadingFileForm;
 import com.jayud.airfreight.model.bo.ForwarderLadingInfoForm;
 import com.jayud.airfreight.model.bo.ForwarderVehicleInfoForm;
 import com.jayud.airfreight.service.VivoService;
+import com.jayud.common.ApiResult;
+import com.jayud.common.UserOperator;
+import com.jayud.common.VivoApiResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
+import com.jayud.common.exception.JayudBizException;
+import com.jayud.common.exception.VivoApiException;
 import com.jayud.common.utils.RsaEncryptUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -63,7 +73,10 @@ public class VivoServiceImpl implements VivoService {
     @Value("${vivo.public-key}")
     String publicKey;
 
-
+    @Autowired
+    private OmsClient omsClient;
+    @Autowired
+    private OauthClient oauthClient;
 
 
     /**
@@ -109,6 +122,7 @@ public class VivoServiceImpl implements VivoService {
         return doPost(form, url);
     }
 
+
     /**
      * 向联想发送API请求
      *
@@ -120,10 +134,10 @@ public class VivoServiceImpl implements VivoService {
         Gson gson = new Gson();
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        HttpEntity<MultiValueMap<String, String>> body=null;
+        HttpEntity<MultiValueMap<String, String>> body = null;
 //        body=new HttpEntity<MultiValueMap<String, String>>(JSONUtil.toBean(form,MultiValueMap.class),headers);
 
-        log.info("vivo参数=========="+gson.toJson(form));
+        log.info("vivo参数==========" + gson.toJson(form));
         String feedback = HttpRequest.post(url)
                 .header("Authorization", String.format(getToken(null, null, null)))
                 .header(Header.CONTENT_TYPE.name(), "multipart/form-data")
@@ -136,12 +150,12 @@ public class VivoServiceImpl implements VivoService {
 
     private Boolean doPostWithFile(Object form, MultipartFile file, String url) {
         Gson gson = new Gson();
-        log.info("参数========"+gson.toJson(form));
+        log.info("参数========" + gson.toJson(form));
         File fw = new File(file.getOriginalFilename());
         String feedback = "";
         try {
             FileUtils.copyInputStreamToFile(file.getInputStream(), fw);
-            log.info("文件大小====={}=======名称{}",FileUtils.sizeOf(fw), fw.getName());
+            log.info("文件大小====={}=======名称{}", FileUtils.sizeOf(fw), fw.getName());
             feedback = HttpRequest.post(url)
                     .header("Authorization", String.format(getToken(null, null, null)))
                     .header(Header.CONTENT_TYPE.name(), "multipart/form-data")
@@ -149,7 +163,7 @@ public class VivoServiceImpl implements VivoService {
                     .form("MultipartFile", fw)
                     .execute()
                     .body();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return check4Success(feedback);
@@ -211,5 +225,28 @@ public class VivoServiceImpl implements VivoService {
             return false;
         }
         return true;
+    }
+
+    /**
+     * 根据登录用户查询客户名称
+     */
+    @Override
+    public JSONObject getCustomerInfoByLoginUserName() {
+        //查询客户id
+        ApiResult result = this.oauthClient.getSystemUserByName(UserOperator.getToken());
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.warn("远程调用查询用户信息失败 message={}", result.getMsg());
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+        JSONObject systemUser = JSONUtil.parseObj(result.getData());
+        Long companyId = systemUser.getLong("companyId");
+
+        result = omsClient.getCustomerInfoById(companyId);
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.warn("远程调用查询客户信息失败 message={}", result.getMsg());
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+        JSONObject customerInfo = JSONUtil.parseObj(result.getData());
+        return customerInfo;
     }
 }

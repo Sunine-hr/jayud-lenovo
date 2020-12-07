@@ -37,7 +37,7 @@ public interface OmsClient {
     ApiResult saveAuditInfo(@RequestBody AuditInfoForm form);
 
     /**
-     * 初始化车辆供应商
+     * 初始化审核通过车辆供应商
      * @return
      */
     @RequestMapping(value = "/api/initSupplierInfo")

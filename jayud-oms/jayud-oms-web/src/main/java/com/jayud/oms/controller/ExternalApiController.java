@@ -5,15 +5,13 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
+import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.utils.BeanUtils;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.*;
-import com.jayud.oms.model.vo.DriverInfoLinkVO;
-import com.jayud.oms.model.vo.InitComboxVO;
-import com.jayud.oms.model.vo.InputMainOrderVO;
-import com.jayud.oms.model.vo.OrderStatusVO;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
 import io.swagger.annotations.Api;
@@ -62,6 +60,9 @@ public class ExternalApiController {
 
     @Autowired
     ICurrencyInfoService currencyInfoService;
+    @Autowired
+    private ICustomerInfoService customerInfoService;
+
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
@@ -71,6 +72,16 @@ public class ExternalApiController {
             return ApiResult.ok(result);
         }
         return ApiResult.error();
+    }
+
+    /**
+     * 暂存订单
+     */
+    @RequestMapping(value = "/api/holdOrder")
+    public ApiResult holdOrder(@RequestBody InputOrderForm form) {
+        form.setCmd(CommonConstant.PRE_SUBMIT);
+        orderInfoService.createOrder(form);
+        return ApiResult.ok();
     }
 
 
@@ -100,12 +111,14 @@ public class ExternalApiController {
         logisticsTrack.setOperatorUser(form.getOperatorUser());
         logisticsTrack.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN));
         logisticsTrack.setStatusPic(form.getStatusPic());
+        logisticsTrack.setStatusPicName(form.getStatusPicName());
         logisticsTrack.setDescription(form.getDescription());
         logisticsTrack.setEntrustNo(form.getEntrustNo());
         logisticsTrack.setGoCustomsTime(DateUtils.str2LocalDateTime(form.getGoCustomsTime(), DateUtils.DATE_TIME_PATTERN));
         logisticsTrack.setPreGoCustomsTime(DateUtils.str2LocalDateTime(form.getPreGoCustomsTime(), DateUtils.DATE_TIME_PATTERN));
         logisticsTrack.setCreatedUser(UserOperator.getToken());
         logisticsTrack.setCreatedTime(LocalDateTime.now());
+        logisticsTrack.setType(form.getBusinessType()); //业务类型 BusinessTypeEnum类
         logisticsTrackService.saveOrUpdate(logisticsTrack);
         return ApiResult.ok();
     }
@@ -164,12 +177,12 @@ public class ExternalApiController {
         return CommonResult.success(initComboxVOS);
     }
 
-    @ApiOperation(value = "车辆供应商")
+    @ApiOperation(value = "下拉框:获取审核通过的车辆供应商")
     @RequestMapping(value = "api/initSupplierInfo")
     public CommonResult initSupplierInfo() {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(SqlConstant.STATUS, 1);
-        List<SupplierInfo> supplierInfos = supplierInfoService.list(queryWrapper);
+        List<SupplierInfo> supplierInfos = supplierInfoService.getApprovedSupplier(
+                BeanUtils.convertToFieldName(true,
+                        SupplierInfo::getId, SupplierInfo::getSupplierChName));
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (SupplierInfo supplierInfo : supplierInfos) {
             InitComboxVO initComboxVO = new InitComboxVO();
@@ -177,6 +190,7 @@ public class ExternalApiController {
             initComboxVO.setName(supplierInfo.getSupplierChName());
             initComboxVOS.add(initComboxVO);
         }
+
         return CommonResult.success(initComboxVOS);
     }
 
@@ -424,6 +438,15 @@ public class ExternalApiController {
     public ApiResult<OrderInfo> getByCustomerName(@RequestParam("customerName") String customerName) {
         List<OrderInfo> orderList = this.orderInfoService.getByCustomerName(customerName);
         return ApiResult.ok(orderList);
+    }
+
+    /**
+     * 根据客户id查询客户信息
+     */
+    @RequestMapping(value = "/api/getCustomerInfoById")
+    public ApiResult getCustomerInfoById(@RequestParam("id") Long id) {
+        CustomerInfo customerInfo = this.customerInfoService.getById(id);
+        return ApiResult.ok(customerInfo);
     }
 
     /**

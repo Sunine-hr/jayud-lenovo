@@ -127,7 +127,7 @@ public enum OrderStatusEnum {
     }
 
     /**
-     * 获取空运下个节点
+     * 获取空运上个节点
      * 如果是驳回状态就是当前状态
      */
     public static OrderStatusEnum getAirOrderPreStatus(String currentStatus) {
@@ -136,16 +136,7 @@ public enum OrderStatusEnum {
             return OrderStatusEnum.AIR_A_2_1;
         }
 
-        List<OrderStatusEnum> statusEnums = new ArrayList<>();
-        statusEnums.add(AIR_A_0);
-        statusEnums.add(AIR_A_1);
-        statusEnums.add(AIR_A_2);
-        statusEnums.add(AIR_A_3);
-        statusEnums.add(AIR_A_4);
-        statusEnums.add(AIR_A_5);
-        statusEnums.add(AIR_A_6);
-        statusEnums.add(AIR_A_7);
-        statusEnums.add(AIR_A_8);
+        List<OrderStatusEnum> statusEnums = getAirOrderProcess();
 
         for (int i = 0; i < statusEnums.size(); i++) {
             OrderStatusEnum orderStatusEnum = statusEnums.get(i);
@@ -158,5 +149,46 @@ public enum OrderStatusEnum {
         }
 
         return null;
+    }
+
+
+    /**
+     * 获取空运下个节点
+     * 如果是驳回状态就是当前状态
+     */
+    public static OrderStatusEnum getAirOrderNextStatus(String currentStatus) {
+
+        if (AIR_A_2_1.getCode().equals(currentStatus)) {
+            return OrderStatusEnum.AIR_A_2_1;
+        }
+        List<OrderStatusEnum> statusEnums = getAirOrderProcess();
+
+        boolean next = true;
+        for (int i = 0; i < statusEnums.size(); i++) {
+            OrderStatusEnum orderStatusEnum = statusEnums.get(i);
+            if (orderStatusEnum.getCode().equals(currentStatus)) {
+                next = false;
+                continue;
+            }
+            if (!next) {
+                return orderStatusEnum;
+            }
+        }
+
+        return null;
+    }
+
+    public static List<OrderStatusEnum> getAirOrderProcess() {
+        List<OrderStatusEnum> statusEnums = new ArrayList<>();
+        statusEnums.add(AIR_A_0);
+        statusEnums.add(AIR_A_1);
+        statusEnums.add(AIR_A_2);
+        statusEnums.add(AIR_A_3);
+        statusEnums.add(AIR_A_4);
+        statusEnums.add(AIR_A_5);
+        statusEnums.add(AIR_A_6);
+        statusEnums.add(AIR_A_7);
+        statusEnums.add(AIR_A_8);
+        return statusEnums;
     }
 }

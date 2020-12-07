@@ -63,7 +63,7 @@ public class AddOrderAddressForm {
 
     public boolean checkCreateAirOrder() {
         if (this.type == null || StringUtils.isEmpty(this.address)
-                || StringUtils.isEmpty(this.phone)) {
+                || StringUtils.isEmpty(this.company)) {
             return false;
         }
         return true;

@@ -51,4 +51,7 @@ public class OprStatusForm {
     @ApiModelProperty(value = "预计通关时间")
     private String preGoCustomsTime;
 
+    @ApiModelProperty(value = "业务类型(0:空运),(1,纯报关),ZGYS(2,中港运输)")
+    private Integer businessType;
+
 }

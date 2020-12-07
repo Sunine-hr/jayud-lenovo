@@ -140,4 +140,9 @@ public class RawDataListener {
         }
         return false;
     }
+
+
+    /**
+     * 调用接口推送给vivo
+     */
 }

@@ -196,7 +196,7 @@ public class OrderComboxController {
         //根据客户获取业务员部门
         resultMap.put("departmentId",customer.getDepartmentId());
         //根据客户获取接单法人
-        resultMap.put("legalEntityId",customer.getLegalEntityId());
+//        resultMap.put("legalEntityId",customer.getLegalEntityId());
         return CommonResult.success(resultMap);
     }
 

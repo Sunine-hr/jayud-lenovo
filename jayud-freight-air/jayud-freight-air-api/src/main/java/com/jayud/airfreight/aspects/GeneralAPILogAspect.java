@@ -2,6 +2,8 @@ package com.jayud.airfreight.aspects;
 
 import cn.hutool.json.JSONUtil;
 import com.jayud.airfreight.model.po.GeneralApiLog;
+import com.jayud.airfreight.service.IGeneralApiLogService;
+import com.jayud.common.UserOperator;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -9,6 +11,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,6 +46,9 @@ import java.util.List;
 public class GeneralAPILogAspect {
 //    @Autowired
 //    GeneralLogMsgClient msgClient;
+
+    @Autowired
+    private IGeneralApiLogService generalApiLogService;
 
     @Pointcut("@annotation(com.jayud.airfreight.annotations.APILog)")
     public void catchLog() {
@@ -81,10 +87,12 @@ public class GeneralAPILogAspect {
         apiLog.setResultJson(resultParameterString);
         //todo 获取远程访问者ID
         apiLog.setIpAddress(request.getRemoteAddr());
-        //todo 加入通过会话ID从redis获取用户ID的功能
-        apiLog.setUserId(1);
+        //登录用户名称
+        apiLog.setLoginUser(UserOperator.getToken());
         apiLog.setTimeSpan(timeSpan);
         apiLog.setRequestTime(LocalDateTime.ofInstant(Instant.ofEpochMilli(startTime), ZoneId.systemDefault()));
+
+        generalApiLogService.save(apiLog);
 
         //todo 配置kafka异步处理
 //        msgClient.saveLog(JSONUtil.toJsonStr(apiLog));

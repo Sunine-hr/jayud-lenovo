@@ -76,6 +76,13 @@ public class CustomerAddressVO {
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
+    @ApiModelProperty(value = "传真")
+    private String fax;
+
+    @ApiModelProperty(value = "邮箱")
+    private String mailbox;
+
+
 
 //    public void setType(String type) {
 //        this.type = AddressTypeEnum.getDesc(type);

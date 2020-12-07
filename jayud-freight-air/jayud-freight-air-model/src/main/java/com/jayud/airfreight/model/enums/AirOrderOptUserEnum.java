@@ -1,6 +1,5 @@
 package com.jayud.airfreight.model.enums;
 
-import com.jayud.common.enums.OrderAddressEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -11,17 +10,14 @@ import java.util.Objects;
  */
 @Getter
 @AllArgsConstructor
-public enum AirOrderTermsEnum {
-    CIF(0, "CIF"),
-    DUU(1, "DUU"),
-    FOB(2, "FOB"),
-    DDP(3, "DDP");
+public enum AirOrderOptUserEnum {
+    VIVO(0, "vivo");
 
     private Integer code;
     private String desc;
 
     public static String getDesc(Integer code) {
-        for (AirOrderTermsEnum value : values()) {
+        for (AirOrderOptUserEnum value : values()) {
             if (Objects.equals(code, value.getCode())) {
                 return value.getDesc();
             }
@@ -30,11 +26,11 @@ public enum AirOrderTermsEnum {
     }
 
     public static Integer getCode(String desc) {
-        for (AirOrderTermsEnum value : values()) {
+        for (AirOrderOptUserEnum value : values()) {
             if (Objects.equals(desc, value.getDesc())) {
                 return value.getCode();
             }
         }
-        return null;
+        return 0;
     }
 }

@@ -41,6 +41,7 @@
         (select name from region_city where id=area) areaName,
         address,
         post_code postCode, status,
+        fax,mailbox,
         create_user createUser, create_time createTime
         from
         delivery_address

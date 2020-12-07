@@ -58,20 +58,20 @@
                 and ap1.name like concat('%',#{form.portDestination},'%')
             </if>
             <if test="form.customerName!=null and form.customerName!=''">
-                a.main_order_no IN
+                and a.main_order_no IN
                 <foreach collection="form.mainOrderNos" index="index" item="item" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
             <if test="form.status !=null and form.status!=''">
                 and a.status = #{form.status}
+                and a.process_status = 0
             </if>
             <if test="form.createTime !=null and form.createTime!=''">
                 and a.create_time = #{form.createTime}
             </if>
-            order by a.id desc
         </where>
-
+        order by a.id desc
     </select>
 
 </mapper>

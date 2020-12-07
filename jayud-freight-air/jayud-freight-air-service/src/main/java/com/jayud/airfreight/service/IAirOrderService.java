@@ -2,7 +2,9 @@ package com.jayud.airfreight.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.airfreight.model.bo.AddAirOrderForm;
+import com.jayud.airfreight.model.bo.AirProcessOptForm;
 import com.jayud.airfreight.model.bo.QueryAirOrderForm;
+import com.jayud.airfreight.model.po.AirBooking;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.airfreight.model.vo.AirOrderFormVO;
@@ -38,4 +40,19 @@ public interface IAirOrderService extends IService<AirOrder> {
      * 分页查询空运订单信息
      */
     IPage<AirOrderFormVO> findByPage(QueryAirOrderForm form);
+
+    /**
+     * 更新流程状态
+     */
+    void updateProcessStatus(AirOrder airOrder, AirProcessOptForm form);
+
+    /**
+     * 空运流程操作记录
+     */
+    void airProcessOptRecord(AirProcessOptForm form);
+
+    /**
+     * 订舱操作
+     */
+    void doAirBookingOpt(AirProcessOptForm form);
 }

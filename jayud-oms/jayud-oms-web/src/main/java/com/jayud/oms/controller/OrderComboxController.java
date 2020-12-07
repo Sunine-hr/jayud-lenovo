@@ -150,8 +150,8 @@ public class OrderComboxController {
         List<Long> ids = new ArrayList<>();
         for (CustomerInfo customerInfo : customerInfoList) {
             InitComboxStrVO comboxStrVO = new InitComboxStrVO();
-            comboxStrVO.setCode(customerInfo.getUnitCode());
-            comboxStrVO.setName(customerInfo.getUnitAccount());
+            comboxStrVO.setCode(customerInfo.getIdCode());
+            comboxStrVO.setName(customerInfo.getName());
             comboxStrVOS.add(comboxStrVO);
             if(customerInfo.getYwId() != null) {
                 ids.add(customerInfo.getYwId());

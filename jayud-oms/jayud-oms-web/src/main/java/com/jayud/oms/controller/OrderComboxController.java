@@ -139,12 +139,12 @@ public class OrderComboxController {
     @PostMapping(value = "/initUnit")
     public CommonResult<Map<String,Object>> initUnit(@RequestBody Map<String,Object> param) {
         String idCode = MapUtil.getStr(param,"idCode");
-        if(idCode != null && "".equals(idCode)){
+        /*if(idCode != null && "".equals(idCode)){
             return CommonResult.error(400,"参数不合法");
-        }
+        }*/
         Map<String,Object> resultMap = new HashMap<>();
         param = new HashMap<>();
-        param.put("id_code", idCode);
+        //param.put("id_code", idCode);
         List<CustomerInfo> customerInfoList = customerInfoService.findCustomerInfoByCondition(param);
         List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
         List<Long> ids = new ArrayList<>();

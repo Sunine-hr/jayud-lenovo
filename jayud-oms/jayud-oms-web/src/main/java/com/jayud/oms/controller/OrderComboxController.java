@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -74,7 +75,8 @@ public class OrderComboxController {
         //客户
         Map<String,Object> param = new HashMap<>();
         param.put(SqlConstant.AUDIT_STATUS, CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());
-        List<CustomerInfo> customerInfoList = customerInfoService.findCustomerInfoByCondition(param);
+        List<CustomerInfo> allCustomerInfoList = customerInfoService.findCustomerInfoByCondition(param);
+        List<CustomerInfo> customerInfoList = allCustomerInfoList.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(CustomerInfo :: getName))), ArrayList::new));
         List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
         for (CustomerInfo customerInfo : customerInfoList) {
             InitComboxStrVO comboxStrVO = new InitComboxStrVO();
@@ -145,7 +147,9 @@ public class OrderComboxController {
         Map<String,Object> resultMap = new HashMap<>();
         param = new HashMap<>();
         //param.put("id_code", idCode);
-        List<CustomerInfo> customerInfoList = customerInfoService.findCustomerInfoByCondition(param);
+        param.put(SqlConstant.AUDIT_STATUS, CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());
+        List<CustomerInfo> allCustomerInfoList = customerInfoService.findCustomerInfoByCondition(param);
+        List<CustomerInfo> customerInfoList = allCustomerInfoList.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(CustomerInfo :: getName))), ArrayList::new));
         List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
         List<Long> ids = new ArrayList<>();
         for (CustomerInfo customerInfo : customerInfoList) {

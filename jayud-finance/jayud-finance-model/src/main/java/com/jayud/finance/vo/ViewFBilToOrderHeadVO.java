@@ -26,7 +26,7 @@ public class ViewFBilToOrderHeadVO {
 
     private String pieceNum = "件数";
 
-    private String weight = "重量";
+    private String weight = "重量(KG)";
 
     private String yunCustomsNo = "报关单号";
 

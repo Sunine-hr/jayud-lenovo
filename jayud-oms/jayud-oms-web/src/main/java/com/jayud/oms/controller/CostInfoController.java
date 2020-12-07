@@ -8,7 +8,6 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.model.bo.AddCostInfoForm;
 import com.jayud.oms.model.bo.QueryCostInfoForm;
-import com.jayud.oms.model.po.CostGenre;
 import com.jayud.oms.model.po.CostInfo;
 import com.jayud.oms.model.vo.CostInfoVO;
 import com.jayud.oms.service.ICostInfoService;
@@ -53,6 +52,12 @@ public class CostInfoController {
     @ApiOperation(value = "新增编辑费用名称")
     @PostMapping(value = "/saveOrUpdateCostInfo")
     public CommonResult saveOrUpdateCostInfo(@Valid @RequestBody AddCostInfoForm form) {
+        //代码只能为英文和数字,这个代码会用作动态对账单显示时做属性
+        String regex = "^[a-z0-9A-Z]+$";
+        Boolean result =  form.getIdCode().matches(regex);
+        if(!result){
+            return CommonResult.error(400, "费用名称代码只能为字母或数字组成");
+        }
         CostInfo costInfo = new CostInfo().setId(form.getId())
                 .setIdCode(form.getIdCode()).setName(form.getName());
         if (this.costInfoService.checkUnique(costInfo)) {

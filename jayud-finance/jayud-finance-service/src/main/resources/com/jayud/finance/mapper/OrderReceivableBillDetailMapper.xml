@@ -62,8 +62,11 @@
         (select c.real_receive_time from cancel_after_verification c where c.bill_no = orbd.bill_no order by c.created_time desc limit 1) heXiaoTimeStr
         FROM
         order_receivable_bill_detail orbd
+        left join
+        (select t.bill_no,max(t.make_time) make_time  from order_receivable_bill_detail t group by t.bill_no) tt on
+        orbd.bill_no = tt.bill_no
         LEFT JOIN order_receivable_bill orb ON orbd.bill_id = orb.id
-        where 1 = 1
+        where orbd.make_time = tt.make_time
         <if test="form.cmd == 'main_statement'">
             and orb.is_main = 1
         </if>
@@ -255,7 +258,7 @@
             order_receivable_bill orb
             LEFT JOIN order_receivable_bill_detail orbd ON orb.id = orbd.bill_id
         WHERE
-            orbd.bill_no = #{billNo}
+            orbd.bill_no = #{billNo} order by orbd.make_time desc limit 1
     </select>
     <select id="findSBillAuditByPage" parameterType="com.jayud.finance.bo.QueryFBillAuditForm" resultType="com.jayud.finance.vo.PaymentNotPaidBillVO">
         select * from (

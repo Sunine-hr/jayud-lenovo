@@ -309,4 +309,23 @@ public class DateUtils {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return localDateTime.format(formatter);
     }
+
+    /**
+     * 根据年、月获取某月的最后一天
+     */
+    public static String getLastDayOfMonth(int year,int month){
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar cal = Calendar.getInstance();
+        //设置年份
+        cal.set(Calendar.YEAR,year+1);
+        //设置月份
+        cal.set(Calendar.MONTH, month-3);
+        //获取某月最大天数
+        int lastDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+        //设置日历中月份的最大天数
+        cal.set(Calendar.DAY_OF_MONTH, lastDay);
+
+        return df.format(cal.getTime());
+    }
+
 }

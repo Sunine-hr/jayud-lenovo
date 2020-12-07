@@ -1,5 +1,7 @@
 package com.jayud.finance.vo;
 
+import com.jayud.common.utils.DateUtils;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -47,4 +49,13 @@ public class ViewBillVO {
 
     @ApiModelProperty(value = "联系电话")
     private String phone;
+
+    public String getAccountTermStr() {
+        if(!StringUtil.isNullOrEmpty(this.accountTermStr)){
+            int year = Integer.valueOf(this.accountTermStr.substring(0,4));
+            int month = Integer.valueOf(this.accountTermStr.substring(6,7));
+            return this.accountTermStr+"-01"+"至"+ DateUtils.getLastDayOfMonth(year,month);
+        }
+        return "";
+    }
 }

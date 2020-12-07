@@ -192,6 +192,7 @@
         SELECT
             CONCAT( orc.cost_code, orc.currency_code ) NAME,
             orc.main_order_no orderNo,
+            orc.order_no subOrderNo,
             concat((SELECT ci.NAME FROM cost_info ci WHERE
                     ci.id_code = orc.cost_code ),'(',(SELECT ci.currency_name FROM currency_info ci WHERE
                     ci.currency_code = orc.currency_code ),')' ) viewName,
@@ -203,11 +204,13 @@
         GROUP BY
             orc.cost_code,
             orc.currency_code,
-            orc.main_order_no
+            orc.main_order_no,
+            orc.order_no
          union
         SELECT
             concat('T',orc.currency_code) NAME,
             orc.main_order_no orderNo,
+            orc.order_no subOrderNo,
             concat('合计(',(SELECT ci.currency_name FROM currency_info ci WHERE
                     ci.currency_code = orc.currency_code ),')' ) viewName,
             sum( orc.amount ) money
@@ -217,7 +220,8 @@
             orc.id IN (select orbd.cost_id from order_receivable_bill_detail orbd where orbd.bill_no = #{billNo})
         GROUP BY
             orc.currency_code,
-            orc.main_order_no
+            orc.main_order_no,
+            orc.order_no
     </select>
     <select id="viewSBillDetail" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewBilToOrderVO">
          SELECT distinct

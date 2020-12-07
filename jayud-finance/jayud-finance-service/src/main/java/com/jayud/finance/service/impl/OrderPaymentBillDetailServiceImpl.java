@@ -20,6 +20,7 @@ import com.jayud.finance.po.OrderPaymentBillDetail;
 import com.jayud.finance.service.*;
 import com.jayud.finance.util.ReflectUtil;
 import com.jayud.finance.vo.*;
+import io.netty.util.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -61,6 +62,9 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
 
     @Autowired
     IOrderBillCostTotalService costTotalService;
+
+    @Autowired
+    IOrderReceivableBillService receivableBillService;
 
     @Override
     public IPage<OrderPaymentBillDetailVO> findPaymentBillDetailByPage(QueryPaymentBillDetailForm form) {
@@ -357,8 +361,16 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         List<ViewFBilToOrderVO> newOrderList = new ArrayList<>();
         List<ViewBillToCostClassVO> findCostClass = baseMapper.findCostClass(billNo);
         for (ViewFBilToOrderVO viewBillToOrder : orderList) {
+            //处理目的地:当有两条或两条以上时,则获取中转仓地址
+            if(!StringUtil.isNullOrEmpty(viewBillToOrder.getEndAddress())){
+                String[] strs = viewBillToOrder.getEndAddress().split(",");
+                if(strs.length > 1){
+                    viewBillToOrder.setEndAddress(receivableBillService.getWarehouseAddress(viewBillToOrder.getOrderNo()));
+                }
+            }
             for(ViewBillToCostClassVO viewBillToCostClass : findCostClass){
-                if(viewBillToOrder.getOrderNo().equals(viewBillToCostClass.getOrderNo())){
+                if((StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo()) && viewBillToOrder.getOrderNo().equals(viewBillToCostClass.getOrderNo()))
+                        || ((!StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo())) && viewBillToOrder.getSubOrderNo().equals(viewBillToCostClass.getSubOrderNo()))){
                     try {
                         String addProperties = "";
                         String addValue = "";

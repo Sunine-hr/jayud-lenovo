@@ -20,6 +20,7 @@ import com.jayud.finance.service.IOrderReceivableBillDetailService;
 import com.jayud.finance.service.IOrderReceivableBillService;
 import com.jayud.finance.util.ReflectUtil;
 import com.jayud.finance.vo.*;
+import io.netty.util.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -215,8 +216,16 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         List<ViewBilToOrderVO> newOrderList = new ArrayList<>();
         List<ViewBillToCostClassVO> findCostClass = baseMapper.findCostClass(costIds);
         for (ViewBilToOrderVO viewBillToOrder : orderList) {
+            //处理目的地:当有两条或两条以上时,则获取中转仓地址
+            if(!StringUtil.isNullOrEmpty(viewBillToOrder.getEndAddress())){
+                String[] strs = viewBillToOrder.getEndAddress().split(",");
+                if(strs.length > 1){
+                    viewBillToOrder.setEndAddress(getWarehouseAddress(viewBillToOrder.getOrderNo()));
+                }
+            }
             for(ViewBillToCostClassVO viewBillToCostClass : findCostClass){
-                if(viewBillToOrder.getOrderNo().equals(viewBillToCostClass.getOrderNo())){
+                if((StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo()) && viewBillToOrder.getOrderNo().equals(viewBillToCostClass.getOrderNo()))
+                        || ((!StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo())) && viewBillToOrder.getSubOrderNo().equals(viewBillToCostClass.getSubOrderNo()))){
                     try {
                         String addProperties = "";
                         String addValue = "";
@@ -298,6 +307,11 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
     @Override
     public List<Long> findSaveConfirmData(List<Long> costIds) {
         return baseMapper.findSaveConfirmData(costIds);
+    }
+
+    @Override
+    public String getWarehouseAddress(String orderNo) {
+        return baseMapper.getWarehouseAddress(orderNo);
     }
 
 

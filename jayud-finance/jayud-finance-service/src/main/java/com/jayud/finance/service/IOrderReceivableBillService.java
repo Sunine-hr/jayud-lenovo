@@ -1,9 +1,12 @@
 package com.jayud.finance.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.finance.bo.*;
-import com.jayud.finance.po.OrderReceivableBill;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.finance.bo.CreateReceiveBillForm;
+import com.jayud.finance.bo.QueryNotPaidBillForm;
+import com.jayud.finance.bo.QueryReceiveBillForm;
+import com.jayud.finance.bo.QueryReceiveBillNumForm;
+import com.jayud.finance.po.OrderReceivableBill;
 import com.jayud.finance.vo.*;
 
 import java.math.BigDecimal;
@@ -100,4 +103,11 @@ public interface IOrderReceivableBillService extends IService<OrderReceivableBil
      * @return
      */
     List<Long> findSaveConfirmData(List<Long> costIds);
+
+    /**
+     * 根据主订单获取中转仓地址
+     * @param orderNo
+     * @return
+     */
+    String getWarehouseAddress(String orderNo);
 }

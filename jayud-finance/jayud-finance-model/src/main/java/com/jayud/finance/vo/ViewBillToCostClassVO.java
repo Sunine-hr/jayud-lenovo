@@ -17,6 +17,9 @@ public class ViewBillToCostClassVO {
     @ApiModelProperty(value = "主订单号")
     private String orderNo;
 
+    @ApiModelProperty(value = "子订单号")
+    private String subOrderNo;
+
     @ApiModelProperty(value = "金额")
     private BigDecimal money;
 

@@ -131,6 +131,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
     public Boolean applyInvoiceCancel(String billNo) {
         OrderReceivableBillDetail orderReceiveBillDetail = new OrderReceivableBillDetail();
         orderReceiveBillDetail.setApplyStatus(BillEnum.F_4.getCode());
+        orderReceiveBillDetail.setAuditStatus(BillEnum.B_5_1.getCode());
         orderReceiveBillDetail.setUpdatedTime(LocalDateTime.now());
         orderReceiveBillDetail.setUpdatedUser(UserOperator.getToken());
 

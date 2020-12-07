@@ -220,7 +220,7 @@
             orc.main_order_no
     </select>
     <select id="viewSBillDetail" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewBilToOrderVO">
-         SELECT
+         SELECT distinct
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         oi.order_no orderNo,
         (select orc.order_no from order_receivable_cost orc where orc.id = orbd.cost_id) subOrderNo,

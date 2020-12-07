@@ -250,7 +250,7 @@
         SELECT DISTINCT
             opb.legal_name legalName,
             opbd.account_term accountTermStr,
-            (select oi.customer_name from order_info oi where oi.order_no = opbd.order_no) customerName,
+            opb.supplier_ch_name customerName,
             opbd.bill_no billNo,
             opbd.make_user makeUser,
             opbd.make_time makeTimeStr

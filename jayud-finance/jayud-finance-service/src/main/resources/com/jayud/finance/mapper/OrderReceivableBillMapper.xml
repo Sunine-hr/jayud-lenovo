@@ -321,10 +321,11 @@
     <select id="getViewBillByCostIds" parameterType="java.util.List" resultType="com.jayud.finance.vo.ViewBillVO">
         SELECT DISTINCT
         oi.legal_name legalName,
-        oi.customer_name customerName
+        ci.`name` customerName
         FROM
         order_info oi
         LEFT JOIN order_receivable_cost orc ON oi.order_no = orc.main_order_no
+        left join customer_info ci on ci.unit_code = orc.customer_code
         WHERE
         orc.id IN
          <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">

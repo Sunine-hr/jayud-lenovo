@@ -247,7 +247,7 @@
         SELECT DISTINCT
             orb.legal_name legalName,
             orbd.account_term accountTermStr,
-            (select oi.customer_name from order_info oi where oi.order_no = orbd.order_no) customerName,
+            orb.unit_account customerName,
             orbd.bill_no billNo,
             orbd.make_user makeUser,
             orbd.make_time makeTimeStr

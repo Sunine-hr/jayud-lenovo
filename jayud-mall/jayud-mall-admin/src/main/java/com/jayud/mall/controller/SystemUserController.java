@@ -12,7 +12,6 @@ import com.jayud.mall.service.ISystemUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiOperationSupport;
-import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +20,6 @@ import java.util.List;
 
 
 @Api(tags = "A001-南京电商后台-用户管理")
-@ApiSort(value = 1)
 @RestController
 @RequestMapping("/system/user")
 public class SystemUserController {

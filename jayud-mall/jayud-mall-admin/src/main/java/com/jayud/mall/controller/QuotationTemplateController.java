@@ -9,12 +9,15 @@ import com.jayud.mall.model.vo.QuotationTemplateVO;
 import com.jayud.mall.service.IQuotationTemplateService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperationSupport;
+import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/quotationtemplate")
 @Api(tags = "报价模板接口")
+@ApiSort(value = 1)
 public class QuotationTemplateController {
 
     @Autowired
@@ -22,6 +25,7 @@ public class QuotationTemplateController {
 
     @ApiOperation(value = "分页查询报价模板")
     @PostMapping("/findQuotationTemplateByPage")
+    @ApiOperationSupport(order = 1)
     public CommonResult<CommonPageResult<QuotationTemplateVO>> findQuotationTemplateByPage(@RequestBody QueryQuotationTemplateForm form) {
         IPage<QuotationTemplateVO> pageList = quotationTemplateService.findQuotationTemplateByPage(form);
         CommonPageResult<QuotationTemplateVO> pageVO = new CommonPageResult(pageList);
@@ -30,6 +34,7 @@ public class QuotationTemplateController {
 
     @ApiOperation(value = "禁用报价模板")
     @PostMapping(value = "/disabledQuotationTemplate")
+    @ApiOperationSupport(order = 2)
     public CommonResult disabledQuotationTemplate(@RequestParam("id") Long id) {
         quotationTemplateService.disabledQuotationTemplate(id);
         return CommonResult.success("禁用报价模板成功！");
@@ -37,6 +42,7 @@ public class QuotationTemplateController {
 
     @ApiOperation(value = "启用报价模板")
     @PostMapping(value = "/enableQuotationTemplate")
+    @ApiOperationSupport(order = 3)
     public CommonResult enableQuotationTemplate(@RequestParam("id") Long id) {
         quotationTemplateService.enableQuotationTemplate(id);
         return CommonResult.success("启用报价模板成功！");
@@ -44,6 +50,7 @@ public class QuotationTemplateController {
 
     @ApiOperation(value = "保存报价模板")
     @PostMapping(value = "saveQuotationTemplate")
+    @ApiOperationSupport(order = 4)
     public CommonResult saveQuotationTemplate(@RequestBody QuotationTemplateForm form){
         quotationTemplateService.saveQuotationTemplate(form);
         return CommonResult.success("保存报价模板，成功！");
@@ -51,6 +58,7 @@ public class QuotationTemplateController {
 
     @ApiOperation(value = "查看报价模板")
     @PostMapping(value = "lookQuotationTemplate")
+    @ApiOperationSupport(order = 5)
     public CommonResult<QuotationTemplateVO> lookQuotationTemplate(@RequestBody QuotationTemplateForm form){
         Long id = form.getId();
         return quotationTemplateService.lookQuotationTemplate(id);

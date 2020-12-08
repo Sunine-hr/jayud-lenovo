@@ -63,8 +63,12 @@
         FROM
         order_payment_cost opc
         where opc.`main_order_no` = #{form.mainOrderNo}
+        <if test="form.cmd == 'main_cost'">
+            and opc.is_sum_to_main = 1
+        </if>
         <if test="form.cmd == 'main_cost_audit'">
             and opc.`status` in ('2','3')
+            and opc.is_sum_to_main = 1
         </if>
         <if test="form.cmd == 'zgys_sub_cost'">
             and opc.sub_type = 'zgys'

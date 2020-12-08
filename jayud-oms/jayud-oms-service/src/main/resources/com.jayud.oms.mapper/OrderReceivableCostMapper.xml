@@ -60,15 +60,26 @@
         order_receivable_cost orc
         left join customer_info ci on orc.customer_code = ci.unit_code
         where orc.`main_order_no` = #{form.mainOrderNo}
+        <if test="form.cmd == 'main_cost'">
+            and orc.is_sum_to_main = 1
+        </if>
         <if test="form.cmd == 'main_cost_audit'">
             and orc.`status` in ('2','3')
+            and orc.is_sum_to_main = 1
         </if>
-        <if test="form.cmd == 'sub_cost'">
-            and orc.`order_no` != '' and orc.`order_no` is not null
+        <if test="form.cmd == 'zgys_sub_cost'">
+            and orc.sub_type = 'zgys'
         </if>
-        <if test="form.cmd == 'sub_cost_audit'">
-            and orc.`order_no` != '' and orc.`order_no` is not null
+        <if test="form.cmd == 'bg_sub_cost'">
+            and orc.sub_type = 'bg'
+        </if>
+        <if test="form.cmd == 'zgys_sub_cost_audit'">
             and orc.`status` in ('2','3')
+            and orc.sub_type = 'zgys'
+        </if>
+        <if test="form.cmd == 'bg_sub_cost_audit'">
+            and orc.`status` in ('2','3')
+            and orc.sub_type = 'bg'
         </if>
     </select>
 

@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 @Data
 public class QuotationTemplateParaForm {
 
-    @ApiModelProperty(value = "自增id", position = 1)
+    @ApiModelProperty(value = "自增id", required = true, position = 1)
     @JSONField(ordinal = 1)
     @NotNull(message = "id is required")
     private Long id;

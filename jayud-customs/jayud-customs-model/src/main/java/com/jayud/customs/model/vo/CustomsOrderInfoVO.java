@@ -96,8 +96,11 @@ public class CustomsOrderInfoVO {
     @ApiModelProperty(value = "业务类型")
     private String bizCode;
 
-    @ApiModelProperty(value = "订单类型")
+    @ApiModelProperty(value = "作业类型")
     private String classCode;
+
+    @ApiModelProperty(value = "作业类型")
+    private String classCodeDesc;
 
     @ApiModelProperty(value = "是否有费用详情")
     private boolean isCost;

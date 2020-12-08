@@ -366,6 +366,7 @@
             (select GROUP_CONCAT(oc.yun_customs_no) from order_customs oc where oc.main_order_no = oi.order_no GROUP BY oc.main_order_no) yunCustomsNo,
             (select cg.`name` from cost_genre cg where cg.id = opc.cost_genre_id) costGenreName,
             opc.cost_genre_id,
+            (select pb.cost_genre_ids from product_biz pb where pb.id_code = oi.biz_code) costGenreStr,
             opc.id costId,
             (select ct.code_name from cost_type ct where ct.id = opc.cost_type_id) costTypeName,
             (select ci.`name` from cost_info ci where ci.id_code = opc.cost_code) costName,

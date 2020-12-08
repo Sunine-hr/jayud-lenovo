@@ -71,4 +71,17 @@
             and orc.`status` in ('2','3')
         </if>
     </select>
+
+    <select id="getWriteBackSCostData" parameterType="java.lang.Long" resultType="com.jayud.oms.model.vo.InputReceivableCostVO" >
+    select temp.id,temp.exchangeRate,temp.amount * temp.exchangeRate changeAmount from (
+        SELECT
+            orc.id,
+            (SELECT cr.exchange_rate FROM currency_rate cr where cr.`month`= orbd.account_term and  cr.dcid = (select ci.id from currency_info ci where ci.currency_code = 'CNY') and cr.ocid = (select ci.id from currency_info ci where ci.currency_code = orc.currency_code)) exchangeRate,
+            orc.amount
+        FROM
+            order_receivable_cost orc left join order_receivable_bill_detail orbd on orc.id = orbd.cost_id
+        WHERE
+            orc.id = #{costId}
+	) temp
+    </select>
 </mapper>

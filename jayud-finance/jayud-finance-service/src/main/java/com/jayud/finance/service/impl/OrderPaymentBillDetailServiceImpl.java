@@ -581,6 +581,16 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         if("0".equals(form.getAuditStatus())){
             applyStatus = BillEnum.F_2.getCode();
             status = BillEnum.B_6.getCode();
+
+            //开票审核通过之后，需要反推汇率和本币金额到费用录入表
+            List<OrderCostForm> orderCostForms = new ArrayList<>();
+            for (OrderPaymentBillDetail tempObject : billDetails) {
+                OrderCostForm orderCostForm = new OrderCostForm();
+                orderCostForm.setCostId(tempObject.getCostId());
+                orderCostForm.setLoginUserName(form.getLoginUserName());
+                orderCostForms.add(orderCostForm);
+            }
+            omsClient.writeBackCostData(orderCostForms,"payment");
         }else {
             applyStatus = BillEnum.F_3.getCode();
             status = BillEnum.B_6_1.getCode();

@@ -259,7 +259,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         List<SheetHeadVO> allHeadList = new ArrayList<>();
         List<SheetHeadVO> fixHeadList = new ArrayList<>();
         try {
-            ViewBilToOrderHeadVO viewBilToOrderVO = new ViewBilToOrderHeadVO();
+            ViewFBilToOrderHeadVO viewBilToOrderVO = new ViewFBilToOrderHeadVO();
             Class cls = viewBilToOrderVO.getClass();
             Field[] fields = cls.getDeclaredFields();
             for (int i = 0; i < fields.length; i++) {

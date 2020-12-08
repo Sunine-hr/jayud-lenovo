@@ -321,7 +321,7 @@
     <select id="getViewBillByCostIds" parameterType="java.util.List" resultType="com.jayud.finance.vo.ViewBillVO">
         SELECT DISTINCT
         oi.legal_name legalName,
-        ci.`name` customerName
+        ci.unit_account customerName
         FROM
         order_info oi
         LEFT JOIN order_receivable_cost orc ON oi.order_no = orc.main_order_no

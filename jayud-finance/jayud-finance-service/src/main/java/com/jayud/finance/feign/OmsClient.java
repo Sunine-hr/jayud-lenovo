@@ -68,4 +68,12 @@ public interface OmsClient {
     ApiResult<Boolean> oprCostGenreByCw(@RequestBody List<OrderCostForm> forms,@RequestParam("cmd") String cmd);
 
 
+    /**
+     * 开票审核通过之后，需要反推汇率和本币金额到费用录入表
+     * @param forms
+     * @param cmd
+     * @return
+     */
+    @RequestMapping(value = "api/writeBackCostData")
+    ApiResult<Boolean> writeBackCostData(@RequestBody List<OrderCostForm> forms, @RequestParam("cmd") String cmd);
 }

@@ -100,5 +100,16 @@
             and oc.order_no =#{orderNo}
         </where>
     </select>
-
+    <select id="getWriteBackFCostData" parameterType="java.lang.Long" resultType="com.jayud.oms.model.vo.InputReceivableCostVO" >
+    select temp.id,temp.exchangeRate,temp.amount * temp.exchangeRate changeAmount from (
+        SELECT
+            opc.id,
+            (SELECT cr.exchange_rate FROM currency_rate cr where cr.`month`= opbd.account_term and  cr.dcid = (select ci.id from currency_info ci where ci.currency_code = 'CNY') and cr.ocid = (select ci.id from currency_info ci where ci.currency_code = opc.currency_code)) exchangeRate,
+            opc.amount
+        FROM
+            order_payment_cost opc left join order_payment_bill_detail opbd on opc.id = opbd.cost_id
+        WHERE
+            opc.id = #{costId}
+        ) temp
+    </select>
 </mapper>

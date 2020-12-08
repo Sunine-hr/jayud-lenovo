@@ -91,13 +91,13 @@ public class QuotationTemplateForm {
     @JSONField(ordinal = 18)
     private List<ShippingAreaForm> areaIdarr;
 
-    @ApiModelProperty(value = "报价类型(13整柜 18散柜)", position = 19)
+    @ApiModelProperty(value = "报价类型(1整柜 2散柜)", position = 19)
     @JSONField(ordinal = 19)
     private Integer qidtype;
 
     @ApiModelProperty(value = "报价类型(goods_type types=1 id),多个用逗号分隔，数组", position = 20)
     @JSONField(ordinal = 20)
-    private List<GoodsTypeForm> qidarr;
+    private List<QuotationTypeForm> qidarr;
 
     @ApiModelProperty(value = "任务分组id(task_group id)", position = 21)
     @JSONField(ordinal = 21)

@@ -7,7 +7,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@ApiModel(value="OrderInfoForm对象", description="产品订单表")
+@ApiModel(value="OfferInfoForm对象", description="报价表单")
 public class OfferInfoForm {
 
     @ApiModelProperty(value = "自增加id", position = 1)

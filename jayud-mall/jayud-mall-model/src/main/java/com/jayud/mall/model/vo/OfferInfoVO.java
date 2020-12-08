@@ -1,5 +1,6 @@
 package com.jayud.mall.model.vo;
 
+import com.jayud.mall.model.bo.PicUrlArrForm;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -102,11 +103,11 @@ public class OfferInfoVO {
 
     /*报价服务组:service_group*/
     @ApiModelProperty(value = "服务名称service_group.code_name")
-    private String sName;
+    private String sname;
 
     /*运输方式:transport_way*/
     @ApiModelProperty(value = "运输方式transport_way.code_name")
-    private String tName;
+    private String tname;
 
     /*机场、港口信息:harbour_info*/
     @ApiModelProperty(value = "起运港harbour_info.code_name")
@@ -130,7 +131,7 @@ public class OfferInfoVO {
 
     /*货物类型list*/
     @ApiModelProperty(value = "货物类型list")
-    private List<GoodsTypeVO> gList;
+    private List<GoodsTypeVO> gidarr;
 
     /*集货仓库list*/
     @ApiModelProperty(value = "集货仓库list")
@@ -138,7 +139,7 @@ public class OfferInfoVO {
 
     /*报价类型list*/
     @ApiModelProperty(value = "报价类型list")
-    private List<GoodsTypeVO> qList;
+    private List<QuotationTypeVO> qidarr;
 
     /*报价对应应收费用明细list*/
     @ApiModelProperty(value = "报价对应应收费用明细list")
@@ -156,12 +157,6 @@ public class OfferInfoVO {
     @ApiModelProperty(value = "配载单，关联查询报价信息-路线")
     private String route;
 
-    /*货物类型(goods_type types=2 id)*/
-    private String gName;
-
-    /*报价类型(goods_type types=1 id)*/
-    private String qName;
-
     //海运费：订柜尺寸(应收费用明细)
     @ApiModelProperty(value = "海运费：订柜尺寸(应收费用明细)")
     private List<TemplateCopeReceivableVO> oceanFeeList;
@@ -170,6 +165,7 @@ public class OfferInfoVO {
     @ApiModelProperty(value = "内陆费：集货仓库(应收费用明细)")
     private List<TemplateCopeReceivableVO> inlandFeeList;
 
-
-
+    //图片
+    @ApiModelProperty(value = "图片")
+    private List<PicUrlArrForm> picUrlarr;
 }

@@ -1,5 +1,6 @@
 package com.jayud.mall.model.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.mall.model.bo.PicUrlArrForm;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -44,15 +45,19 @@ public class QuotationTemplateVO {
     private String visibleUid;
 
     @ApiModelProperty(value = "开船日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime sailTime;
 
     @ApiModelProperty(value = "截单日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime cutOffTime;
 
     @ApiModelProperty(value = "截仓日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime jcTime;
 
     @ApiModelProperty(value = "截亏仓日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime jkcTime;
 
     @ApiModelProperty(value = "货物类型(goods_type types=2 id),多个用逗号分隔")
@@ -83,9 +88,11 @@ public class QuotationTemplateVO {
     private String userName;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "更新时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
     /*报价服务组:service_group*/

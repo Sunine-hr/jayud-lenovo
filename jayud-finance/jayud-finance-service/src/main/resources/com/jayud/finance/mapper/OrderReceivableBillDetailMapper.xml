@@ -331,6 +331,7 @@
         </if>
     </select>
     <select id="findSCostList" parameterType="java.lang.String" resultType="com.jayud.finance.vo.FCostVO">
+        select temp.customerName,temp.costGenreName,temp.costName,temp.unitPrice,temp.number,temp.currencyName,temp.amount,temp.exchangeRate,ifnull(temp.exchangeRate,0)*temp.amount changeAmount,temp.remarks from (
         SELECT
             orc.customer_name customerName,
             (select cg.`name` from cost_genre cg where cg.id = orc.cost_genre_id) costGenreName,
@@ -339,14 +340,13 @@
             orc.number,
             (select ci.currency_name from currency_info ci where ci.currency_code = orc.currency_code) currencyName,
             orc.amount,
-            orc.exchange_rate exchangeRate,
-            orc.change_amount changeAmount,
+            (select cr.exchange_rate from currency_rate cr where cr.dcid = (select ci.id from currency_info ci where ci.currency_code = 'CNY') and cr.ocid = (select ci.id from currency_info ci where ci.currency_code = orbd.settlement_currency)  and cr.`month` = orbd.account_term) exchangeRate,
             orc.remarks
         FROM
             order_receivable_cost orc
-            LEFT JOIN order_receivable_bill_detail orbd ON orc.id = orbd.cost_id
-        WHERE
+        LEFT JOIN order_receivable_bill_detail orbd ON orc.id = orbd.cost_id  WHERE
             orbd.bill_no = #{billNo}
+            ) temp
     </select>
     <select id="getReceivableHeaderForm" parameterType="java.lang.String" resultType="com.jayud.finance.bo.ReceivableHeaderForm">
         SELECT

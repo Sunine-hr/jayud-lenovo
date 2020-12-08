@@ -117,7 +117,8 @@ public class PaymentBillDetailController {
         queryWrapper.eq("bill_no",form.getBillNo());
         List<OrderPaymentBillDetail> orderPaymentBillDetails = billDetailService.list(queryWrapper);
         OrderPaymentBillDetail orderPaymentBillDetail = orderPaymentBillDetails.get(0);
-        if(orderPaymentBillDetail != null && !BillEnum.B_4.getCode().equals(orderPaymentBillDetail.getAuditStatus())){
+        if(orderPaymentBillDetail != null && !(BillEnum.B_4.getCode().equals(orderPaymentBillDetail.getAuditStatus()) ||
+                BillEnum.B_5_1.getCode().equals(orderPaymentBillDetail.getAuditStatus()))){
             return CommonResult.error(10000,"不满足付款申请的条件");
         }
         Boolean result = billDetailService.applyPayment(form);

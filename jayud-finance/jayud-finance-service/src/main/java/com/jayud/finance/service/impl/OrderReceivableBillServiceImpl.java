@@ -55,8 +55,6 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
     public IPage<OrderReceiveBillVO> findReceiveBillByPage(QueryReceiveBillForm form) {
         //定义分页参数
         Page<OrderReceiveBillVO> page = new Page(form.getPageNum(),form.getPageSize());
-        //定义排序规则
-        page.addOrder(OrderItem.desc("oi.legal_name"));
         IPage<OrderReceiveBillVO> pageInfo = null;
         if("main".equals(form.getCmd())) {
             pageInfo = baseMapper.findReceiveBillByPage(page, form);//法人主体/结算单位/可汇总主订单费用的维度统计

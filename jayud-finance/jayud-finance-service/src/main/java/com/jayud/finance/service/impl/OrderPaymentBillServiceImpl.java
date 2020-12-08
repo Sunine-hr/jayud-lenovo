@@ -62,8 +62,6 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
     public IPage<OrderPaymentBillVO> findPaymentBillByPage(QueryPaymentBillForm form) {
         //定义分页参数
         Page<OrderPaymentBillVO> page = new Page(form.getPageNum(),form.getPageSize());
-        //定义排序规则
-        page.addOrder(OrderItem.desc("oi.legal_name"));
         IPage<OrderPaymentBillVO> pageInfo = null;
         if("main".equals(form.getCmd())) {
             pageInfo = baseMapper.findPaymentBillByPage(page, form);//法人主体/供应商/可汇总主订单费用的维度统计

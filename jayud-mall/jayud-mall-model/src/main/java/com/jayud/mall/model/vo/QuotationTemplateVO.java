@@ -1,5 +1,6 @@
 package com.jayud.mall.model.vo;
 
+import com.jayud.mall.model.bo.PicUrlArrForm;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -118,7 +119,7 @@ public class QuotationTemplateVO {
 
     /*货物类型list*/
     @ApiModelProperty(value = "货物类型list")
-    private List<GoodsTypeVO> gList;
+    private List<GoodsTypeVO> gidarr;
 
     /*集货仓库list*/
     @ApiModelProperty(value = "集货仓库list")
@@ -126,16 +127,23 @@ public class QuotationTemplateVO {
 
     /*报价类型list*/
     @ApiModelProperty(value = "报价类型list")
-    private List<GoodsTypeVO> qList;
+    private List<QuotationTypeVO> qidarr;
 
     /*报价对应应收费用明细list*/
+    @ApiModelProperty(value = "报价对应应收费用明细list")
     private List<TemplateCopeReceivableVO> templateCopeReceivableVOList;
 
     /*报价对应应付费用明细list*/
+    @ApiModelProperty(value = "报价对应应付费用明细list")
     private List<TemplateCopeWithVO> templateCopeWithVOList;
 
     /*模板对应模块信息list，文件信息*/
+    @ApiModelProperty(value = "模板对应模块信息list，文件信息")
     private List<TemplateFileVO> templateFileVOList;
+
+    /*报价图片*/
+    @ApiModelProperty(value = "报价图片，多张用逗号分割，数组", position = 5)
+    private List<PicUrlArrForm> picUrlarr;
 
 
 }

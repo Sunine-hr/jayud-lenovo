@@ -22,8 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -50,6 +48,9 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
 
     @Autowired
     ShippingAreaMapper shippingAreaMapper;
+
+    @Autowired
+    QuotationTypeMapper quotationTypeMapper;
 
     @Autowired
     TemplateCopeReceivableMapper templateCopeReceivableMapper;
@@ -242,6 +243,19 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
         QuotationTemplateVO quotationTemplateVO = quotationTemplateMapper.lookQuotationTemplate(id);
 
         Long qie = quotationTemplateVO.getId();//报价模板id
+        //图片picUrl
+        List<PicUrlArrForm> picUrlarr = new ArrayList<>();
+        String picUrl = quotationTemplateVO.getPicUrl();
+        if(picUrl != null && picUrl != ""){
+            String[] picUrlArr = picUrl.split(",");
+            List<String> picUrlList = Arrays.asList(picUrlArr);
+            picUrlList.forEach(filePath -> {
+                PicUrlArrForm picUrlArrForm = new PicUrlArrForm();
+                picUrlArrForm.setFilePath(filePath);
+                picUrlarr.add(picUrlArrForm);
+            });
+            quotationTemplateVO.setPicUrlarr(picUrlarr);
+        }
         //可达仓库List
         String arriveWarehouse = quotationTemplateVO.getArriveWarehouse();
         if(arriveWarehouse != null && arriveWarehouse != ""){
@@ -269,7 +283,7 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
             List<String> gidList = Arrays.asList(gidArr);
             List<GoodsType> goodsTypes = goodsTypeMapper.selectBatchIds(gidList);
             List<GoodsTypeVO> gList = ConvertUtil.convertList(goodsTypes, GoodsTypeVO.class);
-            quotationTemplateVO.setGList(gList);
+            quotationTemplateVO.setGidarr(gList);
         }
 
         //集货仓库list
@@ -287,9 +301,9 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
         if(qid != null && qid != ""){
             String[] qidArr = qid.split(",");
             List<String> qidList = Arrays.asList(qidArr);
-            List<GoodsType> goodsTypes = goodsTypeMapper.selectBatchIds(qidList);
-            List<GoodsTypeVO> qList = ConvertUtil.convertList(goodsTypes, GoodsTypeVO.class);
-            quotationTemplateVO.setQList(qList);
+            List<QuotationType> goodsTypes = quotationTypeMapper.selectBatchIds(qidList);
+            List<QuotationTypeVO> qList = ConvertUtil.convertList(goodsTypes, QuotationTypeVO.class);
+            quotationTemplateVO.setQidarr(qList);
         }
 
         //报价对应应收费用明细list
@@ -310,22 +324,7 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
 
         //模板对应模块信息list，文件信息
         List<TemplateFileVO> templateFileVOList = templateFileMapper.findTemplateFileByQie(qie);
-        //根据类型分组
-        Map<String, List<TemplateFileVO>> map =
-                templateFileVOList.stream().collect(Collectors.groupingBy(TemplateFileVO::getTypes));
-        List<TemplateFileVO> templateFileGroup = new ArrayList<>();
-        map.forEach((k,v) -> {
-            TemplateFileVO templateFileVO = new TemplateFileVO();
-            templateFileVO.setGroupCode(k);
-            if(k.equalsIgnoreCase("1")){
-                templateFileVO.setGroupName("报关服务");
-            }else if(k.equalsIgnoreCase("2")){
-                templateFileVO.setGroupName("清关服务");
-            }
-            templateFileVO.setTemplateFileVOList(v);
-            templateFileGroup.add(templateFileVO);
-        });
-        quotationTemplateVO.setTemplateFileVOList(templateFileGroup);
+        quotationTemplateVO.setTemplateFileVOList(templateFileVOList);
         return CommonResult.success(quotationTemplateVO);
     }
 

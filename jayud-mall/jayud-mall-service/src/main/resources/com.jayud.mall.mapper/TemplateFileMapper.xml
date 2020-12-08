@@ -22,7 +22,12 @@
             resultType="com.jayud.mall.model.vo.TemplateFileVO">
         select
         t.id,t.qie,t.file_name,t.`options`,t.remarks,t.qf_id,
-        t1.group_code,t1.group_name,t1.types
+        t1.group_name,
+        CASE t1.types
+        WHEN '1' THEN '报关服务'
+        WHEN '2' THEN '清关服务'
+        ELSE '其他'
+        END typesName
         from template_file t
         LEFT JOIN quoted_file t1 on t1.id = t.qf_id
         where qie = #{qie}

@@ -64,7 +64,7 @@ public class QuotationTemplateController {
     @ApiOperation(value = "查看报价模板")
     @PostMapping(value = "lookQuotationTemplate")
     @ApiOperationSupport(order = 5)
-    public CommonResult<QuotationTemplateVO> lookQuotationTemplate(@RequestBody QuotationTemplateForm form){
+    public CommonResult<QuotationTemplateVO> lookQuotationTemplate(@Valid @RequestBody QuotationTemplateParaForm form){
         Long id = form.getId();
         return quotationTemplateService.lookQuotationTemplate(id);
     }

@@ -4,8 +4,6 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 public class TemplateFileVO {
 
@@ -29,16 +27,10 @@ public class TemplateFileVO {
     private String qfId;
 
     /*报价对应的文件表：quoted_file*/
-    @ApiModelProperty(value = "文件分组代码")
-    private String groupCode;
-
     @ApiModelProperty(value = "文件分组名称")
     private String groupName;
 
-    @ApiModelProperty(value = "类型 1报关服务 2清关服务")
-    private String types;
-
-    /*按类型分组：买单报关，独立报关*/
-    private List<TemplateFileVO> templateFileVOList;
+    @ApiModelProperty(value = "类型名称 1报关服务 2清关服务")
+    private String typesName;
 
 }

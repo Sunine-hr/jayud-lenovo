@@ -63,6 +63,9 @@ public class ExternalApiController {
     @Autowired
     ICurrencyInfoService currencyInfoService;
 
+    @Autowired
+    ICostGenreService costGenreService;
+
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
     public ApiResult oprMainOrder(@RequestBody InputMainOrderForm form) {
@@ -443,6 +446,23 @@ public class ExternalApiController {
             }
         }
         return ApiResult.ok(true);
+    }
+
+    /**
+     * 获取所有可用的费用类型
+     * @return
+     */
+    @RequestMapping(value = "api/findEnableCostGenre")
+    ApiResult<List<InitComboxVO>> findEnableCostGenre(){
+        List<InitComboxVO> initComboxVOS = new ArrayList<>();
+        List<CostGenre> costGenres = costGenreService.getEnableCostGenre();
+        for (CostGenre costGenre : costGenres) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(costGenre.getId());
+            initComboxVO.setName(costGenre.getName());
+            initComboxVOS.add(initComboxVO);
+        }
+        return ApiResult.ok(initComboxVOS);
     }
 
 

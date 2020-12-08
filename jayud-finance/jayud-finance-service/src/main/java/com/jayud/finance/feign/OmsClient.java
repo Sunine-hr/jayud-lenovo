@@ -76,4 +76,11 @@ public interface OmsClient {
      */
     @RequestMapping(value = "api/writeBackCostData")
     ApiResult<Boolean> writeBackCostData(@RequestBody List<OrderCostForm> forms, @RequestParam("cmd") String cmd);
+
+    /**
+     * 获取所有可用的费用类型
+     * @return
+     */
+    @RequestMapping(value = "api/findEnableCostGenre")
+    ApiResult<List<InitComboxVO>> findEnableCostGenre();
 }

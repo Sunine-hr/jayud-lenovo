@@ -10,6 +10,8 @@ import com.jayud.mall.model.vo.OfferInfoVO;
 import com.jayud.mall.service.IOfferInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperationSupport;
+import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +23,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/offerinfo")
 @Api(tags = "报价接口")
+@ApiSort(value = 2)
 public class OfferInfoController {
 
     @Autowired
@@ -28,6 +31,7 @@ public class OfferInfoController {
 
     @ApiOperation(value = "分页查询报价")
     @PostMapping("/findOfferInfoByPage")
+    @ApiOperationSupport(order = 1)
     public CommonResult<CommonPageResult<OfferInfoVO>> findOfferInfoByPage(@RequestBody QueryOfferInfoForm form) {
         IPage<OfferInfoVO> pageList = offerInfoService.findOfferInfoByPage(form);
         CommonPageResult<OfferInfoVO> pageVO = new CommonPageResult(pageList);
@@ -36,6 +40,7 @@ public class OfferInfoController {
 
     @ApiOperation(value = "禁用报价")
     @PostMapping(value = "/disabledOfferInfo")
+    @ApiOperationSupport(order = 2)
     public CommonResult disabledOfferInfo(@Valid @RequestBody OfferInfoParaForm form) {
         Long id = form.getId();
         offerInfoService.disabledOfferInfo(id);
@@ -44,6 +49,7 @@ public class OfferInfoController {
 
     @ApiOperation(value = "启用报价")
     @PostMapping(value = "/enableOfferInfo")
+    @ApiOperationSupport(order = 3)
     public CommonResult enableOfferInfo(@Valid @RequestBody OfferInfoParaForm form) {
         Long id = form.getId();
         offerInfoService.enableOfferInfo(id);
@@ -52,6 +58,7 @@ public class OfferInfoController {
 
     @ApiOperation(value = "添加报价")
     @PostMapping(value = "saveOfferInfo")
+    @ApiOperationSupport(order = 4)
     public CommonResult saveOfferInfo(@RequestBody OfferInfoForm form){
         offerInfoService.saveOfferInfo(form);
         return CommonResult.success("保存报价，成功！");
@@ -59,6 +66,7 @@ public class OfferInfoController {
 
     @ApiOperation(value = "查看报价详情")
     @PostMapping(value = "lookOfferInfo")
+    @ApiOperationSupport(order = 5)
     public CommonResult<OfferInfoVO> lookOfferInfo(@Valid @RequestBody OfferInfoParaForm form){
         Long id = form.getId();
         return offerInfoService.lookOfferInfo(id);

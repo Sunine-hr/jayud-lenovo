@@ -108,6 +108,10 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
     @Override
     public void saveOfferInfo(OfferInfoForm form) {
         OfferInfo offerInfo = ConvertUtil.convert(form, OfferInfo.class);
+        if(form.getId() == null){
+            //状态(0无效 1有效)
+            offerInfo.setStatus("1");
+        }
         this.saveOrUpdate(offerInfo);
     }
 

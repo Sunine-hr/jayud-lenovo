@@ -1,5 +1,6 @@
 package com.jayud.mall.model.bo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -20,15 +21,19 @@ public class OfferInfoForm {
     private String names;
 
     @ApiModelProperty(value = "开船日期", position = 4)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime sailTime;
 
     @ApiModelProperty(value = "截单日期", position = 5)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime cutOffTime;
 
     @ApiModelProperty(value = "截仓日期", position = 6)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime jcTime;
 
     @ApiModelProperty(value = "截亏仓日期", position = 7)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime jkcTime;
 
     @ApiModelProperty(value = "类型1整柜 2散柜", position = 8)
@@ -44,14 +49,14 @@ public class OfferInfoForm {
     private String userName;
 
     @ApiModelProperty(value = "创建时间", position = 12)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
-    @ApiModelProperty(value = "预计到达时间")
+    @ApiModelProperty(value = "预计到达时间", position = 13)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime estimatedTime;
 
-    @ApiModelProperty(value = "操作信息")
+    @ApiModelProperty(value = "操作信息", position = 14)
     private String remarks;
-
-
 
 }

@@ -53,7 +53,7 @@ public class ViewBillVO {
     public String getAccountTermStr() {
         if(!StringUtil.isNullOrEmpty(this.accountTermStr)){
             int year = Integer.valueOf(this.accountTermStr.substring(0,4));
-            int month = Integer.valueOf(this.accountTermStr.substring(6,7));
+            int month = Integer.valueOf(this.accountTermStr.substring(5,7));
             return this.accountTermStr+"-01"+"至"+ DateUtils.getLastDayOfMonth(year,month);
         }
         return "";

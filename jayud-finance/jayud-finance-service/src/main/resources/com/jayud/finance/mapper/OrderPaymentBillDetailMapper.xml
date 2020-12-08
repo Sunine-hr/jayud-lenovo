@@ -131,7 +131,7 @@
             si.supplier_ch_name supplierChName,
             (SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' LIMIT 1) startAddress,
             (SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id WHERE ota.order_no = ot.order_no AND ota.opr_type = '2' LIMIT 1) endAddress,
-            concat( vi.plate_number, vi.hk_number ) licensePlate,
+            concat( vi.plate_number,',',vi.hk_number ) licensePlate,
             ( SELECT GROUP_CONCAT( oc.yun_customs_no SEPARATOR ',' ) FROM order_customs oc WHERE oc.main_order_no = oi.order_no ) yunCustomsNo,
             cg.`name` costGenreName,
             opc.cost_genre_id costGenreId,
@@ -361,7 +361,7 @@
             ota.delivery_id
             left join order_transport ot on ot.order_no = ota.order_no where ot.main_order_no = oi.order_no and ota.opr_type
             = '2' LIMIT 1) endAddress,
-            (select concat( vi.plate_number, vi.hk_number ) from order_send_cars osc left join order_transport ot
+            (select concat( vi.plate_number,',',vi.hk_number ) from order_send_cars osc left join order_transport ot
             on osc.order_no = ot.order_no left join driver_info di on di.id = osc.driver_info_id left join vehicle_info vi on vi.id = di.vehicle_id where ot.main_order_no = oi.order_no) licensePlate,
             (select GROUP_CONCAT(oc.yun_customs_no) from order_customs oc where oc.main_order_no = oi.order_no GROUP BY oc.main_order_no) yunCustomsNo,
             (select cg.`name` from cost_genre cg where cg.id = opc.cost_genre_id) costGenreName,
@@ -424,7 +424,7 @@
             opc.number,
             (select ci.currency_name from currency_info ci where ci.currency_code = opc.currency_code) currencyName,
             opc.amount,
-            (select cr.exchange_rate from currency_rate cr where cr.dcid = (select ci.id from currency_info ci where ci.currency_code = 'CNY') and cr.ocid = (select ci.id from currency_info ci where ci.currency_code = opbd.settlement_currency)  and cr.`month` = opbd.account_term) exchangeRate,
+            (select cr.exchange_rate from currency_rate cr where cr.dcid = (select ci.id from currency_info ci where ci.currency_code = 'CNY') and cr.ocid = (select ci.id from currency_info ci where ci.currency_code = opc.currency_code)  and cr.`month` = opbd.account_term) exchangeRate,
             opc.remarks
         FROM
             order_payment_cost opc

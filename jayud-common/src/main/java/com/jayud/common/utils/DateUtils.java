@@ -317,9 +317,9 @@ public class DateUtils {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         Calendar cal = Calendar.getInstance();
         //设置年份
-        cal.set(Calendar.YEAR,year+1);
+        cal.set(Calendar.YEAR,year);
         //设置月份
-        cal.set(Calendar.MONTH, month-3);
+        cal.set(Calendar.MONTH, month-1);
         //获取某月最大天数
         int lastDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
         //设置日历中月份的最大天数

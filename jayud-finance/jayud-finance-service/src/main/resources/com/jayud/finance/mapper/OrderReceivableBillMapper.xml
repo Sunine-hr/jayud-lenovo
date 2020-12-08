@@ -128,7 +128,7 @@
         WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' LIMIT 1) startAddress,
         (SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id
         WHERE ota.order_no = ot.order_no AND ota.opr_type = '2' LIMIT 1) endAddress,
-        concat( vi.plate_number, vi.hk_number ) licensePlate,
+        concat( vi.plate_number,',', vi.hk_number ) licensePlate,
         ( SELECT GROUP_CONCAT( oc.yun_customs_no SEPARATOR ',' ) FROM order_customs oc WHERE oc.main_order_no = oi.order_no ) yunCustomsNo,
         cg.`name` costGenreName,
         ct.code_name costTypeName,

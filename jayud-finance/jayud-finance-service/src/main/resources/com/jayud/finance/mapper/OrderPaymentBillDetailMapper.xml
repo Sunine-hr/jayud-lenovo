@@ -352,7 +352,7 @@
             oi.biz_code bizCode,
             (select pb.`name` from product_biz pb where pb.id_code = oi.biz_code) bizCodeDesc,
             oi.create_time createdTimeStr,
-            oi.customer_name customerName,
+           (select si.supplier_ch_name from supplier_info si where si.supplier_code = opc.customer_code) supplierChName,
             (SELECT concat( da.city_name, da.address ) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id =
             ota.delivery_id
             left join order_transport ot on ot.order_no = ota.order_no WHERE ot.main_order_no = oi.order_no and ota.opr_type

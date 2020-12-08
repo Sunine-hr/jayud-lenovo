@@ -2,9 +2,8 @@ package com.jayud.mall.controller;
 
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.GoodsTypeForm;
-import com.jayud.mall.model.bo.HarbourInfoForm;
 import com.jayud.mall.model.po.GoodsType;
-import com.jayud.mall.model.po.HarbourInfo;
+import com.jayud.mall.model.vo.GoodsTypeReturnVO;
 import com.jayud.mall.service.IGoodsTypeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,6 +28,13 @@ public class GoodsTypeController {
     public CommonResult<List<GoodsType>> findGoodsType(@RequestBody GoodsTypeForm form) {
         List<GoodsType> list = goodsTypeService.findGoodsType(form);
         return CommonResult.success(list);
+    }
+
+    @ApiOperation(value = "货物类型下拉选择")
+    @PostMapping("/findGoodsTypeBy")
+    public CommonResult<GoodsTypeReturnVO> findGoodsTypeBy(){
+        GoodsTypeReturnVO goodsTypeReturnVO = goodsTypeService.findGoodsTypeBy();
+        return CommonResult.success(goodsTypeReturnVO);
     }
 
 

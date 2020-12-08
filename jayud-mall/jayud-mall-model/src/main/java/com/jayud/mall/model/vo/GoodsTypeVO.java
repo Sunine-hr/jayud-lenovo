@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 public class GoodsTypeVO {
 
-    @ApiModelProperty(value = "自增加")
+    @ApiModelProperty(value = "自增加id")
     private Long id;
 
     @ApiModelProperty(value = "货物类型名")
@@ -35,7 +35,7 @@ public class GoodsTypeVO {
     @TableField(value = "`status`")
     private String status;
 
-    @ApiModelProperty(value = "类型1报价类型 2货物类型")
+    @ApiModelProperty(value = "类型1普货 2特货")
     private String types;
 
 }

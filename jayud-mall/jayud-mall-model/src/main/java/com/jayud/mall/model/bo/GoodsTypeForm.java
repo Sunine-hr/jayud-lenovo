@@ -1,7 +1,5 @@
 package com.jayud.mall.model.bo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -22,7 +20,7 @@ public class GoodsTypeForm {
     @ApiModelProperty(value = "启用状态0-禁用，1-启用")
     private String status;
 
-    @ApiModelProperty(value = "类型1报价类型 2货物类型")
+    @ApiModelProperty(value = "类型1普货 2特货")
     private String types;
 
 }

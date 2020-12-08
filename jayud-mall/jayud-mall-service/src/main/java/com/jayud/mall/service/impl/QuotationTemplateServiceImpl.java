@@ -181,6 +181,12 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
             }
         }
         quotationTemplate.setQid(qid.toString());
+
+        if(quotationTemplate.getId() == null){
+            //状态(0无效 1有效)
+            quotationTemplate.setStatus("1");
+        }
+
         this.saveOrUpdate(quotationTemplate);
         //报价模板Id
         Long id = quotationTemplate.getId();

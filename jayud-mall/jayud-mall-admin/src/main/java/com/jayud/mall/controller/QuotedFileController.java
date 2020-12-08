@@ -3,6 +3,7 @@ package com.jayud.mall.controller;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.QuotedFileForm;
 import com.jayud.mall.model.po.QuotedFile;
+import com.jayud.mall.model.vo.QuotedFileReturnVO;
 import com.jayud.mall.service.IQuotedFileService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,5 +29,14 @@ public class QuotedFileController {
         List<QuotedFile> list = quotedFileService.findQuotedFile(form);
         return CommonResult.success(list);
     }
+
+    @ApiOperation(value = "报价模板使用模板文件")
+    @PostMapping("/findQuotedFileBy")
+    public CommonResult<List<QuotedFileReturnVO>> findQuotedFileBy(@RequestBody QuotedFileForm form){
+        List<QuotedFileReturnVO> quotedFileReturnVOS = quotedFileService.findQuotedFileBy(form);
+        return CommonResult.success(quotedFileReturnVOS);
+    }
+
+
 
 }

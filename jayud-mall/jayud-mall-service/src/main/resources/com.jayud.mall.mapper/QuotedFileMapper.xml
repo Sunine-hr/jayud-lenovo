@@ -23,4 +23,17 @@
         id, group_code, id_code, file_name, options, is_check, template_url, describe, status, create_time
     </sql>
 
+    <select id="findQuotedFileBy" parameterType="com.jayud.mall.model.bo.QuotedFileForm"
+            resultType="com.jayud.mall.model.vo.QuotedFileReturnVO">
+        select
+        CASE t.types
+            WHEN '1' THEN '报关服务'
+            WHEN '2' THEN '清关服务'
+        ELSE '其他'
+        END typesName,
+        t.group_name groupName,
+        t.file_name fileName,t.`options`,t.`describe` remarks,t.id qfId
+        from quoted_file t
+    </select>
+
 </mapper>

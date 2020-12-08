@@ -5,6 +5,7 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.QueryQuotationTemplateForm;
 import com.jayud.mall.model.bo.QuotationTemplateForm;
+import com.jayud.mall.model.bo.QuotationTemplateParaForm;
 import com.jayud.mall.model.vo.QuotationTemplateVO;
 import com.jayud.mall.service.IQuotationTemplateService;
 import io.swagger.annotations.Api;
@@ -13,6 +14,8 @@ import io.swagger.annotations.ApiOperationSupport;
 import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/quotationtemplate")
@@ -35,7 +38,8 @@ public class QuotationTemplateController {
     @ApiOperation(value = "禁用报价模板")
     @PostMapping(value = "/disabledQuotationTemplate")
     @ApiOperationSupport(order = 2)
-    public CommonResult disabledQuotationTemplate(@RequestParam("id") Long id) {
+    public CommonResult disabledQuotationTemplate(@Valid @RequestBody QuotationTemplateParaForm form) {
+        Long id = form.getId();
         quotationTemplateService.disabledQuotationTemplate(id);
         return CommonResult.success("禁用报价模板成功！");
     }
@@ -43,7 +47,8 @@ public class QuotationTemplateController {
     @ApiOperation(value = "启用报价模板")
     @PostMapping(value = "/enableQuotationTemplate")
     @ApiOperationSupport(order = 3)
-    public CommonResult enableQuotationTemplate(@RequestParam("id") Long id) {
+    public CommonResult enableQuotationTemplate(@Valid @RequestBody QuotationTemplateParaForm form) {
+        Long id = form.getId();
         quotationTemplateService.enableQuotationTemplate(id);
         return CommonResult.success("启用报价模板成功！");
     }

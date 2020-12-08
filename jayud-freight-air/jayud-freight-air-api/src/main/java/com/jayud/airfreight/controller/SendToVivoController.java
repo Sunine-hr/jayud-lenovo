@@ -1,5 +1,8 @@
 package com.jayud.airfreight.controller;
 
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.jayud.airfreight.service.VivoService;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.Map;
 
 /**
  * @author william
@@ -29,39 +33,44 @@ public class SendToVivoController {
 
     @ApiOperation(value = "确认订舱信息传给vivo")
     @PostMapping("/forwarder/bookingConfirmed")
-    public CommonResult forwarderBookingConfirmedFeedback(@RequestBody @Valid ForwarderBookingConfirmedFeedbackForm form) {
-        if (vivoService.forwarderBookingConfirmedFeedback(form)) {
+    public CommonResult forwarderBookingConfirmedFeedback(@RequestBody String value) {
+        ForwarderBookingConfirmedFeedbackForm form = JSONUtil.toBean(value, ForwarderBookingConfirmedFeedbackForm.class);
+        //参数检验
+        form.checkParam();
+        Map<String, Object> resultMap = vivoService.forwarderBookingConfirmedFeedback(form);
+        if (1 == MapUtil.getInt(resultMap, "status")) {
             return CommonResult.success();
         }
         return CommonResult.error(ResultEnum.PARAM_ERROR, "调用失败");
     }
 
-    @ApiOperation(value = "车辆信息传给vivo")
-    @PostMapping("/forwarder/vehicleInfo")
-    public CommonResult forwarderVehicleInfo(@RequestBody @Valid ForwarderVehicleInfoForm form) {
-        if (vivoService.forwarderVehicleInfo(form)) {
-            return CommonResult.success();
-        }
-        return CommonResult.error(ResultEnum.PARAM_ERROR, "调用失败");
-    }
+//    @ApiOperation(value = "车辆信息传给vivo")
+//    @PostMapping("/forwarder/vehicleInfo")
+//    public CommonResult forwarderVehicleInfo(@RequestBody @Valid ForwarderVehicleInfoForm form) {
+//        if (vivoService.forwarderVehicleInfo(form)) {
+//            return CommonResult.success();
+//        }
+//        return CommonResult.error(ResultEnum.PARAM_ERROR, "调用失败");
+//    }
 
-    @ApiOperation(value = "提单文件传给vivo")
-    @PostMapping("/forwarder/ladingFile")
-    public CommonResult forwarderLadingFile(MultipartFile file, @Valid ForwarderLadingFileForm form) {
-        if (vivoService.forwarderLadingFile(form, file)) {
-            return CommonResult.success();
-        }
-        return CommonResult.error(ResultEnum.PARAM_ERROR, "调用失败");
-    }
-
-    @ApiOperation(value = "提单跟踪信息回执给vivo")
-    @PostMapping("/forwarder/ladingInfo")
-    public CommonResult forwarderLadingInfo(@RequestBody @Valid ForwarderLadingInfoForm form) {
-        if (vivoService.forwarderLadingInfo(form)) {
-            return CommonResult.success();
-        }
-        return CommonResult.error(ResultEnum.PARAM_ERROR, "调用失败");
-    }
+//    @ApiOperation(value = "提单文件传给vivo")
+//    @PostMapping("/forwarder/ladingFile")
+//    public CommonResult forwarderLadingFile(MultipartFile file, @Valid ForwarderLadingFileForm form) {
+//        vivoService.forwarderLadingFile(form, file);
+//        if () {
+//            return CommonResult.success();
+//        }
+//        return CommonResult.error(ResultEnum.PARAM_ERROR, "调用失败");
+//    }
+//
+//    @ApiOperation(value = "提单跟踪信息回执给vivo")
+//    @PostMapping("/forwarder/ladingInfo")
+//    public CommonResult forwarderLadingInfo(@RequestBody @Valid ForwarderLadingInfoForm form) {
+//        if (vivoService.forwarderLadingInfo(form)) {
+//            return CommonResult.success();
+//        }
+//        return CommonResult.error(ResultEnum.PARAM_ERROR, "调用失败");
+//    }
 
 
 }

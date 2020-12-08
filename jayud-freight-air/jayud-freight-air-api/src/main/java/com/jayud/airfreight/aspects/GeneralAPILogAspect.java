@@ -55,7 +55,7 @@ public class GeneralAPILogAspect {
     }
 
     @Around("catchLog()")
-    public void doAround(ProceedingJoinPoint process) throws Throwable {
+    public Object doAround(ProceedingJoinPoint process) throws Throwable {
         Long startTime = System.currentTimeMillis();
         //获取当前请求的路径
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
@@ -94,6 +94,7 @@ public class GeneralAPILogAspect {
 
         generalApiLogService.save(apiLog);
 
+        return Result;
         //todo 配置kafka异步处理
 //        msgClient.saveLog(JSONUtil.toJsonStr(apiLog));
     }

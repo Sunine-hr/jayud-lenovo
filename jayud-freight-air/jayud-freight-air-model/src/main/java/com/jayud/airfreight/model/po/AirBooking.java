@@ -3,6 +3,7 @@ package com.jayud.airfreight.model.po;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.time.LocalDateTime;
 import java.io.Serializable;
 
@@ -24,7 +25,7 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="AirBooking对象", description="空运订舱表")
+@ApiModel(value = "AirBooking对象", description = "空运订舱表")
 public class AirBooking extends Model<AirBooking> {
 
     private static final long serialVersionUID = 1L;
@@ -82,10 +83,13 @@ public class AirBooking extends Model<AirBooking> {
     @ApiModelProperty(value = "交仓地址")
     private String deliveryAddress;
 
-    @ApiModelProperty(value = "文件路径(多个逗号隔开)")
+    @ApiModelProperty(value = "交仓仓库")
+    private String deliveryWarehouse;
+
+    @ApiModelProperty(value = "提单文件路径(多个逗号隔开)")
     private String filePath;
 
-    @ApiModelProperty(value = "文件名称(多个逗号隔开)")
+    @ApiModelProperty(value = "提单文件名称(多个逗号隔开)")
     private String fileName;
 
     @ApiModelProperty(value = "创建人(登录用户)")

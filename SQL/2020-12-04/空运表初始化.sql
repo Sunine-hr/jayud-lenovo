@@ -16,24 +16,26 @@ CREATE TABLE `air_booking` (
   `eta` datetime DEFAULT NULL COMMENT '预计到港时间',
   `ata` datetime DEFAULT NULL COMMENT '实际到港时间',
   `delivery_address` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '交仓地址',
-  `file_path` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '文件路径(多个逗号隔开)',
-  `file_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '文件名称(多个逗号隔开)',
+  `delivery_warehouse` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '交仓仓库',
+  `file_path` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '提单文件路径(多个逗号隔开)',
+  `file_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '提单文件名称(多个逗号隔开)',
   `create_user` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '创建人(登录用户)',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_user` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='空运订舱表';
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='空运订舱表';
 
 
 CREATE TABLE `air_extension_field` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `business_id` bigint(20) NOT NULL COMMENT '业务主键',
+  `business_id` bigint(20) DEFAULT NULL COMMENT '业务主键',
+  `third_party_unique_sign` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '第三方唯一标志',
   `business_table` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '业务表(例如:air_order)',
   `value` text CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT '数据(json格式)',
-  `type` int(10) NOT NULL COMMENT '类型(0:本系统,1:vivo,待定)',
+  `type` int(10) NOT NULL COMMENT '类型(0:vivo,待定)',
   `create_time` datetime NOT NULL COMMENT '创建时间',
-  `describe` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '描述(也可以当key值使用)',
+  `remarks` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '描述(也可以当key值使用)',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='空运扩展字段表';
 
@@ -108,3 +110,17 @@ CREATE TABLE `order_address` (
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='订单地址表';
+
+
+CREATE TABLE `general_api_log` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `module_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '模块名',
+  `method` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '访问方法',
+  `request_json` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '请求json',
+  `result_json` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '返回json',
+  `ip_address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '访问方IP',
+  `login_user` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '登录用户名称',
+  `time_span` int(11) DEFAULT NULL COMMENT '处理时间',
+  `request_time` timestamp NULL DEFAULT NULL COMMENT '访问发起时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='经过api模块进行操作的接口请求历史数据表';

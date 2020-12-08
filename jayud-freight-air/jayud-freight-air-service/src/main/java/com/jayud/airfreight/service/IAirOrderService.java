@@ -55,4 +55,19 @@ public interface IAirOrderService extends IService<AirOrder> {
      * 订舱操作
      */
     void doAirBookingOpt(AirProcessOptForm form);
+
+    /**
+     * 是否入仓
+     */
+    boolean isWarehousing(AirOrder airOrder);
+
+    /**
+     * 根据第三方唯一编码查询空运订单
+     */
+    public AirOrder getByThirdPartyOrderNo(String thirdPartyOrderNo);
+
+    /**
+     * 订舱驳回
+     */
+    void bookingRejected(AirOrder airOrder);
 }

@@ -1,8 +1,10 @@
 package com.jayud.airfreight.service.impl;
 
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.airfreight.feign.MsgClient;
 import com.jayud.airfreight.feign.OmsClient;
 import com.jayud.airfreight.model.bo.*;
 import com.jayud.airfreight.model.enums.AirOrderTermsEnum;
@@ -20,10 +22,8 @@ import com.jayud.airfreight.service.IOrderAddressService;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
-import com.jayud.common.enums.BusinessTypeEnum;
-import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.*;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
@@ -33,7 +33,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -55,6 +57,8 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
     private OmsClient omsClient;
     @Autowired
     private IAirBookingService airBookingService;
+    @Autowired
+    private MsgClient msgClient;
 
     //创建订单
     @Override
@@ -197,9 +201,57 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         this.handleLadingBillFile(airBooking, form);
         //设置订舱状态
         setAirBookingStatus(airBooking);
-
         airBookingService.saveOrUpdateAirBooking(airBooking);
         updateProcessStatus(new AirOrder(), form);
+        //发布订舱消息推送
+        this.bookingMessagePush(airBooking, form);
+    }
+
+    /**
+     * 是否能入仓
+     *
+     * @param airOrder
+     * @return
+     */
+    @Override
+    public boolean isWarehousing(AirOrder airOrder) {
+        if (CreateUserTypeEnum.VIVO.getCode().equals(airOrder.getCreateUserType())) {
+            //查询订舱状态
+            AirBooking airBooking = this.airBookingService.getByAirOrderId(airOrder.getId());
+            if ("1".equals(airBooking.getStatus())) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * 根据第三方唯一编码查询空运订单
+     */
+    @Override
+    public AirOrder getByThirdPartyOrderNo(String thirdPartyOrderNo) {
+        QueryWrapper<AirOrder> condition = new QueryWrapper<>();
+        condition.lambda().eq(AirOrder::getThirdPartyOrderNo, thirdPartyOrderNo);
+        return this.getOne(condition);
+    }
+
+    /**
+     * 订舱驳回
+     */
+    @Override
+    @Transactional
+    public void bookingRejected(AirOrder airOrder) {
+        AuditInfoForm auditInfoForm = new AuditInfoForm();
+        auditInfoForm.setExtId(airOrder.getId());
+        auditInfoForm.setExtDesc(SqlConstant.AIR_ORDER);
+        auditInfoForm.setAuditStatus((OrderStatusEnum.AIR_A_2_1.getCode()));
+        auditInfoForm.setAuditTypeDesc(OrderStatusEnum.AIR_A_2_1.getDesc());
+        if (omsClient.saveAuditInfo(auditInfoForm).getCode() != HttpStatus.SC_OK) {
+            log.error("远程调用审核记录失败");
+        }
+        //更改为驳回状态
+        this.updateById(new AirOrder().setId(airOrder.getId()).setStatus(OrderStatusEnum.AIR_A_2_1.getCode()));
     }
 
     private void setAirBookingStatus(AirBooking airBooking) {
@@ -207,10 +259,10 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
             return;
         }
         AirOrder airOrder = this.getById(airBooking.getAirOrderId());
-        if (AirOrderTermsEnum.getCode(airOrder.getCreateUser()) == null) {
-            airBooking.setStatus("0");
-        } else {
+        if (CreateUserTypeEnum.VIVO.getCode().equals(airOrder.getCreateUserType())) {
             airBooking.setStatus("1");
+        } else {
+            airBooking.setStatus("0");
         }
     }
 
@@ -219,7 +271,8 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
             //查询空运订单信息
             AirOrder tmp = this.getById(airOrder.getId());
             if (AirOrderTermsEnum.CIF.getCode().equals(tmp.getTerms())
-                    || AirOrderTermsEnum.FOB.getCode().equals(tmp.getTerms())) {
+                    || AirOrderTermsEnum.FOB.getCode().equals(tmp.getTerms())
+                    || AirOrderTermsEnum.CFR.getCode().equals(tmp.getTerms())) {
                 this.updateById(new AirOrder().setId(tmp.getId()).setProcessStatus(1));
                 return;
             }
@@ -234,6 +287,32 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         if (OrderStatusEnum.AIR_A_4.getCode().equals(form.getStatus())) {
             airBooking.setFilePath(StringUtils.getFileStr(form.getFileViewList()))
                     .setFileName(StringUtils.getFileNameStr(form.getFileViewList()));
+        }
+    }
+
+    /**
+     * 订舱消息推送
+     */
+    private void bookingMessagePush(AirBooking airBooking, AirProcessOptForm form) {
+        if (!OrderStatusEnum.AIR_A_2.getCode().equals(form.getStatus())) {
+            return;
+        }
+        AirOrder airOrder = this.getById(airBooking.getAirOrderId());
+        if (CreateUserTypeEnum.VIVO.getCode().equals(airOrder.getCreateUserType())) {
+            Map<String, String> request = new HashMap();
+            request.put("topic", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_ONE.getTopic());
+            request.put("key", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_ONE.getKey());
+            Map<String, Object> msg = new HashMap<>();
+            msg.put("bookingNo", airOrder.getThirdPartyOrderNo());
+            msg.put("forwarderBookingno", airOrder.getOrderNo());
+            msg.put("deliveryWarehouse", airBooking.getDeliveryWarehouse());
+            msg.put("deliveryWarehouseAddress", airBooking.getDeliveryAddress());
+            request.put("msg", JSONUtil.toJsonStr(msg));
+            msgClient.consume(request);
+//            if (ResultEnum.INTERNAL_SERVER_ERROR.getCode().toString().equals(consume.get("code"))) {
+//                log.error("远程调用推送确认订舱信息给vivo失败 data={}", JSONUtil.toJsonStr(msg));
+//                throw new JayudBizException(ResultEnum.OPR_FAIL);
+//            }
         }
     }
 }

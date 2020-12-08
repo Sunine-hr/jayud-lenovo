@@ -72,6 +72,9 @@ public class AddAirBookingForm extends Model<AddAirBookingForm> {
     @ApiModelProperty(value = "交仓地址")
     private String deliveryAddress;
 
+    @ApiModelProperty(value = "交仓仓库")
+    private String deliveryWarehouse;
+
 //    @ApiModelProperty(value = "附件集合")
 //    private List<FileView> fileViewList = new ArrayList<>();
 
@@ -100,6 +103,10 @@ public class AddAirBookingForm extends Model<AddAirBookingForm> {
         }
         if (StringUtils.isEmpty(this.deliveryAddress)) {
             log.warn(title + " 交仓地址必填");
+            return false;
+        }
+        if (StringUtils.isEmpty(this.deliveryWarehouse)) {
+            log.warn(title + " 交仓仓库必填");
             return false;
         }
         return true;

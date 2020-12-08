@@ -1,6 +1,7 @@
 package com.jayud.airfreight.controller;
 
 
+import cn.hutool.core.map.MapUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -15,10 +16,10 @@ import com.jayud.airfreight.service.IGoodsService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.VivoApiResult;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
-import com.jayud.common.exception.JayudBizException;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 
 /**
  * <p>
@@ -125,9 +126,12 @@ public class AirOrderController {
                 break;
             case AIR_A_2: //订舱
                 this.airOrderService.doAirBookingOpt(form);
-                //推送订舱消息
                 break;
             case AIR_A_3: //订单入仓
+                //是否能入仓
+                if (!this.airOrderService.isWarehousing(airOrder)) {
+                    return CommonResult.error(400, "订舱待确认,无法入仓");
+                }
                 this.airOrderService.updateProcessStatus(new AirOrder(), form);
                 break;
             case AIR_A_4: //确认提单
@@ -168,11 +172,31 @@ public class AirOrderController {
         return null;
     }
 
-    @ApiOperation(value = "订舱驳回")
+    @ApiOperation(value = "订舱驳回 id=空运订单id")
     @PostMapping(value = "/bookingRejected")
-    public CommonResult bookingRejected(@RequestBody AirProcessOptForm form) {
-        //修改空运订单状态为接单状态
-        //把物流轨迹表,删除之前订舱信息
+    public CommonResult bookingRejected(@RequestBody Map<String, Object> form) {
+        Long airOrderId = MapUtil.getLong(form, "id");
+        if (airOrderId == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+
+        AirOrder airOrder = this.airOrderService.getById(airOrderId);
+        if (!OrderStatusEnum.AIR_A_2.getCode().equals(airOrder.getStatus())) {
+            log.warn("当前订单状态无法进行操作 status={}", OrderStatusEnum.getDesc(airOrder.getStatus()));
+            return CommonResult.error(400, "当前订单状态无法进行操作");
+        }
+        //修改空运订单状态为订舱驳回状态
+        this.airOrderService.bookingRejected(airOrder);
+        return CommonResult.success();
+    }
+
+
+    @ApiOperation(value = "订舱驳回编辑 id=空运订单id")
+    @PostMapping(value = "/bookingRejectionEdit")
+    public CommonResult bookingRejectionEdit(@RequestBody  AirProcessOptForm form) {
+
+        form.setStatus(OrderStatusEnum.AIR_A_2.getCode());
+
         return null;
     }
 }

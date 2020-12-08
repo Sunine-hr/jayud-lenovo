@@ -26,11 +26,12 @@ import java.util.Map;
 public class MysqlGenerator {
 
     public static void main(String[] args) {
-        String[] models = {"rtscf-guarantee\\rtscf-guarantee-model", "rtscf-guarantee\\rtscf-guarantee-service", "rtscf-guarantee\\rtscf-guarantee-web"};
-       //   String[] models = {"rtscf-ticket\\rtscf-ticket-model", "rtscf-ticket\\rtscf-ticket-service","rtscf-ticket\\rtscf-ticket-web"};
-        //String[] models = {"rtscf-business\\rtscf-business-model", "rtscf-business\\rtscf-business-service", "rtscf-business\\rtscf-business-web"};
+        String[] models = {"jayud-freight-air\\jayud-freight-air-model",
+                "jayud-freight-air\\jayud-freight-air-service",
+                "jayud-freight-air\\jayud-freight-air-web"};
         for (String model : models) {
-            shell(model, "bh_apply_file");
+            shell(model,"air_order");
+
         }
     }
 
@@ -48,7 +49,7 @@ public class MysqlGenerator {
         gc.setBaseResultMap(true);// XML ResultMap
         gc.setBaseColumnList(true);// XML columList
         gc.setSwagger2(true);
-        gc.setAuthor("xiaoy");
+        gc.setAuthor("李达荣");
 
         // 自定义文件命名，注意 %s 会自动填充表实体属性！
         gc.setMapperName("%sMapper");
@@ -62,9 +63,9 @@ public class MysqlGenerator {
         DataSourceConfig dsc = new DataSourceConfig();
         dsc.setDbType(DbType.MYSQL);
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
-        dsc.setUsername("root");
-        dsc.setPassword("ruitong");
-        dsc.setUrl("jdbc:mysql://192.168.1.88:3306/rt_guarantee?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC");
+        dsc.setUsername("jayudtest");
+        dsc.setPassword("jayudtest");
+        dsc.setUrl("jdbc:mysql://rm-wz9m40gpm90c230wobo.mysql.rds.aliyuncs.com/jayud-test");
         mpg.setDataSource(dsc);
 
         // 策略配置
@@ -77,9 +78,9 @@ public class MysqlGenerator {
         String pack = "";
         // 包配置
         PackageConfig pc = new PackageConfig();
-        pc.setParent("com.jayud");
-        pc.setController("controller");
+        pc.setParent("com.jayud.airfreight");
         pc.setEntity("model.po");
+        pc.setController("controller");
         pc.setMapper("mapper");
         pc.setService("service");
         pc.setServiceImpl("service" + ".impl");
@@ -100,7 +101,7 @@ public class MysqlGenerator {
             focList.add(new FileOutConfig("/templates/mapper.xml.vm") {
                 @Override
                 public String outputFile(TableInfo tableInfo) {
-                    return path + "/src/main/resources/com/scmrt/mapper"
+                    return path + "/src/main/resources/com/jayud/airfreight/mapper"
                             + "/" + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
                 }
             });
@@ -108,15 +109,15 @@ public class MysqlGenerator {
         }
         mpg.setCfg(cfg);
         TemplateConfig tc = new TemplateConfig();
-        if ("rtscf-guarantee\\rtscf-guarantee-model".equals(model)) {
+        if (model.endsWith("model")) {
             tc.setController(null);
             tc.setService(null);
             tc.setServiceImpl(null);
             tc.setMapper(null);
-        } else if ("rtscf-guarantee\\rtscf-guarantee-service".equals(model)) {
+        } else if (model.endsWith("service")) {
             tc.setController(null);
             tc.setEntity(null);
-        } else if ("rtscf-guarantee\\rtscf-guarantee-web".equals(model)) {
+        } else if (model.endsWith("web")) {
             tc.setMapper(null);
             tc.setService(null);
             tc.setServiceImpl(null);

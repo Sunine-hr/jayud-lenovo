@@ -95,13 +95,13 @@ public class AirOrderFormVO {
     }
 
     /**
-     * @param customerObjs 远程客户对象集合
+     * @param mainOrderObjs 远程客户对象集合
      */
-    public void assemblyMainOrderData(Object customerObjs) {
-        if (customerObjs == null) {
+    public void assemblyMainOrderData(Object mainOrderObjs) {
+        if (mainOrderObjs == null) {
             return;
         }
-        JSONArray mainOrders = JSONArray.parseArray(JSON.toJSONString(customerObjs));
+        JSONArray mainOrders = JSONArray.parseArray(JSON.toJSONString(mainOrderObjs));
         for (int i = 0; i < mainOrders.size(); i++) {
             JSONObject json = mainOrders.getJSONObject(i);
             if (this.mainOrderNo.equals(json.getString("orderNo"))) { //主订单配对

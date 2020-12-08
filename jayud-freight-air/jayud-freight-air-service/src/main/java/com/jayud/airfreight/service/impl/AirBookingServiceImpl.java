@@ -51,4 +51,14 @@ public class AirBookingServiceImpl extends ServiceImpl<AirBookingMapper, AirBook
         condition.lambda().eq(AirBooking::getAirOrderId, airOrderId);
         return this.baseMapper.selectOne(condition);
     }
+
+    /**
+     * 根据空运订单id修改订舱
+     */
+    @Override
+    public boolean updateByAirOrderId(Long airOrderId, AirBooking airBooking) {
+        QueryWrapper<AirBooking> condition = new QueryWrapper<>();
+        condition.lambda().eq(AirBooking::getAirOrderId, airOrderId);
+        return this.baseMapper.update(airBooking, condition) > 0;
+    }
 }

@@ -87,6 +87,9 @@ public class InputAirOrderForm {
     @ApiModelProperty(value = "货品信息")
     private List<AddGoodsForm> goodsForms;
 
+    @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo)")
+    private Integer createUserType;
+
     /**
      * 校验创建空运子订单参数
      */

@@ -14,7 +14,7 @@ public class VivoApiException extends RuntimeException {
     private String message;
     private Integer status;
 
-    VivoApiException(String message) {
+    public VivoApiException(String message) {
         this.status = 0;
         this.message = message;
     }

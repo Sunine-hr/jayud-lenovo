@@ -1,9 +1,13 @@
 package com.jayud.airfreight.model.po;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+
 import java.time.LocalDateTime;
 import java.sql.Blob;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -21,12 +25,14 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="GeneralApiLog对象", description="经过api模块进行操作的接口请求历史数据表")
+@ApiModel(value = "GeneralApiLog对象", description = "经过api模块进行操作的接口请求历史数据表")
 public class GeneralApiLog extends Model<GeneralApiLog> {
 
     private static final long serialVersionUID = 1L;
 
-    private Integer id;
+    @ApiModelProperty(value = "主键")
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
 
     @ApiModelProperty(value = "模块名")
     private String moduleName;

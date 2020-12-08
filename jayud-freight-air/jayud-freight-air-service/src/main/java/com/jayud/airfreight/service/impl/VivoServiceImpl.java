@@ -8,18 +8,22 @@ import cn.hutool.json.JSONUtil;
 import com.google.gson.Gson;
 import com.jayud.airfreight.feign.OauthClient;
 import com.jayud.airfreight.feign.OmsClient;
-import com.jayud.airfreight.model.bo.ForwarderBookingConfirmedFeedbackForm;
-import com.jayud.airfreight.model.bo.ForwarderLadingFileForm;
-import com.jayud.airfreight.model.bo.ForwarderLadingInfoForm;
-import com.jayud.airfreight.model.bo.ForwarderVehicleInfoForm;
+import com.jayud.airfreight.model.bo.*;
+import com.jayud.airfreight.model.po.AirBooking;
+import com.jayud.airfreight.model.po.AirExtensionField;
+import com.jayud.airfreight.model.po.AirOrder;
+import com.jayud.airfreight.service.IAirBookingService;
+import com.jayud.airfreight.service.IAirExtensionFieldService;
+import com.jayud.airfreight.service.IAirOrderService;
 import com.jayud.airfreight.service.VivoService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
-import com.jayud.common.VivoApiResult;
+import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.enums.BusinessTypeEnum;
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.exception.JayudBizException;
-import com.jayud.common.exception.VivoApiException;
 import com.jayud.common.utils.RsaEncryptUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
@@ -30,11 +34,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
 
@@ -77,6 +83,10 @@ public class VivoServiceImpl implements VivoService {
     private OmsClient omsClient;
     @Autowired
     private OauthClient oauthClient;
+    @Autowired
+    private IAirExtensionFieldService airExtensionFieldService;
+    @Autowired
+    private IAirBookingService airBookingService;
 
 
     /**
@@ -86,7 +96,7 @@ public class VivoServiceImpl implements VivoService {
      * @return
      */
     @Override
-    public Boolean forwarderBookingConfirmedFeedback(ForwarderBookingConfirmedFeedbackForm form) {
+    public Map<String, Object> forwarderBookingConfirmedFeedback(ForwarderBookingConfirmedFeedbackForm form) {
         String url = urlBase + urlBookingConfirm;
         return doPost(form, url);
     }
@@ -98,7 +108,7 @@ public class VivoServiceImpl implements VivoService {
      * @return
      */
     @Override
-    public Boolean forwarderVehicleInfo(ForwarderVehicleInfoForm form) {
+    public Map<String, Object> forwarderVehicleInfo(ForwarderVehicleInfoForm form) {
         String url = urlBase + urlVehicleInfo;
         return doPost(form, url);
     }
@@ -111,13 +121,13 @@ public class VivoServiceImpl implements VivoService {
      * @return
      */
     @Override
-    public Boolean forwarderLadingFile(ForwarderLadingFileForm form, MultipartFile file) {
+    public Map<String, Object> forwarderLadingFile(ForwarderLadingFileForm form, MultipartFile file) {
         String url = urlBase + urlLadingFile;
         return doPostWithFile(form, file, url);
     }
 
     @Override
-    public boolean forwarderLadingInfo(ForwarderLadingInfoForm form) {
+    public Map<String, Object> forwarderLadingInfo(ForwarderLadingInfoForm form) {
         String url = urlBase + urlLadingInfo;
         return doPost(form, url);
     }
@@ -130,7 +140,7 @@ public class VivoServiceImpl implements VivoService {
      * @param url
      * @return
      */
-    private Boolean doPost(Object form, String url) {
+    private Map<String, Object> doPost(Object form, String url) {
         Gson gson = new Gson();
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -145,10 +155,21 @@ public class VivoServiceImpl implements VivoService {
                 .execute()
                 .body();
 
-        return check4Success(feedback);
+        //没有返回重新调用一次
+        if (StringUtils.isEmpty(feedback)) {
+            log.info("重试调用vivo接口,参数 data={}", gson.toJson(form));
+            feedback = HttpRequest.post(url)
+                    .header("Authorization", String.format(getToken(null, null, null)))
+                    .header(Header.CONTENT_TYPE.name(), "multipart/form-data")
+                    .form("transfer_data", gson.toJson(form))
+                    .execute()
+                    .body();
+        }
+
+        return JSONUtil.toBean(feedback, Map.class);
     }
 
-    private Boolean doPostWithFile(Object form, MultipartFile file, String url) {
+    private Map<String, Object> doPostWithFile(Object form, MultipartFile file, String url) {
         Gson gson = new Gson();
         log.info("参数========" + gson.toJson(form));
         File fw = new File(file.getOriginalFilename());
@@ -164,9 +185,10 @@ public class VivoServiceImpl implements VivoService {
                     .execute()
                     .body();
         } catch (Exception e) {
+            log.error("HttpRequest远程调用失败");
             e.printStackTrace();
         }
-        return check4Success(feedback);
+        return JSONUtil.toBean(feedback, Map.class);
     }
 
     /**
@@ -248,5 +270,65 @@ public class VivoServiceImpl implements VivoService {
         }
         JSONObject customerInfo = JSONUtil.parseObj(result.getData());
         return customerInfo;
+    }
+
+
+    /**
+     * 创建订单
+     */
+    @Override
+    @Transactional
+    public ApiResult createOrder(BookingSpaceForm form) {
+        InputOrderForm orderForm = new InputOrderForm();
+        //查询客户名称
+        JSONObject customerInfo = this.getCustomerInfoByLoginUserName();
+        InputMainOrderForm mainOrderForm = new InputMainOrderForm();
+        //主订单设置客户名称
+        mainOrderForm.setCustomerName(customerInfo.getStr("name"));
+        mainOrderForm.setCustomerCode(customerInfo.getStr("idCode"));
+        mainOrderForm.setClassCode(OrderStatusEnum.KY.getCode());
+        mainOrderForm.setSelectedServer(OrderStatusEnum.KYDD.getCode());
+        //TODO 不清楚接单法人和结算单位是否要传
+        //组装空运订单
+        AddAirOrderForm addAirOrderForm = form.convertAddAirOrderForm();
+        orderForm.setOrderForm(mainOrderForm);
+        orderForm.setAirOrderForm(addAirOrderForm);
+
+        //保存vivo字段
+        AirExtensionField field = new AirExtensionField();
+        field.setValue(JSONUtil.toJsonStr(form));
+        field.setThirdPartyUniqueSign(form.getBookingNo());
+        field.setBusinessTable(SqlConstant.AIR_ORDER);
+        field.setCreateTime(LocalDateTime.now());
+        field.setType(BusinessTypeEnum.KY.getCode());
+        field.setRemarks("vivo抛订舱数据到货代");
+        airExtensionFieldService.save(field);
+        //暂存订单
+        ApiResult result = this.omsClient.holdOrder(orderForm);
+        return result;
+    }
+
+    /**
+     * 货代获取订舱文件
+     *
+     * @param airOrder
+     * @param bookingFileTransferDataForm
+     * @return
+     */
+    @Override
+    @Transactional
+    public boolean bookingFile(AirOrder airOrder, BookingFileTransferDataForm bookingFileTransferDataForm) {
+        //存储冗余字段
+        AirExtensionField airExtensionField = new AirExtensionField()
+                .setBusinessTable(SqlConstant.AIR_ORDER)
+                .setBusinessId(airOrder.getId())
+                .setThirdPartyUniqueSign(bookingFileTransferDataForm.getBookingNo())
+                .setCreateTime(LocalDateTime.now())
+                .setType(BusinessTypeEnum.KY.getCode())
+                .setValue(JSONUtil.toJsonStr(bookingFileTransferDataForm))
+                .setRemarks("货代获取订舱文件");
+        this.airExtensionFieldService.save(airExtensionField);
+        //修改订舱状态
+        return airBookingService.updateByAirOrderId(airOrder.getId(), new AirBooking().setStatus("0"));
     }
 }

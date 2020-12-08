@@ -3,10 +3,13 @@ package com.jayud.airfreight.controller;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.jayud.airfreight.annotations.APILog;
+import com.jayud.airfreight.feign.FileClient;
 import com.jayud.airfreight.feign.OauthClient;
 import com.jayud.airfreight.feign.OmsClient;
 import com.jayud.airfreight.model.bo.*;
+import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.airfreight.service.AirFreightService;
+import com.jayud.airfreight.service.IAirOrderService;
 import com.jayud.airfreight.service.VivoService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
@@ -14,6 +17,8 @@ import com.jayud.common.VivoApiResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.utils.FileView;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.common.utils.ValidatorUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.Map;
 
 /**
  * @author william
@@ -44,38 +50,29 @@ public class ReceiveVivoController {
     private OauthClient oauthClient;
     @Autowired
     private VivoService vivoService;
+    @Autowired
+    private IAirOrderService airOrderService;
+    @Autowired
+    private FileClient fileClient;
 
     @ApiOperation(value = "接收")
     @PostMapping("/bookingSpace")
     @APILog
     public VivoApiResult bookingSpace(@RequestBody @Valid BookingSpaceForm form) {
         //校验子订单参数
-
+        String errorMessage = form.checkTermsType();
+        if (errorMessage.length() > 0) {
+            return VivoApiResult.error(errorMessage);
+        }
         ApiResult result = null;
         switch (form.getModeOfTransport()) {
             case 1:
-                InputOrderForm orderForm = new InputOrderForm();
-                //查询客户名称
-                JSONObject customerInfo = this.vivoService.getCustomerInfoByLoginUserName();
-                InputMainOrderForm mainOrderForm = new InputMainOrderForm();
-                //主订单设置客户名称
-                mainOrderForm.setCustomerName(customerInfo.getStr("name"));
-                mainOrderForm.setCustomerCode(customerInfo.getStr("idCode"));
-                mainOrderForm.setClassCode(OrderStatusEnum.KY.getCode());
-                mainOrderForm.setSelectedServer(OrderStatusEnum.KYDD.getCode());
-                //TODO 不清楚接单法人和结算单位是否要传
-                //组装空运订单
-                AddAirOrderForm addAirOrderForm = form.convertAddAirOrderForm();
-                orderForm.setOrderForm(mainOrderForm);
-                orderForm.setAirOrderForm(addAirOrderForm);
-                //暂存订单
-                result = this.omsClient.holdOrder(orderForm);
-                //TODO 保存第三方字段
+                result = this.vivoService.createOrder(form);
                 break;
             default:
                 return VivoApiResult.error("暂时只支持空运");
         }
-        if (result.getCode() == HttpStatus.SC_OK) {
+        if (result.getCode() != HttpStatus.SC_OK) {
             return VivoApiResult.error("创建订单失败");
         }
         return VivoApiResult.success();
@@ -99,7 +96,26 @@ public class ReceiveVivoController {
         bookingFileTransferDataForm.setFileType(jsonObject.getInt("File_type"));
         bookingFileTransferDataForm.setFileSize(jsonObject.getInt("File_size"));
         ValidatorUtil.validate(bookingFileTransferDataForm);
-        log.info("参数============{},文件名称==={}", transferData, multipartFile.getOriginalFilename());
+        //TODO 校验文件完整性
+
+        //判断当前空运订单状态是否是订舱状态
+        AirOrder airOrder = this.airOrderService.getByThirdPartyOrderNo(bookingFileTransferDataForm.getBookingNo());
+        if (!OrderStatusEnum.AIR_A_2.getCode().equals(airOrder.getStatus())) {
+            log.warn("当前订单状态无法进行操作 status={}", OrderStatusEnum.getDesc(airOrder.getStatus()));
+            return VivoApiResult.error("当前订单状态无法进行操作");
+        }
+        //上传文件
+        ApiResult result = this.fileClient.uploadFile(multipartFile);
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.warn("上传订舱文件失败 message={}", result.getMsg());
+            return VivoApiResult.error("上传订舱文件失败");
+        }
+        FileView fileView = JSONUtil.toBean(result.getData().toString(), FileView.class);
+        bookingFileTransferDataForm.setFileView(fileView);
+        if (this.vivoService.bookingFile(airOrder, bookingFileTransferDataForm)) {
+            log.warn("该booking_no不存在订舱信息 data={}", JSONUtil.toJsonStr(bookingFileTransferDataForm));
+            return VivoApiResult.error("该booking_no不存在订舱信息");
+        }
         return VivoApiResult.success();
     }
 

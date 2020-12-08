@@ -15,7 +15,8 @@ public enum AirOrderTermsEnum {
     CIF(0, "CIF"),
     DUU(1, "DUU"),
     FOB(2, "FOB"),
-    DDP(3, "DDP");
+    DDP(3, "DDP"),
+    CFR(4, "CFR");
 
     private Integer code;
     private String desc;
@@ -35,6 +36,6 @@ public enum AirOrderTermsEnum {
                 return value.getCode();
             }
         }
-        return null;
+        return CIF.getCode();
     }
 }

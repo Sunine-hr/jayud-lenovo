@@ -1,11 +1,12 @@
 package com.jayud.airfreight.service;
 
 import cn.hutool.json.JSONObject;
-import com.jayud.airfreight.model.bo.ForwarderBookingConfirmedFeedbackForm;
-import com.jayud.airfreight.model.bo.ForwarderLadingFileForm;
-import com.jayud.airfreight.model.bo.ForwarderLadingInfoForm;
-import com.jayud.airfreight.model.bo.ForwarderVehicleInfoForm;
+import com.jayud.airfreight.model.bo.*;
+import com.jayud.airfreight.model.po.AirOrder;
+import com.jayud.common.ApiResult;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
 
 /**
  * vivo数据接口服务
@@ -23,7 +24,7 @@ public interface VivoService {
      * @param form
      * @return
      */
-    Boolean forwarderBookingConfirmedFeedback(ForwarderBookingConfirmedFeedbackForm form);
+    Map<String, Object> forwarderBookingConfirmedFeedback(ForwarderBookingConfirmedFeedbackForm form);
 
 
     /**
@@ -32,7 +33,7 @@ public interface VivoService {
      * @param form
      * @return
      */
-    Boolean forwarderVehicleInfo(ForwarderVehicleInfoForm form);
+    Map<String, Object> forwarderVehicleInfo(ForwarderVehicleInfoForm form);
 
     /**
      * 向vivo发送空运提单文件
@@ -41,7 +42,7 @@ public interface VivoService {
      * @param file
      * @return
      */
-    Boolean forwarderLadingFile(ForwarderLadingFileForm form, MultipartFile file);
+    Map<String, Object> forwarderLadingFile(ForwarderLadingFileForm form, MultipartFile file);
 
     /**
      * 向vivo发送空运状态
@@ -49,10 +50,17 @@ public interface VivoService {
      * @param form
      * @return
      */
-    boolean forwarderLadingInfo(ForwarderLadingInfoForm form);
+    Map<String, Object> forwarderLadingInfo(ForwarderLadingInfoForm form);
 
     /**
      * 根据登录用户查询客户信息
      */
     public JSONObject getCustomerInfoByLoginUserName();
+
+    /**
+     * 创建订单
+     */
+    ApiResult createOrder(BookingSpaceForm form);
+
+    boolean bookingFile(AirOrder airOrder, BookingFileTransferDataForm bookingFileTransferDataForm);
 }

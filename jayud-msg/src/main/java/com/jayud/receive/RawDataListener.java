@@ -1,12 +1,14 @@
 package com.jayud.receive;
 
 import com.alibaba.fastjson.JSONObject;
+import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.enums.KafkaMsgEnums;
 import com.jayud.feign.AirfreightClient;
 import com.jayud.feign.FinanceClient;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.lang.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,6 +129,32 @@ public class RawDataListener {
         }
     }
 
+
+    /**
+     * 调用接口推送给vivo
+     */
+    @KafkaListener(topics = {"${kafka.consumer.topic.vivoAir}"}, groupId = "${kafka.consumer.group.id}")
+    public void vivoAirListener(ConsumerRecord<?, ?> record) throws IOException {
+        String value = (String) record.value();
+        String key = (String) record.key();
+        String topic = record.topic();
+        long offset = record.offset();
+        //消费信息
+        log.info("kafka空运信息消费：offset={} topic={} key={} value={}", offset, topic, key, value);
+        if (StringUtils.isEmpty(key)) {
+            return;
+        }
+        CommonResult result = null;
+        if (match(com.jayud.common.enums.KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_ONE, record)) {
+            log.info("推送消息给vivo,确认订舱信息...");
+            result = this.airfreightClient.forwarderBookingConfirmedFeedback(value);
+        }
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.error("推送确认订舱消息给vivo失败 message={}", result.getMsg());
+        }
+
+    }
+
     private void doLog(CommonResult commonResult) {
         if (commonResult.getCode() != ResultEnum.SUCCESS.getCode()) {
             log.error(commonResult.getMsg());
@@ -142,7 +170,10 @@ public class RawDataListener {
     }
 
 
-    /**
-     * 调用接口推送给vivo
-     */
+    private Boolean match(com.jayud.common.enums.KafkaMsgEnums enums, ConsumerRecord<?, ?> record) {
+        if (Objects.equals(enums.getTopic(), record.topic()) && Objects.equals(enums.getKey(), record.key())) {
+            return true;
+        }
+        return false;
+    }
 }

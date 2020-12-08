@@ -17,13 +17,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/goodstype")
-@Api(tags = "(报价&货物)类型表接口")
+@Api(tags = "货物类型表接口")
 public class GoodsTypeController {
 
     @Autowired
     IGoodsTypeService goodsTypeService;
 
-    @ApiOperation(value = "(报价&货物)类型表List")
+    @ApiOperation(value = "货物类型表List")
     @PostMapping("/findGoodsType")
     public CommonResult<List<GoodsType>> findGoodsType(@RequestBody GoodsTypeForm form) {
         List<GoodsType> list = goodsTypeService.findGoodsType(form);

@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="GoodsType对象", description="(报价&货物)类型表")
+@ApiModel(value="GoodsType对象", description="货物类型表")
 public class GoodsType extends Model<GoodsType> {
 
     private static final long serialVersionUID = 1L;

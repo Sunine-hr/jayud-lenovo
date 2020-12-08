@@ -18,7 +18,7 @@ import java.util.List;
 public interface IGoodsTypeService extends IService<GoodsType> {
 
     /**
-     * 查询(报价&货物)类型表list
+     * 查询货物型表list
      * @param form
      * @return
      */

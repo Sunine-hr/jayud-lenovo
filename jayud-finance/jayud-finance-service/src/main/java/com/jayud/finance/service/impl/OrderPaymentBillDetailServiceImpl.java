@@ -477,6 +477,8 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             } else if ("1".equals(form.getAuditStatus())) {
                 auditStatus = BillEnum.B_2_1.getCode();
             }
+            orderPaymentBillDetail.setAuditTime(LocalDateTime.now());
+            orderPaymentBillDetail.setAuditUser(form.getLoginUserName());
             auditInfoForm.setAuditTypeDesc("应付对账单审核");
         }else if("cw_audit".equals(form.getCmd())){//财务对账单审核
             if(!BillEnum.B_3.getCode().equals(existObject.getAuditStatus())){

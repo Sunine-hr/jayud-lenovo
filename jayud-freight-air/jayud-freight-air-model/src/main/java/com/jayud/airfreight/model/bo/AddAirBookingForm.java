@@ -27,7 +27,7 @@ public class AddAirBookingForm extends Model<AddAirBookingForm> {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "主键")
+    @ApiModelProperty(value = "主键 编辑需要传空运订舱id")
     private Long id;
 
     @ApiModelProperty(value = "空运订单编号")

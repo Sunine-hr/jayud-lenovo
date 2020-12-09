@@ -2,8 +2,8 @@ package com.jayud.airfreight.feign;
 
 
 import com.jayud.common.ApiResult;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +23,9 @@ public interface FileClient {
 
     /**
      * 上传文件
+     *
+     * @param file
      */
-    @RequestMapping("/uploadFile")
+    @RequestMapping(value = "/api/uploadFile")
     ApiResult uploadFile(@RequestParam("file") MultipartFile file);
 }

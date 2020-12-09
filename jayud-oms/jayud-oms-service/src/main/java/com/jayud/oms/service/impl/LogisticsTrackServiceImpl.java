@@ -39,9 +39,9 @@ public class LogisticsTrackServiceImpl extends ServiceImpl<LogisticsTrackMapper,
         String prePath = fileClient.getBaseUrl().getData().toString();
         //根据业务类型获取该业务类型的所有流程节点 业务类型加有没有父节点获取，这里是获取子订单流程节点
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("class_code",form.getClassCode());
-        queryWrapper.ne("f_id",0);
-        queryWrapper.eq("status",1);
+        queryWrapper.eq("class_code", form.getClassCode());
+        queryWrapper.ne("f_id", 0);
+        queryWrapper.eq("status", 1);
         queryWrapper.orderByAsc("sub_sorts");
         List<OrderStatus> allOrderStatus = statusService.list(queryWrapper);//所有流程
         List<LogisticsTrackVO> logisticsTrackVOS = new ArrayList<>();//构建所有流程返回给前端显示
@@ -57,33 +57,42 @@ public class LogisticsTrackServiceImpl extends ServiceImpl<LogisticsTrackMapper,
             String containState = logisticsTrackVOS.get(i).getStatus();//在子节点上原则上只有一个
             form.setStatus(containState);
             List<LogisticsTrackVO> oprProcess = baseMapper.findReplyStatus(form);//已操作流程
-            if(oprProcess == null || oprProcess.size() == 0){
+            if (oprProcess == null || oprProcess.size() == 0) {
                 break;
             }
             //取该状态下最新的一条操作记录,并且该记录比上一节点的最新流程创建时间大
             LogisticsTrackVO nowOprProcess = oprProcess.get(0);
             boolean flag = false;
-            if(i != 0){//第一个流程节点除外
-                form.setStatus(logisticsTrackVOS.get(i-1).getStatus());
+            if (i != 0) {//第一个流程节点除外
+                form.setStatus(logisticsTrackVOS.get(i - 1).getStatus());
                 List<LogisticsTrackVO> preOprStatus = baseMapper.findReplyStatus(form);//已操作流程
                 LogisticsTrackVO nowPreOprProcess = preOprStatus.get(0);
-                if(nowOprProcess.getCreatedTime().compareTo(nowPreOprProcess.getCreatedTime()) >= 0){
+                if (nowOprProcess.getCreatedTime().compareTo(nowPreOprProcess.getCreatedTime()) >= 0) {
                     flag = true;
                 }
-            }else {
+            } else {
                 flag = true;
             }
-            if(flag) {
+            if (flag) {
                 logisticsTrackVOS.get(i).setId(nowOprProcess.getId());
                 logisticsTrackVOS.get(i).setDescription(nowOprProcess.getDescription());
                 logisticsTrackVOS.get(i).setOperatorUser(nowOprProcess.getOperatorUser());
                 logisticsTrackVOS.get(i).setOperatorTime(nowOprProcess.getOperatorTime());
                 String statusPic = nowOprProcess.getStatusPic();
                 String statusPicNme = nowOprProcess.getStatusPicName();
-                logisticsTrackVOS.get(i).setFileViewList(StringUtils.getFileViews(statusPic,statusPicNme,prePath));
+                logisticsTrackVOS.get(i).setFileViewList(StringUtils.getFileViews(statusPic, statusPicNme, prePath));
             }
 
         }
         return logisticsTrackVOS;
+    }
+
+    /*
+     * 根据条件查询
+     */
+    @Override
+    public List<LogisticsTrack> getByCondition(LogisticsTrack logisticsTrack) {
+        QueryWrapper<LogisticsTrack> condition = new QueryWrapper<>(logisticsTrack);
+        return this.baseMapper.selectList(condition);
     }
 }

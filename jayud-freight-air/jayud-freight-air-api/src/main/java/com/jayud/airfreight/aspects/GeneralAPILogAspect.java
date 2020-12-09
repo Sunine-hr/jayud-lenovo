@@ -74,9 +74,9 @@ public class GeneralAPILogAspect {
         Object parameter = getParameter(methodSignature.getMethod(), params);
         String requestParameterString = JSONUtil.toJsonStr(parameter);
 
-        Object Result = process.proceed();
+        Object result = process.proceed();
 
-        String resultParameterString = JSONUtil.toJsonStr(Result);
+        String resultParameterString = JSONUtil.toJsonStr(result);
 
         Long endTime = System.currentTimeMillis();
         Integer timeSpan = (int) (endTime - startTime);
@@ -94,7 +94,7 @@ public class GeneralAPILogAspect {
 
         generalApiLogService.save(apiLog);
 
-        return Result;
+        return result;
         //todo 配置kafka异步处理
 //        msgClient.saveLog(JSONUtil.toJsonStr(apiLog));
     }

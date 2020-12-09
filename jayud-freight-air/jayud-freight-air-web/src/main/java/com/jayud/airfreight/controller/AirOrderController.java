@@ -2,10 +2,12 @@ package com.jayud.airfreight.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.airfreight.feign.OmsClient;
+import com.jayud.airfreight.model.bo.AddAirBookingForm;
 import com.jayud.airfreight.model.bo.AirProcessOptForm;
 import com.jayud.airfreight.model.bo.QueryAirOrderForm;
 import com.jayud.airfreight.model.po.AirOrder;
@@ -17,6 +19,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.VivoApiResult;
+import com.jayud.common.enums.AirProcessStatusEnum;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
@@ -111,6 +114,9 @@ public class AirOrderController {
         if (airOrder.getProcessStatus() == 1) {
             return CommonResult.error(400, "该订单已经完成");
         }
+        if (!AirProcessStatusEnum.PROCESSING.getCode().equals(airOrder.getProcessStatus())) {
+            return CommonResult.error(400, "当前订单无法操作");
+        }
         OrderStatusEnum statusEnum = OrderStatusEnum.getAirOrderNextStatus(airOrder.getStatus());
         if (statusEnum == null) {
             log.error("执行空运流程操作失败,超出流程之外 data={}", airOrder.toString());
@@ -151,7 +157,7 @@ public class AirOrderController {
                 break;
         }
         //发送跟踪信息
-
+        this.airOrderService.trackingPush(form.getOrderId());
         return CommonResult.success();
     }
 
@@ -193,11 +199,28 @@ public class AirOrderController {
 
     @ApiOperation(value = "订舱驳回编辑 id=空运订单id")
     @PostMapping(value = "/bookingRejectionEdit")
-    public CommonResult bookingRejectionEdit(@RequestBody  AirProcessOptForm form) {
+    public CommonResult bookingRejectionEdit(@RequestBody AirProcessOptForm form) {
+        if (form.getMainOrderId() == null
+                || form.getOrderId() == null
+                || form.getAirBooking().getId() == null) {
+            log.warn("空运订单编号/空运订单id必填/空运订舱id必填 data={}", JSONUtil.toJsonStr(form));
+            return CommonResult.error(ResultEnum.VALIDATE_FAILED);
+        }
 
+        AirOrder airOrder = this.airOrderService.getById(form.getOrderId());
+        if (!OrderStatusEnum.AIR_A_2_1.getCode().equals(airOrder.getStatus())) {
+            log.warn("当前订单状态无法进行操作 status={}", OrderStatusEnum.getDesc(airOrder.getStatus()));
+            return CommonResult.error(400, "当前订单状态无法进行操作");
+        }
         form.setStatus(OrderStatusEnum.AIR_A_2.getCode());
-
-        return null;
+        //校验参数
+        form.checkProcessOpt(OrderStatusEnum.AIR_A_2);
+        AddAirBookingForm airBooking = form.getAirBooking();
+        airBooking.setAirOrderNo(null);
+        airBooking.setAirOrderId(null);
+        //执行订舱驳回编辑
+        this.airOrderService.doAirBookingOpt(form);
+        return CommonResult.success();
     }
 }
 

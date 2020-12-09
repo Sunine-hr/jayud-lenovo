@@ -3,18 +3,16 @@ package com.jayud.airfreight.controller;
 import cn.hutool.json.JSONUtil;
 import com.jayud.airfreight.model.bo.AddAirOrderForm;
 import com.jayud.airfreight.model.bo.BookingSpaceForm;
-import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.airfreight.service.AirFreightService;
 import com.jayud.airfreight.service.IAirOrderService;
 import com.jayud.common.ApiResult;
-import com.jayud.common.enums.ResultEnum;
-import com.jayud.common.exception.Asserts;
 import io.swagger.annotations.Api;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 被外部模块调用的处理接口
@@ -46,6 +44,24 @@ public class ExternalApiController {
         airOrderService.createOrder(addAirOrderForm);
         return ApiResult.ok();
     }
+
+//    @RequestMapping(value = "订舱驳回 id=空运订单id")
+//    @PostMapping(value = "/api/airfreight/bookingRejected")
+//    public CommonResult bookingRejected(@RequestBody Map<String, Object> form) {
+//        Long airOrderId = MapUtil.getLong(form, "id");
+//        if (airOrderId == null) {
+//            return CommonResult.error(ResultEnum.PARAM_ERROR);
+//        }
+//
+//        AirOrder airOrder = this.airOrderService.getById(airOrderId);
+//        if (!OrderStatusEnum.AIR_A_2.getCode().equals(airOrder.getStatus())) {
+//            log.warn("当前订单状态无法进行操作 status={}", OrderStatusEnum.getDesc(airOrder.getStatus()));
+//            return CommonResult.error(400, "当前订单状态无法进行操作");
+//        }
+//        //修改空运订单状态为订舱驳回状态
+//        this.airOrderService.bookingRejected(airOrder);
+//        return CommonResult.success();
+//    }
 
 
     private <T> T getForm(String json, Class<T> clz) {

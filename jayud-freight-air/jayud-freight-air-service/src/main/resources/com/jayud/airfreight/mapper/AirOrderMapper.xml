@@ -65,7 +65,12 @@
             </if>
             <if test="form.status !=null and form.status!=''">
                 and a.status = #{form.status}
-                and a.process_status = 0
+            </if>
+            <if test="form.processStatusList!=null">
+                and a.process_status IN
+                <foreach collection="form.processStatusList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
             </if>
             <if test="form.createTime !=null and form.createTime!=''">
                 and a.create_time = #{form.createTime}
@@ -73,5 +78,6 @@
         </where>
         order by a.id desc
     </select>
+
 
 </mapper>

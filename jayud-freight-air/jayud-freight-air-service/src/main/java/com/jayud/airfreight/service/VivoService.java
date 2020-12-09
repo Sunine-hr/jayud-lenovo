@@ -2,6 +2,7 @@ package com.jayud.airfreight.service;
 
 import cn.hutool.json.JSONObject;
 import com.jayud.airfreight.model.bo.*;
+import com.jayud.airfreight.model.po.AirBooking;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.common.ApiResult;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,7 +46,7 @@ public interface VivoService {
     Map<String, Object> forwarderLadingFile(ForwarderLadingFileForm form, MultipartFile file);
 
     /**
-     * 向vivo发送空运状态
+     * 提单跟踪信息回执给vivo
      *
      * @param form
      * @return
@@ -63,4 +64,15 @@ public interface VivoService {
     ApiResult createOrder(BookingSpaceForm form);
 
     boolean bookingFile(AirOrder airOrder, BookingFileTransferDataForm bookingFileTransferDataForm);
+
+
+    /**
+     * 订舱推送
+     */
+    public void bookingMessagePush(AirOrder airOrder, AirBooking airBooking);
+
+    /**
+     * vivo跟踪推送
+     */
+    public void trackingPush(AirOrder airOrder);
 }

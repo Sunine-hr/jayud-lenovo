@@ -81,7 +81,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public BaseApiResult globalException(HttpServletRequest request, Throwable ex) {
-        log.error(ex.getCause().getMessage(), ex);
+        log.error(ex.getMessage(), ex);
         if (request.getRequestURI().contains(vivoBaseRequestmap)) {
             return new VivoApiResult(ex.getMessage());
         }

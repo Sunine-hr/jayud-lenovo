@@ -70,4 +70,11 @@ public interface IAirOrderService extends IService<AirOrder> {
      * 订舱驳回
      */
     void bookingRejected(AirOrder airOrder);
+
+
+    /**
+     * 跟踪推送
+     * @param airOrderId
+     */
+    void trackingPush(Long airOrderId);
 }

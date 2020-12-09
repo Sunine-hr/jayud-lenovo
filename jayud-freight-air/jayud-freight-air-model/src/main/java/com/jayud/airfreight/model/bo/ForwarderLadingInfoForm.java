@@ -1,15 +1,23 @@
 package com.jayud.airfreight.model.bo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
+import com.jayud.common.CommonResult;
+import com.jayud.common.exception.VivoApiException;
 import com.jayud.common.vaildator.DateTime;
 import com.jayud.common.vaildator.NumberEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 /**
  * 追踪信息
@@ -74,35 +82,35 @@ public class ForwarderLadingInfoForm {
     @SerializedName("ETD")
     @ApiModelProperty(value = "预计起飞时间")
     @Length(max = 20, message = "预计起飞时间字段的最大长度为20")
-    @DateTime(format = "yyyy/M/dd HH:mm", message = "异常处理完成时间必须为时间格式yyyy/M/dd HH:mm")
+    @DateTime(format = "yyyy/M/dd HH:mm:ss", message = "异常处理完成时间必须为时间格式yyyy/M/dd HH:mm:ss")
     private String etd;
 
     @JsonProperty("ATD")
     @SerializedName("ATD")
     @ApiModelProperty(value = "实际起飞时间")
     @Length(max = 20, message = "实际起飞时间字段的最大长度为20")
-    @DateTime(format = "yyyy/M/dd HH:mm", message = "异常处理完成时间必须为时间格式yyyy/M/dd HH:mm")
+    @DateTime(format = "yyyy/M/dd HH:mm:ss", message = "异常处理完成时间必须为时间格式yyyy/M/dd HH:mm:ss")
     private String atd;
 
     @JsonProperty("ETA")
     @SerializedName("ETA")
     @ApiModelProperty(value = "预计到港时间")
     @Length(max = 20, message = "预计到港时间字段的最大长度为20")
-    @DateTime(format = "yyyy/M/dd HH:mm", message = "异常处理完成时间必须为时间格式yyyy/M/dd HH:mm")
+    @DateTime(format = "yyyy/M/dd HH:mm:ss", message = "异常处理完成时间必须为时间格式yyyy/M/dd HH:mm:ss")
     private String eta;
 
     @JsonProperty("ATA")
     @SerializedName("ATA")
     @ApiModelProperty(value = "实际到港时间")
     @Length(max = 20, message = "实际到港时间字段的最大长度为20")
-    @DateTime(format = "yyyy/M/dd HH:mm", message = "异常处理完成时间必须为时间格式yyyy/M/dd HH:mm")
+    @DateTime(format = "yyyy/M/dd HH:mm:ss", message = "异常处理完成时间必须为时间格式yyyy/M/dd HH:mm:ss")
     private String ata;
 
     @JsonProperty("Inbound_date")
     @SerializedName("Inbound_date")
     @ApiModelProperty(value = "入仓日期")
     @Length(max = 20, message = "入仓日期字段的最大长度为20")
-    @DateTime(format = "yyyy/M/dd HH:mm", message = "异常处理完成时间必须为时间格式yyyy/M/dd HH:mm")
+    @DateTime(format = "yyyy/M/dd HH:mm:ss", message = "异常处理完成时间必须为时间格式yyyy/M/dd HH:mm:ss")
     private String inboundDate;
 
     @JsonProperty("Remarks")
@@ -118,4 +126,14 @@ public class ForwarderLadingInfoForm {
 //    @Length(max = 1, message = "运输方式字段的最大长度为1")
     @NumberEnum(enums = "1,2,3,4", message = "空运跟踪表中运输方式（空运：1；铁运：2；海运：3；陆运：4）")
     private Integer modeOfTransport;
+
+    public CommonResult checkParam() {
+        ValidatorFactory vf = Validation.buildDefaultValidatorFactory();
+        Validator validator = vf.getValidator();
+        Set<ConstraintViolation<ForwarderLadingInfoForm>> set = validator.validate(this);
+        for (ConstraintViolation<ForwarderLadingInfoForm> constraintViolation : set) {
+            return CommonResult.error(400, constraintViolation.getMessage());
+        }
+        return null;
+    }
 }

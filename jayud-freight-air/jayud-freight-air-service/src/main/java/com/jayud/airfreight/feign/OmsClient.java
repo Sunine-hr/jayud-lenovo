@@ -5,6 +5,8 @@ import com.jayud.airfreight.model.bo.AirProcessOptForm;
 import com.jayud.airfreight.model.bo.AuditInfoForm;
 import com.jayud.airfreight.model.bo.InputOrderForm;
 import com.jayud.common.ApiResult;
+import com.jayud.common.config.FeignRequestInterceptor;
+import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.common.entity.InitComboxVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +19,7 @@ import java.util.List;
 /**
  * tms模块消费oms模块的接口
  */
-@FeignClient(value = "jayud-oms-web")
+@FeignClient(value = "jayud-oms-web", configuration = FeignRequestInterceptor.class)
 public interface OmsClient {
 
 
@@ -68,5 +70,21 @@ public interface OmsClient {
      * 暂存订单
      */
     @RequestMapping(value = "/api/holdOrder")
-     ApiResult holdOrder(@RequestBody InputOrderForm form);
+    ApiResult holdOrder(@RequestBody InputOrderForm form);
+
+    /**
+     * 删除特定单的操作流程
+     *
+     * @param form
+     * @return
+     */
+    @RequestMapping(value = "/api/delSpecOprStatus")
+    ApiResult delSpecOprStatus(@RequestBody DelOprStatusForm form);
+
+
+    /**
+     * 查询物流轨迹节点
+     */
+    @RequestMapping(value = "/api/getLogisticsTrackNode")
+    ApiResult getLogisticsTrackNode(@RequestBody String condition);
 }

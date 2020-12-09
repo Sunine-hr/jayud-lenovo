@@ -1,5 +1,6 @@
 package com.jayud.oms.controller;
 
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
@@ -456,6 +457,19 @@ public class ExternalApiController {
     public ApiResult getByOrderNos(@RequestParam("orderNos") List<String> orderNos) {
         List<OrderInfo> orders = this.orderInfoService.getByOrderNos(orderNos);
         return ApiResult.ok(orders);
+    }
+
+    /**
+     * 查询物流轨迹节点
+     */
+    @RequestMapping(value = "/api/getLogisticsTrackNode")
+    public ApiResult getLogisticsTrackNode(@RequestBody String condition) {
+        LogisticsTrack logisticsTrack = new LogisticsTrack();
+        if (condition != null) {
+            logisticsTrack = JSONUtil.toBean(condition, LogisticsTrack.class);
+        }
+        List<LogisticsTrack> list = this.logisticsTrackService.getByCondition(logisticsTrack);
+        return ApiResult.ok(list);
     }
 }
 

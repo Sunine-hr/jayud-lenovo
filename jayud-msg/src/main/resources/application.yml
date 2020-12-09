@@ -12,6 +12,9 @@ hystrix:
         isolation:
           thread:
             timeoutInMilliseconds: 30000
+feign:
+  httpclient:
+    connection-timeout: 5000
 ribbon:
   ReadTimeout: 30000
   ConnectTimeout: 30000

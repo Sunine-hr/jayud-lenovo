@@ -1,8 +1,13 @@
 package com.jayud.common.utils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.http.entity.ContentType;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
+
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -77,4 +82,87 @@ public class FileUtil {
         }
         return data;
     }
+
+
+    /**
+     * MultipartFile 转 File
+     *
+     * @param file
+     * @throws Exception
+     */
+    public static File multipartFileToFile(MultipartFile file) throws Exception {
+
+        File toFile = null;
+        if (file.equals("") || file.getSize() <= 0) {
+            file = null;
+        } else {
+            InputStream ins = null;
+            ins = file.getInputStream();
+            toFile = new File(file.getOriginalFilename());
+            inputStreamToFile(ins, toFile);
+            ins.close();
+        }
+        return toFile;
+    }
+
+    //获取流文件
+    private static void inputStreamToFile(InputStream ins, File file) {
+        try {
+            OutputStream os = new FileOutputStream(file);
+            int bytesRead = 0;
+            byte[] buffer = new byte[8192];
+            while ((bytesRead = ins.read(buffer, 0, 8192)) != -1) {
+                os.write(buffer, 0, bytesRead);
+            }
+            os.close();
+            ins.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * url转变为 MultipartFile对象
+     *
+     * @param url
+     * @param fileName
+     * @return
+     * @throws Exception
+     */
+    public static MultipartFile createFileItem(String url, String fileName, boolean addFileSuffixName, String fileExtension) {
+        FileItem item = null;
+        try {
+            HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+            conn.setReadTimeout(30000);
+            conn.setConnectTimeout(30000);
+            //设置应用程序要从网络连接读取数据
+            conn.setDoInput(true);
+            conn.setRequestMethod("GET");
+            int contentLength = conn.getContentLength();
+            if (addFileSuffixName) {
+                fileName = fileName + contentLength;
+            }
+            System.out.println("文件大小:" + contentLength);
+            if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                InputStream is = conn.getInputStream();
+                FileItemFactory factory = new DiskFileItemFactory(16, null);
+                String textFieldName = "uploadfile";
+                item = factory.createItem(textFieldName, ContentType.APPLICATION_OCTET_STREAM.toString(), false, fileName + "." + fileExtension);
+                OutputStream os = item.getOutputStream();
+
+                int bytesRead = 0;
+                byte[] buffer = new byte[8192];
+                while ((bytesRead = is.read(buffer, 0, 8192)) != -1) {
+                    os.write(buffer, 0, bytesRead);
+                }
+                os.close();
+                is.close();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("文件下载失败", e);
+        }
+
+        return new CommonsMultipartFile(item);
+    }
+
 }

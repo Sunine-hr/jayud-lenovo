@@ -48,6 +48,9 @@ public class AirOrderFormVO {
     @ApiModelProperty(value = "状态(k_0待接单,k_1空运接单,k_2订舱,k_3订单入仓, k_4确认提单,k_5确认离港,k_6确认到港,k_7海外代理k_8确认签收)")
     private String status;
 
+    @ApiModelProperty(value = "状态描述")
+    private String statusDesc;
+
     @ApiModelProperty(value = "客户名称")
     private String customerName;
 
@@ -115,7 +118,8 @@ public class AirOrderFormVO {
 
 
     public void setStatus(String status) {
-        this.status = OrderStatusEnum.getDesc(status);
+        this.status = status;
+        this.statusDesc = OrderStatusEnum.getDesc(status);
     }
 
     public void setTerms(Integer terms) {

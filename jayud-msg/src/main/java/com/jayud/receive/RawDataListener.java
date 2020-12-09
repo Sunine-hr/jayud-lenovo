@@ -146,12 +146,29 @@ public class RawDataListener {
         }
         CommonResult result = null;
         if (match(com.jayud.common.enums.KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_ONE, record)) {
-            log.info("推送消息给vivo,确认订舱信息...");
+            log.info("[vivo]确认订舱信息推送...");
             result = this.airfreightClient.forwarderBookingConfirmedFeedback(value);
+            if (result.getCode() != HttpStatus.SC_OK) {
+                log.error("推送确认订舱消息给vivo失败 message={}", result.getMsg());
+            }
         }
-        if (result.getCode() != HttpStatus.SC_OK) {
-            log.error("推送确认订舱消息给vivo失败 message={}", result.getMsg());
+
+        if (match(com.jayud.common.enums.KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_TWO, record)) {
+            log.info("[vivo]跟踪信息推送...");
+            result = this.airfreightClient.forwarderLadingInfo(value);
+            if (result.getCode() != HttpStatus.SC_OK) {
+                log.error("推送跟踪信息给vivo失败 message={}", result.getMsg());
+            }
         }
+
+        if (match(com.jayud.common.enums.KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_THREE, record)) {
+            log.info("[vivo]提单信息推送...");
+            result = this.airfreightClient.forwarderLadingFile(value);
+            if (result.getCode() != HttpStatus.SC_OK) {
+                log.error("推送提单信息推送给vivo失败 message={}", result.getMsg());
+            }
+        }
+
 
     }
 

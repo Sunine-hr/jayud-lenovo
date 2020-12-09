@@ -1,5 +1,8 @@
 package com.jayud.airfreight.controller;
 
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.http.Header;
+import cn.hutool.http.HttpRequest;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.jayud.airfreight.annotations.APILog;
@@ -12,11 +15,14 @@ import com.jayud.airfreight.service.AirFreightService;
 import com.jayud.airfreight.service.IAirOrderService;
 import com.jayud.airfreight.service.VivoService;
 import com.jayud.common.ApiResult;
+import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.VivoApiResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.JayudBizException;
+import com.jayud.common.utils.FileUtil;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.common.utils.ValidatorUtil;
@@ -29,6 +35,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import javax.validation.ValidationException;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -55,7 +65,7 @@ public class ReceiveVivoController {
     @Autowired
     private FileClient fileClient;
 
-    @ApiOperation(value = "接收")
+    @ApiOperation(value = "vivo抛订舱数据到货代")
     @PostMapping("/bookingSpace")
     @APILog
     public VivoApiResult bookingSpace(@RequestBody @Valid BookingSpaceForm form) {
@@ -80,6 +90,7 @@ public class ReceiveVivoController {
 
     @PostMapping("/bookingCancel")
     @ApiOperation(value = "取消订舱单")
+    @APILog
     public VivoApiResult bookingCancel(@RequestBody @Valid BookingCancelForm bookingCancelForm) {
         log.info("参数============" + JSONUtil.toJsonStr(bookingCancelForm));
         return VivoApiResult.success();
@@ -87,6 +98,7 @@ public class ReceiveVivoController {
 
     @PostMapping("/bookingFile")
     @ApiOperation(value = "货代获取订舱文件")
+    @APILog
     public VivoApiResult bookingFile(@RequestParam("transfer_data") String transferData,
                                      @RequestParam("MultipartFile") MultipartFile multipartFile) {
 
@@ -96,6 +108,11 @@ public class ReceiveVivoController {
         bookingFileTransferDataForm.setFileType(jsonObject.getInt("File_type"));
         bookingFileTransferDataForm.setFileSize(jsonObject.getInt("File_size"));
         ValidatorUtil.validate(bookingFileTransferDataForm);
+        if (multipartFile == null) {
+            log.warn("订舱文件不能为空");
+            return VivoApiResult.error("订舱文件不能为空");
+        }
+
         //TODO 校验文件完整性
 
         //判断当前空运订单状态是否是订舱状态
@@ -104,8 +121,25 @@ public class ReceiveVivoController {
             log.warn("当前订单状态无法进行操作 status={}", OrderStatusEnum.getDesc(airOrder.getStatus()));
             return VivoApiResult.error("当前订单状态无法进行操作");
         }
+
+        File file = null;
+        try {
+            file = FileUtil.multipartFileToFile(multipartFile);
+        } catch (Exception e) {
+            log.error("文件流转换失败 message=" + e.getMessage(), e);
+            throw new JayudBizException("文件流转换失败");
+        }
+        //http://127.0.0.1:8207/file/uploadFile
         //上传文件
-        ApiResult result = this.fileClient.uploadFile(multipartFile);
+        //TODO url配置到配置中心
+        String feedback = HttpRequest.post("http://test.oms.jayud.com:9448/jayudFile/file/uploadFile")
+                .header("token", "3118872f-cb0b-4345-9a7f-4bdc19c97bbd")
+                .contentType("multipart/form-data")
+                .form("file", file)
+                .execute()
+                .body();
+
+        ApiResult result = JSONUtil.toBean(feedback, ApiResult.class);
         if (result.getCode() != HttpStatus.SC_OK) {
             log.warn("上传订舱文件失败 message={}", result.getMsg());
             return VivoApiResult.error("上传订舱文件失败");
@@ -119,8 +153,29 @@ public class ReceiveVivoController {
         return VivoApiResult.success();
     }
 
+
+    @ApiOperation(value = "订舱驳回")
+    @PostMapping(value = "/bookingRejected")
+    @APILog
+    public VivoApiResult bookingRejected(@RequestBody @Valid VivoBookingRejectedForm form) {
+        //判断当前空运订单状态是否是订舱状态
+        AirOrder airOrder = this.airOrderService.getByThirdPartyOrderNo(form.getBookingNo());
+        if (airOrder == null) {
+            log.warn("当前订单不存在 bookingNo={}", form.getBookingNo());
+            return VivoApiResult.error("当前订单不存在");
+        }
+        if (!OrderStatusEnum.AIR_A_2.getCode().equals(airOrder.getStatus())) {
+            log.warn("当前订单状态无法进行操作 status={}", OrderStatusEnum.getDesc(airOrder.getStatus()));
+            return VivoApiResult.error("当前订单状态无法进行操作");
+        }
+        //修改空运订单状态为订舱驳回状态
+        this.airOrderService.bookingRejected(airOrder);
+        return VivoApiResult.success();
+    }
+
     @PostMapping("/carInfoToForwarder")
     @ApiOperation(value = "抛派车信息到货代")
+    @APILog
     public VivoApiResult carInfoToForwarder(@RequestBody @Valid CardInfoToForwarderForm cardInfoToForwarderForm) {
 
         log.info("参数==============={}", JSONUtil.toJsonStr(cardInfoToForwarderForm));
@@ -129,6 +184,7 @@ public class ReceiveVivoController {
 
     @PostMapping("/carCancel")
     @ApiOperation("vivo取消派车")
+    @APILog
     public VivoApiResult carCancel(@RequestBody @Valid CarCancelForm carCancelForm) {
         log.info("参数======{}", JSONUtil.toJsonStr(carCancelForm));
         return VivoApiResult.success();
@@ -136,9 +192,11 @@ public class ReceiveVivoController {
 
     @PostMapping("/parameterToForwarder")
     @ApiOperation("vivo抛台账数据到货代")
+    @APILog
     public VivoApiResult parameterToForwarder(@RequestBody @Valid ParameterToForwarderForm parameterToForwarderForm) {
         log.info("参数=================={}", JSONUtil.toJsonStr(parameterToForwarderForm));
         return VivoApiResult.success();
     }
+
 
 }

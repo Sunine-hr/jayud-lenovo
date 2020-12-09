@@ -9,6 +9,7 @@ import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.enums.AirProcessStatusEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.*;
 import com.jayud.oms.feign.CustomsClient;
@@ -651,6 +652,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             InputAirOrderForm airOrderForm = form.getAirOrderForm();
             airOrderForm.setMainOrderNo(mainOrderNo);
             airOrderForm.setCreateUser(UserOperator.getToken());
+            Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? AirProcessStatusEnum.PROCESSING.getCode()
+                    : AirProcessStatusEnum.DRAFT.getCode();
+            airOrderForm.setProcessStatus(processStatus);
             this.freightAirClient.createOrder(airOrderForm);
         }
 

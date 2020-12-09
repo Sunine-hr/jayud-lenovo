@@ -17,7 +17,11 @@ public enum KafkaMsgEnums {
     FINANCE_CUSTOMS_RECEIVABLE("financeTest", "customs-receivable"),
     FINANCE_CUSTOMS_PAYABLE("financeTest", "customs-payable"),
     //空运订单异步处理
-    VIVO_FREIGHT_AIR_MESSAGE_ONE("vivoAir", "Confirm-booking-info");
+    VIVO_FREIGHT_AIR_MESSAGE_ONE("vivoAir", "Confirm-booking-info"),//确认订舱信息
+    VIVO_FREIGHT_AIR_MESSAGE_TWO("vivoAir", "tracking-push"),//跟踪信息
+    VIVO_FREIGHT_AIR_MESSAGE_THREE("vivoAir", "bill-lading-info-push"),//跟踪信息
+    ;
+
     private String topic;
     private String key;
 }

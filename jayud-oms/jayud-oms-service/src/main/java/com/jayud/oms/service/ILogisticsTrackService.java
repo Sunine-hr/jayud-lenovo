@@ -7,6 +7,7 @@ import com.jayud.oms.model.vo.LogisticsTrackVO;
 
 import java.util.List;
 
+
 /**
  * <p>
  * 物流轨迹跟踪表 服务类
@@ -19,8 +20,14 @@ public interface ILogisticsTrackService extends IService<LogisticsTrack> {
 
     /**
      * 获取反馈状态
+     *
      * @param form
      * @return
      */
     List<LogisticsTrackVO> findReplyStatus(QueryLogisticsTrackForm form);
+
+    /*
+     * 根据条件查询
+     */
+    List<LogisticsTrack> getByCondition(LogisticsTrack logisticsTrack);
 }

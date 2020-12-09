@@ -2,15 +2,21 @@ package com.jayud.airfreight.model.bo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
+import com.jayud.common.CommonResult;
 import com.jayud.common.vaildator.DateTime;
 import com.jayud.common.vaildator.NumberEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.util.Set;
 
 /**
  * 空运提单文件form
@@ -86,4 +92,15 @@ public class ForwarderLadingFileForm {
     @ApiModelProperty(value = "异常处理过程")
     @Length(max = 200, message = "异常处理过程字段长度最大为200")
     private String exceptionProcess;
+
+    public CommonResult checkParam() {
+        ValidatorFactory vf = Validation.buildDefaultValidatorFactory();
+        Validator validator = vf.getValidator();
+        Set<ConstraintViolation<ForwarderLadingFileForm>> set = validator.validate(this);
+        for (ConstraintViolation<ForwarderLadingFileForm> constraintViolation : set) {
+            return CommonResult.error(400, constraintViolation.getMessage());
+        }
+        return null;
+    }
+
 }

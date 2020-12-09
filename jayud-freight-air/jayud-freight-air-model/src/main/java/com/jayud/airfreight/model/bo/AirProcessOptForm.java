@@ -86,7 +86,7 @@ public class AirProcessOptForm {
                 pass = this.airBooking.checkBookingSpaceOptParam();
                 break;
             case AIR_A_4:
-                if (CollectionUtils.isEmpty(this.fileViewList)) throw new JayudBizException(ResultEnum.VALIDATE_FAILED);
+                if (CollectionUtils.isEmpty(this.fileViewList)) throw new JayudBizException("提单文件必传",400);
                 if (!checkOptInfo()) throw new JayudBizException(ResultEnum.VALIDATE_FAILED);
                 pass = this.airBooking.checkConfirmLadingBillOptParam();
                 break;

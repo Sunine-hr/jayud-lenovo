@@ -3,9 +3,12 @@ package com.jayud.airfreight.service.impl;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.http.Header;
 import cn.hutool.http.HttpRequest;
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.google.gson.Gson;
+import com.jayud.airfreight.feign.FileClient;
+import com.jayud.airfreight.feign.MsgClient;
 import com.jayud.airfreight.feign.OauthClient;
 import com.jayud.airfreight.feign.OmsClient;
 import com.jayud.airfreight.model.bo.*;
@@ -20,10 +23,13 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.BusinessTypeEnum;
+import com.jayud.common.enums.KafkaMsgEnums;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.exception.JayudBizException;
+import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.RandomGUID;
 import com.jayud.common.utils.RsaEncryptUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
@@ -41,8 +47,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * vivo数据接口服务
@@ -87,6 +95,10 @@ public class VivoServiceImpl implements VivoService {
     private IAirExtensionFieldService airExtensionFieldService;
     @Autowired
     private IAirBookingService airBookingService;
+    @Autowired
+    private MsgClient msgClient;
+    @Autowired
+    private FileClient fileClient;
 
 
     /**
@@ -330,5 +342,102 @@ public class VivoServiceImpl implements VivoService {
         this.airExtensionFieldService.save(airExtensionField);
         //修改订舱状态
         return airBookingService.updateByAirOrderId(airOrder.getId(), new AirBooking().setStatus("0"));
+    }
+
+    @Override
+    public void bookingMessagePush(AirOrder airOrder, AirBooking airBooking) {
+        Map<String, String> request = new HashMap();
+        request.put("topic", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_ONE.getTopic());
+        request.put("key", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_ONE.getKey());
+        Map<String, Object> msg = new HashMap<>();
+        msg.put("bookingNo", airOrder.getThirdPartyOrderNo());
+        msg.put("forwarderBookingNo", airOrder.getOrderNo());
+        msg.put("deliveryWarehouse", airBooking.getDeliveryWarehouse());
+        msg.put("deliveryWarehouseAddress", airBooking.getDeliveryAddress());
+        request.put("msg", JSONUtil.toJsonStr(msg));
+        msgClient.consume(request);
+//            if (ResultEnum.INTERNAL_SERVER_ERROR.getCode().toString().equals(consume.get("code"))) {
+//                log.error("远程调用推送确认订舱信息给vivo失败 data={}", JSONUtil.toJsonStr(msg));
+//                throw new JayudBizException(ResultEnum.OPR_FAIL);
+//            }
+    }
+
+    /**
+     * 跟踪推送
+     *
+     * @param airOrder
+     */
+    @Override
+    public void trackingPush(AirOrder airOrder) {
+        AirBooking airBooking = this.airBookingService.getByAirOrderId(airOrder.getId());
+        Map<String, String> request = new HashMap();
+        request.put("topic", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_TWO.getTopic());
+        request.put("key", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_TWO.getKey());
+        Map<String, Object> msg = new HashMap<>();
+        msg.put("bookingNo", airOrder.getThirdPartyOrderNo());
+        msg.put("forwarderBookingNo", airOrder.getOrderNo());
+        msg.put("pickUpDate", DateUtils.LocalDateTime2Str(airOrder.getGoodTime(), "yyyy/M/dd HH:mm:ss"));
+        msg.put("masterAirwayBill", airBooking.getMainNo());
+        msg.put("billOfLading", airBooking.getSubNo());
+        msg.put("flightNo", airBooking.getFlight());
+//            msg.put("chargedWeight", "");
+//            msg.put("bLWeight", "");
+        msg.put("etd", DateUtils.LocalDateTime2Str(airBooking.getEtd(), "yyyy/M/dd HH:mm:ss"));
+        msg.put("atd", DateUtils.LocalDateTime2Str(airBooking.getAtd(), "yyyy/M/dd HH:mm:ss"));
+        msg.put("eta", DateUtils.LocalDateTime2Str(airBooking.getEta(), "yyyy/M/dd HH:mm:ss"));
+        msg.put("ata", DateUtils.LocalDateTime2Str(airBooking.getAta(), "yyyy/M/dd HH:mm:ss"));
+        msg.put("inboundDate", getInboundDate(airOrder));//入仓时间
+        msg.put("modeOfTransport", 1);//空运跟踪表中运输方式（空运：1；铁运：2；海运：3；陆运：4）
+        request.put("msg", JSONUtil.toJsonStr(msg));
+        msgClient.consume(request);
+    }
+
+    private Object getInboundDate(AirOrder airOrder) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("orderId", airOrder.getId());
+        map.put("type", BusinessTypeEnum.KY.getCode());
+        map.put("status", OrderStatusEnum.AIR_A_3.getCode());
+        ApiResult result = this.omsClient.getLogisticsTrackNode(JSONUtil.toJsonStr(map));
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.error("获取物流轨迹节点失败");
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+        JSONArray json = new JSONArray(result.getData());
+        return json.size() > 0
+                ? DateUtils.format(
+                json.getJSONObject(0).getDate("operatorTime"), "yyyy/M/dd HH:mm:ss")
+                : null;
+    }
+
+    /**
+     * 推送提单信息
+     *
+     * @param airOrder
+     * @param airBooking
+     */
+    public void billLadingInfoPush(AirOrder airOrder, AirBooking airBooking) {
+        Map<String, String> request = new HashMap();
+        request.put("topic", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_THREE.getTopic());
+        request.put("key", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_THREE.getKey());
+        Map<String, Object> msg = new HashMap<>();
+        msg.put("bookingNo", airOrder.getThirdPartyOrderNo());
+        msg.put("forwarderBookingNo", airOrder.getOrderNo());
+        msg.put("fileType", 1);
+        msg.put("id", new RandomGUID().toStringTwo());
+        msg.put("operationType", "add");
+        ApiResult result = this.fileClient.getBaseUrl();
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.error("获取文件地址失败");
+            throw new JayudBizException("获取文件地址失败");
+        }
+        msg.put("filePath", result.getData() + airBooking.getFilePath());
+        msg.put("fileName", airBooking.getFileName());
+        request.put("msg", JSONUtil.toJsonStr(msg));
+        msgClient.consume(request);
+    }
+
+    public static void main(String[] args) {
+        UUID uuid = UUID.randomUUID();
+        System.out.println(uuid.toString());
     }
 }

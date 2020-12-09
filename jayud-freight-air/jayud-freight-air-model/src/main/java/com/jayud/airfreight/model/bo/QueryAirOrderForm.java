@@ -45,6 +45,9 @@ public class QueryAirOrderForm extends BasePageForm {
     @JsonIgnore
     private List<String> mainOrderNos;
 
+    @ApiModelProperty(value = "流程状态")
+    private List<Integer> processStatusList;
+
     public void assemblyMainOrderNo(JSONArray mainOrders) {
         mainOrderNos = new ArrayList<>(mainOrders.size());
         for (int i = 0; i < mainOrders.size(); i++) {

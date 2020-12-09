@@ -2,6 +2,7 @@ package com.jayud.common.utils;
 
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
@@ -11,9 +12,11 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -231,6 +234,7 @@ public class HttpRequester {
         }
         return result;
     }
+
     /**
      * @param httpResponse
      * @return

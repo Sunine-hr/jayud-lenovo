@@ -78,7 +78,7 @@
             and opb.is_main = 1 and opbd.audit_status in ('B_1','B_2')
         </if>
         <if test="form.cmd == 'cw_statement'">
-            and opb.is_main = 1 and opbd.audit_status in ('B_3','B_5','B_5_1')
+            and opbd.audit_status in ('B_3','B_5','B_5_1','B_6')
         </if>
         <if test="form.cmd == 'zgys_statement'">
             and opb.is_main = 0 and opb.sub_type = 'zgys'
@@ -86,17 +86,11 @@
         <if test="form.cmd == 'zgys_statement_audit'">
             and opb.is_main = 0 and opb.sub_type = 'zgys' and opbd.audit_status IN ('B_1','B_2')
         </if>
-        <if test="form.cmd == 'zgys_cw_statement'">
-            and opb.is_main = 0 and opb.sub_type = 'zgys' and opbd.audit_status in ('B_3','B_5','B_5_1')
-        </if>
         <if test="form.cmd == 'bg_statement'">
             and opb.is_main = 0 and opb.sub_type = 'bg'
         </if>
         <if test="form.cmd == 'bg_statement_audit'">
             and opb.is_main = 0 and opb.sub_type = 'bg' and opbd.audit_status IN ('B_1','B_2')
-        </if>
-        <if test="form.cmd == 'bg_cw_statement'">
-            and opb.is_main = 0 and opb.sub_type = 'bg' and opbd.audit_status in ('B_3','B_5','B_5_1')
         </if>
         <if test="form.supplierChName != null and form.supplierChName != ''">
             and opb.supplier_ch_name like concat('%',#{form.supplierChName},'%')

@@ -44,9 +44,9 @@ public class QueryPaymentBillDetailForm extends BasePageForm{
     private String applyStatus;
 
     @ApiModelProperty(value = "操作指令 cmd=main_statement/zgys_statement/bg_statement对账单 or statement_audit/zgys_statement_audit/bg_statement_audit对账单审核 or" +
-            " cw_statement/zgys_cw_statement/bg_cw_statement财务对账单",required = true)
+            " cw_statement财务对账单",required = true)
     @Pattern(regexp = "(main_statement|zgys_statement|bg_statement|statement_audit|zgys_statement_audit|bg_statement_audit|" +
-            "cw_statement|zgys_cw_statement|bg_cw_statement)", message = "只允许填写特定值")
+            "cw_statement)", message = "只允许填写特定值")
     private String cmd;
 
 }

@@ -228,9 +228,13 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 oprCostBillForm.setCostIds(delCostIds);
                 omsClient.oprCostBill(oprCostBillForm);
 
+                //相应的费用出账金额记录要做删除
+                QueryWrapper removeDelWrapper = new QueryWrapper();
+                removeDelWrapper.in("cost_id", delCostIds);
+                costTotalService.remove(removeWrapper);
             }
             //处理要新增的费用
-            if (form.getPaymentBillDetailForms().size() > 0) {
+            if (paymentBillDetailForms.size() > 0) {
                 Boolean result = true;//结果标识
                 OrderPaymentBill orderPaymentBill = orderPaymentBillService.getById(existObject.getBillId());//获取账单信息
                 //生成账单需要修改order_payment_cost表的is_bill

@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -78,7 +79,8 @@ public class OrderComboxController {
         //客户
         Map<String,Object> param = new HashMap<>();
         param.put(SqlConstant.AUDIT_STATUS, CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());
-        List<CustomerInfo> customerInfoList = customerInfoService.findCustomerInfoByCondition(param);
+        List<CustomerInfo> allCustomerInfoList = customerInfoService.findCustomerInfoByCondition(param);
+        List<CustomerInfo> customerInfoList = allCustomerInfoList.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(CustomerInfo :: getName))), ArrayList::new));
         List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
         for (CustomerInfo customerInfo : customerInfoList) {
             InitComboxStrVO comboxStrVO = new InitComboxStrVO();
@@ -143,19 +145,21 @@ public class OrderComboxController {
     @PostMapping(value = "/initUnit")
     public CommonResult<Map<String,Object>> initUnit(@RequestBody Map<String,Object> param) {
         String idCode = MapUtil.getStr(param,"idCode");
-        if(idCode != null && "".equals(idCode)){
+       /* if(idCode != null && "".equals(idCode)){
             return CommonResult.error(400,"参数不合法");
-        }
+        }*/
         Map<String,Object> resultMap = new HashMap<>();
         param = new HashMap<>();
-        param.put("id_code", idCode);
-        List<CustomerInfo> customerInfoList = customerInfoService.findCustomerInfoByCondition(param);
+        //param.put("id_code", idCode);
+        param.put(SqlConstant.AUDIT_STATUS, CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());
+        List<CustomerInfo> allCustomerInfoList = customerInfoService.findCustomerInfoByCondition(param);
+        List<CustomerInfo> customerInfoList = allCustomerInfoList.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(CustomerInfo :: getName))), ArrayList::new));
         List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
         List<Long> ids = new ArrayList<>();
         for (CustomerInfo customerInfo : customerInfoList) {
             InitComboxStrVO comboxStrVO = new InitComboxStrVO();
-            comboxStrVO.setCode(customerInfo.getUnitCode());
-            comboxStrVO.setName(customerInfo.getUnitAccount());
+            comboxStrVO.setCode(customerInfo.getIdCode());
+            comboxStrVO.setName(customerInfo.getName());
             comboxStrVOS.add(comboxStrVO);
             if(customerInfo.getYwId() != null) {
                 ids.add(customerInfo.getYwId());

@@ -184,7 +184,29 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                     || "edit_del".equals(existObject.getAuditStatus())//流程过度状态-编辑删除
                     || "edit_no_commit".equals(existObject.getAuditStatus())//流程过度状态-编辑提交
             )) {
-                CommonResult.error(10001,"不符合操作条件");
+                return CommonResult.error(10001,"不符合操作条件");
+            }
+            //校验本次提交的数据是否配置汇率
+            if("submit".equals(form.getCmd())){
+                List<Long> costIds = new ArrayList<>();
+                for (OrderPaymentBillDetailForm tempObject : paymentBillDetailForms) {
+                    costIds.add(tempObject.getCostId());
+                }
+                StringBuilder sb = new StringBuilder();
+                sb.append("请配置[");
+                Boolean flag = true;
+                List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderFBillCostTotal(costIds, existObject.getSettlementCurrency(), existObject.getAccountTerm());
+                for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
+                    BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();//如果费率为0，则抛异常回滚数据
+                    if (exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0) {
+                        sb.append("原始币种:"+orderBillCostTotalVO.getCurrencyCode()+",兑换币种:"+existObject.getSettlementCurrency()+";");
+                        flag = false;
+                    }
+                }
+                if(!flag){
+                    sb.append("]的汇率");
+                    return CommonResult.error(10001,sb.toString());
+                }
             }
             //处理需要删除的费用,获取删除标识的账单详情
             queryWrapper.eq("audit_status", "edit_del");

@@ -383,5 +383,31 @@ public class FinanceController {
         return CommonResult.success(comboxStrVOS);
     }
 
+    @ApiOperation(value = "开票/付款申请,核销,开票/付款核销界面的金额初始化,billNo=账单编号")
+    @PostMapping(value = "/getCostAmountView")
+    public CommonResult<CostAmountVO> getCostAmountView(@RequestBody Map<String,Object> param) {
+        String billNo = MapUtil.getStr(param,"billNo");
+        if(StringUtil.isNullOrEmpty(billNo)){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        CostAmountVO costAmountVO = new CostAmountVO();
+        CostAmountVO costFAmountVO = paymentBillDetailService.getFCostAmountView(billNo);
+        CostAmountVO costSAmountVO = receivableBillDetailService.getSCostAmountView(billNo);
+        costAmountVO.setBillNo(billNo);
+        if(costSAmountVO != null) {
+            costAmountVO.setYsAmount(costSAmountVO.getYsAmount());
+            costAmountVO.setYsCurrency(costSAmountVO.getYsCurrency());
+            costAmountVO.setWsAmount(costSAmountVO.getWsAmount());
+            costAmountVO.setWsCurrency(costSAmountVO.getWsCurrency());
+        }
+        if(costFAmountVO != null) {
+            costAmountVO.setYfAmount(costFAmountVO.getYfAmount());
+            costAmountVO.setYfCurrency(costFAmountVO.getYfCurrency());
+            costAmountVO.setWsAmount(costFAmountVO.getWsAmount());
+            costAmountVO.setWsCurrency(costFAmountVO.getWsCurrency());
+        }
+        return CommonResult.success(costAmountVO);
+    }
+
 
 }

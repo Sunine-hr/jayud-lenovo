@@ -469,4 +469,16 @@
         WHERE
             opbd.bill_no = #{billNo}
     </select>
+    <select id="getFCostAmountView" parameterType="java.lang.String" resultType="com.jayud.finance.vo.CostAmountVO">
+        SELECT
+            (select obct.money from order_bill_cost_total obct where obct.bill_no = opbd.bill_no) yfAmount,
+            (select ci.currency_name from currency_info ci where ci.currency_code = opbd.settlement_currency) yfCurrency,
+            ifnull((select obct.money from order_bill_cost_total obct where obct.bill_no = opbd.bill_no),0)-ifnull((select cav.discount_money from cancel_after_verification cav where cav.bill_no = opbd.bill_no),0) dfAmount,
+            (select ci.currency_name from currency_info ci where ci.currency_code = opbd.settlement_currency) dfCurrency
+        FROM
+            order_payment_bill_detail opbd
+            LEFT JOIN order_payment_cost opc ON opbd.cost_id = opc.id
+        WHERE
+            opbd.bill_no = #{billNo}
+    </select>
 </mapper>

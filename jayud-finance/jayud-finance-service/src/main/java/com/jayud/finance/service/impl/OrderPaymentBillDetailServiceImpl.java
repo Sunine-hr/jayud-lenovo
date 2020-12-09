@@ -187,7 +187,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 return CommonResult.error(10001,"不符合操作条件");
             }
             //校验本次提交的数据是否配置汇率
-            if("submit".equals(form.getCmd())){
+            if("submit".equals(form.getCmd()) && paymentBillDetailForms.size()>0){
                 List<Long> costIds = new ArrayList<>();
                 for (OrderPaymentBillDetailForm tempObject : paymentBillDetailForms) {
                     costIds.add(tempObject.getCostId());
@@ -701,6 +701,11 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     @Override
     public List<APARDetailForm> findPayableHeaderDetail(String billNo) {
         return baseMapper.findPayableHeaderDetail(billNo);
+    }
+
+    @Override
+    public CostAmountVO getFCostAmountView(String billNo) {
+        return baseMapper.getFCostAmountView(billNo);
     }
 
 

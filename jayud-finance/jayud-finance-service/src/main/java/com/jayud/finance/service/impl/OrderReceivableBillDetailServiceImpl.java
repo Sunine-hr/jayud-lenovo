@@ -174,7 +174,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 return CommonResult.error(10001,"不符合操作条件");
             }
             //校验本次提交的数据是否配置汇率
-            if("submit".equals(form.getCmd())){
+            if("submit".equals(form.getCmd()) && receiveBillDetailForms.size()>0){
                 List<Long> costIds = new ArrayList<>();
                 for (OrderReceiveBillDetailForm tempObject : receiveBillDetailForms) {
                     costIds.add(tempObject.getCostId());
@@ -182,7 +182,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 StringBuilder sb = new StringBuilder();
                 sb.append("请配置[");
                 Boolean flag = true;
-                List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderFBillCostTotal(costIds, existObject.getSettlementCurrency(), existObject.getAccountTerm());
+                List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, existObject.getSettlementCurrency(), existObject.getAccountTerm());
                 for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                     BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();//如果费率为0，则抛异常回滚数据
                     if (exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0) {
@@ -668,6 +668,11 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
     @Override
     public List<APARDetailForm> findReceivableHeaderDetail(String billNo) {
         return baseMapper.findReceivableHeaderDetail(billNo);
+    }
+
+    @Override
+    public CostAmountVO getSCostAmountView(String billNo) {
+        return baseMapper.getSCostAmountView(billNo);
     }
 
 

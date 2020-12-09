@@ -201,4 +201,11 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      */
     List<APARDetailForm> findPayableHeaderDetail(String billNo);
 
+    /**
+     * 开票和付款申请/开票和付款核销/核销界面展示的金额
+     * @param billNo
+     * @return
+     */
+    CostAmountVO getFCostAmountView(String billNo);
+
 }

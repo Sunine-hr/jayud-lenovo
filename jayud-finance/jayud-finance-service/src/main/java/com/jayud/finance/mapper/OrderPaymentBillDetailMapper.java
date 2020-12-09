@@ -123,4 +123,11 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
      * @return
      */
     List<APARDetailForm> findPayableHeaderDetail(@Param("billNo") String billNo);
+
+    /**
+     * 应付:开票和付款申请/开票和付款核销/核销界面展示的金额
+     * @param billNo
+     * @return
+     */
+    CostAmountVO getFCostAmountView(@Param("billNo") String billNo);
 }

@@ -108,4 +108,11 @@ public interface OrderReceivableBillDetailMapper extends BaseMapper<OrderReceiva
      * @return
      */
     List<APARDetailForm> findReceivableHeaderDetail(@Param("billNo") String billNo);
+
+    /**
+     * 应收:开票和付款申请/开票和付款核销/核销界面展示的金额
+     * @param billNo
+     * @return
+     */
+    CostAmountVO getSCostAmountView(@Param("billNo") String billNo);
 }

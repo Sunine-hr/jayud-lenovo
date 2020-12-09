@@ -103,29 +103,27 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         }
         String settlementCurrency = form.getSettlementCurrency();
         List<OrderBillCostTotalVO> orderBillCostTotalVOS = new ArrayList<>();
-        if(costIds.size() > 0){
-            //校验是否配置了相应币种的汇率
-            //根据费用ID统计费用信息,将原始费用信息根据结算币种进行转换
-            if("create".equals(form.getCmd())) {
-                orderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, settlementCurrency,form.getAccountTermStr());
-                for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
-                    BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();//如果费率为0，则抛异常回滚数据
-                    if (exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0) {
-                        return false;
-                    }
+        //校验是否配置了相应币种的汇率
+        //根据费用ID统计费用信息,将原始费用信息根据结算币种进行转换
+        if("create".equals(form.getCmd()) && costIds.size() > 0) {
+            orderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, settlementCurrency,form.getAccountTermStr());
+            for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
+                BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();//如果费率为0，则抛异常回滚数据
+                if (exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0) {
+                    return false;
                 }
             }
-            OprCostBillForm oprCostBillForm = new OprCostBillForm();
-            oprCostBillForm.setCmd(form.getCmd());
-            oprCostBillForm.setCostIds(costIds);
-            oprCostBillForm.setOprType("receivable");
-            result = omsClient.oprCostBill(oprCostBillForm).getData();
-            if(!result){
-                return false;
-            }
+        }
+        OprCostBillForm oprCostBillForm = new OprCostBillForm();
+        oprCostBillForm.setCmd(form.getCmd());
+        oprCostBillForm.setCostIds(costIds);
+        oprCostBillForm.setOprType("receivable");
+        result = omsClient.oprCostBill(oprCostBillForm).getData();
+        if(!result){
+            return false;
         }
         //生成账单操作才是生成对账单数据
-        if("create".equals(form.getCmd())){
+        if("create".equals(form.getCmd()) && costIds.size() > 0){
             //先保存对账单信息，在保存对账单详情信息
             OrderReceivableBill orderReceivableBill = ConvertUtil.convert(receiveBillForm,OrderReceivableBill.class);
             //1.统计已出账金额alreadyPaidAmount

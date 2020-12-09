@@ -163,19 +163,22 @@
         LEFT JOIN cost_genre cg ON opc.cost_genre_id = cg.id
         LEFT JOIN cost_type ct ON opc.cost_type_id = ct.id
         LEFT JOIN cost_info ci ON opc.cost_code = ci.id_code
+        left join order_customs oc on oc.order_no = opc.order_no
         WHERE
         opc.id NOT IN ( SELECT opbd.cost_id FROM order_payment_bill_detail opbd )
         and opc.is_bill != '2'
         and opc.`status` = '3'
         and si.supplier_ch_name = #{form.supplierChName}
-        and oi.legal_name = #{form.legalName}
         <if test="form.cmd == 'main'">
+        and oi.legal_name = #{form.legalName}
         and opc.is_sum_to_main = 1
         </if>
         <if test="form.cmd == 'zgys'">
+            and ot.legal_name = #{form.legalName}
             and opc.is_sum_to_main = 0 and opc.sub_type = 'zgys'
         </if>
         <if test="form.cmd == 'bg'">
+            and oc.legal_name = #{form.legalName}
             and opc.is_sum_to_main = 0 and opc.sub_type = 'bg'
         </if>
         ) temp where 1 = 1

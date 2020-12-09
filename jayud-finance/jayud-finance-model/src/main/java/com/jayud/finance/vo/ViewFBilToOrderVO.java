@@ -42,5 +42,19 @@ public class ViewFBilToOrderVO {
     @ApiModelProperty(value = "报关单号")
     private String yunCustomsNo;
 
+    public String getVehicleSize() {
+        if(this.vehicleSize != null){
+            if("1".equals(this.vehicleSize)){
+                return "3T";
+            }else if("2".equals(this.vehicleSize)){
+                return "5T";
+            }else if("3".equals(this.vehicleSize)){
+                return "8T";
+            }else if("4".equals(this.vehicleSize)){
+                return "10T";
+            }
+        }
+        return "";
+    }
 
 }

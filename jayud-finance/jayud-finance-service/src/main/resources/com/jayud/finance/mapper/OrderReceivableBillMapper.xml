@@ -160,19 +160,22 @@
         LEFT JOIN cost_genre cg ON orc.cost_genre_id = cg.id
         LEFT JOIN cost_type ct ON orc.cost_type_id = ct.id
         LEFT JOIN cost_info ci ON orc.cost_code = ci.id_code
+        left join order_customs oc on oc.order_no = orc.order_no
         WHERE
         orc.id NOT IN ( SELECT orbd.cost_id FROM order_receivable_bill_detail orbd )
         and orc.is_bill != '2'
         and orc.`status` = '3'
         and c.unit_account = #{form.unitAccount}
-        and oi.legal_name = #{form.legalName}
         <if test="form.cmd == 'main'">
+            and oi.legal_name = #{form.legalName}
             and orc.is_sum_to_main = 1
         </if>
         <if test="form.cmd == 'zgys'">
+            and ot.legal_name = #{form.legalName}
             and orc.is_sum_to_main = 0 and orc.sub_type = 'zgys'
         </if>
         <if test="form.cmd == 'bg'">
+            and oc.legal_name = #{form.legalName}
             and orc.is_sum_to_main = 0 and orc.sub_type = 'bg'
         </if>
         ) temp where 1 = 1

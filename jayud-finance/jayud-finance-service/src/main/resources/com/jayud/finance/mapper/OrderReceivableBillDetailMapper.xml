@@ -58,7 +58,7 @@
         orbd.make_time makeTimeStr,
         orbd.audit_user auditUser,
         orbd.audit_time auditTimeStr,
-        (select ai.audit_comment from audit_info ai where ai.ext_unique_flag = orbd.bill_no order by ai.created_time desc limit 1) auditComment,
+        (select ai.audit_comment from audit_info ai where ai.ext_unique_flag = orbd.bill_no and ai.audit_status='B_2' order by ai.created_time desc limit 1) auditComment,
         (select c.created_user from cancel_after_verification c where c.bill_no = orbd.bill_no order by c.created_time desc limit 1) heXiaoUser,
         (select c.real_receive_time from cancel_after_verification c where c.bill_no = orbd.bill_no order by c.created_time desc limit 1) heXiaoTimeStr
         FROM

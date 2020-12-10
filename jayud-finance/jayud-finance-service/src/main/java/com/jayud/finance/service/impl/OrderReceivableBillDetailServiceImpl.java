@@ -512,7 +512,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.in("bill_no",form.getBillNos());
         List<OrderReceivableBillDetail> existList = baseMapper.selectList(queryWrapper);
-        if("kf_f_reject".equals(form.getCmd())){
+        if("kf_s_reject".equals(form.getCmd())){
             for (OrderReceivableBillDetail existObject : existList) {
                 if(!BillEnum.B_2.getCode().equals(existObject.getAuditStatus())){
                     return CommonResult.error(10001,"存在不符合操作条件的数据");
@@ -527,7 +527,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 updateWrapper.eq("bill_no",billNo);
                 update(orderReceivableBillDetail,updateWrapper);
             }
-        }else if("cw_f_reject".equals(form.getCmd())){
+        }else if("cw_s_reject".equals(form.getCmd())){
             for (OrderReceivableBillDetail existObject : existList) {
                 if(!BillEnum.B_5_1.getCode().equals(existObject.getAuditStatus())){
                     return CommonResult.error(10001,"存在不符合操作条件的数据");

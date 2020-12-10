@@ -24,14 +24,6 @@ public class AddCustomerInfoForm {
     @NotEmpty(message = "idCode is required")
     private String idCode;
 
-    @ApiModelProperty(value = "结算单位",required = true)
-    @NotEmpty(message = "unitAccount is required")
-    private String unitAccount;
-
-    @ApiModelProperty(value = "结算代码",required = true)
-    @NotEmpty(message = "unitCode is required")
-    private String unitCode;
-
     @ApiModelProperty(value = "客户类型(1同行 2电商 3货代)",required = true)
     private Integer types;
 

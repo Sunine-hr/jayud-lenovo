@@ -385,7 +385,7 @@ public class PaymentBillDetailController {
     @ApiOperation(value = "反审核,billNos=账单编号集合")
     @PostMapping("/contraryAudit")
     public CommonResult contraryAudit(@RequestBody ListForm form) {
-        if(form.getBillNos() == null || form.getBillNos().size() == 0){
+        if(form.getBillNos() == null || form.getBillNos().size() == 0 || StringUtil.isNullOrEmpty(form.getCmd())){
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         return billDetailService.contraryAudit(form);

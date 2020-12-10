@@ -645,6 +645,7 @@ class PushOtherReceivable implements Callable<String> {
 
         String applyNo = customsReceivable.getCustomApplyNo();
         String customerName = customsReceivable.getCustomerName();
+        String shipperName = customsReceivable.getShipperName();
         String fdate = customsReceivable.getApplyDt();
 
         if (Objects.nonNull(mainEntity) && Objects.nonNull(detailEntity)) {
@@ -796,9 +797,10 @@ class PushOtherReceivable implements Callable<String> {
                 root.put("FEntity", details);
                 root.put("FAMOUNTFOR", totalValue);
                 root.put("FTAXAMOUNT", totalValue);
-                root.put("FAR_OtherRemarks", customerName);
+                root.put("FAR_OtherRemarks", customerName+"-"+shipperName+"-代垫税金");
                 root.put("F_PCQE_Text", applyNo);
                 root.put("FDATE", fdate);
+                root.put("FENDDATE_H", DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
                 root.put("FACCNTTIMEJUDGETIME", DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
                 //root装载完毕，更新main
                 mainEntity.put("Model", root);
@@ -884,7 +886,9 @@ class PushOtherPayable implements Callable<String> {
             if (Objects.nonNull(root) && CollectionUtil.isNotEmpty(customsPayable)) {
                 String applyNo = customsPayable.get(0).getCustomApplyNo();
                 String customerName = customsPayable.get(0).getCustomerName();
+                String shipperName = customsPayable.get(0).getShipperName();
                 String fdate = customsPayable.get(0).getApplyDt();
+
                 //其他应付表头只对合计和备注进行处理
                 //组织默认使用佳裕达报关
                 //来往单位类型默认为供应商-海关
@@ -933,9 +937,10 @@ class PushOtherPayable implements Callable<String> {
                 root.put("FTOTALAMOUNTFOR_H", totalValue);
                 root.put("FNOTSETTLEAMOUNTFOR", totalValue);
                 root.put("FNOTAXAMOUNT", totalValue);
-                root.put("FRemarks", customerName);
+                root.put("FRemarks", shipperName+"-代垫税金");//应付对账单是看不到客户的
                 root.put("F_PCQE_Text", applyNo);
                 root.put("FDATE", fdate);
+                root.put("FENDDATE_H", DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
                 root.put("FACCNTTIMEJUDGETIME", DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
                 //root装载完毕，更新main
                 mainEntity.put("Model", root);

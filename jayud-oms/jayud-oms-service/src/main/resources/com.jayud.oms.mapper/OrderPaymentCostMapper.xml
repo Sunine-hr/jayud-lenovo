@@ -105,7 +105,7 @@
             and oc.order_no =#{orderNo}
         </where>
     </select>
-    <select id="getWriteBackFCostData" parameterType="java.lang.Long" resultType="com.jayud.oms.model.vo.InputReceivableCostVO" >
+    <select id="getWriteBackFCostData" parameterType="java.lang.Long" resultType="com.jayud.oms.model.vo.InputPaymentCostVO" >
     select temp.id,temp.exchangeRate,temp.amount * temp.exchangeRate changeAmount from (
         SELECT
             opc.id,

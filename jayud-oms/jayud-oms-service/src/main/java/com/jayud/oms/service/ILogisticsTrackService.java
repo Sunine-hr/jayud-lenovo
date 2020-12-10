@@ -1,5 +1,6 @@
 package com.jayud.oms.service;
 
+import com.jayud.common.utils.FileView;
 import com.jayud.oms.model.bo.QueryLogisticsTrackForm;
 import com.jayud.oms.model.po.LogisticsTrack;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -30,4 +31,11 @@ public interface ILogisticsTrackService extends IService<LogisticsTrack> {
      * 根据条件查询
      */
     List<LogisticsTrack> getByCondition(LogisticsTrack logisticsTrack);
+
+    /**
+     * 获取附件
+     *
+     * @return
+     */
+    List<FileView> getAttachments(Long orderId, Integer businessType, String path);
 }

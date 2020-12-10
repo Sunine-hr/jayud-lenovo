@@ -63,6 +63,21 @@ public class AirOrderFormVO {
     @ApiModelProperty(value = "目的地机场")
     private String portDestination;
 
+    @ApiModelProperty(value = "航空公司")
+    private String airlineCompany;
+
+    @ApiModelProperty(value = "航班号")
+    private String flight;
+
+    @ApiModelProperty(value = "预计离港时间")
+    private String etd;
+
+    @ApiModelProperty(value = "预计到港时间")
+    private String eta;
+
+    @ApiModelProperty(value = "入仓号")
+    private String warehousingNo;
+
     @ApiModelProperty(value = "创建人(登录用户)")
     private String createUser;
 
@@ -79,6 +94,9 @@ public class AirOrderFormVO {
 
     @ApiModelProperty(value = "流程状态(0:进行中,1:完成)")
     private Integer processStatus;
+
+    @ApiModelProperty(value = "订单业务人员名称")
+    private String bizUname;
 
     /**
      * 组装商品信息
@@ -110,6 +128,7 @@ public class AirOrderFormVO {
             if (this.mainOrderNo.equals(json.getString("orderNo"))) { //主订单配对
                 this.customerName = json.getString("customerName");
                 this.mainOrderId = json.getString("id");
+                this.bizUname = json.getString("bizUname");
                 break;
             }
         }

@@ -28,7 +28,7 @@ public class QueryOrderInfoForm extends BasePageForm{
     private String classCode;
 
     @ApiModelProperty(value = "操作指令,cmd = noSubmit草稿 or submit全部 or costAudit费用审核 or outCustomsRelease外部报关放行" +
-            "or goCustomsAudit通关前审核 or dataNotAll待补全")
+            "or goCustomsAudit通关前审核 or dataNotAll待补全 or 待处理pending")
     private String cmd;
 
 

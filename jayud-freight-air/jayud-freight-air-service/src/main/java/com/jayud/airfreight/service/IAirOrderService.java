@@ -4,10 +4,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.airfreight.model.bo.AddAirOrderForm;
 import com.jayud.airfreight.model.bo.AirProcessOptForm;
 import com.jayud.airfreight.model.bo.QueryAirOrderForm;
-import com.jayud.airfreight.model.po.AirBooking;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.airfreight.model.vo.AirOrderFormVO;
+import com.jayud.airfreight.model.vo.AirOrderVO;
 
 import java.util.List;
 
@@ -74,7 +74,23 @@ public interface IAirOrderService extends IService<AirOrder> {
 
     /**
      * 跟踪推送
+     *
      * @param airOrderId
      */
     void trackingPush(Long airOrderId);
+
+    /**
+     * 根据主订单号查询空运订单
+     */
+    AirOrder getByMainOrderNo(String mainOrderNo);
+
+    /**
+     * 根据空运订单号修改空运
+     */
+    boolean updateByOrderNo(String airOrderNo, AirOrder airOrder);
+
+    /**
+     * 空运订单详情
+     */
+    AirOrderVO getAirOrderDetails(Long airOrderId);
 }

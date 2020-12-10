@@ -13,13 +13,13 @@ import com.jayud.airfreight.model.bo.QueryAirOrderForm;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.airfreight.model.po.Goods;
 import com.jayud.airfreight.model.vo.AirOrderFormVO;
+import com.jayud.airfreight.model.vo.AirOrderVO;
 import com.jayud.airfreight.service.IAirOrderService;
 import com.jayud.airfreight.service.IGoodsService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
-import com.jayud.common.VivoApiResult;
-import com.jayud.common.enums.AirProcessStatusEnum;
+import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
@@ -57,7 +57,7 @@ public class AirOrderController {
 
     @ApiOperation(value = "分页查询空运订单")
     @PostMapping(value = "/findByPage")
-    public CommonResult findByPage(@RequestBody QueryAirOrderForm form) {
+    public CommonResult<CommonPageResult<AirOrderFormVO>> findByPage(@RequestBody QueryAirOrderForm form) {
 
         //模糊查询客户信息
         if (form.getCustomerName() != null) {
@@ -87,7 +87,7 @@ public class AirOrderController {
             mainOrder.add(record.getMainOrderNo());
         }
         //查询商品信息
-        List<Goods> goods = goodsService.getGoodsByBusIds(airOrderIds, BusinessTypeEnum.KY.getDesc());
+        List<Goods> goods = goodsService.getGoodsByBusIds(airOrderIds, BusinessTypeEnum.KY.getCode());
         //查询客户信息
         ApiResult result = omsClient.getMainOrderByOrderNos(mainOrder);
         for (AirOrderFormVO record : records) {
@@ -111,10 +111,10 @@ public class AirOrderController {
         }
         //空运订单信息
         AirOrder airOrder = this.airOrderService.getById(form.getOrderId());
-        if (airOrder.getProcessStatus() == 1) {
+        if (ProcessStatusEnum.COMPLETE.getCode().equals(airOrder.getProcessStatus())) {
             return CommonResult.error(400, "该订单已经完成");
         }
-        if (!AirProcessStatusEnum.PROCESSING.getCode().equals(airOrder.getProcessStatus())) {
+        if (!ProcessStatusEnum.PROCESSING.getCode().equals(airOrder.getProcessStatus())) {
             return CommonResult.error(400, "当前订单无法操作");
         }
         OrderStatusEnum statusEnum = OrderStatusEnum.getAirOrderNextStatus(airOrder.getStatus());
@@ -221,6 +221,18 @@ public class AirOrderController {
         //执行订舱驳回编辑
         this.airOrderService.doAirBookingOpt(form);
         return CommonResult.success();
+    }
+
+
+    @ApiOperation(value = "查询订单详情 airOrderId=空运订单id")
+    @PostMapping(value = "/getAirOrderDetails")
+    public CommonResult<AirOrderVO> getAirOrderDetails(@RequestBody Map<String, Object> map) {
+        Long airOrderId = MapUtil.getLong(map, "airOrderId");
+        if (airOrderId == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        AirOrderVO airOrderDetails = this.airOrderService.getAirOrderDetails(airOrderId);
+        return CommonResult.success(airOrderDetails);
     }
 }
 

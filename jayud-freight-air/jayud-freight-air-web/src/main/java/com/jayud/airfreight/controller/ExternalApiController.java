@@ -1,18 +1,28 @@
 package com.jayud.airfreight.controller;
 
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONUtil;
 import com.jayud.airfreight.model.bo.AddAirOrderForm;
 import com.jayud.airfreight.model.bo.BookingSpaceForm;
+import com.jayud.airfreight.model.po.AirOrder;
+import com.jayud.airfreight.model.vo.AirOrderVO;
 import com.jayud.airfreight.service.AirFreightService;
 import com.jayud.airfreight.service.IAirOrderService;
 import com.jayud.common.ApiResult;
+import com.jayud.common.CommonResult;
+import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.entity.InitChangeStatusVO;
+import com.jayud.common.entity.SubOrderCloseOpt;
+import com.jayud.common.enums.ProcessStatusEnum;
+import com.jayud.common.enums.ResultEnum;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 被外部模块调用的处理接口
@@ -63,6 +73,47 @@ public class ExternalApiController {
 //        return CommonResult.success();
 //    }
 
+    @ApiOperation(value = "获取空运订单号")
+    @RequestMapping(value = "/api/airfreight/getAirOrderNo")
+    public ApiResult getAirOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo) {
+        InitChangeStatusVO initChangeStatusVO = new InitChangeStatusVO();
+        AirOrder airOrder = this.airOrderService.getByMainOrderNo(mainOrderNo);
+        if (airOrder != null) {
+            initChangeStatusVO.setId(airOrder.getId());
+            initChangeStatusVO.setOrderNo(airOrder.getOrderNo());
+            initChangeStatusVO.setOrderType(CommonConstant.KY);
+            initChangeStatusVO.setOrderTypeDesc(CommonConstant.KY_DESC);
+            initChangeStatusVO.setStatus(airOrder.getProcessStatus() + "");
+            initChangeStatusVO.setNeedInputCost(airOrder.getNeedInputCost());
+            return ApiResult.ok(initChangeStatusVO);
+        }
+        return ApiResult.error();
+    }
+
+
+    @ApiOperation(value = "关闭空运订单")
+    @RequestMapping(value = "/api/airfreight/closeAirOrder")
+    public ApiResult closeAirOrder(@RequestBody List<SubOrderCloseOpt> form) {
+        for (SubOrderCloseOpt subOrderCloseOpt : form) {
+            AirOrder airOrder = new AirOrder();
+            airOrder.setProcessStatus(ProcessStatusEnum.CLOSE.getCode());
+            airOrder.setNeedInputCost(subOrderCloseOpt.getNeedInputCost());
+            airOrder.setUpdateUser(subOrderCloseOpt.getLoginUser());
+            airOrder.setUpdateTime(LocalDateTime.now());
+            boolean bool = this.airOrderService.updateByOrderNo(subOrderCloseOpt.getOrderNo(), airOrder);
+            System.out.println(bool);
+        }
+        return ApiResult.ok();
+    }
+
+
+    @ApiOperation(value = "查询空运订单详情")
+    @PostMapping(value = "/getAirOrderDetails")
+    public ApiResult<AirOrderVO> getAirOrderDetails(@RequestParam("mainOrderNo") String mainOrderNo) {
+        AirOrder airOrder = this.airOrderService.getByMainOrderNo(mainOrderNo);
+        AirOrderVO airOrderDetails = this.airOrderService.getAirOrderDetails(airOrder.getId());
+        return ApiResult.ok(airOrderDetails);
+    }
 
     private <T> T getForm(String json, Class<T> clz) {
         return JSONUtil.toBean(json, clz);

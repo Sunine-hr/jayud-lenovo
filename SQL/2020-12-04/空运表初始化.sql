@@ -65,6 +65,7 @@ CREATE TABLE `air_order` (
   `update_user` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `create_user_type` int(5) DEFAULT '0' COMMENT '创建人的类型(0:本系统,1:vivo)',
+  `need_input_cost` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否需要录入费用',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='空运订单表';
 

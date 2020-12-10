@@ -45,11 +45,15 @@
         a.terms,
         ap.name port_departure,
         ap1.name port_destination,
-        a.create_user createUser, a.create_time createTime
+        a.create_user createUser, a.create_time createTime,
+        ab.airline_company airlineCompany,
+        ab.flight,ab.etd,ab.eta,
+        ab.warehousing_no warehousingNo
         FROM
         `air_order` a
         left join air_port ap on ap.`code`=a.port_departure_code
         left join air_port ap1 on ap1.`code`=a.port_destination_code
+        left join air_booking ab on a.id=ab.air_order_id
         <where>
             <if test="form.portDeparture !=null and form.portDeparture!=''">
                 and ap.name like concat('%',#{form.portDeparture},'%')
@@ -79,5 +83,35 @@
         order by a.id desc
     </select>
 
+    <select id="getAirOrder" parameterType="java.lang.Long"
+            resultType="com.jayud.airfreight.model.vo.AirOrderVO">
+        select
+        a.id,
+        a.main_order_no mainOrderNo,
+        a.order_no orderNo,a.status,
+        a.process_status processStatus,
+        a.imp_and_exp_type impAndExpType,
+        a.terms,
+        a.port_departure_code,
+        a.port_destination_code,
+        a.legal_id,
+        a.settlement_unit_code,
+        a.overseas_suppliers_id,
+        a.proxy_service_type,
+        a.good_time,
+        a.is_freight_collect,
+        a.is_other_expenses_paid,
+        a.is_dangerous_goods,
+        a.is_charged,
+        ap.name port_departure,
+        ap1.name port_destination,
+        a.create_user createUser, a.create_time createTime
+        FROM
+        `air_order` a
+        left join air_port ap on ap.`code`=a.port_departure_code
+        left join air_port ap1 on ap1.`code`=a.port_destination_code
+        where a.id=#{airOrderId}
+        order by a.id desc
+    </select>
 
 </mapper>

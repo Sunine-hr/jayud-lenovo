@@ -6,6 +6,7 @@ import com.jayud.airfreight.model.bo.QueryAirOrderForm;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.airfreight.model.vo.AirOrderFormVO;
+import com.jayud.airfreight.model.vo.AirOrderVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -23,4 +24,6 @@ import java.util.List;
 public interface AirOrderMapper extends BaseMapper<AirOrder> {
 
     IPage<AirOrderFormVO> findByPage(Page page, @Param("form") QueryAirOrderForm form);
+
+    AirOrderVO getAirOrder(Long airOrderId);
 }

@@ -1,6 +1,7 @@
 package com.jayud.oms.controller;
 
 
+import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
@@ -20,6 +21,7 @@ import com.jayud.oms.service.IOrderInfoService;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +39,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/orderInfo")
 @Api(tags = "主订单接口")
+@Slf4j
 public class OrderInfoController {
 
     @Autowired
@@ -57,6 +60,7 @@ public class OrderInfoController {
         resultMap.put(CommonConstant.ALL_COUNT, orderDataCountVO.getAllCount());//所有订单数量
         resultMap.put(CommonConstant.PRE_SUBMIT_COUNT, orderDataCountVO.getPreSubmitCount());//暂存数量
         resultMap.put(CommonConstant.DATA_NOT_ALL_COUNT, orderDataCountVO.getDataNotAllCount());//待补全数据量
+        resultMap.put(CommonConstant.PENDING_COUNT, orderDataCountVO.getDataNotAllCount());//待处理数据量
         return CommonResult.success(resultMap);
     }
 
@@ -119,7 +123,7 @@ public class OrderInfoController {
                 }
                 //六联单号必须为13位的纯数字
                 String encode = inputOrderCustomsForm.getEncode();
-                if(!(encode.matches("[0-9]{1,}") && encode.length() ==  13)){
+                if (!(encode.matches("[0-9]{1,}") && encode.length() == 13)) {
                     return CommonResult.error(ResultEnum.ENCODE_PURE_NUMBERS);
                 }
                 //附件处理
@@ -167,10 +171,10 @@ public class OrderInfoController {
                     return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
                 }
                 List<InputOrderTakeAdrForm> takeAdrForms = new ArrayList<>();
-                if(takeAdrForms1.size() > 0){
+                if (takeAdrForms1.size() > 0) {
                     takeAdrForms.addAll(takeAdrForms1);
                 }
-                if(takeAdrForms2.size() > 0) {
+                if (takeAdrForms2.size() > 0) {
                     takeAdrForms.addAll(takeAdrForms2);
                 }
                 for (InputOrderTakeAdrForm inputOrderTakeAdr : takeAdrForms) {
@@ -257,6 +261,22 @@ public class OrderInfoController {
         return CommonResult.success();
     }
 
+    @ApiOperation(value = "取消待处理 mainOrderId=主订单id")
+    @PostMapping("/cancelPending")
+    public CommonResult cancelPending(@RequestBody @Valid Map<String, Long> map) {
+        Long mainOrderId = MapUtil.getLong(map, "mainOrderId");
+        if (mainOrderId == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        OrderInfo orderInfo = this.orderInfoService.getById(mainOrderId);
+        if (!Integer.valueOf(OrderStatusEnum.MAIN_6.getCode()).equals(orderInfo.getStatus())) {
+            log.warn("该订单不是处于待处理状态 status={}", orderInfo.getStatus());
+            return CommonResult.error(ResultEnum.OPR_FAIL);
+        }
+        this.orderInfoService.updateById(new OrderInfo().setId(mainOrderId)
+                .setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode())));
 
+        return CommonResult.success();
+    }
 }
 

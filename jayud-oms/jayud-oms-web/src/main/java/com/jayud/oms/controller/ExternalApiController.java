@@ -471,6 +471,16 @@ public class ExternalApiController {
         List<LogisticsTrack> list = this.logisticsTrackService.getByCondition(logisticsTrack);
         return ApiResult.ok(list);
     }
+
+    /**
+     * 根据主订单号修改主订单
+     */
+    @RequestMapping(value = "/api/updateByMainOrderNo")
+    public ApiResult updateByMainOrderNo(@RequestBody String value) {
+        OrderInfo orderInfo = JSONUtil.toBean(value, OrderInfo.class);
+        this.orderInfoService.updateByMainOrderNo(orderInfo.getOrderNo(), orderInfo.setOrderNo(null));
+        return ApiResult.ok();
+    }
 }
 
 

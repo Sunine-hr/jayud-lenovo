@@ -16,4 +16,7 @@ public class OrderDataCountVO {
     @ApiModelProperty(value = "待补全数据量")
     private Integer dataNotAllCount;
 
+    @ApiModelProperty(value = "待处理数据量")
+    private Integer pendingCount;
+
 }

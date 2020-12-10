@@ -87,4 +87,10 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/getLogisticsTrackNode")
     ApiResult getLogisticsTrackNode(@RequestBody String condition);
+
+    /**
+     * 根据主订单号修改主订单
+     */
+    @RequestMapping(value = "/api/updateByMainOrderNo")
+    public ApiResult updateByMainOrderNo(@RequestBody String value);
 }

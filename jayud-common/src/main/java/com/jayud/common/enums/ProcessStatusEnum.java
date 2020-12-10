@@ -6,18 +6,18 @@ import lombok.Getter;
 import java.util.Objects;
 
 /**
- * 业务类型(空运,中港运输,纯报关)
+ * 流程状态
  */
 @Getter
 @AllArgsConstructor
-public enum AirProcessStatusEnum {
+public enum ProcessStatusEnum {
 
-    PROCESSING(0, "进行中"),COMPLETE(1,"完成"),DRAFT(2,"草稿");
+    PROCESSING(0, "进行中"), COMPLETE(1, "完成"), DRAFT(2, "草稿"), CLOSE(3, "关闭");
     private Integer code;
     private String desc;
 
-    public static String getDesc(String code) {
-        for (AirProcessStatusEnum value : values()) {
+    public static String getDesc(Integer code) {
+        for (ProcessStatusEnum value : values()) {
             if (Objects.equals(code, value.getCode())) {
                 return value.getDesc();
             }
@@ -26,7 +26,7 @@ public enum AirProcessStatusEnum {
     }
 
     public static Integer getCode(String desc) {
-        for (AirProcessStatusEnum value : values()) {
+        for (ProcessStatusEnum value : values()) {
             if (Objects.equals(desc, value.getDesc())) {
                 return value.getCode();
             }

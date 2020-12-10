@@ -45,7 +45,7 @@ public class AirOrder extends Model<AirOrder> {
     @ApiModelProperty(value = "状态(k_0待接单,k_1空运接单,k_2订舱,k_3订单入仓, k_4确认提单,k_5确认离港,k_6确认到港,k_7海外代理k_8确认签收)")
     private String status;
 
-    @ApiModelProperty(value = "流程状态(0:进行中,1:完成,2:草稿)")
+    @ApiModelProperty(value = "流程状态(0:进行中,1:完成,2:草稿,3.关闭)")
     private Integer processStatus;
 
     @ApiModelProperty(value = "结算单位code")
@@ -101,6 +101,9 @@ public class AirOrder extends Model<AirOrder> {
 
     @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo)")
     private Integer createUserType;
+
+    @ApiModelProperty(value = "是否需要录入费用")
+    private Boolean needInputCost;
 
     @Override
     protected Serializable pkVal() {

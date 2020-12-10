@@ -4,31 +4,31 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.OrderInfo">
-        <id column="id" property="id" />
-        <result column="order_no" property="orderNo" />
-        <result column="customer_code" property="customerCode" />
-        <result column="customer_name" property="customerName" />
-        <result column="biz_uid" property="bizUid" />
-        <result column="biz_uname" property="bizUname" />
-        <result column="unit_account" property="unitAccount" />
-        <result column="unit_code" property="unitCode" />
-        <result column="contract_no" property="contractNo" />
-        <result column="legal_code" property="legalCode" />
-        <result column="legal_name" property="legalName" />
-        <result column="reference_no" property="referenceNo" />
-        <result column="cntr_no" property="cntrNo" />
-        <result column="biz_code" property="bizCode" />
-        <result column="class_code" property="classCode" />
-        <result column="status" property="status" />
-        <result column="biz_belong_depart" property="bizBelongDepart" />
-        <result column="selected_server" property="selectedServer" />
-        <result column="is_data_all" property="isDataAll" />
-        <result column="create_time" property="createTime" />
-        <result column="created_user" property="createdUser" />
-        <result column="up_time" property="upTime" />
-        <result column="up_user" property="upUser" />
-        <result column="need_input_cost" property="needInputCost" />
-        <result column="customs_release" property="customsRelease" />
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="customer_code" property="customerCode"/>
+        <result column="customer_name" property="customerName"/>
+        <result column="biz_uid" property="bizUid"/>
+        <result column="biz_uname" property="bizUname"/>
+        <result column="unit_account" property="unitAccount"/>
+        <result column="unit_code" property="unitCode"/>
+        <result column="contract_no" property="contractNo"/>
+        <result column="legal_code" property="legalCode"/>
+        <result column="legal_name" property="legalName"/>
+        <result column="reference_no" property="referenceNo"/>
+        <result column="cntr_no" property="cntrNo"/>
+        <result column="biz_code" property="bizCode"/>
+        <result column="class_code" property="classCode"/>
+        <result column="status" property="status"/>
+        <result column="biz_belong_depart" property="bizBelongDepart"/>
+        <result column="selected_server" property="selectedServer"/>
+        <result column="is_data_all" property="isDataAll"/>
+        <result column="create_time" property="createTime"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="up_time" property="upTime"/>
+        <result column="up_user" property="upUser"/>
+        <result column="need_input_cost" property="needInputCost"/>
+        <result column="customs_release" property="customsRelease"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -38,7 +38,7 @@
     </sql>
 
     <select id="findOrderInfoByPage" parameterType="com.jayud.oms.model.bo.QueryOrderInfoForm"
-            resultType="com.jayud.oms.model.vo.OrderInfoVO" >
+            resultType="com.jayud.oms.model.vo.OrderInfoVO">
         SELECT * FROM (
         SELECT DISTINCT
         oi.id,
@@ -61,12 +61,12 @@
         '' subAirStatus,
         oi.`created_user` createdUser,
         DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
-        (CASE  WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
+        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
         ELSE FALSE
         END) isCost,
         oi.`need_input_cost` needInputCost,
-        oi.`customs_release`  customsRelease
+        oi.`customs_release` customsRelease
         FROM
         order_info oi LEFT JOIN order_customs oc ON oi.`order_no` = oc.`main_order_no`
         LEFT JOIN product_classify pc1 ON pc1.`id_code` = oi.`class_code`
@@ -85,27 +85,32 @@
         oi.`customer_name` customerName,
         oi.`customer_code` customerCode,
         oi.`legal_name` legalName,
-        (SELECT CONCAT(ota.`goods_desc`,' ',ota.`piece_amount`,'件',',','重量',ota.`weight`,'KG') FROM order_take_adr ota WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 1 ORDER BY ota.`id` LIMIT 1) goodsInfo,
-        (SELECT concat(da.state_name,da.city_name,da.address) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 1 ORDER BY ota.`id` LIMIT 1) takeAddress,
-        (SELECT concat(da.state_name,da.city_name,da.address) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 2 ORDER BY ota.`id` LIMIT 1) giveAddress,
+        (SELECT CONCAT(ota.`goods_desc`,' ',ota.`piece_amount`,'件',',','重量',ota.`weight`,'KG') FROM order_take_adr ota
+        WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 1 ORDER BY ota.`id` LIMIT 1) goodsInfo,
+        (SELECT concat(da.state_name,da.city_name,da.address) FROM order_take_adr ota LEFT JOIN delivery_address da ON
+        ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 1 ORDER BY ota.`id` LIMIT 1)
+        takeAddress,
+        (SELECT concat(da.state_name,da.city_name,da.address) FROM order_take_adr ota LEFT JOIN delivery_address da ON
+        ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 2 ORDER BY ota.`id` LIMIT 1)
+        giveAddress,
         (SELECT oc.`status` FROM order_customs oc WHERE oc.`main_order_no`= oi.`order_no` LIMIT 1) subCustomsStatus,
         ot.`status` subTmsStatus,
         '' subAirStatus,
         oi.`created_user` createdUser,
         DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
-        (CASE  WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
+        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
         ELSE FALSE
         END) isCost,
         oi.`need_input_cost` needInputCost,
-        oi.`customs_release`  customsRelease
+        oi.`customs_release` customsRelease
         FROM
         order_info oi LEFT JOIN order_transport ot ON
         oi.`order_no` = ot.`main_order_no`
         LEFT JOIN port_info p ON ot.port_code = p.id_code
         LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`
         WHERE oi.`class_code` = 'ZGYS'
---      空运
+        -- 空运
         UNION ALL
         SELECT DISTINCT
         oi.id,
@@ -121,19 +126,21 @@
         oi.`customer_code` customerCode,
         oi.`legal_name` legalName,
         '' goodsInfo,
-        (SELECT address FROM order_address oa where oa.`business_id` = a.id AND oa.`type` = 0 ORDER BY oa.`id` LIMIT 1) takeAddress,
-        (SELECT address FROM order_address oa where oa.`business_id` = a.id AND oa.`type` = 1 ORDER BY oa.`id` LIMIT 1) giveAddress,
+        (SELECT address FROM order_address oa where oa.`business_id` = a.id AND oa.`type` = 0 ORDER BY oa.`id` LIMIT 1)
+        takeAddress,
+        (SELECT address FROM order_address oa where oa.`business_id` = a.id AND oa.`type` = 1 ORDER BY oa.`id` LIMIT 1)
+        giveAddress,
         '' subCustomsStatus,
         '' subTmsStatus,
         a.`status` subAirStatus,
         oi.`created_user` createdUser,
         DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
-        (CASE  WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
+        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
         ELSE FALSE
         END) isCost,
         oi.`need_input_cost` needInputCost,
-        oi.`customs_release`  customsRelease
+        oi.`customs_release` customsRelease
         FROM
         order_info oi LEFT JOIN air_order a ON
         oi.`order_no` = a.`main_order_no`
@@ -142,12 +149,14 @@
 
         ) temp WHERE 1 = 1
         <if test="form.cmd == 'noSubmit'">
-           and temp.`status` = 2
+            and temp.`status` = 2
         </if>
         <if test="form.cmd == 'costAudit'">
             and temp.`status` IN (1,4)
-            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = temp.orderNo AND opc.`status` = '2')
-            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = temp.orderNo AND orc.`status` = '2'))
+            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = temp.orderNo AND opc.`status`
+            = '2')
+            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = temp.orderNo AND orc.`status`
+            = '2'))
         </if>
         <if test="form.cmd == 'outCustomsRelease'">
             and temp.classCode = 'ZGYS' and temp.`status` = 1
@@ -156,6 +165,9 @@
         </if>
         <if test="form.cmd == 'dataNotAll'">
             and temp.`status` = 4
+        </if>
+        <if test="form.cmd == 'pending'">
+            and temp.`status` = 6
         </if>
         <if test="form.orderNo != null and form.orderNo != ''">
             and temp.orderNo = #{form.orderNo}
@@ -180,7 +192,8 @@
         </if>
     </select>
 
-    <select id="findGoCustomsAuditByPage" parameterType="com.jayud.oms.model.bo.QueryOrderInfoForm" resultType="com.jayud.oms.model.vo.OrderInfoVO" >
+    <select id="findGoCustomsAuditByPage" parameterType="com.jayud.oms.model.bo.QueryOrderInfoForm"
+            resultType="com.jayud.oms.model.vo.OrderInfoVO">
         SELECT DISTINCT
         oi.id,
         oi.`order_no` orderNo,
@@ -193,19 +206,24 @@
         oi.`customer_name` customerName,
         oi.`customer_code` customerCode,
         oi.`legal_name` legalName,
-        (SELECT CONCAT(ota.`goods_desc`,' ',ota.`piece_amount`,'件',',','重量',ota.`weight`,'KG') FROM order_take_adr ota WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 1 ORDER BY ota.`id` LIMIT 1) goodsInfo,
-        (SELECT concat(da.state_name,da.city_name,da.address) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 1 ORDER BY ota.`id` LIMIT 1) takeAddress,
-        (SELECT concat(da.state_name,da.city_name,da.address) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 2 ORDER BY ota.`id` LIMIT 1) giveAddress,
+        (SELECT CONCAT(ota.`goods_desc`,' ',ota.`piece_amount`,'件',',','重量',ota.`weight`,'KG') FROM order_take_adr ota
+        WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 1 ORDER BY ota.`id` LIMIT 1) goodsInfo,
+        (SELECT concat(da.state_name,da.city_name,da.address) FROM order_take_adr ota LEFT JOIN delivery_address da ON
+        ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 1 ORDER BY ota.`id` LIMIT 1)
+        takeAddress,
+        (SELECT concat(da.state_name,da.city_name,da.address) FROM order_take_adr ota LEFT JOIN delivery_address da ON
+        ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 2 ORDER BY ota.`id` LIMIT 1)
+        giveAddress,
         (SELECT oc.`status` FROM order_customs oc WHERE oc.`main_order_no`= oi.`order_no` LIMIT 1) subCustomsStatus,
         ot.`status` subTmsStatus,
         oi.`created_user` createdUser,
         DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
-        (CASE  WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
+        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
         ELSE FALSE
         END) isCost,
         oi.`need_input_cost` needInputCost,
-        oi.`customs_release`  customsRelease
+        oi.`customs_release` customsRelease
         FROM
         order_info oi LEFT JOIN order_transport ot ON
         oi.`order_no` = ot.`main_order_no`
@@ -242,36 +260,36 @@
         </if>
     </select>
 
-    <select id="getMainOrderById" parameterType="java.lang.Long" resultType="com.jayud.oms.model.vo.InputMainOrderVO" >
+    <select id="getMainOrderById" parameterType="java.lang.Long" resultType="com.jayud.oms.model.vo.InputMainOrderVO">
         SELECT
-            oi.`id` orderId,
-            oi.`order_no` orderNo,
-            oi.`customer_code` customerCode,
-            oi.`customer_name` customerName,
-            oi.`biz_uid` bizUid,
-            oi.`biz_uname` bizUname,
-            oi.`contract_no` contractNo,
-            oi.`legal_name` legalName,
-            oi.`biz_belong_depart` bizBelongDepart,
-            oi.`reference_no` referenceNo,
-            oi.`biz_code` bizCode,
-            (SELECT pb.name FROM product_biz pb WHERE pb.id_code = oi.`biz_code` LIMIT 1) bizDesc,
-            oi.created_user createdUser,
-            DATE_FORMAT(oi.create_time,'%Y-%m-%d %H:%i:%S') createdTimeStr,
-            oi.`selected_server` selectedServer,
-            oi.`class_code` classCode,
-            oi.`unit_code` unitCode,
-            oi.`unit_account` unitAccount,
-            oi.`is_data_all` isDataAll,
-            oi.`status` status
+        oi.`id` orderId,
+        oi.`order_no` orderNo,
+        oi.`customer_code` customerCode,
+        oi.`customer_name` customerName,
+        oi.`biz_uid` bizUid,
+        oi.`biz_uname` bizUname,
+        oi.`contract_no` contractNo,
+        oi.`legal_name` legalName,
+        oi.`biz_belong_depart` bizBelongDepart,
+        oi.`reference_no` referenceNo,
+        oi.`biz_code` bizCode,
+        (SELECT pb.name FROM product_biz pb WHERE pb.id_code = oi.`biz_code` LIMIT 1) bizDesc,
+        oi.created_user createdUser,
+        DATE_FORMAT(oi.create_time,'%Y-%m-%d %H:%i:%S') createdTimeStr,
+        oi.`selected_server` selectedServer,
+        oi.`class_code` classCode,
+        oi.`unit_code` unitCode,
+        oi.`unit_account` unitAccount,
+        oi.`is_data_all` isDataAll,
+        oi.`status` status
         FROM
-            order_info oi WHERE 1 = 1
+        order_info oi WHERE 1 = 1
         <if test="idValue != null and idValue != ''">
             and oi.`id` = #{idValue}
         </if>
     </select>
 
-    <select id="countOrderData"  resultType="com.jayud.oms.model.vo.OrderDataCountVO" >
+    <select id="countOrderData" resultType="com.jayud.oms.model.vo.OrderDataCountVO">
         SELECT
           (SELECT
             COUNT(1)
@@ -286,7 +304,12 @@
             COUNT(1)
           FROM
             order_info o3
-          WHERE o3.status = '4') AS dataNotAllCount
+          WHERE o3.status = '4') AS dataNotAllCount,
+           (SELECT
+            COUNT(1)
+          FROM
+            order_info o6
+          WHERE o6.status = '6') AS pendingCount
         FROM
           DUAL
     </select>

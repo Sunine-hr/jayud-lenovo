@@ -1,7 +1,5 @@
 package com.jayud.airfreight.controller;
 
-import cn.hutool.core.map.MapUtil;
-import cn.hutool.http.Header;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -15,16 +13,12 @@ import com.jayud.airfreight.service.AirFreightService;
 import com.jayud.airfreight.service.IAirOrderService;
 import com.jayud.airfreight.service.VivoService;
 import com.jayud.common.ApiResult;
-import com.jayud.common.CommonResult;
-import com.jayud.common.UserOperator;
 import com.jayud.common.VivoApiResult;
-import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.FileUtil;
 import com.jayud.common.utils.FileView;
-import com.jayud.common.utils.StringUtils;
 import com.jayud.common.utils.ValidatorUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,9 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import javax.validation.ValidationException;
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -92,7 +84,18 @@ public class ReceiveVivoController {
     @ApiOperation(value = "取消订舱单")
     @APILog
     public VivoApiResult bookingCancel(@RequestBody @Valid BookingCancelForm bookingCancelForm) {
-        log.info("参数============" + JSONUtil.toJsonStr(bookingCancelForm));
+        //查询空运订单
+        AirOrder airOrder = this.airOrderService.getByThirdPartyOrderNo(bookingCancelForm.getBookingNo());
+        if (!ProcessStatusEnum.PROCESSING.getCode().equals(airOrder.getProcessStatus())) {
+            log.error("当前状态无法取消订舱 processStatus={}", ProcessStatusEnum.getDesc(airOrder.getProcessStatus()));
+            return VivoApiResult.error("当前状态无法取消订舱");
+        }
+        //获取主订单号
+        //根据主订单号设置状态
+        Map<String, Object> map = new HashMap<>();
+        map.put("orderNo", airOrder.getMainOrderNo());
+        map.put("status", OrderStatusEnum.MAIN_6.getCode());
+        this.omsClient.updateByMainOrderNo(JSONUtil.toJsonStr(map));
         return VivoApiResult.success();
     }
 

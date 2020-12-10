@@ -150,4 +150,9 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * 根据主订单集合查询主订单信息
      */
     List<OrderInfo> getByOrderNos(List<String> orderNos);
+
+    /**
+     * 根据主订单号修改主订单
+     */
+    boolean updateByMainOrderNo(String mainOrderNo,OrderInfo orderInfo);
 }

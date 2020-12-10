@@ -2,6 +2,7 @@ package com.jayud.oms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.mapper.LogisticsTrackMapper;
@@ -94,5 +95,23 @@ public class LogisticsTrackServiceImpl extends ServiceImpl<LogisticsTrackMapper,
     public List<LogisticsTrack> getByCondition(LogisticsTrack logisticsTrack) {
         QueryWrapper<LogisticsTrack> condition = new QueryWrapper<>(logisticsTrack);
         return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 获取附件
+     *
+     * @return
+     */
+    @Override
+    public List<FileView> getAttachments(Long orderId, Integer businessType, String path) {
+        QueryWrapper<LogisticsTrack> condition = new QueryWrapper<>();
+        condition.lambda().eq(LogisticsTrack::getOrderId, orderId)
+                .eq(LogisticsTrack::getType, businessType);
+        List<LogisticsTrack> logisticsTracks = this.baseMapper.selectList(condition);
+        List<FileView> attachments=new ArrayList<>();
+        for (LogisticsTrack logisticsTrack : logisticsTracks) {
+            attachments.addAll(StringUtils.getFileViews(logisticsTrack.getStatusPic(), logisticsTrack.getStatusPicName(), path));
+        }
+        return attachments;
     }
 }

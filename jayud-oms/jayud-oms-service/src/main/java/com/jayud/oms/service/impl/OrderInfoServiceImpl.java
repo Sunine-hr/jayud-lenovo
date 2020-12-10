@@ -5,17 +5,17 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
-import com.jayud.common.enums.AirProcessStatusEnum;
+import com.jayud.common.entity.SubOrderCloseOpt;
+import com.jayud.common.enums.BusinessTypeEnum;
+import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.*;
-import com.jayud.oms.feign.CustomsClient;
-import com.jayud.oms.feign.FileClient;
-import com.jayud.oms.feign.FreightAirClient;
-import com.jayud.oms.feign.TmsClient;
+import com.jayud.oms.feign.*;
 import com.jayud.oms.mapper.OrderInfoMapper;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.*;
@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -79,6 +78,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Autowired
     private FreightAirClient freightAirClient;
+
 
     @Override
     public String oprMainOrder(InputMainOrderForm form) {
@@ -541,7 +541,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 inputOrderVO.setOrderCustomsForm(inputOrderCustomsVO);
             }
         }
-        //TODO 空运可能需要中港运输详情,但是物流节点还没定下来,暂时不写
 
         //获取中港运输信息
         if (OrderStatusEnum.ZGYS.getCode().equals(form.getClassCode())) {
@@ -577,8 +576,22 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         }
 
+        //TODO 空运可能需要中港运输详情,但是物流节点还没定下来,暂时不写
+        if (OrderStatusEnum.KY.getCode().equals(form.getClassCode()) ||
+                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.KYDD.getCode())) {
+            InputAirOrderVO airOrderVO = this.freightAirClient.getAirOrderDetails(inputMainOrderVO.getOrderNo()).getData();
+            if (airOrderVO != null) {
+                //添加附件
+                List<FileView> attachments = this.logisticsTrackService.getAttachments(airOrderVO.getId()
+                        , BusinessTypeEnum.KY.getCode(), prePath);
+                airOrderVO.setAllPics(attachments);
+                inputOrderVO.setAirOrderForm(airOrderVO);
+            }
+        }
+
         return inputOrderVO;
     }
+
 
     @Override
     public boolean createOrder(InputOrderForm form) {
@@ -652,8 +665,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             InputAirOrderForm airOrderForm = form.getAirOrderForm();
             airOrderForm.setMainOrderNo(mainOrderNo);
             airOrderForm.setCreateUser(UserOperator.getToken());
-            Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? AirProcessStatusEnum.PROCESSING.getCode()
-                    : AirProcessStatusEnum.DRAFT.getCode();
+            Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
+                    : ProcessStatusEnum.DRAFT.getCode();
             airOrderForm.setProcessStatus(processStatus);
             this.freightAirClient.createOrder(airOrderForm);
         }
@@ -682,6 +695,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.SZZZC.getCode())) {
             //TODO
         }
+        //空运
+        if (OrderStatusEnum.KY.getCode().equals(form.getClassCode()) ||
+                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.KYDD.getCode())) {
+            InitChangeStatusVO initChangeStatusVO = this.freightAirClient.getAirOrderNo(inputMainOrderVO.getOrderNo()).getData();
+            changeStatusVOS.add(initChangeStatusVO);
+        }
         return changeStatusVOS;
     }
 
@@ -690,6 +709,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<ConfirmChangeStatusForm> forms = form.getForms();
         List<CustomsChangeStatusForm> bgs = new ArrayList<>();
         List<TmsChangeStatusForm> zgys = new ArrayList<>();
+        List<SubOrderCloseOpt> airs = new ArrayList<>();
         //全勾修改主订单状态
         if (form.getCheckAll()) {
             //循环处理,判断主订单是否需要录入费用
@@ -724,6 +744,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 tm.setStatus(form.getStatus());
                 tm.setLoginUser(UserOperator.getToken());
                 zgys.add(tm);
+            } else if (CommonConstant.KY.equals(confirmChangeStatusForm.getOrderType())) {
+                SubOrderCloseOpt air = new SubOrderCloseOpt();
+                air.setNeedInputCost(confirmChangeStatusForm.getNeedInputCost());
+                air.setOrderNo(confirmChangeStatusForm.getOrderNo());
+//                air.setStatus(form.getStatus());
+                air.setLoginUser(UserOperator.getToken());
+                airs.add(air);
             }
 
         }
@@ -733,6 +760,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
         if (zgys.size() > 0) {
             tmsClient.changeTransportStatus(zgys).getData();
+        }
+        if (airs.size() > 0) {
+            freightAirClient.closeAirOrder(airs).getData();
         }
         return true;
     }
@@ -762,6 +792,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         QueryWrapper<OrderInfo> condition = new QueryWrapper<>();
         condition.lambda().in(OrderInfo::getOrderNo, orderNos);
         return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 根据主订单集合查询主订单信息
+     */
+    @Override
+    public boolean updateByMainOrderNo(String mainOrderNo, OrderInfo orderInfo) {
+        QueryWrapper<OrderInfo> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderInfo::getOrderNo, mainOrderNo);
+        return update(orderInfo, condition);
     }
 
 

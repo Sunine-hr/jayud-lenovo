@@ -145,6 +145,9 @@ public abstract class CommonConstant {
     public static final String ZGYS = "ZGYS";
     public static final String ZGYS_DESC = "中港运输订单";
 
+    public static final String KY = "KY";
+    public static final String KY_DESC = "空运订单";
+
     public static final String PAGE_LIST = "pageList";
 
     public static final String PRE_SUBMIT_COUNT = "preSubmitCount";
@@ -152,6 +155,8 @@ public abstract class CommonConstant {
     public static final String ALL_COUNT = "allCount";
 
     public static final String DATA_NOT_ALL_COUNT = "dataNotAllCount";
+
+    public static final String PENDING_COUNT = "pendingCount";
 
     public static final String REJECT = "驳回";
 

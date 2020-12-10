@@ -1,9 +1,5 @@
 package com.jayud.airfreight.service.impl;
 
-import cn.hutool.json.JSON;
-import cn.hutool.json.JSONArray;
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -16,13 +12,12 @@ import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.airfreight.mapper.AirOrderMapper;
 import com.jayud.airfreight.model.po.Goods;
 import com.jayud.airfreight.model.po.OrderAddress;
-import com.jayud.airfreight.model.vo.AirOrderFormVO;
+import com.jayud.airfreight.model.vo.*;
 import com.jayud.airfreight.service.IAirBookingService;
 import com.jayud.airfreight.service.IAirOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.airfreight.service.IGoodsService;
 import com.jayud.airfreight.service.IOrderAddressService;
-import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
@@ -30,7 +25,6 @@ import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.common.enums.*;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
@@ -143,10 +137,10 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
     @Override
     public IPage<AirOrderFormVO> findByPage(QueryAirOrderForm form) {
         if (form.getStatus() == null) { //订单列表
-            form.setProcessStatusList(Arrays.asList(AirProcessStatusEnum.PROCESSING.getCode()
-                    , AirProcessStatusEnum.COMPLETE.getCode()));
-        }else {
-            form.setProcessStatusList(Collections.singletonList(AirProcessStatusEnum.PROCESSING.getCode()));
+            form.setProcessStatusList(Arrays.asList(ProcessStatusEnum.PROCESSING.getCode()
+                    , ProcessStatusEnum.COMPLETE.getCode(), ProcessStatusEnum.CLOSE.getCode()));
+        } else {
+            form.setProcessStatusList(Collections.singletonList(ProcessStatusEnum.PROCESSING.getCode()));
         }
 
         Page<AirOrder> page = new Page<>(form.getPageNum(), form.getPageSize());
@@ -358,6 +352,55 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         if (CreateUserTypeEnum.VIVO.getCode().equals(airOrder.getCreateUserType())) {
             this.vivoService.trackingPush(airOrder);
         }
+    }
+
+    /**
+     * 根据主订单查询空运订单
+     */
+    @Override
+    public AirOrder getByMainOrderNo(String mainOrderNo) {
+        QueryWrapper<AirOrder> condition = new QueryWrapper<>();
+        condition.lambda().eq(AirOrder::getMainOrderNo, mainOrderNo);
+        return this.getOne(condition);
+    }
+
+    /**
+     * 根据空运订单号修改空运
+     */
+    @Override
+    public boolean updateByOrderNo(String airOrderNo, AirOrder airOrder) {
+        QueryWrapper<AirOrder> condition = new QueryWrapper<>();
+        condition.lambda().eq(AirOrder::getOrderNo, airOrderNo);
+        return this.update(airOrder, condition);
+    }
+
+    /**
+     * 空运订单详情
+     */
+    @Override
+    public AirOrderVO getAirOrderDetails(Long airOrderId) {
+        Integer businessType = BusinessTypeEnum.KY.getCode();
+        //空运订单信息
+        AirOrderVO airOrder = this.baseMapper.getAirOrder(airOrderId);
+        //查询商品信息
+        List<Goods> goods = this.goodsService.getGoodsByBusIds(Collections.singletonList(airOrderId), businessType);
+        List<GoodsVO> goodsVOs = new ArrayList<>();
+        for (Goods good : goods) {
+            GoodsVO goodsVO = ConvertUtil.convert(good, GoodsVO.class);
+            goodsVOs.add(goodsVO);
+        }
+        airOrder.setGoodsVOs(goodsVOs);
+        //查询地址信息
+        List<OrderAddress> addressList = this.orderAddressService.getAddress(Collections.singletonList(airOrderId), businessType);
+        for (OrderAddress address : addressList) {
+            OrderAddressVO addressVO = ConvertUtil.convert(address, OrderAddressVO.class);
+            airOrder.processingAddress(addressVO);
+        }
+        //查询订舱信息
+        AirBooking airBooking = this.airBookingService.getByAirOrderId(airOrderId);
+        AirBookingVO airBookingVO = ConvertUtil.convert(airBooking, AirBookingVO.class);
+        airOrder.setAirBookingVO(airBookingVO);
+        return airOrder;
     }
 
 

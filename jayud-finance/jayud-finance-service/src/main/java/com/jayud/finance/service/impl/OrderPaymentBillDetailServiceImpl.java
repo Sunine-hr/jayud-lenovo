@@ -66,6 +66,9 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     @Autowired
     IOrderReceivableBillService receivableBillService;
 
+    @Autowired
+    ICurrencyRateService currencyRateService;
+
     @Override
     public IPage<OrderPaymentBillDetailVO> findPaymentBillDetailByPage(QueryPaymentBillDetailForm form) {
         //定义分页参数
@@ -199,7 +202,10 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                     BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();//如果费率为0，则抛异常回滚数据
                     if (exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0) {
-                        sb.append("原始币种:"+orderBillCostTotalVO.getCurrencyCode()+",兑换币种:"+existObject.getSettlementCurrency()+";");
+                        //根据币种查询币种描述
+                        String oCurrency = currencyRateService.getNameByCode(orderBillCostTotalVO.getCurrencyCode());
+                        String dCurrency = currencyRateService.getNameByCode(existObject.getSettlementCurrency());
+                        sb.append("原始币种:"+oCurrency+",兑换币种:"+dCurrency+";");
                         flag = false;
                     }
                 }

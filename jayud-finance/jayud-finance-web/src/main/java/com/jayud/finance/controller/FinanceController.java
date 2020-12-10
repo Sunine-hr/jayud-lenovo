@@ -403,8 +403,8 @@ public class FinanceController {
         if(costFAmountVO != null) {
             costAmountVO.setYfAmount(costFAmountVO.getYfAmount());
             costAmountVO.setYfCurrency(costFAmountVO.getYfCurrency());
-            costAmountVO.setWsAmount(costFAmountVO.getWsAmount());
-            costAmountVO.setWsCurrency(costFAmountVO.getWsCurrency());
+            costAmountVO.setDfAmount(costFAmountVO.getDfAmount());
+            costAmountVO.setDfCurrency(costFAmountVO.getDfCurrency());
         }
         return CommonResult.success(costAmountVO);
     }

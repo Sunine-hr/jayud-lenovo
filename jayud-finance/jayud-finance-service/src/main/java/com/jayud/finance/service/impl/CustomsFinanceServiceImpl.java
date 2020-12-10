@@ -1,6 +1,7 @@
 package com.jayud.finance.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -20,14 +21,12 @@ import com.jayud.finance.po.*;
 import com.jayud.finance.service.*;
 import com.jayud.finance.util.FileUtil;
 import com.jayud.finance.util.KingdeeHttpUtil;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.NotEmpty;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -404,6 +403,7 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
 
             //调用保存应付单接口
             try {
+                log.info("调用保存应付单接口...");
                 CommonResult commonResult = kingdeeService.savePayableBill(FormIDEnum.PAYABLE.getFormid(), dataForm);
                 if (Objects.nonNull(commonResult) && commonResult.getCode() == ResultEnum.SUCCESS.getCode()) {
                     log.info("金蝶应付单推送完毕：({})", kingdeeCompName);
@@ -645,6 +645,7 @@ class PushOtherReceivable implements Callable<String> {
 
         String applyNo = customsReceivable.getCustomApplyNo();
         String customerName = customsReceivable.getCustomerName();
+        String fdate = customsReceivable.getApplyDt();
 
         if (Objects.nonNull(mainEntity) && Objects.nonNull(detailEntity)) {
 
@@ -775,6 +776,7 @@ class PushOtherReceivable implements Callable<String> {
                             entity.put("F_JYD_Assistant1", setWrapper(entity.get("F_JYD_Assistant1"), customsFinanceFeeRelation.getTypeCode()));
                             entity.put("FCOMMENT", applyNo);
 
+
                             if (StringUtils.isNotEmpty(entry.getValue().toString()) && !Objects.equals(entry.getValue().toString(), "0.00")) {
                                 BigDecimal cost = new BigDecimal(entry.getValue().toString());
                                 entity.put("FTAXAMOUNTFOR", cost);
@@ -796,6 +798,8 @@ class PushOtherReceivable implements Callable<String> {
                 root.put("FTAXAMOUNT", totalValue);
                 root.put("FAR_OtherRemarks", customerName);
                 root.put("F_PCQE_Text", applyNo);
+                root.put("FDATE", fdate);
+                root.put("FACCNTTIMEJUDGETIME", DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
                 //root装载完毕，更新main
                 mainEntity.put("Model", root);
 
@@ -880,6 +884,7 @@ class PushOtherPayable implements Callable<String> {
             if (Objects.nonNull(root) && CollectionUtil.isNotEmpty(customsPayable)) {
                 String applyNo = customsPayable.get(0).getCustomApplyNo();
                 String customerName = customsPayable.get(0).getCustomerName();
+                String fdate = customsPayable.get(0).getApplyDt();
                 //其他应付表头只对合计和备注进行处理
                 //组织默认使用佳裕达报关
                 //来往单位类型默认为供应商-海关
@@ -894,6 +899,7 @@ class PushOtherPayable implements Callable<String> {
                         e.printStackTrace();
                     }
                     if (null != entity) {
+
                         if (feeRelationMap.containsKey(payable.getFeeName())) {
                             CustomsFinanceFeeRelation feeRelation = getFeeRelation(payable.getFeeName());
                             //明细赋值
@@ -929,6 +935,8 @@ class PushOtherPayable implements Callable<String> {
                 root.put("FNOTAXAMOUNT", totalValue);
                 root.put("FRemarks", customerName);
                 root.put("F_PCQE_Text", applyNo);
+                root.put("FDATE", fdate);
+                root.put("FACCNTTIMEJUDGETIME", DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
                 //root装载完毕，更新main
                 mainEntity.put("Model", root);
 

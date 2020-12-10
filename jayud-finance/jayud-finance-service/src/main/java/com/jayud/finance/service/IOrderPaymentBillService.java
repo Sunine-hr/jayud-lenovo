@@ -2,6 +2,7 @@ package com.jayud.finance.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.CommonResult;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.po.OrderPaymentBill;
 import com.jayud.finance.vo.*;
@@ -46,7 +47,7 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
      * @param form
      * @return
      */
-    Boolean createPaymentBill(CreatePaymentBillForm form);
+    CommonResult createPaymentBill(CreatePaymentBillForm form);
 
     /**
      * 预览账单

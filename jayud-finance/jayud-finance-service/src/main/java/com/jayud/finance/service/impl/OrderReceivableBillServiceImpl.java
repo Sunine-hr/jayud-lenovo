@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.finance.bo.*;
@@ -15,6 +17,7 @@ import com.jayud.finance.mapper.OrderReceivableBillMapper;
 import com.jayud.finance.po.OrderBillCostTotal;
 import com.jayud.finance.po.OrderReceivableBill;
 import com.jayud.finance.po.OrderReceivableBillDetail;
+import com.jayud.finance.service.ICurrencyRateService;
 import com.jayud.finance.service.IOrderBillCostTotalService;
 import com.jayud.finance.service.IOrderReceivableBillDetailService;
 import com.jayud.finance.service.IOrderReceivableBillService;
@@ -50,6 +53,9 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
 
     @Autowired
     IOrderBillCostTotalService costTotalService;
+
+    @Autowired
+    ICurrencyRateService currencyRateService;
 
     @Override
     public IPage<OrderReceiveBillVO> findReceiveBillByPage(QueryReceiveBillForm form) {
@@ -90,7 +96,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
     }
 
     @Override
-    public Boolean createReceiveBill(CreateReceiveBillForm form) {
+    public CommonResult createReceiveBill(CreateReceiveBillForm form) {
         OrderReceiveBillForm receiveBillForm = form.getReceiveBillForm();//账单信息
         List<OrderReceiveBillDetailForm> receiveBillDetailForms = form.getReceiveBillDetailForms();//账单详细信息
         Boolean result = true;
@@ -106,12 +112,23 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         //校验是否配置了相应币种的汇率
         //根据费用ID统计费用信息,将原始费用信息根据结算币种进行转换
         if("create".equals(form.getCmd()) && costIds.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("请配置[");
+            Boolean flag = true;
             orderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, settlementCurrency,form.getAccountTermStr());
             for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                 BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();//如果费率为0，则抛异常回滚数据
                 if (exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0) {
-                    return false;
+                    //根据币种查询币种描述
+                    String oCurrency = currencyRateService.getNameByCode(orderBillCostTotalVO.getCurrencyCode());
+                    String dCurrency = currencyRateService.getNameByCode(settlementCurrency);
+                    sb.append("原始币种:"+oCurrency+",兑换币种:"+dCurrency+";");
+                    flag = false;
                 }
+            }
+            if(!flag){
+                sb.append("]的汇率");
+                return CommonResult.error(10001,sb.toString());
             }
         }
         OprCostBillForm oprCostBillForm = new OprCostBillForm();
@@ -120,7 +137,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         oprCostBillForm.setOprType("receivable");
         result = omsClient.oprCostBill(oprCostBillForm).getData();
         if(!result){
-            return false;
+            return CommonResult.error(ResultEnum.OPR_FAIL);
         }
         //生成账单操作才是生成对账单数据
         if("create".equals(form.getCmd()) && costIds.size() > 0){
@@ -168,7 +185,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             orderReceivableBill.setCreatedUser(form.getLoginUserName());
             result = saveOrUpdate(orderReceivableBill);
             if(!result){
-                return false;
+                return CommonResult.error(ResultEnum.OPR_FAIL);
             }
             //开始保存对账单详情数据
             List<OrderReceivableBillDetail> receivableBillDetails = ConvertUtil.convertList(receiveBillDetailForms,OrderReceivableBillDetail.class);
@@ -186,7 +203,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             }
             result = receivableBillDetailService.saveBatch(receivableBillDetails);
             if(!result){
-                return false;
+                return CommonResult.error(ResultEnum.OPR_FAIL);
             }
             //开始保存费用维度的金额信息  以结算币种进行转换后保存
             List<OrderBillCostTotal> orderBillCostTotals = new ArrayList<>();
@@ -202,8 +219,11 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
                 orderBillCostTotals.add(orderBillCostTotal);
             }
             result = costTotalService.saveBatch(orderBillCostTotals);
+            if(!result){
+                return CommonResult.error(ResultEnum.OPR_FAIL);
+            }
         }
-        return result;
+        return CommonResult.success();
     }
 
     @Override

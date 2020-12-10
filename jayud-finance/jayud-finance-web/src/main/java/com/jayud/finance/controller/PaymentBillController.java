@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
-import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.service.IOrderPaymentBillService;
@@ -58,11 +57,7 @@ public class PaymentBillController {
     @ApiOperation(value = "暂存和生成应付账单")
     @PostMapping("/createBill")
     public CommonResult createPaymentBill(@RequestBody @Valid CreatePaymentBillForm form) {
-        Boolean result = billService.createPaymentBill(form);
-        if(result){
-            return CommonResult.success();
-        }
-        return CommonResult.error(ResultEnum.OPR_FAIL);
+        return billService.createPaymentBill(form);
     }
 
     @ApiOperation(value = "生成账单编号,应收应付公用")

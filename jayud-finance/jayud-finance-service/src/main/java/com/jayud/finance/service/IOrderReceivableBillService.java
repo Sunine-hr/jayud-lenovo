@@ -2,6 +2,7 @@ package com.jayud.finance.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.CommonResult;
 import com.jayud.finance.bo.CreateReceiveBillForm;
 import com.jayud.finance.bo.QueryNotPaidBillForm;
 import com.jayud.finance.bo.QueryReceiveBillForm;
@@ -49,7 +50,7 @@ public interface IOrderReceivableBillService extends IService<OrderReceivableBil
      * @param form
      * @return
      */
-    Boolean createReceiveBill(CreateReceiveBillForm form);
+    CommonResult createReceiveBill(CreateReceiveBillForm form);
 
     /**
      * 预览账单

@@ -69,11 +69,7 @@ public class ReceiveBillController {
                 return CommonResult.error(ResultEnum.PARAM_ERROR);
             }
         }
-        Boolean result = billService.createReceiveBill(form);
-        if(result){
-            return CommonResult.success();
-        }
-        return CommonResult.error(ResultEnum.OPR_FAIL);
+        return billService.createReceiveBill(form);
     }
 
     @ApiOperation(value = "预览应收账单")

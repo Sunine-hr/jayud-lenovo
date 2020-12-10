@@ -7,6 +7,7 @@ import com.jayud.mall.model.bo.QueryCustomerForm;
 import com.jayud.mall.model.po.Customer;
 import com.jayud.mall.model.vo.CustomerVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 /**
@@ -27,5 +28,5 @@ public interface CustomerMapper extends BaseMapper<Customer> {
      * @param form
      * @return
      */
-    IPage<CustomerVO> findCustomerByPage(Page<CustomerVO> page, QueryCustomerForm form);
+    IPage<CustomerVO> findCustomerByPage(Page<CustomerVO> page, @Param("form") QueryCustomerForm form);
 }

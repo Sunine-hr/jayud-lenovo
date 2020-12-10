@@ -7,6 +7,7 @@ import com.jayud.mall.model.po.QuotationTemplate;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.vo.QuotationTemplateVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 /**
@@ -27,7 +28,7 @@ public interface QuotationTemplateMapper extends BaseMapper<QuotationTemplate> {
      * @param form
      * @return
      */
-    IPage<QuotationTemplateVO> findQuotationTemplateByPage(Page<QuotationTemplateVO> page, QueryQuotationTemplateForm form);
+    IPage<QuotationTemplateVO> findQuotationTemplateByPage(Page<QuotationTemplateVO> page, @Param("form") QueryQuotationTemplateForm form);
 
     /**
      * 查看报价模板

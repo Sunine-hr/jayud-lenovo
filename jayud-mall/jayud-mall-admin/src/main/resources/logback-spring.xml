@@ -76,7 +76,7 @@
         </encoder>
     </appender>
     <!-- 控制台输出日志级别 -->
-    <root level="DEBUG">
+    <root level="INFO">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="fileDebugAppender"/>
         <appender-ref ref="fileErrorAppender"/>
@@ -87,6 +87,6 @@
     <logger name="com.alibaba.nacos.client">
         <level value="ERROR" />
     </logger>
-    <logger name="com.jayud.mall" level="DEBUG"/>
+    <logger name="com.jayud.mall" level="INFO"/>
     <logger name="org.springframework" level="INFO"/>
 </configuration>

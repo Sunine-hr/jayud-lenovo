@@ -8,6 +8,7 @@ import com.jayud.mall.model.bo.QueryOfferInfoForm;
 import com.jayud.mall.model.po.OfferInfo;
 import com.jayud.mall.model.vo.OfferInfoVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 /**
@@ -28,7 +29,7 @@ public interface OfferInfoMapper extends BaseMapper<OfferInfo> {
      * @param form
      * @return
      */
-    IPage<OfferInfoVO> findOfferInfoByPage(Page<OfferInfoVO> page, QueryOfferInfoForm form);
+    IPage<OfferInfoVO> findOfferInfoByPage(Page<OfferInfoVO> page, @Param("form") QueryOfferInfoForm form);
 
     /**
      * 查询报价信息
@@ -43,7 +44,7 @@ public interface OfferInfoMapper extends BaseMapper<OfferInfo> {
      * @param form
      * @return
      */
-    IPage<OfferInfoVO> findOfferInfoFareByPage(Page<OfferInfoVO> page, QueryOfferInfoFareForm form);
+    IPage<OfferInfoVO> findOfferInfoFareByPage(Page<OfferInfoVO> page, @Param("form") QueryOfferInfoFareForm form);
 
     /**
      * 查看运价详情

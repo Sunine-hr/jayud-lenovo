@@ -10,6 +10,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>jayud-mall-admin</artifactId>
+    <description>南京商城后台</description>
+    <packaging>jar</packaging>
+    <version>1.0</version>
+    <name>jayud-mall-admin</name>
+
     <dependencies>
         <dependency>
             <groupId>com.jayud</groupId>

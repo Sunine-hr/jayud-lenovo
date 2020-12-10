@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.mall.model.bo.QueryShippingAreaForm;
 import com.jayud.mall.model.po.ShippingArea;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 /**
@@ -26,5 +27,5 @@ public interface ShippingAreaMapper extends BaseMapper<ShippingArea> {
      * @param form
      * @return
      */
-    IPage<ShippingArea> findShippingAreaByPage(Page<ShippingArea> page, QueryShippingAreaForm form);
+    IPage<ShippingArea> findShippingAreaByPage(Page<ShippingArea> page, @Param("form") QueryShippingAreaForm form);
 }

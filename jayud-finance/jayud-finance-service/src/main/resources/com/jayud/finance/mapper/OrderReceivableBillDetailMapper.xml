@@ -150,11 +150,21 @@
             LEFT JOIN cost_genre cg ON orc.cost_genre_id = cg.id
             LEFT JOIN cost_type ct ON orc.cost_type_id = ct.id
             LEFT JOIN cost_info ci ON orc.cost_code = ci.id_code
+            left join order_customs oc on oc.order_no = orc.order_no
         WHERE
-            orc.id IN ( SELECT orbd.cost_id FROM order_receivable_bill_detail orbd WHERE orbd.audit_status !='edit_del' and orbd.bill_no = #{form.billNo} )
+            ( orbd1.audit_status !='edit_del' and orbd1.bill_no = #{form.billNo} )
             or
             (orc.is_bill = 'save_confirm' and
-              oi.legal_name = (select orb1.legal_name from order_receivable_bill orb1 left join order_receivable_bill_detail orbd1 on orb1.id = orbd1.bill_id where orbd1.bill_no = #{form.billNo} limit 1)
+                <if test="form.cmd == 'main'">
+                    oi.legal_name
+                </if>
+                <if test="form.cmd == 'bg'">
+                    oc.legal_name
+                </if>
+                <if test="form.cmd == 'zgys">
+                    ot.legal_name
+                </if>
+              = (select orb1.legal_name from order_receivable_bill orb1 left join order_receivable_bill_detail orbd1 on orb1.id = orbd1.bill_id where orbd1.bill_no = #{form.billNo} limit 1)
               and cus.unit_account = (select orb1.unit_account from order_receivable_bill orb1 left join order_receivable_bill_detail orbd1 on orb1.id = orbd1.bill_id where orbd1.bill_no = #{form.billNo} limit 1)
             )
     </select>

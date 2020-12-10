@@ -149,7 +149,7 @@ public class PaymentBillDetailController {
 
     @ApiOperation(value = "编辑对账单列表")
     @PostMapping("/findEditBillByPage")
-    public CommonResult<CommonPageResult<PaymentNotPaidBillVO>> findEditBillByPage(@RequestBody QueryEditBillForm form) {
+    public CommonResult<CommonPageResult<PaymentNotPaidBillVO>> findEditBillByPage(@RequestBody @Valid QueryEditBillForm form) {
         IPage<PaymentNotPaidBillVO> pageList = billDetailService.findEditBillByPage(form);
         CommonPageResult<PaymentNotPaidBillVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);

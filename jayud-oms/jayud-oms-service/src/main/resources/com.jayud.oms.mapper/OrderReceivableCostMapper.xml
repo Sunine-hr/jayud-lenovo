@@ -61,11 +61,12 @@
         left join customer_info ci on orc.customer_code = ci.unit_code
         where orc.`main_order_no` = #{form.mainOrderNo}
         <if test="form.cmd == 'main_cost'">
-            and orc.is_sum_to_main = 1
+            and (orc.sub_type = 'main'
+            or (orc.is_sum_to_main = 1  and orc.`status` = '3'))
         </if>
         <if test="form.cmd == 'main_cost_audit'">
             and orc.`status` in ('2','3')
-            and orc.is_sum_to_main = 1
+            and orc.sub_type = 'main'
         </if>
         <if test="form.cmd == 'zgys_sub_cost'">
             and orc.sub_type = 'zgys'

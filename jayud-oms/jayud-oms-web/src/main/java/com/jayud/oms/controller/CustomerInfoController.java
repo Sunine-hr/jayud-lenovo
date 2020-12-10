@@ -83,6 +83,8 @@ public class CustomerInfoController {
     @PostMapping(value = "/saveOrUpdateCustomerInfo")
     public CommonResult saveOrUpdateCustomerInfo(@RequestBody @Valid AddCustomerInfoForm form) {
         CustomerInfo customerInfo = ConvertUtil.convert(form, CustomerInfo.class);
+        customerInfo.setUnitCode(form.getIdCode());
+        customerInfo.setUnitAccount(form.getName());
         Boolean flag = false;
         if (form.getId() != null) {
             //校验结算代码唯一性

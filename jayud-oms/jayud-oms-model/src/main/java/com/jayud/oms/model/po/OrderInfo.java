@@ -98,6 +98,9 @@ public class OrderInfo extends Model<OrderInfo> {
     @ApiModelProperty(value = "是否外部报关放行,针对没有出口报关的中港订单")
     private Boolean customsRelease;
 
+    @ApiModelProperty(value = "是否车辆过磅")
+    private Boolean isVehicleWeigh;
+
 
     @Override
     protected Serializable pkVal() {

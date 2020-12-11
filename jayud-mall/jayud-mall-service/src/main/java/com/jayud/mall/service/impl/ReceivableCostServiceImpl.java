@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.mall.mapper.ReceivableCostMapper;
 import com.jayud.mall.model.bo.ReceivableCostForm;
 import com.jayud.mall.model.po.ReceivableCost;
+import com.jayud.mall.model.vo.ReceivableCostReturnVO;
 import com.jayud.mall.service.IReceivableCostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,5 +47,11 @@ public class ReceivableCostServiceImpl extends ServiceImpl<ReceivableCostMapper,
         }
         List<ReceivableCost> list = receivableCostMapper.selectList(queryWrapper);
         return list;
+    }
+
+    @Override
+    public List<ReceivableCostReturnVO> findReceivableCostBy(ReceivableCostForm form) {
+        List<ReceivableCostReturnVO> receivableCostReturnVOS = receivableCostMapper.findReceivableCostBy(form);
+        return receivableCostReturnVOS;
     }
 }

@@ -3,6 +3,7 @@ package com.jayud.mall.controller;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.ReceivableCostForm;
 import com.jayud.mall.model.po.ReceivableCost;
+import com.jayud.mall.model.vo.ReceivableCostReturnVO;
 import com.jayud.mall.service.IReceivableCostService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -27,6 +28,13 @@ public class ReceivableCostController {
     public CommonResult<List<ReceivableCost>> findReceivableCost(@RequestBody ReceivableCostForm form) {
         List<ReceivableCost> list = receivableCostService.findReceivableCost(form);
         return CommonResult.success(list);
+    }
+
+    @ApiOperation(value = "报价模板使用应付费用信息")
+    @PostMapping("/findReceivableCostBy")
+    public CommonResult<List<ReceivableCostReturnVO>> findReceivableCostBy(@RequestBody ReceivableCostForm form){
+        List<ReceivableCostReturnVO> receivableCostReturnVOS = receivableCostService.findReceivableCostBy(form);
+        return CommonResult.success(receivableCostReturnVOS);
     }
 
 

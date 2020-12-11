@@ -19,4 +19,11 @@
         id, id_code, cost_name, identifying, status, user_id, user_name, create_time
     </sql>
 
+    <!--报价模板使用应付费用信息-->
+    <select id="findReceivableCostBy" parameterType="com.jayud.mall.model.bo.ReceivableCostForm" resultType="com.jayud.mall.model.vo.ReceivableCostReturnVO">
+        select
+        t.cost_name
+        from receivable_cost t where t.identifying=2;
+    </select>
+
 </mapper>

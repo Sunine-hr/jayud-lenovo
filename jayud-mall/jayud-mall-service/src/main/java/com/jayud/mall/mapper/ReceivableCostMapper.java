@@ -1,9 +1,14 @@
 package com.jayud.mall.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.mall.model.bo.ReceivableCostForm;
 import com.jayud.mall.model.po.ReceivableCost;
+import com.jayud.mall.model.vo.ReceivableCostReturnVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +22,10 @@ import org.springframework.stereotype.Component;
 @Component
 public interface ReceivableCostMapper extends BaseMapper<ReceivableCost> {
 
+    /**
+     * 报价模板使用应付费用信息
+     * @param form
+     * @return
+     */
+    List<ReceivableCostReturnVO> findReceivableCostBy(@Param("form") ReceivableCostForm form);
 }

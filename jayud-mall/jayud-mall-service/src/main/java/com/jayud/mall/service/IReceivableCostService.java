@@ -3,6 +3,7 @@ package com.jayud.mall.service;
 import com.jayud.mall.model.bo.ReceivableCostForm;
 import com.jayud.mall.model.po.ReceivableCost;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.vo.ReceivableCostReturnVO;
 
 import java.util.List;
 
@@ -22,4 +23,11 @@ public interface IReceivableCostService extends IService<ReceivableCost> {
      * @return
      */
     List<ReceivableCost> findReceivableCost(ReceivableCostForm form);
+
+    /**
+     * 报价模板使用应付费用信息
+     * @param form
+     * @return
+     */
+    List<ReceivableCostReturnVO> findReceivableCostBy(ReceivableCostForm form);
 }

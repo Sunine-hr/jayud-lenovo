@@ -152,6 +152,16 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         //定义排序规则
         page.addOrder(OrderItem.desc("orc.id"));
         IPage<PaymentNotPaidBillVO> pageInfo = baseMapper.findEditSBillByPage(page, form);
+        List<PaymentNotPaidBillVO> pageList = pageInfo.getRecords();
+        for (PaymentNotPaidBillVO paymentNotPaidBillVO : pageList) {
+            //处理目的地:当有两条或两条以上时,则获取中转仓地址
+            if(!StringUtil.isNullOrEmpty(paymentNotPaidBillVO.getEndAddress())){
+                String[] strs = paymentNotPaidBillVO.getEndAddress().split(",");
+                if(strs.length > 1){
+                    paymentNotPaidBillVO.setEndAddress(receivableBillService.getWarehouseAddress(paymentNotPaidBillVO.getOrderNo()));
+                }
+            }
+        }
         return pageInfo;
     }
 
@@ -568,6 +578,13 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                     }
                 }
                 paymentNotPaidBill.setCostGenreList(haveCostGenre);
+            }
+            //处理目的地:当有两条或两条以上时,则获取中转仓地址
+            if(!StringUtil.isNullOrEmpty(paymentNotPaidBill.getEndAddress())){
+                String[] strs = paymentNotPaidBill.getEndAddress().split(",");
+                if(strs.length > 1){
+                    paymentNotPaidBill.setEndAddress(receivableBillService.getWarehouseAddress(paymentNotPaidBill.getOrderNo()));
+                }
             }
         }
         return pageInfo;

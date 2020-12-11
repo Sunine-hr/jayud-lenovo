@@ -91,6 +91,16 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         //定义排序规则
         page.addOrder(OrderItem.desc("temp.costId"));
         IPage<PaymentNotPaidBillVO> pageInfo = baseMapper.findNotPaidBillByPage(page, form);
+        List<PaymentNotPaidBillVO> pageList = pageInfo.getRecords();
+        for (PaymentNotPaidBillVO paymentNotPaidBillVO : pageList) {
+            //处理目的地:当有两条或两条以上时,则获取中转仓地址
+            if(!StringUtil.isNullOrEmpty(paymentNotPaidBillVO.getEndAddress())){
+                String[] strs = paymentNotPaidBillVO.getEndAddress().split(",");
+                if(strs.length > 1){
+                    paymentNotPaidBillVO.setEndAddress(receivableBillService.getWarehouseAddress(paymentNotPaidBillVO.getOrderNo()));
+                }
+            }
+        }
         return pageInfo;
     }
 

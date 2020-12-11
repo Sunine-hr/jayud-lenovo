@@ -192,4 +192,11 @@ public enum OrderStatusEnum {
         statusEnums.add(AIR_A_8);
         return statusEnums;
     }
+
+    public static OrderStatusEnum getAirOrderRejection(String status) {
+        if (OrderStatusEnum.AIR_A_0.getCode().equals(status)) {
+            return AIR_A_1_1;
+        }
+        return null;
+    }
 }

@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.airfreight.feign.OmsClient;
 import com.jayud.airfreight.model.bo.AddAirBookingForm;
 import com.jayud.airfreight.model.bo.AirProcessOptForm;
+import com.jayud.airfreight.model.bo.AuditInfoForm;
 import com.jayud.airfreight.model.bo.QueryAirOrderForm;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.airfreight.model.po.Goods;
@@ -19,9 +20,11 @@ import com.jayud.airfreight.service.IGoodsService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
-import com.jayud.common.enums.ProcessStatusEnum;
+import com.jayud.common.UserOperator;
+import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -29,9 +32,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -162,22 +165,6 @@ public class AirOrderController {
     }
 
 
-    @ApiOperation(value = "接单驳回")
-    @PostMapping(value = "/receivingOrdersReject")
-    public CommonResult receivingOrdersReject(@RequestBody AirProcessOptForm form) {
-        //接单驳回
-
-        //根据id批量删除物流轨迹表
-
-        //修改订单驳回状态
-
-        //主订单可以进行编辑
-
-        //编辑完状态更改为待接单状态
-
-        return null;
-    }
-
     @ApiOperation(value = "订舱驳回 id=空运订单id")
     @PostMapping(value = "/bookingRejected")
     public CommonResult bookingRejected(@RequestBody Map<String, Object> form) {
@@ -233,6 +220,45 @@ public class AirOrderController {
         }
         AirOrderVO airOrderDetails = this.airOrderService.getAirOrderDetails(airOrderId);
         return CommonResult.success(airOrderDetails);
+    }
+
+    @ApiOperation(value = "空运订单驳回 空运订单=airOrderId,驳回原因=cause")
+    @PostMapping(value = "/rejectOrder")
+    public CommonResult rejectOrder(@RequestBody Map<String, Object> map) {
+        Long airOrderId = MapUtil.getLong(map, "airOrderId");
+        if (airOrderId == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        //查询空运订单
+        AirOrder tmp = this.airOrderService.getById(airOrderId);
+        AirOrder airOrder = new AirOrder();
+        airOrder.setId(airOrderId);
+        airOrder.setUpdateTime(LocalDateTime.now());
+        airOrder.setUpdateUser(UserOperator.getToken());
+
+        //获取相应驳回操作
+        OrderStatusEnum orderStatusEnum = OrderStatusEnum.getAirOrderRejection(tmp.getStatus());
+        if (orderStatusEnum == null) {
+            return CommonResult.error(400, "驳回操作失败,没有相对应的操作");
+        }
+        //记录审核信息
+        AuditInfoForm auditInfoForm = new AuditInfoForm();
+        auditInfoForm.setExtId(airOrderId);
+        auditInfoForm.setExtDesc(SqlConstant.AIR_ORDER);
+
+
+        switch (orderStatusEnum) {
+            case AIR_A_1_1:
+                airOrder.setStatus(orderStatusEnum.getCode());
+                auditInfoForm.setAuditStatus(orderStatusEnum.getCode());
+                auditInfoForm.setAuditTypeDesc(orderStatusEnum.getDesc());
+                auditInfoForm.setAuditComment(MapUtil.getStr(map, "cause"));
+                omsClient.saveAuditInfo(auditInfoForm);
+                airOrderService.updateById(airOrder);
+                break;
+        }
+
+        return CommonResult.success();
     }
 }
 

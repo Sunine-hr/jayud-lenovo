@@ -28,6 +28,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -116,10 +117,14 @@ public class FinanceController {
     /**对账单管理*/
     @ApiOperation(value = "应付对账单审核列表,对账单明细")
     @PostMapping("/findFBillAuditByPage")
-    public CommonResult<CommonPageResult<PaymentNotPaidBillVO>> findFBillAuditByPage(@RequestBody @Valid QueryFBillAuditForm form) {
+    public CommonResult<Map<String,Object>> findFBillAuditByPage(@RequestBody @Valid QueryFBillAuditForm form) {
         IPage<PaymentNotPaidBillVO> pageList = paymentBillDetailService.findFBillAuditByPage(form);
         CommonPageResult<PaymentNotPaidBillVO> pageVO = new CommonPageResult(pageList);
-        return CommonResult.success(pageVO);
+        Map<String,Object> resultMap = new HashMap<>();
+        resultMap.put("pageList",pageVO);//列表
+        ViewBillVO viewBillVO = paymentBillDetailService.getViewBill(form.getBillNo());
+        resultMap.put(CommonConstant.WHOLE_DATA,viewBillVO);//全局数据
+        return CommonResult.success(resultMap);
     }
 
     @ApiOperation(value = "应收对账单审核列表,对账单明细")
@@ -291,8 +296,8 @@ public class FinanceController {
      * @param form
      * @return
      */
-    @PostMapping("/pushReceivable billNos = 编号集合")
-    @ApiOperation(value = "推送应收单")
+    @PostMapping("/pushReceivable")
+    @ApiOperation(value = "推送应收单,billNos = 编号集合")
     public CommonResult saveReceivableBill(@RequestBody ListForm form) {
         //校验是否可推送金蝶
         //1.必须财务已审核通过
@@ -313,7 +318,9 @@ public class FinanceController {
         }
         //构建数据，推金蝶
         for (OrderReceivableBillDetail receivableBillDetail : receivableBillDetails) {
-            ReceivableHeaderForm reqForm = new ReceivableHeaderForm();
+            ReceivableHeaderForm reqForm = receivableBillDetailService.getReceivableHeaderForm(receivableBillDetail.getBillNo());
+            List<APARDetailForm> entityDetail = receivableBillDetailService.findReceivableHeaderDetail(receivableBillDetail.getBillNo());
+            reqForm.setEntityDetail(entityDetail);
             service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), reqForm);
         }
         return CommonResult.success();
@@ -347,10 +354,59 @@ public class FinanceController {
         }
         //构建数据，推金蝶
         for (OrderPaymentBillDetail paymentBillDetail : paymentBillDetailList) {
-            PayableHeaderForm reqForm = new PayableHeaderForm();
+            PayableHeaderForm reqForm = paymentBillDetailService.getPayableHeaderForm(paymentBillDetail.getBillNo());
+            List<APARDetailForm> entityDetail = paymentBillDetailService.findPayableHeaderDetail(paymentBillDetail.getBillNo());
+            reqForm.setEntityDetail(entityDetail);
             service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), reqForm);
         }
         return CommonResult.success();
+    }
+
+    @ApiOperation(value = "费用状态下拉框")
+    @PostMapping(value = "/initBillStatus")
+    public CommonResult<List<InitComboxStrVO>> initBillStatus() {
+        List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
+        for (BillEnum billEnum : BillEnum.values()) {
+            if(BillEnum.B_1.getCode().equals(billEnum.getCode()) || BillEnum.B_2.getCode().equals(billEnum.getCode()) ||
+               BillEnum.B_2_1.getCode().equals(billEnum.getCode()) || BillEnum.B_3.getCode().equals(billEnum.getCode()) ||
+               BillEnum.B_4.getCode().equals(billEnum.getCode()) || BillEnum.B_4_1.getCode().equals(billEnum.getCode()) ||
+               BillEnum.B_5.getCode().equals(billEnum.getCode()) || BillEnum.B_5_1.getCode().equals(billEnum.getCode()) ||
+               BillEnum.B_6.getCode().equals(billEnum.getCode()) || BillEnum.B_6_1.getCode().equals(billEnum.getCode()) ||
+               BillEnum.B_7.getCode().equals(billEnum.getCode()) || BillEnum.B_8.getCode().equals(billEnum.getCode()) ||
+               BillEnum.B_9.getCode().equals(billEnum.getCode())){
+                InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+                initComboxStrVO.setCode(billEnum.getCode());
+                initComboxStrVO.setName(billEnum.getDesc());
+                comboxStrVOS.add(initComboxStrVO);
+            }
+        }
+        return CommonResult.success(comboxStrVOS);
+    }
+
+    @ApiOperation(value = "开票/付款申请,核销,开票/付款核销界面的金额初始化,billNo=账单编号")
+    @PostMapping(value = "/getCostAmountView")
+    public CommonResult<CostAmountVO> getCostAmountView(@RequestBody Map<String,Object> param) {
+        String billNo = MapUtil.getStr(param,"billNo");
+        if(StringUtil.isNullOrEmpty(billNo)){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        CostAmountVO costAmountVO = new CostAmountVO();
+        CostAmountVO costFAmountVO = paymentBillDetailService.getFCostAmountView(billNo);
+        CostAmountVO costSAmountVO = receivableBillDetailService.getSCostAmountView(billNo);
+        costAmountVO.setBillNo(billNo);
+        if(costSAmountVO != null) {
+            costAmountVO.setYsAmount(costSAmountVO.getYsAmount());
+            costAmountVO.setYsCurrency(costSAmountVO.getYsCurrency());
+            costAmountVO.setWsAmount(costSAmountVO.getWsAmount());
+            costAmountVO.setWsCurrency(costSAmountVO.getWsCurrency());
+        }
+        if(costFAmountVO != null) {
+            costAmountVO.setYfAmount(costFAmountVO.getYfAmount());
+            costAmountVO.setYfCurrency(costFAmountVO.getYfCurrency());
+            costAmountVO.setDfAmount(costFAmountVO.getDfAmount());
+            costAmountVO.setDfCurrency(costFAmountVO.getDfCurrency());
+        }
+        return CommonResult.success(costAmountVO);
     }
 
 

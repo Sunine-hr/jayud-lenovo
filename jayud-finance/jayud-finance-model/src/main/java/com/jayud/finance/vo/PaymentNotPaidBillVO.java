@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 应收/应付保持一致
@@ -47,6 +49,12 @@ public class PaymentNotPaidBillVO {
 
     @ApiModelProperty(value = "费用类型ID")
     private Long costGenreId;
+
+    @ApiModelProperty(value = "费用类型集合,财务模块需要下拉费用类型")
+    private List<InitComboxVO> costGenreList = new ArrayList<>();
+
+    @ApiModelProperty(value = "费用类型Str")
+    private String costGenreStr;
 
     @ApiModelProperty(value = "费用类别")
     private String costTypeName;

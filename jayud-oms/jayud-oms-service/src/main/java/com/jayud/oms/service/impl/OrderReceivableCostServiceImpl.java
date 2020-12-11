@@ -25,4 +25,9 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
     public List<InputReceivableCostVO> findReceivableCost(GetCostDetailForm form) {
         return baseMapper.findReceivableCost(form);
     }
+
+    @Override
+    public InputReceivableCostVO getWriteBackSCostData(Long costId) {
+        return baseMapper.getWriteBackSCostData(costId);
+    }
 }

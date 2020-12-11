@@ -50,4 +50,11 @@ public interface ICurrencyRateService extends IService<CurrencyRate> {
      * @return
      */
     BigDecimal getExchangeRate(String oCode,String dCode);
+
+    /**
+     * 根据币种CODE查名称描述
+     * @param code
+     * @return
+     */
+    String getNameByCode(String code);
 }

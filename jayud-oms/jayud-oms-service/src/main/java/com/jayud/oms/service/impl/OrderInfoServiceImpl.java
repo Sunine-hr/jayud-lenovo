@@ -83,20 +83,20 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public String oprMainOrder(InputMainOrderForm form) {
         OrderInfo orderInfo = ConvertUtil.convert(form, OrderInfo.class);
-        if (form != null && form.getOrderId() != null) {//修改
+        if(form != null && form.getOrderId() != null){//修改
             //修改时也要返回主订单号
             OrderInfo oldOrder = baseMapper.selectById(form.getOrderId());
             orderInfo.setId(form.getOrderId());
             orderInfo.setOrderNo(oldOrder.getOrderNo());
             orderInfo.setUpTime(LocalDateTime.now());
             orderInfo.setUpUser(UserOperator.getToken());
-        } else {//新增
+        }else {//新增
             //生成主订单号
-            String orderNo = StringUtils.loadNum(CommonConstant.M, 12);
-            while (true) {
-                if (!isExistOrder(orderNo)) {//重复
-                    orderNo = StringUtils.loadNum(CommonConstant.M, 12);
-                } else {
+            String orderNo = StringUtils.loadNum(CommonConstant.M,12);
+            while (true){
+                if(!isExistOrder(orderNo)){//重复
+                    orderNo = StringUtils.loadNum(CommonConstant.M,12);
+                }else {
                     break;
                 }
             }
@@ -104,13 +104,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderInfo.setCreateTime(LocalDateTime.now());
             orderInfo.setCreatedUser(UserOperator.getToken());
         }
-        if (CommonConstant.PRE_SUBMIT.equals(form.getCmd())) {
+        if(CommonConstant.PRE_SUBMIT.equals(form.getCmd())) {
             orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_2.getCode()));
-        } else if (CommonConstant.SUBMIT.equals(form.getCmd()) && CommonConstant.VALUE_1.equals(form.getIsDataAll())) {
+        }else if(CommonConstant.SUBMIT.equals(form.getCmd()) && CommonConstant.VALUE_1.equals(form.getIsDataAll())){
             orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
-        } else if (CommonConstant.SUBMIT.equals(form.getCmd()) && CommonConstant.VALUE_0.equals(form.getIsDataAll())) {
+        }else if(CommonConstant.SUBMIT.equals(form.getCmd()) && CommonConstant.VALUE_0.equals(form.getIsDataAll())){
             orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_4.getCode()));
-        } else {
+        }else {
             orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
         }
         saveOrUpdate(orderInfo);
@@ -201,22 +201,22 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 paymentCostService.remove(queryWrapper);
                 receivableCostService.remove(queryWrapper);
             }
-            //当录入的是子订单费用,且主/子订单的法人主体和客户不相等时,不可汇总到主订单
-            Boolean isSumToMain = true;
-            if ("preSubmit_main".equals(form.getCmd()) || "submit_main".equals(form.getCmd())) {//入主订单费用
-                form.setOrderNo(null);//表中是通过有没有子订单来判断这条数据是主订单的费用还是子订单的费用
-            } else {//入子订单费用
-                if (!(inputOrderVO.getLegalName().equals(form.getSubLegalName()) && inputOrderVO.getCustomerName().equals(form.getSubCustomerName()))) {
-                    isSumToMain = false;//主，子订单的法人主体和客户不一致则不能汇总到主订单
-                }
-            }
+            //当录入的是子订单费用,且主/子订单的法人主体和结算单位不相等时,不可汇总到主订单
+            Boolean isSumToMain = true;//1
+           if("preSubmit_main".equals(form.getCmd())){//入主订单费用
+               form.setOrderNo(null);//表中是通过有没有子订单来判断这条数据是主订单的费用还是子订单的费用
+            }else if("preSubmit_sub".equals(form.getCmd())){//入子订单费用
+               if(!(inputOrderVO.getLegalName().equals(form.getSubLegalName()) && inputOrderVO.getUnitCode().equals(form.getSubUnitCode()))){
+                   isSumToMain = false;//0-主，子订单的法人主体和结算单位不一致则不能汇总到主订单
+               }
+           }
             for (OrderPaymentCost orderPaymentCost : orderPaymentCosts) {//应付费用
                 orderPaymentCost.setMainOrderNo(inputOrderVO.getOrderNo());
                 orderPaymentCost.setOrderNo(form.getOrderNo());
-                orderPaymentCost.setIsSumToMain(isSumToMain);
                 orderPaymentCost.setIsBill("0");//未出账
                 orderPaymentCost.setSubType(form.getSubType());
                 if ("preSubmit_main".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())) {
+                    orderPaymentCost.setIsSumToMain(isSumToMain);
                     orderPaymentCost.setCreatedTime(LocalDateTime.now());
                     orderPaymentCost.setCreatedUser(UserOperator.getToken());
                     orderPaymentCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_1.getCode()));
@@ -229,10 +229,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             for (OrderReceivableCost orderReceivableCost : orderReceivableCosts) {//应收费用
                 orderReceivableCost.setMainOrderNo(inputOrderVO.getOrderNo());
                 orderReceivableCost.setOrderNo(form.getOrderNo());
-                orderReceivableCost.setIsSumToMain(isSumToMain);
                 orderReceivableCost.setIsBill("0");//未出账
                 orderReceivableCost.setSubType(form.getSubType());
                 if ("preSubmit_main".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())) {
+                    orderReceivableCost.setIsSumToMain(isSumToMain);
                     orderReceivableCost.setCreatedTime(LocalDateTime.now());
                     orderReceivableCost.setCreatedUser(UserOperator.getToken());
                     orderReceivableCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_1.getCode()));
@@ -389,18 +389,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                                     }
                                 }
                             }
-                            //没有特殊要求,通用节点流程
-                            else {
-                                if (subTrack != null && subTrack.size() > 0) {
-                                    subOrder.setStatus("3");//已完成
-                                    subOrder.setStatusChangeTime(DateUtils.getLocalToStr(subTrack.get(0).getOperatorTime()));
-                                    x.setStatus("2");//进行中
-                                    if (subOrder.getProcessCode().equals(x.getChildren().get(x.getChildren().size() - 1).getProcessCode())) {
-                                        x.setStatus("3");//已完成
-                                        x.setStatusChangeTime(DateUtils.getLocalToStr(subTrack.get(0).getOperatorTime()));
-                                    }
-                                }
-                            }
                         }
                     }
                 } else {
@@ -515,9 +503,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         inputOrderVO.setOrderForm(inputMainOrderVO);
         //获取纯报关和出口报关信息
         if (OrderStatusEnum.CBG.getCode().equals(form.getClassCode()) ||
-                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode())) {
+            inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode())) {
             InputOrderCustomsVO inputOrderCustomsVO = customsClient.getCustomsDetail(inputMainOrderVO.getOrderNo()).getData();
-            if (inputOrderCustomsVO != null) {
+            if(inputOrderCustomsVO != null) {
                 //附件处理
                 List<FileView> allPics = new ArrayList<>();
                 allPics.addAll(inputOrderCustomsVO.getCntrPics());
@@ -605,14 +593,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         String classCode = inputMainOrderForm.getClassCode();//订单类型
         String selectedServer = inputMainOrderForm.getSelectedServer();//所选服务
         //纯报关和出口报关并且订单状态为驳回(C_1_1)或为空或为暂存待补全的待接单
-        if (OrderStatusEnum.CBG.getCode().equals(classCode) ||
-                selectedServer.contains(OrderStatusEnum.CKBG.getCode())) {
+        if(OrderStatusEnum.CBG.getCode().equals(classCode) ||
+                selectedServer.contains(OrderStatusEnum.CKBG.getCode())){
             InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
-            if (StringUtil.isNullOrEmpty(orderCustomsForm.getSubCustomsStatus()) ||
+            if(StringUtil.isNullOrEmpty(orderCustomsForm.getSubCustomsStatus()) ||
                     (OrderStatusEnum.CUSTOMS_C_0.getCode().equals(orderCustomsForm.getSubCustomsStatus()) &&
-                            (OrderStatusEnum.MAIN_2.getCode().equals(inputMainOrderForm.getStatus()) ||
-                                    OrderStatusEnum.MAIN_4.getCode().equals(inputMainOrderForm.getStatus()) ||
-                                    inputMainOrderForm.getStatus() == null)) ||
+                     (OrderStatusEnum.MAIN_2.getCode().equals(inputMainOrderForm.getStatus()) ||
+                      OrderStatusEnum.MAIN_4.getCode().equals(inputMainOrderForm.getStatus()) ||
+                      inputMainOrderForm.getStatus() == null)) ||
                     OrderStatusEnum.CUSTOMS_C_1_1.getCode().equals(orderCustomsForm.getSubCustomsStatus())) {
                 //如果没有生成子订单则不调用
                 if (orderCustomsForm.getSubOrders() != null && orderCustomsForm.getSubOrders().size() >= 0) {
@@ -631,15 +619,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
         }
         //中港运输并且并且订单状态为驳回或为空或为待接单
-        if (OrderStatusEnum.ZGYS.getCode().equals(classCode)) {
+        if(OrderStatusEnum.ZGYS.getCode().equals(classCode)){
             //创建中港订单信息
             InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
-            if (StringUtil.isNullOrEmpty(orderTransportForm.getSubTmsStatus()) ||
-                    OrderStatusEnum.TMS_T_0.getCode().equals(orderTransportForm.getSubTmsStatus()) ||
-                    OrderStatusEnum.TMS_T_1_1.getCode().equals(orderTransportForm.getSubTmsStatus()) ||
-                    OrderStatusEnum.TMS_T_2_1.getCode().equals(orderTransportForm.getSubTmsStatus()) ||
-                    OrderStatusEnum.TMS_T_3_2.getCode().equals(orderTransportForm.getSubTmsStatus()) ||
-                    OrderStatusEnum.TMS_T_4_1.getCode().equals(orderTransportForm.getSubTmsStatus())) {
+            if(StringUtil.isNullOrEmpty(orderTransportForm.getSubTmsStatus()) ||
+               OrderStatusEnum.TMS_T_0.getCode().equals(orderTransportForm.getSubTmsStatus()) ||
+               OrderStatusEnum.TMS_T_1_1.getCode().equals(orderTransportForm.getSubTmsStatus()) ||
+               OrderStatusEnum.TMS_T_2_1.getCode().equals(orderTransportForm.getSubTmsStatus()) ||
+               OrderStatusEnum.TMS_T_3_2.getCode().equals(orderTransportForm.getSubTmsStatus()) ||
+               OrderStatusEnum.TMS_T_4_1.getCode().equals(orderTransportForm.getSubTmsStatus())) {
                 if (!selectedServer.contains(OrderStatusEnum.XGQG.getCode())) {
                     //若没有选择香港清关,则情况香港清关信息，避免信息有误
                     orderTransportForm.setHkLegalName(null);

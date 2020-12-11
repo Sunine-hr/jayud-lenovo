@@ -21,12 +21,12 @@ import java.util.List;
 public class OrderBillCostTotalServiceImpl extends ServiceImpl<OrderBillCostTotalMapper, OrderBillCostTotal> implements IOrderBillCostTotalService {
 
     @Override
-    public List<OrderBillCostTotalVO> findOrderFBillCostTotal(List<Long> costIds,String settlementCurrency) {
-        return baseMapper.findOrderFBillCostTotal(costIds,settlementCurrency);
+    public List<OrderBillCostTotalVO> findOrderFBillCostTotal(List<Long> costIds,String settlementCurrency,String accountTermStr) {
+        return baseMapper.findOrderFBillCostTotal(costIds,settlementCurrency,accountTermStr);
     }
 
     @Override
-    public List<OrderBillCostTotalVO> findOrderSBillCostTotal(List<Long> costIds, String settlementCurrency) {
-        return baseMapper.findOrderSBillCostTotal(costIds,settlementCurrency);
+    public List<OrderBillCostTotalVO> findOrderSBillCostTotal(List<Long> costIds, String settlementCurrency,String accountTermStr) {
+        return baseMapper.findOrderSBillCostTotal(costIds,settlementCurrency,accountTermStr);
     }
 }

@@ -21,4 +21,6 @@ import java.util.List;
 public interface OrderReceivableCostMapper extends BaseMapper<OrderReceivableCost> {
 
     List<InputReceivableCostVO> findReceivableCost(@Param("form") GetCostDetailForm form);
+
+    InputReceivableCostVO getWriteBackSCostData(@Param("costId") Long costId);
 }

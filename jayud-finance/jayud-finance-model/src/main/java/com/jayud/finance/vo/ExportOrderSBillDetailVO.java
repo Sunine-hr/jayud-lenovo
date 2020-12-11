@@ -45,7 +45,7 @@ public class ExportOrderSBillDetailVO {
     private String settlementCurrency;
 
     @ApiModelProperty(value = "审核状态")
-    private String auditStatus;
+    private String auditStatusDesc;
 
     @ApiModelProperty(value = "付款申请")
     private String applyStatus;
@@ -70,6 +70,9 @@ public class ExportOrderSBillDetailVO {
 
     @ApiModelProperty(value = "核销时间")
     private String heXiaoTimeStr;
+
+    @ApiModelProperty(value = "推金蝶次数")
+    private Integer pushKingdeeCount;
 
 
 

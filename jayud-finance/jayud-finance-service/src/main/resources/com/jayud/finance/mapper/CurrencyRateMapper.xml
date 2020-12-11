@@ -51,4 +51,11 @@
 				and cr.`month` = DATE_FORMAT(now() , '%Y-%m' );
     </select>
 
+    <select id="getNameByCode"  resultType="java.lang.String" >
+        SELECT
+            ci.currency_name currencyName
+        FROM
+        currency_info ci
+        WHERE ci.currency_code = #{code}
+    </select>
 </mapper>

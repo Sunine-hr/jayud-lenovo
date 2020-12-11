@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -50,6 +48,21 @@ public class ViewBilToOrderVO {
     @ApiModelProperty(value = "合计费用")
     @JsonIgnore
     private List<String> totalCost;
+
+    public String getVehicleSize() {
+        if(this.vehicleSize != null){
+            if("1".equals(this.vehicleSize)){
+                return "3T";
+            }else if("2".equals(this.vehicleSize)){
+                return "5T";
+            }else if("3".equals(this.vehicleSize)){
+                return "8T";
+            }else if("4".equals(this.vehicleSize)){
+                return "10T";
+            }
+        }
+        return "";
+    }
 
 
 }

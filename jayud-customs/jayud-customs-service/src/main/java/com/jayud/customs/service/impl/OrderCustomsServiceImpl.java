@@ -122,7 +122,6 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
         String prePath = fileClient.getBaseUrl().getData().toString();
         for (CustomsOrderInfoVO customsOrder : customsOrderInfoVOS) {
             customsOrder.setGoodsTypeDesc(customsOrder.getGoodsType());
-            customsOrder.setStatusDesc(customsOrder.getStatus());
             //处理子订单附件信息
             String fileStr = customsOrder.getFileStr();
             String fileNameStr = customsOrder.getFileNameStr();

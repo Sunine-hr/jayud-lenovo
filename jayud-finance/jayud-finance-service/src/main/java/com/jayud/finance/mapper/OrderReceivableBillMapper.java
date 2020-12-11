@@ -113,4 +113,11 @@ public interface OrderReceivableBillMapper extends BaseMapper<OrderReceivableBil
      * @return
      */
     List<Long> findSaveConfirmData(@Param("costIds") List<Long> costIds);
+
+    /**
+     * 根据主订单获取中转仓地址
+     * @param orderNo
+     * @return
+     */
+    String getWarehouseAddress(@Param("orderNo") String orderNo);
 }

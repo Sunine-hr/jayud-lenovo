@@ -49,7 +49,7 @@
         (SELECT cg.name FROM cost_genre cg WHERE cg.id = opc.cost_genre_id LIMIT 1) costGenre,
         opc.`unit`,
         opc.`cost_code` costCode,
-        (SELECT ci.name FROM cost_info ci WHERE ci.id_code = opc.`cost_code` AND ci.types = 2 LIMIT 1) costName,
+        (SELECT ci.name FROM cost_info ci WHERE ci.id_code = opc.`cost_code` LIMIT 1) costName,
         opc.`unit_price` unitPrice,
         opc.`number`,
         opc.`currency_code` currencyCode,
@@ -63,15 +63,27 @@
         FROM
         order_payment_cost opc
         where opc.`main_order_no` = #{form.mainOrderNo}
+        <if test="form.cmd == 'main_cost'">
+            and (opc.sub_type = 'main'
+            or (opc.is_sum_to_main = 1  and opc.`status` = '3'))
+        </if>
         <if test="form.cmd == 'main_cost_audit'">
             and opc.`status` in ('2','3')
+            and opc.sub_type = 'main'
         </if>
-        <if test="form.cmd == 'sub_cost'">
-            and opc.`order_no` != '' and opc.`order_no` is not null
+        <if test="form.cmd == 'zgys_sub_cost'">
+            and opc.sub_type = 'zgys'
         </if>
-        <if test="form.cmd == 'sub_cost_audit'">
+        <if test="form.cmd == 'bg_sub_cost'">
+            and opc.sub_type = 'bg'
+        </if>
+        <if test="form.cmd == 'zgys_sub_cost_audit'">
             and opc.`status` in ('2','3')
-            and opc.`order_no` != '' and opc.`order_no` is not null
+            and opc.sub_type = 'zgys'
+        </if>
+        <if test="form.cmd == 'bg_sub_cost_audit'">
+            and opc.`status` in ('2','3')
+            and opc.sub_type = 'bg'
         </if>
     </select>
 
@@ -93,5 +105,16 @@
             and oc.order_no =#{orderNo}
         </where>
     </select>
-
+    <select id="getWriteBackFCostData" parameterType="java.lang.Long" resultType="com.jayud.oms.model.vo.InputPaymentCostVO" >
+    select temp.id,temp.exchangeRate,temp.amount * temp.exchangeRate changeAmount from (
+        SELECT
+            opc.id,
+            (SELECT cr.exchange_rate FROM currency_rate cr where cr.`month`= opbd.account_term and  cr.dcid = (select ci.id from currency_info ci where ci.currency_code = 'CNY') and cr.ocid = (select ci.id from currency_info ci where ci.currency_code = opc.currency_code)) exchangeRate,
+            opc.amount
+        FROM
+            order_payment_cost opc left join order_payment_bill_detail opbd on opc.id = opbd.cost_id
+        WHERE
+            opc.id = #{costId}
+        ) temp
+    </select>
 </mapper>

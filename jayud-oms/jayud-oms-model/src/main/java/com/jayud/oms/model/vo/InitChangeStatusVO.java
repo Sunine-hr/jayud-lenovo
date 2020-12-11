@@ -17,14 +17,17 @@ public class InitChangeStatusVO {
     @ApiModelProperty(value = "订单类型")
     private String orderType;
 
+    @ApiModelProperty(value = "订单类型描述")
+    private String orderTypeDesc;
+
     @ApiModelProperty(value = "状态")
     private String status;
 
     @ApiModelProperty(value = "是否需要录入费用")
     private Boolean needInputCost;
 
-    public String getOrderType() {
-        if (CommonConstant.ZGYS.equals(this.orderType)) {
+    public String getOrderTypeDesc() {
+        if(CommonConstant.ZGYS.equals(this.orderType)){
             return CommonConstant.ZGYS_DESC;
         } else if (CommonConstant.BG.equals(this.orderType)) {
             return CommonConstant.BG_DESC;

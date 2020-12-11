@@ -140,6 +140,9 @@ public class PaymentBillDetailController {
         if(billDetail != null && !BillEnum.B_6_1.getCode().equals(billDetail.getAuditStatus())){
             return CommonResult.error(10000,"不满足付款申请作废的条件");
         }
+        if(billDetail != null && BillEnum.F_4.getCode().equals(billDetail.getApplyStatus())){
+            return CommonResult.error(10000,"付款申请已作废");
+        }
         Boolean result = billDetailService.applyPaymentCancel(billNo);
         if(!result){
             return CommonResult.error(ResultEnum.OPR_FAIL);

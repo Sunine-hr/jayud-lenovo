@@ -149,6 +149,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     public Boolean applyPaymentCancel(String billNo) {
         OrderPaymentBillDetail orderPaymentBillDetail = new OrderPaymentBillDetail();
         orderPaymentBillDetail.setApplyStatus(BillEnum.F_4.getCode());
+        orderPaymentBillDetail.setAuditStatus(BillEnum.B_5_1.getCode());
         orderPaymentBillDetail.setUpdatedTime(LocalDateTime.now());
         orderPaymentBillDetail.setUpdatedUser(UserOperator.getToken());
 

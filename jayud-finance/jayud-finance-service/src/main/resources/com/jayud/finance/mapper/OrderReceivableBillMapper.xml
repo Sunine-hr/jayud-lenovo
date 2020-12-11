@@ -377,7 +377,7 @@
         FROM
             order_info oi
             LEFT JOIN order_transport ot ON oi.order_no = ot.main_order_no
-            LEFT JOIN warehouse_info wi ON wi.id = ot.warehouse_info_idV
+            LEFT JOIN warehouse_info wi ON wi.id = ot.warehouse_info_id
             where oi.order_no = #{orderNo}
     </select>
 </mapper>

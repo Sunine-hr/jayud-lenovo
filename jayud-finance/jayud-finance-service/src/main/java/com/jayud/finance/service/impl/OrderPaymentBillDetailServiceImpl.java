@@ -598,9 +598,9 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         IPage<PaymentNotPaidBillVO> pageInfo = baseMapper.findFBillAuditByPage(page, form);
         //所有的费用类型
         List<InitComboxVO> initComboxVOS = omsClient.findEnableCostGenre().getData();
-        List<InitComboxVO> haveCostGenre = new ArrayList<>();
         List<PaymentNotPaidBillVO> pageList = pageInfo.getRecords();
         for (PaymentNotPaidBillVO paymentNotPaidBill : pageList) {
+            List<InitComboxVO> haveCostGenre = new ArrayList<>();
             if(!StringUtil.isNullOrEmpty(paymentNotPaidBill.getCostGenreStr())) {
                 String[] ids = paymentNotPaidBill.getCostGenreStr().split(",");//费用类型逗号分隔形式的
                 for (String id : ids) {

@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/currencyinfo")
-@Api(tags = "币种接口")
+@Api(tags = "后台-币种接口")
 public class CurrencyInfoController {
 
     @Autowired

@@ -59,6 +59,11 @@
             (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='bg' and t1.customer_code = opc.customer_code and t1.order_no in (select o1.order_no from order_customs o1 where o1.legal_name = oc.legal_name)) notPaidAmount,
             (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='bg' and t1.customer_code = opc.customer_code and t1.order_no in (select o1.order_no from order_customs o1 where o1.legal_name = oc.legal_name)) notPaidOrderNum,
         </if>
+        <if test="form.cmd == 'ky'">
+            le.legal_name legalName,
+            (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = opc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_id = ao.legal_id)) notPaidAmount,
+            (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = opc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_id = ao.legal_id)) notPaidOrderNum,
+        </if>
         si.supplier_ch_name supplierChName,
         ifnull( opb.already_paid_amount, 0 ) alreadyPaidAmount,
         ifnull( opb.bill_order_num, 0 ) billOrderNum,
@@ -88,6 +93,19 @@
             </if>
             <if test="form.legalName != null and form.legalName != ''">
                 and oc.legal_name like concat('%',#{form.legalName},'%')
+            </if>
+        </if>
+        <if test="form.cmd == 'ky'">
+            left join air_order ao on ao.order_no = opc.order_no
+            left join legal_entity le on ao.legal_id=le.id
+            left join order_payment_bill opb on opb.legal_name = le.legal_name
+            and opb.supplier_ch_name = opc.customer_name
+            where opc.is_sum_to_main = 0 and opc.sub_type = 'ky' and opc.status = '3'
+            <if test="form.supplierChName != null and form.supplierChName != ''">
+                and si.supplier_ch_name like concat('%',#{form.supplierChName},'%')
+            </if>
+            <if test="form.legalName != null and form.legalName != ''">
+                and le.legal_name like concat('%',#{form.legalName},'%')
             </if>
         </if>
     </select>
@@ -164,6 +182,7 @@
         LEFT JOIN cost_type ct ON opc.cost_type_id = ct.id
         LEFT JOIN cost_info ci ON opc.cost_code = ci.id_code
         left join order_customs oc on oc.order_no = opc.order_no
+        left join air_order ao on ao.order_no = opc.order_no
         WHERE
         opc.id NOT IN ( SELECT opbd.cost_id FROM order_payment_bill_detail opbd )
         and opc.is_bill != '2'
@@ -180,6 +199,10 @@
         <if test="form.cmd == 'bg'">
             and oc.legal_name = #{form.legalName}
             and opc.is_sum_to_main = 0 and opc.sub_type = 'bg'
+        </if>
+        <if test="form.cmd == 'ky'">
+            and ao.legal_id = #{form.legalName}
+            and opc.is_sum_to_main = 0 and opc.sub_type = 'ky'
         </if>
         ) temp where 1 = 1
         <if test="form.startAddress != null and form.startAddress != ''">

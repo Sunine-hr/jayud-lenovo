@@ -61,4 +61,12 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
      * 分页查询客户基本信息
      */
     IPage<CustomerInfoVO> findCustomerBasicsInfoByPage(QueryCustomerInfoForm form);
+
+    /**
+     * 做客户代码和客户名称唯一性校验
+     * @param idCode
+     * @param name
+     * @return
+     */
+    List<CustomerInfoVO> existCustomerInfo(String idCode,String name);
 }

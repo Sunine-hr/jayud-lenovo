@@ -11,6 +11,7 @@ import com.jayud.oms.model.vo.CustAccountVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -55,4 +56,12 @@ public interface CustomerInfoMapper extends BaseMapper<CustomerInfo> {
      * 分页查询客户基础数据
      */
     IPage<CustomerInfoVO> findCustomerBasicsInfoByPage(Page page, @Param("form") QueryCustomerInfoForm form);
+
+    /**
+     * 做客户代码和客户名称唯一性校验
+     * @param idCode
+     * @param name
+     * @return
+     */
+    List<CustomerInfoVO> existCustomerInfo(@Param("idCode") String idCode,@Param("name") String name);
 }

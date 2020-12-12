@@ -12,7 +12,6 @@ import com.jayud.airfreight.model.bo.ForwarderVehicleInfoForm;
 import com.jayud.airfreight.service.VivoService;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
-import com.jayud.common.utils.FileUtil;
 import com.jayud.common.utils.RsaEncryptUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -173,7 +172,7 @@ public class VivoServiceImpl implements VivoService {
             log.info("尝试使用配置文件中的默认配置进行vivo接口授权...");
             String encryptedPassword = null;
             try {
-                encryptedPassword = RsaEncryptUtil.getEncryptedPassword(userName, password, publicKey);
+                encryptedPassword = RsaEncryptUtil.getEncryptedPassword(password, publicKey);
             } catch (Exception e) {
                 e.printStackTrace();
             }

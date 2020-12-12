@@ -37,4 +37,11 @@ public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
      */
     boolean isCostSubmitted(String orderNo);
 
+    /**
+     * 获取该条费用以出账时结算币种的汇率和本币金额
+     * @param costId
+     * @return
+     */
+    InputPaymentCostVO getWriteBackFCostData(Long costId);
+
 }

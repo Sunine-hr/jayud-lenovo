@@ -116,4 +116,18 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
      * @return
      */
     PayableHeaderForm getPayableHeaderForm(@Param("billNo") String billNo);
+
+    /**
+     * 获取推送金蝶的应付详情数据
+     * @param billNo
+     * @return
+     */
+    List<APARDetailForm> findPayableHeaderDetail(@Param("billNo") String billNo);
+
+    /**
+     * 应付:开票和付款申请/开票和付款核销/核销界面展示的金额
+     * @param billNo
+     * @return
+     */
+    CostAmountVO getFCostAmountView(@Param("billNo") String billNo);
 }

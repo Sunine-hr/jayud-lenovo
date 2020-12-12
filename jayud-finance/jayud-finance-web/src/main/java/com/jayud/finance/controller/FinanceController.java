@@ -296,8 +296,8 @@ public class FinanceController {
      * @param form
      * @return
      */
-    @PostMapping("/pushReceivable billNos = 编号集合")
-    @ApiOperation(value = "推送应收单")
+    @PostMapping("/pushReceivable")
+    @ApiOperation(value = "推送应收单,billNos = 编号集合")
     public CommonResult saveReceivableBill(@RequestBody ListForm form) {
         //校验是否可推送金蝶
         //1.必须财务已审核通过
@@ -319,7 +319,8 @@ public class FinanceController {
         //构建数据，推金蝶
         for (OrderReceivableBillDetail receivableBillDetail : receivableBillDetails) {
             ReceivableHeaderForm reqForm = receivableBillDetailService.getReceivableHeaderForm(receivableBillDetail.getBillNo());
-            //费用详情 TODO
+            List<APARDetailForm> entityDetail = receivableBillDetailService.findReceivableHeaderDetail(receivableBillDetail.getBillNo());
+            reqForm.setEntityDetail(entityDetail);
             service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), reqForm);
         }
         return CommonResult.success();
@@ -354,8 +355,8 @@ public class FinanceController {
         //构建数据，推金蝶
         for (OrderPaymentBillDetail paymentBillDetail : paymentBillDetailList) {
             PayableHeaderForm reqForm = paymentBillDetailService.getPayableHeaderForm(paymentBillDetail.getBillNo());
-
-            //费用详情 TODO
+            List<APARDetailForm> entityDetail = paymentBillDetailService.findPayableHeaderDetail(paymentBillDetail.getBillNo());
+            reqForm.setEntityDetail(entityDetail);
             service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), reqForm);
         }
         return CommonResult.success();
@@ -380,6 +381,32 @@ public class FinanceController {
             }
         }
         return CommonResult.success(comboxStrVOS);
+    }
+
+    @ApiOperation(value = "开票/付款申请,核销,开票/付款核销界面的金额初始化,billNo=账单编号")
+    @PostMapping(value = "/getCostAmountView")
+    public CommonResult<CostAmountVO> getCostAmountView(@RequestBody Map<String,Object> param) {
+        String billNo = MapUtil.getStr(param,"billNo");
+        if(StringUtil.isNullOrEmpty(billNo)){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        CostAmountVO costAmountVO = new CostAmountVO();
+        CostAmountVO costFAmountVO = paymentBillDetailService.getFCostAmountView(billNo);
+        CostAmountVO costSAmountVO = receivableBillDetailService.getSCostAmountView(billNo);
+        costAmountVO.setBillNo(billNo);
+        if(costSAmountVO != null) {
+            costAmountVO.setYsAmount(costSAmountVO.getYsAmount());
+            costAmountVO.setYsCurrency(costSAmountVO.getYsCurrency());
+            costAmountVO.setWsAmount(costSAmountVO.getWsAmount());
+            costAmountVO.setWsCurrency(costSAmountVO.getWsCurrency());
+        }
+        if(costFAmountVO != null) {
+            costAmountVO.setYfAmount(costFAmountVO.getYfAmount());
+            costAmountVO.setYfCurrency(costFAmountVO.getYfCurrency());
+            costAmountVO.setDfAmount(costFAmountVO.getDfAmount());
+            costAmountVO.setDfCurrency(costFAmountVO.getDfCurrency());
+        }
+        return CommonResult.success(costAmountVO);
     }
 
 

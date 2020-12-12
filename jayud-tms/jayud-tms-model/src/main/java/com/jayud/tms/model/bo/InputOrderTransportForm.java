@@ -26,9 +26,6 @@ public class InputOrderTransportForm {
     @ApiModelProperty(value = "货物流向",required = true)
     private Integer goodsType;
 
-    @ApiModelProperty(value = "六联单号")
-    private String encode;
-
     @ApiModelProperty(value = "车型(1吨车 2柜车)",required = true)
     private Integer vehicleType;
 
@@ -79,6 +76,9 @@ public class InputOrderTransportForm {
 
     @ApiModelProperty(value = "当前登录用户,FeignClient必传,要么就传token,否则跨系统拿不到用户")
     private String loginUser;
+
+    @ApiModelProperty(value = "是否车辆过磅")
+    private Boolean isVehicleWeigh;
 
 
 }

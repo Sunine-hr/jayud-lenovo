@@ -42,4 +42,10 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
         condition.lambda().eq(OrderPaymentCost::getOrderNo, orderNo);
         return this.count(condition) > 0;
     }
+
+    @Override
+    public InputPaymentCostVO getWriteBackFCostData(Long costId) {
+        return baseMapper.getWriteBackFCostData(costId);
+    }
+
 }

@@ -15,11 +15,13 @@ import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.mapper.OrderReceivableBillDetailMapper;
 import com.jayud.finance.po.*;
+import com.jayud.finance.service.ICurrencyRateService;
 import com.jayud.finance.service.IOrderBillCostTotalService;
 import com.jayud.finance.service.IOrderReceivableBillDetailService;
 import com.jayud.finance.service.IOrderReceivableBillService;
 import com.jayud.finance.util.ReflectUtil;
 import com.jayud.finance.vo.*;
+import io.netty.util.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,6 +54,9 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
 
     @Autowired
     IOrderBillCostTotalService costTotalService;
+
+    @Autowired
+    ICurrencyRateService currencyRateService;
 
     @Override
     public IPage<OrderPaymentBillDetailVO> findReceiveBillDetailByPage(QueryPaymentBillDetailForm form) {
@@ -131,6 +136,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
     public Boolean applyInvoiceCancel(String billNo) {
         OrderReceivableBillDetail orderReceiveBillDetail = new OrderReceivableBillDetail();
         orderReceiveBillDetail.setApplyStatus(BillEnum.F_4.getCode());
+        orderReceiveBillDetail.setAuditStatus(BillEnum.B_5_1.getCode());
         orderReceiveBillDetail.setUpdatedTime(LocalDateTime.now());
         orderReceiveBillDetail.setUpdatedUser(UserOperator.getToken());
 
@@ -146,6 +152,16 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         //定义排序规则
         page.addOrder(OrderItem.desc("orc.id"));
         IPage<PaymentNotPaidBillVO> pageInfo = baseMapper.findEditSBillByPage(page, form);
+        List<PaymentNotPaidBillVO> pageList = pageInfo.getRecords();
+        for (PaymentNotPaidBillVO paymentNotPaidBillVO : pageList) {
+            //处理目的地:当有两条或两条以上时,则获取中转仓地址
+            if(!StringUtil.isNullOrEmpty(paymentNotPaidBillVO.getEndAddress())){
+                String[] strs = paymentNotPaidBillVO.getEndAddress().split(",");
+                if(strs.length > 1){
+                    paymentNotPaidBillVO.setEndAddress(receivableBillService.getWarehouseAddress(paymentNotPaidBillVO.getOrderNo()));
+                }
+            }
+        }
         return pageInfo;
     }
 
@@ -171,6 +187,31 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             )) {
                 return CommonResult.error(10001,"不符合操作条件");
             }
+            //校验本次提交的数据是否配置汇率
+            if("submit".equals(form.getCmd()) && receiveBillDetailForms.size()>0){
+                List<Long> costIds = new ArrayList<>();
+                for (OrderReceiveBillDetailForm tempObject : receiveBillDetailForms) {
+                    costIds.add(tempObject.getCostId());
+                }
+                StringBuilder sb = new StringBuilder();
+                sb.append("请配置[");
+                Boolean flag = true;
+                List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, existObject.getSettlementCurrency(), existObject.getAccountTerm());
+                for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
+                    BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();//如果费率为0，则抛异常回滚数据
+                    if (exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0) {
+                        //根据币种查询币种描述
+                        String oCurrency = currencyRateService.getNameByCode(orderBillCostTotalVO.getCurrencyCode());
+                        String dCurrency = currencyRateService.getNameByCode(existObject.getSettlementCurrency());
+                        sb.append("原始币种:"+oCurrency+",兑换币种:"+dCurrency+";");
+                        flag = false;
+                    }
+                }
+                if(!flag){
+                    sb.append("]的汇率");
+                    return CommonResult.error(10001,sb.toString());
+                }
+            }
             //处理需要删除的费用,获取删除标识的账单详情
             queryWrapper.eq("audit_status", "edit_del");
             List<OrderReceivableBillDetail> delCosts = baseMapper.selectList(queryWrapper);
@@ -191,6 +232,11 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 oprCostBillForm.setOprType("receivable");
                 oprCostBillForm.setCostIds(delCostIds);
                 omsClient.oprCostBill(oprCostBillForm);
+
+                //3.相应的费用出账金额记录要做删除
+                QueryWrapper removeDelWrapper = new QueryWrapper();
+                removeDelWrapper.in("cost_id", delCostIds);
+                costTotalService.remove(removeWrapper);
             }
             //处理要新增的费用
             if (receiveBillDetailForms.size() > 0) {
@@ -347,8 +393,16 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         List<ViewBilToOrderVO> newOrderList = new ArrayList<>();
         List<ViewBillToCostClassVO> findCostClass = baseMapper.findSCostClass(billNo);
         for (ViewBilToOrderVO viewBillToOrder : orderList) {
+            //处理目的地:当有两条或两条以上时,则获取中转仓地址
+            if(!StringUtil.isNullOrEmpty(viewBillToOrder.getEndAddress())){
+                String[] strs = viewBillToOrder.getEndAddress().split(",");
+                if(strs.length > 1){
+                    viewBillToOrder.setEndAddress(receivableBillService.getWarehouseAddress(viewBillToOrder.getOrderNo()));
+                }
+            }
             for(ViewBillToCostClassVO viewBillToCostClass : findCostClass){
-                if(viewBillToOrder.getOrderNo().equals(viewBillToCostClass.getOrderNo())){
+                if((StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo()) && StringUtil.isNullOrEmpty(viewBillToCostClass.getSubOrderNo()))
+                        || ((!StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo())) && viewBillToOrder.getSubOrderNo().equals(viewBillToCostClass.getSubOrderNo()))){
                     try {
                         String addProperties = "";
                         String addValue = "";
@@ -359,7 +413,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                             Field f = fields[i];
                             f.setAccessible(true);
                             if("name".equals(f.getName())){
-                                addProperties = String.valueOf(f.get(viewBillToCostClass));//待新增得属性
+                                addProperties = String.valueOf(f.get(viewBillToCostClass)).toLowerCase();//待新增得属性
                             }
                             if("money".equals(f.getName())){
                                 addValue = String.valueOf(f.get(viewBillToCostClass));//待新增属性得值
@@ -429,6 +483,8 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             } else if ("1".equals(form.getAuditStatus())) {
                 auditStatus = BillEnum.B_2_1.getCode();
             }
+            orderReceivableBillDetail.setAuditTime(LocalDateTime.now());
+            orderReceivableBillDetail.setAuditUser(form.getLoginUserName());
             auditInfoForm.setAuditTypeDesc("应收对账单审核");
         }else if("cw_audit".equals(form.getCmd())){//财务对账单审核
             if(!BillEnum.B_3.getCode().equals(existObject.getAuditStatus())){
@@ -466,7 +522,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.in("bill_no",form.getBillNos());
         List<OrderReceivableBillDetail> existList = baseMapper.selectList(queryWrapper);
-        if("kf_f_reject".equals(form.getCmd())){
+        if("kf_s_reject".equals(form.getCmd())){
             for (OrderReceivableBillDetail existObject : existList) {
                 if(!BillEnum.B_2.getCode().equals(existObject.getAuditStatus())){
                     return CommonResult.error(10001,"存在不符合操作条件的数据");
@@ -481,7 +537,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 updateWrapper.eq("bill_no",billNo);
                 update(orderReceivableBillDetail,updateWrapper);
             }
-        }else if("cw_f_reject".equals(form.getCmd())){
+        }else if("cw_s_reject".equals(form.getCmd())){
             for (OrderReceivableBillDetail existObject : existList) {
                 if(!BillEnum.B_5_1.getCode().equals(existObject.getAuditStatus())){
                     return CommonResult.error(10001,"存在不符合操作条件的数据");
@@ -507,6 +563,30 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         //定义排序规则
         page.addOrder(OrderItem.desc("temp.createdTimeStr"));
         IPage<PaymentNotPaidBillVO> pageInfo = baseMapper.findSBillAuditByPage(page, form);
+        //所有的费用类型
+        List<InitComboxVO> initComboxVOS = omsClient.findEnableCostGenre().getData();
+        List<PaymentNotPaidBillVO> pageList = pageInfo.getRecords();
+        for (PaymentNotPaidBillVO paymentNotPaidBill : pageList) {
+            List<InitComboxVO> haveCostGenre = new ArrayList<>();
+            if(!StringUtil.isNullOrEmpty(paymentNotPaidBill.getCostGenreStr())) {
+                String[] ids = paymentNotPaidBill.getCostGenreStr().split(",");//费用类型逗号分隔形式的
+                for (String id : ids) {
+                    for (InitComboxVO initComboxVO : initComboxVOS) {
+                        if(initComboxVO.getId() == Long.parseLong(id)){
+                            haveCostGenre.add(initComboxVO);
+                        }
+                    }
+                }
+                paymentNotPaidBill.setCostGenreList(haveCostGenre);
+            }
+            //处理目的地:当有两条或两条以上时,则获取中转仓地址
+            if(!StringUtil.isNullOrEmpty(paymentNotPaidBill.getEndAddress())){
+                String[] strs = paymentNotPaidBill.getEndAddress().split(",");
+                if(strs.length > 1){
+                    paymentNotPaidBill.setEndAddress(receivableBillService.getWarehouseAddress(paymentNotPaidBill.getOrderNo()));
+                }
+            }
+        }
         return pageInfo;
     }
 
@@ -537,6 +617,16 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         if("0".equals(form.getAuditStatus())){
             applyStatus = BillEnum.F_2.getCode();
             status = BillEnum.B_6.getCode();
+
+            //开票审核通过之后，需要反推汇率和本币金额到费用录入表
+            List<OrderCostForm> orderCostForms = new ArrayList<>();
+            for (OrderReceivableBillDetail tempObject : billDetails) {
+                OrderCostForm orderCostForm = new OrderCostForm();
+                orderCostForm.setCostId(tempObject.getCostId());
+                orderCostForm.setLoginUserName(form.getLoginUserName());
+                orderCostForms.add(orderCostForm);
+            }
+            omsClient.writeBackCostData(orderCostForms,"receivable");
         }else {
             applyStatus = BillEnum.F_3.getCode();
             status = BillEnum.B_6_1.getCode();
@@ -597,6 +687,16 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
     @Override
     public ReceivableHeaderForm getReceivableHeaderForm(String billNo) {
         return baseMapper.getReceivableHeaderForm(billNo);
+    }
+
+    @Override
+    public List<APARDetailForm> findReceivableHeaderDetail(String billNo) {
+        return baseMapper.findReceivableHeaderDetail(billNo);
+    }
+
+    @Override
+    public CostAmountVO getSCostAmountView(String billNo) {
+        return baseMapper.getSCostAmountView(billNo);
     }
 
 

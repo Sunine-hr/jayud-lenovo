@@ -46,7 +46,7 @@
         (SELECT cg.name FROM cost_genre cg WHERE cg.id = orc.cost_genre_id LIMIT 1) costGenre,
         orc.`unit`,
         orc.`cost_code` costCode,
-        (SELECT ci.name FROM cost_info ci WHERE ci.id_code = orc.`cost_code` AND ci.types = 1 LIMIT 1) costName,
+        (SELECT ci.name FROM cost_info ci WHERE ci.id_code = orc.`cost_code` LIMIT 1) costName,
         orc.`unit_price` unitPrice,
         orc.`number`,
         orc.`currency_code` currencyCode,
@@ -60,15 +60,40 @@
         order_receivable_cost orc
         left join customer_info ci on orc.customer_code = ci.unit_code
         where orc.`main_order_no` = #{form.mainOrderNo}
+        <if test="form.cmd == 'main_cost'">
+            and (orc.sub_type = 'main'
+            or (orc.is_sum_to_main = 1  and orc.`status` = '3'))
+        </if>
         <if test="form.cmd == 'main_cost_audit'">
             and orc.`status` in ('2','3')
+            and orc.sub_type = 'main'
         </if>
-        <if test="form.cmd == 'sub_cost'">
-            and orc.`order_no` != '' and orc.`order_no` is not null
+        <if test="form.cmd == 'zgys_sub_cost'">
+            and orc.sub_type = 'zgys'
         </if>
-        <if test="form.cmd == 'sub_cost_audit'">
-            and orc.`order_no` != '' and orc.`order_no` is not null
+        <if test="form.cmd == 'bg_sub_cost'">
+            and orc.sub_type = 'bg'
+        </if>
+        <if test="form.cmd == 'zgys_sub_cost_audit'">
             and orc.`status` in ('2','3')
+            and orc.sub_type = 'zgys'
         </if>
+        <if test="form.cmd == 'bg_sub_cost_audit'">
+            and orc.`status` in ('2','3')
+            and orc.sub_type = 'bg'
+        </if>
+    </select>
+
+    <select id="getWriteBackSCostData" parameterType="java.lang.Long" resultType="com.jayud.oms.model.vo.InputReceivableCostVO" >
+    select temp.id,temp.exchangeRate,temp.amount * temp.exchangeRate changeAmount from (
+        SELECT
+            orc.id,
+            (SELECT cr.exchange_rate FROM currency_rate cr where cr.`month`= orbd.account_term and  cr.dcid = (select ci.id from currency_info ci where ci.currency_code = 'CNY') and cr.ocid = (select ci.id from currency_info ci where ci.currency_code = orc.currency_code)) exchangeRate,
+            orc.amount
+        FROM
+            order_receivable_cost orc left join order_receivable_bill_detail orbd on orc.id = orbd.cost_id
+        WHERE
+            orc.id = #{costId}
+	) temp
     </select>
 </mapper>

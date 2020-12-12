@@ -28,13 +28,14 @@
         <result column="up_time" property="upTime" />
         <result column="up_user" property="upUser" />
         <result column="need_input_cost" property="needInputCost" />
+        <result column="is_vehicle_weigh" property="isVehicleWeigh" />
         <result column="customs_release" property="customsRelease" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, order_no, customer_code, customer_name, biz_uid, biz_uname, unit_account, unit_code, contract_no, legal_code, legal_name, reference_no, cntr_no, biz_code,class_code, status,
-        biz_belong_depart,selected_server,is_data_all,create_time, created_user, up_time, up_user,need_input_cost
+        biz_belong_depart,selected_server,is_data_all,create_time, created_user, up_time, up_user,need_input_cost,is_vehicle_weigh,customs_release
     </sql>
 
     <select id="findOrderInfoByPage" parameterType="com.jayud.oms.model.bo.QueryOrderInfoForm" resultType="com.jayud.oms.model.vo.OrderInfoVO" >
@@ -108,8 +109,8 @@
         </if>
         <if test="form.cmd == 'costAudit'">
             and temp.`status` IN (1,4)
-            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = temp.orderNo AND opc.`status` = '2')
-            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = temp.orderNo AND orc.`status` = '2'))
+            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = temp.orderNo AND opc.`status` = '2' and opc.sub_type='main')
+            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = temp.orderNo AND orc.`status` = '2' and orc.sub_type='main'))
         </if>
         <if test="form.cmd == 'outCustomsRelease'">
             and temp.classCode = 'ZGYS' and temp.`status` = 1
@@ -174,7 +175,7 @@
         LEFT JOIN port_info p ON ot.port_code = p.id_code
         LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`
         WHERE oi.`class_code` = 'ZGYS'
-        AND ot.`status` = 'T_6'
+        AND (ot.`status` = 'T_6' or (ot.`status` = 'T_5' AND ot.is_vehicle_weigh = 1))
         AND (oi.`customs_release` = 1
         OR
         ((SELECT COUNT(1) FROM logistics_track lt WHERE lt.`main_order_id` = oi.`id` AND lt.`status`='C_5') =

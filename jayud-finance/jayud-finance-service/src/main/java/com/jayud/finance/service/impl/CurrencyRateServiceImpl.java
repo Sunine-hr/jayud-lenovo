@@ -90,5 +90,10 @@ public class CurrencyRateServiceImpl extends ServiceImpl<CurrencyRateMapper, Cur
         return baseMapper.getExchangeRate(oCode,dCode);
     }
 
+    @Override
+    public String getNameByCode(String code) {
+        return baseMapper.getNameByCode(code);
+    }
+
 
 }

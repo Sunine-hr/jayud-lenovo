@@ -18,7 +18,8 @@ public interface ICurrencyInfoService extends IService<CurrencyInfo> {
 
     /**
      * 获取币种信息
+     * @param createdTimeStr
      * @return
      */
-    List<CurrencyInfoVO> findCurrencyInfo();
+    List<CurrencyInfoVO> findCurrencyInfo(String createdTimeStr);
 }

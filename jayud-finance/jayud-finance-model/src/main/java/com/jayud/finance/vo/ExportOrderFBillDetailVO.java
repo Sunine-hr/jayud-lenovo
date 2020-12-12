@@ -45,7 +45,7 @@ public class ExportOrderFBillDetailVO {
     private String settlementCurrency;
 
     @ApiModelProperty(value = "审核状态")
-    private String auditStatus;
+    private String auditStatusDesc;
 
     @ApiModelProperty(value = "付款申请")
     private String applyStatus;

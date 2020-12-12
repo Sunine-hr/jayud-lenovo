@@ -2,10 +2,7 @@ package com.jayud.finance.mapper;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.jayud.finance.bo.QueryEditBillForm;
-import com.jayud.finance.bo.QueryFBillAuditForm;
-import com.jayud.finance.bo.QueryPaymentBillDetailForm;
-import com.jayud.finance.bo.ReceivableHeaderForm;
+import com.jayud.finance.bo.*;
 import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.finance.vo.*;
@@ -104,4 +101,18 @@ public interface OrderReceivableBillDetailMapper extends BaseMapper<OrderReceiva
      * @return
      */
     ReceivableHeaderForm getReceivableHeaderForm(@Param("billNo") String billNo);
+
+    /**
+     * 获取推送金蝶的应收详情数据
+     * @param billNo
+     * @return
+     */
+    List<APARDetailForm> findReceivableHeaderDetail(@Param("billNo") String billNo);
+
+    /**
+     * 应收:开票和付款申请/开票和付款核销/核销界面展示的金额
+     * @param billNo
+     * @return
+     */
+    CostAmountVO getSCostAmountView(@Param("billNo") String billNo);
 }

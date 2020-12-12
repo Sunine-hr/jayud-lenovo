@@ -83,7 +83,7 @@ public class ReceiveBillDetailController {
         writer.addHeaderAlias("heXiaoAmount", "已付金额");
         writer.addHeaderAlias("notHeXiaoAmount", "未付金额");
         writer.addHeaderAlias("settlementCurrency", "结算币种");
-        writer.addHeaderAlias("auditStatus", "状态");
+        writer.addHeaderAlias("auditStatusDesc", "状态");
         writer.addHeaderAlias("applyStatus", "付款申请");
         writer.addHeaderAlias("makeUser", "制单人");
         writer.addHeaderAlias("makeTimeStr", "制单时间");
@@ -92,6 +92,7 @@ public class ReceiveBillDetailController {
         writer.addHeaderAlias("auditComment", "审核意见");
         writer.addHeaderAlias("heXiaoUser", "核销人");
         writer.addHeaderAlias("heXiaoTimeStr", "核销时间");
+        writer.addHeaderAlias("pushKingdeeCount", "推金蝶次数");//导出财务应收对账单列表才有
 
         // 一次性写出内容，使用默认样式，强制输出标题
         writer.write(list, true);
@@ -116,7 +117,8 @@ public class ReceiveBillDetailController {
         queryWrapper.eq("bill_no",form.getBillNo());
         List<OrderReceivableBillDetail> orderReceivableBillDetails = billDetailService.list(queryWrapper);
         OrderReceivableBillDetail orderReceivableBillDetail = orderReceivableBillDetails.get(0);
-        if(orderReceivableBillDetail != null && !BillEnum.B_4.getCode().equals(orderReceivableBillDetail.getAuditStatus())){
+        if(orderReceivableBillDetail != null && !(BillEnum.B_4.getCode().equals(orderReceivableBillDetail.getAuditStatus()) ||
+                BillEnum.B_5_1.getCode().equals(orderReceivableBillDetail.getAuditStatus()))){
             return CommonResult.error(10000,"不满足付款申请的条件");
         }
         Boolean result = billDetailService.applyInvoice(form);
@@ -138,6 +140,9 @@ public class ReceiveBillDetailController {
         if(orderReceivableBillDetail != null && !BillEnum.B_6_1.getCode().equals(orderReceivableBillDetail.getAuditStatus())){
             return CommonResult.error(10000,"不满足付款申请作废的条件");
         }
+        if(orderReceivableBillDetail != null && BillEnum.F_4.getCode().equals(orderReceivableBillDetail.getApplyStatus())){
+            return CommonResult.error(10000,"开票申请已作废");
+        }
         Boolean result = billDetailService.applyInvoiceCancel(billNo);
         if(!result){
             return CommonResult.error(ResultEnum.OPR_FAIL);
@@ -147,7 +152,7 @@ public class ReceiveBillDetailController {
 
     @ApiOperation(value = "编辑对账单列表,费用维度的")
     @PostMapping("/findEditSBillByPage")
-    public CommonResult<CommonPageResult<PaymentNotPaidBillVO>> findEditSBillByPage(@RequestBody QueryEditBillForm form) {
+    public CommonResult<CommonPageResult<PaymentNotPaidBillVO>> findEditSBillByPage(@RequestBody @Valid QueryEditBillForm form) {
         IPage<PaymentNotPaidBillVO> pageList = billDetailService.findEditSBillByPage(form);
         CommonPageResult<PaymentNotPaidBillVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
@@ -370,7 +375,7 @@ public class ReceiveBillDetailController {
     @ApiOperation(value = "反审核,billNos=账单编号集合")
     @PostMapping("/contrarySAudit")
     public CommonResult contrarySAudit(@RequestBody ListForm form) {
-        if(form.getBillNos() == null || form.getBillNos().size() == 0){
+        if(form.getBillNos() == null || form.getBillNos().size() == 0 || StringUtil.isNullOrEmpty(form.getCmd())){
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
        return billDetailService.contrarySAudit(form);

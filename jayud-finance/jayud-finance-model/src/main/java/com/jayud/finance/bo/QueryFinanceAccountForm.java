@@ -37,7 +37,10 @@ public class QueryFinanceAccountForm extends BasePageForm{
     @ApiModelProperty(value = "创建时间")
     private String createTimeStr;
 
-    @ApiModelProperty(value = "开始核算期")
-    private String accountTermStr;
+    @ApiModelProperty(value = "应收核算期")
+    private String recAccountTermStr;
+
+    @ApiModelProperty(value = "应付核算期")
+    private String payAccountTermStr;
 
 }

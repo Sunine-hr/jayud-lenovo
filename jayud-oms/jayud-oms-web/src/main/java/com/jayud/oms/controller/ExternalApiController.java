@@ -63,6 +63,9 @@ public class ExternalApiController {
     @Autowired
     ICurrencyInfoService currencyInfoService;
 
+    @Autowired
+    ICostGenreService costGenreService;
+
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
     public ApiResult oprMainOrder(@RequestBody InputMainOrderForm form) {
@@ -408,6 +411,60 @@ public class ExternalApiController {
         }
         return ApiResult.ok(true);
     }
+
+    /**
+     * 开票审核通过之后，需要反推汇率和本币金额到费用录入表
+     * @param forms
+     * @param cmd
+     * @return
+     */
+    @RequestMapping(value = "api/writeBackCostData")
+    ApiResult<Boolean> writeBackCostData(@RequestBody List<OrderCostForm> forms, @RequestParam("cmd") String cmd){
+        if ("receivable".equals(cmd)) {
+            for (OrderCostForm orderCost : forms) {
+                //获取该条费用以出账时结算币种的汇率和本币金额
+                InputReceivableCostVO sCost = receivableCostService.getWriteBackSCostData(orderCost.getCostId());
+                OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
+                orderReceivableCost.setId(orderCost.getCostId());
+                orderReceivableCost.setExchangeRate(sCost.getExchangeRate());//汇率
+                orderReceivableCost.setChangeAmount(sCost.getChangeAmount());//本币金额
+                orderReceivableCost.setOptName(orderCost.getLoginUserName());
+                orderReceivableCost.setOptTime(LocalDateTime.now());
+                receivableCostService.updateById(orderReceivableCost);
+            }
+        } else if ("payment".equals(cmd)) {
+            for (OrderCostForm orderCost : forms) {
+                //获取该条费用以出账时结算币种的汇率和本币金额
+                InputPaymentCostVO fCost = paymentCostService.getWriteBackFCostData(orderCost.getCostId());
+                OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
+                orderPaymentCost.setId(orderCost.getCostId());
+                orderPaymentCost.setExchangeRate(fCost.getExchangeRate());//汇率
+                orderPaymentCost.setChangeAmount(fCost.getChangeAmount());//本币金额
+                orderPaymentCost.setOptName(orderCost.getLoginUserName());
+                orderPaymentCost.setOptTime(LocalDateTime.now());
+                paymentCostService.updateById(orderPaymentCost);
+            }
+        }
+        return ApiResult.ok(true);
+    }
+
+    /**
+     * 获取所有可用的费用类型
+     * @return
+     */
+    @RequestMapping(value = "api/findEnableCostGenre")
+    ApiResult<List<InitComboxVO>> findEnableCostGenre(){
+        List<InitComboxVO> initComboxVOS = new ArrayList<>();
+        List<CostGenre> costGenres = costGenreService.getEnableCostGenre();
+        for (CostGenre costGenre : costGenres) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(costGenre.getId());
+            initComboxVO.setName(costGenre.getName());
+            initComboxVOS.add(initComboxVO);
+        }
+        return ApiResult.ok(initComboxVOS);
+    }
+
 
 
 }

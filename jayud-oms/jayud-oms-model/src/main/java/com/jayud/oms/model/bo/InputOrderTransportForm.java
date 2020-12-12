@@ -26,9 +26,6 @@ public class InputOrderTransportForm {
     @ApiModelProperty(value = "货物流向",required = true)
     private Integer goodsType;
 
-    @ApiModelProperty(value = "六联单号")
-    private String encode;
-
     @ApiModelProperty(value = "车型(1吨车 2柜车)",required = true)
     private Integer vehicleType;
 
@@ -82,5 +79,9 @@ public class InputOrderTransportForm {
 
     @ApiModelProperty(value = "审核状态")
     private String subTmsStatus;
+
+    @ApiModelProperty(value = "是否车辆过磅")
+    private Boolean isVehicleWeigh;
+
 
 }

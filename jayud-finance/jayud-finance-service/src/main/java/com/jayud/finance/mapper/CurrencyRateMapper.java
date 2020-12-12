@@ -38,4 +38,11 @@ public interface CurrencyRateMapper extends BaseMapper<CurrencyRate> {
      * @return
      */
     BigDecimal getExchangeRate(@Param("oCode") String oCode,@Param("dCode")String dCode);
+
+    /**
+     * 根据币种CODE查名称描述
+     * @param code
+     * @return
+     */
+    String getNameByCode(@Param("code") String code);
 }

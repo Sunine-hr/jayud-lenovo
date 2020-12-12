@@ -24,4 +24,6 @@ public interface OrderPaymentCostMapper extends BaseMapper<OrderPaymentCost> {
     List<InputPaymentCostVO> findPaymentCost(@Param("form") GetCostDetailForm form);
 
     List<DriverOrderPaymentCostVO> getDriverOrderPaymentCost(@Param("orderNo") String orderNo);
+
+    InputPaymentCostVO getWriteBackFCostData(@Param("costId") Long costId);
 }

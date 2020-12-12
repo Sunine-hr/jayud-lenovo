@@ -83,7 +83,7 @@ public class PaymentBillDetailController {
         writer.addHeaderAlias("heXiaoAmount", "已付金额");
         writer.addHeaderAlias("notHeXiaoAmount", "未付金额");
         writer.addHeaderAlias("settlementCurrency", "结算币种");
-        writer.addHeaderAlias("auditStatus", "状态");
+        writer.addHeaderAlias("auditStatusDesc", "状态");
         writer.addHeaderAlias("applyStatus", "付款申请");
         writer.addHeaderAlias("makeUser", "制单人");
         writer.addHeaderAlias("makeTimeStr", "制单时间");
@@ -117,7 +117,8 @@ public class PaymentBillDetailController {
         queryWrapper.eq("bill_no",form.getBillNo());
         List<OrderPaymentBillDetail> orderPaymentBillDetails = billDetailService.list(queryWrapper);
         OrderPaymentBillDetail orderPaymentBillDetail = orderPaymentBillDetails.get(0);
-        if(orderPaymentBillDetail != null && !BillEnum.B_4.getCode().equals(orderPaymentBillDetail.getAuditStatus())){
+        if(orderPaymentBillDetail != null && !(BillEnum.B_4.getCode().equals(orderPaymentBillDetail.getAuditStatus()) ||
+                BillEnum.B_5_1.getCode().equals(orderPaymentBillDetail.getAuditStatus()))){
             return CommonResult.error(10000,"不满足付款申请的条件");
         }
         Boolean result = billDetailService.applyPayment(form);
@@ -139,6 +140,9 @@ public class PaymentBillDetailController {
         if(billDetail != null && !BillEnum.B_6_1.getCode().equals(billDetail.getAuditStatus())){
             return CommonResult.error(10000,"不满足付款申请作废的条件");
         }
+        if(billDetail != null && BillEnum.F_4.getCode().equals(billDetail.getApplyStatus())){
+            return CommonResult.error(10000,"付款申请已作废");
+        }
         Boolean result = billDetailService.applyPaymentCancel(billNo);
         if(!result){
             return CommonResult.error(ResultEnum.OPR_FAIL);
@@ -148,7 +152,7 @@ public class PaymentBillDetailController {
 
     @ApiOperation(value = "编辑对账单列表")
     @PostMapping("/findEditBillByPage")
-    public CommonResult<CommonPageResult<PaymentNotPaidBillVO>> findEditBillByPage(@RequestBody QueryEditBillForm form) {
+    public CommonResult<CommonPageResult<PaymentNotPaidBillVO>> findEditBillByPage(@RequestBody @Valid QueryEditBillForm form) {
         IPage<PaymentNotPaidBillVO> pageList = billDetailService.findEditBillByPage(form);
         CommonPageResult<PaymentNotPaidBillVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
@@ -384,7 +388,7 @@ public class PaymentBillDetailController {
     @ApiOperation(value = "反审核,billNos=账单编号集合")
     @PostMapping("/contraryAudit")
     public CommonResult contraryAudit(@RequestBody ListForm form) {
-        if(form.getBillNos() == null || form.getBillNos().size() == 0){
+        if(form.getBillNos() == null || form.getBillNos().size() == 0 || StringUtil.isNullOrEmpty(form.getCmd())){
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         return billDetailService.contraryAudit(form);

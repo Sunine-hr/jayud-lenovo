@@ -59,9 +59,6 @@ public class OrderTransport extends Model<OrderTransport> {
     @ApiModelProperty(value = "仓库代码(warehouse_info)")
     private String warehouseInfoId;
 
-    @ApiModelProperty(value = "六联单号")
-    private String encode;
-
     @ApiModelProperty(value = "状态")
     private String status;
 

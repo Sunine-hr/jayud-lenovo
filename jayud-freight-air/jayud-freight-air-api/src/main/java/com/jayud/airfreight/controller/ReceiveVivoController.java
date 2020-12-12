@@ -7,7 +7,7 @@ import com.jayud.airfreight.annotations.APILog;
 import com.jayud.airfreight.feign.FileClient;
 import com.jayud.airfreight.feign.OauthClient;
 import com.jayud.airfreight.feign.OmsClient;
-import com.jayud.airfreight.model.bo.*;
+import com.jayud.airfreight.model.bo.vivo.*;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.airfreight.service.AirFreightService;
 import com.jayud.airfreight.service.IAirOrderService;

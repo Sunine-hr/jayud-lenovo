@@ -16,13 +16,13 @@ public enum CreateUserTypeEnum {
     private Integer code;
     private String desc;
 
-    public static String getDesc(String code) {
+    public static String getDesc(Integer code) {
         for (CreateUserTypeEnum value : values()) {
             if (Objects.equals(code, value.getCode())) {
                 return value.getDesc();
             }
         }
-        return "";
+        return LOCAL.getDesc();
     }
 
     public static Integer getCode(String desc) {
@@ -32,5 +32,14 @@ public enum CreateUserTypeEnum {
             }
         }
         return -1;
+    }
+
+    public static CreateUserTypeEnum getEnum(Integer code) {
+        for (CreateUserTypeEnum value : values()) {
+            if (Objects.equals(code, value.getCode())) {
+                return value;
+            }
+        }
+        return LOCAL;
     }
 }

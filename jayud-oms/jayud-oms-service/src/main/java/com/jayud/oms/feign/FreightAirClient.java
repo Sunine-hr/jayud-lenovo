@@ -7,6 +7,7 @@ import com.jayud.common.entity.SubOrderCloseOpt;
 import com.jayud.oms.model.bo.InputAirOrderForm;
 import com.jayud.oms.model.vo.InitChangeStatusVO;
 import com.jayud.oms.model.vo.InputAirOrderVO;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,6 +44,10 @@ public interface FreightAirClient {
     /**
      * 查询空运订单详情
      */
-    @PostMapping(value = "/getAirOrderDetails")
+    @PostMapping(value = "/api/airfreight/getAirOrderDetails")
     public ApiResult<InputAirOrderVO> getAirOrderDetails(@RequestParam("mainOrderNo") String mainOrderNo);
+
+    @ApiModelProperty(value = "查询空运订单信息")
+    @RequestMapping(value = "/api/airfreight/getAirOrderInfoByOrderNo")
+    public ApiResult getAirOrderInfoByOrderNo(@RequestParam("airOrderNo") String airOrderNo);
 }

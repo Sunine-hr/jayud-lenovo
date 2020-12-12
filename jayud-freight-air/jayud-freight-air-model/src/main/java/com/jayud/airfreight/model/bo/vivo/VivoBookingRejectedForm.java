@@ -1,4 +1,4 @@
-package com.jayud.airfreight.model.bo;
+package com.jayud.airfreight.model.bo.vivo;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonProperty;

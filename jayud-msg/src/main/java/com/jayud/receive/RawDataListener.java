@@ -165,7 +165,15 @@ public class RawDataListener {
             log.info("[vivo]提单信息推送...");
             result = this.airfreightClient.forwarderLadingFile(value);
             if (result.getCode() != HttpStatus.SC_OK) {
-                log.error("推送提单信息推送给vivo失败 message={}", result.getMsg());
+                log.error("推送提单信息给vivo失败 message={}", result.getMsg());
+            }
+        }
+
+        if (match(com.jayud.common.enums.KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_FOUR, record)) {
+            log.info("[vivo]应收费用推送...");
+            result = this.airfreightClient.forwarderAirFarePush(value);
+            if (result.getCode() != HttpStatus.SC_OK) {
+                log.error("推送应收费用给vivo失败 message={}", result.getMsg());
             }
         }
 

@@ -41,4 +41,11 @@ public interface AirfreightClient {
      */
     @PostMapping("/airfreight/toVivo/forwarder/ladingFile")
     public CommonResult forwarderLadingFile(@RequestBody String value);
+
+
+    /**
+     * 货代抛空运费用数据到vivo
+     */
+    @PostMapping("/forwarder/forwarderAirFarePush")
+    public CommonResult forwarderAirFarePush(@RequestBody String value);
 }

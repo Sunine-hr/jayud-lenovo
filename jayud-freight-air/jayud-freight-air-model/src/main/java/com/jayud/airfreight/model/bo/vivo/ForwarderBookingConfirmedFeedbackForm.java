@@ -1,14 +1,11 @@
-package com.jayud.airfreight.model.bo;
+package com.jayud.airfreight.model.bo.vivo;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 import com.jayud.common.CommonResult;
-import com.jayud.common.exception.VivoApiException;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.context.annotation.Primary;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;

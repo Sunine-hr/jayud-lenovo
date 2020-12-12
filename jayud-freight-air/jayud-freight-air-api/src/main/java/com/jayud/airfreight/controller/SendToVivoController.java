@@ -3,16 +3,15 @@ package com.jayud.airfreight.controller;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.jayud.airfreight.model.bo.ForwarderBookingConfirmedFeedbackForm;
-import com.jayud.airfreight.model.bo.ForwarderLadingFileForm;
-import com.jayud.airfreight.model.bo.ForwarderLadingInfoForm;
+import com.jayud.airfreight.model.bo.vivo.ForwarderAirFreightForm;
+import com.jayud.airfreight.model.bo.vivo.ForwarderBookingConfirmedFeedbackForm;
+import com.jayud.airfreight.model.bo.vivo.ForwarderLadingFileForm;
+import com.jayud.airfreight.model.bo.vivo.ForwarderLadingInfoForm;
 import com.jayud.airfreight.service.VivoService;
 import com.jayud.common.CommonResult;
-import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.FileUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,8 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
-import java.io.File;
 import java.util.Map;
 
 /**
@@ -94,12 +91,24 @@ public class SendToVivoController {
         }
     }
 
-    //
     @ApiOperation(value = "提单跟踪信息回执给vivo")
     @PostMapping("/forwarder/ladingInfo")
     public CommonResult forwarderLadingInfo(@RequestBody String value) {
         ForwarderLadingInfoForm form = JSONUtil.toBean(value, ForwarderLadingInfoForm.class);
         Map<String, Object> resultMap = vivoService.forwarderLadingInfo(form);
+        if (1 == MapUtil.getInt(resultMap, "status")) {
+            return CommonResult.success();
+        } else {
+            return CommonResult.error(MapUtil.getInt(resultMap, "status"),
+                    MapUtil.getStr(resultMap, "message"));
+        }
+    }
+
+    @ApiOperation(value = "货代抛空运费用数据到vivo")
+    @PostMapping("/forwarder/forwarderAirFarePush")
+    public CommonResult forwarderAirFarePush(@RequestBody String value) {
+        ForwarderAirFreightForm form = JSONUtil.toBean(value, ForwarderAirFreightForm.class);
+        Map<String, Object> resultMap = vivoService.forwarderAirFarePush(form);
         if (1 == MapUtil.getInt(resultMap, "status")) {
             return CommonResult.success();
         } else {

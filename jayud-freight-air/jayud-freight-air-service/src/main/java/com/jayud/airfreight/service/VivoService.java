@@ -1,7 +1,7 @@
 package com.jayud.airfreight.service;
 
 import cn.hutool.json.JSONObject;
-import com.jayud.airfreight.model.bo.*;
+import com.jayud.airfreight.model.bo.vivo.*;
 import com.jayud.airfreight.model.po.AirBooking;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.common.ApiResult;
@@ -75,4 +75,11 @@ public interface VivoService {
      * vivo跟踪推送
      */
     public void trackingPush(AirOrder airOrder);
+
+    /**
+     * 货代抛空运费用数据到vivo
+     * @param form
+     * @return
+     */
+    Map<String, Object> forwarderAirFarePush(ForwarderAirFreightForm form);
 }

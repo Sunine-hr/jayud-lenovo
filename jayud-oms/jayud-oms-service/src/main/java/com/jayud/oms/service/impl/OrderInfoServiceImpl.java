@@ -1,5 +1,7 @@
 package com.jayud.oms.service.impl;
 
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -11,9 +13,8 @@ import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.SubOrderCloseOpt;
-import com.jayud.common.enums.BusinessTypeEnum;
-import com.jayud.common.enums.ProcessStatusEnum;
-import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.*;
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.*;
 import com.jayud.oms.feign.*;
 import com.jayud.oms.mapper.OrderInfoMapper;
@@ -22,12 +23,19 @@ import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
 import io.netty.util.internal.StringUtil;
+import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static com.jayud.common.enums.CreateUserTypeEnum.*;
 
 /**
  * <p>
@@ -79,24 +87,27 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Autowired
     private FreightAirClient freightAirClient;
 
+    @Autowired
+    private MsgClient msgClient;
+
 
     @Override
     public String oprMainOrder(InputMainOrderForm form) {
         OrderInfo orderInfo = ConvertUtil.convert(form, OrderInfo.class);
-        if(form != null && form.getOrderId() != null){//修改
+        if (form != null && form.getOrderId() != null) {//修改
             //修改时也要返回主订单号
             OrderInfo oldOrder = baseMapper.selectById(form.getOrderId());
             orderInfo.setId(form.getOrderId());
             orderInfo.setOrderNo(oldOrder.getOrderNo());
             orderInfo.setUpTime(LocalDateTime.now());
             orderInfo.setUpUser(UserOperator.getToken());
-        }else {//新增
+        } else {//新增
             //生成主订单号
-            String orderNo = StringUtils.loadNum(CommonConstant.M,12);
-            while (true){
-                if(!isExistOrder(orderNo)){//重复
-                    orderNo = StringUtils.loadNum(CommonConstant.M,12);
-                }else {
+            String orderNo = StringUtils.loadNum(CommonConstant.M, 12);
+            while (true) {
+                if (!isExistOrder(orderNo)) {//重复
+                    orderNo = StringUtils.loadNum(CommonConstant.M, 12);
+                } else {
                     break;
                 }
             }
@@ -104,13 +115,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderInfo.setCreateTime(LocalDateTime.now());
             orderInfo.setCreatedUser(UserOperator.getToken());
         }
-        if(CommonConstant.PRE_SUBMIT.equals(form.getCmd())) {
+        if (CommonConstant.PRE_SUBMIT.equals(form.getCmd())) {
             orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_2.getCode()));
-        }else if(CommonConstant.SUBMIT.equals(form.getCmd()) && CommonConstant.VALUE_1.equals(form.getIsDataAll())){
+        } else if (CommonConstant.SUBMIT.equals(form.getCmd()) && CommonConstant.VALUE_1.equals(form.getIsDataAll())) {
             orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
-        }else if(CommonConstant.SUBMIT.equals(form.getCmd()) && CommonConstant.VALUE_0.equals(form.getIsDataAll())){
+        } else if (CommonConstant.SUBMIT.equals(form.getCmd()) && CommonConstant.VALUE_0.equals(form.getIsDataAll())) {
             orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_4.getCode()));
-        }else {
+        } else {
             orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
         }
         saveOrUpdate(orderInfo);
@@ -203,13 +214,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
             //当录入的是子订单费用,且主/子订单的法人主体和结算单位不相等时,不可汇总到主订单
             Boolean isSumToMain = true;//1
-           if("preSubmit_main".equals(form.getCmd())){//入主订单费用
-               form.setOrderNo(null);//表中是通过有没有子订单来判断这条数据是主订单的费用还是子订单的费用
-            }else if("preSubmit_sub".equals(form.getCmd())){//入子订单费用
-               if(!(inputOrderVO.getLegalName().equals(form.getSubLegalName()) && inputOrderVO.getUnitCode().equals(form.getSubUnitCode()))){
-                   isSumToMain = false;//0-主，子订单的法人主体和结算单位不一致则不能汇总到主订单
-               }
-           }
+            if ("preSubmit_main".equals(form.getCmd())) {//入主订单费用
+                form.setOrderNo(null);//表中是通过有没有子订单来判断这条数据是主订单的费用还是子订单的费用
+            } else if ("preSubmit_sub".equals(form.getCmd())) {//入子订单费用
+                if (!(inputOrderVO.getLegalName().equals(form.getSubLegalName()) && inputOrderVO.getUnitCode().equals(form.getSubUnitCode()))) {
+                    isSumToMain = false;//0-主，子订单的法人主体和结算单位不一致则不能汇总到主订单
+                }
+            }
             for (OrderPaymentCost orderPaymentCost : orderPaymentCosts) {//应付费用
                 orderPaymentCost.setMainOrderNo(inputOrderVO.getOrderNo());
                 orderPaymentCost.setOrderNo(form.getOrderNo());
@@ -266,10 +277,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public boolean auditCost(AuditCostForm form) {
         try {
             List<OrderPaymentCost> orderPaymentCosts = form.getPaymentCosts();
             List<OrderReceivableCost> orderReceivableCosts = form.getReceivableCosts();
+            //查询应收审核通过数量
+//            this.receivableCostService.getApprovalFeeCount()
             for (OrderPaymentCost paymentCost : orderPaymentCosts) {
                 paymentCost.setStatus(Integer.valueOf(form.getStatus()));
                 paymentCost.setRemarks(form.getRemarks());
@@ -278,12 +292,18 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 receivableCost.setStatus(Integer.valueOf(form.getStatus()));
                 receivableCost.setRemarks(form.getRemarks());
             }
+            boolean optOne = false;
             if (orderPaymentCosts != null && orderPaymentCosts.size() > 0) {
                 paymentCostService.saveOrUpdateBatch(orderPaymentCosts);
             }
             if (orderReceivableCosts != null && orderReceivableCosts.size() > 0) {
-                receivableCostService.saveOrUpdateBatch(orderReceivableCosts);
+                optOne = receivableCostService.saveOrUpdateBatch(orderReceivableCosts);
             }
+            //推送应收费用审核消息
+            if (optOne && "3".equals(form.getStatus())) { //只能推子订单
+                this.receivableAuditMsgPush(orderReceivableCosts);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -503,9 +523,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         inputOrderVO.setOrderForm(inputMainOrderVO);
         //获取纯报关和出口报关信息
         if (OrderStatusEnum.CBG.getCode().equals(form.getClassCode()) ||
-            inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode())) {
+                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode())) {
             InputOrderCustomsVO inputOrderCustomsVO = customsClient.getCustomsDetail(inputMainOrderVO.getOrderNo()).getData();
-            if(inputOrderCustomsVO != null) {
+            if (inputOrderCustomsVO != null) {
                 //附件处理
                 List<FileView> allPics = new ArrayList<>();
                 allPics.addAll(inputOrderCustomsVO.getCntrPics());
@@ -593,14 +613,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         String classCode = inputMainOrderForm.getClassCode();//订单类型
         String selectedServer = inputMainOrderForm.getSelectedServer();//所选服务
         //纯报关和出口报关并且订单状态为驳回(C_1_1)或为空或为暂存待补全的待接单
-        if(OrderStatusEnum.CBG.getCode().equals(classCode) ||
-                selectedServer.contains(OrderStatusEnum.CKBG.getCode())){
+        if (OrderStatusEnum.CBG.getCode().equals(classCode) ||
+                selectedServer.contains(OrderStatusEnum.CKBG.getCode())) {
             InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
-            if(StringUtil.isNullOrEmpty(orderCustomsForm.getSubCustomsStatus()) ||
+            if (StringUtil.isNullOrEmpty(orderCustomsForm.getSubCustomsStatus()) ||
                     (OrderStatusEnum.CUSTOMS_C_0.getCode().equals(orderCustomsForm.getSubCustomsStatus()) &&
-                     (OrderStatusEnum.MAIN_2.getCode().equals(inputMainOrderForm.getStatus()) ||
-                      OrderStatusEnum.MAIN_4.getCode().equals(inputMainOrderForm.getStatus()) ||
-                      inputMainOrderForm.getStatus() == null)) ||
+                            (OrderStatusEnum.MAIN_2.getCode().equals(inputMainOrderForm.getStatus()) ||
+                                    OrderStatusEnum.MAIN_4.getCode().equals(inputMainOrderForm.getStatus()) ||
+                                    inputMainOrderForm.getStatus() == null)) ||
                     OrderStatusEnum.CUSTOMS_C_1_1.getCode().equals(orderCustomsForm.getSubCustomsStatus())) {
                 //如果没有生成子订单则不调用
                 if (orderCustomsForm.getSubOrders() != null && orderCustomsForm.getSubOrders().size() >= 0) {
@@ -619,15 +639,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
         }
         //中港运输并且并且订单状态为驳回或为空或为待接单
-        if(OrderStatusEnum.ZGYS.getCode().equals(classCode)){
+        if (OrderStatusEnum.ZGYS.getCode().equals(classCode)) {
             //创建中港订单信息
             InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
-            if(StringUtil.isNullOrEmpty(orderTransportForm.getSubTmsStatus()) ||
-               OrderStatusEnum.TMS_T_0.getCode().equals(orderTransportForm.getSubTmsStatus()) ||
-               OrderStatusEnum.TMS_T_1_1.getCode().equals(orderTransportForm.getSubTmsStatus()) ||
-               OrderStatusEnum.TMS_T_2_1.getCode().equals(orderTransportForm.getSubTmsStatus()) ||
-               OrderStatusEnum.TMS_T_3_2.getCode().equals(orderTransportForm.getSubTmsStatus()) ||
-               OrderStatusEnum.TMS_T_4_1.getCode().equals(orderTransportForm.getSubTmsStatus())) {
+            if (StringUtil.isNullOrEmpty(orderTransportForm.getSubTmsStatus()) ||
+                    OrderStatusEnum.TMS_T_0.getCode().equals(orderTransportForm.getSubTmsStatus()) ||
+                    OrderStatusEnum.TMS_T_1_1.getCode().equals(orderTransportForm.getSubTmsStatus()) ||
+                    OrderStatusEnum.TMS_T_2_1.getCode().equals(orderTransportForm.getSubTmsStatus()) ||
+                    OrderStatusEnum.TMS_T_3_2.getCode().equals(orderTransportForm.getSubTmsStatus()) ||
+                    OrderStatusEnum.TMS_T_4_1.getCode().equals(orderTransportForm.getSubTmsStatus())) {
                 if (!selectedServer.contains(OrderStatusEnum.XGQG.getCode())) {
                     //若没有选择香港清关,则情况香港清关信息，避免信息有误
                     orderTransportForm.setHkLegalName(null);
@@ -792,5 +812,73 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return update(orderInfo, condition);
     }
 
+
+    /**
+     * 应付消息推送
+     *
+     * @param orderReceivableCosts
+     */
+    private void receivableAuditMsgPush(List<OrderReceivableCost> orderReceivableCosts) {
+        OrderReceivableCost orderReceivableCost = this.receivableCostService.getById(orderReceivableCosts.get(0));
+        if (StringUtils.isEmpty(orderReceivableCost.getOrderNo())) {
+            return;
+        }
+        switch (ReceivableAndPayableOrderTypeEnum.getEnum(orderReceivableCost.getSubType())) {
+            case KY:
+                this.airFreightFeePush(orderReceivableCost.getMainOrderNo(), orderReceivableCost.getOrderNo()
+                        , orderReceivableCosts);
+                break;
+
+        }
+    }
+
+    /**
+     * 空运费用推送
+     *
+     * @param mainOrderNo
+     * @param orderNo
+     * @param orderReceivableCosts
+     */
+    private void airFreightFeePush(String mainOrderNo, String orderNo,
+                                   List<OrderReceivableCost> orderReceivableCosts) {
+        //TODO 操作类型判断还要修改
+
+        //查询空运订单信息
+        ApiResult result = this.freightAirClient.getAirOrderInfoByOrderNo(orderNo);
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.warn("推送空运费用消息失败");
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+        JSONObject jsonObject = new JSONObject(result.getData());
+        Integer createUserType = jsonObject.getInt("createUserType");
+        switch (getEnum(createUserType)) {
+            case VIVO:
+                //查询审核通过应收费用
+                List<OrderReceivableCost> receivableCosts = this.receivableCostService.getApprovalFee(mainOrderNo);
+                Map<String, String> map = new HashMap<>();
+                map.put("topic", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_FOUR.getTopic());
+                map.put("key", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_FOUR.getKey());
+                Map<String, Object> msg = new HashMap<>();
+                msg.put("mainOrderNo", mainOrderNo);
+                msg.put("orderNo", orderNo);
+                msg.put("operationType", receivableCosts.size() > 0 ? "update" : "add");
+                msg.put("booking_no", jsonObject.getStr("thirdPartyOrderNo"));
+                //组装商品
+                receivableCosts.addAll(orderReceivableCosts);
+                List<Map<String, Object>> costItems = new ArrayList<>();
+                for (OrderReceivableCost receivableCost : receivableCosts) {
+                    Map<String, Object> tmp = new HashMap<>();
+                    tmp.put("costItemCode", receivableCost.getCostCode());
+                    tmp.put("currencyOfPayment", receivableCost.getCurrencyCode());
+                    tmp.put("amountPayable", receivableCost.getAmount());
+                    costItems.add(tmp);
+                }
+                msg.put("line", costItems);
+                map.put("msg", JSONUtil.toJsonStr(msg));
+                msgClient.consume(map);
+                break;
+            default:
+        }
+    }
 
 }

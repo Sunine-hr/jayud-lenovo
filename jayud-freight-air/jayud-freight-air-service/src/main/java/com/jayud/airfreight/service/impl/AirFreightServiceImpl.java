@@ -1,6 +1,6 @@
 package com.jayud.airfreight.service.impl;
 
-import com.jayud.airfreight.model.bo.BookingSpaceForm;
+import com.jayud.airfreight.model.bo.vivo.BookingSpaceForm;
 import com.jayud.airfreight.service.AirFreightService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

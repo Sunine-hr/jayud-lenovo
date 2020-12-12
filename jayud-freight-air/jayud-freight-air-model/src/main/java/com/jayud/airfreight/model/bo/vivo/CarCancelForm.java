@@ -1,4 +1,4 @@
-package com.jayud.airfreight.model.bo;
+package com.jayud.airfreight.model.bo.vivo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;

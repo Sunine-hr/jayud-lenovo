@@ -12,12 +12,12 @@ import com.jayud.airfreight.feign.MsgClient;
 import com.jayud.airfreight.feign.OauthClient;
 import com.jayud.airfreight.feign.OmsClient;
 import com.jayud.airfreight.model.bo.*;
+import com.jayud.airfreight.model.bo.vivo.*;
 import com.jayud.airfreight.model.po.AirBooking;
 import com.jayud.airfreight.model.po.AirExtensionField;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.airfreight.service.IAirBookingService;
 import com.jayud.airfreight.service.IAirExtensionFieldService;
-import com.jayud.airfreight.service.IAirOrderService;
 import com.jayud.airfreight.service.VivoService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
@@ -82,7 +82,8 @@ public class VivoServiceImpl implements VivoService {
     String urlLadingFile;
     @Value("${vivo.urls.lading-info}")
     String urlLadingInfo;
-
+    @Value("${vivo.urls.air-freight-info}")
+    String urlAirFreightInfo;
 
     @Value("${vivo.public-key}")
     String publicKey;
@@ -141,6 +142,17 @@ public class VivoServiceImpl implements VivoService {
     @Override
     public Map<String, Object> forwarderLadingInfo(ForwarderLadingInfoForm form) {
         String url = urlBase + urlLadingInfo;
+        return doPost(form, url);
+    }
+
+    /**
+     * 货代抛空运费用数据到vivo
+     * @param form
+     * @return
+     */
+    @Override
+    public Map<String, Object> forwarderAirFarePush(ForwarderAirFreightForm form) {
+        String url = urlBase + urlAirFreightInfo;
         return doPost(form, url);
     }
 
@@ -332,7 +344,7 @@ public class VivoServiceImpl implements VivoService {
     public boolean bookingFile(AirOrder airOrder, BookingFileTransferDataForm bookingFileTransferDataForm) {
         //存储冗余字段
         AirExtensionField airExtensionField = new AirExtensionField()
-                .setBusinessTable(SqlConstant.AIR_ORDER)
+                .setBusinessTable(SqlConstant.AIR_BOOKING)
                 .setBusinessId(airOrder.getId())
                 .setThirdPartyUniqueSign(bookingFileTransferDataForm.getBookingNo())
                 .setCreateTime(LocalDateTime.now())
@@ -391,6 +403,7 @@ public class VivoServiceImpl implements VivoService {
         request.put("msg", JSONUtil.toJsonStr(msg));
         msgClient.consume(request);
     }
+
 
     private Object getInboundDate(AirOrder airOrder) {
         Map<String, Object> map = new HashMap<>();

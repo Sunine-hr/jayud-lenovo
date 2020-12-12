@@ -1,10 +1,7 @@
-package com.jayud.airfreight.model.bo;
+package com.jayud.airfreight.model.bo.vivo;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
-import com.jayud.common.enums.ViVoCargoTypeEnum;
-import com.jayud.common.vaildator.EnumAnnotation;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
@@ -12,8 +9,6 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data

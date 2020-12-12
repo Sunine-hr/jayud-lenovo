@@ -1,21 +1,19 @@
 package com.jayud.airfreight.controller;
 
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONUtil;
 import com.jayud.airfreight.model.bo.AddAirOrderForm;
-import com.jayud.airfreight.model.bo.BookingSpaceForm;
+import com.jayud.airfreight.model.bo.vivo.BookingSpaceForm;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.airfreight.model.vo.AirOrderVO;
 import com.jayud.airfreight.service.AirFreightService;
 import com.jayud.airfreight.service.IAirOrderService;
 import com.jayud.common.ApiResult;
-import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.entity.InitChangeStatusVO;
 import com.jayud.common.entity.SubOrderCloseOpt;
 import com.jayud.common.enums.ProcessStatusEnum;
-import com.jayud.common.enums.ResultEnum;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,12 +106,22 @@ public class ExternalApiController {
 
 
     @ApiOperation(value = "查询空运订单详情")
-    @PostMapping(value = "/getAirOrderDetails")
+    @PostMapping(value = "/api/airfreight/getAirOrderDetails")
     public ApiResult<AirOrderVO> getAirOrderDetails(@RequestParam("mainOrderNo") String mainOrderNo) {
         AirOrder airOrder = this.airOrderService.getByMainOrderNo(mainOrderNo);
         AirOrderVO airOrderDetails = this.airOrderService.getAirOrderDetails(airOrder.getId());
         return ApiResult.ok(airOrderDetails);
     }
+
+
+    @ApiModelProperty(value = "查询空运订单信息")
+    @RequestMapping(value = "/api/airfreight/getAirOrderInfoByOrderNo")
+    public ApiResult<AirOrder> getAirOrderInfoByOrderNo(@RequestParam("airOrderNo") String airOrderNo) {
+        AirOrder condition = new AirOrder().setOrderNo(airOrderNo);
+        List<AirOrder> airOrders = this.airOrderService.getAirOrderInfo(condition);
+        return ApiResult.ok(airOrders.get(0));
+    }
+
 
     private <T> T getForm(String json, Class<T> clz) {
         return JSONUtil.toBean(json, clz);

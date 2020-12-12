@@ -93,4 +93,9 @@ public interface IAirOrderService extends IService<AirOrder> {
      * 空运订单详情
      */
     AirOrderVO getAirOrderDetails(Long airOrderId);
+
+    /**
+     * 查询空运订单信息
+     */
+    public List<AirOrder> getAirOrderInfo(AirOrder airOrder);
 }

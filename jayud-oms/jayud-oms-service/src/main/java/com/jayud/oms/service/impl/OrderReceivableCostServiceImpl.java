@@ -1,5 +1,6 @@
 package com.jayud.oms.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.oms.mapper.OrderReceivableCostMapper;
 import com.jayud.oms.model.bo.GetCostDetailForm;
@@ -29,5 +30,27 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
     @Override
     public InputReceivableCostVO getWriteBackSCostData(Long costId) {
         return baseMapper.getWriteBackSCostData(costId);
+    }
+
+    /**
+     * 获取审核通过费用
+     */
+    @Override
+    public List<OrderReceivableCost> getApprovalFee(String mainOrder) {
+        QueryWrapper<OrderReceivableCost> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderReceivableCost::getMainOrderNo, mainOrder);
+        condition.lambda().eq(OrderReceivableCost::getStatus, 3);
+        return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 获取审核通过费用数目
+     */
+    @Override
+    public Integer getApprovalFeeCount(String mainOrder) {
+        QueryWrapper<OrderReceivableCost> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderReceivableCost::getMainOrderNo, mainOrder);
+        condition.lambda().eq(OrderReceivableCost::getStatus, 3);
+        return this.count(condition);
     }
 }

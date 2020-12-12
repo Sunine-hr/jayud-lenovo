@@ -1,8 +1,11 @@
-package com.jayud.airfreight.model.bo;
+package com.jayud.airfreight.model.bo.vivo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
+import com.jayud.airfreight.model.bo.AddAirOrderForm;
+import com.jayud.airfreight.model.bo.AddGoodsForm;
+import com.jayud.airfreight.model.bo.AddOrderAddressForm;
 import com.jayud.airfreight.model.enums.AirOrderTermsEnum;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.CreateUserTypeEnum;

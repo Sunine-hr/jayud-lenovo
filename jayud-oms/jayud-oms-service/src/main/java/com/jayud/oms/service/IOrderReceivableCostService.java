@@ -19,6 +19,7 @@ public interface IOrderReceivableCostService extends IService<OrderReceivableCos
 
     /**
      * 获取费用详情
+     *
      * @param form
      * @return
      */
@@ -26,8 +27,19 @@ public interface IOrderReceivableCostService extends IService<OrderReceivableCos
 
     /**
      * 获取该条费用以出账时结算币种的汇率和本币金额
+     *
      * @param costId
      * @return
      */
     InputReceivableCostVO getWriteBackSCostData(Long costId);
+
+    /**
+     * 获取审核通过费用
+     */
+    List<OrderReceivableCost> getApprovalFee(String mainOrder);
+
+    /**
+     * 获取审核通过费用数目
+     */
+    public Integer getApprovalFeeCount(String mainOrder);
 }

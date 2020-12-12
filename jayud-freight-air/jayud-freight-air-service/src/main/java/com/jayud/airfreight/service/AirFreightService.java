@@ -1,6 +1,6 @@
 package com.jayud.airfreight.service;
 
-import com.jayud.airfreight.model.bo.BookingSpaceForm;
+import com.jayud.airfreight.model.bo.vivo.BookingSpaceForm;
 
 /**
  * 空运货代

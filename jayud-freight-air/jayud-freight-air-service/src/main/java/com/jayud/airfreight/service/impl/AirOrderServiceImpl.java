@@ -403,5 +403,14 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         return airOrder;
     }
 
+    /**
+     * 查询空运订单信息
+     */
+    @Override
+    public List<AirOrder> getAirOrderInfo(AirOrder airOrder) {
+        QueryWrapper<AirOrder> condition = new QueryWrapper<>(airOrder);
+        return this.baseMapper.selectList(condition);
+    }
+
 
 }

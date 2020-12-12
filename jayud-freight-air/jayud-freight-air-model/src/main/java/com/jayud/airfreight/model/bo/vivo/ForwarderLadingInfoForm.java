@@ -1,10 +1,8 @@
-package com.jayud.airfreight.model.bo;
+package com.jayud.airfreight.model.bo.vivo;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 import com.jayud.common.CommonResult;
-import com.jayud.common.exception.VivoApiException;
 import com.jayud.common.vaildator.DateTime;
 import com.jayud.common.vaildator.NumberEnum;
 import io.swagger.annotations.ApiModelProperty;

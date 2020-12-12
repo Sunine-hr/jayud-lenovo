@@ -375,6 +375,10 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             }
             omsClient.oprCostGenreByCw(orderCostForms,"payment");
         }
+        //重新编辑后清除核销内容
+        QueryWrapper removeVerification = new QueryWrapper();
+        removeVerification.eq("bill_no",existObject.getBillNo());
+        verificationService.remove(removeVerification);
         return CommonResult.success();
     }
 

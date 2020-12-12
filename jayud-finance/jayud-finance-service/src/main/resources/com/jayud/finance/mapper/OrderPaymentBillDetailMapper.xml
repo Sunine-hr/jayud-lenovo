@@ -307,7 +307,10 @@
         (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_payment_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'CNY' and obct.money_type='1') payLocalAmount,
         (select group_concat(opbd.audit_status) from order_payment_bill_detail opbd where opbd.bill_no in (select distinct opbd.bill_no from order_payment_bill_detail opbd where opbd.order_no = oi.order_no) group by opbd.order_no) payStatus
         FROM
-        order_info oi ) temp
+        order_info oi
+        where EXISTS (select opc.main_order_no from order_payment_cost opc where opc.main_order_no = oi.order_no and opc.`status` = '3')
+        or EXISTS (select orc.main_order_no from order_receivable_cost orc where orc.main_order_no = oi.order_no and orc.`status` = '3')
+        ) temp
         where 1 = 1
         <if test="form.orderNo != null and form.orderNo != ''">
             and temp.orderNo = #{form.orderNo}

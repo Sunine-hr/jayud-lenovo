@@ -7,9 +7,6 @@
         <id column="id" property="id" />
         <result column="transport_no" property="transportNo" />
         <result column="order_no" property="orderNo" />
-        <result column="encode" property="encode" />
-        <result column="encode_url" property="encodeUrl" />
-        <result column="encode_url_name" property="encodeUrlName" />
         <result column="vehicle_type" property="vehicleType" />
         <result column="vehicle_size" property="vehicleSize" />
         <result column="cntr_no" property="cntrNo" />
@@ -28,7 +25,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, transport_no, order_no, encode, encode_url,encode_url_name, vehicle_type, vehicle_size, cntr_no, cntr_pic,
+        id, transport_no, order_no,vehicle_type, vehicle_size, cntr_no, cntr_pic,
         cntr_pic_name, driver_info_info,
         warehouse_info_id,remarks, describes, status, updated_time, updated_user, created_user, created_time
     </sql>
@@ -36,7 +33,6 @@
         SELECT
             osc.`id`,
             osc.`transport_no` transportNo,
-            osc.`encode`,
             osc.`vehicle_size` vehicleSize,
             osc.`vehicle_type` vehicleType,
             osc.`cntr_no` cntrNo,

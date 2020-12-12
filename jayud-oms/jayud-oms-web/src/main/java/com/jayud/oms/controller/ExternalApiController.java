@@ -101,7 +101,7 @@ public class ExternalApiController {
         logisticsTrack.setStatus(form.getStatus());
         logisticsTrack.setStatusName(form.getStatusName());
         logisticsTrack.setOperatorUser(form.getOperatorUser());
-        logisticsTrack.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(),DateUtils.DATE_TIME_PATTERN));
+        logisticsTrack.setOperatorTime(LocalDateTime.now());
         logisticsTrack.setStatusPic(form.getStatusPic());
         logisticsTrack.setDescription(form.getDescription());
         logisticsTrack.setEntrustNo(form.getEntrustNo());

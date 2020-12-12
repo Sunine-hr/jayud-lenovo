@@ -113,8 +113,14 @@ public class OrderInfoController {
                         inputOrderCustomsForm.getGoodsType() == null ||
                         StringUtil.isNullOrEmpty(inputOrderCustomsForm.getBizModel()) ||
                         StringUtil.isNullOrEmpty(inputOrderCustomsForm.getLegalName()) ||
+                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getEncode()) ||//六联单号
                         inputOrderCustomsForm.getSubOrders() == null) {
                     return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+                }
+                //六联单号必须为13位的纯数字
+                String encode = inputOrderCustomsForm.getEncode();
+                if(!(encode.matches("[0-9]{1,}") && encode.length() ==  13)){
+                    return CommonResult.error(ResultEnum.ENCODE_PURE_NUMBERS);
                 }
                 //附件处理
                 inputOrderCustomsForm.setCntrPic(StringUtils.getFileStr(inputOrderCustomsForm.getCntrPics()));

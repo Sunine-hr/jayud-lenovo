@@ -25,21 +25,6 @@ public class SendCarForm {
     @ApiModelProperty(value = "运输对应子订单",required = true)
     private String orderNo;
 
-    @ApiModelProperty(value = "是否有六联单",required = true)
-    private Boolean isHaveEncode;
-
-    @ApiModelProperty(value = "六联单号,勾了有就必填，没有就不填")
-    private String encode;
-
-    @ApiModelProperty(value = "六联单号文件地址,前台忽略")
-    private String encodeUrl;
-
-    @ApiModelProperty(value = "六联单号文件地址名称,前台忽略")
-    private String encodeUrlName;
-
-    @ApiModelProperty(value = "六联单号附件数组集合")
-    private List<FileView> encodePics = new ArrayList<>();
-
     @ApiModelProperty(value = "车型(1吨车 2柜车)",required = true)
     private Integer vehicleType;
 

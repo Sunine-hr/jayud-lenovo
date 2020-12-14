@@ -3,9 +3,13 @@ package com.jayud.tms.controller;
 import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.tms.model.vo.DriverInfoPdfVO;
 import com.jayud.tms.model.vo.SendCarPdfVO;
 import com.jayud.tms.pdfUtil.PdfTemplateUtil;
+import com.jayud.tms.service.IOrderSendCarsService;
 import com.jayud.tms.service.IOrderTransportService;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,16 +33,33 @@ public class PdfController {
     @Autowired
     private IOrderTransportService orderTransportService;
 
+    @Autowired
+    private IOrderSendCarsService sendCarsService;
+
     @ApiOperation(value = "渲染数据,orderNo=子订单号")
     @PostMapping(value = "/initPdfData")
     public CommonResult<SendCarPdfVO> initPdfData(@RequestBody Map<String,Object> param) {
         String orderNo = MapUtil.getStr(param, CommonConstant.ORDER_NO);
+        if(StringUtil.isNullOrEmpty(orderNo)){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
         SendCarPdfVO sendCarPdfVO = orderTransportService.initPdfData(orderNo, CommonConstant.ZGYS);
         return CommonResult.success(sendCarPdfVO);
     }
 
+    @ApiOperation(value = "司机资料,orderNo=子订单号")
+    @PostMapping(value = "/initDriverInfo")
+    public CommonResult<DriverInfoPdfVO> initDriverInfo(@RequestBody Map<String,Object> param) {
+        String orderNo = MapUtil.getStr(param, CommonConstant.ORDER_NO);
+        if(StringUtil.isNullOrEmpty(orderNo)){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        DriverInfoPdfVO driverInfoPdfVO = sendCarsService.initDriverInfo(orderNo);
+        return CommonResult.success(driverInfoPdfVO);
+    }
 
-    @ApiOperation(value = "下载PDF")
+
+    @ApiOperation(value = "下载PDF,废弃")
     @RequestMapping("/export")
     public void exportPdf(HttpServletResponse response) throws Exception {
         ByteArrayOutputStream byteArrayOutputStream = null;

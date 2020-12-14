@@ -2,6 +2,7 @@ package com.jayud.tms.service;
 
 import com.jayud.tms.model.po.OrderSendCars;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.tms.model.vo.DriverInfoPdfVO;
 import com.jayud.tms.model.vo.OrderSendCarsVO;
 
 import java.util.List;
@@ -33,5 +34,12 @@ public interface IOrderSendCarsService extends IService<OrderSendCars> {
      * 根据订单编号获取
      */
     public OrderSendCars getOrderSendCarsByOrderNo(String orderNo);
+
+    /**
+     * 获取司机资料PDF数据
+     * @param orderNo
+     * @return
+     */
+    DriverInfoPdfVO initDriverInfo(String orderNo);
 
 }

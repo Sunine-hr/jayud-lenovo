@@ -125,6 +125,12 @@ public class InputOrderTransportVO {
     @ApiModelProperty(value = "是否香港清关")
     private String isHkClear;
 
+    @ApiModelProperty(value = "提货文件上传附件地址,前台忽略")
+    private String takeFile;
+
+    @ApiModelProperty(value = "提货文件上传附件地址名称,前台忽略")
+    private String takeFileName;
+
     //中转信息
     @ApiModelProperty(value = "中转公司")
     private String companyName;

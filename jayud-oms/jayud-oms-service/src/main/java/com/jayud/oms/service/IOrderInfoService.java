@@ -123,5 +123,11 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      */
     OrderDataCountVO countOrderData();
 
+    /**
+     * 二期优化1：通关前审核，通关前复核
+     * @return
+     */
+    InitGoCustomsAuditVO initGoCustomsAudit(InitGoCustomsAuditForm form);
+
 
 }

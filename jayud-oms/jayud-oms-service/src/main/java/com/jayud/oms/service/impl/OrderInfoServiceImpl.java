@@ -197,7 +197,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     queryWrapper.isNull("order_no");
                 }
                 if("preSubmit_sub".equals(form.getCmd())){
-                    queryWrapper.eq("order_no",inputOrderVO.getOrderNo());
+                    queryWrapper.eq("order_no",form.getOrderNo());
                 }
                 queryWrapper.eq("status",OrderStatusEnum.COST_1.getCode());
                 paymentCostService.remove(queryWrapper);
@@ -545,6 +545,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 for (LogisticsTrack logisticsTrack : logisticsTracks) {
                     allPics.addAll(StringUtils.getFileViews(logisticsTrack.getStatusPic(), logisticsTrack.getStatusPicName(), prePath));
                 }
+                //提货文件
+                allPics.addAll(StringUtils.getFileViews(inputOrderTransportVO.getTakeFile(), inputOrderTransportVO.getTakeFileName(), prePath));
                 inputOrderTransportVO.setAllPics(allPics);
 
                 //设置提货信息的客户
@@ -716,6 +718,19 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public OrderDataCountVO countOrderData() {
         return baseMapper.countOrderData();
+    }
+
+    @Override
+    public InitGoCustomsAuditVO initGoCustomsAudit(InitGoCustomsAuditForm form) {
+        InitGoCustomsAuditVO initGoCustomsAuditVO;
+        String prePath = fileClient.getBaseUrl().getData().toString();
+        if(form.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode())){//出口报关
+            initGoCustomsAuditVO = baseMapper.initGoCustomsAudit1(form);
+        }else {//外部报关放行
+            initGoCustomsAuditVO = baseMapper.initGoCustomsAudit2(form);
+        }
+        initGoCustomsAuditVO.setFileViewList(StringUtils.getFileViews(initGoCustomsAuditVO.getFileStr(),initGoCustomsAuditVO.getFileNameStr(),prePath));
+        return initGoCustomsAuditVO;
     }
 
 

@@ -3,8 +3,10 @@ package com.jayud.oms.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.oms.model.bo.InitGoCustomsAuditForm;
 import com.jayud.oms.model.bo.QueryOrderInfoForm;
 import com.jayud.oms.model.po.OrderInfo;
+import com.jayud.oms.model.vo.InitGoCustomsAuditVO;
 import com.jayud.oms.model.vo.InputMainOrderVO;
 import com.jayud.oms.model.vo.OrderDataCountVO;
 import com.jayud.oms.model.vo.OrderInfoVO;
@@ -50,5 +52,19 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      * @return
      */
     OrderDataCountVO countOrderData();
+
+    /**
+     * 二期优化1：通关前审核，通关前复核
+     * @param form
+     * @return
+     */
+    InitGoCustomsAuditVO initGoCustomsAudit1(@Param("form") InitGoCustomsAuditForm form);
+
+    /**
+     * 二期优化1：通关前审核，通关前复核
+     * @param form
+     * @return
+     */
+    InitGoCustomsAuditVO initGoCustomsAudit2(@Param("form") InitGoCustomsAuditForm form);
 
 }

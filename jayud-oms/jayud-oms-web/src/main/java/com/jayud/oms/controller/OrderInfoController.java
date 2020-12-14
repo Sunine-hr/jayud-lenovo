@@ -250,6 +250,12 @@ public class OrderInfoController {
     }
 
 
+    @ApiOperation(value = "二期优化1：通关前审核，通关前复核")
+    @PostMapping(value = "/initGoCustomsAudit")
+    public CommonResult<InitGoCustomsAuditVO> initGoCustomsAudit(@RequestBody @Valid InitGoCustomsAuditForm form) {
+        InitGoCustomsAuditVO initGoCustomsAuditVO = orderInfoService.initGoCustomsAudit(form);
+        return CommonResult.success(initGoCustomsAuditVO);
+    }
 
 
 }

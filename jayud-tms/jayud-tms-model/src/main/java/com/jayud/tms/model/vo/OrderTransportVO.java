@@ -1,9 +1,13 @@
 package com.jayud.tms.model.vo;
 
 import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.utils.FileView;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class OrderTransportVO {
@@ -80,6 +84,15 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "子订单结算单位")
     private String subUnitCode;
 
+    @ApiModelProperty(value = "提货文件上传附件地址,前台忽略")
+    private String takeFile;
+
+    @ApiModelProperty(value = "提货文件上传附件地址名称,前台忽略")
+    private String takeFileName;
+
+    @ApiModelProperty(value = "提货文件上传附件地址数组集合")
+    private List<FileView> takeFiles = new ArrayList<>();
+
     //货物信息
     @ApiModelProperty(value = "货物描述")
     private String goodsDesc;
@@ -92,6 +105,9 @@ public class OrderTransportVO {
 
     @ApiModelProperty(value = "重量")
     private String weight;
+
+    @ApiModelProperty(value = "提货时间,多个逗号拼接")
+    private String takeTimeStr;
 
     //提供货信息
     @ApiModelProperty(value = "省")//提货

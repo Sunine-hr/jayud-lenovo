@@ -3,6 +3,7 @@ package com.jayud.tms.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.tms.model.po.OrderSendCars;
 import com.jayud.tms.mapper.OrderSendCarsMapper;
+import com.jayud.tms.model.vo.DriverInfoPdfVO;
 import com.jayud.tms.model.vo.OrderSendCarsVO;
 import com.jayud.tms.service.IOrderSendCarsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -45,6 +46,11 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
         QueryWrapper<OrderSendCars> condition = new QueryWrapper<>();
         condition.lambda().eq(OrderSendCars::getOrderNo, orderNo);
         return this.baseMapper.selectOne(condition);
+    }
+
+    @Override
+    public DriverInfoPdfVO initDriverInfo(String orderNo) {
+        return baseMapper.initDriverInfo(orderNo);
     }
 
 

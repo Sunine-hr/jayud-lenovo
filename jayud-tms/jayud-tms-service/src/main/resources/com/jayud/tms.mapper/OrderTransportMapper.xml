@@ -149,7 +149,9 @@
             ot.`legal_name` subLegalName,
             ot.unit_code subUnitCode,
         (SELECT	GROUP_CONCAT(ota.take_time) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' group by ot.order_no
-        ) takeTimeStr
+        ) takeTimeStr,
+        ot.take_file takeFile,
+        ot.take_file_name takeFileName
         FROM
             order_transport ot
             LEFT JOIN order_info oi

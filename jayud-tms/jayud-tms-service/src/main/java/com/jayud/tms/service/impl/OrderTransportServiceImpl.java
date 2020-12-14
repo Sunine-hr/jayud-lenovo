@@ -12,6 +12,7 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.tms.feign.FileClient;
 import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.mapper.OrderTransportMapper;
 import com.jayud.tms.model.bo.*;
@@ -58,6 +59,9 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     IOrderSendCarsService orderSendCarsService;
     @Autowired
     OmsClient omsClient;
+
+    @Autowired
+    FileClient fileClient;
 
 
     @Override
@@ -176,6 +180,11 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         //定义排序规则
         page.addOrder(OrderItem.desc("ot.id"));
         IPage<OrderTransportVO> pageInfo = baseMapper.findTransportOrderByPage(page, form);
+        String prePath = fileClient.getBaseUrl().getData().toString();
+        List<OrderTransportVO> pageList = pageInfo.getRecords();
+        for (OrderTransportVO orderTransportVO : pageList) {
+            orderTransportVO.setTakeFiles(StringUtils.getFileViews(orderTransportVO.getTakeFile(),orderTransportVO.getTakeFileName(),prePath));
+        }
         return pageInfo;
     }
 

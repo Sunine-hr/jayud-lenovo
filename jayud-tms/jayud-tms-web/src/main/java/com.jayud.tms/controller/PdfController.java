@@ -38,7 +38,7 @@ public class PdfController {
     }
 
 
-    @ApiOperation(value = "下载PDF")
+    @ApiOperation(value = "下载PDF,废弃")
     @RequestMapping("/export")
     public void exportPdf(HttpServletResponse response) throws Exception {
         ByteArrayOutputStream byteArrayOutputStream = null;

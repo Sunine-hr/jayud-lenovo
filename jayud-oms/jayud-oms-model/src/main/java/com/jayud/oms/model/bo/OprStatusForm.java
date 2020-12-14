@@ -51,4 +51,7 @@ public class OprStatusForm {
     @ApiModelProperty(value = "预计通关时间")
     private String preGoCustomsTime;
 
+    @ApiModelProperty(value = "外部报关放行的六联单号")
+    private String encode;
+
 }

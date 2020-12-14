@@ -122,6 +122,12 @@ public class OrderTransport extends Model<OrderTransport> {
     @ApiModelProperty(value = "预计通关时间")
     private LocalDateTime preGoCustomsTime;
 
+    @ApiModelProperty(value = "提货文件")
+    private String takeFile;
+
+    @ApiModelProperty(value = "提货文件名称")
+    private String takeFileName;
+
 
     @Override
     protected Serializable pkVal() {

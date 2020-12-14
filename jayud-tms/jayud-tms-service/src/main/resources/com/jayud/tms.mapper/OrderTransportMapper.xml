@@ -31,6 +31,8 @@
         <result column="created_time" property="createdTime" />
         <result column="created_user" property="createdUser" />
         <result column="driver_info_id" property="driverInfoId" />
+        <result column="take_file" property="takeFile" />
+        <result column="take_file_name" property="takeFileName" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -38,7 +40,7 @@
         id, main_order_no, order_no, port_code, goods_type, vehicle_type, vehicle_size, cntr_no, cntr_pic, cntrPicName,
         warehouse_info_id, status, is_load_goods, is_unload_goods,unit_code, hk_unit_code,hk_legal_name,is_hk_clear,
         updated_time, updated_user, created_time,created_user,jiedan_user,jiedan_time,car_weigh_num,legal_name,need_input_cost,
-        driver_info_id
+        driver_info_id,take_file,take_file_name
     </sql>
 
     <select id="getOrderTransport"  resultType="com.jayud.tms.model.vo.InputOrderTransportVO" >

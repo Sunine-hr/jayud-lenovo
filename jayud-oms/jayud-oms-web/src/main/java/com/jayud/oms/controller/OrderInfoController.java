@@ -9,7 +9,6 @@ import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
-import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.AuditInfo;
@@ -113,8 +112,14 @@ public class OrderInfoController {
                         inputOrderCustomsForm.getGoodsType() == null ||
                         StringUtil.isNullOrEmpty(inputOrderCustomsForm.getBizModel()) ||
                         StringUtil.isNullOrEmpty(inputOrderCustomsForm.getLegalName()) ||
+                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getEncode()) ||//六联单号
                         inputOrderCustomsForm.getSubOrders() == null) {
                     return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+                }
+                //六联单号必须为13位的纯数字
+                String encode = inputOrderCustomsForm.getEncode();
+                if(!(encode.matches("[0-9]{1,}") && encode.length() ==  13)){
+                    return CommonResult.error(ResultEnum.ENCODE_PURE_NUMBERS);
                 }
                 //附件处理
                 inputOrderCustomsForm.setCntrPic(StringUtils.getFileStr(inputOrderCustomsForm.getCntrPics()));
@@ -209,8 +214,13 @@ public class OrderInfoController {
     @PostMapping(value = "/outCustomsRelease")
     public CommonResult outCustomsRelease(@RequestBody OprStatusForm form) {
         if(form.getMainOrderId() == null || StringUtil.isNullOrEmpty(form.getOperatorUser()) ||
-                StringUtil.isNullOrEmpty(form.getOperatorTime())){
+                StringUtil.isNullOrEmpty(form.getEncode())){
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+        }
+        //六联单号必须为13位的纯数字
+        String encode = form.getEncode();
+        if(!(encode.matches("[0-9]{1,}") && encode.length() ==  13)){
+            return CommonResult.error(ResultEnum.ENCODE_PURE_NUMBERS);
         }
         //外部报关放行:1.对主订单放行  2.随时可操作  3.没有出口报关的中港运输的单才可进行外部报关放行,有出口报关的就进行报关模块的报关放行
         //外部报关放行不体现在流程节点中
@@ -223,12 +233,13 @@ public class OrderInfoController {
         auditInfo.setStatusFileName(StringUtils.getFileNameStr(form.getFileViewList()));
         auditInfo.setAuditUser(UserOperator.getToken());
         auditInfo.setCreatedUser(UserOperator.getToken());
-        auditInfo.setAuditTime(DateUtils.str2LocalDateTime(form.getOperatorTime(),DateUtils.DATE_TIME_PATTERN));
+        auditInfo.setAuditTime(LocalDateTime.now());
         auditInfo.setExtDesc(SqlConstant.ORDER_INFO);
         auditInfoService.save(auditInfo);//保存操作记录
         OrderInfo orderInfo = new OrderInfo();
         orderInfo.setId(form.getMainOrderId());
         orderInfo.setCustomsRelease(true);
+        orderInfo.setEncode(form.getEncode());
         orderInfo.setUpUser(UserOperator.getToken());
         orderInfo.setUpTime(LocalDateTime.now());
         boolean result = orderInfoService.updateById(orderInfo);

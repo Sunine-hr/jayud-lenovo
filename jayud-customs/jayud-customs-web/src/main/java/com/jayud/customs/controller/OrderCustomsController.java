@@ -85,7 +85,7 @@ public class OrderCustomsController {
         OrderCustoms orderCustoms = new OrderCustoms();
         orderCustoms.setId(form.getOrderId());
         orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_1.getCode());
-        orderCustoms.setJiedanTime(DateUtils.str2LocalDateTime(form.getOperatorTime(),DateUtils.DATE_TIME_PATTERN));
+        orderCustoms.setJiedanTime(LocalDateTime.now());
         orderCustoms.setJiedanUser(form.getOperatorUser());
         orderCustoms.setUpdatedTime(LocalDateTime.now());
         orderCustoms.setUpdatedUser(UserOperator.getToken());
@@ -125,7 +125,7 @@ public class OrderCustomsController {
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
         }
         if(OrderOprCmdEnum.ISSUE_ORDER.getCode().equals(form.getCmd())){//重新打单时不用填操作人操作时间
-            if(StringUtil.isNullOrEmpty(form.getOperatorUser()) || form.getOperatorTime() == null ){
+            if(StringUtil.isNullOrEmpty(form.getOperatorUser())){
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
             }
         }
@@ -178,7 +178,7 @@ public class OrderCustomsController {
     @PostMapping(value = "/toCheckOrder")
     public CommonResult auditOrderRelease(@RequestBody OprStatusForm form) {
         if(form.getOrderId() == null || form.getMainOrderId() == null ||
-                StringUtil.isNullOrEmpty(form.getOperatorUser())  || form.getOperatorTime() == null ){
+                StringUtil.isNullOrEmpty(form.getOperatorUser())){
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
         }
         OrderCustoms orderCustoms = new OrderCustoms();
@@ -224,7 +224,7 @@ public class OrderCustomsController {
 
         Boolean flag = true;//是否是流程节点中操作状态
         if(OrderOprCmdEnum.DECLARE.getCode().equals(form.getCmd())) {//报关申报
-            if (StringUtil.isNullOrEmpty(form.getOperatorUser()) || form.getOperatorTime() == null) {
+            if (StringUtil.isNullOrEmpty(form.getOperatorUser())) {
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
             }
             orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_4.getCode());

@@ -15,10 +15,7 @@ import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.mapper.OrderReceivableBillDetailMapper;
 import com.jayud.finance.po.*;
-import com.jayud.finance.service.ICurrencyRateService;
-import com.jayud.finance.service.IOrderBillCostTotalService;
-import com.jayud.finance.service.IOrderReceivableBillDetailService;
-import com.jayud.finance.service.IOrderReceivableBillService;
+import com.jayud.finance.service.*;
 import com.jayud.finance.util.ReflectUtil;
 import com.jayud.finance.vo.*;
 import io.netty.util.internal.StringUtil;
@@ -57,6 +54,9 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
 
     @Autowired
     ICurrencyRateService currencyRateService;
+
+    @Autowired
+    ICancelAfterVerificationService verificationService;
 
     @Override
     public IPage<OrderPaymentBillDetailVO> findReceiveBillDetailByPage(QueryPaymentBillDetailForm form) {
@@ -305,6 +305,12 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                     receiveBillDetails.get(i).setMakeTime(LocalDateTime.now());
                     receiveBillDetails.get(i).setCreatedUser(form.getLoginUserName());
                 }
+
+                //解决报错时重复添加数据问题
+                QueryWrapper queryWrapper1 = new QueryWrapper();
+                queryWrapper1.in("cost_id",costIds);
+                receivableBillService.remove(queryWrapper1);
+
                 result = saveBatch(receiveBillDetails);
                 if (!result) {
                     return CommonResult.error(ResultEnum.OPR_FAIL);
@@ -364,6 +370,10 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             }
             omsClient.oprCostGenreByCw(orderCostForms,"receivable");
         }
+        //重新编辑后清除核销内容
+        QueryWrapper removeVerification = new QueryWrapper();
+        removeVerification.eq("bill_no",existObject.getBillNo());
+        verificationService.remove(removeVerification);
         return CommonResult.success();
     }
 

@@ -12,18 +12,6 @@ public class OrderSendCarsVO {
     @ApiModelProperty(value = "运输订单号")
     private String transportNo;
 
-    @ApiModelProperty(value = "是否有六联单号")
-    private Boolean isHaveEncode;
-
-    @ApiModelProperty(value = "六联单号")
-    private String encode;
-
-    @ApiModelProperty(value = "六联单号文件地址,暂时不要")
-    private String encodeUrl;
-
-    @ApiModelProperty(value = "六联单号文件地址名称,暂时不要")
-    private String encodeUrlName;
-
     @ApiModelProperty(value = "车型(1吨车 2柜车)")
     private Integer vehicleType;
 

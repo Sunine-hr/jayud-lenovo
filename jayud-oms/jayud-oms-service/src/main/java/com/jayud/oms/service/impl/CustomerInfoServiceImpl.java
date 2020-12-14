@@ -70,5 +70,10 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         return this.baseMapper.findCustomerBasicsInfoByPage(page, form);
     }
 
+    @Override
+    public List<CustomerInfoVO> existCustomerInfo(String idCode, String name) {
+        return baseMapper.existCustomerInfo(idCode,name);
+    }
+
 
 }

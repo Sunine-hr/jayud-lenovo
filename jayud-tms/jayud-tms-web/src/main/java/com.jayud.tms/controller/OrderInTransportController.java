@@ -67,7 +67,7 @@ public class OrderInTransportController {
     public CommonResult oprOrderTransport(@RequestBody OprStatusForm form) {
         if(form.getOrderId() == null || form.getMainOrderId() == null ||
                 (StringUtil.isNullOrEmpty(form.getOperatorUser()) && !CommonConstant.HK_CLEAR_CUSTOMS.equals(form.getCmd())) ||
-                (StringUtil.isNullOrEmpty(form.getOperatorTime()) && !CommonConstant.HK_CLEAR_CUSTOMS.equals(form.getCmd())) ||
+                (!CommonConstant.HK_CLEAR_CUSTOMS.equals(form.getCmd())) ||
                 StringUtil.isNullOrEmpty(form.getCmd())){
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
         }
@@ -85,7 +85,7 @@ public class OrderInTransportController {
 
         if(CommonConstant.COMFIRM_ORDER.equals(form.getCmd())){//确认接单
             orderTransport.setStatus(OrderStatusEnum.TMS_T_1.getCode());
-            orderTransport.setJiedanTime(DateUtils.str2LocalDateTime(form.getOperatorTime(),DateUtils.DATE_TIME_PATTERN));
+            orderTransport.setJiedanTime(LocalDateTime.now());
             orderTransport.setJiedanUser(form.getOperatorUser());
 
             form.setStatus(OrderStatusEnum.TMS_T_1.getCode());
@@ -307,10 +307,9 @@ public class OrderInTransportController {
             if((CommonConstant.EDIT_CAR.equals(form.getCmd()) && form.getId() == null) ||
               form.getOrderId() == null || form.getMainOrderId() == null ||
               StringUtil.isNullOrEmpty(form.getTransportNo()) || StringUtil.isNullOrEmpty(form.getOrderNo()) ||
-              form.getIsHaveEncode() == null || form.getVehicleSize() == null || form.getVehicleType() == null ||
+              form.getVehicleSize() == null || form.getVehicleType() == null ||
               form.getSupplierInfoId() == null || StringUtil.isNullOrEmpty(form.getLicensePlate()) ||
-              form.getDriverInfoId() == null ||
-              form.getWarehouseInfoId() == null || (form.getIsHaveEncode() && StringUtil.isNullOrEmpty(form.getEncode()))){
+              form.getDriverInfoId() == null || form.getWarehouseInfoId() == null){
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }
             //当运输派车后在驳回时,重新编辑,再次走流程时会出现两条派车记录,原来那条作废
@@ -322,8 +321,6 @@ public class OrderInTransportController {
             //保存派车信息
             orderSendCars.setCntrPic(StringUtils.getFileStr(form.getCntrPics()));
             orderSendCars.setCntrPicName(StringUtils.getFileNameStr(form.getCntrPics()));
-            orderSendCars.setEncodeUrl(StringUtils.getFileStr(form.getEncodePics()));
-            orderSendCars.setEncodeUrlName(StringUtils.getFileNameStr(form.getEncodePics()));
             orderSendCars.setStatus(OrderStatusEnum.TMS_T_2.getCode());
             if(CommonConstant.SEND_CAR.equals(form.getCmd())) {
                 orderSendCars.setCreatedUser(UserOperator.getToken());
@@ -399,11 +396,6 @@ public class OrderInTransportController {
         OrderSendCarsVO orderSendCars = orderSendCarsService.getOrderSendInfo(orderNo);
         if(orderSendCars == null){
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
-        }
-        if(StringUtil.isNullOrEmpty(orderSendCars.getEncode())){
-            orderSendCars.setIsHaveEncode(false);
-        }else {
-            orderSendCars.setIsHaveEncode(true);
         }
         return CommonResult.success(orderSendCars);
     }

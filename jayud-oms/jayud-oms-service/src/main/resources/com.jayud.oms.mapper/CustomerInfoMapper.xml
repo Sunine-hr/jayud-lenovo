@@ -295,4 +295,9 @@
             </if>
         </where>
     </select>
+
+    <select id="existCustomerInfo" resultType="com.jayud.oms.model.vo.CustomerInfoVO">
+        select id,name,id_code idCode from customer_info where name = #{name}
+         OR id_code = #{idCode}
+    </select>
 </mapper>

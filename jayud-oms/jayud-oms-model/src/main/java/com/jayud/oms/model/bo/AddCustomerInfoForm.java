@@ -14,7 +14,7 @@ import javax.validation.constraints.Pattern;
 public class AddCustomerInfoForm {
 
     @ApiModelProperty(value = "主键ID,修改时必传")
-    private Integer id;
+    private Long id;
 
     @ApiModelProperty(value = "客户名称",required = true)
     @NotEmpty(message = "name is required")

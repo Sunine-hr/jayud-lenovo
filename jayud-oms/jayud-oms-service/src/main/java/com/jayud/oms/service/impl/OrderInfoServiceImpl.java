@@ -192,8 +192,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             //业务场景:暂存时提交所有未提交审核的信息,为了避免用户删除一条然后又添加的情况，每次暂存前先把原来未提交审核的清空
             if("preSubmit_main".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())){
                 QueryWrapper queryWrapper = new QueryWrapper();
-                queryWrapper.eq("main_order_no",inputOrderVO.getOrderNo());
-                queryWrapper.isNull("order_no");
+                if("preSubmit_main".equals(form.getCmd())){
+                    queryWrapper.eq("main_order_no",inputOrderVO.getOrderNo());
+                    queryWrapper.isNull("order_no");
+                }
+                if("preSubmit_sub".equals(form.getCmd())){
+                    queryWrapper.eq("order_no",inputOrderVO.getOrderNo());
+                }
                 queryWrapper.eq("status",OrderStatusEnum.COST_1.getCode());
                 paymentCostService.remove(queryWrapper);
                 receivableCostService.remove(queryWrapper);

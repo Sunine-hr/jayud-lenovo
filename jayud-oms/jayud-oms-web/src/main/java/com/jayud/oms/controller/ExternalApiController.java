@@ -101,7 +101,7 @@ public class ExternalApiController {
         logisticsTrack.setStatus(form.getStatus());
         logisticsTrack.setStatusName(form.getStatusName());
         logisticsTrack.setOperatorUser(form.getOperatorUser());
-        logisticsTrack.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(),DateUtils.DATE_TIME_PATTERN));
+        logisticsTrack.setOperatorTime(LocalDateTime.now());
         logisticsTrack.setStatusPic(form.getStatusPic());
         logisticsTrack.setDescription(form.getDescription());
         logisticsTrack.setEntrustNo(form.getEntrustNo());
@@ -247,14 +247,21 @@ public class ExternalApiController {
                     orderPaymentCost.setId(costId);
                     orderPaymentCost.setIsBill("1");//暂存
                     paymentCosts.add(orderPaymentCost);
-
+                }
+                //获取现存数据有多少暂存的，改为未出账
+                QueryWrapper queryWrapper = new QueryWrapper();
+                queryWrapper.eq("is_bill","1");
+                List<OrderPaymentCost> existPaymentCosts = paymentCostService.list(queryWrapper);
+                for (OrderPaymentCost existPaymentCost : existPaymentCosts) {
                     OrderPaymentCost delCost = new OrderPaymentCost();
-                    delCost.setId(costId);
+                    delCost.setId(existPaymentCost.getId());
                     delCost.setIsBill("0");//未出账
                     delCosts.add(delCost);
                 }
                 //把原来暂存的清除,更新未出账
-                paymentCostService.updateBatchById(delCosts);
+                if(delCosts.size() > 0){
+                    paymentCostService.updateBatchById(delCosts);
+                }
             }else if("del".equals(form.getCmd())){//删除对账单
                 for (Long costId : form.getCostIds()) {
                     OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
@@ -280,14 +287,21 @@ public class ExternalApiController {
                     orderReceivableCost.setId(costId);
                     orderReceivableCost.setIsBill("1");//暂存
                     receivableCosts.add(orderReceivableCost);
-
+                }
+                //获取现存数据有多少暂存的，改为未出账
+                QueryWrapper queryWrapper = new QueryWrapper();
+                queryWrapper.eq("is_bill","1");
+                List<OrderReceivableCost> existReceivableCosts = receivableCostService.list(queryWrapper);
+                for (OrderReceivableCost existReceivableCost : existReceivableCosts) {
                     OrderReceivableCost delCost = new OrderReceivableCost();
-                    delCost.setId(costId);
+                    delCost.setId(existReceivableCost.getId());
                     delCost.setIsBill("0");//未出账
                     delCosts.add(delCost);
                 }
                 //把原来暂存的清除,更新未出账
-                receivableCostService.updateBatchById(delCosts);
+                if(delCosts.size() > 0) {
+                    receivableCostService.updateBatchById(delCosts);
+                }
             }else if("del".equals(form.getCmd())){//删除对账单
                 for (Long costId : form.getCostIds()) {
                     OrderReceivableCost orderReceivableCost = new OrderReceivableCost();

@@ -1,5 +1,7 @@
 package com.jayud.finance.vo;
 
+import com.jayud.finance.enums.BillEnum;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -53,6 +55,9 @@ public class FinanceAccountVO {
     @ApiModelProperty(value = "应收对账单状态")
     private String recStatus;
 
+    @ApiModelProperty(value = "应收对账单状态描述")
+    private String recStatusDesc;
+
     @ApiModelProperty(value = "应收费用状态")
     private String recCostStatus;
 
@@ -83,8 +88,44 @@ public class FinanceAccountVO {
     @ApiModelProperty(value = "应付对账单状态")
     private String payStatus;
 
+    @ApiModelProperty(value = "应收对账单状态描述")
+    private String payStatusDesc;
+
     @ApiModelProperty(value = "利润(人民币)")
     private String profit;
+
+    public String getRecStatusDesc() {
+        if(!StringUtil.isNullOrEmpty(recStatus)){
+            String desc = "";
+            StringBuilder sb = new StringBuilder();
+            String[] strs = recStatus.split(",");
+            for (String str : strs) {
+                sb.append(BillEnum.getDesc(str)).append(",");
+            }
+            if (!"".equals(String.valueOf(sb))) {
+                desc = sb.substring(0, sb.length() - 1);
+            }
+            return desc;
+        }
+        return "";
+    }
+
+    public String getPayStatusDesc() {
+        if(!StringUtil.isNullOrEmpty(payStatus)){
+            String desc = "";
+            StringBuilder sb = new StringBuilder();
+            String[] strs = payStatus.split(",");
+            for (String str : strs) {
+                sb.append(BillEnum.getDesc(str)).append(",");
+            }
+            if (!"".equals(String.valueOf(sb))) {
+                desc = sb.substring(0, sb.length() - 1);
+            }
+            return desc;
+        }
+        return "";
+    }
+
 
 
 

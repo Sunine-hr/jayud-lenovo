@@ -39,7 +39,7 @@
 
     <select id="findPaymentCost" parameterType="com.jayud.oms.model.bo.GetCostDetailForm"
             resultType="com.jayud.oms.model.vo.InputPaymentCostVO">
-        SELECT
+        SELECT distinct
         opc.`id`,
         opc.`customer_code` customerCode ,
         (select si.supplier_ch_name from supplier_info si where si.supplier_code = opc.customer_code limit 1)customerName,

@@ -305,6 +305,12 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                     receiveBillDetails.get(i).setMakeTime(LocalDateTime.now());
                     receiveBillDetails.get(i).setCreatedUser(form.getLoginUserName());
                 }
+
+                //解决报错时重复添加数据问题
+                QueryWrapper queryWrapper1 = new QueryWrapper();
+                queryWrapper1.in("cost_id",costIds);
+                receivableBillService.remove(queryWrapper1);
+
                 result = saveBatch(receiveBillDetails);
                 if (!result) {
                     return CommonResult.error(ResultEnum.OPR_FAIL);

@@ -1,15 +1,20 @@
 package com.jayud.airfreight.controller;
 
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.airfreight.model.bo.AddAirOrderForm;
 import com.jayud.airfreight.model.bo.vivo.BookingSpaceForm;
 import com.jayud.airfreight.model.po.AirOrder;
+import com.jayud.airfreight.model.po.AirPort;
 import com.jayud.airfreight.model.vo.AirOrderVO;
 import com.jayud.airfreight.service.AirFreightService;
 import com.jayud.airfreight.service.IAirOrderService;
+import com.jayud.airfreight.service.IAirPortService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.InitChangeStatusVO;
+import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.SubOrderCloseOpt;
 import com.jayud.common.enums.ProcessStatusEnum;
 import io.swagger.annotations.Api;
@@ -20,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,6 +43,8 @@ public class ExternalApiController {
     AirFreightService airFreightService;
     @Autowired
     private IAirOrderService airOrderService;
+    @Autowired
+    private IAirPortService airPortService;
 
     @RequestMapping(value = "/api/airfreight/bookingSpace")
     public Boolean doBookingSpace(@RequestParam(name = "json") String json) {
@@ -120,6 +128,23 @@ public class ExternalApiController {
         AirOrder condition = new AirOrder().setOrderNo(airOrderNo);
         List<AirOrder> airOrders = this.airOrderService.getAirOrderInfo(condition);
         return ApiResult.ok(airOrders.get(0));
+    }
+
+
+    @ApiModelProperty(value = "获取飞机港口下拉数据")
+    @RequestMapping(value = "/api/airfreight/initAirPort")
+    public ApiResult<AirPort> getAirPort() {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(SqlConstant.STATUS, 1);
+        List<AirPort> airPorts = this.airPortService.list(queryWrapper);
+        List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
+        for (AirPort airPort : airPorts) {
+            InitComboxStrVO initComboxVO = new InitComboxStrVO();
+            initComboxVO.setCode(airPort.getCode());
+            initComboxVO.setName(airPort.getName());
+            initComboxStrVOS.add(initComboxVO);
+        }
+        return ApiResult.ok(initComboxStrVOS);
     }
 
 

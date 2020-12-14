@@ -44,6 +44,18 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
     }
 
     /**
+     * 获取审核通过费用
+     */
+    @Override
+    public List<OrderReceivableCost> getApprovalFee(String mainOrder, List<Long> excludeIds) {
+        QueryWrapper<OrderReceivableCost> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderReceivableCost::getMainOrderNo, mainOrder);
+        condition.lambda().eq(OrderReceivableCost::getStatus, 3);
+        condition.lambda().notIn(OrderReceivableCost::getId, excludeIds);
+        return this.baseMapper.selectList(condition);
+    }
+
+    /**
      * 获取审核通过费用数目
      */
     @Override
@@ -51,6 +63,18 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
         QueryWrapper<OrderReceivableCost> condition = new QueryWrapper<>();
         condition.lambda().eq(OrderReceivableCost::getMainOrderNo, mainOrder);
         condition.lambda().eq(OrderReceivableCost::getStatus, 3);
+        return this.count(condition);
+    }
+
+    /**
+     * 获取审核通过费用数目
+     */
+    @Override
+    public Integer getApprovalFeeCount(String mainOrder, List<Long> excludeIds) {
+        QueryWrapper<OrderReceivableCost> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderReceivableCost::getMainOrderNo, mainOrder);
+        condition.lambda().eq(OrderReceivableCost::getStatus, 3);
+        condition.lambda().notIn(OrderReceivableCost::getId, excludeIds);
         return this.count(condition);
     }
 }

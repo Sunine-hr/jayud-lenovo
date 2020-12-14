@@ -9,6 +9,7 @@ import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +27,6 @@ public class InputAirOrderVO {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "空运订单主键")
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     @ApiModelProperty(value = "主订单编号")
@@ -57,7 +57,7 @@ public class InputAirOrderVO {
     private Integer impAndExpType;
 
     @ApiModelProperty(value = "进出口类型")
-    private Integer impAndExpTypeDesc;
+    private String impAndExpTypeDesc;
 
     @ApiModelProperty(value = "贸易方式(0:CIF,1:DUU,2:FOB,3:DDP)")
     private Integer terms;
@@ -112,5 +112,11 @@ public class InputAirOrderVO {
 
     @ApiModelProperty(value = "所有附件信息")
     private List<FileView> allPics = new ArrayList<>();
+
+    @ApiModelProperty(value = "接单人(登录用户名)")
+    private String orderTaker;
+
+    @ApiModelProperty(value = "接单日期")
+    private String receivingOrdersDate;
 
 }

@@ -8,6 +8,7 @@ import com.jayud.airfreight.model.enums.AirOrderTermsEnum;
 import com.jayud.airfreight.model.po.Goods;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.TradeTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -41,6 +42,9 @@ public class AirOrderFormVO {
 
     @ApiModelProperty(value = "进出口类型(1：进口，2：出口)")
     private Integer impAndExpType;
+
+    @ApiModelProperty(value = "进出口类型描述")
+    private String impAndExpTypeDesc;
 
     @ApiModelProperty(value = "业务类型(贸易方式0:CIF,1:DUU,2:FOB,3:DDP)")
     private String terms;
@@ -143,5 +147,10 @@ public class AirOrderFormVO {
 
     public void setTerms(Integer terms) {
         this.terms = AirOrderTermsEnum.getDesc(terms);
+    }
+
+    public void setImpAndExpType(Integer impAndExpType) {
+        this.impAndExpType = impAndExpType;
+        this.impAndExpTypeDesc = TradeTypeEnum.getDesc(impAndExpType);
     }
 }

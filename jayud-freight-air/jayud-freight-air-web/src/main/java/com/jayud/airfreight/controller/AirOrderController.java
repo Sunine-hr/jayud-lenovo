@@ -26,6 +26,7 @@ import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.utils.DateUtils;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,7 +132,10 @@ public class AirOrderController {
         //指令操作
         switch (statusEnum) {
             case AIR_A_1: //空运接单
-                this.airOrderService.updateProcessStatus(new AirOrder(), form);
+                this.airOrderService.updateProcessStatus(new AirOrder()
+                                .setOrderTaker(form.getOperatorUser())
+                                .setReceivingOrdersDate(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN))
+                        , form);
                 break;
             case AIR_A_2: //订舱
                 this.airOrderService.doAirBookingOpt(form);

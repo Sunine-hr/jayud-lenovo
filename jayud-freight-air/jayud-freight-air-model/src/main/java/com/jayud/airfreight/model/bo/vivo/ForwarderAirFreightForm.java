@@ -30,20 +30,21 @@ public class ForwarderAirFreightForm {
     @JsonProperty("Booking_no")
     @SerializedName("Booking_no")
     @ApiModelProperty(value = "订单号")
-//    @NotEmpty(message = "订单号不能为空")
+    @NotEmpty(message = "订单号不能为空")
     @Length(max = 32, message = "订单号字段的最大长度为32")
     private String bookingNo;
 
-//    @JsonProperty("Bill_of_lading")
-//    @SerializedName("Bill_of_lading")
-//    @ApiModelProperty(value = "提单号")
-//    @Length(max = 32, message = "提单号字段的最大长度为32")
-//    private String billOfLading;
-
+    @JsonProperty("Bill_of_lading")
+    @SerializedName("Bill_of_lading")
+    @ApiModelProperty(value = "提单号")
+    @NotEmpty(message = "提单号不能为空")
+    @Length(max = 32, message = "提单号字段的最大长度为32")
+    private String billOfLading;
 
     @JsonProperty("Operation_type")
     @SerializedName("Operation_type")
     @ApiModelProperty(value = "操作类型")
+    @NotEmpty(message = "操作类型不能为空")
     @Length(max = 10, message = "操作类型最大长度为10")
     private String operationType;
 

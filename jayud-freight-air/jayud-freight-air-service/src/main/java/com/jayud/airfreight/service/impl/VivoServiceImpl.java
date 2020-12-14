@@ -147,6 +147,7 @@ public class VivoServiceImpl implements VivoService {
 
     /**
      * 货代抛空运费用数据到vivo
+     *
      * @param form
      * @return
      */
@@ -389,8 +390,9 @@ public class VivoServiceImpl implements VivoService {
         msg.put("bookingNo", airOrder.getThirdPartyOrderNo());
         msg.put("forwarderBookingNo", airOrder.getOrderNo());
         msg.put("pickUpDate", DateUtils.LocalDateTime2Str(airOrder.getGoodTime(), "yyyy/M/dd HH:mm:ss"));
-        msg.put("masterAirwayBill", airBooking.getMainNo());
-        msg.put("billOfLading", airBooking.getSubNo());
+//        msg.put("masterAirwayBill", airBooking.getMainNo());
+        msg.put("billOfLading", airBooking.getMainNo() + "/" + (StringUtils.isEmpty(airBooking.getSubNo()) ?
+                "" : airBooking.getSubNo()));
         msg.put("flightNo", airBooking.getFlight());
 //            msg.put("chargedWeight", "");
 //            msg.put("bLWeight", "");

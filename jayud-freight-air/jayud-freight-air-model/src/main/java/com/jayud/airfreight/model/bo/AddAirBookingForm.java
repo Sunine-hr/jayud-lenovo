@@ -126,6 +126,10 @@ public class AddAirBookingForm extends Model<AddAirBookingForm> {
             log.warn(title + " 航班必填");
             return false;
         }
+        if (StringUtils.isEmpty(this.mainNo)) {
+            log.warn(title + " 主单号必填");
+            return false;
+        }
         if (StringUtils.isEmpty(this.etd)) {
             log.warn(title + " 预计离港时间必填");
             return false;

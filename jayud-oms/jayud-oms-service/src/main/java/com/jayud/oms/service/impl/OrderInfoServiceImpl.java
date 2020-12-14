@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.jayud.common.enums.CreateUserTypeEnum.*;
 
@@ -277,7 +278,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     @Override
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    @Transactional
     public boolean auditCost(AuditCostForm form) {
         try {
             List<OrderPaymentCost> orderPaymentCosts = form.getPaymentCosts();
@@ -818,8 +819,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      *
      * @param orderReceivableCosts
      */
-    private void receivableAuditMsgPush(List<OrderReceivableCost> orderReceivableCosts) {
-        OrderReceivableCost orderReceivableCost = this.receivableCostService.getById(orderReceivableCosts.get(0));
+    public void receivableAuditMsgPush(List<OrderReceivableCost> orderReceivableCosts) {
+        OrderReceivableCost orderReceivableCost = this.receivableCostService.getById(orderReceivableCosts.get(0).getId());
         if (StringUtils.isEmpty(orderReceivableCost.getOrderNo())) {
             return;
         }
@@ -839,30 +840,30 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      * @param orderNo
      * @param orderReceivableCosts
      */
-    private void airFreightFeePush(String mainOrderNo, String orderNo,
-                                   List<OrderReceivableCost> orderReceivableCosts) {
-        //TODO 操作类型判断还要修改
-
+    public void airFreightFeePush(String mainOrderNo, String orderNo,
+                                  List<OrderReceivableCost> orderReceivableCosts) {
         //查询空运订单信息
         ApiResult result = this.freightAirClient.getAirOrderInfoByOrderNo(orderNo);
         if (result.getCode() != HttpStatus.SC_OK) {
-            log.warn("推送空运费用消息失败");
+            log.warn("查询空运订单信息失败");
             throw new JayudBizException(ResultEnum.OPR_FAIL);
         }
         JSONObject jsonObject = new JSONObject(result.getData());
         Integer createUserType = jsonObject.getInt("createUserType");
         switch (getEnum(createUserType)) {
             case VIVO:
+                List<Long> ids = orderReceivableCosts.stream().map(OrderReceivableCost::getId).collect(Collectors.toList());
                 //查询审核通过应收费用
-                List<OrderReceivableCost> receivableCosts = this.receivableCostService.getApprovalFee(mainOrderNo);
+                List<OrderReceivableCost> receivableCosts = this.receivableCostService.getApprovalFee(mainOrderNo, ids);
+                //操作类型判断
                 Map<String, String> map = new HashMap<>();
                 map.put("topic", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_FOUR.getTopic());
                 map.put("key", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_FOUR.getKey());
                 Map<String, Object> msg = new HashMap<>();
                 msg.put("mainOrderNo", mainOrderNo);
-                msg.put("orderNo", orderNo);
+                msg.put("airOrderId", jsonObject.getLong("id"));
                 msg.put("operationType", receivableCosts.size() > 0 ? "update" : "add");
-                msg.put("booking_no", jsonObject.getStr("thirdPartyOrderNo"));
+                msg.put("bookingNo", jsonObject.getStr("thirdPartyOrderNo"));
                 //组装商品
                 receivableCosts.addAll(orderReceivableCosts);
                 List<Map<String, Object>> costItems = new ArrayList<>();

@@ -105,7 +105,8 @@
         a.is_charged,
         ap.name port_departure,
         ap1.name port_destination,
-        a.create_user createUser, a.create_time createTime
+        a.create_user createUser, a.create_time createTime,
+        a.order_taker, a.receiving_orders_date
         FROM
         `air_order` a
         left join air_port ap on ap.`code`=a.port_departure_code

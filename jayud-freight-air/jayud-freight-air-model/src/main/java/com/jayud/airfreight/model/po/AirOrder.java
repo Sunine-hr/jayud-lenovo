@@ -105,6 +105,12 @@ public class AirOrder extends Model<AirOrder> {
     @ApiModelProperty(value = "是否需要录入费用")
     private Boolean needInputCost;
 
+    @ApiModelProperty(value = "接单人(登录用户名)")
+    private String orderTaker;
+
+    @ApiModelProperty(value = "接单日期")
+    private LocalDateTime receivingOrdersDate;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

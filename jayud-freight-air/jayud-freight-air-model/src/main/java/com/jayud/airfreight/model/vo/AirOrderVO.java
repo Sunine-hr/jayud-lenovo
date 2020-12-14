@@ -2,10 +2,14 @@ package com.jayud.airfreight.model.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.airfreight.model.enums.AirOrderTermsEnum;
 import com.jayud.airfreight.model.po.Goods;
+import com.jayud.common.enums.TradeTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -53,7 +57,7 @@ public class AirOrderVO {
     private Integer impAndExpType;
 
     @ApiModelProperty(value = "进出口类型")
-    private Integer impAndExpTypeDesc;
+    private String impAndExpTypeDesc;
 
     @ApiModelProperty(value = "贸易方式(0:CIF,1:DUU,2:FOB,3:DDP)")
     private Integer terms;
@@ -74,6 +78,7 @@ public class AirOrderVO {
     private String portDestination;
 
     @ApiModelProperty(value = "货好时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private String goodTime;
 
     @ApiModelProperty(value = "运费是否到付")
@@ -106,6 +111,13 @@ public class AirOrderVO {
     @ApiModelProperty(value = "货品信息")
     private List<GoodsVO> goodsVOs;
 
+    @ApiModelProperty(value = "接单人(登录用户名)")
+    private String orderTaker;
+
+    @ApiModelProperty(value = "接单日期")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private String receivingOrdersDate;
+
     public void processingAddress(OrderAddressVO addressVO) {
         switch (addressVO.getType()) {
             case 0:
@@ -118,5 +130,15 @@ public class AirOrderVO {
                 this.notificationAddressInfo = addressVO;
                 break;
         }
+    }
+
+    public void setImpAndExpType(Integer impAndExpType) {
+        this.impAndExpType = impAndExpType;
+        this.impAndExpTypeDesc = TradeTypeEnum.getDesc(impAndExpType);
+    }
+
+    public void setTerms(Integer terms) {
+        this.terms = terms;
+        this.termsDesc = AirOrderTermsEnum.getDesc(terms);
     }
 }

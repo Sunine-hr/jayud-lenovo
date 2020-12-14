@@ -46,6 +46,6 @@ public interface AirfreightClient {
     /**
      * 货代抛空运费用数据到vivo
      */
-    @PostMapping("/forwarder/forwarderAirFarePush")
+    @PostMapping("/airfreight/toVivo/forwarder/forwarderAirFarePush")
     public CommonResult forwarderAirFarePush(@RequestBody String value);
 }

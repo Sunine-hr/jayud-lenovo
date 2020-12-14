@@ -47,7 +47,16 @@ public interface FreightAirClient {
     @PostMapping(value = "/api/airfreight/getAirOrderDetails")
     public ApiResult<InputAirOrderVO> getAirOrderDetails(@RequestParam("mainOrderNo") String mainOrderNo);
 
-    @ApiModelProperty(value = "查询空运订单信息")
+    /**
+     * 查询空运订单信息
+     */
     @RequestMapping(value = "/api/airfreight/getAirOrderInfoByOrderNo")
     public ApiResult getAirOrderInfoByOrderNo(@RequestParam("airOrderNo") String airOrderNo);
+
+    @ApiModelProperty(value = "查询飞机港口")
+    /**
+     * 获取飞机港口下拉数据
+     */
+    @RequestMapping(value = "/api/airfreight/initAirPort")
+    public ApiResult getAirPort();
 }

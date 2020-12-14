@@ -3,12 +3,14 @@ package com.jayud.oms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.BeanUtils;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.oms.feign.FreightAirClient;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.enums.CustomerInfoStatusEnum;
 import com.jayud.oms.model.enums.RoleKeyEnum;
@@ -17,7 +19,10 @@ import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +36,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/combox")
 @Api(tags = "初始化下拉框接口")
+@Slf4j
 public class OrderComboxController {
 
     @Autowired
@@ -68,28 +74,30 @@ public class OrderComboxController {
 
     @Autowired
     ISupplierInfoService supplierInfoService;
+    @Autowired
+    private FreightAirClient freightAirClient;
 
     @ApiOperation(value = "创建订单-客户,业务员,合同,业务所属部门,通关口岸")
     @PostMapping(value = "/initCombox1")
-    public CommonResult<Map<String,Object>> initCombox1() {
-        Map<String,Object> resultMap = new HashMap<>();
+    public CommonResult<Map<String, Object>> initCombox1() {
+        Map<String, Object> resultMap = new HashMap<>();
         //客户
-        Map<String,Object> param = new HashMap<>();
+        Map<String, Object> param = new HashMap<>();
         param.put(SqlConstant.AUDIT_STATUS, CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());
         List<CustomerInfo> allCustomerInfoList = customerInfoService.findCustomerInfoByCondition(param);
-        List<CustomerInfo> customerInfoList = allCustomerInfoList.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(CustomerInfo :: getName))), ArrayList::new));
+        List<CustomerInfo> customerInfoList = allCustomerInfoList.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(CustomerInfo::getName))), ArrayList::new));
         List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
         for (CustomerInfo customerInfo : customerInfoList) {
             InitComboxStrVO comboxStrVO = new InitComboxStrVO();
             comboxStrVO.setCode(customerInfo.getIdCode());
-            comboxStrVO.setName(customerInfo.getName()+" ("+customerInfo.getIdCode()+")");
+            comboxStrVO.setName(customerInfo.getName() + " (" + customerInfo.getIdCode() + ")");
             comboxStrVOS.add(comboxStrVO);
         }
-        resultMap.put(CommonConstant.CUSTOMERS,comboxStrVOS);
+        resultMap.put(CommonConstant.CUSTOMERS, comboxStrVOS);
 
         //业务员
         List<InitComboxVO> initComboxVOS = (List<InitComboxVO>) oauthClient.findUserByKey(RoleKeyEnum.BUSINESS_MANAGER.getCode()).getData();
-        resultMap.put(CommonConstant.YWS,initComboxVOS);
+        resultMap.put(CommonConstant.YWS, initComboxVOS);
 
         //合同
         List<ContractInfo> contractInfos = contractInfoService.findContractByCondition(new HashMap<>());
@@ -97,21 +105,21 @@ public class OrderComboxController {
         for (ContractInfo contractInfo : contractInfos) {
             InitComboxStrVO comboxStrVO = new InitComboxStrVO();
             comboxStrVO.setCode(contractInfo.getContractNo());
-            comboxStrVO.setName(contractInfo.getContractNo()+" ("+contractInfo.getName()+")");
+            comboxStrVO.setName(contractInfo.getContractNo() + " (" + contractInfo.getName() + ")");
             //计算合同的剩余天数
             Date endDate = contractInfo.getEndDate();
-            Date nowDate = DateUtils.stringToDate(DateUtils.format(new Date()),DateUtils.DATE_PATTERN);
-            if(endDate == null || nowDate.getTime() > endDate.getTime()){//过期合同不显示
+            Date nowDate = DateUtils.stringToDate(DateUtils.format(new Date()), DateUtils.DATE_PATTERN);
+            if (endDate == null || nowDate.getTime() > endDate.getTime()) {//过期合同不显示
                 continue;
             }
-            comboxStrVO.setNote(String.valueOf(DateUtils.diffDay(nowDate,endDate)));
+            comboxStrVO.setNote(String.valueOf(DateUtils.diffDay(nowDate, endDate)));
             comboxStrVOS.add(comboxStrVO);
         }
-        resultMap.put(CommonConstant.CONTRACTS,comboxStrVOS);
+        resultMap.put(CommonConstant.CONTRACTS, comboxStrVOS);
 
         //业务所属部门
         initComboxVOS = (List<InitComboxVO>) oauthClient.findDepartment().getData();
-        resultMap.put(CommonConstant.DEPARTMENTS,initComboxVOS);
+        resultMap.put(CommonConstant.DEPARTMENTS, initComboxVOS);
 
         //通关口岸
         List<PortInfo> proInfos = portInfoService.findPortInfoByCondition(new HashMap<>());
@@ -122,7 +130,7 @@ public class OrderComboxController {
             comboxStrVO.setName(portInfo.getName());
             comboxStrVOS.add(comboxStrVO);
         }
-        resultMap.put(CommonConstant.PROTINFOS,comboxStrVOS);
+        resultMap.put(CommonConstant.PROTINFOS, comboxStrVOS);
 
         //业务类型
         List<ProductBiz> productBizs = productBizService.findProductBiz();
@@ -133,24 +141,24 @@ public class OrderComboxController {
             comboxStrVO.setName(productBiz.getName());
             comboxStrVOS.add(comboxStrVO);
         }
-        resultMap.put(CommonConstant.BIZCODES,comboxStrVOS);
+        resultMap.put(CommonConstant.BIZCODES, comboxStrVOS);
         return CommonResult.success(resultMap);
     }
 
 
     @ApiOperation(value = "创建订单-客户联动业务员和结算单位,idCode=客户CODE,必填")
     @PostMapping(value = "/initUnit")
-    public CommonResult<Map<String,Object>> initUnit(@RequestBody Map<String,Object> param) {
-        String idCode = MapUtil.getStr(param,"idCode");
+    public CommonResult<Map<String, Object>> initUnit(@RequestBody Map<String, Object> param) {
+        String idCode = MapUtil.getStr(param, "idCode");
        /* if(idCode != null && "".equals(idCode)){
             return CommonResult.error(400,"参数不合法");
         }*/
-        Map<String,Object> resultMap = new HashMap<>();
+        Map<String, Object> resultMap = new HashMap<>();
         param = new HashMap<>();
         //param.put("id_code", idCode);
         param.put(SqlConstant.AUDIT_STATUS, CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());
         List<CustomerInfo> allCustomerInfoList = customerInfoService.findCustomerInfoByCondition(param);
-        List<CustomerInfo> customerInfoList = allCustomerInfoList.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(CustomerInfo :: getName))), ArrayList::new));
+        List<CustomerInfo> customerInfoList = allCustomerInfoList.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(CustomerInfo::getName))), ArrayList::new));
         List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
         List<Long> ids = new ArrayList<>();
         for (CustomerInfo customerInfo : customerInfoList) {
@@ -158,15 +166,15 @@ public class OrderComboxController {
             comboxStrVO.setCode(customerInfo.getIdCode());
             comboxStrVO.setName(customerInfo.getName());
             comboxStrVOS.add(comboxStrVO);
-            if(customerInfo.getYwId() != null) {
+            if (customerInfo.getYwId() != null) {
                 ids.add(customerInfo.getYwId());
             }
         }
-        resultMap.put("units",comboxStrVOS);
+        resultMap.put("units", comboxStrVOS);
 
         List<SupplierInfo> supplierInfos = supplierInfoService.getApprovedSupplier(
                 BeanUtils.convertToFieldName(true,
-                        SupplierInfo::getId, SupplierInfo::getSupplierChName,SupplierInfo::getSupplierCode));
+                        SupplierInfo::getId, SupplierInfo::getSupplierChName, SupplierInfo::getSupplierCode));
         List<InitComboxStrVO> supplierStrVOS = new ArrayList<>();
         for (SupplierInfo supplierInfo : supplierInfos) {
             InitComboxStrVO comboxStrVO = new InitComboxStrVO();
@@ -174,10 +182,10 @@ public class OrderComboxController {
             comboxStrVO.setName(supplierInfo.getSupplierChName());
             supplierStrVOS.add(comboxStrVO);
         }
-        resultMap.put("supplierInfos",supplierStrVOS);//下拉供应商
+        resultMap.put("supplierInfos", supplierStrVOS);//下拉供应商
 
         List<InitComboxVO> yws = new ArrayList<>();
-        if(ids.size() > 0) {
+        if (ids.size() > 0) {
             List<SystemUserVO> userVOS = oauthClient.getUsersByIds(ids).getData();
             for (SystemUserVO systemUserVO : userVOS) {
                 InitComboxVO comboxVO = new InitComboxVO();
@@ -186,7 +194,7 @@ public class OrderComboxController {
                 yws.add(comboxVO);
             }
         }
-        resultMap.put("yws",yws);
+        resultMap.put("yws", yws);
         return CommonResult.success(resultMap);
     }
 
@@ -207,8 +215,8 @@ public class OrderComboxController {
     @ApiOperation(value = "纯报关-作业类型")
     @PostMapping(value = "/initBizType")
     public CommonResult<List<InitComboxStrVO>> initBizType() {
-        Map<String,Object> param = new HashMap<>();
-        param.put("f_id",0);
+        Map<String, Object> param = new HashMap<>();
+        param.put("f_id", 0);
         List<ProductClassify> productClassifies = productClassifyService.findProductClassify(param);
         List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
         for (ProductClassify productClassify : productClassifies) {
@@ -222,12 +230,12 @@ public class OrderComboxController {
 
     @ApiOperation(value = "录入费用:应收/付项目/币种 ")
     @PostMapping(value = "/initCost")
-    public CommonResult initCost(@RequestBody Map<String,Object> param) {
-        String createdTimeStr = MapUtil.getStr(param,"createdTimeStr");
-        if(StringUtil.isNullOrEmpty(createdTimeStr)){
+    public CommonResult initCost(@RequestBody Map<String, Object> param) {
+        String createdTimeStr = MapUtil.getStr(param, "createdTimeStr");
+        if (StringUtil.isNullOrEmpty(createdTimeStr)) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        Map<String,Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>();
         List<CostInfo> costInfos = costInfoService.findCostInfo();//费用项目
         List<InitComboxStrVO> paymentCombox = new ArrayList<>();
         List<InitComboxStrVO> receivableCombox = new ArrayList<>();
@@ -238,8 +246,8 @@ public class OrderComboxController {
             receivableCombox.add(comboxStrVO);//后期没做应收应付项目的区分
             paymentCombox.add(comboxStrVO);
         }
-        result.put("paymentCost",paymentCombox);
-        result.put("receivableCost",receivableCombox);
+        result.put("paymentCost", paymentCombox);
+        result.put("receivableCost", receivableCombox);
 
         //币种
         List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
@@ -251,7 +259,7 @@ public class OrderComboxController {
             comboxStrVO.setNote(String.valueOf(currencyInfo.getExchangeRate()));
             initComboxStrVOS.add(comboxStrVO);
         }
-        result.put("currency",initComboxStrVOS);
+        result.put("currency", initComboxStrVOS);
         return CommonResult.success(result);
     }
 
@@ -266,7 +274,7 @@ public class OrderComboxController {
     @PostMapping(value = "/initWarehouseInfo")
     public CommonResult initWarehouseInfo() {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(SqlConstant.STATUS,1);
+        queryWrapper.eq(SqlConstant.STATUS, 1);
         List<WarehouseInfo> warehouseInfos = warehouseInfoService.list(queryWrapper);
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (WarehouseInfo warehouseInfo : warehouseInfos) {
@@ -280,19 +288,19 @@ public class OrderComboxController {
 
     @ApiOperation(value = "费用类别,idCode=费用名称的隐藏值")
     @PostMapping(value = "/initCostType")
-    public CommonResult<List<InitComboxVO>> initCostType(@RequestBody Map<String,Object> param) {
-        String idCode = MapUtil.getStr(param,CommonConstant.ID_CODE);
+    public CommonResult<List<InitComboxVO>> initCostType(@RequestBody Map<String, Object> param) {
+        String idCode = MapUtil.getStr(param, CommonConstant.ID_CODE);
         QueryWrapper queryCostInfo = new QueryWrapper();
-        queryCostInfo.eq(SqlConstant.ID_CODE,idCode);
+        queryCostInfo.eq(SqlConstant.ID_CODE, idCode);
         CostInfo costInfo = costInfoService.getOne(queryCostInfo);
-        if(costInfo == null || StringUtil.isNullOrEmpty(costInfo.getCids())){
-            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+        if (costInfo == null || StringUtil.isNullOrEmpty(costInfo.getCids())) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
         String[] cids = costInfo.getCids().split(CommonConstant.COMMA);
         List<InitComboxVO> costTypeComboxs = new ArrayList<>();
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(SqlConstant.STATUS,CommonConstant.VALUE_1);
-        queryWrapper.in(SqlConstant.ID,cids);
+        queryWrapper.eq(SqlConstant.STATUS, CommonConstant.VALUE_1);
+        queryWrapper.in(SqlConstant.ID, cids);
         List<CostType> costTypes = costTypeService.list(queryWrapper);
         for (CostType costType : costTypes) {
             InitComboxVO initComboxVO = new InitComboxVO();
@@ -305,27 +313,27 @@ public class OrderComboxController {
 
     @ApiOperation(value = "费用类型,bizCode=业务类型CODE")
     @PostMapping(value = "/initCostGenre")
-    public CommonResult<List<InitComboxVO>> initCostGenre(@RequestBody Map<String,Object> param) {
-        String code = MapUtil.getStr(param,CommonConstant.BIZ_CODE);
+    public CommonResult<List<InitComboxVO>> initCostGenre(@RequestBody Map<String, Object> param) {
+        String code = MapUtil.getStr(param, CommonConstant.BIZ_CODE);
         QueryWrapper queryProductBiz = new QueryWrapper();
-        queryProductBiz.eq(SqlConstant.ID_CODE,code);
+        queryProductBiz.eq(SqlConstant.ID_CODE, code);
         ProductBiz productBiz = productBizService.getOne(queryProductBiz);
-        if(productBiz == null || StringUtil.isNullOrEmpty(productBiz.getCostGenreIds())){
-            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+        if (productBiz == null || StringUtil.isNullOrEmpty(productBiz.getCostGenreIds())) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
         String[] cids = productBiz.getCostGenreIds().split(CommonConstant.COMMA);
         List<InitComboxVO> costTypeComboxs = new ArrayList<>();
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(SqlConstant.STATUS,CommonConstant.VALUE_1);
-        queryWrapper.in(SqlConstant.ID,cids);
+        queryWrapper.eq(SqlConstant.STATUS, CommonConstant.VALUE_1);
+        queryWrapper.in(SqlConstant.ID, cids);
         List<CostGenre> costGenres = costGenreService.list(queryWrapper);
         for (CostGenre costGenre : costGenres) {
             InitComboxVO initComboxVO = new InitComboxVO();
             initComboxVO.setName(costGenre.getName());
             initComboxVO.setId(costGenre.getId());
-            if(productBiz.getCostGenreDefault() == costGenre.getId()){
+            if (productBiz.getCostGenreDefault() == costGenre.getId()) {
                 initComboxVO.setIsDefault(true);
-            }else {
+            } else {
                 initComboxVO.setIsDefault(false);
             }
             costTypeComboxs.add(initComboxVO);
@@ -334,10 +342,16 @@ public class OrderComboxController {
     }
 
 
-
-
-
-
+    @ApiModelProperty(value = "空运-飞机港口")
+    @RequestMapping(value = "/initAirPort")
+    public CommonResult initAirPort() {
+        ApiResult result = freightAirClient.getAirPort();
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.warn("获取飞机港口下拉数据失败");
+            return CommonResult.error(ResultEnum.OPR_FAIL);
+        }
+        return CommonResult.success(result.getData());
+    }
 
 
 }

@@ -48,13 +48,13 @@ public class AirProcessOptForm {
     private Long agentSupplierId;
 
     @ApiModelProperty(value = "代理服务类型（0:清关,1:配送")
-    private List<String> proxyServiceType;
+    private List<Long> proxyServiceType;
 
 //    @ApiModelProperty(value = "操作指令,cmd = 1-空运接单,2-空运订舱,3-订单入仓,4-确认提单, " +
 //            "5-确认离港，6-确认到港,7-海外代理,8-确认签收", required = true)
 //    private Integer cmd;
 
-    @ApiModelProperty(value = "业务类型(0:空运),(1,纯报关),ZGYS(2,中港运输) 前端不用管")
+    @ApiModelProperty(value = "业务类型(0:空运),(1,纯报关),(2,中港运输) 前端不用管")
     private Integer businessType;
 
     @ApiModelProperty(value = "状态码,前台不用传")
@@ -86,7 +86,7 @@ public class AirProcessOptForm {
                 pass = this.airBooking.checkBookingSpaceOptParam();
                 break;
             case AIR_A_4:
-                if (CollectionUtils.isEmpty(this.fileViewList)) throw new JayudBizException("提单文件必传",400);
+                if (CollectionUtils.isEmpty(this.fileViewList)) throw new JayudBizException("提单文件必传", 400);
                 if (!checkOptInfo()) throw new JayudBizException(ResultEnum.VALIDATE_FAILED);
                 pass = this.airBooking.checkConfirmLadingBillOptParam();
                 break;

@@ -46,7 +46,7 @@ CREATE TABLE `air_order` (
   `order_no` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '空运订单编号',
   `third_party_order_no` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '第三方订单编号',
   `status` char(10) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '状态(k_0待接单,k_1空运接单,k_2订舱,k_3订单入仓,\r\nk_4确认提单,k_5确认离港,k_6确认到港,k_7海外代理k_8确认签收)',
-  `process_status` int(10) DEFAULT NULL COMMENT '流程状态(0:进行中,1:完成,2:草稿)',
+  `process_status` int(10) DEFAULT NULL COMMENT '流程状态(0:进行中,1:完成,2:草稿,3.关闭)',
   `settlement_unit_code` char(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '结算单位code',
   `legal_id` bigint(20) DEFAULT NULL COMMENT '接单法人',
   `imp_and_exp_type` int(10) DEFAULT NULL COMMENT '进出口类型(1：进口，2：出口)',
@@ -65,7 +65,9 @@ CREATE TABLE `air_order` (
   `update_user` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `create_user_type` int(5) DEFAULT '0' COMMENT '创建人的类型(0:本系统,1:vivo)',
-  `need_input_cost` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否需要录入费用',
+  `need_input_cost` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否需要录入费用(0:false,1:true)',
+  `order_taker` varchar(50) DEFAULT NULL COMMENT '接单人(登录用户名)',
+  `receiving_orders_date` datetime DEFAULT NULL COMMENT '接单日期',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='空运订单表';
 
@@ -76,6 +78,7 @@ CREATE TABLE `air_port` (
   `name` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '飞机港口名称',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `create_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '创建人',
+  `status` int(10) DEFAULT '1' COMMENT '状态(0无效 1有效)',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='飞机港口地址表';
 

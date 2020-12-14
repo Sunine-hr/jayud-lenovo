@@ -7,9 +7,12 @@ import com.jayud.airfreight.model.bo.vivo.ForwarderAirFreightForm;
 import com.jayud.airfreight.model.bo.vivo.ForwarderBookingConfirmedFeedbackForm;
 import com.jayud.airfreight.model.bo.vivo.ForwarderLadingFileForm;
 import com.jayud.airfreight.model.bo.vivo.ForwarderLadingInfoForm;
+import com.jayud.airfreight.model.po.AirBooking;
+import com.jayud.airfreight.service.IAirBookingService;
 import com.jayud.airfreight.service.VivoService;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.FileUtil;
+import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,8 @@ import java.util.Map;
 public class SendToVivoController {
     @Autowired
     VivoService vivoService;
+    @Autowired
+    private IAirBookingService airBookingService;
 
     @ApiOperation(value = "确认订舱信息传给vivo")
     @PostMapping("/forwarder/bookingConfirmed")
@@ -107,7 +112,14 @@ public class SendToVivoController {
     @ApiOperation(value = "货代抛空运费用数据到vivo")
     @PostMapping("/forwarder/forwarderAirFarePush")
     public CommonResult forwarderAirFarePush(@RequestBody String value) {
+
         ForwarderAirFreightForm form = JSONUtil.toBean(value, ForwarderAirFreightForm.class);
+        JSONObject jsonObject = new JSONObject(value);
+        Long airOrderId = jsonObject.getLong("airOrderId");
+        AirBooking airBooking = this.airBookingService.getByAirOrderId(airOrderId);
+        form.setBillOfLading(airBooking.getMainNo() + "/" + (StringUtils.isEmpty(airBooking.getSubNo())
+                ? "" : airBooking.getSubNo()));
+
         Map<String, Object> resultMap = vivoService.forwarderAirFarePush(form);
         if (1 == MapUtil.getInt(resultMap, "status")) {
             return CommonResult.success();

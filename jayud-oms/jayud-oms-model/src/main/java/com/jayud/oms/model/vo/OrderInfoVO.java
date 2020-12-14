@@ -81,6 +81,9 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "是否需要录入费用")
     private Boolean needInputCost;
 
+    @ApiModelProperty(value = "已选中得服务")
+    private String selectedServer;
+
     public String getStatusDesc() {
         return OrderStatusEnum.getDesc(this.status);
     }

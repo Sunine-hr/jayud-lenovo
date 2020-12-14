@@ -63,4 +63,19 @@
             LEFT JOIN supplier_info si ON vi.`supplier_id` = si.`id`
             WHERE osc.`order_no` = #{orderNo}
     </select>
+    <select id="initDriverInfo"  resultType="com.jayud.tms.model.vo.DriverInfoPdfVO" >
+        SELECT
+            ot.legal_name legalName,le.rigis_address rigisAddress,le.phone legalPhone,le.fax,
+            di.`name`,di.id_no idNo,di.hk_phone hkPhone,di.phone,
+            vi.pt_company ptCompany,vi.customs_code customsCode,vi.plate_number plateNumber,vi.hk_number hkNumber,'' qs,
+			vi.vehicle_tonnage vehicleTonnage,vi.pt_phone ptPhone,vi.pt_fax ptFax,vi.stepping_code steppingCode,'' loadList,
+			vi.enterprise_code enterpriseCode,vi.weight,
+			(select name from port_info pi where pi.id_code = ot.port_code) portCodeDesc
+        FROM
+            order_transport ot
+            LEFT JOIN legal_entity le on le.legal_name = ot.legal_name
+			left join driver_info di on di.id = ot.driver_info_id
+			left join vehicle_info vi on vi.id = di.vehicle_id
+            WHERE ot.`order_no` = #{orderNo}
+    </select>
 </mapper>

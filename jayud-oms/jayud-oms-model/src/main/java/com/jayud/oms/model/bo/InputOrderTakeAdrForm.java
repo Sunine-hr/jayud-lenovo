@@ -15,6 +15,15 @@ public class InputOrderTakeAdrForm {
     @ApiModelProperty(value = "提货/送货地址")
     private String address;
 
+    @ApiModelProperty(value = "所属客户ID")
+    private Long customerId;
+
+    @ApiModelProperty(value = "联系人")
+    private String contacts;
+
+    @ApiModelProperty(value = "联系电话")
+    private String phone;
+
     //以上部分是加自定义地址使用
     //以下部分是选择地址使用,通过deliveryId区分
 

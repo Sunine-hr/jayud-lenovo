@@ -1,9 +1,11 @@
 package com.jayud.mall.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.model.bo.TaskGroupForm;
 import com.jayud.mall.model.po.TaskGroup;
 import com.jayud.mall.mapper.TaskGroupMapper;
+import com.jayud.mall.model.vo.TaskGroupVO;
 import com.jayud.mall.service.ITaskGroupService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +28,7 @@ public class TaskGroupServiceImpl extends ServiceImpl<TaskGroupMapper, TaskGroup
     TaskGroupMapper taskGroupMapper;
 
     @Override
-    public List<TaskGroup> findTaskGroup(TaskGroupForm form) {
+    public List<TaskGroupVO> findTaskGroup(TaskGroupForm form) {
         QueryWrapper<TaskGroup> queryWrapper = new QueryWrapper<>();
         String idCode = form.getIdCode();
         if(idCode != null && idCode != ""){
@@ -45,6 +47,25 @@ public class TaskGroupServiceImpl extends ServiceImpl<TaskGroupMapper, TaskGroup
             queryWrapper.eq("types", types);
         }
         List<TaskGroup> list = taskGroupMapper.selectList(queryWrapper);
-        return list;
+        List<TaskGroupVO> taskGroupVOS = ConvertUtil.convertList(list, TaskGroupVO.class);
+        return taskGroupVOS;
+    }
+
+    @Override
+    public List<TaskGroupVO> findTaskGroupByTd() {
+        QueryWrapper<TaskGroup> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("types", 1);
+        List<TaskGroup> list = taskGroupMapper.selectList(queryWrapper);
+        List<TaskGroupVO> taskGroupVOS = ConvertUtil.convertList(list, TaskGroupVO.class);
+        return taskGroupVOS;
+    }
+
+    @Override
+    public List<TaskGroupVO> findTaskGroupByYd() {
+        QueryWrapper<TaskGroup> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("types", 2);
+        List<TaskGroup> taskGroups = taskGroupMapper.selectList(queryWrapper);
+        List<TaskGroupVO> taskGroupVOS = ConvertUtil.convertList(taskGroups, TaskGroupVO.class);
+        return taskGroupVOS;
     }
 }

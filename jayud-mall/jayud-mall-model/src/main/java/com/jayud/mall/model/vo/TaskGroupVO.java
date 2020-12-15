@@ -1,13 +1,11 @@
-package com.jayud.mall.model.bo;
+package com.jayud.mall.model.vo;
 
 import com.baomidou.mybatisplus.annotation.TableField;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-@ApiModel(value = "提单任务分组Form")
-public class TaskGroupForm {
+public class TaskGroupVO {
 
     @ApiModelProperty(value = "自增id", position = 1)
     private Long id;

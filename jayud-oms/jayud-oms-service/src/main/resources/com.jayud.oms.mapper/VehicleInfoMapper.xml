@@ -39,7 +39,7 @@
         w.id, plate_number plateNumber,
         hk_number hkNumber,
         w.supplier_id supplierId,
-        s.supplier_ch_name supplier_name,
+        s.supplier_ch_name supplierName,
         pt_company ptCompany,
         pt_fax ptFax, car_type carType,
         pt_phone ptPhone,
@@ -68,5 +68,15 @@
         </where>
 
     </select>
-
+    <select id="findVehicleByDriverName" resultType="com.jayud.oms.model.vo.VehicleInfoVO">
+        select
+            w.id,
+            plate_number plateNumber,
+            hk_number hkNumber,
+            w.supplier_id supplierId,
+            s.supplier_ch_name supplierName
+        from
+            vehicle_info w left join supplier_info s on w.supplier_id=s.id
+        where w.id in (select di.vehicle_id from driver_info di where di.`name` = #{driverName})
+    </select>
 </mapper>

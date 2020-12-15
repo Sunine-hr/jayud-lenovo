@@ -72,10 +72,10 @@
           osc.`remarks`,
           ot.`cntr_pic` cntrPic,
           ot.`cntr_pic_name` cntrPicName,
-          ifnull(w2.warehouse_name,wi.`warehouse_name`) companyName,
-          ifnull(w2.contacts,wi.`contacts`) contacts,
-          ifnull(w2.contact_number,wi.`contact_number`) contactNumber,
-          ifnull(w2.address,wi.`address`) address,
+          wi.`warehouse_name` companyName,
+          wi.`contacts` contacts,
+          wi.`contact_number` contactNumber,
+          wi.`address` address,
           ot.`is_load_goods` isLoadGoods,
           ot.`is_unload_goods` isUnloadGoods,
           ot.`hk_legal_name` hkLegalName,
@@ -91,7 +91,6 @@
             ON osc.order_no = ot.`order_no`
           LEFT JOIN warehouse_info wi
             ON ot.warehouse_info_id = wi.`id`
-			left join warehouse_info w2 on osc.warehouse_info_id = w2.id
 		  left join driver_info di on di.id = osc.driver_info_id
 		  left join vehicle_info vi on vi.id = di.vehicle_id
 		  LEFT JOIN supplier_info si ON si.`id` = vi.supplier_id

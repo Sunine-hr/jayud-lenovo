@@ -47,7 +47,7 @@ public class PdfController {
         return CommonResult.success(sendCarPdfVO);
     }
 
-    @ApiOperation(value = "司机资料,orderNo=子订单号")
+    @ApiOperation(value = "二期优化1：司机资料,orderNo=子订单号")
     @PostMapping(value = "/initDriverInfo")
     public CommonResult<DriverInfoPdfVO> initDriverInfo(@RequestBody Map<String,Object> param) {
         String orderNo = MapUtil.getStr(param, CommonConstant.ORDER_NO);

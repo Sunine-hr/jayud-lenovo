@@ -11,10 +11,14 @@ import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.DriverInfo;
 import com.jayud.oms.model.vo.DriverInfoLinkVO;
 import com.jayud.oms.model.vo.DriverInfoVO;
+import com.jayud.oms.model.vo.VehicleInfoVO;
 import com.jayud.oms.service.IDriverInfoService;
+import com.jayud.oms.service.IVehicleInfoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -27,6 +31,9 @@ import java.util.Objects;
  */
 @Service
 public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverInfo> implements IDriverInfoService {
+
+    @Autowired
+    IVehicleInfoService vehicleInfoService;
 
     /**
      * 分页查询司机信息
@@ -98,7 +105,18 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
 
     @Override
     public DriverInfoLinkVO getDriverInfoLink(Long driverId) {
-        return baseMapper.getDriverInfoLink(driverId);
+        DriverInfo driverInfo = getById(driverId);
+        if(driverInfo != null){
+            DriverInfoLinkVO driverInfoLinkVO = new DriverInfoLinkVO();
+            driverInfoLinkVO.setDriverName(driverInfo.getName());
+            driverInfoLinkVO.setDriverPhone(driverInfo.getPhone());
+
+            //根据司机名称获取车辆信息
+            List<VehicleInfoVO> vehicleInfoVO = vehicleInfoService.findVehicleByDriverName(driverInfo.getName());
+            driverInfoLinkVO.setVehicleInfoVOList(vehicleInfoVO);
+            return driverInfoLinkVO;
+        }
+        return new DriverInfoLinkVO();
     }
 
 

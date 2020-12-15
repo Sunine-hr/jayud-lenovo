@@ -101,10 +101,6 @@ public class OrderInfo extends Model<OrderInfo> {
     @ApiModelProperty(value = "外部报关放行的六联单号")
     private String encode;
 
-    @ApiModelProperty(value = "是否车辆过磅")
-    private Boolean isVehicleWeigh;
-
-
     @Override
     protected Serializable pkVal() {
         return this.id;

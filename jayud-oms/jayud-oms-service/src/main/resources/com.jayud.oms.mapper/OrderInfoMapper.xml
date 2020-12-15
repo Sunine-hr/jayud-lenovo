@@ -56,7 +56,7 @@
         '' goodsInfo,
         '' takeAddress,
         '' giveAddress,
-        oc.`status` subCustomsStatus,
+        (select GROUP_CONCAT(t.`status`) from order_customs t where t.main_order_no = oi.order_no group by t.main_order_no) subCustomsStatus,
         '' subTmsStatus,
         oi.`created_user` createdUser,
         DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,

@@ -355,15 +355,12 @@
             ) temp
     </select>
     <select id="getReceivableHeaderForm" parameterType="java.lang.String" resultType="com.jayud.finance.bo.ReceivableHeaderForm">
-        SELECT
+        SELECT DISTINCT
             oi.customer_name customerName,
             ci.unit_account settleOrgName,
             orbd.settlement_currency currency,
             d.`name` saleDeptName,
-            (case when orc.sub_type = 'main' then orc.main_order_no
-             when orc.sub_type = 'zgys' or orc.sub_type = 'bg' then orc.order_no
-             else ''
-             end) businessNo,
+            orbd.order_no businessNo,
             orbd.bill_no billNo,
             orbd.account_term businessDate
         FROM

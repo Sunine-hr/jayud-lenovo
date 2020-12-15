@@ -5,6 +5,7 @@ import com.jayud.tms.model.po.OrderSendCars;
 import com.jayud.tms.mapper.OrderSendCarsMapper;
 import com.jayud.tms.model.vo.DriverInfoPdfVO;
 import com.jayud.tms.model.vo.OrderSendCarsVO;
+import com.jayud.tms.model.vo.SendCarListPdfVO;
 import com.jayud.tms.service.IOrderSendCarsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections4.CollectionUtils;
@@ -51,6 +52,11 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
     @Override
     public DriverInfoPdfVO initDriverInfo(String orderNo) {
         return baseMapper.initDriverInfo(orderNo);
+    }
+
+    @Override
+    public SendCarListPdfVO initSendCarList(String orderNo) {
+        return baseMapper.initSendCarList(orderNo);
     }
 
 

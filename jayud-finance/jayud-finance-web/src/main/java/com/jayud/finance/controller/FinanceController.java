@@ -301,15 +301,18 @@ public class FinanceController {
     public CommonResult saveReceivableBill(@RequestBody ListForm form) {
         //校验是否可推送金蝶
         //1.必须财务已审核通过
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.in("bill_no",form.getBillNos());
-        List<OrderReceivableBillDetail> receivableBillDetails = receivableBillDetailService.list(queryWrapper);
         StringBuilder sb = new StringBuilder("账单编号:");
         Boolean flag = false;
-        for (OrderReceivableBillDetail receivableBillDetail : receivableBillDetails) {
-            if(StringUtil.isNullOrEmpty(receivableBillDetail.getAuditStatus()) || !BillEnum.B_6.getCode().equals(receivableBillDetail.getAuditStatus())){
-                flag = true;
-                sb.append(receivableBillDetail.getBillNo());
+        for (String billNo : form.getBillNos()) {
+            QueryWrapper queryWrapper1 = new QueryWrapper();
+            queryWrapper1.eq("bill_no",billNo);
+            List<OrderReceivableBillDetail> tempObjects = receivableBillDetailService.list(queryWrapper1);
+            if(tempObjects != null && tempObjects.size()>0){
+                OrderReceivableBillDetail tempObject = tempObjects.get(0);
+                if(StringUtil.isNullOrEmpty(tempObject.getAuditStatus()) || !BillEnum.B_6.getCode().equals(tempObject.getAuditStatus())){
+                    flag = true;
+                    sb.append(tempObject.getBillNo()+";");
+                }
             }
         }
         sb.append("财务未审核通过,不能推送金蝶");
@@ -317,6 +320,9 @@ public class FinanceController {
             return CommonResult.error(10001, sb.toString());
         }
         //构建数据，推金蝶
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.in("bill_no",form.getBillNos());
+        List<OrderReceivableBillDetail> receivableBillDetails = receivableBillDetailService.list(queryWrapper);
         for (OrderReceivableBillDetail receivableBillDetail : receivableBillDetails) {
             ReceivableHeaderForm reqForm = receivableBillDetailService.getReceivableHeaderForm(receivableBillDetail.getBillNo());
             List<APARDetailForm> entityDetail = receivableBillDetailService.findReceivableHeaderDetail(receivableBillDetail.getBillNo());
@@ -337,15 +343,18 @@ public class FinanceController {
     public CommonResult savePayableBill(@RequestBody ListForm form) {
         //校验是否可推送金蝶
         //1.必须财务已审核通过
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.in("bill_no",form.getBillNos());
-        List<OrderPaymentBillDetail> paymentBillDetailList = paymentBillDetailService.list(queryWrapper);
         StringBuilder sb = new StringBuilder("账单编号:");
         Boolean flag = false;
-        for (OrderPaymentBillDetail paymentBillDetail : paymentBillDetailList) {
-            if(StringUtil.isNullOrEmpty(paymentBillDetail.getAuditStatus()) || !BillEnum.B_6.getCode().equals(paymentBillDetail.getAuditStatus())){
-                flag = true;
-                sb.append(paymentBillDetail.getBillNo());
+        for (String billNo : form.getBillNos()) {
+            QueryWrapper queryWrapper1 = new QueryWrapper();
+            queryWrapper1.eq("bill_no",billNo);
+            List<OrderPaymentBillDetail> tempObjects = receivableBillDetailService.list(queryWrapper1);
+            if(tempObjects != null && tempObjects.size()>0){
+                OrderPaymentBillDetail tempObject = tempObjects.get(0);
+                if(StringUtil.isNullOrEmpty(tempObject.getAuditStatus()) || !BillEnum.B_6.getCode().equals(tempObject.getAuditStatus())){
+                    flag = true;
+                    sb.append(tempObject.getBillNo()+";");
+                }
             }
         }
         sb.append("财务未审核通过,不能推送金蝶");
@@ -353,6 +362,9 @@ public class FinanceController {
             return CommonResult.error(10001, sb.toString());
         }
         //构建数据，推金蝶
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.in("bill_no",form.getBillNos());
+        List<OrderPaymentBillDetail> paymentBillDetailList = paymentBillDetailService.list(queryWrapper);
         for (OrderPaymentBillDetail paymentBillDetail : paymentBillDetailList) {
             PayableHeaderForm reqForm = paymentBillDetailService.getPayableHeaderForm(paymentBillDetail.getBillNo());
             List<APARDetailForm> entityDetail = paymentBillDetailService.findPayableHeaderDetail(paymentBillDetail.getBillNo());

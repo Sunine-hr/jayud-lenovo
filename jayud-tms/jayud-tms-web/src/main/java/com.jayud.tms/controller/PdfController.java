@@ -5,6 +5,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.tms.model.vo.DriverInfoPdfVO;
+import com.jayud.tms.model.vo.SendCarListPdfVO;
 import com.jayud.tms.model.vo.SendCarPdfVO;
 import com.jayud.tms.pdfUtil.PdfTemplateUtil;
 import com.jayud.tms.service.IOrderSendCarsService;
@@ -36,7 +37,7 @@ public class PdfController {
     @Autowired
     private IOrderSendCarsService sendCarsService;
 
-    @ApiOperation(value = "渲染数据,orderNo=子订单号")
+    @ApiOperation(value = "渲染数据,确认派车 orderNo=子订单号")
     @PostMapping(value = "/initPdfData")
     public CommonResult<SendCarPdfVO> initPdfData(@RequestBody Map<String,Object> param) {
         String orderNo = MapUtil.getStr(param, CommonConstant.ORDER_NO);
@@ -56,6 +57,17 @@ public class PdfController {
         }
         DriverInfoPdfVO driverInfoPdfVO = sendCarsService.initDriverInfo(orderNo);
         return CommonResult.success(driverInfoPdfVO);
+    }
+
+    @ApiOperation(value = "二期优化1：派车单,orderNo=子订单号")
+    @PostMapping(value = "/initSendCarList")
+    public CommonResult<SendCarListPdfVO> initSendCarList(@RequestBody Map<String,Object> param) {
+        String orderNo = MapUtil.getStr(param, CommonConstant.ORDER_NO);
+        if(StringUtil.isNullOrEmpty(orderNo)){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        SendCarListPdfVO sendCarListPdfVO = sendCarsService.initSendCarList(orderNo);
+        return CommonResult.success(sendCarListPdfVO);
     }
 
 

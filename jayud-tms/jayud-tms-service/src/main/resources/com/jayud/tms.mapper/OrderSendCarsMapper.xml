@@ -78,4 +78,7 @@
 			left join vehicle_info vi on vi.id = di.vehicle_id
             WHERE ot.`order_no` = #{orderNo}
     </select>
+    <select id="initSendCarList"  resultType="com.jayud.tms.model.vo.SendCarListPdfVO" >
+
+    </select>
 </mapper>

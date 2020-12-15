@@ -79,6 +79,25 @@
             WHERE ot.`order_no` = #{orderNo}
     </select>
     <select id="initSendCarList"  resultType="com.jayud.tms.model.vo.SendCarListPdfVO" >
-
+    SELECT
+        ot.legal_name legalName,
+        le.legal_en_name legalEnName,
+        ot.order_no jobNumber,
+        (select DATE_FORMAT(ota.take_time, '%Y-%m-%d' ) from order_take_adr ota where ota.opr_type = '1' and ota.order_no = ot.order_no limit 1) createTimeStr,
+        di.`name`,
+        DATE_FORMAT(ota1.take_time, '%Y-%m-%d' ) takeTimeStr,
+        CONCAT(ifnull(da.state_name,''),ifnull(da.city_name,''),da.address) address,
+        ota1.piece_amount pieceAmount,
+        ota1.weight,
+        ota1.remarks
+    FROM
+        order_transport ot
+        left join legal_entity le on le.legal_name = ot.legal_name
+        left join order_take_adr ota1 on ota1.order_no = ot.order_no and ota1.opr_type = '2'
+        left join delivery_address da on da.id = ota1.delivery_id
+        left join order_send_cars osc on osc.order_no = ot.order_no
+        left join driver_info di on di.id = osc.driver_info_id
+    WHERE
+        ot.order_no = #{orderNo}
     </select>
 </mapper>

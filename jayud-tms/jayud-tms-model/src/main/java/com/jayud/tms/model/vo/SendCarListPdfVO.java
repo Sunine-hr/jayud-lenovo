@@ -18,9 +18,6 @@ public class SendCarListPdfVO {
     @ApiModelProperty(value = "工作号")
     private String jobNumber;
 
-    @ApiModelProperty(value = "货物描述")
-    private String goodsInfo;
-
     @ApiModelProperty(value = "日期")
     private String createTimeStr;
 

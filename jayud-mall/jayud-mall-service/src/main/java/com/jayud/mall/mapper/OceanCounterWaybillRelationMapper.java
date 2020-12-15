@@ -2,6 +2,8 @@ package com.jayud.mall.mapper;
 
 import com.jayud.mall.model.po.OceanCounterWaybillRelation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Component;
 
 /**
  * <p>
@@ -11,6 +13,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author fachang.mao
  * @since 2020-12-15
  */
+@Mapper
+@Component
 public interface OceanCounterWaybillRelationMapper extends BaseMapper<OceanCounterWaybillRelation> {
 
 }

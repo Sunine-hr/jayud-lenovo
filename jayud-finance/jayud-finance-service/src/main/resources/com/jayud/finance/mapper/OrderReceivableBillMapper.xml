@@ -182,6 +182,7 @@
         LEFT JOIN cost_type ct ON orc.cost_type_id = ct.id
         LEFT JOIN cost_info ci ON orc.cost_code = ci.id_code
         left join order_customs oc on oc.order_no = orc.order_no
+        left join air_order ao on ao.order_no = orc.order_no
         WHERE
         orc.id NOT IN ( SELECT orbd.cost_id FROM order_receivable_bill_detail orbd )
         and orc.is_bill != '2'
@@ -198,6 +199,11 @@
         <if test="form.cmd == 'bg'">
             and oc.legal_name = #{form.legalName}
             and orc.is_sum_to_main = 0 and orc.sub_type = 'bg'
+        </if>
+        <if test="form.cmd == 'ky'">
+--             TODO 二期出来还要改
+            and ao.legal_id = #{form.legalName}
+            and orc.is_sum_to_main = 0 and orc.sub_type = 'ky'
         </if>
         ) temp where 1 = 1
         <if test="form.startAddress != null and form.startAddress != ''">

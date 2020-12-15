@@ -82,4 +82,11 @@ public interface OmsClient {
     ApiResult<DriverInfoLinkVO> initDriverInfo(@RequestParam("driverId") Long driverId);
 
 
+    /**
+     * 根据车辆主键查询车辆信息
+     */
+    @RequestMapping(value = "/api/getVehicleInfoById")
+    public ApiResult getVehicleInfoById(@RequestParam("vehicleId") Long vehicleId);
+
+
 }

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  * 应收/应付一致
  */
 @Data
-public class QueryPaymentBillDetailForm extends BasePageForm{
+public class QueryPaymentBillDetailForm extends BasePageForm {
 
     @ApiModelProperty(value = "法人主体")
     private String legalName;
@@ -27,11 +27,11 @@ public class QueryPaymentBillDetailForm extends BasePageForm{
     private String billNo;
 
     @ApiModelProperty(value = "开始核算期")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime beginAccountTerm;
 
     @ApiModelProperty(value = "结束核算期")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endAccountTerm;
 
     @ApiModelProperty(value = "币种")
@@ -43,9 +43,11 @@ public class QueryPaymentBillDetailForm extends BasePageForm{
     @ApiModelProperty(value = "付款申请/开票申请")
     private String applyStatus;
 
-    @ApiModelProperty(value = "操作指令 cmd=main_statement/zgys_statement/bg_statement对账单 or statement_audit/zgys_statement_audit/bg_statement_audit对账单审核 or" +
-            " cw_statement财务对账单",required = true)
-    @Pattern(regexp = "(main_statement|zgys_statement|bg_statement|statement_audit|zgys_statement_audit|bg_statement_audit|" +
+    @ApiModelProperty(value = "操作指令 cmd=main_statement/zgys_statement/bg_statement/ky_statement对账单 " +
+            "or statement_audit/zgys_statement_audit/bg_statement_audit/ky_statement_audit对账单审核 or" +
+            " cw_statement财务对账单", required = true)
+    @Pattern(regexp = "(main_statement|zgys_statement|bg_statement|ky_statement" +
+            "|statement_audit|zgys_statement_audit|bg_statement_audit|ky_statement_audit" +
             "cw_statement)", message = "只允许填写特定值")
     private String cmd;
 

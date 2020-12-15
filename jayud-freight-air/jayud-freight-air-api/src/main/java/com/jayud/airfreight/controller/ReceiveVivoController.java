@@ -7,6 +7,8 @@ import com.jayud.airfreight.annotations.APILog;
 import com.jayud.airfreight.feign.FileClient;
 import com.jayud.airfreight.feign.OauthClient;
 import com.jayud.airfreight.feign.OmsClient;
+import com.jayud.airfreight.feign.TmsClient;
+import com.jayud.airfreight.model.bo.InputOrderTransportForm;
 import com.jayud.airfreight.model.bo.vivo.*;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.airfreight.service.AirFreightService;
@@ -16,6 +18,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.VivoApiResult;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
+import com.jayud.common.enums.VehicleTypeEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.FileUtil;
 import com.jayud.common.utils.FileView;
@@ -24,7 +27,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -56,6 +61,10 @@ public class ReceiveVivoController {
     private IAirOrderService airOrderService;
     @Autowired
     private FileClient fileClient;
+    @Autowired
+    private TmsClient tmsClient;
+
+    @Value("")
 
     @ApiOperation(value = "vivo抛订舱数据到货代")
     @PostMapping("/bookingSpace")
@@ -69,7 +78,7 @@ public class ReceiveVivoController {
         ApiResult result = null;
         switch (form.getModeOfTransport()) {
             case 1:
-                result = this.vivoService.createOrder(form);
+                result = this.vivoService.createAirOrder(form);
                 break;
             default:
                 return VivoApiResult.error("暂时只支持空运");
@@ -179,9 +188,32 @@ public class ReceiveVivoController {
     @PostMapping("/carInfoToForwarder")
     @ApiOperation(value = "抛派车信息到货代")
     @APILog
-    public VivoApiResult carInfoToForwarder(@RequestBody @Valid CardInfoToForwarderForm cardInfoToForwarderForm) {
+    public VivoApiResult carInfoToForwarder(@RequestBody @Valid CardInfoToForwarderForm form) {
+        //车型
+        if (VehicleTypeEnum.getCode(form.getDemandTruckType()) == null) {
+            log.warn("无法配对车型 size={}", form.getDemandTruckType());
+            return VivoApiResult.error("无法配对车型");
+        }
 
-        log.info("参数==============={}", JSONUtil.toJsonStr(cardInfoToForwarderForm));
+        //获取海关代码
+        ApiResult result = this.omsClient.getPortCodeByName(form.getExportCustomsPort());
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.warn("根据海关名称查询海关代码接口请求失败 message={}", result.getMsg());
+            return VivoApiResult.error("创建订单失败");
+        }
+        if (result.getData() == null) {
+            log.warn("找不到对应的出口口岸 message={}", result.getMsg());
+            return VivoApiResult.error("找不到对应的出口口岸");
+        }
+        //设置海关
+        form.setExportCustomsPort(String.valueOf(result.getData()));
+        //组装订单
+        InputOrderTransportForm orderTransportForm = form.assemblyTmsObj();
+
+        result = this.vivoService.createTmsOrder(form, orderTransportForm);
+        if (result.getCode() != HttpStatus.SC_OK) {
+            return VivoApiResult.error("创建订单失败");
+        }
         return VivoApiResult.success();
     }
 
@@ -189,7 +221,24 @@ public class ReceiveVivoController {
     @ApiOperation("vivo取消派车")
     @APILog
     public VivoApiResult carCancel(@RequestBody @Valid CarCancelForm carCancelForm) {
-        log.info("参数======{}", JSONUtil.toJsonStr(carCancelForm));
+        //查询中港订单
+        ApiResult result = this.tmsClient.getTmsOrderByThirdPartyOrderNo(carCancelForm.getDispatchNo());
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.error("查询中港订单请求失败");
+            return VivoApiResult.error("取消派车失败");
+        }
+
+        if (result.getData() == null) {
+            log.error("不存在派车信息 派车号={}", carCancelForm.getDispatchNo());
+            return VivoApiResult.error("不存在派车信息");
+        }
+        JSONObject data = new JSONObject(result.getData());
+
+        //根据主订单号设置状态
+        Map<String, Object> map = new HashMap<>();
+        map.put("orderNo", data.getStr("mainOrderNo"));
+        map.put("status", OrderStatusEnum.MAIN_6.getCode());
+        this.omsClient.updateByMainOrderNo(JSONUtil.toJsonStr(map));
         return VivoApiResult.success();
     }
 

@@ -7,10 +7,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.google.gson.Gson;
-import com.jayud.airfreight.feign.FileClient;
-import com.jayud.airfreight.feign.MsgClient;
-import com.jayud.airfreight.feign.OauthClient;
-import com.jayud.airfreight.feign.OmsClient;
+import com.jayud.airfreight.feign.*;
 import com.jayud.airfreight.model.bo.*;
 import com.jayud.airfreight.model.bo.vivo.*;
 import com.jayud.airfreight.model.po.AirBooking;
@@ -22,10 +19,7 @@ import com.jayud.airfreight.service.VivoService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.SqlConstant;
-import com.jayud.common.enums.BusinessTypeEnum;
-import com.jayud.common.enums.KafkaMsgEnums;
-import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.enums.*;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.DateUtils;
@@ -100,6 +94,8 @@ public class VivoServiceImpl implements VivoService {
     private MsgClient msgClient;
     @Autowired
     private FileClient fileClient;
+    @Autowired
+    private TmsClient tmsClient;
 
 
     /**
@@ -299,11 +295,11 @@ public class VivoServiceImpl implements VivoService {
 
 
     /**
-     * 创建订单
+     * 创建空运订单
      */
     @Override
     @Transactional
-    public ApiResult createOrder(BookingSpaceForm form) {
+    public ApiResult createAirOrder(BookingSpaceForm form) {
         InputOrderForm orderForm = new InputOrderForm();
         //查询客户名称
         JSONObject customerInfo = this.getCustomerInfoByLoginUserName();
@@ -325,9 +321,51 @@ public class VivoServiceImpl implements VivoService {
         field.setThirdPartyUniqueSign(form.getBookingNo());
         field.setBusinessTable(SqlConstant.AIR_ORDER);
         field.setCreateTime(LocalDateTime.now());
-        field.setType(BusinessTypeEnum.KY.getCode());
-        field.setRemarks("vivo抛订舱数据到货代");
+        field.setType(ExtensionFieldTypeEnum.VIVO.getCode());
+        field.setRemarks(VivoInterfaceDescEnum.ONE.getDesc());
         airExtensionFieldService.save(field);
+        //暂存订单
+        ApiResult result = this.omsClient.holdOrder(orderForm);
+        return result;
+    }
+
+    /**
+     * 创建中港订单
+     */
+    @Override
+    public ApiResult createTmsOrder(CardInfoToForwarderForm form, InputOrderTransportForm orderTransportForm) {
+        InputOrderForm orderForm = new InputOrderForm();
+        //查询客户名称
+        JSONObject customerInfo = this.getCustomerInfoByLoginUserName();
+        InputMainOrderForm mainOrderForm = new InputMainOrderForm();
+        //主订单设置客户名称
+        mainOrderForm.setCustomerName(customerInfo.getStr("name"));
+        mainOrderForm.setCustomerCode(customerInfo.getStr("idCode"));
+        mainOrderForm.setClassCode(OrderStatusEnum.ZGYS.getCode());
+        mainOrderForm.setSelectedServer("JD");//选择服务类型
+        orderForm.setOrderTransportForm(orderTransportForm);
+        orderForm.setOrderForm(mainOrderForm);
+
+
+        //保存vivo字段
+        AirExtensionField field = new AirExtensionField();
+        field.setValue(JSONUtil.toJsonStr(form));
+        field.setThirdPartyUniqueSign(form.getDispatchNo());
+        field.setBusinessTable(SqlConstant.ORDER_TRANSPORT);
+        field.setCreateTime(LocalDateTime.now());
+        field.setType(ExtensionFieldTypeEnum.VIVO.getCode());
+        field.setRemarks(VivoInterfaceDescEnum.SIX.getDesc());
+        airExtensionFieldService.save(field);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("value", JSONUtil.toJsonStr(form));
+        map.put("thirdPartyUniqueSign", form.getDispatchNo());
+        map.put("businessTable", SqlConstant.ORDER_TRANSPORT);
+        map.put("createTime", LocalDateTime.now());
+        map.put("type", ExtensionFieldTypeEnum.VIVO.getCode());
+        map.put("remarks", VivoInterfaceDescEnum.SIX.getDesc());
+        //保存冗余字段
+        this.tmsClient.saveOrUpdateTmsExtensionField(JSONUtil.toJsonStr(map));
         //暂存订单
         ApiResult result = this.omsClient.holdOrder(orderForm);
         return result;
@@ -351,7 +389,7 @@ public class VivoServiceImpl implements VivoService {
                 .setCreateTime(LocalDateTime.now())
                 .setType(BusinessTypeEnum.KY.getCode())
                 .setValue(JSONUtil.toJsonStr(bookingFileTransferDataForm))
-                .setRemarks("货代获取订舱文件");
+                .setRemarks(VivoInterfaceDescEnum.FOUR.getDesc());
         this.airExtensionFieldService.save(airExtensionField);
         //修改订舱状态
         return airBookingService.updateByAirOrderId(airOrder.getId(), new AirBooking().setStatus("0"));

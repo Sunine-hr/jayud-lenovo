@@ -93,4 +93,10 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/updateByMainOrderNo")
     public ApiResult updateByMainOrderNo(@RequestBody String value);
+
+    /**
+     * 根据编码获取港口名称
+     */
+    @RequestMapping(value = "/api/getPortCodeByName")
+    public ApiResult getPortCodeByName(@RequestBody String name);
 }

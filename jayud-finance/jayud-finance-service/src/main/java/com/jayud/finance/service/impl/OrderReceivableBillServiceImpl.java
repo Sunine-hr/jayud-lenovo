@@ -166,9 +166,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             orderReceivableBill.setBillNum(billNum + 1);
             if ("main".equals(form.getSubType())) {
                 orderReceivableBill.setIsMain(true);
-            } else if ("zgys".equals(form.getSubType())) {
-                orderReceivableBill.setIsMain(false);
-            } else if ("bg".equals(form.getSubType())) {
+            } else {
                 orderReceivableBill.setIsMain(false);
             }
             orderReceivableBill.setSubType(form.getSubType());

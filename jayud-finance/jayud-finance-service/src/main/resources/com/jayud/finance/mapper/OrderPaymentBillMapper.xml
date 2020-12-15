@@ -201,6 +201,7 @@
             and opc.is_sum_to_main = 0 and opc.sub_type = 'bg'
         </if>
         <if test="form.cmd == 'ky'">
+--         TODO 二期出来还要改
             and ao.legal_id = #{form.legalName}
             and opc.is_sum_to_main = 0 and opc.sub_type = 'ky'
         </if>

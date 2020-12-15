@@ -64,9 +64,13 @@ public class ExternalApiController {
     @Autowired
     private ICustomerInfoService customerInfoService;
 
-
     @Autowired
     ICostGenreService costGenreService;
+
+    @Autowired
+    private IPortInfoService portInfoService;
+    @Autowired
+    private IVehicleInfoService vehicleInfoService;
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
@@ -436,12 +440,13 @@ public class ExternalApiController {
 
     /**
      * 开票审核通过之后，需要反推汇率和本币金额到费用录入表
+     *
      * @param forms
      * @param cmd
      * @return
      */
     @RequestMapping(value = "api/writeBackCostData")
-    ApiResult<Boolean> writeBackCostData(@RequestBody List<OrderCostForm> forms, @RequestParam("cmd") String cmd){
+    ApiResult<Boolean> writeBackCostData(@RequestBody List<OrderCostForm> forms, @RequestParam("cmd") String cmd) {
         if ("receivable".equals(cmd)) {
             for (OrderCostForm orderCost : forms) {
                 //获取该条费用以出账时结算币种的汇率和本币金额
@@ -472,10 +477,11 @@ public class ExternalApiController {
 
     /**
      * 获取所有可用的费用类型
+     *
      * @return
      */
     @RequestMapping(value = "api/findEnableCostGenre")
-    ApiResult<List<InitComboxVO>> findEnableCostGenre(){
+    ApiResult<List<InitComboxVO>> findEnableCostGenre() {
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         List<CostGenre> costGenres = costGenreService.getEnableCostGenre();
         for (CostGenre costGenre : costGenres) {
@@ -486,7 +492,6 @@ public class ExternalApiController {
         }
         return ApiResult.ok(initComboxVOS);
     }
-
 
 
     /**
@@ -538,6 +543,28 @@ public class ExternalApiController {
         this.orderInfoService.updateByMainOrderNo(orderInfo.getOrderNo(), orderInfo.setOrderNo(null));
         return ApiResult.ok();
     }
+
+
+    /**
+     * 根据编码获取港口名称
+     */
+    @RequestMapping(value = "/api/getPortCodeByName")
+    public ApiResult getPortCodeByName(@RequestBody String name) {
+        PortInfo portInfo = new PortInfo().setName(name);
+        List<PortInfo> portInfos = this.portInfoService.findPortInfoByCondition(portInfo);
+        return ApiResult.ok(portInfos.size() > 0 ? portInfos.get(0).getName() : null);
+    }
+
+    /**
+     * 根据车辆主键查询车辆信息
+     */
+    @RequestMapping(value = "/api/getVehicleInfoById")
+    public ApiResult getVehicleInfoById(@RequestParam("vehicleId") Long vehicleId) {
+        VehicleInfo vehicleInfo = this.vehicleInfoService.getById(vehicleId);
+        return ApiResult.ok(vehicleInfo);
+    }
+
+
 }
 
 

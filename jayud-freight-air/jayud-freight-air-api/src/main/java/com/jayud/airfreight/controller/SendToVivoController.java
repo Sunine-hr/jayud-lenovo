@@ -3,10 +3,7 @@ package com.jayud.airfreight.controller;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.jayud.airfreight.model.bo.vivo.ForwarderAirFreightForm;
-import com.jayud.airfreight.model.bo.vivo.ForwarderBookingConfirmedFeedbackForm;
-import com.jayud.airfreight.model.bo.vivo.ForwarderLadingFileForm;
-import com.jayud.airfreight.model.bo.vivo.ForwarderLadingInfoForm;
+import com.jayud.airfreight.model.bo.vivo.*;
 import com.jayud.airfreight.model.po.AirBooking;
 import com.jayud.airfreight.service.IAirBookingService;
 import com.jayud.airfreight.service.VivoService;
@@ -22,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.Map;
 
 /**
@@ -56,14 +54,18 @@ public class SendToVivoController {
         }
     }
 
-//    @ApiOperation(value = "车辆信息传给vivo")
-//    @PostMapping("/forwarder/vehicleInfo")
-//    public CommonResult forwarderVehicleInfo(@RequestBody @Valid ForwarderVehicleInfoForm form) {
-//        if (vivoService.forwarderVehicleInfo(form)) {
-//            return CommonResult.success();
-//        }
-//        return CommonResult.error(ResultEnum.PARAM_ERROR, "调用失败");
-//    }
+    @ApiOperation(value = "车辆信息传给vivo")
+    @PostMapping("/forwarder/vehicleInfo")
+    public CommonResult forwarderVehicleInfo(@RequestBody String value) {
+        ForwarderVehicleInfoForm form = JSONUtil.toBean(value, ForwarderVehicleInfoForm.class);
+        Map<String, Object> resultMap = vivoService.forwarderVehicleInfo(form);
+        if (1 == MapUtil.getInt(resultMap, "status")) {
+            return CommonResult.success();
+        } else {
+            return CommonResult.error(MapUtil.getInt(resultMap, "status"),
+                    MapUtil.getStr(resultMap, "message"));
+        }
+    }
 
     @ApiOperation(value = "提单文件传给vivo")
     @PostMapping("/forwarder/ladingFile")

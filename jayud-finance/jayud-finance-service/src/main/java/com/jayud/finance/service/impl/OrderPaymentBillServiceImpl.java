@@ -165,9 +165,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             orderPaymentBill.setBillNum(billNum + 1);
             if ("main".equals(form.getSubType())) {
                 orderPaymentBill.setIsMain(true);
-            } else if ("zgys".equals(form.getSubType())) {
-                orderPaymentBill.setIsMain(false);
-            } else if ("bg".equals(form.getSubType())) {
+            }else {
                 orderPaymentBill.setIsMain(false);
             }
             orderPaymentBill.setSubType(form.getSubType());

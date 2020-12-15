@@ -19,14 +19,14 @@ public class CarInfoToForwarderLineForm {
     @JsonProperty("Contract_no")
     @SerializedName("Contract_no")
     @ApiModelProperty("合同号")
-    @Length(max = 200,message = "Contract_no最大长度为200位")
+    @Length(max = 200, message = "Contract_no最大长度为200位")
     @NotEmpty(message = "Contract_no 必填")
     private String contractNo;
 
     @JsonProperty("Invoice_no")
     @SerializedName("Invoice_no")
     @ApiModelProperty("发票号")
-    @Length(max = 200,message = "Invoice_no最大长度为200位")
+    @Length(max = 200, message = "Invoice_no最大长度为200位")
     @NotEmpty(message = "Invoice_no 必填")
     private String invoiceNo;
 
@@ -34,15 +34,15 @@ public class CarInfoToForwarderLineForm {
     @SerializedName("Booking_no")
     @ApiModelProperty("Booking号")
     @NotEmpty(message = "Booking_no 必填")
-    @Length(max = 200,message = "Booking_no最大长度为200位")
+    @Length(max = 200, message = "Booking_no最大长度为200位")
     private String bookingNo;
 
     @JsonProperty("Cargo_type")
     @SerializedName("Cargo_type")
     @ApiModelProperty("货物类型")
     @NotEmpty(message = "Cargo_type号 必填")
-    @Length(max = 200,message = "Cargo_type最大长度为200位")
-    @EnumAnnotation(message = "Cargo_type错误",target = {ViVoCargoTypeEnum.class})
+    @Length(max = 200, message = "Cargo_type最大长度为200位")
+    @EnumAnnotation(message = "Cargo_type错误", target = {ViVoCargoTypeEnum.class})
     private String cargoType;
 
     @JsonProperty("Forwarder_booking_no")
@@ -88,9 +88,15 @@ public class CarInfoToForwarderLineForm {
     @NotNull(message = "Volume号 必填")
     private BigDecimal volume;
 
-    @JsonProperty("Delivery_warehouse_code")
-    @SerializedName("Delivery_warehouse_code")
+    @JsonProperty("Delivery_warehouse")
+    @SerializedName("Delivery_warehouse")
     @ApiModelProperty("体积")
-    @NotNull(message = "Delivery_warehouse_code号 必填")
-    private Integer deliveryWarehouseCode;
+    @NotNull(message = "Delivery_warehouse号 必填")
+    private String deliveryWarehouse;
+
+    @JsonProperty("Delivery_warehouse_address")
+    @SerializedName("Delivery_warehouse_address")
+    @ApiModelProperty("交货仓库地址")
+    @NotNull(message = "Delivery_warehouse_address号 必填")
+    private String deliveryWarehouseAddress;
 }

@@ -48,4 +48,10 @@ public interface AirfreightClient {
      */
     @PostMapping("/airfreight/toVivo/forwarder/forwarderAirFarePush")
     public CommonResult forwarderAirFarePush(@RequestBody String value);
+
+    /**
+     * 车辆信息传给vivo
+     */
+    @PostMapping("/forwarder/vehicleInfo")
+    public CommonResult forwarderVehicleInfo(@RequestBody String value);
 }

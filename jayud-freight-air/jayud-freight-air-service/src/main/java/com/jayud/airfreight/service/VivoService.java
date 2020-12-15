@@ -1,6 +1,7 @@
 package com.jayud.airfreight.service;
 
 import cn.hutool.json.JSONObject;
+import com.jayud.airfreight.model.bo.InputOrderTransportForm;
 import com.jayud.airfreight.model.bo.vivo.*;
 import com.jayud.airfreight.model.po.AirBooking;
 import com.jayud.airfreight.model.po.AirOrder;
@@ -61,7 +62,12 @@ public interface VivoService {
     /**
      * 创建订单
      */
-    ApiResult createOrder(BookingSpaceForm form);
+    ApiResult createAirOrder(BookingSpaceForm form);
+
+    /**
+     * 创建中港订单
+     */
+    ApiResult createTmsOrder(CardInfoToForwarderForm form, InputOrderTransportForm orderTransportForm);
 
     boolean bookingFile(AirOrder airOrder, BookingFileTransferDataForm bookingFileTransferDataForm);
 
@@ -78,6 +84,7 @@ public interface VivoService {
 
     /**
      * 货代抛空运费用数据到vivo
+     *
      * @param form
      * @return
      */

@@ -13,8 +13,8 @@ public class InputOrderForm {
 //    @ApiModelProperty(value = "报关单")
 //    private InputOrderCustomsForm orderCustomsForm;
 
-//    @ApiModelProperty(value = "中港")
-//    private InputOrderTransportForm orderTransportForm;
+    @ApiModelProperty(value = "中港")
+    private InputOrderTransportForm orderTransportForm;
 
     @ApiModelProperty(value = "空运")
     private AddAirOrderForm airOrderForm;

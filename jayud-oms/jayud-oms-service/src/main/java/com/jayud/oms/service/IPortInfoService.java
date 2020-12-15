@@ -23,4 +23,11 @@ public interface IPortInfoService extends IService<PortInfo> {
      */
     List<PortInfo> findPortInfoByCondition(Map<String,Object> param);
 
+
+    /**
+     * 根据条件获取通过口岸信息
+     * @return
+     */
+    List<PortInfo> findPortInfoByCondition(PortInfo portInfo);
+
 }

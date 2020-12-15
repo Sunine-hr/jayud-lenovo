@@ -1,5 +1,7 @@
 package com.jayud.tms.controller;
 
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
@@ -11,11 +13,14 @@ import com.jayud.tms.model.bo.QueryDriverOrderTransportForm;
 import com.jayud.tms.model.bo.TmsChangeStatusForm;
 import com.jayud.tms.model.po.OrderSendCars;
 import com.jayud.tms.model.po.OrderTransport;
+import com.jayud.tms.model.po.TmsExtensionField;
 import com.jayud.tms.model.vo.*;
 import com.jayud.tms.service.IOrderSendCarsService;
 import com.jayud.tms.service.IOrderTakeAdrService;
 import com.jayud.tms.service.IOrderTransportService;
+import com.jayud.tms.service.ITmsExtensionFieldService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,6 +48,8 @@ public class ExternalApiController {
     private IOrderTakeAdrService orderTakeAdrService;
     @Autowired
     private OrderInTransportController orderInTransportController;
+    @Autowired
+    private ITmsExtensionFieldService tmsExtensionFieldService;
 
 
     @ApiOperation(value = "创建中港子订单")
@@ -166,6 +173,21 @@ public class ExternalApiController {
     public ApiResult<OrderSendCars> getOrderSendCarsByOrderNo(@RequestParam("orderNo") String orderNo) {
         OrderSendCars orderSendCars = this.orderSendCarsService.getOrderSendCarsByOrderNo(orderNo);
         return ApiResult.ok(orderSendCars);
+    }
+
+    @ApiModelProperty(value = "保存扩展字段")
+    @RequestMapping(value = "/api/saveOrUpdateTmsExtensionField")
+    public ApiResult<TmsExtensionField> saveOrUpdateTmsExtensionField(@RequestBody String json) {
+        TmsExtensionField tmsExtensionField = JSONUtil.toBean(json, TmsExtensionField.class);
+        this.tmsExtensionFieldService.saveOrUpdate(tmsExtensionField);
+        return ApiResult.ok();
+    }
+
+    @ApiModelProperty(value = "根据第三方订单获取中港订单信息")
+    @RequestMapping(value = "/api/getTmsOrderByThirdPartyOrderNo")
+    public ApiResult getTmsOrderByThirdPartyOrderNo(@RequestParam("thirdPartyOrderNo") String thirdPartyOrderNo) {
+        List<OrderTransport> orderTransports = this.orderTransportService.getOrderTmsByCondition(new OrderTransport().setThirdPartyOrderNo(thirdPartyOrderNo));
+        return ApiResult.ok(orderTransports.size() > 0 ? orderTransports.get(0) : null);
     }
 }
 

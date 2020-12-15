@@ -92,6 +92,12 @@
         <if test="form.cmd == 'bg_statement_audit'">
             and opb.is_main = 0 and opb.sub_type = 'bg' and opbd.audit_status IN ('B_1','B_2')
         </if>
+        <if test="form.cmd == 'ky_statement'">
+            and opb.is_main = 0 and opb.sub_type = 'ky'
+        </if>
+        <if test="form.cmd == 'ky_statement_audit'">
+            and opb.is_main = 0 and opb.sub_type = 'ky' and opbd.audit_status IN ('B_1','B_2')
+        </if>
         <if test="form.supplierChName != null and form.supplierChName != ''">
             and opb.supplier_ch_name like concat('%',#{form.supplierChName},'%')
         </if>

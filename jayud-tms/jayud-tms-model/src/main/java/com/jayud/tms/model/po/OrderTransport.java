@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="OrderTransport对象", description="中港运输订单")
+@ApiModel(value = "OrderTransport对象", description = "中港运输订单")
 public class OrderTransport extends Model<OrderTransport> {
 
     private static final long serialVersionUID = 1L;
@@ -34,6 +34,9 @@ public class OrderTransport extends Model<OrderTransport> {
 
     @ApiModelProperty(value = "订单编号(生成规则product_classify code+随时数)")
     private String orderNo;
+
+    @ApiModelProperty(value = "第三方订单号")
+    private String thirdPartyOrderNo;
 
     @ApiModelProperty(value = "口岸code(port_info code)")
     private String portCode;
@@ -127,6 +130,9 @@ public class OrderTransport extends Model<OrderTransport> {
 
     @ApiModelProperty(value = "预计通关时间")
     private LocalDateTime preGoCustomsTime;
+
+    @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo)")
+    private Integer createUserType;
 
 
     @Override

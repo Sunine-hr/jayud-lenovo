@@ -167,6 +167,17 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         return inputOrderTransportVO;
     }
 
+    /**
+     * 根据条件获取中港信息
+     *
+     * @return
+     */
+    @Override
+    public List<OrderTransport> getOrderTmsByCondition(OrderTransport orderTransport) {
+        QueryWrapper<OrderTransport> condition = new QueryWrapper<>(orderTransport);
+        return this.baseMapper.selectList(condition);
+    }
+
     @Override
     public IPage<OrderTransportVO> findTransportOrderByPage(QueryOrderTmsForm form) {
         //定义分页参数

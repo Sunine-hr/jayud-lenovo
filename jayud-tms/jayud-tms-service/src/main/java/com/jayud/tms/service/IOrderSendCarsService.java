@@ -1,5 +1,6 @@
 package com.jayud.tms.service;
 
+import com.jayud.tms.model.bo.SendCarForm;
 import com.jayud.tms.model.po.OrderSendCars;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.tms.model.vo.OrderSendCarsVO;
@@ -33,5 +34,10 @@ public interface IOrderSendCarsService extends IService<OrderSendCars> {
      * 根据订单编号获取
      */
     public OrderSendCars getOrderSendCarsByOrderNo(String orderNo);
+
+    /**
+     * 派车消息推送
+     */
+    public void sendCarsMessagePush(SendCarForm form);
 
 }

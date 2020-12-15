@@ -54,6 +54,13 @@ public interface IOrderTransportService extends IService<OrderTransport> {
     public InputOrderTransportVO getOrderTransport(String mainOrderNo);
 
     /**
+     * 根据条件获取中港信息
+     *
+     * @return
+     */
+    public List<OrderTransport> getOrderTmsByCondition(OrderTransport orderTransport);
+
+    /**
      * 中港分页查询
      *
      * @param form
@@ -85,6 +92,7 @@ public interface IOrderTransportService extends IService<OrderTransport> {
 
     /**
      * 司机反馈状态
+     *
      * @param form
      */
     void doDriverFeedbackStatus(OprStatusForm form);

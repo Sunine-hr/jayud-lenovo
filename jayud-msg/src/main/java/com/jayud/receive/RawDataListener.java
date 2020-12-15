@@ -131,7 +131,7 @@ public class RawDataListener {
 
 
     /**
-     * 调用接口推送给vivo
+     * 空运消息推送给vivo
      */
     @KafkaListener(topics = {"${kafka.consumer.topic.vivoAir}"}, groupId = "${kafka.consumer.group.id}")
     public void vivoAirListener(ConsumerRecord<?, ?> record) throws IOException {
@@ -177,8 +177,35 @@ public class RawDataListener {
             }
         }
 
+    }
+
+    /**
+     * 中港消息推送给vivo
+     */
+    @KafkaListener(topics = {"${kafka.consumer.topic.vivoTms}"}, groupId = "${kafka.consumer.group.id}")
+    public void vivoTmsListener(ConsumerRecord<?, ?> record) throws IOException {
+        String value = (String) record.value();
+        String key = (String) record.key();
+        String topic = record.topic();
+        long offset = record.offset();
+        //消费信息
+        log.info("kafka中港信息消费：offset={} topic={} key={} value={}", offset, topic, key, value);
+        if (StringUtils.isEmpty(key)) {
+            return;
+        }
+        CommonResult result = null;
+
+        if (match(com.jayud.common.enums.KafkaMsgEnums.VIVO_FREIGHT_TMS_MESSAGE_ONE, record)) {
+            log.info("[vivo]派车信息推送...");
+            result = this.airfreightClient.forwarderVehicleInfo(value);
+            if (result.getCode() != HttpStatus.SC_OK) {
+                log.error("推送派车信息给vivo失败 message={}", result.getMsg());
+            }
+        }
 
     }
+
+
 
     private void doLog(CommonResult commonResult) {
         if (commonResult.getCode() != ResultEnum.SUCCESS.getCode()) {

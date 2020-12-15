@@ -24,11 +24,23 @@ public class PortInfoServiceImpl extends ServiceImpl<PortInfoMapper, PortInfo> i
     @Override
     public List<PortInfo> findPortInfoByCondition(Map<String, Object> param) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("status","1");//有效的
-        for(String key : param.keySet()){
+        queryWrapper.eq("status", "1");//有效的
+        for (String key : param.keySet()) {
             String value = String.valueOf(param.get(key));
-            queryWrapper.eq(key,value);
+            queryWrapper.eq(key, value);
         }
         return baseMapper.selectList(queryWrapper);
+    }
+
+
+    /**
+     * 根据条件获取通过口岸信息
+     *
+     * @return
+     */
+    @Override
+    public List<PortInfo> findPortInfoByCondition(PortInfo portInfo) {
+        QueryWrapper<PortInfo> condition = new QueryWrapper<>(portInfo);
+        return this.baseMapper.selectList(condition);
     }
 }

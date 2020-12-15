@@ -47,7 +47,7 @@ public class OceanCounterTest {
         form1.setCreateTime(LocalDateTime.now());
         oceanCounterFormList.add(form1);
 
-        form.setOceanCounterFormList(oceanCounterFormList);
+//        form.setOceanCounterFormList(oceanCounterFormList);
         TestUtils.JSONObjectPrint(form);
 
 

@@ -1,13 +1,13 @@
 package com.jayud.mall.model.bo;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @ApiModel(value = "柜子", description = "1提单对应1货柜(PS:之前是1提单对应N货柜)")
@@ -47,6 +47,7 @@ public class OceanCounterForm {
 
     @ApiModelProperty(value = "创建时间", position = 8)
     @JSONField(ordinal = 9)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
 //    //提单对应货柜信息和客户关联表
@@ -59,8 +60,8 @@ public class OceanCounterForm {
 //    @JSONField(ordinal = 11)
 //    private List<OceanWaybillForm> oceanWaybillFormList;
 
-    @ApiModelProperty(value = "1提单对应1货柜(PS:之前是1提单对应N货柜)")
-    private List<OceanCounterForm> oceanCounterFormList;
+//    @ApiModelProperty(value = "1提单对应1货柜(PS:之前是1提单对应N货柜)")
+//    private List<OceanCounterForm> oceanCounterFormList;
 
 
 }

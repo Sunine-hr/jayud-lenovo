@@ -1,36 +1,15 @@
-package com.jayud.mall.model.po;
+package com.jayud.mall.model.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
-/**
- * <p>
- * 提单任务列表
- * </p>
- *
- * @author fachang.mao
- * @since 2020-11-27
- */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value="BillTask对象", description="提单任务列表")
-public class BillTask extends Model<BillTask> {
-
-    private static final long serialVersionUID = 1L;
+public class BillTaskVO {
 
     @ApiModelProperty(value = "自增id")
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     @ApiModelProperty(value = "分组代码(task_group id_code)")
@@ -76,10 +55,28 @@ public class BillTask extends Model<BillTask> {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    /*任务分组:task_group*/
+    @ApiModelProperty(value = "分组代码")
+    private String idCode;
 
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
+    @ApiModelProperty(value = "分组名")
+    private String codeName;
+
+    /*提单表:ocean_bill*/
+    //...
+
+    /*运营(服务)小组:operation_team*/
+    @ApiModelProperty(value = "运营(服务)小组id")
+    private Long operationTeamId;
+
+    /*任务对应运营小组成员*/
+    @ApiModelProperty(value = "成员id")
+    private Long memberUserId;
+
+    @ApiModelProperty(value = "成员名称")
+    private String memberUserName;
+
+
+
 
 }

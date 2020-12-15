@@ -213,6 +213,39 @@ public class OceanBillTest {
 
     }
 
+    @Test
+    public void test5(){
+
+        OceanBillForm form = new OceanBillForm();
+        form.setId(1L);
+        form.setTid(1);
+        form.setSupplierCode("G001");
+        form.setOrderId("DL200228H011");
+        form.setStartCode("SH");
+        form.setEndCode("NY");
+        form.setSailTime(LocalDateTime.now());
+        form.setVoyageDay(20);
+        form.setUnit(2);
+        form.setCreateTime(LocalDateTime.now());
+        form.setTaskId(1);//1	TD001	提单任务组1	1	1
+
+        List<OceanCounterForm> oceanCounterForms = new ArrayList<>();
+        OceanCounterForm form1 = new OceanCounterForm();
+        form1.setId(null);
+        form1.setCntrNo("A0001");
+        form1.setCabinetCode("20GP");
+        form1.setVolume(100.00);
+        form1.setCost(new BigDecimal("1000.00"));
+        form1.setCid(1);
+        form1.setStatus("1");
+        form1.setObId(null);
+        form1.setCreateTime(LocalDateTime.now());
+        oceanCounterForms.add(form1);
+        form.setOceanCounterForms(oceanCounterForms);
+
+        TestUtils.JSONObjectPrintNull(form);
+    }
+
 
 
 }

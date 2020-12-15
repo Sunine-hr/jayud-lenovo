@@ -62,6 +62,9 @@ public class OceanBill extends Model<OceanBill> {
     @ApiModelProperty(value = "任务分组id(提单任务task_group id)")
     private Integer taskId;
 
+    @ApiModelProperty(value = "运营(服务)小组id(operation_team id)")
+    private Integer operationTeamId;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

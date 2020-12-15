@@ -1,13 +1,15 @@
 package com.jayud.mall.model.po;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
-import java.time.LocalDateTime;
-import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -65,6 +67,7 @@ public class BillTaskRelevance extends Model<BillTaskRelevance> {
     private String reason;
 
     @ApiModelProperty(value = "延期/完成时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime upTime;
 
     @ApiModelProperty(value = "操作人id")
@@ -74,6 +77,7 @@ public class BillTaskRelevance extends Model<BillTaskRelevance> {
     private String userName;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
 

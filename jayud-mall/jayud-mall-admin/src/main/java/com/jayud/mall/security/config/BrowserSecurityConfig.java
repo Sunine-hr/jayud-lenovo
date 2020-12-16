@@ -13,7 +13,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
@@ -102,7 +101,7 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
 
         //配置需要http验证
         http
-            .addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class) // 添加验证码校验过滤器
+            //.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class) // 添加验证码校验过滤器
             .formLogin() // 表单登录
                 //使用数据库,注释下面的内容
                 //.usernameParameter("username") /* 默认值 username */
@@ -121,6 +120,7 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/authentication/require",
                         "/login.html","/css/login.css",
                         "/code/image",
+                        "/login",
                         "/session/invalid",
                         "/signout/success").permitAll() // 登录跳转 URL 无需认证
                 //Security,放行swagger2资源,和swagger-bootstrap-ui增强功能

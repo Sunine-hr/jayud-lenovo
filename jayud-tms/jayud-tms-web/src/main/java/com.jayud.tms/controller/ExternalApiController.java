@@ -175,6 +175,13 @@ public class ExternalApiController {
         return ApiResult.ok(orderSendCars);
     }
 
+    @ApiOperation(value = "删除派车信息")
+    @RequestMapping(value = "/api/deleteDispatchInfoByOrderNo")
+    public ApiResult deleteDispatchInfoByOrderNo(@RequestParam("orderNo") String orderNo) {
+        this.orderSendCarsService.deleteDispatchInfoByOrderNo(orderNo);
+        return ApiResult.ok();
+    }
+
     @ApiModelProperty(value = "保存扩展字段")
     @RequestMapping(value = "/api/saveOrUpdateTmsExtensionField")
     public ApiResult<TmsExtensionField> saveOrUpdateTmsExtensionField(@RequestBody String json) {

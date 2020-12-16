@@ -61,6 +61,9 @@ public class OprStatusForm {
     @ApiModelProperty(value = "香港清关")
     private String clearCustomsNo;
 
+    @ApiModelProperty(value = "业务类型(0:空运),(1,纯报关),ZGYS(2,中港运输)")
+    private Integer businessType;
+
     @ApiModelProperty(value = "操作指令,cmd = extCustomsRelease外部报关放行,confirmOrder确认接单,carTakeGoods车辆提货,carWeigh车辆过磅, " +
             "goCustomsAudit通过前审核，goCustomsCheck通关前复核,carGoCustoms车辆通关,hkClearCustoms香港清关,carEnterWarehouse车辆入仓," +
             "carOutWarehouse车辆出仓,carSend车辆派送,confirmSignIn确认签收",required = true)

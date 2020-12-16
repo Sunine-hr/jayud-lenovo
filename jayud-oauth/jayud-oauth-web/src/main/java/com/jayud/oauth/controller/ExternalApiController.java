@@ -16,6 +16,7 @@ import com.jayud.oauth.model.bo.QueryAccountForm;
 import com.jayud.oauth.model.enums.StatusEnum;
 import com.jayud.oauth.model.enums.SystemUserStatusEnum;
 import com.jayud.oauth.model.po.Company;
+import com.jayud.oauth.model.po.LegalEntity;
 import com.jayud.oauth.model.po.SystemRole;
 import com.jayud.oauth.model.po.SystemUser;
 import com.jayud.oauth.model.vo.*;
@@ -264,6 +265,14 @@ public class ExternalApiController {
     public ApiResult getSystemUserByName(@RequestParam("name") String name) {
         SystemUser systemUser = this.userService.selectByName(name);
         return ApiResult.ok(systemUser);
+    }
+
+
+    @ApiOperation("根据法人主体id查询法人主体信息")
+    @RequestMapping(value = "/api/getLegalEntityByLegalId")
+    public ApiResult getLegalEntityByLegalId(@RequestParam("legalId") Long legalId) {
+        LegalEntity legalEntity = this.legalEntityService.getById(legalId);
+        return ApiResult.ok(legalEntity);
     }
 }
 

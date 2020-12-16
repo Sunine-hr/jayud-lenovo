@@ -69,6 +69,19 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
     }
 
     /**
+     * 根据中港订单号删除派车信息
+     *
+     * @param orderNo
+     * @return
+     */
+    @Override
+    public boolean deleteDispatchInfoByOrderNo(String orderNo) {
+        QueryWrapper<OrderSendCars> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderSendCars::getOrderNo, orderNo);
+        return this.baseMapper.delete(condition) > 0;
+    }
+
+    /**
      * 派车消息推送
      */
     @Override
@@ -79,11 +92,16 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
         Integer createUserType = orderTransport.getCreateUserType();
         switch (CreateUserTypeEnum.getEnum(createUserType)) {
             case VIVO:
+                //查询接单法人
+                ApiResult resultOne = omsClient.getLegalEntityInfoByOrderNo(orderTransport.getMainOrderNo());
+                if (resultOne.getCode() != HttpStatus.SC_OK) {
+                    log.warn("请求查询法人主体信息失败");
+                }
                 //查询派车信息
                 OrderSendCars orderSendCars = this.getById(form.getId());
                 //查询车辆信息
-                ApiResult result = this.omsClient.getVehicleInfoById(3L);//TODO 等派车单增加车辆id字段再修改
-                if (result.getCode() != HttpStatus.SC_OK) {
+                ApiResult resultTwo = this.omsClient.getVehicleInfoById(3L);//TODO 等派车单增加车辆id字段再修改
+                if (resultTwo.getCode() != HttpStatus.SC_OK) {
                     log.warn("请求车辆信息失败");
                 }
                 Map<String, String> request = new HashMap<>();
@@ -91,8 +109,8 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
                 request.put("key", KafkaMsgEnums.VIVO_FREIGHT_TMS_MESSAGE_ONE.getKey());
                 Map<String, Object> msg = new HashMap<>();
                 msg.put("dispatchNo", orderTransport.getThirdPartyOrderNo());
-                msg.put("licensePlate", new JSONObject(result.getData()).getStr("plateNumber")); //TODO 等派车单增加车辆id字段再修改
-//                msg.put("transportationCompany", airBooking.getDeliveryWarehouse());
+                msg.put("licensePlate", new JSONObject(resultTwo.getData()).getStr("plateNumber")); //TODO 等派车单增加车辆id字段再修改
+                msg.put("transportationCompany", new JSONObject(resultOne.getData()).getStr("legalName"));
                 msg.put("containerNo", orderSendCars.getCntrNo());
                 request.put("msg", JSONUtil.toJsonStr(msg));
                 msgClient.consume(request);

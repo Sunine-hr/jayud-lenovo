@@ -242,6 +242,37 @@ public class ReceiveVivoController {
         return VivoApiResult.success();
     }
 
+
+    @PostMapping("/dispatchRejected")
+    @ApiOperation("vivo派车驳回")
+    @APILog
+    public VivoApiResult dispatchRejected(@RequestBody @Valid CarCancelForm carCancelForm) {
+        //查询中港订单
+        ApiResult result = this.tmsClient.getTmsOrderByThirdPartyOrderNo(carCancelForm.getDispatchNo());
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.error("查询中港订单请求失败");
+            return VivoApiResult.error("取消派车失败");
+        }
+
+        if (result.getData() == null) {
+            log.error("不存在派车信息 派车号={}", carCancelForm.getDispatchNo());
+            return VivoApiResult.error("不存在派车信息");
+        }
+        JSONObject data = new JSONObject(result.getData());
+        String tmsOrderNo = data.getStr("orderNo");
+        //查询订单状态是不是在提仓之前进行驳回
+        //删除派车信息
+        this.tmsClient.deleteDispatchInfoByOrderNo(tmsOrderNo);
+        //物流轨迹记录删除
+
+        //根据主订单号设置状态
+        Map<String, Object> map = new HashMap<>();
+        map.put("orderNo", data.getStr("mainOrderNo"));
+        map.put("status", OrderStatusEnum.MAIN_7.getCode());
+        this.omsClient.updateByMainOrderNo(JSONUtil.toJsonStr(map));
+        return VivoApiResult.success();
+    }
+
     @PostMapping("/parameterToForwarder")
     @ApiOperation("vivo抛台账数据到货代")
     @APILog

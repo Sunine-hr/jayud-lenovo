@@ -19,4 +19,7 @@ public class OrderDataCountVO {
     @ApiModelProperty(value = "待处理数据量")
     private Integer pendingCount;
 
+    @ApiModelProperty(value = "待驳回数据量")
+    private Integer pendingRejectedCount;
+
 }

@@ -36,6 +36,13 @@ public interface IOrderSendCarsService extends IService<OrderSendCars> {
     public OrderSendCars getOrderSendCarsByOrderNo(String orderNo);
 
     /**
+     * 根据中港订单号删除派车信息
+     * @param orderNo
+     * @return
+     */
+    boolean deleteDispatchInfoByOrderNo(String orderNo);
+
+    /**
      * 派车消息推送
      */
     public void sendCarsMessagePush(SendCarForm form);

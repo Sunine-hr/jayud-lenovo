@@ -11,12 +11,15 @@ import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.utils.BeanUtils;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,11 +28,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 
 @RestController
 @Api(tags = "oms对外接口")
+@Slf4j
 public class ExternalApiController {
 
     @Autowired
@@ -71,6 +77,8 @@ public class ExternalApiController {
     private IPortInfoService portInfoService;
     @Autowired
     private IVehicleInfoService vehicleInfoService;
+    @Autowired
+    private OauthClient oauthClient;
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
@@ -565,6 +573,23 @@ public class ExternalApiController {
     }
 
 
+    @ApiOperation("根据主订单号查询法人主体信息")
+    @RequestMapping(value = "/api/getLegalEntityInfoByOrderNo")
+    public ApiResult getLegalEntityInfoByOrderNo(@RequestParam("mainOrderNo") String mainOrderNo) {
+        List<OrderInfo> orderNos = this.orderInfoService.getByOrderNos(Collections.singletonList(mainOrderNo));
+        if (orderNos.size() == 0) {
+            log.warn("根据主订单查询法人主体信息失败 mainOrderNo={}", mainOrderNo);
+            return ApiResult.error("根据主订单查询法人主体信息失败");
+        }
+        OrderInfo orderInfo = orderNos.get(0);
+        ApiResult result = this.oauthClient.getLegalEntityByLegalId(orderInfo.getLegalEntityId());
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.warn("根据接单法人id查询法人主体信息失败 legalEntityId={}", orderInfo.getLegalEntityId());
+            return ApiResult.error("根据主订单查询法人主体信息失败");
+        }
+
+        return ApiResult.ok(result.getData());
+    }
 }
 
 

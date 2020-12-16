@@ -158,6 +158,8 @@ public abstract class CommonConstant {
 
     public static final String PENDING_COUNT = "pendingCount";
 
+    public static final String PENDING_REJECTED_COUNT = "pendingRejectedCount";
+
     public static final String REJECT = "驳回";
 
     public static final String ORDER_NO = "orderNo";

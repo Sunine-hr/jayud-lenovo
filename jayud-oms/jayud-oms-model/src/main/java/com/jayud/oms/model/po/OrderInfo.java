@@ -59,6 +59,9 @@ public class OrderInfo extends Model<OrderInfo> {
     @ApiModelProperty(value = "接单法人")
     private String legalName;
 
+    @ApiModelProperty(value = "接单法人id")
+    private Long legalEntityId;
+
     @ApiModelProperty(value = "客户参考号")
     private String referenceNo;
 

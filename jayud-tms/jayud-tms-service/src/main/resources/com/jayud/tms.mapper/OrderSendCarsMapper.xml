@@ -47,7 +47,7 @@
             osc.`status`,
             osc.`order_no` orderNo,
             osc.`remarks`,
-            osc.`warehouse_info_id` warehouseInfoId,
+            wi.id warehouseInfoId,
             wi.`warehouse_name` warehouseName,
             wi.`contacts` warehouseContacts,
             wi.`contact_number` warehouseNumber,
@@ -57,7 +57,8 @@
             wi.`address` address
         FROM
             order_send_cars osc
-            LEFT JOIN warehouse_info wi ON wi.`id` = osc.`warehouse_info_id`
+			left join order_transport ot on ot.order_no = osc.order_no
+            LEFT JOIN warehouse_info wi ON wi.`id` = ot.`warehouse_info_id`
             LEFT JOIN driver_info di ON di.id = osc.driver_info_id
             LEFT JOIN vehicle_info vi ON vi.id = di.vehicle_id
             LEFT JOIN supplier_info si ON vi.`supplier_id` = si.`id`

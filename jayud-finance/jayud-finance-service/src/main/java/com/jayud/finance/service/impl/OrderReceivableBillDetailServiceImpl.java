@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.enums.ResultEnum;
@@ -14,7 +15,9 @@ import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.mapper.OrderReceivableBillDetailMapper;
-import com.jayud.finance.po.*;
+import com.jayud.finance.po.OrderBillCostTotal;
+import com.jayud.finance.po.OrderReceivableBill;
+import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.service.*;
 import com.jayud.finance.util.ReflectUtil;
 import com.jayud.finance.vo.*;
@@ -637,7 +640,10 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 orderCostForm.setLoginUserName(form.getLoginUserName());
                 orderCostForms.add(orderCostForm);
             }
-            omsClient.writeBackCostData(orderCostForms,"receivable");
+            ApiResult result = omsClient.writeBackCostData(orderCostForms,"receivable");
+            if(result.getCode() != 200){
+                return CommonResult.error(result.getCode(),result.getMsg());
+            }
         }else {
             applyStatus = BillEnum.F_3.getCode();
             status = BillEnum.B_6_1.getCode();

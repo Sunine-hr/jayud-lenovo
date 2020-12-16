@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.enums.ResultEnum;
@@ -669,7 +670,10 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 orderCostForm.setLoginUserName(form.getLoginUserName());
                 orderCostForms.add(orderCostForm);
             }
-            omsClient.writeBackCostData(orderCostForms,"payment");
+            ApiResult result = omsClient.writeBackCostData(orderCostForms,"payment");
+            if(result.getCode() != 200){
+                return CommonResult.error(result.getCode(),result.getMsg());
+            }
         }else {
             applyStatus = BillEnum.F_3.getCode();
             status = BillEnum.B_6_1.getCode();

@@ -359,7 +359,7 @@
         SELECT DISTINCT
             oi.customer_name customerName,
             ci.unit_account settleOrgName,
-            (select ci.`code` from currency_info ci where ci.currency_code = orbd.settlement_currency) currency,
+            orbd.settlement_currency currency,
             d.`name` saleDeptName,
             orbd.order_no businessNo,
             orbd.bill_no billNo,

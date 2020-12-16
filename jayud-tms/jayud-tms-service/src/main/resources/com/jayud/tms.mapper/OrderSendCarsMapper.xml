@@ -13,7 +13,7 @@
         <result column="cntr_pic" property="cntrPic" />
         <result column="cntr_pic_name" property="cntrPicName" />
         <result column="driver_info_info" property="driverInfoId" />
-        <result column="warehouse_info_id" property="warehouseInfoId" />
+        <result column="vehicle_id" property="vehicleId" />
         <result column="remarks" property="remarks" />
         <result column="describes" property="describes" />
         <result column="status" property="status" />
@@ -27,7 +27,7 @@
     <sql id="Base_Column_List">
         id, transport_no, order_no,vehicle_type, vehicle_size, cntr_no, cntr_pic,
         cntr_pic_name, driver_info_info,
-        warehouse_info_id,remarks, describes, status, updated_time, updated_user, created_user, created_time
+        vehicle_id,remarks, describes, status, updated_time, updated_user, created_user, created_time
     </sql>
     <select id="getOrderSendInfo"  resultType="com.jayud.tms.model.vo.OrderSendCarsVO" >
         SELECT
@@ -78,7 +78,7 @@
 			left join vehicle_info vi on vi.id = di.vehicle_id
             WHERE ot.`order_no` = #{orderNo}
     </select>
-    <select id="initSendCarList"  resultType="com.jayud.tms.model.vo.SendCarListPdfVO" >
+    <select id="initSendCarList"  resultType="com.jayud.tms.model.vo.SendCarListTempVO" >
     SELECT
         ot.legal_name legalName,
         le.legal_en_name legalEnName,

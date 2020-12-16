@@ -1,11 +1,10 @@
 package com.jayud.tms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.tms.model.po.OrderSendCars;
 import com.jayud.tms.mapper.OrderSendCarsMapper;
-import com.jayud.tms.model.vo.DriverInfoPdfVO;
-import com.jayud.tms.model.vo.OrderSendCarsVO;
-import com.jayud.tms.model.vo.SendCarListPdfVO;
+import com.jayud.tms.model.vo.*;
 import com.jayud.tms.service.IOrderSendCarsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections4.CollectionUtils;
@@ -56,7 +55,17 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
 
     @Override
     public SendCarListPdfVO initSendCarList(String orderNo) {
-        return baseMapper.initSendCarList(orderNo);
+        List<SendCarListTempVO> tempList = baseMapper.initSendCarList(orderNo);
+        SendCarListPdfVO sendCarListPdfVO = new SendCarListPdfVO();
+        if(tempList == null && tempList.size() > 0){
+            sendCarListPdfVO.setLegalName(tempList.get(0).getLegalName());
+            sendCarListPdfVO.setLegalEnName(tempList.get(0).getLegalEnName());
+            sendCarListPdfVO.setJobNumber(tempList.get(0).getJobNumber());
+            sendCarListPdfVO.setCreateTimeStr(tempList.get(0).getCreateTimeStr());
+            List<SendCarListVO> sendCarListVOList = ConvertUtil.convertList(tempList,SendCarListVO.class);
+            sendCarListPdfVO.setSendCarListVOList(sendCarListVOList);
+        }
+        return sendCarListPdfVO;
     }
 
 

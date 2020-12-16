@@ -55,4 +55,10 @@ public interface OrderTransportMapper extends BaseMapper<OrderTransport> {
      */
     List<DriverOrderTransportVO> getDriverOrderTransport(@Param("form") QueryDriverOrderTransportForm form,
                                                          @Param("status") List<String> status);
+
+    /**
+     * 中港运输各个菜单列表数据量统计
+     * @return
+     */
+    StatisticsDataNumberVO statisticsDataNumber();
 }

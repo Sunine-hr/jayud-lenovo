@@ -307,8 +307,7 @@ public class OrderInTransportController {
               form.getOrderId() == null || form.getMainOrderId() == null ||
               StringUtil.isNullOrEmpty(form.getTransportNo()) || StringUtil.isNullOrEmpty(form.getOrderNo()) ||
               form.getVehicleSize() == null || form.getVehicleType() == null ||
-              form.getSupplierInfoId() == null || StringUtil.isNullOrEmpty(form.getLicensePlate()) ||
-              form.getDriverInfoId() == null){
+              form.getVehicleId() == null || form.getDriverInfoId() == null){
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }
             //当运输派车后在驳回时,重新编辑,再次走流程时会出现两条派车记录,原来那条作废

@@ -8,6 +8,7 @@ import com.jayud.customs.model.po.OrderCustoms;
 import com.jayud.customs.model.vo.CustomsOrderInfoVO;
 import com.jayud.customs.model.vo.InputOrderCustomsVO;
 import com.jayud.customs.model.vo.OrderCustomsVO;
+import com.jayud.customs.model.vo.StatisticsDataNumberVO;
 
 import java.util.List;
 import java.util.Map;
@@ -56,5 +57,11 @@ public interface IOrderCustomsService extends IService<OrderCustoms> {
      * @return
      */
     public InputOrderCustomsVO getOrderCustomsDetail(String mainOrderNo);
+
+    /**
+     * 报关各个菜单列表数据量统计
+     * @return
+     */
+    StatisticsDataNumberVO statisticsDataNumber();
 
 }

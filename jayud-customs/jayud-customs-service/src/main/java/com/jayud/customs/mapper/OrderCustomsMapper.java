@@ -8,6 +8,7 @@ import com.jayud.customs.model.bo.QueryCustomsOrderInfoForm;
 import com.jayud.customs.model.po.OrderCustoms;
 import com.jayud.customs.model.vo.CustomsOrderInfoVO;
 import com.jayud.customs.model.vo.OrderCustomsVO;
+import com.jayud.customs.model.vo.StatisticsDataNumberVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -35,4 +36,10 @@ public interface OrderCustomsMapper extends BaseMapper<OrderCustoms> {
      * @return
      */
     IPage<CustomsOrderInfoVO> findCustomsOrderByPage(Page page, @Param("form") QueryCustomsOrderInfoForm form);
+
+    /**
+     * 报关各个菜单列表数据量统计
+     * @return
+     */
+    StatisticsDataNumberVO statisticsDataNumber();
 }

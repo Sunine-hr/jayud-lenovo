@@ -448,7 +448,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 
     @Override
     public StatisticsDataNumberVO statisticsDataNumber() {
-        return null;
+        return baseMapper.statisticsDataNumber();
     }
 
 

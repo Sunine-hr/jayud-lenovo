@@ -43,20 +43,11 @@ public class SendCarForm {
     @ApiModelProperty(value = "柜号上传附件地址数组集合")
     private List<FileView> cntrPics = new ArrayList<>();
 
-    @ApiModelProperty(value = "供应商ID",required = true)
-    private Long supplierInfoId;
-
-    @ApiModelProperty(value = "大陆车牌号",required = true)
-    private String licensePlate;
+    @ApiModelProperty(value = "车辆ID",required = true)
+    private Long vehicleId;
 
     @ApiModelProperty(value = "大陆司机名",required = true)
-    private String driverInfoId;
-
-    @ApiModelProperty(value = "HK车牌号",required = true)
-    private String hkLicensePlate;
-
-    @ApiModelProperty(value = "司机电话")
-    private String driverPhone;
+    private Long driverInfoId;
 
     @ApiModelProperty(value = "要求")
     private String remarks;

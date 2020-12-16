@@ -325,6 +325,11 @@ public class FinanceController {
         List<OrderReceivableBillDetail> receivableBillDetails = receivableBillDetailService.list(queryWrapper);
         for (OrderReceivableBillDetail receivableBillDetail : receivableBillDetails) {
             ReceivableHeaderForm reqForm = receivableBillDetailService.getReceivableHeaderForm(receivableBillDetail.getBillNo());
+            if(reqForm != null && !StringUtil.isNullOrEmpty(reqForm.getCustomerName())){
+                int index = reqForm.getCustomerName().indexOf("(");
+                String customerName = reqForm.getCustomerName().substring(0,index);
+                reqForm.setCustomerName(customerName);
+            }
             List<APARDetailForm> entityDetail = receivableBillDetailService.findReceivableHeaderDetail(receivableBillDetail.getBillNo());
             reqForm.setEntityDetail(entityDetail);
             service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), reqForm);

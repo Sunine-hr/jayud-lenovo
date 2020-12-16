@@ -9,12 +9,6 @@ import java.util.List;
 @Data
 public class DriverInfoLinkVO {
 
-    @ApiModelProperty(value = "供应商ID")
-    private Long supplierInfoId;
-
-    @ApiModelProperty(value = "供应商名称")
-    private String supplierName;
-
     @ApiModelProperty(value = "司机大陆电话")
     private String driverPhone;
 

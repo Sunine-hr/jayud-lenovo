@@ -67,7 +67,6 @@ public class OrderInTransportController {
     public CommonResult oprOrderTransport(@RequestBody OprStatusForm form) {
         if(form.getOrderId() == null || form.getMainOrderId() == null ||
                 (StringUtil.isNullOrEmpty(form.getOperatorUser()) && !CommonConstant.HK_CLEAR_CUSTOMS.equals(form.getCmd())) ||
-                (!CommonConstant.HK_CLEAR_CUSTOMS.equals(form.getCmd())) ||
                 StringUtil.isNullOrEmpty(form.getCmd())){
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
         }

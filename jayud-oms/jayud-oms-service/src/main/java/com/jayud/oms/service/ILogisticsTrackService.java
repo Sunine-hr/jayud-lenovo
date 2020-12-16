@@ -38,4 +38,9 @@ public interface ILogisticsTrackService extends IService<LogisticsTrack> {
      * @return
      */
     List<FileView> getAttachments(Long orderId, Integer businessType, String path);
+
+    /**
+     * 根据orderId和类型删除物流轨迹跟踪信息
+     */
+    public boolean deleteLogisticsTrackByType(Long orderId,Integer type);
 }

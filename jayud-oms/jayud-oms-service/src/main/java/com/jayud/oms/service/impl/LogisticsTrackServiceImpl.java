@@ -108,10 +108,21 @@ public class LogisticsTrackServiceImpl extends ServiceImpl<LogisticsTrackMapper,
         condition.lambda().eq(LogisticsTrack::getOrderId, orderId)
                 .eq(LogisticsTrack::getType, businessType);
         List<LogisticsTrack> logisticsTracks = this.baseMapper.selectList(condition);
-        List<FileView> attachments=new ArrayList<>();
+        List<FileView> attachments = new ArrayList<>();
         for (LogisticsTrack logisticsTrack : logisticsTracks) {
             attachments.addAll(StringUtils.getFileViews(logisticsTrack.getStatusPic(), logisticsTrack.getStatusPicName(), path));
         }
         return attachments;
+    }
+
+    /**
+     * 根据orderId和类型删除物流轨迹跟踪信息
+     */
+    @Override
+    public boolean deleteLogisticsTrackByType(Long orderId, Integer type) {
+        QueryWrapper<LogisticsTrack> condition = new QueryWrapper<>();
+        condition.lambda().eq(LogisticsTrack::getOrderId, orderId);
+        condition.lambda().eq(LogisticsTrack::getType, type);
+        return this.baseMapper.delete(condition) > 0;
     }
 }

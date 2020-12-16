@@ -139,6 +139,12 @@ public class ExternalApiController {
         return ApiResult.ok();
     }
 
+    @ApiOperation(value = "根据orderId和类型删除物流轨迹跟踪表")
+    @RequestMapping(value = "/api/deleteLogisticsTrackByType")
+    ApiResult deleteLogisticsTrackByType(@RequestParam("orderId") Long orderId, @RequestParam("type") Integer type) {
+        this.logisticsTrackService.deleteLogisticsTrackByType(orderId, type);
+        return ApiResult.ok();
+    }
 
     /**
      * 子订单流程

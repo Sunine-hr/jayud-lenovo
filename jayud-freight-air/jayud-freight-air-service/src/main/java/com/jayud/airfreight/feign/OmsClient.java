@@ -99,4 +99,10 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/getPortCodeByName")
     public ApiResult getPortCodeByName(@RequestBody String name);
+
+    /**
+     * 根据orderId和类型删除物流轨迹跟踪表
+     */
+    @RequestMapping(value = "/api/deleteLogisticsTrackByType")
+    ApiResult deleteLogisticsTrackByType(@RequestParam("orderId") Long orderId, @RequestParam("type") Integer type);
 }

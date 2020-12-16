@@ -16,6 +16,7 @@ import com.jayud.airfreight.service.IAirOrderService;
 import com.jayud.airfreight.service.VivoService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.VivoApiResult;
+import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.VehicleTypeEnum;
@@ -260,10 +261,18 @@ public class ReceiveVivoController {
         }
         JSONObject data = new JSONObject(result.getData());
         String tmsOrderNo = data.getStr("orderNo");
+        Long id = data.getLong("id");
+        String orderStatus = data.getStr("status").split("_")[1];
+        String status = OrderStatusEnum.TMS_T_5.getCode().split("_")[1];
         //查询订单状态是不是在提仓之前进行驳回
+        if (Integer.parseInt(status) <= Integer.parseInt(orderStatus)) {
+            log.warn("车辆已提货,无法进行派车驳回操作 tmsOrder={} status={}", tmsOrderNo, data.getStr("status"));
+            return VivoApiResult.error("车辆已提货,无法进行派车驳回操作");
+        }
         //删除派车信息
         this.tmsClient.deleteDispatchInfoByOrderNo(tmsOrderNo);
         //物流轨迹记录删除
+        this.omsClient.deleteLogisticsTrackByType(id, BusinessTypeEnum.ZGYS.getCode());
 
         //根据主订单号设置状态
         Map<String, Object> map = new HashMap<>();

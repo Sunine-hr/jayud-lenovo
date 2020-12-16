@@ -3,6 +3,8 @@ package com.jayud.mall.security.controller;
 import com.jayud.mall.security.validate.code.ImageCode;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperationSupport;
+import io.swagger.annotations.ApiSort;
 import org.springframework.social.connect.web.HttpSessionSessionStrategy;
 import org.springframework.social.connect.web.SessionStrategy;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,8 +19,9 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Random;
 
-@Api(tags = "验证码控制器")
 @RestController
+@Api(tags = "后台-验证码控制器接口")
+@ApiSort(value = 2)
 public class ValidateController {
 
     public final static String SESSION_KEY_IMAGE_CODE = "SESSION_KEY_IMAGE_CODE";
@@ -27,6 +30,7 @@ public class ValidateController {
 
     @ApiOperation(value = "创建图形验证码")
     @GetMapping("/code/image")
+    @ApiOperationSupport(order = 1)
     public void createCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ImageCode imageCode = createImageCode();
         sessionStrategy.setAttribute(new ServletWebRequest(request), SESSION_KEY_IMAGE_CODE, imageCode);

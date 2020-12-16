@@ -357,6 +357,7 @@
             SELECT
             opbd.id billDetailId,
             oi.order_no orderNo,
+            opc.order_no subOrderNo,
             oi.biz_code bizCode,
             (select pb.`name` from product_biz pb where pb.id_code = oi.biz_code) bizCodeDesc,
             oi.create_time createdTimeStr,

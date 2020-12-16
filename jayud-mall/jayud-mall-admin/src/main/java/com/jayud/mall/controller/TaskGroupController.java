@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/taskgroup")
 @Api(tags = "后台-任务分组接口")
-@ApiSort(value = 1)
+@ApiSort(value = 10001)
 public class TaskGroupController {
 
     @Autowired

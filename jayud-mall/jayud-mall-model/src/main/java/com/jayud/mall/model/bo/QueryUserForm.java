@@ -9,14 +9,14 @@ import lombok.Data;
 @Data
 public class QueryUserForm extends BasePageForm{
 
-    @ApiModelProperty("用户姓名")
+    @ApiModelProperty(value = "用户姓名", position = 1)
     private String userName;
 
     //工号-无
 
     //角色-暂未关联
 
-    @ApiModelProperty(value = "帐号启用状态")
+    @ApiModelProperty(value = "帐号启用状态", position = 2)
     private Integer status;
 
 

@@ -23,7 +23,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/offerinfo")
 @Api(tags = "报价接口")
-@ApiSort(value = 2)
+@ApiSort(value = 10004)
 public class OfferInfoController {
 
     @Autowired

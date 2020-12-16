@@ -16,6 +16,7 @@ import com.jayud.tms.feign.FileClient;
 import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.mapper.OrderTransportMapper;
 import com.jayud.tms.model.bo.*;
+import com.jayud.tms.model.po.DeliveryAddress;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.*;
@@ -112,7 +113,17 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             orderTransport.setCreatedUser(form.getLoginUser());
         }
         for (InputOrderTakeAdrForm inputOrderTakeAdrForm : orderTakeAdrForms) {
+            //有的地址是创建订单填的,有的地址是从地址簿选的
+            DeliveryAddress deliveryAddress = new DeliveryAddress();
+            if(inputOrderTakeAdrForm.getDeliveryId() == null){//将地址保存到地址簿
+                deliveryAddress.setCustomerId(inputOrderTakeAdrForm.getCustomerId());
+                deliveryAddress.setContacts(inputOrderTakeAdrForm.getContacts());
+                deliveryAddress.setPhone(inputOrderTakeAdrForm.getPhone());
+                deliveryAddress.setAddress(inputOrderTakeAdrForm.getAddress());
+                deliveryAddressService.save(deliveryAddress);
+            }
             OrderTakeAdr orderTakeAdr = ConvertUtil.convert(inputOrderTakeAdrForm, OrderTakeAdr.class);
+            orderTakeAdr.setDeliveryId(deliveryAddress.getId());
             orderTakeAdr.setTakeTime(inputOrderTakeAdrForm.getTakeTimeStr());
             orderTakeAdr.setOrderNo(orderTransport.getOrderNo());
             orderTakeAdrService.save(orderTakeAdr);
@@ -433,6 +444,11 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             this.doDriverFeedbackStatus(form);
         }
 
+    }
+
+    @Override
+    public StatisticsDataNumberVO statisticsDataNumber() {
+        return null;
     }
 
 

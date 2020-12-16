@@ -2,6 +2,7 @@ package com.jayud.oms.model.vo;
 
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.OrderStatusEnum;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -98,7 +99,19 @@ public class OrderInfoVO {
     }
 
     public String getSubCustomsDesc() {
-        return OrderStatusEnum.getDesc(this.subCustomsStatus);
+        if(!StringUtil.isNullOrEmpty(this.subCustomsStatus)){
+            String desc = "";
+            StringBuilder sb = new StringBuilder();
+            String[] strs = this.subCustomsStatus.split(",");
+            for (String str : strs) {
+                sb.append(OrderStatusEnum.getDesc(this.subCustomsStatus)).append(",");
+            }
+            if (!"".equals(String.valueOf(sb))) {
+                desc = sb.substring(0, sb.length() - 1);
+            }
+            return desc;
+        }
+        return "";
     }
 
     public String getSubTmsDesc() {

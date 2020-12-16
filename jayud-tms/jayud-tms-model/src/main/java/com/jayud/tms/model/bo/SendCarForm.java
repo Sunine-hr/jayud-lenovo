@@ -55,9 +55,6 @@ public class SendCarForm {
     @ApiModelProperty(value = "HK车牌号",required = true)
     private String hkLicensePlate;
 
-    @ApiModelProperty(value = "仓库ID",required = true)
-    private Long warehouseInfoId;
-
     @ApiModelProperty(value = "司机电话")
     private String driverPhone;
 

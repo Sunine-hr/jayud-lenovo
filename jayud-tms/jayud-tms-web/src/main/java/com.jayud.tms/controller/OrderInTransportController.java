@@ -67,7 +67,6 @@ public class OrderInTransportController {
     public CommonResult oprOrderTransport(@RequestBody OprStatusForm form) {
         if(form.getOrderId() == null || form.getMainOrderId() == null ||
                 (StringUtil.isNullOrEmpty(form.getOperatorUser()) && !CommonConstant.HK_CLEAR_CUSTOMS.equals(form.getCmd())) ||
-                (!CommonConstant.HK_CLEAR_CUSTOMS.equals(form.getCmd())) ||
                 StringUtil.isNullOrEmpty(form.getCmd())){
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
         }
@@ -309,7 +308,7 @@ public class OrderInTransportController {
               StringUtil.isNullOrEmpty(form.getTransportNo()) || StringUtil.isNullOrEmpty(form.getOrderNo()) ||
               form.getVehicleSize() == null || form.getVehicleType() == null ||
               form.getSupplierInfoId() == null || StringUtil.isNullOrEmpty(form.getLicensePlate()) ||
-              form.getDriverInfoId() == null || form.getWarehouseInfoId() == null){
+              form.getDriverInfoId() == null){
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }
             //当运输派车后在驳回时,重新编辑,再次走流程时会出现两条派车记录,原来那条作废

@@ -48,7 +48,7 @@ public class OrderTransComboxController {
         return CommonResult.success(driverInfo);
     }
 
-    @ApiOperation(value = "运输派车-司机姓名联动车辆供应商，大陆车牌，香港车牌，司机电话  = 司机隐藏值")
+    @ApiOperation(value = "运输派车-司机姓名联动车辆供应商，大陆车牌，香港车牌，司机电话 id = 司机隐藏值")
     @PostMapping(value = "/initDriverInfo")
     public CommonResult<DriverInfoLinkVO> initDriverInfo(@RequestBody Map<String,Object> param) {
         Long driverId = Long.valueOf(MapUtil.getStr(param,"id"));

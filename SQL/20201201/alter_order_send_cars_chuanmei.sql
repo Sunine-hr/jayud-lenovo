@@ -2,4 +2,5 @@
 ALTER TABLE `order_send_cars`
 DROP COLUMN `encode`,
 DROP COLUMN `encode_url`,
-DROP COLUMN `encode_url_name`;
+DROP COLUMN `encode_url_name`,
+DROP COLUMN `warehouse_info_id`;

@@ -77,6 +77,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Autowired
     FileClient fileClient;
 
+    @Autowired
+    ICustomerInfoService customerInfoService;
+
     @Override
     public String oprMainOrder(InputMainOrderForm form) {
         OrderInfo orderInfo = ConvertUtil.convert(form, OrderInfo.class);
@@ -625,6 +628,19 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
                 orderTransportForm.setMainOrderNo(mainOrderNo);
                 orderTransportForm.setLoginUser(UserOperator.getToken());
+
+                //根据主订单获取提货地址送货地址得客户ID
+                QueryWrapper queryWrapper = new QueryWrapper();
+                queryWrapper.eq("id_code",inputMainOrderForm.getCustomerCode());
+                CustomerInfo customerInfo = customerInfoService.getOne(queryWrapper);
+                List<InputOrderTakeAdrForm> takeAdrForms1 = orderTransportForm.getTakeAdrForms1();
+                List<InputOrderTakeAdrForm> takeAdrForms2 = orderTransportForm.getTakeAdrForms2();
+                for (InputOrderTakeAdrForm takeAdrForm1: takeAdrForms1) {
+                    takeAdrForm1.setCustomerId(customerInfo.getId());
+                }
+                for (InputOrderTakeAdrForm takeAdrForm2: takeAdrForms2) {
+                    takeAdrForm2.setCustomerId(customerInfo.getId());
+                }
                 Boolean result = tmsClient.createOrderTransport(orderTransportForm).getData();
                 if (!result) {//调用失败
                     return false;

@@ -443,15 +443,12 @@
 		) temp
     </select>
     <select id="getPayableHeaderForm" parameterType="java.lang.String" resultType="com.jayud.finance.bo.PayableHeaderForm">
-        SELECT
+        SELECT distinct
             oi.customer_name customerName,
             si.supplier_ch_name settleOrgName,
-            opbd.settlement_currency currency,
+            (select ci.`code` from currency_info ci where ci.currency_code = opbd.settlement_currency) currency,
             d.`name` saleDeptName,
-            (case when opc.sub_type = 'main' then opc.main_order_no
-             when opc.sub_type = 'zgys' or opc.sub_type = 'bg' then opc.order_no
-             else ''
-             end) businessNo,
+            opbd.order_no businessNo,
             opbd.bill_no billNo,
             opbd.account_term businessDate
         FROM

@@ -319,7 +319,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 //解决报错时重复添加数据问题
                 QueryWrapper queryWrapper1 = new QueryWrapper();
                 queryWrapper1.in("cost_id",costIds);
-                orderPaymentBillService.remove(queryWrapper1);
+                remove(queryWrapper1);
 
                 result = saveBatch(paymentBillDetails);
                 if (!result) {

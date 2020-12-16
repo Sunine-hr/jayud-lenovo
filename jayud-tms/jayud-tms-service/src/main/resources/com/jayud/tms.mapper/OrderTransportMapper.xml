@@ -31,6 +31,7 @@
         <result column="created_time" property="createdTime" />
         <result column="created_user" property="createdUser" />
         <result column="driver_info_id" property="driverInfoId" />
+        <result column="is_vehicle_weigh" property="isVehicleWeigh" />
         <result column="take_file" property="takeFile" />
         <result column="take_file_name" property="takeFileName" />
     </resultMap>
@@ -40,7 +41,7 @@
         id, main_order_no, order_no, port_code, goods_type, vehicle_type, vehicle_size, cntr_no, cntr_pic, cntrPicName,
         warehouse_info_id, status, is_load_goods, is_unload_goods,unit_code, hk_unit_code,hk_legal_name,is_hk_clear,
         updated_time, updated_user, created_time,created_user,jiedan_user,jiedan_time,car_weigh_num,legal_name,need_input_cost,
-        driver_info_id,take_file,take_file_name
+        driver_info_id,take_file,take_file_name,is_vehicle_weigh
     </sql>
 
     <select id="getOrderTransport"  resultType="com.jayud.tms.model.vo.InputOrderTransportVO" >
@@ -72,10 +73,10 @@
           osc.`remarks`,
           ot.`cntr_pic` cntrPic,
           ot.`cntr_pic_name` cntrPicName,
-          ifnull(w2.warehouse_name,wi.`warehouse_name`) companyName,
-          ifnull(w2.contacts,wi.`contacts`) contacts,
-          ifnull(w2.contact_number,wi.`contact_number`) contactNumber,
-          ifnull(w2.address,wi.`address`) address,
+          wi.`warehouse_name` companyName,
+          wi.`contacts` contacts,
+          wi.`contact_number` contactNumber,
+          wi.`address` address,
           ot.`is_load_goods` isLoadGoods,
           ot.`is_unload_goods` isUnloadGoods,
           ot.`hk_legal_name` hkLegalName,
@@ -91,7 +92,6 @@
             ON osc.order_no = ot.`order_no`
           LEFT JOIN warehouse_info wi
             ON ot.warehouse_info_id = wi.`id`
-			left join warehouse_info w2 on osc.warehouse_info_id = w2.id
 		  left join driver_info di on di.id = osc.driver_info_id
 		  left join vehicle_info vi on vi.id = di.vehicle_id
 		  LEFT JOIN supplier_info si ON si.`id` = vi.supplier_id

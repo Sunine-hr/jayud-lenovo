@@ -1,10 +1,7 @@
 package com.jayud.mall.security.handler;
 
-import com.alibaba.druid.support.logging.Log;
-import com.alibaba.druid.support.logging.LogFactory;
 import com.alibaba.fastjson.JSONObject;
-import com.google.gson.JsonObject;
-import com.jayud.mall.security.domain.MyUser;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
@@ -19,12 +16,15 @@ import java.io.IOException;
  * <p>自定义退出登录行为</p>
  */
 @Component
+@Slf4j
 public class MyLogOutSuccessHandler implements LogoutSuccessHandler {
 
     @Override
     public void onLogoutSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
+
         Object principal = authentication.getPrincipal();
         String json = JSONObject.toJSONString(principal);
+        log.info("退出登录成功："+principal);
         System.out.println(json);
 //        String username = (String) principal;
 //        System.out.println("退出成功，用户名：{"+username+"}");

@@ -10,7 +10,7 @@ CREATE TABLE `order_receivable_bill`  (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '应收出账单ID',
   `legal_name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '法人主体',
   `unit_account` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '结算单位名称,录入费用时填的',
-  `already_paid_amount` decimal(10, 2) NULL DEFAULT NULL COMMENT '已出账金额',
+  `already_paid_amount` decimal(10, 4) NULL DEFAULT NULL COMMENT '已出账金额',
   `bill_order_num` int(5) NULL DEFAULT NULL COMMENT '已出账订单数',
   `bill_num` int(5) NULL DEFAULT NULL COMMENT '账单数',
   `sub_type` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '如果是已子订单维度出账的,则记录具体的子订单类型\r\nmain or zgys or bg',

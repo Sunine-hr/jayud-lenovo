@@ -66,5 +66,8 @@ public class InputPaymentCostVO {
     @ApiModelProperty(value = "状态")
     private Integer status;
 
+    @ApiModelProperty(value = "原始币种,财务审核通过后反推数据到费用录入时用于校验")
+    private String oCurrencyName;
+
 
 }

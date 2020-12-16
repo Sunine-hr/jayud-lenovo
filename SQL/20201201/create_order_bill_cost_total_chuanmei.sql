@@ -13,8 +13,8 @@ CREATE TABLE `order_bill_cost_total`  (
   `currency_code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '结算币种',
   `cost_id` bigint(20) NULL DEFAULT NULL COMMENT '费用ID',
   `cost_info_name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '费用项',
-  `money` decimal(10, 2) NULL DEFAULT NULL COMMENT '金额',
-  `local_money` decimal(10, 2) NULL DEFAULT NULL COMMENT '本币金额',
+  `money` decimal(10, 4) NULL DEFAULT NULL COMMENT '金额',
+  `local_money` decimal(10, 4) NULL DEFAULT NULL COMMENT '本币金额',
   `status` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '1' COMMENT '1-有效 0-无效',
   `money_type` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '1-应付 2-应收',
   PRIMARY KEY (`id`) USING BTREE

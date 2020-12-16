@@ -99,7 +99,7 @@
         ( SELECT ifnull(sum( obct.money ),0) FROM order_bill_cost_total obct WHERE op.bill_no = obct.bill_no AND obct.currency_code = 'USD' ) dollar,
         ( SELECT ifnull(sum( obct.money ),0) FROM order_bill_cost_total obct WHERE op.bill_no = obct.bill_no AND obct.currency_code = 'EUR' ) euro,
         ( SELECT ifnull(sum( obct.money ),0) FROM order_bill_cost_total obct WHERE op.bill_no = obct.bill_no AND obct.currency_code = 'HKD' ) hKDollar,
-        ifnull(op.local_amount,0) localAmount,
+        ifnull(sum(op.local_amount),0) localAmount,
         (select ifnull(sum(cav.real_receive_money),0) from cancel_after_verification cav where cav.bill_no = op.bill_no) heXiaoAmount,
         op.audit_status billStatus,
         op.make_user makeUser,

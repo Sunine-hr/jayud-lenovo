@@ -73,17 +73,21 @@
         </if>
         <if test="form.cmd == 'zgys_sub_cost'">
             and opc.sub_type = 'zgys'
+            and opc.order_no = #{form.subOrderNo}
         </if>
         <if test="form.cmd == 'bg_sub_cost'">
             and opc.sub_type = 'bg'
+            and opc.order_no = #{form.subOrderNo}
         </if>
         <if test="form.cmd == 'zgys_sub_cost_audit'">
             and opc.`status` in ('2','3')
             and opc.sub_type = 'zgys'
+            and opc.order_no = #{form.subOrderNo}
         </if>
         <if test="form.cmd == 'bg_sub_cost_audit'">
             and opc.`status` in ('2','3')
             and opc.sub_type = 'bg'
+            and opc.order_no = #{form.subOrderNo}
         </if>
     </select>
 
@@ -106,11 +110,12 @@
         </where>
     </select>
     <select id="getWriteBackFCostData" parameterType="java.lang.Long" resultType="com.jayud.oms.model.vo.InputPaymentCostVO" >
-    select temp.id,temp.exchangeRate,temp.amount * temp.exchangeRate changeAmount from (
+    	select temp.id,temp.exchangeRate,temp.amount * temp.exchangeRate changeAmount,temp.oCurrencyName from (
         SELECT
             opc.id,
             (SELECT cr.exchange_rate FROM currency_rate cr where cr.`month`= opbd.account_term and  cr.dcid = (select ci.id from currency_info ci where ci.currency_code = 'CNY') and cr.ocid = (select ci.id from currency_info ci where ci.currency_code = opc.currency_code)) exchangeRate,
-            opc.amount
+            opc.amount,
+			(select ci.currency_name from currency_info ci where ci.currency_code = opc.currency_code) oCurrencyName
         FROM
             order_payment_cost opc left join order_payment_bill_detail opbd on opc.id = opbd.cost_id
         WHERE

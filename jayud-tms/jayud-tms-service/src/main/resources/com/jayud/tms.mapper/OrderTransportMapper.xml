@@ -315,4 +315,23 @@
             </foreach>
         </where>
     </select>
+    <select id="statisticsDataNumber" resultType="com.jayud.tms.model.vo.StatisticsDataNumberVO">
+        select
+            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` = 'T_0' AND oi.`status` in ('1','4')) ysjd,
+            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` = 'T_1' ) yspc,
+            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` = 'T_2' ) yssh,
+            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` = 'T_3_1' ) bhcxdy,
+            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` = 'T_3' ) qrpc,
+            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` = 'T_4' ) clth,
+            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` = 'T_5' ) clgb,
+            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` = 'T_7' ) tgqfh,
+            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` in ('T_8','T_9_1','T_9_2')) cltg,
+            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`is_hk_clear` = '1' and ot.clear_customs_no is null AND oi.`status` in ('1','4')) xgqg,
+            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where oi.`status` = 'T_9') clrc,
+            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where oi.`status` = 'T_10') clcc,
+            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where oi.`status` = 'T_13') clps,
+            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where oi.`status` = 'T_14') qrqs
+        from
+             dual
+    </select>
 </mapper>

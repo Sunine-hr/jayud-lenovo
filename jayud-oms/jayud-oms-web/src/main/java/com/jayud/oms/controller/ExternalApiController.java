@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -433,11 +434,15 @@ public class ExternalApiController {
      * @return
      */
     @RequestMapping(value = "api/writeBackCostData")
-    ApiResult<Boolean> writeBackCostData(@RequestBody List<OrderCostForm> forms, @RequestParam("cmd") String cmd){
+    ApiResult writeBackCostData(@RequestBody List<OrderCostForm> forms, @RequestParam("cmd") String cmd){
         if ("receivable".equals(cmd)) {
             for (OrderCostForm orderCost : forms) {
                 //获取该条费用以出账时结算币种的汇率和本币金额
                 InputReceivableCostVO sCost = receivableCostService.getWriteBackSCostData(orderCost.getCostId());
+                //汇率校验
+                if(sCost.getExchangeRate() == null || sCost.getExchangeRate().compareTo(new BigDecimal("0")) == 0){
+                    return ApiResult.error(10001,"请配置原始币种:"+sCost.getOCurrencyName()+",兑换币种:人民币的汇率");
+                }
                 OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
                 orderReceivableCost.setId(orderCost.getCostId());
                 orderReceivableCost.setExchangeRate(sCost.getExchangeRate());//汇率
@@ -450,6 +455,10 @@ public class ExternalApiController {
             for (OrderCostForm orderCost : forms) {
                 //获取该条费用以出账时结算币种的汇率和本币金额
                 InputPaymentCostVO fCost = paymentCostService.getWriteBackFCostData(orderCost.getCostId());
+                //汇率校验
+                if(fCost.getExchangeRate() == null || fCost.getExchangeRate().compareTo(new BigDecimal("0")) == 0){
+                    return ApiResult.error(10001,"请配置原始币种:"+fCost.getOCurrencyName()+",兑换币种:人民币的汇率");
+                }
                 OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
                 orderPaymentCost.setId(orderCost.getCostId());
                 orderPaymentCost.setExchangeRate(fCost.getExchangeRate());//汇率
@@ -459,7 +468,7 @@ public class ExternalApiController {
                 paymentCostService.updateById(orderPaymentCost);
             }
         }
-        return ApiResult.ok(true);
+        return ApiResult.ok();
     }
 
     /**

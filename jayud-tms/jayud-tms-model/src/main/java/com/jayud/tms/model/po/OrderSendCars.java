@@ -53,8 +53,11 @@ public class OrderSendCars extends Model<OrderSendCars> {
     @ApiModelProperty(value = "柜号图片名称")
     private String cntrPicName;
 
+    @ApiModelProperty(value = "车辆ID")
+    private Long vehicleId;
+
     @ApiModelProperty(value = "大陆司机名ID")
-    private String driverInfoId;
+    private Long driverInfoId;
 
     @ApiModelProperty(value = "要求")
     private String remarks;

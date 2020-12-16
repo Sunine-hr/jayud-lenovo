@@ -8,7 +8,6 @@ import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
-import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletException;
@@ -39,15 +38,15 @@ public class MyAuthenticationSucessHandler implements AuthenticationSuccessHandl
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-//        //输出如下JSON信息
-//        response.setContentType("application/json;charset=utf-8");
-//        response.getWriter().write(mapper.writeValueAsString(authentication));
+        //输出如下JSON信息
+        response.setContentType("application/json;charset=utf-8");
+        response.getWriter().write(mapper.writeValueAsString(authentication));
 
 //        //登录成功后页面将跳转回引发跳转的页面
 //        SavedRequest savedRequest = requestCache.getRequest(request, response);
 //        redirectStrategy.sendRedirect(request, response, savedRequest.getRedirectUrl());
 
-        //登录成功指定跳转的页面，比如跳转到`/index`
-        redirectStrategy.sendRedirect(request, response, "/index");
+//        //登录成功指定跳转的页面，比如跳转到`/index`
+//        redirectStrategy.sendRedirect(request, response, "/index");
     }
 }

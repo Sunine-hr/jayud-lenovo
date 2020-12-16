@@ -8,10 +8,13 @@ import com.jayud.mall.model.bo.QueryUserForm;
 import com.jayud.mall.model.bo.SaveUserForm;
 import com.jayud.mall.model.bo.SystemUserLoginForm;
 import com.jayud.mall.model.vo.SystemUserVO;
+import com.jayud.mall.security.domain.AuthUser;
+import com.jayud.mall.security.service.BaseService;
 import com.jayud.mall.service.ISystemUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiOperationSupport;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +25,14 @@ import java.util.List;
 @Api(tags = "A001-南京电商后台-用户管理")
 @RestController
 @RequestMapping("/system/user")
+@Slf4j
 public class SystemUserController {
+
+    /**
+     * baseService，获取登录用户
+     */
+    @Autowired
+    BaseService baseService;
 
     @Autowired
     ISystemUserService userService;
@@ -32,6 +42,8 @@ public class SystemUserController {
     @ApiOperationSupport(order = 1)
     @PostMapping(value = "/hi")
     public String hi(){
+        AuthUser user = baseService.getUser();
+        log.info("当前登录用户user:"+user);
         return "hi mall admin";
     }
 

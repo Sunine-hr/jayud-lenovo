@@ -101,6 +101,14 @@ public class ExternalApiController {
         return ApiResult.ok();
     }
 
+    @ApiOperation(value = "根据中港订单号查询中港订单信息")
+    @RequestMapping(value = "/api/getTmsOrderByOrderNo")
+    public ApiResult<OrderTransport> getTmsOrderByOrderNo(@RequestParam("orderNo") String orderNo) {
+        List<OrderTransport> orderTransports = this.orderTransportService
+                .getOrderTmsByCondition(new OrderTransport().setOrderNo(orderNo));
+        return ApiResult.ok(orderTransports.size() > 0 ? orderTransports.get(0) : orderTransports);
+    }
+
 
     @ApiOperation(value = "查询司机的中港订单信息")
     @RequestMapping(value = "/api/getDriverOrderTransport")

@@ -22,7 +22,8 @@ public enum KafkaMsgEnums {
     VIVO_FREIGHT_AIR_MESSAGE_THREE("vivoAir", "bill-lading-info-push"),//跟踪信息
     VIVO_FREIGHT_AIR_MESSAGE_FOUR("vivoAir", "receivable-costs-push"),//应收费用推送
 
-    VIVO_FREIGHT_TMS_MESSAGE_ONE("vivoTms", "push-vehicle-info"),//确认订舱信息
+    VIVO_FREIGHT_TMS_MESSAGE_ONE("vivoTms", "push-vehicle-info"),//推送派车消息
+    VIVO_FREIGHT_TMS_MESSAGE_TWO("vivoTms", "receivable-costs-push"),//应收费用推送
     ;
 
     private String topic;

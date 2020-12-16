@@ -9,7 +9,7 @@ import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Data
-public class ForwarderAirOrderCostItems {
+public class ForwarderCostItems {
 
     @JsonProperty("Cost_item_code")
     @SerializedName("Cost_item_code")

@@ -79,6 +79,9 @@ public class VivoServiceImpl implements VivoService {
     @Value("${vivo.urls.air-freight-info}")
     String urlAirFreightInfo;
 
+    @Value("${vivo.urls.land-transportation-info}")
+    String urlLandTransportationFreightInfo;
+
     @Value("${vivo.public-key}")
     String publicKey;
 
@@ -150,6 +153,18 @@ public class VivoServiceImpl implements VivoService {
     @Override
     public Map<String, Object> forwarderAirFarePush(ForwarderAirFreightForm form) {
         String url = urlBase + urlAirFreightInfo;
+        return doPost(form, url);
+    }
+
+    /**
+     * 货代抛陆运费用数据到vivo
+     *
+     * @param form
+     * @return
+     */
+    @Override
+    public Map<String, Object> forwarderLandTransportationFarePush(ForwarderLandTransportationFareForm form) {
+        String url = urlBase + urlLandTransportationFreightInfo;
         return doPost(form, url);
     }
 

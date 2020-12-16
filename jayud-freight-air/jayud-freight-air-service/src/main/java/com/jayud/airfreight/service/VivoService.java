@@ -89,4 +89,13 @@ public interface VivoService {
      * @return
      */
     Map<String, Object> forwarderAirFarePush(ForwarderAirFreightForm form);
+
+
+    /**
+     * 货代抛陆运费用数据到vivo
+     *
+     * @param form
+     * @return
+     */
+    Map<String, Object> forwarderLandTransportationFarePush(ForwarderLandTransportationFareForm form);
 }

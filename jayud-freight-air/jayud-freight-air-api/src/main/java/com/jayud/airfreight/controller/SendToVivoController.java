@@ -131,5 +131,20 @@ public class SendToVivoController {
         }
     }
 
+    @ApiOperation(value = "货代抛陆运费用数据到vivo")
+    @PostMapping("/forwarder/forwarderLandTransportationFarePush")
+    public CommonResult forwarderLandTransportationFarePush(@RequestBody String value) {
+
+        ForwarderLandTransportationFareForm form = JSONUtil.toBean(value, ForwarderLandTransportationFareForm.class);
+
+        Map<String, Object> resultMap = vivoService.forwarderLandTransportationFarePush(form);
+        if (1 == MapUtil.getInt(resultMap, "status")) {
+            return CommonResult.success();
+        } else {
+            return CommonResult.error(MapUtil.getInt(resultMap, "status"),
+                    MapUtil.getStr(resultMap, "message"));
+        }
+    }
+
 
 }

@@ -66,6 +66,12 @@ public interface TmsClient {
     ApiResult getDriverOrderTransport(@RequestBody QueryDriverOrderTransportForm form);
 
     /**
+     * 根据中港订单号查询中港订单信息
+     */
+    @RequestMapping(value = "/api/getTmsOrderByOrderNo")
+    public ApiResult getTmsOrderByOrderNo(@RequestParam("orderNo") String orderNo) ;
+
+    /**
      * PDF派车单
      *
      * @return

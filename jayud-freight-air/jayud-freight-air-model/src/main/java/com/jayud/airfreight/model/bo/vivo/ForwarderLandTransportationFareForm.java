@@ -23,20 +23,20 @@ import java.util.Set;
  * @Date: 2020-09-16 17:20
  */
 @Data
-public class ForwarderAirFreightForm {
-    @JsonProperty("Booking_no")
-    @SerializedName("Booking_no")
+public class ForwarderLandTransportationFareForm {
+    @JsonProperty("Dispatch_no")
+    @SerializedName("Dispatch_no")
     @ApiModelProperty(value = "订单号")
     @NotEmpty(message = "订单号不能为空")
     @Length(max = 32, message = "订单号字段的最大长度为32")
-    private String bookingNo;
+    private String dispatchNo;
 
-    @JsonProperty("Bill_of_lading")
-    @SerializedName("Bill_of_lading")
-    @ApiModelProperty(value = "提单号")
-    @NotEmpty(message = "提单号不能为空")
-    @Length(max = 32, message = "提单号字段的最大长度为32")
-    private String billOfLading;
+//    @JsonProperty("Bill_of_lading")
+//    @SerializedName("Bill_of_lading")
+//    @ApiModelProperty(value = "提单号")
+//    @NotEmpty(message = "提单号不能为空")
+//    @Length(max = 32, message = "提单号字段的最大长度为32")
+//    private String billOfLading;
 
     @JsonProperty("Operation_type")
     @SerializedName("Operation_type")
@@ -48,7 +48,7 @@ public class ForwarderAirFreightForm {
 
     @JsonProperty("Line")
     @SerializedName("Line")
-    @ApiModelProperty(value = "空运费用")
+    @ApiModelProperty(value = "陆运费用")
     @NotEmpty(message = "费用项不能为空")
     private List<ForwarderCostItems> line;
 
@@ -56,8 +56,8 @@ public class ForwarderAirFreightForm {
     public CommonResult checkParam() {
         ValidatorFactory vf = Validation.buildDefaultValidatorFactory();
         Validator validator = vf.getValidator();
-        Set<ConstraintViolation<ForwarderAirFreightForm>> set = validator.validate(this);
-        for (ConstraintViolation<ForwarderAirFreightForm> constraintViolation : set) {
+        Set<ConstraintViolation<ForwarderLandTransportationFareForm>> set = validator.validate(this);
+        for (ConstraintViolation<ForwarderLandTransportationFareForm> constraintViolation : set) {
             return CommonResult.error(400, constraintViolation.getMessage());
         }
         return null;

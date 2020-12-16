@@ -210,6 +210,7 @@ public class ReceiveVivoController {
         form.setExportCustomsPort(String.valueOf(result.getData()));
         //组装订单
         InputOrderTransportForm orderTransportForm = form.assemblyTmsObj();
+        //根据booking_no查询货品信息
 
         result = this.vivoService.createTmsOrder(form, orderTransportForm);
         if (result.getCode() != HttpStatus.SC_OK) {

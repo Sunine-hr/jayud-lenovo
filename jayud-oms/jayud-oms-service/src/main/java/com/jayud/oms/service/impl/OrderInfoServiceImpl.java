@@ -829,6 +829,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 this.airFreightFeePush(orderReceivableCost.getMainOrderNo(), orderReceivableCost.getOrderNo()
                         , orderReceivableCosts);
                 break;
+            case ZGYS:
+                this.tmsFeePush(orderReceivableCost.getMainOrderNo(), orderReceivableCost.getOrderNo()
+                        , orderReceivableCosts);
+                break;
 
         }
     }
@@ -864,6 +868,56 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 msg.put("airOrderId", jsonObject.getLong("id"));
                 msg.put("operationType", receivableCosts.size() > 0 ? "update" : "add");
                 msg.put("bookingNo", jsonObject.getStr("thirdPartyOrderNo"));
+                //组装商品
+                receivableCosts.addAll(orderReceivableCosts);
+                List<Map<String, Object>> costItems = new ArrayList<>();
+                for (OrderReceivableCost receivableCost : receivableCosts) {
+                    Map<String, Object> tmp = new HashMap<>();
+                    tmp.put("costItemCode", receivableCost.getCostCode());
+                    tmp.put("currencyOfPayment", receivableCost.getCurrencyCode());
+                    tmp.put("amountPayable", receivableCost.getAmount());
+                    costItems.add(tmp);
+                }
+                msg.put("line", costItems);
+                map.put("msg", JSONUtil.toJsonStr(msg));
+                msgClient.consume(map);
+                break;
+            default:
+        }
+    }
+
+
+    /**
+     * 中港费用推送
+     *
+     * @param mainOrderNo
+     * @param orderNo
+     * @param orderReceivableCosts
+     */
+    public void tmsFeePush(String mainOrderNo, String orderNo,
+                                  List<OrderReceivableCost> orderReceivableCosts) {
+        //查询中港订单信息
+        ApiResult result = this.tmsClient.getTmsOrderByOrderNo(orderNo);
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.warn("查询中港订单信息失败");
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+        JSONObject jsonObject = new JSONObject(result.getData());
+        Integer createUserType = jsonObject.getInt("createUserType");
+        switch (getEnum(createUserType)) {
+            case VIVO:
+                List<Long> ids = orderReceivableCosts.stream().map(OrderReceivableCost::getId).collect(Collectors.toList());
+                //查询审核通过应收费用
+                List<OrderReceivableCost> receivableCosts = this.receivableCostService.getApprovalFee(mainOrderNo, ids);
+                //操作类型判断
+                Map<String, String> map = new HashMap<>();
+                map.put("topic", KafkaMsgEnums.VIVO_FREIGHT_TMS_MESSAGE_TWO.getTopic());
+                map.put("key", KafkaMsgEnums.VIVO_FREIGHT_TMS_MESSAGE_TWO.getKey());
+                Map<String, Object> msg = new HashMap<>();
+                msg.put("mainOrderNo", mainOrderNo);
+                msg.put("tmsOrderId", jsonObject.getLong("id"));
+                msg.put("operationType", receivableCosts.size() > 0 ? "update" : "add");
+                msg.put("dispatchNo", jsonObject.getStr("thirdPartyOrderNo"));
                 //组装商品
                 receivableCosts.addAll(orderReceivableCosts);
                 List<Map<String, Object>> costItems = new ArrayList<>();

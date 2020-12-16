@@ -54,7 +54,7 @@ public class OrderPaymentBillNumVO {
 
     public String getBillStatusDesc() {
         if(!StringUtil.isNullOrEmpty(this.billStatus)){
-            billStatusDesc = BillEnum.getDesc(this.billStatus);
+            return BillEnum.getDesc(this.billStatus);
         }
         return "";
     }

@@ -250,7 +250,8 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
                 }
             }
             for(ViewBillToCostClassVO viewBillToCostClass : findCostClass){
-                if((StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo()) && viewBillToOrder.getOrderNo().equals(viewBillToCostClass.getOrderNo()))
+                if((StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo()) && StringUtil.isNullOrEmpty(viewBillToCostClass.getSubOrderNo()) &&
+                        viewBillToCostClass.getOrderNo().equals(viewBillToOrder.getOrderNo()))
                         || ((!StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo())) && viewBillToOrder.getSubOrderNo().equals(viewBillToCostClass.getSubOrderNo()))){
                     try {
                         String addProperties = "";

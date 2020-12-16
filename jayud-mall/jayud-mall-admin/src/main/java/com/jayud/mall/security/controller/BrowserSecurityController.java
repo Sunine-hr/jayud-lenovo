@@ -5,6 +5,8 @@ import com.jayud.mall.security.domain.BaseAuthVO;
 import com.jayud.mall.security.service.BaseService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperationSupport;
+import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -33,8 +35,9 @@ import java.util.Collection;
 /**
  * 浏览器安全控制器BrowserSecurityController
  */
-@Api(tags = "浏览器安全控制器")
 @RestController
+@Api(tags = "后台-Security浏览器安全接口")
+@ApiSort(value = 1)
 public class BrowserSecurityController {
 
     /**
@@ -62,18 +65,21 @@ public class BrowserSecurityController {
     BaseService baseService;
 
     @ApiOperation(value = "测试spring security")
+    @ApiOperationSupport(order = 1)
     @GetMapping("hello")
     public String hello() {
         return "hello spring security";
     }
 
     @ApiOperation(value = "测试")
+    @ApiOperationSupport(order = 2)
     @PostMapping(value = "/hi")
     public String hi(){
         return "hi mall admin";
     }
 
     @ApiOperation(value = "登录成功后跳转的地址")
+    @ApiOperationSupport(order = 3)
     @GetMapping("index")
     public Object index(){
         //登录成功，测试获取用户信息
@@ -91,12 +97,14 @@ public class BrowserSecurityController {
     }
 
     @ApiOperation(value = "登录成功后跳转的地址2(另一种获取authentication的方式)")
+    @ApiOperationSupport(order = 4)
     @GetMapping("index2")
     public Object index(Authentication authentication) {
         return authentication;
     }
 
     @ApiOperation(value = "在未登录的情况下，当用户访问html资源的时候跳转到登录页，否则返回JSON格式数据，状态码为401")
+    @ApiOperationSupport(order = 5)
     @GetMapping("/authentication/require")
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public String requireAuthentication(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -111,6 +119,7 @@ public class BrowserSecurityController {
     }
 
     @ApiOperation(value = "session失效")
+    @ApiOperationSupport(order = 6)
     @GetMapping("/session/invalid")
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public String sessionInvalid(){
@@ -118,6 +127,7 @@ public class BrowserSecurityController {
     }
 
     @ApiOperation(value = "退出登录")
+    @ApiOperationSupport(order = 7)
     @GetMapping("/signout/success")
     public String signout() {
         return "退出成功，请重新登录";

@@ -21,6 +21,9 @@ public class OrderBillCostTotalVO {
     @ApiModelProperty(value = "费用项")
     private String costInfoName;
 
+    @ApiModelProperty(value = "录入费用时刻的本币金额")
+    private BigDecimal oldMoney;
+
     @ApiModelProperty(value = "金额")
     private BigDecimal money;
 

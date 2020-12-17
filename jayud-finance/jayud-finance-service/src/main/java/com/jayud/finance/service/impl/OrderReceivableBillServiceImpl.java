@@ -135,6 +135,19 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
                     sb.append("原始币种:"+oCurrency+",兑换币种:"+dCurrency+";");
                     flag = false;
                 }
+                if(orderBillCostTotalVO.getCurrencyCode().equals("CNY")){
+                    orderBillCostTotalVO.setMoney(orderBillCostTotalVO.getOldMoney());
+                }
+            }
+            List<OrderBillCostTotalVO> tempOrderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, "CNY",form.getAccountTermStr());
+            for (OrderBillCostTotalVO orderBillCostTotalVO : tempOrderBillCostTotalVOS) {
+                BigDecimal money = orderBillCostTotalVO.getMoney();//如果本币金额为0，说明汇率为空没配置
+                if ((money == null || money.compareTo(new BigDecimal(0)) == 0) && !orderBillCostTotalVO.getCurrencyCode().equals("CNY")) {
+                    //根据币种查询币种描述
+                    String oCurrency = currencyRateService.getNameByCode(orderBillCostTotalVO.getCurrencyCode());
+                    sb.append("原始币种:"+oCurrency+",兑换币种:人民币;");
+                    flag = false;
+                }
             }
             if(!flag){
                 sb.append("]的汇率");

@@ -216,8 +216,8 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 }
                 List<OrderBillCostTotalVO> tempOrderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, "CNY", existObject.getAccountTerm());
                 for (OrderBillCostTotalVO orderBillCostTotalVO : tempOrderBillCostTotalVOS) {
-                    BigDecimal money = orderBillCostTotalVO.getMoney();//如果本币金额为0，说明汇率为空没配置
-                    if ((money == null || money.compareTo(new BigDecimal("0")) == 0) && !orderBillCostTotalVO.getCurrencyCode().equals("CNY")) {
+                    BigDecimal localMoney = orderBillCostTotalVO.getLocalMoney();//如果本币金额为0，说明汇率为空没配置
+                    if ((localMoney == null || localMoney.compareTo(new BigDecimal("0")) == 0) && !orderBillCostTotalVO.getCurrencyCode().equals("CNY")) {
                         //根据币种查询币种描述
                         String oCurrency = currencyRateService.getNameByCode(orderBillCostTotalVO.getCurrencyCode());
                         sb.append("原始币种:"+oCurrency+",兑换币种:人民币;");

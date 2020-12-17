@@ -2,8 +2,9 @@ package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.QueryUserForm;
-import com.jayud.mall.model.bo.SaveUserForm;
+import com.jayud.mall.model.bo.SaveSystemUserForm;
 import com.jayud.mall.model.bo.SystemUserLoginForm;
 import com.jayud.mall.model.po.SystemUser;
 import com.jayud.mall.model.vo.SystemUserVO;
@@ -35,15 +36,15 @@ public interface ISystemUserService extends IService<SystemUser> {
 
     /**
      * 新增用户
-     * @param user
+     * @param form
      */
-    void insertUser(SaveUserForm user);
+    CommonResult<SystemUserVO> insertUser(SaveSystemUserForm form);
 
     /**
      * 修改用户
-     * @param user
+     * @param form
      */
-    void updateUser(SaveUserForm user);
+    CommonResult<SystemUserVO> updateUser(SaveSystemUserForm form);
 
     /**
      * 删除用户

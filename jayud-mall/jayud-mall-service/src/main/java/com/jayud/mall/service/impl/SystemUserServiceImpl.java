@@ -1,19 +1,22 @@
 package com.jayud.mall.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.SystemUserMapper;
 import com.jayud.mall.model.bo.QueryUserForm;
 import com.jayud.mall.model.bo.ResetUserPwdForm;
-import com.jayud.mall.model.bo.SaveUserForm;
+import com.jayud.mall.model.bo.SaveSystemUserForm;
 import com.jayud.mall.model.bo.SystemUserLoginForm;
 import com.jayud.mall.model.po.SystemUser;
 import com.jayud.mall.model.vo.SystemUserVO;
 import com.jayud.mall.service.ISystemUserRoleRelationService;
 import com.jayud.mall.service.ISystemUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +38,9 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     SystemUserMapper systemUserMapper;
     @Autowired
     ISystemUserRoleRelationService userRoleRelationService;
+
+    @Value("${mall.system_user.password:}")
+    private String pass;
 
     @Override
     public SystemUserVO login(SystemUserLoginForm loginForm) {
@@ -60,26 +66,55 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     }
 
     @Override
-    public void insertUser(SaveUserForm user) {
-        String pass = "123456";
-        BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
-        String password = bcryptPasswordEncoder.encode(pass.trim());
-
-        SystemUser systemUser = ConvertUtil.convert(user, SystemUser.class);
-        systemUser.setName(systemUser.getUserName());
-//        systemUser.setPassword(Md5Utils.getMD5("123456".getBytes()).toUpperCase()); // MD5
-        systemUser.setPassword(password); // BCryptPasswordEncoder
-
-        systemUserMapper.insert(systemUser);
-        systemUser.setId(systemUser.getId());
-        if(user.getRoleIds() != null){
-            userRoleRelationService.createUserRoleRelation(systemUser,user.getRoleIds());
+    public CommonResult<SystemUserVO> insertUser(SaveSystemUserForm form) {
+        //新增用户，验证
+        String phone = form.getPhone();//手机号
+        QueryWrapper<SystemUser> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("phone", phone);
+        Integer phoneCount = systemUserMapper.selectCount(queryWrapper);
+        if(phoneCount > 0){
+            return CommonResult.error(-1, "手机号已存在，不能使用");
         }
+        String email = form.getEmail();//邮箱
+        queryWrapper = new QueryWrapper<>();//3.3.1.9-SNAPSHOT, wrapper加入了对clear的支持,目前的版本是3.1.2
+        queryWrapper.eq("email", email);
+        Integer emailCount = systemUserMapper.selectCount(queryWrapper);
+        if(emailCount > 0){
+            return CommonResult.error(-1, "邮箱已存在，不能使用");
+        }
+        String name = form.getName();//用户名，登录名
+        queryWrapper = new QueryWrapper<>();//3.3.1.9-SNAPSHOT, wrapper加入了对clear的支持,目前的版本是3.1.2
+        queryWrapper.eq("name", name);
+        Integer nameCount = systemUserMapper.selectCount(queryWrapper);
+        if(nameCount > 0){
+            return CommonResult.error(-1, "用户名已存在，不能使用");
+        }
+
+        //从nacos中获取，新增用户，初始化密码
+        String pwd = pass;
+        BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
+        String password = bcryptPasswordEncoder.encode(pwd.trim());
+
+        SystemUser systemUser = ConvertUtil.convert(form, SystemUser.class);
+        systemUser.setName(systemUser.getUserName());
+        //systemUser.setPassword(Md5Utils.getMD5("123456".getBytes()).toUpperCase()); // MD5 加密
+        systemUser.setPassword(password); // BCryptPasswordEncoder 加密
+
+
+
+
+//        systemUserMapper.insert(systemUser);
+//        systemUser.setId(systemUser.getId());
+//        if(user.getRoleIds() != null){
+//            userRoleRelationService.createUserRoleRelation(systemUser,user.getRoleIds());
+//        }
+
+        return null;
     }
 
     @Override
-    public void updateUser(SaveUserForm user) {
-        SystemUser systemUser = ConvertUtil.convert(user, SystemUser.class);
+    public CommonResult<SystemUserVO> updateUser(SaveSystemUserForm form) {
+        SystemUser systemUser = ConvertUtil.convert(form, SystemUser.class);
 
 //        systemUserMapper.updateUser(user);    //原始的mybatis修改，不用这个，太麻烦了，还要写sql update 语句
         systemUserMapper.updateById(systemUser);
@@ -90,10 +125,10 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         userRoleRelationService.removeUserRoleRelation(userIds);
 
         //在重新绑定角色
-        if(user.getRoleIds() != null){
-            userRoleRelationService.createUserRoleRelation(systemUser,user.getRoleIds());
+        if(form.getRoleIds() != null){
+            userRoleRelationService.createUserRoleRelation(systemUser,form.getRoleIds());
         }
-
+        return null;
     }
 
     @Override

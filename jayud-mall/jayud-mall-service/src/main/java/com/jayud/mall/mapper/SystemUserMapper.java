@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.mall.model.bo.QueryUserForm;
 import com.jayud.mall.model.bo.ResetUserPwdForm;
-import com.jayud.mall.model.bo.SaveUserForm;
+import com.jayud.mall.model.bo.SaveSystemUserForm;
 import com.jayud.mall.model.po.SystemUser;
 import com.jayud.mall.model.vo.SystemUserVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -43,13 +43,13 @@ public interface SystemUserMapper extends BaseMapper<SystemUser> {
      * 新增用户
      * @param user
      */
-    void insertUser(@Param("user") SaveUserForm user);
+    void insertUser(@Param("user") SaveSystemUserForm user);
 
     /**
      * 修改用户
      * @param user
      */
-    void updateUser(@Param("user") SaveUserForm user);
+    void updateUser(@Param("user") SaveSystemUserForm user);
 
     /**
      * 删除用户

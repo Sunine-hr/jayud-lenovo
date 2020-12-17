@@ -5,10 +5,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
-import com.jayud.mall.model.bo.QueryUserForm;
-import com.jayud.mall.model.bo.SaveUserForm;
-import com.jayud.mall.model.bo.SystemUserLoginForm;
-import com.jayud.mall.model.bo.SystemUserParaForm;
+import com.jayud.common.utils.ConvertUtil;
+import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.vo.SystemUserVO;
 import com.jayud.mall.security.domain.AuthUser;
 import com.jayud.mall.security.service.BaseService;
@@ -19,7 +17,10 @@ import io.swagger.annotations.ApiOperationSupport;
 import io.swagger.annotations.ApiSort;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -75,16 +76,17 @@ public class SystemUserController {
     @ApiOperation(value = "新增用户")
     @ApiOperationSupport(order = 4)
     @PostMapping(value = "/insertUser")
-    public CommonResult insertUser(@Valid @RequestBody SaveUserForm userForm){
-        userService.insertUser(userForm);
-        return CommonResult.success("新增用户成功！");
+    public CommonResult<SystemUserVO> insertUser(@Valid @RequestBody SaveSystemUserForm form){
+        AuthUser authUser = baseService.getUser();
+        SystemUserVO user = ConvertUtil.convert(authUser, SystemUserVO.class);
+        return userService.insertUser(form);
     }
 
     @ApiOperation(value = "修改用户")
     @ApiOperationSupport(order = 5)
     @PostMapping(value = "/updateUser")
-    public CommonResult updateUser(@Valid @RequestBody SaveUserForm userForm){
-        userService.updateUser(userForm);
+    public CommonResult updateUser(@Valid @RequestBody SaveSystemUserForm form){
+        userService.updateUser(form);
         return CommonResult.success("修改用户成功！");
     }
 

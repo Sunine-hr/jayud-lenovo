@@ -44,13 +44,13 @@
     </select>
 
     <!--插入用户-->
-    <insert id="insertUser" parameterType="com.jayud.mall.model.bo.SaveUserForm">
+    <insert id="insertUser" parameterType="com.jayud.mall.model.bo.SaveSystemUserForm">
         INSERT INTO system_user (user_name, company_id, en_user_name, phone, email)
         VALUES (#{userName}, #{companyId}, #{enUserName}, #{phone}, #{email})
     </insert>
 
     <!--修改用户-->
-    <update id="updateUser" parameterType="com.jayud.mall.model.bo.SaveUserForm">
+    <update id="updateUser" parameterType="com.jayud.mall.model.bo.SaveSystemUserForm">
         UPDATE system_user
         SET
             user_name = #{userName},

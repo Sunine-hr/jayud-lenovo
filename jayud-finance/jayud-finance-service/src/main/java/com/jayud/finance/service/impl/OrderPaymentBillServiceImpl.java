@@ -127,7 +127,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             orderBillCostTotalVOS = costTotalService.findOrderFBillCostTotal(costIds, settlementCurrency, form.getAccountTermStr());
             for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                 BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();//如果费率为0，则抛异常回滚数据
-                if (exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0) {
+                if (exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0 || !orderBillCostTotalVO.getCurrencyCode().equals(settlementCurrency)) {
                     //根据币种查询币种描述
                     String oCurrency = currencyRateService.getNameByCode(orderBillCostTotalVO.getCurrencyCode());
                     String dCurrency = currencyRateService.getNameByCode(settlementCurrency);
@@ -220,7 +220,11 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
                 orderBillCostTotalVO.setBillNo(form.getBillNo());
                 orderBillCostTotalVO.setCurrencyCode(settlementCurrency);
                 BigDecimal localMoney = orderBillCostTotalVO.getMoney();//本币金额
-                BigDecimal money = localMoney.multiply(orderBillCostTotalVO.getExchangeRate());
+                BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();
+                if(exchangeRate == null || exchangeRate.compareTo(new BigDecimal("0")) == 0){
+                    exchangeRate = new BigDecimal("1");
+                }
+                BigDecimal money = localMoney.multiply(exchangeRate);
                 orderBillCostTotalVO.setMoney(money);
                 OrderBillCostTotal orderBillCostTotal = ConvertUtil.convert(orderBillCostTotalVO,OrderBillCostTotal.class);
                 orderBillCostTotal.setLocalMoney(localMoney);

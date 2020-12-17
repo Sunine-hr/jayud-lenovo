@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.mall.admin.security.domain.AuthUser;
+import com.jayud.mall.admin.security.service.BaseService;
 import com.jayud.mall.mapper.SystemUserMapper;
 import com.jayud.mall.model.bo.QueryUserForm;
 import com.jayud.mall.model.bo.ResetUserPwdForm;
@@ -15,6 +17,7 @@ import com.jayud.mall.model.po.SystemUser;
 import com.jayud.mall.model.vo.SystemUserVO;
 import com.jayud.mall.service.ISystemUserRoleRelationService;
 import com.jayud.mall.service.ISystemUserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -31,8 +34,15 @@ import java.util.List;
  * @author fachang.mao
  * @since 2020-10-23
  */
+@Slf4j
 @Service
 public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemUser> implements ISystemUserService {
+
+    /**
+     * baseService，获取admin项目，登录用户
+     */
+    @Autowired
+    BaseService baseService;
 
     @Autowired
     SystemUserMapper systemUserMapper;
@@ -100,7 +110,8 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         //systemUser.setPassword(Md5Utils.getMD5("123456".getBytes()).toUpperCase()); // MD5 加密
         systemUser.setPassword(password); // BCryptPasswordEncoder 加密
 
-
+        AuthUser user = baseService.getUser();
+        log.info("user:"+user);
 
 
 //        systemUserMapper.insert(systemUser);

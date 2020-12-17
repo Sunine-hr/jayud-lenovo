@@ -1,11 +1,11 @@
 package com.jayud.mall.security.service;
 
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.mall.admin.security.domain.AuthUser;
+import com.jayud.mall.admin.security.domain.BaseAuthVO;
 import com.jayud.mall.model.bo.SystemUserLoginForm;
 import com.jayud.mall.model.po.SystemRole;
 import com.jayud.mall.model.vo.SystemUserVO;
-import com.jayud.mall.security.domain.AuthUser;
-import com.jayud.mall.security.domain.BaseAuthVO;
 import com.jayud.mall.security.utils.ContextHolderUtils;
 import com.jayud.mall.service.ISystemRoleService;
 import com.jayud.mall.service.ISystemUserService;
@@ -114,7 +114,7 @@ public class UserDetailService implements UserDetailsService {
         }
         //存放用户信息-授权用户
         AuthUser authUser = ConvertUtil.convert(userVO, AuthUser.class);
-        getHttpSession().setAttribute(BaseAuthVO.USER_LOGIN_SESSION_KEY, authUser);
+        getHttpSession().setAttribute(BaseAuthVO.ADMIN_USER_LOGIN_SESSION_KEY, authUser);
         User user = new User(userVO.getUserName(), userVO.getPassword(),
                 true, true, true, true,
                 auths);

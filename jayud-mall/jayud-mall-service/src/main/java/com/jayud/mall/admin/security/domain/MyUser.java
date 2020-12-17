@@ -1,4 +1,4 @@
-package com.jayud.mall.security.domain;
+package com.jayud.mall.admin.security.domain;
 
 import io.swagger.annotations.ApiModelProperty;
 

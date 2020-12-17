@@ -1,7 +1,7 @@
-package com.jayud.mall.security.service;
+package com.jayud.mall.admin.security.service;
 
-import com.jayud.mall.security.domain.AuthUser;
-import com.jayud.mall.security.domain.BaseAuthVO;
+import com.jayud.mall.admin.security.domain.AuthUser;
+import com.jayud.mall.admin.security.domain.BaseAuthVO;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -9,7 +9,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpSession;
 
 /**
- * 基本service
+ * admin项目-基本service
  */
 @Component
 public class BaseService {
@@ -31,7 +31,7 @@ public class BaseService {
         Object o = null;
         ServletRequestAttributes sa = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
         if (sa != null && sa.getRequest() != null) {
-            o = this.getHttpSession().getAttribute(BaseAuthVO.USER_LOGIN_SESSION_KEY);
+            o = this.getHttpSession().getAttribute(BaseAuthVO.ADMIN_USER_LOGIN_SESSION_KEY);
             return o;
         } else {
             return null;

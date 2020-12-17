@@ -1,8 +1,8 @@
 package com.jayud.mall.security.controller;
 
-import com.jayud.mall.security.domain.AuthUser;
-import com.jayud.mall.security.domain.BaseAuthVO;
-import com.jayud.mall.security.service.BaseService;
+import com.jayud.mall.admin.security.domain.AuthUser;
+import com.jayud.mall.admin.security.domain.BaseAuthVO;
+import com.jayud.mall.admin.security.service.BaseService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiOperationSupport;
@@ -88,7 +88,7 @@ public class BrowserSecurityController {
         String username = myuser.getUsername();
         String password = myuser.getPassword();
 
-        Object token = getHttpSession().getAttribute(BaseAuthVO.USER_LOGIN_SESSION_KEY);
+        Object token = getHttpSession().getAttribute(BaseAuthVO.ADMIN_USER_LOGIN_SESSION_KEY);
         AuthUser userVO = (AuthUser) token;
 
         AuthUser user = baseService.getUser();

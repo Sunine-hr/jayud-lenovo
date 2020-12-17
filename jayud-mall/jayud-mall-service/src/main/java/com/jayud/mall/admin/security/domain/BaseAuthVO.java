@@ -1,4 +1,4 @@
-package com.jayud.mall.security.domain;
+package com.jayud.mall.admin.security.domain;
 
 import java.io.Serializable;
 
@@ -9,5 +9,5 @@ public class BaseAuthVO implements Serializable {
 
     private static final long serialVersionUID = 8847125691904516507L;
 
-    public static final String USER_LOGIN_SESSION_KEY = "USER_LOGIN_SESSION_KEY";
+    public static final String ADMIN_USER_LOGIN_SESSION_KEY = "ADMIN_USER_LOGIN_SESSION_KEY";
 }

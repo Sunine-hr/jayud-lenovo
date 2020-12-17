@@ -6,10 +6,13 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.mall.model.bo.*;
+import com.jayud.mall.admin.security.domain.AuthUser;
+import com.jayud.mall.admin.security.service.BaseService;
+import com.jayud.mall.model.bo.QueryUserForm;
+import com.jayud.mall.model.bo.SaveSystemUserForm;
+import com.jayud.mall.model.bo.SystemUserLoginForm;
+import com.jayud.mall.model.bo.SystemUserParaForm;
 import com.jayud.mall.model.vo.SystemUserVO;
-import com.jayud.mall.security.domain.AuthUser;
-import com.jayud.mall.security.service.BaseService;
 import com.jayud.mall.service.ISystemUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -27,13 +30,13 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/system/user")
+@RequestMapping("/systemuser")
 @Api(tags = "后台-用户管理")
 @ApiSort(value = 3)
 public class SystemUserController {
 
     /**
-     * baseService，获取登录用户
+     * baseService，获取admin项目，登录用户
      */
     @Autowired
     BaseService baseService;

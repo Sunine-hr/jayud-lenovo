@@ -11,26 +11,20 @@
         <result column="en_user_name" property="enUserName"/>
         <result column="phone" property="phone"/>
         <result column="email" property="email"/>
-        <result column="is_department_charge" property="isDepartmentCharge"/>
-        <result column="department_id" property="departmentId"/>
-        <result column="work_id" property="workId"/>
-        <result column="work_name" property="workName"/>
-        <result column="company_id" property="companyId"/>
-        <result column="superior_id" property="superiorId"/>
-        <result column="login_time" property="loginTime"/>
-        <result column="status" property="status"/>
-        <result column="audit_status" property="auditStatus"/>
-        <result column="user_type" property="userType"/>
+        <result column="company" property="company" />
+        <result column="wkno" property="wkno" />
+        <result column="login_time" property="loginTime" />
+        <result column="status" property="status" />
         <result column="note" property="note"/>
         <result column="created_user" property="createdUser"/>
         <result column="created_time" property="createdTime"/>
-        <result column="updated_time" property="updatedTime"/>
         <result column="updated_user" property="updatedUser"/>
+        <result column="updated_time" property="updatedTime"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, `name`, password, user_name, en_user_name, phone, email, is_department_charge, department_id, work_id, work_name, company_id, superior_id, login_time, status, audit_status, user_type, note, created_user, created_time, updated_time, updated_user
+        id,`name`,`password`,user_name,en_user_name,phone,email,company,wkno,login_time,`status`,note,created_user,created_time,updated_user,updated_time
     </sql>
 
     <!--查询登录用户-->
@@ -106,41 +100,18 @@
     <!--查询用户分页-->
     <select id="findUserByPage" parameterType="com.jayud.mall.model.bo.QueryUserForm"
             resultType="com.jayud.mall.model.vo.SystemUserVO" >
-        SELECT
-            su.id,
-            su.`name`,
-            su.`password`,
-            su.user_name,
-            su.en_user_name,
-            su.phone,
-            su.email,
-            su.is_department_charge,
-            su.department_id,
-            su.work_id,
-            su.work_name,
-            su.company_id,
-            su.superior_id,
-            su.login_time,
-            su.`status`,
-            su.audit_status,
-            su.user_type,
-            su.note,
-            su.created_user,
-            su.created_time,
-            su.updated_time,
-            su.updated_user
-        FROM
-            system_user su
-        WHERE
-            1 = 1
+        select
+        t.id,t.`name`,t.`password`,t.user_name,t.en_user_name,t.phone,t.email,t.company,t.wkno,t.login_time,t.`status`,t.note,t.created_user,t.created_time,t.updated_user,t.updated_time
+        from
+        system_user t
+        where
+        1 = 1
         <if test="form.userName != null and form.userName != ''">
-            AND su.user_name LIKE concat('%',#{form.userName},'%')
+            AND t.user_name LIKE concat('%',#{form.userName},'%')
         </if>
         <if test="form.status != null and form.status != ''">
-            AND su.`status` = #{form.status}
+            AND t.`status` = #{form.status}
         </if>
-        GROUP BY
-            su.`id`
     </select>
 
 

@@ -1,5 +1,6 @@
 package com.jayud.mall.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
@@ -40,13 +41,13 @@ public class SystemUserController {
     ISystemUserService userService;
 
 
-    @ApiOperation(value = "测试")
+    @ApiOperation(value = "测试,登录的当前用户")
     @ApiOperationSupport(order = 1)
     @PostMapping(value = "/hi")
     public String hi(){
         AuthUser user = baseService.getUser();
         log.info("当前登录用户user:"+user);
-        return "hi mall admin";
+        return "hi, mall user: "+ JSONObject.toJSONString(user);
     }
 
 

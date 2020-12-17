@@ -43,44 +43,44 @@ public interface SystemUserMapper extends BaseMapper<SystemUser> {
      * 新增用户
      * @param user
      */
-    void insertUser(SaveUserForm user);
+    void insertUser(@Param("user") SaveUserForm user);
 
     /**
      * 修改用户
      * @param user
      */
-    void updateUser(SaveUserForm user);
+    void updateUser(@Param("user") SaveUserForm user);
 
     /**
      * 删除用户
      * @param id
      */
-    void deleteUser(Long id);
+    void deleteUser(@Param("id") Long id);
 
     /**
      * 获取根据Id，获取用户
      * @param id
      * @return
      */
-    SystemUserVO getUser(Long id);
+    SystemUserVO getUser(@Param("id") Long id);
 
     /**
      * 禁用用户
      * @param id
      */
-    void disableUser(Long id);
+    void disableUser(@Param("id") Long id);
 
     /**
      * 启用用户
      * @param id
      */
-    void enableUser(Long id);
+    void enableUser(@Param("id") Long id);
 
     /**
      * 重置用户密码
-     * @param resetUserPwdForm
+     * @param form
      */
-    void resetPassword(ResetUserPwdForm resetUserPwdForm);
+    void resetPassword(@Param("form") ResetUserPwdForm form);
 
     /**
      * 查询用户分页
@@ -88,7 +88,7 @@ public interface SystemUserMapper extends BaseMapper<SystemUser> {
      * @param form
      * @return
      */
-    IPage<SystemUserVO> findUserByPage(Page<SystemUserVO> page, QueryUserForm form);
+    IPage<SystemUserVO> findUserByPage(Page<SystemUserVO> page, @Param("form") QueryUserForm form);
 
 
 

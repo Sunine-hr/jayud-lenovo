@@ -124,6 +124,7 @@
         select * from (
         SELECT
         opc.main_order_no orderNo,
+        opc.order_no subOrderNo,
         pb.`name` bizCodeDesc,
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         si.supplier_ch_name supplierChName,

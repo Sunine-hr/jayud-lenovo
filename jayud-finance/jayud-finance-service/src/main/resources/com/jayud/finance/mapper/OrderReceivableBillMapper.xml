@@ -121,6 +121,7 @@
         select * from (
         SELECT
         orc.main_order_no orderNo,
+        orc.order_no subOrderNo,
         pb.`name` bizCodeDesc,
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         c.unit_account unitAccount,

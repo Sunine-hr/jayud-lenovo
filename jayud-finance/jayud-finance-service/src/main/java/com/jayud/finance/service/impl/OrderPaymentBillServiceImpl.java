@@ -136,7 +136,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
                     flag = false;
                 }
                 if(orderBillCostTotalVO.getCurrencyCode().equals("CNY")){
-                    orderBillCostTotalVO.setMoney(orderBillCostTotalVO.getOldMoney());
+                    orderBillCostTotalVO.setLocalMoney(orderBillCostTotalVO.getOldLocalMoney());
                 }
             }
             //出账时要以结算期为汇率记录本币金额，需要校验是否配置汇率
@@ -235,15 +235,15 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                 orderBillCostTotalVO.setBillNo(form.getBillNo());
                 orderBillCostTotalVO.setCurrencyCode(settlementCurrency);
-                BigDecimal localMoney = orderBillCostTotalVO.getMoney();//本币金额
+                BigDecimal money = orderBillCostTotalVO.getMoney();//录入费用时的金额
                 BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();
                 if(exchangeRate == null || exchangeRate.compareTo(new BigDecimal("0")) == 0){
                     exchangeRate = new BigDecimal("1");
                 }
-                BigDecimal money = localMoney.multiply(exchangeRate);
+                money = money.multiply(exchangeRate);
                 orderBillCostTotalVO.setMoney(money);
                 OrderBillCostTotal orderBillCostTotal = ConvertUtil.convert(orderBillCostTotalVO,OrderBillCostTotal.class);
-                orderBillCostTotal.setLocalMoney(localMoney);
+                orderBillCostTotal.setLocalMoney(orderBillCostTotalVO.getLocalMoney());
                 orderBillCostTotal.setMoneyType("1");
                 orderBillCostTotals.add(orderBillCostTotal);
             }

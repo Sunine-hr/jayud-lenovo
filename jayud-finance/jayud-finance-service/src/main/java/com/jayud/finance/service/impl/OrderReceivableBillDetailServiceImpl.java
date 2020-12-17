@@ -211,7 +211,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                         flag = false;
                     }
                     if(orderBillCostTotalVO.getCurrencyCode().equals("CNY")){
-                        orderBillCostTotalVO.setMoney(orderBillCostTotalVO.getOldMoney());
+                        orderBillCostTotalVO.setLocalMoney(orderBillCostTotalVO.getOldLocalMoney());
                     }
                 }
                 List<OrderBillCostTotalVO> tempOrderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, "CNY", existObject.getAccountTerm());
@@ -344,15 +344,15 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                     orderBillCostTotalVO.setBillNo(form.getBillNo());
                     orderBillCostTotalVO.setCurrencyCode(settlementCurrency);
-                    BigDecimal localMoney = orderBillCostTotalVO.getMoney();//本币金额
+                    BigDecimal money = orderBillCostTotalVO.getMoney();//录入费用时的金额
                     BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();
                     if(exchangeRate == null || exchangeRate.compareTo(new BigDecimal("0")) == 0){
                         exchangeRate = new BigDecimal("1");
                     }
-                    BigDecimal money = localMoney.multiply(exchangeRate);
+                    money = money.multiply(exchangeRate);
                     orderBillCostTotalVO.setMoney(money);
                     OrderBillCostTotal orderBillCostTotal = ConvertUtil.convert(orderBillCostTotalVO, OrderBillCostTotal.class);
-                    orderBillCostTotal.setLocalMoney(localMoney);
+                    orderBillCostTotal.setLocalMoney(orderBillCostTotalVO.getLocalMoney());
                     orderBillCostTotal.setMoneyType("2");
                     orderBillCostTotals.add(orderBillCostTotal);
                 }

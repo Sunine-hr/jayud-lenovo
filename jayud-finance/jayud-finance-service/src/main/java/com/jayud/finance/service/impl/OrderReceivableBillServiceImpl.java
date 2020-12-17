@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -172,11 +173,12 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             orderReceivableBill.setAlreadyPaidAmount(alreadyPaidAmount.add(nowBillAmount));
             //2.统计已出账订单数billOrderNum
             List<String> validOrders = new ArrayList<>();
+            orderNos = orderNos.stream().distinct().collect(Collectors.toList());
             for (String orderNo : orderNos) {
                 QueryWrapper queryWrapper1 = new QueryWrapper();
                 queryWrapper1.eq("order_no",orderNo);
-                List<OrderReceivableBillDetail> orderNoOjects= receivableBillDetailService.list(queryWrapper1);
-                if(orderNoOjects == null || orderNoOjects.size() == 0){
+                List<OrderReceivableBillDetail> orderNoObjects= receivableBillDetailService.list(queryWrapper1);
+                if(orderNoObjects == null || orderNoObjects.size() == 0){
                     validOrders.add(orderNo);
                 }
             }

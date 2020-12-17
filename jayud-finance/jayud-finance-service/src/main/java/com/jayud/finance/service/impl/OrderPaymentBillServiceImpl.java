@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -172,6 +173,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             orderPaymentBill.setAlreadyPaidAmount(alreadyPaidAmount.add(nowBillAmount));
             //2.统计已出账订单数billOrderNum
             List<String> validOrders = new ArrayList<>();
+            orderNos = orderNos.stream().distinct().collect(Collectors.toList());
             for (String orderNo : orderNos) {
                 QueryWrapper queryWrapper1 = new QueryWrapper();
                 queryWrapper1.eq("order_no",orderNo);

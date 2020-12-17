@@ -115,6 +115,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         for (InputOrderTakeAdrForm inputOrderTakeAdrForm : orderTakeAdrForms) {
             //有的地址是创建订单填的,有的地址是从地址簿选的
             DeliveryAddress deliveryAddress = new DeliveryAddress();
+            deliveryAddress.setId(inputOrderTakeAdrForm.getDeliveryId());
             if(inputOrderTakeAdrForm.getDeliveryId() == null){//将地址保存到地址簿
                 deliveryAddress.setCustomerId(inputOrderTakeAdrForm.getCustomerId());
                 deliveryAddress.setContacts(inputOrderTakeAdrForm.getContacts());

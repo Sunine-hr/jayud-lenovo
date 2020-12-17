@@ -46,8 +46,7 @@
           ota.`volume`,
           ota.`opr_type` oprType,
           ota.`remarks`,
-          ota.`enter_warehouse_no` enterWarehouseNo,
-          ota.delivery_id deliveryId
+          ota.`enter_warehouse_no` enterWarehouseNo
         FROM
           order_take_adr ota
           LEFT JOIN delivery_address da

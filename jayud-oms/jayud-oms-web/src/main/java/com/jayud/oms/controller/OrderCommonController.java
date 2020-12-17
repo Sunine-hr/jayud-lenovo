@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -237,6 +238,13 @@ public class OrderCommonController {
         }else {
             return CommonResult.success(productClassifyVOS);
         }
+    }
+
+    @ApiOperation(value = "获取当前时间")
+    @PostMapping(value = "/getNowTime")
+    public CommonResult getNowTime() {
+        String nowTime = DateUtils.getLocalToStr(LocalDateTime.now());
+        return CommonResult.success(nowTime);
     }
 
 

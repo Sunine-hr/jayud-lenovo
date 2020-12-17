@@ -39,7 +39,7 @@ public class BaseService {
     }
 
     /**
-     * 获取User
+     * 获取当前登录User
      * @return
      */
     public AuthUser getUser() {

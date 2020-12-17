@@ -2,11 +2,13 @@ package com.jayud.mall.security.domain;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
+@ApiModel(value = "权限用户，当前登录用户")
 @Data
 public class AuthUser {
 

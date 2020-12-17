@@ -96,9 +96,10 @@ public interface OrderReceivableBillMapper extends BaseMapper<OrderReceivableBil
     /**
      * 预览账单全局数据
      * @param costIds
+     * @param cmd
      * @return
      */
-    ViewBillVO getViewBillByCostIds(@Param("costIds") List<Long> costIds);
+    ViewBillVO getViewBillByCostIds(@Param("costIds") List<Long> costIds,@Param("cmd") String cmd);
 
     /**
      * 查询账单明细

@@ -174,8 +174,8 @@
             AND oc.`status` = 'C_5' and oc.class_code = 'CBG'
         </if>
         <if test="form.cmd == 'costAudit'">
-            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = oi.order_no AND opc.`status` = '2' and opc.sub_type = 'bg')
-            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = oi.order_no AND orc.`status` = '2' and orc.sub_type = 'bg'))
+            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = oc.order_no AND opc.`status` = '2' and opc.sub_type = 'bg')
+            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = oc.order_no AND orc.`status` = '2' and orc.sub_type = 'bg'))
         </if>
     </select>
     <select id="statisticsDataNumber"  resultType="com.jayud.customs.model.vo.StatisticsDataNumberVO" >

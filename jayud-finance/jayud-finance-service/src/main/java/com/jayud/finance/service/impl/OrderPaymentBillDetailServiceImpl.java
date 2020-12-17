@@ -213,7 +213,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderFBillCostTotal(costIds, existObject.getSettlementCurrency(), existObject.getAccountTerm());
                 for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                     BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();//如果费率为0，则抛异常回滚数据
-                    if (exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0 || !orderBillCostTotalVO.getCurrencyCode().equals(existObject.getSettlementCurrency())) {
+                    if ((exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0) && !orderBillCostTotalVO.getCurrencyCode().equals(existObject.getSettlementCurrency())) {
                         //根据币种查询币种描述
                         String oCurrency = currencyRateService.getNameByCode(orderBillCostTotalVO.getCurrencyCode());
                         String dCurrency = currencyRateService.getNameByCode(existObject.getSettlementCurrency());

@@ -128,7 +128,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             orderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, settlementCurrency,form.getAccountTermStr());
             for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                 BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();//如果费率为0，则抛异常回滚数据
-                if (exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0 || !orderBillCostTotalVO.getCurrencyCode().equals(settlementCurrency)) {
+                if ((exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0) && !orderBillCostTotalVO.getCurrencyCode().equals(settlementCurrency)) {
                     //根据币种查询币种描述
                     String oCurrency = currencyRateService.getNameByCode(orderBillCostTotalVO.getCurrencyCode());
                     String dCurrency = currencyRateService.getNameByCode(settlementCurrency);
@@ -314,8 +314,8 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
     }
 
     @Override
-    public ViewBillVO getViewBillByCostIds(List<Long> costIds) {
-        return baseMapper.getViewBillByCostIds(costIds);
+    public ViewBillVO getViewBillByCostIds(List<Long> costIds,String cmd) {
+        return baseMapper.getViewBillByCostIds(costIds,cmd);
     }
 
 

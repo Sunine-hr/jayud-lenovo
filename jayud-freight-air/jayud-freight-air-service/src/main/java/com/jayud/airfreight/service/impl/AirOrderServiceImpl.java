@@ -1,23 +1,21 @@
 package com.jayud.airfreight.service.impl;
 
+import cn.hutool.json.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.airfreight.feign.MsgClient;
 import com.jayud.airfreight.feign.OmsClient;
+import com.jayud.airfreight.mapper.AirOrderMapper;
 import com.jayud.airfreight.model.bo.*;
 import com.jayud.airfreight.model.enums.AirOrderTermsEnum;
 import com.jayud.airfreight.model.po.AirBooking;
 import com.jayud.airfreight.model.po.AirOrder;
-import com.jayud.airfreight.mapper.AirOrderMapper;
-import com.jayud.airfreight.model.po.Goods;
-import com.jayud.airfreight.model.po.OrderAddress;
 import com.jayud.airfreight.model.vo.*;
 import com.jayud.airfreight.service.IAirBookingService;
 import com.jayud.airfreight.service.IAirOrderService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.airfreight.service.IGoodsService;
-import com.jayud.airfreight.service.IOrderAddressService;
+import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
@@ -33,7 +31,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * <p>
@@ -47,10 +47,10 @@ import java.util.*;
 @Slf4j
 public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> implements IAirOrderService {
 
-    @Autowired
-    private IOrderAddressService orderAddressService;
-    @Autowired
-    private IGoodsService goodsService;
+    //    @Autowired
+//    private IOrderAddressService orderAddressService;
+    //    @Autowired
+//    private IGoodsService goodsService;
     @Autowired
     private OmsClient omsClient;
     @Autowired
@@ -82,29 +82,27 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         }
 
         List<AddOrderAddressForm> orderAddressForms = addAirOrderForm.getOrderAddressForms();
-        List<OrderAddress> orderAddresses = new ArrayList<>();
         for (AddOrderAddressForm orderAddressForm : orderAddressForms) {
-            OrderAddress orderAddress = ConvertUtil.convert(orderAddressForm, OrderAddress.class);
-            orderAddress.setBusinessType(BusinessTypeEnum.KY.getCode())
-                    .setBusinessId(airOrder.getId())
-                    .setCreateTime(orderAddressForm.getId() == null ? now : null);
-            orderAddresses.add(orderAddress);
+            orderAddressForm.setBusinessType(BusinessTypeEnum.KY.getCode());
+            orderAddressForm.setBusinessId(airOrder.getId());
         }
         //批量保存用户地址
-        this.orderAddressService.saveOrUpdateBatch(orderAddresses);
-
-        List<AddGoodsForm> goodsForms = addAirOrderForm.getGoodsForms();
-        List<Goods> goodsList = new ArrayList<>();
-        for (AddGoodsForm goodsForm : goodsForms) {
-            Goods goods = ConvertUtil.convert(goodsForm, Goods.class);
-            goods.setBusinessId(airOrder.getId())
-                    .setBusinessType(BusinessTypeEnum.KY.getCode())
-                    .setCreateTime(goodsForm.getId() == null ? now : null);
-            goodsList.add(goods);
+        ApiResult result = this.omsClient.saveOrUpdateOrderAddressBatch(orderAddressForms);
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.warn("批量保存/修改订单地址信息失败,订单地址信息={}", new JSONArray(orderAddressForms));
         }
 
+        List<AddGoodsForm> goodsForms = addAirOrderForm.getGoodsForms();
+        for (AddGoodsForm goodsForm : goodsForms) {
+            goodsForm.setBusinessId(airOrder.getId());
+            goodsForm.setBusinessType(BusinessTypeEnum.KY.getCode());
+        }
         //批量保存货物信息
-        goodsService.saveOrUpdateBatch(goodsList);
+        result = this.omsClient.saveOrUpdateGoodsBatch(goodsForms);
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.warn("批量保存/修改商品信息失败,商品信息={}", new JSONArray(goodsForms));
+        }
+
     }
 
     /**
@@ -383,18 +381,19 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         //空运订单信息
         AirOrderVO airOrder = this.baseMapper.getAirOrder(airOrderId);
         //查询商品信息
-        List<Goods> goods = this.goodsService.getGoodsByBusIds(Collections.singletonList(airOrderId), businessType);
-        List<GoodsVO> goodsVOs = new ArrayList<>();
-        for (Goods good : goods) {
-            GoodsVO goodsVO = ConvertUtil.convert(good, GoodsVO.class);
-            goodsVOs.add(goodsVO);
+        ApiResult<List<GoodsVO>> result = this.omsClient.getGoodsByBusIds(Collections.singletonList(airOrderId), businessType);
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.warn("查询商品信息失败 airOrderId={}", airOrderId);
         }
-        airOrder.setGoodsVOs(goodsVOs);
+        airOrder.setGoodsVOs(result.getData());
         //查询地址信息
-        List<OrderAddress> addressList = this.orderAddressService.getAddress(Collections.singletonList(airOrderId), businessType);
-        for (OrderAddress address : addressList) {
-            OrderAddressVO addressVO = ConvertUtil.convert(address, OrderAddressVO.class);
-            airOrder.processingAddress(addressVO);
+        ApiResult<List<OrderAddressVO>> resultOne = this.omsClient.getOrderAddressByBusIds(Collections.singletonList(airOrderId), businessType);
+        if (resultOne.getCode() != HttpStatus.SC_OK) {
+            log.warn("查询订单地址信息失败 airOrderId={}", airOrderId);
+        }
+        //处理地址信息
+        for (OrderAddressVO address : resultOne.getData()) {
+            airOrder.processingAddress(address);
         }
         //查询订舱信息
         AirBooking airBooking = this.airBookingService.getByAirOrderId(airOrderId);

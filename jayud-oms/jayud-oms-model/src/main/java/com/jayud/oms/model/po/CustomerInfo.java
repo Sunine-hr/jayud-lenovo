@@ -102,9 +102,9 @@ public class CustomerInfo extends Model<CustomerInfo> {
     @ApiModelProperty(value = "状态(0无效 1有效)")
     private String status;
 
-    private String unitCode;
+//    private String unitCode;
 
-    private String unitAccount;
+//    private String unitAccount;
 
 
 

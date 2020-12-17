@@ -16,10 +16,10 @@ public class OrderDataCountVO {
     @ApiModelProperty(value = "待补全数据量")
     private Integer dataNotAllCount;
 
-    @ApiModelProperty(value = "待处理数据量")
-    private Integer pendingCount;
+    @ApiModelProperty(value = "待取消处理数据量")
+    private Integer cancelledCount;
 
-    @ApiModelProperty(value = "待驳回数据量")
-    private Integer pendingRejectedCount;
+    @ApiModelProperty(value = "待驳回处理数据量")
+    private Integer rejectedCount;
 
 }

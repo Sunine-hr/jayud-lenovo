@@ -92,8 +92,8 @@ public class CustomerInfoController {
     @PostMapping(value = "/saveOrUpdateCustomerInfo")
     public CommonResult saveOrUpdateCustomerInfo(@RequestBody @Valid AddCustomerInfoForm form) {
         CustomerInfo customerInfo = ConvertUtil.convert(form, CustomerInfo.class);
-        customerInfo.setUnitCode(form.getIdCode());
-        customerInfo.setUnitAccount(form.getName());
+//        customerInfo.setUnitCode(form.getIdCode());
+//        customerInfo.setUnitAccount(form.getName());
         if (form.getId() != null) {
             customerInfo.setUpdatedUser(UserOperator.getToken());
             customerInfo.setUpdatedTime(DateUtils.getNowTime());

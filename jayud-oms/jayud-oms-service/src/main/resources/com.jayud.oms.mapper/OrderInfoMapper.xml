@@ -163,8 +163,11 @@
         <if test="form.cmd == 'dataNotAll'">
             and temp.`status` = 4
         </if>
-        <if test="form.cmd == 'pending'">
+        <if test="form.cmd == 'cancelled'">
             and temp.`status` = 6
+        </if>
+        <if test="form.cmd == 'rejected'">
+            and temp.`status` = 7
         </if>
         <if test="form.orderNo != null and form.orderNo != ''">
             and temp.orderNo = #{form.orderNo}

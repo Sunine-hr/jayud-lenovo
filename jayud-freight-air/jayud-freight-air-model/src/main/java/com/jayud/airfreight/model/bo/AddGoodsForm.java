@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
  * @since 2020-11-30
  */
 @Data
-
 public class AddGoodsForm {
 
     private static final long serialVersionUID = 1L;
@@ -28,9 +27,6 @@ public class AddGoodsForm {
 
     @ApiModelProperty(value = "业务主键(根据类型选择对应表的主键) 前端不用管")
     private Long businessId;
-
-    @ApiModelProperty(value = "类型(0:空运)")
-    private Integer type;
 
     @ApiModelProperty(value = "标签（空运是唛头）")
     private String label;
@@ -62,8 +58,11 @@ public class AddGoodsForm {
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "业务类型(0:空运)")
+    private Integer businessType;
+
     public boolean checkCreateAirOrder() {
-        if (this.type == null || StringUtils.isEmpty(this.label)
+        if (StringUtils.isEmpty(this.label)
                 || StringUtils.isEmpty(this.name) || plateAmount == null
                 || StringUtils.isEmpty(this.plateUnit)
                 || this.bulkCargoAmount == null || StringUtils.isEmpty(this.bulkCargoUnit)

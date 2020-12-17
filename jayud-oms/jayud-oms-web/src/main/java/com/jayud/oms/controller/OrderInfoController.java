@@ -60,7 +60,8 @@ public class OrderInfoController {
         resultMap.put(CommonConstant.ALL_COUNT, orderDataCountVO.getAllCount());//所有订单数量
         resultMap.put(CommonConstant.PRE_SUBMIT_COUNT, orderDataCountVO.getPreSubmitCount());//暂存数量
         resultMap.put(CommonConstant.DATA_NOT_ALL_COUNT, orderDataCountVO.getDataNotAllCount());//待补全数据量
-        resultMap.put(CommonConstant.PENDING_REJECTED_COUNT, orderDataCountVO.getPendingRejectedCount());//待处理数据量
+        resultMap.put(CommonConstant.CANCELLED_COUNT, orderDataCountVO.getCancelledCount());//待处理数据量
+        resultMap.put(CommonConstant.REJECTED_COUNT, orderDataCountVO.getRejectedCount());//待处理数据量
         return CommonResult.success(resultMap);
     }
 

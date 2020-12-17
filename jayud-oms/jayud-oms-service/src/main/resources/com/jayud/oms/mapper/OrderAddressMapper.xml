@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.mapper.OrderAddressMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.OrderAddress">
+        <id column="id" property="id" />
+        <result column="business_id" property="businessId" />
+        <result column="type" property="type" />
+        <result column="business_type" property="businessType" />
+        <result column="company" property="company" />
+        <result column="contacts" property="contacts" />
+        <result column="address" property="address" />
+        <result column="phone" property="phone" />
+        <result column="fax" property="fax" />
+        <result column="mailbox" property="mailbox" />
+        <result column="remarks" property="remarks" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, business_id, type, business_type, company, contacts, address, phone, fax, mailbox, remarks, create_time
+    </sql>
+
+</mapper>

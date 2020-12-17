@@ -12,11 +12,10 @@ import com.jayud.airfreight.model.bo.AirProcessOptForm;
 import com.jayud.airfreight.model.bo.AuditInfoForm;
 import com.jayud.airfreight.model.bo.QueryAirOrderForm;
 import com.jayud.airfreight.model.po.AirOrder;
-import com.jayud.airfreight.model.po.Goods;
 import com.jayud.airfreight.model.vo.AirOrderFormVO;
 import com.jayud.airfreight.model.vo.AirOrderVO;
+import com.jayud.airfreight.model.vo.GoodsVO;
 import com.jayud.airfreight.service.IAirOrderService;
-import com.jayud.airfreight.service.IGoodsService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
@@ -56,8 +55,8 @@ public class AirOrderController {
     private OmsClient omsClient;
     @Autowired
     private IAirOrderService airOrderService;
-    @Autowired
-    private IGoodsService goodsService;
+//    @Autowired
+//    private IGoodsService goodsService;
 
     @ApiOperation(value = "分页查询空运订单")
     @PostMapping(value = "/findByPage")
@@ -91,7 +90,7 @@ public class AirOrderController {
             mainOrder.add(record.getMainOrderNo());
         }
         //查询商品信息
-        List<Goods> goods = goodsService.getGoodsByBusIds(airOrderIds, BusinessTypeEnum.KY.getCode());
+        List<GoodsVO> goods = this.omsClient.getGoodsByBusIds(airOrderIds, BusinessTypeEnum.KY.getCode()).getData();
         //查询客户信息
         ApiResult result = omsClient.getMainOrderByOrderNos(mainOrder);
         for (AirOrderFormVO record : records) {

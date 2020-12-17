@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.airfreight.model.enums.AirOrderTermsEnum;
-import com.jayud.airfreight.model.po.Goods;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.TradeTypeEnum;
@@ -105,9 +104,9 @@ public class AirOrderFormVO {
     /**
      * 组装商品信息
      */
-    public void assemblyGoodsInfo(List<Goods> goodsList) {
+    public void assemblyGoodsInfo(List<GoodsVO> goodsList) {
         StringBuilder sb = new StringBuilder();
-        for (Goods goods : goodsList) {
+        for (GoodsVO goods : goodsList) {
             if (this.id.equals(goods.getBusinessId())
                     && BusinessTypeEnum.KY.getCode().equals(goods.getBusinessType())) {
                 sb.append(goods.getName()).append("+")

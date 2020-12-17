@@ -9,6 +9,7 @@ import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.utils.BeanUtils;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.OauthClient;
@@ -28,7 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,48 +37,41 @@ import java.util.List;
 @Api(tags = "oms对外接口")
 @Slf4j
 public class ExternalApiController {
-
     @Autowired
     IOrderInfoService orderInfoService;
-
     @Autowired
     ILogisticsTrackService logisticsTrackService;
-
     @Autowired
     RedisUtils redisUtils;
-
     @Autowired
     IAuditInfoService auditInfoService;
-
     @Autowired
     IWarehouseInfoService warehouseInfoService;
-
     @Autowired
     ISupplierInfoService supplierInfoService;
-
     @Autowired
     IDriverInfoService driverInfoService;
-
     @Autowired
     IOrderPaymentCostService paymentCostService;
-
     @Autowired
     IOrderReceivableCostService receivableCostService;
-
     @Autowired
     ICurrencyInfoService currencyInfoService;
     @Autowired
     private ICustomerInfoService customerInfoService;
-
     @Autowired
     ICostGenreService costGenreService;
-
     @Autowired
     private IPortInfoService portInfoService;
     @Autowired
     private IVehicleInfoService vehicleInfoService;
     @Autowired
     private OauthClient oauthClient;
+    @Autowired
+    private IGoodsService goodsService;
+    @Autowired
+    private IOrderAddressService orderAddressService;
+
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
@@ -596,6 +589,65 @@ public class ExternalApiController {
 
         return ApiResult.ok(result.getData());
     }
+
+
+    @ApiOperation("批量保存/修改商品信息")
+    @RequestMapping(value = "/api/saveOrUpdateGoodsBatch")
+    public ApiResult saveOrUpdateGoodsBatch(@RequestBody List<AddGoodsForm> goodsForms) {
+        List<Goods> goodsList = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
+        for (AddGoodsForm goodsForm : goodsForms) {
+            Goods goods = ConvertUtil.convert(goodsForm, Goods.class);
+            goods.setCreateTime(goods.getId() == null ? now : null);
+            goodsList.add(goods);
+        }
+        //批量保存货物信息
+        if (goodsService.saveOrUpdateBatch(goodsList)) {
+            return ApiResult.ok();
+        } else {
+            return ApiResult.error("批量保存/修改商品信息失败");
+        }
+    }
+
+    @ApiOperation("批量保存/修改订单地址信息")
+    @RequestMapping(value = "/api/saveOrUpdateOrderAddressBatch")
+    public ApiResult saveOrUpdateOrderAddressBatch(@RequestBody List<AddOrderAddressForm> forms) {
+        List<OrderAddress> addresses = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
+        for (AddOrderAddressForm form : forms) {
+            OrderAddress orderAddress = ConvertUtil.convert(form, OrderAddress.class);
+            orderAddress.setCreateTime(orderAddress.getId() == null ? now : null);
+            addresses.add(orderAddress);
+        }
+        //批量保存/修改订单地址信息
+        if (this.orderAddressService.saveOrUpdateBatch(addresses)) {
+            return ApiResult.ok();
+        } else {
+            return ApiResult.error("批量保存/修改订单地址信息失败");
+        }
+    }
+
+
+    @ApiOperation("根据业务id集合查询订单地址")
+    @RequestMapping(value = "/api/getOrderAddressByBusIds")
+    public ApiResult<List<OrderAddress>> getOrderAddressByBusIds(@RequestParam("orderId") List<Long> orderId,
+                                                                 @RequestParam("businessType") Integer businessType) {
+        //查询订单地址信息
+        List<OrderAddress> orderAddresses = this.orderAddressService.getOrderAddressByBusIds(orderId, businessType);
+        return ApiResult.ok(orderAddresses);
+    }
+
+
+    @ApiOperation("根据订单id集合查询商品信息")
+    @RequestMapping(value = "/api/getGoodsByBusIds")
+    public ApiResult getGoodsByBusIds(@RequestParam("orderId") List<Long> orderId,
+                                      @RequestParam("businessType") Integer businessType) {
+        //查询商品信息
+        List<Goods> goods = this.goodsService.getGoodsByBusIds(orderId, businessType);
+        return ApiResult.ok(goods);
+    }
+
+
 }
 
 

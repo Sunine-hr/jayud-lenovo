@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.lang.StringUtils;
 
+import java.time.LocalDateTime;
+
 /**
  * <p>
  * 订单地址表
@@ -52,6 +54,9 @@ public class AddOrderAddressForm {
 
     @ApiModelProperty(value = "备注")
     private String remarks;
+
+    @ApiModelProperty(value = "创建时间")
+    private LocalDateTime createTime;
 
 
     public boolean checkCreateAirOrder() {

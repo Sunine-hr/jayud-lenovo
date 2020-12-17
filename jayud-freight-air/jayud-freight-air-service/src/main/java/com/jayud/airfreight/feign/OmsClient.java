@@ -1,13 +1,14 @@
 package com.jayud.airfreight.feign;
 
 
-import com.jayud.airfreight.model.bo.AirProcessOptForm;
-import com.jayud.airfreight.model.bo.AuditInfoForm;
-import com.jayud.airfreight.model.bo.InputOrderForm;
+import com.jayud.airfreight.model.bo.*;
+import com.jayud.airfreight.model.vo.GoodsVO;
+import com.jayud.airfreight.model.vo.OrderAddressVO;
 import com.jayud.common.ApiResult;
 import com.jayud.common.config.FeignRequestInterceptor;
 import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.common.entity.InitComboxVO;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -105,4 +106,30 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/deleteLogisticsTrackByType")
     ApiResult deleteLogisticsTrackByType(@RequestParam("orderId") Long orderId, @RequestParam("type") Integer type);
+
+    /**
+     * 批量保存/修改商品信息
+     */
+    @RequestMapping(value = "/api/saveOrUpdateGoodsBatch")
+    public ApiResult saveOrUpdateGoodsBatch(@RequestBody List<AddGoodsForm> goodsForms);
+
+    /**
+     * 批量保存/修改订单地址信息
+     */
+    @RequestMapping(value = "/api/saveOrUpdateOrderAddressBatch")
+    public ApiResult saveOrUpdateOrderAddressBatch(@RequestBody List<AddOrderAddressForm> forms);
+
+    /**
+     * 根据业务id集合查询订单地址
+     */
+    @RequestMapping(value = "/api/getOrderAddressByBusIds")
+    public ApiResult<List<OrderAddressVO>> getOrderAddressByBusIds(@RequestParam("orderId") List<Long> orderId,
+                                                                   @RequestParam("businessType") Integer businessType);
+
+    /**
+     * 根据订单id集合查询商品信息
+     */
+    @RequestMapping(value = "/api/getGoodsByBusIds")
+    public ApiResult<List<GoodsVO>> getGoodsByBusIds(@RequestParam("orderId") List<Long> orderId,
+                                                     @RequestParam("businessType") Integer businessType);
 }

@@ -79,8 +79,8 @@ public class VivoServiceImpl implements VivoService {
     @Value("${vivo.urls.air-freight-info}")
     String urlAirFreightInfo;
 
-    @Value("${vivo.urls.land-transportation-info}")
-    String urlLandTransportationFreightInfo;
+    @Value("${vivo.urls.land-transportation-cost}")
+    String urlLandTransportationCost;
 
     @Value("${vivo.public-key}")
     String publicKey;
@@ -164,7 +164,7 @@ public class VivoServiceImpl implements VivoService {
      */
     @Override
     public Map<String, Object> forwarderLandTransportationFarePush(ForwarderLandTransportationFareForm form) {
-        String url = urlBase + urlLandTransportationFreightInfo;
+        String url = urlBase + urlLandTransportationCost;
         return doPost(form, url);
     }
 

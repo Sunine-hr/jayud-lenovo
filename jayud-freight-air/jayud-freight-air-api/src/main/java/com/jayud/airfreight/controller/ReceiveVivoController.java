@@ -65,7 +65,6 @@ public class ReceiveVivoController {
     @Autowired
     private TmsClient tmsClient;
 
-    @Value("")
 
     @ApiOperation(value = "vivo抛订舱数据到货代")
     @PostMapping("/bookingSpace")

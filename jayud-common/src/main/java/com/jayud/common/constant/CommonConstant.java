@@ -156,9 +156,9 @@ public abstract class CommonConstant {
 
     public static final String DATA_NOT_ALL_COUNT = "dataNotAllCount";
 
-    public static final String PENDING_COUNT = "pendingCount";
+    public static final String CANCELLED_COUNT = "cancelledCount";
 
-    public static final String PENDING_REJECTED_COUNT = "pendingRejectedCount";
+    public static final String REJECTED_COUNT = "rejectedCount";
 
     public static final String REJECT = "驳回";
 

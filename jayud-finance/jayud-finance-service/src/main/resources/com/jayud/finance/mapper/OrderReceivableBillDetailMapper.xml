@@ -75,7 +75,7 @@
             and orb.is_main = 1 and orbd.audit_status in ('B_1','B_2')
         </if>
         <if test="form.cmd == 'cw_statement'">
-            and (orbd.audit_status in ('B_3','B_5','B_5_1','B_6') or orbd.apply_status='4')
+            and (orbd.audit_status in ('B_3','B_4','B_5','B_5_1','B_6') or orbd.apply_status='4')
         </if>
         <if test="form.cmd == 'zgys_statement'">
             and orb.is_main = 0 and orb.sub_type = 'zgys'

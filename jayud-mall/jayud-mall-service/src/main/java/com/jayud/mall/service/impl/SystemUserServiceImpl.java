@@ -9,11 +9,13 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.admin.security.domain.AuthUser;
 import com.jayud.mall.admin.security.service.BaseService;
 import com.jayud.mall.mapper.SystemUserMapper;
+import com.jayud.mall.mapper.SystemUserRoleRelationMapper;
 import com.jayud.mall.model.bo.QueryUserForm;
 import com.jayud.mall.model.bo.ResetUserPwdForm;
 import com.jayud.mall.model.bo.SaveSystemUserForm;
 import com.jayud.mall.model.bo.SystemUserLoginForm;
 import com.jayud.mall.model.po.SystemUser;
+import com.jayud.mall.model.po.SystemUserRoleRelation;
 import com.jayud.mall.model.vo.SystemUserVO;
 import com.jayud.mall.service.ISystemUserRoleRelationService;
 import com.jayud.mall.service.ISystemUserService;
@@ -48,8 +50,12 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     @Autowired
     SystemUserMapper systemUserMapper;
+
     @Autowired
-    ISystemUserRoleRelationService userRoleRelationService;
+    SystemUserRoleRelationMapper systemUserRoleRelationMapper;
+
+    @Autowired
+    ISystemUserRoleRelationService systemUserRoleRelationService;
 
     @Value("${mall.system_user.password:}")
     private String pass;
@@ -123,15 +129,25 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         systemUser.setCreatedTime(nowTime);
         systemUser.setUpdatedUser(user.getId().intValue());
         systemUser.setUpdatedTime(nowTime);
+        //1.保存用户
         this.saveOrUpdate(systemUser);
 
-//        systemUserMapper.insert(systemUser);
-//        systemUser.setId(systemUser.getId());
-//        if(user.getRoleIds() != null){
-//            userRoleRelationService.createUserRoleRelation(systemUser,user.getRoleIds());
-//        }
-
-        return null;
+        Long userId = systemUser.getId();
+        List<Long> roleIds = form.getRoleIds();
+        if(roleIds.size() > 0){
+            List<SystemUserRoleRelation> systemUserRoleRelationList = new ArrayList<>();
+            roleIds.forEach(roleId -> {
+                SystemUserRoleRelation systemUserRoleRelation = new SystemUserRoleRelation();
+                systemUserRoleRelation.setUserId(userId.intValue());
+                systemUserRoleRelation.setRoleId(roleId.intValue());
+                systemUserRoleRelationList.add(systemUserRoleRelation);
+            });
+            //2.保存用户关联的角色
+            systemUserRoleRelationService.saveOrUpdateBatch(systemUserRoleRelationList);
+        }
+        //返回保存对象
+        SystemUserVO systemUserVO = ConvertUtil.convert(systemUser, SystemUserVO.class);
+        return CommonResult.success(systemUserVO);
     }
 
     @Override
@@ -144,11 +160,11 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         //先删除用户的角色
         List<Long> userIds = new ArrayList<>();
         userIds.add(systemUser.getId());
-        userRoleRelationService.removeUserRoleRelation(userIds);
+        systemUserRoleRelationService.removeUserRoleRelation(userIds);
 
         //在重新绑定角色
         if(form.getRoleIds() != null){
-            userRoleRelationService.createUserRoleRelation(systemUser,form.getRoleIds());
+            systemUserRoleRelationService.createUserRoleRelation(systemUser,form.getRoleIds());
         }
         return null;
     }
@@ -159,7 +175,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         //删除用户的角色
         List<Long> userIds = new ArrayList<>();
         userIds.add(id);
-        userRoleRelationService.removeUserRoleRelation(userIds);
+        systemUserRoleRelationService.removeUserRoleRelation(userIds);
     }
 
     @Override

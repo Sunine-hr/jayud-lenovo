@@ -106,6 +106,9 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "重量")
     private String weight;
 
+    @ApiModelProperty(value = "总重量")
+    private String totalWeight;
+
     @ApiModelProperty(value = "提货时间,多个逗号拼接")
     private String takeTimeStr;
 

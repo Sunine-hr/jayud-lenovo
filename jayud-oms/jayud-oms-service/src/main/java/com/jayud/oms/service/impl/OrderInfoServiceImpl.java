@@ -740,7 +740,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Override
     public InitGoCustomsAuditVO initGoCustomsAudit(InitGoCustomsAuditForm form) {
-        InitGoCustomsAuditVO initGoCustomsAuditVO;
+        InitGoCustomsAuditVO initGoCustomsAuditVO = new InitGoCustomsAuditVO();
         String prePath = fileClient.getBaseUrl().getData().toString();
         if(form.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode())){//出口报关
             initGoCustomsAuditVO = baseMapper.initGoCustomsAudit1(form);

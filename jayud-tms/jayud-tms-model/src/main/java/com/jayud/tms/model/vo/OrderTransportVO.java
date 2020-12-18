@@ -21,6 +21,9 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "主订单")
     private String mainOrderNo;
 
+    @ApiModelProperty(value = "已选中得服务")
+    private String selectedServer;
+
     @ApiModelProperty(value = "业务类型")
     private String bizCode;
 

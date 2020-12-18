@@ -257,24 +257,24 @@
     <select id="initGoCustomsAudit1"  resultType="com.jayud.oms.model.vo.InitGoCustomsAuditVO" >
         SELECT
             (select oc.encode from order_customs oc where oc.main_order_no = oi.order_no limit 1) encode,
-            (select vi.plate_number from vehicle_info vi left join driver_info di on vi.id = di.vehicle_id left join order_send_cars osc on di.id = osc.driver_info_id where osc.order_no = ot.order_no) licensePlate,
+            (select vi.plate_number from vehicle_info vi left join driver_info di on vi.id = di.vehicle_id left join order_send_cars osc on di.id = osc.driver_info_id where osc.order_no = ot.order_no) plateNumber,
             (select oc.encode_pic_name from order_customs oc where oc.main_order_no = oi.order_no limit 1) fileNameStr,
             (select oc.encode_pic from order_customs oc where oc.main_order_no = oi.order_no limit 1) fileStr
         FROM
             order_info oi
-            LEFT JOIN order_transport ot ON ot.main_order_no = ot.order_no
+            LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
         WHERE
             oi.order_no = #{form.orderNo}
     </select>
     <select id="initGoCustomsAudit2"  resultType="com.jayud.oms.model.vo.InitGoCustomsAuditVO" >
     SELECT
         oi.encode,
-        (select vi.plate_number from vehicle_info vi left join driver_info di on vi.id = di.vehicle_id left join order_send_cars osc on di.id = osc.driver_info_id where osc.order_no = ot.order_no) licensePlate,
+        (select vi.plate_number from vehicle_info vi left join driver_info di on vi.id = di.vehicle_id left join order_send_cars osc on di.id = osc.driver_info_id where osc.order_no = ot.order_no) plateNumber,
         (select ai.status_file_name from audit_info ai where ai.audit_status = 'E_C_0' and ai.ext_id = oi.id order by ai.created_time desc limit 1) fileNameStr,
     (select ai.status_file from audit_info ai where ai.audit_status = 'E_C_0' and ai.ext_id = oi.id order by ai.created_time desc limit 1) fileStr
     FROM
         order_info oi
-        LEFT JOIN order_transport ot ON ot.main_order_no = ot.order_no
+        LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
     WHERE
         oi.order_no = #{form.orderNo}
     </select>

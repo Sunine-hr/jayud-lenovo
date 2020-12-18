@@ -57,13 +57,13 @@
             ( SELECT rc.NAME FROM region_city rc WHERE rc.id = wi.city_code LIMIT 1 ) AS cityName,
             wi.`address` address
         FROM
-            order_send_cars osc
-			left join order_transport ot on ot.order_no = osc.order_no
-            LEFT JOIN warehouse_info wi ON wi.`id` = ot.`warehouse_info_id`
+             order_transport ot
+			LEFT JOIN warehouse_info wi ON wi.`id` = ot.`warehouse_info_id`
+			left join order_send_cars osc on ot.order_no = osc.order_no
             LEFT JOIN driver_info di ON di.id = osc.driver_info_id
-            LEFT JOIN vehicle_info vi ON vi.id = di.vehicle_id
+            LEFT JOIN vehicle_info vi ON vi.id = osc.vehicle_id
             LEFT JOIN supplier_info si ON vi.`supplier_id` = si.`id`
-            WHERE osc.`order_no` = #{orderNo}
+            WHERE ot.`order_no` = #{orderNo}
     </select>
     <select id="initDriverInfo"  resultType="com.jayud.tms.model.vo.DriverInfoPdfVO" >
         SELECT
@@ -77,7 +77,7 @@
             order_transport ot
             LEFT JOIN legal_entity le on le.legal_name = ot.legal_name
 			left join driver_info di on di.id = ot.driver_info_id
-			left join vehicle_info vi on vi.id = di.vehicle_id
+			left join vehicle_info vi on vi.id = ot.vehicle_id
             WHERE ot.`order_no` = #{orderNo}
     </select>
     <select id="initSendCarList"  resultType="com.jayud.tms.model.vo.SendCarListTempVO" >

@@ -1,22 +1,26 @@
 package com.jayud.airfreight.controller;
 
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.airfreight.model.bo.AddAirOrderForm;
 import com.jayud.airfreight.model.bo.vivo.BookingSpaceForm;
+import com.jayud.airfreight.model.enums.VivoRejectionStatusEnum;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.airfreight.model.po.AirPort;
 import com.jayud.airfreight.model.vo.AirOrderVO;
 import com.jayud.airfreight.service.AirFreightService;
 import com.jayud.airfreight.service.IAirOrderService;
 import com.jayud.airfreight.service.IAirPortService;
+import com.jayud.airfreight.service.VivoService;
 import com.jayud.common.ApiResult;
+import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.InitChangeStatusVO;
 import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.SubOrderCloseOpt;
-import com.jayud.common.enums.ProcessStatusEnum;
+import com.jayud.common.enums.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
@@ -27,6 +31,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 被外部模块调用的处理接口
@@ -45,6 +51,8 @@ public class ExternalApiController {
     private IAirOrderService airOrderService;
     @Autowired
     private IAirPortService airPortService;
+    @Autowired
+    private VivoService vivoService;
 
     @RequestMapping(value = "/api/airfreight/bookingSpace")
     public Boolean doBookingSpace(@RequestParam(name = "json") String json) {
@@ -100,14 +108,36 @@ public class ExternalApiController {
     @ApiOperation(value = "关闭空运订单")
     @RequestMapping(value = "/api/airfreight/closeAirOrder")
     public ApiResult closeAirOrder(@RequestBody List<SubOrderCloseOpt> form) {
+        List<String> orderNos = form.stream().map(SubOrderCloseOpt::getOrderNo).collect(Collectors.toList());
+        List<AirOrder> airOrders = this.airOrderService.getAirOrdersByOrderNos(orderNos);
+        Map<String, AirOrder> airMap = airOrders.stream().collect(Collectors.toMap(AirOrder::getOrderNo, e -> e));
+
         for (SubOrderCloseOpt subOrderCloseOpt : form) {
+            AirOrder tmp = airMap.get(subOrderCloseOpt.getOrderNo());
             AirOrder airOrder = new AirOrder();
+            airOrder.setId(tmp.getId());
             airOrder.setProcessStatus(ProcessStatusEnum.CLOSE.getCode());
             airOrder.setNeedInputCost(subOrderCloseOpt.getNeedInputCost());
             airOrder.setUpdateUser(subOrderCloseOpt.getLoginUser());
             airOrder.setUpdateTime(LocalDateTime.now());
-            boolean bool = this.airOrderService.updateByOrderNo(subOrderCloseOpt.getOrderNo(), airOrder);
-            System.out.println(bool);
+            switch (CreateUserTypeEnum.getEnum(tmp.getCreateUserType())) {
+                case VIVO:
+                    if (!OrderStatusEnum.MAIN_6.getCode().equals(tmp.getStatus())) {
+                        Map<String, Object> resultMap = this.vivoService.forwarderBookingRejected(tmp.getThirdPartyOrderNo(),
+                                VivoRejectionStatusEnum.PENDING_SUBMITTED.getCode());
+                        if (1 == MapUtil.getInt(resultMap, "status")) {
+                            this.airOrderService.updateById(airOrder);
+                        } else {
+                            log.warn("调用vivo驳回关闭接口失败 msg={}", resultMap.get("message"));
+                        }
+                    } else {
+                        this.airOrderService.updateById(airOrder);
+                    }
+                    break;
+                case LOCAL:
+                    this.airOrderService.updateById(airOrder);
+                    break;
+            }
         }
         return ApiResult.ok();
     }
@@ -146,6 +176,15 @@ public class ExternalApiController {
         }
         return ApiResult.ok(initComboxStrVOS);
     }
+
+//    /**
+//     * 关闭vivo空运单
+//     */
+//    @ApiModelProperty(value = "获取飞机港口下拉数据")
+//    @RequestMapping(value = "/api/airfreight/initAirPort")
+//    public ApiResult<AirPort> closeVivoAirWaybill() {
+//
+//    }
 
 
     private <T> T getForm(String json, Class<T> clz) {

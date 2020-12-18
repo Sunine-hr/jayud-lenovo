@@ -308,7 +308,7 @@
             COUNT(1)
           FROM
             order_info o7
-          WHERE o6.status = '7') AS pendingRejectedCount
+          WHERE o7.status = '7') AS pendingRejectedCount
         FROM
           DUAL
     </select>

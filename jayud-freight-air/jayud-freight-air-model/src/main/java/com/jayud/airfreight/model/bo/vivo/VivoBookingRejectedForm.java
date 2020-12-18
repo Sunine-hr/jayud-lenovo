@@ -24,5 +24,5 @@ public class VivoBookingRejectedForm extends Model<AirExtensionField> {
     @ApiModelProperty(value = "订单号")
     @Length(max = 1, message = "订单号最大长度1位")
     @NotNull(message = "订单号为必填")
-    private String status;
+    private Integer status;
 }

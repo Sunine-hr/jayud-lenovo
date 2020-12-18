@@ -7,10 +7,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.airfreight.feign.OmsClient;
-import com.jayud.airfreight.model.bo.AddAirBookingForm;
-import com.jayud.airfreight.model.bo.AirProcessOptForm;
-import com.jayud.airfreight.model.bo.AuditInfoForm;
-import com.jayud.airfreight.model.bo.QueryAirOrderForm;
+import com.jayud.airfreight.model.bo.*;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.airfreight.model.vo.AirOrderFormVO;
 import com.jayud.airfreight.model.vo.AirOrderVO;
@@ -38,6 +35,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static com.jayud.common.enums.OrderStatusEnum.AIR_A_2;
 
 /**
  * <p>
@@ -168,23 +167,30 @@ public class AirOrderController {
     }
 
 
-    @ApiOperation(value = "订舱驳回 id=空运订单id")
-    @PostMapping(value = "/bookingRejected")
-    public CommonResult bookingRejected(@RequestBody Map<String, Object> form) {
-        Long airOrderId = MapUtil.getLong(form, "id");
-        if (airOrderId == null) {
-            return CommonResult.error(ResultEnum.PARAM_ERROR);
-        }
-
-        AirOrder airOrder = this.airOrderService.getById(airOrderId);
-        if (!OrderStatusEnum.AIR_A_2.getCode().equals(airOrder.getStatus())) {
-            log.warn("当前订单状态无法进行操作 status={}", OrderStatusEnum.getDesc(airOrder.getStatus()));
-            return CommonResult.error(400, "当前订单状态无法进行操作");
-        }
-        //修改空运订单状态为订舱驳回状态
-        this.airOrderService.bookingRejected(airOrder);
-        return CommonResult.success();
-    }
+//    @ApiOperation(value = "订舱驳回 id=空运订单id")
+//    @PostMapping(value = "/bookingRejected")
+//    public CommonResult bookingRejected(@RequestBody Map<String, Object> form) {
+//        Long airOrderId = MapUtil.getLong(form, "id");
+//        if (airOrderId == null) {
+//            return CommonResult.error(ResultEnum.PARAM_ERROR);
+//        }
+//
+//        AirOrder airOrder = this.airOrderService.getById(airOrderId);
+//
+//        OrderStatusEnum statusEnum = OrderStatusEnum.getAirOrderRejection(airOrder.getStatus());
+//        if (statusEnum == null) {
+//            log.warn("当前订单状态无法进行驳回操作 status={}", OrderStatusEnum.getDesc(airOrder.getStatus()));
+//            return CommonResult.error(400, "当前订单状态无法进行驳回操作");
+//        }
+//        switch (statusEnum) {
+//            case AIR_A_2_1:
+//
+//        }
+//
+//        //修改空运订单状态为订舱驳回状态
+//        this.airOrderService.bookingRejected(airOrder);
+//        return CommonResult.success();
+//    }
 
 
     @ApiOperation(value = "订舱驳回编辑 id=空运订单id")
@@ -198,13 +204,13 @@ public class AirOrderController {
         }
 
         AirOrder airOrder = this.airOrderService.getById(form.getOrderId());
-        if (!OrderStatusEnum.AIR_A_2_1.getCode().equals(airOrder.getStatus())) {
+        if (!OrderStatusEnum.AIR_A_3_1.getCode().equals(airOrder.getStatus())) {
             log.warn("当前订单状态无法进行操作 status={}", OrderStatusEnum.getDesc(airOrder.getStatus()));
             return CommonResult.error(400, "当前订单状态无法进行操作");
         }
-        form.setStatus(OrderStatusEnum.AIR_A_2.getCode());
+        form.setStatus(AIR_A_2.getCode());
         //校验参数
-        form.checkProcessOpt(OrderStatusEnum.AIR_A_2);
+        form.checkProcessOpt(AIR_A_2);
         AddAirBookingForm airBooking = form.getAirBooking();
         airBooking.setAirOrderNo(null);
         airBooking.setAirOrderId(null);
@@ -225,20 +231,11 @@ public class AirOrderController {
         return CommonResult.success(airOrderDetails);
     }
 
-    @ApiOperation(value = "空运订单驳回 空运订单=airOrderId,驳回原因=cause")
+    @ApiOperation(value = "空运订单驳回")
     @PostMapping(value = "/rejectOrder")
-    public CommonResult rejectOrder(@RequestBody Map<String, Object> map) {
-        Long airOrderId = MapUtil.getLong(map, "airOrderId");
-        if (airOrderId == null) {
-            return CommonResult.error(ResultEnum.PARAM_ERROR);
-        }
+    public CommonResult rejectOrder(@RequestBody AirCargoRejected airCargoRejected) {
         //查询空运订单
-        AirOrder tmp = this.airOrderService.getById(airOrderId);
-        AirOrder airOrder = new AirOrder();
-        airOrder.setId(airOrderId);
-        airOrder.setUpdateTime(LocalDateTime.now());
-        airOrder.setUpdateUser(UserOperator.getToken());
-
+        AirOrder tmp = this.airOrderService.getById(airCargoRejected.getAirOrderId());
         //获取相应驳回操作
         OrderStatusEnum orderStatusEnum = OrderStatusEnum.getAirOrderRejection(tmp.getStatus());
         if (orderStatusEnum == null) {
@@ -246,18 +243,20 @@ public class AirOrderController {
         }
         //记录审核信息
         AuditInfoForm auditInfoForm = new AuditInfoForm();
-        auditInfoForm.setExtId(airOrderId);
+        auditInfoForm.setExtId(airCargoRejected.getAirOrderId());
         auditInfoForm.setExtDesc(SqlConstant.AIR_ORDER);
+        auditInfoForm.setAuditStatus(orderStatusEnum.getCode());
+        auditInfoForm.setAuditTypeDesc(orderStatusEnum.getDesc());
 
-
+        auditInfoForm.setAuditComment(airCargoRejected.getCause());
         switch (orderStatusEnum) {
             case AIR_A_1_1:
-                airOrder.setStatus(orderStatusEnum.getCode());
-                auditInfoForm.setAuditStatus(orderStatusEnum.getCode());
-                auditInfoForm.setAuditTypeDesc(orderStatusEnum.getDesc());
-                auditInfoForm.setAuditComment(MapUtil.getStr(map, "cause"));
-                omsClient.saveAuditInfo(auditInfoForm);
-                airOrderService.updateById(airOrder);
+                //订单驳回
+                this.airOrderService.orderReceiving(tmp, auditInfoForm,airCargoRejected);
+                break;
+            case AIR_A_2_1:
+            case AIR_A_3_1:
+                this.airOrderService.rejectedOpt(tmp, auditInfoForm,airCargoRejected);
                 break;
         }
 

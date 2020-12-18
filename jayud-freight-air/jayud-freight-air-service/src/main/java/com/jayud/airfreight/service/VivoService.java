@@ -6,8 +6,11 @@ import com.jayud.airfreight.model.bo.vivo.*;
 import com.jayud.airfreight.model.po.AirBooking;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.common.ApiResult;
+import com.jayud.common.VivoApiResult;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.Map;
 
 /**
@@ -98,4 +101,10 @@ public interface VivoService {
      * @return
      */
     Map<String, Object> forwarderLandTransportationFarePush(ForwarderLandTransportationFareForm form);
+
+    /**
+     * 订舱驳回接口
+     *
+     */
+    public Map<String, Object>  forwarderBookingRejected(String bookingNo, Integer status);
 }

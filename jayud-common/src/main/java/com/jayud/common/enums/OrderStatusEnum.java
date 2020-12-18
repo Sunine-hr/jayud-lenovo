@@ -87,6 +87,7 @@ public enum OrderStatusEnum {
     AIR_A_2("A_2", "空运订舱"),
     AIR_A_2_1("A_2_1", "订舱驳回"),
     AIR_A_3("A_3", "订单入仓"),
+    AIR_A_3_1("A_3_1", "订单入仓驳回"),
     AIR_A_4("A_4", "确认提单"),
     AIR_A_5("A_5", "确认离港"),
     AIR_A_6("A_6", "确认到港"),
@@ -134,8 +135,8 @@ public enum OrderStatusEnum {
      */
     public static OrderStatusEnum getAirOrderPreStatus(String currentStatus) {
 
-        if (AIR_A_2_1.getCode().equals(currentStatus)) {
-            return OrderStatusEnum.AIR_A_2_1;
+        if (AIR_A_3_1.getCode().equals(currentStatus)) {
+            return OrderStatusEnum.AIR_A_3_1;
         }
 
         List<OrderStatusEnum> statusEnums = getAirOrderProcess();
@@ -195,8 +196,14 @@ public enum OrderStatusEnum {
     }
 
     public static OrderStatusEnum getAirOrderRejection(String status) {
-        if (OrderStatusEnum.AIR_A_0.getCode().equals(status)) {
+        if (OrderStatusEnum.AIR_A_0.getCode().equals(status)) {//接单页面驳回
             return AIR_A_1_1;
+        }
+        if (OrderStatusEnum.AIR_A_1.getCode().equals(status)) {//订舱页面驳回
+            return AIR_A_2_1;
+        }
+        if (OrderStatusEnum.AIR_A_2.getCode().equals(status)) {//入仓页面驳回
+            return AIR_A_3_1;
         }
         return null;
     }

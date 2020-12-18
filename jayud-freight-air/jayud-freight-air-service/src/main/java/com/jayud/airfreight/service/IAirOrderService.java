@@ -1,9 +1,7 @@
 package com.jayud.airfreight.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.airfreight.model.bo.AddAirOrderForm;
-import com.jayud.airfreight.model.bo.AirProcessOptForm;
-import com.jayud.airfreight.model.bo.QueryAirOrderForm;
+import com.jayud.airfreight.model.bo.*;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.airfreight.model.vo.AirOrderFormVO;
@@ -66,10 +64,11 @@ public interface IAirOrderService extends IService<AirOrder> {
      */
     public AirOrder getByThirdPartyOrderNo(String thirdPartyOrderNo);
 
+
     /**
-     * 订舱驳回
+     * 通用驳回操作
      */
-    void bookingRejected(AirOrder airOrder);
+    void rejectedOpt(AirOrder airOrder, AuditInfoForm auditInfoForm, AirCargoRejected airCargoRejected);
 
 
     /**
@@ -98,4 +97,21 @@ public interface IAirOrderService extends IService<AirOrder> {
      * 查询空运订单信息
      */
     public List<AirOrder> getAirOrderInfo(AirOrder airOrder);
+
+    /**
+     * 根据空运订单号集合查询空运订单信息
+     */
+    List<AirOrder> getAirOrdersByOrderNos(List<String> airOrderNos);
+
+    /**
+     * 订单单驳回
+     */
+    public void orderReceiving(AirOrder airOrder, AuditInfoForm auditInfoForm, AirCargoRejected airCargoRejected);
+
+    /**
+     * 接单驳回
+     */
+//    public void rejectionOrderReceiving(AirOrder airOrder, AuditInfoForm auditInfoForm);
+
+
 }

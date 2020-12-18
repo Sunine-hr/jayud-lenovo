@@ -166,24 +166,24 @@ public class ReceiveVivoController {
     }
 
 
-    @ApiOperation(value = "订舱驳回")
-    @PostMapping(value = "/bookingRejected")
-    @APILog
-    public VivoApiResult bookingRejected(@RequestBody @Valid VivoBookingRejectedForm form) {
-        //判断当前空运订单状态是否是订舱状态
-        AirOrder airOrder = this.airOrderService.getByThirdPartyOrderNo(form.getBookingNo());
-        if (airOrder == null) {
-            log.warn("当前订单不存在 bookingNo={}", form.getBookingNo());
-            return VivoApiResult.error("当前订单不存在");
-        }
-        if (!OrderStatusEnum.AIR_A_2.getCode().equals(airOrder.getStatus())) {
-            log.warn("当前订单状态无法进行操作 status={}", OrderStatusEnum.getDesc(airOrder.getStatus()));
-            return VivoApiResult.error("当前订单状态无法进行操作");
-        }
-        //修改空运订单状态为订舱驳回状态
-        this.airOrderService.bookingRejected(airOrder);
-        return VivoApiResult.success();
-    }
+//    @ApiOperation(value = "订舱驳回")
+//    @PostMapping(value = "/bookingRejected")
+//    @APILog
+//    public VivoApiResult bookingRejected(@RequestBody @Valid VivoBookingRejectedForm form) {
+//        //判断当前空运订单状态是否是订舱状态
+//        AirOrder airOrder = this.airOrderService.getByThirdPartyOrderNo(form.getBookingNo());
+//        if (airOrder == null) {
+//            log.warn("当前订单不存在 bookingNo={}", form.getBookingNo());
+//            return VivoApiResult.error("当前订单不存在");
+//        }
+//        if (!OrderStatusEnum.AIR_A_2.getCode().equals(airOrder.getStatus())) {
+//            log.warn("当前订单状态无法进行操作 status={}", OrderStatusEnum.getDesc(airOrder.getStatus()));
+//            return VivoApiResult.error("当前订单状态无法进行操作");
+//        }
+//        //修改空运订单状态为订舱驳回状态
+//        this.airOrderService.bookingRejected(airOrder);
+//        return VivoApiResult.success();
+//    }
 
     @PostMapping("/carInfoToForwarder")
     @ApiOperation(value = "抛派车信息到货代")
@@ -247,7 +247,7 @@ public class ReceiveVivoController {
     @PostMapping("/dispatchRejected")
     @ApiOperation("vivo派车驳回")
     @APILog
-    public VivoApiResult dispatchRejected(@RequestBody @Valid CarCancelForm carCancelForm) {
+    public VivoApiResult dispatchRejected(@RequestBody @Valid DispatchRejectedForm carCancelForm) {
         //查询中港订单
         ApiResult result = this.tmsClient.getTmsOrderByThirdPartyOrderNo(carCancelForm.getDispatchNo());
         if (result.getCode() != HttpStatus.SC_OK) {

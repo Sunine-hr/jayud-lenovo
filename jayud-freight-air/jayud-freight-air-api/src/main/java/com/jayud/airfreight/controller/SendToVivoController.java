@@ -8,6 +8,8 @@ import com.jayud.airfreight.model.po.AirBooking;
 import com.jayud.airfreight.service.IAirBookingService;
 import com.jayud.airfreight.service.VivoService;
 import com.jayud.common.CommonResult;
+import com.jayud.common.VivoApiResult;
+import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.FileUtil;
 import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.Api;
@@ -49,7 +51,7 @@ public class SendToVivoController {
         if (1 == MapUtil.getInt(resultMap, "status")) {
             return CommonResult.success();
         } else {
-            return CommonResult.error(MapUtil.getInt(resultMap, "status"),
+            return CommonResult.error(ResultEnum.VIVO_ERROR.getCode(),
                     MapUtil.getStr(resultMap, "message"));
         }
     }
@@ -62,7 +64,7 @@ public class SendToVivoController {
         if (1 == MapUtil.getInt(resultMap, "status")) {
             return CommonResult.success();
         } else {
-            return CommonResult.error(MapUtil.getInt(resultMap, "status"),
+            return CommonResult.error(ResultEnum.VIVO_ERROR.getCode(),
                     MapUtil.getStr(resultMap, "message"));
         }
     }
@@ -93,7 +95,7 @@ public class SendToVivoController {
         if (1 == MapUtil.getInt(resultMap, "status")) {
             return CommonResult.success();
         } else {
-            return CommonResult.error(MapUtil.getInt(resultMap, "status"),
+            return CommonResult.error(ResultEnum.VIVO_ERROR.getCode(),
                     MapUtil.getStr(resultMap, "message"));
         }
     }
@@ -106,7 +108,7 @@ public class SendToVivoController {
         if (1 == MapUtil.getInt(resultMap, "status")) {
             return CommonResult.success();
         } else {
-            return CommonResult.error(MapUtil.getInt(resultMap, "status"),
+            return CommonResult.error(ResultEnum.VIVO_ERROR.getCode(),
                     MapUtil.getStr(resultMap, "message"));
         }
     }
@@ -126,7 +128,7 @@ public class SendToVivoController {
         if (1 == MapUtil.getInt(resultMap, "status")) {
             return CommonResult.success();
         } else {
-            return CommonResult.error(MapUtil.getInt(resultMap, "status"),
+            return CommonResult.error(ResultEnum.VIVO_ERROR,
                     MapUtil.getStr(resultMap, "message"));
         }
     }
@@ -141,10 +143,22 @@ public class SendToVivoController {
         if (1 == MapUtil.getInt(resultMap, "status")) {
             return CommonResult.success();
         } else {
-            return CommonResult.error(MapUtil.getInt(resultMap, "status"),
+            return CommonResult.error(ResultEnum.VIVO_ERROR.getCode(),
                     MapUtil.getStr(resultMap, "message"));
         }
     }
 
+
+//    @ApiOperation(value = "订舱驳回关闭")
+//    @PostMapping(value = "/forwarderBookingRejectedClosed")
+//    public CommonResult forwarderBookingRejectedClosed(@RequestBody @Valid VivoBookingRejectedForm form) {
+//        Map<String, Object> resultMap = this.vivoService.forwarderBookingRejected(form.getBookingNo(), form.getStatus());
+//        if (1 == MapUtil.getInt(resultMap, "status")) {
+//            return CommonResult.success();
+//        } else {
+//            return CommonResult.error(ResultEnum.VIVO_ERROR,
+//                    MapUtil.getStr(resultMap, "message"));
+//        }
+//    }
 
 }

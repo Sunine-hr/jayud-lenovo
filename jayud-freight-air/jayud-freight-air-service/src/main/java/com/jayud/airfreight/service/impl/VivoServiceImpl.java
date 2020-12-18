@@ -13,15 +13,20 @@ import com.jayud.airfreight.model.bo.vivo.*;
 import com.jayud.airfreight.model.po.AirBooking;
 import com.jayud.airfreight.model.po.AirExtensionField;
 import com.jayud.airfreight.model.po.AirOrder;
+import com.jayud.airfreight.model.vo.GoodsVO;
+import com.jayud.airfreight.model.vo.OrderAddressVO;
 import com.jayud.airfreight.service.IAirBookingService;
 import com.jayud.airfreight.service.IAirExtensionFieldService;
+import com.jayud.airfreight.service.IAirOrderService;
 import com.jayud.airfreight.service.VivoService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
+import com.jayud.common.VivoApiResult;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.*;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.exception.JayudBizException;
+import com.jayud.common.exception.VivoApiException;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.RandomGUID;
 import com.jayud.common.utils.RsaEncryptUtil;
@@ -41,10 +46,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * vivo数据接口服务
@@ -78,9 +82,12 @@ public class VivoServiceImpl implements VivoService {
     String urlLadingInfo;
     @Value("${vivo.urls.air-freight-info}")
     String urlAirFreightInfo;
-
     @Value("${vivo.urls.land-transportation-cost}")
     String urlLandTransportationCost;
+    @Value("${vivo.urls.booking-rejected}")
+    String urlBookingRejected;
+    @Value("${vivo.urls.dispatch-rejected}")
+    String urlDispatchRejected;
 
     @Value("${vivo.public-key}")
     String publicKey;
@@ -99,6 +106,8 @@ public class VivoServiceImpl implements VivoService {
     private FileClient fileClient;
     @Autowired
     private TmsClient tmsClient;
+    @Autowired
+    private IAirOrderService airOrderService;
 
 
     /**
@@ -166,6 +175,18 @@ public class VivoServiceImpl implements VivoService {
     public Map<String, Object> forwarderLandTransportationFarePush(ForwarderLandTransportationFareForm form) {
         String url = urlBase + urlLandTransportationCost;
         return doPost(form, url);
+    }
+
+    /**
+     * 订舱驳回接口
+     */
+    public Map<String, Object> forwarderBookingRejected(String bookingNo, Integer status) {
+        VivoBookingRejectedForm form = new VivoBookingRejectedForm();
+        form.setBookingNo(bookingNo);
+        form.setStatus(status);
+        String url = urlBase + urlBookingRejected;
+        Map<String, Object> resultMap = doPost(form, url);
+        return resultMap;
     }
 
 
@@ -315,6 +336,9 @@ public class VivoServiceImpl implements VivoService {
     @Override
     @Transactional
     public ApiResult createAirOrder(BookingSpaceForm form) {
+        //存在booking,设置更新操作id
+        this.supplementIdOpt(form);
+
         InputOrderForm orderForm = new InputOrderForm();
         //查询客户名称
         JSONObject customerInfo = this.getCustomerInfoByLoginUserName();
@@ -502,6 +526,43 @@ public class VivoServiceImpl implements VivoService {
         msg.put("fileName", airBooking.getFileName());
         request.put("msg", JSONUtil.toJsonStr(msg));
         msgClient.consume(request);
+    }
+
+    private void supplementIdOpt(BookingSpaceForm form) {
+        //根据booking号查询是否存在空运订单,如果存在进行订单更新
+        AirOrder airOrder = this.airOrderService.getByThirdPartyOrderNo(form.getBookingNo());
+        if (airOrder != null) {
+            form.setAirOrderId(airOrder.getId());
+            //查询商品id
+            ApiResult<List<GoodsVO>> resultOne = this.omsClient.getGoodsByBusIds(Collections.singletonList(airOrder.getId())
+                    , BusinessTypeEnum.KY.getCode());
+            if (resultOne.getCode() != HttpStatus.SC_OK) {
+                log.warn("查询商品信息失败 mainOrderNo={} msg={}",
+                        airOrder.getMainOrderNo(), resultOne.getMsg());
+                throw new VivoApiException("查询商品信息失败");
+            }
+            List<GoodsVO> goodsVOs = resultOne.getData();
+            form.setGoodsId(goodsVOs.get(0).getId());
+
+            //查询地址信息
+            ApiResult<List<OrderAddressVO>> resultTwo = this.omsClient.getOrderAddressByBusIds(Collections.singletonList(airOrder.getId())
+                    , BusinessTypeEnum.KY.getCode());
+            if (resultTwo.getCode() != HttpStatus.SC_OK) {
+                log.warn("查询订单地址信息失败 mainOrderNo={} msg={}",
+                        airOrder.getMainOrderNo(), resultTwo.getMsg());
+                throw new VivoApiException("查询订单地址信息失败");
+            }
+            List<OrderAddressVO> addressVOS = resultTwo.getData();
+            form.setAddressIds(addressVOS.stream().map(OrderAddressVO::getId).collect(Collectors.toList()));
+            //查询主订单id
+            ApiResult result = this.omsClient.getIdByOrderNo(airOrder.getMainOrderNo());
+            if (result.getCode() != HttpStatus.SC_OK) {
+                log.warn("根据主订单号查询主订单id失败 mainOrderNo={} msg={}",
+                        airOrder.getMainOrderNo(), result.getMsg());
+                throw new VivoApiException("空运订单更新失败");
+            }
+            form.setMainOrderId(Long.valueOf(result.getData().toString()));
+        }
     }
 
     public static void main(String[] args) {

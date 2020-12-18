@@ -1,6 +1,7 @@
 package com.jayud.airfreight.model.bo.vivo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 import com.jayud.airfreight.model.bo.AddAirOrderForm;
@@ -18,8 +19,10 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * vivo向3PL订舱请求入参
@@ -233,6 +236,22 @@ public class BookingSpaceForm {
 //    @Pattern(regexp = "1|2|3|4", message = "1=空运、2=海运、3=铁运、4=陆运")
     private Integer modeOfTransport;
 
+    @ApiModelProperty(value = "空运订单id(用于修改操作)")
+    @JsonIgnore
+    private Long airOrderId;
+
+    @ApiModelProperty(value = "订单地址id(用于修改操作)")
+    @JsonIgnore
+    private List<Long> addressIds;
+
+    @ApiModelProperty(value = "商品id(用于修改操作)")
+    @JsonIgnore
+    private Long goodsId;
+
+    @ApiModelProperty(value = "主订单id(用于修改操作)")
+    @JsonIgnore
+    private Long mainOrderId;
+
 
     public AddAirOrderForm convertAddAirOrderForm() {
         AddAirOrderForm addAirOrderForm = new AddAirOrderForm();
@@ -242,16 +261,19 @@ public class BookingSpaceForm {
         addAirOrderForm.setTerms(AirOrderTermsEnum.getCode(this.tradeTerms));
         addAirOrderForm.setCreateUserType(CreateUserTypeEnum.VIVO.getCode());
         addAirOrderForm.setGoodTime(this.pickUpDate);
+        addAirOrderForm.setId(this.airOrderId);
         //发货地址信息
         AddOrderAddressForm shippingAddress = new AddOrderAddressForm();
         shippingAddress.setCompany(this.shipper);
         shippingAddress.setAddress(this.shippingAddress);
         shippingAddress.setType(OrderAddressEnum.DELIVER_GOODS.getCode());
+        shippingAddress.setId(this.addressIds != null ? addressIds.get(0) : null);
         //收货地址信息
         AddOrderAddressForm consignee = new AddOrderAddressForm();
         consignee.setCompany(this.consignee);
         consignee.setAddress(this.consigneeAddress);
         consignee.setType(OrderAddressEnum.RECEIVING_GOODS.getCode());
+        consignee.setId(this.addressIds != null ? addressIds.get(1) : null);
         //货品信息
         AddGoodsForm addGoodsForm = new AddGoodsForm();
         addGoodsForm.setVolume(Double.valueOf(this.totalVolume));
@@ -262,6 +284,7 @@ public class BookingSpaceForm {
         addGoodsForm.setBulkCargoAmount(this.bulkBoxNumber);
         addGoodsForm.setBulkCargoUnit(this.bulkBoxUnit);
         addGoodsForm.setName(this.goods);
+        addGoodsForm.setId(this.goodsId);
 
         addAirOrderForm.setOrderAddressForms(Arrays.asList(shippingAddress, consignee));
         addAirOrderForm.setGoodsForms(Collections.singletonList(addGoodsForm));

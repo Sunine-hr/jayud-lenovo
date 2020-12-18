@@ -132,4 +132,10 @@ public interface OmsClient {
     @RequestMapping(value = "/api/getGoodsByBusIds")
     public ApiResult<List<GoodsVO>> getGoodsByBusIds(@RequestParam("orderId") List<Long> orderId,
                                                      @RequestParam("businessType") Integer businessType);
+
+    /**
+     * 获取主订单ID
+     */
+    @RequestMapping(value = "/api/getIdByOrderNo")
+    ApiResult getIdByOrderNo(@RequestParam(value = "orderNo") String orderNo);
 }

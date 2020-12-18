@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
-import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.admin.security.domain.AuthUser;
 import com.jayud.mall.admin.security.service.BaseService;
 import com.jayud.mall.model.bo.QueryUserForm;
@@ -80,8 +79,6 @@ public class SystemUserController {
     @ApiOperationSupport(order = 4)
     @PostMapping(value = "/insertUser")
     public CommonResult<SystemUserVO> insertUser(@Valid @RequestBody SaveSystemUserForm form){
-        AuthUser authUser = baseService.getUser();
-        SystemUserVO user = ConvertUtil.convert(authUser, SystemUserVO.class);
         return userService.insertUser(form);
     }
 

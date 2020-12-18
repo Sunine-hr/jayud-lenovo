@@ -22,7 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,6 +78,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult<SystemUserVO> insertUser(SaveSystemUserForm form) {
         //新增用户，验证
         String phone = form.getPhone();//手机号
@@ -100,19 +103,27 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             return CommonResult.error(-1, "用户名已存在，不能使用");
         }
 
+        AuthUser user = baseService.getUser();
+        log.info("user:"+user);
+
         //从nacos中获取，新增用户，初始化密码
         String pwd = pass;
         BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
         String password = bcryptPasswordEncoder.encode(pwd.trim());
 
         SystemUser systemUser = ConvertUtil.convert(form, SystemUser.class);
-        systemUser.setName(systemUser.getUserName());
         //systemUser.setPassword(Md5Utils.getMD5("123456".getBytes()).toUpperCase()); // MD5 加密
         systemUser.setPassword(password); // BCryptPasswordEncoder 加密
 
-        AuthUser user = baseService.getUser();
-        log.info("user:"+user);
-
+        systemUser.setUserName(form.getName());
+        systemUser.setStatus(1);
+        systemUser.setNote(null);//备注
+        LocalDateTime nowTime = LocalDateTime.now();
+        systemUser.setCreatedUser(user.getId().intValue());
+        systemUser.setCreatedTime(nowTime);
+        systemUser.setUpdatedUser(user.getId().intValue());
+        systemUser.setUpdatedTime(nowTime);
+        this.saveOrUpdate(systemUser);
 
 //        systemUserMapper.insert(systemUser);
 //        systemUser.setId(systemUser.getId());

@@ -64,19 +64,19 @@ public interface ISystemUserService extends IService<SystemUser> {
      * <p>帐号启用状态：0->Off；1->On</p>
      * @param id
      */
-    void disableUser(Long id);
+    CommonResult disableUser(Long id);
 
     /**
      * 启用用户
      * @param id
      */
-    void enableUser(Long id);
+    CommonResult enableUser(Long id);
 
     /**
      * 重置用户密码
      * @param id
      */
-    void resetPassword(Long id);
+    CommonResult resetPassword(Long id);
 
     /**
      * 查询用户分页

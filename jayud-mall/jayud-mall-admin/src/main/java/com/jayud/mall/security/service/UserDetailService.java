@@ -93,7 +93,8 @@ public class UserDetailService implements UserDetailsService {
             throw new UsernameNotFoundException("找不到该用户！");
         }
         //账号状态验证
-        if(userVO.getStatus()==0) {
+        //帐号启用状态：0->Off 启用；1->On 停用
+        if(userVO.getStatus()==1) {
             logger.debug("用户账号未启用，无法登陆 （手机号／邮箱）:{}", username);
             throw new UsernameNotFoundException("用户账号未启用！");
         }

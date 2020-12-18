@@ -103,6 +103,9 @@ public class SystemUserController {
     public CommonResult<SystemUserVO> getUser(@Valid @RequestBody SystemUserParaForm form){
         Long id = form.getId();
         SystemUserVO user = userService.getUser(id);
+        if(user == null){
+            return CommonResult.error(-1, "用户不存在");
+        }
         return CommonResult.success(user);
     }
 
@@ -111,8 +114,7 @@ public class SystemUserController {
     @PostMapping(value = "/disableUser")
     public CommonResult disableUser(@Valid @RequestBody SystemUserParaForm form){
         Long id = form.getId();
-        userService.disableUser(id);
-        return CommonResult.success("用户禁用成功！");
+        return userService.disableUser(id);
     }
 
     @ApiOperation(value = "启用用户")
@@ -120,8 +122,7 @@ public class SystemUserController {
     @PostMapping(value = "/enableUser")
     public CommonResult enableUser(@Valid @RequestBody SystemUserParaForm form){
         Long id = form.getId();
-        userService.enableUser(id);
-        return CommonResult.success("用户启用成功！");
+        return userService.enableUser(id);
     }
 
     @ApiOperation(value = "重置用户密码")
@@ -129,8 +130,7 @@ public class SystemUserController {
     @PostMapping(value = "/resetPassword")
     public CommonResult resetPassword(@Valid @RequestBody SystemUserParaForm form) {
         Long id = form.getId();
-        userService.resetPassword(id);
-        return CommonResult.success("重置用户密码成功！");
+        return userService.resetPassword(id);
     }
 
     @ApiOperation(value = "用户分页查询")

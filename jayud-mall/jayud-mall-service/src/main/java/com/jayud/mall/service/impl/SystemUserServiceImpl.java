@@ -11,7 +11,6 @@ import com.jayud.mall.admin.security.service.BaseService;
 import com.jayud.mall.mapper.SystemUserMapper;
 import com.jayud.mall.mapper.SystemUserRoleRelationMapper;
 import com.jayud.mall.model.bo.QueryUserForm;
-import com.jayud.mall.model.bo.ResetUserPwdForm;
 import com.jayud.mall.model.bo.SaveSystemUserForm;
 import com.jayud.mall.model.bo.SystemUserLoginForm;
 import com.jayud.mall.model.po.SystemUser;
@@ -120,7 +119,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         systemUser.setPassword(password); // BCryptPasswordEncoder 加密
 
         systemUser.setUserName(form.getName());
-        systemUser.setStatus(1);
+        systemUser.setStatus(0);
         systemUser.setNote(null);//备注
         LocalDateTime nowTime = LocalDateTime.now();
         systemUser.setCreatedUser(user.getId().intValue());
@@ -188,8 +187,6 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         SystemUser systemUser = ConvertUtil.convert(form, SystemUser.class);
 
         systemUser.setUserName(form.getName());
-        systemUser.setStatus(0);//帐号启用状态：0->Off 启用；1->On 停用
-        systemUser.setNote(null);//备注
         LocalDateTime nowTime = LocalDateTime.now();
         systemUser.setUpdatedUser(user.getId().intValue());//修改人
         systemUser.setUpdatedTime(nowTime);//修改时间
@@ -247,26 +244,63 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     }
 
     @Override
-    public void disableUser(Long id) {
-        systemUserMapper.disableUser(id);
+    @Transactional(rollbackFor = Exception.class)
+    public CommonResult disableUser(Long id) {
+        SystemUser user = systemUserMapper.selectById(id);
+        if(user == null){
+            return CommonResult.error(-1, "用户不存在，无法禁用。");
+        }
+        if(user.getStatus().equals(1)){
+            return CommonResult.error(-1, "用户已禁用，无须再次操作。");
+        }
+        //帐号启用状态：0->Off 启用；1->On 停用
+        user.setStatus(1);
+        AuthUser authUser = baseService.getUser();
+        LocalDateTime nowTime = LocalDateTime.now();
+        user.setUpdatedUser(authUser.getId().intValue());//修改人
+        user.setUpdatedTime(nowTime);//修改时间
+        this.saveOrUpdate(user);
+
+        return CommonResult.success("禁用用户成功");
     }
 
     @Override
-    public void enableUser(Long id) {
-        systemUserMapper.enableUser(id);
+    @Transactional(rollbackFor = Exception.class)
+    public CommonResult enableUser(Long id) {
+        SystemUser user = systemUserMapper.selectById(id);
+        if(user == null){
+            return CommonResult.error(-1, "用户不存在，无法启用。");
+        }
+        if(user.getStatus().equals(0)){
+            return CommonResult.error(-1, "用户已启用，无须再次操作。");
+        }
+        //帐号启用状态：0->Off 启用；1->On 停用
+        user.setStatus(0);
+        AuthUser authUser = baseService.getUser();
+        LocalDateTime nowTime = LocalDateTime.now();
+        user.setUpdatedUser(authUser.getId().intValue());//修改人
+        user.setUpdatedTime(nowTime);//修改时间
+        systemUserMapper.updateById(user);
+        return CommonResult.success("启用用户成功");
     }
 
     @Override
-    public void resetPassword(Long id) {
-        String pass = "123456";
-        ResetUserPwdForm resetUserPwdForm = new ResetUserPwdForm();
-        resetUserPwdForm.setId(id);
-
+    @Transactional(rollbackFor = Exception.class)
+    public CommonResult resetPassword(Long id) {
+        SystemUser user = systemUserMapper.selectById(id);
+        if(user == null){
+            return CommonResult.error(-1, "用户不存在");
+        }
+        String pwd = pass;
         BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
-        String password = bcryptPasswordEncoder.encode(pass.trim());
-        //resetUserPwdForm.setPassword(Md5Utils.getMD5(password.getBytes()).toUpperCase()); //MD5
-        resetUserPwdForm.setPassword(password);//BCryptPasswordEncoder
-        systemUserMapper.resetPassword(resetUserPwdForm);
+        String password = bcryptPasswordEncoder.encode(pwd.trim());
+        user.setPassword(password);
+        AuthUser authUser = baseService.getUser();
+        LocalDateTime nowTime = LocalDateTime.now();
+        user.setUpdatedUser(authUser.getId().intValue());//修改人
+        user.setUpdatedTime(nowTime);//修改时间
+        systemUserMapper.updateById(user);
+        return CommonResult.success("重置用户密码成功");
     }
 
     @Override

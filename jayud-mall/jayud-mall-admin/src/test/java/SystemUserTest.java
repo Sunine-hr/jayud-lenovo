@@ -1,3 +1,4 @@
+import com.jayud.mall.model.bo.QueryUserForm;
 import com.jayud.mall.model.bo.SaveSystemUserForm;
 import com.jayud.mall.utils.TestUtils;
 import org.junit.Test;
@@ -23,4 +24,17 @@ public class SystemUserTest {
         TestUtils.JSONObjectPrint(form);
 
     }
+
+    @Test
+    public void test2(){
+        QueryUserForm form = new QueryUserForm();
+        form.setName("张少娜");
+        form.setWkno("520");
+        form.setStatus(0);
+        List<Long> roleIds = Arrays.asList(1L, 2L);
+        form.setRoleIds(roleIds);
+        TestUtils.JSONObjectPrint(form);
+
+    }
+
 }

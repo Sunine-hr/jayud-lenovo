@@ -32,7 +32,7 @@
         SELECT
         <include refid="Base_Column_List"/>
         FROM system_user
-        WHERE status = 1
+        WHERE status = 0
         AND phone=#{loginname} OR email=#{loginname}
     </select>
 
@@ -77,7 +77,7 @@
     <update id="disableUser" parameterType="Long">
         UPDATE system_user
         SET
-            status = 0
+            status = 1
         where id = #{id}
     </update>
 
@@ -85,7 +85,7 @@
     <update id="enableUser" parameterType="Long">
         UPDATE system_user
         SET
-            status = 1
+            status = 0
         where id = #{id}
     </update>
 

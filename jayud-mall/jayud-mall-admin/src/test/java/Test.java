@@ -141,7 +141,7 @@ public class Test {
     public void Test7(){
 
         QueryUserForm form = new QueryUserForm();
-        form.setUserName("张");
+//        form.setUserName("张");
         form.setStatus(1);
         form.setPageNum(1);
         form.setPageSize(10);

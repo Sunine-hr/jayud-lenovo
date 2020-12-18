@@ -173,4 +173,14 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      */
     CostAmountVO getSCostAmountView(String billNo);
 
+    /**
+     * 当前订单是否已经存在当前法人主体，结算单位，订单类型中,若存在则不做数量统计
+     * @param legalName
+     * @param unitAccount
+     * @param subType
+     * @param orderNo
+     * @return
+     */
+    List<OrderReceivableBillDetail> getNowSOrderExist(String legalName, String unitAccount, String subType,String orderNo);
+
 }

@@ -21,6 +21,9 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "主订单")
     private String mainOrderNo;
 
+    @ApiModelProperty(value = "已选中得服务")
+    private String selectedServer;
+
     @ApiModelProperty(value = "业务类型")
     private String bizCode;
 
@@ -105,6 +108,9 @@ public class OrderTransportVO {
 
     @ApiModelProperty(value = "重量")
     private String weight;
+
+    @ApiModelProperty(value = "总重量")
+    private String totalWeight;
 
     @ApiModelProperty(value = "提货时间,多个逗号拼接")
     private String takeTimeStr;

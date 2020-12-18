@@ -549,7 +549,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     allPics.addAll(StringUtils.getFileViews(logisticsTrack.getStatusPic(), logisticsTrack.getStatusPicName(), prePath));
                 }
                 //提货文件
-                allPics.addAll(StringUtils.getFileViews(inputOrderTransportVO.getTakeFile(), inputOrderTransportVO.getTakeFileName(), prePath));
+                List<FileView> takeFiles = StringUtils.getFileViews(inputOrderTransportVO.getTakeFile(), inputOrderTransportVO.getTakeFileName(), prePath);
+                inputOrderTransportVO.setTakeFiles(takeFiles);
+                allPics.addAll(takeFiles);
                 inputOrderTransportVO.setAllPics(allPics);
 
                 //设置提货信息的客户
@@ -738,7 +740,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Override
     public InitGoCustomsAuditVO initGoCustomsAudit(InitGoCustomsAuditForm form) {
-        InitGoCustomsAuditVO initGoCustomsAuditVO;
+        InitGoCustomsAuditVO initGoCustomsAuditVO = new InitGoCustomsAuditVO();
         String prePath = fileClient.getBaseUrl().getData().toString();
         if(form.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode())){//出口报关
             initGoCustomsAuditVO = baseMapper.initGoCustomsAudit1(form);

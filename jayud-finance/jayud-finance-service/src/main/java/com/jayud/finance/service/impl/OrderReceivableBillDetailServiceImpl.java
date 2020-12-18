@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -202,11 +203,24 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, existObject.getSettlementCurrency(), existObject.getAccountTerm());
                 for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                     BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();//如果费率为0，则抛异常回滚数据
-                    if (exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0 || !orderBillCostTotalVO.getCurrencyCode().equals(existObject.getSettlementCurrency())) {
+                    if ((exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0) && !orderBillCostTotalVO.getCurrencyCode().equals(existObject.getSettlementCurrency())) {
                         //根据币种查询币种描述
                         String oCurrency = currencyRateService.getNameByCode(orderBillCostTotalVO.getCurrencyCode());
                         String dCurrency = currencyRateService.getNameByCode(existObject.getSettlementCurrency());
                         sb.append("原始币种:"+oCurrency+",兑换币种:"+dCurrency+";");
+                        flag = false;
+                    }
+                    if(orderBillCostTotalVO.getCurrencyCode().equals("CNY")){
+                        orderBillCostTotalVO.setLocalMoney(orderBillCostTotalVO.getOldLocalMoney());
+                    }
+                }
+                List<OrderBillCostTotalVO> tempOrderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, "CNY", existObject.getAccountTerm());
+                for (OrderBillCostTotalVO orderBillCostTotalVO : tempOrderBillCostTotalVOS) {
+                    BigDecimal localMoney = orderBillCostTotalVO.getLocalMoney();//如果本币金额为0，说明汇率为空没配置
+                    if ((localMoney == null || localMoney.compareTo(new BigDecimal("0")) == 0) && !orderBillCostTotalVO.getCurrencyCode().equals("CNY")) {
+                        //根据币种查询币种描述
+                        String oCurrency = currencyRateService.getNameByCode(orderBillCostTotalVO.getCurrencyCode());
+                        sb.append("原始币种:"+oCurrency+",兑换币种:人民币;");
                         flag = false;
                     }
                 }
@@ -272,11 +286,10 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 orderReceivableBill.setAlreadyPaidAmount(alreadyPaidAmount.add(nowBillAmount));
                 //2.统计已出账订单数billOrderNum
                 List<String> validOrders = new ArrayList<>();
+                orderNos = orderNos.stream().distinct().collect(Collectors.toList());
                 for (String orderNo : orderNos) {
-                    QueryWrapper queryWrapper1 = new QueryWrapper();
-                    queryWrapper1.eq("order_no", orderNo);
-                    List<OrderReceivableBillDetail> orderNoOjects = list(queryWrapper1);
-                    if (orderNoOjects == null || orderNoOjects.size() == 0) {
+                    List<OrderReceivableBillDetail> orderNoObjects = getNowSOrderExist(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), subType,orderNo);
+                    if (orderNoObjects == null || orderNoObjects.size() == 0) {
                         validOrders.add(orderNo);
                     }
                 }
@@ -329,15 +342,15 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                     orderBillCostTotalVO.setBillNo(form.getBillNo());
                     orderBillCostTotalVO.setCurrencyCode(settlementCurrency);
-                    BigDecimal localMoney = orderBillCostTotalVO.getMoney();//本币金额
+                    BigDecimal money = orderBillCostTotalVO.getMoney();//录入费用时的金额
                     BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();
                     if(exchangeRate == null || exchangeRate.compareTo(new BigDecimal("0")) == 0){
                         exchangeRate = new BigDecimal("1");
                     }
-                    BigDecimal money = localMoney.multiply(exchangeRate);
+                    money = money.multiply(exchangeRate);
                     orderBillCostTotalVO.setMoney(money);
                     OrderBillCostTotal orderBillCostTotal = ConvertUtil.convert(orderBillCostTotalVO, OrderBillCostTotal.class);
-                    orderBillCostTotal.setLocalMoney(localMoney);
+                    orderBillCostTotal.setLocalMoney(orderBillCostTotalVO.getLocalMoney());
                     orderBillCostTotal.setMoneyType("2");
                     orderBillCostTotals.add(orderBillCostTotal);
                 }
@@ -718,6 +731,11 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
     @Override
     public CostAmountVO getSCostAmountView(String billNo) {
         return baseMapper.getSCostAmountView(billNo);
+    }
+
+    @Override
+    public List<OrderReceivableBillDetail> getNowSOrderExist(String legalName, String unitAccount, String subType, String orderNo) {
+        return baseMapper.getNowSOrderExist(legalName,unitAccount,subType,orderNo);
     }
 
 

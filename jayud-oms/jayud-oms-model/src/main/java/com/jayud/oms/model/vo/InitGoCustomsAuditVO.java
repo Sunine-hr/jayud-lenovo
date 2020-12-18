@@ -15,7 +15,7 @@ public class InitGoCustomsAuditVO {
     private String encode;
 
     @ApiModelProperty(value = "车牌号")
-    private String licensePlate;
+    private String plateNumber;
 
     @ApiModelProperty(value = "附件")
     private String fileStr;

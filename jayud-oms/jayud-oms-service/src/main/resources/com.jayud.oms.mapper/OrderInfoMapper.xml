@@ -85,8 +85,8 @@
         oi.`customer_code` customerCode,
         oi.`legal_name` legalName,
         (SELECT CONCAT(ota.`goods_desc`,' ',ota.`piece_amount`,'件',',','重量',ota.`weight`,'KG') FROM order_take_adr ota WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 1 ORDER BY ota.`id` LIMIT 1) goodsInfo,
-        (SELECT concat(da.state_name,da.city_name,da.address) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 1 ORDER BY ota.`id` LIMIT 1) takeAddress,
-        (SELECT concat(da.state_name,da.city_name,da.address) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 2 ORDER BY ota.`id` LIMIT 1) giveAddress,
+        (SELECT concat(ifnull(da.state_name,''),ifnull(da.city_name,''),da.address) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 1 ORDER BY ota.`id` LIMIT 1) takeAddress,
+        (SELECT concat(ifnull(da.state_name,''),ifnull(da.city_name,''),da.address) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 2 ORDER BY ota.`id` LIMIT 1) giveAddress,
         (SELECT oc.`status` FROM order_customs oc WHERE oc.`main_order_no`= oi.`order_no` LIMIT 1) subCustomsStatus,
         ot.`status` subTmsStatus,
         oi.`created_user` createdUser,
@@ -257,24 +257,24 @@
     <select id="initGoCustomsAudit1"  resultType="com.jayud.oms.model.vo.InitGoCustomsAuditVO" >
         SELECT
             (select oc.encode from order_customs oc where oc.main_order_no = oi.order_no limit 1) encode,
-            (select vi.plate_number from vehicle_info vi left join driver_info di on vi.id = di.vehicle_id left join order_send_cars osc on di.id = osc.driver_info_id where osc.order_no = ot.order_no) licensePlate,
+            (select vi.plate_number from vehicle_info vi left join driver_info di on vi.id = di.vehicle_id left join order_send_cars osc on di.id = osc.driver_info_id where osc.order_no = ot.order_no) plateNumber,
             (select oc.encode_pic_name from order_customs oc where oc.main_order_no = oi.order_no limit 1) fileNameStr,
             (select oc.encode_pic from order_customs oc where oc.main_order_no = oi.order_no limit 1) fileStr
         FROM
             order_info oi
-            LEFT JOIN order_transport ot ON ot.main_order_no = ot.order_no
+            LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
         WHERE
             oi.order_no = #{form.orderNo}
     </select>
     <select id="initGoCustomsAudit2"  resultType="com.jayud.oms.model.vo.InitGoCustomsAuditVO" >
     SELECT
         oi.encode,
-        (select vi.plate_number from vehicle_info vi left join driver_info di on vi.id = di.vehicle_id left join order_send_cars osc on di.id = osc.driver_info_id where osc.order_no = ot.order_no) licensePlate,
+        (select vi.plate_number from vehicle_info vi left join driver_info di on vi.id = di.vehicle_id left join order_send_cars osc on di.id = osc.driver_info_id where osc.order_no = ot.order_no) plateNumber,
         (select ai.status_file_name from audit_info ai where ai.audit_status = 'E_C_0' and ai.ext_id = oi.id order by ai.created_time desc limit 1) fileNameStr,
     (select ai.status_file from audit_info ai where ai.audit_status = 'E_C_0' and ai.ext_id = oi.id order by ai.created_time desc limit 1) fileStr
     FROM
         order_info oi
-        LEFT JOIN order_transport ot ON ot.main_order_no = ot.order_no
+        LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
     WHERE
         oi.order_no = #{form.orderNo}
     </select>

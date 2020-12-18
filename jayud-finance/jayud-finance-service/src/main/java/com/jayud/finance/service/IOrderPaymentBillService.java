@@ -66,7 +66,7 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
      * 预览账单全局数据
      * @return
      */
-    ViewBillVO getViewBillByCostIds(List<Long> costIds);
+    ViewBillVO getViewBillByCostIds(List<Long> costIds,String cmd);
 
     /**
      * 已出账订单数

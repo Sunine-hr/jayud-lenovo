@@ -101,7 +101,7 @@
             ( SELECT sum( obct.money ) FROM order_bill_cost_total obct WHERE op.bill_no = obct.bill_no AND obct.currency_code = 'USD' ) dollar,
             ( SELECT sum( obct.money ) FROM order_bill_cost_total obct WHERE op.bill_no = obct.bill_no AND obct.currency_code = 'EUR' ) euro,
             ( SELECT sum( obct.money ) FROM order_bill_cost_total obct WHERE op.bill_no = obct.bill_no AND obct.currency_code = 'HKD' ) hKDollar,
-            sum(op.local_amount) localAmount,
+            (select ifnull(sum(obct.local_money),0) from order_bill_cost_total obct where obct.bill_no = op.bill_no) localAmount,
             (select sum(cav.real_receive_money) from cancel_after_verification cav where cav.bill_no = op.bill_no) heXiaoAmount,
             op.audit_status billStatus,
             op.make_user makeUser,
@@ -124,6 +124,7 @@
         select * from (
         SELECT
         opc.main_order_no orderNo,
+        opc.order_no subOrderNo,
         pb.`name` bizCodeDesc,
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         si.supplier_ch_name supplierChName,
@@ -342,16 +343,31 @@
             and 1 = 0
         </if>
     </select>
-    <select id="getViewBillByCostIds" parameterType="java.util.List" resultType="com.jayud.finance.vo.ViewBillVO">
+    <select id="getViewBillByCostIds" parameterType="java.util.Map" resultType="com.jayud.finance.vo.ViewBillVO">
         SELECT DISTINCT
-        oi.legal_name legalName,
-        si.supplier_ch_name customerName
+        <if test="cmd == 'main'">
+            oi.legal_name legalName,
+        </if>
+        <if test="cmd == 'bg'">
+            oc.legal_name legalName,
+        </if>
+        <if test="cmd == 'zgys'">
+            ot.legal_name legalName,
+        </if>
+            si.supplier_ch_name customerName
         FROM
-        order_info oi
-        LEFT JOIN order_payment_cost opc ON oi.order_no = opc.main_order_no
-        left join supplier_info si on si.supplier_code = opc.customer_code
+        <if test="cmd == 'main'">
+            order_info oi LEFT JOIN order_payment_cost opc ON oi.order_no = opc.main_order_no
+        </if>
+        <if test="cmd == 'bg'">
+            order_customs oc LEFT JOIN order_payment_cost opc on oc.order_no = opc.order_no
+        </if>
+        <if test="cmd == 'zgys'">
+            order_transport ot LEFT JOIN order_payment_cost opc on ot.order_no = opc.order_no
+        </if>
+            left join supplier_info si on si.supplier_code = opc.customer_code
         WHERE
-        opc.id IN
+            opc.id IN
         <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>

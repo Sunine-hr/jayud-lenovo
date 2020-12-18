@@ -208,4 +208,14 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      */
     CostAmountVO getFCostAmountView(String billNo);
 
+    /**
+     * 当前订单是否已经存在当前法人主体，结算单位，订单类型中,若存在则不做数量统计
+     * @param legalName
+     * @param supplierChName
+     * @param subType
+     * @param orderNo
+     * @return
+     */
+    List<OrderPaymentBillDetail> getNowFOrderExist(String legalName, String supplierChName, String subType, String orderNo);
+
 }

@@ -81,7 +81,9 @@
           ot.`is_unload_goods` isUnloadGoods,
           ot.`hk_legal_name` hkLegalName,
           ot.`hk_unit_code` hkUnitCode,
-          ot.`is_hk_clear` isHkClear
+          ot.`is_hk_clear` isHkClear,
+          ot.take_file takeFile,
+		  ot.take_file_name takeFileName
         FROM
           order_transport ot
           LEFT JOIN order_info oi
@@ -151,7 +153,8 @@
         (SELECT	GROUP_CONCAT(ota.take_time) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' group by ot.order_no
         ) takeTimeStr,
         ot.take_file takeFile,
-        ot.take_file_name takeFileName
+        ot.take_file_name takeFileName,
+        oi.selected_server selectedServer
         FROM
             order_transport ot
             LEFT JOIN order_info oi
@@ -204,7 +207,7 @@
             AND ot.`status` = 'T_4'
         </if>
         <if test="form.cmd == 'T_6'">
-            AND ot.`status` = 'T_5'
+            AND ot.`status` = 'T_5' and ot.is_vehicle_weigh = '1'
         </if>
         <if test="form.cmd == 'T_8'">
             AND ot.`status` = 'T_7'

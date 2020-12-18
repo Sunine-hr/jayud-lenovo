@@ -75,7 +75,7 @@
             and orb.is_main = 1 and orbd.audit_status in ('B_1','B_2')
         </if>
         <if test="form.cmd == 'cw_statement'">
-            and (orbd.audit_status in ('B_3','B_5','B_5_1','B_6') or orbd.apply_status='4')
+            and (orbd.audit_status in ('B_3','B_4','B_5','B_5_1','B_6') or orbd.apply_status='4')
         </if>
         <if test="form.cmd == 'zgys_statement'">
             and orb.is_main = 0 and orb.sub_type = 'zgys'
@@ -397,5 +397,13 @@
             LEFT JOIN order_receivable_cost orc ON orbd.cost_id = orc.id
         WHERE
             orbd.bill_no = #{billNo}
+    </select>
+    <select id="getNowSOrderExist" parameterType="java.util.Map" resultType="com.jayud.finance.po.OrderReceivableBillDetail">
+         SELECT orbd.*
+        FROM
+            order_receivable_bill_detail orbd
+            LEFT JOIN order_receivable_bill orb ON orbd.bill_id = orb.id
+        WHERE
+            orbd.order_no = #{orderNo} and orb.sub_type = #{subType} and orb.legal_name = #{legalName} and orb.unit_account = #{unitAccount}
     </select>
 </mapper>

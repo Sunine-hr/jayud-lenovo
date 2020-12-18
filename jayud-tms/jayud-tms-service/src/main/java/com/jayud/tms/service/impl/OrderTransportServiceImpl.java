@@ -79,18 +79,10 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         for (InputOrderTakeAdrForm orderTakeAdrForm2 : orderTakeAdrForms2) {
             orderTakeAdrForm2.setOprType(Integer.valueOf(CommonConstant.VALUE_2));
         }
-        List<InputOrderTakeAdrForm> orderTakeAdrForms = new ArrayList<>();
 
-        //值为空的不进行保存
-        List<InputOrderTakeAdrForm> handleTakeAdrForms = new ArrayList<>();
-        handleTakeAdrForms.addAll(orderTakeAdrForms1);
-        handleTakeAdrForms.addAll(orderTakeAdrForms2);
-        for (InputOrderTakeAdrForm inputOrderTakeAdrForm : handleTakeAdrForms) {
-            //如果收货提货信息都不填,不保存该信息,视为恶意操作
-            if (inputOrderTakeAdrForm.getDeliveryId() != null) {
-                orderTakeAdrForms.add(inputOrderTakeAdrForm);
-            }
-        }
+        List<InputOrderTakeAdrForm> orderTakeAdrForms = new ArrayList<>();
+        orderTakeAdrForms.addAll(orderTakeAdrForms1);
+        orderTakeAdrForms.addAll(orderTakeAdrForms2);
 
         if (orderTransport.getId() != null) {//修改
             //修改时,先把以前的收货信息清空
@@ -116,13 +108,12 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             //有的地址是创建订单填的,有的地址是从地址簿选的
             DeliveryAddress deliveryAddress = new DeliveryAddress();
             deliveryAddress.setId(inputOrderTakeAdrForm.getDeliveryId());
-            if(inputOrderTakeAdrForm.getDeliveryId() == null){//将地址保存到地址簿
-                deliveryAddress.setCustomerId(inputOrderTakeAdrForm.getCustomerId());
-                deliveryAddress.setContacts(inputOrderTakeAdrForm.getContacts());
-                deliveryAddress.setPhone(inputOrderTakeAdrForm.getPhone());
-                deliveryAddress.setAddress(inputOrderTakeAdrForm.getAddress());
-                deliveryAddressService.save(deliveryAddress);
-            }
+            deliveryAddress.setCustomerId(inputOrderTakeAdrForm.getCustomerId());
+            deliveryAddress.setContacts(inputOrderTakeAdrForm.getContacts());
+            deliveryAddress.setPhone(inputOrderTakeAdrForm.getPhone());
+            deliveryAddress.setAddress(inputOrderTakeAdrForm.getAddress());
+            deliveryAddressService.saveOrUpdate(deliveryAddress);
+
             OrderTakeAdr orderTakeAdr = ConvertUtil.convert(inputOrderTakeAdrForm, OrderTakeAdr.class);
             orderTakeAdr.setDeliveryId(deliveryAddress.getId());
             orderTakeAdr.setTakeTime(inputOrderTakeAdrForm.getTakeTimeStr());
@@ -132,7 +123,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         orderTransport.setCntrPic(StringUtils.getFileStr(form.getCntrPics()));
         orderTransport.setCntrPicName(StringUtils.getFileNameStr(form.getCntrPics()));
         orderTransport.setTakeFile(StringUtils.getFileStr(form.getTakeFiles()));
-        orderTransport.setTakeFileName(StringUtils.getFileStr(form.getTakeFiles()));
+        orderTransport.setTakeFileName(StringUtils.getFileNameStr(form.getTakeFiles()));
         orderTransport.setStatus(OrderStatusEnum.TMS_T_0.getCode());
         boolean result = orderTransportService.saveOrUpdate(orderTransport);
         return result;

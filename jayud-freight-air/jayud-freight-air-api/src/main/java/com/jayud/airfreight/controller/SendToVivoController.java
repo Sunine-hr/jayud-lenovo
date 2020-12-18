@@ -3,10 +3,12 @@ package com.jayud.airfreight.controller;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.jayud.airfreight.annotations.APILog;
 import com.jayud.airfreight.model.bo.vivo.*;
 import com.jayud.airfreight.model.po.AirBooking;
 import com.jayud.airfreight.service.IAirBookingService;
 import com.jayud.airfreight.service.VivoService;
+import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.VivoApiResult;
 import com.jayud.common.enums.ResultEnum;
@@ -15,10 +17,7 @@ import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
@@ -144,6 +143,20 @@ public class SendToVivoController {
             return CommonResult.success();
         } else {
             return CommonResult.error(ResultEnum.VIVO_ERROR.getCode(),
+                    MapUtil.getStr(resultMap, "message"));
+        }
+    }
+
+    @PostMapping("/forwarder/forwarderDispatchRejected")
+    @ApiOperation("派车驳回")
+    public ApiResult forwarderDispatchRejected(@RequestParam("dispatchNo") String dispatchNo) {
+        DispatchRejectedForm form = new DispatchRejectedForm();
+        form.setDispatchNo(dispatchNo);
+        Map<String, Object> resultMap = this.vivoService.forwarderDispatchRejected(form);
+        if (1 == MapUtil.getInt(resultMap, "status")) {
+            return ApiResult.ok();
+        } else {
+            return ApiResult.error(ResultEnum.VIVO_ERROR.getCode(),
                     MapUtil.getStr(resultMap, "message"));
         }
     }

@@ -104,7 +104,11 @@ public interface VivoService {
 
     /**
      * 订舱驳回接口
-     *
      */
-    public Map<String, Object>  forwarderBookingRejected(String bookingNo, Integer status);
+    public Map<String, Object> forwarderBookingRejected(String bookingNo, Integer status);
+
+    /**
+     * 派车驳回
+     */
+    Map<String, Object> forwarderDispatchRejected(DispatchRejectedForm form);
 }

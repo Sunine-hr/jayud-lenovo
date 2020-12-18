@@ -8,7 +8,10 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.google.gson.Gson;
 import com.jayud.airfreight.feign.*;
-import com.jayud.airfreight.model.bo.*;
+import com.jayud.airfreight.model.bo.AddAirOrderForm;
+import com.jayud.airfreight.model.bo.InputMainOrderForm;
+import com.jayud.airfreight.model.bo.InputOrderForm;
+import com.jayud.airfreight.model.bo.InputOrderTransportForm;
 import com.jayud.airfreight.model.bo.vivo.*;
 import com.jayud.airfreight.model.po.AirBooking;
 import com.jayud.airfreight.model.po.AirExtensionField;
@@ -21,7 +24,6 @@ import com.jayud.airfreight.service.IAirOrderService;
 import com.jayud.airfreight.service.VivoService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
-import com.jayud.common.VivoApiResult;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.*;
 import com.jayud.common.exception.Asserts;
@@ -47,7 +49,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -187,6 +188,15 @@ public class VivoServiceImpl implements VivoService {
         String url = urlBase + urlBookingRejected;
         Map<String, Object> resultMap = doPost(form, url);
         return resultMap;
+    }
+
+    /**
+     * 派车驳回
+     */
+    @Override
+    public Map<String, Object> forwarderDispatchRejected(DispatchRejectedForm form) {
+        String url = urlBase + urlDispatchRejected;
+        return doPost(form, url);
     }
 
 

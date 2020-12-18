@@ -16,6 +16,7 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.tms.feign.FreightAirApiClient;
 import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.model.bo.*;
 import com.jayud.tms.model.po.OrderSendCars;
@@ -56,6 +57,8 @@ public class OrderInTransportController {
 
     @Autowired
     IOrderSendCarsService orderSendCarsService;
+    @Autowired
+    private FreightAirApiClient freightAirApiClient;
 
 
     /**
@@ -382,6 +385,9 @@ public class OrderInTransportController {
             auditInfoForm.setAuditComment(form.getAuditComment());
 
             //审核通过推送派车信息
+            if (OrderStatusEnum.TMS_T_3.getCode().equals(form.getStatus())) {
+                this.orderSendCarsService.sendCarsMessagePush(form);
+            }
 
         }
         orderSendCarsService.saveOrUpdate(orderSendCars);
@@ -485,7 +491,7 @@ public class OrderInTransportController {
         AuditInfoForm auditInfoForm = new AuditInfoForm();
         auditInfoForm.setExtId(form.getOrderId());
         auditInfoForm.setExtDesc(SqlConstant.ORDER_TRANSPORT);
-
+        Integer rejectOptions = form.getRejectOptions() == null ? 1 : form.getRejectOptions();
         //删除操作流程记录
         OrderTransport orderTransport1 = orderTransportService.getById(form.getOrderId());
         if (orderTransport1 == null) {
@@ -511,10 +517,14 @@ public class OrderInTransportController {
             auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_3_2.getCode());
             auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_3_2.getDesc());
         } else if (OrderStatusEnum.TMS_T_4_1.getCode().equals(form.getCmd())) {//确认派车驳回
-            orderTransport.setStatus(OrderStatusEnum.TMS_T_4_1.getCode());
+            String cmd = form.getCmd();
+            //TODO 驳回推送需要做的
 
-            auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_4_1.getCode());
-            auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_4_1.getDesc());
+            orderTransport.setStatus(cmd);
+            auditInfoForm.setAuditStatus(cmd);
+            auditInfoForm.setAuditTypeDesc(cmd);
+
+
         }
         omsClient.saveAuditInfo(auditInfoForm);
         omsClient.delOprStatus(form.getOrderId()); //TODO 物流轨迹图不能根据id删除,可能删除到其他相同id数据

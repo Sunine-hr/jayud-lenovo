@@ -101,4 +101,9 @@ public interface IOrderTransportService extends IService<OrderTransport> {
      * 小程序司机车辆通关（补出仓和入仓数据）,送货地址只有一个时候才做这个操作
      */
     void driverCustomsClearanceVehicles(OprStatusForm form);
+
+    /**
+     * 审核消息推送
+     */
+
 }

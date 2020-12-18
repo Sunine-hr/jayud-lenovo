@@ -86,7 +86,6 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
      */
     @Override
     public void sendCarsMessagePush(SendCarForm form) {
-
         //查询中港订单用户类型
         OrderTransport orderTransport = this.orderTransportService.getById(form.getOrderId());
         Integer createUserType = orderTransport.getCreateUserType();

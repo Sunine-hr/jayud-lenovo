@@ -11,7 +11,7 @@ public class SystemUserTest {
     public void test1(){
 
         SaveSystemUserForm form = new SaveSystemUserForm();
-        form.setId(null);
+        form.setId(161L);
         form.setName("张少娜");
         form.setCompany("佳裕达xxx公司");
         form.setWkno("520");

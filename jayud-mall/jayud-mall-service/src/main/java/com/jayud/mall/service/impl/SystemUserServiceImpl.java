@@ -110,8 +110,6 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         }
 
         AuthUser user = baseService.getUser();
-        log.info("user:"+user);
-
         //从nacos中获取，新增用户，初始化密码
         String pwd = pass;
         BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
@@ -152,21 +150,68 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     @Override
     public CommonResult<SystemUserVO> updateUser(SaveSystemUserForm form) {
+        //修改用户，验证
+        Long id = form.getId();
+        String phone = form.getPhone();//手机号
+        QueryWrapper<SystemUser> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("phone", phone);
+        queryWrapper.ne("id", id);//不等于<>
+        Integer phoneCount = systemUserMapper.selectCount(queryWrapper);
+        if(phoneCount > 0){
+            return CommonResult.error(-1, "手机号已存在，不能使用");
+        }
+        String email = form.getEmail();//邮箱
+        queryWrapper = new QueryWrapper<>();//3.3.1.9-SNAPSHOT, wrapper加入了对clear的支持,目前的版本是3.1.2
+        queryWrapper.eq("email", email);
+        queryWrapper.ne("id", id);//不等于<>
+        Integer emailCount = systemUserMapper.selectCount(queryWrapper);
+        if(emailCount > 0){
+            return CommonResult.error(-1, "邮箱已存在，不能使用");
+        }
+        String name = form.getName();//用户名，登录名
+        queryWrapper = new QueryWrapper<>();//3.3.1.9-SNAPSHOT, wrapper加入了对clear的支持,目前的版本是3.1.2
+        queryWrapper.eq("name", name);
+        queryWrapper.ne("id", id);//不等于<>
+        Integer nameCount = systemUserMapper.selectCount(queryWrapper);
+        if(nameCount > 0){
+            return CommonResult.error(-1, "用户名已存在，不能使用");
+        }
+
+        //systemUserMapper.updateUser(user);    //原始的mybatis修改，不用这个，太麻烦了，还要写sql update 语句
+        //systemUserMapper.updateById(systemUser);
+        AuthUser user = baseService.getUser();
         SystemUser systemUser = ConvertUtil.convert(form, SystemUser.class);
 
-//        systemUserMapper.updateUser(user);    //原始的mybatis修改，不用这个，太麻烦了，还要写sql update 语句
-        systemUserMapper.updateById(systemUser);
+        systemUser.setUserName(form.getName());
+        systemUser.setStatus(1);
+        systemUser.setNote(null);//备注
+        LocalDateTime nowTime = LocalDateTime.now();
+        systemUser.setUpdatedUser(user.getId().intValue());//修改人
+        systemUser.setUpdatedTime(nowTime);//修改时间
+        //1.保存用户
+        this.saveOrUpdate(systemUser);
 
-        //先删除用户的角色
-        List<Long> userIds = new ArrayList<>();
-        userIds.add(systemUser.getId());
-        systemUserRoleRelationService.removeUserRoleRelation(userIds);
+        Long userId = systemUser.getId();
+        List<Long> roleIds = form.getRoleIds();
+        if(roleIds.size() > 0){
+            QueryWrapper<SystemUserRoleRelation> systemUserRoleRelationQueryWrapper = new QueryWrapper<>();
+            systemUserRoleRelationQueryWrapper.eq("user_id", userId);
+            //2.删除用户关联角色
+            systemUserRoleRelationService.remove(systemUserRoleRelationQueryWrapper);
 
-        //在重新绑定角色
-        if(form.getRoleIds() != null){
-            systemUserRoleRelationService.createUserRoleRelation(systemUser,form.getRoleIds());
+            List<SystemUserRoleRelation> systemUserRoleRelationList = new ArrayList<>();
+            roleIds.forEach(roleId -> {
+                SystemUserRoleRelation systemUserRoleRelation = new SystemUserRoleRelation();
+                systemUserRoleRelation.setUserId(userId.intValue());
+                systemUserRoleRelation.setRoleId(roleId.intValue());
+                systemUserRoleRelationList.add(systemUserRoleRelation);
+            });
+            //3.保存用户关联的角色
+            systemUserRoleRelationService.saveOrUpdateBatch(systemUserRoleRelationList);
         }
-        return null;
+
+        SystemUserVO systemUserVO = ConvertUtil.convert(systemUser, SystemUserVO.class);
+        return CommonResult.success(systemUserVO);
     }
 
     @Override

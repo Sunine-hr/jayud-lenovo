@@ -85,9 +85,8 @@ public class SystemUserController {
     @ApiOperation(value = "修改用户")
     @ApiOperationSupport(order = 5)
     @PostMapping(value = "/updateUser")
-    public CommonResult updateUser(@Valid @RequestBody SaveSystemUserForm form){
-        userService.updateUser(form);
-        return CommonResult.success("修改用户成功！");
+    public CommonResult<SystemUserVO> updateUser(@Valid @RequestBody SaveSystemUserForm form){
+        return userService.updateUser(form);
     }
 
     @ApiOperation(value = "删除用户")

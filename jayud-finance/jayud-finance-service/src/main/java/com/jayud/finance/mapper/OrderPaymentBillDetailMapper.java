@@ -130,4 +130,15 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
      * @return
      */
     CostAmountVO getFCostAmountView(@Param("billNo") String billNo);
+
+    /**
+     * 当前订单是否已经存在当前法人主体，结算单位，订单类型中,若存在则不做数量统计
+     * @param legalName
+     * @param supplierChName
+     * @param subType
+     * @param orderNo
+     * @return
+     */
+    List<OrderPaymentBillDetail> getNowFOrderExist(@Param("legalName") String legalName, @Param("supplierChName") String supplierChName,
+                                                   @Param("subType") String subType,@Param("orderNo") String orderNo);
 }

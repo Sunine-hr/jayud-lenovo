@@ -486,4 +486,12 @@
         WHERE
             opbd.bill_no = #{billNo}
     </select>
+    <select id="getNowFOrderExist" parameterType="java.util.Map" resultType="com.jayud.finance.po.OrderPaymentBillDetail">
+         SELECT opbd.*
+        FROM
+            order_payment_bill_detail opbd
+            LEFT JOIN order_payment_bill opb ON opbd.bill_id = opb.id
+        WHERE
+            opbd.order_no = #{orderNo} and opb.sub_type = #{subType} and opb.legal_name = #{legalName} and opb.supplier_ch_name = #{supplierChName}
+    </select>
 </mapper>

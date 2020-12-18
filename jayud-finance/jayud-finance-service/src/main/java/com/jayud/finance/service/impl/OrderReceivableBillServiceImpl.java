@@ -175,9 +175,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             List<String> validOrders = new ArrayList<>();
             orderNos = orderNos.stream().distinct().collect(Collectors.toList());
             for (String orderNo : orderNos) {
-                QueryWrapper queryWrapper1 = new QueryWrapper();
-                queryWrapper1.eq("order_no",orderNo);
-                List<OrderReceivableBillDetail> orderNoObjects= receivableBillDetailService.list(queryWrapper1);
+                List<OrderReceivableBillDetail> orderNoObjects = receivableBillDetailService.getNowSOrderExist(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), form.getSubType(),orderNo);
                 if(orderNoObjects == null || orderNoObjects.size() == 0){
                     validOrders.add(orderNo);
                 }

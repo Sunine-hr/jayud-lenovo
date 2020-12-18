@@ -288,10 +288,8 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 List<String> validOrders = new ArrayList<>();
                 orderNos = orderNos.stream().distinct().collect(Collectors.toList());
                 for (String orderNo : orderNos) {
-                    QueryWrapper queryWrapper1 = new QueryWrapper();
-                    queryWrapper1.eq("order_no", orderNo);
-                    List<OrderReceivableBillDetail> orderNoOjects = list(queryWrapper1);
-                    if (orderNoOjects == null || orderNoOjects.size() == 0) {
+                    List<OrderReceivableBillDetail> orderNoObjects = getNowSOrderExist(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), subType,orderNo);
+                    if (orderNoObjects == null || orderNoObjects.size() == 0) {
                         validOrders.add(orderNo);
                     }
                 }
@@ -733,6 +731,11 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
     @Override
     public CostAmountVO getSCostAmountView(String billNo) {
         return baseMapper.getSCostAmountView(billNo);
+    }
+
+    @Override
+    public List<OrderReceivableBillDetail> getNowSOrderExist(String legalName, String unitAccount, String subType, String orderNo) {
+        return baseMapper.getNowSOrderExist(legalName,unitAccount,subType,orderNo);
     }
 
 

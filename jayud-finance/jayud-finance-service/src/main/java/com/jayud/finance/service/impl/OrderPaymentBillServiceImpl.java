@@ -175,10 +175,8 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             List<String> validOrders = new ArrayList<>();
             orderNos = orderNos.stream().distinct().collect(Collectors.toList());
             for (String orderNo : orderNos) {
-                QueryWrapper queryWrapper1 = new QueryWrapper();
-                queryWrapper1.eq("order_no",orderNo);
-                List<OrderPaymentBillDetail> orderNoOjects= paymentBillDetailService.list(queryWrapper1);
-                if(orderNoOjects == null || orderNoOjects.size() == 0){
+                List<OrderPaymentBillDetail> orderNoObjects= paymentBillDetailService.getNowFOrderExist(paymentBillForm.getLegalName(),paymentBillForm.getSupplierChName(),form.getSubType(),orderNo);
+                if(orderNoObjects == null || orderNoObjects.size() == 0){
                     validOrders.add(orderNo);
                 }
             }

@@ -765,5 +765,10 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         return baseMapper.getFCostAmountView(billNo);
     }
 
+    @Override
+    public List<OrderPaymentBillDetail> getNowFOrderExist(String legalName, String supplierChName, String subType, String orderNo) {
+        return baseMapper.getNowFOrderExist(legalName,supplierChName,subType,orderNo);
+    }
+
 
 }

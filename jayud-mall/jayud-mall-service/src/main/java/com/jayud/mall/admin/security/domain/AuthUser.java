@@ -20,9 +20,9 @@ public class AuthUser {
     @JSONField(ordinal = 2)
     private String name;
 
-    @ApiModelProperty(value = "密码", position = 3)
-    @JSONField(ordinal = 3)
-    private String password;
+//    @ApiModelProperty(value = "密码", position = 3)
+//    @JSONField(ordinal = 3)
+//    private String password;
 
     @ApiModelProperty(value = "用户姓名", position = 4)
     @JSONField(ordinal = 4)

@@ -101,17 +101,33 @@
     <select id="findUserByPage" parameterType="com.jayud.mall.model.bo.QueryUserForm"
             resultType="com.jayud.mall.model.vo.SystemUserVO" >
         select
-        t.id,t.`name`,t.`password`,t.user_name,t.en_user_name,t.phone,t.email,t.company,t.wkno,t.login_time,t.`status`,t.note,t.created_user,t.created_time,t.updated_user,t.updated_time
-        from
-        system_user t
+        t.id,t.name,t.password,t.user_name,t.en_user_name,t.phone,t.email,t.company,t.wkno,t.login_time,t.`status`,t.note,t.created_user,t.created_time,t.updated_user,t.updated_time
+        from system_user t
+        left join (
+        select distinct user_id from system_user_role_relation
+        where 1=1
+        <if test="form.roleIds != null and form.roleIds.size > 0">
+            and role_id in
+            <foreach collection="form.roleIds" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        ) t1 on t1.user_id = t.id
         where
-        1 = 1
-        <if test="form.userName != null and form.userName != ''">
-            AND t.user_name LIKE concat('%',#{form.userName},'%')
+        1=1
+        <if test="form.name != null and form.name != ''">
+            and t.name LIKE concat('%',#{form.name},'%')
         </if>
-        <if test="form.status != null and form.status != ''">
-            AND t.`status` = #{form.status}
+        <if test="form.wkno != null and form.wkno != ''">
+            and t.wkno like concat('%',#{form.wkno},'%')
         </if>
+        <if test="form.status != null">
+            and t.status = #{form.status}
+        </if>
+        <if test="form.roleIds != null and form.roleIds.size > 0">
+            and t.id = t1.user_id
+        </if>
+
     </select>
 
 

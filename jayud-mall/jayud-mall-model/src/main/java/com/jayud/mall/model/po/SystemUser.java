@@ -1,6 +1,7 @@
 package com.jayud.mall.model.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -62,6 +63,7 @@ public class SystemUser extends Model<SystemUser> {
     private LocalDateTime loginTime;
 
     @ApiModelProperty(value = "帐号启用状态：0->Off 启用；1->On 停用", position = 11)
+    @TableField(value = "`status`")
     private Integer status;
 
     @ApiModelProperty(value = "备注", position = 12)

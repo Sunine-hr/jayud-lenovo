@@ -84,7 +84,8 @@
           ot.`hk_unit_code` hkUnitCode,
           ot.`is_hk_clear` isHkClear,
           ot.take_file takeFile,
-		  ot.take_file_name takeFileName
+		  ot.take_file_name takeFileName,
+		  ot.is_vehicle_weigh isVehicleWeigh
         FROM
           order_transport ot
           LEFT JOIN order_info oi

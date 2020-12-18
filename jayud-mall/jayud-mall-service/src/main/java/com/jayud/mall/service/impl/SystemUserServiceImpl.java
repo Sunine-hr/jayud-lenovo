@@ -149,9 +149,14 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult<SystemUserVO> updateUser(SaveSystemUserForm form) {
         //修改用户，验证
         Long id = form.getId();
+        SystemUser sysUser = systemUserMapper.selectById(id);
+        if(sysUser == null){
+            return CommonResult.error(-1, "用户不存在，不能修改用户");
+        }
         String phone = form.getPhone();//手机号
         QueryWrapper<SystemUser> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("phone", phone);
@@ -183,7 +188,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         SystemUser systemUser = ConvertUtil.convert(form, SystemUser.class);
 
         systemUser.setUserName(form.getName());
-        systemUser.setStatus(1);
+        systemUser.setStatus(0);//帐号启用状态：0->Off 启用；1->On 停用
         systemUser.setNote(null);//备注
         LocalDateTime nowTime = LocalDateTime.now();
         systemUser.setUpdatedUser(user.getId().intValue());//修改人
@@ -215,12 +220,25 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     }
 
     @Override
-    public void deleteUser(Long id) {
-        systemUserMapper.deleteUser(id);
-        //删除用户的角色
-        List<Long> userIds = new ArrayList<>();
-        userIds.add(id);
-        systemUserRoleRelationService.removeUserRoleRelation(userIds);
+    @Transactional(rollbackFor = Exception.class)
+    public CommonResult deleteUser(Long id) {
+        SystemUser systemUser = systemUserMapper.selectById(id);
+        //用户删除，验证
+        if(systemUser == null){
+            return CommonResult.error(-1, "用户不存在，无法删除");
+        }
+        Integer status = systemUser.getStatus();//帐号启用状态：0->Off 启用；1->On 停用
+        if(!status.equals(1)){
+            return CommonResult.error(-1, "用户未停用，无法删除");
+        }
+        Long userId = systemUser.getId();
+        //删除用户
+        systemUserMapper.deleteById(userId);
+        //删除用户关联的角色
+        QueryWrapper<SystemUserRoleRelation> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", userId);
+        systemUserRoleRelationMapper.delete(queryWrapper);
+        return CommonResult.success("用户删除成功");
     }
 
     @Override

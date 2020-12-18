@@ -50,7 +50,7 @@ public interface ISystemUserService extends IService<SystemUser> {
      * 删除用户
      * @param userId
      */
-    void deleteUser(Long userId);
+    CommonResult deleteUser(Long userId);
 
     /**
      * 通过id获取用户

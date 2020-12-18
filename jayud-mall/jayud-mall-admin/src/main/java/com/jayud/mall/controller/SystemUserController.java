@@ -94,8 +94,7 @@ public class SystemUserController {
     @PostMapping(value = "/deleteUser")
     public CommonResult deleteUser(@Valid @RequestBody SystemUserParaForm form){
         Long id = form.getId();
-        userService.deleteUser(id);
-        return CommonResult.success("删除用户成功！");
+        return userService.deleteUser(id);
     }
 
     @ApiOperation(value = "根据id获取用户")

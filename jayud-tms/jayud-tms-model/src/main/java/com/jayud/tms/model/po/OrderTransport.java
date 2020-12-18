@@ -86,6 +86,9 @@ public class OrderTransport extends Model<OrderTransport> {
     @ApiModelProperty(value = "香港清关司机ID")
     private Long driverInfoId;
 
+    @ApiModelProperty(value = "香港清关车辆ID")
+    private Long vehicleId;
+
     @ApiModelProperty(value = "无缝单号")
     private String seamlessNo;
 

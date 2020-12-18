@@ -115,9 +115,11 @@ public class OrderInTransportController {
         }else if(CommonConstant.HK_CLEAR_CUSTOMS.equals(form.getCmd())) {//香港清关
             //参数校验
             if(form.getDriverInfoId() == null || StringUtil.isNullOrEmpty(form.getSeamlessNo()) ||
-               StringUtil.isNullOrEmpty(form.getClearCustomsNo())){
+               StringUtil.isNullOrEmpty(form.getClearCustomsNo()) || form.getVehicleId() == null){
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
             }
+            orderTransport.setDriverInfoId(form.getDriverInfoId());
+            orderTransport.setVehicleId(form.getVehicleId());
             orderTransport.setSeamlessNo(form.getSeamlessNo());
             orderTransport.setClearCustomsNo(form.getClearCustomsNo());//清关完成标识,有数据表示清关完成
 

@@ -60,6 +60,9 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "车型尺寸")
     private Integer vehicleSize;
 
+    @ApiModelProperty(value = "车型尺寸描述")
+    private String vehicleSizeDesc;
+
     @ApiModelProperty(value = "柜号")
     private String cntrNo;
 
@@ -181,6 +184,21 @@ public class OrderTransportVO {
 
     public String getStatusDesc() {
        return OrderStatusEnum.getDesc(this.status);
+    }
+
+    public String getVehicleSizeDesc() {
+        if(this.vehicleSize != null){
+            if(this.vehicleSize == 1){
+                return "3T";
+            }else if(this.vehicleSize == 2){
+                return "5T";
+            }else if(this.vehicleSize == 3){
+                return "8T";
+            }else if(this.vehicleSize == 4){
+                return "10T";
+            }
+        }
+        return "";
     }
 
 }

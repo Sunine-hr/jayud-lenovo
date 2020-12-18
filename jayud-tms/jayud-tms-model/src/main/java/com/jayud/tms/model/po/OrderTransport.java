@@ -131,6 +131,9 @@ public class OrderTransport extends Model<OrderTransport> {
     @ApiModelProperty(value = "提货文件名称")
     private String takeFileName;
 
+    @ApiModelProperty(value = "是否车辆过磅")
+    private Boolean isVehicleWeigh;
+
 
     @Override
     protected Serializable pkVal() {

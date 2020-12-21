@@ -291,7 +291,10 @@ public class OrderInTransportController {
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
         OrderSendCars orderSendCars = ConvertUtil.convert(form,OrderSendCars.class);
-
+        //只有柜车才有柜号
+        if(form.getVehicleType() == 1){//吨车
+            form.setCntrNo(null);
+        }
         OrderTransport orderTransport = new OrderTransport();
         orderTransport.setId(form.getOrderId());
         orderTransport.setUpdatedTime(LocalDateTime.now());

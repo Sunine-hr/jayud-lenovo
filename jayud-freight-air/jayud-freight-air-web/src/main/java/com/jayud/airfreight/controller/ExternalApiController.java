@@ -14,13 +14,14 @@ import com.jayud.airfreight.service.IAirOrderService;
 import com.jayud.airfreight.service.IAirPortService;
 import com.jayud.airfreight.service.VivoService;
 import com.jayud.common.ApiResult;
-import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.InitChangeStatusVO;
 import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.SubOrderCloseOpt;
-import com.jayud.common.enums.*;
+import com.jayud.common.enums.CreateUserTypeEnum;
+import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.ProcessStatusEnum;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
@@ -176,6 +177,8 @@ public class ExternalApiController {
         }
         return ApiResult.ok(initComboxStrVOS);
     }
+
+
 
 //    /**
 //     * 关闭vivo空运单

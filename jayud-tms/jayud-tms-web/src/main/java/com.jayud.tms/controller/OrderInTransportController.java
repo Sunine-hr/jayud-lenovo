@@ -65,16 +65,17 @@ public class OrderInTransportController {
 
     /**
      * 该接口针对填操作人操作时间的操作
+     *
      * @param form
      * @return
      */
     @ApiOperation(value = "确认接单/车辆提货/车辆过磅/香港清关/车辆入仓/车辆出仓/车辆派送/确认签收")
     @PostMapping(value = "/oprOrderTransport")
     public CommonResult oprOrderTransport(@RequestBody OprStatusForm form) {
-        if(form.getOrderId() == null || form.getMainOrderId() == null ||
+        if (form.getOrderId() == null || form.getMainOrderId() == null ||
                 (StringUtil.isNullOrEmpty(form.getOperatorUser()) && !CommonConstant.HK_CLEAR_CUSTOMS.equals(form.getCmd())) ||
-                StringUtil.isNullOrEmpty(form.getCmd())){
-            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+                StringUtil.isNullOrEmpty(form.getCmd())) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
         form.setBusinessType(BusinessTypeEnum.ZGYS.getCode());
         OrderTransport orderTransport = new OrderTransport();
@@ -89,7 +90,7 @@ public class OrderInTransportController {
         auditInfoForm.setAuditUser(form.getOperatorUser());
         auditInfoForm.setFileViews(form.getFileViewList());
 
-        if(CommonConstant.COMFIRM_ORDER.equals(form.getCmd())){//确认接单
+        if (CommonConstant.COMFIRM_ORDER.equals(form.getCmd())) {//确认接单
             orderTransport.setStatus(OrderStatusEnum.TMS_T_1.getCode());
             orderTransport.setJiedanTime(LocalDateTime.now());
             orderTransport.setJiedanUser(form.getOperatorUser());
@@ -99,7 +100,7 @@ public class OrderInTransportController {
 
             auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_1.getCode());
             auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_1.getDesc());
-        }else if(CommonConstant.CAR_TAKE_GOODS.equals(form.getCmd())){//车辆提货
+        } else if (CommonConstant.CAR_TAKE_GOODS.equals(form.getCmd())) {//车辆提货
             orderTransport.setStatus(OrderStatusEnum.TMS_T_5.getCode());
 
             form.setStatus(OrderStatusEnum.TMS_T_5.getCode());
@@ -107,9 +108,9 @@ public class OrderInTransportController {
 
             auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_5.getCode());
             auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_5.getDesc());
-        }else if(CommonConstant.CAR_WEIGH.equals(form.getCmd())) {//车辆过磅
-            if(form.getCarWeighNum() == null){
-                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+        } else if (CommonConstant.CAR_WEIGH.equals(form.getCmd())) {//车辆过磅
+            if (form.getCarWeighNum() == null) {
+                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }
             orderTransport.setCarWeighNum(form.getCarWeighNum());
             orderTransport.setStatus(OrderStatusEnum.TMS_T_6.getCode());
@@ -119,11 +120,11 @@ public class OrderInTransportController {
 
             auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_6.getCode());
             auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_6.getDesc());
-        }else if(CommonConstant.HK_CLEAR_CUSTOMS.equals(form.getCmd())) {//香港清关
+        } else if (CommonConstant.HK_CLEAR_CUSTOMS.equals(form.getCmd())) {//香港清关
             //参数校验
-            if(form.getDriverInfoId() == null || StringUtil.isNullOrEmpty(form.getSeamlessNo()) ||
-               StringUtil.isNullOrEmpty(form.getClearCustomsNo()) || form.getVehicleId() == null){
-                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+            if (form.getDriverInfoId() == null || StringUtil.isNullOrEmpty(form.getSeamlessNo()) ||
+                    StringUtil.isNullOrEmpty(form.getClearCustomsNo()) || form.getVehicleId() == null) {
+                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }
             orderTransport.setDriverInfoId(form.getDriverInfoId());
             orderTransport.setVehicleId(form.getVehicleId());
@@ -135,7 +136,7 @@ public class OrderInTransportController {
 
             auditInfoForm.setAuditStatus(OrderStatusEnum.HK_CLEAR_1.getCode());
             auditInfoForm.setAuditTypeDesc(OrderStatusEnum.HK_CLEAR_1.getDesc());
-        }else if(CommonConstant.CAR_ENTER_WAREHOUSE.equals(form.getCmd())){//车辆入仓
+        } else if (CommonConstant.CAR_ENTER_WAREHOUSE.equals(form.getCmd())) {//车辆入仓
             orderTransport.setStatus(OrderStatusEnum.TMS_T_10.getCode());
 
             form.setStatus(OrderStatusEnum.TMS_T_10.getCode());
@@ -143,7 +144,7 @@ public class OrderInTransportController {
 
             auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_10.getCode());
             auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_10.getDesc());
-        }else if(CommonConstant.CAR_OUT_WAREHOUSE.equals(form.getCmd())){//车辆出仓
+        } else if (CommonConstant.CAR_OUT_WAREHOUSE.equals(form.getCmd())) {//车辆出仓
             orderTransport.setStatus(OrderStatusEnum.TMS_T_13.getCode());
 
             form.setStatus(OrderStatusEnum.TMS_T_13.getCode());
@@ -167,7 +168,7 @@ public class OrderInTransportController {
             tms12.setStatusName(OrderStatusEnum.TMS_T_12.getDesc());
             tms11.setBusinessType(BusinessTypeEnum.ZGYS.getCode());
             omsClient.saveOprStatus(tms12);
-        }else if(CommonConstant.CAR_SEND.equals(form.getCmd())){//车辆派送
+        } else if (CommonConstant.CAR_SEND.equals(form.getCmd())) {//车辆派送
             orderTransport.setStatus(OrderStatusEnum.TMS_T_14.getCode());
 
             form.setStatus(OrderStatusEnum.TMS_T_14.getCode());
@@ -175,7 +176,7 @@ public class OrderInTransportController {
 
             auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_14.getCode());
             auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_14.getDesc());
-        }else if(CommonConstant.CONFIRM_SIGN_IN.equals(form.getCmd())){//确认签收
+        } else if (CommonConstant.CONFIRM_SIGN_IN.equals(form.getCmd())) {//确认签收
             orderTransport.setStatus(OrderStatusEnum.TMS_T_15.getCode());
 
             form.setStatus(OrderStatusEnum.TMS_T_15.getCode());
@@ -190,8 +191,8 @@ public class OrderInTransportController {
         omsClient.saveOprStatus(form);
         omsClient.saveAuditInfo(auditInfoForm);
         boolean result = orderTransportService.saveOrUpdate(orderTransport);
-        if(!result){
-            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(),ResultEnum.OPR_FAIL.getMessage());
+        if (!result) {
+            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
         return CommonResult.success();
     }
@@ -199,6 +200,7 @@ public class OrderInTransportController {
 
     /**
      * 该接口针对填各种审核状态的操作
+     *
      * @param form
      * @return
      */
@@ -230,9 +232,9 @@ public class OrderInTransportController {
             }
             //根据主订单获取中港子订单号
             QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.eq(SqlConstant.MAIN_ORDER_NO,form.getMainOrderNo());
+            queryWrapper.eq(SqlConstant.MAIN_ORDER_NO, form.getMainOrderNo());
             OrderTransport transport = orderTransportService.getOne(queryWrapper);
-            if(transport == null){
+            if (transport == null) {
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }
             orderTransport.setStatus(form.getStatus());
@@ -261,14 +263,14 @@ public class OrderInTransportController {
                 omsClient.saveOprStatus(form);
             }
             auditInfoForm.setAuditTypeDesc(CommonConstant.GO_CUSTOMS_CHECK_DESC);
-        }else if(CommonConstant.CAR_GO_CUSTOMS.equals(form.getCmd())){//车辆通关
+        } else if (CommonConstant.CAR_GO_CUSTOMS.equals(form.getCmd())) {//车辆通关
             if (!(OrderStatusEnum.TMS_T_9.getCode().equals(form.getStatus()) ||
                     OrderStatusEnum.TMS_T_9_1.getCode().equals(form.getStatus()) ||
                     OrderStatusEnum.TMS_T_9_2.getCode().equals(form.getStatus()))) {
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }
             orderTransport.setStatus(form.getStatus());
-            orderTransport.setGoCustomsTime(DateUtils.str2LocalDateTime(form.getGoCustomsTime(),DateUtils.DATE_TIME_PATTERN));
+            orderTransport.setGoCustomsTime(DateUtils.str2LocalDateTime(form.getGoCustomsTime(), DateUtils.DATE_TIME_PATTERN));
 
             if (OrderStatusEnum.TMS_T_9.getCode().equals(form.getStatus())) {
                 //记录操作成功状态
@@ -290,18 +292,19 @@ public class OrderInTransportController {
 
     /**
      * 运输派车
+     *
      * @param form
      * @return
      */
     @ApiOperation(value = "运输派车")
     @PostMapping(value = "/transportSendCar")
     public CommonResult transportSendCar(@RequestBody @Valid SendCarForm form) {
-        if(StringUtil.isNullOrEmpty(form.getCmd())){
+        if (StringUtil.isNullOrEmpty(form.getCmd())) {
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
-        OrderSendCars orderSendCars = ConvertUtil.convert(form,OrderSendCars.class);
+        OrderSendCars orderSendCars = ConvertUtil.convert(form, OrderSendCars.class);
         //只有柜车才有柜号
-        if(form.getVehicleType() == 1){//吨车
+        if (form.getVehicleType() == 1) {//吨车
             form.setCntrNo(null);
         }
         OrderTransport orderTransport = new OrderTransport();
@@ -316,17 +319,17 @@ public class OrderInTransportController {
 
         AuditInfoForm auditInfoForm = new AuditInfoForm();
         auditInfoForm.setExtId(form.getOrderId());
-        if(CommonConstant.SEND_CAR.equals(form.getCmd()) || CommonConstant.EDIT_CAR.equals(form.getCmd())){
+        if (CommonConstant.SEND_CAR.equals(form.getCmd()) || CommonConstant.EDIT_CAR.equals(form.getCmd())) {
             //参数校验
-            if((CommonConstant.EDIT_CAR.equals(form.getCmd()) && form.getId() == null) ||
-              form.getOrderId() == null || form.getMainOrderId() == null ||
-              StringUtil.isNullOrEmpty(form.getTransportNo()) || StringUtil.isNullOrEmpty(form.getOrderNo()) ||
-              form.getVehicleSize() == null || form.getVehicleType() == null ||
-              form.getVehicleId() == null || form.getDriverInfoId() == null){
+            if ((CommonConstant.EDIT_CAR.equals(form.getCmd()) && form.getId() == null) ||
+                    form.getOrderId() == null || form.getMainOrderId() == null ||
+                    StringUtil.isNullOrEmpty(form.getTransportNo()) || StringUtil.isNullOrEmpty(form.getOrderNo()) ||
+                    form.getVehicleSize() == null || form.getVehicleType() == null ||
+                    form.getVehicleId() == null || form.getDriverInfoId() == null) {
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }
             //当运输派车后在驳回时,重新编辑,再次走流程时会出现两条派车记录,原来那条作废
-            if(CommonConstant.SEND_CAR.equals(form.getCmd())) {
+            if (CommonConstant.SEND_CAR.equals(form.getCmd())) {
                 QueryWrapper removeWrapper = new QueryWrapper();
                 removeWrapper.eq("order_no", form.getOrderNo());
                 orderSendCarsService.remove(removeWrapper);
@@ -335,9 +338,9 @@ public class OrderInTransportController {
             orderSendCars.setCntrPic(StringUtils.getFileStr(form.getCntrPics()));
             orderSendCars.setCntrPicName(StringUtils.getFileNameStr(form.getCntrPics()));
             orderSendCars.setStatus(OrderStatusEnum.TMS_T_2.getCode());
-            if(CommonConstant.SEND_CAR.equals(form.getCmd())) {
+            if (CommonConstant.SEND_CAR.equals(form.getCmd())) {
                 orderSendCars.setCreatedUser(UserOperator.getToken());
-            }else{
+            } else {
                 orderSendCars.setUpdatedTime(LocalDateTime.now());
                 orderSendCars.setUpdatedUser(UserOperator.getToken());
             }
@@ -358,10 +361,10 @@ public class OrderInTransportController {
             auditInfoForm.setAuditComment(form.getDescribes());
 
 
-        }else if(CommonConstant.AUDIT_CAR.equals(form.getCmd())){//运输审核
-            if(!(OrderStatusEnum.TMS_T_3.getCode().equals(form.getStatus()) ||
+        } else if (CommonConstant.AUDIT_CAR.equals(form.getCmd())) {//运输审核
+            if (!(OrderStatusEnum.TMS_T_3.getCode().equals(form.getStatus()) ||
                     OrderStatusEnum.TMS_T_3_1.getCode().equals(form.getStatus())) || form.getId() == null ||
-                    form.getOrderId() == null || form.getMainOrderId() == null){
+                    form.getOrderId() == null || form.getMainOrderId() == null) {
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }
             //更新派车信息
@@ -371,7 +374,7 @@ public class OrderInTransportController {
             //更新订单状态
             orderTransport.setStatus(form.getStatus());
             //记录操作状态
-            if(OrderStatusEnum.TMS_T_3.getCode().equals(form.getStatus())) {
+            if (OrderStatusEnum.TMS_T_3.getCode().equals(form.getStatus())) {
                 oprStatusForm.setStatus(OrderStatusEnum.TMS_T_3.getCode());
                 oprStatusForm.setStatusName(OrderStatusEnum.TMS_T_3.getDesc());
                 oprStatusForm.setDescription(form.getAuditComment());
@@ -390,14 +393,14 @@ public class OrderInTransportController {
 
         }
         orderSendCarsService.saveOrUpdate(orderSendCars);
-        if(!OrderStatusEnum.TMS_T_3_1.getCode().equals(form.getStatus()) ||
+        if (!OrderStatusEnum.TMS_T_3_1.getCode().equals(form.getStatus()) ||
                 CommonConstant.EDIT_CAR.equals(form.getCmd())) {
             omsClient.saveOprStatus(oprStatusForm);
         }
         omsClient.saveAuditInfo(auditInfoForm);
         boolean result = orderTransportService.saveOrUpdate(orderTransport);
-        if(!result){
-            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(),ResultEnum.OPR_FAIL.getMessage());
+        if (!result) {
+            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
         return CommonResult.success();
     }
@@ -407,13 +410,13 @@ public class OrderInTransportController {
      */
     @ApiOperation(value = "运输审核信息回显,参数=order_no=中港子订单号")
     @PostMapping(value = "/getOrderSendCars")
-    public CommonResult<OrderSendCarsVO> getOrderSendCars(@RequestBody  Map<String,Object> param){
-        String orderNo = MapUtil.getStr(param,SqlConstant.ORDER_NO);
-        if(StringUtil.isNullOrEmpty(orderNo)){
+    public CommonResult<OrderSendCarsVO> getOrderSendCars(@RequestBody Map<String, Object> param) {
+        String orderNo = MapUtil.getStr(param, SqlConstant.ORDER_NO);
+        if (StringUtil.isNullOrEmpty(orderNo)) {
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
         OrderSendCarsVO orderSendCars = orderSendCarsService.getOrderSendInfo(orderNo);
-        if(orderSendCars == null){
+        if (orderSendCars == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
         return CommonResult.success(orderSendCars);
@@ -425,12 +428,12 @@ public class OrderInTransportController {
      */
     @ApiOperation(value = "生成派车单号")
     @PostMapping(value = "/createTransportNo")
-    public CommonResult createTransportNo(){
-        String transportNo = StringUtils.loadNum(CommonConstant.P,12);
-        while (true){
-            if(!isExistTransportNo(transportNo)){//重复
-                transportNo = StringUtils.loadNum(CommonConstant.P,12);
-            }else {
+    public CommonResult createTransportNo() {
+        String transportNo = StringUtils.loadNum(CommonConstant.P, 12);
+        while (true) {
+            if (!isExistTransportNo(transportNo)) {//重复
+                transportNo = StringUtils.loadNum(CommonConstant.P, 12);
+            } else {
                 break;
             }
         }
@@ -438,17 +441,17 @@ public class OrderInTransportController {
     }
 
 
-
     /**
      * 派车单号是否存在
+     *
      * @param transportNo
      * @return
      */
-    private boolean isExistTransportNo(String transportNo){
+    private boolean isExistTransportNo(String transportNo) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(SqlConstant.TRANSPORT_NO,transportNo);
+        queryWrapper.eq(SqlConstant.TRANSPORT_NO, transportNo);
         List<OrderSendCars> orderSendCars = orderSendCarsService.list(queryWrapper);
-        if(orderSendCars == null || orderSendCars.size() == 0) {
+        if (orderSendCars == null || orderSendCars.size() == 0) {
             return true;
         }
         return false;
@@ -466,6 +469,7 @@ public class OrderInTransportController {
 
     /**
      * 该接口针对填各种驳回
+     *
      * @param form
      * @return
      */
@@ -484,10 +488,11 @@ public class OrderInTransportController {
         AuditInfoForm auditInfoForm = new AuditInfoForm();
         auditInfoForm.setExtId(form.getOrderId());
         auditInfoForm.setExtDesc(SqlConstant.ORDER_TRANSPORT);
+        auditInfoForm.setAuditComment(form.getCause());
         Integer rejectOptions = form.getRejectOptions() == null ? 1 : form.getRejectOptions();
         //删除操作流程记录
         OrderTransport orderTransport1 = orderTransportService.getById(form.getOrderId());
-        if(orderTransport1 == null){
+        if (orderTransport1 == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         List<String> deleteStatus = new ArrayList<>();
@@ -501,7 +506,7 @@ public class OrderInTransportController {
 
             auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_2_1.getCode());
             auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_2_1.getDesc());
-        }else if(OrderStatusEnum.TMS_T_3_2.getCode().equals(form.getCmd())){//运输审核驳回
+        } else if (OrderStatusEnum.TMS_T_3_2.getCode().equals(form.getCmd())) {//运输审核驳回
             orderTransport.setStatus(OrderStatusEnum.TMS_T_3_2.getCode());
 
             auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_3_2.getCode());

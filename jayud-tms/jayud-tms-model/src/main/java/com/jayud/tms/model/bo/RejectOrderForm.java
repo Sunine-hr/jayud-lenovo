@@ -19,4 +19,7 @@ public class RejectOrderForm {
 
     @ApiModelProperty(value = "驳回选项(1:驳回订单,2:驳回派车)")
     private Integer rejectOptions;
+
+    @ApiModelProperty(value = "驳回原因")
+    private String cause;
 }

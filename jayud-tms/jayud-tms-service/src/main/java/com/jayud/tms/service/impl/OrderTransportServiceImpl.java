@@ -123,11 +123,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             orderTakeAdr.setId(inputOrderTakeAdrForm.getTakeAdrId());
             orderTakeAdr.setTakeTime(inputOrderTakeAdrForm.getTakeTimeStr());
             orderTakeAdr.setOrderNo(orderTransport.getOrderNo());
-            logger.info("参数:" + orderTakeAdr.toString());
-            Boolean flag = orderTakeAdrService.saveOrUpdate(orderTakeAdr);
-            logger.info("修改ID:"+orderTakeAdr + "结果:"+flag);
-            logger.info("执行完毕");
-
+            orderTakeAdrService.saveOrUpdate(orderTakeAdr);
         }
         orderTransport.setCntrPic(StringUtils.getFileStr(form.getCntrPics()));
         orderTransport.setCntrPicName(StringUtils.getFileNameStr(form.getCntrPics()));

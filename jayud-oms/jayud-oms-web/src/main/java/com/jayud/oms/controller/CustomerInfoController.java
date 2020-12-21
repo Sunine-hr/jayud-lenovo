@@ -142,16 +142,16 @@ public class CustomerInfoController {
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "二期优化:已关联客户(结算单位)列表,id = 客户ID")
-    @PostMapping(value = "/relateUnitList")
-    public CommonResult<List<CustomerInfoVO>> relateUnitList(@RequestBody Map<String,Object> param) {
-        Long id = Long.valueOf(MapUtil.getStr(param, "id"));
-        if(id == null){
-            return CommonResult.error(ResultEnum.PARAM_ERROR);
-        }
-        List<CustomerInfoVO> customerInfoVOS = customerInfoService.relateUnitList(id);
-        return CommonResult.success(customerInfoVOS);
-    }
+//    @ApiOperation(value = "二期优化:已关联客户(结算单位)列表,id = 客户ID")
+//    @PostMapping(value = "/relateUnitList")
+//    public CommonResult<List<CustomerInfoVO>> relateUnitList(@RequestBody Map<String,Object> param) {
+//        Long id = Long.valueOf(MapUtil.getStr(param, "id"));
+//        if(id == null){
+//            return CommonResult.error(ResultEnum.PARAM_ERROR);
+//        }
+//        List<CustomerInfoVO> customerInfoVOS = customerInfoService.relateUnitList(id);
+//        return CommonResult.success(customerInfoVOS);
+//    }
 
     @ApiOperation(value = "二期优化:删除已关联客户(结算单位)列表,customerInfoId=客户ID,unitId=关联客户ID")
     @PostMapping(value = "/delRelateUnitList")
@@ -168,12 +168,12 @@ public class CustomerInfoController {
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "二期优化:关联客户(结算单位)列表")
-    @PostMapping(value = "/findRelateUnitList")
-    public CommonResult<List<CustomerInfoVO>> findRelateUnitList(@RequestBody QueryRelUnitInfoListForm form) {
-        List<CustomerInfoVO> customerInfoVOS = customerInfoService.findRelateUnitList(form);
-        return CommonResult.success(customerInfoVOS);
-    }
+//    @ApiOperation(value = "二期优化:关联客户(结算单位)列表")
+//    @PostMapping(value = "/findRelateUnitList")
+//    public CommonResult<List<CustomerInfoVO>> findRelateUnitList(@RequestBody QueryRelUnitInfoListForm form) {
+//        List<CustomerInfoVO> customerInfoVOS = customerInfoService.findRelateUnitList(form);
+//        return CommonResult.success(customerInfoVOS);
+//    }
 
     @ApiOperation(value = "二期优化:确认关联客户(结算单位)")
     @PostMapping(value = "/confirmRelateUnit")

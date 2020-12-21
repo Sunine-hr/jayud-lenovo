@@ -75,6 +75,11 @@ public  class RsaEncryptUtil {
         return encrypt(infoStr,vivoPublicKey);
     }
 
+    public static void main(String[] args) throws NoSuchPaddingException, NoSuchAlgorithmException, IOException, BadPaddingException, IllegalBlockSizeException, InvalidKeyException, InvalidKeySpecException {
+        String encryptedPassword = getEncryptedPassword("123456", "<RSAKeyValue><Modulus>4xGrWUFEftqNS4DvSOW9wfeYK1i9gJBYB+tmhz6E9QCo6cvRdmT+IaG6lE6U7sh1dP3atLc8lzvljDmxoDu/SBMLkDXiXJgj7AJWbhDUn1xCbQb/1jEb08jEqr/3K4+03bCX06W0V5HrjL53GiQ0dZHIO1eFdAvRDPYfvIwIWq0=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>");
+        System.out.println(encryptedPassword);
+    }
+
     /**
      * 实际加密算法
      * @param info 封装的password+时间密钥对

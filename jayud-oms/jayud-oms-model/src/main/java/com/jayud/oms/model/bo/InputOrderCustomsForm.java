@@ -15,15 +15,15 @@ public class InputOrderCustomsForm {
     @ApiModelProperty(value = "主订单号,前台忽略")
     private String mainOrderNo;
 
-    @ApiModelProperty(value = "通关口岸code",required = true)
+    @ApiModelProperty(value = "通关口岸code", required = true)
     @NotEmpty(message = "portCode is required")
     private String portCode;
 
-    @ApiModelProperty(value = "通关口岸",required = true)
+    @ApiModelProperty(value = "通关口岸", required = true)
     @NotEmpty(message = "portName is required")
     private String portName;
 
-    @ApiModelProperty(value = "货物流向",required = true)
+    @ApiModelProperty(value = "货物流向", required = true)
     @NotEmpty(message = "goodsType is required")
     private Integer goodsType;
 
@@ -39,7 +39,7 @@ public class InputOrderCustomsForm {
     @ApiModelProperty(value = "柜号上传附件地址数组集合")
     private List<FileView> cntrPics = new ArrayList<>();
 
-    @ApiModelProperty(value = "六联单号",required = true)
+    @ApiModelProperty(value = "六联单号", required = true)
     private String encode;
 
     @ApiModelProperty(value = "六联单号附件,前台忽略")
@@ -51,7 +51,7 @@ public class InputOrderCustomsForm {
     @ApiModelProperty(value = "六联单号附件数组集合")
     private List<FileView> encodePics = new ArrayList<>();
 
-    @ApiModelProperty(value = "业务模式(1-陆路运输 2-空运 3-海运 4-快递)",required = true)
+    @ApiModelProperty(value = "业务模式(1-陆路运输 2-空运 3-海运 4-快递)", required = true)
     private String bizModel;
 
     @ApiModelProperty(value = "提运单")
@@ -81,13 +81,16 @@ public class InputOrderCustomsForm {
     @ApiModelProperty(value = "是否代垫税金1-是 0-否")
     private String isAgencyTax;
 
+    @ApiModelProperty(value = "接单法人")
+    private String legalName;
+
     @ApiModelProperty(value = "接单法人ID")
     private Long legalEntityId;
 
     @ApiModelProperty(value = "报关类型 CBG-纯报关 CKBG-出口报关,前台忽略")
     private String classCode;
 
-    @ApiModelProperty(value = "子订单",required = true)
+    @ApiModelProperty(value = "子订单", required = true)
     @NotEmpty(message = "subOrders is required")
     private List<InputSubOrderCustomsForm> subOrders = new ArrayList<>();
 

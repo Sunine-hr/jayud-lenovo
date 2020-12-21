@@ -25,6 +25,8 @@ import com.jayud.tms.service.IOrderSendCarsService;
 import com.jayud.tms.service.IOrderTakeAdrService;
 import com.jayud.tms.service.IOrderTransportService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +48,8 @@ import java.util.stream.Collectors;
  */
 @Service
 public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper, OrderTransport> implements IOrderTransportService {
+
+    private static Logger logger = LoggerFactory.getLogger(OrderTransportServiceImpl.class);
 
     @Autowired
     IOrderTakeAdrService orderTakeAdrService;
@@ -119,7 +123,11 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             orderTakeAdr.setId(inputOrderTakeAdrForm.getTakeAdrId());
             orderTakeAdr.setTakeTime(inputOrderTakeAdrForm.getTakeTimeStr());
             orderTakeAdr.setOrderNo(orderTransport.getOrderNo());
-            orderTakeAdrService.saveOrUpdate(orderTakeAdr);
+            logger.info("参数:" + orderTakeAdr.toString());
+            Boolean flag = orderTakeAdrService.saveOrUpdate(orderTakeAdr);
+            logger.info("修改ID:"+orderTakeAdr + "结果:"+flag);
+            logger.info("执行完毕");
+
         }
         orderTransport.setCntrPic(StringUtils.getFileStr(form.getCntrPics()));
         orderTransport.setCntrPicName(StringUtils.getFileNameStr(form.getCntrPics()));

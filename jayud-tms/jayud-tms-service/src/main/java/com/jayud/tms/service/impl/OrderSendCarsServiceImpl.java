@@ -57,7 +57,7 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
     public SendCarListPdfVO initSendCarList(String orderNo) {
         List<SendCarListTempVO> tempList = baseMapper.initSendCarList(orderNo);
         SendCarListPdfVO sendCarListPdfVO = new SendCarListPdfVO();
-        if(tempList == null && tempList.size() > 0){
+        if(tempList != null && tempList.size() > 0){
             sendCarListPdfVO.setLegalName(tempList.get(0).getLegalName());
             sendCarListPdfVO.setLegalEnName(tempList.get(0).getLegalEnName());
             sendCarListPdfVO.setJobNumber(tempList.get(0).getJobNumber());

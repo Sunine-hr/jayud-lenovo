@@ -131,6 +131,9 @@ public class InputOrderTransportVO {
     @ApiModelProperty(value = "提货文件上传附件地址名称,前台忽略")
     private String takeFileName;
 
+    @ApiModelProperty(value = "是否车辆过磅")
+    private Boolean isVehicleWeigh;
+
     //中转信息
     @ApiModelProperty(value = "中转公司")
     private String companyName;

@@ -136,6 +136,9 @@ public class InputOrderTransportVO {
     @ApiModelProperty(value = "提货文件上传附件地址数组集合")
     private List<FileView> takeFiles = new ArrayList<>();
 
+    @ApiModelProperty(value = "是否车辆过磅")
+    private Boolean isVehicleWeigh;
+
     //中转信息
     @ApiModelProperty(value = "中转公司")
     private String companyName;

@@ -60,6 +60,9 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "车型尺寸")
     private Integer vehicleSize;
 
+    @ApiModelProperty(value = "车型尺寸描述")
+    private String vehicleSizeDesc;
+
     @ApiModelProperty(value = "柜号")
     private String cntrNo;
 
@@ -148,23 +151,54 @@ public class OrderTransportVO {
 
 
     public String getEntireAddress1() {
-        if(StringUtil.isNullOrEmpty(this.stateName1) || StringUtil.isNullOrEmpty(this.cityName1) ||
-                StringUtil.isNullOrEmpty(this.address1)){
-            return "";
+        String stateName1 = this.stateName1;
+        String cityName1 = this.cityName1;
+        String address1 = this.address1;
+        if(StringUtil.isNullOrEmpty(this.stateName1)){
+            stateName1 = "";
         }
-        return this.entireAddress1 = this.stateName1 + this.cityName1 + this.address1;
+        if(StringUtil.isNullOrEmpty(this.cityName1)){
+            cityName1 = "";
+        }
+        if(StringUtil.isNullOrEmpty(this.address1)){
+            address1 = "";
+        }
+        return this.entireAddress1 = stateName1 + cityName1 + address1;
     }
 
     public String getEntireAddress2() {
-        if(StringUtil.isNullOrEmpty(this.stateName2) || StringUtil.isNullOrEmpty(this.cityName2) ||
-                StringUtil.isNullOrEmpty(this.address2)){
-            return "";
+        String stateName2 = this.stateName2;
+        String cityName2 = this.cityName2;
+        String address2 = this.address2;
+        if(StringUtil.isNullOrEmpty(this.stateName2)){
+            stateName2 = "";
         }
-        return this.entireAddress2 = this.stateName2 + this.cityName2 + this.address2;
+        if(StringUtil.isNullOrEmpty(this.cityName2)){
+            cityName2 = "";
+        }
+        if(StringUtil.isNullOrEmpty(this.address2)){
+            address2 = "";
+        }
+        return this.entireAddress2 = stateName2 + cityName2 + address2;
     }
 
     public String getStatusDesc() {
        return OrderStatusEnum.getDesc(this.status);
+    }
+
+    public String getVehicleSizeDesc() {
+        if(this.vehicleSize != null){
+            if(this.vehicleSize == 1){
+                return "3T";
+            }else if(this.vehicleSize == 2){
+                return "5T";
+            }else if(this.vehicleSize == 3){
+                return "8T";
+            }else if(this.vehicleSize == 4){
+                return "10T";
+            }
+        }
+        return "";
     }
 
 }

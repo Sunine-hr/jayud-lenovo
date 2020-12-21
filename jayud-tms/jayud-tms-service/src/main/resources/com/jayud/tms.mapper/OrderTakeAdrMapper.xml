@@ -34,6 +34,7 @@
           da.`city_name` cityName,
           da.`address`,
           ota.delivery_id deliveryId,
+          ota.id takeAdrId,
           DATE_FORMAT(
             ota.`take_time`,
             '%Y-%m-%d %H:%i:%S'

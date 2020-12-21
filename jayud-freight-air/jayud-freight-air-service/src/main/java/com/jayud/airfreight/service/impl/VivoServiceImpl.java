@@ -23,6 +23,7 @@ import com.jayud.airfreight.service.IAirExtensionFieldService;
 import com.jayud.airfreight.service.IAirOrderService;
 import com.jayud.airfreight.service.VivoService;
 import com.jayud.common.ApiResult;
+import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.*;
@@ -47,6 +48,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -93,6 +95,8 @@ public class VivoServiceImpl implements VivoService {
     @Value("${vivo.public-key}")
     String publicKey;
 
+    private final String VIVO_TOEKN_STR = "VIVO_TOKEN";
+
     @Autowired
     private OmsClient omsClient;
     @Autowired
@@ -109,6 +113,8 @@ public class VivoServiceImpl implements VivoService {
     private TmsClient tmsClient;
     @Autowired
     private IAirOrderService airOrderService;
+    @Autowired
+    private RedisUtils redisUtils;
 
 
     /**
@@ -120,7 +126,7 @@ public class VivoServiceImpl implements VivoService {
     @Override
     public Map<String, Object> forwarderBookingConfirmedFeedback(ForwarderBookingConfirmedFeedbackForm form) {
         String url = urlBase + urlBookingConfirm;
-        return doPost(form, url);
+        return post(form, url);
     }
 
     /**
@@ -132,7 +138,7 @@ public class VivoServiceImpl implements VivoService {
     @Override
     public Map<String, Object> forwarderVehicleInfo(ForwarderVehicleInfoForm form) {
         String url = urlBase + urlVehicleInfo;
-        return doPost(form, url);
+        return post(form, url);
     }
 
     /**
@@ -145,13 +151,13 @@ public class VivoServiceImpl implements VivoService {
     @Override
     public Map<String, Object> forwarderLadingFile(ForwarderLadingFileForm form, MultipartFile file) {
         String url = urlBase + urlLadingFile;
-        return doPostWithFile(form, file, url);
+        return postWithFile(form, file, url);
     }
 
     @Override
     public Map<String, Object> forwarderLadingInfo(ForwarderLadingInfoForm form) {
         String url = urlBase + urlLadingInfo;
-        return doPost(form, url);
+        return post(form, url);
     }
 
     /**
@@ -163,7 +169,7 @@ public class VivoServiceImpl implements VivoService {
     @Override
     public Map<String, Object> forwarderAirFarePush(ForwarderAirFreightForm form) {
         String url = urlBase + urlAirFreightInfo;
-        return doPost(form, url);
+        return post(form, url);
     }
 
     /**
@@ -175,7 +181,7 @@ public class VivoServiceImpl implements VivoService {
     @Override
     public Map<String, Object> forwarderLandTransportationFarePush(ForwarderLandTransportationFareForm form) {
         String url = urlBase + urlLandTransportationCost;
-        return doPost(form, url);
+        return post(form, url);
     }
 
     /**
@@ -186,7 +192,7 @@ public class VivoServiceImpl implements VivoService {
         form.setBookingNo(bookingNo);
         form.setStatus(status);
         String url = urlBase + urlBookingRejected;
-        Map<String, Object> resultMap = doPost(form, url);
+        Map<String, Object> resultMap = post(form, url);
         return resultMap;
     }
 
@@ -196,7 +202,7 @@ public class VivoServiceImpl implements VivoService {
     @Override
     public Map<String, Object> forwarderDispatchRejected(DispatchRejectedForm form) {
         String url = urlBase + urlDispatchRejected;
-        return doPost(form, url);
+        return post(form, url);
     }
 
 
@@ -207,53 +213,110 @@ public class VivoServiceImpl implements VivoService {
      * @param url
      * @return
      */
-    private Map<String, Object> doPost(Object form, String url) {
+    private Map<String, Object> post(Object form, String url) {
         Gson gson = new Gson();
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<MultiValueMap<String, String>> body = null;
 //        body=new HttpEntity<MultiValueMap<String, String>>(JSONUtil.toBean(form,MultiValueMap.class),headers);
 
-        log.info("vivo参数==========" + gson.toJson(form));
+        String data = gson.toJson(form);
+        log.info("vivo参数==========" + data);
+
+        Map<String, Object> map = this.doPost(data, url);
+        if (map == null) {
+            //没有返回重新调用一次
+            map = doPost(data, url);
+            if (map == null) {
+                log.warn("请联系vivo客户");
+                return new HashMap<>();
+            }
+        }
+        //token过期,重新请求
+        if ((map.get("Message").toString().contains("已拒绝为此请求授权"))) {
+            redisUtils.delete(VIVO_TOEKN_STR);
+            map = this.doPost(data, url);
+        }
+
+//        String feedback = HttpRequest.post(url)
+//                .header("Authorization", String.format(getToken(null, null, null)))
+//                .header(Header.CONTENT_TYPE.name(), "multipart/form-data")
+//                .form("transfer_data", gson.toJson(form))
+//                .execute()
+//                .body();
+
+        //没有返回重新调用一次
+//        if (StringUtils.isEmpty(feedback)) {
+//            log.info("重试调用vivo接口,参数 data={}", gson.toJson(form));
+//            feedback = HttpRequest.post(url)
+//                    .header("Authorization", String.format(getToken(null, null, null)))
+//                    .header(Header.CONTENT_TYPE.name(), "multipart/form-data")
+//                    .form("transfer_data", gson.toJson(form))
+//                    .execute()
+//                    .body();
+//            if (StringUtils.isEmpty(feedback)) {
+//                log.warn("请联系vivo客户");
+//                return new HashMap<>();
+//            }
+//        }
+
+        return map;
+    }
+
+
+    private Map<String, Object> doPost(String form, String url) {
+        log.info("vivo参数==========" + form);
         String feedback = HttpRequest.post(url)
                 .header("Authorization", String.format(getToken(null, null, null)))
                 .header(Header.CONTENT_TYPE.name(), "multipart/form-data")
-                .form("transfer_data", gson.toJson(form))
+                .form("transfer_data", form)
                 .execute()
                 .body();
-
-        //没有返回重新调用一次
         if (StringUtils.isEmpty(feedback)) {
-            log.info("重试调用vivo接口,参数 data={}", gson.toJson(form));
-            feedback = HttpRequest.post(url)
-                    .header("Authorization", String.format(getToken(null, null, null)))
-                    .header(Header.CONTENT_TYPE.name(), "multipart/form-data")
-                    .form("transfer_data", gson.toJson(form))
-                    .execute()
-                    .body();
+            return null;
         }
-
         return JSONUtil.toBean(feedback, Map.class);
     }
 
-    private Map<String, Object> doPostWithFile(Object form, MultipartFile file, String url) {
+    private Map<String, Object> postWithFile(Object form, MultipartFile file, String url) {
         Gson gson = new Gson();
-        log.info("参数========" + gson.toJson(form));
+        String data = gson.toJson(form);
+        log.info("参数========" + data);
         File fw = new File(file.getOriginalFilename());
-        String feedback = "";
         try {
             FileUtils.copyInputStreamToFile(file.getInputStream(), fw);
-            log.info("文件大小====={}=======名称{}", FileUtils.sizeOf(fw), fw.getName());
-            feedback = HttpRequest.post(url)
-                    .header("Authorization", String.format(getToken(null, null, null)))
-                    .header(Header.CONTENT_TYPE.name(), "multipart/form-data")
-                    .form("transfer_data", gson.toJson(form))
-                    .form("MultipartFile", fw)
-                    .execute()
-                    .body();
-        } catch (Exception e) {
-            log.error("HttpRequest远程调用失败");
-            e.printStackTrace();
+        } catch (IOException e) {
+            log.warn("文件流操作失败");
+        }
+        log.info("文件大小====={}=======名称{}", FileUtils.sizeOf(fw), fw.getName());
+        Map<String, Object> map = this.doPostWithFile(data, fw, url);
+        if (map == null) {
+            //没有返回重新调用一次
+            map = doPostWithFile(data, fw, url);
+            if (map == null) {
+                log.warn("请联系vivo客户");
+                return new HashMap<>();
+            }
+        }
+        //token过期,重新请求
+        if ((map.get("Message").toString().contains("已拒绝为此请求授权"))) {
+            redisUtils.delete(VIVO_TOEKN_STR);
+            map = this.doPostWithFile(data, fw, url);
+        }
+
+        return map;
+    }
+
+    private Map<String, Object> doPostWithFile(String form, File fw, String url) {
+        String feedback = HttpRequest.post(url)
+                .header("Authorization", String.format(getToken(null, null, null)))
+                .header(Header.CONTENT_TYPE.name(), "multipart/form-data")
+                .form("transfer_data", form)
+                .form("MultipartFile", fw)
+                .execute()
+                .body();
+        if (StringUtils.isEmpty(feedback)) {
+            return null;
         }
         return JSONUtil.toBean(feedback, Map.class);
     }
@@ -267,6 +330,11 @@ public class VivoServiceImpl implements VivoService {
      * @return
      */
     private String getToken(String userName, String password, String scope) {
+        String vivoToekn = redisUtils.get(VIVO_TOEKN_STR);
+        if (vivoToekn != null) {
+            return vivoToekn;
+        }
+
         if (StringUtils.isBlank(userName) || StringUtils.isBlank(password) || StringUtils.isBlank(scope)) {
             //只要有一个参数为空，即调用默认的登录设置
             userName = defaultUsername;
@@ -294,8 +362,10 @@ public class VivoServiceImpl implements VivoService {
             Map resultMap = JSONUtil.toBean(feedback, Map.class);
             String access_token = MapUtil.getStr(resultMap, "access_token");
             if (!StringUtils.isEmpty(access_token)) {
+                redisUtils.set(VIVO_TOEKN_STR, access_token, 82800);
                 return String.format("Bearer %s", access_token);
             }
+
             Asserts.fail(ResultEnum.UNAUTHORIZED, "vivo 授权失败");
         }
         return null;
@@ -576,7 +646,11 @@ public class VivoServiceImpl implements VivoService {
     }
 
     public static void main(String[] args) {
-        UUID uuid = UUID.randomUUID();
-        System.out.println(uuid.toString());
+//        UUID uuid = UUID.randomUUID();
+//        System.out.println(uuid.toString());
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("Message", "已拒绝为此请求授权。");
+        System.out.println(map.get("Message").toString().contains("已拒绝为此请求授权"));
     }
 }

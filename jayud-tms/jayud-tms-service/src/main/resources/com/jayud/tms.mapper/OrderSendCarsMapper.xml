@@ -76,8 +76,9 @@
         FROM
             order_transport ot
             LEFT JOIN legal_entity le on le.legal_name = ot.legal_name
-			left join driver_info di on di.id = ot.driver_info_id
-			left join vehicle_info vi on vi.id = ot.vehicle_id
+			left join order_send_cars osc on ot.order_no = osc.order_no
+	        LEFT JOIN driver_info di ON di.id = osc.driver_info_id
+	        LEFT JOIN vehicle_info vi ON vi.id = osc.vehicle_id
             WHERE ot.`order_no` = #{orderNo}
     </select>
     <select id="initSendCarList"  resultType="com.jayud.tms.model.vo.SendCarListTempVO" >

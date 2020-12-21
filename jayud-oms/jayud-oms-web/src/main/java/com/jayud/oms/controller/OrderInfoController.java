@@ -83,9 +83,9 @@ public class OrderInfoController {
     @PostMapping("/createOrder")
     public CommonResult createOrder(@RequestBody InputOrderForm form) {
         //通用参数校验
-        if(form == null || StringUtil.isNullOrEmpty(form.getCmd()) ||
-           form.getOrderForm() == null || "".equals(form.getOrderForm())){
-            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+        if (form == null || StringUtil.isNullOrEmpty(form.getCmd()) ||
+                form.getOrderForm() == null || "".equals(form.getOrderForm())) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
         //主订单参数校验
         InputMainOrderForm inputMainOrderForm = form.getOrderForm();
@@ -123,7 +123,7 @@ public class OrderInfoController {
                 }
                 //六联单号必须为13位的纯数字
                 String encode = inputOrderCustomsForm.getEncode();
-                if(!(encode.matches("[0-9]{1,}") && encode.length() ==  13)){
+                if (!(encode.matches("[0-9]{1,}") && encode.length() == 13)) {
                     return CommonResult.error(ResultEnum.ENCODE_PURE_NUMBERS);
                 }
                 //附件处理
@@ -137,7 +137,7 @@ public class OrderInfoController {
                 inputOrderCustomsForm.setSeaTransPicName(StringUtils.getFileNameStr(inputOrderCustomsForm.getAirTransportPics()));
                 //报关订单中的子订单
                 List<InputSubOrderCustomsForm> subOrders = inputOrderCustomsForm.getSubOrders();
-                if(subOrders.size() == 0){
+                if (subOrders.size() == 0) {
                     return CommonResult.error(ResultEnum.PARAM_ERROR);
                 }
                 for (InputSubOrderCustomsForm subOrderCustomsForm : subOrders) {
@@ -167,7 +167,7 @@ public class OrderInfoController {
                 List<InputOrderTakeAdrForm> takeAdrForms1 = inputOrderTransportForm.getTakeAdrForms1();
                 List<InputOrderTakeAdrForm> takeAdrForms2 = inputOrderTransportForm.getTakeAdrForms2();
                 //提货地址和送货地址分别至少存在一条数据才可提交
-                if(takeAdrForms1 == null || takeAdrForms1.size() == 0 || takeAdrForms2 == null || takeAdrForms2.size() == 0){
+                if (takeAdrForms1 == null || takeAdrForms1.size() == 0 || takeAdrForms2 == null || takeAdrForms2.size() == 0) {
                     return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
                 }
                 List<InputOrderTakeAdrForm> takeAdrForms = new ArrayList<>();
@@ -181,10 +181,10 @@ public class OrderInfoController {
                     }
                 }
                 //清关参数校验
-                if(inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.XGQG.getCode())){
-                    if(StringUtil.isNullOrEmpty(inputOrderTransportForm.getHkLegalName()) ||
-                       StringUtil.isNullOrEmpty(inputOrderTransportForm.getHkUnitCode()) ||
-                       StringUtil.isNullOrEmpty(inputOrderTransportForm.getIsHkClear())){
+                if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.XGQG.getCode())) {
+                    if (StringUtil.isNullOrEmpty(inputOrderTransportForm.getHkLegalName()) ||
+                            StringUtil.isNullOrEmpty(inputOrderTransportForm.getHkUnitCode()) ||
+                            StringUtil.isNullOrEmpty(inputOrderTransportForm.getIsHkClear())) {
                         return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
                     }
                 }
@@ -192,6 +192,8 @@ public class OrderInfoController {
             //空运校验参数
             if (OrderStatusEnum.KY.getCode().equals(inputMainOrderForm.getClassCode())) {
                 InputAirOrderForm airOrderForm = form.getAirOrderForm();
+                //拼装地址信息
+                airOrderForm.assemblyAddress();
                 if (!airOrderForm.checkCreateOrder()) {
                     return CommonResult.error(ResultEnum.PARAM_ERROR);
                 }
@@ -200,8 +202,8 @@ public class OrderInfoController {
 
 
         boolean result = orderInfoService.createOrder(form);
-        if(!result) {
-            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(),ResultEnum.OPR_FAIL.getMessage());
+        if (!result) {
+            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
         return CommonResult.success();
     }
@@ -217,8 +219,8 @@ public class OrderInfoController {
     @PostMapping("/changeStatus")
     public CommonResult changeStatus(@RequestBody @Valid ChangeStatusListForm form) {
         Boolean result = orderInfoService.changeStatus(form);
-        if(!result){
-            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(),ResultEnum.OPR_FAIL.getMessage());
+        if (!result) {
+            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
         return CommonResult.success();
     }
@@ -227,13 +229,13 @@ public class OrderInfoController {
     @ApiOperation(value = "外部报关放行")
     @PostMapping(value = "/outCustomsRelease")
     public CommonResult outCustomsRelease(@RequestBody OprStatusForm form) {
-        if(form.getMainOrderId() == null || StringUtil.isNullOrEmpty(form.getOperatorUser()) ||
-                StringUtil.isNullOrEmpty(form.getEncode())){
-            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+        if (form.getMainOrderId() == null || StringUtil.isNullOrEmpty(form.getOperatorUser()) ||
+                StringUtil.isNullOrEmpty(form.getEncode())) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
         //六联单号必须为13位的纯数字
         String encode = form.getEncode();
-        if(!(encode.matches("[0-9]{1,}") && encode.length() ==  13)){
+        if (!(encode.matches("[0-9]{1,}") && encode.length() == 13)) {
             return CommonResult.error(ResultEnum.ENCODE_PURE_NUMBERS);
         }
         //外部报关放行:1.对主订单放行  2.随时可操作  3.没有出口报关的中港运输的单才可进行外部报关放行,有出口报关的就进行报关模块的报关放行
@@ -257,8 +259,8 @@ public class OrderInfoController {
         orderInfo.setUpUser(UserOperator.getToken());
         orderInfo.setUpTime(LocalDateTime.now());
         boolean result = orderInfoService.updateById(orderInfo);
-        if(!result){
-            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(),ResultEnum.OPR_FAIL.getMessage());
+        if (!result) {
+            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
         return CommonResult.success();
     }

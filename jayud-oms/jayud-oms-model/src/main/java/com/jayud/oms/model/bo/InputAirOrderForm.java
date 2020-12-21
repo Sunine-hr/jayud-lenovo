@@ -6,10 +6,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.enums.OrderAddressEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,6 +23,7 @@ import java.util.List;
  * @since 2020-11-30
  */
 @Data
+@Slf4j
 public class InputAirOrderForm {
 
     private static final long serialVersionUID = 1L;
@@ -80,6 +83,14 @@ public class InputAirOrderForm {
     @ApiModelProperty(value = "创建人(登录用户)")
     private String createUser;
 
+    @ApiModelProperty(value = "发货地址集合")
+    private List<AddOrderAddressForm> deliveryAddress;
+
+    @ApiModelProperty(value = "收货地址集合")
+    private List<AddOrderAddressForm> shippingAddress;
+
+    @ApiModelProperty(value = "通知地址集合")
+    private List<AddOrderAddressForm> notificationAddress;
 
     @ApiModelProperty(value = "空运订单地址信息")
     private List<AddOrderAddressForm> orderAddressForms;
@@ -102,12 +113,21 @@ public class InputAirOrderForm {
                 || this.goodTime == null) {
             return false;
         }
-        //地址
-        if (CollectionUtils.isEmpty(orderAddressForms)) {
+        // 发货/收货地址是必填项
+        if (CollectionUtils.isEmpty(this.deliveryAddress)) {
+            log.warn("发货地址信息不能为空");
+            return false;
+        }
+        if (CollectionUtils.isEmpty(this.shippingAddress)) {
+            log.warn("收货地址信息不能为空");
             return false;
         }
         // 发货/收货地址是必填项
         int count = 0;
+        if (CollectionUtils.isEmpty(deliveryAddress)){
+
+            return false;
+        }
         for (AddOrderAddressForm orderAddressForm : orderAddressForms) {
             if (!orderAddressForm.checkCreateAirOrder()) return false;
             if (OrderAddressEnum.DELIVER_GOODS.getCode().equals(orderAddressForm.getType()) ||
@@ -127,5 +147,17 @@ public class InputAirOrderForm {
         }
 
         return true;
+    }
+
+    /**
+     * 拼装地址
+     */
+    public void assemblyAddress() {
+        this.orderAddressForms = new ArrayList<>();
+        this.orderAddressForms.addAll(this.deliveryAddress);
+        this.orderAddressForms.addAll(this.shippingAddress);
+        if (CollectionUtils.isNotEmpty(this.notificationAddress)) {
+            this.orderAddressForms.addAll(this.notificationAddress);
+        }
     }
 }

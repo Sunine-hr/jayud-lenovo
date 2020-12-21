@@ -86,6 +86,9 @@
         ot.legal_name legalName,
         le.legal_en_name legalEnName,
         ot.order_no jobNumber,
+        di.phone,
+		vi.plate_number plateNumber,
+		ota1.enter_warehouse_no enterWarehouseNo,
         (select DATE_FORMAT(ota.take_time, '%Y-%m-%d' ) from order_take_adr ota where ota.opr_type = '1' and ota.order_no = ot.order_no limit 1) createTimeStr,
         di.`name`,
         DATE_FORMAT(ota1.take_time, '%Y-%m-%d' ) takeTimeStr,
@@ -100,6 +103,7 @@
         left join delivery_address da on da.id = ota1.delivery_id
         left join order_send_cars osc on osc.order_no = ot.order_no
         left join driver_info di on di.id = osc.driver_info_id
+        left join vehicle_info vi on vi.id = osc.vehicle_id
     WHERE
         ot.order_no = #{orderNo}
     </select>

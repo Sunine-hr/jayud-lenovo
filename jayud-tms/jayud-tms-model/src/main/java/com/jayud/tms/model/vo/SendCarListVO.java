@@ -15,6 +15,15 @@ public class SendCarListVO {
     @ApiModelProperty(value = "中港车司机")
     private String name;
 
+    @ApiModelProperty(value = "大陆车牌")
+    private String plateNumber;
+
+    @ApiModelProperty(value = "大陆电话")
+    private String phone;
+
+    @ApiModelProperty(value = "入仓号")
+    private String enterWarehouseNo;
+
     @ApiModelProperty(value = "送货时间")
     private String takeTimeStr;
 

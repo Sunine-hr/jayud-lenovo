@@ -47,7 +47,7 @@ public class InputAirOrderForm {
     @ApiModelProperty(value = "结算单位code")
     private String settlementUnitCode;
 
-    @ApiModelProperty(value = "接单法人id")
+    @ApiModelProperty(value = "操作主体id(接单法人id)")
     private Long legalId;
 
     @ApiModelProperty(value = "进出口类型(1：进口，2：出口)")

@@ -194,6 +194,8 @@ public class OrderComboxController {
                 yws.add(comboxVO);
             }
         }
+
+
         resultMap.put("yws", yws);
         return CommonResult.success(resultMap);
     }
@@ -342,7 +344,7 @@ public class OrderComboxController {
     }
 
 
-    @ApiModelProperty(value = "空运-飞机港口")
+    @ApiModelProperty(value = "空运 下拉选项-飞机港口")
     @RequestMapping(value = "/initAirPort")
     public CommonResult initAirPort() {
         ApiResult result = freightAirClient.getAirPort();

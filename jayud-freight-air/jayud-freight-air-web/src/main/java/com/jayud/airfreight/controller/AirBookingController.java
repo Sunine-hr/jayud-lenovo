@@ -6,6 +6,7 @@ import com.jayud.airfreight.model.po.AirBooking;
 import com.jayud.airfreight.service.IAirBookingService;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +27,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/airBooking")
+@Api(tags = "空运订舱")
 public class AirBookingController {
     @Autowired
     private IAirBookingService airBookingService;

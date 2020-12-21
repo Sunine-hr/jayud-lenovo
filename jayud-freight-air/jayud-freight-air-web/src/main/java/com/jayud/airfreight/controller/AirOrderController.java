@@ -23,6 +23,7 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.DateUtils;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,7 @@ import static com.jayud.common.enums.OrderStatusEnum.AIR_A_2;
  */
 @RestController
 @Slf4j
+@Api(tags = "空运订单")
 @RequestMapping("/airOrder")
 public class AirOrderController {
     @Autowired

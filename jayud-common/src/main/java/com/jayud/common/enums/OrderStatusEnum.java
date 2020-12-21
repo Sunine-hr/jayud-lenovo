@@ -20,6 +20,8 @@ public enum OrderStatusEnum {
     CKBG("CKBG", "出口报关"),
     XGQG("XGQG", "香港清关"),
     KYDD("KYDD", "空运订单"),
+    ZGYSDD("ZGYSDD","中港运输订单"),
+    NLYSDD("NLYSDD","内陆运输订单"),
 
 
     //主订单状态

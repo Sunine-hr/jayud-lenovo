@@ -3,6 +3,7 @@ package com.jayud.tms.service;
 import com.jayud.tms.model.bo.SendCarForm;
 import com.jayud.tms.model.po.OrderSendCars;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.OrderSendCarsVO;
 
 import java.util.List;
@@ -37,6 +38,7 @@ public interface IOrderSendCarsService extends IService<OrderSendCars> {
 
     /**
      * 根据中港订单号删除派车信息
+     *
      * @param orderNo
      * @return
      */
@@ -46,5 +48,12 @@ public interface IOrderSendCarsService extends IService<OrderSendCars> {
      * 派车消息推送
      */
     public void sendCarsMessagePush(SendCarForm form);
+
+    /**
+     * 派车驳回信息推送
+     *
+     * @param orderTransport
+     */
+    public boolean dispatchRejectionMsgPush(OrderTransport orderTransport);
 
 }

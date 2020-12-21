@@ -10,6 +10,7 @@ import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -497,10 +499,7 @@ public class OrderInTransportController {
         if (orderTransport1 == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        //删除派车信息
-        QueryWrapper removeWrapper = new QueryWrapper();
-        removeWrapper.eq("order_no", orderTransport1.getOrderNo());
-        orderSendCarsService.remove(removeWrapper);
+        List<String> deleteStatus = new ArrayList<>();
         if (OrderStatusEnum.TMS_T_1_1.getCode().equals(form.getCmd())) {//确认接单驳回
             orderTransport.setStatus(OrderStatusEnum.TMS_T_1_1.getCode());
 
@@ -519,15 +518,34 @@ public class OrderInTransportController {
         } else if (OrderStatusEnum.TMS_T_4_1.getCode().equals(form.getCmd())) {//确认派车驳回
             String cmd = form.getCmd();
             //TODO 驳回推送需要做的
-
+            if (rejectOptions == 2) {//派车驳回
+                cmd = OrderStatusEnum.TMS_T_3_1.getCode();
+                deleteStatus.add(OrderStatusEnum.TMS_T_3.getCode());
+                //推送派车驳回消息
+                if (this.orderSendCarsService.dispatchRejectionMsgPush(orderTransport1)) {
+                    return CommonResult.error(ResultEnum.OPR_FAIL);
+                }
+            }
             orderTransport.setStatus(cmd);
             auditInfoForm.setAuditStatus(cmd);
             auditInfoForm.setAuditTypeDesc(cmd);
-
-
         }
         omsClient.saveAuditInfo(auditInfoForm);
-        omsClient.delOprStatus(form.getOrderId()); //TODO 物流轨迹图不能根据id删除,可能删除到其他相同id数据
+        if (rejectOptions == 1) { //驳回到订单编辑
+            //删除这个订单下所有物流轨迹,重新走流程
+            this.omsClient.deleteLogisticsTrackByType(form.getOrderId(), BusinessTypeEnum.ZGYS.getCode());
+            //删除派车信息
+            QueryWrapper removeWrapper = new QueryWrapper();
+            removeWrapper.eq("order_no", orderTransport1.getOrderNo());
+            orderSendCarsService.remove(removeWrapper);
+        } else {
+            DelOprStatusForm deleteOpr = new DelOprStatusForm();
+            deleteOpr.setOrderId(form.getOrderId());
+            deleteOpr.setStatus(deleteStatus);
+            //删除特定流程
+            this.omsClient.delSpecOprStatus(deleteOpr);
+        }
+
         boolean result = orderTransportService.updateById(orderTransport);
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());

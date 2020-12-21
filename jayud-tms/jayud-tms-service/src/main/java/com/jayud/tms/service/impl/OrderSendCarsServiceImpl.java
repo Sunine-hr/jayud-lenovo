@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
 import com.jayud.common.enums.CreateUserTypeEnum;
 import com.jayud.common.enums.KafkaMsgEnums;
+import com.jayud.tms.feign.FreightAirApiClient;
 import com.jayud.tms.feign.MsgClient;
 import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.model.bo.SendCarForm;
@@ -16,6 +17,7 @@ import com.jayud.tms.model.vo.OrderSendCarsVO;
 import com.jayud.tms.service.IOrderSendCarsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.tms.service.IOrderTransportService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,7 @@ import java.util.Map;
  * @since 2020-09-15
  */
 @Service
+@Slf4j
 public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, OrderSendCars> implements IOrderSendCarsService {
 
     @Autowired
@@ -42,6 +45,8 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
     private MsgClient msgClient;
     @Autowired
     private OmsClient omsClient;
+    @Autowired
+    private FreightAirApiClient freightAirApiClient;
 
     @Override
     public OrderSendCarsVO getOrderSendInfo(String orderNo) {
@@ -115,6 +120,25 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
                 msgClient.consume(request);
                 break;
         }
+    }
+
+    /**
+     * 派车驳回信息推送
+     *
+     * @param orderTransport
+     */
+    @Override
+    public boolean dispatchRejectionMsgPush(OrderTransport orderTransport) {
+        switch (CreateUserTypeEnum.getEnum(orderTransport.getCreateUserType())) {
+            case VIVO:
+                ApiResult result = freightAirApiClient.forwarderDispatchRejected(orderTransport.getThirdPartyOrderNo());
+                if (result.getCode() != HttpStatus.SC_OK) {
+                    log.warn("请求vivo派车推送接口失败 msg={}", result.getMsg());
+                    return false;
+                }
+        }
+
+        return true;
     }
 
 

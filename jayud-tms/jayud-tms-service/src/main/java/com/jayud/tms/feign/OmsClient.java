@@ -2,6 +2,7 @@ package com.jayud.tms.feign;
 
 
 import com.jayud.common.ApiResult;
+import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.tms.model.bo.AuditInfoForm;
 import com.jayud.tms.model.bo.HandleSubProcessForm;
 import com.jayud.tms.model.bo.OprStatusForm;
@@ -62,6 +63,21 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/delOprStatus")
     ApiResult delOprStatus(@RequestParam("orderId") Long orderId);
+
+    /**
+     * 根据orderId和类型删除物流轨迹跟踪表
+     */
+    @RequestMapping(value = "/api/deleteLogisticsTrackByType")
+    ApiResult deleteLogisticsTrackByType(@RequestParam("orderId") Long orderId, @RequestParam("type") Integer type);
+
+    /**
+     * 删除特定单的操作流程
+     *
+     * @param form
+     * @return
+     */
+    @RequestMapping(value = "/api/delSpecOprStatus")
+    ApiResult delSpecOprStatus(@RequestBody DelOprStatusForm form);
 
     /**
      * 子订单流程

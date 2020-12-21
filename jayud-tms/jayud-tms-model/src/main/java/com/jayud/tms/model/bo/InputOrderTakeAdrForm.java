@@ -33,6 +33,9 @@ public class InputOrderTakeAdrForm {
     @ApiModelProperty(value = "地址信息(delivery_address id)")
     private Long deliveryId;
 
+    @ApiModelProperty(value = "提货/送货信息ID")
+    private Long takeAdrId;
+
     @ApiModelProperty(value = "提货日期")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime takeTimeStr;

@@ -6,6 +6,8 @@
     <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.CustomerInfo">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
+        <result column="unit_account" property="unitAccount"/>
+        <result column="unit_code" property="unitCode"/>
         <result column="id_code" property="idCode"/>
         <result column="types" property="types"/>
         <result column="contact" property="contact"/>
@@ -13,7 +15,7 @@
         <result column="address" property="address"/>
         <result column="email" property="email"/>
         <result column="legal_entity" property="legalEntity"/>
-        <result column="legal_entity_id" property="legalEntityId"/>
+        <result column="invoice_code" property="invoiceCode"/>
         <result column="tfn" property="tfn"/>
         <result column="if_contract" property="ifContract"/>
         <result column="settlement_type" property="settlementType"/>
@@ -32,7 +34,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-         id,name,id_code,types,contact,phone,address,email,legal_entity,legal_entity_id,tfn,
+         id,name,unit_account,unit_code,id_code,types,contact,phone,address,email,legal_entity,invoice_code,tfn,
          if_contract,settlement_type,account_period,estate,department_code,ku_code,yw_code,audit_status,
          created_user,updated_user,tax_type,tax_rate
     </sql>
@@ -42,6 +44,8 @@
         SELECT
         ci.id,
         ci.name,
+        ci.`unit_account` unitAccount,
+        ci.`unit_code` unitCode,
         ci.`id_code` idCode,
         ci.`types`,
         ci.`contact`,
@@ -49,6 +53,7 @@
         ci.`address`,
         ci.`email`,
         ci.`legal_entity` legalEntity,
+        ci.`invoice_code` invoiceCode,
         ci.`tfn`,
         ci.`if_contract` ifContract,
         ci.`settlement_type` settlementType,
@@ -113,14 +118,16 @@
         SELECT
         ci.id,
         ci.name,
+        ci.`unit_account` unitAccount,
+        ci.`unit_code` unitCode,
         ci.`id_code` idCode,
         ci.`types`,
         ci.`contact`,
         ci.`phone`,
         ci.`address`,
         ci.`email`,
-        (select GROUP_CONCAT(concat(le.id,':',le.legal_name)) from legal_entity le
-        left join customer_rela_legal orl on le.id = orl.legal_entity_id where orl.customer_info_id = ci.id group by ci.id) legalEntityStr,
+        ci.`legal_entity` legalEntity,
+        ci.`invoice_code` invoiceCode,
         ci.`tfn`,
         ci.`if_contract` ifContract,
         ci.`settlement_type` settlementType,
@@ -289,31 +296,8 @@
         </where>
     </select>
 
-    <select id="findUnitInfoByCode" parameterType="java.lang.String" resultType="com.jayud.oms.model.vo.CustomerInfoVO">
-        select ci.id,ci.id_code idCode,ci.`name` from customer_info ci
-        where ci.id in
-           (select cru.unit_id from customer_info c left join customer_rela_unit cru on c.id = cru.customer_info_id
-            where c.id_code = #{idCode})
-    </select>
-
-    <select id="relateUnitList" parameterType="java.lang.Long" resultType="com.jayud.oms.model.vo.CustomerInfoVO">
-        select ci.id_code idCode,ci.`name`,ci.contact,ci.phone,ci.address from customer_info ci
-        where ci.id in
-           (select cru.unit_id from customer_rela_unit cru
-            where cru.customer_info_id = #{id})
-    </select>
-
-    <select id="findRelateUnitList" parameterType="com.jayud.oms.model.bo.QueryRelUnitInfoListForm" resultType="com.jayud.oms.model.vo.CustomerInfoVO">
-        select ci.id,ci.id_code idCode,ci.`name`,ci.contact,ci.phone,ci.address from customer_info ci
-        where ci.audit_status = '10'
-				and ci.id not in
-           (select cru.unit_id from customer_rela_unit cru
-            where cru.customer_info_id = #{form.customerInfoId})
-        <if test="form.name != null and form.name != ''">
-            and ci.`name` like concat('%',#{form.name},'%')
-        </if>
-        <if test="form.idCode != null and form.idCode != ''">
-            and ci.id_code like concat('%',#{form.idCode},'%')
-        </if>
+    <select id="existCustomerInfo" resultType="com.jayud.oms.model.vo.CustomerInfoVO">
+        select id,name,id_code idCode from customer_info where name = #{name}
+         OR id_code = #{idCode}
     </select>
 </mapper>

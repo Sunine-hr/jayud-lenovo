@@ -12,9 +12,11 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.tms.feign.FileClient;
 import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.mapper.OrderTransportMapper;
 import com.jayud.tms.model.bo.*;
+import com.jayud.tms.model.po.DeliveryAddress;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.*;
@@ -59,6 +61,9 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     @Autowired
     OmsClient omsClient;
 
+    @Autowired
+    FileClient fileClient;
+
 
     @Override
     public boolean createOrderTransport(InputOrderTransportForm form) {
@@ -74,18 +79,10 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         for (InputOrderTakeAdrForm orderTakeAdrForm2 : orderTakeAdrForms2) {
             orderTakeAdrForm2.setOprType(Integer.valueOf(CommonConstant.VALUE_2));
         }
-        List<InputOrderTakeAdrForm> orderTakeAdrForms = new ArrayList<>();
 
-        //值为空的不进行保存
-        List<InputOrderTakeAdrForm> handleTakeAdrForms = new ArrayList<>();
-        handleTakeAdrForms.addAll(orderTakeAdrForms1);
-        handleTakeAdrForms.addAll(orderTakeAdrForms2);
-        for (InputOrderTakeAdrForm inputOrderTakeAdrForm : handleTakeAdrForms) {
-            //如果收货提货信息都不填,不保存该信息,视为恶意操作
-            if (inputOrderTakeAdrForm.getDeliveryId() != null) {
-                orderTakeAdrForms.add(inputOrderTakeAdrForm);
-            }
-        }
+        List<InputOrderTakeAdrForm> orderTakeAdrForms = new ArrayList<>();
+        orderTakeAdrForms.addAll(orderTakeAdrForms1);
+        orderTakeAdrForms.addAll(orderTakeAdrForms2);
 
         if (orderTransport.getId() != null) {//修改
             //修改时,先把以前的收货信息清空
@@ -108,13 +105,26 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             orderTransport.setCreatedUser(form.getLoginUser());
         }
         for (InputOrderTakeAdrForm inputOrderTakeAdrForm : orderTakeAdrForms) {
+            //有的地址是创建订单填的,有的地址是从地址簿选的
+            DeliveryAddress deliveryAddress = new DeliveryAddress();
+            deliveryAddress.setId(inputOrderTakeAdrForm.getDeliveryId());
+            deliveryAddress.setCustomerId(inputOrderTakeAdrForm.getCustomerId());
+            deliveryAddress.setContacts(inputOrderTakeAdrForm.getContacts());
+            deliveryAddress.setPhone(inputOrderTakeAdrForm.getPhone());
+            deliveryAddress.setAddress(inputOrderTakeAdrForm.getAddress());
+            deliveryAddressService.saveOrUpdate(deliveryAddress);
+
             OrderTakeAdr orderTakeAdr = ConvertUtil.convert(inputOrderTakeAdrForm, OrderTakeAdr.class);
+            orderTakeAdr.setDeliveryId(deliveryAddress.getId());
+            orderTakeAdr.setId(inputOrderTakeAdrForm.getTakeAdrId());
             orderTakeAdr.setTakeTime(inputOrderTakeAdrForm.getTakeTimeStr());
             orderTakeAdr.setOrderNo(orderTransport.getOrderNo());
-            orderTakeAdrService.save(orderTakeAdr);
+            orderTakeAdrService.saveOrUpdate(orderTakeAdr);
         }
         orderTransport.setCntrPic(StringUtils.getFileStr(form.getCntrPics()));
         orderTransport.setCntrPicName(StringUtils.getFileNameStr(form.getCntrPics()));
+        orderTransport.setTakeFile(StringUtils.getFileStr(form.getTakeFiles()));
+        orderTransport.setTakeFileName(StringUtils.getFileNameStr(form.getTakeFiles()));
         orderTransport.setStatus(OrderStatusEnum.TMS_T_0.getCode());
         boolean result = orderTransportService.saveOrUpdate(orderTransport);
         return result;
@@ -185,6 +195,11 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         //定义排序规则
         page.addOrder(OrderItem.desc("ot.id"));
         IPage<OrderTransportVO> pageInfo = baseMapper.findTransportOrderByPage(page, form);
+        String prePath = fileClient.getBaseUrl().getData().toString();
+        List<OrderTransportVO> pageList = pageInfo.getRecords();
+        for (OrderTransportVO orderTransportVO : pageList) {
+            orderTransportVO.setTakeFiles(StringUtils.getFileViews(orderTransportVO.getTakeFile(),orderTransportVO.getTakeFileName(),prePath));
+        }
         return pageInfo;
     }
 
@@ -433,6 +448,11 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             this.doDriverFeedbackStatus(form);
         }
 
+    }
+
+    @Override
+    public StatisticsDataNumberVO statisticsDataNumber() {
+        return baseMapper.statisticsDataNumber();
     }
 
 

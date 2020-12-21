@@ -16,10 +16,7 @@ import com.jayud.customs.model.bo.InputOrderCustomsForm;
 import com.jayud.customs.model.bo.InputSubOrderCustomsForm;
 import com.jayud.customs.model.bo.QueryCustomsOrderInfoForm;
 import com.jayud.customs.model.po.OrderCustoms;
-import com.jayud.customs.model.vo.CustomsOrderInfoVO;
-import com.jayud.customs.model.vo.InputOrderCustomsVO;
-import com.jayud.customs.model.vo.InputSubOrderCustomsVO;
-import com.jayud.customs.model.vo.OrderCustomsVO;
+import com.jayud.customs.model.vo.*;
 import com.jayud.customs.service.IOrderCustomsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -180,5 +177,10 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
 
         }
         return inputOrderCustomsVO;
+    }
+
+    @Override
+    public StatisticsDataNumberVO statisticsDataNumber() {
+        return baseMapper.statisticsDataNumber();
     }
 }

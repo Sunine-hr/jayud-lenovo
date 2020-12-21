@@ -115,4 +115,15 @@ public interface OrderReceivableBillDetailMapper extends BaseMapper<OrderReceiva
      * @return
      */
     CostAmountVO getSCostAmountView(@Param("billNo") String billNo);
+
+    /**
+     * 当前订单是否已经存在当前法人主体，结算单位，订单类型中,若存在则不做数量统计
+     * @param legalName
+     * @param unitAccount
+     * @param subType
+     * @param orderNo
+     * @return
+     */
+    List<OrderReceivableBillDetail> getNowSOrderExist(@Param("legalName") String legalName, @Param("unitAccount") String unitAccount,
+                                                     @Param("subType") String subType,@Param("orderNo") String orderNo);
 }

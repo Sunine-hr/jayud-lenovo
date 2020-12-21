@@ -1,13 +1,12 @@
 package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.bo.QueryVehicleInfoForm;
 import com.jayud.oms.model.po.VehicleInfo;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.vo.VehicleInfoVO;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -44,4 +43,9 @@ public interface IVehicleInfoService extends IService<VehicleInfo> {
     List<VehicleInfo> getVehicleInfoByStatus(String status);
 
     boolean enableOrDisableVehicle(Long id);
+
+    /**
+     * 根据司机查询车辆信息
+     */
+    List<VehicleInfoVO> findVehicleByDriverName(String driverName);
 }

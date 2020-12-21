@@ -3,12 +3,11 @@ package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.oms.model.bo.QueryCusAccountForm;
 import com.jayud.oms.model.bo.QueryCustomerInfoForm;
-import com.jayud.oms.model.bo.QueryRelUnitInfoListForm;
 import com.jayud.oms.model.po.CustomerInfo;
-import com.jayud.oms.model.vo.CustAccountVO;
 import com.jayud.oms.model.vo.CustomerInfoVO;
+import com.jayud.oms.model.bo.QueryCusAccountForm;
+import com.jayud.oms.model.vo.CustAccountVO;
 
 import java.util.List;
 import java.util.Map;
@@ -64,24 +63,10 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
     IPage<CustomerInfoVO> findCustomerBasicsInfoByPage(QueryCustomerInfoForm form);
 
     /**
-     * 根据客户CODE获取结算单位
+     * 做客户代码和客户名称唯一性校验
      * @param idCode
+     * @param name
      * @return
      */
-    List<CustomerInfoVO> findUnitInfoByCode(String idCode);
-
-    /**
-     * 根据客户ID获取结算单位
-     * @param id
-     * @return
-     */
-    List<CustomerInfoVO> relateUnitList(Long id);
-
-    /**
-     * 查询审核通过的关联客户,并且没有关联当前客户的
-     * @param form
-     * @return
-     */
-    List<CustomerInfoVO> findRelateUnitList(QueryRelUnitInfoListForm form);
-
+    List<CustomerInfoVO> existCustomerInfo(String idCode,String name);
 }

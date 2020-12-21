@@ -225,7 +225,8 @@ public class MiniAppController {
         String mainOrderNo = json.getString("mainOrderNo");
         String orderNo = json.getString("orderNo");
 
-        DriverInfoLinkVO driverInfoLink = this.driverInfoService.getDriverInfoLink(driverId);
+        //根据子订单ID去找派车信息，然后找到车辆供应商信息 待开发 TODO
+        //DriverInfoLinkVO driverInfoLink = this.driverInfoService.getDriverInfoLink(driverId);
 
         DriverEmploymentFee driverEmploymentFee = new DriverEmploymentFee()
                 .setCostCode(form.getCostCode())
@@ -236,8 +237,8 @@ public class MiniAppController {
                 .setMainOrderNo(mainOrderNo)
                 .setOrderId(form.getOrderId())
                 .setOrderNo(orderNo)
-                .setSupplierCode(driverInfoLink.getSupplierCode())
-                .setSupplierName(driverInfoLink.getSupplierName())
+                //.setSupplierCode(driverInfoLink.getSupplierCode())
+                //.setSupplierName(driverInfoLink.getSupplierName())
                 .setCreateTime(LocalDateTime.now())
                 .setStatus(EmploymentFeeStatusEnum.SUBMIT.getCode())
                 .setDriverId(driverId);

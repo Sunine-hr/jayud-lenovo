@@ -62,9 +62,6 @@ public class OrderTransport extends Model<OrderTransport> {
     @ApiModelProperty(value = "仓库代码(warehouse_info)")
     private String warehouseInfoId;
 
-    @ApiModelProperty(value = "六联单号")
-    private String encode;
-
     @ApiModelProperty(value = "状态")
     private String status;
 
@@ -94,6 +91,9 @@ public class OrderTransport extends Model<OrderTransport> {
 
     @ApiModelProperty(value = "香港清关司机ID")
     private Long driverInfoId;
+
+    @ApiModelProperty(value = "香港清关车辆ID")
+    private Long vehicleId;
 
     @ApiModelProperty(value = "无缝单号")
     private String seamlessNo;
@@ -130,6 +130,15 @@ public class OrderTransport extends Model<OrderTransport> {
 
     @ApiModelProperty(value = "预计通关时间")
     private LocalDateTime preGoCustomsTime;
+
+    @ApiModelProperty(value = "提货文件")
+    private String takeFile;
+
+    @ApiModelProperty(value = "提货文件名称")
+    private String takeFileName;
+
+    @ApiModelProperty(value = "是否车辆过磅")
+    private Boolean isVehicleWeigh;
 
     @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo)")
     private Integer createUserType;

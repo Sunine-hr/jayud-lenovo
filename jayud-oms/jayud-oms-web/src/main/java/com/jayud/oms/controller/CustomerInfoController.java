@@ -100,6 +100,12 @@ public class CustomerInfoController {
         } else {
             customerInfo.setCreatedUser(UserOperator.getToken());
         }
+        //校验客户代码和客户名称的唯一性
+        List<CustomerInfoVO> oldCustomerInfos = customerInfoService.existCustomerInfo(form.getIdCode(),form.getName());
+        if((oldCustomerInfos != null && oldCustomerInfos.size()>1) || (oldCustomerInfos != null && oldCustomerInfos.size() == 1 &&
+                oldCustomerInfos.get(0).getId() != form.getId())){
+            return CommonResult.error(ResultEnum.CUSTOMER_CODE_EXIST);
+        }
         customerInfo.setAuditStatus(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode());
         customerInfoService.saveOrUpdate(customerInfo);//保存客户信息
         form.setId(customerInfo.getId());

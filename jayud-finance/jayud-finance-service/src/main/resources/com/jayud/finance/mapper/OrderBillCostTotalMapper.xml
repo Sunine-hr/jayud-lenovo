@@ -25,13 +25,14 @@
         opc.currency_code currencyCode,
         opc.id costId,
         ci.`name` costInfoName,
-        opc.amount money, ifnull((
-        SELECT
-        cr.exchange_rate
-        FROM
-        currency_rate cr
-        WHERE
-        cr.dcid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = #{settlementCurrency} )
+        opc.change_amount oldLocalMoney,
+        opc.amount money,
+        opc.amount * ifnull((
+        SELECT cr.exchange_rate FROM currency_rate cr
+        WHERE cr.dcid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = 'CNY' )
+        AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = opc.currency_code ) and cr.month = #{accountTermStr}),0) localMoney,
+        ifnull((SELECT cr.exchange_rate FROM currency_rate cr
+        WHERE cr.dcid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = #{settlementCurrency} )
         AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = opc.currency_code ) and cr.month = #{accountTermStr}),0) exchangeRate
         FROM
         order_payment_cost opc
@@ -48,12 +49,12 @@
         orc.currency_code currencyCode,
         orc.id costId,
         ci.`name` costInfoName,
-        orc.amount money, ifnull((
-        SELECT
-        cr.exchange_rate
-        FROM
-        currency_rate cr
-        WHERE
+        orc.change_amount oldLocalMoney,
+        orc.amount money,
+        orc.amount * ifnull((SELECT cr.exchange_rate FROM currency_rate cr WHERE
+        cr.dcid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = 'CNY' )
+        AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = orc.currency_code ) and cr.`month`=#{accountTermStr} ORDER BY cr.created_time desc limit 1),0) localMoney,
+        ifnull((SELECT cr.exchange_rate FROM currency_rate cr WHERE
         cr.dcid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = #{settlementCurrency} )
         AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = orc.currency_code ) and cr.`month`=#{accountTermStr} ORDER BY cr.created_time desc limit 1),0) exchangeRate
         FROM

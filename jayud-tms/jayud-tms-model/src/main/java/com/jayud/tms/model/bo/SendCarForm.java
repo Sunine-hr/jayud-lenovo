@@ -25,21 +25,6 @@ public class SendCarForm {
     @ApiModelProperty(value = "运输对应子订单",required = true)
     private String orderNo;
 
-    @ApiModelProperty(value = "是否有六联单",required = true)
-    private Boolean isHaveEncode;
-
-    @ApiModelProperty(value = "六联单号,勾了有就必填，没有就不填")
-    private String encode;
-
-    @ApiModelProperty(value = "六联单号文件地址,前台忽略")
-    private String encodeUrl;
-
-    @ApiModelProperty(value = "六联单号文件地址名称,前台忽略")
-    private String encodeUrlName;
-
-    @ApiModelProperty(value = "六联单号附件数组集合")
-    private List<FileView> encodePics = new ArrayList<>();
-
     @ApiModelProperty(value = "车型(1吨车 2柜车)",required = true)
     private Integer vehicleType;
 
@@ -58,23 +43,11 @@ public class SendCarForm {
     @ApiModelProperty(value = "柜号上传附件地址数组集合")
     private List<FileView> cntrPics = new ArrayList<>();
 
-    @ApiModelProperty(value = "供应商ID",required = true)
-    private Long supplierInfoId;
-
-    @ApiModelProperty(value = "大陆车牌号",required = true)
-    private String licensePlate;
+    @ApiModelProperty(value = "车辆ID",required = true)
+    private Long vehicleId;
 
     @ApiModelProperty(value = "大陆司机名",required = true)
-    private String driverInfoId;
-
-    @ApiModelProperty(value = "HK车牌号",required = true)
-    private String hkLicensePlate;
-
-    @ApiModelProperty(value = "仓库ID",required = true)
-    private Long warehouseInfoId;
-
-    @ApiModelProperty(value = "司机电话")
-    private String driverPhone;
+    private Long driverInfoId;
 
     @ApiModelProperty(value = "要求")
     private String remarks;

@@ -3,21 +3,18 @@ package com.jayud.oms.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.UserOperator;
+import com.jayud.oms.mapper.VehicleInfoMapper;
 import com.jayud.oms.model.bo.QueryVehicleInfoForm;
 import com.jayud.oms.model.enums.StatusEnum;
-import com.jayud.oms.model.po.SupplierInfo;
 import com.jayud.oms.model.po.VehicleInfo;
-import com.jayud.oms.mapper.VehicleInfoMapper;
-import com.jayud.oms.model.po.WarehouseInfo;
 import com.jayud.oms.model.vo.VehicleInfoVO;
 import com.jayud.oms.service.IVehicleInfoService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -110,6 +107,11 @@ public class VehicleInfoServiceImpl extends ServiceImpl<VehicleInfoMapper, Vehic
 
         VehicleInfo vehicleInfo = new VehicleInfo().setId(id).setStatus(status);
         return this.updateById(vehicleInfo);
+    }
+
+    @Override
+    public List<VehicleInfoVO> findVehicleByDriverName(String driverName) {
+        return baseMapper.findVehicleByDriverName(driverName);
     }
 
 

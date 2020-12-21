@@ -85,9 +85,9 @@ public class ReceiveBillController {
         List<ViewBilToOrderVO> list = billService.viewReceiveBill(costIds);
         resultMap.put(CommonConstant.LIST, list);//分页数据
         List<SheetHeadVO> sheetHeadVOS = billService.findSheetHead(costIds);
-        resultMap.put(CommonConstant.SHEET_HEAD, sheetHeadVOS);//表头
-        ViewBillVO viewBillVO = billService.getViewBillByCostIds(costIds);
-        resultMap.put(CommonConstant.WHOLE_DATA, viewBillVO);//全局数据
+        resultMap.put(CommonConstant.SHEET_HEAD,sheetHeadVOS);//表头
+        ViewBillVO viewBillVO = billService.getViewBillByCostIds(costIds,form.getCmd());
+        resultMap.put(CommonConstant.WHOLE_DATA,viewBillVO);//全局数据
         return CommonResult.success(resultMap);
     }
 

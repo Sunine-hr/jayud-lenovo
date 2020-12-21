@@ -20,6 +20,9 @@ public class PaymentNotPaidBillVO {
     @ApiModelProperty(value = "订单编号")
     private String orderNo;
 
+    @ApiModelProperty(value = "子订单编号")
+    private String subOrderNo;
+
     @ApiModelProperty(value = "业务类型")
     private String bizCodeDesc;
 

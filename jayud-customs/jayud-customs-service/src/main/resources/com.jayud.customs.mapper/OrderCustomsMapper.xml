@@ -174,9 +174,21 @@
             AND oc.`status` = 'C_5' and oc.class_code = 'CBG'
         </if>
         <if test="form.cmd == 'costAudit'">
-            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = oi.order_no AND opc.`status` = '2' and opc.sub_type = 'bg')
-            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = oi.order_no AND orc.`status` = '2' and orc.sub_type = 'bg'))
+            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = oc.order_no AND opc.`status` = '2' and opc.sub_type = 'bg')
+            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = oc.order_no AND orc.`status` = '2' and orc.sub_type = 'bg'))
         </if>
     </select>
-
+    <select id="statisticsDataNumber"  resultType="com.jayud.customs.model.vo.StatisticsDataNumberVO" >
+    select
+        (SELECT count(1) FROM order_customs oc,order_info oi WHERE oc.`main_order_no` = oi.`order_no` and oi.`status` = 1 AND oc.`status` = 'C_0') bgjd,
+        (SELECT count(1) FROM order_customs oc,order_info oi WHERE oc.`main_order_no` = oi.`order_no` and oi.`status` = 1 AND oc.`status` = 'C_1') bgdd,
+        (SELECT count(1) FROM order_customs oc,order_info oi WHERE oc.`main_order_no` = oi.`order_no` and oi.`status` = 1 AND oc.`status` = 'C_2') bgfh,
+        (SELECT count(1) FROM order_customs oc,order_info oi WHERE oc.`main_order_no` = oi.`order_no` and oi.`status` = 1 AND oc.`status` = 'C_3') bgsb,
+        (SELECT count(1) FROM order_customs oc,order_info oi WHERE oc.`main_order_no` = oi.`order_no` and oi.`status` = 1 AND oc.`status` = 'C_4') bgfx,
+        (SELECT count(1) FROM order_customs oc,order_info oi WHERE oc.`main_order_no` = oi.`order_no` and oi.`status` = 1 AND oc.`status` = 'C_5_1') bhlb,
+        (SELECT count(1) FROM order_customs oc,order_info oi WHERE oc.`main_order_no` = oi.`order_no` and oi.`status` = 1 AND oc.`status` = 'C_5') tgqr,
+        (SELECT count(1) FROM order_customs oc,order_info oi WHERE oc.`main_order_no` = oi.`order_no` and oi.`status` = 1 AND oc.`status` = 'C_6_2') bgyc
+    from
+        dual
+    </select>
 </mapper>

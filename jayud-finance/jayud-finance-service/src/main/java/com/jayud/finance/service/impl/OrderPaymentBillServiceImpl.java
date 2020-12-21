@@ -33,10 +33,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
- * 服务实现类
+ *  服务实现类
  * </p>
  *
  * @author chuanmei
@@ -66,7 +67,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
     @Override
     public IPage<OrderPaymentBillVO> findPaymentBillByPage(QueryPaymentBillForm form) {
         //定义分页参数
-        Page<OrderPaymentBillVO> page = new Page(form.getPageNum(), form.getPageSize());
+        Page<OrderPaymentBillVO> page = new Page(form.getPageNum(),form.getPageSize());
         IPage<OrderPaymentBillVO> pageInfo = null;
         if ("main".equals(form.getCmd())) {
             pageInfo = baseMapper.findPaymentBillByPage(page, form);//法人主体/供应商/可汇总主订单费用的维度统计
@@ -92,6 +93,16 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         //定义排序规则
         page.addOrder(OrderItem.desc("temp.costId"));
         IPage<PaymentNotPaidBillVO> pageInfo = baseMapper.findNotPaidBillByPage(page, form);
+        List<PaymentNotPaidBillVO> pageList = pageInfo.getRecords();
+        for (PaymentNotPaidBillVO paymentNotPaidBillVO : pageList) {
+            //处理目的地:当有两条或两条以上时,则获取中转仓地址
+            if(!StringUtil.isNullOrEmpty(paymentNotPaidBillVO.getEndAddress())){
+                String[] strs = paymentNotPaidBillVO.getEndAddress().split(",");
+                if(strs.length > 1){
+                    paymentNotPaidBillVO.setEndAddress(receivableBillService.getWarehouseAddress(paymentNotPaidBillVO.getOrderNo()));
+                }
+            }
+        }
         return pageInfo;
     }
 
@@ -118,11 +129,25 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             orderBillCostTotalVOS = costTotalService.findOrderFBillCostTotal(costIds, settlementCurrency, form.getAccountTermStr());
             for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                 BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();//如果费率为0，则抛异常回滚数据
-                if (exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0) {
+                if ((exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0) && !orderBillCostTotalVO.getCurrencyCode().equals(settlementCurrency)) {
                     //根据币种查询币种描述
                     String oCurrency = currencyRateService.getNameByCode(orderBillCostTotalVO.getCurrencyCode());
                     String dCurrency = currencyRateService.getNameByCode(settlementCurrency);
                     sb.append("原始币种:" + oCurrency + ",兑换币种:" + dCurrency + ";");
+                    flag = false;
+                }
+                if(orderBillCostTotalVO.getCurrencyCode().equals("CNY")){
+                    orderBillCostTotalVO.setLocalMoney(orderBillCostTotalVO.getOldLocalMoney());
+                }
+            }
+            //出账时要以结算期为汇率记录本币金额，需要校验是否配置汇率
+            List<OrderBillCostTotalVO> tempOrderBillCostTotalVOS = costTotalService.findOrderFBillCostTotal(costIds, "CNY", form.getAccountTermStr());
+            for (OrderBillCostTotalVO orderBillCostTotalVO : tempOrderBillCostTotalVOS) {
+                BigDecimal localMoney = orderBillCostTotalVO.getLocalMoney();//如果本币金额为0，说明汇率为空没配置
+                if ((localMoney == null || localMoney.compareTo(new BigDecimal("0")) == 0) && !orderBillCostTotalVO.getCurrencyCode().equals("CNY")) {
+                    //根据币种查询币种描述
+                    String oCurrency = currencyRateService.getNameByCode(orderBillCostTotalVO.getCurrencyCode());
+                    sb.append("原始币种:"+oCurrency+",兑换币种:人民币;");
                     flag = false;
                 }
             }
@@ -140,20 +165,19 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
         //生成账单操作才是生成对账单数据
-        if ("create".equals(form.getCmd()) && costIds.size() > 0) {
+        if("create".equals(form.getCmd()) && costIds.size() > 0){
             //先保存对账单信息，在保存对账单详情信息
-            OrderPaymentBill orderPaymentBill = ConvertUtil.convert(paymentBillForm, OrderPaymentBill.class);
+            OrderPaymentBill orderPaymentBill = ConvertUtil.convert(paymentBillForm,OrderPaymentBill.class);
             //1.统计已出账金额alreadyPaidAmount
-            BigDecimal nowBillAmount = paymentBillDetailForms.stream().map(OrderPaymentBillDetailForm::getLocalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-            BigDecimal alreadyPaidAmount = getAlreadyPaidAmount(paymentBillForm.getLegalName(), paymentBillForm.getSupplierChName(), form.getSubType());
+            BigDecimal nowBillAmount = paymentBillDetailForms.stream().map(OrderPaymentBillDetailForm::getLocalAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
+            BigDecimal alreadyPaidAmount = getAlreadyPaidAmount(paymentBillForm.getLegalName(),paymentBillForm.getSupplierChName(),form.getSubType());
             orderPaymentBill.setAlreadyPaidAmount(alreadyPaidAmount.add(nowBillAmount));
             //2.统计已出账订单数billOrderNum
             List<String> validOrders = new ArrayList<>();
+            orderNos = orderNos.stream().distinct().collect(Collectors.toList());
             for (String orderNo : orderNos) {
-                QueryWrapper queryWrapper1 = new QueryWrapper();
-                queryWrapper1.eq("order_no", orderNo);
-                List<OrderPaymentBillDetail> orderNoOjects = paymentBillDetailService.list(queryWrapper1);
-                if (orderNoOjects == null || orderNoOjects.size() == 0) {
+                List<OrderPaymentBillDetail> orderNoObjects= paymentBillDetailService.getNowFOrderExist(paymentBillForm.getLegalName(),paymentBillForm.getSupplierChName(),form.getSubType(),orderNo);
+                if(orderNoObjects == null || orderNoObjects.size() == 0){
                     validOrders.add(orderNo);
                 }
             }
@@ -193,7 +217,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
                 paymentBillDetails.get(i).setAccountTerm(form.getAccountTermStr());
                 paymentBillDetails.get(i).setSettlementCurrency(form.getSettlementCurrency());
                 paymentBillDetails.get(i).setAuditStatus(BillEnum.B_1.getCode());
-                paymentBillDetails.get(i).setCreatedOrderTime(DateUtils.convert2Date(paymentBillDetailForms.get(i).getCreatedTimeStr(), DateUtils.DATE_PATTERN));
+                paymentBillDetails.get(i).setCreatedOrderTime(DateUtils.convert2Date(paymentBillDetailForms.get(i).getCreatedTimeStr(),DateUtils.DATE_PATTERN));
                 paymentBillDetails.get(i).setMakeUser(form.getLoginUserName());
                 paymentBillDetails.get(i).setMakeTime(LocalDateTime.now());
                 paymentBillDetails.get(i).setCreatedUser(form.getLoginUserName());
@@ -208,11 +232,15 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                 orderBillCostTotalVO.setBillNo(form.getBillNo());
                 orderBillCostTotalVO.setCurrencyCode(settlementCurrency);
-                BigDecimal localMoney = orderBillCostTotalVO.getMoney();//本币金额
-                BigDecimal money = localMoney.multiply(orderBillCostTotalVO.getExchangeRate());
+                BigDecimal money = orderBillCostTotalVO.getMoney();//录入费用时的金额
+                BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();
+                if(exchangeRate == null || exchangeRate.compareTo(new BigDecimal("0")) == 0){
+                    exchangeRate = new BigDecimal("1");
+                }
+                money = money.multiply(exchangeRate);
                 orderBillCostTotalVO.setMoney(money);
-                OrderBillCostTotal orderBillCostTotal = ConvertUtil.convert(orderBillCostTotalVO, OrderBillCostTotal.class);
-                orderBillCostTotal.setLocalMoney(localMoney);
+                OrderBillCostTotal orderBillCostTotal = ConvertUtil.convert(orderBillCostTotalVO,OrderBillCostTotal.class);
+                orderBillCostTotal.setLocalMoney(orderBillCostTotalVO.getLocalMoney());
                 orderBillCostTotal.setMoneyType("1");
                 orderBillCostTotals.add(orderBillCostTotal);
             }
@@ -237,13 +265,14 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
                     viewBillToOrder.setEndAddress(receivableBillService.getWarehouseAddress(viewBillToOrder.getOrderNo()));
                 }
             }
-            for (ViewBillToCostClassVO viewBillToCostClass : findCostClass) {
-                if ((StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo()) && viewBillToOrder.getOrderNo().equals(viewBillToCostClass.getOrderNo()))
-                        || ((!StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo())) && viewBillToOrder.getSubOrderNo().equals(viewBillToCostClass.getSubOrderNo()))) {
+            for(ViewBillToCostClassVO viewBillToCostClass : findCostClass){
+                if((StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo()) && StringUtil.isNullOrEmpty(viewBillToCostClass.getSubOrderNo())
+                        && viewBillToOrder.getOrderNo().equals(viewBillToCostClass.getOrderNo()))
+                        || ((!StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo())) && viewBillToOrder.getSubOrderNo().equals(viewBillToCostClass.getSubOrderNo()))){
                     try {
                         String addProperties = "";
                         String addValue = "";
-                        Map<String, Object> propertiesMap = new HashMap<String, Object>();
+                        Map<String,Object> propertiesMap = new HashMap<String,Object>();
                         Class cls = viewBillToCostClass.getClass();
                         Field[] fields = cls.getDeclaredFields();
                         for (int i = 0; i < fields.length; i++) {
@@ -297,8 +326,8 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
     }
 
     @Override
-    public ViewBillVO getViewBillByCostIds(List<Long> costIds) {
-        return baseMapper.getViewBillByCostIds(costIds);
+    public ViewBillVO getViewBillByCostIds(List<Long> costIds,String cmd) {
+        return baseMapper.getViewBillByCostIds(costIds,cmd);
     }
 
     @Override

@@ -69,7 +69,7 @@ public interface IOrderReceivableBillService extends IService<OrderReceivableBil
      * 预览账单全局数据
      * @return
      */
-    ViewBillVO getViewBillByCostIds(List<Long> costIds);
+    ViewBillVO getViewBillByCostIds(List<Long> costIds,String cmd);
 
     /**
      * 已出账订单数

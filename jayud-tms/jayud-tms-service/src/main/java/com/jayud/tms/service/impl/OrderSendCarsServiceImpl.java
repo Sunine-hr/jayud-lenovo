@@ -3,6 +3,7 @@ package com.jayud.tms.service.impl;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.ApiResult;
 import com.jayud.common.enums.CreateUserTypeEnum;
 import com.jayud.common.enums.KafkaMsgEnums;
@@ -12,6 +13,7 @@ import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.model.bo.SendCarForm;
 import com.jayud.tms.model.po.OrderSendCars;
 import com.jayud.tms.mapper.OrderSendCarsMapper;
+import com.jayud.tms.model.vo.*;
 import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.OrderSendCarsVO;
 import com.jayud.tms.service.IOrderSendCarsService;
@@ -71,6 +73,26 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
         QueryWrapper<OrderSendCars> condition = new QueryWrapper<>();
         condition.lambda().eq(OrderSendCars::getOrderNo, orderNo);
         return this.baseMapper.selectOne(condition);
+    }
+
+    @Override
+    public DriverInfoPdfVO initDriverInfo(String orderNo) {
+        return baseMapper.initDriverInfo(orderNo);
+    }
+
+    @Override
+    public SendCarListPdfVO initSendCarList(String orderNo) {
+        List<SendCarListTempVO> tempList = baseMapper.initSendCarList(orderNo);
+        SendCarListPdfVO sendCarListPdfVO = new SendCarListPdfVO();
+        if(tempList != null && tempList.size() > 0){
+            sendCarListPdfVO.setLegalName(tempList.get(0).getLegalName());
+            sendCarListPdfVO.setLegalEnName(tempList.get(0).getLegalEnName());
+            sendCarListPdfVO.setJobNumber(tempList.get(0).getJobNumber());
+            sendCarListPdfVO.setCreateTimeStr(tempList.get(0).getCreateTimeStr());
+            List<SendCarListVO> sendCarListVOList = ConvertUtil.convertList(tempList,SendCarListVO.class);
+            sendCarListPdfVO.setSendCarListVOList(sendCarListVOList);
+        }
+        return sendCarListPdfVO;
     }
 
     /**

@@ -1,20 +1,13 @@
 package com.jayud.tms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.common.ApiResult;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.tms.model.bo.InputOrderTransportForm;
 import com.jayud.tms.model.bo.OprStatusForm;
 import com.jayud.tms.model.bo.QueryDriverOrderTransportForm;
 import com.jayud.tms.model.bo.QueryOrderTmsForm;
 import com.jayud.tms.model.po.OrderTransport;
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.tms.model.vo.DriverOrderTransportVO;
-import com.jayud.tms.model.vo.InputOrderTransportVO;
-import com.jayud.tms.model.vo.OrderTransportVO;
-import com.jayud.tms.model.vo.SendCarPdfVO;
-import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import com.jayud.tms.model.vo.*;
 
 import java.util.List;
 
@@ -92,7 +85,6 @@ public interface IOrderTransportService extends IService<OrderTransport> {
 
     /**
      * 司机反馈状态
-     *
      * @param form
      */
     void doDriverFeedbackStatus(OprStatusForm form);
@@ -103,7 +95,8 @@ public interface IOrderTransportService extends IService<OrderTransport> {
     void driverCustomsClearanceVehicles(OprStatusForm form);
 
     /**
-     * 审核消息推送
+     *中港运输各个菜单列表数据量统计
+     * @return
      */
-
+    StatisticsDataNumberVO statisticsDataNumber();
 }

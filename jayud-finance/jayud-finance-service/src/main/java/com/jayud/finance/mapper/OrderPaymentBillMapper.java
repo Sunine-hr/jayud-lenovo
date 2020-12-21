@@ -103,9 +103,10 @@ public interface OrderPaymentBillMapper extends BaseMapper<OrderPaymentBill> {
     /**
      * 预览账单全局数据
      * @param costIds
+     * @param cmd
      * @return
      */
-    ViewBillVO getViewBillByCostIds(@Param("costIds") List<Long> costIds);
+    ViewBillVO getViewBillByCostIds(@Param("costIds") List<Long> costIds,@Param("cmd") String cmd);
 
     /**
      * 从删除的costIds里面挑出那种保存确定的数据

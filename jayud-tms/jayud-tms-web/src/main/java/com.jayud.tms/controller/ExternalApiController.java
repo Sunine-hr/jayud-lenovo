@@ -44,10 +44,9 @@ public class ExternalApiController {
 
     @Autowired
     private IOrderSendCarsService orderSendCarsService;
+
     @Autowired
     private IOrderTakeAdrService orderTakeAdrService;
-    @Autowired
-    private OrderInTransportController orderInTransportController;
     @Autowired
     private ITmsExtensionFieldService tmsExtensionFieldService;
 

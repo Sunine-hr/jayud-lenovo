@@ -293,7 +293,7 @@ public class OrderInTransportController {
         OrderSendCars orderSendCars = ConvertUtil.convert(form,OrderSendCars.class);
         //只有柜车才有柜号
         if(form.getVehicleType() != null && form.getVehicleType() == 1){//吨车
-            orderSendCars.setCntrNo(null);
+            orderSendCars.setCntrNo("");
         }
         OrderTransport orderTransport = new OrderTransport();
         orderTransport.setId(form.getOrderId());
@@ -334,6 +334,7 @@ public class OrderInTransportController {
             //更新订单状态
             orderTransport.setVehicleSize(form.getVehicleSize());
             orderTransport.setVehicleType(form.getVehicleType());
+            orderTransport.setCntrNo(orderSendCars.getCntrNo());
             orderTransport.setStatus(OrderStatusEnum.TMS_T_2.getCode());
 
             //记录操作状态

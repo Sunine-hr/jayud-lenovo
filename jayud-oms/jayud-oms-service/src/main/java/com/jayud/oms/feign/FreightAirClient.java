@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -59,4 +60,8 @@ public interface FreightAirClient {
      */
     @RequestMapping(value = "/api/airfreight/initAirPort")
     public ApiResult getAirPort();
+
+    @ApiModelProperty(value = "主订单下拉选项-飞机港口,贸易类型")
+    @RequestMapping(value = "/api/airfreight/mainOrder/initAir")
+    public ApiResult<Map<String, Object>> initAir();
 }

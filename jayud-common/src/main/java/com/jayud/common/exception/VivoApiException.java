@@ -22,4 +22,8 @@ public class VivoApiException extends RuntimeException {
         this.status=0;
         this.message= super.getMessage();
     }
+    public VivoApiException(String msg, Throwable e) {
+        super(msg, e);
+        this.message = msg;
+    }
 }

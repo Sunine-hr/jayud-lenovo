@@ -140,7 +140,7 @@
     </select>
     <select id="findNotPaidBillByPage" parameterType="com.jayud.finance.bo.QueryNotPaidBillForm" resultType="com.jayud.finance.vo.ReceiveNotPaidBillVO" >
         select * from (
-        SELECT
+        SELECT DISTINCT
         orc.main_order_no orderNo,
         orc.order_no subOrderNo,
         pb.`name` bizCodeDesc,

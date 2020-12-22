@@ -59,6 +59,8 @@ public class ViewBilToOrderVO {
                 return "8T";
             }else if("4".equals(this.vehicleSize)){
                 return "10T";
+            }else if("5".equals(this.vehicleSize)){
+                return "12T";
             }
         }
         return "";

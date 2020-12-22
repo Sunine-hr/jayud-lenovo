@@ -102,6 +102,8 @@ public class InputOrderTakeAdrVO {
                 return "8T";
             }else if(this.vehicleSize == 4){
                 return "10T";
+            }else if(this.vehicleSize == 5){
+                return "12T";
             }
         }
         return "";

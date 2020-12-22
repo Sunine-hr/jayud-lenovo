@@ -1,6 +1,9 @@
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.jayud.customs.model.po.CustomsReceivable;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.ParseException;
@@ -17,7 +20,9 @@ import org.springframework.util.CollectionUtils;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -202,6 +207,32 @@ public class ApiControllerTest {
             this.exec(apply_no_list, 5);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+    }
+
+
+    /**
+     * 测试json
+     * <p>测试String(json)->Map</p>
+     * <p>测试String(json)->List</p>
+     * <p>测试Object->String(json)</p>
+     */
+    @Test
+    public void testJson(){
+        String str = "[{\"declare_id\":2,\"port_no\":\"5301\",\"customer_name\":\"佳裕达国际\",\"shipper_name\":\"长华国际贸易(深圳)有限公司\",\"cust_linkman\":\"\",\"custom_apply_no\":\"530120201010576891\",\"apply_dt\":\"2020-12-10 00:00:00\",\"goods_name\":\"PA6塑胶粒/新料\",\"cabin_no\":\"JYD12\",\"contract_no\":\"450092393\",\"trade_no\":\"0110\",\"start_country_no\":\"HKG\",\"bus_no\":\"JYDZB20120073\",\"book_no\":null,\"accompany_no\":\"120000008391628\",\"vessel\":null,\"voyage\":\"1100378721743\",\"emsno\":null,\"num_no\":null,\"container_type_no\":null,\"container_no\":null,\"cost_note\":\"\",\"WF\":0.00,\"CGF\":0.00,\"DLF\":0.00,\"HDF\":0.00,\"KSSMF\":0.00,\"DZF\":0.00,\"GCF\":0.00,\"BCLHF\":0.00,\"GBF1\":0.00,\"SF\":0.00,\"CDF\":0.00,\"GDF\":0.00,\"HZQD\":0.00,\"GS\":0.00,\"ZZS\":0.00,\"YSF\":0.00,\"GBF001\":0.00,\"Y3C\":0.00,\"XGF\":0.00,\"DDF\":0.00,\"XGFY\":0.00,\"JKHDF\":0.00,\"CYDL\":0.00,\"DL\":0.00,\"XFS\":0.00,\"HWTY\":0.00,\"BGF\":100.00,\"HDDLF\":0.00,\"FDLHF\":0.00,\"BSQBGF\":0.00,\"XYF\":0.00,\"GLCD\":10.00,\"BJ\":100.00,\"MTF\":0.00,\"MTBA\":0.00,\"DEL\":0.00,\"OTH\":0.00,\"CZF\":0.00,\"HGYGF\":0.00,\"sjbj_cost\":0.00,\"xzxd_cost\":0.00,\"sjdd_cost\":0.00,\"kd_cost\":0.00,\"qtc_cost\":0.00}]";
+        System.out.println(str);
+        Map<String, String> msg = new HashMap<>();
+        msg.put("msg", str);
+        String json = JSONObject.toJSONString(msg);//<p>测试Object->String(json)</p>
+        Map param = JSONObject.parseObject(json, Map.class);//<p>测试String(json)->Map</p>
+        String reqMsg = MapUtil.getStr(param, "msg");
+        log.debug("金蝶接收到报关应收数据：{}", reqMsg);
+        JSONArray receivableArray = JSONObject.parseArray(reqMsg);//<p>测试String(json)->List</p>
+        for (Object o : receivableArray) {
+            JSONObject jsonObject = (JSONObject) o;
+            CustomsReceivable data = jsonObject.toJavaObject(CustomsReceivable.class);
+            log.debug("data={}", data);
         }
 
     }

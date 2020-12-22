@@ -3,6 +3,7 @@ package com.jayud.common.config;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -14,7 +15,7 @@ import java.util.Enumeration;
  * @author: cao_wencao
  * @date: 2020-09-25 16:36
  */
-//@Component
+@Component
 @Slf4j
 public class FeignRequestInterceptor implements RequestInterceptor {
     @Override
@@ -34,6 +35,21 @@ public class FeignRequestInterceptor implements RequestInterceptor {
             }
         } else {
             log.info("feign interceptor error header:{}", requestTemplate);
+        }
+
+        Enumeration<String> bodyNames = request.getParameterNames();
+        StringBuffer body =new StringBuffer();
+        if (bodyNames != null) {
+            while (bodyNames.hasMoreElements()) {
+                String name = bodyNames.nextElement();
+                String values = request.getParameter(name);
+                body.append(name).append("=").append(values).append("&");
+            }
+        }
+        if(body.length()!=0) {
+            body.deleteCharAt(body.length()-1);
+            requestTemplate.body(body.toString());
+            log.info("feign interceptor body:{}",body.toString());
         }
     }
 }

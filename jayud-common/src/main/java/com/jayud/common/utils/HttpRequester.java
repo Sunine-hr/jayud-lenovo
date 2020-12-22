@@ -16,7 +16,10 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -273,6 +276,24 @@ public class HttpRequester {
             }
         }
         return result;
+    }
+
+    /**
+     * 获取头部信息
+     *
+     * @param key 键
+     * @return
+     */
+    public static String getHead(String key) {
+        return getHttpRequestServletContext().getHeader(key);
+    }
+
+    /**
+     * 获取请求上下文
+     */
+    public static HttpServletRequest getHttpRequestServletContext() {
+        ServletRequestAttributes servlet = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        return servlet.getRequest();
     }
 
 

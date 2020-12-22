@@ -25,6 +25,8 @@ import com.jayud.tms.service.IOrderSendCarsService;
 import com.jayud.tms.service.IOrderTakeAdrService;
 import com.jayud.tms.service.IOrderTransportService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +48,8 @@ import java.util.stream.Collectors;
  */
 @Service
 public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper, OrderTransport> implements IOrderTransportService {
+
+    private static Logger logger = LoggerFactory.getLogger(OrderTransportServiceImpl.class);
 
     @Autowired
     IOrderTakeAdrService orderTakeAdrService;
@@ -125,7 +129,9 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         orderTransport.setCntrPicName(StringUtils.getFileNameStr(form.getCntrPics()));
         orderTransport.setTakeFile(StringUtils.getFileStr(form.getTakeFiles()));
         orderTransport.setTakeFileName(StringUtils.getFileNameStr(form.getTakeFiles()));
-        orderTransport.setStatus(OrderStatusEnum.TMS_T_0.getCode());
+        if(!form.getIsGoodsEdit()){
+            orderTransport.setStatus(OrderStatusEnum.TMS_T_0.getCode());
+        }
         boolean result = orderTransportService.saveOrUpdate(orderTransport);
         return result;
     }

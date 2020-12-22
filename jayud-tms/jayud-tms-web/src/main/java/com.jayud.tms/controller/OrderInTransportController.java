@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -304,8 +305,8 @@ public class OrderInTransportController {
         }
         OrderSendCars orderSendCars = ConvertUtil.convert(form, OrderSendCars.class);
         //只有柜车才有柜号
-        if (form.getVehicleType() == 1) {//吨车
-            form.setCntrNo(null);
+        if(form.getVehicleType() != null && form.getVehicleType() == 1){//吨车
+            orderSendCars.setCntrNo("");
         }
         OrderTransport orderTransport = new OrderTransport();
         orderTransport.setId(form.getOrderId());
@@ -347,6 +348,7 @@ public class OrderInTransportController {
             //更新订单状态
             orderTransport.setVehicleSize(form.getVehicleSize());
             orderTransport.setVehicleType(form.getVehicleType());
+            orderTransport.setCntrNo(orderSendCars.getCntrNo());
             orderTransport.setStatus(OrderStatusEnum.TMS_T_2.getCode());
 
             //记录操作状态
@@ -495,6 +497,10 @@ public class OrderInTransportController {
         if (orderTransport1 == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
+        //删除派车信息
+        QueryWrapper removeWrapper = new QueryWrapper();
+        removeWrapper.eq("order_no",orderTransport1.getOrderNo());
+        orderSendCarsService.remove(removeWrapper);
         List<String> deleteStatus = new ArrayList<>();
         if (OrderStatusEnum.TMS_T_1_1.getCode().equals(form.getCmd())) {//确认接单驳回
             orderTransport.setStatus(OrderStatusEnum.TMS_T_1_1.getCode());
@@ -531,9 +537,9 @@ public class OrderInTransportController {
             //删除这个订单下所有物流轨迹,重新走流程
             this.omsClient.deleteLogisticsTrackByType(form.getOrderId(), BusinessTypeEnum.ZGYS.getCode());
             //删除派车信息
-            QueryWrapper removeWrapper = new QueryWrapper();
-            removeWrapper.eq("order_no", orderTransport1.getOrderNo());
-            orderSendCarsService.remove(removeWrapper);
+            QueryWrapper removeWrapper1 = new QueryWrapper();
+            removeWrapper1.eq("order_no", orderTransport1.getOrderNo());
+            orderSendCarsService.remove(removeWrapper1);
         } else {
             DelOprStatusForm deleteOpr = new DelOprStatusForm();
             deleteOpr.setOrderId(form.getOrderId());

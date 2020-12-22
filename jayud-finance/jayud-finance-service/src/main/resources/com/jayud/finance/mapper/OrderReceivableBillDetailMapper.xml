@@ -363,8 +363,8 @@
     </select>
     <select id="getReceivableHeaderForm" parameterType="java.lang.String" resultType="com.jayud.finance.bo.ReceivableHeaderForm">
         SELECT DISTINCT
-            oi.customer_name customerName,
-            ci.unit_account settleOrgName,
+            orb.unit_account customerName,
+            orb.legal_name settleOrgName,
             orbd.settlement_currency currency,
             d.`name` saleDeptName,
             orbd.order_no businessNo,
@@ -373,7 +373,8 @@
         FROM
             order_receivable_cost orc
             left join order_info oi on oi.order_no = orc.main_order_no
-          left join order_receivable_bill_detail orbd on orbd.cost_id = orc.id
+            left join order_receivable_bill_detail orbd on orbd.cost_id = orc.id
+			left join order_receivable_bill orb on orb.id = orbd.bill_id
             left join department d on d.id = oi.biz_belong_depart
             left join customer_info ci on ci.unit_code = orc.customer_code
         where orbd.bill_no = #{billNo}
@@ -384,8 +385,9 @@
             ( SELECT code_name FROM cost_type ct WHERE ct.id = orc.cost_type_id ) expenseCategoryName,
             ( SELECT cg.NAME FROM cost_genre cg WHERE cg.id = orc.cost_genre_id ) expenseTypeName,
             orc.number,
-            orc.unit_price taxPrice,
-            orbd.tax_rate taxRate
+            ifnull(orc.unit_price,0) taxPrice,
+            ifnull(orbd.tax_rate,0) taxRate,
+            '0' priceQty
         FROM
             order_receivable_bill_detail orbd
             LEFT JOIN order_receivable_cost orc ON orbd.cost_id = orc.id

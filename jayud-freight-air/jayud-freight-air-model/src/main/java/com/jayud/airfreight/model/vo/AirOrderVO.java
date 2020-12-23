@@ -8,6 +8,8 @@ import com.jayud.common.enums.TradeTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -98,16 +100,16 @@ public class AirOrderVO {
     private AirBookingVO airBookingVO;
 
     @ApiModelProperty(value = "空运订单发货地址信息")
-    private OrderAddressVO deliveryAddressInfo;
+    private List<OrderAddressVO> deliveryAddress;
 
     @ApiModelProperty(value = "空运订单收货地址信息")
-    private OrderAddressVO shippingAddressInfo;
+    private List<OrderAddressVO> shippingAddress;
 
     @ApiModelProperty(value = "空运订单通知地址信息")
-    private OrderAddressVO notificationAddressInfo;
+    private List<OrderAddressVO> notificationAddress;
 
     @ApiModelProperty(value = "货品信息")
-    private List<GoodsVO> goodsVOs;
+    private List<GoodsVO> goodsForms;
 
     @ApiModelProperty(value = "接单人(登录用户名)")
     private String orderTaker;
@@ -119,13 +121,13 @@ public class AirOrderVO {
     public void processingAddress(OrderAddressVO addressVO) {
         switch (addressVO.getType()) {
             case 0:
-                this.deliveryAddressInfo = addressVO;
+                this.deliveryAddress = Collections.singletonList(addressVO);
                 break;
             case 1:
-                this.shippingAddressInfo = addressVO;
+                this.shippingAddress = Collections.singletonList(addressVO);
                 break;
             case 2:
-                this.notificationAddressInfo = addressVO;
+                this.notificationAddress = Collections.singletonList(addressVO);
                 break;
         }
     }

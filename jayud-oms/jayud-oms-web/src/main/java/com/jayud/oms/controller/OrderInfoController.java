@@ -192,8 +192,6 @@ public class OrderInfoController {
             //空运校验参数
             if (OrderStatusEnum.KY.getCode().equals(inputMainOrderForm.getClassCode())) {
                 InputAirOrderForm airOrderForm = form.getAirOrderForm();
-                //拼装地址信息
-                airOrderForm.assemblyAddress();
                 if (!airOrderForm.checkCreateOrder()) {
                     return CommonResult.error(ResultEnum.PARAM_ERROR);
                 }

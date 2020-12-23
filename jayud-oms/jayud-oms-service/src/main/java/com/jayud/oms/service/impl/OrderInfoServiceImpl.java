@@ -712,6 +712,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //空运
         if (OrderStatusEnum.KY.getCode().equals(classCode)) {
             InputAirOrderForm airOrderForm = form.getAirOrderForm();
+            //拼装地址信息
+            airOrderForm.assemblyAddress();
             airOrderForm.setMainOrderNo(mainOrderNo);
             airOrderForm.setCreateUser(UserOperator.getToken());
             Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()

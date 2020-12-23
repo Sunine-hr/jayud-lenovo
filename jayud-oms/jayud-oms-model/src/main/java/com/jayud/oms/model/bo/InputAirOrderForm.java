@@ -122,21 +122,8 @@ public class InputAirOrderForm {
             log.warn("收货地址信息不能为空");
             return false;
         }
-        // 发货/收货地址是必填项
-        int count = 0;
-        if (CollectionUtils.isEmpty(deliveryAddress)){
-
-            return false;
-        }
-        for (AddOrderAddressForm orderAddressForm : orderAddressForms) {
-            if (!orderAddressForm.checkCreateAirOrder()) return false;
-            if (OrderAddressEnum.DELIVER_GOODS.getCode().equals(orderAddressForm.getType()) ||
-                    OrderAddressEnum.RECEIVING_GOODS.getCode().equals(orderAddressForm.getType())) {
-                ++count;
-            }
-        }
-        if (count < 2) {
-            return false;
+        if (StringUtils.isEmpty(this.notificationAddress.get(0).getAddress())) {
+            this.notificationAddress = null;
         }
 
         //货品信息
@@ -156,7 +143,8 @@ public class InputAirOrderForm {
         this.orderAddressForms = new ArrayList<>();
         this.orderAddressForms.addAll(this.deliveryAddress);
         this.orderAddressForms.addAll(this.shippingAddress);
-        if (CollectionUtils.isNotEmpty(this.notificationAddress)) {
+        if (CollectionUtils.isNotEmpty(this.notificationAddress)
+                && StringUtils.isNotEmpty(this.notificationAddress.get(0).getAddress())) {
             this.orderAddressForms.addAll(this.notificationAddress);
         }
     }

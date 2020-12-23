@@ -99,16 +99,16 @@ public class InputAirOrderVO {
     private InputAirBookingVO airBookingVO;
 
     @ApiModelProperty(value = "空运订单发货地址信息")
-    private InputOrderAddressVO deliveryAddressInfo;
+    private List<InputOrderAddressVO> deliveryAddress;
 
     @ApiModelProperty(value = "空运订单收货地址信息")
-    private InputOrderAddressVO shippingAddressInfo;
+    private List<InputOrderAddressVO> shippingAddress;
 
     @ApiModelProperty(value = "空运订单通知地址信息")
-    private InputOrderAddressVO notificationAddressInfo;
+    private List<InputOrderAddressVO> notificationAddress;
 
     @ApiModelProperty(value = "货品信息")
-    private List<InputGoodsVO> goodsVOs;
+    private List<InputGoodsVO> goodsForms;
 
     @ApiModelProperty(value = "所有附件信息")
     private List<FileView> allPics = new ArrayList<>();

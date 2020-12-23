@@ -78,8 +78,14 @@ public class SystemRoleServiceImpl extends ServiceImpl<SystemRoleMapper, SystemR
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteRole(Long id) {
-        roleMapper.deleteRole(id);
+        //删除角色
+        this.removeById(id);
+        //删除角色菜单
+        QueryWrapper<SystemRoleMenuRelation> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("role_id", id);
+        roleMenuRelationService.remove(queryWrapper);
     }
 
     @Override

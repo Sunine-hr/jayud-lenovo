@@ -10,7 +10,7 @@ public enum FormIDEnum {
     STOCK("BD_STOCK"),//仓库
     CUSTOMER("BD_Customer"),//客户
     PAYABLE("AP_Payable"),//应付单PAYABLE
-    PAYABLE_OTHER("AP_OtherPayable"),//其他应收单
+    PAYABLE_OTHER("AP_OtherPayable"),//其他应付单
     RECEIVABLE("AR_receivable"),//应收单
     RECEIVABLE_OTHER("AR_OtherRecAble"),//其他应收单
     ORGANIZATION("ORG_Organizations"),//组织架构

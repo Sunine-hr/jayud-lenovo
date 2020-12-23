@@ -8,6 +8,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.Feature;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.PushKingdeeEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.vaildator.ValidList;
@@ -15,6 +16,7 @@ import com.jayud.finance.bo.APARDetailForm;
 import com.jayud.finance.bo.PayableHeaderForm;
 import com.jayud.finance.bo.ReceivableHeaderForm;
 import com.jayud.finance.enums.FormIDEnum;
+import com.jayud.finance.feign.CustomsApiClient;
 import com.jayud.finance.kingdeesettings.K3CloudConfig;
 import com.jayud.finance.kingdeesettings.K3CloudConfigBack;
 import com.jayud.finance.po.Currency;
@@ -34,6 +36,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -60,6 +63,9 @@ public class KingdeeServiceImpl implements KingdeeService {
 
     @Autowired
     BaseService baseService;
+
+    @Autowired
+    CustomsApiClient customsApiClient;
 
     @Override
     public CommonResult login(String url, String content) {
@@ -110,7 +116,7 @@ public class KingdeeServiceImpl implements KingdeeService {
 
         String result = KingdeeHttpUtil.httpPost(k3CloudConfig.getSave(), header, content);
 
-        log.debug("保存结果：{}", result);
+        log.info("saveReceivableBill请求完成金蝶的保存结果是：{}", result);
         JSONObject jsonObject = JSON.parseObject(result);
         //获取金蝶响应json
         Map<String, Object> map = (Map<String, Object>) jsonObject.get("Result");
@@ -119,6 +125,17 @@ public class KingdeeServiceImpl implements KingdeeService {
 
         Boolean isSuccess = (Boolean) responseStatus.get("IsSuccess");
         if (isSuccess) {
+
+            /**update push log**/
+            String logApplyNo = reqForm.getBusinessNo();
+            Map<String, Object> logParam = new HashMap<>();
+            logParam.put("applyNo", logApplyNo);//18位报关单号
+            logParam.put("pushStatusCode", PushKingdeeEnum.STEP5.getCode());
+            logParam.put("pushStatusMsg", PushKingdeeEnum.STEP5.getMsg());
+            logParam.put("updateTime", LocalDateTime.now());
+            String logMsg = JSONObject.toJSONString(logParam);
+            customsApiClient.saveOrOpdateLog(logMsg);
+
             return CommonResult.success(map.get("Number"));
         } else {
             List<Map<String, Object>> errors = (List<Map<String, Object>>) responseStatus.get("Errors");
@@ -140,12 +157,23 @@ public class KingdeeServiceImpl implements KingdeeService {
 
             String result = KingdeeHttpUtil.httpPost(k3CloudConfig.getSave(), header, content);
 
-            log.debug("保存结果：{}", result);
+            log.info("savePayableBill请求完成金蝶的保存结果是：{}", result);
             JSONObject jsonObject = JSON.parseObject(result);
             Map<String, Object> map = (Map<String, Object>) jsonObject.get("Result");
             Map<String, Object> responseStatus = (Map<String, Object>) map.get("ResponseStatus");
             Boolean isSuccess = (Boolean) responseStatus.get("IsSuccess");
             if (isSuccess) {
+
+                /**update push log**/
+                String logApplyNo = reqForm.getBusinessNo();
+                Map<String, Object> logParam = new HashMap<>();
+                logParam.put("applyNo", logApplyNo);//18位报关单号
+                logParam.put("pushStatusCode", PushKingdeeEnum.STEP5.getCode());
+                logParam.put("pushStatusMsg", PushKingdeeEnum.STEP5.getMsg());
+                logParam.put("updateTime", LocalDateTime.now());
+                String logMsg = JSONObject.toJSONString(logParam);
+                customsApiClient.saveOrOpdateLog(logMsg);
+
                 return CommonResult.success(map.get("Number"));
             } else {
                 List<Map<String, Object>> errors = (List<Map<String, Object>>) responseStatus.get("Errors");

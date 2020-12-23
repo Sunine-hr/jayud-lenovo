@@ -8,6 +8,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
+import com.jayud.common.enums.PushKingdeeEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.finance.annotations.HeadProperty;
 import com.jayud.finance.annotations.IsFee;
@@ -16,6 +17,7 @@ import com.jayud.finance.bo.PayableHeaderForm;
 import com.jayud.finance.bo.ReceivableHeaderForm;
 import com.jayud.finance.enums.FormIDEnum;
 import com.jayud.finance.enums.InvoiceFormNeedRelationEnum;
+import com.jayud.finance.feign.CustomsApiClient;
 import com.jayud.finance.kingdeesettings.K3CloudConfig;
 import com.jayud.finance.po.*;
 import com.jayud.finance.service.*;
@@ -31,8 +33,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 
@@ -58,6 +62,9 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
     K3CloudConfig k3CloudConfig;
     @Autowired
     PreloadService preloadService;
+    @Autowired
+    CustomsApiClient customsApiClient;
+
 
     @Override
     public Boolean pushReceivable(List<CustomsReceivable> customsReceivable, YunbaoguanPushProperties properties) {
@@ -147,6 +154,7 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
                 pushOtherReceivable.feeRelationMap = feeRelationMap;
                 pushOtherReceivable.cookieService = cookieService;
                 pushOtherReceivable.k3CloudConfig = k3CloudConfig;
+                pushOtherReceivable.customsApiClient = customsApiClient;
                 FutureTask<String> futureTask = new FutureTask<>(pushOtherReceivable);
                 futureTasks.add(futureTask);
                 executorService.execute(futureTask);
@@ -329,6 +337,7 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
                 pushOtherPayable.feeRelationMap = feeRelationMap;
                 pushOtherPayable.k3CloudConfig = k3CloudConfig;
                 pushOtherPayable.cookieService = cookieService;
+                pushOtherPayable.customsApiClient = customsApiClient;
 
                 FutureTask<String> futureTask = new FutureTask<>(pushOtherPayable);
                 futureTasks.add(futureTask);
@@ -617,6 +626,7 @@ class PushOtherReceivable implements Callable<String> {
     public Map<String, CustomsFinanceFeeRelation> feeRelationMap;
     public CookieService cookieService;
     public K3CloudConfig k3CloudConfig;
+    public CustomsApiClient customsApiClient;
 
     /**
      * 方法实现
@@ -822,6 +832,17 @@ class PushOtherReceivable implements Callable<String> {
 
                 Boolean succeed = KingdeeHttpUtil.ifSucceed(result);
                 if (succeed) {
+
+                    /**update push log**/
+                    String logApplyNo = customsReceivable.getCustomApplyNo();
+                    Map<String, Object> logParam = new HashMap<>();
+                    logParam.put("applyNo", logApplyNo);//18位报关单号
+                    logParam.put("pushStatusCode", PushKingdeeEnum.STEP5.getCode());
+                    logParam.put("pushStatusMsg", PushKingdeeEnum.STEP5.getMsg());
+                    logParam.put("updateTime", LocalDateTime.now());
+                    String logMsg = JSONObject.toJSONString(logParam);
+                    customsApiClient.saveOrOpdateLog(logMsg);
+
                     log.info(String.format("报关单号（%s）（%s）其他应收单保存成功", applyNo, customerName));
                 } else {
                     log.error(String.format("报关单号（%s）（%s）其他应收单保存失败", applyNo, customerName));
@@ -863,6 +884,7 @@ class PushOtherPayable implements Callable<String> {
     public Map<String, CustomsFinanceFeeRelation> feeRelationMap;
     public CookieService cookieService;
     public K3CloudConfig k3CloudConfig;
+    public CustomsApiClient customsApiClient;
 
     public String doPush(List<CustomsPayable> customsPayable,
                          Map<String, CustomsFinanceCoRelation> coRelationMap,
@@ -962,6 +984,20 @@ class PushOtherPayable implements Callable<String> {
 
                 Boolean succeed = KingdeeHttpUtil.ifSucceed(result);
                 if (succeed) {
+                    /**update push log**/
+                    AtomicReference<String> logApplyNo = new AtomicReference<>("");
+                    customsPayable.forEach(o -> {
+                        String customApplyNo = o.getCustomApplyNo();
+                        logApplyNo.set(customApplyNo);
+                    });
+                    Map<String, Object> logParam = new HashMap<>();
+                    logParam.put("applyNo", logApplyNo);//18位报关单号
+                    logParam.put("pushStatusCode", PushKingdeeEnum.STEP5.getCode());
+                    logParam.put("pushStatusMsg", PushKingdeeEnum.STEP5.getMsg());
+                    logParam.put("updateTime", LocalDateTime.now());
+                    String logMsg = JSONObject.toJSONString(logParam);
+                    customsApiClient.saveOrOpdateLog(logMsg);
+
                     log.info(String.format("报关单号（%s）其他应付单保存成功", applyNo));
                 } else {
                     log.error(String.format("报关单号（%s）其他应付单保存失败", applyNo));

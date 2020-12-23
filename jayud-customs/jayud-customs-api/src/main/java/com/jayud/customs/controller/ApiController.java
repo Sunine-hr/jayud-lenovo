@@ -179,56 +179,6 @@ public class ApiController {
     }
 
 
-//    @PostMapping("/push/finance")
-//    public CommonResult repushFinance() {
-//
-//        try {
-//
-//            InputStream inputStream = (new ClassPathResource("xml/Data.xml")).getInputStream();
-////            String path = classPathResource.getPath();
-//
-////            XmlUtil.readXML(inputStream);
-//            Document document = XmlUtil.readXML(inputStream);
-//            Element documentElement = document.getDocumentElement();
-//            NodeList info = documentElement.getElementsByTagName("info");
-//            int length = info.getLength();
-//            List<String> infoList = new ArrayList<>();
-//            Integer count = 0;
-//            for (int i = 0; i < info.getLength(); i++) {
-//                Element item = (Element) info.item(i);
-//                String cuScode = item.getAttribute("CUScode");
-//                if (StringUtils.isEmpty(cuScode)) {
-//                    continue;
-//                }
-//                String cusCode9 = cuScode.substring(9);
-//                String passtime = item.getAttribute("passtime");
-//                if (DateUtil.parseDateTime(passtime).isAfter(DateUtil.parseDateTime("2020-10-01 00:00:00"))) {
-//                    String thisRow = "i= " + i + "    passtime=" + passtime + "    CusCode18=" + cuScode + "    CusCode9=" + cusCode9;
-//                    infoList.add(thisRow);
-//                    System.out.println(thisRow);
-//                    GetFinanceInfoForm getFinanceInfoForm = new GetFinanceInfoForm();
-//                    getFinanceInfoForm.setApplyNo(cuScode);
-//                    service.getFinanceInfoAndPush2Kingdee(getFinanceInfoForm);
-////                    count++;
-////                    if (count == 15) {
-////                        break;
-////                    }
-//                    Thread.sleep(4000);
-//                }
-//
-//            }
-//            for (String s : infoList) {
-//                System.out.println(s);
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//
-//        return CommonResult.success();
-//    }
-
 
     @PostMapping("/push/finance/bylist")
     public CommonResult pushDeterminedApplyNos(@RequestBody String param) {

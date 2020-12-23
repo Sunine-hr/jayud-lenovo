@@ -17,7 +17,6 @@ import com.jayud.customs.feign.FinanceClient;
 import com.jayud.customs.feign.MsgClient;
 import com.jayud.customs.model.bo.*;
 import com.jayud.customs.model.po.CustomsPayable;
-import com.jayud.customs.model.po.CustomsReceivable;
 import com.jayud.customs.model.vo.*;
 import com.jayud.customs.service.ICustomsApiService;
 import lombok.extern.slf4j.Slf4j;
@@ -229,6 +228,11 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
         String receivable = doPost(JSONUtil.toJsonStr(recParam), financeUrl);
         String payable = doPost(JSONUtil.toJsonStr(payParam), financeUrl);
 
+        log.info(String.format("应收账款receivable..."));
+        log.info(receivable);
+        log.info(String.format("应付款payable..."));
+        log.info(payable);
+
 //        log.info(String.format("拼装数据完成，开始请求金蝶接口..." + receivable + "====" + receivable));
         //应付为行显示费用
         //应收为列显示费用，但可能存在多行应收对应同一个报关单
@@ -380,7 +384,9 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
         org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
         //  请勿轻易改变此提交方式，大部分的情况下，提交方式都是表单提交
         headers.setContentType(MediaType.APPLICATION_JSON);
+
         headers.add("X-Ticket", checkoutUserToken(new LoginForm(defaultUserName, defaultPassword, null)));
+
         HttpEntity<Map<String, String>> requestEntity = null;
         requestEntity = new HttpEntity<Map<String, String>>(JSONUtil.toBean(requestStr, Map.class), headers);
         //  执行HTTP请求

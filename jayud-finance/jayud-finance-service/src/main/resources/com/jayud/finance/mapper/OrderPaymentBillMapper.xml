@@ -122,7 +122,7 @@
 
     <select id="findNotPaidBillByPage" parameterType="com.jayud.finance.bo.QueryNotPaidBillForm" resultType="com.jayud.finance.vo.PaymentNotPaidBillVO" >
         select * from (
-        SELECT
+        SELECT DISTINCT
         opc.main_order_no orderNo,
         opc.order_no subOrderNo,
         pb.`name` bizCodeDesc,

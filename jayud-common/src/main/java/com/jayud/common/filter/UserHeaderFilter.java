@@ -1,6 +1,5 @@
 package com.jayud.common.filter;
 
-import com.alibaba.fastjson.JSONObject;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,8 @@ public class UserHeaderFilter implements Filter {
                     "/yunbaoguan/info/flush",
                     "/yunbaoguan/receivable/delete",
                     "/yunbaoguan/payable/delete",
-                    "kafka")));
+                    "kafka",
+                    "/yunbaoguanKingdeePushLog/saveOrOpdateLog")));
 
 
     @Override

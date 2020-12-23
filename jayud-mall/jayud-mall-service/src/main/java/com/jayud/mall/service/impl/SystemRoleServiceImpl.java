@@ -90,7 +90,19 @@ public class SystemRoleServiceImpl extends ServiceImpl<SystemRoleMapper, SystemR
 
     @Override
     public SystemRoleVO getRole(Long id) {
-        SystemRoleVO roleVO = roleMapper.getRole(id);
+        SystemRole systemRole = this.getById(id);
+        SystemRoleVO roleVO = ConvertUtil.convert(systemRole, SystemRoleVO.class);
+
+        QueryWrapper<SystemRoleMenuRelation> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("menu_id");
+        queryWrapper.eq("role_id", systemRole.getId());
+        List<SystemRoleMenuRelation> systemRoleMenuRelations = roleMenuRelationService.list(queryWrapper);
+        List<Long> menuIds = new ArrayList<>();
+        systemRoleMenuRelations.forEach(systemRoleMenuRelation -> {
+            Long menuId = systemRoleMenuRelation.getMenuId();
+            menuIds.add(menuId);
+        });
+        roleVO.setMenuIds(menuIds);
         return roleVO;
     }
 

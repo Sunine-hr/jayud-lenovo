@@ -149,9 +149,12 @@ public class FinanceController {
 
         //自定义标题别名
         writer.addHeaderAlias("orderNo", "订单编号");
+        writer.addHeaderAlias("subOrderNo", "子订单编号");
+        writer.addHeaderAlias("billNo", "账单编号");
         writer.addHeaderAlias("bizCodeDesc", "业务类型");
         writer.addHeaderAlias("createdTimeStr", "日期");
         writer.addHeaderAlias("supplierChName", "供应商");
+        writer.addHeaderAlias("goodsDesc", "货物信息");
         writer.addHeaderAlias("startAddress", "起运地");
         writer.addHeaderAlias("endAddress", "目的地");
         writer.addHeaderAlias("licensePlate", "车牌号");
@@ -190,9 +193,12 @@ public class FinanceController {
 
         //自定义标题别名
         writer.addHeaderAlias("orderNo", "订单编号");
+        writer.addHeaderAlias("subOrderNo", "子订单编号");
+        writer.addHeaderAlias("billNo", "账单编号");
         writer.addHeaderAlias("bizCodeDesc", "业务类型");
         writer.addHeaderAlias("createdTimeStr", "日期");
-        writer.addHeaderAlias("customerName", "客服");
+        writer.addHeaderAlias("customerName", "客户");
+        writer.addHeaderAlias("goodsDesc", "货物信息");
         writer.addHeaderAlias("startAddress", "起运地");
         writer.addHeaderAlias("endAddress", "目的地");
         writer.addHeaderAlias("licensePlate", "车牌号");

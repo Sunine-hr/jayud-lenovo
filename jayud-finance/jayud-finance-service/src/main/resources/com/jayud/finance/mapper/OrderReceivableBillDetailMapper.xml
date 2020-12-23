@@ -304,7 +304,9 @@
         (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = orbd.cost_id and
         obct.money_type='2' and obct.currency_code = 'HKD') hKDollar,
         ifnull(orbd.tax_rate,(select pb.tax_rate from product_biz pb where pb.id_code = oi.biz_code)) taxRate,
-        orbd.remarks
+        orbd.remarks,
+        orbd.bill_no,
+        (SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota left join order_transport ot on ot.order_no = ota.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' GROUP BY ot.order_no) goodsDesc
         FROM
         order_receivable_bill_detail orbd
         left join order_receivable_bill orb on orbd.bill_id = orb.id

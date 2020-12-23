@@ -332,7 +332,14 @@ public class FinanceController {
             }*/
             List<APARDetailForm> entityDetail = receivableBillDetailService.findReceivableHeaderDetail(receivableBillDetail.getBillNo());
             reqForm.setEntityDetail(entityDetail);
-            service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), reqForm);
+            CommonResult result = service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), reqForm);
+            if(result.getCode() == 0){//推送成功,则记录推送金蝶次数
+                OrderReceivableBillDetail tempObject = new OrderReceivableBillDetail();
+                tempObject.setPushKingdeeCount(receivableBillDetail.getPushKingdeeCount() + 1);
+                QueryWrapper updateWrapper = new QueryWrapper();
+                updateWrapper.eq("bill_no",receivableBillDetail.getBillNo());
+                receivableBillDetailService.update(tempObject,updateWrapper);
+            }
         }
         return CommonResult.success();
     }
@@ -374,7 +381,14 @@ public class FinanceController {
             PayableHeaderForm reqForm = paymentBillDetailService.getPayableHeaderForm(paymentBillDetail.getBillNo());
             List<APARDetailForm> entityDetail = paymentBillDetailService.findPayableHeaderDetail(paymentBillDetail.getBillNo());
             reqForm.setEntityDetail(entityDetail);
-            service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), reqForm);
+            CommonResult result = service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), reqForm);
+            if(result.getCode() == 0){//推送成功,则记录推送金蝶次数
+                OrderPaymentBillDetail tempObject = new OrderPaymentBillDetail();
+                tempObject.setPushKingdeeCount(paymentBillDetail.getPushKingdeeCount() + 1);
+                QueryWrapper updateWrapper = new QueryWrapper();
+                updateWrapper.eq("bill_no",paymentBillDetail.getBillNo());
+                paymentBillDetailService.update(tempObject,updateWrapper);
+            }
         }
         return CommonResult.success();
     }

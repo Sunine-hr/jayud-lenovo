@@ -487,8 +487,8 @@
         FROM
             order_payment_bill_detail opbd
             LEFT JOIN order_payment_cost opc ON opbd.cost_id = opc.id
-        WHERE
-            opbd.bill_no = #{billNo}
+			left join cost_type ct on ct.id = opc.cost_type_id
+        WHERE ct.is_pay_collection = 0 and opbd.bill_no = #{billNo}
     </select>
     <select id="getNowFOrderExist" parameterType="java.util.Map" resultType="com.jayud.finance.po.OrderPaymentBillDetail">
          SELECT opbd.*

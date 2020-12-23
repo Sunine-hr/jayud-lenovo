@@ -398,8 +398,8 @@
         FROM
             order_receivable_bill_detail orbd
             LEFT JOIN order_receivable_cost orc ON orbd.cost_id = orc.id
-        WHERE
-            orbd.bill_no = #{billNo}
+            left join cost_type ct on ct.id = orc.cost_type_id
+        WHERE ct.is_pay_collection = 0 and orbd.bill_no = #{billNo}
     </select>
     <select id="getNowSOrderExist" parameterType="java.util.Map" resultType="com.jayud.finance.po.OrderReceivableBillDetail">
          SELECT orbd.*

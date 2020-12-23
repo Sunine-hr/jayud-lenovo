@@ -241,7 +241,7 @@ public class ReceiveBillDetailController {
         for (int i = 0; i < sheetHeadVOS.size(); i++) {
             SheetHeadVO sheetHeadVO = sheetHeadVOS.get(i);
             headMap.put(sheetHeadVO.getName(), sheetHeadVO.getViewName());
-            if (i > 10) {
+            if (i > 11) {
                 dynamicHead.put(sheetHeadVO.getName(), sheetHeadVO.getViewName());
             }
         }
@@ -283,7 +283,7 @@ public class ReceiveBillDetailController {
 
         }
         entity.setTotalData(costTotal);
-        entity.setTotalIndex(10);
+        entity.setTotalIndex(11);
 
         //尾部
         List<String> bottomData = new ArrayList<>();

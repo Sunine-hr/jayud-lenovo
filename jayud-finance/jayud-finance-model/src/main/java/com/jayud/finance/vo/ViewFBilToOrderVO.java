@@ -39,6 +39,9 @@ public class ViewFBilToOrderVO {
     @ApiModelProperty(value = "重量")
     private Double weight;
 
+    @ApiModelProperty(value = "货物描述")
+    private String goodsDesc;
+
     @ApiModelProperty(value = "报关单号")
     private String yunCustomsNo;
 

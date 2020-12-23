@@ -5,17 +5,20 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.UserOperator;
-import com.jayud.common.utils.MD5;
 import com.jayud.oms.mapper.DriverInfoMapper;
 import com.jayud.oms.model.bo.QueryDriverInfoForm;
 import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.DriverInfo;
+import com.jayud.oms.model.vo.DriverInfoLinkVO;
 import com.jayud.oms.model.vo.DriverInfoVO;
+import com.jayud.oms.model.vo.VehicleInfoVO;
 import com.jayud.oms.service.IDriverInfoService;
-import org.apache.commons.lang.StringUtils;
+import com.jayud.oms.service.IVehicleInfoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -28,6 +31,9 @@ import java.util.Objects;
  */
 @Service
 public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverInfo> implements IDriverInfoService {
+
+    @Autowired
+    IVehicleInfoService vehicleInfoService;
 
     /**
      * 分页查询司机信息
@@ -96,4 +102,35 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
         DriverInfo driverInfo = new DriverInfo().setId(id).setStatus(status);
         return this.updateById(driverInfo);
     }
+
+    @Override
+    public DriverInfoLinkVO getDriverInfoLink(Long driverId) {
+        DriverInfo driverInfo = getById(driverId);
+        if(driverInfo != null){
+            DriverInfoLinkVO driverInfoLinkVO = new DriverInfoLinkVO();
+            driverInfoLinkVO.setDriverName(driverInfo.getName());
+            driverInfoLinkVO.setDriverPhone(driverInfo.getPhone());
+
+            //根据司机名称获取车辆信息
+            List<VehicleInfoVO> vehicleInfoVO = vehicleInfoService.findVehicleByDriverName(driverInfo.getName());
+            driverInfoLinkVO.setVehicleInfoVOList(vehicleInfoVO);
+            return driverInfoLinkVO;
+        }
+        return new DriverInfoLinkVO();
+    }
+
+
+    /**
+     * 根据司机大陆手机查询用户
+     *
+     * @param phone
+     * @return
+     */
+    @Override
+    public DriverInfo getByPhone(String phone) {
+        QueryWrapper<DriverInfo> condition = new QueryWrapper<>();
+        condition.lambda().eq(DriverInfo::getPhone, phone);
+        return this.baseMapper.selectOne(condition);
+    }
+
 }

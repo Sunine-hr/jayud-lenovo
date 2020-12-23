@@ -1,9 +1,13 @@
 package com.jayud.tms.model.vo;
 
 import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.utils.FileView;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class OrderTransportVO {
@@ -16,6 +20,9 @@ public class OrderTransportVO {
 
     @ApiModelProperty(value = "主订单")
     private String mainOrderNo;
+
+    @ApiModelProperty(value = "已选中得服务")
+    private String selectedServer;
 
     @ApiModelProperty(value = "业务类型")
     private String bizCode;
@@ -41,6 +48,9 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "客户名称")
     private String customerName;
 
+    @ApiModelProperty(value = "客户名称CODE")
+    private String customerCode;
+
     @ApiModelProperty(value = "六联单号")
     private String encode;
 
@@ -48,7 +58,10 @@ public class OrderTransportVO {
     private String vehicleType;
 
     @ApiModelProperty(value = "车型尺寸")
-    private String vehicleSize;
+    private Integer vehicleSize;
+
+    @ApiModelProperty(value = "车型尺寸描述")
+    private String vehicleSizeDesc;
 
     @ApiModelProperty(value = "柜号")
     private String cntrNo;
@@ -68,6 +81,24 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "法人主体")
     private String legalName;
 
+    @ApiModelProperty(value = "结算单位")
+    private String unitCode;
+
+    @ApiModelProperty(value = "子订单法人主体")
+    private String subLegalName;
+
+    @ApiModelProperty(value = "子订单结算单位")
+    private String subUnitCode;
+
+    @ApiModelProperty(value = "提货文件上传附件地址,前台忽略")
+    private String takeFile;
+
+    @ApiModelProperty(value = "提货文件上传附件地址名称,前台忽略")
+    private String takeFileName;
+
+    @ApiModelProperty(value = "提货文件上传附件地址数组集合")
+    private List<FileView> takeFiles = new ArrayList<>();
+
     //货物信息
     @ApiModelProperty(value = "货物描述")
     private String goodsDesc;
@@ -80,6 +111,12 @@ public class OrderTransportVO {
 
     @ApiModelProperty(value = "重量")
     private String weight;
+
+    @ApiModelProperty(value = "总重量")
+    private String totalWeight;
+
+    @ApiModelProperty(value = "提货时间,多个逗号拼接")
+    private String takeTimeStr;
 
     //提供货信息
     @ApiModelProperty(value = "省")//提货
@@ -114,23 +151,56 @@ public class OrderTransportVO {
 
 
     public String getEntireAddress1() {
-        if(StringUtil.isNullOrEmpty(this.stateName1) || StringUtil.isNullOrEmpty(this.cityName1) ||
-                StringUtil.isNullOrEmpty(this.address1)){
-            return "";
+        String stateName1 = this.stateName1;
+        String cityName1 = this.cityName1;
+        String address1 = this.address1;
+        if(StringUtil.isNullOrEmpty(this.stateName1)){
+            stateName1 = "";
         }
-        return this.entireAddress1 = this.stateName1 + this.cityName1 + this.address1;
+        if(StringUtil.isNullOrEmpty(this.cityName1)){
+            cityName1 = "";
+        }
+        if(StringUtil.isNullOrEmpty(this.address1)){
+            address1 = "";
+        }
+        return this.entireAddress1 = stateName1 + cityName1 + address1;
     }
 
     public String getEntireAddress2() {
-        if(StringUtil.isNullOrEmpty(this.stateName2) || StringUtil.isNullOrEmpty(this.cityName2) ||
-                StringUtil.isNullOrEmpty(this.address2)){
-            return "";
+        String stateName2 = this.stateName2;
+        String cityName2 = this.cityName2;
+        String address2 = this.address2;
+        if(StringUtil.isNullOrEmpty(this.stateName2)){
+            stateName2 = "";
         }
-        return this.entireAddress2 = this.stateName2 + this.cityName2 + this.address2;
+        if(StringUtil.isNullOrEmpty(this.cityName2)){
+            cityName2 = "";
+        }
+        if(StringUtil.isNullOrEmpty(this.address2)){
+            address2 = "";
+        }
+        return this.entireAddress2 = stateName2 + cityName2 + address2;
     }
 
     public String getStatusDesc() {
        return OrderStatusEnum.getDesc(this.status);
+    }
+
+    public String getVehicleSizeDesc() {
+        if(this.vehicleSize != null){
+            if(this.vehicleSize == 1){
+                return "3T";
+            }else if(this.vehicleSize == 2){
+                return "5T";
+            }else if(this.vehicleSize == 3){
+                return "8T";
+            }else if(this.vehicleSize == 4){
+                return "10T";
+            }else if(this.vehicleSize == 5){
+                return "12T";
+            }
+        }
+        return "";
     }
 
 }

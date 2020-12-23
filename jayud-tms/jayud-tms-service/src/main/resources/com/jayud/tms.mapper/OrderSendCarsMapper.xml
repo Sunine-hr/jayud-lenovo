@@ -7,21 +7,13 @@
         <id column="id" property="id" />
         <result column="transport_no" property="transportNo" />
         <result column="order_no" property="orderNo" />
-        <result column="encode" property="encode" />
-        <result column="encode_url" property="encodeUrl" />
-        <result column="encode_url_name" property="encodeUrlName" />
         <result column="vehicle_type" property="vehicleType" />
         <result column="vehicle_size" property="vehicleSize" />
         <result column="cntr_no" property="cntrNo" />
         <result column="cntr_pic" property="cntrPic" />
         <result column="cntr_pic_name" property="cntrPicName" />
-        <result column="supplier_info_id" property="supplierInfoId" />
-        <result column="license_plate" property="licensePlate" />
-        <result column="driver_name" property="driverName" />
-        <result column="hk_license_plate" property="hkLicensePlate" />
-        <result column="driver_phone" property="driverPhone" />
-        <result column="driver_hk_phone" property="driverHkPhone" />
-        <result column="warehouse_info_id" property="warehouseInfoId" />
+        <result column="driver_info_info" property="driverInfoId" />
+        <result column="vehicle_id" property="vehicleId" />
         <result column="remarks" property="remarks" />
         <result column="describes" property="describes" />
         <result column="status" property="status" />
@@ -33,42 +25,86 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, transport_no, order_no, encode, encode_url,encode_url_name, vehicle_type, vehicle_size, cntr_no, cntr_pic,
-        cntr_pic_name,supplier_info_id, license_plate, driver_name, hk_license_plate, driver_phone, driver_hk_phone,
-        warehouse_info_id,remarks, describes, status, updated_time, updated_user, created_user, created_time
+        id, transport_no, order_no,vehicle_type, vehicle_size, cntr_no, cntr_pic,
+        cntr_pic_name, driver_info_info,
+        vehicle_id,remarks, describes, status, updated_time, updated_user, created_user, created_time
     </sql>
     <select id="getOrderSendInfo"  resultType="com.jayud.tms.model.vo.OrderSendCarsVO" >
         SELECT
-          osc.`id`,
-          osc.`transport_no` transportNo,
-          osc.`encode`,
-          osc.`vehicle_size` vehicleSize,
-          osc.`vehicle_type` vehicleType,
-          osc.`cntr_no` cntrNo,
-          osc.`supplier_info_id` supplierInfoId,
-          si.`supplier_ch_name` supplierName,
-          osc.`license_plate` licensePlate,
-          osc.`driver_name` driverName,
-          osc.`hk_license_plate` hkLicensePlate,
-          osc.`driver_phone` driverPhone,
-          osc.`describes`,
-          osc.`status`,
-          osc.`order_no` orderNo,
-          osc.`remarks`,
-          osc.`warehouse_info_id` warehouseInfoId,
-          wi.`warehouse_name` warehouseName,
-          wi.`contacts` warehouseContacts,
-          wi.`contact_number` warehouseNumber,
-          '中国' countryName,
-          (SELECT rc.name FROM region_city rc WHERE rc.code = wi.`state_code` LIMIT 1) AS provinceName,
-          (SELECT rc.name FROM region_city rc WHERE rc.code = wi.`city_code` LIMIT 1) AS cityName,
-          wi.`address` address
+            osc.`id`,
+            osc.`transport_no` transportNo,
+            osc.`vehicle_size` vehicleSize,
+            osc.`vehicle_type` vehicleType,
+            osc.`cntr_no` cntrNo,
+            vi.supplier_id supplierId,
+            si.`supplier_ch_name` supplierName,
+            vi.id vehicleId,
+            vi.`plate_number` plateNumber,
+            di.`name` driverName,
+            osc.driver_info_id driverInfoId,
+            vi.hk_number hkNumber,
+            di.phone driverPhone,
+            osc.`describes`,
+            osc.`status`,
+            osc.`order_no` orderNo,
+            osc.`remarks`,
+            wi.id warehouseInfoId,
+            wi.`warehouse_name` warehouseName,
+            wi.`contacts` warehouseContacts,
+            wi.`contact_number` warehouseNumber,
+            '中国' countryName,
+            ( SELECT rc.NAME FROM region_city rc WHERE rc.id = wi.state_code LIMIT 1 ) AS provinceName,
+            ( SELECT rc.NAME FROM region_city rc WHERE rc.id = wi.city_code LIMIT 1 ) AS cityName,
+            wi.`address` address
         FROM
-          order_send_cars osc
-          LEFT JOIN supplier_info si
-            ON osc.`supplier_info_id` = si.`id`
-          LEFT JOIN warehouse_info wi
-            ON wi.`id` = osc.`warehouse_info_id`
-          WHERE osc.`order_no` = #{orderNo}
+             order_transport ot
+			LEFT JOIN warehouse_info wi ON wi.`id` = ot.`warehouse_info_id`
+			left join order_send_cars osc on ot.order_no = osc.order_no
+            LEFT JOIN driver_info di ON di.id = osc.driver_info_id
+            LEFT JOIN vehicle_info vi ON vi.id = osc.vehicle_id
+            LEFT JOIN supplier_info si ON vi.`supplier_id` = si.`id`
+            WHERE ot.`order_no` = #{orderNo}
+    </select>
+    <select id="initDriverInfo"  resultType="com.jayud.tms.model.vo.DriverInfoPdfVO" >
+        SELECT
+            ot.legal_name legalName,le.rigis_address rigisAddress,le.phone legalPhone,le.fax,
+            di.`name`,di.id_no idNo,di.hk_phone hkPhone,di.phone,
+            vi.pt_company ptCompany,vi.customs_code customsCode,vi.plate_number plateNumber,vi.hk_number hkNumber,'' qs,
+			vi.vehicle_tonnage vehicleTonnage,vi.pt_phone ptPhone,vi.pt_fax ptFax,vi.stepping_code steppingCode,'' loadList,
+			vi.enterprise_code enterpriseCode,vi.weight,
+			(select name from port_info pi where pi.id_code = ot.port_code) portCodeDesc
+        FROM
+            order_transport ot
+            LEFT JOIN legal_entity le on le.legal_name = ot.legal_name
+			left join order_send_cars osc on ot.order_no = osc.order_no
+	        LEFT JOIN driver_info di ON di.id = osc.driver_info_id
+	        LEFT JOIN vehicle_info vi ON vi.id = osc.vehicle_id
+            WHERE ot.`order_no` = #{orderNo}
+    </select>
+    <select id="initSendCarList"  resultType="com.jayud.tms.model.vo.SendCarListTempVO" >
+    SELECT
+        ot.legal_name legalName,
+        le.legal_en_name legalEnName,
+        ot.order_no jobNumber,
+        di.phone,
+		vi.plate_number plateNumber,
+		ota1.enter_warehouse_no enterWarehouseNo,
+        (select DATE_FORMAT(ota.take_time, '%Y-%m-%d' ) from order_take_adr ota where ota.opr_type = '1' and ota.order_no = ot.order_no limit 1) createTimeStr,
+        di.`name`,
+        DATE_FORMAT(ota1.take_time, '%Y-%m-%d' ) takeTimeStr,
+        CONCAT(ifnull(da.state_name,''),ifnull(da.city_name,''),da.address) address,
+        ota1.piece_amount pieceAmount,
+        ota1.weight,
+        ota1.remarks
+    FROM
+        order_transport ot
+        left join legal_entity le on le.legal_name = ot.legal_name
+        left join order_take_adr ota1 on ota1.order_no = ot.order_no and ota1.opr_type = '2'
+        left join delivery_address da on da.id = ota1.delivery_id
+        left join order_send_cars osc on osc.order_no = ot.order_no
+        left join driver_info di on di.id = osc.driver_info_id
+        left join vehicle_info vi on vi.id = osc.vehicle_id
+    WHERE
+        ot.order_no = #{orderNo}
     </select>
 </mapper>

@@ -25,11 +25,12 @@
         <result column="stepping_code" property="steppingCode" />
         <result column="enterprise_code" property="enterpriseCode" />
         <result column="vehicle_tonnage" property="vehicleTonnage" />
+        <result column="file_name" property="fileName" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, plate_number, hk_number, supplier_id, supplier_name, pt_company, pt_fax, car_type, pt_phone, customs_code, card_number, weight, files, status, create_user, create_time, update_time, update_user, stepping_code, enterprise_code
+        id, plate_number, hk_number, supplier_id, supplier_name, pt_company, pt_fax, car_type, pt_phone, customs_code, card_number, weight, files, status, create_user, create_time, update_time, update_user, stepping_code, enterprise_code,file_name
     </sql>
 
     <select id="findVehicleInfoByPage" parameterType="com.jayud.oms.model.bo.QueryVehicleInfoForm"
@@ -38,16 +39,17 @@
         w.id, plate_number plateNumber,
         hk_number hkNumber,
         w.supplier_id supplierId,
-        s.supplier_ch_name supplier_name,
+        s.supplier_ch_name supplierName,
         pt_company ptCompany,
         pt_fax ptFax, car_type carType,
         pt_phone ptPhone,
         customs_code customsCode,
-        card_number cardNumber, weight, files, w.status,
+        card_number cardNumber, weight, w.status,
         w.create_user createUser, w.create_time createTime,
         w.update_time updateTime, w.update_user updateUser,
         stepping_code steppingCode, enterprise_code enterpriseCode,
-        vehicle_tonnage vehicleTonnage
+        vehicle_tonnage vehicleTonnage,
+        file_name files
         from
         vehicle_info w left join supplier_info s on w.supplier_id=s.id
         <where>
@@ -66,5 +68,15 @@
         </where>
 
     </select>
-
+    <select id="findVehicleByDriverName" resultType="com.jayud.oms.model.vo.VehicleInfoVO">
+        select
+            w.id,
+            plate_number plateNumber,
+            hk_number hkNumber,
+            w.supplier_id supplierId,
+            s.supplier_ch_name supplierName
+        from
+            vehicle_info w left join supplier_info s on w.supplier_id=s.id
+        where w.id in (select di.vehicle_id from driver_info di where di.`name` = #{driverName})
+    </select>
 </mapper>

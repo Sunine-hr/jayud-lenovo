@@ -1,5 +1,6 @@
 package com.jayud.oms.model.bo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -26,6 +27,7 @@ public class OprStatusForm {
     private String operatorUser;
 
     @ApiModelProperty(value = "操作时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private String operatorTime;
 
     @ApiModelProperty(value = "附件")
@@ -48,5 +50,8 @@ public class OprStatusForm {
 
     @ApiModelProperty(value = "预计通关时间")
     private String preGoCustomsTime;
+
+    @ApiModelProperty(value = "外部报关放行的六联单号")
+    private String encode;
 
 }

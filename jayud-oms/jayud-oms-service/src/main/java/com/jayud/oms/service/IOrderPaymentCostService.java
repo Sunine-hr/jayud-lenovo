@@ -3,6 +3,7 @@ package com.jayud.oms.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.bo.GetCostDetailForm;
 import com.jayud.oms.model.po.OrderPaymentCost;
+import com.jayud.oms.model.vo.DriverOrderPaymentCostVO;
 import com.jayud.oms.model.vo.InputPaymentCostVO;
 
 import java.util.List;
@@ -24,5 +25,23 @@ public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
      */
     List<InputPaymentCostVO> findPaymentCost(GetCostDetailForm form);
 
+    /**
+     * 根据订单编码查询录用费用明细
+     * @param orderNo
+     * @return
+     */
+    List<DriverOrderPaymentCostVO>  getDriverOrderPaymentCost(String orderNo);
+
+    /**
+     * 判断是否司机已经提交费用
+     */
+    boolean isCostSubmitted(String orderNo);
+
+    /**
+     * 获取该条费用以出账时结算币种的汇率和本币金额
+     * @param costId
+     * @return
+     */
+    InputPaymentCostVO getWriteBackFCostData(Long costId);
 
 }

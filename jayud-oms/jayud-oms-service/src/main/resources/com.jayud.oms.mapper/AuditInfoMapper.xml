@@ -6,6 +6,7 @@
     <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.AuditInfo">
         <id column="id" property="id"/>
         <result column="ext_id" property="extId"/>
+        <result column="ext_unique_flag" property="extUniqueFlag"/>
         <result column="ext_desc" property="extDesc"/>
         <result column="audit_type_desc" property="auditTypeDesc"/>
         <result column="audit_status" property="auditStatus"/>
@@ -20,7 +21,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, ext_id, audit_type_desc, audit_status, audit_comment, audit_user, created_user, audit_time, created_time,status_file,
+        id, ext_id, ext_unique_flag,audit_type_desc, audit_status, audit_comment, audit_user, created_user, audit_time, created_time,status_file,
         status_file_name,ext_desc
     </sql>
 

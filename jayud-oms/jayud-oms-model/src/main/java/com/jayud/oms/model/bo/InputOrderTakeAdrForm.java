@@ -15,6 +15,15 @@ public class InputOrderTakeAdrForm {
     @ApiModelProperty(value = "提货/送货地址")
     private String address;
 
+    @ApiModelProperty(value = "所属客户ID")
+    private Long customerId;
+
+    @ApiModelProperty(value = "联系人")
+    private String contacts;
+
+    @ApiModelProperty(value = "联系电话")
+    private String phone;
+
     //以上部分是加自定义地址使用
     //以下部分是选择地址使用,通过deliveryId区分
 
@@ -24,9 +33,12 @@ public class InputOrderTakeAdrForm {
     @ApiModelProperty(value = "地址信息(delivery_address id)")
     private Long deliveryId;
 
+    @ApiModelProperty(value = "提货/送货信息ID")
+    private Long takeAdrId;
+
     @ApiModelProperty(value = "提货日期")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime takeTime;
+    private LocalDateTime takeTimeStr;
 
     @ApiModelProperty(value = "货物描述")
     private String goodsDesc;

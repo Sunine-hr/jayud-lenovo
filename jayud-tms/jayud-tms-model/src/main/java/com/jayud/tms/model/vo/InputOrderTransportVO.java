@@ -57,7 +57,7 @@ public class InputOrderTransportVO {
     private String licensePlate;
 
     @ApiModelProperty(value = "车型(1-3T 2-5t 3-8T 4-10T)")
-    private String vehicleSize;
+    private Integer vehicleSize;
 
     @ApiModelProperty(value = "车型(1吨车 2柜车)")
     private Integer vehicleType;
@@ -125,6 +125,15 @@ public class InputOrderTransportVO {
     @ApiModelProperty(value = "是否香港清关")
     private String isHkClear;
 
+    @ApiModelProperty(value = "提货文件上传附件地址,前台忽略")
+    private String takeFile;
+
+    @ApiModelProperty(value = "提货文件上传附件地址名称,前台忽略")
+    private String takeFileName;
+
+    @ApiModelProperty(value = "是否车辆过磅")
+    private Boolean isVehicleWeigh;
+
     //中转信息
     @ApiModelProperty(value = "中转公司")
     private String companyName;
@@ -144,12 +153,20 @@ public class InputOrderTransportVO {
     @ApiModelProperty(value = "卸货地址")
     private List<InputOrderTakeAdrVO> orderTakeAdrForms2 = new ArrayList<>();
 
+    @ApiModelProperty(value = "审核状态")
+    private String subTmsStatus;
+
+    public String getSubTmsStatus() {
+        return subTmsStatus = this.status;
+    }
 
     public String getGoodsTypeDesc() {
-        if(this.goodsType == 1){
-           return  "进口";
-        }else if(this.goodsType == 2){
-            return "出口";
+        if(this.goodsType != null) {
+            if (this.goodsType == 1) {
+                return "进口";
+            } else if (this.goodsType == 2) {
+                return "出口";
+            }
         }
         return "";
     }

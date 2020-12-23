@@ -8,6 +8,7 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.oms.feign.OauthClient;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,6 +63,14 @@ public class CustomerInfoController {
         return CommonResult.success(pageVO);
     }
 
+    @ApiOperation(value = "分页查询客户基本信息列表")
+    @PostMapping(value = "/findCustomerBasicsInfoByPage")
+    public CommonResult<CommonPageResult<CustomerInfoVO>> findCustomerBasicsInfoByPage(@RequestBody QueryCustomerInfoForm form) {
+        IPage<CustomerInfoVO> pageList = customerInfoService.findCustomerBasicsInfoByPage(form);
+        CommonPageResult<CustomerInfoVO> pageVO = new CommonPageResult(pageList);
+        return CommonResult.success(pageVO);
+    }
+
     @ApiOperation(value = "查看客户详情和编辑时数据回显,id=客户ID")
     @PostMapping(value = "/getCustomerInfoById")
     public CommonResult<CustomerInfoVO> getCustomerInfoById(@RequestBody Map<String, Object> param) {
@@ -70,14 +80,21 @@ public class CustomerInfoController {
 
     @ApiOperation(value = "新增编辑客户")
     @PostMapping(value = "/saveOrUpdateCustomerInfo")
-    public CommonResult saveOrUpdateCustomerInfo(@RequestBody AddCustomerInfoForm form) {
-        CustomerInfo customerInfo = null;
-        customerInfo = ConvertUtil.convert(form, CustomerInfo.class);
+    public CommonResult saveOrUpdateCustomerInfo(@RequestBody @Valid AddCustomerInfoForm form) {
+        CustomerInfo customerInfo = ConvertUtil.convert(form, CustomerInfo.class);
+        customerInfo.setUnitCode(form.getIdCode());
+        customerInfo.setUnitAccount(form.getName());
         if (form.getId() != null) {
             customerInfo.setUpdatedUser(UserOperator.getToken());
             customerInfo.setUpdatedTime(DateUtils.getNowTime());
         } else {
             customerInfo.setCreatedUser(UserOperator.getToken());
+        }
+        //校验客户代码和客户名称的唯一性
+        List<CustomerInfoVO> oldCustomerInfos = customerInfoService.existCustomerInfo(form.getIdCode(),form.getName());
+        if((oldCustomerInfos != null && oldCustomerInfos.size()>1) || (oldCustomerInfos != null && oldCustomerInfos.size() == 1 &&
+                oldCustomerInfos.get(0).getId() != form.getId())){
+            return CommonResult.error(ResultEnum.CUSTOMER_CODE_EXIST);
         }
         customerInfo.setAuditStatus(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode());
         customerInfoService.saveOrUpdate(customerInfo);

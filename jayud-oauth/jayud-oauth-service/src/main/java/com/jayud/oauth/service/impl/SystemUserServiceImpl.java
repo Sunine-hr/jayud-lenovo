@@ -11,7 +11,6 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.enums.ResultEnum;
-import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.oauth.mapper.SystemUserMapper;
@@ -24,6 +23,7 @@ import com.jayud.oauth.model.po.SystemUser;
 import com.jayud.oauth.model.po.SystemUserLoginLog;
 import com.jayud.oauth.model.vo.*;
 import com.jayud.oauth.service.*;
+import io.netty.util.internal.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -100,7 +100,9 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         } catch (ApiException e) {
             throw e;
         } catch (Exception e) {
-            Asserts.fail(ResultEnum.LOGIN_FAIL);
+            cacheUser = new SystemUserVO();
+            cacheUser.setIsError(true);
+            return cacheUser;
         }
         // 构建缓存用户信息返回给前端
         SystemUser user = (SystemUser) subject.getPrincipals().getPrimaryPrincipal();
@@ -164,12 +166,17 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         if ("update".equals(form.getCmd())) {//修改
             SystemUser systemUser = ConvertUtil.convert(form, SystemUser.class);
             //校验登录名的唯一性
-            String newName = systemUser.getName();
-            QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.eq("name", newName);
-            List<SystemUser> systemUsers = baseMapper.selectList(queryWrapper);
-            if (systemUsers != null && systemUsers.size() > 0) {
-                return CommonResult.error(ResultEnum.LOGIN_NAME_EXIST.getCode(), ResultEnum.LOGIN_NAME_EXIST.getMessage());
+            SystemUser systemUser1 = baseMapper.selectById(form.getId());
+            if(!StringUtil.isNullOrEmpty(systemUser1.getName())) {
+                if (!systemUser1.getName().equals(form.getName())) {//修改了登录名的情况下
+                    String newName = systemUser.getName();
+                    QueryWrapper queryWrapper = new QueryWrapper();
+                    queryWrapper.eq("name", newName);
+                    List<SystemUser> systemUsers = baseMapper.selectList(queryWrapper);
+                    if (systemUsers != null && systemUsers.size() > 0) {
+                        return CommonResult.error(ResultEnum.LOGIN_NAME_EXIST.getCode(), ResultEnum.LOGIN_NAME_EXIST.getMessage());
+                    }
+                }
             }
             systemUser.setPassword("E10ADC3949BA59ABBE56E057F20F883E");//默认密码为:123456
             systemUser.setStatus(1);//账户为启用状态

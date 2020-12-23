@@ -102,6 +102,21 @@ public class OrderPaymentCost extends Model<OrderPaymentCost> {
     @ApiModelProperty(value = "创建人")
     private String createdUser;
 
+    @ApiModelProperty(value = "附件路径,多个时用逗号分隔")
+    private String files;
+
+    @ApiModelProperty(value = "附件名称,多个时用逗号分隔")
+    private String fileName;
+
+    @ApiModelProperty(value = "是否出账 1-已出账 0-未出账")
+    private String isBill;
+
+    @ApiModelProperty(value = "是否汇总到主订单")
+    private Boolean isSumToMain;
+
+    @ApiModelProperty(value = "录用费用类型(zgys=中港运输)")
+    private String subType;
+
 
     @Override
     protected Serializable pkVal() {

@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -156,11 +155,21 @@ public class ExternalApiController {
     public ApiResult saveOrUpdateCustAccount(@RequestBody AddCusAccountForm form) {
         //校验登录名唯一性
         QueryWrapper<SystemUser> queryWrapper = new QueryWrapper();
-        queryWrapper.lambda().eq(SystemUser::getName, form.getName()).eq(SystemUser::getUserName, form.getUserName());
-        int count = userService.count(queryWrapper);
-        if (count > 0) {
-            return ApiResult.error(ResultEnum.LOGIN_NAME_OR_NAME_EXIST.getCode(), ResultEnum.LOGIN_NAME_OR_NAME_EXIST.getMessage());
+
+        if (form.getId() != null) {
+            queryWrapper.lambda().select(SystemUser::getId).eq(SystemUser::getUserName, form.getUserName());
+            SystemUser tmp = this.userService.getOne(queryWrapper);
+            if (tmp != null && !tmp.getId().equals(form.getId())) {
+                return ApiResult.error(ResultEnum.NAME_EXIST.getCode(), ResultEnum.NAME_EXIST.getMessage());
+            }
+        } else {
+            queryWrapper.lambda().eq(SystemUser::getUserName, form.getUserName()).or().eq(SystemUser::getName, form.getName());
+            if (this.userService.count(queryWrapper)>0) {
+                return ApiResult.error(ResultEnum.LOGIN_NAME_EXIST.getCode(), ResultEnum.LOGIN_NAME_EXIST.getMessage());
+            }
         }
+
+
         SystemUser systemUser = new SystemUser();
         systemUser.setName(form.getName());
         systemUser.setUserName(form.getUserName());

@@ -104,6 +104,10 @@ public abstract class CommonConstant {
      * 生成派车单号
      */
     public static final String P = "P";
+    /**
+     * 生成账单号
+     */
+    public static final String B = "B";
 
     public static final String VALUE_1 = "1";
 
@@ -162,4 +166,30 @@ public abstract class CommonConstant {
     public static final String DEPARTMENT = "department";
 
     public static final String ID = "id";
+
+    public static final String LIST = "list";
+
+    public static final String BILL_NUM_TOTAL = "billNumTotal";//订单数合计
+
+    public static final String RMB_TOTAL = "rmbTotal";//人民币合计
+
+    public static final String DOLLAR_TOTAL = "dollarTotal";//美元合计
+
+    public static final String EURO_TOTAL = "euroTotal";//欧元合计
+
+    public static final String HK_DOLLAR_TOTAL = "hKDollarTotal";//港币合计
+
+    public static final String LOCAL_AMOUNT_TOTAL = "localAmountTotal";//本币金额合计
+
+    public static final String HE_XIAO_AMOUNT = "heXiaoAmount";//已收金额，即财务已核销金额合计
+
+    public static final String SHEET_HEAD = "sheetHead";//表头
+
+    public static final String WHOLE_DATA = "wholeData";//全局数据
+
+    public static final String DOUBLE_QUOTE = "";//双引号
+
+    public static final String RECEIVABLE = "receivable";//应收标识
+
+    public static final String PAYMENT = "payment";//应付标识
 }

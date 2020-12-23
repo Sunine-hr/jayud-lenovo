@@ -12,8 +12,6 @@
         <result column="vehicle_id" property="vehicleId"/>
         <result column="id_no" property="idNo"/>
         <result column="driving_no" property="drivingNo"/>
-        <result column="supplier_id" property="supplierId"/>
-        <result column="supplier_name" property="supplierName"/>
         <result column="status" property="status"/>
         <result column="create_user" property="createUser"/>
         <result column="create_time" property="createTime"/>
@@ -24,15 +22,14 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, name, is_main, hk_phone, phone, vehicle_id, id_no, driving_no, supplier_id, supplier_name, status, create_user, create_time, update_time, update_user, password
+        id, name, is_main, hk_phone, phone, vehicle_id, id_no, driving_no, status, create_user, create_time, update_time, update_user, password
     </sql>
 
     <select id="findDriverInfoByPage" parameterType="com.jayud.oms.model.bo.QueryDriverInfoForm"
             resultType="com.jayud.oms.model.vo.DriverInfoVO">
         select
             d.id, name, is_main isMain, hk_phone hkPhone,
-            phone, vehicle_id vehicleId, id_no idNo, driving_no drivingNo,
-            d.supplier_id supplierId, d.supplier_name supplierName, d.status,
+            phone, vehicle_id vehicleId, id_no idNo, driving_no drivingNo, d.status,
             d.create_user createUser, d.create_time createTime,
             d.update_time updateTime, d.update_user updateUser,
             v.plate_number plateNumber,

@@ -7,11 +7,14 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.oms.model.bo.QueryContractInfoForm;
+import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.ContractInfo;
 import com.jayud.oms.model.po.ProductBiz;
+import com.jayud.oms.model.po.ProductClassify;
 import com.jayud.oms.model.vo.ContractInfoVO;
 import com.jayud.oms.mapper.ContractInfoMapper;
 import com.jayud.oms.service.IContractInfoService;
+import com.jayud.oms.service.IProductClassifyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +28,9 @@ public class ContractInfoServiceImpl extends ServiceImpl<ContractInfoMapper, Con
     @Autowired
     private ProductBizServiceImpl productBizService;
 
+    @Autowired
+    private IProductClassifyService productClassifyService;
+
     @Override
     public IPage<ContractInfoVO> findContractInfoByPage(QueryContractInfoForm form) {
         //定义分页参数
@@ -33,7 +39,7 @@ public class ContractInfoServiceImpl extends ServiceImpl<ContractInfoMapper, Con
         page.addOrder(OrderItem.asc("ci.id"));
         IPage<ContractInfoVO> pageInfo = baseMapper.findContractInfoByPage(page, form);
         List<ContractInfoVO> contractInfoVOS = pageInfo.getRecords();
-        List<ProductBiz> productBizs = productBizService.findProductBiz();//业务类型
+        List<ProductClassify> productBizs = productClassifyService.getEnableParentProductClassify(StatusEnum.ENABLE.getCode());//服务类型
         for (ContractInfoVO contractInfoVO : contractInfoVOS) {
             contractInfoVO.setBusinessTypes(contractInfoVO.getBusinessType());
             contractInfoVO.buildViewBusinessType(productBizs);
@@ -43,16 +49,16 @@ public class ContractInfoServiceImpl extends ServiceImpl<ContractInfoMapper, Con
 
     @Override
     public ContractInfoVO getContractInfoById(Long id) {
-        return  baseMapper.getContractInfoById(id);
+        return baseMapper.getContractInfoById(id);
     }
 
     @Override
     public List<ContractInfo> findContractByCondition(Map<String, Object> param) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("status","1");//有效的合同
-        for(String key : param.keySet()){
+        queryWrapper.eq("status", "1");//有效的合同
+        for (String key : param.keySet()) {
             String value = String.valueOf(param.get(key));
-            queryWrapper.eq(key,value);
+            queryWrapper.eq(key, value);
         }
         return baseMapper.selectList(queryWrapper);
     }

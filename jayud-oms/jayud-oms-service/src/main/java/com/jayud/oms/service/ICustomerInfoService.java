@@ -19,13 +19,15 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
 
     /**
      * 客户列表分页查询
+     *
      * @param from
      * @return
      */
-    IPage<CustomerInfoVO>  findCustomerInfoByPage(QueryCustomerInfoForm from);
+    IPage<CustomerInfoVO> findCustomerInfoByPage(QueryCustomerInfoForm from);
 
     /**
      * 根据id获取客户信息
+     *
      * @param id
      * @return
      */
@@ -33,24 +35,38 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
 
     /**
      * 根据条件获取客户
+     *
      * @return
      */
-    List<CustomerInfo> findCustomerInfoByCondition(Map<String,Object> param);
+    List<CustomerInfo> findCustomerInfoByCondition(Map<String, Object> param);
 
 
     /**
      * 获取客户账号
+     *
      * @param param
      * @return
      */
-    CustAccountVO getCustAccountByCondition(Map<String,Object> param);
+    CustAccountVO getCustAccountByCondition(Map<String, Object> param);
 
     /**
      * 客户账户列表分页查询
+     *
      * @param form
      * @return
      */
-    IPage<CustAccountVO>  findCustAccountByPage(QueryCusAccountForm form);
+    IPage<CustAccountVO> findCustAccountByPage(QueryCusAccountForm form);
 
+    /**
+     * 分页查询客户基本信息
+     */
+    IPage<CustomerInfoVO> findCustomerBasicsInfoByPage(QueryCustomerInfoForm form);
 
+    /**
+     * 做客户代码和客户名称唯一性校验
+     * @param idCode
+     * @param name
+     * @return
+     */
+    List<CustomerInfoVO> existCustomerInfo(String idCode,String name);
 }

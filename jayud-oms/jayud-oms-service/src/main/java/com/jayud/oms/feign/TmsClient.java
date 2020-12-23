@@ -2,10 +2,14 @@ package com.jayud.oms.feign;
 
 
 import com.jayud.common.ApiResult;
+import com.jayud.oms.model.bo.DriverFeedbackStatusForm;
 import com.jayud.oms.model.bo.InputOrderTransportForm;
+import com.jayud.oms.model.bo.QueryDriverOrderTransportForm;
 import com.jayud.oms.model.bo.TmsChangeStatusForm;
+import com.jayud.oms.model.vo.DriverOrderTakeAdrVO;
 import com.jayud.oms.model.vo.InitChangeStatusVO;
 import com.jayud.oms.model.vo.InputOrderTransportVO;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +32,7 @@ public interface TmsClient {
 
     /**
      * 获取中港订单详情
+     *
      * @param mainOrderNo
      * @return
      */
@@ -36,6 +41,7 @@ public interface TmsClient {
 
     /**
      * 获取中港订单号
+     *
      * @param mainOrderNo
      * @return
      */
@@ -45,10 +51,71 @@ public interface TmsClient {
 
     /**
      * 更改报关单状态
+     *
      * @param form
      * @return
      */
     @RequestMapping(value = "/api/changeCustomsStatus")
     ApiResult changeTransportStatus(@RequestBody List<TmsChangeStatusForm> form);
 
+
+    /**
+     * 分页查询司机的中港订单信息
+     */
+    @RequestMapping(value = "/api/getDriverOrderTransport")
+    ApiResult getDriverOrderTransport(@RequestBody QueryDriverOrderTransportForm form);
+
+    /**
+     * PDF派车单
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/dispatchList")
+    ApiResult dispatchList(@RequestParam(value = "orderNo") String orderNo);
+
+    /**
+     * 根据主键查询司机的中港订单信息
+     */
+    @RequestMapping(value = "/api/getDriverOrderTransportById")
+    ApiResult getDriverOrderTransportById(@RequestParam("orderId") Long orderId);
+
+
+    /**
+     * 获取司机待接单数量（小程序）
+     */
+    @RequestMapping(value = "/api/getDriverPendingOrderNum")
+    ApiResult getDriverOrderTransportDetailById(@RequestParam("driverId") Long driverId
+            , @RequestParam("orderNos") List<String> orderNos);
+
+    /**
+     * 查询送货地址数量
+     */
+    @RequestMapping(value = "/api/getDeliveryAddressNum")
+    ApiResult getDeliveryAddressNum(@RequestParam("orderNo") String orderNo);
+
+    /**
+     * 获取中港订单状态
+     */
+    @RequestMapping(value = "/api/getOrderTransportStatus")
+    ApiResult getOrderTransportStatus(@RequestParam("orderNo") String orderNo);
+
+    /**
+     * 司机反馈状态
+     */
+    @RequestMapping(value = "/api/doDriverFeedbackStatus")
+    ApiResult doDriverFeedbackStatus(@RequestBody DriverFeedbackStatusForm form);
+
+
+    /**
+     * 查询提货/收货地址
+     */
+    @RequestMapping(value = "/api/getDriverOrderTakeAdrByOrderNo")
+    public ApiResult<List<DriverOrderTakeAdrVO>> getDriverOrderTakeAdrByOrderNo(@RequestParam("orderNo") List<String> orderNo
+            , @RequestParam("oprType") Integer oprType);
+
+    /**
+     * 查询派车信息
+     */
+    @RequestMapping(value = "/api/getOrderSendCarsByOrderNo")
+    public ApiResult getOrderSendCarsByOrderNo(@RequestParam("orderNo") String orderNo);
 }

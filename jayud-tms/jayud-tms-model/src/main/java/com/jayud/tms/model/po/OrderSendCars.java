@@ -38,15 +38,6 @@ public class OrderSendCars extends Model<OrderSendCars> {
     @ApiModelProperty(value = "运输对应子订单(订单编号(生成规则product_classify code+随时数)")
     private String orderNo;
 
-    @ApiModelProperty(value = "六联单号")
-    private String encode;
-
-    @ApiModelProperty(value = "六联单号文件地址")
-    private String encodeUrl;
-
-    @ApiModelProperty(value = "六联单号文件地址名称")
-    private String encodeUrlName;
-
     @ApiModelProperty(value = "车型(1吨车 2柜车)")
     private Integer vehicleType;
 
@@ -62,26 +53,11 @@ public class OrderSendCars extends Model<OrderSendCars> {
     @ApiModelProperty(value = "柜号图片名称")
     private String cntrPicName;
 
-    @ApiModelProperty(value = "供应商ID")
-    private Long supplierInfoId;
+    @ApiModelProperty(value = "车辆ID")
+    private Long vehicleId;
 
-    @ApiModelProperty(value = "大陆车牌号")
-    private String licensePlate;
-
-    @ApiModelProperty(value = "大陆司机名")
-    private String driverName;
-
-    @ApiModelProperty(value = "HK车牌号")
-    private String hkLicensePlate;
-
-    @ApiModelProperty(value = "司机大陆电话")
-    private String driverPhone;
-
-    @ApiModelProperty(value = "司机香港电话")
-    private String driverHkPhone;
-
-    @ApiModelProperty(value = "仓库ID)")
-    private Long warehouseInfoId;
+    @ApiModelProperty(value = "大陆司机名ID")
+    private Long driverInfoId;
 
     @ApiModelProperty(value = "要求")
     private String remarks;

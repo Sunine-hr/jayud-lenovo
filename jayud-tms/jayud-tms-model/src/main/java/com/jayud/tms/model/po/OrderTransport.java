@@ -59,9 +59,6 @@ public class OrderTransport extends Model<OrderTransport> {
     @ApiModelProperty(value = "仓库代码(warehouse_info)")
     private String warehouseInfoId;
 
-    @ApiModelProperty(value = "六联单号")
-    private String encode;
-
     @ApiModelProperty(value = "状态")
     private String status;
 
@@ -86,20 +83,11 @@ public class OrderTransport extends Model<OrderTransport> {
     @ApiModelProperty(value = "是否香港清关 1-是 0-否,选择了香港清关必填")
     private String isHkClear;
 
-    @ApiModelProperty(value = "车辆供应商ID")
-    private Long hkSupplierId;
+    @ApiModelProperty(value = "香港清关司机ID")
+    private Long driverInfoId;
 
-    @ApiModelProperty(value = "香港清关司机名称")
-    private String hkDriverName;
-
-    @ApiModelProperty(value = "香港清关司机电话")
-    private String hkDriverPhone;
-
-    @ApiModelProperty(value = "香港清关大陆车牌")
-    private String licensePlate;
-
-    @ApiModelProperty(value = "香港清关香港车牌")
-    private String hkLicensePlate;
+    @ApiModelProperty(value = "香港清关车辆ID")
+    private Long vehicleId;
 
     @ApiModelProperty(value = "无缝单号")
     private String seamlessNo;
@@ -136,6 +124,15 @@ public class OrderTransport extends Model<OrderTransport> {
 
     @ApiModelProperty(value = "预计通关时间")
     private LocalDateTime preGoCustomsTime;
+
+    @ApiModelProperty(value = "提货文件")
+    private String takeFile;
+
+    @ApiModelProperty(value = "提货文件名称")
+    private String takeFileName;
+
+    @ApiModelProperty(value = "是否车辆过磅")
+    private Boolean isVehicleWeigh;
 
 
     @Override

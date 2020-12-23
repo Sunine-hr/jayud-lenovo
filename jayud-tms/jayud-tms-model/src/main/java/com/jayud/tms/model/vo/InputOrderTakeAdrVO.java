@@ -9,6 +9,9 @@ import lombok.Data;
 @Data
 public class InputOrderTakeAdrVO {
 
+    @ApiModelProperty(value = "地址信息(delivery_address id)")
+    private Long deliveryId;
+
     @ApiModelProperty(value = "联系人")
     private String contacts;
 
@@ -27,8 +30,11 @@ public class InputOrderTakeAdrVO {
     @ApiModelProperty(value = "详细地址")
     private String address;
 
+    @ApiModelProperty(value = "提货/送货信息ID")
+    private Long takeAdrId;
+
     @ApiModelProperty(value = "提货日期")
-    private String takeTime;
+    private String takeTimeStr;
 
     @ApiModelProperty(value = "客户,取主订单的客户")
     private String customerName;
@@ -60,10 +66,47 @@ public class InputOrderTakeAdrVO {
     @ApiModelProperty(value = "车型(1吨车 2柜车)")
     private Integer vehicleType;
 
+    @ApiModelProperty(value = "车型(1吨车 2柜车)")
+    private String vehicleTypeDesc;
+
+    @ApiModelProperty(value = "柜号")
+    private String cntrNo;
+
     @ApiModelProperty(value = "车型(1-3T 2-5t 3-8T 4-10T)")
     private Integer vehicleSize;
 
+    @ApiModelProperty(value = "车型(1-3T 2-5t 3-8T 4-10T)")
+    private String vehicleSizeDesc;
+
     @ApiModelProperty(value = "入仓号,送货地址特有")
     private String enterWarehouseNo;
+
+    public String getVehicleTypeDesc() {
+        if(this.vehicleType != null){
+            if(this.vehicleType == 1){
+                return "吨车";
+            }else if(this.vehicleType == 2){
+                return "柜车";
+            }
+        }
+        return "";
+    }
+
+    public String getVehicleSizeDesc() {
+        if(this.vehicleSize != null){
+            if(this.vehicleSize == 1){
+                return "3T";
+            }else if(this.vehicleSize == 2){
+                return "5T";
+            }else if(this.vehicleSize == 3){
+                return "8T";
+            }else if(this.vehicleSize == 4){
+                return "10T";
+            }else if(this.vehicleSize == 5){
+                return "12T";
+            }
+        }
+        return "";
+    }
 
 }

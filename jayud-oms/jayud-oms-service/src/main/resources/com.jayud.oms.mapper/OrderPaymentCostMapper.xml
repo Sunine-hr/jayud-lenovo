@@ -4,30 +4,30 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.OrderPaymentCost">
-        <id column="id" property="id" />
-        <result column="main_order_no" property="mainOrderNo" />
-        <result column="biz_order_no" property="bizOrderNo" />
-        <result column="order_no" property="orderNo" />
-        <result column="biz_code" property="bizCode" />
-        <result column="biz_name" property="bizName" />
-        <result column="customer_code" property="customerCode" />
-        <result column="customer_name" property="customerName" />
-        <result column="cost_type_id" property="costTypeId" />
-        <result column="cost_genre_id" property="costGenreId" />
-        <result column="unit" property="unit" />
-        <result column="cost_code" property="costCode" />
-        <result column="unit_price" property="unitPrice" />
-        <result column="number" property="number" />
-        <result column="currency_code" property="currencyCode" />
-        <result column="amount" property="amount" />
-        <result column="exchange_rate" property="exchangeRate" />
-        <result column="change_amount" property="changeAmount" />
-        <result column="remarks" property="remarks" />
-        <result column="status" property="status" />
-        <result column="opt_name" property="optName" />
-        <result column="opt_time" property="optTime" />
-        <result column="created_time" property="createdTime" />
-        <result column="created_user" property="createdUser" />
+        <id column="id" property="id"/>
+        <result column="main_order_no" property="mainOrderNo"/>
+        <result column="biz_order_no" property="bizOrderNo"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="biz_code" property="bizCode"/>
+        <result column="biz_name" property="bizName"/>
+        <result column="customer_code" property="customerCode"/>
+        <result column="customer_name" property="customerName"/>
+        <result column="cost_type_id" property="costTypeId"/>
+        <result column="cost_genre_id" property="costGenreId"/>
+        <result column="unit" property="unit"/>
+        <result column="cost_code" property="costCode"/>
+        <result column="unit_price" property="unitPrice"/>
+        <result column="number" property="number"/>
+        <result column="currency_code" property="currencyCode"/>
+        <result column="amount" property="amount"/>
+        <result column="exchange_rate" property="exchangeRate"/>
+        <result column="change_amount" property="changeAmount"/>
+        <result column="remarks" property="remarks"/>
+        <result column="status" property="status"/>
+        <result column="opt_name" property="optName"/>
+        <result column="opt_time" property="optTime"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="created_user" property="createdUser"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -37,21 +37,24 @@
         created_time, created_user,cost_genre_id,unit
     </sql>
 
-    <select id="findPaymentCost" parameterType="com.jayud.oms.model.bo.GetCostDetailForm" resultType="com.jayud.oms.model.vo.InputPaymentCostVO" >
-        SELECT
+    <select id="findPaymentCost" parameterType="com.jayud.oms.model.bo.GetCostDetailForm"
+            resultType="com.jayud.oms.model.vo.InputPaymentCostVO">
+        SELECT distinct
         opc.`id`,
-        opc.`customer_name` customerName ,
+        opc.`customer_code` customerCode ,
+        (select si.supplier_ch_name from supplier_info si where si.supplier_code = opc.customer_code limit 1)customerName,
         opc.`cost_type_id` costTypeId,
         (SELECT ct.code_name FROM cost_type ct WHERE ct.id = opc.`cost_type_id` LIMIT 1) costType,
         opc.`cost_genre_id` costGenreId,
         (SELECT cg.name FROM cost_genre cg WHERE cg.id = opc.cost_genre_id LIMIT 1) costGenre,
         opc.`unit`,
         opc.`cost_code` costCode,
-        (SELECT ci.name FROM cost_info ci WHERE ci.id_code = opc.`cost_code` AND ci.types = 2 LIMIT 1) costName,
+        (SELECT ci.name FROM cost_info ci WHERE ci.id_code = opc.`cost_code` LIMIT 1) costName,
         opc.`unit_price` unitPrice,
         opc.`number`,
         opc.`currency_code` currencyCode,
-        (SELECT ci.currency_name FROM currency_info ci WHERE ci.currency_code = opc.`currency_code` LIMIT 1) currencyName,
+        (SELECT ci.currency_name FROM currency_info ci WHERE ci.currency_code = opc.`currency_code` LIMIT 1)
+        currencyName,
         opc.`amount`,
         opc.`change_amount` changeAmount,
         opc.`exchange_rate` exchangeRate,
@@ -60,16 +63,63 @@
         FROM
         order_payment_cost opc
         where opc.`main_order_no` = #{form.mainOrderNo}
+        <if test="form.cmd == 'main_cost'">
+            and (opc.sub_type = 'main'
+            or (opc.is_sum_to_main = 1  and opc.`status` = '3'))
+        </if>
         <if test="form.cmd == 'main_cost_audit'">
             and opc.`status` in ('2','3')
+            and opc.sub_type = 'main'
         </if>
-        <if test="form.cmd == 'sub_cost'">
-            and opc.`order_no` != '' and opc.`order_no` is not null
+        <if test="form.cmd == 'zgys_sub_cost'">
+            and opc.sub_type = 'zgys'
+            and opc.order_no = #{form.subOrderNo}
         </if>
-        <if test="form.cmd == 'sub_cost_audit'">
+        <if test="form.cmd == 'bg_sub_cost'">
+            and opc.sub_type = 'bg'
+            and opc.order_no = #{form.subOrderNo}
+        </if>
+        <if test="form.cmd == 'zgys_sub_cost_audit'">
             and opc.`status` in ('2','3')
-            and opc.`order_no` != '' and opc.`order_no` is not null
+            and opc.sub_type = 'zgys'
+            and opc.order_no = #{form.subOrderNo}
+        </if>
+        <if test="form.cmd == 'bg_sub_cost_audit'">
+            and opc.`status` in ('2','3')
+            and opc.sub_type = 'bg'
+            and opc.order_no = #{form.subOrderNo}
         </if>
     </select>
 
+    <select id="getDriverOrderPaymentCost" parameterType="string"
+            resultType="com.jayud.oms.model.vo.DriverOrderPaymentCostVO">
+        select
+        oc.id,
+        oc.order_no orderNo,
+        ci.currency_name currency,
+        c.name costName,
+        oc.amount,
+        oc.files,
+        oc.file_name fileName
+        from
+        order_payment_cost oc
+        left join currency_info ci on oc.currency_code=ci.currency_code
+        left join cost_info c on c.id_code=oc.cost_code
+        <where>
+            and oc.order_no =#{orderNo}
+        </where>
+    </select>
+    <select id="getWriteBackFCostData" parameterType="java.lang.Long" resultType="com.jayud.oms.model.vo.InputPaymentCostVO" >
+    	select temp.id,temp.exchangeRate,temp.amount * temp.exchangeRate changeAmount,temp.oCurrencyName from (
+        SELECT
+            opc.id,
+            (SELECT cr.exchange_rate FROM currency_rate cr where cr.`month`= opbd.account_term and  cr.dcid = (select ci.id from currency_info ci where ci.currency_code = 'CNY') and cr.ocid = (select ci.id from currency_info ci where ci.currency_code = opc.currency_code)) exchangeRate,
+            opc.amount,
+			(select ci.currency_name from currency_info ci where ci.currency_code = opc.currency_code) oCurrencyName
+        FROM
+            order_payment_cost opc left join order_payment_bill_detail opbd on opc.id = opbd.cost_id
+        WHERE
+            opc.id = #{costId}
+        ) temp
+    </select>
 </mapper>

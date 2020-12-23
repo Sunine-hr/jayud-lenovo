@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.finance.mapper.OrderReceivableBillDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.finance.po.OrderReceivableBillDetail">
+        <id column="id" property="id" />
+        <result column="bill_id" property="billId" />
+        <result column="bill_no" property="billNo" />
+        <result column="account_term" property="accountTerm" />
+        <result column="settlement_currency" property="settlementCurrency" />
+        <result column="order_no" property="orderNo" />
+        <result column="local_amount" property="localAmount" />
+        <result column="cost_id" property="costId" />
+        <result column="created_order_time" property="createdOrderTime" />
+        <result column="start_address" property="startAddress" />
+        <result column="end_address" property="endAddress" />
+        <result column="license_plate" property="licensePlate" />
+        <result column="vehicle_size" property="vehicleSize" />
+        <result column="piece_num" property="pieceNum" />
+        <result column="weight" property="weight" />
+        <result column="yun_customs_no" property="yunCustomsNo" />
+        <result column="audit_status" property="auditStatus" />
+        <result column="make_user" property="makeUser" />
+        <result column="make_time" property="makeTime" />
+        <result column="audit_user" property="auditUser" />
+        <result column="audit_time" property="auditTime" />
+        <result column="apply_status" property="applyStatus" />
+        <result column="invoice_amount" property="invoiceAmount" />
+        <result column="status" property="status" />
+        <result column="created_user" property="createdUser" />
+        <result column="created_time" property="createdTime" />
+        <result column="updated_user" property="updatedUser" />
+        <result column="updated_time" property="updatedTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, bill_id,bill_no, order_no,account_term,settlement_currency, cost_id, created_order_time, start_address,
+        end_address, license plate, vehicle_size, piece_num, weight, yun_customs_no, audit_status,make_user,make_time,audit_user,
+        audit_time,apply_status,invoice_amount,status, created_user, created_time,updated_user,updated_time,local_amount
+    </sql>
+
+    <select id="findReceiveBillDetailByPage" parameterType="com.jayud.finance.bo.QueryPaymentBillDetailForm" resultType="com.jayud.finance.vo.OrderPaymentBillDetailVO" >
+        SELECT distinct
+        orbd.bill_no billNo,
+        orb.legal_name legalName,
+        orb.unit_account unitAccount,
+        orbd.account_term accountTermStr,
+        (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='CNY') rmb,
+        (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='USD') dollar,
+        (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='EUR') euro,
+        (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='HKD') hKDollar,
+        (select sum(m.money) from make_invoice m where m.opr_type = '2' and m.bill_no = orbd.bill_no and m.`status` = '1') heXiaoAmount,
+        (orbd.invoice_amount - (select sum(m.money) from make_invoice m where m.opr_type = '2' and m.bill_no = orbd.bill_no and m.`status` = '1'))  notHeXiaoAmount,
+        (select cur.currency_name from currency_info cur where cur.currency_code = orbd.settlement_currency) settlementCurrency,orbd.audit_status auditStatus,orbd.apply_status applyStatus,
+        orbd.make_user makeUser,
+        orbd.make_time makeTimeStr,
+        orbd.audit_user auditUser,
+        orbd.audit_time auditTimeStr,
+        (select ai.audit_comment from audit_info ai where ai.ext_unique_flag = orbd.bill_no and ai.audit_status='B_2_1' order by ai.created_time desc limit 1) auditComment,
+        (select c.created_user from cancel_after_verification c where c.bill_no = orbd.bill_no order by c.created_time desc limit 1) heXiaoUser,
+        (select c.real_receive_time from cancel_after_verification c where c.bill_no = orbd.bill_no order by c.created_time desc limit 1) heXiaoTimeStr
+        FROM
+        order_receivable_bill_detail orbd
+        left join
+        (select t.bill_no,max(t.make_time) make_time  from order_receivable_bill_detail t group by t.bill_no) tt on
+        orbd.bill_no = tt.bill_no
+        LEFT JOIN order_receivable_bill orb ON orbd.bill_id = orb.id
+        where orbd.make_time = tt.make_time
+        <if test="form.cmd == 'main_statement'">
+            and orb.is_main = 1
+        </if>
+        <if test="form.cmd == 'statement_audit'">
+            and orb.is_main = 1 and orbd.audit_status in ('B_1','B_2')
+        </if>
+        <if test="form.cmd == 'cw_statement'">
+            and (orbd.audit_status in ('B_3','B_4','B_5','B_5_1','B_6') or orbd.apply_status='4')
+        </if>
+        <if test="form.cmd == 'zgys_statement'">
+            and orb.is_main = 0 and orb.sub_type = 'zgys'
+        </if>
+        <if test="form.cmd == 'zgys_statement_audit'">
+            and orb.is_main = 0 and orb.sub_type = 'zgys' and orbd.audit_status in ('B_1','B_2')
+        </if>
+        <if test="form.cmd == 'bg_statement'">
+            and orb.is_main = 0 and orb.sub_type = 'bg'
+        </if>
+        <if test="form.cmd == 'bg_statement_audit'">
+            and orb.is_main = 0 and orb.sub_type = 'bg' and orbd.audit_status in ('B_1','B_2')
+        </if>
+        <if test="form.unitAccount != null and form.unitAccount != ''">
+            and orb.unit_account like concat('%',#{form.unitAccount},'%')
+        </if>
+        <if test="form.legalName != null and form.legalName != ''">
+            and orb.legal_name like concat('%',#{form.legalName},'%')
+        </if>
+        <if test="form.billNo != null and form.billNo != ''">
+            and orbd.bill_no like concat('%',#{form.billNo},'%')
+        </if>
+        <if test="form.endAccountTerm != null and form.endAccountTerm !=''">
+            and orbd.end_account_term <![CDATA[<=]]> #{form.endAccountTerm}
+        </if>
+        <if test="form.beginAccountTerm != null and form.beginAccountTerm !=''">
+            and orbd.begin_account_term <![CDATA[>=]]> #{form.beginAccountTerm}
+        </if>
+        <if test="form.currencyCode != null and form.currencyCode !=''">
+            and orbd.settlement_currency = #{form.currencyCode}
+        </if>
+        <if test="form.auditStatus != null and form.auditStatus !=''">
+            and orbd.audit_status = #{form.auditStatus}
+        </if>
+        <if test="form.applyStatus != null and form.applyStatus !=''">
+            and orbd.apply_status = #{form.applyStatus}
+        </if>
+    </select>
+    <select id="findEditSBillByPage" parameterType="com.jayud.finance.bo.QueryEditBillForm" resultType="com.jayud.finance.vo.PaymentNotPaidBillVO" >
+        SELECT
+            orbd1.id billDetailId,
+            orc.main_order_no orderNo,
+            pb.`name` bizCodeDesc,
+            DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
+            cus.unit_account unitAccount,
+           (SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' GROUP BY ot.order_no) startAddress,
+           (SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id WHERE ota.order_no = ot.order_no AND ota.opr_type = '2' GROUP BY ot.order_no) endAddress,
+            concat( vi.plate_number,',',vi.hk_number ) licensePlate,
+            ( SELECT GROUP_CONCAT( oc.yun_customs_no SEPARATOR ',' ) FROM order_customs oc WHERE oc.main_order_no = oi.order_no ) yunCustomsNo,
+            cg.`name` costGenreName,
+            orc.cost_genre_id costGenreId,
+            ct.code_name costTypeName,
+            ci.`name` costName,
+            (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'CNY' GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) rmb,
+            (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'USD' GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) dollar,
+            (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'EUR' GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) euro,
+            (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'HKD' GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) hKDollar,
+            orc.id costId,
+            orc.is_bill isBill,
+            ifnull(orc.change_amount,0) localAmount,
+            orbd1.audit_status auditStatus
+        FROM
+            order_receivable_cost orc
+            left join order_receivable_bill_detail orbd1 on orbd1.cost_id = orc.id
+			left join customer_info cus on cus.unit_code = orc.customer_code
+            LEFT JOIN order_info oi ON orc.main_order_no = oi.order_no
+            LEFT JOIN product_biz pb ON pb.id_code = oi.biz_code
+            LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
+            LEFT JOIN order_send_cars osc ON ot.order_no = osc.transport_no
+			left join driver_info di on di.id = osc.driver_info_id
+			left join vehicle_info vi on vi.id = di.vehicle_id
+            LEFT JOIN cost_genre cg ON orc.cost_genre_id = cg.id
+            LEFT JOIN cost_type ct ON orc.cost_type_id = ct.id
+            LEFT JOIN cost_info ci ON orc.cost_code = ci.id_code
+            left join order_customs oc on oc.order_no = orc.order_no
+        WHERE
+            ( orbd1.audit_status !='edit_del' and orbd1.bill_no = #{form.billNo} )
+            or
+            (orc.is_bill = 'save_confirm' and
+                <if test="form.cmd == 'main'">
+                    oi.legal_name
+                </if>
+                <if test="form.cmd == 'bg'">
+                    oc.legal_name
+                </if>
+                <if test="form.cmd == 'zgys'">
+                    ot.legal_name
+                </if>
+              = (select orb1.legal_name from order_receivable_bill orb1 left join order_receivable_bill_detail orbd1 on orb1.id = orbd1.bill_id where orbd1.bill_no = #{form.billNo} limit 1)
+              and cus.unit_account = (select orb1.unit_account from order_receivable_bill orb1 left join order_receivable_bill_detail orbd1 on orb1.id = orbd1.bill_id where orbd1.bill_no = #{form.billNo} limit 1)
+            )
+    </select>
+    <select id="findSSheetHead" parameterType="java.lang.String" resultType="com.jayud.finance.vo.SheetHeadVO">
+        SELECT
+        CONCAT( orc.cost_code, orc.currency_code ) NAME,
+        concat((select ci.name from cost_info ci where ci.id_code = orc.cost_code),'(',(select ci.currency_name from currency_info ci where ci.  currency_code = orc.currency_code),')') viewName,
+        sum( orc.amount )
+        FROM
+        order_receivable_cost orc
+        WHERE
+        orc.id IN
+        (select orbd.cost_id from order_receivable_bill_detail orbd where orbd.bill_no = #{billNo})
+        GROUP BY
+        orc.cost_code,
+        orc.currency_code
+
+        union
+
+        SELECT
+        concat('T',orc.currency_code) NAME,
+        concat('合计(',(select ci.currency_name from currency_info ci where ci.  currency_code = orc.currency_code),')') viewName,
+        sum( orc.amount )
+        FROM
+        order_receivable_cost orc
+        WHERE
+        orc.id IN
+        (select orbd.cost_id from order_receivable_bill_detail orbd where orbd.bill_no = #{billNo})
+        GROUP BY
+        orc.currency_code
+    </select>
+    <select id="findSCostClass" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewBillToCostClassVO">
+        SELECT
+            CONCAT( orc.cost_code, orc.currency_code ) NAME,
+            orc.main_order_no orderNo,
+            orc.order_no subOrderNo,
+            concat((SELECT ci.NAME FROM cost_info ci WHERE
+                    ci.id_code = orc.cost_code ),'(',(SELECT ci.currency_name FROM currency_info ci WHERE
+                    ci.currency_code = orc.currency_code ),')' ) viewName,
+            sum( orc.amount ) money
+        FROM
+            order_receivable_cost orc
+        WHERE
+            orc.id IN (select orbd.cost_id from order_receivable_bill_detail orbd where orbd.bill_no = #{billNo})
+        GROUP BY
+            orc.cost_code,
+            orc.currency_code,
+            orc.main_order_no,
+            orc.order_no
+         union
+        SELECT
+            concat('T',orc.currency_code) NAME,
+            orc.main_order_no orderNo,
+            orc.order_no subOrderNo,
+            concat('合计(',(SELECT ci.currency_name FROM currency_info ci WHERE
+                    ci.currency_code = orc.currency_code ),')' ) viewName,
+            sum( orc.amount ) money
+        FROM
+            order_receivable_cost orc
+        WHERE
+            orc.id IN (select orbd.cost_id from order_receivable_bill_detail orbd where orbd.bill_no = #{billNo})
+        GROUP BY
+            orc.currency_code,
+            orc.main_order_no,
+            orc.order_no
+    </select>
+    <select id="viewSBillDetail" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewBilToOrderVO">
+         SELECT distinct
+        DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
+        oi.order_no orderNo,
+        (select orc.order_no from order_receivable_cost orc where orc.id = orbd.cost_id) subOrderNo,
+        orb.unit_account unitAccount,
+        ( SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address)) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' GROUP BY ot.order_no) startAddress,
+        ( SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address)) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '2' GROUP BY ot.order_no) endAddress,
+        (select concat(vi.plate_number,',',vi.hk_number) from order_send_cars osc left join order_transport ot on osc.order_no = ot.order_no left join driver_info di on di.id = osc.driver_info_id
+		left join vehicle_info vi on vi.id = di.vehicle_id	where ot.main_order_no = oi.order_no) licensePlate,
+        (select ot.vehicle_size from order_transport ot where ot.main_order_no = oi.order_no)  vehicleSize,
+        (select sum(ota.piece_amount) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1') pieceNum,
+        (select sum(ota.weight) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1') weight,
+        (select oc.yun_customs_no from order_customs oc where oc.main_order_no = oi.order_no limit 1) yunCustomsNo
+        FROM
+        order_info oi
+		left join order_receivable_bill_detail orbd on orbd.order_no = oi.order_no
+		left join order_receivable_bill orb on orb.id = orbd.bill_id
+        where orbd.bill_no = #{billNo}
+    </select>
+    <select id="getViewSBill" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewBillVO">
+        SELECT DISTINCT
+            orb.legal_name legalName,
+            orbd.account_term accountTermStr,
+            orb.unit_account customerName,
+            orbd.bill_no billNo,
+            orbd.make_user makeUser,
+            orbd.make_time makeTimeStr
+        FROM
+            order_receivable_bill orb
+            LEFT JOIN order_receivable_bill_detail orbd ON orb.id = orbd.bill_id
+        WHERE
+            orbd.bill_no = #{billNo} order by orbd.make_time desc limit 1
+    </select>
+    <select id="findSBillAuditByPage" parameterType="com.jayud.finance.bo.QueryFBillAuditForm" resultType="com.jayud.finance.vo.PaymentNotPaidBillVO">
+        select * from (
+        SELECT
+        orbd.id billDetailId,
+        oi.order_no orderNo,
+        orc.order_no subOrderNo,
+        oi.biz_code bizCode,
+        (select pb.`name` from product_biz pb where pb.id_code = oi.biz_code) bizCodeDesc,
+        oi.create_time createdTimeStr,
+        orb.unit_account unitAccount,
+        (SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id =
+        ota.delivery_id
+        left join order_transport ot on ot.order_no = ota.order_no WHERE ot.main_order_no = oi.order_no and ota.opr_type
+        = '1' GROUP BY ot.order_no) startAddress,
+        (SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id =
+        ota.delivery_id
+        left join order_transport ot on ot.order_no = ota.order_no where ot.main_order_no = oi.order_no and ota.opr_type
+        = '2' GROUP BY ot.order_no) endAddress,
+        (select concat( vi.plate_number,',',vi.hk_number ) from order_send_cars osc left join order_transport ot
+        on osc.order_no = ot.order_no left join driver_info di on di.id = osc.driver_info_id left join vehicle_info vi on vi.id = di.vehicle_id where ot.main_order_no = oi.order_no) licensePlate,
+        (select GROUP_CONCAT(oc.yun_customs_no) from order_customs oc where oc.main_order_no = oi.order_no group by oc.main_order_no) yunCustomsNo,
+        (select cg.`name` from cost_genre cg where cg.id = orc.cost_genre_id) costGenreName,
+        orc.cost_genre_id,
+        (select pb.cost_genre_ids from product_biz pb where pb.id_code = oi.biz_code) costGenreStr,
+        orc.id costId,
+        (select ct.code_name from cost_type ct where ct.id = orc.cost_type_id) costTypeName,
+        (select ci.`name` from cost_info ci where ci.id_code = orc.cost_code) costName,
+        (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = orbd.cost_id and
+        obct.money_type='2' and obct.currency_code = 'CNY') rmb,
+        (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = orbd.cost_id and
+        obct.money_type='2' and obct.currency_code = 'USD') dollar,
+        (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = orbd.cost_id and
+        obct.money_type='2' and obct.currency_code = 'EUR') euro,
+        (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = orbd.cost_id and
+        obct.money_type='2' and obct.currency_code = 'HKD') hKDollar,
+        ifnull(orbd.tax_rate,(select pb.tax_rate from product_biz pb where pb.id_code = oi.biz_code)) taxRate,
+        orbd.remarks
+        FROM
+        order_receivable_bill_detail orbd
+        left join order_receivable_bill orb on orbd.bill_id = orb.id
+        left join order_info oi on oi.order_no = orbd.order_no
+        left join order_receivable_cost orc on orc.id = orbd.cost_id
+        where orbd.bill_no = #{form.billNo}
+        ) temp
+        <if test="form.orderNo != null and form.orderNo != ''">
+            and temp.orderNo = #{form.orderNo}
+        </if>
+        <if test="form.bizCode != null and form.bizCode != ''">
+            and temp.bizCode = #{form.bizCode}
+        </if>
+        <if test="form.startAddress != null and form.startAddress != ''">
+            and temp.startAddress like concat('%',#{form.startAddress},'%')
+        </if>
+        <if test="form.endAddress != null and form.endAddress != ''">
+            and temp.endAddress like concat('%',#{form.endAddress},'%')
+        </if>
+        <if test="form.costTypeName != null and form.costTypeName != ''">
+            and temp.costTypeName like concat('%',#{form.costTypeName},'%')
+        </if>
+        <if test="form.costName != null and form.costName != ''">
+            and temp.costName like concat('%',#{form.costName},'%')
+        </if>
+        <if test="form.costGenreId != null">
+            and temp.costGenreId = #{form.costGenreId}
+        </if>
+        <if test="form.endCreateTimeStr != null and form.endCreateTimeStr !=''">
+            and temp.createdTimeStr <![CDATA[<=]]> #{form.endCreateTimeStr}
+        </if>
+        <if test="form.beginCreateTimeStr != null and form.beginCreateTimeStr !=''">
+            and temp.createdTimeStr <![CDATA[<=]]> #{form.beginCreateTimeStr}
+        </if>
+    </select>
+    <select id="findSCostList" parameterType="java.lang.String" resultType="com.jayud.finance.vo.FCostVO">
+        select temp.customerName,temp.costGenreName,temp.costName,temp.unitPrice,temp.number,temp.currencyName,temp.amount,temp.exchangeRate,ifnull(temp.exchangeRate,0)*temp.amount changeAmount,temp.remarks from (
+        SELECT
+            orc.customer_name customerName,
+            (select cg.`name` from cost_genre cg where cg.id = orc.cost_genre_id) costGenreName,
+            (select ci.`name` from cost_info ci where ci.id_code = orc.cost_code) costName,
+            orc.unit_price unitPrice,
+            orc.number,
+            (select ci.currency_name from currency_info ci where ci.currency_code = orc.currency_code) currencyName,
+            orc.amount,
+            (select cr.exchange_rate from currency_rate cr where cr.dcid = (select ci.id from currency_info ci where ci.currency_code = 'CNY') and cr.ocid = (select ci.id from currency_info ci where ci.currency_code = orc.currency_code)  and cr.`month` = orbd.account_term) exchangeRate,
+            orc.remarks
+        FROM
+            order_receivable_cost orc
+        LEFT JOIN order_receivable_bill_detail orbd ON orc.id = orbd.cost_id  WHERE
+            orbd.bill_no = #{billNo}
+            ) temp
+    </select>
+    <select id="getReceivableHeaderForm" parameterType="java.lang.String" resultType="com.jayud.finance.bo.ReceivableHeaderForm">
+        SELECT DISTINCT
+            orb.unit_account customerName,
+            orb.legal_name settleOrgName,
+            orbd.settlement_currency currency,
+            d.`name` saleDeptName,
+            orbd.order_no businessNo,
+            orbd.bill_no billNo,
+            orbd.account_term businessDate
+        FROM
+            order_receivable_cost orc
+            left join order_info oi on oi.order_no = orc.main_order_no
+            left join order_receivable_bill_detail orbd on orbd.cost_id = orc.id
+			left join order_receivable_bill orb on orb.id = orbd.bill_id
+            left join department d on d.id = oi.biz_belong_depart
+            left join customer_info ci on ci.unit_code = orc.customer_code
+        where orbd.bill_no = #{billNo}
+    </select>
+    <select id="findReceivableHeaderDetail" parameterType="java.lang.String" resultType="com.jayud.finance.bo.APARDetailForm">
+        SELECT
+            ( SELECT ci.NAME FROM cost_info ci WHERE ci.id_code = orc.cost_code ) expenseName,
+            ( SELECT code_name FROM cost_type ct WHERE ct.id = orc.cost_type_id ) expenseCategoryName,
+            ( SELECT cg.NAME FROM cost_genre cg WHERE cg.id = orc.cost_genre_id ) expenseTypeName,
+            orc.number,
+            ifnull(orc.unit_price,0) taxPrice,
+            ifnull(orbd.tax_rate,0) taxRate,
+            '0' priceQty
+        FROM
+            order_receivable_bill_detail orbd
+            LEFT JOIN order_receivable_cost orc ON orbd.cost_id = orc.id
+        WHERE
+            orbd.bill_no = #{billNo}
+    </select>
+    <select id="getSCostAmountView" parameterType="java.lang.String" resultType="com.jayud.finance.vo.CostAmountVO">
+         SELECT DISTINCT
+           (select sum(obct.money) from order_bill_cost_total obct where obct.bill_no = orbd.bill_no) ysAmount,
+		   (select ci.currency_name from currency_info ci where ci.currency_code = orbd.settlement_currency limit 1) ysCurrency,
+		   ifnull((select sum(obct.money) from order_bill_cost_total obct where obct.bill_no = orbd.bill_no),0)-ifnull((select sum(cav.discount_money) from cancel_after_verification cav where cav.bill_no = orbd.bill_no),0) wsAmount,
+		   (select ci.currency_name from currency_info ci where ci.currency_code = orbd.settlement_currency limit 1) wsCurrency
+        FROM
+            order_receivable_bill_detail orbd
+            LEFT JOIN order_receivable_cost orc ON orbd.cost_id = orc.id
+        WHERE
+            orbd.bill_no = #{billNo}
+    </select>
+    <select id="getNowSOrderExist" parameterType="java.util.Map" resultType="com.jayud.finance.po.OrderReceivableBillDetail">
+         SELECT orbd.*
+        FROM
+            order_receivable_bill_detail orbd
+            LEFT JOIN order_receivable_bill orb ON orbd.bill_id = orb.id
+        WHERE
+            orbd.order_no = #{orderNo} and orb.sub_type = #{subType} and orb.legal_name = #{legalName} and orb.unit_account = #{unitAccount}
+    </select>
+</mapper>

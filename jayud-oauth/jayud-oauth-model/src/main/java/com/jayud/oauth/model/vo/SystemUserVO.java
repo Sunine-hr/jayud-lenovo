@@ -72,4 +72,7 @@ public class SystemUserVO {
     @ApiModelProperty(value = "用户token")
     private String token;
 
+    @ApiModelProperty(value = "登录错误")
+    private Boolean isError;
+
 }

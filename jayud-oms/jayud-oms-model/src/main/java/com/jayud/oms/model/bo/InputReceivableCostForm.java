@@ -13,13 +13,9 @@ public class InputReceivableCostForm {
     @ApiModelProperty(value = "应收主键ID,修改时传")
     private Long id;
 
-    @ApiModelProperty(value = "客户名称CODE",required = true)
+    @ApiModelProperty(value = "客户名称CODE,下拉结算单位",required = true)
     @NotEmpty(message = "customerCode is required")
     private String customerCode;
-
-    @ApiModelProperty(value = "客户名称",required = true)
-    @NotEmpty(message = "customerName is required")
-    private String customerName;
 
     @ApiModelProperty(value = "应收项目CODE",required = true)
     @NotEmpty(message = "costCode is required")

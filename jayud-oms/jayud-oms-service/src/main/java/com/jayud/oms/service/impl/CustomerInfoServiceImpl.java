@@ -26,7 +26,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
     @Override
     public IPage<CustomerInfoVO> findCustomerInfoByPage(QueryCustomerInfoForm form) {
         //定义分页参数
-        Page<CustomerInfoVO> page = new Page(form.getPageNum(),form.getPageSize());
+        Page<CustomerInfoVO> page = new Page(form.getPageNum(), form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.asc("ci.id"));
         IPage<CustomerInfoVO> pageInfo = baseMapper.findCustomerInfoByPage(page, form);
@@ -35,16 +35,16 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
 
     @Override
     public CustomerInfoVO getCustomerInfoById(Long id) {
-        return  baseMapper.getCustomerInfoById(id);
+        return baseMapper.getCustomerInfoById(id);
     }
 
     @Override
-    public List<CustomerInfo> findCustomerInfoByCondition(Map<String,Object> param) {
+    public List<CustomerInfo> findCustomerInfoByCondition(Map<String, Object> param) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("status","1");
-        for(String key : param.keySet()){
+        queryWrapper.eq("status", "1");
+        for (String key : param.keySet()) {
             String value = String.valueOf(param.get(key));
-            queryWrapper.eq(key,value);
+            queryWrapper.eq(key, value);
         }
         return baseMapper.selectList(queryWrapper);
     }
@@ -57,11 +57,22 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
     @Override
     public IPage<CustAccountVO> findCustAccountByPage(QueryCusAccountForm form) {
         //定义分页参数
-        Page<CustomerInfoVO> page = new Page(form.getPageNum(),form.getPageSize());
+        Page<CustomerInfoVO> page = new Page(form.getPageNum(), form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.asc("su.id"));
         IPage<CustAccountVO> pageInfo = baseMapper.findCustAccountByPage(page, form);
         return pageInfo;
+    }
+
+    @Override
+    public IPage<CustomerInfoVO> findCustomerBasicsInfoByPage(QueryCustomerInfoForm form) {
+        Page<CustomerInfo> page = new Page<>(form.getPageNum(), form.getPageSize());
+        return this.baseMapper.findCustomerBasicsInfoByPage(page, form);
+    }
+
+    @Override
+    public List<CustomerInfoVO> existCustomerInfo(String idCode, String name) {
+        return baseMapper.existCustomerInfo(idCode,name);
     }
 
 

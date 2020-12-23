@@ -1,5 +1,6 @@
 package com.jayud.tms.model.vo;
 
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -57,6 +58,15 @@ public class SendCarPdfVO {
     @ApiModelProperty(value = "车型(1吨车 2柜车)")
     private Integer vehicleType;
 
+    @ApiModelProperty(value = "车型(1吨车 2柜车)")
+    private String vehicleTypeDesc;
+
+    @ApiModelProperty(value = "车型(1-3T 2-5t 3-8T 4-10T)")
+    private String vehicleSizeDesc;
+
+    @ApiModelProperty(value = "柜号")
+    private String cntrNo;
+
     @ApiModelProperty(value = "通关口岸")
     private String portName;
 
@@ -83,5 +93,44 @@ public class SendCarPdfVO {
 
     @ApiModelProperty(value = "总体积")
     private Double totalVolume;
+
+    public String getVehicleTypeDesc() {
+        if(this.vehicleType != null){
+            if(this.vehicleType == 1){
+                return "吨车";
+            }else if(this.vehicleType == 2){
+                return "柜车";
+            }
+        }
+        return "";
+    }
+
+    public String getVehicleSizeDesc() {
+        if(this.vehicleSize != null){
+            if(this.vehicleSize == 1){
+                return "3T";
+            }else if(this.vehicleSize == 2){
+                return "5T";
+            }else if(this.vehicleSize == 3){
+                return "8T";
+            }else if(this.vehicleSize == 4){
+                return "10T";
+            }else if(this.vehicleSize == 5){
+                return "12T";
+            }
+        }
+        return "";
+    }
+
+    public String getGoodsType() {
+        if(!StringUtil.isNullOrEmpty(this.goodsType)){
+            if("1".equals(this.goodsType)){
+                return "进口";
+            }else if("2".equals(this.goodsType)){
+                return "出口";
+            }
+        }
+        return "";
+    }
 
 }

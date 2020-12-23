@@ -12,6 +12,9 @@ public class InputPaymentCostVO {
     @ApiModelProperty(value = "应付主键ID,修改时传")
     private Long id;
 
+    @ApiModelProperty(value = "应付客户CODE")
+    private String customerCode;
+
     @ApiModelProperty(value = "应付客户名称")
     private String customerName;
 
@@ -62,6 +65,9 @@ public class InputPaymentCostVO {
 
     @ApiModelProperty(value = "状态")
     private Integer status;
+
+    @ApiModelProperty(value = "原始币种,财务审核通过后反推数据到费用录入时用于校验")
+    private String oCurrencyName;
 
 
 }

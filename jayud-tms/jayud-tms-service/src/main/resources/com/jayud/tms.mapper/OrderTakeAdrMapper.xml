@@ -4,20 +4,20 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.tms.model.po.OrderTakeAdr">
-        <id column="id" property="id" />
-        <result column="order_no" property="orderNo" />
-        <result column="delivery_id" property="deliveryId" />
-        <result column="take_time" property="takeTime" />
-        <result column="goods_desc" property="goodsDesc" />
-        <result column="plate_amount" property="plateAmount" />
-        <result column="piece_amount" property="pieceAmount" />
-        <result column="weight" property="weight" />
-        <result column="volume" property="volume" />
-        <result column="remarks" property="remarks" />
-        <result column="opr_type" property="oprType" />
-        <result column="create_time" property="createTime" />
-        <result column="create_user" property="createUser" />
-        <result column="enter_warehouse_no" property="enterWarehouseNo" />
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="delivery_id" property="deliveryId"/>
+        <result column="take_time" property="takeTime"/>
+        <result column="goods_desc" property="goodsDesc"/>
+        <result column="plate_amount" property="plateAmount"/>
+        <result column="piece_amount" property="pieceAmount"/>
+        <result column="weight" property="weight"/>
+        <result column="volume" property="volume"/>
+        <result column="remarks" property="remarks"/>
+        <result column="opr_type" property="oprType"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="enter_warehouse_no" property="enterWarehouseNo"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -25,7 +25,7 @@
         id, order_no, delivery_id, take_time, goods_desc, plate_amount, piece_amount, weight, volume, remarks, opr_type, enter_warehouse_no,create_time, create_user
     </sql>
 
-    <select id="findTakeGoodsInfo"  resultType="com.jayud.tms.model.vo.InputOrderTakeAdrVO" >
+    <select id="findTakeGoodsInfo" resultType="com.jayud.tms.model.vo.InputOrderTakeAdrVO">
         SELECT
           da.`contacts`,
           da.`phone`,
@@ -33,10 +33,12 @@
           da.`state_name` stateName,
           da.`city_name` cityName,
           da.`address`,
+          ota.delivery_id deliveryId,
+          ota.id takeAdrId,
           DATE_FORMAT(
             ota.`take_time`,
             '%Y-%m-%d %H:%i:%S'
-          ) takeTime,
+          ) takeTimeStr,
           ota.`goods_desc` goodsDesc,
           ota.`plate_amount` plateAmount,
           ota.`piece_amount` pieceAmount,
@@ -51,6 +53,36 @@
           LEFT JOIN delivery_address da
             ON ota.`delivery_id` = da.`id`
             WHERE ota.`order_no` = #{orderNo}
+    </select>
+
+    <select id="getDriverOrderTakeAdr" resultType="com.jayud.tms.model.vo.DriverOrderTakeAdrVO">
+        SELECT
+        ota.id,
+        ota.order_no orderNo,
+        da.`contacts`,
+        da.`phone`,
+        da.`address`,
+        take_time takeTime,
+        ota.`goods_desc` goodsDesc,
+        ota.opr_type oprType,
+        (select name from region_city where id=da.province) province,
+        (select name from region_city where id=da.city) city,
+        (select name from region_city where id=da.area) area,
+        address,
+        piece_amount pieceAmount,
+        weight
+        FROM
+        order_take_adr ota
+        LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
+        <where>
+            <if test="oprType!=null">
+                and ota.opr_type = #{oprType}
+            </if>
+                and ota.`order_no` in
+            <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
     </select>
 
 </mapper>

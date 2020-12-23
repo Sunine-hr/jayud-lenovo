@@ -35,4 +35,14 @@ public class RegionCityServiceImpl extends ServiceImpl<RegionCityMapper, RegionC
         condition.lambda().eq(RegionCity::getParentId, id);
         return this.baseMapper.selectList(condition);
     }
+
+//    /**
+//     * 获取地址名称
+//     */
+//    @Override
+//    public List<RegionCity> getAddrName(Long... id) {
+//        QueryWrapper<RegionCity> condition = new QueryWrapper<>();
+//        condition.lambda().in(RegionCity::getId, id);
+//        return this.baseMapper.selectList(condition);
+//    }
 }

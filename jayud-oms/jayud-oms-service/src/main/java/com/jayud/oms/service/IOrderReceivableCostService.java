@@ -23,4 +23,11 @@ public interface IOrderReceivableCostService extends IService<OrderReceivableCos
      * @return
      */
     List<InputReceivableCostVO> findReceivableCost(GetCostDetailForm form);
+
+    /**
+     * 获取该条费用以出账时结算币种的汇率和本币金额
+     * @param costId
+     * @return
+     */
+    InputReceivableCostVO getWriteBackSCostData(Long costId);
 }

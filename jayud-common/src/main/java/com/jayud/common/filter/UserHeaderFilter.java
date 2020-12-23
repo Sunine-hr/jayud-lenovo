@@ -2,6 +2,7 @@ package com.jayud.common.filter;
 
 import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -54,12 +55,14 @@ public class UserHeaderFilter implements Filter {
             }
         }
         if (allowedPath) {
-            System.out.println("这里是不需要处理的url进入的方法");
+           // System.out.println("这里是不需要处理的url进入的方法");
         }
         else {
             String token = request.getHeader("token");
-            String user = redisUtils.get(token,10000l);
-            UserOperator.setToken(user);
+            if (StringUtils.isNotEmpty(token)) {
+                String user = redisUtils.get(token,10000l);
+                UserOperator.setToken(user);
+            }
         }
         chain.doFilter(req, res);
     }

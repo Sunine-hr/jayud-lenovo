@@ -2,9 +2,13 @@ package com.jayud.tms.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.tms.model.po.OrderSendCars;
+import com.jayud.tms.model.vo.DriverInfoPdfVO;
 import com.jayud.tms.model.vo.OrderSendCarsVO;
+import com.jayud.tms.model.vo.SendCarListTempVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -23,4 +27,18 @@ public interface OrderSendCarsMapper extends BaseMapper<OrderSendCars> {
      * @return
      */
     OrderSendCarsVO getOrderSendInfo(@Param("orderNo") String orderNo);
+
+    /**
+     * 获取司机资料PDF数据
+     * @param orderNo
+     * @return
+     */
+    DriverInfoPdfVO initDriverInfo(@Param("orderNo") String orderNo);
+
+    /**
+     * 初始化派车单
+     * @param orderNo
+     * @return
+     */
+    List<SendCarListTempVO> initSendCarList(@Param("orderNo") String orderNo);
 }

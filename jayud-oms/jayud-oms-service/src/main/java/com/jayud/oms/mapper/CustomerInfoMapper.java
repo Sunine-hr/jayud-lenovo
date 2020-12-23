@@ -11,6 +11,7 @@ import com.jayud.oms.model.vo.CustAccountVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -19,6 +20,7 @@ public interface CustomerInfoMapper extends BaseMapper<CustomerInfo> {
 
     /**
      * 获取客户列表分页
+     *
      * @param page
      * @param form
      * @return
@@ -27,6 +29,7 @@ public interface CustomerInfoMapper extends BaseMapper<CustomerInfo> {
 
     /**
      * 查看客户详情
+     *
      * @param id
      * @return
      */
@@ -34,16 +37,31 @@ public interface CustomerInfoMapper extends BaseMapper<CustomerInfo> {
 
     /**
      * 获取客户账号
+     *
      * @param param
      * @return
      */
-    CustAccountVO getCustAccountByCondition(Map<String,Object> param);
+    CustAccountVO getCustAccountByCondition(Map<String, Object> param);
 
     /**
      * 客户账户列表分页查询
+     *
      * @param page
      * @param form
      * @return
      */
-    IPage<CustAccountVO>  findCustAccountByPage(Page page, @Param("form") QueryCusAccountForm form);
+    IPage<CustAccountVO> findCustAccountByPage(Page page, @Param("form") QueryCusAccountForm form);
+
+    /**
+     * 分页查询客户基础数据
+     */
+    IPage<CustomerInfoVO> findCustomerBasicsInfoByPage(Page page, @Param("form") QueryCustomerInfoForm form);
+
+    /**
+     * 做客户代码和客户名称唯一性校验
+     * @param idCode
+     * @param name
+     * @return
+     */
+    List<CustomerInfoVO> existCustomerInfo(@Param("idCode") String idCode,@Param("name") String name);
 }

@@ -16,10 +16,7 @@ import com.jayud.customs.model.bo.InputOrderCustomsForm;
 import com.jayud.customs.model.bo.InputSubOrderCustomsForm;
 import com.jayud.customs.model.bo.QueryCustomsOrderInfoForm;
 import com.jayud.customs.model.po.OrderCustoms;
-import com.jayud.customs.model.vo.CustomsOrderInfoVO;
-import com.jayud.customs.model.vo.InputOrderCustomsVO;
-import com.jayud.customs.model.vo.InputSubOrderCustomsVO;
-import com.jayud.customs.model.vo.OrderCustomsVO;
+import com.jayud.customs.model.vo.*;
 import com.jayud.customs.service.IOrderCustomsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -122,7 +119,6 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
         String prePath = fileClient.getBaseUrl().getData().toString();
         for (CustomsOrderInfoVO customsOrder : customsOrderInfoVOS) {
             customsOrder.setGoodsTypeDesc(customsOrder.getGoodsType());
-            customsOrder.setStatusDesc(customsOrder.getStatus());
             //处理子订单附件信息
             String fileStr = customsOrder.getFileStr();
             String fileNameStr = customsOrder.getFileNameStr();
@@ -157,6 +153,8 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
             inputOrderCustomsVO.setAirTransportPics(StringUtils.getFileViews(orderCustomsVO.getAirTransportPic(), orderCustomsVO.getAirTransPicName(), prePath));
             inputOrderCustomsVO.setLegalName(orderCustomsVO.getLegalName());
             inputOrderCustomsVO.setBizModel(orderCustomsVO.getBizModel());
+            //为了控制驳回编辑子订单之间互不影响,报关中驳回时所有子订单都应驳回
+            inputOrderCustomsVO.setSubCustomsStatus(orderCustomsVO.getStatus());
             //处理子订单部分
             List<InputSubOrderCustomsVO> subOrderCustomsVOS = new ArrayList<>();
             for (OrderCustomsVO orderCustoms : orderCustomsVOS) {
@@ -179,5 +177,10 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
 
         }
         return inputOrderCustomsVO;
+    }
+
+    @Override
+    public StatisticsDataNumberVO statisticsDataNumber() {
+        return baseMapper.statisticsDataNumber();
     }
 }

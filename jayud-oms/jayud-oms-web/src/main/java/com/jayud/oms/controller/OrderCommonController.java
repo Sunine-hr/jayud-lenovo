@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,7 +70,8 @@ public class OrderCommonController {
         }
 
         if("preSubmit_sub".equals(form.getCmd()) || "submit_sub".equals(form.getCmd())){
-            if(form.getOrderNo() == null || "".equals(form.getOrderNo())){
+            if(StringUtil.isNullOrEmpty(form.getOrderNo()) || StringUtil.isNullOrEmpty(form.getSubLegalName()) ||
+               StringUtil.isNullOrEmpty(form.getSubUnitCode())){
                 return CommonResult.error(400,"参数不合法");
             }
         }
@@ -77,7 +79,7 @@ public class OrderCommonController {
             List<InputPaymentCostForm> paymentCostForms = form.getPaymentCostList();
             List<InputReceivableCostForm> receivableCostForms = form.getReceivableCostList();
             for (InputPaymentCostForm paymentCost : paymentCostForms) {
-                if(StringUtil.isNullOrEmpty(paymentCost.getCustomerName())
+                if(StringUtil.isNullOrEmpty(paymentCost.getCustomerCode())
                 || StringUtil.isNullOrEmpty(paymentCost.getCostCode())
                 || paymentCost.getCostTypeId() == null || paymentCost.getCostGenreId() == null
                 || StringUtil.isNullOrEmpty(paymentCost.getUnit())
@@ -89,8 +91,7 @@ public class OrderCommonController {
                 }
             }
             for (InputReceivableCostForm receivableCost : receivableCostForms) {
-                if(StringUtil.isNullOrEmpty(receivableCost.getCustomerName())
-                        || StringUtil.isNullOrEmpty(receivableCost.getCustomerCode())
+                if(StringUtil.isNullOrEmpty(receivableCost.getCustomerCode())
                         || StringUtil.isNullOrEmpty(receivableCost.getCostCode())
                         || receivableCost.getCostTypeId() == null || receivableCost.getCostGenreId() == null
                         || StringUtil.isNullOrEmpty(receivableCost.getUnit())
@@ -237,6 +238,13 @@ public class OrderCommonController {
         }else {
             return CommonResult.success(productClassifyVOS);
         }
+    }
+
+    @ApiOperation(value = "获取当前时间")
+    @PostMapping(value = "/getNowTime")
+    public CommonResult getNowTime() {
+        String nowTime = DateUtils.getLocalToStr(LocalDateTime.now());
+        return CommonResult.success(nowTime);
     }
 
 

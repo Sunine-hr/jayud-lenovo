@@ -27,6 +27,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 public class ApiControllerTest {
@@ -220,7 +221,7 @@ public class ApiControllerTest {
      */
     @Test
     public void testJson(){
-        String str = "[{\"declare_id\":2,\"port_no\":\"5301\",\"customer_name\":\"佳裕达国际\",\"shipper_name\":\"长华国际贸易(深圳)有限公司\",\"cust_linkman\":\"\",\"custom_apply_no\":\"530120201010576891\",\"apply_dt\":\"2020-12-10 00:00:00\",\"goods_name\":\"PA6塑胶粒/新料\",\"cabin_no\":\"JYD12\",\"contract_no\":\"450092393\",\"trade_no\":\"0110\",\"start_country_no\":\"HKG\",\"bus_no\":\"JYDZB20120073\",\"book_no\":null,\"accompany_no\":\"120000008391628\",\"vessel\":null,\"voyage\":\"1100378721743\",\"emsno\":null,\"num_no\":null,\"container_type_no\":null,\"container_no\":null,\"cost_note\":\"\",\"WF\":0.00,\"CGF\":0.00,\"DLF\":0.00,\"HDF\":0.00,\"KSSMF\":0.00,\"DZF\":0.00,\"GCF\":0.00,\"BCLHF\":0.00,\"GBF1\":0.00,\"SF\":0.00,\"CDF\":0.00,\"GDF\":0.00,\"HZQD\":0.00,\"GS\":0.00,\"ZZS\":0.00,\"YSF\":0.00,\"GBF001\":0.00,\"Y3C\":0.00,\"XGF\":0.00,\"DDF\":0.00,\"XGFY\":0.00,\"JKHDF\":0.00,\"CYDL\":0.00,\"DL\":0.00,\"XFS\":0.00,\"HWTY\":0.00,\"BGF\":100.00,\"HDDLF\":0.00,\"FDLHF\":0.00,\"BSQBGF\":0.00,\"XYF\":0.00,\"GLCD\":10.00,\"BJ\":100.00,\"MTF\":0.00,\"MTBA\":0.00,\"DEL\":0.00,\"OTH\":0.00,\"CZF\":0.00,\"HGYGF\":0.00,\"sjbj_cost\":0.00,\"xzxd_cost\":0.00,\"sjdd_cost\":0.00,\"kd_cost\":0.00,\"qtc_cost\":0.00}]";
+        String str = "[{\"fee_cd\":\"BGF\",\"fee_name\":\"报关费\",\"target_name\":\"佳裕达国际\",\"cost\":50,\"fee_item\":null,\"container_type_no\":null,\"custom_apply_no\":\"530120201010577267\",\"goods_name\":\"集成电路\",\"shipper_name\":\"西安诺瓦星云科技股份有限公司\",\"cabin_no\":\"JYD65\",\"apply_dt\":\"2020-12-10 00:00:00\",\"container_no\":\"\"},{\"fee_cd\":\"BGF\",\"fee_name\":\"报关费\",\"target_name\":\"佳裕达国际\",\"cost\":50,\"fee_item\":null,\"container_type_no\":null,\"custom_apply_no\":\"530120201010577277\",\"goods_name\":\"集成电路\",\"shipper_name\":\"西安诺瓦星云科技股份有限公司\",\"cabin_no\":\"JYD65\",\"apply_dt\":\"2020-12-10 00:00:00\",\"container_no\":\"\"}]";
         System.out.println(str);
         Map<String, String> msg = new HashMap<>();
         msg.put("msg", str);
@@ -234,6 +235,17 @@ public class ApiControllerTest {
             CustomsReceivable data = jsonObject.toJavaObject(CustomsReceivable.class);
             log.debug("data={}", data);
         }
+
+
+        AtomicReference<String> applyNo = new AtomicReference<>("");
+        JSONArray jsonArray = JSONObject.parseArray(str);
+        jsonArray.forEach(o -> {
+            JSONObject jsonObject = (JSONObject) o;
+            String custom_apply_no = jsonObject.get("custom_apply_no").toString();
+            applyNo.set(custom_apply_no);
+        });
+        System.out.println(applyNo);
+
 
     }
 

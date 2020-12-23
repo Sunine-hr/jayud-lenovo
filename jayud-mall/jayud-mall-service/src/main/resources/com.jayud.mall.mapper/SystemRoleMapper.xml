@@ -5,9 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.SystemRole">
         <id column="id" property="id"/>
-        <result column="bs_user_id" property="bsUserId"/>
         <result column="role_name" property="roleName"/>
-        <result column="type" property="type"/>
         <result column="role_describe" property="roleDescribe"/>
         <result column="create_by" property="createBy"/>
         <result column="create_time" property="createTime"/>
@@ -53,12 +51,6 @@
         from system_role where id = #{id}
     </select>
 
-    <!--根据roleId查询menuId-->
-    <select id="selectMenuIdByRoleId" resultType="Long" parameterType="java.lang.Long">
-        select menu_id from system_role_menu_relation where role_id = #{id}
-     </select>
-
-
     <!--查询角色分页-->
     <select id="findRoleByPage" parameterType="com.jayud.mall.model.bo.QueryRoleForm"
             resultType="com.jayud.mall.model.vo.SystemRoleVO" >
@@ -86,9 +78,7 @@
             resultType="com.jayud.mall.model.po.SystemRole" >
         select
         t.id,
-        t.bs_user_id,
         t.role_name,
-        t.type,
         t.role_describe,
         t.create_by,
         t.create_time,

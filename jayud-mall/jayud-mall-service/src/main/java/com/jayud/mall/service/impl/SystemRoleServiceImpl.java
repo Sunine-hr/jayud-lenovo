@@ -1,19 +1,25 @@
 package com.jayud.mall.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.mall.admin.security.domain.AuthUser;
+import com.jayud.mall.admin.security.service.BaseService;
 import com.jayud.mall.mapper.SystemRoleMapper;
 import com.jayud.mall.model.bo.QueryRoleForm;
 import com.jayud.mall.model.bo.SaveRoleForm;
 import com.jayud.mall.model.po.SystemRole;
+import com.jayud.mall.model.po.SystemRoleMenuRelation;
 import com.jayud.mall.model.vo.SystemRoleVO;
 import com.jayud.mall.service.ISystemRoleMenuRelationService;
 import com.jayud.mall.service.ISystemRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,26 +40,41 @@ public class SystemRoleServiceImpl extends ServiceImpl<SystemRoleMapper, SystemR
     @Autowired
     ISystemRoleMenuRelationService roleMenuRelationService;
 
+    @Autowired
+    BaseService baseService;
+
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveRole(SaveRoleForm saveRoleForm) {
         SystemRole systemRole = ConvertUtil.convert(saveRoleForm, SystemRole.class);
-        if(systemRole.getId() != null){
-            //修改
-            this.saveOrUpdate(systemRole);
-            List<Long> roleIds = new ArrayList<>();
-            roleIds.add(saveRoleForm.getId());
-            //根据角色Id，清除角色菜单关联信息
-            roleMenuRelationService.removeRoleMenuRelation(roleIds);
-        }else{
-            //新增
-            roleMapper.saveRole(systemRole);
+
+        AuthUser user = baseService.getUser();//当前登录人
+        if(systemRole.getId() == null){
+            systemRole.setCreateBy(user.getId().toString());
+            systemRole.setCreateTime(LocalDateTime.now());
         }
-        systemRole.setId(systemRole.getId());
-        if(saveRoleForm.getMenuIds() != null){
-            //关联角色菜单关联信息
-            roleMenuRelationService.createRoleMenuRelation(systemRole, saveRoleForm.getMenuIds());
-        }
+        systemRole.setUpdateBy(user.getId().toString());
+        systemRole.setUpdateTime(LocalDateTime.now());
+        //1.保存角色
+        this.saveOrUpdate(systemRole);
+
+        Integer roleId = systemRole.getId();
+        QueryWrapper<SystemRoleMenuRelation> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("role_id", roleId);
+        //2.删除角色关联菜单
+        roleMenuRelationService.remove(queryWrapper);
+
+        List<Long> menuIds = saveRoleForm.getMenuIds();
+        List<SystemRoleMenuRelation> systemRoleMenuRelations = new ArrayList<>();
+        menuIds.forEach(menuId -> {
+            SystemRoleMenuRelation systemRoleMenuRelation = new SystemRoleMenuRelation();
+            systemRoleMenuRelation.setRoleId(Long.valueOf(roleId));
+            systemRoleMenuRelation.setMenuId(menuId);
+            systemRoleMenuRelations.add(systemRoleMenuRelation);
+        });
+        //3.保存角色关联菜单
+        roleMenuRelationService.saveOrUpdateBatch(systemRoleMenuRelations);
     }
 
     @Override

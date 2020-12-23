@@ -68,8 +68,6 @@
         <if test="form.roleName != null and form.roleName != ''">
             AND sr.role_name LIKE concat('%',#{form.roleName},'%')
         </if>
-        GROUP BY
-        sr.`id`
     </select>
 
     <select id="selectRolesByUserId" parameterType="java.lang.Long"

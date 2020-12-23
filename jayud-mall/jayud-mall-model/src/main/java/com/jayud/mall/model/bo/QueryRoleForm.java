@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class QueryRoleForm extends BasePageForm{
 
-    @ApiModelProperty(value = "角色名称")
+    @ApiModelProperty(value = "角色名称", position = 1)
     private String roleName;
 
 

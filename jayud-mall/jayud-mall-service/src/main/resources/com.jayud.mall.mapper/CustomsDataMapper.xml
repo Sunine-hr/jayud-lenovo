@@ -50,8 +50,6 @@
         <if test="form.hsCode != null and form.hsCode != ''">
             AND t.hs_code LIKE concat('%',#{form.hsCode},'%')
         </if>
-        GROUP BY
-        t.`id`
     </select>
 
 

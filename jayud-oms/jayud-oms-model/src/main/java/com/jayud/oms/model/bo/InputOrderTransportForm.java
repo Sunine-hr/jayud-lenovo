@@ -83,9 +83,6 @@ public class InputOrderTransportForm {
     @ApiModelProperty(value = "是否车辆过磅")
     private Boolean isVehicleWeigh;
 
-    @ApiModelProperty(value = "提货文件上传附件地址数组集合")
-    private List<FileView> takeFiles = new ArrayList<>();
-
     @ApiModelProperty(value = "是否是货物编辑,货物编辑只编辑货物信息")
     private Boolean isGoodsEdit;
 

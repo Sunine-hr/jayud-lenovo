@@ -68,6 +68,12 @@ public class OrderTakeAdr extends Model<OrderTakeAdr> {
     @ApiModelProperty(value = "创建人")
     private String createUser;
 
+    @ApiModelProperty(value = "提货送货文件")
+    private String file;
+
+    @ApiModelProperty(value = "提货送货文件名称")
+    private String fileName;
+
 
     @Override
     protected Serializable pkVal() {

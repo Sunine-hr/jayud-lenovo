@@ -391,7 +391,7 @@
             orc.number,
             ifnull(orc.unit_price,0) taxPrice,
             ifnull(orbd.tax_rate,0) taxRate,
-            '0' priceQty
+            ifnull(orc.number,0) priceQty
         FROM
             order_receivable_bill_detail orbd
             LEFT JOIN order_receivable_cost orc ON orbd.cost_id = orc.id

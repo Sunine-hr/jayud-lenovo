@@ -478,7 +478,7 @@
             opc.number,
             ifnull(opc.unit_price,0) taxPrice,
             ifnull(opbd.tax_rate,0) taxRate,
-            '0' priceQty
+            ifnull(opc.number,0) priceQty
         FROM
             order_payment_bill_detail opbd
             LEFT JOIN order_payment_cost opc ON opbd.cost_id = opc.id

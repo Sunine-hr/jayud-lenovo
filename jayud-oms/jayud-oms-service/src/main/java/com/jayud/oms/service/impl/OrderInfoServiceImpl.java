@@ -548,10 +548,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 for (LogisticsTrack logisticsTrack : logisticsTracks) {
                     allPics.addAll(StringUtils.getFileViews(logisticsTrack.getStatusPic(), logisticsTrack.getStatusPicName(), prePath));
                 }
-                //提货文件
-                List<FileView> takeFiles = StringUtils.getFileViews(inputOrderTransportVO.getTakeFile(), inputOrderTransportVO.getTakeFileName(), prePath);
-                inputOrderTransportVO.setTakeFiles(takeFiles);
-                allPics.addAll(takeFiles);
                 inputOrderTransportVO.setAllPics(allPics);
 
                 //设置提货信息的客户

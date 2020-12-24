@@ -123,12 +123,12 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             orderTakeAdr.setId(inputOrderTakeAdrForm.getTakeAdrId());
             orderTakeAdr.setTakeTime(inputOrderTakeAdrForm.getTakeTimeStr());
             orderTakeAdr.setOrderNo(orderTransport.getOrderNo());
+            orderTakeAdr.setFile(StringUtils.getFileStr(inputOrderTakeAdrForm.getTakeFiles()));
+            orderTakeAdr.setFileName(StringUtils.getFileNameStr(inputOrderTakeAdrForm.getTakeFiles()));
             orderTakeAdrService.saveOrUpdate(orderTakeAdr);
         }
         orderTransport.setCntrPic(StringUtils.getFileStr(form.getCntrPics()));
         orderTransport.setCntrPicName(StringUtils.getFileNameStr(form.getCntrPics()));
-        orderTransport.setTakeFile(StringUtils.getFileStr(form.getTakeFiles()));
-        orderTransport.setTakeFileName(StringUtils.getFileNameStr(form.getTakeFiles()));
         if(!form.getIsGoodsEdit()){
             orderTransport.setStatus(OrderStatusEnum.TMS_T_0.getCode());
         }
@@ -159,7 +159,9 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         List<InputOrderTakeAdrVO> orderTakeAdrForms2 = new ArrayList<>();
         Integer totalAmount = 0;//总件数
         Double totalWeight = 0.0;//总重量
+        String prePath = String.valueOf(fileClient.getBaseUrl().getData());
         for (InputOrderTakeAdrVO inputOrderTakeAdrVO : inputOrderTakeAdrVOS) {
+            inputOrderTakeAdrVO.setTakeFiles(StringUtils.getFileViews(inputOrderTakeAdrVO.getFile(),inputOrderTakeAdrVO.getFileName(),prePath));
             if (CommonConstant.VALUE_1.equals(String.valueOf(inputOrderTakeAdrVO.getOprType()))) {//提货
                 orderTakeAdrForms1.add(inputOrderTakeAdrVO);
                 Integer pieceAmount = inputOrderTakeAdrVO.getPieceAmount();
@@ -193,7 +195,8 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         String prePath = fileClient.getBaseUrl().getData().toString();
         List<OrderTransportVO> pageList = pageInfo.getRecords();
         for (OrderTransportVO orderTransportVO : pageList) {
-            orderTransportVO.setTakeFiles(StringUtils.getFileViews(orderTransportVO.getTakeFile(),orderTransportVO.getTakeFileName(),prePath));
+            orderTransportVO.setTakeFiles1(StringUtils.getFileViews(orderTransportVO.getFile1(),orderTransportVO.getFileName1(),prePath));
+            orderTransportVO.setTakeFiles2(StringUtils.getFileViews(orderTransportVO.getFile2(),orderTransportVO.getFileName2(),prePath));
         }
         return pageInfo;
     }

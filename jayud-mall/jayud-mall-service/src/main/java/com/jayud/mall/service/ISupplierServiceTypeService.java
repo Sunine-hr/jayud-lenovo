@@ -2,6 +2,9 @@ package com.jayud.mall.service;
 
 import com.jayud.mall.model.po.SupplierServiceType;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.vo.SupplierServiceTypeVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ISupplierServiceTypeService extends IService<SupplierServiceType> {
 
+    /**
+     * 查询供应商服务类型
+     * @return
+     */
+    List<SupplierServiceTypeVO> findSupplierServiceType();
 }

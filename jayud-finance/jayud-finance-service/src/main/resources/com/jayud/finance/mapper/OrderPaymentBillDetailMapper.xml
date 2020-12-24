@@ -396,8 +396,7 @@
             ifnull(opbd.tax_rate,(select pb.tax_rate from product_biz pb where pb.id_code = oi.biz_code)) taxRate,
             opbd.remarks,
             opbd.created_time createTimeStr,
-            opbd.bill_no,
-            (SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota left join order_transport ot on ot.order_no = ota.order_no WHERE ot.main_order_no = oi.order_no and ota.opr_type = '1' group by ot.order_no) goodsDesc
+            opbd.bill_no
             FROM
             order_payment_bill_detail opbd left join order_payment_bill opb on opbd.bill_id = opb.id
             left join order_info oi on oi.order_no = opbd.order_no

@@ -16,6 +16,8 @@ public class ViewBilToOrderHeadVO {
 
     private String unitAccount = "结算单位";
 
+    private String goodsDesc = "货物描述";
+
     private String startAddress = "起运地";
 
     private String endAddress = "目的地";

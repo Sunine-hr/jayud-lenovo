@@ -16,19 +16,18 @@ import com.jayud.airfreight.service.IAirOrderService;
 import com.jayud.airfreight.service.VivoService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.VivoApiResult;
-import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.VehicleTypeEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.FileUtil;
 import com.jayud.common.utils.FileView;
+import com.jayud.common.utils.HttpRequester;
 import com.jayud.common.utils.ValidatorUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -64,6 +63,9 @@ public class ReceiveVivoController {
     private FileClient fileClient;
     @Autowired
     private TmsClient tmsClient;
+
+    @Value("vivo.url.upload-file")
+    private String uploadFile;
 
 
     @ApiOperation(value = "vivo抛订舱数据到货代")
@@ -125,7 +127,11 @@ public class ReceiveVivoController {
             return VivoApiResult.error("订舱文件不能为空");
         }
 
-        //TODO 校验文件完整性
+        //校验文件完整性
+        if (bookingFileTransferDataForm.getFileSize() != multipartFile.getSize()) {
+            log.warn("文件传输不完整,请重新传输");
+            return VivoApiResult.error("文件传输不完整,请重新传输");
+        }
 
         //判断当前空运订单状态是否是订舱状态
         AirOrder airOrder = this.airOrderService.getByThirdPartyOrderNo(bookingFileTransferDataForm.getBookingNo());
@@ -144,8 +150,8 @@ public class ReceiveVivoController {
         //http://127.0.0.1:8207/file/uploadFile
         //上传文件
         //TODO url配置到配置中心
-        String feedback = HttpRequest.post("http://test.oms.jayud.com:9448/jayudFile/file/uploadFile")
-                .header("token", "3118872f-cb0b-4345-9a7f-4bdc19c97bbd")
+        String feedback = HttpRequest.post(uploadFile)
+                .header("token", HttpRequester.getHead("token"))
                 .contentType("multipart/form-data")
                 .form("file", file)
                 .execute()
@@ -244,43 +250,43 @@ public class ReceiveVivoController {
     }
 
 
-    @PostMapping("/dispatchRejected")
-    @ApiOperation("vivo派车驳回")
-    @APILog
-    public VivoApiResult dispatchRejected(@RequestBody @Valid DispatchRejectedForm carCancelForm) {
-        //查询中港订单
-        ApiResult result = this.tmsClient.getTmsOrderByThirdPartyOrderNo(carCancelForm.getDispatchNo());
-        if (result.getCode() != HttpStatus.SC_OK) {
-            log.error("查询中港订单请求失败");
-            return VivoApiResult.error("取消派车失败");
-        }
-
-        if (result.getData() == null) {
-            log.error("不存在派车信息 派车号={}", carCancelForm.getDispatchNo());
-            return VivoApiResult.error("不存在派车信息");
-        }
-        JSONObject data = new JSONObject(result.getData());
-        String tmsOrderNo = data.getStr("orderNo");
-        Long id = data.getLong("id");
-        String orderStatus = data.getStr("status").split("_")[1];
-        String status = OrderStatusEnum.TMS_T_5.getCode().split("_")[1];
-        //查询订单状态是不是在提仓之前进行驳回
-        if (Integer.parseInt(status) <= Integer.parseInt(orderStatus)) {
-            log.warn("车辆已提货,无法进行派车驳回操作 tmsOrder={} status={}", tmsOrderNo, data.getStr("status"));
-            return VivoApiResult.error("车辆已提货,无法进行派车驳回操作");
-        }
-        //删除派车信息
-        this.tmsClient.deleteDispatchInfoByOrderNo(tmsOrderNo);
-        //物流轨迹记录删除
-        this.omsClient.deleteLogisticsTrackByType(id, BusinessTypeEnum.ZGYS.getCode());
-
-        //根据主订单号设置状态
-        Map<String, Object> map = new HashMap<>();
-        map.put("orderNo", data.getStr("mainOrderNo"));
-        map.put("status", OrderStatusEnum.MAIN_7.getCode());
-        this.omsClient.updateByMainOrderNo(JSONUtil.toJsonStr(map));
-        return VivoApiResult.success();
-    }
+//    @PostMapping("/dispatchRejected")
+//    @ApiOperation("vivo派车驳回")
+//    @APILog
+//    public VivoApiResult dispatchRejected(@RequestBody @Valid DispatchRejectedForm carCancelForm) {
+//        //查询中港订单
+//        ApiResult result = this.tmsClient.getTmsOrderByThirdPartyOrderNo(carCancelForm.getDispatchNo());
+//        if (result.getCode() != HttpStatus.SC_OK) {
+//            log.error("查询中港订单请求失败");
+//            return VivoApiResult.error("取消派车失败");
+//        }
+//
+//        if (result.getData() == null) {
+//            log.error("不存在派车信息 派车号={}", carCancelForm.getDispatchNo());
+//            return VivoApiResult.error("不存在派车信息");
+//        }
+//        JSONObject data = new JSONObject(result.getData());
+//        String tmsOrderNo = data.getStr("orderNo");
+//        Long id = data.getLong("id");
+//        String orderStatus = data.getStr("status").split("_")[1];
+//        String status = OrderStatusEnum.TMS_T_5.getCode().split("_")[1];
+//        //查询订单状态是不是在提仓之前进行驳回
+//        if (Integer.parseInt(status) <= Integer.parseInt(orderStatus)) {
+//            log.warn("车辆已提货,无法进行派车驳回操作 tmsOrder={} status={}", tmsOrderNo, data.getStr("status"));
+//            return VivoApiResult.error("车辆已提货,无法进行派车驳回操作");
+//        }
+//        //删除派车信息
+//        this.tmsClient.deleteDispatchInfoByOrderNo(tmsOrderNo);
+//        //物流轨迹记录删除
+//        this.omsClient.deleteLogisticsTrackByType(id, BusinessTypeEnum.ZGYS.getCode());
+//
+//        //根据主订单号设置状态
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("orderNo", data.getStr("mainOrderNo"));
+//        map.put("status", OrderStatusEnum.MAIN_7.getCode());
+//        this.omsClient.updateByMainOrderNo(JSONUtil.toJsonStr(map));
+//        return VivoApiResult.success();
+//    }
 
     @PostMapping("/parameterToForwarder")
     @ApiOperation("vivo抛台账数据到货代")

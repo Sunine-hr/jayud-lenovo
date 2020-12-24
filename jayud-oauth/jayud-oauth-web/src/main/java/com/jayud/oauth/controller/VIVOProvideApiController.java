@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.TokenGenerator;
 import com.jayud.oauth.model.bo.BizData;
 import com.jayud.oauth.model.bo.ExtAuthenticationForm;
@@ -16,6 +17,9 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.xml.crypto.Data;
+import java.util.Date;
 
 
 @RestController
@@ -56,6 +60,19 @@ public class VIVOProvideApiController {
         String token = TokenGenerator.generateValue(encodeValue);
         redisUtils.set("token",token);
         return CommonResult.error(1,"成功",token);
+    }
+
+
+    public static void main(String[] args) {
+
+        BizData bizData = new BizData();
+        String date = DateUtils.format(new Date(), "YYYYMMDDHHMMSS");
+        bizData.setOprTime(date);
+        String jsonStr = JSONObject.toJSONString(bizData);
+        String encodeValue = DigestUtils.md5DigestAsHex(("lenovo2xISJEOM" + jsonStr + "485c7a8e4a77041aeae042cd7541fb4133ed144e").getBytes());
+        System.out.println(encodeValue);
+        String token = TokenGenerator.generateValue(encodeValue);
+        System.out.println(token);
     }
 
 

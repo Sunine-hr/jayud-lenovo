@@ -90,6 +90,7 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         for (AddOrderAddressForm orderAddressForm : orderAddressForms) {
             orderAddressForm.setBusinessType(BusinessTypeEnum.KY.getCode());
             orderAddressForm.setBusinessId(airOrder.getId());
+            orderAddressForm.setCreateTime(LocalDateTime.now());
         }
         //批量保存用户地址
         ApiResult result = this.omsClient.saveOrUpdateOrderAddressBatch(orderAddressForms);
@@ -442,7 +443,7 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         if (result.getCode() != HttpStatus.SC_OK) {
             log.warn("查询商品信息失败 airOrderId={}", airOrderId);
         }
-        airOrder.setGoodsVOs(result.getData());
+        airOrder.setGoodsForms(result.getData());
         //查询地址信息
         ApiResult<List<OrderAddressVO>> resultOne = this.omsClient.getOrderAddressByBusIds(Collections.singletonList(airOrderId), businessType);
         if (resultOne.getCode() != HttpStatus.SC_OK) {

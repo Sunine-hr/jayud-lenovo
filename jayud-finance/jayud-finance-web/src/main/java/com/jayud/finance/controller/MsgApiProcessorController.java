@@ -5,7 +5,9 @@ import cn.hutool.core.map.MapUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.PushKingdeeEnum;
 import com.jayud.finance.enums.FormIDEnum;
+import com.jayud.finance.feign.CustomsApiClient;
 import com.jayud.finance.po.*;
 import com.jayud.finance.service.BaseService;
 import com.jayud.finance.service.CustomsFinanceService;
@@ -20,7 +22,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +48,8 @@ public class MsgApiProcessorController {
     CustomsFinanceService customsFinanceService;
     @Value("${kingdee.settings.allow-delete-push}")
     Boolean allowDeletePush;
+    @Autowired
+    CustomsApiClient customsApiClient;
 
     /**
      * 刷新公司和费用项目缓存
@@ -82,6 +88,23 @@ public class MsgApiProcessorController {
         Map param = JSONObject.parseObject(msg, Map.class);
         String reqMsg = MapUtil.getStr(param, "msg");
         log.debug("金蝶接收到报关应收数据：{}", reqMsg);
+
+        /**update push log**/
+        AtomicReference<String> logApplyNo = new AtomicReference<>("");
+        JSONArray jsonArray = JSONObject.parseArray(reqMsg);
+        jsonArray.forEach(o -> {
+            JSONObject jsonObject = (JSONObject) o;
+            String custom_apply_no = jsonObject.get("custom_apply_no").toString();
+            logApplyNo.set(custom_apply_no);
+        });
+        Map<String, Object> logParam = new HashMap<>();
+        logParam.put("applyNo", logApplyNo);//18位报关单号
+        logParam.put("pushStatusCode", PushKingdeeEnum.STEP4.getCode());
+        logParam.put("pushStatusMsg", PushKingdeeEnum.STEP4.getMsg());
+        logParam.put("updateTime", LocalDateTime.now());
+        String logMsg = JSONObject.toJSONString(logParam);
+        customsApiClient.saveOrOpdateLog(logMsg);
+
 
         //feign调用之前确保从列表中取出单行数据且非空，因此此处不需再校验
         //解析数据，获取应收的数据实体
@@ -135,18 +158,36 @@ public class MsgApiProcessorController {
 
 
     /**
-     * 处理云报关的应收推送到金蝶接口
+     * 处理云报关的应付推送到金蝶接口
      * by william
      *
      * @param msg
      * @return
      */
     @RequestMapping(path = "/yunbaoguan/payable/push", method = RequestMethod.POST)
-    @ApiOperation(value = "接收云报关的应收单信息推至金蝶")
+    @ApiOperation(value = "接收云报关的应付单信息推至金蝶")
     public Boolean savePayableBill(@RequestBody String msg) {
 
         String reqMsg = MapUtil.getStr(JSONObject.parseObject(msg, Map.class), "msg");
         log.debug("金蝶接收到报关应付数据：{}", reqMsg);
+
+        /**update push log**/
+        AtomicReference<String> logApplyNo = new AtomicReference<>("");
+        JSONArray jsonArray = JSONObject.parseArray(reqMsg);
+        jsonArray.forEach(o -> {
+            JSONObject jsonObject = (JSONObject) o;
+            String custom_apply_no = jsonObject.get("custom_apply_no").toString();
+            logApplyNo.set(custom_apply_no);
+        });
+        Map<String, Object> logParam = new HashMap<>();
+        logParam.put("applyNo", logApplyNo);//18位报关单号
+        logParam.put("pushStatusCode", PushKingdeeEnum.STEP4.getCode());
+        logParam.put("pushStatusMsg", PushKingdeeEnum.STEP4.getMsg());
+        logParam.put("updateTime", LocalDateTime.now());
+        String logMsg = JSONObject.toJSONString(logParam);
+        customsApiClient.saveOrOpdateLog(logMsg);
+
+
         //拼装根据入参拼装实体数据
         List<CustomsPayable> customsPayableForms = JSONArray.parseArray(reqMsg).toJavaList(CustomsPayable.class);
 

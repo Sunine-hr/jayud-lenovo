@@ -8,8 +8,10 @@ import com.jayud.finance.bo.EditCurrencyRateForm;
 import com.jayud.finance.bo.QueryCurrencyRateForm;
 import com.jayud.finance.po.CurrencyRate;
 import com.jayud.finance.vo.CurrencyRateVO;
+import com.jayud.finance.vo.InitComboxStrVO;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * <p>
@@ -57,4 +59,11 @@ public interface ICurrencyRateService extends IService<CurrencyRate> {
      * @return
      */
     String getNameByCode(String code);
+
+    /**
+     * 核销时初始化下拉币种
+     * @param currencyName
+     * @return
+     */
+    List<InitComboxStrVO> initHeXiaoCurrency(String currencyName);
 }

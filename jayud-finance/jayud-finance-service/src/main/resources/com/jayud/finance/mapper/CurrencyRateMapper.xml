@@ -58,4 +58,15 @@
         currency_info ci
         WHERE ci.currency_code = #{code}
     </select>
+
+    <select id="initHeXiaoCurrency"  parameterType="java.lang.String" resultType="com.jayud.finance.vo.InitComboxStrVO">
+        SELECT
+            ci.currency_code `code`,
+			ci.currency_name `name`,
+			cr.exchange_rate note
+        FROM
+          currency_rate cr left join currency_info ci on ci.id = cr.ocid
+        WHERE cr.dcid = (select t.id from currency_info t where t.currency_name = #{currencyName})
+				AND cr.`month` = DATE_FORMAT(now() , '%Y-%m' )
+    </select>
 </mapper>

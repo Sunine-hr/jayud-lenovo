@@ -34,8 +34,6 @@
         <result column="driver_info_id" property="driverInfoId" />
         <result column="vehicle_id" property="vehicleId" />
         <result column="is_vehicle_weigh" property="isVehicleWeigh" />
-        <result column="take_file" property="takeFile" />
-        <result column="take_file_name" property="takeFileName" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -43,7 +41,7 @@
         id, main_order_no, order_no, port_code, goods_type, vehicle_type, vehicle_size, cntr_no, cntr_pic, cntrPicName,
         warehouse_info_id, status, is_load_goods, is_unload_goods,unit_code, hk_unit_code,hk_legal_name,is_hk_clear,
         updated_time, updated_user, created_time,created_user,jiedan_user,jiedan_time,car_weigh_num,legal_name,need_input_cost,
-        driver_info_id,take_file,take_file_name,is_vehicle_weigh
+        driver_info_id,is_vehicle_weigh
     </sql>
 
     <select id="getOrderTransport"  resultType="com.jayud.tms.model.vo.InputOrderTransportVO" >
@@ -84,8 +82,6 @@
           ot.`hk_legal_name` hkLegalName,
           ot.`hk_unit_code` hkUnitCode,
           ot.`is_hk_clear` isHkClear,
-          ot.take_file takeFile,
-		  ot.take_file_name takeFileName,
 		  ot.is_vehicle_weigh isVehicleWeigh
         FROM
           order_transport ot
@@ -155,8 +151,14 @@
             ot.unit_code subUnitCode,
         (SELECT	GROUP_CONCAT(ota.take_time) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' group by ot.order_no
         ) takeTimeStr,
-        ot.take_file takeFile,
-        ot.take_file_name takeFileName,
+        (SELECT	GROUP_CONCAT(ota.file) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' group by ot.order_no
+        ) file1,
+        (SELECT	GROUP_CONCAT(ota.file_name) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' group by ot.order_no
+        ) fileName1,
+        (SELECT	GROUP_CONCAT(ota.file) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '2' group by ot.order_no
+        ) file2,
+        (SELECT	GROUP_CONCAT(ota.file_name) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '2' group by ot.order_no
+        ) fileName2,
         oi.selected_server selectedServer
         FROM
             order_transport ot

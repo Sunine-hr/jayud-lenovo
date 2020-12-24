@@ -34,13 +34,15 @@
         <result column="created_time" property="createdTime" />
         <result column="updated_user" property="updatedUser" />
         <result column="updated_time" property="updatedTime" />
+        <result column="push_kingdee_count" property="pushKingdeeCount" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, bill_id,bill_no, account_term,settlement_currency,order_no, cost_id, created_order_time, start_address,
         end_address, license plate, vehicle_size, piece_num, weight, yun_customs_no, audit_status,make_user,make_time,audit_user,
-        audit_time,apply_status,payment_amount,status, created_user, created_time,updated_user,updated_time,local_amount
+        audit_time,apply_status,payment_amount,status, created_user, created_time,updated_user,updated_time,local_amount,
+        push_kingdee_count
     </sql>
 
     <select id="findPaymentBillDetailByPage" parameterType="com.jayud.finance.bo.QueryPaymentBillDetailForm" resultType="com.jayud.finance.vo.OrderPaymentBillDetailVO" >
@@ -130,6 +132,7 @@
             pb.`name` bizCodeDesc,
             DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
             si.supplier_ch_name supplierChName,
+            (SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' GROUP BY ot.order_no) goodsDesc,
             (SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' GROUP BY ot.order_no) startAddress,
             (SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id WHERE ota.order_no = ot.order_no AND ota.opr_type = '2' GROUP BY ot.order_no) endAddress,
             concat( vi.plate_number,',',vi.hk_number ) licensePlate,
@@ -246,6 +249,7 @@
         oi.order_no orderNo,
 		(select opc.order_no from order_payment_cost opc where opc.id = opbd.cost_id) subOrderNo,
         opb.supplier_ch_name supplierChName,
+        ( SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' group by ot.order_no) goodsDesc,
         ( SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address)) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' group by ot.order_no) startAddress,
         ( SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address)) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '2' group by ot.order_no) endAddress,
         (select concat(vi.plate_number,',',vi.hk_number) from order_send_cars osc left join order_transport ot on osc.order_no = ot.order_no left join driver_info di on di.id = osc.driver_info_id
@@ -253,6 +257,7 @@
         (select ot.vehicle_size from order_transport ot where ot.main_order_no = oi.order_no)  vehicleSize,
         (select sum(ota.piece_amount) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1') pieceNum,
         (select sum(ota.weight) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1') weight,
+        (select GROUP_CONCAT(ota.goods_desc) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' group by ota.order_no) goodsDesc,
         (select oc.yun_customs_no from order_customs oc where oc.main_order_no = oi.order_no limit 1) yunCustomsNo
         FROM
         order_info oi
@@ -368,6 +373,7 @@
             (select pb.`name` from product_biz pb where pb.id_code = oi.biz_code) bizCodeDesc,
             oi.create_time createdTimeStr,
            (select si.supplier_ch_name from supplier_info si where si.supplier_code = opc.customer_code) supplierChName,
+           (SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota left join order_transport ot on ot.order_no = ota.order_no WHERE ot.main_order_no = oi.order_no and ota.opr_type = '1' group by ot.order_no) goodsDesc,
             (SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id =
             ota.delivery_id
             left join order_transport ot on ot.order_no = ota.order_no WHERE ot.main_order_no = oi.order_no and ota.opr_type
@@ -395,7 +401,8 @@
             obct.money_type='1' and obct.currency_code = 'HKD') hKDollar,
             ifnull(opbd.tax_rate,(select pb.tax_rate from product_biz pb where pb.id_code = oi.biz_code)) taxRate,
             opbd.remarks,
-            opbd.created_time createTimeStr
+            opbd.created_time createTimeStr,
+            opbd.bill_no
             FROM
             order_payment_bill_detail opbd left join order_payment_bill opb on opbd.bill_id = opb.id
             left join order_info oi on oi.order_no = opbd.order_no
@@ -476,7 +483,7 @@
             opc.number,
             ifnull(opc.unit_price,0) taxPrice,
             ifnull(opbd.tax_rate,0) taxRate,
-            '0' priceQty
+            ifnull(opc.number,0) priceQty
         FROM
             order_payment_bill_detail opbd
             LEFT JOIN order_payment_cost opc ON opbd.cost_id = opc.id
@@ -485,15 +492,15 @@
     </select>
     <select id="getFCostAmountView" parameterType="java.lang.String" resultType="com.jayud.finance.vo.CostAmountVO">
         SELECT DISTINCT
-            (select sum(obct.money) from order_bill_cost_total obct where obct.bill_no = opbd.bill_no) yfAmount,
+            (select ifnull(sum(obct.money),0) from order_bill_cost_total obct where obct.bill_no = opbd.bill_no and ct.is_pay_collection = 0) yfAmount,
             (select ci.currency_name from currency_info ci where ci.currency_code = opbd.settlement_currency limit 1) yfCurrency,
-            ifnull((select sum(obct.money) from order_bill_cost_total obct where obct.bill_no = opbd.bill_no),0)-ifnull((select sum(cav.discount_money) from cancel_after_verification cav where cav.bill_no = opbd.bill_no),0) dfAmount,
+            ifnull((select sum(obct.money) from order_bill_cost_total obct where obct.bill_no = opbd.bill_no and ct.is_pay_collection = 0),0)-ifnull((select sum(cav.discount_money) from cancel_after_verification cav where cav.bill_no = opbd.bill_no and ct.is_pay_collection = 0),0) dfAmount,
             (select ci.currency_name from currency_info ci where ci.currency_code = opbd.settlement_currency limit 1) dfCurrency
         FROM
             order_payment_bill_detail opbd
             LEFT JOIN order_payment_cost opc ON opbd.cost_id = opc.id
-        WHERE
-            opbd.bill_no = #{billNo}
+			left join cost_type ct on ct.id = opc.cost_type_id
+        WHERE opbd.bill_no = #{billNo}
     </select>
     <select id="getNowFOrderExist" parameterType="java.util.Map" resultType="com.jayud.finance.po.OrderPaymentBillDetail">
          SELECT opbd.*

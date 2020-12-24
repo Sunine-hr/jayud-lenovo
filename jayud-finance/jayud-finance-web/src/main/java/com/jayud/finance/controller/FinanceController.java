@@ -21,6 +21,8 @@ import com.jayud.finance.vo.*;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +40,8 @@ import java.util.Map;
 @RequestMapping("/finance/")
 @Api(tags = "财务管理模块")
 public class FinanceController {
+
+    private static Logger logger = LoggerFactory.getLogger(FinanceController.class);
 
     @Autowired
     IOrderPaymentBillDetailService paymentBillDetailService;
@@ -149,9 +153,12 @@ public class FinanceController {
 
         //自定义标题别名
         writer.addHeaderAlias("orderNo", "订单编号");
+        writer.addHeaderAlias("subOrderNo", "子订单编号");
+        writer.addHeaderAlias("billNo", "账单编号");
         writer.addHeaderAlias("bizCodeDesc", "业务类型");
         writer.addHeaderAlias("createdTimeStr", "日期");
         writer.addHeaderAlias("supplierChName", "供应商");
+        writer.addHeaderAlias("goodsDesc", "货物信息");
         writer.addHeaderAlias("startAddress", "起运地");
         writer.addHeaderAlias("endAddress", "目的地");
         writer.addHeaderAlias("licensePlate", "车牌号");
@@ -190,9 +197,12 @@ public class FinanceController {
 
         //自定义标题别名
         writer.addHeaderAlias("orderNo", "订单编号");
+        writer.addHeaderAlias("subOrderNo", "子订单编号");
+        writer.addHeaderAlias("billNo", "账单编号");
         writer.addHeaderAlias("bizCodeDesc", "业务类型");
         writer.addHeaderAlias("createdTimeStr", "日期");
-        writer.addHeaderAlias("customerName", "客服");
+        writer.addHeaderAlias("customerName", "客户");
+        writer.addHeaderAlias("goodsDesc", "货物信息");
         writer.addHeaderAlias("startAddress", "起运地");
         writer.addHeaderAlias("endAddress", "目的地");
         writer.addHeaderAlias("licensePlate", "车牌号");
@@ -332,7 +342,15 @@ public class FinanceController {
             }*/
             List<APARDetailForm> entityDetail = receivableBillDetailService.findReceivableHeaderDetail(receivableBillDetail.getBillNo());
             reqForm.setEntityDetail(entityDetail);
-            service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), reqForm);
+            logger.info("推送金蝶传参:" + reqForm);
+            CommonResult result = service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), reqForm);
+            if(result.getCode() == 0){//推送成功,则记录推送金蝶次数
+                OrderReceivableBillDetail tempObject = new OrderReceivableBillDetail();
+                tempObject.setPushKingdeeCount(receivableBillDetail.getPushKingdeeCount() + 1);
+                QueryWrapper updateWrapper = new QueryWrapper();
+                updateWrapper.eq("bill_no",receivableBillDetail.getBillNo());
+                receivableBillDetailService.update(tempObject,updateWrapper);
+            }
         }
         return CommonResult.success();
     }
@@ -374,7 +392,15 @@ public class FinanceController {
             PayableHeaderForm reqForm = paymentBillDetailService.getPayableHeaderForm(paymentBillDetail.getBillNo());
             List<APARDetailForm> entityDetail = paymentBillDetailService.findPayableHeaderDetail(paymentBillDetail.getBillNo());
             reqForm.setEntityDetail(entityDetail);
-            service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), reqForm);
+            logger.info("推送金蝶传参:" + reqForm);
+            CommonResult result = service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), reqForm);
+            if(result.getCode() == 0){//推送成功,则记录推送金蝶次数
+                OrderPaymentBillDetail tempObject = new OrderPaymentBillDetail();
+                tempObject.setPushKingdeeCount(paymentBillDetail.getPushKingdeeCount() + 1);
+                QueryWrapper updateWrapper = new QueryWrapper();
+                updateWrapper.eq("bill_no",paymentBillDetail.getBillNo());
+                paymentBillDetailService.update(tempObject,updateWrapper);
+            }
         }
         return CommonResult.success();
     }

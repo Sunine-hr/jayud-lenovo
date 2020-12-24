@@ -91,13 +91,22 @@ public class OrderTransportVO {
     private String subUnitCode;
 
     @ApiModelProperty(value = "提货文件上传附件地址,前台忽略")
-    private String takeFile;
+    private String file1;
 
     @ApiModelProperty(value = "提货文件上传附件地址名称,前台忽略")
-    private String takeFileName;
+    private String fileName1;
+
+    @ApiModelProperty(value = "送货文件上传附件地址,前台忽略")
+    private String file2;
+
+    @ApiModelProperty(value = "送货文件上传附件地址名称,前台忽略")
+    private String fileName2;
 
     @ApiModelProperty(value = "提货文件上传附件地址数组集合")
-    private List<FileView> takeFiles = new ArrayList<>();
+    private List<FileView> takeFiles1 = new ArrayList<>();
+
+    @ApiModelProperty(value = "送货文件上传附件地址数组集合")
+    private List<FileView> takeFiles2 = new ArrayList<>();
 
     //货物信息
     @ApiModelProperty(value = "货物描述")

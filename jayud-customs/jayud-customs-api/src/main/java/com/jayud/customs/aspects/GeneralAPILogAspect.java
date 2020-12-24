@@ -1,8 +1,12 @@
 package com.jayud.customs.aspects;
 
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSONObject;
+import com.jayud.common.enums.PushKingdeeEnum;
 import com.jayud.customs.model.po.GeneralApiLog;
+import com.jayud.customs.model.po.YunbaoguanKingdeePushLog;
 import com.jayud.customs.service.IGeneralApiLogService;
+import com.jayud.customs.service.IYunbaoguanKingdeePushLogService;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -25,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 统一接口日志切面
@@ -43,6 +48,13 @@ import java.util.List;
 @Order(1)
 @Slf4j
 public class GeneralAPILogAspect {
+
+    /**
+     * 云报关到金蝶推送日志
+     */
+    @Autowired
+    IYunbaoguanKingdeePushLogService yunbaoguanKingdeePushLogService;
+
     @Autowired
     IGeneralApiLogService logService;
 
@@ -52,12 +64,10 @@ public class GeneralAPILogAspect {
 
     @Around("catchLog()")
     public Object doAround(ProceedingJoinPoint process) throws Throwable {
-        Long startTime = System.currentTimeMillis();
+
         //获取当前请求的路径
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
-
-
         //获取请求方法名
         String methodName = process.getSignature().getName();
         String moduleName = process.getTarget().getClass().getName();
@@ -71,12 +81,37 @@ public class GeneralAPILogAspect {
         Object parameter = getParameter(methodSignature.getMethod(), params);
         String requestParameterString = JSONUtil.toJsonStr(parameter);
 
-        Object Result = process.proceed();
+        /**IYunbaoguanKingdeePushLogService**/
+        LocalDateTime now = LocalDateTime.now();//当前时间
+        Map param = JSONObject.parseObject(requestParameterString, Map.class);
+        String apply_no = param.get("apply_no").toString();//报关单号18位，主键
+        YunbaoguanKingdeePushLog yunbaoguanKingdeePushLog = yunbaoguanKingdeePushLogService.getById(apply_no);
+        if(yunbaoguanKingdeePushLog == null){
+            //新增
+            yunbaoguanKingdeePushLog = new YunbaoguanKingdeePushLog();
+            yunbaoguanKingdeePushLog.setApplyNo(apply_no);
+            yunbaoguanKingdeePushLog.setPushStatusCode(PushKingdeeEnum.STEP1.getCode());
+            yunbaoguanKingdeePushLog.setPushStatusMsg(PushKingdeeEnum.STEP1.getMsg());
+            yunbaoguanKingdeePushLog.setIpAddress(request.getRemoteAddr());
+            yunbaoguanKingdeePushLog.setUserId(1);
+            yunbaoguanKingdeePushLog.setCreateTime(now);
+            yunbaoguanKingdeePushLog.setUpdateTime(now);
+        }else{
+            //修改
+            yunbaoguanKingdeePushLog.setPushStatusCode(PushKingdeeEnum.STEP1.getCode());
+            yunbaoguanKingdeePushLog.setPushStatusMsg(PushKingdeeEnum.STEP1.getMsg());
+            yunbaoguanKingdeePushLog.setIpAddress(request.getRemoteAddr());
+            yunbaoguanKingdeePushLog.setUserId(1);
+            yunbaoguanKingdeePushLog.setUpdateTime(now);
+        }
+        yunbaoguanKingdeePushLogService.saveOrUpdate(yunbaoguanKingdeePushLog);
 
+        /**IGeneralApiLogService**/
+        Long startTime = System.currentTimeMillis();
+        Object Result = process.proceed();//执行方法，拿到执行后的结果
         String resultParameterString = JSONUtil.toJsonStr(Result);
-
         Long endTime = System.currentTimeMillis();
-        Integer timeSpan = (int) (endTime - startTime);
+        Integer timeSpan = (int) (endTime - startTime);//处理时间
 
         GeneralApiLog apiLog = new GeneralApiLog();
         apiLog.setMethod(methodName);

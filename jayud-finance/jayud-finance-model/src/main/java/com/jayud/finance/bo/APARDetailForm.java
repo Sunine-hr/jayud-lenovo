@@ -62,4 +62,18 @@ public class APARDetailForm {
     private BigDecimal taxRate;
 
     //todo 推送时要确认是否要以不含税价格进行计算
+
+
+    @Override
+    public String toString() {
+        return "APARDetailForm{" +
+                "materialIdPacked='" + materialIdPacked + '\'' +
+                ", expenseName='" + expenseName + '\'' +
+                ", expenseCategoryName='" + expenseCategoryName + '\'' +
+                ", expenseTypeName='" + expenseTypeName + '\'' +
+                ", priceQty=" + priceQty +
+                ", taxPrice=" + taxPrice +
+                ", taxRate=" + taxRate +
+                '}';
+    }
 }

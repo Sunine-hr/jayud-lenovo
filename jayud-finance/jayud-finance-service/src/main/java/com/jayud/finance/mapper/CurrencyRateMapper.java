@@ -7,10 +7,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.finance.bo.QueryCurrencyRateForm;
 import com.jayud.finance.po.CurrencyRate;
 import com.jayud.finance.vo.CurrencyRateVO;
+import com.jayud.finance.vo.InitComboxStrVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * <p>
@@ -45,4 +47,11 @@ public interface CurrencyRateMapper extends BaseMapper<CurrencyRate> {
      * @return
      */
     String getNameByCode(@Param("code") String code);
+
+    /**
+     * 核销时初始化下拉币种
+     * @param currencyName
+     * @return
+     */
+    List<InitComboxStrVO> initHeXiaoCurrency(@Param("currencyName") String currencyName);
 }

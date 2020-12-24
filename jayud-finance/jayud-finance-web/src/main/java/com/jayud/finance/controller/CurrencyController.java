@@ -13,6 +13,7 @@ import com.jayud.finance.service.ICurrencyRateService;
 import com.jayud.finance.vo.CurrencyRateVO;
 import com.jayud.finance.vo.InitComboxStrVO;
 import com.jayud.finance.vo.InitComboxVO;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +80,17 @@ public class CurrencyController {
     @PostMapping("/initCurrencyInfo2")
     public CommonResult<List<InitComboxVO>> initCurrencyInfo2() {
         return CommonResult.success(omsClient.initCurrencyInfo2().getData());
+    }
+
+    @ApiOperation(value = "核销时初始化下拉币种 兑换币种 currencyName = 应收金额币种名称")
+    @PostMapping("/initHeXiaoCurrency")
+    public CommonResult<List<InitComboxStrVO>> initHeXiaoCurrency(@RequestBody Map<String,Object> param) {
+        String currencyName = MapUtil.getStr(param,"currencyName");
+        if(StringUtil.isNullOrEmpty(currencyName)){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        List<InitComboxStrVO> initComboxStrVOS = currencyRateService.initHeXiaoCurrency(currencyName);
+        return CommonResult.success(initComboxStrVOS);
     }
 
 

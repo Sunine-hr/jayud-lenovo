@@ -14,6 +14,7 @@ import com.jayud.finance.mapper.CurrencyRateMapper;
 import com.jayud.finance.po.CurrencyRate;
 import com.jayud.finance.service.ICurrencyRateService;
 import com.jayud.finance.vo.CurrencyRateVO;
+import com.jayud.finance.vo.InitComboxStrVO;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -93,6 +94,11 @@ public class CurrencyRateServiceImpl extends ServiceImpl<CurrencyRateMapper, Cur
     @Override
     public String getNameByCode(String code) {
         return baseMapper.getNameByCode(code);
+    }
+
+    @Override
+    public List<InitComboxStrVO> initHeXiaoCurrency(String currencyName) {
+        return baseMapper.initHeXiaoCurrency(currencyName);
     }
 
 

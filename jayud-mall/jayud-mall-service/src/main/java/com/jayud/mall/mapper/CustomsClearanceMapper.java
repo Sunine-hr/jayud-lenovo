@@ -7,6 +7,7 @@ import com.jayud.mall.model.bo.QueryCustomsClearanceForm;
 import com.jayud.mall.model.po.CustomsClearance;
 import com.jayud.mall.model.vo.CustomsClearanceVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 /**
@@ -27,5 +28,5 @@ public interface CustomsClearanceMapper extends BaseMapper<CustomsClearance> {
      * @param form
      * @return
      */
-    IPage<CustomsClearanceVO> findCustomsClearanceByPage(Page<CustomsClearanceVO> page, QueryCustomsClearanceForm form);
+    IPage<CustomsClearanceVO> findCustomsClearanceByPage(Page<CustomsClearanceVO> page,@Param("form") QueryCustomsClearanceForm form);
 }

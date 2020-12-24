@@ -1,5 +1,6 @@
 package com.jayud.mall.model.po;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
@@ -27,14 +28,17 @@ public class SystemRoleMenuRelation extends Model<SystemRoleMenuRelation> {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "主键ID")
+    @ApiModelProperty(value = "主键ID", position = 1)
     @TableId(value = "id", type = IdType.AUTO)
+    @JSONField(ordinal = 1)
     private Long id;
 
-    @ApiModelProperty(value = "角色ID")
+    @ApiModelProperty(value = "角色ID", position = 2)
+    @JSONField(ordinal = 2)
     private Long roleId;
 
-    @ApiModelProperty(value = "菜单ID")
+    @ApiModelProperty(value = "菜单ID", position = 3)
+    @JSONField(ordinal = 3)
     private Long menuId;
 
     @Override

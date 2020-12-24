@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/customsclearance")
 @Api(tags = "S012-后台-清关资料接口")
@@ -39,7 +41,7 @@ public class CustomsClearanceController {
     @ApiOperation(value = "保存清关资料")
     @PostMapping("/saveCustomsClearance")
     @ApiOperationSupport(order = 2)
-    public CommonResult saveCustomsClearance(@RequestBody CustomsClearanceForm form){
+    public CommonResult saveCustomsClearance(@Valid @RequestBody CustomsClearanceForm form){
         return customsClearanceService.saveCustomsData(form);
     }
 

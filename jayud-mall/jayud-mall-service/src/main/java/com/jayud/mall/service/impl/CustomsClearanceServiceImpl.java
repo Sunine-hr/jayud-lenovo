@@ -1,10 +1,13 @@
 package com.jayud.mall.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.mall.admin.security.domain.AuthUser;
+import com.jayud.mall.admin.security.service.BaseService;
 import com.jayud.mall.mapper.CustomsClearanceMapper;
 import com.jayud.mall.model.bo.CustomsClearanceForm;
 import com.jayud.mall.model.bo.QueryCustomsClearanceForm;
@@ -13,6 +16,8 @@ import com.jayud.mall.model.vo.CustomsClearanceVO;
 import com.jayud.mall.service.ICustomsClearanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -27,6 +32,8 @@ public class CustomsClearanceServiceImpl extends ServiceImpl<CustomsClearanceMap
 
     @Autowired
     CustomsClearanceMapper customsClearanceMapper;
+    @Autowired
+    BaseService baseService;
 
     @Override
     public IPage<CustomsClearanceVO> findCustomsClearanceByPage(QueryCustomsClearanceForm form) {
@@ -41,6 +48,31 @@ public class CustomsClearanceServiceImpl extends ServiceImpl<CustomsClearanceMap
     @Override
     public CommonResult saveCustomsData(CustomsClearanceForm form) {
         CustomsClearance customsClearance = ConvertUtil.convert(form, CustomsClearance.class);
+        Long id = form.getId();
+        String idCode = form.getIdCode();
+        if(id == null){
+            //新增
+            QueryWrapper<CustomsClearance> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("id_code", idCode);
+            int count = this.count(queryWrapper);
+            if(count > 0){
+                return CommonResult.error(-1, "idCode,已存在");
+            }
+            AuthUser user = baseService.getUser();
+            customsClearance.setStatus("1");
+            customsClearance.setUserId(user.getId().intValue());
+            customsClearance.setUserName(user.getName());
+            customsClearance.setCreateTime(LocalDateTime.now());
+        }else{
+            //修改
+            QueryWrapper<CustomsClearance> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("id_code", idCode);
+            queryWrapper.ne("id", id);
+            int count = this.count(queryWrapper);
+            if(count > 0){
+                return CommonResult.error(-1, "idCode,已存在");
+            }
+        }
         this.saveOrUpdate(customsClearance);
         return CommonResult.success("保存清关，成功！");
     }

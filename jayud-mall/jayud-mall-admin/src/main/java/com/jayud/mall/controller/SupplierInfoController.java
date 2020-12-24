@@ -7,8 +7,7 @@ import com.jayud.mall.model.bo.QuerySupplierInfoForm;
 import com.jayud.mall.model.bo.SupplierInfoForm;
 import com.jayud.mall.model.vo.SupplierInfoVO;
 import com.jayud.mall.service.ISupplierInfoService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +18,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/supplierinfo")
-@Api(tags = "供应商信息接口")
+@Api(tags = "S014-后台-供应商信息接口")
+@ApiSort(value = 14)
 public class SupplierInfoController {
 
     @Autowired
@@ -27,6 +27,7 @@ public class SupplierInfoController {
 
     @ApiOperation(value = "查询供应商信息List")
     @PostMapping("/findSupplierInfo")
+    @ApiOperationSupport(order = 1)
     public CommonResult<List<SupplierInfoVO>> findSupplierInfo(@RequestBody QuerySupplierInfoForm form) {
         List<SupplierInfoVO> list = supplierInfoService.findSupplierInfo(form);
         return CommonResult.success(list);
@@ -34,6 +35,7 @@ public class SupplierInfoController {
 
     @ApiOperation(value = "分页查询供应商信息")
     @PostMapping("/findSupplierInfoByPage")
+    @ApiOperationSupport(order = 2)
     public CommonResult<CommonPageResult<SupplierInfoVO>> findSupplierInfoByPage(@RequestBody QuerySupplierInfoForm form) {
         IPage<SupplierInfoVO> pageList = supplierInfoService.findSupplierInfoByPage(form);
         CommonPageResult<SupplierInfoVO> pageVO = new CommonPageResult(pageList);
@@ -42,6 +44,7 @@ public class SupplierInfoController {
 
     @ApiOperation(value = "保存查询供应商信息")
     @PostMapping("/saveSupplierInfo")
+    @ApiOperationSupport(order = 3)
     public CommonResult saveSupplierInfo(@RequestBody SupplierInfoForm form) {
         return supplierInfoService.saveSupplierInfo(form);
     }

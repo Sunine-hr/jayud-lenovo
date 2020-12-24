@@ -183,6 +183,10 @@ public class OrderInTransportController {
             auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_14.getCode());
             auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_14.getDesc());
         } else if (CommonConstant.CONFIRM_SIGN_IN.equals(form.getCmd())) {//确认签收
+            //确认签收时附件必传
+            if(form.getFileViewList().size() == 0){
+                return CommonResult.error(ResultEnum.PARAM_ERROR);
+            }
             orderTransport.setStatus(OrderStatusEnum.TMS_T_15.getCode());
 
             form.setStatus(OrderStatusEnum.TMS_T_15.getCode());

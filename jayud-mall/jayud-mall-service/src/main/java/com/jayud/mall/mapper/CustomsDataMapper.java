@@ -7,6 +7,7 @@ import com.jayud.mall.model.bo.QueryCustomsDataForm;
 import com.jayud.mall.model.po.CustomsData;
 import com.jayud.mall.model.vo.CustomsDataVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 /**
@@ -27,5 +28,5 @@ public interface CustomsDataMapper extends BaseMapper<CustomsData> {
      * @param form
      * @return
      */
-    IPage<CustomsDataVO> findCustomsDataByPage(Page<CustomsDataVO> page, QueryCustomsDataForm form);
+    IPage<CustomsDataVO> findCustomsDataByPage(Page<CustomsDataVO> page,@Param("form") QueryCustomsDataForm form);
 }

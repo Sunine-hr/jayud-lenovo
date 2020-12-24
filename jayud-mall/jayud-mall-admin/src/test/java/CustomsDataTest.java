@@ -8,7 +8,7 @@ public class CustomsDataTest {
     @Test
     public void test1(){
         QueryCustomsDataForm form = new QueryCustomsDataForm();
-        form.setIdCode("B001");
+        form.setIdCode("BG0001");
         form.setEnName("blanket");
         form.setHsCode("6000.40.3001");
         TestUtils.JSONObjectPrint(form);
@@ -18,8 +18,9 @@ public class CustomsDataTest {
     @Test
     public void test2(){
         CustomsDataForm form = new CustomsDataForm();
-        form.setId(1L);
-        form.setChName("毯子2020");
+        form.setId(null);
+        form.setIdCode("BG0001");
+        form.setChName("毯子2020-12");
         TestUtils.JSONObjectPrint(form);
 
     }

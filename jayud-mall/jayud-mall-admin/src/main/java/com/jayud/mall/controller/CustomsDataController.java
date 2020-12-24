@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/customsdata")
 @Api(tags = "S011-后台-报关商品资料接口")
@@ -38,7 +40,7 @@ public class CustomsDataController {
     @ApiOperation(value = "保存报关资料")
     @PostMapping("/saveCustomsData")
     @ApiOperationSupport(order = 2)
-    public CommonResult saveCustomsData(@RequestBody CustomsDataForm form){
+    public CommonResult saveCustomsData(@Valid @RequestBody CustomsDataForm form){
         return customsDataService.saveCustomsData(form);
     }
 

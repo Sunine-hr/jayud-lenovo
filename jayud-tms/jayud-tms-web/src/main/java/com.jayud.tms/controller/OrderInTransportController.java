@@ -17,8 +17,8 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
-import com.jayud.tms.feign.FreightAirApiClient;
 import com.jayud.tms.feign.OmsClient;
+import com.jayud.tms.feign.OmsMiniClient;
 import com.jayud.tms.model.bo.*;
 import com.jayud.tms.model.po.OrderSendCars;
 import com.jayud.tms.model.po.OrderTransport;
@@ -39,7 +39,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -59,9 +58,10 @@ public class OrderInTransportController {
     OmsClient omsClient;
 
     @Autowired
-    IOrderSendCarsService orderSendCarsService;
+    OmsMiniClient omsMiniClient;
+
     @Autowired
-    private FreightAirApiClient freightAirApiClient;
+    IOrderSendCarsService orderSendCarsService;
 
 
     /**
@@ -76,7 +76,7 @@ public class OrderInTransportController {
         if (form.getOrderId() == null || form.getMainOrderId() == null ||
                 (StringUtil.isNullOrEmpty(form.getOperatorUser()) && !CommonConstant.HK_CLEAR_CUSTOMS.equals(form.getCmd())) ||
                 StringUtil.isNullOrEmpty(form.getCmd())) {
-            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         form.setBusinessType(BusinessTypeEnum.ZGYS.getCode());
         OrderTransport orderTransport = new OrderTransport();
@@ -102,6 +102,11 @@ public class OrderInTransportController {
             auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_1.getCode());
             auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_1.getDesc());
         } else if (CommonConstant.CAR_TAKE_GOODS.equals(form.getCmd())) {//车辆提货
+            //小程序司机需确认接单
+            Boolean isConfirmJieDan = omsMiniClient.isConfirmJieDan(form.getOrderId()).getData();
+            if(!isConfirmJieDan){
+                return CommonResult.error(ResultEnum.IS_CONFIRM_JIE_DAN);
+            }
             orderTransport.setStatus(OrderStatusEnum.TMS_T_5.getCode());
 
             form.setStatus(OrderStatusEnum.TMS_T_5.getCode());
@@ -111,7 +116,7 @@ public class OrderInTransportController {
             auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_5.getDesc());
         } else if (CommonConstant.CAR_WEIGH.equals(form.getCmd())) {//车辆过磅
             if (form.getCarWeighNum() == null) {
-                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+                return CommonResult.error(ResultEnum.PARAM_ERROR);
             }
             orderTransport.setCarWeighNum(form.getCarWeighNum());
             orderTransport.setStatus(OrderStatusEnum.TMS_T_6.getCode());
@@ -125,7 +130,7 @@ public class OrderInTransportController {
             //参数校验
             if (form.getDriverInfoId() == null || StringUtil.isNullOrEmpty(form.getSeamlessNo()) ||
                     StringUtil.isNullOrEmpty(form.getClearCustomsNo()) || form.getVehicleId() == null) {
-                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+                return CommonResult.error(ResultEnum.PARAM_ERROR);
             }
             orderTransport.setDriverInfoId(form.getDriverInfoId());
             orderTransport.setVehicleId(form.getVehicleId());
@@ -193,7 +198,7 @@ public class OrderInTransportController {
         omsClient.saveAuditInfo(auditInfoForm);
         boolean result = orderTransportService.saveOrUpdate(orderTransport);
         if (!result) {
-            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
+            return CommonResult.error(ResultEnum.OPR_FAIL);
         }
         return CommonResult.success();
     }
@@ -475,7 +480,7 @@ public class OrderInTransportController {
      * @param form
      * @return
      */
-    @ApiOperation(value = "确认接单驳回cmd=T_1_1,确认派车驳回cmd=T_2_1,运输审核驳回cmd=T_3_2,确认派车驳回cmd=T_4_1")
+    @ApiOperation(value = "确认接单驳回cmd=T_1_1,确认派车驳回cmd=T_2_1,运输审核驳回cmd=T_3_2,确认派车驳回cmd=T_4_1,车辆提货 cmd=T_5_1")
     @PostMapping(value = "/rejectOrder")
     public CommonResult rejectOrder(@RequestBody RejectOrderForm form) {
         if (form.getOrderId() == null || StringUtil.isNullOrEmpty(form.getCmd())) {
@@ -531,6 +536,11 @@ public class OrderInTransportController {
             orderTransport.setStatus(cmd);
             auditInfoForm.setAuditStatus(cmd);
             auditInfoForm.setAuditTypeDesc(cmd);
+        } else if (OrderStatusEnum.TMS_T_5_1.getCode().equals(form.getCmd())) {//车辆提货驳回
+            orderTransport.setStatus(OrderStatusEnum.TMS_T_5_1.getCode());
+
+            auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_5_1.getCode());
+            auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_5_1.getDesc());
         }
         omsClient.saveAuditInfo(auditInfoForm);
         if (rejectOptions == 1) { //驳回到订单编辑

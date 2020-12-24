@@ -45,6 +45,7 @@ public enum ResultEnum implements IResultCode {
     MAKE_INVOICE_CONDITION_2(10005, "付款申请审核通过才可操作"),
     MAKE_INVOICE_CONDITION_3(10006, "核销总金额超过申请金额"),
     ENCODE_PURE_NUMBERS(10007, "六联单号须为13位的纯数字"),
+    IS_CONFIRM_JIE_DAN(10008, "司机未进行接单操作，不能反馈车辆提货状态"),
     VIVO_ERROR(1000001, "调用vivo接口失败"),
 
     ;

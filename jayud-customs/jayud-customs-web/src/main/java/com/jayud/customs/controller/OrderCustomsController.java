@@ -352,6 +352,7 @@ public class OrderCustomsController {
 
                 auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_1_1.getCode());
                 auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_1_1.getDesc());
+                auditInfoForm.setAuditComment(form.getCause());
             }
 
             orderCustomsList.add(orderCustom);

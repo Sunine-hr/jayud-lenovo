@@ -16,4 +16,7 @@ public class RejectOrderForm {
     @NotEmpty(message = "cmd is required")
     private String cmd;
 
+    @ApiModelProperty(value = "驳回原因")
+    private String cause;
+
 }

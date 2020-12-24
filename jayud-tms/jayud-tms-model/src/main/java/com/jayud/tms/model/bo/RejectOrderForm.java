@@ -13,7 +13,7 @@ public class RejectOrderForm {
     @NotNull(message = "orderId is required")
     private Long orderId;
 
-    @ApiModelProperty(value = "操作指令",required = true)
+    @ApiModelProperty(value = "操作指令 cmd=T_5_1 车辆提货驳回",required = true)
     @NotEmpty(message = "cmd is required")
     private String cmd;
 

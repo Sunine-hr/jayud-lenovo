@@ -126,6 +126,7 @@
             pb.`name` bizCodeDesc,
             DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
             si.supplier_ch_name supplierChName,
+            (SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' GROUP BY ot.order_no) goodsDesc,
             (SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' GROUP BY ot.order_no) startAddress,
             (SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id WHERE ota.order_no = ot.order_no AND ota.opr_type = '2' GROUP BY ot.order_no) endAddress,
             concat( vi.plate_number,',',vi.hk_number ) licensePlate,
@@ -242,6 +243,7 @@
         oi.order_no orderNo,
 		(select opc.order_no from order_payment_cost opc where opc.id = opbd.cost_id) subOrderNo,
         opb.supplier_ch_name supplierChName,
+        ( SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' group by ot.order_no) goodsDesc,
         ( SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address)) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' group by ot.order_no) startAddress,
         ( SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address)) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '2' group by ot.order_no) endAddress,
         (select concat(vi.plate_number,',',vi.hk_number) from order_send_cars osc left join order_transport ot on osc.order_no = ot.order_no left join driver_info di on di.id = osc.driver_info_id
@@ -365,6 +367,7 @@
             (select pb.`name` from product_biz pb where pb.id_code = oi.biz_code) bizCodeDesc,
             oi.create_time createdTimeStr,
            (select si.supplier_ch_name from supplier_info si where si.supplier_code = opc.customer_code) supplierChName,
+           (SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota left join order_transport ot on ot.order_no = ota.order_no WHERE ot.main_order_no = oi.order_no and ota.opr_type = '1' group by ot.order_no) goodsDesc,
             (SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id =
             ota.delivery_id
             left join order_transport ot on ot.order_no = ota.order_no WHERE ot.main_order_no = oi.order_no and ota.opr_type

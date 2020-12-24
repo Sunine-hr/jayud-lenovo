@@ -177,4 +177,20 @@ public class ReceivableHeaderForm {
     //FPAYAMOUNTFOR 应收金额通过计算获取
 
 
+    @Override
+    public String toString() {
+        return "ReceivableHeaderForm{" +
+                "customerName='" + customerName + '\'' +
+                ", currency='" + currency + '\'' +
+                ", settleOrgName='" + settleOrgName + '\'' +
+                ", saleDeptName='" + saleDeptName + '\'' +
+                ", businessNo='" + businessNo + '\'' +
+                ", remark='" + remark + '\'' +
+                ", billNo='" + billNo + '\'' +
+                ", entityDetail=" + entityDetail +
+                ", businessDate='" + businessDate + '\'' +
+                ", baseCurrency='" + baseCurrency + '\'' +
+                ", exchangeRate=" + exchangeRate +
+                '}';
+    }
 }

@@ -36,7 +36,7 @@
     <select id="findSupplierInfoByPage" parameterType="com.jayud.mall.model.bo.QuerySupplierInfoForm"
             resultType="com.jayud.mall.model.vo.SupplierInfoVO" >
         select
-        t.id,t.supplier_code,t.supplier_ch_name,t.supplier_en_name,t.state_code,t.contacts,t.company_name,t.contact_number,t.contact_phone,t.address_first,t.address_second,t.address_thirdly,t.pid,t.pname,t.cid,t.cname,t.zip_code,t.status,t.user_id,t.user_name,t.create_time
+        t.id,t.supplier_code,t.supplier_ch_name,t.supplier_en_name,t.company_name,t.state_code,t.contacts,t.contact_number,t.contact_phone,t.address_first,t.address_second,t.address_thirdly,t.pid,t.pname,t.cid,t.cname,t.zip_code,t.contact_address,t.status,t.grade,t.effective_date,t.expiry_date,t.user_id,t.user_name,t.create_time
         from supplier_info t
         WHERE
         1 = 1
@@ -49,8 +49,6 @@
         <if test="form.status != null and form.status != '' ">
             AND t.status = #{form.status}
         </if>
-        GROUP BY
-        t.`id`
     </select>
 
 

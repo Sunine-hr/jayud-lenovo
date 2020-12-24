@@ -3,6 +3,8 @@ import com.jayud.mall.model.bo.SupplierInfoForm;
 import com.jayud.mall.utils.TestUtils;
 import org.junit.Test;
 
+import java.time.LocalDateTime;
+
 public class SupplierInfoTest {
 
     @Test
@@ -34,6 +36,23 @@ public class SupplierInfoTest {
         form.setContactPhone("13245678908");
         form.setAddressFirst("深圳，罗湖，110");
         form.setStatus("1");
+        TestUtils.JSONObjectPrint(form);
+    }
+
+
+    @Test
+    public void test4(){
+        SupplierInfoForm form = new SupplierInfoForm();
+        form.setCompanyName("xx物流有限公司");
+        //TODO服务类型
+        form.setContacts("张三三");
+        form.setContactNumber("18900000001");
+        form.setZipCode("518000");
+        form.setContactAddress("xx省xx市xx街道");
+        form.setGrade(5);
+        form.setStatus("1");
+        form.setEffectiveDate(LocalDateTime.now());
+        form.setExpiryDate(LocalDateTime.now());
         TestUtils.JSONObjectPrint(form);
     }
 

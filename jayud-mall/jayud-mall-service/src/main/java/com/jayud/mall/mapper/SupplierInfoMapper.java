@@ -7,6 +7,7 @@ import com.jayud.mall.model.bo.QuerySupplierInfoForm;
 import com.jayud.mall.model.po.SupplierInfo;
 import com.jayud.mall.model.vo.SupplierInfoVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 /**
@@ -27,5 +28,5 @@ public interface SupplierInfoMapper extends BaseMapper<SupplierInfo> {
      * @param form
      * @return
      */
-    IPage<SupplierInfoVO> findSupplierInfoByPage(Page<SupplierInfoVO> page, QuerySupplierInfoForm form);
+    IPage<SupplierInfoVO> findSupplierInfoByPage(Page<SupplierInfoVO> page, @Param("form") QuerySupplierInfoForm form);
 }

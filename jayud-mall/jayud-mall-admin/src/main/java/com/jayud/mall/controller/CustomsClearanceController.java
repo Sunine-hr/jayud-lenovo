@@ -29,7 +29,8 @@ public class CustomsClearanceController {
     @ApiOperation(value = "分页查询清关资料")
     @PostMapping("/findCustomsClearanceByPage")
     @ApiOperationSupport(order = 1)
-    public CommonResult<CommonPageResult<CustomsClearanceVO>> findCustomsClearanceByPage(@RequestBody QueryCustomsClearanceForm form) {
+    public CommonResult<CommonPageResult<CustomsClearanceVO>> findCustomsClearanceByPage(
+            @RequestBody QueryCustomsClearanceForm form) {
         IPage<CustomsClearanceVO> pageList = customsClearanceService.findCustomsClearanceByPage(form);
         CommonPageResult<CustomsClearanceVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);

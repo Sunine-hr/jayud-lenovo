@@ -6,6 +6,8 @@ import com.jayud.mall.model.vo.CurrencyRateVO;
 import com.jayud.mall.service.ICurrencyRateService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperationSupport;
+import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,7 +18,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/currencyrate")
-@Api(tags = "币种汇率接口")
+@Api(tags = "S010-后台-币种汇率接口")
+@ApiSort(value = 10)
 public class CurrencyRateController {
 
     @Autowired
@@ -24,6 +27,7 @@ public class CurrencyRateController {
 
     @ApiOperation(value = "查询币种汇率List")
     @PostMapping("/findCurrencyRate")
+    @ApiOperationSupport(order = 1)
     public CommonResult<List<CurrencyRateVO>> findCurrencyRate(@RequestBody QueryCurrencyRateForm form) {
         List<CurrencyRateVO> list = currencyRateService.findCurrencyRate(form);
         return CommonResult.success(list);

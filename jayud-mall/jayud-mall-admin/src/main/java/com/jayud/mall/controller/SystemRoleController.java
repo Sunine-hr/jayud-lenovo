@@ -22,7 +22,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/systemrole")
-@Api(tags = "后台-角色管理")
+@Api(tags = "S004-后台-角色管理")
 @ApiSort(value = 4)
 public class SystemRoleController {
 

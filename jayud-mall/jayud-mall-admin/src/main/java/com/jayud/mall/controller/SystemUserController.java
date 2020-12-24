@@ -30,7 +30,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/systemuser")
-@Api(tags = "后台-用户管理")
+@Api(tags = "S003-后台-用户管理")
 @ApiSort(value = 3)
 public class SystemUserController {
 

@@ -36,7 +36,7 @@ import java.util.Collection;
  * 浏览器安全控制器BrowserSecurityController
  */
 @RestController
-@Api(tags = "后台-Security浏览器安全接口")
+@Api(tags = "S001-后台-Security安全接口")
 @ApiSort(value = 1)
 public class BrowserSecurityController {
 

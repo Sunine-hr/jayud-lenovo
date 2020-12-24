@@ -93,6 +93,9 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "已选中得服务")
     private String selectedServer;
 
+    @ApiModelProperty(value = "驳回原因,目前只要求显示报关驳回的")
+    private String rejectComment;
+
     public String getStatusDesc() {
         return OrderStatusEnum.getDesc(this.status);
     }

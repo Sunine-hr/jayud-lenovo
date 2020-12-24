@@ -66,7 +66,8 @@
         ELSE FALSE
         END) isCost,
         oi.`need_input_cost` needInputCost,
-        oi.`customs_release` customsRelease
+        oi.`customs_release` customsRelease,
+        (select ai.audit_comment from audit_info ai where ai.ext_id = oc.id and ai.audit_status = 'C_1_1') rejectComment
         FROM
         order_info oi LEFT JOIN order_customs oc ON oi.`order_no` = oc.`main_order_no`
         LEFT JOIN product_classify pc1 ON pc1.`id_code` = oi.`class_code`
@@ -98,7 +99,8 @@
         ELSE FALSE
         END) isCost,
         oi.`need_input_cost` needInputCost,
-        oi.`customs_release` customsRelease
+        oi.`customs_release` customsRelease,
+        '' rejectComment
         FROM
         order_info oi LEFT JOIN order_transport ot ON
         oi.`order_no` = ot.`main_order_no`
@@ -135,7 +137,8 @@
         ELSE FALSE
         END) isCost,
         oi.`need_input_cost` needInputCost,
-        oi.`customs_release` customsRelease
+        oi.`customs_release` customsRelease,
+        '' rejectComment
         FROM
         order_info oi LEFT JOIN air_order a ON
         oi.`order_no` = a.`main_order_no`

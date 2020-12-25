@@ -1,5 +1,7 @@
 package com.jayud.mall.model.po;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -25,13 +27,14 @@ public class SupplierInfoServiceTypeRelation extends Model<SupplierInfoServiceTy
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "主键id")
+    @ApiModelProperty(value = "主键id", position = 1)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "供应商id(supplier_info id)")
+    @ApiModelProperty(value = "供应商id(supplier_info id)", position = 2)
     private Long infoId;
 
-    @ApiModelProperty(value = "服务类id(supplier_service_type id)")
+    @ApiModelProperty(value = "服务类id(supplier_service_type id)", position = 3)
     private Long serviceTypeId;
 
 

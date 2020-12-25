@@ -4,6 +4,8 @@ import com.jayud.mall.utils.TestUtils;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 public class SupplierInfoTest {
 
@@ -45,6 +47,8 @@ public class SupplierInfoTest {
         SupplierInfoForm form = new SupplierInfoForm();
         form.setCompanyName("xx物流有限公司");
         //TODO服务类型
+        List<Long> serviceTypeIds = Arrays.asList(1L, 2L, 3L);
+        form.setServiceTypeIds(serviceTypeIds);
         form.setContacts("张三三");
         form.setContactNumber("18900000001");
         form.setZipCode("518000");

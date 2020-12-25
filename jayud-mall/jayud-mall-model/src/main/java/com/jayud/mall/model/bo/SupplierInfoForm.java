@@ -1,20 +1,18 @@
 package com.jayud.mall.model.bo;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class SupplierInfoForm {
 
     @ApiModelProperty(value = "自增ID", position = 1)
-    @TableId(value = "id", type = IdType.AUTO)
     @JSONField(ordinal = 1)
     private Long id;
 
@@ -104,6 +102,10 @@ public class SupplierInfoForm {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     @JSONField(ordinal = 22)
     private LocalDateTime expiryDate;
+
+    @ApiModelProperty(value = "服务类型List<Long>", position = 23)
+    @JSONField(ordinal = 23)
+    private List<Long> serviceTypeIds;
 
 
 

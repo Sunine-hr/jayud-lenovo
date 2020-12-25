@@ -12,11 +12,14 @@ import com.jayud.mall.mapper.SupplierInfoMapper;
 import com.jayud.mall.model.bo.QuerySupplierInfoForm;
 import com.jayud.mall.model.bo.SupplierInfoForm;
 import com.jayud.mall.model.po.SupplierInfo;
+import com.jayud.mall.model.po.SupplierInfoServiceTypeRelation;
 import com.jayud.mall.model.vo.SupplierInfoVO;
 import com.jayud.mall.service.INumberGeneratedService;
 import com.jayud.mall.service.ISupplierInfoService;
+import com.jayud.mall.service.ISupplierInfoServiceTypeRelationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,11 +37,13 @@ import java.util.List;
 public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, SupplierInfo> implements ISupplierInfoService {
 
     @Autowired
-    SupplierInfoMapper supplierInfoMapper;
+    BaseService baseService;
     @Autowired
     INumberGeneratedService numberGeneratedService;
     @Autowired
-    BaseService baseService;
+    SupplierInfoMapper supplierInfoMapper;
+    @Autowired
+    ISupplierInfoServiceTypeRelationService supplierInfoServiceTypeRelationService;
 
     @Override
     public List<SupplierInfoVO> findSupplierInfo(QuerySupplierInfoForm form) {
@@ -67,20 +72,41 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult saveSupplierInfo(SupplierInfoForm form) {
         SupplierInfo supplierInfo = ConvertUtil.convert(form, SupplierInfo.class);
         Long id = form.getId();
-        String supplierCode = form.getSupplierCode();
-        //供应商代码
-        String supplier_code = numberGeneratedService.getOrderNoByCode("supplier_code");
-        supplierInfo.setSupplierCode(supplier_code);
-        //创建人
-        AuthUser user = baseService.getUser();
-        supplierInfo.setUserId(user.getId().intValue());
-        supplierInfo.setUserName(user.getName());
-        supplierInfo.setCreateTime(LocalDateTime.now());
-
+        if(id == null){
+            //新增
+            //供应商代码
+            String supplier_code = numberGeneratedService.getOrderNoByCode("supplier_code");
+            supplierInfo.setSupplierCode(supplier_code);
+            //创建人
+            AuthUser user = baseService.getUser();
+            supplierInfo.setUserId(user.getId().intValue());
+            supplierInfo.setUserName(user.getName());
+            supplierInfo.setCreateTime(LocalDateTime.now());
+        }
+        //1.保存供应商
         this.saveOrUpdate(supplierInfo);
+        Long infoId = supplierInfo.getId();
+
+        QueryWrapper<SupplierInfoServiceTypeRelation> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("info_id", infoId);
+        //2.删除供应商和服务类型关联信息
+        supplierInfoServiceTypeRelationService.remove(queryWrapper);
+
+        List<Long> serviceTypeIds = form.getServiceTypeIds();
+        List<SupplierInfoServiceTypeRelation> supplierInfoServiceTypeRelations = new ArrayList<>();
+        serviceTypeIds.forEach(serviceTypeId -> {
+            SupplierInfoServiceTypeRelation supplierInfoServiceTypeRelation = new SupplierInfoServiceTypeRelation();
+            supplierInfoServiceTypeRelation.setInfoId(infoId);
+            supplierInfoServiceTypeRelation.setServiceTypeId(serviceTypeId);
+            supplierInfoServiceTypeRelations.add(supplierInfoServiceTypeRelation);
+        });
+        //3.保存供应商和服务类型关联信息
+        supplierInfoServiceTypeRelationService.saveOrUpdateBatch(supplierInfoServiceTypeRelations);
+
         return CommonResult.success("保存供应商，成功！");
     }
 }

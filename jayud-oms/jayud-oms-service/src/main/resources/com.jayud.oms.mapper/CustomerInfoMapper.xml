@@ -38,52 +38,18 @@
     <select id="findCustomerInfoByPage" parameterType="com.jayud.oms.model.bo.QueryCustomerInfoForm"
             resultType="com.jayud.oms.model.vo.CustomerInfoVO">
         SELECT
-        ci.id,
-        ci.name,
-        ci.`id_code` idCode,
-        ci.`types`,
-        ci.`contact`,
-        ci.`phone`,
-        ci.`address`,
-        ci.`email`,
-        ci.`tfn`,
-        ci.`if_contract` ifContract,
-        ci.`settlement_type` settlementType,
-        ci.`account_period` accountPeriod,
-        ci.`estate`,
-        ci.`department_id` departmentId,
-        d.`name` departmentName,
-        ci.`ku_id` kuId,
-        su1.`user_name` kuName,
-        ci.`yw_id` ywId,
-        su2.`user_name` ywName,
-        ci.`audit_status` auditStatus,
-        (
-        CASE
-        ci.`audit_status`
-        WHEN '0'
-        THEN '待客服审核'
-        WHEN '1'
-        THEN '待财务审核'
-        WHEN '2'
-        THEN '待总经办审核'
-        WHEN '10'
-        THEN '审核通过'
-        WHEN '11'
-        THEN '审核拒绝'
-        END
-        ) auditStatusDesc,
+        ci.id,ci.name,ci.`id_code` idCode,ci.`types`,ci.`contact`,ci.`phone`,ci.`address`,ci.`email`,ci.`tfn`,ci.`if_contract` ifContract,
+        ci.`settlement_type` settlementType,ci.`account_period` accountPeriod,ci.`estate`,ci.`department_id` departmentId,d.`name` departmentName,
+        ci.`ku_id` kuId,su1.`user_name` kuName,ci.`yw_id` ywId,su2.`user_name` ywName,ci.`audit_status` auditStatus,
+        (CASE ci.`audit_status` WHEN '0' THEN '待客服审核'
+        WHEN '1' THEN '待财务审核'
+        WHEN '2' THEN '待总经办审核'
+        WHEN '10' THEN '审核通过'
+        WHEN '11' THEN '审核拒绝' END) auditStatusDesc,
         ci.`created_user` createdUser,
-        DATE_FORMAT(
-        ci.`created_time`,
-        '%Y-%m-%d %H:%i:%S'
-        ) createdTimeStr,
-        ci.`updated_user` updatedUser,
-        ci.`audit_comment` auditComment,
-        DATE_FORMAT(
-        ci.`updated_time`,
-        '%Y-%m-%d %H:%i:%S'
-        ) updatedTimeStr
+        DATE_FORMAT(ci.`created_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
+        ci.`updated_user` updatedUser,ci.`audit_comment` auditComment,
+        DATE_FORMAT(ci.`updated_time`,'%Y-%m-%d %H:%i:%S') updatedTimeStr
         FROM
         customer_info ci
         LEFT JOIN department d
@@ -94,6 +60,18 @@
         ON su2.`id` = ci.`yw_id` where ci.`status` = 1
         <if test="form.name != null and form.name != ''">
             and ci.name like concat('%',#{form.name},'%')
+        </if>
+        <if test="form.idCode != null and form.idCode != ''">
+            and ci.id_code like concat('%',#{form.idCode},'%')
+        </if>
+        <if test="form.ywId != null and form.ywId != ''">
+            and ci.yw_id = #{form.ywId}
+        </if>
+        <if test="form.contact != null and form.contact != ''">
+            and ci.contact like concat('%',#{form.contact},'%')
+        </if>
+        <if test="form.auditStatus != null and form.auditStatus != ''">
+            and ci.audit_status = #{form.auditStatus}
         </if>
         <if test="form.cmd == 'kf'">
             and ci.audit_status = 0

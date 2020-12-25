@@ -108,6 +108,9 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "送货文件上传附件地址数组集合")
     private List<FileView> takeFiles2 = new ArrayList<>();
 
+    @ApiModelProperty(value = "过磅数KG")
+    private Double carWeighNum;
+
     //货物信息
     @ApiModelProperty(value = "货物描述")
     private String goodsDesc;

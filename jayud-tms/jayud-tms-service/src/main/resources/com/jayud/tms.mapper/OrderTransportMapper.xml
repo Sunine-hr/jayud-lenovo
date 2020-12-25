@@ -159,7 +159,8 @@
         ) file2,
         (SELECT	GROUP_CONCAT(ota.file_name) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '2' group by ot.order_no
         ) fileName2,
-        oi.selected_server selectedServer
+        oi.selected_server selectedServer,
+        ot.car_weigh_num carWeighNum
         FROM
             order_transport ot
             LEFT JOIN order_info oi

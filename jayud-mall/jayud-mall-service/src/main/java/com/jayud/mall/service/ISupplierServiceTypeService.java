@@ -1,5 +1,6 @@
 package com.jayud.mall.service;
 
+import com.jayud.common.CommonResult;
 import com.jayud.mall.model.po.SupplierServiceType;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.vo.SupplierServiceTypeVO;
@@ -21,4 +22,11 @@ public interface ISupplierServiceTypeService extends IService<SupplierServiceTyp
      * @return
      */
     List<SupplierServiceTypeVO> findSupplierServiceType();
+
+    /**
+     * 根据供应商id，查询供应商对应服务类型
+     * @param infoId
+     * @return
+     */
+    CommonResult<List<SupplierServiceTypeVO>> findSupplierServiceTypeByInfoId(Long infoId);
 }

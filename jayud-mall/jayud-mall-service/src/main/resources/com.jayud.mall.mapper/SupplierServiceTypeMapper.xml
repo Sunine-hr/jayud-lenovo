@@ -18,4 +18,18 @@
         id, type_code, type_name, status, user_id, user_name, create_time
     </sql>
 
+    <select id="findSupplierServiceTypeByInfoId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.SupplierServiceTypeVO">
+        select t.id,
+               t.type_code,
+               t.type_name,
+               t.status,
+               t.user_id,
+               t.user_name,
+               t.create_time
+        from supplier_service_type t
+                 left join supplier_info_service_type_relation t1 on t1.service_type_id = t.id
+        where 1 = 1
+          and t1.info_id = #{infoId}
+    </select>
+
 </mapper>

@@ -1,12 +1,13 @@
 package com.jayud.mall.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.mall.model.po.SupplierServiceType;
 import com.jayud.mall.mapper.SupplierServiceTypeMapper;
+import com.jayud.mall.model.po.SupplierServiceType;
 import com.jayud.mall.model.vo.SupplierServiceTypeVO;
 import com.jayud.mall.service.ISupplierServiceTypeService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,5 +33,11 @@ public class SupplierServiceTypeServiceImpl extends ServiceImpl<SupplierServiceT
         List<SupplierServiceType> list = this.list(queryWrapper);
         List<SupplierServiceTypeVO> supplierServiceTypeVOS = ConvertUtil.convertList(list, SupplierServiceTypeVO.class);
         return supplierServiceTypeVOS;
+    }
+
+    @Override
+    public CommonResult<List<SupplierServiceTypeVO>> findSupplierServiceTypeByInfoId(Long infoId) {
+        List<SupplierServiceTypeVO> list = supplierServiceTypeMapper.findSupplierServiceTypeByInfoId(infoId);
+        return CommonResult.success(list);
     }
 }

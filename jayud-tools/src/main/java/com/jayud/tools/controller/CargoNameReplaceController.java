@@ -28,7 +28,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/cargonamereplace")
-@Api(tags = "货物名称替换接口")
+@Api(tags = "T003-工具-货物名称替换接口")
 @ApiSort(value = 3)
 public class CargoNameReplaceController {
 

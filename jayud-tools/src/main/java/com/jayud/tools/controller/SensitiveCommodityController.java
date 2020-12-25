@@ -32,7 +32,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/sensitivecommodity")
-@Api(tags = "敏感品名接口")
+@Api(tags = "T001-工具-敏感品名接口")
 @ApiSort(value = 1)
 public class SensitiveCommodityController {
 
@@ -40,31 +40,31 @@ public class SensitiveCommodityController {
     ISensitiveCommodityService sensitiveCommodityService;
 
     @ApiOperation(value = "查询敏感品名list")
-    @ApiOperationSupport(order = 1)
     @PostMapping(value = "/getSensitiveCommodityList")
+    @ApiOperationSupport(order = 1)
     public CommonResult<List<SensitiveCommodity>> getSensitiveCommodityList(@RequestBody QuerySensitiveCommodityForm form){
         List<SensitiveCommodity> userList = sensitiveCommodityService.getSensitiveCommodityList(form);
         return CommonResult.success(userList);
     }
 
     @ApiOperation(value = "保存`敏感品名`（新增或修改）")
-    @ApiOperationSupport(order = 2)
     @PostMapping(value = "/saveSensitiveCommodity")
+    @ApiOperationSupport(order = 2)
     public CommonResult saveSensitiveCommodity(@Valid @RequestBody SensitiveCommodityForm sensitiveCommodityForm){
         return sensitiveCommodityService.saveSensitiveCommodity(sensitiveCommodityForm);
     }
 
     @ApiOperation(value = "删除`敏感品名`")
-    @ApiOperationSupport(order = 3)
     @PostMapping(value = "/deleteSensitiveCommodityById")
+    @ApiOperationSupport(order = 3)
     public CommonResult deleteSensitiveCommodityById(@RequestParam(value = "id") Long id){
         sensitiveCommodityService.deleteSensitiveCommodityById(id);
         return CommonResult.success();
     }
 
     @ApiOperation(value = "敏感品名分页查询")
-    @ApiOperationSupport(order = 4)
     @PostMapping(value = "/findSensitiveCommodityByPage")
+    @ApiOperationSupport(order = 4)
     public CommonResult<CommonPageResult<SensitiveCommodityVO>> findSensitiveCommodityByPage(@RequestBody QuerySensitiveCommodityForm  form){
         IPage<SensitiveCommodityVO> pageList = sensitiveCommodityService.findSensitiveCommodityByPage(form);
         CommonPageResult<SensitiveCommodityVO> pageVO = new CommonPageResult(pageList);
@@ -73,8 +73,8 @@ public class SensitiveCommodityController {
 
 
     @ApiOperation(value = "下载敏感品名导入模板")
-    @ApiOperationSupport(order = 5)
     @RequestMapping(value = "/exportExcelTemplate", method = RequestMethod.GET)
+    @ApiOperationSupport(order = 5)
     public void exportExcelTest(HttpServletResponse response) throws IOException {
         Map<String, Object> row1 = new LinkedHashMap<>();
         row1.put("品名", "品名A");
@@ -94,8 +94,8 @@ public class SensitiveCommodityController {
     }
 
     @ApiOperation(value = "导入敏感品名数据")
-    @ApiOperationSupport(order = 6)
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
+    @ApiOperationSupport(order = 6)
     @ResponseBody
     public CommonResult importExcel(@RequestParam("file") MultipartFile file, HttpServletRequest request){
         if (file.isEmpty()) {

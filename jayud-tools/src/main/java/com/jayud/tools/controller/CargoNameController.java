@@ -33,7 +33,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/cargoname")
-@Api(tags = "货物名称接口")
+@Api(tags = "T002-工具-货物名称接口")
 @ApiSort(value = 2)
 public class CargoNameController {
 

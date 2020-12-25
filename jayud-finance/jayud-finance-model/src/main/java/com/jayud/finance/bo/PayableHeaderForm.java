@@ -210,4 +210,20 @@ public class PayableHeaderForm {
     //private BigDecimal noTaxAmountFor;
 
 
+    @Override
+    public String toString() {
+        return "PayableHeaderForm{" +
+                "businessNo='" + businessNo + '\'' +
+                ", supplierName='" + supplierName + '\'' +
+                ", currency='" + currency + '\'' +
+                ", settleOrgName='" + settleOrgName + '\'' +
+                ", remark='" + remark + '\'' +
+                ", purchaseDeptName='" + purchaseDeptName + '\'' +
+                ", billNo='" + billNo + '\'' +
+                ", entityDetail=" + entityDetail +
+                ", businessDate='" + businessDate + '\'' +
+                ", baseCurrency='" + baseCurrency + '\'' +
+                ", exchangeRate=" + exchangeRate +
+                '}';
+    }
 }

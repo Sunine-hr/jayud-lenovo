@@ -1,6 +1,7 @@
 package com.jayud.finance.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.jayud.common.enums.VehicleSizeEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -34,13 +35,16 @@ public class ViewBilToOrderVO {
     private String licensePlate;
 
     @ApiModelProperty(value = "车型 如：3T")
-    private String vehicleSize;
+    private Integer vehicleSize;
 
     @ApiModelProperty(value = "件数")
     private Integer pieceNum;
 
     @ApiModelProperty(value = "重量")
     private Double weight;
+
+    @ApiModelProperty(value = "货物描述")
+    private String goodsDesc;
 
     @ApiModelProperty(value = "报关单号")
     private String yunCustomsNo;
@@ -51,17 +55,7 @@ public class ViewBilToOrderVO {
 
     public String getVehicleSize() {
         if(this.vehicleSize != null){
-            if("1".equals(this.vehicleSize)){
-                return "3T";
-            }else if("2".equals(this.vehicleSize)){
-                return "5T";
-            }else if("3".equals(this.vehicleSize)){
-                return "8T";
-            }else if("4".equals(this.vehicleSize)){
-                return "10T";
-            }else if("5".equals(this.vehicleSize)){
-                return "12T";
-            }
+            return VehicleSizeEnum.getDesc(this.vehicleSize);
         }
         return "";
     }

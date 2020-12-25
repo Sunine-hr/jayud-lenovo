@@ -121,6 +121,9 @@ public class OrderPaymentBillDetail extends Model<OrderPaymentBillDetail> {
     @ApiModelProperty(value = "修改时间")
     private LocalDateTime updatedTime;
 
+    @ApiModelProperty(value = "推送金蝶次数")
+    private Integer pushKingdeeCount;
+
 
     @Override
     protected Serializable pkVal() {

@@ -1,7 +1,12 @@
 package com.jayud.tms.model.vo;
 
+import com.jayud.common.enums.VehicleSizeEnum;
+import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 提货/收货地址
@@ -81,6 +86,15 @@ public class InputOrderTakeAdrVO {
     @ApiModelProperty(value = "入仓号,送货地址特有")
     private String enterWarehouseNo;
 
+    @ApiModelProperty(value = "提货送货文件")
+    private String file;
+
+    @ApiModelProperty(value = "提货送货文件名称")
+    private String fileName;
+
+    @ApiModelProperty(value = "提货文件上传附件地址数组集合")
+    private List<FileView> takeFiles = new ArrayList<>();
+
     public String getVehicleTypeDesc() {
         if(this.vehicleType != null){
             if(this.vehicleType == 1){
@@ -94,17 +108,7 @@ public class InputOrderTakeAdrVO {
 
     public String getVehicleSizeDesc() {
         if(this.vehicleSize != null){
-            if(this.vehicleSize == 1){
-                return "3T";
-            }else if(this.vehicleSize == 2){
-                return "5T";
-            }else if(this.vehicleSize == 3){
-                return "8T";
-            }else if(this.vehicleSize == 4){
-                return "10T";
-            }else if(this.vehicleSize == 5){
-                return "12T";
-            }
+            return VehicleSizeEnum.getDesc(this.vehicleSize);
         }
         return "";
     }

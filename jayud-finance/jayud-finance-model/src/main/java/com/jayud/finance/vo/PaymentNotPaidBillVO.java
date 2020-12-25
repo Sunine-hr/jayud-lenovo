@@ -104,6 +104,11 @@ public class PaymentNotPaidBillVO {
     @ApiModelProperty(value = "对账单明细状态")
     private String auditStatus;
 
+    @ApiModelProperty(value = "账单编号")
+    private String billNo;
+
+    @ApiModelProperty(value = "货物描述")
+    private String goodsDesc;
 
 
 

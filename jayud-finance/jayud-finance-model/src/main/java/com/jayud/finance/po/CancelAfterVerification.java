@@ -63,6 +63,9 @@ public class CancelAfterVerification extends Model<CancelAfterVerification> {
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createdTime;
 
+    @ApiModelProperty(value = "备注")
+    private String remarks;
+
 
     @Override
     protected Serializable pkVal() {

@@ -45,5 +45,8 @@ public class HeXiaoConfirmForm {
     @NotEmpty(message = "realReceiveTimeStr is required")
     private String realReceiveTimeStr;
 
+    @ApiModelProperty(value = "备注")
+    private String remarks;
+
 
 }

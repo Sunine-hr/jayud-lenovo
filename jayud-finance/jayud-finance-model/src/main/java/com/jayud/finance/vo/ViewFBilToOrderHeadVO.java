@@ -16,6 +16,8 @@ public class ViewFBilToOrderHeadVO {
 
     private String supplierChName = "供应商";
 
+    private String goodsDesc = "货物描述";
+
     private String startAddress = "起运地";
 
     private String endAddress = "目的地";

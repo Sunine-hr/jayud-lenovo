@@ -1,7 +1,11 @@
 package com.jayud.oms.model.vo;
 
+import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 提货/收货地址
@@ -62,5 +66,8 @@ public class InputOrderTakeAdrVO {
 
     @ApiModelProperty(value = "入仓号,送货地址特有")
     private String enterWarehouseNo;
+
+    @ApiModelProperty(value = "提货文件上传附件地址数组集合")
+    private List<FileView> takeFiles = new ArrayList<>();
 
 }

@@ -17,12 +17,14 @@
         <result column="opr_type" property="oprType"/>
         <result column="create_time" property="createTime"/>
         <result column="create_user" property="createUser"/>
-        <result column="enter_warehouse_no" property="enterWarehouseNo"/>
+        <result column="file" property="file"/>
+        <result column="file_name" property="fileName"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, order_no, delivery_id, take_time, goods_desc, plate_amount, piece_amount, weight, volume, remarks, opr_type, enter_warehouse_no,create_time, create_user
+        id, order_no, delivery_id, take_time, goods_desc, plate_amount, piece_amount, weight, volume, remarks, opr_type, enter_warehouse_no,create_time, create_user,
+        file,file_name
     </sql>
 
     <select id="findTakeGoodsInfo" resultType="com.jayud.tms.model.vo.InputOrderTakeAdrVO">
@@ -47,7 +49,9 @@
           ota.`volume`,
           ota.`opr_type` oprType,
           ota.`remarks`,
-          ota.`enter_warehouse_no` enterWarehouseNo
+          ota.`enter_warehouse_no` enterWarehouseNo,
+          ota.file,
+		  ota.file_name fileName
         FROM
           order_take_adr ota
           LEFT JOIN delivery_address da

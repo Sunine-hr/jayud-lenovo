@@ -83,7 +83,11 @@ public class ReceiveNotPaidBillVO {
     @ApiModelProperty(value = "1-暂存 2-生成账单")
     private String isBill;
 
+    @ApiModelProperty(value = "账单编号")
+    private String billNo;
 
+    @ApiModelProperty(value = "货物描述")
+    private String goodsDesc;
 
 
 }

@@ -8,14 +8,19 @@ import com.jayud.airfreight.feign.FileClient;
 import com.jayud.airfreight.feign.OauthClient;
 import com.jayud.airfreight.feign.OmsClient;
 import com.jayud.airfreight.feign.TmsClient;
+import com.jayud.airfreight.model.bo.InputOrderTakeAdrForm;
 import com.jayud.airfreight.model.bo.InputOrderTransportForm;
 import com.jayud.airfreight.model.bo.vivo.*;
+import com.jayud.airfreight.model.po.AirBooking;
 import com.jayud.airfreight.model.po.AirOrder;
+import com.jayud.airfreight.model.vo.GoodsVO;
 import com.jayud.airfreight.service.AirFreightService;
+import com.jayud.airfreight.service.IAirBookingService;
 import com.jayud.airfreight.service.IAirOrderService;
 import com.jayud.airfreight.service.VivoService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.VivoApiResult;
+import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.VehicleTypeEnum;
@@ -28,6 +33,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -35,8 +41,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * @author william
@@ -63,8 +69,10 @@ public class ReceiveVivoController {
     private FileClient fileClient;
     @Autowired
     private TmsClient tmsClient;
+    @Autowired
+    private IAirBookingService airBookingService;
 
-    @Value("vivo.url.upload-file")
+    @Value("${vivo.urls.upload-file}")
     private String uploadFile;
 
 
@@ -135,25 +143,34 @@ public class ReceiveVivoController {
 
         //判断当前空运订单状态是否是订舱状态
         AirOrder airOrder = this.airOrderService.getByThirdPartyOrderNo(bookingFileTransferDataForm.getBookingNo());
-        if (!OrderStatusEnum.AIR_A_2.getCode().equals(airOrder.getStatus())) {
-            log.warn("当前订单状态无法进行操作 status={}", OrderStatusEnum.getDesc(airOrder.getStatus()));
-            return VivoApiResult.error("当前订单状态无法进行操作");
+        if (airOrder == null) {
+            log.warn("不存在该空运订单信息 Booking_no={}", bookingFileTransferDataForm.getBookingNo());
+            return VivoApiResult.error("不存在该空运订单信息");
         }
+//        if (!OrderStatusEnum.AIR_A_2.getCode().equals(airOrder.getStatus())) {
+//            log.warn("当前订单状态无法进行操作 status={}", OrderStatusEnum.getDesc(airOrder.getStatus()));
+//            return VivoApiResult.error("当前订单状态无法进行操作");
+//        }
 
-        File file = null;
+        //Todo 判断是否该订舱已确认
+//        AirBooking airBooking = airBookingService.getByAirOrderId(airOrder.getId());
+//        if ("0".equals(airBooking.getStatus())) {
+//            log.warn("订舱已确认 Booking_no={}", bookingFileTransferDataForm.getBookingNo());
+//            return VivoApiResult.error("订舱已确认");
+//        }
+
+        File fw = new File(multipartFile.getOriginalFilename());
         try {
-            file = FileUtil.multipartFileToFile(multipartFile);
-        } catch (Exception e) {
+            FileUtils.copyInputStreamToFile(multipartFile.getInputStream(), fw);
+        } catch (IOException e) {
             log.error("文件流转换失败 message=" + e.getMessage(), e);
             throw new JayudBizException("文件流转换失败");
         }
-        //http://127.0.0.1:8207/file/uploadFile
         //上传文件
-        //TODO url配置到配置中心
         String feedback = HttpRequest.post(uploadFile)
                 .header("token", HttpRequester.getHead("token"))
                 .contentType("multipart/form-data")
-                .form("file", file)
+                .form("file", fw)
                 .execute()
                 .body();
 
@@ -164,9 +181,9 @@ public class ReceiveVivoController {
         }
         FileView fileView = JSONUtil.toBean(result.getData().toString(), FileView.class);
         bookingFileTransferDataForm.setFileView(fileView);
-        if (this.vivoService.bookingFile(airOrder, bookingFileTransferDataForm)) {
-            log.warn("该booking_no不存在订舱信息 data={}", JSONUtil.toJsonStr(bookingFileTransferDataForm));
-            return VivoApiResult.error("该booking_no不存在订舱信息");
+        if (!this.vivoService.bookingFile(airOrder, bookingFileTransferDataForm)) {
+            log.warn("订舱文件存储失败 data={}", JSONUtil.toJsonStr(bookingFileTransferDataForm));
+            return VivoApiResult.error("订舱文件存储失败");
         }
         return VivoApiResult.success();
     }
@@ -215,7 +232,23 @@ public class ReceiveVivoController {
         form.setExportCustomsPort(String.valueOf(result.getData()));
         //组装订单
         InputOrderTransportForm orderTransportForm = form.assemblyTmsObj();
-        //根据booking_no查询货品信息
+
+        List<InputOrderTakeAdrForm> tmp = new ArrayList<>();
+        //组装提货/送货地址
+        for (CarInfoToForwarderLineForm lineForm : form.getLine()) {
+            //根据booking_no查询货品信息
+            AirOrder airOrder = this.airOrderService.getByThirdPartyOrderNo(lineForm.getBookingNo());
+            ApiResult<List<GoodsVO>> goodsResult = this.omsClient.getGoodsByBusIds(Arrays.asList(airOrder.getId()), BusinessTypeEnum.KY.getCode());
+            List<GoodsVO> goodsVOS = goodsResult.getData();
+            if (goodsVOS == null) {
+                log.warn("获取不到相对的货品信息 booking_no={}", lineForm.getBookingNo());
+                return VivoApiResult.error("获取不到相对的货品信息 booking_no=" + lineForm.getBookingNo());
+            }
+            InputOrderTakeAdrForm shippingAddress = lineForm.assemblyOrderTakeAdr();
+            shippingAddress.setGoodsDesc(goodsVOS.get(0).getName());
+            tmp.add(shippingAddress);
+        }
+        orderTransportForm.setTakeAdrForms2(tmp);
 
         result = this.vivoService.createTmsOrder(form, orderTransportForm);
         if (result.getCode() != HttpStatus.SC_OK) {

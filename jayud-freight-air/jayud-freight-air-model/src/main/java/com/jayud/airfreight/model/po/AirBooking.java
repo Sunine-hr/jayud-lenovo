@@ -34,8 +34,8 @@ public class AirBooking extends Model<AirBooking> {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "状态(0:确认,1:待确认)")
-    private String status;
+    @ApiModelProperty(value = "状态(0:确认,1:待确认,2:删除)")
+    private Integer status;
 
     @ApiModelProperty(value = "空运订单编号")
     private String airOrderNo;

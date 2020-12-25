@@ -1,9 +1,11 @@
 package com.jayud.airfreight.aspects;
 
+import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 import com.jayud.airfreight.model.po.GeneralApiLog;
 import com.jayud.airfreight.service.IGeneralApiLogService;
 import com.jayud.common.UserOperator;
+import com.jayud.common.utils.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -86,7 +89,7 @@ public class GeneralAPILogAspect {
         apiLog.setRequestJson(requestParameterString);
         apiLog.setResultJson(resultParameterString);
         //todo 获取远程访问者ID
-        apiLog.setIpAddress(request.getRemoteAddr());
+        apiLog.setIpAddress(HttpUtils.getIpAddr(request));
         //登录用户名称
         apiLog.setLoginUser(UserOperator.getToken());
         apiLog.setTimeSpan(timeSpan);
@@ -109,6 +112,11 @@ public class GeneralAPILogAspect {
             //将RequestBody注解修饰的参数作为请求参数
             RequestBody requestBody = parameters[i].getAnnotation(RequestBody.class);
             if (requestBody != null) {
+                argList.add(args[i]);
+                continue;
+            }
+            RequestParam requestParam = parameters[i].getAnnotation(RequestParam.class);
+            if (requestParam != null) {
                 argList.add(args[i]);
                 continue;
             }

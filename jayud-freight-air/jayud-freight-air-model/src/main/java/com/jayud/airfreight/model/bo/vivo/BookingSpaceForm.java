@@ -263,17 +263,17 @@ public class BookingSpaceForm {
         addAirOrderForm.setGoodTime(this.pickUpDate);
         addAirOrderForm.setId(this.airOrderId);
         //发货地址信息
-        AddOrderAddressForm shippingAddress = new AddOrderAddressForm();
-        shippingAddress.setCompany(this.shipper);
-        shippingAddress.setAddress(this.shippingAddress);
-        shippingAddress.setType(OrderAddressEnum.DELIVER_GOODS.getCode());
-        shippingAddress.setId(this.addressIds != null ? addressIds.get(0) : null);
+        AddOrderAddressForm deliveryAddress = new AddOrderAddressForm();
+        deliveryAddress.setCompany(this.shipper);
+        deliveryAddress.setAddress(this.shippingAddress);
+        deliveryAddress.setType(OrderAddressEnum.DELIVER_GOODS.getCode());
+        deliveryAddress.setId(this.addressIds != null ? addressIds.get(0) : null);
         //收货地址信息
-        AddOrderAddressForm consignee = new AddOrderAddressForm();
-        consignee.setCompany(this.consignee);
-        consignee.setAddress(this.consigneeAddress);
-        consignee.setType(OrderAddressEnum.RECEIVING_GOODS.getCode());
-        consignee.setId(this.addressIds != null ? addressIds.get(1) : null);
+        AddOrderAddressForm shippingAddress = new AddOrderAddressForm();
+        shippingAddress.setCompany(this.consignee);
+        shippingAddress.setAddress(this.consigneeAddress);
+        shippingAddress.setType(OrderAddressEnum.RECEIVING_GOODS.getCode());
+        shippingAddress.setId(this.addressIds != null ? addressIds.get(1) : null);
         //货品信息
         AddGoodsForm addGoodsForm = new AddGoodsForm();
         addGoodsForm.setVolume(Double.valueOf(this.totalVolume));
@@ -286,7 +286,9 @@ public class BookingSpaceForm {
         addGoodsForm.setName(this.goods);
         addGoodsForm.setId(this.goodsId);
 
-        addAirOrderForm.setOrderAddressForms(Arrays.asList(shippingAddress, consignee));
+        addAirOrderForm.setDeliveryAddress(Collections.singletonList(deliveryAddress));
+        addAirOrderForm.setShippingAddress(Collections.singletonList(shippingAddress));
+
         addAirOrderForm.setGoodsForms(Collections.singletonList(addGoodsForm));
         return addAirOrderForm;
     }

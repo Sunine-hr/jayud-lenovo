@@ -1,6 +1,7 @@
 package com.jayud.airfreight.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.airfreight.model.enums.AirBookingStatusEnum;
 import com.jayud.airfreight.model.po.AirBooking;
 import com.jayud.airfreight.mapper.AirBookingMapper;
 import com.jayud.airfreight.service.IAirBookingService;
@@ -43,12 +44,13 @@ public class AirBookingServiceImpl extends ServiceImpl<AirBookingMapper, AirBook
     }
 
     /**
-     * 根据空运订单id查询订舱信息
+     * 根据空运订单id查询启用订舱信息
      */
     @Override
-    public AirBooking getByAirOrderId(Long airOrderId) {
+    public AirBooking getEnableByAirOrderId(Long airOrderId) {
         QueryWrapper<AirBooking> condition = new QueryWrapper<>();
         condition.lambda().eq(AirBooking::getAirOrderId, airOrderId);
+        condition.lambda().ne(AirBooking::getStatus, AirBookingStatusEnum.DELETE.getCode());
         return this.baseMapper.selectOne(condition);
     }
 

@@ -1,6 +1,5 @@
 package com.jayud.airfreight.service.impl;
 
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -10,8 +9,8 @@ import com.jayud.airfreight.feign.MsgClient;
 import com.jayud.airfreight.feign.OmsClient;
 import com.jayud.airfreight.mapper.AirOrderMapper;
 import com.jayud.airfreight.model.bo.*;
+import com.jayud.airfreight.model.enums.AirBookingStatusEnum;
 import com.jayud.airfreight.model.enums.AirOrderTermsEnum;
-import com.jayud.airfreight.model.enums.VivoRejectionStatusEnum;
 import com.jayud.airfreight.model.po.AirBooking;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.airfreight.model.vo.*;
@@ -24,7 +23,6 @@ import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.common.enums.*;
 import com.jayud.common.exception.JayudBizException;
-import com.jayud.common.exception.VivoApiException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -207,7 +205,7 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
     public void doAirBookingOpt(AirProcessOptForm form) {
         AddAirBookingForm airBookingForm = form.getAirBooking();
         //查询订舱是否存在,存在做更新操作
-        AirBooking oldAirBooking = this.airBookingService.getByAirOrderId(form.getOrderId());
+        AirBooking oldAirBooking = this.airBookingService.getEnableByAirOrderId(form.getOrderId());
         airBookingForm.setId(oldAirBooking != null ? oldAirBooking.getId() : null);
 
         AirBooking airBooking = ConvertUtil.convert(airBookingForm, AirBooking.class);
@@ -215,10 +213,13 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         this.handleLadingBillFile(airBooking, form);
         //设置订舱状态
         setAirBookingStatus(airBooking);
+        airBooking.setAirOrderNo(null);
+        airBooking.setAirOrderId(null);
+
         airBookingService.saveOrUpdateAirBooking(airBooking);
         updateProcessStatus(new AirOrder(), form);
         //消息推送
-        this.messagePush(airBooking, form);
+        this.messagePush(airBooking.setAirOrderId(form.getOrderId()), form);
     }
 
 
@@ -239,7 +240,7 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
     public boolean isWarehousing(AirOrder airOrder) {
         if (CreateUserTypeEnum.VIVO.getCode().equals(airOrder.getCreateUserType())) {
             //查询订舱状态
-            AirBooking airBooking = this.airBookingService.getByAirOrderId(airOrder.getId());
+            AirBooking airBooking = this.airBookingService.getEnableByAirOrderId(airOrder.getId());
             if ("1".equals(airBooking.getStatus())) {
                 return false;
             }
@@ -277,12 +278,16 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         switch (rejectOptions) {
             case 1://订单驳回
                 result = omsClient.deleteLogisticsTrackByType(airOrder.getId(), BusinessTypeEnum.KY.getCode());
+                //删除订舱数据
+                this.airBookingService.updateByAirOrderId(airOrder.getId(),
+                        new AirBooking().setStatus(AirBookingStatusEnum.DELETE.getCode()));
                 break;
-            case 2:
+            case 2://订舱驳回
                 DelOprStatusForm form = new DelOprStatusForm();
                 form.setOrderId(airOrder.getId());
                 form.setStatus(Collections.singletonList(OrderStatusEnum.AIR_A_2.getCode()));
                 result = this.omsClient.delSpecOprStatus(form);
+                tmp.setStatus(OrderStatusEnum.AIR_A_3_2.getCode());
         }
 
         if (result.getCode() != HttpStatus.SC_OK) {
@@ -290,11 +295,6 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
             throw new JayudBizException(ResultEnum.OPR_FAIL);
         }
 
-//        AuditInfoForm auditInfoForm = new AuditInfoForm();
-//        auditInfoForm.setExtId(airOrder.getId());
-//        auditInfoForm.setExtDesc(SqlConstant.AIR_ORDER);
-//        auditInfoForm.setAuditStatus((OrderStatusEnum.AIR_A_2_1.getCode()));
-//        auditInfoForm.setAuditTypeDesc(OrderStatusEnum.AIR_A_2_1.getDesc());
         if (omsClient.saveAuditInfo(auditInfoForm).getCode() != HttpStatus.SC_OK) {
             log.error("远程调用审核记录失败");
             throw new JayudBizException(ResultEnum.OPR_FAIL);
@@ -302,7 +302,7 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
 
         //更改为驳回状态
         this.updateById(tmp);
-        //订舱驳回推送l
+        //订舱驳回推送
         this.bookingRejectedMsgPush(airOrder, airCargoRejected);
     }
 
@@ -314,20 +314,7 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         Map<String, Object> resultMap = null;
         switch (CreateUserTypeEnum.getEnum(airOrder.getCreateUserType())) {
             case VIVO:
-                //判断当前订单状态所处位置,以订舱为分界线,订舱之后的驳回都是传2,订舱之前是1
-//                Integer node = Integer.valueOf(OrderStatusEnum.AIR_A_2.getCode().split("_")[1]);
-//                Integer status = Integer.parseInt(airOrder.getStatus().split("_")[1]) >= node ? 2 : 1;
-                Integer status = airCargoRejected.getRejectOptions() == null ? VivoRejectionStatusEnum.PENDING_SUBMITTED.getCode()
-                        : airCargoRejected.getRejectOptions();
-                resultMap = this.vivoService.forwarderBookingRejected(airOrder.getThirdPartyOrderNo(), status);
-                if (resultMap == null) {
-                    log.warn("请求vivo订舱驳回操作失败,返回响应为空,请联系客服");
-                    throw new VivoApiException("请求vivo订舱驳回操作失败,返回响应为空,请联系客服");
-                }
-                if (1 != MapUtil.getInt(resultMap, "status")) {
-                    log.warn("请求vivo订舱驳回操作失败 message={}", MapUtil.getStr(resultMap, "message"));
-                    throw new VivoApiException("请求vivo订舱驳回操作失败 message=" + MapUtil.getStr(resultMap, "message"));
-                }
+                this.vivoService.bookingRejected(airOrder, airCargoRejected);
         }
         return true;
     }
@@ -337,12 +324,13 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         if (airBooking.getId() != null) {
             return;
         }
-        AirOrder airOrder = this.getById(airBooking.getAirOrderId());
-        if (CreateUserTypeEnum.VIVO.getCode().equals(airOrder.getCreateUserType())) {
-            airBooking.setStatus("1");
-        } else {
-            airBooking.setStatus("0");
-        }
+        airBooking.setStatus(0);
+//        AirOrder airOrder = this.getById(airBooking.getAirOrderId());
+//        if (CreateUserTypeEnum.VIVO.getCode().equals(airOrder.getCreateUserType())) {
+//            airBooking.setStatus("1");
+//        } else {
+//            airBooking.setStatus("0");
+//        }
     }
 
     private void finishAirOrderOpt(AirOrder airOrder) {
@@ -391,7 +379,7 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         }
         AirOrder airOrder = this.getById(form.getOrderId());
         if (CreateUserTypeEnum.VIVO.getCode().equals(airOrder.getCreateUserType())) {
-            AirBooking airBooking = this.airBookingService.getByAirOrderId(airOrder.getId());
+            AirBooking airBooking = this.airBookingService.getEnableByAirOrderId(airOrder.getId());
             this.vivoService.billLadingInfoPush(airOrder, airBooking);
         }
     }
@@ -454,7 +442,7 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
             airOrder.processingAddress(address);
         }
         //查询订舱信息
-        AirBooking airBooking = this.airBookingService.getByAirOrderId(airOrderId);
+        AirBooking airBooking = this.airBookingService.getEnableByAirOrderId(airOrderId);
         AirBookingVO airBookingVO = ConvertUtil.convert(airBooking, AirBookingVO.class);
         airOrder.setAirBookingVO(airBookingVO);
         return airOrder;

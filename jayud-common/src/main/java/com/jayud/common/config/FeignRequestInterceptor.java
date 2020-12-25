@@ -21,6 +21,9 @@ public class FeignRequestInterceptor implements RequestInterceptor {
     @Override
     public void apply(RequestTemplate requestTemplate) {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attributes == null) {
+            return;
+        }
         HttpServletRequest request = attributes.getRequest();
         Enumeration<String> headerNames = request.getHeaderNames();
         if (headerNames != null) {
@@ -38,7 +41,7 @@ public class FeignRequestInterceptor implements RequestInterceptor {
         }
 
         Enumeration<String> bodyNames = request.getParameterNames();
-        StringBuffer body =new StringBuffer();
+        StringBuffer body = new StringBuffer();
         if (bodyNames != null) {
             while (bodyNames.hasMoreElements()) {
                 String name = bodyNames.nextElement();
@@ -46,10 +49,10 @@ public class FeignRequestInterceptor implements RequestInterceptor {
                 body.append(name).append("=").append(values).append("&");
             }
         }
-        if(body.length()!=0) {
-            body.deleteCharAt(body.length()-1);
+        if (body.length() != 0) {
+            body.deleteCharAt(body.length() - 1);
             requestTemplate.body(body.toString());
-            log.info("feign interceptor body:{}",body.toString());
+            log.info("feign interceptor body:{}", body.toString());
         }
     }
 }

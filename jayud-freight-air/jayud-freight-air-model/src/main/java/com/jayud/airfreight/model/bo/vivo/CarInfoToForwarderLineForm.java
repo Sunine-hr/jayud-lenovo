@@ -2,6 +2,7 @@ package com.jayud.airfreight.model.bo.vivo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
+import com.jayud.airfreight.model.bo.InputOrderTakeAdrForm;
 import com.jayud.common.enums.ViVoCargoTypeEnum;
 import com.jayud.common.vaildator.EnumAnnotation;
 import io.swagger.annotations.ApiModelProperty;
@@ -90,7 +91,7 @@ public class CarInfoToForwarderLineForm {
 
     @JsonProperty("Delivery_warehouse")
     @SerializedName("Delivery_warehouse")
-    @ApiModelProperty("体积")
+    @ApiModelProperty("交仓仓库")
     @NotNull(message = "Delivery_warehouse号 必填")
     private String deliveryWarehouse;
 
@@ -99,4 +100,23 @@ public class CarInfoToForwarderLineForm {
     @ApiModelProperty("交货仓库地址")
     @NotNull(message = "Delivery_warehouse_address号 必填")
     private String deliveryWarehouseAddress;
+
+    /**
+     * 商品名称
+     */
+    private String goodsName;
+
+    public InputOrderTakeAdrForm assemblyOrderTakeAdr() {
+        //送货地址
+        InputOrderTakeAdrForm shippingAddress = new InputOrderTakeAdrForm();
+        shippingAddress.setPlateAmount(this.palletQty);
+        shippingAddress.setPieceAmount(this.packageQty);
+        shippingAddress.setWeight(this.grossWeight.doubleValue());
+        shippingAddress.setVolume(this.volume.doubleValue());
+        //TODO 交仓仓库=送货联系人,这个等财务出来再改
+        shippingAddress.setContacts(this.deliveryWarehouse);
+        shippingAddress.setAddress(this.deliveryWarehouseAddress);
+//        shippingAddress.setGoodsDesc(this.goodsName);
+        return shippingAddress;
+    }
 }

@@ -8,11 +8,9 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.google.gson.Gson;
 import com.jayud.airfreight.feign.*;
-import com.jayud.airfreight.model.bo.AddAirOrderForm;
-import com.jayud.airfreight.model.bo.InputMainOrderForm;
-import com.jayud.airfreight.model.bo.InputOrderForm;
-import com.jayud.airfreight.model.bo.InputOrderTransportForm;
+import com.jayud.airfreight.model.bo.*;
 import com.jayud.airfreight.model.bo.vivo.*;
+import com.jayud.airfreight.model.enums.VivoRejectionStatusEnum;
 import com.jayud.airfreight.model.po.AirBooking;
 import com.jayud.airfreight.model.po.AirExtensionField;
 import com.jayud.airfreight.model.po.AirOrder;
@@ -205,6 +203,32 @@ public class VivoServiceImpl implements VivoService {
         return post(form, url);
     }
 
+    /**
+     * 订舱驳回
+     */
+    @Override
+    public Map<String, Object> bookingRejected(AirOrder airOrder, AirCargoRejected airCargoRejected) {
+        Integer status = airCargoRejected.getRejectOptions() == null ? VivoRejectionStatusEnum.PENDING_SUBMITTED.getCode()
+                : airCargoRejected.getRejectOptions();
+        //驳回订单,数据作废
+        if (VivoRejectionStatusEnum.PENDING_SUBMITTED.getCode().equals(status)) {
+            this.airExtensionFieldService.updateByUniqueSign(airOrder.getThirdPartyOrderNo(),
+                    new AirExtensionField().setStatus(StatusEnum.DELETE.getCode()));
+        }
+
+        Map<String, Object> resultMap = this.forwarderBookingRejected(airOrder.getThirdPartyOrderNo(), status);
+        if (resultMap == null) {
+            log.warn("请求vivo订舱驳回操作失败,返回响应为空,请联系客服");
+            throw new VivoApiException("请求vivo订舱驳回操作失败,返回响应为空,请联系客服");
+        }
+        if (1 != MapUtil.getInt(resultMap, "status")) {
+            log.warn("请求vivo订舱驳回操作失败 message={}", MapUtil.getStr(resultMap, "message"));
+            throw new VivoApiException("请求vivo订舱驳回操作失败 message=" + MapUtil.getStr(resultMap, "message"));
+        }
+
+        return resultMap;
+    }
+
 
     /**
      * 向联想发送API请求
@@ -233,7 +257,7 @@ public class VivoServiceImpl implements VivoService {
             }
         }
         //token过期,重新请求
-        if ((map.get("Message").toString().contains("已拒绝为此请求授权"))) {
+        if ((map.get("message").toString().contains("已拒绝为此请求授权"))) {
             redisUtils.delete(VIVO_TOEKN_STR);
             map = this.doPost(data, url);
         }
@@ -267,7 +291,7 @@ public class VivoServiceImpl implements VivoService {
     private Map<String, Object> doPost(String form, String url) {
         log.info("vivo参数==========" + form);
         String feedback = HttpRequest.post(url)
-                .header("Authorization", String.format(getToken(null, null, null)))
+                .header("Authorization", "bearer " + String.format(getToken(null, null, null)))
                 .header(Header.CONTENT_TYPE.name(), "multipart/form-data")
                 .form("transfer_data", form)
                 .execute()
@@ -299,7 +323,7 @@ public class VivoServiceImpl implements VivoService {
             }
         }
         //token过期,重新请求
-        if ((map.get("Message").toString().contains("已拒绝为此请求授权"))) {
+        if ((map.get("message").toString().contains("已拒绝为此请求授权"))) {
             redisUtils.delete(VIVO_TOEKN_STR);
             map = this.doPostWithFile(data, fw, url);
         }
@@ -309,7 +333,7 @@ public class VivoServiceImpl implements VivoService {
 
     private Map<String, Object> doPostWithFile(String form, File fw, String url) {
         String feedback = HttpRequest.post(url)
-                .header("Authorization", String.format(getToken(null, null, null)))
+                .header("Authorization", "bearer " + String.format(getToken(null, null, null)))
                 .header(Header.CONTENT_TYPE.name(), "multipart/form-data")
                 .form("transfer_data", form)
                 .form("MultipartFile", fw)
@@ -428,6 +452,7 @@ public class VivoServiceImpl implements VivoService {
         mainOrderForm.setCustomerCode(customerInfo.getStr("idCode"));
         mainOrderForm.setClassCode(OrderStatusEnum.KY.getCode());
         mainOrderForm.setSelectedServer(OrderStatusEnum.KYDD.getCode());
+        mainOrderForm.setOrderId(form.getMainOrderId());
         //TODO 不清楚接单法人和结算单位是否要传
         //组装空运订单
         AddAirOrderForm addAirOrderForm = form.convertAddAirOrderForm();
@@ -498,21 +523,21 @@ public class VivoServiceImpl implements VivoService {
      * @return
      */
     @Override
-    @Transactional
     public boolean bookingFile(AirOrder airOrder, BookingFileTransferDataForm bookingFileTransferDataForm) {
         //存储冗余字段
         AirExtensionField airExtensionField = new AirExtensionField()
-                .setBusinessTable(SqlConstant.AIR_BOOKING)
+                .setBusinessTable(SqlConstant.AIR_ORDER)
                 .setBusinessId(airOrder.getId())
                 .setThirdPartyUniqueSign(bookingFileTransferDataForm.getBookingNo())
                 .setCreateTime(LocalDateTime.now())
-                .setType(BusinessTypeEnum.KY.getCode())
+                .setType(ExtensionFieldTypeEnum.VIVO.getCode())
                 .setValue(JSONUtil.toJsonStr(bookingFileTransferDataForm))
                 .setRemarks(VivoInterfaceDescEnum.FOUR.getDesc());
-        this.airExtensionFieldService.save(airExtensionField);
+        return this.airExtensionFieldService.save(airExtensionField);
         //修改订舱状态
-        return airBookingService.updateByAirOrderId(airOrder.getId(), new AirBooking().setStatus("0"));
+//        return airBookingService.updateByAirOrderId(airOrder.getId(), new AirBooking().setStatus("0"));
     }
+
 
     @Override
     public void bookingMessagePush(AirOrder airOrder, AirBooking airBooking) {
@@ -539,7 +564,12 @@ public class VivoServiceImpl implements VivoService {
      */
     @Override
     public void trackingPush(AirOrder airOrder) {
-        AirBooking airBooking = this.airBookingService.getByAirOrderId(airOrder.getId());
+        if (OrderStatusEnum.AIR_A_0.getCode().equals(airOrder.getStatus())
+                || OrderStatusEnum.AIR_A_1.getCode().equals(airOrder.getStatus())
+                || OrderStatusEnum.AIR_A_2.getCode().equals(airOrder.getStatus())) {
+            return;
+        }
+        AirBooking airBooking = this.airBookingService.getEnableByAirOrderId(airOrder.getId());
         Map<String, String> request = new HashMap();
         request.put("topic", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_TWO.getTopic());
         request.put("key", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_TWO.getKey());
@@ -548,15 +578,17 @@ public class VivoServiceImpl implements VivoService {
         msg.put("forwarderBookingNo", airOrder.getOrderNo());
         msg.put("pickUpDate", DateUtils.LocalDateTime2Str(airOrder.getGoodTime(), "yyyy/M/dd HH:mm:ss"));
 //        msg.put("masterAirwayBill", airBooking.getMainNo());
-        msg.put("billOfLading", airBooking.getMainNo() + "/" + (StringUtils.isEmpty(airBooking.getSubNo()) ?
-                "" : airBooking.getSubNo()));
-        msg.put("flightNo", airBooking.getFlight());
+        if (airBooking != null) {
+            msg.put("billOfLading", airBooking.getMainNo() + "/" + (StringUtils.isEmpty(airBooking.getSubNo()) ?
+                    "" : airBooking.getSubNo()));
+            msg.put("flightNo", airBooking.getFlight());
 //            msg.put("chargedWeight", "");
 //            msg.put("bLWeight", "");
-        msg.put("etd", DateUtils.LocalDateTime2Str(airBooking.getEtd(), "yyyy/M/dd HH:mm:ss"));
-        msg.put("atd", DateUtils.LocalDateTime2Str(airBooking.getAtd(), "yyyy/M/dd HH:mm:ss"));
-        msg.put("eta", DateUtils.LocalDateTime2Str(airBooking.getEta(), "yyyy/M/dd HH:mm:ss"));
-        msg.put("ata", DateUtils.LocalDateTime2Str(airBooking.getAta(), "yyyy/M/dd HH:mm:ss"));
+            msg.put("etd", DateUtils.LocalDateTime2Str(airBooking.getEtd(), "yyyy/M/dd HH:mm:ss"));
+            msg.put("atd", DateUtils.LocalDateTime2Str(airBooking.getAtd(), "yyyy/M/dd HH:mm:ss"));
+            msg.put("eta", DateUtils.LocalDateTime2Str(airBooking.getEta(), "yyyy/M/dd HH:mm:ss"));
+            msg.put("ata", DateUtils.LocalDateTime2Str(airBooking.getAta(), "yyyy/M/dd HH:mm:ss"));
+        }
         msg.put("inboundDate", getInboundDate(airOrder));//入仓时间
         msg.put("modeOfTransport", 1);//空运跟踪表中运输方式（空运：1；铁运：2；海运：3；陆运：4）
         request.put("msg", JSONUtil.toJsonStr(msg));
@@ -650,7 +682,8 @@ public class VivoServiceImpl implements VivoService {
 //        System.out.println(uuid.toString());
 
         Map<String, Object> map = new HashMap<>();
-        map.put("Message", "已拒绝为此请求授权。");
-        System.out.println(map.get("Message").toString().contains("已拒绝为此请求授权"));
+        map.put("name", "张三");
+
+        System.out.println(JSONUtil.toJsonStr(Collections.singletonList(map)));
     }
 }

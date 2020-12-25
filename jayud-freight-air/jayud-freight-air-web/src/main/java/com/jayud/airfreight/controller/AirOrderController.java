@@ -129,6 +129,7 @@ public class AirOrderController {
         //校验参数
         form.checkProcessOpt(statusEnum);
         form.setStatus(statusEnum.getCode());
+
         //指令操作
         switch (statusEnum) {
             case AIR_A_1: //空运接单
@@ -142,9 +143,9 @@ public class AirOrderController {
                 break;
             case AIR_A_3: //订单入仓
                 //是否能入仓
-                if (!this.airOrderService.isWarehousing(airOrder)) {
-                    return CommonResult.error(400, "订舱待确认,无法入仓");
-                }
+//                if (!this.airOrderService.isWarehousing(airOrder)) {
+//                    return CommonResult.error(400, "订舱待确认,无法入仓");
+//                }
                 this.airOrderService.updateProcessStatus(new AirOrder(), form);
                 break;
             case AIR_A_4: //确认提单
@@ -206,16 +207,13 @@ public class AirOrderController {
         }
 
         AirOrder airOrder = this.airOrderService.getById(form.getOrderId());
-        if (!OrderStatusEnum.AIR_A_3_1.getCode().equals(airOrder.getStatus())) {
+        if (!OrderStatusEnum.AIR_A_3_2.getCode().equals(airOrder.getStatus())) {
             log.warn("当前订单状态无法进行操作 status={}", OrderStatusEnum.getDesc(airOrder.getStatus()));
             return CommonResult.error(400, "当前订单状态无法进行操作");
         }
         form.setStatus(AIR_A_2.getCode());
         //校验参数
         form.checkProcessOpt(AIR_A_2);
-        AddAirBookingForm airBooking = form.getAirBooking();
-        airBooking.setAirOrderNo(null);
-        airBooking.setAirOrderId(null);
         //执行订舱驳回编辑
         this.airOrderService.doAirBookingOpt(form);
         return CommonResult.success();
@@ -254,11 +252,12 @@ public class AirOrderController {
         switch (orderStatusEnum) {
             case AIR_A_1_1:
                 //订单驳回
-                this.airOrderService.orderReceiving(tmp, auditInfoForm,airCargoRejected);
+                airCargoRejected.setRejectOptions(1);
+                this.airOrderService.orderReceiving(tmp, auditInfoForm, airCargoRejected);
                 break;
             case AIR_A_2_1:
             case AIR_A_3_1:
-                this.airOrderService.rejectedOpt(tmp, auditInfoForm,airCargoRejected);
+                this.airOrderService.rejectedOpt(tmp, auditInfoForm, airCargoRejected);
                 break;
         }
 

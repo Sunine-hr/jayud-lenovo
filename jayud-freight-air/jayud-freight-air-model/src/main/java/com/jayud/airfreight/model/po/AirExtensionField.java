@@ -54,6 +54,8 @@ public class AirExtensionField extends Model<AirExtensionField> {
     @ApiModelProperty(value = "描述(也可以当key值使用)")
     private String remarks;
 
+    @ApiModelProperty(value = "状态(0禁用 1启用 2删除)")
+    private Integer status;
 
     @Override
     protected Serializable pkVal() {

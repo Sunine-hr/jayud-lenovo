@@ -17,6 +17,7 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.tms.feign.FreightAirApiClient;
 import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.feign.OmsMiniClient;
 import com.jayud.tms.model.bo.*;
@@ -62,6 +63,8 @@ public class OrderInTransportController {
 
     @Autowired
     IOrderSendCarsService orderSendCarsService;
+    @Autowired
+    private FreightAirApiClient freightAirApiClient;
 
 
     /**
@@ -506,10 +509,6 @@ public class OrderInTransportController {
         if (orderTransport1 == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        //删除派车信息
-        QueryWrapper removeWrapper = new QueryWrapper();
-        removeWrapper.eq("order_no",orderTransport1.getOrderNo());
-        orderSendCarsService.remove(removeWrapper);
         List<String> deleteStatus = new ArrayList<>();
         if (OrderStatusEnum.TMS_T_1_1.getCode().equals(form.getCmd())) {//确认接单驳回
             orderTransport.setStatus(OrderStatusEnum.TMS_T_1_1.getCode());
@@ -551,9 +550,9 @@ public class OrderInTransportController {
             //删除这个订单下所有物流轨迹,重新走流程
             this.omsClient.deleteLogisticsTrackByType(form.getOrderId(), BusinessTypeEnum.ZGYS.getCode());
             //删除派车信息
-            QueryWrapper removeWrapper1 = new QueryWrapper();
-            removeWrapper1.eq("order_no", orderTransport1.getOrderNo());
-            orderSendCarsService.remove(removeWrapper1);
+            QueryWrapper removeWrapper = new QueryWrapper();
+            removeWrapper.eq("order_no", orderTransport1.getOrderNo());
+            orderSendCarsService.remove(removeWrapper);
         } else {
             DelOprStatusForm deleteOpr = new DelOprStatusForm();
             deleteOpr.setOrderId(form.getOrderId());

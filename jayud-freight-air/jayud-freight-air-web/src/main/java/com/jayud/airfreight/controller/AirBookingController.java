@@ -39,7 +39,7 @@ public class AirBookingController {
         if (airOrderId == null) {
             return CommonResult.error(ResultEnum.VALIDATE_FAILED);
         }
-        return CommonResult.success(this.airBookingService.getByAirOrderId(airOrderId));
+        return CommonResult.success(this.airBookingService.getEnableByAirOrderId(airOrderId));
     }
 }
 

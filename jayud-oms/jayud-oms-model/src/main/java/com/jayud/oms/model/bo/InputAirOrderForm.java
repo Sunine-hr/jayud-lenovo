@@ -122,7 +122,8 @@ public class InputAirOrderForm {
             log.warn("收货地址信息不能为空");
             return false;
         }
-        if (StringUtils.isEmpty(this.notificationAddress.get(0).getAddress())) {
+        if (this.notificationAddress.size() == 0 ||
+                StringUtils.isEmpty(this.notificationAddress.get(0).getAddress())) {
             this.notificationAddress = null;
         }
 

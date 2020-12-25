@@ -2,6 +2,7 @@ package com.jayud.airfreight.model.bo.vivo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
+import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -55,12 +56,12 @@ public class ForwarderBookingConfirmedFeedbackForm {
     private String deliveryWarehouseAddress;
 
 
-    public CommonResult checkParam() {
+    public ApiResult checkParam() {
         ValidatorFactory vf = Validation.buildDefaultValidatorFactory();
         Validator validator = vf.getValidator();
         Set<ConstraintViolation<ForwarderBookingConfirmedFeedbackForm>> set = validator.validate(this);
         for (ConstraintViolation<ForwarderBookingConfirmedFeedbackForm> constraintViolation : set) {
-            return CommonResult.error(400, constraintViolation.getMessage());
+            return ApiResult.error(400, constraintViolation.getMessage());
         }
         return null;
     }

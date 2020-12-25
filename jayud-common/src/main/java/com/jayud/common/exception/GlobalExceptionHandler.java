@@ -85,7 +85,13 @@ public class GlobalExceptionHandler {
         if (request.getRequestURI().contains(vivoBaseRequestmap)) {
             return new VivoApiResult(ex.getMessage());
         }
-        return new ApiResult(getStatus(request).value(), ex.getCause().getMessage());
+        String msg = "";
+        if (ex.getCause() != null) {
+            msg=ex.getCause().getMessage();
+        }else {
+            msg=ex.getMessage();
+        }
+        return new ApiResult(getStatus(request).value(), msg);
     }
 
     private HttpStatus getStatus(HttpServletRequest request) {

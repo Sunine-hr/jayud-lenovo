@@ -21,7 +21,7 @@ public interface IAirBookingService extends IService<AirBooking> {
     /**
      * 根据空运订单id查询订舱信息
      */
-    AirBooking getByAirOrderId(Long airOrderId);
+    AirBooking getEnableByAirOrderId(Long airOrderId);
 
     /**
      * 根据空运订单id修改订舱

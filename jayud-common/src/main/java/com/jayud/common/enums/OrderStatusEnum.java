@@ -91,6 +91,7 @@ public enum OrderStatusEnum {
     AIR_A_2_1("A_2_1", "订舱驳回"),
     AIR_A_3("A_3", "订单入仓"),
     AIR_A_3_1("A_3_1", "订单入仓驳回"),
+    AIR_A_3_2("A_3_2", "订舱驳回编辑"),
     AIR_A_4("A_4", "确认提单"),
     AIR_A_5("A_5", "确认离港"),
     AIR_A_6("A_6", "确认到港"),
@@ -138,8 +139,8 @@ public enum OrderStatusEnum {
      */
     public static OrderStatusEnum getAirOrderPreStatus(String currentStatus) {
 
-        if (AIR_A_3_1.getCode().equals(currentStatus)) {
-            return OrderStatusEnum.AIR_A_3_1;
+        if (AIR_A_3_2.getCode().equals(currentStatus)) {
+            return OrderStatusEnum.AIR_A_3_2;
         }
 
         List<OrderStatusEnum> statusEnums = getAirOrderProcess();

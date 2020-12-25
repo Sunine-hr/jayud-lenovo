@@ -87,6 +87,12 @@ public class AddAirOrderForm {
     @ApiModelProperty(value = "更新时间")
     private LocalDateTime updateTime;
 
+    @ApiModelProperty(value = "发货地址集合")
+    private List<AddOrderAddressForm> deliveryAddress;
+
+    @ApiModelProperty(value = "收货地址集合")
+    private List<AddOrderAddressForm> shippingAddress;
+
     @ApiModelProperty(value = "空运订单地址信息")
     private List<AddOrderAddressForm> orderAddressForms;
 
@@ -96,42 +102,4 @@ public class AddAirOrderForm {
     @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo)")
     private Integer createUserType;
 
-    /**
-     * 校验创建空运子订单参数
-     */
-    public boolean checkCreateOrder() {
-        //空运
-        if (this.legalId == null || StringUtils.isEmpty(this.settlementUnitCode)
-                || this.impAndExpType == null || this.terms == null
-                || StringUtils.isEmpty(this.portDepartureCode)
-                || StringUtils.isEmpty(this.portDestinationCode)
-                || this.goodTime == null) {
-            return false;
-        }
-        //地址
-        if (CollectionUtils.isEmpty(orderAddressForms)) {
-            return false;
-        }
-        // 发货/收货地址是必填项
-        int count = 0;
-        for (AddOrderAddressForm orderAddressForm : orderAddressForms) {
-            if (!orderAddressForm.checkCreateAirOrder()) return false;
-            if (OrderAddressEnum.DELIVER_GOODS.getCode().equals(orderAddressForm.getType()) ||
-                    OrderAddressEnum.RECEIVING_GOODS.getCode().equals(orderAddressForm.getType())) {
-                ++count;
-            }
-        }
-        if (count < 2) {
-            return false;
-        }
-        //货品信息
-        for (AddGoodsForm goodsForm : goodsForms) {
-            if (!goodsForm.checkCreateAirOrder()) {
-                return false;
-            }
-        }
-
-
-        return true;
-    }
 }

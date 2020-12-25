@@ -1,16 +1,14 @@
 package com.jayud.airfreight.service;
 
 import cn.hutool.json.JSONObject;
+import com.jayud.airfreight.model.bo.AirCargoRejected;
 import com.jayud.airfreight.model.bo.InputOrderTransportForm;
 import com.jayud.airfreight.model.bo.vivo.*;
 import com.jayud.airfreight.model.po.AirBooking;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.common.ApiResult;
-import com.jayud.common.VivoApiResult;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
 import java.util.Map;
 
 /**
@@ -103,7 +101,7 @@ public interface VivoService {
     Map<String, Object> forwarderLandTransportationFarePush(ForwarderLandTransportationFareForm form);
 
     /**
-     * 订舱驳回接口
+     * 货代订舱驳回
      */
     public Map<String, Object> forwarderBookingRejected(String bookingNo, Integer status);
 
@@ -111,4 +109,9 @@ public interface VivoService {
      * 派车驳回
      */
     Map<String, Object> forwarderDispatchRejected(DispatchRejectedForm form);
+
+    /**
+     * 订舱驳回
+     */
+    public Map<String,Object> bookingRejected(AirOrder airOrder, AirCargoRejected airCargoRejected);
 }

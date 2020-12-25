@@ -15,8 +15,8 @@ public class SupplierServeTest {
     public void test1(){
         QuerySupplierServeForm form = new QuerySupplierServeForm();
         form.setServeName("海运40HQ报价");
-        form.setSupplierCode("G001");
-        form.setTransportPay(1);
+//        form.setSupplierCode("G001");
+//        form.setTransportPay(1);
         TestUtils.JSONObjectPrint(form);
     }
 
@@ -27,11 +27,11 @@ public class SupplierServeTest {
 
         SupplierServeForm form = new SupplierServeForm();
         form.setId(1L);
-        form.setSupplierCode(supplierCode);
+//        form.setSupplierCode(supplierCode);
         form.setServeCode(serveCode);
         form.setServeName("海运40HQ报价");
-        form.setTransportPay(1);
-        form.setStatus("1");
+//        form.setTransportPay(1);
+//        form.setStatus("1");
         form.setEffectiveDate(LocalDateTime.now());
         form.setExpiryDate(LocalDateTime.now());
 

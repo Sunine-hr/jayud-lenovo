@@ -49,10 +49,10 @@ public class SupplierServeServiceImpl extends ServiceImpl<SupplierServeMapper, S
 
         List<SupplierServeVO> list = pageInfo.getRecords();
         list.forEach(supplierServeVO -> {
-            String supplierCode = supplierServeVO.getSupplierCode();
+//            String supplierCode = supplierServeVO.getSupplierCode();
             String serveCode = supplierServeVO.getServeCode();
             QueryWrapper<SupplierCost> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("supplier_code", supplierCode);
+//            queryWrapper.eq("supplier_code", supplierCode);
             queryWrapper.eq("serve_code", serveCode);
             List<SupplierCost> supplierCostList = supplierCostService.list(queryWrapper);
             List<SupplierCostVO> supplierCostVOList = ConvertUtil.convertList(supplierCostList, SupplierCostVO.class);
@@ -68,19 +68,19 @@ public class SupplierServeServiceImpl extends ServiceImpl<SupplierServeMapper, S
         SupplierServe supplierServe = ConvertUtil.convert(form, SupplierServe.class);
         this.saveOrUpdate(supplierServe);
 
-        String supplierCode = supplierServe.getSupplierCode();
+//        String supplierCode = supplierServe.getSupplierCode();
         String serveCode = supplierServe.getServeCode();
 
         List<SupplierCostVO> supplierCostVOList = form.getSupplierCostVOList();
         //先删除-供应商服务费用
         QueryWrapper<SupplierCost> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("supplier_code", supplierCode);
+//        queryWrapper.eq("supplier_code", supplierCode);
         queryWrapper.eq("serve_code", serveCode);
         supplierCostService.remove(queryWrapper);
         //再保存-供应商服务费用
         List<SupplierCost> supplierCostList = new ArrayList<>();
         supplierCostVOList.forEach(supplierCostVO -> {
-            supplierCostVO.setSupplierCode(supplierCode);
+//            supplierCostVO.setSupplierCode(supplierCode);
             supplierCostVO.setServeCode(serveCode);
             SupplierCost supplierCost = ConvertUtil.convert(supplierCostVO, SupplierCost.class);
             supplierCostList.add(supplierCost);

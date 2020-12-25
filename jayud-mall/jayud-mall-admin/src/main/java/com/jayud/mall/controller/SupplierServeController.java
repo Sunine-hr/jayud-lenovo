@@ -8,7 +8,9 @@ import com.jayud.mall.model.bo.SupplierServeForm;
 import com.jayud.mall.model.vo.SupplierServeVO;
 import com.jayud.mall.service.ISupplierServeService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/supplierserve")
-@Api(tags = "供应商服务接口")
+@Api(tags = "S015-后台-供应商服务接口")
+@ApiSort(value = 15)
 public class SupplierServeController {
 
     @Autowired
@@ -25,6 +28,7 @@ public class SupplierServeController {
 
     @ApiOperation(value = "分页查询供应商服务")
     @PostMapping("/findSupplierServeByPage")
+    @ApiModelProperty(position = 1)
     public CommonResult<CommonPageResult<SupplierServeVO>> findSupplierServeByPage(@RequestBody QuerySupplierServeForm form) {
         IPage<SupplierServeVO> pageList = supplierServeService.findSupplierServeByPage(form);
         CommonPageResult<SupplierServeVO> pageVO = new CommonPageResult(pageList);
@@ -33,6 +37,7 @@ public class SupplierServeController {
 
     @ApiOperation(value = "保存供应商服务")
     @PostMapping("/saveSupplierServe")
+    @ApiModelProperty(position = 2)
     public CommonResult saveSupplierServe(@RequestBody SupplierServeForm form){
         return supplierServeService.saveSupplierServe(form);
     }

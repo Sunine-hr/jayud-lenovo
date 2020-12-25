@@ -7,6 +7,7 @@ import com.jayud.mall.model.po.SupplierServe;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.vo.SupplierServeVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 /**
@@ -27,5 +28,5 @@ public interface SupplierServeMapper extends BaseMapper<SupplierServe> {
      * @param form
      * @return
      */
-    IPage<SupplierServeVO> findSupplierServeByPage(Page<SupplierServeVO> page, QuerySupplierServeForm form);
+    IPage<SupplierServeVO> findSupplierServeByPage(Page<SupplierServeVO> page, @Param("form") QuerySupplierServeForm form);
 }

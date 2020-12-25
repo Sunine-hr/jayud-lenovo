@@ -5,42 +5,39 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.SupplierServe">
         <id column="id" property="id" />
-        <result column="supplier_code" property="supplierCode" />
         <result column="serve_code" property="serveCode" />
+        <result column="supplier_info_id" property="supplierInfoId" />
+        <result column="service_type_id" property="serviceTypeId" />
         <result column="serve_name" property="serveName" />
-        <result column="transport_pay" property="transportPay" />
+        <result column="effective_date" property="effectiveDate" />
+        <result column="expiry_date" property="expiryDate" />
         <result column="status" property="status" />
         <result column="user_id" property="userId" />
         <result column="user_name" property="userName" />
         <result column="create_time" property="createTime" />
-        <result column="effective_date" property="effectiveDate" />
-        <result column="expiry_date" property="expiryDate" />
+
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, supplier_code, serve_code, serve_name, transport_pay, status, user_id, user__name, create_time
+        t.id,t.supplier_info_id,t.service_type_id,t.serve_code,t.serve_name,t.effective_date,t.expiry_date,t.status,t.user_id,t.user_name,t.create_time
     </sql>
 
     <!--查询并分页-->
     <select id="findSupplierServeByPage" parameterType="com.jayud.mall.model.bo.QuerySupplierServeForm"
             resultType="com.jayud.mall.model.vo.SupplierServeVO" >
         select
-        t.id,t.supplier_code,t.serve_code,t.serve_name,t.transport_pay,t.status,t.user_id,t.user__name,t.create_time,t.effective_date,t.expiry_date
+        t.id,t.supplier_info_id,t.service_type_id,t.serve_code,t.serve_name,t.effective_date,t.expiry_date,t.status,t.user_id,t.user_name,t.create_time,
+        t1.company_name supplierInfoName,
+        t2.type_name serviceTypeName
         from supplier_serve t
+        left join supplier_info t1 on t1.id = t.supplier_info_id
+        left join supplier_service_type t2 on t2.id = t.service_type_id
         WHERE
         1 = 1
         <if test="form.serveName != null and form.serveName != ''">
             AND t.serve_name LIKE concat('%',#{form.serveName},'%')
         </if>
-        <if test="form.transportPay != null">
-            AND t.transport_pay = #{form.transportPay}
-        </if>
-        <if test="form.supplierCode != null and form.supplierCode != ''">
-            AND t.supplier_code = #{form.supplierCode}
-        </if>
-        GROUP BY
-        t.`id`
     </select>
 
 

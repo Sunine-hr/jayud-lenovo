@@ -1,21 +1,26 @@
 package com.jayud.mall.model.bo;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
 public class QuerySupplierServeForm extends BasePageForm{
 
-    @ApiModelProperty(value = "服务名")
+    @ApiModelProperty(value = "服务名", position = 1)
+    @JSONField(ordinal = 1)
     private String serveName;
 
-    @ApiModelProperty(value = "1海运 2空运 3陆运")
-    private Integer transportPay;
+    @ApiModelProperty(value = "服务类型", position = 2)
+    @JSONField(ordinal = 2)
+    private Long serviceTypeId;
 
-    @ApiModelProperty(value = "供应商代码")
-    private String supplierCode;
+    @ApiModelProperty(value = "供应商", position = 3)
+    @JSONField(ordinal = 3)
+    private Long supplierInfoId;
 
-    //费用项目
+    //TODO 费用项目
+
 
 
 }

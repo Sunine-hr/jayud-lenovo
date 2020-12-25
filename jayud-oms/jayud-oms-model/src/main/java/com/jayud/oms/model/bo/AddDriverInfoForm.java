@@ -1,6 +1,5 @@
 package com.jayud.oms.model.bo;
 
-import com.jayud.common.utils.MD5;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -32,7 +31,6 @@ public class AddDriverInfoForm {
     private String isMain;
 
     @ApiModelProperty(value = "香港电话")
-    @NotEmpty(message = "hkPhone is required")
     private String hkPhone;
 
     @ApiModelProperty(value = "大陆电话")

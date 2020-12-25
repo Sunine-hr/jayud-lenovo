@@ -1,17 +1,7 @@
 package com.jayud.oms.model.bo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
-import com.jayud.oms.model.po.VehicleInfo;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
-
-import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -37,4 +27,7 @@ public class QueryWarehouseInfoForm extends BasePageForm {
 
     @ApiModelProperty("状态 0 禁用 1启用")
     private String status;
+
+    @ApiModelProperty("操作指令 cmd=audit审核 list查询")
+    private String cmd;
 }

@@ -22,7 +22,6 @@ public class AddWarehouseInfoForm {
     private Long id;
 
     @ApiModelProperty(value = "中转仓库代码")
-    @NotEmpty(message = "warehouseCode is required")
     private String warehouseCode;
 
     @ApiModelProperty(value = "中转仓库名称")

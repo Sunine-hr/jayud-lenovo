@@ -68,6 +68,12 @@ public class WarehouseInfo extends Model<VehicleInfo> {
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "审核状态")
+    private String auditStatus;
+
+    @ApiModelProperty(value = "审核备注")
+    private String auditComment;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

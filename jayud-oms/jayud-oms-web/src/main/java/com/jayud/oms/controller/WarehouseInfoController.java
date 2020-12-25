@@ -7,6 +7,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.model.bo.AddWarehouseInfoForm;
+import com.jayud.oms.model.bo.AuditWarehouseForm;
 import com.jayud.oms.model.bo.QueryWarehouseInfoForm;
 import com.jayud.oms.model.po.WarehouseInfo;
 import com.jayud.oms.model.vo.WarehouseInfoVO;
@@ -90,5 +91,16 @@ public class WarehouseInfoController {
         } else {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
+    }
+
+    @ApiOperation(value = "审核中转仓")
+    @PostMapping(value = "/auditWarehouse")
+    public CommonResult auditWarehouse(@RequestBody AuditWarehouseForm form) {
+        WarehouseInfo warehouseInfo = new WarehouseInfo();
+        warehouseInfo.setId(form.getId());
+        warehouseInfo.setWarehouseCode(form.getWarehouseCode());
+        warehouseInfo.setAuditStatus(form.getAuditStatus());
+        warehouseInfoService.updateById(warehouseInfo);
+        return CommonResult.success();
     }
 }

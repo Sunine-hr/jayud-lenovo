@@ -17,11 +17,14 @@
         <result column="status" property="status"/>
         <result column="create_user" property="createUser"/>
         <result column="create_time" property="createTime"/>
+        <result column="audit_status" property="auditStatus"/>
+        <result column="audit_comment" property="auditComment"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, warehouse_code, warehouse_name, contacts, contact_number, address, state_code, city_code, area, zip_code, status, create_user, create_time
+        id, warehouse_code, warehouse_name, contacts, contact_number, address, state_code, city_code, area, zip_code, status, create_user, create_time,
+        audit_status,audit_comment
     </sql>
 
     <select id="findWarehouseInfoByPage" parameterType="com.jayud.oms.model.bo.QueryWarehouseInfoForm"
@@ -47,6 +50,9 @@
             </if>
             <if test="form.status!=null and form.status!=''">
                 and status= #{form.status}
+            </if>
+            <if test="form.cmd == 'audit'">
+                and audit_status = '1'
             </if>
         </where>
 

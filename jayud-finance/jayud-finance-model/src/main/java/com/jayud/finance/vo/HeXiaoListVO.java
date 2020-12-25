@@ -41,6 +41,9 @@ public class HeXiaoListVO {
     @ApiModelProperty(value = "实际收款时间显示")
     private String realReceiveTimeStr;
 
+    @ApiModelProperty(value = "备注")
+    private String remarks;
+
     public String getRealReceiveTimeStr() {
         if(this.realReceiveTime != null){
             return DateUtils.getLocalToStr(this.realReceiveTime);

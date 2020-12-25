@@ -725,7 +725,15 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
 
     @Override
     public List<APARDetailForm> findReceivableHeaderDetail(String billNo) {
-        return baseMapper.findReceivableHeaderDetail(billNo);
+        List<APARDetailForm> detailForms = baseMapper.findReceivableHeaderDetail(billNo);
+        for (APARDetailForm detailForm : detailForms) {
+            String expenseCategoryName = detailForm.getExpenseCategoryName();
+            if(expenseCategoryName.contains("-")){
+                expenseCategoryName = expenseCategoryName.substring(0,expenseCategoryName.indexOf("-"));
+                detailForm.setExpenseCategoryName(expenseCategoryName);
+            }
+        }
+        return detailForms;
     }
 
     @Override

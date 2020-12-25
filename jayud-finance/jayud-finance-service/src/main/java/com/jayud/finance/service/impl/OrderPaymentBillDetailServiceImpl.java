@@ -757,7 +757,15 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
 
     @Override
     public List<APARDetailForm> findPayableHeaderDetail(String billNo) {
-        return baseMapper.findPayableHeaderDetail(billNo);
+        List<APARDetailForm> detailForms = baseMapper.findPayableHeaderDetail(billNo);
+        for (APARDetailForm detailForm : detailForms) {
+            String expenseCategoryName = detailForm.getExpenseCategoryName();
+            if(expenseCategoryName.contains("-")){
+                expenseCategoryName = expenseCategoryName.substring(0,expenseCategoryName.indexOf("-"));
+                detailForm.setExpenseCategoryName(expenseCategoryName);
+            }
+        }
+        return detailForms;
     }
 
     @Override

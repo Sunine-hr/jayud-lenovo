@@ -85,6 +85,9 @@ public class CustomerInfoController {
     @PostMapping(value = "/getCustomerInfoById")
     public CommonResult<CustomerInfoVO> getCustomerInfoById(@RequestBody Map<String, Object> param) {
         String id = MapUtil.getStr(param, "id");
+        if(StringUtil.isNullOrEmpty(id)){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
         return CommonResult.success(customerInfoService.getCustomerInfoById(Long.valueOf(id)));
     }
 
@@ -92,8 +95,6 @@ public class CustomerInfoController {
     @PostMapping(value = "/saveOrUpdateCustomerInfo")
     public CommonResult saveOrUpdateCustomerInfo(@RequestBody @Valid AddCustomerInfoForm form) {
         CustomerInfo customerInfo = ConvertUtil.convert(form, CustomerInfo.class);
-//        customerInfo.setUnitCode(form.getIdCode());
-//        customerInfo.setUnitAccount(form.getName());
         if (form.getId() != null) {
             customerInfo.setUpdatedUser(UserOperator.getToken());
             customerInfo.setUpdatedTime(DateUtils.getNowTime());
@@ -113,9 +114,9 @@ public class CustomerInfoController {
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "二期优化:新增和编辑时校验客户名称是否存在,name=客户姓名")
+    @ApiOperation(value = "二期优化3:新增和编辑时校验客户名称是否存在,name=客户姓名")
     @PostMapping(value = "/existCustomerName")
-    public CommonResult<List<CustomerInfo>> existCustomerName(@RequestBody Map<String,Object> param) {
+    public CommonResult existCustomerName(@RequestBody Map<String,Object> param) {
         String customerName = MapUtil.getStr(param, "name");
         if(StringUtil.isNullOrEmpty(customerName)){
             return CommonResult.error(ResultEnum.PARAM_ERROR);
@@ -123,10 +124,13 @@ public class CustomerInfoController {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.like("name",customerName);
         List<CustomerInfo> customerInfos = customerInfoService.list(queryWrapper);
-        return CommonResult.success(customerInfos);
+        if(customerInfos != null && customerInfos.size() > 0){
+            return CommonResult.error(ResultEnum.CUSTOMER_NAME_EXIST);
+        }
+        return CommonResult.success();
     }
 
-    @ApiOperation(value = "二期优化:删除客户信息(禁用)")
+    @ApiOperation(value = "二期优化3:删除客户信息(禁用)")
     @PostMapping(value = "/delCustomerInfo")
     public CommonResult delCustomerInfo(@RequestBody DeleteForm form) {
         List<CustomerInfo> customerInfos = new ArrayList<>();
@@ -142,18 +146,18 @@ public class CustomerInfoController {
         return CommonResult.success();
     }
 
-//    @ApiOperation(value = "二期优化:已关联客户(结算单位)列表,id = 客户ID")
-//    @PostMapping(value = "/relateUnitList")
-//    public CommonResult<List<CustomerInfoVO>> relateUnitList(@RequestBody Map<String,Object> param) {
-//        Long id = Long.valueOf(MapUtil.getStr(param, "id"));
-//        if(id == null){
-//            return CommonResult.error(ResultEnum.PARAM_ERROR);
-//        }
-//        List<CustomerInfoVO> customerInfoVOS = customerInfoService.relateUnitList(id);
-//        return CommonResult.success(customerInfoVOS);
-//    }
+    @ApiOperation(value = "二期优化3:已关联客户(结算单位)列表,id = 客户ID")
+    @PostMapping(value = "/relateUnitList")
+    public CommonResult<List<CustomerInfoVO>> relateUnitList(@RequestBody Map<String,Object> param) {
+        Long id = Long.valueOf(MapUtil.getStr(param, "id"));
+        if(id == null){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        List<CustomerInfoVO> customerInfoVOS = customerInfoService.relateUnitList(id);
+        return CommonResult.success(customerInfoVOS);
+    }
 
-    @ApiOperation(value = "二期优化:删除已关联客户(结算单位)列表,customerInfoId=客户ID,unitId=关联客户ID")
+    @ApiOperation(value = "二期优化3:删除已关联客户(结算单位)列表,customerInfoId=客户ID,unitId=关联客户ID")
     @PostMapping(value = "/delRelateUnitList")
     public CommonResult delRelateUnitList(@RequestBody Map<String,Object> param) {
         Long customerInfoId = Long.valueOf(MapUtil.getStr(param, "customerInfoId"));
@@ -168,14 +172,14 @@ public class CustomerInfoController {
         return CommonResult.success();
     }
 
-//    @ApiOperation(value = "二期优化:关联客户(结算单位)列表")
-//    @PostMapping(value = "/findRelateUnitList")
-//    public CommonResult<List<CustomerInfoVO>> findRelateUnitList(@RequestBody QueryRelUnitInfoListForm form) {
-//        List<CustomerInfoVO> customerInfoVOS = customerInfoService.findRelateUnitList(form);
-//        return CommonResult.success(customerInfoVOS);
-//    }
+    @ApiOperation(value = "二期优化3:关联客户(结算单位)列表")
+    @PostMapping(value = "/findRelateUnitList")
+    public CommonResult<List<CustomerInfoVO>> findRelateUnitList(@RequestBody QueryRelUnitInfoListForm form) {
+        List<CustomerInfoVO> customerInfoVOS = customerInfoService.findRelateUnitList(form);
+        return CommonResult.success(customerInfoVOS);
+    }
 
-    @ApiOperation(value = "二期优化:确认关联客户(结算单位)")
+    @ApiOperation(value = "二期优化3:确认关联客户(结算单位)")
     @PostMapping(value = "/confirmRelateUnit")
     public CommonResult<List<CustomerInfoVO>> confirmRelateUnit(@RequestBody ConfirmRelateUnitForm form) {
         Boolean result = customerRelaUnitService.confirmRelateUnit(form);

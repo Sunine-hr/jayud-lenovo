@@ -34,11 +34,11 @@ public class CustomerInfoVO {
     @ApiModelProperty(value = "邮箱")
     private String email;
 
-    @ApiModelProperty(value = "法人主体拼接串,ID:NAME,ID:NAME")
-    private String legalEntityStr;
+    @ApiModelProperty(value = "法人主体拼接串,ID,ID")
+    private String legalEntityIdStr;
 
     @ApiModelProperty(value = "法人主体集合")
-    private List<LegalEntityVO> legals = new ArrayList<>();
+    private List<Long> legalEntityIds = new ArrayList<>();
 
     @ApiModelProperty(value = "纳税号")
     private String tfn;
@@ -97,10 +97,13 @@ public class CustomerInfoVO {
     @ApiModelProperty(value = "更新时间")
     private String updatedTimeStr;
 
-    public List<LegalEntityVO> getLegals() {
-        if(!StringUtil.isNullOrEmpty(this.legalEntityStr)){
-            //TODO
+    public List<Long> getLegalEntityIds() {
+        if(!StringUtil.isNullOrEmpty(this.legalEntityIdStr)){
+            String[] strs = this.legalEntityIdStr.split(",");
+            for (String str : strs) {
+                legalEntityIds.add(Long.valueOf(str));
+            }
         }
-        return legals;
+        return legalEntityIds;
     }
 }

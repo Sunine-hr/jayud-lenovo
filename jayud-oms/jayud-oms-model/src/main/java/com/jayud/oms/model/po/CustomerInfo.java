@@ -45,12 +45,6 @@ public class CustomerInfo extends Model<CustomerInfo> {
     @ApiModelProperty(value = "邮箱")
     private String email;
 
-    @ApiModelProperty(value = "法人主体")
-    private String legalEntity;
-
-//    @ApiModelProperty(value = "法人主体ID")
-//    private Long legalEntityId;
-
     @ApiModelProperty(value = "纳税号")
     private String tfn;
 
@@ -101,10 +95,6 @@ public class CustomerInfo extends Model<CustomerInfo> {
 
     @ApiModelProperty(value = "状态(0无效 1有效)")
     private String status;
-
-//    private String unitCode;
-
-//    private String unitAccount;
 
 
 

@@ -211,7 +211,7 @@ public class OrderComboxController {
         //根据客户获取业务员部门
         resultMap.put("departmentId", customer.getDepartmentId());
         //根据客户获取接单法人
-        resultMap.put("legalEntity", customer.getLegalEntity());
+        //resultMap.put("legalEntity", customer.getLegalEntity());
         //查询法人主体
         resultMap.put("legalEntitys", oauthClient.findLegalEntity().getData());
 
@@ -374,5 +374,11 @@ public class OrderComboxController {
     }
 
 
+    @ApiOperation(value = "二期优化3:新增客户列表 初始化法人主体")
+    @PostMapping(value = "/initLegalEntity")
+    public CommonResult<List<InitComboxVO>> initLegalEntity() {
+        List<InitComboxVO> initComboxVOS = oauthClient.findLegalEntity().getData();
+        return CommonResult.success(initComboxVOS);
+    }
 }
 

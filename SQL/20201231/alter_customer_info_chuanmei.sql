@@ -1,4 +1,4 @@
---20201202 二期优化
+--20201202 二期优化3
 ALTER TABLE `customer_info`
 DROP COLUMN `unit_account`,
 DROP COLUMN `invoice_code`,

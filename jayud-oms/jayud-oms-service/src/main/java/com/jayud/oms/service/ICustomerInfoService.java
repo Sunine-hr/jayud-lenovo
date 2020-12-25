@@ -4,6 +4,7 @@ package com.jayud.oms.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.bo.QueryCustomerInfoForm;
+import com.jayud.oms.model.bo.QueryRelUnitInfoListForm;
 import com.jayud.oms.model.po.CustomerInfo;
 import com.jayud.oms.model.vo.CustomerInfoVO;
 import com.jayud.oms.model.bo.QueryCusAccountForm;
@@ -69,4 +70,19 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
      * @return
      */
     List<CustomerInfoVO> existCustomerInfo(String idCode,String name);
+
+    /**
+     * 根据客户ID获取结算单位
+     * @param id
+     * @return
+     */
+    List<CustomerInfoVO> relateUnitList(Long id);
+
+    /**
+     * 查询审核通过的关联客户,并且没有关联当前客户的
+     * @param form
+     * @return
+     */
+    List<CustomerInfoVO> findRelateUnitList(QueryRelUnitInfoListForm form);
+
 }

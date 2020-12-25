@@ -41,4 +41,10 @@ public interface ISupplierInfoService extends IService<SupplierInfo> {
      */
     CommonResult saveSupplierInfo(SupplierInfoForm form);
 
+    /**
+     * 根据id，查询供应商详细
+     * @param id
+     * @return
+     */
+    CommonResult<SupplierInfoVO> findSupplierInfoById(Long id);
 }

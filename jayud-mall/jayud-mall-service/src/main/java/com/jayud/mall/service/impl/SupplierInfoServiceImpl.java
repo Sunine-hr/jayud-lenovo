@@ -109,4 +109,21 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
 
         return CommonResult.success("保存供应商，成功！");
     }
+
+    @Override
+    public CommonResult<SupplierInfoVO> findSupplierInfoById(Long id) {
+        SupplierInfo supplierInfo = this.getById(id);
+        Long infoId = supplierInfo.getId();
+        QueryWrapper<SupplierInfoServiceTypeRelation> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("info_id", infoId);
+        List<SupplierInfoServiceTypeRelation> list = supplierInfoServiceTypeRelationService.list(queryWrapper);
+        List<Long> serviceTypeIds = new ArrayList<>();
+        list.forEach(supplierInfoServiceTypeRelation -> {
+            Long serviceTypeId = supplierInfoServiceTypeRelation.getServiceTypeId();
+            serviceTypeIds.add(serviceTypeId);
+        });
+        SupplierInfoVO supplierInfoVO = ConvertUtil.convert(supplierInfo, SupplierInfoVO.class);
+        supplierInfoVO.setServiceTypeIds(serviceTypeIds);
+        return CommonResult.success(supplierInfoVO);
+    }
 }

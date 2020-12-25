@@ -1,14 +1,13 @@
 package com.jayud.mall.model.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class SupplierInfoVO {
@@ -116,5 +115,9 @@ public class SupplierInfoVO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     @JSONField(ordinal = 25)
     private LocalDateTime createTime;
+
+    @ApiModelProperty(value = "服务类型List<Long>", position = 26)
+    @JSONField(ordinal = 26)
+    private List<Long> serviceTypeIds;
 
 }

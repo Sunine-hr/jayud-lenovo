@@ -5,9 +5,13 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.QuerySupplierInfoForm;
 import com.jayud.mall.model.bo.SupplierInfoForm;
+import com.jayud.mall.model.bo.SupplierInfoParaForm;
 import com.jayud.mall.model.vo.SupplierInfoVO;
 import com.jayud.mall.service.ISupplierInfoService;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperationSupport;
+import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,11 +46,19 @@ public class SupplierInfoController {
         return CommonResult.success(pageVO);
     }
 
-    @ApiOperation(value = "保存查询供应商信息")
+    @ApiOperation(value = "保存供应商信息")
     @PostMapping("/saveSupplierInfo")
     @ApiOperationSupport(order = 3)
     public CommonResult saveSupplierInfo(@RequestBody SupplierInfoForm form) {
         return supplierInfoService.saveSupplierInfo(form);
+    }
+
+    @ApiOperation(value = "查询供应商详细")
+    @PostMapping("/findSupplierInfoById")
+    @ApiOperationSupport(order = 4)
+    public CommonResult<SupplierInfoVO> findSupplierInfoById(@RequestBody SupplierInfoParaForm form){
+        Long id = form.getId();
+        return supplierInfoService.findSupplierInfoById(id);
     }
 
 

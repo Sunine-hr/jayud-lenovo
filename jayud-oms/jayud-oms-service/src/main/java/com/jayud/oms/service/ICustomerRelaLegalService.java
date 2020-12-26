@@ -3,6 +3,9 @@ package com.jayud.oms.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.bo.AddCustomerInfoForm;
 import com.jayud.oms.model.po.CustomerRelaLegal;
+import com.jayud.oms.model.vo.LegalEntityVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -16,9 +19,16 @@ public interface ICustomerRelaLegalService extends IService<CustomerRelaLegal> {
 
 
     /**
-     * 确认关联客户，即结算单位
+     * 保存法人主体和客户的关联关系
      * @param form
      * @return
      */
     Boolean saveCusRelLegal(AddCustomerInfoForm form);
+
+    /**
+     * 根据客户ID获取相关联的法人主体
+     * @param id
+     * @return
+     */
+    List<LegalEntityVO> findLegalByCustomerId(Long id);
 }

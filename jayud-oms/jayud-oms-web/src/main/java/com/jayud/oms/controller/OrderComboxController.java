@@ -74,8 +74,11 @@ public class OrderComboxController {
 
     @Autowired
     ISupplierInfoService supplierInfoService;
+
     @Autowired
     private FreightAirClient freightAirClient;
+
+    private ICustomerRelaLegalService relaLegalService;
 
     @ApiOperation(value = "创建订单-客户,业务员,合同,业务所属部门,通关口岸")
     @PostMapping(value = "/initCombox1")
@@ -146,7 +149,7 @@ public class OrderComboxController {
     }
 
 
-    @ApiOperation(value = "二期优化现有接口:创建订单-客户联动业务员和结算单位,idCode=客户CODE,必填")
+    @ApiOperation(value = "二期优化3现有接口:创建订单-客户联动业务员和结算单位,idCode=客户CODE,必填")
     @PostMapping(value = "/initUnit")
     public CommonResult<Map<String, Object>> initUnit(@RequestBody Map<String, Object> param) {
         String idCode = MapUtil.getStr(param, "idCode");
@@ -205,15 +208,19 @@ public class OrderComboxController {
         }
         resultMap.put("yws", yws);
 
-        //TODO 查询所有法人主体,后续根据客户代码查询法人主体
-
-
         //根据客户获取业务员部门
         resultMap.put("departmentId", customer.getDepartmentId());
-        //根据客户获取接单法人
-        //resultMap.put("legalEntity", customer.getLegalEntity());
+
         //查询法人主体
-        resultMap.put("legalEntitys", oauthClient.findLegalEntity().getData());
+        List<LegalEntityVO> legalEntityVOS = relaLegalService.findLegalByCustomerId(customer.getId());
+        List<InitComboxVO> initComboxVOS = new ArrayList<>();
+        for (LegalEntityVO legalEntityVO : legalEntityVOS) {
+            InitComboxVO comboxVO = new InitComboxVO();
+            comboxVO.setId(legalEntityVO.getId());
+            comboxVO.setName(legalEntityVO.getLegalName());
+            initComboxVOS.add(comboxVO);
+        }
+        resultMap.put("legalEntitys", initComboxVOS);
 
         return CommonResult.success(resultMap);
     }

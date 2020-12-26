@@ -492,10 +492,9 @@
             (select ci.currency_name from currency_info ci where ci.currency_code = opbd.settlement_currency limit 1) dfCurrency
         FROM
             order_payment_bill_detail opbd
-            LEFT JOIN order_payment_cost opc ON opbd.cost_id = opc.id
+            LEFT JOIN order_payment_cost opc ON opbd.cost_id = opc.id and 0 = (select ct1.is_pay_collection from cost_type ct1 where ct1.id = opc.cost_type_id)
 			left join cost_type ct on ct.id = opc.cost_type_id
         WHERE opbd.bill_no = #{billNo}
-		and 0 = (select ct1.is_pay_collection from cost_type ct1 where ct1.id = opc.cost_type_id)
     </select>
     <select id="getNowFOrderExist" parameterType="java.util.Map" resultType="com.jayud.finance.po.OrderPaymentBillDetail">
          SELECT opbd.*

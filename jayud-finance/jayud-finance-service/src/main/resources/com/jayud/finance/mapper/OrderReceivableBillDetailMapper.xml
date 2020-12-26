@@ -406,9 +406,8 @@
 		   (select ci.currency_name from currency_info ci where ci.currency_code = orbd.settlement_currency limit 1) wsCurrency
         FROM
             order_receivable_bill_detail orbd
-            LEFT JOIN order_receivable_cost orc ON orbd.cost_id = orc.id
+            LEFT JOIN order_receivable_cost orc ON orbd.cost_id = orc.id and 0 = (select ct1.is_pay_collection from cost_type ct1 where ct1.id = orc.cost_type_id)
         WHERE orbd.bill_no = #{billNo}
-		and 0 = (select ct1.is_pay_collection from cost_type ct1 where ct1.id = orc.cost_type_id)
     </select>
     <select id="getNowSOrderExist" parameterType="java.util.Map" resultType="com.jayud.finance.po.OrderReceivableBillDetail">
          SELECT orbd.*

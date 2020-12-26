@@ -2,9 +2,6 @@ package com.jayud.send;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONUtil;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.jayud.common.enums.PushKingdeeEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.feign.CustomsApiClient;
 import lombok.extern.slf4j.Slf4j;
@@ -15,10 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * 发送消息

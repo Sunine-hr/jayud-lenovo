@@ -62,7 +62,7 @@
         opbd.make_time makeTimeStr,
         opbd.audit_user auditUser,
         opbd.audit_time auditTimeStr,
-        (select ai.audit_comment from audit_info ai where ai.ext_unique_flag = opbd.bill_no and ai.audit_status='B_2_1' order by ai.created_time desc limit 1) auditComment,
+        (select ai.audit_comment from audit_info ai where ai.ext_unique_flag = opbd.bill_no and ai.audit_status in ('B_2_1','B_4_1','B_6_1','B_7','B_8') order by ai.created_time desc limit 1) auditComment,
         (select c.created_user from cancel_after_verification c where c.bill_no = opbd.bill_no order by c.created_time desc limit 1) heXiaoUser,
         (select c.real_receive_time from cancel_after_verification c where c.bill_no = opbd.bill_no order by c.created_time desc limit 1) heXiaoTimeStr,
         opbd.push_kingdee_count
@@ -308,7 +308,7 @@
         (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_receivable_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'EUR' and obct.money_type='2') recEuro,
         (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_receivable_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'HKD' and obct.money_type='2') recHkDollar,
         (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_receivable_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'CNY' and obct.money_type='2') recLocalAmount,
-        (select group_concat(orbd.audit_status) from order_receivable_bill_detail orbd where orbd.order_no = oi.order_no group by orbd.order_no) recStatus,
+        (select group_concat(distinct orbd.audit_status) from order_receivable_bill_detail orbd where orbd.order_no = oi.order_no group by orbd.order_no) recStatus,
         (select group_concat(distinct opbd.bill_no) from order_payment_bill_detail opbd where opbd.order_no = oi.order_no group by opbd.order_no) payBillNo,
         (select group_concat(distinct opbd.account_term) from order_payment_bill_detail opbd where opbd.order_no = oi.order_no group by opbd.order_no) payAccountTermStr,
         (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_payment_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'CNY' and obct.money_type='1') payRmb,
@@ -316,7 +316,7 @@
         (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_payment_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'EUR' and obct.money_type='1') payEuro,
         (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_payment_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'HKD' and obct.money_type='1') payHkDollar,
         (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from order_payment_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'CNY' and obct.money_type='1') payLocalAmount,
-        (select group_concat(opbd.audit_status) from order_payment_bill_detail opbd where opbd.order_no = oi.order_no group by opbd.order_no) payStatus
+        (select group_concat(distinct opbd.audit_status) from order_payment_bill_detail opbd where opbd.order_no = oi.order_no group by opbd.order_no) payStatus
         FROM
         order_info oi
         where EXISTS (select opc.main_order_no from order_payment_cost opc where opc.main_order_no = oi.order_no and opc.`status` = '3')
@@ -492,9 +492,9 @@
     </select>
     <select id="getFCostAmountView" parameterType="java.lang.String" resultType="com.jayud.finance.vo.CostAmountVO">
         SELECT DISTINCT
-            (select ifnull(sum(obct.money),0) from order_bill_cost_total obct where obct.bill_no = opbd.bill_no and ct.is_pay_collection = 0) yfAmount,
+            (select ifnull(sum(obct.money),0) from order_bill_cost_total obct where obct.bill_no = opbd.bill_no ) yfAmount,
             (select ci.currency_name from currency_info ci where ci.currency_code = opbd.settlement_currency limit 1) yfCurrency,
-            ifnull((select sum(obct.money) from order_bill_cost_total obct where obct.bill_no = opbd.bill_no and ct.is_pay_collection = 0),0)-ifnull((select sum(cav.discount_money) from cancel_after_verification cav where cav.bill_no = opbd.bill_no and ct.is_pay_collection = 0),0) dfAmount,
+            ifnull((select sum(obct.money) from order_bill_cost_total obct where obct.bill_no = opbd.bill_no),0)-ifnull((select sum(cav.discount_money) from cancel_after_verification cav where cav.bill_no = opbd.bill_no),0) dfAmount,
             (select ci.currency_name from currency_info ci where ci.currency_code = opbd.settlement_currency limit 1) dfCurrency
         FROM
             order_payment_bill_detail opbd

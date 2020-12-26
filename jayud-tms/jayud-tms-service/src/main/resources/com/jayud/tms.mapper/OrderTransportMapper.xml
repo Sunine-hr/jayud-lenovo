@@ -191,9 +191,6 @@
         <if test="form.beginCreatedTime != null and form.beginCreatedTime !=''">
             and DATE_FORMAT(ot.`created_time`,'%Y-%m-%d %H:%i:%S') <![CDATA[>=]]> #{form.beginCreatedTime}
         </if>
-        <if test="form.cmd == 'list'">
-            AND oi.`created_user` = #{form.loginUserName}
-        </if>
         <if test="form.cmd == 'T_1'">
             AND ot.`status` = 'T_0' AND oi.`status` in ('1','4')
         </if>

@@ -238,7 +238,7 @@ public class ReceiveVivoController {
         for (CarInfoToForwarderLineForm lineForm : form.getLine()) {
             //根据booking_no查询货品信息
             AirOrder airOrder = this.airOrderService.getByThirdPartyOrderNo(lineForm.getBookingNo());
-            ApiResult<List<GoodsVO>> goodsResult = this.omsClient.getGoodsByBusIds(Arrays.asList(airOrder.getId()), BusinessTypeEnum.KY.getCode());
+            ApiResult<List<GoodsVO>> goodsResult = this.omsClient.getGoodsByBusIds(Collections.singletonList(airOrder.getId()), BusinessTypeEnum.KY.getCode());
             List<GoodsVO> goodsVOS = goodsResult.getData();
             if (goodsVOS == null) {
                 log.warn("获取不到相对的货品信息 booking_no={}", lineForm.getBookingNo());

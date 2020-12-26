@@ -66,7 +66,7 @@ public class AddGoodsForm {
 
 
     public boolean checkCreateAirOrder() {
-        if (StringUtils.isEmpty(this.name) || plateAmount == null
+        if (StringUtils.isEmpty(this.name)
                 || StringUtils.isEmpty(this.plateUnit)
                 || this.bulkCargoAmount == null || StringUtils.isEmpty(this.bulkCargoUnit)
                 || this.totalWeight == null) {

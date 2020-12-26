@@ -79,6 +79,7 @@
             <if test="form.createTime !=null and form.createTime!=''">
                 and a.create_time = #{form.createTime}
             </if>
+            and (ab.`status` != 2 or ab.`status` is null)
         </where>
         order by a.id desc
     </select>

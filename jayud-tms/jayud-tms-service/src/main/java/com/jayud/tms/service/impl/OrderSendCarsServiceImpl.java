@@ -126,7 +126,7 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
                 //查询派车信息
                 OrderSendCars orderSendCars = this.getById(form.getId());
                 //查询车辆信息
-                ApiResult resultTwo = this.omsClient.getVehicleInfoById(3L);//TODO 等派车单增加车辆id字段再修改
+                ApiResult resultTwo = this.omsClient.getVehicleInfoById(orderSendCars.getVehicleId());
                 if (resultTwo.getCode() != HttpStatus.SC_OK) {
                     log.warn("请求车辆信息失败");
                 }

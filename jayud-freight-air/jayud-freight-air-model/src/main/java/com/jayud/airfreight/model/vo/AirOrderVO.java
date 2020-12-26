@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.airfreight.model.enums.AirOrderTermsEnum;
+import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.TradeTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -38,11 +39,14 @@ public class AirOrderVO {
     @ApiModelProperty(value = "第三方订单编号")
     private String thirdPartyOrderNo;
 
-    @ApiModelProperty(value = "状态(k_0待接单,k_1空运接单,k_2订舱,k_3订单入仓, k_4确认提单,k_5确认离港,k_6确认到港,k_7海外代理k_8确认签收)")
+    @ApiModelProperty(value = "状态(A_0待接单,A_1空运接单,A_2订舱,A_3订单入仓,A_4确认提单,A_5确认离港,A_6确认到港,A_7海外代理,A_8确认签收)")
     private String status;
 
-    @ApiModelProperty(value = "流程状态(0:进行中,1:完成)")
+    @ApiModelProperty(value = "流程状态(0:进行中,1:完成,2:草稿,3.关闭)")
     private Integer processStatus;
+
+    @ApiModelProperty(value = "流程状态描述")
+    private String processStatusDesc;
 
     @ApiModelProperty(value = "结算单位code")
     private String settlementUnitCode;
@@ -140,5 +144,10 @@ public class AirOrderVO {
     public void setTerms(Integer terms) {
         this.terms = terms;
         this.termsDesc = AirOrderTermsEnum.getDesc(terms);
+    }
+
+    public void setProcessStatus(Integer processStatus) {
+        this.processStatus = processStatus;
+        this.processStatusDesc = ProcessStatusEnum.getDesc(processStatus);
     }
 }

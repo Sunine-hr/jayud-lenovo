@@ -29,6 +29,9 @@ public class InputMainOrderForm {
     @ApiModelProperty(value = "接单法人",required = true)
     private String legalName;
 
+    @ApiModelProperty(value = "接单法人ID",required = true)
+    private Long legalEntityId;
+
     @ApiModelProperty(value = "业务所属部门",required = true)
     private Long bizBelongDepart;
 

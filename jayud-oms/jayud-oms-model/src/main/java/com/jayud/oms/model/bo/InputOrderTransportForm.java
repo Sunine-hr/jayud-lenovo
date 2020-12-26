@@ -59,6 +59,9 @@ public class InputOrderTransportForm {
     @ApiModelProperty(value = "接单法人",required = true)
     private String legalName;
 
+    @ApiModelProperty(value = "接单法人ID",required = true)
+    private Long legalEntityId;
+
     @ApiModelProperty(value = "结算单位",required = true)
     private String unitCode;
 

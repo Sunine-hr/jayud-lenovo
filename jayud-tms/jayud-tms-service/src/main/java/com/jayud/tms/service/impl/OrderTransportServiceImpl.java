@@ -129,7 +129,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         }
         orderTransport.setCntrPic(StringUtils.getFileStr(form.getCntrPics()));
         orderTransport.setCntrPicName(StringUtils.getFileNameStr(form.getCntrPics()));
-        if(!form.getIsGoodsEdit()){
+        if (form.getIsGoodsEdit() == null || !form.getIsGoodsEdit()) {
             orderTransport.setStatus(OrderStatusEnum.TMS_T_0.getCode());
         }
         boolean result = orderTransportService.saveOrUpdate(orderTransport);

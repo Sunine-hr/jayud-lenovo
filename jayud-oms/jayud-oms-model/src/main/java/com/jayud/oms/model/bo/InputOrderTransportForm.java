@@ -92,4 +92,7 @@ public class InputOrderTransportForm {
     @ApiModelProperty(value = "是否是货物编辑,货物编辑只编辑货物信息")
     private Boolean isGoodsEdit;
 
+    @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo)")
+    private Integer createUserType;
+
 }

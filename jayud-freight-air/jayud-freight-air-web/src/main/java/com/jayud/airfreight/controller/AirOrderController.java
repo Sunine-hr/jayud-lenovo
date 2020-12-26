@@ -74,9 +74,9 @@ public class AirOrderController {
         }
 
         //获取下个节点状态
-        OrderStatusEnum statusEnum = OrderStatusEnum.getAirOrderPreStatus(form.getStatus());
+//        OrderStatusEnum statusEnum = OrderStatusEnum.getAirOrderPreStatus(form.getStatus());
 
-        form.setStatus(statusEnum == null ? null : statusEnum.getCode());
+//        form.setStatus(statusEnum == null ? null : statusEnum.getCode());
 
         IPage<AirOrderFormVO> page = this.airOrderService.findByPage(form);
         if (page.getRecords().size() == 0) {

@@ -5,7 +5,6 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.enums.KafkaMsgEnums;
 import com.jayud.feign.AirfreightClient;
-import com.jayud.feign.CustomsApiClient;
 import com.jayud.feign.FinanceClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -32,8 +31,6 @@ public class RawDataListener {
     AirfreightClient airfreightClient;
     @Autowired
     FinanceClient financeClient;
-    @Autowired
-    CustomsApiClient customsApiClient;
 
     /**
      * 实时获取kafka数据(生产一条，监听生产topic自动消费一条)
@@ -110,23 +107,6 @@ public class RawDataListener {
         if (StringUtils.isEmpty(key)) {
             return;
         }
-
-        /**update push log**/
-//        AtomicReference<String> applyNo = new AtomicReference<>("");
-//        JSONArray jsonArray = JSONObject.parseArray(value);
-//        jsonArray.forEach(o -> {
-//            JSONObject jsonObject = (JSONObject) o;
-//            String custom_apply_no = jsonObject.get("custom_apply_no").toString();
-//            applyNo.set(custom_apply_no);
-//        });
-//        Map<String, Object> logParam = new HashMap<>();
-//        logParam.put("applyNo", applyNo);//18位报关单号
-//        logParam.put("pushStatusCode", PushKingdeeEnum.STEP3.getCode());
-//        logParam.put("pushStatusMsg", PushKingdeeEnum.STEP3.getMsg());
-//        logParam.put("updateTime", LocalDateTime.now());
-//        String logMsg = JSONObject.toJSONString(logParam);
-//        customsApiClient.saveOrOpdateLog(logMsg);
-
 
         if (match(KafkaMsgEnums.FINANCE_CUSTOMS_RECEIVABLE, record)) {
             log.info("写入金蝶报关应收数据...");

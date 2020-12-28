@@ -33,10 +33,25 @@
         from supplier_serve t
         left join supplier_info t1 on t1.id = t.supplier_info_id
         left join supplier_service_type t2 on t2.id = t.service_type_id
-        WHERE
-        1 = 1
+        left join (
+            select distinct supplier_info_id,service_id from supplier_cost
+            where 1=1
+            <if test="form.costItemId">
+                and cost_item_id = #{form.costItemId}
+            </if>
+            ) t3 on t3.service_id = t.id
+        where 1=1
         <if test="form.serveName != null and form.serveName != ''">
             AND t.serve_name LIKE concat('%',#{form.serveName},'%')
+        </if>
+        <if test="form.serviceTypeId != null">
+            and t.service_type_id = #{form.serviceTypeId}
+        </if>
+        <if test="form.supplierInfoId != null">
+            and t.supplier_info_id = #{form.supplierInfoId}
+        </if>
+        <if test="form.costItemId != null">
+            and t.id = t3.service_id
         </if>
     </select>
 

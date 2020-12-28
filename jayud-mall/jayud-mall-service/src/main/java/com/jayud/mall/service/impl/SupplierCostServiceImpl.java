@@ -1,10 +1,15 @@
 package com.jayud.mall.service.impl;
 
+import com.jayud.mall.model.bo.SupplierCostForm;
 import com.jayud.mall.model.po.SupplierCost;
 import com.jayud.mall.mapper.SupplierCostMapper;
+import com.jayud.mall.model.vo.SupplierCostVO;
 import com.jayud.mall.service.ISupplierCostService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +22,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class SupplierCostServiceImpl extends ServiceImpl<SupplierCostMapper, SupplierCost> implements ISupplierCostService {
 
+    @Autowired
+    SupplierCostMapper supplierCostMapper;
+
+    @Override
+    public List<SupplierCostVO> findSupplierCost(SupplierCostForm form) {
+        List<SupplierCostVO> supplierCostVOS = supplierCostMapper.findSupplierCost(form);
+        return supplierCostVOS;
+    }
 }

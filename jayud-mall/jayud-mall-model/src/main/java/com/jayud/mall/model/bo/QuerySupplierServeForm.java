@@ -19,8 +19,9 @@ public class QuerySupplierServeForm extends BasePageForm{
     @JSONField(ordinal = 3)
     private Long supplierInfoId;
 
-    //TODO 费用项目
-
+    @ApiModelProperty(value = "费用项目", position = 4)
+    @JSONField(ordinal = 4)
+    private Long costItemId;
 
 
 }

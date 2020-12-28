@@ -74,4 +74,29 @@ public class SupplierCostVO {
     @JSONField(ordinal = 15, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    /*供应商信息supplier_info*/
+    @ApiModelProperty(value = "公司名称", position = 16)
+    @JSONField(ordinal = 16)
+    private String supplierInfoName;
+
+    /*供应商服务supplier_serve*/
+    @ApiModelProperty(value = "服务名称", position = 17)
+    @JSONField(ordinal = 17)
+    private String serveName;
+
+    /*费用项目cost_item*/
+    @ApiModelProperty(value = "费用项目名称", position = 18)
+    @JSONField(ordinal = 18)
+    private String costItemName;
+
+    /*币种currency_info*/
+    @ApiModelProperty(value = "币种代码", position = 19)
+    @JSONField(ordinal = 19)
+    private String currencyCode;
+
+    @ApiModelProperty(value = "币种名称", position = 20)
+    @JSONField(ordinal = 20)
+    private String currencyName;
+
+
 }

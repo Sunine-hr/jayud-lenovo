@@ -2,6 +2,7 @@ package com.jayud.mall.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
@@ -10,6 +11,7 @@ import com.jayud.mall.admin.security.domain.AuthUser;
 import com.jayud.mall.admin.security.service.BaseService;
 import com.jayud.mall.mapper.SupplierServeMapper;
 import com.jayud.mall.model.bo.QuerySupplierServeForm;
+import com.jayud.mall.model.bo.SupplierCostForm;
 import com.jayud.mall.model.bo.SupplierServeForm;
 import com.jayud.mall.model.po.SupplierCost;
 import com.jayud.mall.model.po.SupplierServe;
@@ -53,19 +55,18 @@ public class SupplierServeServiceImpl extends ServiceImpl<SupplierServeMapper, S
         //定义分页参数
         Page<SupplierServeVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
-        //page.addOrder(OrderItem.desc("oc.id"));
+        page.addOrder(OrderItem.asc("t.id"));
         IPage<SupplierServeVO> pageInfo = supplierServeMapper.findSupplierServeByPage(page, form);
 
         List<SupplierServeVO> list = pageInfo.getRecords();
         list.forEach(supplierServeVO -> {
-//            String supplierCode = supplierServeVO.getSupplierCode();
-            String serveCode = supplierServeVO.getServeCode();
-            QueryWrapper<SupplierCost> queryWrapper = new QueryWrapper<>();
-//            queryWrapper.eq("supplier_code", supplierCode);
-            queryWrapper.eq("serve_code", serveCode);
-            List<SupplierCost> supplierCostList = supplierCostService.list(queryWrapper);
-            List<SupplierCostVO> supplierCostVOList = ConvertUtil.convertList(supplierCostList, SupplierCostVO.class);
-            supplierServeVO.setSupplierCostVOList(supplierCostVOList);
+            Long supplierInfoId = supplierServeVO.getSupplierInfoId();//供应商id
+            Long serviceId = supplierServeVO.getId();//供应商服务id
+            SupplierCostForm form1 = new SupplierCostForm();
+            form1.setSupplierInfoId(supplierInfoId);
+            form1.setServiceId(serviceId);
+            List<SupplierCostVO> supplierCostVOS = supplierCostService.findSupplierCost(form1);
+            supplierServeVO.setSupplierCostVOList(supplierCostVOS);
         });
         return pageInfo;
     }

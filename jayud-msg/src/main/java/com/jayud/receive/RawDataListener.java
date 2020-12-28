@@ -1,9 +1,7 @@
 package com.jayud.receive;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jayud.common.CommonResult;
-import com.jayud.common.enums.PushKingdeeEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.enums.KafkaMsgEnums;
 import com.jayud.feign.AirfreightClient;
@@ -17,11 +15,9 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * kafka监听
@@ -116,20 +112,20 @@ public class RawDataListener {
         }
 
         /**update push log**/
-        AtomicReference<String> applyNo = new AtomicReference<>("");
-        JSONArray jsonArray = JSONObject.parseArray(value);
-        jsonArray.forEach(o -> {
-            JSONObject jsonObject = (JSONObject) o;
-            String custom_apply_no = jsonObject.get("custom_apply_no").toString();
-            applyNo.set(custom_apply_no);
-        });
-        Map<String, Object> logParam = new HashMap<>();
-        logParam.put("applyNo", applyNo);//18位报关单号
-        logParam.put("pushStatusCode", PushKingdeeEnum.STEP3.getCode());
-        logParam.put("pushStatusMsg", PushKingdeeEnum.STEP3.getMsg());
-        logParam.put("updateTime", LocalDateTime.now());
-        String logMsg = JSONObject.toJSONString(logParam);
-        customsApiClient.saveOrOpdateLog(logMsg);
+//        AtomicReference<String> applyNo = new AtomicReference<>("");
+//        JSONArray jsonArray = JSONObject.parseArray(value);
+//        jsonArray.forEach(o -> {
+//            JSONObject jsonObject = (JSONObject) o;
+//            String custom_apply_no = jsonObject.get("custom_apply_no").toString();
+//            applyNo.set(custom_apply_no);
+//        });
+//        Map<String, Object> logParam = new HashMap<>();
+//        logParam.put("applyNo", applyNo);//18位报关单号
+//        logParam.put("pushStatusCode", PushKingdeeEnum.STEP3.getCode());
+//        logParam.put("pushStatusMsg", PushKingdeeEnum.STEP3.getMsg());
+//        logParam.put("updateTime", LocalDateTime.now());
+//        String logMsg = JSONObject.toJSONString(logParam);
+//        customsApiClient.saveOrOpdateLog(logMsg);
 
 
         if (match(KafkaMsgEnums.FINANCE_CUSTOMS_RECEIVABLE, record)) {

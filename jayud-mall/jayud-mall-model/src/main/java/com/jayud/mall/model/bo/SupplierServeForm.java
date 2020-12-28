@@ -34,12 +34,12 @@ public class SupplierServeForm {
 
     @ApiModelProperty(value = "生效日期", position = 6)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
-    @JSONField(ordinal = 6)
+    @JSONField(ordinal = 6, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime effectiveDate;
 
     @ApiModelProperty(value = "失效日期", position = 7)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
-    @JSONField(ordinal = 7)
+    @JSONField(ordinal = 7, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime expiryDate;
 
     /*供应商服务费用list*/

@@ -60,5 +60,13 @@ public class SupplierInfoTest {
         TestUtils.JSONObjectPrint(form);
     }
 
+    @Test
+    public void test5(){
+        QuerySupplierInfoForm form = new QuerySupplierInfoForm();
+        List<Long> serviceTypeIds = Arrays.asList(1L, 2L);
+        form.setServiceTypeIds(serviceTypeIds);
+        TestUtils.JSONObjectPrint(form);
+    }
+
 
 }

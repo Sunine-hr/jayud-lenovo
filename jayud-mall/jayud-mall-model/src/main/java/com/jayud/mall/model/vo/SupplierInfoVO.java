@@ -120,4 +120,8 @@ public class SupplierInfoVO {
     @JSONField(ordinal = 26)
     private List<Long> serviceTypeIds;
 
+    @ApiModelProperty(value = "服务类型名称", position = 27)
+    @JSONField(ordinal = 27)
+    private String serviceTypeName;
+
 }

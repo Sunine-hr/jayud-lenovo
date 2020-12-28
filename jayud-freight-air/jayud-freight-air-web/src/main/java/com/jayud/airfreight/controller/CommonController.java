@@ -39,11 +39,12 @@ public class CommonController {
     @ApiOperation(value = "下拉框(审核通过的供应商)")
     @PostMapping(value = "/initSupplierInfo")
     public CommonResult initSupplierInfo() {
-        if (omsClient.initSupplierInfo().getCode() != HttpStatus.SC_OK) {
-            log.warn("远程调用审核通过的供应商");
-            return CommonResult.error(ResultEnum.OPR_FAIL);
-        }
-        return CommonResult.success();
+        CommonResult<List<InitComboxVO>> result = omsClient.initSupplierInfo();
+//        if (result.getMsg().equals("成功")) {
+//            log.warn("远程调用审核通过的供应商失败 msg={}", result.getMsg());
+//            return CommonResult.error(ResultEnum.OPR_FAIL);
+//        }
+        return CommonResult.success(result.getData());
     }
 
     @ApiOperation(value = "主订单下拉选项-飞机港口,贸易类型")

@@ -77,7 +77,7 @@ public class OrderComboxController {
 
     @Autowired
     private FreightAirClient freightAirClient;
-
+    @Autowired
     private ICustomerRelaLegalService relaLegalService;
 
     @ApiOperation(value = "创建订单-客户,业务员,合同,业务所属部门,通关口岸")

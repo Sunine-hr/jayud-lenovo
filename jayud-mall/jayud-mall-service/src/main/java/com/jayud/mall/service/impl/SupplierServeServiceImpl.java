@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -68,24 +67,26 @@ public class SupplierServeServiceImpl extends ServiceImpl<SupplierServeMapper, S
         SupplierServe supplierServe = ConvertUtil.convert(form, SupplierServe.class);
         this.saveOrUpdate(supplierServe);
 
-//        String supplierCode = supplierServe.getSupplierCode();
-        String serveCode = supplierServe.getServeCode();
+        Long id = supplierServe.getId();
 
-        List<SupplierCostVO> supplierCostVOList = form.getSupplierCostVOList();
-        //先删除-供应商服务费用
-        QueryWrapper<SupplierCost> queryWrapper = new QueryWrapper<>();
-//        queryWrapper.eq("supplier_code", supplierCode);
-        queryWrapper.eq("serve_code", serveCode);
-        supplierCostService.remove(queryWrapper);
-        //再保存-供应商服务费用
-        List<SupplierCost> supplierCostList = new ArrayList<>();
-        supplierCostVOList.forEach(supplierCostVO -> {
-//            supplierCostVO.setSupplierCode(supplierCode);
-            supplierCostVO.setServeCode(serveCode);
-            SupplierCost supplierCost = ConvertUtil.convert(supplierCostVO, SupplierCost.class);
-            supplierCostList.add(supplierCost);
-        });
-        supplierCostService.saveOrUpdateBatch(supplierCostList);
+////        String supplierCode = supplierServe.getSupplierCode();
+//        String serveCode = supplierServe.getServeCode();
+//
+//        List<SupplierCostVO> supplierCostVOList = form.getSupplierCostVOList();
+//        //先删除-供应商服务费用
+//        QueryWrapper<SupplierCost> queryWrapper = new QueryWrapper<>();
+////        queryWrapper.eq("supplier_code", supplierCode);
+//        queryWrapper.eq("serve_code", serveCode);
+//        supplierCostService.remove(queryWrapper);
+//        //再保存-供应商服务费用
+//        List<SupplierCost> supplierCostList = new ArrayList<>();
+//        supplierCostVOList.forEach(supplierCostVO -> {
+////            supplierCostVO.setSupplierCode(supplierCode);
+////            supplierCostVO.setServeCode(serveCode);
+//            SupplierCost supplierCost = ConvertUtil.convert(supplierCostVO, SupplierCost.class);
+//            supplierCostList.add(supplierCost);
+//        });
+//        supplierCostService.saveOrUpdateBatch(supplierCostList);
         return CommonResult.success("保存供应商服务，成功！");
     }
 }

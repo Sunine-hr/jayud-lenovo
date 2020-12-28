@@ -131,7 +131,7 @@ public class SupplierServeTest {
         SupplierCostVO supplierCostVO2 = new SupplierCostVO();
         supplierCostVO2.setSupplierInfoId(6L);
         supplierCostVO2.setServiceId(null);//根据具体的服务确定
-        supplierCostVO1.setCostItemId(2L);//1运输费,2过桥费,3停车费
+        supplierCostVO2.setCostItemId(2L);//1运输费,2过桥费,3停车费
         //supplierCostVO2.setCostCode(null);//自动生成
         //supplierCostVO2.setCostName("拖车费");//卡车费、拖车费、搬运费
         supplierCostVO2.setCountWay(1);//计算方式(1自动 2手动)

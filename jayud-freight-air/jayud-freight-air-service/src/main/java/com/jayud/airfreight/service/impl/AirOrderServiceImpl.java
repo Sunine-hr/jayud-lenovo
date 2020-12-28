@@ -213,8 +213,7 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         this.handleLadingBillFile(airBooking, form);
         //设置订舱状态
         setAirBookingStatus(airBooking);
-        airBooking.setAirOrderNo(null);
-        airBooking.setAirOrderId(null);
+
 
         airBookingService.saveOrUpdateAirBooking(airBooking);
         updateProcessStatus(new AirOrder(), form);

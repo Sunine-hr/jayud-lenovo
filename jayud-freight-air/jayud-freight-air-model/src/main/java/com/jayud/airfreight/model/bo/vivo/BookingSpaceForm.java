@@ -296,7 +296,7 @@ public class BookingSpaceForm {
     public String checkTermsType() {
         String message = "贸易类型暂时不支持";
         for (AirOrderTermsEnum termsEnum : AirOrderTermsEnum.values()) {
-            if (this.tradeTerms.contains(termsEnum.getDesc())) {
+            if (termsEnum.getDesc().equals(this.tradeTerms.split(" ")[0])) {
                 message = "";
                 break;
             }
@@ -305,8 +305,8 @@ public class BookingSpaceForm {
     }
 
     public static void main(String[] args) {
-        String s = "HHHKG";
-        System.out.println(s.substring(2, 5));
+        String s = "CIP KATHMANDU";
+        System.out.println(s.split(" ")[0]);
     }
 
 

@@ -5,6 +5,7 @@ import com.jayud.airfreight.model.bo.*;
 import com.jayud.airfreight.model.vo.GoodsVO;
 import com.jayud.airfreight.model.vo.OrderAddressVO;
 import com.jayud.common.ApiResult;
+import com.jayud.common.CommonResult;
 import com.jayud.common.config.FeignRequestInterceptor;
 import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.common.entity.InitComboxVO;
@@ -58,7 +59,7 @@ public interface OmsClient {
      * @return
      */
     @RequestMapping(value = "/api/initSupplierInfo")
-    ApiResult<List<InitComboxVO>> initSupplierInfo();
+    CommonResult<List<InitComboxVO>> initSupplierInfo();
 
     /**
      * 根据客户id查询客户信息

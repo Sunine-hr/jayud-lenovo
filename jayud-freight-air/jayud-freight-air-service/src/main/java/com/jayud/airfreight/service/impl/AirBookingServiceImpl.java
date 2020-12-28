@@ -37,6 +37,7 @@ public class AirBookingServiceImpl extends ServiceImpl<AirBookingMapper, AirBook
                     .setCreateUser(UserOperator.getToken());
             this.save(airBooking);
         } else {
+            airBooking.setAirOrderNo(null).setAirOrderId(null);
             airBooking.setUpdateTime(LocalDateTime.now())
                     .setUpdateUser(UserOperator.getToken());
             this.updateById(airBooking);

@@ -143,10 +143,10 @@ public class AddAirBookingForm extends Model<AddAirBookingForm> {
 
     public boolean checkConfirmATDOptParam() {
         String title = "确认离港操作";
-        if (this.id == null) {
-            log.warn(title + " 订舱id必填");
-            return false;
-        }
+//        if (this.id == null) {
+//            log.warn(title + " 订舱id必填");
+//            return false;
+//        }
         if (StringUtils.isEmpty(this.atd)) {
             log.warn(title + " 实际离港时间必填");
             return false;
@@ -156,10 +156,10 @@ public class AddAirBookingForm extends Model<AddAirBookingForm> {
 
     public boolean checkConfirmATAOptParam() {
         String title = "确认到港操作";
-        if (this.id == null) {
-            log.warn(title + " 订舱id必填");
-            return false;
-        }
+//        if (this.id == null) {
+//            log.warn(title + " 订舱id必填");
+//            return false;
+//        }
         if (StringUtils.isEmpty(this.ata)) {
             log.warn(title + " 实际到港时间必填");
             return false;

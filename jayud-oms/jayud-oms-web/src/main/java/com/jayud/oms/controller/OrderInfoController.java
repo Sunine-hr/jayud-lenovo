@@ -94,7 +94,7 @@ public class OrderInfoController {
                 || inputMainOrderForm.getBizUid() == null
                 || StringUtil.isNullOrEmpty(inputMainOrderForm.getBizUname())
                 || StringUtil.isNullOrEmpty(inputMainOrderForm.getLegalName())
-                || inputMainOrderForm.getLegalEntityId() == null
+//                || inputMainOrderForm.getLegalEntityId() == null
                 || inputMainOrderForm.getBizBelongDepart() == null
                 || StringUtil.isNullOrEmpty(inputMainOrderForm.getBizCode())
                 || StringUtil.isNullOrEmpty(inputMainOrderForm.getClassCode())

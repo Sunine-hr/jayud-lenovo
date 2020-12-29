@@ -65,4 +65,11 @@ public interface ICustomerService extends IService<Customer> {
      * @return
      */
     CommonResult<CustomerVO> findCustomerById(Integer id);
+
+    /**
+     * 我的账号-更换手机-设置新手机号
+     * @param form
+     * @return
+     */
+    CommonResult<CustomerVO> customerUpdatePhone(CustomerPhoneForm form);
 }

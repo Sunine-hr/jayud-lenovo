@@ -69,7 +69,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         queryWrapper.ne("id", id);
         int userNameCount = this.count(queryWrapper);
         if(userNameCount > 0){
-            return CommonResult.error(-1, "客户(公司)名称,已存在");
+            return CommonResult.error(-1, "登录名,已存在");
         }
         String phone = form.getPhone();
         queryWrapper = new QueryWrapper<>();
@@ -164,6 +164,18 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Override
     public CommonResult<CustomerVO> findCustomerById(Integer id) {
         Customer customer = this.getById(id);
+        CustomerVO customerVO = ConvertUtil.convert(customer, CustomerVO.class);
+        return CommonResult.success(customerVO);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CommonResult<CustomerVO> customerUpdatePhone(CustomerPhoneForm form) {
+        Integer id = form.getId();
+        Customer customer = this.getById(id);
+        String phone = form.getPhone();
+        customer.setPhone(phone);
+        this.saveOrUpdate(customer);
         CustomerVO customerVO = ConvertUtil.convert(customer, CustomerVO.class);
         return CommonResult.success(customerVO);
     }

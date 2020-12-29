@@ -1,10 +1,7 @@
 package com.jayud.mall.controller;
 
 import com.jayud.common.CommonResult;
-import com.jayud.mall.model.bo.CustomerParaForm;
-import com.jayud.mall.model.bo.CustomerPwdForm;
-import com.jayud.mall.model.bo.CustomerRegisterForm;
-import com.jayud.mall.model.bo.CustomerVerifyForm;
+import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.vo.CustomerVO;
 import com.jayud.mall.service.ICustomerService;
 import io.swagger.annotations.Api;
@@ -55,6 +52,27 @@ public class CustomerController {
     public CommonResult<CustomerVO> findCustomerById(@Valid @RequestBody CustomerParaForm form){
         Integer id = form.getId();
         return customerService.findCustomerById(id);
+    }
+
+    @ApiOperation(value = "我的账号-客户账号编辑")
+    @PostMapping("/updateCustomer")
+    @ApiOperationSupport(order = 5)
+    public CommonResult<CustomerVO> updateCustomer(@Valid @RequestBody CustomerEditForm form){
+        return customerService.saveCustomer(form);
+    }
+
+    @ApiOperation(value = "我的账号-更换手机-验证身份")
+    @PostMapping("/customerUpdatePhoneVerify")
+    @ApiOperationSupport(order = 6)
+    public CommonResult<CustomerVO> customerUpdatePhoneVerify(@Valid @RequestBody CustomerVerifyForm form){
+        return customerService.customerVerify(form);
+    }
+
+    @ApiOperation(value = "我的账号-更换手机-设置新手机号")
+    @PostMapping("/customerUpdatePhone")
+    @ApiOperationSupport(order = 7)
+    public CommonResult<CustomerVO> customerUpdatePhone(@Valid @RequestBody CustomerPhoneForm form){
+        return customerService.customerUpdatePhone(form);
     }
 
 

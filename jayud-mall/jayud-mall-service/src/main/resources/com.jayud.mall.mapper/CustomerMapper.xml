@@ -46,12 +46,18 @@
         FROM customer t
         WHERE
         1 = 1
-        /*关键字查询*/
+        <if test="form.company != null and form.company != ''">
+            and t.company LIKE concat('%',#{form.company},'%')
+        </if>
+        <if test="form.userName != null and form.userName != ''">
+            and t.user_name like concat('%',#{form.userName},'%')
+        </if>
+        <if test="form.phone != null and form.phone != ''">
+            and t.phone like concat('%',#{form.phone},'%')
+        </if>
         <if test="form.keyword != null and form.keyword != ''">
             AND ( t.`name_cn` LIKE concat('%',#{form.keyword},'%') OR t.`company` LIKE concat('%',#{form.keyword},'%') )
         </if>
-        GROUP BY
-        t.`id`
     </select>
 
 </mapper>

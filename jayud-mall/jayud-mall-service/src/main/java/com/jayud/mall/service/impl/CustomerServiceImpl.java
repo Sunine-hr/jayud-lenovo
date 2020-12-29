@@ -10,10 +10,7 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.admin.security.domain.AuthUser;
 import com.jayud.mall.admin.security.service.BaseService;
 import com.jayud.mall.mapper.CustomerMapper;
-import com.jayud.mall.model.bo.CustomerAuditForm;
-import com.jayud.mall.model.bo.CustomerEditForm;
-import com.jayud.mall.model.bo.CustomerRegisterForm;
-import com.jayud.mall.model.bo.QueryCustomerForm;
+import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.Customer;
 import com.jayud.mall.model.vo.CustomerVO;
 import com.jayud.mall.service.ICustomerService;
@@ -139,6 +136,29 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         this.saveOrUpdate(customer);
         CustomerVO customerVO = ConvertUtil.convert(customer, CustomerVO.class);
         return CommonResult.success(customerVO);
+    }
+
+    @Override
+    public CommonResult customerVerify(CustomerVerifyForm form) {
+        String phone = form.getPhone();
+        String verificationCode = form.getVerificationCode();
+        return CommonResult.success("验证成功");
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CommonResult customerUpdatePwd(CustomerPwdForm form) {
+        Integer id = form.getId();
+        Customer customer = this.getById(id);
+        String passwd = form.getPasswd();
+        String affirmPasswd = form.getAffirmPasswd();
+        if(!passwd.equals(affirmPasswd)){
+            return CommonResult.error(-1, "两次的密码不一致");
+        }
+        //没有加密
+        customer.setPasswd(passwd);
+        this.saveOrUpdate(customer);
+        return CommonResult.success("修改密码成功");
     }
 
 

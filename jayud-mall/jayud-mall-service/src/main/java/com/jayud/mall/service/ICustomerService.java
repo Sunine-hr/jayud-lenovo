@@ -3,10 +3,7 @@ package com.jayud.mall.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.CommonResult;
-import com.jayud.mall.model.bo.CustomerAuditForm;
-import com.jayud.mall.model.bo.CustomerEditForm;
-import com.jayud.mall.model.bo.CustomerRegisterForm;
-import com.jayud.mall.model.bo.QueryCustomerForm;
+import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.Customer;
 import com.jayud.mall.model.vo.CustomerVO;
 
@@ -47,4 +44,18 @@ public interface ICustomerService extends IService<Customer> {
      * @return
      */
     CommonResult<CustomerVO> customerRegister(CustomerRegisterForm form);
+
+    /**
+     * 忘记密码-客户验证
+     * @param form
+     * @return
+     */
+    CommonResult customerVerify(CustomerVerifyForm form);
+
+    /**
+     * 修改密码-客户确认密码
+     * @param form
+     * @return
+     */
+    CommonResult customerUpdatePwd(CustomerPwdForm form);
 }

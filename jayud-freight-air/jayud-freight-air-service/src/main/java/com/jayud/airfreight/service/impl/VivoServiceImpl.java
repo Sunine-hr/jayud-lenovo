@@ -217,6 +217,7 @@ public class VivoServiceImpl implements VivoService {
     /**
      * 订舱驳回接口
      */
+    @Override
     public Map<String, Object> forwarderBookingRejected(String bookingNo, Integer status) {
         VivoBookingRejectedForm form = new VivoBookingRejectedForm();
         form.setBookingNo(bookingNo);
@@ -277,8 +278,6 @@ public class VivoServiceImpl implements VivoService {
 //        body=new HttpEntity<MultiValueMap<String, String>>(JSONUtil.toBean(form,MultiValueMap.class),headers);
 
         String data = gson.toJson(form);
-        log.info("vivo参数==========" + data);
-
         Map<String, Object> map = this.doPost(data, url);
         if (map == null) {
             //没有返回重新调用一次
@@ -321,7 +320,7 @@ public class VivoServiceImpl implements VivoService {
 
 
     private Map<String, Object> doPost(String form, String url) {
-        log.info("vivo参数==========" + form);
+        log.info("vivo参数:" + form);
         String feedback = HttpRequest.post(url)
                 .header("Authorization", "bearer " + String.format(getToken(null, null, null)))
                 .header(Header.CONTENT_TYPE.name(), "multipart/form-data")
@@ -331,13 +330,14 @@ public class VivoServiceImpl implements VivoService {
         if (StringUtils.isEmpty(feedback)) {
             return null;
         }
+        log.info("vivo返回参数:" + JSONUtil.toJsonStr(feedback));
         return JSONUtil.toBean(feedback, Map.class);
     }
 
     private Map<String, Object> postWithFile(Object form, MultipartFile file, String url) {
         Gson gson = new Gson();
         String data = gson.toJson(form);
-        log.info("参数========" + data);
+        log.info("参数:" + data);
         File fw = new File(file.getOriginalFilename());
         try {
             FileUtils.copyInputStreamToFile(file.getInputStream(), fw);
@@ -359,7 +359,7 @@ public class VivoServiceImpl implements VivoService {
             redisUtils.delete(VIVO_TOEKN_STR);
             map = this.doPostWithFile(data, fw, url);
         }
-
+        log.info("响应参数:" + gson.toJson(map));
         return map;
     }
 
@@ -621,8 +621,8 @@ public class VivoServiceImpl implements VivoService {
             msg.put("billOfLading", airBooking.getMainNo() + "/" + (StringUtils.isEmpty(airBooking.getSubNo()) ?
                     "" : airBooking.getSubNo()));
             msg.put("flightNo", airBooking.getFlight());
-//            msg.put("chargedWeight", "");
-//            msg.put("bLWeight", "");
+            msg.put("chargedWeight", airBooking.getBillingWeight());
+            msg.put("blWeight", airBooking.getBillLadingWeight());
             msg.put("etd", DateUtils.LocalDateTime2Str(airBooking.getEtd(), "yyyy/M/dd HH:mm:ss"));
             msg.put("atd", DateUtils.LocalDateTime2Str(airBooking.getAtd(), "yyyy/M/dd HH:mm:ss"));
             msg.put("eta", DateUtils.LocalDateTime2Str(airBooking.getEta(), "yyyy/M/dd HH:mm:ss"));

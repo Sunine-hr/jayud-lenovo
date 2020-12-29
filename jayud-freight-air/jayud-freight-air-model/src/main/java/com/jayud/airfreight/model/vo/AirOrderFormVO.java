@@ -4,13 +4,18 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jayud.airfreight.model.enums.AirOrderTermsEnum;
+import com.jayud.common.ApiResult;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.TradeTypeEnum;
+import com.jayud.common.utils.HttpUtils;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.httpclient.HttpStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,6 +29,7 @@ import java.util.List;
  * @since 2020-11-30
  */
 @Data
+@Slf4j
 public class AirOrderFormVO {
 
     private static final long serialVersionUID = 1L;
@@ -58,6 +64,9 @@ public class AirOrderFormVO {
     @ApiModelProperty(value = "客户名称")
     private String customerName;
 
+    @ApiModelProperty(value = "客户代码")
+    private String customerCode;
+
     @ApiModelProperty(value = "货物信息")
     private String goodsInfo;
 
@@ -87,7 +96,7 @@ public class AirOrderFormVO {
 
     @ApiModelProperty(value = "创建时间")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createTime;
+    private LocalDateTime createdTimeStr;
 
     @ApiModelProperty(value = "更新人")
     private String updateUser;
@@ -105,12 +114,28 @@ public class AirOrderFormVO {
     @ApiModelProperty(value = "订单业务人员名称")
     private String bizUname;
 
+    @ApiModelProperty(value = "对应业务类型")
+    private String bizCode;
+
+    @ApiModelProperty(value = "结算单位code")
+    private String subUnitCode;
+
+    @JsonIgnore
+    @ApiModelProperty(value = "法人主体")
+    private Long legalId;
+
+    @ApiModelProperty(value = "法人主体名称")
+    private String subLegalName;
+
+    @ApiModelProperty(value = "是否录用费用")
+    private Boolean cost;
 
     /**
      * 组装商品信息
      */
     public void assemblyGoodsInfo(List<GoodsVO> goodsList) {
         StringBuilder sb = new StringBuilder();
+
         for (GoodsVO goods : goodsList) {
             if (this.id.equals(goods.getBusinessId())
                     && BusinessTypeEnum.KY.getCode().equals(goods.getBusinessType())) {
@@ -135,12 +160,37 @@ public class AirOrderFormVO {
             JSONObject json = mainOrders.getJSONObject(i);
             if (this.mainOrderNo.equals(json.getString("orderNo"))) { //主订单配对
                 this.customerName = json.getString("customerName");
+                this.customerCode = json.getString("customerCode");
                 this.mainOrderId = json.getString("id");
                 this.bizUname = json.getString("bizUname");
+                this.bizCode = json.getString("bizCode");
                 break;
             }
         }
 
+    }
+
+    /**
+     * 组装法人主体
+     *
+     * @param legalEntityResult
+     */
+    public void assemblyLegalEntity(ApiResult legalEntityResult) {
+        if (legalEntityResult == null) {
+            return;
+        }
+        if (legalEntityResult.getCode() != HttpStatus.SC_OK) {
+            log.warn("请求法人主体信息失败");
+            return;
+        }
+        JSONArray legalEntitys = JSONArray.parseArray(JSON.toJSONString(legalEntityResult.getData()));
+        for (int i = 0; i < legalEntitys.size(); i++) {
+            JSONObject json = legalEntitys.getJSONObject(i);
+            if (this.legalId.equals(json.getLong("id"))) { //法人主体配对
+                this.subLegalName = json.getString("legalName");
+                break;
+            }
+        }
     }
 
 
@@ -162,4 +212,5 @@ public class AirOrderFormVO {
         this.processStatus = processStatus;
         this.processStatusDesc = ProcessStatusEnum.getDesc(processStatus);
     }
+
 }

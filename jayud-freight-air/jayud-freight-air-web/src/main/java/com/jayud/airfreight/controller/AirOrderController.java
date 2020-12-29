@@ -6,6 +6,7 @@ import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.airfreight.feign.OauthClient;
 import com.jayud.airfreight.feign.OmsClient;
 import com.jayud.airfreight.model.bo.*;
 import com.jayud.airfreight.model.po.AirOrder;
@@ -26,6 +27,7 @@ import com.jayud.common.utils.DateUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,6 +58,8 @@ public class AirOrderController {
     private OmsClient omsClient;
     @Autowired
     private IAirOrderService airOrderService;
+    @Autowired
+    private OauthClient oauthClient;
 //    @Autowired
 //    private IGoodsService goodsService;
 
@@ -86,12 +90,20 @@ public class AirOrderController {
         List<AirOrderFormVO> records = page.getRecords();
         List<Long> airOrderIds = new ArrayList<>();
         List<String> mainOrder = new ArrayList<>();
+        List<Long> entityIds = new ArrayList<>();
         for (AirOrderFormVO record : records) {
             airOrderIds.add(record.getId());
             mainOrder.add(record.getMainOrderNo());
+            entityIds.add(record.getLegalId());
         }
         //查询商品信息
         List<GoodsVO> goods = this.omsClient.getGoodsByBusIds(airOrderIds, BusinessTypeEnum.KY.getCode()).getData();
+        //查询法人主体
+        ApiResult legalEntityResult = null;
+        if (CollectionUtils.isNotEmpty(entityIds)) {
+            legalEntityResult = this.oauthClient.getLegalEntityByLegalIds(entityIds);
+        }
+
         //查询客户信息
         ApiResult result = omsClient.getMainOrderByOrderNos(mainOrder);
         for (AirOrderFormVO record : records) {
@@ -99,6 +111,8 @@ public class AirOrderController {
             record.assemblyGoodsInfo(goods);
             //拼装主订单信息
             record.assemblyMainOrderData(result.getData());
+            //组装法人名称
+            record.assemblyLegalEntity(legalEntityResult);
         }
         return CommonResult.success(new CommonPageResult(page));
     }

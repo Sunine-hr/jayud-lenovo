@@ -18,5 +18,7 @@ public interface OauthClient {
     @RequestMapping(value = "/api/getSystemUserByName")
     ApiResult getSystemUserByName(@RequestParam("name") String name);
 
-
+    @ApiOperation("根据法人主体id集合查询法人主体信息")
+    @RequestMapping(value = "/api/getLegalEntityByLegalIds")
+    public ApiResult getLegalEntityByLegalIds(@RequestParam("legalId") List<Long> legalIds);
 }

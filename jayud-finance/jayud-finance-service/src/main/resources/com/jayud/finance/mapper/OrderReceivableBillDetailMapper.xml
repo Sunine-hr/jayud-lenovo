@@ -380,7 +380,7 @@
 			left join order_receivable_bill orb on orb.id = orbd.bill_id
             left join department d on d.id = oi.biz_belong_depart
             left join customer_info ci on ci.unit_code = orc.customer_code
-        where orbd.bill_no = #{billNo}
+        where orbd.order_no = #{orderNo}
     </select>
     <select id="findReceivableHeaderDetail" parameterType="java.lang.String" resultType="com.jayud.finance.bo.APARDetailForm">
         SELECT

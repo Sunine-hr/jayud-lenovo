@@ -334,12 +334,7 @@ public class FinanceController {
         queryWrapper.in("bill_no",form.getBillNos());
         List<OrderReceivableBillDetail> receivableBillDetails = receivableBillDetailService.list(queryWrapper);
         for (OrderReceivableBillDetail receivableBillDetail : receivableBillDetails) {
-            ReceivableHeaderForm reqForm = receivableBillDetailService.getReceivableHeaderForm(receivableBillDetail.getBillNo());
-            /*if(reqForm != null && !StringUtil.isNullOrEmpty(reqForm.getCustomerName())){
-                int index = reqForm.getCustomerName().indexOf("(");
-                String customerName = reqForm.getCustomerName().substring(0,index);
-                reqForm.setCustomerName(customerName);
-            }*/
+            ReceivableHeaderForm reqForm = receivableBillDetailService.getReceivableHeaderForm(receivableBillDetail.getOrderNo());
             List<APARDetailForm> entityDetail = receivableBillDetailService.findReceivableHeaderDetail(receivableBillDetail.getBillNo());
             reqForm.setEntityDetail(entityDetail);
             logger.info("推送金蝶传参:" + reqForm);
@@ -389,7 +384,7 @@ public class FinanceController {
         queryWrapper.in("bill_no",form.getBillNos());
         List<OrderPaymentBillDetail> paymentBillDetailList = paymentBillDetailService.list(queryWrapper);
         for (OrderPaymentBillDetail paymentBillDetail : paymentBillDetailList) {
-            PayableHeaderForm reqForm = paymentBillDetailService.getPayableHeaderForm(paymentBillDetail.getBillNo());
+            PayableHeaderForm reqForm = paymentBillDetailService.getPayableHeaderForm(paymentBillDetail.getOrderNo());
             List<APARDetailForm> entityDetail = paymentBillDetailService.findPayableHeaderDetail(paymentBillDetail.getBillNo());
             reqForm.setEntityDetail(entityDetail);
             logger.info("推送金蝶传参:" + reqForm);

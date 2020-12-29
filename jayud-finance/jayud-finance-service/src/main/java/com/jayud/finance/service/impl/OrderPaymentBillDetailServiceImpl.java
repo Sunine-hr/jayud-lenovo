@@ -771,8 +771,8 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     }
 
     @Override
-    public PayableHeaderForm getPayableHeaderForm(String billNo) {
-        return baseMapper.getPayableHeaderForm(billNo);
+    public PayableHeaderForm getPayableHeaderForm(String orderNo) {
+        return baseMapper.getPayableHeaderForm(orderNo);
     }
 
     @Override

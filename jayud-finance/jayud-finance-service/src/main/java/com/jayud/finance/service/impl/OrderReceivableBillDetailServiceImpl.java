@@ -739,8 +739,8 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
     }
 
     @Override
-    public ReceivableHeaderForm getReceivableHeaderForm(String billNo) {
-        return baseMapper.getReceivableHeaderForm(billNo);
+    public ReceivableHeaderForm getReceivableHeaderForm(String orderNo) {
+        return baseMapper.getReceivableHeaderForm(orderNo);
     }
 
     @Override

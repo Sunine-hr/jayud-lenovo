@@ -467,7 +467,7 @@
 			left join order_payment_bill opb on opb.id = opbd.bill_id
             left join department d on d.id = oi.biz_belong_depart
             left join supplier_info si on si.supplier_code = opc.customer_code
-        where opbd.bill_no = #{billNo}
+        where opbd.order_no = #{orderNo}
     </select>
     <select id="findPayableHeaderDetail" parameterType="java.lang.String" resultType="com.jayud.finance.bo.APARDetailForm">
         SELECT

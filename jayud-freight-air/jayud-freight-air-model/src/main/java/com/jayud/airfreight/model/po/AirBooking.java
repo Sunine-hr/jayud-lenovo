@@ -107,6 +107,12 @@ public class AirBooking extends Model<AirBooking> {
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
+    @ApiModelProperty(value = "提单重量")
+    private Double billLadingWeight;
+
+    @ApiModelProperty(value = "计费重量")
+    private Double billingWeight;
+
 
     @Override
     protected Serializable pkVal() {

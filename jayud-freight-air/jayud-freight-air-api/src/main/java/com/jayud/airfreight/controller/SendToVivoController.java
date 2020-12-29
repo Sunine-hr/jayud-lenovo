@@ -65,36 +65,36 @@ public class SendToVivoController {
         }
     }
 
-    @ApiOperation(value = "提单文件传给vivo")
-    @PostMapping("/forwarder/ladingFile")
-    public ApiResult forwarderLadingFile(@RequestBody String value) {
-        ForwarderLadingFileForm form = JSONUtil.toBean(value, ForwarderLadingFileForm.class);
-        //参数检验
-//        CommonResult commonResult = form.checkParam();
-//        if (commonResult != null) {
-//            return commonResult;
+//    @ApiOperation(value = "提单文件传给vivo")
+//    @PostMapping("/forwarder/ladingFile")
+//    public ApiResult forwarderLadingFile(@RequestBody String value) {
+//        ForwarderLadingFileForm form = JSONUtil.toBean(value, ForwarderLadingFileForm.class);
+//        //参数检验
+////        CommonResult commonResult = form.checkParam();
+////        if (commonResult != null) {
+////            return commonResult;
+////        }
+//
+//        JSONObject jsonObject = new JSONObject(value);
+//        String filePath = jsonObject.getStr("filePath");
+//        String file = jsonObject.getStr("fileName");
+//        String[] tmp = file.split("\\.");
+//        String fileType = "";
+//        if (tmp.length > 1) {
+//            fileType = tmp[1];
 //        }
-
-        JSONObject jsonObject = new JSONObject(value);
-        String filePath = jsonObject.getStr("filePath");
-        String file = jsonObject.getStr("fileName");
-        String[] tmp = file.split("\\.");
-        String fileType = "";
-        if (tmp.length > 1) {
-            fileType = tmp[1];
-        }
-        StringBuilder sb = new StringBuilder().append(form.getId())
-                .append("_").append(tmp[0])
-                .append("_");
-        MultipartFile fileItem = FileUtil.createFileItem(filePath, sb.toString(), true, fileType);
-        Map<String, Object> resultMap = vivoService.forwarderLadingFile(form, fileItem);
-        if (1 == MapUtil.getInt(resultMap, "status")) {
-            return ApiResult.ok();
-        } else {
-            return ApiResult.error(ResultEnum.VIVO_ERROR.getCode(),
-                    MapUtil.getStr(resultMap, "message"));
-        }
-    }
+//        StringBuilder sb = new StringBuilder().append(form.getId())
+//                .append("_").append(tmp[0])
+//                .append("_");
+//        MultipartFile fileItem = FileUtil.createFileItem(filePath, sb.toString(), true, fileType);
+//        Map<String, Object> resultMap = vivoService.forwarderLadingFile(form, fileItem);
+//        if (1 == MapUtil.getInt(resultMap, "status")) {
+//            return ApiResult.ok();
+//        } else {
+//            return ApiResult.error(ResultEnum.VIVO_ERROR.getCode(),
+//                    MapUtil.getStr(resultMap, "message"));
+//        }
+//    }
 
     @ApiOperation(value = "提单跟踪信息回执给vivo")
     @PostMapping("/forwarder/ladingInfo")

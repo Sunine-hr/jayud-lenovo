@@ -249,10 +249,12 @@ public class AirOrderController {
         auditInfoForm.setAuditTypeDesc(orderStatusEnum.getDesc());
 
         auditInfoForm.setAuditComment(airCargoRejected.getCause());
+
+        Integer rejectOptions = airCargoRejected.getRejectOptions() == null ? 1 : airCargoRejected.getRejectOptions();
+        airCargoRejected.setRejectOptions(rejectOptions);
         switch (orderStatusEnum) {
             case AIR_A_1_1:
                 //订单驳回
-                airCargoRejected.setRejectOptions(1);
                 this.airOrderService.orderReceiving(tmp, auditInfoForm, airCargoRejected);
                 break;
             case AIR_A_2_1:

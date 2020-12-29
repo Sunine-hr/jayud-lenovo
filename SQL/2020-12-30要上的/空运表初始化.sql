@@ -23,8 +23,10 @@ CREATE TABLE `air_booking` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_user` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `bill_lading_weight` double DEFAULT NULL COMMENT '提单重量',
+  `billing_weight` double DEFAULT NULL COMMENT '计费重量',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='空运订舱表';
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='空运订舱表';
 
 
 CREATE TABLE `air_extension_field` (
@@ -103,7 +105,8 @@ CREATE TABLE `goods` (
 CREATE TABLE `order_address` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `business_id` bigint(20) NOT NULL COMMENT '业务主键(根据类型选择对应表的主键)',
-  `type` int(10) NOT NULL COMMENT '类型(0:发货,1:收货,2:通知)',
+  `bind_goods_id` bigint(20) DEFAULT NULL COMMENT '绑定商品id',
+  `type` int(10) NOT NULL COMMENT '类型(0:发货,1:收货,2:通知,3:提货,4:送货)',
   `business_type` int(10) DEFAULT NULL COMMENT '业务类型(0:空运)',
   `company` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '公司名称',
   `contacts` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '联系人',
@@ -113,8 +116,9 @@ CREATE TABLE `order_address` (
   `mailbox` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '邮箱',
   `remarks` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '备注',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `delivery_date` datetime DEFAULT NULL COMMENT '交货日期(提货日期/送货日期)',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='订单地址表';
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='订单地址表';
 
 
 CREATE TABLE `general_api_log` (

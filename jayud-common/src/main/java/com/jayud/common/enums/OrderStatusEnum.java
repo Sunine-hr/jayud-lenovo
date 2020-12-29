@@ -30,8 +30,8 @@ public enum OrderStatusEnum {
     MAIN_3("3", "关闭"),
     MAIN_4("4", "待补全"),
     MAIN_5("5", "终止"),//废弃
-    MAIN_6("6", "待取消处理"),
-    MAIN_7("7", "待驳回处理"),
+    MAIN_6("6", "待取消"),
+    MAIN_7("7", "待驳回"),
 
     //所有主/子订单的状态
     CLOSE("CLOSE", "关闭"),

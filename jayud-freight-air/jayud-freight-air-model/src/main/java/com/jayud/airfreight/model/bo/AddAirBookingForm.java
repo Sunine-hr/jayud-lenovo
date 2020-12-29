@@ -75,6 +75,12 @@ public class AddAirBookingForm extends Model<AddAirBookingForm> {
     @ApiModelProperty(value = "交仓仓库")
     private String deliveryWarehouse;
 
+    @ApiModelProperty(value = "提单重量")
+    private Double billLadingWeight;
+
+    @ApiModelProperty(value = "计费重量")
+    private Double billingWeight;
+
 //    @ApiModelProperty(value = "附件集合")
 //    private List<FileView> fileViewList = new ArrayList<>();
 
@@ -138,15 +144,23 @@ public class AddAirBookingForm extends Model<AddAirBookingForm> {
             log.warn(title + " 预计到港时间必填");
             return false;
         }
+        if (this.billLadingWeight == null) {
+            log.warn(title + " 计费重量必填");
+            return false;
+        }
+        if (this.billingWeight == null) {
+            log.warn(title + " 提单重量必填");
+            return false;
+        }
         return true;
     }
 
     public boolean checkConfirmATDOptParam() {
         String title = "确认离港操作";
-        if (this.id == null) {
-            log.warn(title + " 订舱id必填");
-            return false;
-        }
+//        if (this.id == null) {
+//            log.warn(title + " 订舱id必填");
+//            return false;
+//        }
         if (StringUtils.isEmpty(this.atd)) {
             log.warn(title + " 实际离港时间必填");
             return false;
@@ -156,10 +170,10 @@ public class AddAirBookingForm extends Model<AddAirBookingForm> {
 
     public boolean checkConfirmATAOptParam() {
         String title = "确认到港操作";
-        if (this.id == null) {
-            log.warn(title + " 订舱id必填");
-            return false;
-        }
+//        if (this.id == null) {
+//            log.warn(title + " 订舱id必填");
+//            return false;
+//        }
         if (StringUtils.isEmpty(this.ata)) {
             log.warn(title + " 实际到港时间必填");
             return false;

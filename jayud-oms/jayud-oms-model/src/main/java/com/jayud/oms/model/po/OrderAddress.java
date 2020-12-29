@@ -3,8 +3,10 @@ package com.jayud.oms.model.po;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.time.LocalDateTime;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -22,7 +24,7 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="OrderAddress对象", description="订单地址表")
+@ApiModel(value = "OrderAddress对象", description = "订单地址表")
 public class OrderAddress extends Model<OrderAddress> {
 
     private static final long serialVersionUID = 1L;
@@ -36,6 +38,9 @@ public class OrderAddress extends Model<OrderAddress> {
 
     @ApiModelProperty(value = "类型(0:发货,1:收货,2:通知)")
     private Integer type;
+
+    @ApiModelProperty(value = "绑定商品id")
+    private Long bindGoodsId;
 
     @ApiModelProperty(value = "业务类型(0:空运)")
     private Integer businessType;
@@ -63,6 +68,9 @@ public class OrderAddress extends Model<OrderAddress> {
 
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
+
+    @ApiModelProperty(value = "交货日期(提货日期/送货日期)")
+    private LocalDateTime deliveryDate;
 
 
     @Override

@@ -58,4 +58,11 @@ public interface ICustomerService extends IService<Customer> {
      * @return
      */
     CommonResult customerUpdatePwd(CustomerPwdForm form);
+
+    /**
+     * 我的账号-根据id获取客户详细
+      * @param id
+     * @return
+     */
+    CommonResult<CustomerVO> findCustomerById(Integer id);
 }

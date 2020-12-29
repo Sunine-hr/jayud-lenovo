@@ -1,6 +1,7 @@
 package com.jayud.mall.controller;
 
 import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.CustomerParaForm;
 import com.jayud.mall.model.bo.CustomerPwdForm;
 import com.jayud.mall.model.bo.CustomerRegisterForm;
 import com.jayud.mall.model.bo.CustomerVerifyForm;
@@ -47,5 +48,14 @@ public class CustomerController {
     public CommonResult customerUpdatePwd(@Valid @RequestBody CustomerPwdForm form){
         return customerService.customerUpdatePwd(form);
     }
+
+    @ApiOperation(value = "我的账号-根据id获取客户详细")
+    @PostMapping("/findCustomerById")
+    @ApiOperationSupport(order = 4)
+    public CommonResult<CustomerVO> findCustomerById(@Valid @RequestBody CustomerParaForm form){
+        Integer id = form.getId();
+        return customerService.findCustomerById(id);
+    }
+
 
 }

@@ -161,5 +161,12 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         return CommonResult.success("修改密码成功");
     }
 
+    @Override
+    public CommonResult<CustomerVO> findCustomerById(Integer id) {
+        Customer customer = this.getById(id);
+        CustomerVO customerVO = ConvertUtil.convert(customer, CustomerVO.class);
+        return CommonResult.success(customerVO);
+    }
+
 
 }

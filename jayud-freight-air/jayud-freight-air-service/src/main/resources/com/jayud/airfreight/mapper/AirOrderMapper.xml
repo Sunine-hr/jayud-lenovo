@@ -79,6 +79,10 @@
             <if test="form.createTime !=null and form.createTime!=''">
                 and a.create_time = #{form.createTime}
             </if>
+            <if test="form.cmd == 'costAudit'">
+                AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = a.order_no AND opc.`status` = '2' and opc.sub_type = 'ky')
+                OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = a.order_no AND orc.`status` = '2' and orc.sub_type = 'ky'))
+            </if>
             and (ab.`status` != 2 or ab.`status` is null)
         </where>
         order by a.id desc

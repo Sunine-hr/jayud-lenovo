@@ -214,7 +214,6 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         //设置订舱状态
         setAirBookingStatus(airBooking);
 
-
         airBookingService.saveOrUpdateAirBooking(airBooking);
         updateProcessStatus(new AirOrder(), form);
         //消息推送
@@ -271,10 +270,9 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         tmp.setUpdateUser(UserOperator.getToken());
         tmp.setStatus(auditInfoForm.getAuditStatus());
         //根据选择是否订舱驳回
-        Integer rejectOptions = airCargoRejected.getRejectOptions() == null ? 1 : airCargoRejected.getRejectOptions();
         ApiResult result = new ApiResult();
         //删除物流轨迹表订舱数据
-        switch (rejectOptions) {
+        switch (airCargoRejected.getRejectOptions()) {
             case 1://订单驳回
                 result = omsClient.deleteLogisticsTrackByType(airOrder.getId(), BusinessTypeEnum.KY.getCode());
                 //删除订舱数据
@@ -338,7 +336,8 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
             AirOrder tmp = this.getById(airOrder.getId());
             if (AirOrderTermsEnum.CIF.getCode().equals(tmp.getTerms())
                     || AirOrderTermsEnum.FOB.getCode().equals(tmp.getTerms())
-                    || AirOrderTermsEnum.CFR.getCode().equals(tmp.getTerms())) {
+                    || AirOrderTermsEnum.CFR.getCode().equals(tmp.getTerms())
+                    || AirOrderTermsEnum.CPT.getCode().equals(tmp.getTerms())) {
                 this.updateById(new AirOrder().setId(tmp.getId()).setProcessStatus(1));
                 return;
             }

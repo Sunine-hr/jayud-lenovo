@@ -29,6 +29,7 @@ import com.jayud.common.exception.Asserts;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.exception.VivoApiException;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.FileUtil;
 import com.jayud.common.utils.RandomGUID;
 import com.jayud.common.utils.RsaEncryptUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -150,6 +151,37 @@ public class VivoServiceImpl implements VivoService {
     public Map<String, Object> forwarderLadingFile(ForwarderLadingFileForm form, MultipartFile file) {
         String url = urlBase + urlLadingFile;
         return postWithFile(form, file, url);
+    }
+
+
+    /**
+     * 提单文件信息
+     *
+     * @return
+     */
+    @Override
+    public Map<String, Object> forwarderLadingFile(Map<String, Object> map) {
+        JSONObject jsonObject = new JSONObject(map);
+        ForwarderLadingFileForm form = JSONUtil.toBean(jsonObject, ForwarderLadingFileForm.class);
+        //参数检验
+//        CommonResult commonResult = form.checkParam();
+//        if (commonResult != null) {
+//            return commonResult;
+//        }
+
+        String filePath = jsonObject.getStr("filePath");
+        String file = jsonObject.getStr("fileName");
+        String[] tmp = file.split("\\.");
+        String fileType = "";
+        if (tmp.length > 1) {
+            fileType = tmp[1];
+        }
+        StringBuilder sb = new StringBuilder().append(form.getId())
+                .append("_").append(tmp[0])
+                .append("_");
+        MultipartFile fileItem = FileUtil.createFileItem(filePath, sb.toString(), true, fileType);
+        String url = urlBase + urlLadingFile;
+        return postWithFile(form, fileItem, url);
     }
 
     @Override
@@ -627,9 +659,9 @@ public class VivoServiceImpl implements VivoService {
      * @param airBooking
      */
     public void billLadingInfoPush(AirOrder airOrder, AirBooking airBooking) {
-        Map<String, String> request = new HashMap();
-        request.put("topic", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_THREE.getTopic());
-        request.put("key", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_THREE.getKey());
+//        Map<String, String> request = new HashMap();
+//        request.put("topic", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_THREE.getTopic());
+//        request.put("key", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_THREE.getKey());
         Map<String, Object> msg = new HashMap<>();
         msg.put("bookingNo", airOrder.getThirdPartyOrderNo());
         msg.put("forwarderBookingNo", airOrder.getOrderNo());
@@ -643,8 +675,15 @@ public class VivoServiceImpl implements VivoService {
         }
         msg.put("filePath", result.getData() + airBooking.getFilePath());
         msg.put("fileName", airBooking.getFileName());
-        request.put("msg", JSONUtil.toJsonStr(msg));
-        msgClient.consume(request);
+//        request.put("msg", JSONUtil.toJsonStr(msg));
+//        msgClient.consume(request);
+
+        Map<String, Object> resultMap = this.forwarderLadingFile(msg);
+        if (0 == MapUtil.getInt(resultMap, "status")) {
+            log.error("vivo货代抛转空运提单信息失败 msg={}", MapUtil.getStr(resultMap, "message"));
+            throw new VivoApiException(MapUtil.getStr(resultMap, "message"));
+        }
+
     }
 
     private void supplementIdOpt(BookingSpaceForm form) {

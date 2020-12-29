@@ -2,4 +2,4 @@ jayud:
   nacos:
     server-addr: 113.100.140.250:8848
     config:
-      namespace: c19b4244-6c37-4ca2-ba49-a27404ca3f74
+      namespace: 65ed253a-22cf-49e9-8e95-72402f722631

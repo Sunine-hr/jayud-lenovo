@@ -48,6 +48,13 @@ public interface VivoService {
     Map<String, Object> forwarderLadingFile(ForwarderLadingFileForm form, MultipartFile file);
 
     /**
+     * 提单文件信息
+     *
+     * @return
+     */
+    public Map<String, Object> forwarderLadingFile(Map<String, Object> map);
+
+    /**
      * 提单跟踪信息回执给vivo
      *
      * @param form
@@ -113,5 +120,5 @@ public interface VivoService {
     /**
      * 订舱驳回
      */
-    public Map<String,Object> bookingRejected(AirOrder airOrder, AirCargoRejected airCargoRejected);
+    public Map<String, Object> bookingRejected(AirOrder airOrder, AirCargoRejected airCargoRejected);
 }

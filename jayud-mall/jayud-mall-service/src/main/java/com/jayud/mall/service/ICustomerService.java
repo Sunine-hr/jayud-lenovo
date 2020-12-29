@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.CustomerAuditForm;
 import com.jayud.mall.model.bo.CustomerEditForm;
+import com.jayud.mall.model.bo.CustomerRegisterForm;
 import com.jayud.mall.model.bo.QueryCustomerForm;
 import com.jayud.mall.model.po.Customer;
 import com.jayud.mall.model.vo.CustomerVO;
@@ -39,4 +40,11 @@ public interface ICustomerService extends IService<Customer> {
      * @return
      */
     CommonResult<CustomerVO> auditCustomer(CustomerAuditForm form);
+
+    /**
+     * 客户注册
+     * @param form
+     * @return
+     */
+    CommonResult<CustomerVO> customerRegister(CustomerRegisterForm form);
 }

@@ -584,6 +584,16 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 QueryWrapper updateWrapper = new QueryWrapper();
                 updateWrapper.eq("bill_no",billNo);
                 update(orderPaymentBillDetail,updateWrapper);
+
+                //保存审核信息
+                AuditInfoForm auditInfoForm = new AuditInfoForm();
+                auditInfoForm.setExtUniqueFlag(billNo);
+                auditInfoForm.setAuditTypeDesc("应付客服反审核");
+                auditInfoForm.setAuditStatus(BillEnum.B_7.getCode());
+                auditInfoForm.setAuditComment(form.getRemark());
+                auditInfoForm.setExtDesc("order_payment_bill_detail表bill_no");
+                auditInfoForm.setAuditUser(form.getLoginUserName());
+                omsClient.saveAuditInfo(auditInfoForm);
             }
         }else if("cw_f_reject".equals(form.getCmd())){
             for (OrderPaymentBillDetail existObject : existList) {
@@ -599,6 +609,16 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 QueryWrapper updateWrapper = new QueryWrapper();
                 updateWrapper.eq("bill_no",billNo);
                 update(orderPaymentBillDetail,updateWrapper);
+
+                //保存审核信息
+                AuditInfoForm auditInfoForm = new AuditInfoForm();
+                auditInfoForm.setExtUniqueFlag(billNo);
+                auditInfoForm.setAuditTypeDesc("应付财务反审核");
+                auditInfoForm.setAuditStatus(BillEnum.B_8.getCode());
+                auditInfoForm.setAuditComment(form.getRemark());
+                auditInfoForm.setExtDesc("order_payment_bill_detail表bill_no");
+                auditInfoForm.setAuditUser(form.getLoginUserName());
+                omsClient.saveAuditInfo(auditInfoForm);
             }
         }
         return CommonResult.success();
@@ -751,13 +771,21 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     }
 
     @Override
-    public PayableHeaderForm getPayableHeaderForm(String billNo) {
-        return baseMapper.getPayableHeaderForm(billNo);
+    public PayableHeaderForm getPayableHeaderForm(String orderNo) {
+        return baseMapper.getPayableHeaderForm(orderNo);
     }
 
     @Override
     public List<APARDetailForm> findPayableHeaderDetail(String billNo) {
-        return baseMapper.findPayableHeaderDetail(billNo);
+        List<APARDetailForm> detailForms = baseMapper.findPayableHeaderDetail(billNo);
+        for (APARDetailForm detailForm : detailForms) {
+            String expenseCategoryName = detailForm.getExpenseCategoryName();
+            if(expenseCategoryName.contains("-")){
+                expenseCategoryName = expenseCategoryName.substring(0,expenseCategoryName.indexOf("-"));
+                detailForm.setExpenseCategoryName(expenseCategoryName);
+            }
+        }
+        return detailForms;
     }
 
     @Override

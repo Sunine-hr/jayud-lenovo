@@ -22,5 +22,8 @@ public class ListForm {
     @ApiModelProperty(value = "当前登录用户")
     private String loginUserName;
 
+    @ApiModelProperty(value = "备注")
+    private String remark;
+
 
 }

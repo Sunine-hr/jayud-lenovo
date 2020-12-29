@@ -3,7 +3,6 @@ package com.jayud.send;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONUtil;
 import com.jayud.common.enums.ResultEnum;
-import com.jayud.feign.CustomsApiClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -29,9 +28,6 @@ public class ProducerController {
     @Autowired
     private KafkaTemplate kafkaTemplate;
 
-    @Autowired
-    CustomsApiClient customsApiClient;
-
     /**
      * 提供发送接口
      *
@@ -45,22 +41,6 @@ public class ProducerController {
         try {
             log.debug(String.format("正在向kafka发送数据：%s", JSONUtil.toJsonPrettyStr(param)));
             kafkaTemplate.send(topic, key, value);
-
-            /**update push log**/
-//            AtomicReference<String> applyNo = new AtomicReference<>("");
-//            JSONArray jsonArray = JSONObject.parseArray(value);
-//            jsonArray.forEach(o -> {
-//                JSONObject jsonObject = (JSONObject) o;
-//                String custom_apply_no = jsonObject.get("custom_apply_no").toString();
-//                applyNo.set(custom_apply_no);
-//            });
-//            Map<String, Object> logParam = new HashMap<>();
-//            logParam.put("applyNo", applyNo);//18位报关单号
-//            logParam.put("pushStatusCode", PushKingdeeEnum.STEP3.getCode());
-//            logParam.put("pushStatusMsg", PushKingdeeEnum.STEP3.getMsg());
-//            logParam.put("updateTime", LocalDateTime.now());
-//            String logMsg = JSONObject.toJSONString(logParam);
-//            customsApiClient.saveOrOpdateLog(logMsg);
 
         } catch (Exception e) {
             e.printStackTrace();

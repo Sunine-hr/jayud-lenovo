@@ -189,10 +189,10 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
     /**
      * 获取推送金蝶的应付数据
-     * @param billNo
+     * @param orderNo 主订单
      * @return
      */
-    PayableHeaderForm getPayableHeaderForm(String billNo);
+    PayableHeaderForm getPayableHeaderForm(String orderNo);
 
     /**
      * 获取推送金蝶的应付详细数据

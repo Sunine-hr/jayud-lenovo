@@ -9,6 +9,8 @@ import com.jayud.mall.model.vo.CustomerVO;
 import com.jayud.mall.service.ICustomerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperationSupport;
+import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/customer")
-@Api(tags = "后台-客户接口")
+@Api(tags = "S017-后台-客户接口")
+@ApiSort(value = 17)
 public class CustomerController {
 
     @Autowired
@@ -25,6 +28,7 @@ public class CustomerController {
 
     @ApiOperation(value = "分页查询-客户列表")
     @PostMapping("/findCustomerByPage")
+    @ApiOperationSupport(order = 1)
     public CommonResult<CommonPageResult<CustomerVO>> findCustomerByPage(@RequestBody QueryCustomerForm form) {
         IPage<CustomerVO> pageList = customerService.findCustomerByPage(form);
         CommonPageResult<CustomerVO> pageVO = new CommonPageResult(pageList);
@@ -33,12 +37,14 @@ public class CustomerController {
 
     @ApiOperation(value = "编辑-保存客户")
     @PostMapping("/saveCustomer")
+    @ApiOperationSupport(order = 2)
     public CommonResult saveCustomer(@RequestBody CustomerForm form){
         return customerService.saveCustomer(form);
     }
 
     @ApiOperation(value = "审核-客户")
     @PostMapping("/auditCustomer")
+    @ApiOperationSupport(order = 3)
     public CommonResult<CustomerVO> auditCustomer(@RequestBody CustomerForm form){
         return customerService.auditCustomer(form);
     }

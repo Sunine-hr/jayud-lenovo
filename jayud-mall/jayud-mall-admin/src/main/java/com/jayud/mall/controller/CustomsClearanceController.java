@@ -21,7 +21,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/customsclearance")
-@Api(tags = "S012-后台-清关资料接口")
+@Api(tags = "S012-后台-清关商品资料接口")
 @ApiSort(value = 12)
 public class CustomsClearanceController {
 

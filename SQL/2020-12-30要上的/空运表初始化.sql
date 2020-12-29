@@ -23,8 +23,10 @@ CREATE TABLE `air_booking` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_user` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `bill_lading_weight` double DEFAULT NULL COMMENT '提单重量',
+  `billing_weight` double DEFAULT NULL COMMENT '计费重量',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='空运订舱表';
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='空运订舱表';
 
 
 CREATE TABLE `air_extension_field` (

@@ -541,20 +541,27 @@ public class VivoServiceImpl implements VivoService {
 
     @Override
     public void bookingMessagePush(AirOrder airOrder, AirBooking airBooking) {
-        Map<String, String> request = new HashMap();
-        request.put("topic", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_ONE.getTopic());
-        request.put("key", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_ONE.getKey());
-        Map<String, Object> msg = new HashMap<>();
-        msg.put("bookingNo", airOrder.getThirdPartyOrderNo());
-        msg.put("forwarderBookingNo", airOrder.getOrderNo());
-        msg.put("deliveryWarehouse", airBooking.getDeliveryWarehouse());
-        msg.put("deliveryWarehouseAddress", airBooking.getDeliveryAddress());
-        request.put("msg", JSONUtil.toJsonStr(msg));
-        msgClient.consume(request);
-//            if (ResultEnum.INTERNAL_SERVER_ERROR.getCode().toString().equals(consume.get("code"))) {
-//                log.error("远程调用推送确认订舱信息给vivo失败 data={}", JSONUtil.toJsonStr(msg));
-//                throw new JayudBizException(ResultEnum.OPR_FAIL);
-//            }
+//        Map<String, String> request = new HashMap<>();
+//        request.put("topic", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_ONE.getTopic());
+//        request.put("key", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_ONE.getKey());
+//        Map<String, Object> msg = new HashMap<>();
+//        msg.put("bookingNo", airOrder.getThirdPartyOrderNo());
+//        msg.put("forwarderBookingNo", airOrder.getOrderNo());
+//        msg.put("deliveryWarehouse", airBooking.getDeliveryWarehouse());
+//        msg.put("deliveryWarehouseAddress", airBooking.getDeliveryAddress());
+//        request.put("msg", JSONUtil.toJsonStr(msg));
+//        msgClient.consume(request);
+        ForwarderBookingConfirmedFeedbackForm form = new ForwarderBookingConfirmedFeedbackForm();
+        form.setBookingNo(airOrder.getThirdPartyOrderNo());
+        form.setForwarderBookingno(airOrder.getOrderNo());
+        form.setDeliveryWarehouse(airBooking.getDeliveryWarehouse());
+        form.setDeliveryWarehouseAddress(airBooking.getDeliveryAddress());
+        Map<String, Object> result = this.forwarderBookingConfirmedFeedback(form);
+
+        if (1 == MapUtil.getInt(result, "status")) {
+            log.error("远程调用推送确认订舱信息给vivo失败 msg={}", MapUtil.getStr(result, "message"));
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
     }
 
     /**

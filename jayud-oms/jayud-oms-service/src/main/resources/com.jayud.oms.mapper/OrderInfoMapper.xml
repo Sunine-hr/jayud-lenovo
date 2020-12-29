@@ -304,7 +304,7 @@
             COUNT(1)
           FROM
             order_info o6
-          WHERE o6.status = '6') AS pendingCount,
+          WHERE o6.status = '6') AS cancelledCount,
            (SELECT
             COUNT(1)
           FROM

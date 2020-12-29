@@ -75,6 +75,12 @@ public class AddAirBookingForm extends Model<AddAirBookingForm> {
     @ApiModelProperty(value = "交仓仓库")
     private String deliveryWarehouse;
 
+    @ApiModelProperty(value = "提单重量")
+    private Double billLadingWeight;
+
+    @ApiModelProperty(value = "计费重量")
+    private Double billingWeight;
+
 //    @ApiModelProperty(value = "附件集合")
 //    private List<FileView> fileViewList = new ArrayList<>();
 
@@ -136,6 +142,14 @@ public class AddAirBookingForm extends Model<AddAirBookingForm> {
         }
         if (StringUtils.isEmpty(this.eta)) {
             log.warn(title + " 预计到港时间必填");
+            return false;
+        }
+        if (this.billLadingWeight == null) {
+            log.warn(title + " 计费重量必填");
+            return false;
+        }
+        if (this.billingWeight == null) {
+            log.warn(title + " 提单重量必填");
             return false;
         }
         return true;

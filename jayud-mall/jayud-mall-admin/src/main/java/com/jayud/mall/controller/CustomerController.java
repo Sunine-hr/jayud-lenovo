@@ -3,6 +3,7 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.CustomerEditForm;
 import com.jayud.mall.model.bo.CustomerForm;
 import com.jayud.mall.model.bo.QueryCustomerForm;
 import com.jayud.mall.model.vo.CustomerVO;
@@ -38,7 +39,7 @@ public class CustomerController {
     @ApiOperation(value = "编辑-保存客户")
     @PostMapping("/saveCustomer")
     @ApiOperationSupport(order = 2)
-    public CommonResult saveCustomer(@RequestBody CustomerForm form){
+    public CommonResult saveCustomer(@RequestBody CustomerEditForm form){
         return customerService.saveCustomer(form);
     }
 

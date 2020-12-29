@@ -1,5 +1,6 @@
 package com.jayud.mall.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -7,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.CustomerMapper;
+import com.jayud.mall.model.bo.CustomerEditForm;
 import com.jayud.mall.model.bo.CustomerForm;
 import com.jayud.mall.model.bo.QueryCustomerForm;
 import com.jayud.mall.model.po.Customer;
@@ -41,8 +43,33 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
 
     @Override
-    public CommonResult saveCustomer(CustomerForm form) {
+    public CommonResult saveCustomer(CustomerEditForm form) {
         Customer customer = ConvertUtil.convert(form, Customer.class);
+        Integer id = form.getId();
+        String company = form.getCompany();
+        QueryWrapper<Customer> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("company", company);
+        queryWrapper.ne("id", id);
+        int companyCount = this.count(queryWrapper);
+        if(companyCount > 0){
+            return CommonResult.error(-1, "客户(公司)名称,已存在");
+        }
+        String userName = form.getUserName();
+        queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_name", userName);
+        queryWrapper.ne("id", id);
+        int userNameCount = this.count(queryWrapper);
+        if(userNameCount > 0){
+            return CommonResult.error(-1, "客户(公司)名称,已存在");
+        }
+        String phone = form.getPhone();
+        queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("phone", phone);
+        queryWrapper.ne("id", id);
+        int phoneCount = this.count(queryWrapper);
+        if(phoneCount > 0){
+            return CommonResult.error(-1, "手机号,已存在");
+        }
         this.saveOrUpdate(customer);
         return CommonResult.success("保存客户，成功！");
     }

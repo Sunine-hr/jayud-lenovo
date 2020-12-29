@@ -7,15 +7,19 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.mall.admin.security.domain.AuthUser;
+import com.jayud.mall.admin.security.service.BaseService;
 import com.jayud.mall.mapper.CustomerMapper;
+import com.jayud.mall.model.bo.CustomerAuditForm;
 import com.jayud.mall.model.bo.CustomerEditForm;
-import com.jayud.mall.model.bo.CustomerForm;
 import com.jayud.mall.model.bo.QueryCustomerForm;
 import com.jayud.mall.model.po.Customer;
 import com.jayud.mall.model.vo.CustomerVO;
 import com.jayud.mall.service.ICustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -30,6 +34,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
     @Autowired
     CustomerMapper customerMapper;
+    @Autowired
+    BaseService baseService;
 
     @Override
     public IPage<CustomerVO> findCustomerByPage(QueryCustomerForm form) {
@@ -75,8 +81,11 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
 
     @Override
-    public CommonResult<CustomerVO> auditCustomer(CustomerForm form) {
+    public CommonResult<CustomerVO> auditCustomer(CustomerAuditForm form) {
         Customer customer = ConvertUtil.convert(form, Customer.class);
+        AuthUser user = baseService.getUser();
+        customer.setAuditUserId(user.getId().intValue());//审核人
+        customer.setAuditTime(LocalDateTime.now());//审核时间
         this.saveOrUpdate(customer);
         CustomerVO customerVO = ConvertUtil.convert(customer, CustomerVO.class);
         return CommonResult.success(customerVO);

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -72,12 +73,13 @@ public class Customer extends Model<Customer> {
     @JSONField(ordinal = 10)
     private Integer auditStatus;
 
-    @ApiModelProperty(value = "审核人", position = 11)
+    @ApiModelProperty(value = "审核人(system_user id)", position = 11)
     @JSONField(ordinal = 11)
     private Integer auditUserId;
 
     @ApiModelProperty(value = "审核时间", position = 12)
-    @JSONField(ordinal = 12)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 12, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime auditTime;
 
     @ApiModelProperty(value = "启用状态，默认为1，1是0否", position = 13)
@@ -111,7 +113,8 @@ public class Customer extends Model<Customer> {
     private String origin;
 
     @ApiModelProperty(value = "创建日期", position = 20)
-    @JSONField(ordinal = 20)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 12, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createDate;
 
     @ApiModelProperty(value = "支付类型", position = 21)

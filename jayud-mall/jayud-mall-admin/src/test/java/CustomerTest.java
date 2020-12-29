@@ -1,3 +1,4 @@
+import com.jayud.mall.model.bo.CustomerAuditForm;
 import com.jayud.mall.model.bo.CustomerForm;
 import com.jayud.mall.utils.TestUtils;
 import org.junit.Test;
@@ -22,6 +23,17 @@ public class CustomerTest {
         form.setSalesmanId(149);
         form.setOperationTeamId(1L);
         form.setRemark("这个是我`吴提柜`审核的哈~");
+        TestUtils.JSONObjectPrint(form);
+    }
+
+    @Test
+    public void test3(){
+        CustomerAuditForm form = new CustomerAuditForm();
+        form.setId(3);
+        form.setAuditStatus(1);//1审核通过
+        form.setSalesmanId(1);
+        form.setOperationTeamId(1L);
+        form.setRemark("审核备注A");
         TestUtils.JSONObjectPrint(form);
     }
 

@@ -475,11 +475,12 @@
             ( SELECT code_name FROM cost_type ct WHERE ct.id = opc.cost_type_id ) expenseCategoryName,
             ( SELECT cg.NAME FROM cost_genre cg WHERE cg.id = opc.cost_genre_id ) expenseTypeName,
             opc.number,
-            ifnull(opc.unit_price,0) taxPrice,
+            ifnull(obct.money,0)/opc.number taxPrice,
             ifnull(opbd.tax_rate,0) taxRate,
             ifnull(opc.number,0) priceQty
         FROM
             order_payment_bill_detail opbd
+			left join order_bill_cost_total obct on obct.cost_id = opbd.cost_id
             LEFT JOIN order_payment_cost opc ON opbd.cost_id = opc.id
         WHERE
             opbd.bill_no = #{billNo}

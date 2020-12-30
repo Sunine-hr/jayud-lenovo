@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -79,5 +80,14 @@ public class CustomsDataServiceImpl extends ServiceImpl<CustomsDataMapper, Custo
         }
         this.saveOrUpdate(customsData);
         return CommonResult.success("保存报关资料，成功!");
+    }
+
+    @Override
+    public List<CustomsDataVO> findCustomsData() {
+        QueryWrapper<CustomsData> queryWrapper = new QueryWrapper<>();
+        //queryWrapper.eq("","");
+        List<CustomsData> list = this.list(queryWrapper);
+        List<CustomsDataVO> customsDataVOS = ConvertUtil.convertList(list, CustomsDataVO.class);
+        return customsDataVOS;
     }
 }

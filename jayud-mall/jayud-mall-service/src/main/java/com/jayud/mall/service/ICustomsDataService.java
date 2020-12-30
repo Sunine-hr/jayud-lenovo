@@ -8,6 +8,8 @@ import com.jayud.mall.model.po.CustomsData;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.vo.CustomsDataVO;
 
+import java.util.List;
+
 /**
  * <p>
  * 报关资料表 服务类
@@ -31,4 +33,10 @@ public interface ICustomsDataService extends IService<CustomsData> {
      * @return
      */
     CommonResult saveCustomsData(CustomsDataForm form);
+
+    /**
+     * 查询报关商品资料list
+     * @return
+     */
+    List<CustomsDataVO> findCustomsData();
 }

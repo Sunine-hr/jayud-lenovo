@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/customsdata")
@@ -42,6 +43,14 @@ public class CustomsDataController {
     @ApiOperationSupport(order = 2)
     public CommonResult saveCustomsData(@Valid @RequestBody CustomsDataForm form){
         return customsDataService.saveCustomsData(form);
+    }
+
+    @ApiOperation(value = "查询报关商品资料list")
+    @PostMapping("/findCustomsData")
+    @ApiOperationSupport(order = 3)
+    public CommonResult<List<CustomsDataVO>> findCustomsData() {
+        List<CustomsDataVO> list = customsDataService.findCustomsData();
+        return CommonResult.success(list);
     }
 
 

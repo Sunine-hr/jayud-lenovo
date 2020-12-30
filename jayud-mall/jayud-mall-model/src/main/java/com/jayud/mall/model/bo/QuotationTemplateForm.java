@@ -30,9 +30,12 @@ public class QuotationTemplateForm {
     @JSONField(ordinal = 4)
     private String names;
 
-    @ApiModelProperty(value = "报价图片，多张用逗号分割", position = 5)
+    //@ApiModelProperty(value = "报价图片，多张用逗号分割", position = 5)
+    //@JSONField(ordinal = 5)
+    //private String picUrl;
+    @ApiModelProperty(value = "报价图片，多张用逗号分割，数组", position = 5)
     @JSONField(ordinal = 5)
-    private String picUrl;
+    private List<PicUrlArrForm> picUrlarr;
 
     @ApiModelProperty(value = "运输方式(transport_way id)", position = 6)
     @JSONField(ordinal = 6)
@@ -46,17 +49,23 @@ public class QuotationTemplateForm {
     @JSONField(ordinal = 8)
     private String destinationPort;
 
-    @ApiModelProperty(value = "可达仓库(fab_warehouse.id),多个用逗号分隔", position = 9)
+    //@ApiModelProperty(value = "可达仓库(fab_warehouse.id),多个用逗号分隔", position = 9)
+    //@JSONField(ordinal = 9)
+    //private String arriveWarehouse;
+    @ApiModelProperty(value = "可达仓库(fab_warehouse.id),多个用逗号分隔，数组", position = 9)
     @JSONField(ordinal = 9)
-    private String arriveWarehouse;
+    private List<FabWarehouseForm> arriveWarehousearr;
 
     @ApiModelProperty(value = "可见客户(0公开 1指定客户)", position = 10)
     @JSONField(ordinal = 10)
     private Integer visibleCustomer;
 
-    @ApiModelProperty(value = "可见客户(customer.id，多客户时逗号分隔用户ID)", position = 11)
+    //@ApiModelProperty(value = "可见客户(customer.id，多客户时逗号分隔用户ID)", position = 11)
+    //@JSONField(ordinal = 11)
+    //private String visibleUid;
+    @ApiModelProperty(value = "可见客户(customer.id，多客户时逗号分隔用户ID)，数组", position = 11)
     @JSONField(ordinal = 11)
-    private String visibleUid;
+    private List<CustomerForm> visibleUidarr;
 
     @ApiModelProperty(value = "开船日期", position = 12)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
@@ -82,21 +91,30 @@ public class QuotationTemplateForm {
     @JSONField(ordinal = 16)
     private Integer gidtype;
 
-    @ApiModelProperty(value = "货物类型(goods_type id),多个用逗号分隔", position = 17)
+    //@ApiModelProperty(value = "货物类型(goods_type id),多个用逗号分隔", position = 17)
+    //@JSONField(ordinal = 17)
+    //private String gid;
+    @ApiModelProperty(value = "货物类型(goods_type types=2 id),多个用逗号分隔，数组", position = 17)
     @JSONField(ordinal = 17)
-    private String gid;
+    private List<GoodsTypeForm> gidarr;
 
+    //@ApiModelProperty(value = "集货仓库(shipping_area id),多个都号分隔", position = 18)
+    //@JSONField(ordinal = 18)
+    //private String areaId;
     @ApiModelProperty(value = "集货仓库(shipping_area id),多个都号分隔", position = 18)
     @JSONField(ordinal = 18)
-    private String areaId;
+    private List<ShippingAreaForm> areaIdarr;
 
     @ApiModelProperty(value = "报价类型(1整柜 2散柜)", position = 19)
     @JSONField(ordinal = 19)
     private Integer qidtype;
 
-    @ApiModelProperty(value = "报价类型(quotation_type id),多个用逗号分隔", position = 20)
+    //@ApiModelProperty(value = "报价类型(quotation_type id),多个用逗号分隔", position = 20)
+    //@JSONField(ordinal = 20)
+    //private String qid;
+    @ApiModelProperty(value = "报价类型(goods_type types=1 id),多个用逗号分隔，数组", position = 20)
     @JSONField(ordinal = 20)
-    private String qid;
+    private List<QuotationTypeForm> qidarr;
 
     @ApiModelProperty(value = "任务分组id(运单任务task_group id)", position = 21)
     @JSONField(ordinal = 21)

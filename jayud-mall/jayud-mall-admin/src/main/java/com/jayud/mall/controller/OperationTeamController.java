@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/operationteam")
-@Api(tags = "S018-后端-运营(服务)小组接口")
+@Api(tags = "S018-后台-运营(服务)小组接口")
 @ApiSort(value = 18)
 public class OperationTeamController {
 

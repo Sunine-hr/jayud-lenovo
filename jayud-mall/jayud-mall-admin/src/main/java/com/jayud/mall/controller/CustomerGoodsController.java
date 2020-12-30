@@ -9,6 +9,8 @@ import com.jayud.mall.model.vo.CustomerGoodsVO;
 import com.jayud.mall.service.ICustomerGoodsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperationSupport;
+import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/customergoods")
-@Api(tags = "客户商品接口")
+@Api(tags = "S021-后台-客户商品接口")
+@ApiSort(value = 21)
 public class CustomerGoodsController {
 
     @Autowired
@@ -25,6 +28,7 @@ public class CustomerGoodsController {
 
     @ApiOperation(value = "分页查询客户商品")
     @PostMapping("/findCustomerGoodsByPage")
+    @ApiOperationSupport(order = 1)
     public CommonResult<CommonPageResult<CustomerGoodsVO>> findCustomerGoodsByPage(@RequestBody QueryCustomerGoodsForm form) {
         IPage<CustomerGoodsVO> pageList = customerGoodsService.findCustomerGoodsByPage(form);
         CommonPageResult<CustomerGoodsVO> pageVO = new CommonPageResult(pageList);
@@ -33,6 +37,7 @@ public class CustomerGoodsController {
 
     @ApiOperation(value = "审核客户商品")
     @PostMapping("/auditCustomerGoods")
+    @ApiOperationSupport(order = 2)
     public CommonResult auditCustomerGoods(@RequestBody CustomerGoodsForm form) {
         return customerGoodsService.auditCustomerGoods(form);
     }

@@ -49,14 +49,14 @@
         left join customer t1 on t1.id = t.customer_id
         WHERE
         1 = 1
+        <if test="form.customerId != null">
+            AND t.customer_id = #{form.customerId}
+        </if>
         <if test="form.sku != null and form.sku != ''">
             AND t.sku LIKE CONCAT('%',#{form.sku},'%')
         </if>
         <if test="form.nameCn != null and form.nameCn != ''">
             AND t.name_cn LIKE CONCAT('%',#{form.nameCn},'%')
-        </if>
-        <if test="form.customerId != null">
-            AND t.customer_id = #{form.customerId}
         </if>
         <if test="form.dataCode != null and form.dataCode != ''">
             AND t.data_code LIKE CONCAT('%',#{form.dataCode},'%')
@@ -67,8 +67,6 @@
         <if test="form.status != null">
             AND t.status = #{form.status}
         </if>
-        GROUP BY
-        t.`id`
     </select>
 
 </mapper>

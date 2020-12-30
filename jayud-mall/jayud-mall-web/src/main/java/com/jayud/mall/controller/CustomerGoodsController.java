@@ -12,6 +12,8 @@ import com.jayud.mall.service.ICustomerGoodsService;
 import com.jayud.mall.utils.ExcelTemplateUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperationSupport;
+import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,7 +26,8 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/customergoods")
-@Api(tags = "C端-客户商品表接口")
+@Api(tags = "C003-C端-客户商品表接口")
+@ApiSort(value = 3)
 public class CustomerGoodsController {
 
     @Autowired
@@ -32,7 +35,9 @@ public class CustomerGoodsController {
 
     @ApiOperation(value = "分页查询客户商品")
     @PostMapping("/findCustomerGoodsByPage")
+    @ApiOperationSupport(order = 1)
     public CommonResult<CommonPageResult<CustomerGoodsVO>> findCustomerGoodsByPage(@RequestBody QueryCustomerGoodsForm form) {
+        form.setCustomerId(1);//当前登录客户
         IPage<CustomerGoodsVO> pageList = customerGoodsService.findCustomerGoodsByPage(form);
         CommonPageResult<CustomerGoodsVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
@@ -40,6 +45,7 @@ public class CustomerGoodsController {
 
     @ApiOperation(value = "保存商品信息")
     @PostMapping("/saveCustomerGoods")
+    @ApiOperationSupport(order = 2)
     public CommonResult<CustomerGoodsVO> saveCustomerGoods(@RequestBody CustomerGoodsForm form){
         CustomerGoodsVO customerGoodsVO = customerGoodsService.saveCustomerGoods(form);
         return CommonResult.success(customerGoodsVO);
@@ -47,6 +53,7 @@ public class CustomerGoodsController {
 
     @ApiOperation(value = "下载Excel模板-客户商品")
     @RequestMapping(value = "/downloadExcelTemplateByCustomerGoods", method = RequestMethod.GET)
+    @ApiOperationSupport(order = 3)
     public void downloadExcelTemplateByCustomerGoods(HttpServletResponse response){
         new ExcelTemplateUtil().downloadExcel(response, "customer_goods.xlsx", "客户商品导入模板.xlsx");
     }
@@ -54,6 +61,7 @@ public class CustomerGoodsController {
     @ApiOperation(value = "上传文件-导入客户商品")
     @RequestMapping(value = "/importExcelByCustomerGoods", method = RequestMethod.POST)
     @ResponseBody
+    @ApiOperationSupport(order = 4)
     public CommonResult<List<CustomerGoodsVO>> importExcelByCustomerGoods(@RequestParam("file") MultipartFile file){
         if (file.isEmpty()) {
             return CommonResult.error(-1, "文件为空！");
@@ -97,6 +105,7 @@ public class CustomerGoodsController {
 
     @ApiOperation(value = "批量保存-客户商品")
     @PostMapping(value = "/batchSaveCustomerGoods")
+    @ApiOperationSupport(order = 5)
     public CommonResult batchSaveCustomerGoods(@RequestBody List<CustomerGoodsVO> list){
         customerGoodsService.batchSaveCustomerGoods(list);
         return CommonResult.success("批量保存-客户商品，成功！");

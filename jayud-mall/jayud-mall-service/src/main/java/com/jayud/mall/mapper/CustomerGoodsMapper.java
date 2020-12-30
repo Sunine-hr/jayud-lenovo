@@ -7,6 +7,7 @@ import com.jayud.mall.model.po.CustomerGoods;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.vo.CustomerGoodsVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 /**
@@ -27,5 +28,5 @@ public interface CustomerGoodsMapper extends BaseMapper<CustomerGoods> {
      * @param form
      * @return
      */
-    IPage<CustomerGoodsVO> findCustomerGoodsByPage(Page<CustomerGoodsVO> page, QueryCustomerGoodsForm form);
+    IPage<CustomerGoodsVO> findCustomerGoodsByPage(Page<CustomerGoodsVO> page,@Param("form") QueryCustomerGoodsForm form);
 }

@@ -31,4 +31,8 @@ public class QueryCustomerGoodsForm extends BasePageForm {
     @JSONField(ordinal = 6)
     private String clearanceCode;
 
+    @ApiModelProperty(value = "客户名称", position = 7)
+    @JSONField(ordinal = 7)
+    private String customerName;
+
 }

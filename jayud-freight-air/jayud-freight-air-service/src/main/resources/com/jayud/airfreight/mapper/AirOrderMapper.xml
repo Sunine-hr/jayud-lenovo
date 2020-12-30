@@ -59,7 +59,7 @@
         `air_order` a
         left join air_port ap on ap.`code`=a.port_departure_code
         left join air_port ap1 on ap1.`code`=a.port_destination_code
-        left join air_booking ab on a.id=ab.air_order_id
+        left join air_booking ab on a.id=ab.air_order_id and (ab.`status` != 2 OR ab.`status` IS NULL)
         <where>
             <if test="form.portDeparture !=null and form.portDeparture!=''">
                 and ap.name like concat('%',#{form.portDeparture},'%')
@@ -91,7 +91,7 @@
                 OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = a.order_no AND orc.`status` =
                 '2' and orc.sub_type = 'ky'))
             </if>
-            and (ab.`status` != 2 or ab.`status` is null)
+
         </where>
         order by a.id desc
     </select>

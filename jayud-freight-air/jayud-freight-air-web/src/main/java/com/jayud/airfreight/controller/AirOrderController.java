@@ -105,7 +105,7 @@ public class AirOrderController {
             legalEntityResult = this.oauthClient.getLegalEntityByLegalIds(entityIds);
         }
 
-        //查询客户信息
+        //查询主订单信息
         ApiResult result = omsClient.getMainOrderByOrderNos(mainOrder);
         for (AirOrderFormVO record : records) {
             //组装商品信息

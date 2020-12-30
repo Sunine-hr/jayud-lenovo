@@ -241,6 +241,15 @@ public class VivoServiceImpl implements VivoService {
      */
     @Override
     public Map<String, Object> bookingRejected(AirOrder airOrder, AirCargoRejected airCargoRejected) {
+        //修改订单状态待处理
+        Map<String, Object> map = new HashMap<>();
+        map.put("orderNo", airOrder.getMainOrderNo());
+        map.put("status", OrderStatusEnum.MAIN_8.getCode());
+        ApiResult result = this.omsClient.updateByMainOrderNo(JSONUtil.toJsonStr(map));
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.warn("修改主订单状态为待处理失败 mainOrderNo={}", airOrder.getMainOrderNo());
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
         Integer status = airCargoRejected.getRejectOptions() == null ? VivoRejectionStatusEnum.PENDING_SUBMITTED.getCode()
                 : airCargoRejected.getRejectOptions();
         //驳回订单,数据作废
@@ -590,7 +599,7 @@ public class VivoServiceImpl implements VivoService {
         form.setDeliveryWarehouseAddress(airBooking.getDeliveryAddress());
         Map<String, Object> result = this.forwarderBookingConfirmedFeedback(form);
 
-        if (1 == MapUtil.getInt(result, "status")) {
+        if (0 == MapUtil.getInt(result, "status")) {
             log.error("远程调用推送确认订舱信息给vivo失败 msg={}", MapUtil.getStr(result, "message"));
             throw new JayudBizException(ResultEnum.OPR_FAIL);
         }
@@ -697,7 +706,7 @@ public class VivoServiceImpl implements VivoService {
             if (resultOne.getCode() != HttpStatus.SC_OK) {
                 log.warn("查询商品信息失败 mainOrderNo={} msg={}",
                         airOrder.getMainOrderNo(), resultOne.getMsg());
-                throw new VivoApiException("查询商品信息失败");
+                throw new VivoApiException("空运订单更新失败");
             }
             List<GoodsVO> goodsVOs = resultOne.getData();
             form.setGoodsId(goodsVOs.get(0).getId());
@@ -708,7 +717,7 @@ public class VivoServiceImpl implements VivoService {
             if (resultTwo.getCode() != HttpStatus.SC_OK) {
                 log.warn("查询订单地址信息失败 mainOrderNo={} msg={}",
                         airOrder.getMainOrderNo(), resultTwo.getMsg());
-                throw new VivoApiException("查询订单地址信息失败");
+                throw new VivoApiException("空运订单更新失败");
             }
             List<OrderAddressVO> addressVOS = resultTwo.getData();
             form.setAddressIds(addressVOS.stream().map(OrderAddressVO::getId).collect(Collectors.toList()));
@@ -719,9 +728,12 @@ public class VivoServiceImpl implements VivoService {
                         airOrder.getMainOrderNo(), result.getMsg());
                 throw new VivoApiException("空运订单更新失败");
             }
+
             form.setMainOrderId(Long.valueOf(result.getData().toString()));
         }
     }
+
+
 
     public static void main(String[] args) {
 //        UUID uuid = UUID.randomUUID();

@@ -117,6 +117,9 @@ public class AirOrderFormVO {
     @ApiModelProperty(value = "对应业务类型")
     private String bizCode;
 
+    @ApiModelProperty(value = "订单类别")
+    private String classCode;
+
     @ApiModelProperty(value = "结算单位code")
     private String subUnitCode;
 
@@ -164,6 +167,7 @@ public class AirOrderFormVO {
                 this.mainOrderId = json.getString("id");
                 this.bizUname = json.getString("bizUname");
                 this.bizCode = json.getString("bizCode");
+                this.classCode = json.getString("classCode");
                 break;
             }
         }

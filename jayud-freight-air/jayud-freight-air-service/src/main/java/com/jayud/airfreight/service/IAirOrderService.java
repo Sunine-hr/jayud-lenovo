@@ -8,6 +8,7 @@ import com.jayud.airfreight.model.vo.AirOrderFormVO;
 import com.jayud.airfreight.model.vo.AirOrderVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -113,5 +114,10 @@ public interface IAirOrderService extends IService<AirOrder> {
      */
 //    public void rejectionOrderReceiving(AirOrder airOrder, AuditInfoForm auditInfoForm);
 
+
+    /**
+     * 根据空运第三方标识查询主订单信息
+     */
+    public Map<String,Object> getMainOrderByThirdOrderNo(String thirdPartyOrderNo);
 
 }

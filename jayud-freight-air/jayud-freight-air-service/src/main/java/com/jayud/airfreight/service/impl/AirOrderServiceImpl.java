@@ -1,6 +1,8 @@
 package com.jayud.airfreight.service.impl;
 
 import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -481,6 +483,23 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         this.bookingRejectedMsgPush(airOrder, airCargoRejected);
         omsClient.saveAuditInfo(auditInfoForm);
         this.updateById(tmp);
+    }
+
+    /**
+     * 根据空运第三方标识查询主订单信息
+     */
+    @Override
+    public Map<String, Object> getMainOrderByThirdOrderNo(String thirdPartyOrderNo) {
+        AirOrder airOrder = this.getByThirdPartyOrderNo(thirdPartyOrderNo);
+        if (airOrder == null) {
+            return null;
+        }
+        ApiResult result = this.omsClient.getMainOrderByOrderNos(Arrays.asList(airOrder.getMainOrderNo()));
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.error("查询主订单信息失败 mainOrderNo={}", airOrder.getMainOrderNo());
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+        return JSONUtil.toBean(JSONUtil.toJsonStr(result.getData()), Map.class);
     }
 
 //    /**

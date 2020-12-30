@@ -36,6 +36,9 @@ public class InputAirBookingVO extends Model<InputAirBookingVO> {
     @ApiModelProperty(value = "代理供应商id")
     private Long agentSupplierId;
 
+    @ApiModelProperty(value = "代理供应商")
+    private String agentSupplier;
+
     @ApiModelProperty(value = "入仓号")
     private String warehousingNo;
 

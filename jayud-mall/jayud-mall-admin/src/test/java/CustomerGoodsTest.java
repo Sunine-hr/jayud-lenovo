@@ -1,7 +1,11 @@
+import com.jayud.mall.model.bo.CustomerGoodsAuditForm;
 import com.jayud.mall.model.bo.CustomerGoodsForm;
 import com.jayud.mall.model.bo.QueryCustomerGoodsForm;
 import com.jayud.mall.utils.TestUtils;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class CustomerGoodsTest {
 
@@ -28,5 +32,15 @@ public class CustomerGoodsTest {
         TestUtils.JSONObjectPrint(form);
     }
 
+    @Test
+    public void test3(){
+        CustomerGoodsAuditForm form = new CustomerGoodsAuditForm();
+        List<Integer> ids = Arrays.asList(1,2);
+        form.setIds(ids);
+        form.setStatus(1);
+        form.setDataCode("B001");
+        form.setClearanceCode("QG001");
+        TestUtils.JSONObjectPrint(form);
+    }
 
 }

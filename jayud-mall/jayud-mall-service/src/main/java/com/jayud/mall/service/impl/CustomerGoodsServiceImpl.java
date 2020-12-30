@@ -6,7 +6,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.mall.enums.CustomerGoodsEnum;
 import com.jayud.mall.mapper.CustomerGoodsMapper;
+import com.jayud.mall.model.bo.CustomerGoodsAuditForm;
 import com.jayud.mall.model.bo.CustomerGoodsForm;
 import com.jayud.mall.model.bo.QueryCustomerGoodsForm;
 import com.jayud.mall.model.po.CustomerGoods;
@@ -15,6 +17,7 @@ import com.jayud.mall.service.ICustomerGoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,9 +45,22 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
     }
 
     @Override
-    public CommonResult auditCustomerGoods(CustomerGoodsForm form) {
-        CustomerGoods customerGoods = ConvertUtil.convert(form, CustomerGoods.class);
-        this.saveOrUpdate(customerGoods);
+    public CommonResult auditCustomerGoods(CustomerGoodsAuditForm form) {
+        List<Integer> ids = form.getIds();
+        Integer status = form.getStatus();
+        String statusName = CustomerGoodsEnum.getName(status);
+        String dataCode = form.getDataCode();
+        String clearanceCode = form.getClearanceCode();
+        List<CustomerGoods> customerGoodsList = new ArrayList<>();
+        ids.forEach(id -> {
+            CustomerGoods customerGoods = new CustomerGoods();
+            customerGoods.setId(id);
+            customerGoods.setStatusName(statusName);
+            customerGoods.setDataCode(dataCode);
+            customerGoods.setClearanceCode(clearanceCode);
+            customerGoodsList.add(customerGoods);
+        });
+        this.saveOrUpdateBatch(customerGoodsList);
         return CommonResult.success("审核成功!");
     }
 

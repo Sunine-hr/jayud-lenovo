@@ -45,10 +45,16 @@
         a.terms,
         ap.name port_departure,
         ap1.name port_destination,
-        a.create_user createUser, a.create_time createTime,
+        a.create_user createUser, a.create_time createdTimeStr,
         ab.airline_company airlineCompany,
         ab.flight,ab.etd,ab.eta,
-        ab.warehousing_no warehousingNo
+        ab.warehousing_no warehousingNo,
+        a.settlement_unit_code subUnitCode,
+        a.legal_id,
+        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = a.`order_no`) +
+        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = a.`order_no`)>0 THEN TRUE
+        ELSE FALSE
+        END) cost
         FROM
         `air_order` a
         left join air_port ap on ap.`code`=a.port_departure_code
@@ -80,8 +86,10 @@
                 and a.create_time = #{form.createTime}
             </if>
             <if test="form.cmd == 'costAudit'">
-                AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = a.order_no AND opc.`status` = '2' and opc.sub_type = 'ky')
-                OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = a.order_no AND orc.`status` = '2' and orc.sub_type = 'ky'))
+                AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = a.order_no AND opc.`status` =
+                '2' and opc.sub_type = 'ky')
+                OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = a.order_no AND orc.`status` =
+                '2' and orc.sub_type = 'ky'))
             </if>
             and (ab.`status` != 2 or ab.`status` is null)
         </where>

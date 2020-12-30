@@ -274,6 +274,14 @@ public class ExternalApiController {
         LegalEntity legalEntity = this.legalEntityService.getById(legalId);
         return ApiResult.ok(legalEntity);
     }
+
+
+    @ApiOperation("根据法人主体id集合查询法人主体信息")
+    @RequestMapping(value = "/api/getLegalEntityByLegalIds")
+    public ApiResult<LegalEntity> getLegalEntityByLegalIds(@RequestParam("legalId") List<Long> legalIds) {
+        List<LegalEntity> legalEntity = this.legalEntityService.getBaseMapper().selectBatchIds(legalIds);
+        return ApiResult.ok(legalEntity);
+    }
 }
 
 

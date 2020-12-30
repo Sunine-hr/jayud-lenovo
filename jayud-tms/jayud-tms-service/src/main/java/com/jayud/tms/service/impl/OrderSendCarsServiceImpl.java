@@ -3,6 +3,9 @@ package com.jayud.tms.service.impl;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.JayudBizException;
+import com.jayud.common.exception.VivoApiException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.ApiResult;
 import com.jayud.common.enums.CreateUserTypeEnum;
@@ -84,12 +87,12 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
     public SendCarListPdfVO initSendCarList(String orderNo) {
         List<SendCarListTempVO> tempList = baseMapper.initSendCarList(orderNo);
         SendCarListPdfVO sendCarListPdfVO = new SendCarListPdfVO();
-        if(tempList != null && tempList.size() > 0){
+        if (tempList != null && tempList.size() > 0) {
             sendCarListPdfVO.setLegalName(tempList.get(0).getLegalName());
             sendCarListPdfVO.setLegalEnName(tempList.get(0).getLegalEnName());
             sendCarListPdfVO.setJobNumber(tempList.get(0).getJobNumber());
             sendCarListPdfVO.setCreateTimeStr(tempList.get(0).getCreateTimeStr());
-            List<SendCarListVO> sendCarListVOList = ConvertUtil.convertList(tempList,SendCarListVO.class);
+            List<SendCarListVO> sendCarListVOList = ConvertUtil.convertList(tempList, SendCarListVO.class);
             sendCarListPdfVO.setSendCarListVOList(sendCarListVOList);
         }
         return sendCarListPdfVO;
@@ -118,28 +121,7 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
         Integer createUserType = orderTransport.getCreateUserType();
         switch (CreateUserTypeEnum.getEnum(createUserType)) {
             case VIVO:
-                //查询接单法人
-                ApiResult resultOne = omsClient.getLegalEntityInfoByOrderNo(orderTransport.getMainOrderNo());
-                if (resultOne.getCode() != HttpStatus.SC_OK) {
-                    log.warn("请求查询法人主体信息失败");
-                }
-                //查询派车信息
-                OrderSendCars orderSendCars = this.getById(form.getId());
-                //查询车辆信息
-                ApiResult resultTwo = this.omsClient.getVehicleInfoById(orderSendCars.getVehicleId());
-                if (resultTwo.getCode() != HttpStatus.SC_OK) {
-                    log.warn("请求车辆信息失败");
-                }
-                Map<String, String> request = new HashMap<>();
-                request.put("topic", KafkaMsgEnums.VIVO_FREIGHT_TMS_MESSAGE_ONE.getTopic());
-                request.put("key", KafkaMsgEnums.VIVO_FREIGHT_TMS_MESSAGE_ONE.getKey());
-                Map<String, Object> msg = new HashMap<>();
-                msg.put("dispatchNo", orderTransport.getThirdPartyOrderNo());
-                msg.put("licensePlate", new JSONObject(resultTwo.getData()).getStr("plateNumber")); //TODO 等派车单增加车辆id字段再修改
-                msg.put("transportationCompany", new JSONObject(resultOne.getData()).getStr("legalName"));
-                msg.put("containerNo", orderSendCars.getCntrNo());
-                request.put("msg", JSONUtil.toJsonStr(msg));
-                msgClient.consume(request);
+                this.sendCarsMsg2Vivo(form, orderTransport);
                 break;
         }
     }
@@ -155,7 +137,7 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
             case VIVO:
                 ApiResult result = freightAirApiClient.forwarderDispatchRejected(orderTransport.getThirdPartyOrderNo());
                 if (result.getCode() != HttpStatus.SC_OK) {
-                    log.warn("请求vivo派车推送接口失败 msg={}", result.getMsg());
+                    log.error("请求vivo派车推送接口失败 msg={}", result.getMsg());
                     return false;
                 }
         }
@@ -163,5 +145,35 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
         return true;
     }
 
+
+    private void sendCarsMsg2Vivo(SendCarForm form, OrderTransport orderTransport) {
+        //查询接单法人
+        ApiResult resultOne = omsClient.getLegalEntityInfoByOrderNo(orderTransport.getMainOrderNo());
+        if (resultOne.getCode() != HttpStatus.SC_OK) {
+            log.warn("请求查询法人主体信息失败");
+        }
+        //查询派车信息
+        OrderSendCars orderSendCars = this.getById(form.getId());
+        //查询车辆信息
+        ApiResult resultTwo = this.omsClient.getVehicleInfoById(orderSendCars.getVehicleId());
+        if (resultTwo.getCode() != HttpStatus.SC_OK) {
+            log.warn("请求车辆信息失败");
+        }
+//                Map<String, String> request = new HashMap<>();
+//                request.put("topic", KafkaMsgEnums.VIVO_FREIGHT_TMS_MESSAGE_ONE.getTopic());
+//                request.put("key", KafkaMsgEnums.VIVO_FREIGHT_TMS_MESSAGE_ONE.getKey());
+        Map<String, Object> msg = new HashMap<>();
+        msg.put("dispatchNo", orderTransport.getThirdPartyOrderNo());
+        msg.put("licensePlate", new JSONObject(resultTwo.getData()).getStr("plateNumber")); //TODO 等派车单增加车辆id字段再修改
+        msg.put("transportationCompany", new JSONObject(resultOne.getData()).getStr("legalName"));
+        msg.put("containerNo", orderSendCars.getCntrNo());
+//                request.put("msg", JSONUtil.toJsonStr(msg));
+//                msgClient.consume(request);
+        ApiResult result = freightAirApiClient.forwarderVehicleInfo(JSONUtil.toJsonStr(msg));
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.error("推送派车消息给vivo失败 msg={}", result.getMsg());
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+    }
 
 }

@@ -70,8 +70,8 @@ public class ForwarderLadingInfoForm {
 //    @Length(max = 10, message = "字段的最大长度为10")
     private Float chargedWeight;
 
-    @JsonProperty("B/L_weight")
-    @SerializedName("B/L_weight")
+    @JsonProperty("BL_weight")
+    @SerializedName("BL_weight")
     @ApiModelProperty(value = "提单重量")
 //    @Length(max = 10, message = "提单重量字段的最大长度为10")
     private Float blWeight;

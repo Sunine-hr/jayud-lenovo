@@ -53,7 +53,7 @@ CREATE TABLE `air_order` (
   `settlement_unit_code` char(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '结算单位code',
   `legal_id` bigint(20) DEFAULT NULL COMMENT '接单法人',
   `imp_and_exp_type` int(10) DEFAULT NULL COMMENT '进出口类型(1：进口，2：出口)',
-  `terms` int(10) DEFAULT NULL COMMENT '贸易方式(0:CIF,1:DUU,2:FOB,3:DDP)',
+  `terms` int(10) DEFAULT NULL COMMENT '贸易方式(0:CIF,1:DUU,2:FOB,3:DDP,4:CFR,5:CPT,6:CNF,7:CIP)',
   `port_departure_code` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '起运港代码',
   `port_destination_code` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '目的港代码',
   `overseas_suppliers_id` bigint(20) DEFAULT NULL COMMENT '海外供应商id',
@@ -72,7 +72,7 @@ CREATE TABLE `air_order` (
   `order_taker` varchar(50) DEFAULT NULL COMMENT '接单人(登录用户名)',
   `receiving_orders_date` datetime DEFAULT NULL COMMENT '接单日期',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='空运订单表';
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='空运订单表';
 
 
 CREATE TABLE `air_port` (
@@ -80,7 +80,7 @@ CREATE TABLE `air_port` (
   `code` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '飞机港口代码',
   `name` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '飞机港口名称',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `create_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '创建人',
+  `create_user` varchar(255) CHARACTER DEFAULT NULL COMMENT '创建人',
   `status` int(10) DEFAULT '1' COMMENT '状态(0无效 1有效)',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='飞机港口地址表';

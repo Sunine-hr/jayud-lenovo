@@ -7,6 +7,8 @@ import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.Customer;
 import com.jayud.mall.model.vo.CustomerVO;
 
+import java.util.List;
+
 /**
  * <p>
  * 客户表 服务类
@@ -72,4 +74,10 @@ public interface ICustomerService extends IService<Customer> {
      * @return
      */
     CommonResult<CustomerVO> customerUpdatePhone(CustomerPhoneForm form);
+
+    /**
+     * 查询客户list
+     * @return
+     */
+    List<CustomerVO> findCustomer();
 }

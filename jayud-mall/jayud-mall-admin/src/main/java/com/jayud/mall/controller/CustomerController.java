@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/customer")
 @Api(tags = "S017-后台-客户接口")
@@ -48,6 +50,14 @@ public class CustomerController {
     @ApiOperationSupport(order = 3)
     public CommonResult<CustomerVO> auditCustomer(@RequestBody CustomerAuditForm form){
         return customerService.auditCustomer(form);
+    }
+
+    @ApiOperation(value = "查询客户list")
+    @PostMapping("/findCustomer")
+    @ApiOperationSupport(order = 4)
+    public CommonResult<List<CustomerVO>> findCustomer() {
+        List<CustomerVO> list = customerService.findCustomer();
+        return CommonResult.success(list);
     }
 
 }

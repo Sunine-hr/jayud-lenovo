@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -178,6 +179,15 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         this.saveOrUpdate(customer);
         CustomerVO customerVO = ConvertUtil.convert(customer, CustomerVO.class);
         return CommonResult.success(customerVO);
+    }
+
+    @Override
+    public List<CustomerVO> findCustomer() {
+        QueryWrapper<Customer> queryWrapper = new QueryWrapper<>();
+        //queryWrapper.eq("","");
+        List<Customer> list = this.list(queryWrapper);
+        List<CustomerVO> customerVOS = ConvertUtil.convertList(list, CustomerVO.class);
+        return customerVOS;
     }
 
 

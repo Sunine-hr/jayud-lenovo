@@ -24,6 +24,7 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +69,7 @@ public class AirOrderController {
     public CommonResult<CommonPageResult<AirOrderFormVO>> findByPage(@RequestBody QueryAirOrderForm form) {
 
         //模糊查询客户信息
-        if (form.getCustomerName() != null) {
+        if (!StringUtils.isEmpty(form.getCustomerName())) {
             ApiResult result = omsClient.getByCustomerName(form.getCustomerName());
             Object data = result.getData();
             if (data != null) {

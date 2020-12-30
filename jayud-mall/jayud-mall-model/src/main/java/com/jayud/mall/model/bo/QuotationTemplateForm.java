@@ -19,11 +19,10 @@ public class QuotationTemplateForm {
     private Long id;
 
     @ApiModelProperty(value = "模板类型(1整柜 2散柜)", position = 2)
-//    @NotEmpty(message = "模板类型")
     @JSONField(ordinal = 2)
     private Integer types;
 
-    @ApiModelProperty(value = "服务分类(service_group sid)", position = 3)
+    @ApiModelProperty(value = "服务分类(service_group id)", position = 3)
     @JSONField(ordinal = 3)
     private Integer sid;
 
@@ -31,75 +30,75 @@ public class QuotationTemplateForm {
     @JSONField(ordinal = 4)
     private String names;
 
-    @ApiModelProperty(value = "报价图片，多张用逗号分割，数组", position = 5)
+    @ApiModelProperty(value = "报价图片，多张用逗号分割", position = 5)
     @JSONField(ordinal = 5)
-    private List<PicUrlArrForm> picUrlarr;
+    private String picUrl;
 
     @ApiModelProperty(value = "运输方式(transport_way id)", position = 6)
     @JSONField(ordinal = 6)
     private Integer tid;
 
-    @ApiModelProperty(value = "起运港", position = 7)
+    @ApiModelProperty(value = "起运港(harbour_info id_code)", position = 7)
     @JSONField(ordinal = 7)
     private String startShipment;
 
-    @ApiModelProperty(value = "目的港", position = 8)
+    @ApiModelProperty(value = "目的港(harbour_info id_code)", position = 8)
     @JSONField(ordinal = 8)
     private String destinationPort;
 
-    @ApiModelProperty(value = "可达仓库(fab_warehouse.id),多个用逗号分隔，数组", position = 9)
+    @ApiModelProperty(value = "可达仓库(fab_warehouse.id),多个用逗号分隔", position = 9)
     @JSONField(ordinal = 9)
-    private List<FabWarehouseForm> arriveWarehousearr;
+    private String arriveWarehouse;
 
     @ApiModelProperty(value = "可见客户(0公开 1指定客户)", position = 10)
     @JSONField(ordinal = 10)
     private Integer visibleCustomer;
 
-    @ApiModelProperty(value = "可见客户(customer.id，多客户时逗号分隔用户ID)，数组", position = 11)
+    @ApiModelProperty(value = "可见客户(customer.id，多客户时逗号分隔用户ID)", position = 11)
     @JSONField(ordinal = 11)
-    private List<CustomerForm> visibleUidarr;
+    private String visibleUid;
 
     @ApiModelProperty(value = "开船日期", position = 12)
-    @JSONField(ordinal = 12)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 12, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime sailTime;
 
     @ApiModelProperty(value = "截单日期", position = 13)
-    @JSONField(ordinal = 13)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 13, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime cutOffTime;
 
     @ApiModelProperty(value = "截仓日期", position = 14)
-    @JSONField(ordinal = 14)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 14, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime jcTime;
 
     @ApiModelProperty(value = "截亏仓日期", position = 15)
-    @JSONField(ordinal = 15)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 15, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime jkcTime;
 
     @ApiModelProperty(value = "货物类型(1普货 2特货)", position = 16)
     @JSONField(ordinal = 16)
     private Integer gidtype;
 
-    @ApiModelProperty(value = "货物类型(goods_type types=2 id),多个用逗号分隔，数组", position = 17)
+    @ApiModelProperty(value = "货物类型(goods_type id),多个用逗号分隔", position = 17)
     @JSONField(ordinal = 17)
-    private List<GoodsTypeForm> gidarr;
+    private String gid;
 
     @ApiModelProperty(value = "集货仓库(shipping_area id),多个都号分隔", position = 18)
     @JSONField(ordinal = 18)
-    private List<ShippingAreaForm> areaIdarr;
+    private String areaId;
 
     @ApiModelProperty(value = "报价类型(1整柜 2散柜)", position = 19)
     @JSONField(ordinal = 19)
     private Integer qidtype;
 
-    @ApiModelProperty(value = "报价类型(goods_type types=1 id),多个用逗号分隔，数组", position = 20)
+    @ApiModelProperty(value = "报价类型(quotation_type id),多个用逗号分隔", position = 20)
     @JSONField(ordinal = 20)
-    private List<QuotationTypeForm> qidarr;
+    private String qid;
 
-    @ApiModelProperty(value = "任务分组id(task_group id)", position = 21)
+    @ApiModelProperty(value = "任务分组id(运单任务task_group id)", position = 21)
     @JSONField(ordinal = 21)
     private Integer taskId;
 
@@ -115,22 +114,22 @@ public class QuotationTemplateForm {
     @JSONField(ordinal = 24)
     private String status;
 
-    @ApiModelProperty(value = "创建人id", position = 25)
+    @ApiModelProperty(value = "创建人id(system_user id)", position = 25)
     @JSONField(ordinal = 25)
     private Integer userId;
 
-    @ApiModelProperty(value = "创建人姓名", position = 26)
+    @ApiModelProperty(value = "创建人姓名(system_user name)", position = 26)
     @JSONField(ordinal = 26)
     private String userName;
 
     @ApiModelProperty(value = "创建时间", position = 27)
-    @JSONField(ordinal = 27)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 27, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "更新时间", position = 28)
-    @JSONField(ordinal = 28)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 28, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
     /*应收费用明细List*/

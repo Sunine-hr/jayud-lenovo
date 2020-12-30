@@ -771,13 +771,13 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     }
 
     @Override
-    public PayableHeaderForm getPayableHeaderForm(String orderNo) {
-        return baseMapper.getPayableHeaderForm(orderNo);
+    public List<PayableHeaderForm> getPayableHeaderForm(String billNo) {
+        return baseMapper.getPayableHeaderForm(billNo);
     }
 
     @Override
-    public List<APARDetailForm> findPayableHeaderDetail(String billNo) {
-        List<APARDetailForm> detailForms = baseMapper.findPayableHeaderDetail(billNo);
+    public List<APARDetailForm> findPayableHeaderDetail(String billNo,String orderNo) {
+        List<APARDetailForm> detailForms = baseMapper.findPayableHeaderDetail(billNo,orderNo);
         for (APARDetailForm detailForm : detailForms) {
             String expenseCategoryName = detailForm.getExpenseCategoryName();
             if(expenseCategoryName.contains("-")){

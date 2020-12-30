@@ -18,4 +18,18 @@
         id, action_combination_id, action_item_id, prefix_declare, time_number, time_unit, sort
     </sql>
 
+    <select id="findActionCombinationItemRelationByActionCombinationId" parameterType="java.lang.Integer"
+            resultType="com.jayud.mall.model.vo.ActionCombinationItemRelationVO">
+        select
+        t.id,t.action_combination_id,t.action_item_id,t.prefix_declare,t.time_number,t.time_unit,t.sort,
+        t1.combination_name actionCombinationName,
+        t2.item_name actionItemName
+        from action_combination_item_relation t
+        left join action_combination t1 on t1.id = t.action_combination_id
+        left join action_item t2 on t2.id = t.action_item_id
+        where 1=1
+        and t.action_combination_id = #{actionCombinationId}
+    </select>
+
+
 </mapper>

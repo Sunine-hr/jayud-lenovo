@@ -2,7 +2,6 @@ package com.jayud.mall.model.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.jayud.mall.model.po.ActionCombinationItemRelation;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -39,6 +38,7 @@ public class ActionCombinationVO {
 
     /*操作组合操作项目关联表action_combination_item_relation*/
     @ApiModelProperty(value = "操作组合关联操作项list", position = 7)
-    private List<ActionCombinationItemRelation> actionCombinationItemRelationList;
+    @JSONField(ordinal = 7)
+    private List<ActionCombinationItemRelationVO> actionCombinationItemRelationVOList;
 
 }

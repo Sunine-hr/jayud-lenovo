@@ -12,6 +12,7 @@ import com.jayud.mall.model.bo.ActionCombinationForm;
 import com.jayud.mall.model.bo.ActionCombinationQueryForm;
 import com.jayud.mall.model.po.ActionCombination;
 import com.jayud.mall.model.po.ActionCombinationItemRelation;
+import com.jayud.mall.model.vo.ActionCombinationItemRelationVO;
 import com.jayud.mall.model.vo.ActionCombinationVO;
 import com.jayud.mall.service.IActionCombinationItemRelationService;
 import com.jayud.mall.service.IActionCombinationService;
@@ -115,10 +116,11 @@ public class ActionCombinationServiceImpl extends ServiceImpl<ActionCombinationM
         ActionCombinationVO actionCombinationVO =
                 ConvertUtil.convert(actionCombination, ActionCombinationVO.class);
         Integer actionCombinationId = actionCombination.getId();
-        QueryWrapper<ActionCombinationItemRelation> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("action_combination_id", actionCombinationId);
-        List<ActionCombinationItemRelation> list = actionCombinationItemRelationService.list(queryWrapper);
-        actionCombinationVO.setActionCombinationItemRelationList(list);
+
+        List<ActionCombinationItemRelationVO> list =
+                actionCombinationItemRelationService.findActionCombinationItemRelationByActionCombinationId(actionCombinationId);
+
+        actionCombinationVO.setActionCombinationItemRelationVOList(list);
         return CommonResult.success(actionCombinationVO);
     }
 

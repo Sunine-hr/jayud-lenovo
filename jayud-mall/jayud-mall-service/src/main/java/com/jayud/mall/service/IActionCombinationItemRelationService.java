@@ -2,6 +2,9 @@ package com.jayud.mall.service;
 
 import com.jayud.mall.model.po.ActionCombinationItemRelation;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.vo.ActionCombinationItemRelationVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IActionCombinationItemRelationService extends IService<ActionCombinationItemRelation> {
 
+    /**
+     * 根据操作项组合id，查询关联信息
+     * @param actionCombinationId 操作项组合id(action_combination id)
+     * @return
+     */
+    List<ActionCombinationItemRelationVO> findActionCombinationItemRelationByActionCombinationId(Integer actionCombinationId);
 }

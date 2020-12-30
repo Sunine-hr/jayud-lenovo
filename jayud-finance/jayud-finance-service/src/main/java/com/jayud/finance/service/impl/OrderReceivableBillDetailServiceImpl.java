@@ -739,13 +739,13 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
     }
 
     @Override
-    public ReceivableHeaderForm getReceivableHeaderForm(String orderNo) {
-        return baseMapper.getReceivableHeaderForm(orderNo);
+    public List<ReceivableHeaderForm> getReceivableHeaderForm(String billNo) {
+        return baseMapper.getReceivableHeaderForm(billNo);
     }
 
     @Override
-    public List<APARDetailForm> findReceivableHeaderDetail(String billNo) {
-        List<APARDetailForm> detailForms = baseMapper.findReceivableHeaderDetail(billNo);
+    public List<APARDetailForm> findReceivableHeaderDetail(String billNo,String orderNo) {
+        List<APARDetailForm> detailForms = baseMapper.findReceivableHeaderDetail(billNo,orderNo);
         for (APARDetailForm detailForm : detailForms) {
             String expenseCategoryName = detailForm.getExpenseCategoryName();
             if(expenseCategoryName.contains("-")){

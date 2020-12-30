@@ -8,6 +8,8 @@ import com.jayud.mall.model.bo.QueryCustomsClearanceForm;
 import com.jayud.mall.model.po.CustomsClearance;
 import com.jayud.mall.model.vo.CustomsClearanceVO;
 
+import java.util.List;
+
 /**
  * <p>
  * 清关资料表 服务类
@@ -31,4 +33,10 @@ public interface ICustomsClearanceService extends IService<CustomsClearance> {
      * @return
      */
     CommonResult saveCustomsData(CustomsClearanceForm form);
+
+    /**
+     * 查询清关商品资料list
+     * @return
+     */
+    List<CustomsClearanceVO> findCustomsClearance();
 }

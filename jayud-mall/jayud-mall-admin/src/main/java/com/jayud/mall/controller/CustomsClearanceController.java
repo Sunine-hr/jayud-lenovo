@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/customsclearance")
@@ -44,5 +45,14 @@ public class CustomsClearanceController {
     public CommonResult saveCustomsClearance(@Valid @RequestBody CustomsClearanceForm form){
         return customsClearanceService.saveCustomsData(form);
     }
+
+    @ApiOperation(value = "查询清关商品资料list")
+    @PostMapping("/findCustomsClearance")
+    @ApiOperationSupport(order = 3)
+    public CommonResult<List<CustomsClearanceVO>> findCustomsClearance() {
+        List<CustomsClearanceVO> list = customsClearanceService.findCustomsClearance();
+        return CommonResult.success(list);
+    }
+
 
 }

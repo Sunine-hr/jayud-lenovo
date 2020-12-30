@@ -16,8 +16,10 @@ import com.jayud.mall.model.vo.CustomsClearanceVO;
 import com.jayud.mall.service.ICustomsClearanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -46,6 +48,7 @@ public class CustomsClearanceServiceImpl extends ServiceImpl<CustomsClearanceMap
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult saveCustomsData(CustomsClearanceForm form) {
         CustomsClearance customsClearance = ConvertUtil.convert(form, CustomsClearance.class);
         Long id = form.getId();
@@ -75,5 +78,14 @@ public class CustomsClearanceServiceImpl extends ServiceImpl<CustomsClearanceMap
         }
         this.saveOrUpdate(customsClearance);
         return CommonResult.success("保存清关，成功！");
+    }
+
+    @Override
+    public List<CustomsClearanceVO> findCustomsClearance() {
+        QueryWrapper<CustomsClearance> queryWrapper = new QueryWrapper<>();
+        //queryWrapper.eq("","");
+        List<CustomsClearance> list = this.list(queryWrapper);
+        List<CustomsClearanceVO> customsClearanceVOS = ConvertUtil.convertList(list, CustomsClearanceVO.class);
+        return customsClearanceVOS;
     }
 }

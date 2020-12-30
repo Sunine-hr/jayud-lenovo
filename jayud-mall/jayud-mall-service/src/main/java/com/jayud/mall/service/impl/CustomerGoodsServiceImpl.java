@@ -16,6 +16,7 @@ import com.jayud.mall.model.vo.CustomerGoodsVO;
 import com.jayud.mall.service.ICustomerGoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +46,7 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult auditCustomerGoods(CustomerGoodsAuditForm form) {
         List<Integer> ids = form.getIds();
         Integer status = form.getStatus();
@@ -65,6 +67,7 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CustomerGoodsVO saveCustomerGoods(CustomerGoodsForm form) {
         CustomerGoods customerGoods = ConvertUtil.convert(form, CustomerGoods.class);
         this.saveOrUpdate(customerGoods);
@@ -73,6 +76,7 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void batchSaveCustomerGoods(List<CustomerGoodsVO> list) {
         list.forEach(customerGoodsVO -> {
             String typesName = customerGoodsVO.getTypesName();

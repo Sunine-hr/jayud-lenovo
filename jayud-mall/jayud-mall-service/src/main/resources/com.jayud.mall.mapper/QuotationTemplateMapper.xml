@@ -48,7 +48,7 @@
         t3.code_name startShipmentName,
         t4.code_name destinationPortName,
         t5.code_name taskName,
-        t6.name countryName
+        t6.name destinationCountryName
         from quotation_template t
         LEFT JOIN service_group t1 on t1.id = t.sid
         LEFT JOIN transport_way t2 on t2.id = t.tid

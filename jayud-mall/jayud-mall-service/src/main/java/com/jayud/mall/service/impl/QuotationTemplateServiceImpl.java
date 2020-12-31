@@ -72,15 +72,6 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
 
     @Override
     public IPage<QuotationTemplateVO> findQuotationTemplateByPage(QueryQuotationTemplateForm form) {
-        //处理时间区间
-        if(form.getSailTime() != null){
-            form.setSailTimeStart(form.getSailTime().toLocalDate().toString() + " 00:00:00");
-            form.setSailTimeEnd(form.getSailTime().toLocalDate().toString() + " 23:23:59");
-        }
-        if(form.getCutOffTime() != null){
-            form.setCutOffTimeStart(form.getCutOffTime().toLocalDate().toString() + " 00:00:00");
-            form.setCutOffTimeEnd(form.getCutOffTime().toLocalDate().toString() + " 23:23:59");
-        }
         //定义分页参数
         Page<QuotationTemplateVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
@@ -93,14 +84,14 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
     @Override
     public void disabledQuotationTemplate(Long id) {
         QuotationTemplate quotationTemplate = quotationTemplateMapper.selectById(id);
-        quotationTemplate.setStatus("0");
+        quotationTemplate.setStatus("0");//status '状态(0无效 1有效)
         this.saveOrUpdate(quotationTemplate);
     }
 
     @Override
     public void enableQuotationTemplate(Long id) {
         QuotationTemplate quotationTemplate = quotationTemplateMapper.selectById(id);
-        quotationTemplate.setStatus("1");
+        quotationTemplate.setStatus("1");//status '状态(0无效 1有效)
         this.saveOrUpdate(quotationTemplate);
     }
 
@@ -191,7 +182,6 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
         this.saveOrUpdate(quotationTemplate);
         //报价模板Id
         Long id = quotationTemplate.getId();
-        System.out.println(id);
 
         /*应收费用明细List*/
         List<TemplateCopeReceivableForm> templateCopeReceivableFormList = form.getTemplateCopeReceivableFormList();

@@ -79,7 +79,7 @@ public class UserDetailService implements UserDetailsService {
         logger.debug("权限框架-加载用户");
         HttpServletRequest request = ContextHolderUtils.getRequest();
         String password = request.getParameter(passwordParameter);
-        logger.error("password = {}", password);
+        logger.info("password = {}", password);
 
         List<GrantedAuthority> auths = new ArrayList<>();
 

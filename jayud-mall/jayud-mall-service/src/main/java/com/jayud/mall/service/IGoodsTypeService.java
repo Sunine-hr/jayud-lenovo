@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.bo.GoodsTypeForm;
 import com.jayud.mall.model.po.GoodsType;
 import com.jayud.mall.model.vo.GoodsTypeReturnVO;
+import com.jayud.mall.model.vo.GoodsTypeVO;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public interface IGoodsTypeService extends IService<GoodsType> {
      * @param form
      * @return
      */
-    List<GoodsType> findGoodsType(GoodsTypeForm form);
+    List<GoodsTypeVO> findGoodsType(GoodsTypeForm form);
 
     /**
      * 货物类型下拉选择

@@ -29,7 +29,7 @@ public class GoodsTypeServiceImpl extends ServiceImpl<GoodsTypeMapper, GoodsType
     GoodsTypeMapper goodsTypeMapper;
 
     @Override
-    public List<GoodsType> findGoodsType(GoodsTypeForm form) {
+    public List<GoodsTypeVO> findGoodsType(GoodsTypeForm form) {
         QueryWrapper<GoodsType> queryWrapper = new QueryWrapper<>();
         //类型    1报价类型 2货物类型
         String types = form.getTypes();
@@ -54,7 +54,8 @@ public class GoodsTypeServiceImpl extends ServiceImpl<GoodsTypeMapper, GoodsType
             queryWrapper.eq("fid", fid);
         }
         List<GoodsType> list = goodsTypeMapper.selectList(queryWrapper);
-        return list;
+        List<GoodsTypeVO> goodsTypeVOS = ConvertUtil.convertList(list, GoodsTypeVO.class);
+        return goodsTypeVOS;
     }
 
     @Override

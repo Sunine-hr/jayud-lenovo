@@ -14,12 +14,31 @@
         <result column="status" property="status" />
         <result column="user_id" property="userId" />
         <result column="user_name" property="userName" />
-        <result column=" create_time" property=" createTime" />
+        <result column="create_time" property="createTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, id_code, code_name, destination, tid, cargo_type, describe, status, user_id, user_name,  create_time
     </sql>
+
+    <select id="findServiceGroup" parameterType="com.jayud.mall.model.bo.ServiceGroupForm"
+            resultType="com.jayud.mall.model.vo.ServiceGroupVO">
+        select
+        t.id,t.id_code,t.code_name,t.destination,t.tid,t.cargo_type,t.`describe`,t.status,t.user_id,t.user_name,t.create_time,
+        t1.code_name tname
+        from service_group t
+        left join transport_way t1 on t1.id = t.tid
+        where 1=1
+        <if test="form.idCode != null and form.idCode != ''">
+            and t.id_code LIKE CONCAT('%',#{form.idCode},'%')
+        </if>
+        <if test="form.codeName != null and form.codeName != ''">
+            and t.code_name LIKE CONCAT('%',#{form.codeName},'%')
+        </if>
+        <if test="form.status != null and form.status != ''">
+            and t.status = #{form.status}
+        </if>
+    </select>
 
 </mapper>

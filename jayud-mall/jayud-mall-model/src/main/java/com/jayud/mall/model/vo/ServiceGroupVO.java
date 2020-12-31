@@ -1,35 +1,17 @@
-package com.jayud.mall.model.po;
+package com.jayud.mall.model.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
-/**
- * <p>
- * 报价服务组
- * </p>
- *
- * @author fachang.mao
- * @since 2020-11-03
- */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value="ServiceGroup对象", description="报价服务组")
-public class ServiceGroup extends Model<ServiceGroup> {
-
-    private static final long serialVersionUID = 1L;
+public class ServiceGroupVO {
 
     @ApiModelProperty(value = "自增id", position = 1)
     @TableId(value = "id", type = IdType.AUTO)
@@ -79,10 +61,9 @@ public class ServiceGroup extends Model<ServiceGroup> {
     @JSONField(ordinal = 11, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
-
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
+    /*运输方式:transport_way.code_name*/
+    @ApiModelProperty(value = "运输方式名称", position = 12)
+    @JSONField(ordinal = 12)
+    private String tname;
 
 }

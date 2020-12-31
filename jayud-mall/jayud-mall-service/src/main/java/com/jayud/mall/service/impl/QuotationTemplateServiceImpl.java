@@ -78,14 +78,15 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
             form.setSailTimeEnd(form.getSailTime().toLocalDate().toString() + " 23:23:59");
         }
         if(form.getCutOffTime() != null){
-            form.setCutOffTimeStart(form.getSailTime().toLocalDate().toString() + " 00:00:00");
-            form.setCutOffTimeEnd(form.getSailTime().toLocalDate().toString() + " 23:23:59");
+            form.setCutOffTimeStart(form.getCutOffTime().toLocalDate().toString() + " 00:00:00");
+            form.setCutOffTimeEnd(form.getCutOffTime().toLocalDate().toString() + " 23:23:59");
         }
         //定义分页参数
         Page<QuotationTemplateVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.asc("t.id"));
-        IPage<QuotationTemplateVO> pageInfo = quotationTemplateMapper.findQuotationTemplateByPage(page, form);
+        IPage<QuotationTemplateVO> quotationTemplateByPage = quotationTemplateMapper.findQuotationTemplateByPage(page, form);
+        IPage<QuotationTemplateVO> pageInfo = quotationTemplateByPage;
         return pageInfo;
     }
 

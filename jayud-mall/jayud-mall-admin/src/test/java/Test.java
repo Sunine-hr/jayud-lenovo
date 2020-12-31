@@ -241,7 +241,7 @@ public class Test {
         form.setNames("美西-海卡大船");
         form.setSailTime(LocalDateTime.now());
         form.setCutOffTime(LocalDateTime.now());
-        form.setDestinationPort("纽约州");
+        //form.setDestinationPort("纽约州");
         String json = JSON.toJSONString(form);
         System.out.println(json);
     }

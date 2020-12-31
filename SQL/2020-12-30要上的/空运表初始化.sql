@@ -133,3 +133,18 @@ CREATE TABLE `general_api_log` (
   `request_time` timestamp NULL DEFAULT NULL COMMENT '访问发起时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='经过api模块进行操作的接口请求历史数据表';
+
+
+CREATE TABLE `air_exception_feedback` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `order_id` bigint(20) NOT NULL COMMENT '空运订单id',
+  `type` int(10) NOT NULL COMMENT '异常原因(1.货物破损,2.潮湿,3.丢失,4.其他)',
+  `remarks` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '异常描述',
+  `start_time` datetime DEFAULT NULL COMMENT '异常发生时间',
+  `completion_time` datetime DEFAULT NULL COMMENT '预计完成时间',
+  `file_path` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '文件路径(多个逗号隔开)',
+  `file_name` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '文件名称(多个逗号隔开)',
+  `create_user` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '创建人(登录用户)',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='空运异常反馈';

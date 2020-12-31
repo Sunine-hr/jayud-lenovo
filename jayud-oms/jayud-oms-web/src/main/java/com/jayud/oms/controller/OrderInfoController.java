@@ -89,6 +89,14 @@ public class OrderInfoController {
         }
         //主订单参数校验
         InputMainOrderForm inputMainOrderForm = form.getOrderForm();
+        //待处理状态无法操作
+        if (inputMainOrderForm.getOrderId() != null) {
+            OrderInfo orderInfo = this.orderInfoService.getById(inputMainOrderForm.getOrderId());
+            if (OrderStatusEnum.MAIN_8.getCode().equals(orderInfo.getStatus().toString())) {
+                return CommonResult.error(400, "待处理状态,无法进行操作");
+            }
+        }
+
         if (inputMainOrderForm == null || StringUtil.isNullOrEmpty(inputMainOrderForm.getCustomerCode())
                 || StringUtil.isNullOrEmpty(inputMainOrderForm.getCustomerName())
                 || inputMainOrderForm.getBizUid() == null
@@ -118,7 +126,7 @@ public class OrderInfoController {
                         inputOrderCustomsForm.getGoodsType() == null ||
                         StringUtil.isNullOrEmpty(inputOrderCustomsForm.getBizModel()) ||
                         StringUtil.isNullOrEmpty(inputOrderCustomsForm.getLegalName()) ||
-                        inputOrderCustomsForm.getLegalEntityId() == null ||
+//                        inputOrderCustomsForm.getLegalEntityId() == null ||
                         StringUtil.isNullOrEmpty(inputOrderCustomsForm.getEncode()) ||//六联单号
                         inputOrderCustomsForm.getSubOrders() == null) {
                     return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());

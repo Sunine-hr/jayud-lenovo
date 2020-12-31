@@ -5,6 +5,7 @@ import com.jayud.airfreight.model.bo.AirCargoRejected;
 import com.jayud.airfreight.model.bo.InputOrderTransportForm;
 import com.jayud.airfreight.model.bo.vivo.*;
 import com.jayud.airfreight.model.po.AirBooking;
+import com.jayud.airfreight.model.po.AirExceptionFeedback;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.common.ApiResult;
 import org.springframework.web.multipart.MultipartFile;
@@ -121,4 +122,9 @@ public interface VivoService {
      * 订舱驳回
      */
     public Map<String, Object> bookingRejected(AirOrder airOrder, AirCargoRejected airCargoRejected);
+
+    /**
+     * 推送反馈信息
+     */
+    void pushExceptionFeedbackInfo(AirOrder airOrder, AirExceptionFeedback airExceptionFeedback);
 }

@@ -49,6 +49,7 @@ public class AirBookingVO extends Model<AirBookingVO> {
     private String subNo;
 
     @ApiModelProperty(value = "截关日期")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime cutOffDate;
 
     @ApiModelProperty(value = "航空公司")

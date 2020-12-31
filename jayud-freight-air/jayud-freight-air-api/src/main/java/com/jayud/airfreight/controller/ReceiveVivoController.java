@@ -1,5 +1,6 @@
 package com.jayud.airfreight.controller;
 
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -85,6 +86,11 @@ public class ReceiveVivoController {
         if (errorMessage.length() > 0) {
             return VivoApiResult.error(errorMessage);
         }
+        //待处理才能操作
+        Map<String, Object> mainOrderMap = this.airOrderService.getMainOrderByThirdOrderNo(form.getBookingNo());
+        if (mainOrderMap != null && !OrderStatusEnum.MAIN_8.getCode().equals(MapUtil.getStr(mainOrderMap, "status"))) {
+            return VivoApiResult.error(form.getBookingNo() + "为待处理状态才能操作");
+        }
         ApiResult result = null;
         switch (form.getModeOfTransport()) {
             case 1:
@@ -98,6 +104,7 @@ public class ReceiveVivoController {
         }
         return VivoApiResult.success();
     }
+
 
     @PostMapping("/bookingCancel")
     @ApiOperation(value = "取消订舱单")

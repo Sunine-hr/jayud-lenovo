@@ -93,6 +93,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Autowired
     private MsgClient msgClient;
+    @Autowired
+    private ISupplierInfoService supplierInfoService;
 
 
     @Override
@@ -612,6 +614,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.KYDD.getCode())) {
             InputAirOrderVO airOrderVO = this.freightAirClient.getAirOrderDetails(inputMainOrderVO.getOrderNo()).getData();
             if (airOrderVO != null) {
+                //查询供应商
+                InputAirBookingVO airBookingVO = airOrderVO.getAirBookingVO();
+                if (airBookingVO != null && airBookingVO.getAgentSupplierId() != null) {
+                    SupplierInfo supplierInfo = this.supplierInfoService.getById(airBookingVO.getAgentSupplierId());
+                    airBookingVO.setAgentSupplier(supplierInfo.getSupplierChName());
+                }
                 //添加附件
                 List<FileView> attachments = this.logisticsTrackService.getAttachments(airOrderVO.getId()
                         , BusinessTypeEnum.KY.getCode(), prePath);
@@ -666,7 +674,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 selectedServer.contains(OrderStatusEnum.ZGYSDD.getCode())) {
             //创建中港订单信息
             InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
-            if(!OrderStatusEnum.TMS_T_15.getCode().equals(orderTransportForm.getSubTmsStatus())) {
+            if (!OrderStatusEnum.TMS_T_15.getCode().equals(orderTransportForm.getSubTmsStatus())) {
                 if (!selectedServer.contains(OrderStatusEnum.XGQG.getCode())) {
                     //若没有选择香港清关,则情况香港清关信息，避免信息有误
                     orderTransportForm.setHkLegalName(null);

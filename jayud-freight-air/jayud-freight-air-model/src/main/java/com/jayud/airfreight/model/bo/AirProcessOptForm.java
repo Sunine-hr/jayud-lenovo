@@ -87,7 +87,7 @@ public class AirProcessOptForm {
                 break;
             case AIR_A_4:
                 if (CollectionUtils.isEmpty(this.fileViewList)) throw new JayudBizException("提单文件必传", 400);
-                if (this.fileViewList.size() != 1) throw new JayudBizException("只能上传一个提单文", 400);
+//                if (this.fileViewList.size() != 1) throw new JayudBizException("只能上传一个提单文", 400);
                 if (!checkOptInfo()) throw new JayudBizException(ResultEnum.VALIDATE_FAILED);
                 pass = this.airBooking.checkConfirmLadingBillOptParam();
                 break;

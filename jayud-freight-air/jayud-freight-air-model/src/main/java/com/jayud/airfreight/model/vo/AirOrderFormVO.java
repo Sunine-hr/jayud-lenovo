@@ -117,6 +117,9 @@ public class AirOrderFormVO {
     @ApiModelProperty(value = "对应业务类型")
     private String bizCode;
 
+    @ApiModelProperty(value = "订单类别")
+    private String classCode;
+
     @ApiModelProperty(value = "结算单位code")
     private String subUnitCode;
 
@@ -129,6 +132,9 @@ public class AirOrderFormVO {
 
     @ApiModelProperty(value = "是否录用费用")
     private Boolean cost;
+
+    @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo)")
+    private Boolean createUserType;
 
     /**
      * 组装商品信息
@@ -164,6 +170,7 @@ public class AirOrderFormVO {
                 this.mainOrderId = json.getString("id");
                 this.bizUname = json.getString("bizUname");
                 this.bizCode = json.getString("bizCode");
+                this.classCode = json.getString("classCode");
                 break;
             }
         }

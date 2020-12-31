@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.mall.mapper.FabWarehouseMapper;
 import com.jayud.mall.model.bo.QueryFabWarehouseForm;
 import com.jayud.mall.model.po.FabWarehouse;
+import com.jayud.mall.model.vo.FabWarehouseVO;
 import com.jayud.mall.service.IFabWarehouseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,12 +26,12 @@ public class FabWarehouseServiceImpl extends ServiceImpl<FabWarehouseMapper, Fab
     FabWarehouseMapper fabWarehouseMapper;
 
     @Override
-    public IPage<FabWarehouse> findFabWarehouseByPage(QueryFabWarehouseForm form) {
+    public IPage<FabWarehouseVO> findFabWarehouseByPage(QueryFabWarehouseForm form) {
         //定义分页参数
         Page<FabWarehouse> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
         //page.addOrder(OrderItem.desc("oc.id"));
-        IPage<FabWarehouse> pageInfo = fabWarehouseMapper.findFabWarehouseByPage(page, form);
+        IPage<FabWarehouseVO> pageInfo = fabWarehouseMapper.findFabWarehouseByPage(page, form);
         return pageInfo;
     }
 }

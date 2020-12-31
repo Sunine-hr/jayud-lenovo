@@ -33,7 +33,7 @@
 
     <!--查询应收/FBA仓库并分页-->
     <select id="findFabWarehouseByPage" parameterType="com.jayud.mall.model.bo.QueryFabWarehouseForm"
-            resultType="com.jayud.mall.model.po.FabWarehouse" >
+            resultType="com.jayud.mall.model.vo.FabWarehouseVO" >
         select
         t.id,
         t.warehouse_code,
@@ -68,8 +68,6 @@
         <if test="form.stateCode != null and form.stateCode != ''">
             AND t.state_code LIKE concat('%',#{form.stateCode},'%')
         </if>
-        GROUP BY
-        t.`id`
     </select>
 
 </mapper>

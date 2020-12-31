@@ -1,9 +1,10 @@
 package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.bo.QueryFabWarehouseForm;
 import com.jayud.mall.model.po.FabWarehouse;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.vo.FabWarehouseVO;
 
 /**
  * <p>
@@ -20,5 +21,5 @@ public interface IFabWarehouseService extends IService<FabWarehouse> {
      * @param form
      * @return
      */
-    IPage<FabWarehouse> findFabWarehouseByPage(QueryFabWarehouseForm form);
+    IPage<FabWarehouseVO> findFabWarehouseByPage(QueryFabWarehouseForm form);
 }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.mall.model.bo.QueryFabWarehouseForm;
 import com.jayud.mall.model.po.FabWarehouse;
+import com.jayud.mall.model.vo.FabWarehouseVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -27,5 +28,5 @@ public interface FabWarehouseMapper extends BaseMapper<FabWarehouse> {
      * @param form
      * @return
      */
-    IPage<FabWarehouse> findFabWarehouseByPage(Page<FabWarehouse> page, @Param("form") QueryFabWarehouseForm form);
+    IPage<FabWarehouseVO> findFabWarehouseByPage(Page<FabWarehouse> page, @Param("form") QueryFabWarehouseForm form);
 }

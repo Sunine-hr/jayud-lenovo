@@ -1,38 +1,17 @@
-package com.jayud.mall.model.po;
+package com.jayud.mall.model.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
-/**
- * <p>
- * 机场、港口信息
- * </p>
- *
- * @author fachang.mao
- * @since 2020-11-03
- */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value="HarbourInfo对象", description="机场、港口信息")
-public class HarbourInfo extends Model<HarbourInfo> {
-
-    private static final long serialVersionUID = 1L;
+public class HarbourInfoVO {
 
     @ApiModelProperty(value = "自增加id", position = 1)
-    @TableId(value = "id", type = IdType.AUTO)
     @JSONField(ordinal = 1)
     private Long id;
 
@@ -105,11 +84,5 @@ public class HarbourInfo extends Model<HarbourInfo> {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     @JSONField(ordinal = 18, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
-
-
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
 
 }

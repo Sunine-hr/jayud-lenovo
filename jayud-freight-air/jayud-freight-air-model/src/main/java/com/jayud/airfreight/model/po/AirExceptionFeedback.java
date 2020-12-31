@@ -35,7 +35,7 @@ public class AirExceptionFeedback extends Model<AirExceptionFeedback> {
     private Integer type;
 
     @ApiModelProperty(value = "异常描述")
-    private String describe;
+    private String remarks;
 
     @ApiModelProperty(value = "异常发生时间")
     private LocalDateTime startTime;

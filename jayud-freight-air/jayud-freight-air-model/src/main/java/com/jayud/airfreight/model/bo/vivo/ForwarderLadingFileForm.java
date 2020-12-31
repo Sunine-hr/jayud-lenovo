@@ -60,12 +60,12 @@ public class ForwarderLadingFileForm {
     @Pattern(regexp = "(add|update|delete)", message = "只允许填写 add/update/delete")
     private String operationType;
 
-    @JsonProperty("Anomaly_classification")
-    @SerializedName("Anomaly_classification")
+    @JsonProperty("Abnormaly_classification")
+    @SerializedName("Abnormaly_classification")
     @ApiModelProperty(value = "异常分类")
     @Length(max = 50, message = "异常分类字段长度最大为50")
     @Pattern(regexp = "(1|2|3)", message = "异常分类项：1.货物破损、2.潮湿、3.丢失")
-    private String anomalyClassification;
+    private String abnormalyClassification;
 
     @JsonProperty("Abnormal")
     @SerializedName("Abnormal")

@@ -516,7 +516,9 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
     public void exceptionFeedback(AddAirExceptionFeedbackForm form) {
         AirExceptionFeedback airExceptionFeedback = ConvertUtil.convert(form, AirExceptionFeedback.class);
         airExceptionFeedback.setFileName(StringUtils.getFileNameStr(form.getFileViewList()))
-                .setFilePath(StringUtils.getFileStr(form.getFileViewList()));
+                .setFilePath(StringUtils.getFileStr(form.getFileViewList()))
+                .setCreateUser(UserOperator.getToken())
+                .setCreateTime(LocalDateTime.now());
         this.airExceptionFeedbackService.saveOrUpdate(airExceptionFeedback);
         //推送异常反馈
         this.pushExceptionFeedbackInfo(airExceptionFeedback);
@@ -525,11 +527,16 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
     private void pushExceptionFeedbackInfo(AirExceptionFeedback airExceptionFeedback) {
         AirOrder airOrder = this.getById(airExceptionFeedback.getOrderId());
         if (CreateUserTypeEnum.VIVO.getCode().equals(airOrder.getCreateUserType())) {
-            if (OrderStatusEnum.AIR_A_0.getCode().equals(airOrder.getStatus())
-            ) {
-
+            if (OrderStatusEnum.AIR_A_4.getCode().equals(airOrder.getStatus())
+                    || OrderStatusEnum.AIR_A_5.getCode().equals(airOrder.getStatus())
+                    || OrderStatusEnum.AIR_A_6.getCode().equals(airOrder.getStatus())
+                    || OrderStatusEnum.AIR_A_7.getCode().equals(airOrder.getStatus())
+                    || OrderStatusEnum.AIR_A_8.getCode().equals(airOrder.getStatus())) {
+                this.vivoService.pushExceptionFeedbackInfo(airOrder, airExceptionFeedback);
+            } else {
+                throw new JayudBizException("当前订单只能在空运提单后才能进行反馈");
             }
-            this.vivoService.pushExceptionFeedbackInfo(airOrder, airExceptionFeedback);
+
         }
     }
 

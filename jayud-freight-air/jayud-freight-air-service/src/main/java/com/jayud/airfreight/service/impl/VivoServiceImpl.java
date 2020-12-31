@@ -754,6 +754,7 @@ public class VivoServiceImpl implements VivoService {
             log.error("获取文件地址失败");
             throw new JayudBizException("获取文件地址失败");
         }
+
         for (int i = 0; i < filePaths.length; i++) {
             String filePath = filePaths[i];
             String fileName = fileNames[i];
@@ -765,8 +766,8 @@ public class VivoServiceImpl implements VivoService {
             msg.put("operationType", "add");
             msg.put("filePath", result.getData() + filePath);
             msg.put("fileName", fileName);
-            msg.put("anormalyClassification", airExceptionFeedback.getType());
-            msg.put("abnormal", airExceptionFeedback.getDescribe());
+            msg.put("abnormalyClassification", airExceptionFeedback.getType());
+            msg.put("abnormal", airExceptionFeedback.getRemarks());
             msg.put("occurrenceTime", airExceptionFeedback.getStartTime());
             msg.put("exceptionFinishTime", airExceptionFeedback.getCompletionTime());
 //        request.put("msg", JSONUtil.toJsonStr(msg));
@@ -776,7 +777,7 @@ public class VivoServiceImpl implements VivoService {
             if (0 == MapUtil.getInt(resultMap, "status")) {
                 log.error("[vivo]推送异常信息失败 bookingNo={} file={} msg={}", airOrder.getThirdPartyOrderNo(),
                         fileName, MapUtil.getStr(resultMap, "message"));
-//                throw new VivoApiException(MapUtil.getStr(resultMap, "message"));
+                throw new VivoApiException(fileName + "文件推送失败");
             }
         }
     }

@@ -18,6 +18,12 @@ public class LocalDateTimeTest {
         LocalDateTime now = LocalDateTime.now();
         System.out.println(now);
 
+        //处理时间区间
+        String start = now.toLocalDate().toString() + " 00:00:00";
+        String end = now.toLocalDate().toString() + " 23:23:59";
+        System.out.println(start);
+        System.out.println(end);
+
 
     }
 }

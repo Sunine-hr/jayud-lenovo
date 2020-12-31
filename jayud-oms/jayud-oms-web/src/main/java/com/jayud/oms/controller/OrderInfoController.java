@@ -126,7 +126,7 @@ public class OrderInfoController {
                         inputOrderCustomsForm.getGoodsType() == null ||
                         StringUtil.isNullOrEmpty(inputOrderCustomsForm.getBizModel()) ||
                         StringUtil.isNullOrEmpty(inputOrderCustomsForm.getLegalName()) ||
-                        inputOrderCustomsForm.getLegalEntityId() == null ||
+//                        inputOrderCustomsForm.getLegalEntityId() == null ||
                         StringUtil.isNullOrEmpty(inputOrderCustomsForm.getEncode()) ||//六联单号
                         inputOrderCustomsForm.getSubOrders() == null) {
                     return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());

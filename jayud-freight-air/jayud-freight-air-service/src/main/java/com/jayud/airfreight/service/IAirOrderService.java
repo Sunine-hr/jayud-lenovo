@@ -118,6 +118,11 @@ public interface IAirOrderService extends IService<AirOrder> {
     /**
      * 根据空运第三方标识查询主订单信息
      */
-    public Map<String,Object> getMainOrderByThirdOrderNo(String thirdPartyOrderNo);
+    public Map<String, Object> getMainOrderByThirdOrderNo(String thirdPartyOrderNo);
+
+    /**
+     * 异常反馈
+     */
+    public void exceptionFeedback(AddAirExceptionFeedbackForm form);
 
 }

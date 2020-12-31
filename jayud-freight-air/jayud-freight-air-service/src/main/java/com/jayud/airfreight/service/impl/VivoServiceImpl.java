@@ -12,6 +12,7 @@ import com.jayud.airfreight.model.bo.*;
 import com.jayud.airfreight.model.bo.vivo.*;
 import com.jayud.airfreight.model.enums.VivoRejectionStatusEnum;
 import com.jayud.airfreight.model.po.AirBooking;
+import com.jayud.airfreight.model.po.AirExceptionFeedback;
 import com.jayud.airfreight.model.po.AirExtensionField;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.airfreight.model.vo.GoodsVO;
@@ -738,6 +739,45 @@ public class VivoServiceImpl implements VivoService {
             }
 
             form.setMainOrderId(Long.valueOf(result.getData().toString()));
+        }
+    }
+
+    /**
+     * 推送反馈信息
+     */
+    @Override
+    public void pushExceptionFeedbackInfo(AirOrder airOrder, AirExceptionFeedback airExceptionFeedback) {
+        String[] filePaths = airExceptionFeedback.getFilePath().split(",");
+        String[] fileNames = airExceptionFeedback.getFileName().split(",");
+        ApiResult result = this.fileClient.getBaseUrl();
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.error("获取文件地址失败");
+            throw new JayudBizException("获取文件地址失败");
+        }
+        for (int i = 0; i < filePaths.length; i++) {
+            String filePath = filePaths[i];
+            String fileName = fileNames[i];
+            Map<String, Object> msg = new HashMap<>();
+            msg.put("bookingNo", airOrder.getThirdPartyOrderNo());
+            msg.put("forwarderBookingNo", airOrder.getOrderNo());
+            msg.put("fileType", 3);
+            msg.put("id", new RandomGUID().toStringTwo());
+            msg.put("operationType", "add");
+            msg.put("filePath", result.getData() + filePath);
+            msg.put("fileName", fileName);
+            msg.put("anormalyClassification", airExceptionFeedback.getType());
+            msg.put("abnormal", airExceptionFeedback.getDescribe());
+            msg.put("occurrenceTime", airExceptionFeedback.getStartTime());
+            msg.put("exceptionFinishTime", airExceptionFeedback.getCompletionTime());
+//        request.put("msg", JSONUtil.toJsonStr(msg));
+//        msgClient.consume(request);
+
+            Map<String, Object> resultMap = this.forwarderLadingFile(msg);
+            if (0 == MapUtil.getInt(resultMap, "status")) {
+                log.error("[vivo]推送异常信息失败 bookingNo={} file={} msg={}", airOrder.getThirdPartyOrderNo(),
+                        fileName, MapUtil.getStr(resultMap, "message"));
+//                throw new VivoApiException(MapUtil.getStr(resultMap, "message"));
+            }
         }
     }
 

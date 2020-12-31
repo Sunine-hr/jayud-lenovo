@@ -133,6 +133,9 @@ public class AirOrderFormVO {
     @ApiModelProperty(value = "是否录用费用")
     private Boolean cost;
 
+    @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo)")
+    private Boolean createUserType;
+
     /**
      * 组装商品信息
      */

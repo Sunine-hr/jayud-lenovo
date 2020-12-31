@@ -9,6 +9,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.airfreight.feign.OauthClient;
 import com.jayud.airfreight.feign.OmsClient;
 import com.jayud.airfreight.model.bo.*;
+import com.jayud.airfreight.model.enums.ExceptionCausesEnum;
+import com.jayud.airfreight.model.po.AirExceptionFeedback;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.airfreight.model.vo.AirOrderFormVO;
 import com.jayud.airfreight.model.vo.AirOrderVO;
@@ -19,6 +21,7 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.entity.InitComboxVO;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
@@ -30,11 +33,13 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -278,6 +283,29 @@ public class AirOrderController {
                 break;
         }
 
+        return CommonResult.success();
+    }
+
+
+    @ApiOperation(value = "获取异常原因 createUserType=创建人的类型(0:本系统,1:vivo)")
+    @PostMapping(value = "/getExceptionCauses")
+    public CommonResult getExceptionCauses(@RequestBody Map<String, Object> map) {
+        Integer createUserType = MapUtil.getInt(map, "createUserType");
+        List<ExceptionCausesEnum> tmp = ExceptionCausesEnum.getExceptionCauses(createUserType);
+        List<InitComboxVO> list = new ArrayList<>();
+        for (ExceptionCausesEnum exceptionCausesEnum : tmp) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(exceptionCausesEnum.getCode().longValue());
+            initComboxVO.setName(exceptionCausesEnum.getDesc());
+        }
+
+        return CommonResult.success(list);
+    }
+
+    @ApiOperation(value = "异常反馈")
+    @PostMapping(value = "/exceptionFeedback")
+    public CommonResult exceptionFeedback(@RequestBody @Valid AddAirExceptionFeedbackForm form) {
+        this.airOrderService.exceptionFeedback(form);
         return CommonResult.success();
     }
 }

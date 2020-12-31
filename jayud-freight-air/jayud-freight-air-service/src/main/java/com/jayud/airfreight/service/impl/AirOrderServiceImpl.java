@@ -14,9 +14,11 @@ import com.jayud.airfreight.model.bo.*;
 import com.jayud.airfreight.model.enums.AirBookingStatusEnum;
 import com.jayud.airfreight.model.enums.AirOrderTermsEnum;
 import com.jayud.airfreight.model.po.AirBooking;
+import com.jayud.airfreight.model.po.AirExceptionFeedback;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.airfreight.model.vo.*;
 import com.jayud.airfreight.service.IAirBookingService;
+import com.jayud.airfreight.service.IAirExceptionFeedbackService;
 import com.jayud.airfreight.service.IAirOrderService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
@@ -26,6 +28,8 @@ import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.common.enums.*;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.FileUtil;
+import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
@@ -63,6 +67,8 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
     private MsgClient msgClient;
     @Autowired
     private VivoServiceImpl vivoService;
+    @Autowired
+    private IAirExceptionFeedbackService airExceptionFeedbackService;
 
     //创建订单
     @Override
@@ -140,7 +146,7 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
 
     @Override
     public IPage<AirOrderFormVO> findByPage(QueryAirOrderForm form) {
-        if (form.getStatus() == null) { //订单列表
+        if (StringUtils.isEmpty(form.getStatus())) { //订单列表
             form.setProcessStatusList(Arrays.asList(ProcessStatusEnum.PROCESSING.getCode()
                     , ProcessStatusEnum.COMPLETE.getCode(), ProcessStatusEnum.CLOSE.getCode()));
         } else {
@@ -500,6 +506,27 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
             throw new JayudBizException(ResultEnum.OPR_FAIL);
         }
         return JSONUtil.toBean(JSONUtil.toJsonStr(result.getData()), Map.class);
+    }
+
+    /**
+     * 异常反馈
+     */
+    @Override
+    @Transactional
+    public void exceptionFeedback(AddAirExceptionFeedbackForm form) {
+        AirExceptionFeedback airExceptionFeedback = ConvertUtil.convert(form, AirExceptionFeedback.class);
+        airExceptionFeedback.setFileName(StringUtils.getFileNameStr(form.getFileViewList()))
+                .setFilePath(StringUtils.getFileStr(form.getFileViewList()));
+        this.airExceptionFeedbackService.saveOrUpdate(airExceptionFeedback);
+        //推送异常反馈
+        this.pushExceptionFeedbackInfo(airExceptionFeedback);
+    }
+
+    private void pushExceptionFeedbackInfo(AirExceptionFeedback airExceptionFeedback) {
+        AirOrder airOrder = this.getById(airExceptionFeedback.getOrderId());
+        if (CreateUserTypeEnum.VIVO.getCode().equals(airOrder.getCreateUserType())) {
+            this.vivoService.pushExceptionFeedbackInfo(airOrder, airExceptionFeedback);
+        }
     }
 
 //    /**

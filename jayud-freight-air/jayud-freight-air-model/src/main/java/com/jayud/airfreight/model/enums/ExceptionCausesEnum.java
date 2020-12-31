@@ -1,5 +1,6 @@
 package com.jayud.airfreight.model.enums;
 
+import com.jayud.common.enums.CreateUserTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -32,7 +33,8 @@ public enum ExceptionCausesEnum {
         return "";
     }
 
-    public static List<ExceptionCausesEnum> getExceptionCauses(int createUserType) {
+    public static List<ExceptionCausesEnum> getExceptionCauses(Integer createUserType) {
+        createUserType = createUserType == null ? CreateUserTypeEnum.LOCAL.getCode() : CreateUserTypeEnum.VIVO.getCode();
         List<ExceptionCausesEnum> list = new ArrayList<>();
         switch (createUserType) {
             case 1:

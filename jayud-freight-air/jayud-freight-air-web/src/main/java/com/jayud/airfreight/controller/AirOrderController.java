@@ -289,7 +289,7 @@ public class AirOrderController {
 
     @ApiOperation(value = "获取异常原因 createUserType=创建人的类型(0:本系统,1:vivo)")
     @PostMapping(value = "/getExceptionCauses")
-    public CommonResult getExceptionCauses(@RequestBody Map<String, Object> map) {
+    public CommonResult<List<InitComboxVO>> getExceptionCauses(@RequestBody Map<String, Object> map) {
         Integer createUserType = MapUtil.getInt(map, "createUserType");
         List<ExceptionCausesEnum> tmp = ExceptionCausesEnum.getExceptionCauses(createUserType);
         List<InitComboxVO> list = new ArrayList<>();
@@ -297,6 +297,7 @@ public class AirOrderController {
             InitComboxVO initComboxVO = new InitComboxVO();
             initComboxVO.setId(exceptionCausesEnum.getCode().longValue());
             initComboxVO.setName(exceptionCausesEnum.getDesc());
+            list.add(initComboxVO);
         }
 
         return CommonResult.success(list);

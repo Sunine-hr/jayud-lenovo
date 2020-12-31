@@ -525,6 +525,10 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
     private void pushExceptionFeedbackInfo(AirExceptionFeedback airExceptionFeedback) {
         AirOrder airOrder = this.getById(airExceptionFeedback.getOrderId());
         if (CreateUserTypeEnum.VIVO.getCode().equals(airOrder.getCreateUserType())) {
+            if (OrderStatusEnum.AIR_A_0.getCode().equals(airOrder.getStatus())
+            ) {
+
+            }
             this.vivoService.pushExceptionFeedbackInfo(airOrder, airExceptionFeedback);
         }
     }

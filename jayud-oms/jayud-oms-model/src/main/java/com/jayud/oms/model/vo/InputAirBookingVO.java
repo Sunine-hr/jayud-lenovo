@@ -49,7 +49,7 @@ public class InputAirBookingVO extends Model<InputAirBookingVO> {
     private String subNo;
 
     @ApiModelProperty(value = "截关日期")
-    private LocalDateTime cutOffDate;
+    private String cutOffDate;
 
     @ApiModelProperty(value = "航空公司")
     private String airlineCompany;

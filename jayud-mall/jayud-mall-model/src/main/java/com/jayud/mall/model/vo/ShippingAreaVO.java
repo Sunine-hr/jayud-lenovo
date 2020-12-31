@@ -1,6 +1,8 @@
 package com.jayud.mall.model.vo;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -9,71 +11,94 @@ import java.time.LocalDateTime;
 @Data
 public class ShippingAreaVO {
 
-    @ApiModelProperty(value = "自增id")
+    @ApiModelProperty(value = "自增id", position = 1)
+    @JSONField(ordinal = 1)
     private Long id;
 
-    @ApiModelProperty(value = "仓库代码")
+    @ApiModelProperty(value = "仓库代码", position = 2)
+    @JSONField(ordinal = 2)
     private String warehouseCode;
 
-    @ApiModelProperty(value = "仓库名称")
+    @ApiModelProperty(value = "仓库名称", position = 3)
+    @JSONField(ordinal = 3)
     private String warehouseName;
 
-    @ApiModelProperty(value = "国家代码")
+    @ApiModelProperty(value = "国家代码(country code)", position = 4)
+    @JSONField(ordinal = 4)
     private String stateCode;
 
-    @ApiModelProperty(value = "联系人")
+    @ApiModelProperty(value = "联系人", position = 5)
+    @JSONField(ordinal = 5)
     private String contacts;
 
-    @ApiModelProperty(value = "公司名称")
+    @ApiModelProperty(value = "公司名称", position = 6)
+    @JSONField(ordinal = 6)
     private String companyName;
 
-    @ApiModelProperty(value = "联系电话")
+    @ApiModelProperty(value = "联系电话", position = 7)
+    @JSONField(ordinal = 7)
     private String contactNumber;
 
-    @ApiModelProperty(value = "联系手机")
+    @ApiModelProperty(value = "联系手机", position = 8)
+    @JSONField(ordinal = 8)
     private String contactPhone;
 
-    @ApiModelProperty(value = "地址1")
+    @ApiModelProperty(value = "地址1", position = 9)
+    @JSONField(ordinal = 9)
     private String addressFirst;
 
-    @ApiModelProperty(value = "地址2")
+    @ApiModelProperty(value = "地址2", position = 10)
+    @JSONField(ordinal = 10)
     private String addressSecond;
 
-    @ApiModelProperty(value = "地址3")
+    @ApiModelProperty(value = "地址3", position = 11)
+    @JSONField(ordinal = 11)
     private String addressThirdly;
 
-    @ApiModelProperty(value = "省id")
+    @ApiModelProperty(value = "省id", position = 12)
+    @JSONField(ordinal = 12)
     private Integer pid;
 
-    @ApiModelProperty(value = "省/州名")
+    @ApiModelProperty(value = "省/州名", position = 13)
+    @JSONField(ordinal = 13)
     private String pname;
 
-    @ApiModelProperty(value = "城市id")
+    @ApiModelProperty(value = "城市id", position = 14)
+    @JSONField(ordinal = 14)
     private Integer cid;
 
-    @ApiModelProperty(value = "城市名")
+    @ApiModelProperty(value = "城市名", position = 15)
+    @JSONField(ordinal = 15)
     private String cname;
 
-    @ApiModelProperty(value = "邮编")
+    @ApiModelProperty(value = "邮编", position = 16)
+    @JSONField(ordinal = 16)
     private String zipCode;
 
-    @ApiModelProperty(value = "进仓单文件模版")
+    @ApiModelProperty(value = "进仓单文件模版", position = 17)
+    @JSONField(ordinal = 17)
     private String deliveryNote;
 
-    @ApiModelProperty(value = "唛头文件模版URL")
+    @ApiModelProperty(value = "唛头文件模版URL", position = 18)
+    @JSONField(ordinal = 18)
     private String shippingMark;
 
-    @ApiModelProperty(value = "状态(0无效 1有效)")
+    @ApiModelProperty(value = "状态(0无效 1有效)", position = 19)
     @TableField(value = "`status`")
+    @JSONField(ordinal = 19)
     private String status;
 
-    @ApiModelProperty(value = "创建用户id")
+    @ApiModelProperty(value = "创建用户id(system_user id)", position = 20)
+    @JSONField(ordinal = 20)
     private Integer userId;
 
-    @ApiModelProperty(value = "创建用户名")
+    @ApiModelProperty(value = "创建用户名(system_user name)", position = 21)
+    @JSONField(ordinal = 21)
     private String userName;
 
-    @ApiModelProperty(value = "创建时间")
+    @ApiModelProperty(value = "创建时间", position = 22)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 22, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
 

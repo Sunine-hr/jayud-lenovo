@@ -35,7 +35,7 @@
 
     <!--查询集货仓表并分页-->
     <select id="findShippingAreaByPage" parameterType="com.jayud.mall.model.bo.QueryShippingAreaForm"
-            resultType="com.jayud.mall.model.po.ShippingArea" >
+            resultType="com.jayud.mall.model.vo.ShippingAreaVO" >
         select
         t.id,
         t.warehouse_code,
@@ -72,8 +72,6 @@
         <if test="form.stateCode != null and form.stateCode != ''">
             AND t.state_code LIKE concat('%',#{form.stateCode},'%')
         </if>
-        GROUP BY
-        t.`id`
     </select>
 
 

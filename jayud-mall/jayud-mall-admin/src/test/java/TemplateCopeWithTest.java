@@ -12,7 +12,7 @@ public class TemplateCopeWithTest {
         form.setId(1L);
         form.setQie(1);
         form.setCostName("订船费");
-        form.setSupplierCode("xx供应商");
+        //form.setSupplierCode("xx供应商");
         form.setCalculateWay(1);
         form.setCount(1);
         form.setUnit(1);

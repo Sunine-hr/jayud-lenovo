@@ -169,7 +169,7 @@ public class QuotationTemplateTest {
 //        form1.setId(1L);
         form1.setQie(qie);
         form1.setCostName("订船费");
-        form1.setSupplierCode("xx供应商");
+        //form1.setSupplierCode("xx供应商");
         form1.setCalculateWay(1);
         form1.setCount(1);
         form1.setUnit(1);
@@ -184,7 +184,7 @@ public class QuotationTemplateTest {
 //        form2.setId(1L);
         form2.setQie(qie);
         form2.setCostName("仓库服务费");
-        form2.setSupplierCode("xx供应商");
+        //form2.setSupplierCode("xx供应商");
         form2.setCalculateWay(1);
         form2.setCount(1);
         form2.setUnit(1);
@@ -199,7 +199,7 @@ public class QuotationTemplateTest {
 //        form3.setId(3L);
         form3.setQie(qie);
         form3.setCostName("上门提货费");
-        form3.setSupplierCode("xx供应商");
+        //form3.setSupplierCode("xx供应商");
         form3.setCalculateWay(1);
         form3.setCount(1);
         form3.setUnit(1);

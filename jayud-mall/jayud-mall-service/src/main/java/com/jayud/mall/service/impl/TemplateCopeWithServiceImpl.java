@@ -31,7 +31,7 @@ public class TemplateCopeWithServiceImpl extends ServiceImpl<TemplateCopeWithMap
         Long id = form.getId();
         Integer qie = form.getQie();
         String costName = form.getCostName();
-        String supplierCode = form.getSupplierCode();
+        Integer supplierId = form.getSupplierId();
         Integer calculateWay = form.getCalculateWay();
         Integer count = form.getCount();
         Integer unit = form.getUnit();
@@ -50,8 +50,8 @@ public class TemplateCopeWithServiceImpl extends ServiceImpl<TemplateCopeWithMap
         if(costName != null && costName != ""){
             queryWrapper.like("cost_name", costName);
         }
-        if(supplierCode != null && supplierCode != ""){
-            queryWrapper.like("supplier_code", supplierCode);
+        if(supplierId != null){
+            queryWrapper.like("supplier_id", supplierId);
         }
         if(calculateWay != null){
             queryWrapper.eq("calculate_way", calculateWay);

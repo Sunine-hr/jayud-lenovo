@@ -6,6 +6,8 @@ import com.jayud.mall.model.po.TemplateCopeWith;
 import com.jayud.mall.service.ITemplateCopeWithService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperationSupport;
+import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,7 +18,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/templatecopewith")
-@Api(tags = "报价对应应付费用明细接口")
+@Api(tags = "S036-后台-报价对应应付费用明细接口")
+@ApiSort(value = 36)
 public class TemplateCopeWithController {
 
     @Autowired
@@ -24,6 +27,7 @@ public class TemplateCopeWithController {
 
     @ApiOperation(value = "查询报价对应应付费用明细List")
     @PostMapping("/findTemplateCopeWith")
+    @ApiOperationSupport(order = 1)
     public CommonResult<List<TemplateCopeWith>> findTemplateCopeWith(@RequestBody TemplateCopeWithForm form) {
         List<TemplateCopeWith> list = templateCopeWithService.findTemplateCopeWith(form);
         return CommonResult.success(list);

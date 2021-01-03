@@ -27,14 +27,14 @@ public class OceanCounterWaybillRelation extends Model<OceanCounterWaybillRelati
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "主键id")
+    @ApiModelProperty(value = "主键id", position = 1)
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "货柜id(ocean_counter id)")
+    @ApiModelProperty(value = "货柜id(ocean_counter id)", position = 2)
     private Long oceanCounterId;
 
-    @ApiModelProperty(value = "运单id(订单id)(order_info id)")
+    @ApiModelProperty(value = "运单id(订单id)(order_info id)", position = 3)
     private Long orderInfoId;
 
 

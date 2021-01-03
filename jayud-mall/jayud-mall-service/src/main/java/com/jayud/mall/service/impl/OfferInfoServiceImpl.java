@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.mall.admin.security.domain.AuthUser;
+import com.jayud.mall.admin.security.service.BaseService;
 import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.OfferInfoForm;
 import com.jayud.mall.model.bo.PicUrlArrForm;
@@ -17,6 +19,7 @@ import com.jayud.mall.service.IOfferInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -72,17 +75,11 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
     @Autowired
     OrderCaseMapper orderCaseMapper;
 
+    @Autowired
+    BaseService baseService;
+
     @Override
     public IPage<OfferInfoVO> findOfferInfoByPage(QueryOfferInfoForm form) {
-        //处理时间区间
-        if(form.getSailTime() != null){
-            form.setSailTimeStart(form.getSailTime().toLocalDate().toString() + " 00:00:00");
-            form.setSailTimeEnd(form.getSailTime().toLocalDate().toString() + " 23:23:59");
-        }
-        if(form.getCutOffTime() != null){
-            form.setCutOffTimeStart(form.getSailTime().toLocalDate().toString() + " 00:00:00");
-            form.setCutOffTimeEnd(form.getSailTime().toLocalDate().toString() + " 23:23:59");
-        }
         //定义分页参数
         Page<OfferInfoVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
@@ -109,8 +106,11 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
     public void saveOfferInfo(OfferInfoForm form) {
         OfferInfo offerInfo = ConvertUtil.convert(form, OfferInfo.class);
         if(form.getId() == null){
-            //状态(0无效 1有效)
-            offerInfo.setStatus("1");
+            AuthUser user = baseService.getUser();
+            offerInfo.setStatus("1");//状态(0无效 1有效)
+            offerInfo.setUserId(user.getId().intValue());
+            offerInfo.setUserName(user.getName());
+            offerInfo.setCreateTime(LocalDateTime.now());
         }
         this.saveOrUpdate(offerInfo);
     }

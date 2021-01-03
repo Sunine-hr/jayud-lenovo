@@ -44,22 +44,27 @@
         t1.gidtype,
         t1.qidtype,
         t2.code_name startShipmentName,
-        t3.code_name destinationPortName
+        t3.code_name destinationPortName,
+        t4.name destinationCountryName
         from
         offer_info t
         LEFT JOIN quotation_template t1 ON t1.id = t.qie
         LEFT JOIN harbour_info t2 on t2.id_code = t1.start_shipment
         LEFT JOIN harbour_info t3 on t3.id_code = t1.destination_port
+        left join country t4 on t4.code = t3.state_code
         WHERE
         1 = 1
         <if test="form.names != null and form.names != ''">
             AND t.`names` LIKE concat('%',#{form.names},'%')
         </if>
-        <if test="form.sailTime != null and form.sailTimeStart != null and form.sailTimeStart != '' and form.sailTimeEnd != null and form.sailTimeEnd != '' ">
-            and t.sail_time <![CDATA[ >= ]]> #{form.sailTimeStart} AND t.sail_time <![CDATA[ <= ]]> #{form.sailTimeEnd}
+        <if test="form.sailTime != null">
+            and t.sail_time <![CDATA[ >= ]]> concat(date_format(#{form.sailTime}, '%Y-%m-%d'), ' 00:00:00') AND t.sail_time <![CDATA[ <= ]]> concat(date_format(#{form.sailTime}, '%Y-%m-%d'), ' 23:23:59')
         </if>
-        <if test="form.cutOffTime != null and form.cutOffTimeStart != null and form.cutOffTimeStart != '' and form.cutOffTimeEnd != null and form.cutOffTimeEnd != '' ">
-            and t.cut_off_time <![CDATA[ >= ]]> #{form.cutOffTimeStart} AND t.cut_off_time <![CDATA[ <= ]]> #{form.cutOffTimeEnd}
+        <if test="form.cutOffTime != null">
+            and t.cut_off_time <![CDATA[ >= ]]> concat(date_format(#{form.cutOffTime}, '%Y-%m-%d'), ' 00:00:00') AND t.cut_off_time <![CDATA[ <= ]]> concat(date_format(#{form.cutOffTime}, '%Y-%m-%d'), ' 23:23:59')
+        </if>
+        <if test="form.countryCode != null and form.countryCode != ''">
+            and t4.code = #{form.countryCode}
         </if>
 
     </select>

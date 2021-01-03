@@ -6,7 +6,7 @@
     <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.OceanBill">
         <id column="id" property="id" />
         <result column="tid" property="tid" />
-        <result column="supplier_code" property="supplierCode" />
+        <result column="supplier_id" property="supplierId" />
         <result column="order_id" property="orderId" />
         <result column="start_code" property="startCode" />
         <result column="end_code" property="endCode" />
@@ -18,14 +18,14 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, tid, supplier_code, order_id, start_code, end_code, sail_time, voyage_day, unit, create_time
+        id, tid, supplier_id, order_id, start_code, end_code, sail_time, voyage_day, unit, create_time
     </sql>
 
     <!--查询报价模板并分页-->
     <select id="findOceanBillByPage" parameterType="com.jayud.mall.model.bo.QueryOceanBillForm"
             resultType="com.jayud.mall.model.vo.OceanBillVO" >
         select
-        t.id,t.tid,t.supplier_code,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time
+        t.id,t.tid,t.supplier_id,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time
         from
         ocean_bill t
         WHERE
@@ -39,8 +39,8 @@
             and t.sail_time <![CDATA[ >= ]]> #{form.sailTimeStart} AND t.sail_time <![CDATA[ <= ]]> #{form.sailTimeEnd}
         </if>
         /*供应商*/
-        <if test="form.supplierCode != null and form.supplierCode != ''">
-            and t.supplier_code = #{form.supplierCode}
+        <if test="form.supplierId != null">
+            and t.supplier_id = #{form.supplierId}
         </if>
         /*目的港*/
         <if test="form.endCode != null and form.endCode != ''">

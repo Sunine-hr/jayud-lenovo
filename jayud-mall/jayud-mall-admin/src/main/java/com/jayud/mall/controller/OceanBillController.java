@@ -22,8 +22,8 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/oceanbill")
-@Api(tags = "后端-提单接口")
-@ApiSort(value = 10003)
+@Api(tags = "S040-后台-提单接口")
+@ApiSort(value = 40)
 public class OceanBillController {
 
     @Autowired

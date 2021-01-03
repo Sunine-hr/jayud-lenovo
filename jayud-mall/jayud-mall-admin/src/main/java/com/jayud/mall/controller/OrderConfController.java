@@ -10,6 +10,8 @@ import com.jayud.mall.model.vo.OrderConfVO;
 import com.jayud.mall.service.IOrderConfService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperationSupport;
+import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/orderconf")
-@Api(tags = "配载单接口")
+@Api(tags = "S043-后台-配载单接口")
+@ApiSort(value = 43)
 public class OrderConfController {
 
     @Autowired
@@ -26,6 +29,7 @@ public class OrderConfController {
 
     @ApiOperation(value = "分页查询配载单")
     @PostMapping("/findOrderConfByPage")
+    @ApiOperationSupport(order = 1)
     public CommonResult<CommonPageResult<OrderConfVO>> findOrderConfByPage(@RequestBody QueryOrderConfForm form) {
         IPage<OrderConfVO> pageList = orderConfService.findOrderConfByPage(form);
         CommonPageResult<OrderConfVO> pageVO = new CommonPageResult(pageList);
@@ -34,6 +38,7 @@ public class OrderConfController {
 
     @ApiOperation(value = "保存配载单")
     @PostMapping(value = "saveOrderConf")
+    @ApiOperationSupport(order = 2)
     public CommonResult saveOrderConf(@RequestBody OrderConfForm form){
         orderConfService.saveOrderConf(form);
         return CommonResult.success("保存配载单，成功！");
@@ -41,6 +46,7 @@ public class OrderConfController {
 
     @ApiOperation(value = "查看配载单详情")
     @PostMapping(value = "lookOrderConf")
+    @ApiOperationSupport(order = 3)
     public CommonResult<OrderConfVO> lookOrderConf(@RequestBody OceanBillForm form){
         Long id = form.getId();
         return orderConfService.lookOrderConf(id);

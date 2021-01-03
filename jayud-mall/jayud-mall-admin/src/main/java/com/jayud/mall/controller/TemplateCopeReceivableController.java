@@ -6,6 +6,8 @@ import com.jayud.mall.model.po.TemplateCopeReceivable;
 import com.jayud.mall.service.ITemplateCopeReceivableService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperationSupport;
+import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,7 +18,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/templatecopereceivable")
-@Api(tags = "报价对应应收费用明细接口")
+@Api(tags = "S035-后台-报价对应应收费用明细接口")
+@ApiSort(value = 35)
 public class TemplateCopeReceivableController {
 
     @Autowired
@@ -24,6 +27,7 @@ public class TemplateCopeReceivableController {
 
     @ApiOperation(value = "查询报价对应应收费用明细List")
     @PostMapping("/findTemplateCopeReceivable")
+    @ApiOperationSupport(order = 1)
     public CommonResult<List<TemplateCopeReceivable>> findTemplateCopeReceivable(@RequestBody TemplateCopeReceivableForm form) {
         List<TemplateCopeReceivable> list = templateCopeReceivableService.findTemplateCopeReceivable(form);
         return CommonResult.success(list);

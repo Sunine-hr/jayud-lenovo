@@ -7,6 +7,8 @@ import com.jayud.mall.model.vo.ReceivableCostReturnVO;
 import com.jayud.mall.service.IReceivableCostService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperationSupport;
+import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,14 +19,16 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/receivablecost")
-@Api(tags = "应收/应付费用名称接口")
+@Api(tags = "S034-后台-应收-应付费用名称接口")
+@ApiSort(value = 34)
 public class ReceivableCostController {
 
     @Autowired
     IReceivableCostService receivableCostService;
 
-    @ApiOperation(value = "查询应收/应付费用名称List")
+    @ApiOperation(value = "查询应收-应付费用名称List")
     @PostMapping("/findReceivableCost")
+    @ApiOperationSupport(order = 1)
     public CommonResult<List<ReceivableCost>> findReceivableCost(@RequestBody ReceivableCostForm form) {
         List<ReceivableCost> list = receivableCostService.findReceivableCost(form);
         return CommonResult.success(list);
@@ -32,6 +36,7 @@ public class ReceivableCostController {
 
     @ApiOperation(value = "报价模板使用应付费用信息")
     @PostMapping("/findReceivableCostBy")
+    @ApiOperationSupport(order = 2)
     public CommonResult<List<ReceivableCostReturnVO>> findReceivableCostBy(@RequestBody ReceivableCostForm form){
         List<ReceivableCostReturnVO> receivableCostReturnVOS = receivableCostService.findReceivableCostBy(form);
         return CommonResult.success(receivableCostReturnVOS);

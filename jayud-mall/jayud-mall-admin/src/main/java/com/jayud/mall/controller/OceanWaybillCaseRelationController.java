@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/oceanwaybillcaserelation")
-@Api(tags = "运单对应箱号接口")
+@Api(tags = "运单对应箱号接口-准备删除的接口")
 public class OceanWaybillCaseRelationController {
 
     @Autowired

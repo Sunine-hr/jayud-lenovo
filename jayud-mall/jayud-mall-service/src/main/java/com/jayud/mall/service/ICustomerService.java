@@ -86,5 +86,5 @@ public interface ICustomerService extends IService<Customer> {
      * @param form
      * @return
      */
-    CommonResult<CustomerVO> customerLogin(CustomerLoginForm form);
+    CustomerVO customerLogin(CustomerLoginForm form);
 }

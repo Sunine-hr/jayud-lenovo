@@ -191,8 +191,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
 
     @Override
-    public CommonResult<CustomerVO> customerLogin(CustomerLoginForm form) {
-        return customerMapper.customerLogin(form);
+    public CustomerVO customerLogin(CustomerLoginForm form) {
+        CustomerVO customerVO = customerMapper.customerLogin(form);
+        return customerVO;
     }
 
 

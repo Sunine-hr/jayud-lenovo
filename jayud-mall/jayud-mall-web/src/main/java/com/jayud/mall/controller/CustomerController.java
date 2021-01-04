@@ -79,9 +79,8 @@ public class CustomerController {
     @PostMapping("/customerLogin")
     @ApiOperationSupport(order = 8)
     public CommonResult<CustomerVO> customerLogin(@Valid @RequestBody CustomerLoginForm form){
-        return customerService.customerLogin(form);
+        CustomerVO customerVO = customerService.customerLogin(form);
+        return CommonResult.success(customerVO);
     }
-
-
 
 }

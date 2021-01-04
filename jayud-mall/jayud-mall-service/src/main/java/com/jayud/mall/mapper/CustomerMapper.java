@@ -3,7 +3,6 @@ package com.jayud.mall.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.CustomerLoginForm;
 import com.jayud.mall.model.bo.QueryCustomerForm;
 import com.jayud.mall.model.po.Customer;
@@ -37,5 +36,5 @@ public interface CustomerMapper extends BaseMapper<Customer> {
      * @param form
      * @return
      */
-    CommonResult<CustomerVO> customerLogin(@Param("form") CustomerLoginForm form);
+    CustomerVO customerLogin(@Param("form") CustomerLoginForm form);
 }

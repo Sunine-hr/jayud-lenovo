@@ -41,9 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.jayud.common.enums.OrderStatusEnum.AIR_A_2;
 
@@ -77,9 +75,11 @@ public class AirOrderController {
         if (!StringUtils.isEmpty(form.getCustomerName())) {
             ApiResult result = omsClient.getByCustomerName(form.getCustomerName());
             Object data = result.getData();
-            if (data != null) {
+            if (data != null && ((List) data).size() > 0) {
                 JSONArray mainOrders = JSONArray.parseArray(JSON.toJSONString(data));
                 form.assemblyMainOrderNo(mainOrders);
+            } else {
+                form.setMainOrderNos(Collections.singletonList("-1"));
             }
         }
 

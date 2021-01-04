@@ -41,6 +41,7 @@ public enum ExceptionCausesEnum {
                 list.add(values()[0]);
                 list.add(values()[1]);
                 list.add(values()[2]);
+                list.add(values()[3]);
                 return list;
             default:
                 return Arrays.asList(values());

@@ -125,4 +125,9 @@ public interface IAirOrderService extends IService<AirOrder> {
      */
     public void exceptionFeedback(AddAirExceptionFeedbackForm form);
 
+    /**
+     * 根据主订单号查询空运订单信息
+     */
+    public List<AirOrder> getAirOrderByMainOrderNos(List<String> mainOrderNos);
+
 }

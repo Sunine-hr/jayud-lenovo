@@ -1,6 +1,7 @@
 import com.jayud.mall.model.bo.CountryForm;
 import com.jayud.mall.utils.TestUtils;
 import org.junit.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class CountryTest {
 
@@ -14,6 +15,15 @@ public class CountryTest {
         form.setName("中国");
         form.setStatus("1");
         TestUtils.JSONObjectPrint(form);
+    }
+
+    @Test
+    public void test2(){
+        //从nacos中获取，新增用户，初始化密码
+        String pwd = "123456";
+        BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
+        String password = bcryptPasswordEncoder.encode(pwd.trim());
+        System.out.println(password);
     }
 
 }

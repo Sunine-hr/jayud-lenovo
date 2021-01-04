@@ -80,4 +80,11 @@ public interface ICustomerService extends IService<Customer> {
      * @return
      */
     List<CustomerVO> findCustomer();
+
+    /**
+     * 客户登录
+     * @param form
+     * @return
+     */
+    CommonResult<CustomerVO> customerLogin(CustomerLoginForm form);
 }

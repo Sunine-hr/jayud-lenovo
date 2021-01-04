@@ -18,8 +18,8 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/customer")
-@Api(tags = "C002-C端-客户接口")
-@ApiSort(value = 2)
+@Api(tags = "C003-C端-客户接口")
+@ApiSort(value = 3)
 public class CustomerController {
 
     @Autowired
@@ -74,6 +74,14 @@ public class CustomerController {
     public CommonResult<CustomerVO> customerUpdatePhone(@Valid @RequestBody CustomerPhoneForm form){
         return customerService.customerUpdatePhone(form);
     }
+
+    @ApiOperation(value = "客户登录")
+    @PostMapping("/customerLogin")
+    @ApiOperationSupport(order = 8)
+    public CommonResult<CustomerVO> customerLogin(@Valid @RequestBody CustomerLoginForm form){
+        return customerService.customerLogin(form);
+    }
+
 
 
 }

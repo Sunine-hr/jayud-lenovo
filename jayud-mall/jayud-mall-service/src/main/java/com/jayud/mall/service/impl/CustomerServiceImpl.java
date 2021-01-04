@@ -190,5 +190,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         return customerVOS;
     }
 
+    @Override
+    public CommonResult<CustomerVO> customerLogin(CustomerLoginForm form) {
+        return customerMapper.customerLogin(form);
+    }
+
 
 }

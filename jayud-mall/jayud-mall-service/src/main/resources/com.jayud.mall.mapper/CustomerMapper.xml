@@ -5,7 +5,6 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.Customer">
         <id column="id" property="id" />
-        <result column="bs_user_id" property="bsUserId" />
         <result column="name_cn" property="nameCn" />
         <result column="passwd" property="passwd" />
         <result column="phone" property="phone" />
@@ -58,6 +57,15 @@
         <if test="form.keyword != null and form.keyword != ''">
             AND ( t.`name_cn` LIKE concat('%',#{form.keyword},'%') OR t.`company` LIKE concat('%',#{form.keyword},'%') )
         </if>
+    </select>
+
+    <select id="customerLogin" parameterType="com.jayud.mall.model.bo.CustomerLoginForm"
+            resultType="com.jayud.mall.model.vo.CustomerVO">
+        select
+        t.id,t.code,t.company,t.name_cn,t.name_en,t.contact_number,t.phone,t.user_name,t.passwd,t.audit_status,t.audit_user_id,t.audit_time,t.status,t.salesman_id,t.operation_team_id,t.currency,t.address,t.level,t.origin,t.create_date,t.pay_type,t.pay_passwd,t.clearing_way,t.clearing_date,t.lock_date,t.real_date,t.business_license_url,t.remark
+        from customer t
+        where 1=1
+        and (t.phone=#{form.loginname} OR t.user_name=#{form.loginname})
     </select>
 
 </mapper>

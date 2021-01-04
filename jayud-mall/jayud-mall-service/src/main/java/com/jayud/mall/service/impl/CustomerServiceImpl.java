@@ -15,6 +15,7 @@ import com.jayud.mall.model.po.Customer;
 import com.jayud.mall.model.vo.CustomerVO;
 import com.jayud.mall.service.ICustomerService;
 import com.jayud.mall.service.INumberGeneratedService;
+import com.jayud.mall.utils.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +40,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     BaseService baseService;
     @Autowired
     INumberGeneratedService numberGeneratedService;
+    @Autowired
+    private RedisUtils redisUtils;
 
     @Override
     public IPage<CustomerVO> findCustomerByPage(QueryCustomerForm form) {
@@ -126,7 +129,14 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         if(companyCount > 0){
             return CommonResult.error(-1, "公司名称已存在");
         }
-
+        String verificationCode = form.getVerificationCode();//验证码(前端输入)
+        String code = redisUtils.get(phone);//验证码redis
+        if(code == null){
+            return CommonResult.error(-1, "验证码已过期或不存在");
+        }
+        if(!verificationCode.equals(code)){
+            return CommonResult.error(-1, "验证码不正确");
+        }
         //mysql-生成单号，有规则
         String customerCode = numberGeneratedService.getOrderNoByCode("customer_code");
         customer.setCode(customerCode);//客户代码

@@ -302,6 +302,15 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         return this.baseMapper.findEachModuleAccountByPage(page, form);
     }
 
+    @Override
+    public SystemUser getSystemUserBySystemName(String name) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("name", name);
+        SystemUser systemUser = baseMapper.selectOne(queryWrapper);
+
+        return systemUser;
+    }
+
 
     /**
      * 添加登录记录

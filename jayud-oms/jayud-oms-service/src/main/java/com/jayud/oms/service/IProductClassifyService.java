@@ -27,4 +27,9 @@ public interface IProductClassifyService extends IService<ProductClassify> {
      * 根据id集合查询所有产品分类
      */
     List<ProductClassify> getByIds(List<Long> ids);
+
+    /**
+     * 根据产品名字查询产品id
+     */
+    ProductClassify getProductClassifyId(String str);
 }

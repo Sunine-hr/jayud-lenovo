@@ -10,7 +10,6 @@ import com.jayud.oms.mapper.CostInfoMapper;
 import com.jayud.oms.model.bo.AddCostInfoForm;
 import com.jayud.oms.model.bo.QueryCostInfoForm;
 import com.jayud.oms.model.enums.StatusEnum;
-import com.jayud.oms.model.po.CostGenre;
 import com.jayud.oms.model.po.CostInfo;
 import com.jayud.oms.model.po.CostType;
 import com.jayud.oms.model.vo.CostInfoVO;

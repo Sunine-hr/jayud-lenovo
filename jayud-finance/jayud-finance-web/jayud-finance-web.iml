@@ -205,7 +205,6 @@
     <orderEntry type="library" name="Maven: com.alibaba.nacos:nacos-client:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.alibaba.nacos:nacos-common:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.alibaba.nacos:nacos-api:1.0.0" level="project" />
-    <orderEntry type="library" name="Maven: com.alibaba:fastjson:1.2.47" level="project" />
     <orderEntry type="library" name="Maven: io.prometheus:simpleclient:0.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.cloud:spring-cloud-starter-openfeign:2.1.2.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.cloud:spring-cloud-starter:2.1.2.RELEASE" level="project" />
@@ -255,5 +254,6 @@
     <orderEntry type="library" name="Maven: org.springframework.cloud:spring-cloud-context:2.1.2.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-configuration-processor:2.1.6.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: commons-logging:commons-logging-api:1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.alibaba:fastjson:1.2.68" level="project" />
   </component>
 </module>

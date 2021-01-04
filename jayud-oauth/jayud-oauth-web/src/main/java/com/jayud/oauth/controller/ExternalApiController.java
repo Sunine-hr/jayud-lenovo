@@ -15,10 +15,7 @@ import com.jayud.oauth.model.bo.OprSystemUserForm;
 import com.jayud.oauth.model.bo.QueryAccountForm;
 import com.jayud.oauth.model.enums.StatusEnum;
 import com.jayud.oauth.model.enums.SystemUserStatusEnum;
-import com.jayud.oauth.model.po.Company;
-import com.jayud.oauth.model.po.LegalEntity;
-import com.jayud.oauth.model.po.SystemRole;
-import com.jayud.oauth.model.po.SystemUser;
+import com.jayud.oauth.model.po.*;
 import com.jayud.oauth.model.vo.*;
 import com.jayud.oauth.service.*;
 import io.swagger.annotations.Api;
@@ -273,6 +270,36 @@ public class ExternalApiController {
     public ApiResult getLegalEntityByLegalId(@RequestParam("legalId") Long legalId) {
         LegalEntity legalEntity = this.legalEntityService.getById(legalId);
         return ApiResult.ok(legalEntity);
+    }
+
+    @ApiOperation("根据部门名称查询部门id")
+    @RequestMapping(value = "/api/getDeptIdByDeptName")
+    public ApiResult getDeptIdByDeptName(@RequestParam("deptName") String deptName) {
+        Department department = departmentService.getByDeptName(deptName);
+        if(department==null){
+            return ApiResult.error();
+        }
+        return ApiResult.ok(department.getId().toString());
+    }
+
+    @ApiOperation("根据业务员名称查询业务员id")
+    @RequestMapping(value = "/api/getSystemUserBySystemName")
+    public ApiResult getSystemUserBySystemName(@RequestParam("name") String name) {
+        SystemUser systemUser = userService.getSystemUserBySystemName(name);
+        if(systemUser==null){
+            return ApiResult.error();
+        }
+        return ApiResult.ok(systemUser.getId());
+    }
+
+    @ApiOperation("根据法人主体姓名查询法人主体信息")
+    @RequestMapping(value = "/api/getLegalEntityByLegalName")
+    public ApiResult getLegalEntityByLegalName(@RequestParam("name") String name) {
+        LegalEntity legalEntity = legalEntityService.getLegalEntityByLegalName(name);
+        if(legalEntity==null){
+            return ApiResult.error();
+        }
+        return ApiResult.ok();
     }
 }
 

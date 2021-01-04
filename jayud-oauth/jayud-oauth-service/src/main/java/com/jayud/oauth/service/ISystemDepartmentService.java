@@ -39,4 +39,9 @@ public interface ISystemDepartmentService extends IService<Department> {
      */
     void saveOrUpdateDepartment(AddDepartmentForm form);
 
+    /**
+     * 获取部门id
+     * @param deptName
+     */
+    Department getByDeptName(String deptName);
 }

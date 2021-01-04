@@ -1,7 +1,7 @@
 package com.jayud.mall.security.controller;
 
-import com.jayud.mall.admin.security.domain.AuthUser;
 import com.jayud.mall.admin.security.domain.BaseAuthVO;
+import com.jayud.mall.admin.security.domain.CustomerUser;
 import com.jayud.mall.admin.security.service.BaseService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,7 +36,7 @@ import java.util.Collection;
  * 浏览器安全控制器BrowserSecurityController
  */
 @RestController
-@Api(tags = "S001-后台-Security安全接口")
+@Api(tags = "S001-C端-Security安全接口")
 @ApiSort(value = 1)
 public class BrowserSecurityController {
 
@@ -75,7 +75,7 @@ public class BrowserSecurityController {
     @ApiOperationSupport(order = 2)
     @PostMapping(value = "/hi")
     public String hi(){
-        return "hi mall admin";
+        return "hi mall web";
     }
 
     @ApiOperation(value = "登录成功后跳转的地址")
@@ -88,10 +88,10 @@ public class BrowserSecurityController {
         String username = myuser.getUsername();
         String password = myuser.getPassword();
 
-        Object token = getHttpSession().getAttribute(BaseAuthVO.ADMIN_USER_LOGIN_SESSION_KEY);
-        AuthUser userVO = (AuthUser) token;
+        Object token = getHttpSession().getAttribute(BaseAuthVO.WEB_CUSTOMER_USER_LOGIN_SESSION_KEY);
+        CustomerUser userVO = (CustomerUser) token;
 
-        AuthUser user = baseService.getUser();
+        CustomerUser user = baseService.getCustomerUser();
 
         return SecurityContextHolder.getContext().getAuthentication();
     }

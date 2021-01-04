@@ -1,14 +1,12 @@
 package com.jayud.mall.security.service;
 
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.mall.admin.security.domain.AuthUser;
 import com.jayud.mall.admin.security.domain.BaseAuthVO;
-import com.jayud.mall.model.bo.SystemUserLoginForm;
-import com.jayud.mall.model.po.SystemRole;
-import com.jayud.mall.model.vo.SystemUserVO;
+import com.jayud.mall.admin.security.domain.CustomerUser;
+import com.jayud.mall.model.bo.CustomerLoginForm;
+import com.jayud.mall.model.vo.CustomerVO;
 import com.jayud.mall.security.utils.ContextHolderUtils;
-import com.jayud.mall.service.ISystemRoleService;
-import com.jayud.mall.service.ISystemUserService;
+import com.jayud.mall.service.ICustomerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,16 +42,23 @@ public class UserDetailService implements UserDetailsService {
      */
     @Autowired
     private PasswordEncoder passwordEncoder;
+//    /**
+//     * <p>用户服务</p>
+//     */
+//    @Autowired
+//    ISystemUserService userService;
+//    /**
+//     * <p>角色服务</p>
+//     */
+//    @Autowired
+//    ISystemRoleService roleService;
+
     /**
-     * <p>用户服务</p>
+     * <p>客户登录</p>
      */
     @Autowired
-    ISystemUserService userService;
-    /**
-     * <p>角色服务</p>
-     */
-    @Autowired
-    ISystemRoleService roleService;
+    ICustomerService customerService;
+
     /**
      * <p>前端密码</p>
      */
@@ -83,42 +88,35 @@ public class UserDetailService implements UserDetailsService {
 
         List<GrantedAuthority> auths = new ArrayList<>();
 
-        SystemUserLoginForm loginForm = new SystemUserLoginForm();
-        //登录名（手机号／邮箱）不能为空
+        CustomerLoginForm loginForm = new CustomerLoginForm();
         loginForm.setLoginname(username);
-        SystemUserVO userVO = userService.login(loginForm);
-        //用户认证
-        if (userVO == null) {
-            logger.debug("找不到该用户 （手机号／邮箱）:{}", username);
+        CustomerVO customerVO = customerService.customerLogin(loginForm);
+        //客户认证
+        if (customerVO == null) {
+            logger.debug("找不到该用户(手机号):{}", username);
             throw new UsernameNotFoundException("找不到该用户！");
         }
-        //账号状态验证
-        //帐号启用状态：0->Off 启用；1->On 停用
-        if(userVO.getStatus()==1) {
-            logger.debug("用户账号未启用，无法登陆 （手机号／邮箱）:{}", username);
+        //启用状态，默认为1，1是0否
+        if(customerVO.getStatus()==0) {
+            logger.debug("用户账号未启用，无法登陆(手机号):{}", username);
             throw new UsernameNotFoundException("用户账号未启用！");
         }
         // security bcryptPasswordEncoder自定义密码验证
         BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
-        if (!bcryptPasswordEncoder.matches(password,userVO.getPassword())){
+        if (!bcryptPasswordEncoder.matches(password,customerVO.getPasswd())){
             throw new BadCredentialsException("密码错误，请重新输入");
         }
 
-        Long userId = userVO.getId();
-        List<SystemRole> systemRoles = roleService.selectRolesByUserId(userId);
-        if (systemRoles != null) {
-            //设置角色名称
-            for (SystemRole role : systemRoles) {
-                SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.getRoleName());
-                auths.add(authority);
-            }
-        }
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("注册客户");//角色写死
+        auths.add(authority);
+
         //存放用户信息-授权用户
-        AuthUser authUser = ConvertUtil.convert(userVO, AuthUser.class);
-        getHttpSession().setAttribute(BaseAuthVO.ADMIN_USER_LOGIN_SESSION_KEY, authUser);
-        User user = new User(userVO.getUserName(), userVO.getPassword(),
+        CustomerUser customerUser = ConvertUtil.convert(customerVO, CustomerUser.class);
+        getHttpSession().setAttribute(BaseAuthVO.WEB_CUSTOMER_USER_LOGIN_SESSION_KEY, customerUser);
+        User user = new User(customerUser.getUserName(), customerUser.getPasswd(),
                 true, true, true, true,
                 auths);
+
         return user;
     }
 }

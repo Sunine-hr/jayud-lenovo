@@ -2,6 +2,7 @@ package com.jayud.mall.admin.security.service;
 
 import com.jayud.mall.admin.security.domain.AuthUser;
 import com.jayud.mall.admin.security.domain.BaseAuthVO;
+import com.jayud.mall.admin.security.domain.CustomerUser;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -23,8 +24,10 @@ public class BaseService {
         return sa != null && sa.getRequest() != null ? sa.getRequest().getSession() : null;
     }
 
+    /**admin**/
+
     /**
-     * 获取LoginToken
+     * 获取admin LoginToken
      * @return
      */
     public Object getLoginToken() {
@@ -39,12 +42,38 @@ public class BaseService {
     }
 
     /**
-     * 获取当前登录User
+     * 获取admmin 当前登录User
      * @return
      */
     public AuthUser getUser() {
         Object o = this.getLoginToken();
         return o == null ? null : (AuthUser)o;
+    }
+
+    /**web**/
+
+    /**
+     * 获取web LoginToken
+     * @return
+     */
+    public Object getWebLoginToken() {
+        Object o = null;
+        ServletRequestAttributes sa = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
+        if (sa != null && sa.getRequest() != null) {
+            o = this.getHttpSession().getAttribute(BaseAuthVO.WEB_CUSTOMER_USER_LOGIN_SESSION_KEY);
+            return o;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * 获取web 当前登录User
+     * @return
+     */
+    public CustomerUser getCustomerUser() {
+        Object o = this.getWebLoginToken();
+        return o == null ? null : (CustomerUser)o;
     }
 
 

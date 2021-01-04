@@ -72,5 +72,8 @@ hystrix:
 ribbon:
   ReadTimeout: 30000
   ConnectTimeout: 30000
+address:
+  productAddr: ${address.productAddr}
+  supplierAddr: ${address.supplierAddr}
 
 

@@ -6,11 +6,9 @@ import com.jayud.oms.model.bo.AddCusAccountForm;
 import com.jayud.oms.model.bo.QueryAccountForm;
 import com.jayud.oms.model.vo.InitComboxVO;
 import com.jayud.oms.model.vo.SystemUserVO;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -40,7 +38,7 @@ public interface OauthClient {
      *
      * @return
      */
-    @RequestMapping(value = "/api/findLegalEntity", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/findLegalEntity")
     ApiResult<List<InitComboxVO>> findLegalEntity();
 
 
@@ -112,4 +110,22 @@ public interface OauthClient {
      */
     @RequestMapping(value = "/api/getLegalEntityByLegalId")
     public ApiResult getLegalEntityByLegalId(@RequestParam("legalId") Long legalId);
+
+    /**
+     * 根据部门名称查询部门id
+     */
+    @RequestMapping(value = "/api/getDeptIdByDeptName")
+    public ApiResult getDeptIdByDeptName(@RequestParam("deptName") String deptName);
+
+    /**
+     * 根据业务员名称查询业务员id
+     */
+    @RequestMapping(value = "/api/getSystemUserBySystemName")
+    public ApiResult getSystemUserBySystemName(@RequestParam("name") String name);
+
+    /**
+     * 根据法人主体姓名查询法人主体信息
+     */
+    @RequestMapping(value = "/api/getLegalEntityByLegalName")
+    public ApiResult getLegalEntityByLegalName(@RequestParam("name") String name);
 }

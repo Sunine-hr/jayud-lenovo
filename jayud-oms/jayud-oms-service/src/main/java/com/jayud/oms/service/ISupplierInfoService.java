@@ -7,7 +7,9 @@ import com.jayud.oms.model.bo.QueryAuditSupplierInfoForm;
 import com.jayud.oms.model.bo.QuerySupplierInfoForm;
 import com.jayud.oms.model.po.SupplierInfo;
 import com.jayud.oms.model.vo.SupplierInfoVO;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -52,4 +54,19 @@ public interface ISupplierInfoService extends IService<SupplierInfo> {
      * @return
      */
     boolean checkUnique(SupplierInfo supplierInfo);
+
+    /**
+     * 导入供应商信息
+     * @param file
+     * @param response
+     * @return
+     */
+    String importCustomerInfoExcel(HttpServletResponse response, MultipartFile file) throws Exception;
+
+    /**
+     * 下载错误文件
+     * @param response
+     * @return
+     */
+    void insExcel(HttpServletResponse response) throws Exception;
 }

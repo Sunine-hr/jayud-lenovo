@@ -40,5 +40,13 @@ public class LegalEntityServiceImpl extends ServiceImpl<LegalEntityMapper, Legal
         return ConvertUtil.convertList(baseMapper.selectList(queryWrapper),LegalEntityVO.class);
     }
 
+    @Override
+    public LegalEntity getLegalEntityByLegalName(String name) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("legal_name",name);
+        LegalEntity legalEntity = baseMapper.selectOne(queryWrapper);
+        return legalEntity;
+    }
+
 
 }

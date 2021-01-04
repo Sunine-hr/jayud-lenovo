@@ -9,7 +9,11 @@ import com.jayud.oms.model.po.CustomerInfo;
 import com.jayud.oms.model.vo.CustomerInfoVO;
 import com.jayud.oms.model.bo.QueryCusAccountForm;
 import com.jayud.oms.model.vo.CustAccountVO;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -85,4 +89,18 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
      */
     List<CustomerInfoVO> findRelateUnitList(QueryRelUnitInfoListForm form);
 
+    /**
+     * 导入客户信息
+     * @param file
+     * @param response
+     * @return
+     */
+    String importCustomerInfoExcel(HttpServletResponse response, MultipartFile file) throws Exception;
+
+    /**
+     * 下载错误文件
+     * @param response
+     * @return
+     */
+    void insExcel(HttpServletResponse response) throws Exception;
 }

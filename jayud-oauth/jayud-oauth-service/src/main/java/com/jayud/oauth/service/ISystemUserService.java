@@ -139,5 +139,8 @@ public interface ISystemUserService extends IService<SystemUser> {
      */
     IPage<SystemUserVO> findEachModuleAccountByPage(QueryAccountForm form);
 
-
+    /**
+     * 根据业务员姓名获取业务员id
+     */
+    SystemUser getSystemUserBySystemName(String name);
 }

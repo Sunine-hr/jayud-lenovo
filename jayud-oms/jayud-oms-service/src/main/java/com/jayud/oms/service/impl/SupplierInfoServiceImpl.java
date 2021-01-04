@@ -4,8 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.oms.config.ImportExcelUtil;
+import com.jayud.oms.config.LoadExcelUtil;
+import com.jayud.oms.config.TypeUtils;
+import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.mapper.SupplierInfoMapper;
 import com.jayud.oms.model.bo.AddSupplierInfoForm;
 import com.jayud.oms.model.bo.QueryAuditSupplierInfoForm;
@@ -14,10 +19,7 @@ import com.jayud.oms.model.enums.AuditStatusEnum;
 import com.jayud.oms.model.enums.AuditTypeDescEnum;
 import com.jayud.oms.model.enums.SettlementTypeEnum;
 import com.jayud.oms.model.enums.StatusEnum;
-import com.jayud.oms.model.po.AuditInfo;
-import com.jayud.oms.model.po.ProductBiz;
-import com.jayud.oms.model.po.ProductClassify;
-import com.jayud.oms.model.po.SupplierInfo;
+import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.SupplierInfoVO;
 import com.jayud.oms.service.IAuditInfoService;
 import com.jayud.oms.service.IProductClassifyService;
@@ -26,11 +28,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.FileDescriptor;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * <p>
@@ -47,6 +53,9 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
     private IProductClassifyService productClassifyService;
     @Autowired
     private IAuditInfoService auditInfoService;
+
+    @Autowired
+    private OauthClient oauthClient;
 
     /**
      * 列表分页查询
@@ -202,5 +211,151 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         return this.count(condition) > 0;
     }
 
+    private HashMap<String,Object> hashMap = new HashMap<>();
+
+    @Override
+    public String importCustomerInfoExcel(HttpServletResponse response, MultipartFile file)throws Exception{
+        InputStream in = null;
+        List<List<String>>  listob = null;
+
+        if (file.isEmpty()) {
+            throw new Exception("文件不存在！");
+        }
+        in = file.getInputStream();
+        listob = ImportExcelUtil.getBankListByExcel(in, file.getOriginalFilename());
+
+        in.close();
+
+        int successCount=0;
+        int failCount=0;
+        //导入字段条件判断
+        ArrayList<ArrayList<String>> fieldData = new ArrayList<ArrayList<String>>();//必填值为空的数据行
+        SupplierInfo supplierInfo = new SupplierInfo();//格式无误的数据行
+        int lisize = listob.size();
+        for (int i = 0; i < lisize; i++) {
+            List<String> lo = listob.get(i);
+
+            if (com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(0))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(2))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(3))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(4))&&
+                    com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(5))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(6))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(7))) {//判断每行某个数据是否符合规范要求
+                //符合要求，插入到数据库customerInfo表中
+                String s = saveSupplierInfoFromExcel(supplierInfo, lo);
+                if(s.equals("添加成功")){
+                    lo = null;
+                    successCount += 1;
+                }else{
+                    //数据不符合要求
+                    ArrayList<String> dataString = new ArrayList<String>();
+                    for (int j = 0; j < lo.size(); j++) {
+                        String a;
+                        if(lo.get(j)==null||lo.get(j)==""){
+                            a = "null";
+                        }else{
+                            a = lo.get(j);
+                        }
+
+                        dataString.add(a);
+                    }
+                    dataString.add(s);
+                    fieldData.add(dataString);
+                }
+
+            } else {
+                //需要另外生成excel的不规范行，构造excel的数据
+                ArrayList<String> dataString = new ArrayList<String>();
+                for (int j = 0; j < lo.size(); j++) {
+                    String a;
+                    if(lo.get(j)==null||lo.get(j)==""){
+                        a = "null";
+                    }else{
+                        a = lo.get(j);
+                    }
+
+                    dataString.add(a);
+                }
+                dataString.add("有必填的数据未填写，请重新填写");
+                fieldData.add(dataString);
+            }
+
+        }
+        failCount=fieldData.size();
+        String o=null;
+        if (failCount>0) {
+            //不符合规范的数据保存在redis中，重新生成EXCEL表
+            hashMap.put("errorMsg",fieldData);
+
+//            insExcel(fieldData,response);
+            o="成功导入"+successCount+"行，未成功导入"+failCount+"行,请在有误数据表内查看!";
+        }else{
+            o="全部导入成功！";
+        }
+
+        return o;
+    }
+
+    private String saveSupplierInfoFromExcel(SupplierInfo supplierInfo, List<String> lo) {
+        supplierInfo.setSupplierChName(lo.get(0));
+        supplierInfo.setSupplierCode(lo.get(1));
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("supplier_ch_name",lo.get(0));
+        queryWrapper.eq("supplier_code",lo.get(1));
+        SupplierInfo supplierInfo1 = baseMapper.selectOne(queryWrapper);
+        if(supplierInfo1!=null){
+            return "供应商信息已存在";
+        }
+
+        String[] str = lo.get(2).split("/");
+        StringBuffer stringBuffer = new StringBuffer();
+        for(int i = 0 ; i<str.length ; i++){
+            ProductClassify productClassify = productClassifyService.getProductClassifyId(str[i]);
+            if(productClassify==null){
+                return str[i]+"该服务类型不存在";
+            }
+            if(i==str.length-1){
+                stringBuffer.append(productClassify.getId().toString());
+            }else{
+                stringBuffer.append(productClassify.getId().toString()).append(",");
+            }
+        }
+        supplierInfo.setProductClassifyIds(stringBuffer.toString());
+
+        supplierInfo.setContacts(lo.get(3));
+        supplierInfo.setContactNumber(lo.get(4));
+        supplierInfo.setAddress(lo.get(5));
+        supplierInfo.setSettlementType(lo.get(6));
+        supplierInfo.setPaymentDay(lo.get(7));
+        supplierInfo.setTaxReceipt(lo.get(8));
+        supplierInfo.setRate(lo.get(9));
+
+        ApiResult systemUserBySystemName = oauthClient.getSystemUserBySystemName(lo.get(10));
+        if(systemUserBySystemName.getMsg().equals("fail")){
+            return "采购人员名称数据与系统不匹配";
+        }
+        Long buyerId = Long.parseLong(systemUserBySystemName.getData().toString());
+        supplierInfo.setBuyerId(buyerId);
+
+        baseMapper.insert(supplierInfo);
+        return "添加成功";
+    }
+
+
+    public void insExcel(HttpServletResponse response) throws Exception{
+        ArrayList<ArrayList<String>> fieldData = (ArrayList<ArrayList<String>>)hashMap.get("errorMsg");
+        if(fieldData!=null&&fieldData.size()>0){//如果存在不规范行，则重新生成表
+            //使用ExcelFileGenerator完成导出
+            LoadExcelUtil loadExcelUtil = new LoadExcelUtil(fieldData);
+            OutputStream os = response.getOutputStream();
+            //导出excel建议加上重置输出流，可以不加该代码，但是如果不加必须要保证输出流中不应该在存在其他数据，否则导出会有问题
+            response.reset();
+            //配置：//文件名
+            String fileName = "有误数据表（"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+"）.xls";
+            //处理乱码
+            fileName = new String(fileName.getBytes("utf-8"),"iso-8859-1");
+            response.setContentType("application/vnd.ms-excel");
+            response.setHeader("Content-disposition", "attachment;filename="+fileName);
+            response.setBufferSize(1024);
+            //导出excel的操作
+            loadExcelUtil.expordExcel2(os);
+        }
+    }
 
 }

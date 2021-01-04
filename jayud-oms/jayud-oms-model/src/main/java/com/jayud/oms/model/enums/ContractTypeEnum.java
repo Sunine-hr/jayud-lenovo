@@ -6,7 +6,7 @@ package com.jayud.oms.model.enums;
 public enum ContractTypeEnum {
 
     CUSTOMER("0","客户合同"),
-    SUPPLIER("1,","供应商合同");
+    SUPPLIER("1","供应商合同");
     private String code;
     private String desc;
 
@@ -14,7 +14,6 @@ public enum ContractTypeEnum {
         this.code = code;
         this.desc = desc;
     }
-
 
     public String getCode() {
         return code;

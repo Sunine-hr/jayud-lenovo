@@ -48,6 +48,9 @@ public class QueryAirOrderForm extends BasePageForm {
     @ApiModelProperty(value = "流程状态")
     private List<Integer> processStatusList;
 
+    @ApiModelProperty(value = "操作指令,cmd = costAudit 费用审核")
+    private String cmd;
+
     public void assemblyMainOrderNo(JSONArray mainOrders) {
         mainOrderNos = new ArrayList<>(mainOrders.size());
         for (int i = 0; i < mainOrders.size(); i++) {

@@ -1,6 +1,8 @@
 package com.jayud.airfreight.service.impl;
 
 import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -12,9 +14,11 @@ import com.jayud.airfreight.model.bo.*;
 import com.jayud.airfreight.model.enums.AirBookingStatusEnum;
 import com.jayud.airfreight.model.enums.AirOrderTermsEnum;
 import com.jayud.airfreight.model.po.AirBooking;
+import com.jayud.airfreight.model.po.AirExceptionFeedback;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.airfreight.model.vo.*;
 import com.jayud.airfreight.service.IAirBookingService;
+import com.jayud.airfreight.service.IAirExceptionFeedbackService;
 import com.jayud.airfreight.service.IAirOrderService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
@@ -24,6 +28,8 @@ import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.common.enums.*;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.FileUtil;
+import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
@@ -61,6 +67,8 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
     private MsgClient msgClient;
     @Autowired
     private VivoServiceImpl vivoService;
+    @Autowired
+    private IAirExceptionFeedbackService airExceptionFeedbackService;
 
     //创建订单
     @Override
@@ -138,7 +146,7 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
 
     @Override
     public IPage<AirOrderFormVO> findByPage(QueryAirOrderForm form) {
-        if (form.getStatus() == null) { //订单列表
+        if (StringUtils.isEmpty(form.getStatus())) { //订单列表
             form.setProcessStatusList(Arrays.asList(ProcessStatusEnum.PROCESSING.getCode()
                     , ProcessStatusEnum.COMPLETE.getCode(), ProcessStatusEnum.CLOSE.getCode()));
         } else {
@@ -213,8 +221,6 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         this.handleLadingBillFile(airBooking, form);
         //设置订舱状态
         setAirBookingStatus(airBooking);
-        airBooking.setAirOrderNo(null);
-        airBooking.setAirOrderId(null);
 
         airBookingService.saveOrUpdateAirBooking(airBooking);
         updateProcessStatus(new AirOrder(), form);
@@ -272,10 +278,9 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         tmp.setUpdateUser(UserOperator.getToken());
         tmp.setStatus(auditInfoForm.getAuditStatus());
         //根据选择是否订舱驳回
-        Integer rejectOptions = airCargoRejected.getRejectOptions() == null ? 1 : airCargoRejected.getRejectOptions();
         ApiResult result = new ApiResult();
         //删除物流轨迹表订舱数据
-        switch (rejectOptions) {
+        switch (airCargoRejected.getRejectOptions()) {
             case 1://订单驳回
                 result = omsClient.deleteLogisticsTrackByType(airOrder.getId(), BusinessTypeEnum.KY.getCode());
                 //删除订舱数据
@@ -339,7 +344,10 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
             AirOrder tmp = this.getById(airOrder.getId());
             if (AirOrderTermsEnum.CIF.getCode().equals(tmp.getTerms())
                     || AirOrderTermsEnum.FOB.getCode().equals(tmp.getTerms())
-                    || AirOrderTermsEnum.CFR.getCode().equals(tmp.getTerms())) {
+                    || AirOrderTermsEnum.CFR.getCode().equals(tmp.getTerms())
+                    || AirOrderTermsEnum.CPT.getCode().equals(tmp.getTerms())
+                    || AirOrderTermsEnum.CNF.getCode().equals(tmp.getTerms())
+                    || AirOrderTermsEnum.CIP.getCode().equals(tmp.getTerms())) {
                 this.updateById(new AirOrder().setId(tmp.getId()).setProcessStatus(1));
                 return;
             }
@@ -481,6 +489,55 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         this.bookingRejectedMsgPush(airOrder, airCargoRejected);
         omsClient.saveAuditInfo(auditInfoForm);
         this.updateById(tmp);
+    }
+
+    /**
+     * 根据空运第三方标识查询主订单信息
+     */
+    @Override
+    public Map<String, Object> getMainOrderByThirdOrderNo(String thirdPartyOrderNo) {
+        AirOrder airOrder = this.getByThirdPartyOrderNo(thirdPartyOrderNo);
+        if (airOrder == null) {
+            return null;
+        }
+        ApiResult result = this.omsClient.getMainOrderByOrderNos(Arrays.asList(airOrder.getMainOrderNo()));
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.error("查询主订单信息失败 mainOrderNo={}", airOrder.getMainOrderNo());
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+        return JSONUtil.toBean(JSONUtil.toJsonStr(result.getData()), Map.class);
+    }
+
+    /**
+     * 异常反馈
+     */
+    @Override
+    @Transactional
+    public void exceptionFeedback(AddAirExceptionFeedbackForm form) {
+        AirExceptionFeedback airExceptionFeedback = ConvertUtil.convert(form, AirExceptionFeedback.class);
+        airExceptionFeedback.setFileName(StringUtils.getFileNameStr(form.getFileViewList()))
+                .setFilePath(StringUtils.getFileStr(form.getFileViewList()))
+                .setCreateUser(UserOperator.getToken())
+                .setCreateTime(LocalDateTime.now());
+        this.airExceptionFeedbackService.saveOrUpdate(airExceptionFeedback);
+        //推送异常反馈
+        this.pushExceptionFeedbackInfo(airExceptionFeedback);
+    }
+
+    private void pushExceptionFeedbackInfo(AirExceptionFeedback airExceptionFeedback) {
+        AirOrder airOrder = this.getById(airExceptionFeedback.getOrderId());
+        if (CreateUserTypeEnum.VIVO.getCode().equals(airOrder.getCreateUserType())) {
+            if (OrderStatusEnum.AIR_A_4.getCode().equals(airOrder.getStatus())
+                    || OrderStatusEnum.AIR_A_5.getCode().equals(airOrder.getStatus())
+                    || OrderStatusEnum.AIR_A_6.getCode().equals(airOrder.getStatus())
+                    || OrderStatusEnum.AIR_A_7.getCode().equals(airOrder.getStatus())
+                    || OrderStatusEnum.AIR_A_8.getCode().equals(airOrder.getStatus())) {
+                this.vivoService.pushExceptionFeedbackInfo(airOrder, airExceptionFeedback);
+            } else {
+                throw new JayudBizException("当前订单只能在空运提单后才能进行反馈");
+            }
+
+        }
     }
 
 //    /**

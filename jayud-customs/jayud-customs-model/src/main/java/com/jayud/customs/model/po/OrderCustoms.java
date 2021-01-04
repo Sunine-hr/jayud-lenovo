@@ -119,6 +119,9 @@ public class OrderCustoms extends Model<OrderCustoms> {
     @ApiModelProperty(value = "接单法人")
     private String legalName;
 
+    @ApiModelProperty(value = "接单法人ID")
+    private Long legalEntityId;
+
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createdTime;
 

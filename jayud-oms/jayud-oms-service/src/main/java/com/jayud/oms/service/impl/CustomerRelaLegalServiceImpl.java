@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.oms.mapper.CustomerRelaLegalMapper;
 import com.jayud.oms.model.bo.AddCustomerInfoForm;
 import com.jayud.oms.model.po.CustomerRelaLegal;
+import com.jayud.oms.model.vo.LegalEntityVO;
 import com.jayud.oms.service.ICustomerRelaLegalService;
 import org.springframework.stereotype.Service;
 
@@ -32,5 +33,10 @@ public class CustomerRelaLegalServiceImpl extends ServiceImpl<CustomerRelaLegalM
             customerRelaLegals.add(customerRelaLegal);
         }
         return saveBatch(customerRelaLegals);
+    }
+
+    @Override
+    public List<LegalEntityVO> findLegalByCustomerId(Long id) {
+        return baseMapper.findLegalByCustomerId(id);
     }
 }

@@ -12,6 +12,7 @@ import com.jayud.airfreight.model.bo.*;
 import com.jayud.airfreight.model.bo.vivo.*;
 import com.jayud.airfreight.model.enums.VivoRejectionStatusEnum;
 import com.jayud.airfreight.model.po.AirBooking;
+import com.jayud.airfreight.model.po.AirExceptionFeedback;
 import com.jayud.airfreight.model.po.AirExtensionField;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.airfreight.model.vo.GoodsVO;
@@ -29,6 +30,7 @@ import com.jayud.common.exception.Asserts;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.exception.VivoApiException;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.FileUtil;
 import com.jayud.common.utils.RandomGUID;
 import com.jayud.common.utils.RsaEncryptUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -152,6 +154,37 @@ public class VivoServiceImpl implements VivoService {
         return postWithFile(form, file, url);
     }
 
+
+    /**
+     * 提单文件信息
+     *
+     * @return
+     */
+    @Override
+    public Map<String, Object> forwarderLadingFile(Map<String, Object> map) {
+        JSONObject jsonObject = new JSONObject(map);
+        ForwarderLadingFileForm form = JSONUtil.toBean(jsonObject, ForwarderLadingFileForm.class);
+        //参数检验
+//        CommonResult commonResult = form.checkParam();
+//        if (commonResult != null) {
+//            return commonResult;
+//        }
+
+        String filePath = jsonObject.getStr("filePath");
+        String file = jsonObject.getStr("fileName");
+        String[] tmp = file.split("\\.");
+        String fileType = "";
+        if (tmp.length > 1) {
+            fileType = tmp[1];
+        }
+        StringBuilder sb = new StringBuilder().append(form.getId())
+                .append("_").append(tmp[0])
+                .append("_");
+        MultipartFile fileItem = FileUtil.createFileItem(filePath, sb.toString(), true, fileType);
+        String url = urlBase + urlLadingFile;
+        return postWithFile(form, fileItem, url);
+    }
+
     @Override
     public Map<String, Object> forwarderLadingInfo(ForwarderLadingInfoForm form) {
         String url = urlBase + urlLadingInfo;
@@ -185,6 +218,7 @@ public class VivoServiceImpl implements VivoService {
     /**
      * 订舱驳回接口
      */
+    @Override
     public Map<String, Object> forwarderBookingRejected(String bookingNo, Integer status) {
         VivoBookingRejectedForm form = new VivoBookingRejectedForm();
         form.setBookingNo(bookingNo);
@@ -208,6 +242,15 @@ public class VivoServiceImpl implements VivoService {
      */
     @Override
     public Map<String, Object> bookingRejected(AirOrder airOrder, AirCargoRejected airCargoRejected) {
+        //修改订单状态待处理
+        Map<String, Object> map = new HashMap<>();
+        map.put("orderNo", airOrder.getMainOrderNo());
+        map.put("status", OrderStatusEnum.MAIN_8.getCode());
+        ApiResult result = this.omsClient.updateByMainOrderNo(JSONUtil.toJsonStr(map));
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.warn("修改主订单状态为待处理失败 mainOrderNo={}", airOrder.getMainOrderNo());
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
         Integer status = airCargoRejected.getRejectOptions() == null ? VivoRejectionStatusEnum.PENDING_SUBMITTED.getCode()
                 : airCargoRejected.getRejectOptions();
         //驳回订单,数据作废
@@ -245,8 +288,6 @@ public class VivoServiceImpl implements VivoService {
 //        body=new HttpEntity<MultiValueMap<String, String>>(JSONUtil.toBean(form,MultiValueMap.class),headers);
 
         String data = gson.toJson(form);
-        log.info("vivo参数==========" + data);
-
         Map<String, Object> map = this.doPost(data, url);
         if (map == null) {
             //没有返回重新调用一次
@@ -289,7 +330,7 @@ public class VivoServiceImpl implements VivoService {
 
 
     private Map<String, Object> doPost(String form, String url) {
-        log.info("vivo参数==========" + form);
+        log.info("vivo参数:" + form);
         String feedback = HttpRequest.post(url)
                 .header("Authorization", "bearer " + String.format(getToken(null, null, null)))
                 .header(Header.CONTENT_TYPE.name(), "multipart/form-data")
@@ -299,13 +340,14 @@ public class VivoServiceImpl implements VivoService {
         if (StringUtils.isEmpty(feedback)) {
             return null;
         }
+        log.info("vivo返回参数:" + JSONUtil.toJsonStr(feedback));
         return JSONUtil.toBean(feedback, Map.class);
     }
 
     private Map<String, Object> postWithFile(Object form, MultipartFile file, String url) {
         Gson gson = new Gson();
         String data = gson.toJson(form);
-        log.info("参数========" + data);
+        log.info("参数:" + data);
         File fw = new File(file.getOriginalFilename());
         try {
             FileUtils.copyInputStreamToFile(file.getInputStream(), fw);
@@ -327,7 +369,7 @@ public class VivoServiceImpl implements VivoService {
             redisUtils.delete(VIVO_TOEKN_STR);
             map = this.doPostWithFile(data, fw, url);
         }
-
+        log.info("响应参数:" + gson.toJson(map));
         return map;
     }
 
@@ -541,20 +583,27 @@ public class VivoServiceImpl implements VivoService {
 
     @Override
     public void bookingMessagePush(AirOrder airOrder, AirBooking airBooking) {
-        Map<String, String> request = new HashMap();
-        request.put("topic", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_ONE.getTopic());
-        request.put("key", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_ONE.getKey());
-        Map<String, Object> msg = new HashMap<>();
-        msg.put("bookingNo", airOrder.getThirdPartyOrderNo());
-        msg.put("forwarderBookingNo", airOrder.getOrderNo());
-        msg.put("deliveryWarehouse", airBooking.getDeliveryWarehouse());
-        msg.put("deliveryWarehouseAddress", airBooking.getDeliveryAddress());
-        request.put("msg", JSONUtil.toJsonStr(msg));
-        msgClient.consume(request);
-//            if (ResultEnum.INTERNAL_SERVER_ERROR.getCode().toString().equals(consume.get("code"))) {
-//                log.error("远程调用推送确认订舱信息给vivo失败 data={}", JSONUtil.toJsonStr(msg));
-//                throw new JayudBizException(ResultEnum.OPR_FAIL);
-//            }
+//        Map<String, String> request = new HashMap<>();
+//        request.put("topic", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_ONE.getTopic());
+//        request.put("key", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_ONE.getKey());
+//        Map<String, Object> msg = new HashMap<>();
+//        msg.put("bookingNo", airOrder.getThirdPartyOrderNo());
+//        msg.put("forwarderBookingNo", airOrder.getOrderNo());
+//        msg.put("deliveryWarehouse", airBooking.getDeliveryWarehouse());
+//        msg.put("deliveryWarehouseAddress", airBooking.getDeliveryAddress());
+//        request.put("msg", JSONUtil.toJsonStr(msg));
+//        msgClient.consume(request);
+        ForwarderBookingConfirmedFeedbackForm form = new ForwarderBookingConfirmedFeedbackForm();
+        form.setBookingNo(airOrder.getThirdPartyOrderNo());
+        form.setForwarderBookingno(airOrder.getOrderNo());
+        form.setDeliveryWarehouse(airBooking.getDeliveryWarehouse());
+        form.setDeliveryWarehouseAddress(airBooking.getDeliveryAddress());
+        Map<String, Object> result = this.forwarderBookingConfirmedFeedback(form);
+
+        if (0 == MapUtil.getInt(result, "status")) {
+            log.error("远程调用推送确认订舱信息给vivo失败 msg={}", MapUtil.getStr(result, "message"));
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
     }
 
     /**
@@ -582,8 +631,8 @@ public class VivoServiceImpl implements VivoService {
             msg.put("billOfLading", airBooking.getMainNo() + "/" + (StringUtils.isEmpty(airBooking.getSubNo()) ?
                     "" : airBooking.getSubNo()));
             msg.put("flightNo", airBooking.getFlight());
-//            msg.put("chargedWeight", "");
-//            msg.put("bLWeight", "");
+            msg.put("chargedWeight", airBooking.getBillingWeight());
+            msg.put("blWeight", airBooking.getBillLadingWeight());
             msg.put("etd", DateUtils.LocalDateTime2Str(airBooking.getEtd(), "yyyy/M/dd HH:mm:ss"));
             msg.put("atd", DateUtils.LocalDateTime2Str(airBooking.getAtd(), "yyyy/M/dd HH:mm:ss"));
             msg.put("eta", DateUtils.LocalDateTime2Str(airBooking.getEta(), "yyyy/M/dd HH:mm:ss"));
@@ -620,24 +669,39 @@ public class VivoServiceImpl implements VivoService {
      * @param airBooking
      */
     public void billLadingInfoPush(AirOrder airOrder, AirBooking airBooking) {
-        Map<String, String> request = new HashMap();
-        request.put("topic", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_THREE.getTopic());
-        request.put("key", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_THREE.getKey());
-        Map<String, Object> msg = new HashMap<>();
-        msg.put("bookingNo", airOrder.getThirdPartyOrderNo());
-        msg.put("forwarderBookingNo", airOrder.getOrderNo());
-        msg.put("fileType", 1);
-        msg.put("id", new RandomGUID().toStringTwo());
-        msg.put("operationType", "add");
+//        Map<String, String> request = new HashMap();
+//        request.put("topic", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_THREE.getTopic());
+//        request.put("key", KafkaMsgEnums.VIVO_FREIGHT_AIR_MESSAGE_THREE.getKey());
+        String[] filePaths = airBooking.getFilePath().split(",");
+        String[] fileNames = airBooking.getFileName().split(",");
         ApiResult result = this.fileClient.getBaseUrl();
         if (result.getCode() != HttpStatus.SC_OK) {
             log.error("获取文件地址失败");
             throw new JayudBizException("获取文件地址失败");
         }
-        msg.put("filePath", result.getData() + airBooking.getFilePath());
-        msg.put("fileName", airBooking.getFileName());
-        request.put("msg", JSONUtil.toJsonStr(msg));
-        msgClient.consume(request);
+        for (int i = 0; i < filePaths.length; i++) {
+            String filePath = filePaths[i];
+            String fileName = fileNames[i];
+            Map<String, Object> msg = new HashMap<>();
+            msg.put("bookingNo", airOrder.getThirdPartyOrderNo());
+            msg.put("forwarderBookingNo", airOrder.getOrderNo());
+            msg.put("fileType", 1);
+            msg.put("id", new RandomGUID().toStringTwo());
+            msg.put("operationType", "add");
+            msg.put("filePath", result.getData() + filePath);
+            msg.put("fileName", fileName);
+//        request.put("msg", JSONUtil.toJsonStr(msg));
+//        msgClient.consume(request);
+
+            Map<String, Object> resultMap = this.forwarderLadingFile(msg);
+            if (0 == MapUtil.getInt(resultMap, "status")) {
+                log.error("vivo货代抛转空运提单信息失败 bookingNo={} file={} msg={}", airOrder.getThirdPartyOrderNo(),
+                        fileName, MapUtil.getStr(resultMap, "message"));
+//                throw new VivoApiException(MapUtil.getStr(resultMap, "message"));
+            }
+        }
+
+
     }
 
     private void supplementIdOpt(BookingSpaceForm form) {
@@ -651,7 +715,7 @@ public class VivoServiceImpl implements VivoService {
             if (resultOne.getCode() != HttpStatus.SC_OK) {
                 log.warn("查询商品信息失败 mainOrderNo={} msg={}",
                         airOrder.getMainOrderNo(), resultOne.getMsg());
-                throw new VivoApiException("查询商品信息失败");
+                throw new VivoApiException("空运订单更新失败");
             }
             List<GoodsVO> goodsVOs = resultOne.getData();
             form.setGoodsId(goodsVOs.get(0).getId());
@@ -662,7 +726,7 @@ public class VivoServiceImpl implements VivoService {
             if (resultTwo.getCode() != HttpStatus.SC_OK) {
                 log.warn("查询订单地址信息失败 mainOrderNo={} msg={}",
                         airOrder.getMainOrderNo(), resultTwo.getMsg());
-                throw new VivoApiException("查询订单地址信息失败");
+                throw new VivoApiException("空运订单更新失败");
             }
             List<OrderAddressVO> addressVOS = resultTwo.getData();
             form.setAddressIds(addressVOS.stream().map(OrderAddressVO::getId).collect(Collectors.toList()));
@@ -673,9 +737,51 @@ public class VivoServiceImpl implements VivoService {
                         airOrder.getMainOrderNo(), result.getMsg());
                 throw new VivoApiException("空运订单更新失败");
             }
+
             form.setMainOrderId(Long.valueOf(result.getData().toString()));
         }
     }
+
+    /**
+     * 推送反馈信息
+     */
+    @Override
+    public void pushExceptionFeedbackInfo(AirOrder airOrder, AirExceptionFeedback airExceptionFeedback) {
+        String[] filePaths = airExceptionFeedback.getFilePath().split(",");
+        String[] fileNames = airExceptionFeedback.getFileName().split(",");
+        ApiResult result = this.fileClient.getBaseUrl();
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.error("获取文件地址失败");
+            throw new JayudBizException("获取文件地址失败");
+        }
+
+        for (int i = 0; i < filePaths.length; i++) {
+            String filePath = filePaths[i];
+            String fileName = fileNames[i];
+            Map<String, Object> msg = new HashMap<>();
+            msg.put("bookingNo", airOrder.getThirdPartyOrderNo());
+            msg.put("forwarderBookingNo", airOrder.getOrderNo());
+            msg.put("fileType", 3);
+            msg.put("id", new RandomGUID().toStringTwo());
+            msg.put("operationType", "add");
+            msg.put("filePath", result.getData() + filePath);
+            msg.put("fileName", fileName);
+            msg.put("abnormalyClassification", airExceptionFeedback.getType());
+            msg.put("abnormal", airExceptionFeedback.getRemarks());
+            msg.put("occurrenceTime", airExceptionFeedback.getStartTime());
+            msg.put("exceptionFinishTime", airExceptionFeedback.getCompletionTime());
+//        request.put("msg", JSONUtil.toJsonStr(msg));
+//        msgClient.consume(request);
+
+            Map<String, Object> resultMap = this.forwarderLadingFile(msg);
+            if (0 == MapUtil.getInt(resultMap, "status")) {
+                log.error("[vivo]推送异常信息失败 bookingNo={} file={} msg={}", airOrder.getThirdPartyOrderNo(),
+                        fileName, MapUtil.getStr(resultMap, "message"));
+                throw new VivoApiException(fileName + "文件推送失败");
+            }
+        }
+    }
+
 
     public static void main(String[] args) {
 //        UUID uuid = UUID.randomUUID();

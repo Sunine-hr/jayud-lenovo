@@ -2,7 +2,11 @@ package com.jayud.oms.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.oms.model.po.CustomerRelaLegal;
+import com.jayud.oms.model.vo.LegalEntityVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -15,4 +19,10 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface CustomerRelaLegalMapper extends BaseMapper<CustomerRelaLegal> {
 
+    /**
+     * 根据客户ID获取相关联的法人主体
+     * @param id
+     * @return
+     */
+    List<LegalEntityVO> findLegalByCustomerId(@Param("id") Long id);
 }

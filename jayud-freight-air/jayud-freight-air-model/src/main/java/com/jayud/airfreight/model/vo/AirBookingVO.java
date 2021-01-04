@@ -2,11 +2,14 @@ package com.jayud.airfreight.model.vo;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -46,6 +49,7 @@ public class AirBookingVO extends Model<AirBookingVO> {
     private String subNo;
 
     @ApiModelProperty(value = "截关日期")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime cutOffDate;
 
     @ApiModelProperty(value = "航空公司")
@@ -91,6 +95,14 @@ public class AirBookingVO extends Model<AirBookingVO> {
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
+    @ApiModelProperty(value = "提单重量")
+    private Double billLadingWeight;
+
+    @ApiModelProperty(value = "计费重量")
+    private Double billingWeight;
+
+    @ApiModelProperty(value = "附件集合")
+    private List<FileView> fileViewList = new ArrayList<>();
 
     @Override
     protected Serializable pkVal() {

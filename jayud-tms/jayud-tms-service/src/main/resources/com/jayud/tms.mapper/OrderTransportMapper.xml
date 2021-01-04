@@ -4,36 +4,36 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.tms.model.po.OrderTransport">
-        <id column="id" property="id" />
-        <result column="main_order_no" property="mainOrderNo" />
-        <result column="order_no" property="orderNo" />
-        <result column="port_code" property="portCode" />
-        <result column="goods_type" property="goodsType" />
-        <result column="vehicle_type" property="vehicleType" />
-        <result column="vehicle_size" property="vehicleSize" />
-        <result column="cntr_no" property="cntrNo" />
-        <result column="cntr_pic" property="cntrPic" />
-        <result column="cntr_pic_name" property="cntrPicName" />
-        <result column="warehouse_info_id" property="warehouseInfoId" />
-        <result column="status" property="status" />
-        <result column="is_load_goods" property="isLoadGoods" />
-        <result column="is_unload_goods" property="isUnloadGoods" />
-        <result column="unit_code" property="unitCode" />
-        <result column="legal_name" property="legalName" />
-        <result column="legal_entity_id" property="legalEntityId" />
-        <result column="hk_unit_code" property="hkUnitCode" />
-        <result column="hk_legal_name" property="hkLegalName" />
-        <result column="is_hk_clear" property="isHkClear" />
-        <result column="jiedan_user" property="jiedanUser" />
-        <result column="jiedan_time" property="jiedanTime" />
-        <result column="car_weigh_num" property="carWeighNum" />
-        <result column="updated_time" property="updatedTime" />
-        <result column="updated_user" property="updatedUser" />
-        <result column="created_time" property="createdTime" />
-        <result column="created_user" property="createdUser" />
-        <result column="driver_info_id" property="driverInfoId" />
-        <result column="vehicle_id" property="vehicleId" />
-        <result column="is_vehicle_weigh" property="isVehicleWeigh" />
+        <id column="id" property="id"/>
+        <result column="main_order_no" property="mainOrderNo"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="port_code" property="portCode"/>
+        <result column="goods_type" property="goodsType"/>
+        <result column="vehicle_type" property="vehicleType"/>
+        <result column="vehicle_size" property="vehicleSize"/>
+        <result column="cntr_no" property="cntrNo"/>
+        <result column="cntr_pic" property="cntrPic"/>
+        <result column="cntr_pic_name" property="cntrPicName"/>
+        <result column="warehouse_info_id" property="warehouseInfoId"/>
+        <result column="status" property="status"/>
+        <result column="is_load_goods" property="isLoadGoods"/>
+        <result column="is_unload_goods" property="isUnloadGoods"/>
+        <result column="unit_code" property="unitCode"/>
+        <result column="legal_name" property="legalName"/>
+        <result column="legal_entity_id" property="legalEntityId"/>
+        <result column="hk_unit_code" property="hkUnitCode"/>
+        <result column="hk_legal_name" property="hkLegalName"/>
+        <result column="is_hk_clear" property="isHkClear"/>
+        <result column="jiedan_user" property="jiedanUser"/>
+        <result column="jiedan_time" property="jiedanTime"/>
+        <result column="car_weigh_num" property="carWeighNum"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="updated_user" property="updatedUser"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="driver_info_id" property="driverInfoId"/>
+        <result column="vehicle_id" property="vehicleId"/>
+        <result column="is_vehicle_weigh" property="isVehicleWeigh"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -44,7 +44,7 @@
         driver_info_id,is_vehicle_weigh
     </sql>
 
-    <select id="getOrderTransport"  resultType="com.jayud.tms.model.vo.InputOrderTransportVO" >
+    <select id="getOrderTransport" resultType="com.jayud.tms.model.vo.InputOrderTransportVO">
         SELECT
           ot.id,
           ot.`order_no` orderNo,
@@ -98,78 +98,95 @@
 		  LEFT JOIN supplier_info si ON si.`id` = vi.supplier_id
           where ot.`main_order_no` = #{mainOrderNo}
     </select>
-    <select id="findTransportOrderByPage" parameterType="com.jayud.tms.model.bo.QueryOrderTmsForm" resultType="com.jayud.tms.model.vo.OrderTransportVO" >
+    <select id="findTransportOrderByPage" parameterType="com.jayud.tms.model.bo.QueryOrderTmsForm"
+            resultType="com.jayud.tms.model.vo.OrderTransportVO">
         SELECT
-            ot.`id`,
-            oi.`id` mainOrderId,
-            oi.`order_no` mainOrderNo,
-            oi.`biz_code` bizCode,
-            ot.`order_no` orderNo,
-            p.`name` portName,
-            ot.`goods_type` goodsType,
-            oi.`status`,
-            oi.`class_code` classCode,
-            pc.`name` classCodeDesc,
-            oi.`customer_name` customerName,
-            oi.`customer_code` customerCode,
-            ot.`created_user` createdUser,
-            DATE_FORMAT(ot.`created_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
-        (SELECT	ota.`goods_desc` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
+        ot.`id`,
+        oi.`id` mainOrderId,
+        oi.`order_no` mainOrderNo,
+        oi.`biz_code` bizCode,
+        ot.`order_no` orderNo,
+        p.`name` portName,
+        ot.`goods_type` goodsType,
+        oi.`status`,
+        oi.`class_code` classCode,
+        pc.`name` classCodeDesc,
+        oi.`customer_name` customerName,
+        oi.`customer_code` customerCode,
+        ot.`created_user` createdUser,
+        DATE_FORMAT(ot.`created_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
+        (SELECT ota.`goods_desc` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
+        where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
         ) goodsDesc,
-        (SELECT	ota.`piece_amount` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
+        (SELECT ota.`piece_amount` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
+        where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
         ) pieceAmount,
-        (SELECT	ota.`plate_amount` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
+        (SELECT ota.`plate_amount` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
+        where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
         ) plateAmount,
-        (SELECT	ota.`weight` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
+        (SELECT ota.`weight` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where
+        ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
         ) weight,
-        (SELECT	SUM(ota.`weight`) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1'
+        (SELECT SUM(ota.`weight`) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
+        where ota.order_no = ot.order_no AND ota.`opr_type` = '1'
         ) totalWeight,
-        (SELECT	da.`state_name` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
+        (SELECT da.`state_name` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
+        where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
         ) stateName1,
-        (SELECT	da.`city_name` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
+        (SELECT da.`city_name` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
+        where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
         ) cityName1,
-        (SELECT	da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
+        (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where
+        ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
         ) address1,
-        (SELECT	da.`state_name` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '2' limit 1
+        (SELECT da.`state_name` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
+        where ota.order_no = ot.order_no AND ota.`opr_type` = '2' limit 1
         ) stateName2,
-        (SELECT	da.`city_name` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '2' limit 1
+        (SELECT da.`city_name` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
+        where ota.order_no = ot.order_no AND ota.`opr_type` = '2' limit 1
         ) cityName2,
-        (SELECT	da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '2' limit 1
+        (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where
+        ota.order_no = ot.order_no AND ota.`opr_type` = '2' limit 1
         ) address2,
-            ot.`vehicle_type` vehicleType,
-            ot.`vehicle_size` vehicleSize,
-            ot.`cntr_no` cntrNo,
-            (CASE  WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
-            (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
-            ELSE FALSE
-            END) isCost,
-            oi.`need_input_cost` needInputCost,
-            ot.`status` subTmsStatus,
-            oi.legal_name legalName,
-            oi.unit_code unitCode,
-            ot.`legal_name` subLegalName,
-            ot.unit_code subUnitCode,
-        (SELECT	GROUP_CONCAT(ota.take_time) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' group by ot.order_no
+        ot.`vehicle_type` vehicleType,
+        ot.`vehicle_size` vehicleSize,
+        ot.`cntr_no` cntrNo,
+        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
+        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
+        ELSE FALSE
+        END) isCost,
+        oi.`need_input_cost` needInputCost,
+        ot.`status` subTmsStatus,
+        oi.legal_name legalName,
+        oi.unit_code unitCode,
+        ot.`legal_name` subLegalName,
+        ot.unit_code subUnitCode,
+        (SELECT GROUP_CONCAT(ota.take_time) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` =
+        da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' group by ot.order_no
         ) takeTimeStr,
-        (SELECT	GROUP_CONCAT(ota.file) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' group by ot.order_no
+        (SELECT GROUP_CONCAT(ota.file) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` =
+        da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' group by ot.order_no
         ) file1,
-        (SELECT	GROUP_CONCAT(ota.file_name) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' group by ot.order_no
+        (SELECT GROUP_CONCAT(ota.file_name) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` =
+        da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' group by ot.order_no
         ) fileName1,
-        (SELECT	GROUP_CONCAT(ota.file) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '2' group by ot.order_no
+        (SELECT GROUP_CONCAT(ota.file) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` =
+        da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '2' group by ot.order_no
         ) file2,
-        (SELECT	GROUP_CONCAT(ota.file_name) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '2' group by ot.order_no
+        (SELECT GROUP_CONCAT(ota.file_name) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` =
+        da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '2' group by ot.order_no
         ) fileName2,
         oi.selected_server selectedServer,
         ot.car_weigh_num carWeighNum
         FROM
-            order_transport ot
-            LEFT JOIN order_info oi
-            ON ot.`main_order_no` = oi.`order_no`
-            LEFT JOIN port_info p
-            ON p.`id_code` = ot.`port_code`
-            LEFT JOIN product_classify pc
-            ON oi.`class_code` = pc.`id_code`
-             where 1 = 1
+        order_transport ot
+        LEFT JOIN order_info oi
+        ON ot.`main_order_no` = oi.`order_no`
+        LEFT JOIN port_info p
+        ON p.`id_code` = ot.`port_code`
+        LEFT JOIN product_classify pc
+        ON oi.`class_code` = pc.`id_code`
+        where 1 = 1
         <if test="form.orderNo != null and form.orderNo != ''">
             and ot.order_no = #{form.orderNo}
         </if>
@@ -190,9 +207,6 @@
         </if>
         <if test="form.beginCreatedTime != null and form.beginCreatedTime !=''">
             and DATE_FORMAT(ot.`created_time`,'%Y-%m-%d %H:%i:%S') <![CDATA[>=]]> #{form.beginCreatedTime}
-        </if>
-        <if test="form.cmd == 'list'">
-            AND oi.`created_user` = #{form.loginUserName}
         </if>
         <if test="form.cmd == 'T_1'">
             AND ot.`status` = 'T_0' AND oi.`status` in ('1','4')
@@ -237,34 +251,39 @@
         <if test="form.cmd == 'T_15'">
             AND ot.`status` = 'T_14'
         </if>
+        <if test="form.cmd != 'list'">
+            AND (oi.`status`= 1 or oi.`status`=4)
+        </if>
         <if test="form.cmd == 'costAudit'">
             and oi.`status` IN (1,4)
-            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = oi.order_no AND opc.`status` = '2' and opc.sub_type = 'zgys')
-            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = oi.order_no AND orc.`status` = '2' and orc.sub_type = 'zgys'))
+            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = oi.order_no AND opc.`status` =
+            '2' and opc.sub_type = 'zgys')
+            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = oi.order_no AND orc.`status`
+            = '2' and orc.sub_type = 'zgys'))
         </if>
     </select>
-    <select id="initPdfData"  resultType="com.jayud.tms.model.vo.SendCarPdfVO" >
+    <select id="initPdfData" resultType="com.jayud.tms.model.vo.SendCarPdfVO">
         SELECT
-            ot.`legal_name` legalName,
-            '' enLegalName,
-            '' tel,
-            '' fax,
-            ot.`order_no` orderNo,
-            DATE_FORMAT(
-            ot.`jiedan_time`,
-            '%Y-%m-%d %H:%i:%S'
-            ) jiedanTimeStr,
-            vi.plate_number licensePlate,
-            vi.hk_number hkLicensePlate,
-            di.phone driverPhone,
-            ifnull(osc.`vehicle_size`,ot.vehicle_size) vehicleSize,
-            ifnull(osc.`vehicle_type`,ot.vehicle_type) vehicleType,
-            ifnull(osc.cntr_no,ot.cntr_no) cntrNo,
-            p.`name` portName,
-            ot.`goods_type` goodsType,
-            '' jiedanUser,
-            si.`supplier_ch_name` clearCustomsAddress,
-            (SELECT su.phone FROM `system_user` su WHERE su.name = ot.`jiedan_user`) jiedanPhone
+        ot.`legal_name` legalName,
+        '' enLegalName,
+        '' tel,
+        '' fax,
+        ot.`order_no` orderNo,
+        DATE_FORMAT(
+        ot.`jiedan_time`,
+        '%Y-%m-%d %H:%i:%S'
+        ) jiedanTimeStr,
+        vi.plate_number licensePlate,
+        vi.hk_number hkLicensePlate,
+        di.phone driverPhone,
+        ifnull(osc.`vehicle_size`,ot.vehicle_size) vehicleSize,
+        ifnull(osc.`vehicle_type`,ot.vehicle_type) vehicleType,
+        ifnull(osc.cntr_no,ot.cntr_no) cntrNo,
+        p.`name` portName,
+        ot.`goods_type` goodsType,
+        '' jiedanUser,
+        si.`supplier_ch_name` clearCustomsAddress,
+        (SELECT su.phone FROM `system_user` su WHERE su.name = ot.`jiedan_user`) jiedanPhone
         FROM
         order_transport ot
         LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no`

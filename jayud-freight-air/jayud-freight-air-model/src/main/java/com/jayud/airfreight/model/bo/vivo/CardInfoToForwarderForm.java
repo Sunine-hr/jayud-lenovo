@@ -8,20 +8,23 @@ import com.jayud.airfreight.model.bo.InputOrderTransportForm;
 import com.jayud.common.UserOperator;
 import com.jayud.common.enums.CreateUserTypeEnum;
 import com.jayud.common.enums.VehicleTypeEnum;
+import com.jayud.common.exception.VivoApiException;
 import com.jayud.common.utils.DateUtils;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Data
+@Slf4j
 public class CardInfoToForwarderForm {
 
     @JsonProperty("Dispatch_no")
@@ -134,7 +137,8 @@ public class CardInfoToForwarderForm {
         //TODO 提货/送货地址等财务上了,进行修改
         InputOrderTakeAdrForm deliveryAddress = new InputOrderTakeAdrForm();
         deliveryAddress.setAddress(this.deliveryAddress);
-        deliveryAddress.setTakeTimeStr(DateUtils.str2LocalDateTime(this.pickUpDate, DateUtils.DATE_TIME_PATTERN));
+
+        deliveryAddress.setTakeTimeStr(str2LocalDateTime(this.pickUpDate));
         orderTransportForm.setTakeAdrForms1(Collections.singletonList(deliveryAddress));
 
         List<InputOrderTakeAdrForm> shippingAddressList = new ArrayList<>();
@@ -153,5 +157,17 @@ public class CardInfoToForwarderForm {
         orderTransportForm.setCreateUserType(CreateUserTypeEnum.VIVO.getCode());
         orderTransportForm.setLoginUser(UserOperator.getToken());
         return orderTransportForm;
+    }
+
+    private LocalDateTime str2LocalDateTime(String date) {
+        date = date.replace("/", "-");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtils.DATE_TIME_PATTERN);
+        try {
+            Date dateTime = simpleDateFormat.parse(date);
+            return DateUtils.date2LocalDateTime(dateTime);
+        } catch (ParseException e) {
+            log.error("时间格式转换失败 date={}", date);
+            throw new VivoApiException("时间格式转换失败");
+        }
     }
 }

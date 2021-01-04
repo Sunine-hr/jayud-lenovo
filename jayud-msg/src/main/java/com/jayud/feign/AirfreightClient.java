@@ -1,16 +1,11 @@
 package com.jayud.feign;
 
-import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.validation.Valid;
-import java.util.Map;
 
 /**
  * 调用空运模块的服务
@@ -52,6 +47,6 @@ public interface AirfreightClient {
     /**
      * 车辆信息传给vivo
      */
-    @PostMapping("/forwarder/vehicleInfo")
+    @PostMapping("/airfreight/toVivo/forwarder/vehicleInfo")
     public CommonResult forwarderVehicleInfo(@RequestBody String value);
 }

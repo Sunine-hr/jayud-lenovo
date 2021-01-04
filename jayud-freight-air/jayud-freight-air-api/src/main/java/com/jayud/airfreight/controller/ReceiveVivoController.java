@@ -1,5 +1,6 @@
 package com.jayud.airfreight.controller;
 
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -85,6 +86,11 @@ public class ReceiveVivoController {
         if (errorMessage.length() > 0) {
             return VivoApiResult.error(errorMessage);
         }
+        //待处理才能操作
+        Map<String, Object> mainOrderMap = this.airOrderService.getMainOrderByThirdOrderNo(form.getBookingNo());
+        if (mainOrderMap != null && !OrderStatusEnum.MAIN_8.getCode().equals(MapUtil.getStr(mainOrderMap, "status"))) {
+            return VivoApiResult.error(form.getBookingNo() + "为待处理状态才能操作");
+        }
         ApiResult result = null;
         switch (form.getModeOfTransport()) {
             case 1:
@@ -98,6 +104,7 @@ public class ReceiveVivoController {
         }
         return VivoApiResult.success();
     }
+
 
     @PostMapping("/bookingCancel")
     @ApiOperation(value = "取消订舱单")
@@ -238,7 +245,7 @@ public class ReceiveVivoController {
         for (CarInfoToForwarderLineForm lineForm : form.getLine()) {
             //根据booking_no查询货品信息
             AirOrder airOrder = this.airOrderService.getByThirdPartyOrderNo(lineForm.getBookingNo());
-            ApiResult<List<GoodsVO>> goodsResult = this.omsClient.getGoodsByBusIds(Arrays.asList(airOrder.getId()), BusinessTypeEnum.KY.getCode());
+            ApiResult<List<GoodsVO>> goodsResult = this.omsClient.getGoodsByBusIds(Collections.singletonList(airOrder.getId()), BusinessTypeEnum.KY.getCode());
             List<GoodsVO> goodsVOS = goodsResult.getData();
             if (goodsVOS == null) {
                 log.warn("获取不到相对的货品信息 booking_no={}", lineForm.getBookingNo());

@@ -6,8 +6,10 @@ import org.joda.time.format.DateTimeFormat;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
@@ -90,7 +92,7 @@ public class DateUtils {
     public static void main(String[] args) {
         Date date = new Date("Mar 5, 2014 12:00:00 AM");
         System.out.println(date);
-      //  System.out.println(DateUtil.to("Mar 5, 2014 12:00:00 AM", "yyyy-MM-dd HH:ss:mm"));
+        //  System.out.println(DateUtil.to("Mar 5, 2014 12:00:00 AM", "yyyy-MM-dd HH:ss:mm"));
     }
 
     /**
@@ -262,18 +264,36 @@ public class DateUtils {
     }
 
     /**
-     *  时间字符转成 localDateTime
+     * 时间字符转成 localDateTime
+     *
      * @param dateStr
      * @param pattern
      * @return
      */
-    public static LocalDateTime str2LocalDateTime(String dateStr,String pattern){
-        if(StringUtils.isBlank(dateStr) || StringUtils.isBlank(pattern)){
+    public static LocalDateTime str2LocalDateTime(String dateStr, String pattern) {
+        if (StringUtils.isBlank(dateStr) || StringUtils.isBlank(pattern)) {
             return null;
         }
         DateTimeFormatter df = DateTimeFormatter.ofPattern(pattern);
-        return LocalDateTime.parse(dateStr,df);
+        return LocalDateTime.parse(dateStr, df);
     }
+
+    /**
+     * 时间字符转成 localDateTime
+     *
+     * @param date
+     * @return
+     */
+    public static LocalDateTime date2LocalDateTime(Date date) {
+        if (date == null) {
+            return null;
+        }
+        Instant instant = date.toInstant();
+        ZoneId zoneId = ZoneId.systemDefault();
+
+        return instant.atZone(zoneId).toLocalDateTime();
+    }
+
 
     /**
      * LocalDaetTime 转换 String

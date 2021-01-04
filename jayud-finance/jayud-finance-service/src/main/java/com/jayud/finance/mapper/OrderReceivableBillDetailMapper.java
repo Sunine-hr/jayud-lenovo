@@ -100,14 +100,15 @@ public interface OrderReceivableBillDetailMapper extends BaseMapper<OrderReceiva
      * @param billNo
      * @return
      */
-    ReceivableHeaderForm getReceivableHeaderForm(@Param("billNo") String billNo);
+    List<ReceivableHeaderForm> getReceivableHeaderForm(@Param("billNo") String billNo);
 
     /**
      * 获取推送金蝶的应收详情数据
      * @param billNo
+     * @param orderNo
      * @return
      */
-    List<APARDetailForm> findReceivableHeaderDetail(@Param("billNo") String billNo);
+    List<APARDetailForm> findReceivableHeaderDetail(@Param("billNo") String billNo,@Param("orderNo") String orderNo);
 
     /**
      * 应收:开票和付款申请/开票和付款核销/核销界面展示的金额

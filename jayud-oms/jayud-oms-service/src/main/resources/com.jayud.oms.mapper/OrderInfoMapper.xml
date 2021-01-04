@@ -15,6 +15,7 @@
         <result column="contract_no" property="contractNo" />
         <result column="legal_code" property="legalCode" />
         <result column="legal_name" property="legalName" />
+        <result column="legal_entity_id" property="legalEntityId" />
         <result column="reference_no" property="referenceNo" />
         <result column="cntr_no" property="cntrNo" />
         <result column="biz_code" property="bizCode" />
@@ -303,7 +304,7 @@
             COUNT(1)
           FROM
             order_info o6
-          WHERE o6.status = '6') AS pendingCount,
+          WHERE o6.status = '6') AS cancelledCount,
            (SELECT
             COUNT(1)
           FROM

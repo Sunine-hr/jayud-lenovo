@@ -44,7 +44,7 @@ public class AirProcessOptForm {
     @ApiModelProperty(value = "订舱信息")
     private AddAirBookingForm airBooking = new AddAirBookingForm();
 
-    @ApiModelProperty(value = "代理公司id")
+    @ApiModelProperty(value = "海外代理公司id")
     private Long agentSupplierId;
 
     @ApiModelProperty(value = "代理服务类型（0:清关,1:配送")
@@ -87,6 +87,7 @@ public class AirProcessOptForm {
                 break;
             case AIR_A_4:
                 if (CollectionUtils.isEmpty(this.fileViewList)) throw new JayudBizException("提单文件必传", 400);
+//                if (this.fileViewList.size() != 1) throw new JayudBizException("只能上传一个提单文", 400);
                 if (!checkOptInfo()) throw new JayudBizException(ResultEnum.VALIDATE_FAILED);
                 pass = this.airBooking.checkConfirmLadingBillOptParam();
                 break;
@@ -110,10 +111,10 @@ public class AirProcessOptForm {
             log.warn(title + " 海外代理id必填");
             return false;
         }
-        if (this.proxyServiceType == null) {
-            log.warn(title + " 代理服务必填");
-            return false;
-        }
+//        if (this.proxyServiceType == null) {
+//            log.warn(title + " 代理服务必填");
+//            return false;
+//        }
         return true;
     }
 

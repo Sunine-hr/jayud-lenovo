@@ -334,23 +334,18 @@ public class FinanceController {
         queryWrapper.in("bill_no",form.getBillNos());
         List<OrderReceivableBillDetail> receivableBillDetails = receivableBillDetailService.list(queryWrapper);
         for (OrderReceivableBillDetail receivableBillDetail : receivableBillDetails) {
-            ReceivableHeaderForm reqForm = receivableBillDetailService.getReceivableHeaderForm(receivableBillDetail.getBillNo());
-            /*if(reqForm != null && !StringUtil.isNullOrEmpty(reqForm.getCustomerName())){
-                int index = reqForm.getCustomerName().indexOf("(");
-                String customerName = reqForm.getCustomerName().substring(0,index);
-                reqForm.setCustomerName(customerName);
-            }*/
-            List<APARDetailForm> entityDetail = receivableBillDetailService.findReceivableHeaderDetail(receivableBillDetail.getBillNo());
-            reqForm.setEntityDetail(entityDetail);
-            logger.info("推送金蝶传参:" + reqForm);
-            CommonResult result = service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), reqForm);
-            if(result.getCode() == 0){//推送成功,则记录推送金蝶次数
-                OrderReceivableBillDetail tempObject = new OrderReceivableBillDetail();
-                tempObject.setPushKingdeeCount(receivableBillDetail.getPushKingdeeCount() + 1);
-                QueryWrapper updateWrapper = new QueryWrapper();
-                updateWrapper.eq("bill_no",receivableBillDetail.getBillNo());
-                receivableBillDetailService.update(tempObject,updateWrapper);
+            List<ReceivableHeaderForm> reqForm = receivableBillDetailService.getReceivableHeaderForm(receivableBillDetail.getBillNo());
+            for (ReceivableHeaderForm tempReqForm : reqForm) {
+                List<APARDetailForm> entityDetail = receivableBillDetailService.findReceivableHeaderDetail(tempReqForm.getBillNo(),tempReqForm.getBusinessNo());
+                tempReqForm.setEntityDetail(entityDetail);
+                logger.info("推送金蝶传参:" + reqForm);
+                service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), tempReqForm);
             }
+            OrderReceivableBillDetail tempObject = new OrderReceivableBillDetail();
+            tempObject.setPushKingdeeCount(receivableBillDetail.getPushKingdeeCount() + 1);
+            QueryWrapper updateWrapper = new QueryWrapper();
+            updateWrapper.eq("bill_no",receivableBillDetail.getBillNo());
+            receivableBillDetailService.update(tempObject,updateWrapper);
         }
         return CommonResult.success();
     }
@@ -389,18 +384,18 @@ public class FinanceController {
         queryWrapper.in("bill_no",form.getBillNos());
         List<OrderPaymentBillDetail> paymentBillDetailList = paymentBillDetailService.list(queryWrapper);
         for (OrderPaymentBillDetail paymentBillDetail : paymentBillDetailList) {
-            PayableHeaderForm reqForm = paymentBillDetailService.getPayableHeaderForm(paymentBillDetail.getBillNo());
-            List<APARDetailForm> entityDetail = paymentBillDetailService.findPayableHeaderDetail(paymentBillDetail.getBillNo());
-            reqForm.setEntityDetail(entityDetail);
-            logger.info("推送金蝶传参:" + reqForm);
-            CommonResult result = service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), reqForm);
-            if(result.getCode() == 0){//推送成功,则记录推送金蝶次数
-                OrderPaymentBillDetail tempObject = new OrderPaymentBillDetail();
-                tempObject.setPushKingdeeCount(paymentBillDetail.getPushKingdeeCount() + 1);
-                QueryWrapper updateWrapper = new QueryWrapper();
-                updateWrapper.eq("bill_no",paymentBillDetail.getBillNo());
-                paymentBillDetailService.update(tempObject,updateWrapper);
+            List<PayableHeaderForm> reqForm = paymentBillDetailService.getPayableHeaderForm(paymentBillDetail.getBillNo());
+            for (PayableHeaderForm tempReqForm : reqForm) {
+                List<APARDetailForm> entityDetail = paymentBillDetailService.findPayableHeaderDetail(tempReqForm.getBillNo(),tempReqForm.getBusinessNo());
+                tempReqForm.setEntityDetail(entityDetail);
+                logger.info("推送金蝶传参:" + reqForm);
+                service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), tempReqForm);
             }
+            OrderPaymentBillDetail tempObject = new OrderPaymentBillDetail();
+            tempObject.setPushKingdeeCount(paymentBillDetail.getPushKingdeeCount() + 1);
+            QueryWrapper updateWrapper = new QueryWrapper();
+            updateWrapper.eq("bill_no",paymentBillDetail.getBillNo());
+            paymentBillDetailService.update(tempObject,updateWrapper);
         }
         return CommonResult.success();
     }

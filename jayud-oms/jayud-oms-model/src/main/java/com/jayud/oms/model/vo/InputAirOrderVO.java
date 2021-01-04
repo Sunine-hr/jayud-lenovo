@@ -38,10 +38,10 @@ public class InputAirOrderVO {
     @ApiModelProperty(value = "第三方订单编号")
     private String thirdPartyOrderNo;
 
-    @ApiModelProperty(value = "状态(k_0待接单,k_1空运接单,k_2订舱,k_3订单入仓, k_4确认提单,k_5确认离港,k_6确认到港,k_7海外代理k_8确认签收)")
+    @ApiModelProperty(value = "状态")
     private String status;
 
-    @ApiModelProperty(value = "流程状态(0:进行中,1:完成)")
+    @ApiModelProperty(value = "流程状态")
     private Integer processStatus;
 
     @ApiModelProperty(value = "结算单位code")
@@ -119,4 +119,9 @@ public class InputAirOrderVO {
     @ApiModelProperty(value = "接单日期")
     private String receivingOrdersDate;
 
+    @ApiModelProperty(value = "海外代理供应商id")
+    private Long overseasSuppliersId;
+
+    @ApiModelProperty(value = "海外代理供应商")
+    private String overseasSuppliers;
 }

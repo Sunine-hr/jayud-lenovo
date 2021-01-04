@@ -23,8 +23,10 @@ CREATE TABLE `air_booking` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_user` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `bill_lading_weight` double DEFAULT NULL COMMENT '提单重量',
+  `billing_weight` double DEFAULT NULL COMMENT '计费重量',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='空运订舱表';
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='空运订舱表';
 
 
 CREATE TABLE `air_extension_field` (
@@ -46,12 +48,12 @@ CREATE TABLE `air_order` (
   `main_order_no` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '主订单编号',
   `order_no` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '空运订单编号',
   `third_party_order_no` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '第三方订单编号',
-  `status` char(10) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '状态(k_0待接单,k_1空运接单,k_2订舱,k_3订单入仓,\r\nk_4确认提单,k_5确认离港,k_6确认到港,k_7海外代理k_8确认签收)',
+  `status` char(10) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '状态(A_0待接单,A_1空运接单,A_2订舱,A_3订单入仓,\r\nA_4确认提单,A_5确认离港,A_6确认到港,A_7海外代理A_8确认签收)',
   `process_status` int(10) DEFAULT NULL COMMENT '流程状态(0:进行中,1:完成,2:草稿,3.关闭)',
   `settlement_unit_code` char(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '结算单位code',
   `legal_id` bigint(20) DEFAULT NULL COMMENT '接单法人',
   `imp_and_exp_type` int(10) DEFAULT NULL COMMENT '进出口类型(1：进口，2：出口)',
-  `terms` int(10) DEFAULT NULL COMMENT '贸易方式(0:CIF,1:DUU,2:FOB,3:DDP)',
+  `terms` int(10) DEFAULT NULL COMMENT '贸易方式(0:CIF,1:DUU,2:FOB,3:DDP,4:CFR,5:CPT,6:CNF,7:CIP)',
   `port_departure_code` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '起运港代码',
   `port_destination_code` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '目的港代码',
   `overseas_suppliers_id` bigint(20) DEFAULT NULL COMMENT '海外供应商id',
@@ -63,14 +65,14 @@ CREATE TABLE `air_order` (
   `is_charged` tinyint(1) DEFAULT NULL COMMENT '是否带电(1代表true,0代表false)',
   `create_user` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '创建人(登录用户)',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_user` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '更新人',
+  `update_user` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `create_user_type` int(5) DEFAULT '0' COMMENT '创建人的类型(0:本系统,1:vivo)',
   `need_input_cost` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否需要录入费用(0:false,1:true)',
   `order_taker` varchar(50) DEFAULT NULL COMMENT '接单人(登录用户名)',
   `receiving_orders_date` datetime DEFAULT NULL COMMENT '接单日期',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='空运订单表';
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='空运订单表';
 
 
 CREATE TABLE `air_port` (
@@ -78,7 +80,7 @@ CREATE TABLE `air_port` (
   `code` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '飞机港口代码',
   `name` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '飞机港口名称',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `create_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '创建人',
+  `create_user` varchar(255) CHARACTER DEFAULT NULL COMMENT '创建人',
   `status` int(10) DEFAULT '1' COMMENT '状态(0无效 1有效)',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='飞机港口地址表';
@@ -103,7 +105,8 @@ CREATE TABLE `goods` (
 CREATE TABLE `order_address` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `business_id` bigint(20) NOT NULL COMMENT '业务主键(根据类型选择对应表的主键)',
-  `type` int(10) NOT NULL COMMENT '类型(0:发货,1:收货,2:通知)',
+  `bind_goods_id` bigint(20) DEFAULT NULL COMMENT '绑定商品id',
+  `type` int(10) NOT NULL COMMENT '类型(0:发货,1:收货,2:通知,3:提货,4:送货)',
   `business_type` int(10) DEFAULT NULL COMMENT '业务类型(0:空运)',
   `company` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '公司名称',
   `contacts` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '联系人',
@@ -113,8 +116,9 @@ CREATE TABLE `order_address` (
   `mailbox` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '邮箱',
   `remarks` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '备注',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `delivery_date` datetime DEFAULT NULL COMMENT '交货日期(提货日期/送货日期)',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='订单地址表';
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='订单地址表';
 
 
 CREATE TABLE `general_api_log` (
@@ -129,3 +133,18 @@ CREATE TABLE `general_api_log` (
   `request_time` timestamp NULL DEFAULT NULL COMMENT '访问发起时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='经过api模块进行操作的接口请求历史数据表';
+
+
+CREATE TABLE `air_exception_feedback` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `order_id` bigint(20) NOT NULL COMMENT '空运订单id',
+  `type` int(10) NOT NULL COMMENT '异常原因(1.货物破损,2.潮湿,3.丢失,4.其他)',
+  `remarks` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '异常描述',
+  `start_time` datetime DEFAULT NULL COMMENT '异常发生时间',
+  `completion_time` datetime DEFAULT NULL COMMENT '预计完成时间',
+  `file_path` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '文件路径(多个逗号隔开)',
+  `file_name` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '文件名称(多个逗号隔开)',
+  `create_user` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '创建人(登录用户)',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='空运异常反馈';

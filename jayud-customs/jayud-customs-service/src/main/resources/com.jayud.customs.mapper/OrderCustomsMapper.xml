@@ -33,6 +33,7 @@
         <result column="go_customs_time" property="goCustomsTime" />
         <result column="pre_go_customs_time" property="preGoCustomsTime" />
         <result column="legal_name" property="legalName" />
+        <result column="legal_entity_id" property="legalEntityId" />
         <result column="status" property="status" />
         <result column="created_time" property="createdTime" />
         <result column="created_user" property="createdUser" />
@@ -134,9 +135,6 @@
           order_info oi
         WHERE oc.`main_order_no` = oi.`order_no`
         and oi.`status` = 1
-        <if test="form.cmd == 'orderList'">
-            AND oi.`created_user` = #{form.loginUserName}
-        </if>
         <if test="form.cmd == 'confirmOrder'">
             AND oc.`status` = 'C_0'
         </if>

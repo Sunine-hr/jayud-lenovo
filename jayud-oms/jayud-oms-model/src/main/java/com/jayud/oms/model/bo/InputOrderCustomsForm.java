@@ -81,10 +81,10 @@ public class InputOrderCustomsForm {
     @ApiModelProperty(value = "是否代垫税金1-是 0-否")
     private String isAgencyTax;
 
-    @ApiModelProperty(value = "接单法人")
+    @ApiModelProperty(value = "接单法人",required = true)
     private String legalName;
 
-    @ApiModelProperty(value = "接单法人ID")
+    @ApiModelProperty(value = "接单法人ID",required = true)
     private Long legalEntityId;
 
     @ApiModelProperty(value = "报关类型 CBG-纯报关 CKBG-出口报关,前台忽略")

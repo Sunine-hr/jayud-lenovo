@@ -59,8 +59,8 @@ public class OrderInfoController {
         resultMap.put(CommonConstant.ALL_COUNT, orderDataCountVO.getAllCount());//所有订单数量
         resultMap.put(CommonConstant.PRE_SUBMIT_COUNT, orderDataCountVO.getPreSubmitCount());//暂存数量
         resultMap.put(CommonConstant.DATA_NOT_ALL_COUNT, orderDataCountVO.getDataNotAllCount());//待补全数据量
-        resultMap.put(CommonConstant.CANCELLED_COUNT, orderDataCountVO.getCancelledCount());//待处理数据量
-        resultMap.put(CommonConstant.REJECTED_COUNT, orderDataCountVO.getRejectedCount());//待处理数据量
+        resultMap.put(CommonConstant.CANCELLED_COUNT, orderDataCountVO.getCancelledCount());//待取消数据量
+        resultMap.put(CommonConstant.REJECTED_COUNT, orderDataCountVO.getRejectedCount());//待驳回数据量
         return CommonResult.success(resultMap);
     }
 
@@ -89,11 +89,20 @@ public class OrderInfoController {
         }
         //主订单参数校验
         InputMainOrderForm inputMainOrderForm = form.getOrderForm();
+        //待处理状态无法操作
+        if (inputMainOrderForm.getOrderId() != null) {
+            OrderInfo orderInfo = this.orderInfoService.getById(inputMainOrderForm.getOrderId());
+            if (OrderStatusEnum.MAIN_8.getCode().equals(orderInfo.getStatus().toString())) {
+                return CommonResult.error(400, "待处理状态,无法进行操作");
+            }
+        }
+
         if (inputMainOrderForm == null || StringUtil.isNullOrEmpty(inputMainOrderForm.getCustomerCode())
                 || StringUtil.isNullOrEmpty(inputMainOrderForm.getCustomerName())
                 || inputMainOrderForm.getBizUid() == null
                 || StringUtil.isNullOrEmpty(inputMainOrderForm.getBizUname())
                 || StringUtil.isNullOrEmpty(inputMainOrderForm.getLegalName())
+//                || inputMainOrderForm.getLegalEntityId() == null
                 || inputMainOrderForm.getBizBelongDepart() == null
                 || StringUtil.isNullOrEmpty(inputMainOrderForm.getBizCode())
                 || StringUtil.isNullOrEmpty(inputMainOrderForm.getClassCode())
@@ -117,6 +126,7 @@ public class OrderInfoController {
                         inputOrderCustomsForm.getGoodsType() == null ||
                         StringUtil.isNullOrEmpty(inputOrderCustomsForm.getBizModel()) ||
                         StringUtil.isNullOrEmpty(inputOrderCustomsForm.getLegalName()) ||
+//                        inputOrderCustomsForm.getLegalEntityId() == null ||
                         StringUtil.isNullOrEmpty(inputOrderCustomsForm.getEncode()) ||//六联单号
                         inputOrderCustomsForm.getSubOrders() == null) {
                     return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
@@ -160,6 +170,7 @@ public class OrderInfoController {
                         inputOrderTransportForm.getVehicleSize() == null ||
                         inputOrderTransportForm.getWarehouseInfoId() == null ||
                         StringUtil.isNullOrEmpty(inputOrderTransportForm.getLegalName()) ||
+//                        inputOrderTransportForm.getLegalEntityId() == null ||
                         StringUtil.isNullOrEmpty(inputOrderTransportForm.getUnitCode())) {
                     return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
                 }

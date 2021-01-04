@@ -30,7 +30,7 @@ public class MysqlGenerator {
                 "jayud-freight-air\\jayud-freight-air-service",
                 "jayud-freight-air\\jayud-freight-air-web"};
         for (String model : models) {
-            shell(model,"air_booking");
+            shell(model,"air_exception_feedback");
 
         }
     }

@@ -16,7 +16,10 @@ public enum AirOrderTermsEnum {
     DUU(1, "DUU"),
     FOB(2, "FOB"),
     DDP(3, "DDP"),
-    CFR(4, "CFR");
+    CFR(4, "CFR"),
+    CPT(5, "CPT"),
+    CNF(6, "CNF"),
+    CIP(7, "CIP"),;
 
     private Integer code;
     private String desc;

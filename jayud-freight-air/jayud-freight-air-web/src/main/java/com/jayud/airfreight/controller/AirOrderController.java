@@ -6,8 +6,11 @@ import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.airfreight.feign.OauthClient;
 import com.jayud.airfreight.feign.OmsClient;
 import com.jayud.airfreight.model.bo.*;
+import com.jayud.airfreight.model.enums.ExceptionCausesEnum;
+import com.jayud.airfreight.model.po.AirExceptionFeedback;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.airfreight.model.vo.AirOrderFormVO;
 import com.jayud.airfreight.model.vo.AirOrderVO;
@@ -18,20 +21,25 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.entity.InitComboxVO;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +64,8 @@ public class AirOrderController {
     private OmsClient omsClient;
     @Autowired
     private IAirOrderService airOrderService;
+    @Autowired
+    private OauthClient oauthClient;
 //    @Autowired
 //    private IGoodsService goodsService;
 
@@ -64,7 +74,7 @@ public class AirOrderController {
     public CommonResult<CommonPageResult<AirOrderFormVO>> findByPage(@RequestBody QueryAirOrderForm form) {
 
         //模糊查询客户信息
-        if (form.getCustomerName() != null) {
+        if (!StringUtils.isEmpty(form.getCustomerName())) {
             ApiResult result = omsClient.getByCustomerName(form.getCustomerName());
             Object data = result.getData();
             if (data != null) {
@@ -74,9 +84,9 @@ public class AirOrderController {
         }
 
         //获取下个节点状态
-        OrderStatusEnum statusEnum = OrderStatusEnum.getAirOrderPreStatus(form.getStatus());
+//        OrderStatusEnum statusEnum = OrderStatusEnum.getAirOrderPreStatus(form.getStatus());
 
-        form.setStatus(statusEnum == null ? null : statusEnum.getCode());
+//        form.setStatus(statusEnum == null ? null : statusEnum.getCode());
 
         IPage<AirOrderFormVO> page = this.airOrderService.findByPage(form);
         if (page.getRecords().size() == 0) {
@@ -86,19 +96,29 @@ public class AirOrderController {
         List<AirOrderFormVO> records = page.getRecords();
         List<Long> airOrderIds = new ArrayList<>();
         List<String> mainOrder = new ArrayList<>();
+        List<Long> entityIds = new ArrayList<>();
         for (AirOrderFormVO record : records) {
             airOrderIds.add(record.getId());
             mainOrder.add(record.getMainOrderNo());
+            entityIds.add(record.getLegalId());
         }
         //查询商品信息
         List<GoodsVO> goods = this.omsClient.getGoodsByBusIds(airOrderIds, BusinessTypeEnum.KY.getCode()).getData();
-        //查询客户信息
+        //查询法人主体
+        ApiResult legalEntityResult = null;
+        if (CollectionUtils.isNotEmpty(entityIds)) {
+            legalEntityResult = this.oauthClient.getLegalEntityByLegalIds(entityIds);
+        }
+
+        //查询主订单信息
         ApiResult result = omsClient.getMainOrderByOrderNos(mainOrder);
         for (AirOrderFormVO record : records) {
             //组装商品信息
             record.assemblyGoodsInfo(goods);
             //拼装主订单信息
             record.assemblyMainOrderData(result.getData());
+            //组装法人名称
+            record.assemblyLegalEntity(legalEntityResult);
         }
         return CommonResult.success(new CommonPageResult(page));
     }
@@ -249,10 +269,12 @@ public class AirOrderController {
         auditInfoForm.setAuditTypeDesc(orderStatusEnum.getDesc());
 
         auditInfoForm.setAuditComment(airCargoRejected.getCause());
+
+        Integer rejectOptions = airCargoRejected.getRejectOptions() == null ? 1 : airCargoRejected.getRejectOptions();
+        airCargoRejected.setRejectOptions(rejectOptions);
         switch (orderStatusEnum) {
             case AIR_A_1_1:
                 //订单驳回
-                airCargoRejected.setRejectOptions(1);
                 this.airOrderService.orderReceiving(tmp, auditInfoForm, airCargoRejected);
                 break;
             case AIR_A_2_1:
@@ -261,6 +283,30 @@ public class AirOrderController {
                 break;
         }
 
+        return CommonResult.success();
+    }
+
+
+    @ApiOperation(value = "获取异常原因 createUserType=创建人的类型(0:本系统,1:vivo)")
+    @PostMapping(value = "/getExceptionCauses")
+    public CommonResult<List<InitComboxVO>> getExceptionCauses(@RequestBody Map<String, Object> map) {
+        Integer createUserType = MapUtil.getInt(map, "createUserType");
+        List<ExceptionCausesEnum> tmp = ExceptionCausesEnum.getExceptionCauses(createUserType);
+        List<InitComboxVO> list = new ArrayList<>();
+        for (ExceptionCausesEnum exceptionCausesEnum : tmp) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(exceptionCausesEnum.getCode().longValue());
+            initComboxVO.setName(exceptionCausesEnum.getDesc());
+            list.add(initComboxVO);
+        }
+
+        return CommonResult.success(list);
+    }
+
+    @ApiOperation(value = "异常反馈")
+    @PostMapping(value = "/exceptionFeedback")
+    public CommonResult exceptionFeedback(@RequestBody @Valid AddAirExceptionFeedbackForm form) {
+        this.airOrderService.exceptionFeedback(form);
         return CommonResult.success();
     }
 }

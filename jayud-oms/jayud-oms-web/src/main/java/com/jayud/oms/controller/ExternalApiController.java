@@ -589,7 +589,7 @@ public class ExternalApiController {
     public ApiResult getPortCodeByName(@RequestBody String name) {
         PortInfo portInfo = new PortInfo().setName(name);
         List<PortInfo> portInfos = this.portInfoService.findPortInfoByCondition(portInfo);
-        return ApiResult.ok(portInfos.size() > 0 ? portInfos.get(0).getName() : null);
+        return ApiResult.ok(portInfos.size() > 0 ? portInfos.get(0).getIdCode() : null);
     }
 
     /**

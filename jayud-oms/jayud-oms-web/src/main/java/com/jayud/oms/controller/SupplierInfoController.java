@@ -5,7 +5,6 @@ import cn.hutool.core.map.MapUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
@@ -24,7 +23,6 @@ import com.jayud.oms.model.vo.EnumVO;
 import com.jayud.oms.model.vo.SupplierInfoVO;
 import com.jayud.oms.service.IAuditInfoService;
 import com.jayud.oms.service.ISupplierInfoService;
-import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -271,11 +269,65 @@ public class SupplierInfoController {
         }
     }
 
-
     @ApiOperation(value = "供应商账号-所属公司")
     @PostMapping(value = "/initCompany")
     public CommonResult initCompany() {
         return CommonResult.success(oauthClient.getCompany().getData());
+    }
+
+    @Value("${address.supplierAddr}")
+    private String filePath;
+
+    @ApiOperation(value = "下载供应商模板")
+    @GetMapping(value = "/downloadExcel")
+    public void downloadExcel(HttpServletResponse response, HttpServletRequest request)throws IOException {
+        //获取输入流，原始模板位置
+        InputStream bis = new BufferedInputStream(new FileInputStream(new File(filePath)));
+        //假如以中文名下载的话，设置下载文件名称
+        String filename = "供应商模板.xlsx";
+        //转码，免得文件名中文乱码s
+        //设置文件下载头
+        response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename,"UTF-8"));
+        //1.设置文件ContentType类型，这样设置，会自动判断下载文件类型
+        response.setContentType("application/vnd.ms-excel;charset=utf-8");
+        BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
+        int len = 0;
+        while((len = bis.read()) != -1){
+            out.write(len);
+            out.flush();
+        }
+        out.close();
+    }
+
+    @ApiOperation(value = "导入供应商信息")
+    @PostMapping(value = "/uploadExcel")
+    public ResponseEntity<String> ajaxUploadExcel(MultipartFile file, HttpServletResponse response){
+
+        String commentHTML=null;
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(new MediaType("text","html", Charset.forName("UTF-8")));
+        try {
+            commentHTML = supplierInfoService.importCustomerInfoExcel(response,file);
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+
+        if (com.alibaba.nacos.client.utils.StringUtils.isNotBlank(commentHTML)) {
+            return new ResponseEntity<String>(commentHTML, responseHeaders, org.springframework.http.HttpStatus.OK);
+        }else {
+            return new ResponseEntity<String>("导入失败！", responseHeaders, org.springframework.http.HttpStatus.OK);
+        }
+
+    }
+
+    @ApiOperation(value = "下载错误信息")
+    @GetMapping(value = "/downloadErrorExcel")
+    public void downloadErrorExcel( HttpServletResponse response)  {
+        try {
+            supplierInfoService.insExcel(response);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
     }
 }
 

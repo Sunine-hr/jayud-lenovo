@@ -2,6 +2,7 @@ package com.jayud.oms.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import com.alibaba.nacos.client.utils.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.ApiResult;
@@ -31,16 +32,21 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.util.*;
 
 /**
  * 客户管理 前端控制器
@@ -64,6 +70,7 @@ public class CustomerInfoController {
 
     @Autowired
     private ICustomerRelaLegalService customerRelaLegalService;
+
 
     @ApiOperation(value = "查询客户列表")
     @PostMapping(value = "/findCustomerInfoByPage")
@@ -360,6 +367,63 @@ public class CustomerInfoController {
     public CommonResult<List<InitComboxVO>> initDepartCharge() {
         List<InitComboxVO> initComboxVOS = (List<InitComboxVO>) oauthClient.findCustAccount().getData();
         return CommonResult.success(initComboxVOS);
+    }
+
+    @Value("${address.productAddr}")
+    private String filePath;
+
+    @ApiOperation(value = "下载客户模板")
+    @GetMapping(value = "/downloadExcel")
+    public void downloadExcel(HttpServletResponse response,HttpServletRequest request)throws IOException {
+        //获取输入流，原始模板位置
+
+//        String filePath = "D:\\CodeRepository1\\jayud-platform\\jayud-oms\\jayud-oms-web\\src\\main\\resources\\static\\客户模板.xls";
+        InputStream bis = new BufferedInputStream(new FileInputStream(new File(filePath)));
+        //假如以中文名下载的话，设置下载文件名称
+        String filename = "客户模板.xls";
+        //转码，免得文件名中文乱码
+        //设置文件下载头
+        response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename,"UTF-8"));
+        //1.设置文件ContentType类型，这样设置，会自动判断下载文件类型
+        response.setContentType("application/vnd.ms-excel;charset=utf-8");
+
+        BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
+        int len = 0;
+        while((len = bis.read()) != -1){
+            out.write(len);
+            out.flush();
+        }
+        out.close();
+    }
+
+    @ApiOperation(value = "导入客户信息")
+    @PostMapping(value = "/uploadExcel")
+    public  ResponseEntity<String> ajaxUploadExcel(MultipartFile file,HttpServletResponse response){
+
+        String commentHTML=null;
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(new MediaType("text","html", Charset.forName("UTF-8")));
+        try {
+            commentHTML = customerInfoService.importCustomerInfoExcel(response,file);
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+
+        if (StringUtils.isNotBlank(commentHTML)) {
+            return new ResponseEntity<String>(commentHTML, responseHeaders, org.springframework.http.HttpStatus.OK);
+        }else {
+            return new ResponseEntity<String>("导入失败！", responseHeaders, org.springframework.http.HttpStatus.OK);
+        }
+    }
+
+    @ApiOperation(value = "下载错误信息")
+    @GetMapping(value = "/downloadErrorExcel")
+    public void downloadErrorExcel( HttpServletResponse response)  {
+        try {
+            customerInfoService.insExcel(response);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
     }
 
 

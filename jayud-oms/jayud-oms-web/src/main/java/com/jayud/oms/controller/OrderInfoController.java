@@ -209,7 +209,6 @@ public class OrderInfoController {
             }
         }
 
-
         boolean result = orderInfoService.createOrder(form);
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());

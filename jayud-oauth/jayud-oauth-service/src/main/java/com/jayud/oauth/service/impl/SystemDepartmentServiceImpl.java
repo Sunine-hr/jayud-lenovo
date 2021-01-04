@@ -67,4 +67,12 @@ public class SystemDepartmentServiceImpl extends ServiceImpl<SystemDepartmentMap
         saveOrUpdate(department);
     }
 
+    @Override
+    public Department getByDeptName(String deptName) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("name",deptName);
+        Department department = baseMapper.selectOne(queryWrapper);
+        return department;
+    }
+
 }

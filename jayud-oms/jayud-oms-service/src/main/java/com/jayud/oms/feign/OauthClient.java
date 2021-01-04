@@ -110,4 +110,22 @@ public interface OauthClient {
      */
     @RequestMapping(value = "/api/getLegalEntityByLegalId")
     public ApiResult getLegalEntityByLegalId(@RequestParam("legalId") Long legalId);
+
+    /**
+     * 根据部门名称查询部门id
+     */
+    @RequestMapping(value = "/api/getDeptIdByDeptName")
+    public ApiResult getDeptIdByDeptName(@RequestParam("deptName") String deptName);
+
+    /**
+     * 根据业务员名称查询业务员id
+     */
+    @RequestMapping(value = "/api/getSystemUserBySystemName")
+    public ApiResult getSystemUserBySystemName(@RequestParam("name") String name);
+
+    /**
+     * 根据法人主体姓名查询法人主体信息
+     */
+    @RequestMapping(value = "/api/getLegalEntityByLegalName")
+    public ApiResult getLegalEntityByLegalName(@RequestParam("name") String name);
 }

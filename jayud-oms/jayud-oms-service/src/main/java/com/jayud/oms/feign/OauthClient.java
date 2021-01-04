@@ -6,11 +6,9 @@ import com.jayud.oms.model.bo.AddCusAccountForm;
 import com.jayud.oms.model.bo.QueryAccountForm;
 import com.jayud.oms.model.vo.InitComboxVO;
 import com.jayud.oms.model.vo.SystemUserVO;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -40,7 +38,7 @@ public interface OauthClient {
      *
      * @return
      */
-    @RequestMapping(value = "/api/findLegalEntity", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/findLegalEntity")
     ApiResult<List<InitComboxVO>> findLegalEntity();
 
 

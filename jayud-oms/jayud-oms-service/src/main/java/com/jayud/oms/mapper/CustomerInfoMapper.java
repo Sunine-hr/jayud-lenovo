@@ -34,7 +34,7 @@ public interface CustomerInfoMapper extends BaseMapper<CustomerInfo> {
      * @param id
      * @return
      */
-    CustomerInfoVO getCustomerInfoById(Long id);
+    CustomerInfoVO getCustomerInfoById(@Param("id") Long id);
 
     /**
      * 获取客户账号

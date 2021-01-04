@@ -114,8 +114,7 @@
         LEFT JOIN `system_user` su1
         ON su1.`id` = ci.`ku_id`
         LEFT JOIN `system_user` su2
-        ON su2.`id` = ci.`yw_id` where 1 = 1
-        and ci.id = #{id}
+        ON su2.`id` = ci.`yw_id` where ci.id = #{id}
     </select>
 
     <!--客户账户管理-->

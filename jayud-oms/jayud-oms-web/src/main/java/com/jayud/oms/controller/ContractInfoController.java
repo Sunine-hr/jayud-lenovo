@@ -211,7 +211,7 @@ public class ContractInfoController {
     @ApiOperation(value = "合同管理-下拉框-法人主体")
     @PostMapping(value = "/initLegalEntity")
     public CommonResult<List<InitComboxVO>> initLegalEntity() {
-        List<InitComboxVO> initComboxVOS = (List<InitComboxVO>) oauthClient.findLegalEntity().getData();
+        List<InitComboxVO> initComboxVOS = oauthClient.findLegalEntity().getData();
         return CommonResult.success(initComboxVOS);
     }
 

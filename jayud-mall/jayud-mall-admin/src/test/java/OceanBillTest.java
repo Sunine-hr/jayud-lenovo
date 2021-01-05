@@ -175,23 +175,23 @@ public class OceanBillTest {
 //        return oceanWaybillFormList;
 //    }
 
-    /**
-     * 1运单对应N箱号
-     * @return
-     */
-    public List<OceanWaybillCaseRelationForm>  oceanWaybillCaseRelationFormList(){
-        //1运单对应N箱号
-        List<OceanWaybillCaseRelationForm> oceanWaybillCaseRelationFormList = new ArrayList<>();
-        OceanWaybillCaseRelationForm form1 = new OceanWaybillCaseRelationForm();
-
-        form1.setId(null);
-        form1.setOceanWaybillId(null);
-        form1.setOrderCaseId(1L);
-        form1.setCustomerId(3L);
-        oceanWaybillCaseRelationFormList.add(form1);
-
-        return oceanWaybillCaseRelationFormList;
-    }
+//    /**
+//     * 1运单对应N箱号
+//     * @return
+//     */
+//    public List<OceanWaybillCaseRelationForm>  oceanWaybillCaseRelationFormList(){
+//        //1运单对应N箱号
+//        List<OceanWaybillCaseRelationForm> oceanWaybillCaseRelationFormList = new ArrayList<>();
+//        OceanWaybillCaseRelationForm form1 = new OceanWaybillCaseRelationForm();
+//
+//        form1.setId(null);
+//        form1.setOceanWaybillId(null);
+//        form1.setOrderCaseId(1L);
+//        form1.setCustomerId(3L);
+//        oceanWaybillCaseRelationFormList.add(form1);
+//
+//        return oceanWaybillCaseRelationFormList;
+//    }
 
     /**
      * 提单保存json

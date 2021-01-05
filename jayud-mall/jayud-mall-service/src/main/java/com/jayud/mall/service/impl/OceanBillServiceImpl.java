@@ -8,7 +8,6 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.OceanBillMapper;
 import com.jayud.mall.mapper.OceanCounterMapper;
-import com.jayud.mall.mapper.OceanWaybillCaseRelationMapper;
 import com.jayud.mall.model.bo.OceanBillForm;
 import com.jayud.mall.model.bo.OceanCounterForm;
 import com.jayud.mall.model.bo.QueryOceanBillForm;
@@ -20,7 +19,6 @@ import com.jayud.mall.model.vo.OceanCounterVO;
 import com.jayud.mall.service.IBillTaskRelevanceService;
 import com.jayud.mall.service.IOceanBillService;
 import com.jayud.mall.service.IOceanCounterService;
-import com.jayud.mall.service.IOceanWaybillCaseRelationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,13 +44,7 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     OceanCounterMapper oceanCounterMapper;
 
     @Autowired
-    OceanWaybillCaseRelationMapper oceanWaybillCaseRelationMapper;
-
-    @Autowired
     IOceanCounterService oceanCounterService;
-
-    @Autowired
-    IOceanWaybillCaseRelationService oceanWaybillCaseRelationService;
 
     @Autowired
     IBillTaskRelevanceService billTaskRelevanceService;

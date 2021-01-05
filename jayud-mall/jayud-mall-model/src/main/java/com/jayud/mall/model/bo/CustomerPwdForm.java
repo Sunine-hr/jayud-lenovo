@@ -9,9 +9,9 @@ import lombok.Data;
 @Data
 public class CustomerPwdForm {
 
-    @ApiModelProperty(value = "主键id，自增", position = 1)
+    @ApiModelProperty(value = "手机号", position = 1)
     @JSONField(ordinal = 1)
-    private Integer id;
+    private String phone;
 
     @ApiModelProperty(value = "密码", position = 2)
     @JSONField(ordinal = 2)

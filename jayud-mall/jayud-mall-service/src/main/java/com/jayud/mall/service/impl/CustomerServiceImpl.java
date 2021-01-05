@@ -17,6 +17,7 @@ import com.jayud.mall.service.ICustomerService;
 import com.jayud.mall.service.INumberGeneratedService;
 import com.jayud.mall.utils.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -153,21 +154,33 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     public CommonResult customerVerify(CustomerVerifyForm form) {
         String phone = form.getPhone();
         String verificationCode = form.getVerificationCode();
+        String code = redisUtils.get(phone);
+        if(code == null){
+            return CommonResult.error(-1, "验证码不存在或者已过期");
+        }
+        if(!verificationCode.equals(code)){
+            return CommonResult.error(-1, "验证码不正确");
+        }
         return CommonResult.success("验证成功");
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CommonResult customerUpdatePwd(CustomerPwdForm form) {
-        Integer id = form.getId();
-        Customer customer = this.getById(id);
+        String phone = form.getPhone();
+        QueryWrapper<Customer> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("phone", phone);
+        List<Customer> list = this.list(queryWrapper);
+        Customer customer = list.get(0);
         String passwd = form.getPasswd();
         String affirmPasswd = form.getAffirmPasswd();
         if(!passwd.equals(affirmPasswd)){
             return CommonResult.error(-1, "两次的密码不一致");
         }
-        //没有加密
-        customer.setPasswd(passwd);
+        //BCryptPasswordEncoder 加密
+        BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
+        String password = bcryptPasswordEncoder.encode(passwd.trim());
+        customer.setPasswd(password);
         this.saveOrUpdate(customer);
         return CommonResult.success("修改密码成功");
     }

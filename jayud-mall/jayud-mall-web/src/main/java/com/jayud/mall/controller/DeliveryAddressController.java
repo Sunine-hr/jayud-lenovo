@@ -9,6 +9,8 @@ import com.jayud.mall.model.vo.DeliveryAddressVO;
 import com.jayud.mall.service.IDeliveryAddressService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperationSupport;
+import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/deliveryaddress")
-@Api(tags = "C端-提货、收货地址基础数据表接口")
+@Api(tags = "C005-C端-提货、收货地址基础数据表接口")
+@ApiSort(value = 5)
 public class DeliveryAddressController {
 
     @Autowired
@@ -25,6 +28,7 @@ public class DeliveryAddressController {
 
     @ApiOperation(value = "分页查询-提货、收货地址")
     @PostMapping("/findDeliveryAddressByPage")
+    @ApiOperationSupport(order = 1)
     public CommonResult<CommonPageResult<DeliveryAddressVO>> findDeliveryAddressByPage(@RequestBody QueryDeliveryAddressForm form) {
         IPage<DeliveryAddressVO> pageList = deliveryAddressService.findDeliveryAddressByPage(form);
         CommonPageResult<DeliveryAddressVO> pageVO = new CommonPageResult(pageList);
@@ -33,6 +37,7 @@ public class DeliveryAddressController {
 
     @ApiOperation(value = "保存-提货、收货地址")
     @PostMapping("/saveDeliveryAddress")
+    @ApiOperationSupport(order = 2)
     public CommonResult<DeliveryAddressVO> saveDeliveryAddress(@RequestBody DeliveryAddressForm form){
         return deliveryAddressService.saveDeliveryAddress(form);
     }

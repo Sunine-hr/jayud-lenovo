@@ -59,6 +59,8 @@ public class ImportBaseCountryInfoTest {
             //存放国家级数据实体类的列表
 //            List<BaseCountry> baseCountryList = new ArrayList<>();
             for (Element countryNode : countryNodes) {
+                log.info("正在处理{}",
+                        countryNode.attributeValue("Name"));
 //                BaseCountry baseCountry = new BaseCountry();
 //                baseCountry.setName(countryNode.attributeValue("Name"));
 //                baseCountry.setCode(countryNode.attributeValue("Code"));
@@ -66,6 +68,9 @@ public class ImportBaseCountryInfoTest {
                 //遍历此节点下的省
                 List<Element> provinceNodes = countryNode.elements("State");
                 for (Element provinceNode : provinceNodes) {
+                    log.info("正在处理{}-{}",
+                            countryNode.attributeValue("Name"),
+                            provinceNode.attributeValue("Name"));
 //                    BaseProvince baseProvince = new BaseProvince();
 //                    baseProvince.setName(provinceNode.attributeValue("Name"));
 //                    baseProvince.setCode(provinceNode.attributeValue("Code"));

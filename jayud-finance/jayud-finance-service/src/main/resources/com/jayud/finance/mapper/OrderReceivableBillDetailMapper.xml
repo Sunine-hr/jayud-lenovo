@@ -106,11 +106,8 @@
         <if test="form.billNo != null and form.billNo != ''">
             and orbd.bill_no like concat('%',#{form.billNo},'%')
         </if>
-        <if test="form.endAccountTerm != null and form.endAccountTerm !=''">
-            and orbd.end_account_term <![CDATA[<=]]> #{form.endAccountTerm}
-        </if>
-        <if test="form.beginAccountTerm != null and form.beginAccountTerm !=''">
-            and orbd.begin_account_term <![CDATA[>=]]> #{form.beginAccountTerm}
+        <if test="form.accountTermStr != null and form.accountTermStr !=''">
+            and orbd.account_term = #{form.accountTermStr}
         </if>
         <if test="form.currencyCode != null and form.currencyCode !=''">
             and orbd.settlement_currency = #{form.currencyCode}

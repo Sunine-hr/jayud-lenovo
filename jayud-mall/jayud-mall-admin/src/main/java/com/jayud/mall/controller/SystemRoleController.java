@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/systemrole")
@@ -62,6 +63,14 @@ public class SystemRoleController {
         IPage<SystemRoleVO> pageList = roleService.findRoleByPage(form);
         CommonPageResult<SystemRoleVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
+    }
+
+    @ApiOperation(value = "查询角色list")
+    @PostMapping("/findRole")
+    @ApiOperationSupport(order = 5)
+    public CommonResult<List<SystemRoleVO>> findRole(@RequestBody QueryRoleForm form) {
+        List<SystemRoleVO> list = roleService.findRole(form);
+        return CommonResult.success(list);
     }
 
 

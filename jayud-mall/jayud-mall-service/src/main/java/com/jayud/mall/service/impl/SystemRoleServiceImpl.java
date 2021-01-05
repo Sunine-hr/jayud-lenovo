@@ -119,4 +119,16 @@ public class SystemRoleServiceImpl extends ServiceImpl<SystemRoleMapper, SystemR
         List<SystemRole> list = roleMapper.selectRolesByUserId(userId);
         return list;
     }
+
+    @Override
+    public List<SystemRoleVO> findRole(QueryRoleForm form) {
+        QueryWrapper<SystemRole> queryWrapper = new QueryWrapper<>();
+        String roleName = form.getRoleName();
+        if(roleName != null && roleName != ""){
+            queryWrapper.eq("role_name", roleName);
+        }
+        List<SystemRole> list = this.list(queryWrapper);
+        List<SystemRoleVO> systemRoleVOS = ConvertUtil.convertList(list, SystemRoleVO.class);
+        return systemRoleVOS;
+    }
 }

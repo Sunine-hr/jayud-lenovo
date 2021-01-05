@@ -118,7 +118,7 @@ public class BookingSpaceForm {
     @JsonProperty("Consignee")
     @SerializedName("Consignee")
     @ApiModelProperty(value = "收货人")
-    @NotEmpty(message = "收货人不能为空")
+//    @NotEmpty(message = "收货人不能为空")
     @Length(max = 100, message = "收货人字段的最大长度为100")
     private String consignee;
 

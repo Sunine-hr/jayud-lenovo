@@ -61,13 +61,16 @@
         left join air_port ap1 on ap1.`code`=a.port_destination_code
         left join air_booking ab on a.id=ab.air_order_id and (ab.`status` != 2 OR ab.`status` IS NULL)
         <where>
+            <if test="form.orderNo !=null and form.orderNo!=''">
+                and a.order_no like concat('%',#{form.orderNo},'%')
+            </if>
             <if test="form.portDeparture !=null and form.portDeparture!=''">
                 and ap.name like concat('%',#{form.portDeparture},'%')
             </if>
             <if test="form.portDestination !=null and form.portDestination!=''">
                 and ap1.name like concat('%',#{form.portDestination},'%')
             </if>
-            <if test="form.customerName!=null and form.customerName!=''">
+            <if test="form.mainOrderNos !=null and form.mainOrderNos.size > 0">
                 and a.main_order_no IN
                 <foreach collection="form.mainOrderNos" index="index" item="item" open="(" separator="," close=")">
                     #{item}

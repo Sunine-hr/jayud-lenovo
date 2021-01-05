@@ -524,6 +524,16 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         this.pushExceptionFeedbackInfo(airExceptionFeedback);
     }
 
+    /**
+     * 根据主订单号查询空运订单信息
+     */
+    @Override
+    public List<AirOrder> getAirOrderByMainOrderNos(List<String> mainOrderNos) {
+        QueryWrapper<AirOrder> condition = new QueryWrapper<>();
+        condition.lambda().in(AirOrder::getOrderNo, mainOrderNos);
+        return this.baseMapper.selectList(condition);
+    }
+
     private void pushExceptionFeedbackInfo(AirExceptionFeedback airExceptionFeedback) {
         AirOrder airOrder = this.getById(airExceptionFeedback.getOrderId());
         if (CreateUserTypeEnum.VIVO.getCode().equals(airOrder.getCreateUserType())) {

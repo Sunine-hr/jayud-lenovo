@@ -75,7 +75,8 @@ public class ImportBaseCountryInfoTest {
                     List<Element> cityNodes = provinceNode.elements("City");
 //                    List<BaseCity> baseCityList = new ArrayList<>();
                     for (Element cityNode : cityNodes) {
-                        log.info("正在处理{}-{}-{}",countryNode.attributeValue("Name"),
+                        log.info("正在处理{}-{}-{}",
+                                countryNode.attributeValue("Name"),
                                 provinceNode.attributeValue("Name"),
                                 cityNode.attributeValue("Name"));
 //                        BaseCity baseCity = new BaseCity();
@@ -84,6 +85,19 @@ public class ImportBaseCountryInfoTest {
 //                        baseCity.setCountryId(countryId);
 //                        baseCity.setProvinceId(provinceId);
 //                        baseCityList.add(baseCity);
+
+                        //遍历区县(地区)节点
+                        List<Element> regionNodes = cityNode.elements("Region");
+                        for (int r=0; r<regionNodes.size(); r++){
+                            Element regionNode = regionNodes.get(r);
+                            log.info("正在处理{}-{}-{}-{}",
+                                    countryNode.attributeValue("Name"),//国家
+                                    provinceNode.attributeValue("Name"),//省州
+                                    cityNode.attributeValue("Name"),//城市
+                                    regionNode.attributeValue("Name")//区县(地区)
+                            );
+                        }
+
                     }
 //                    cityRepository.saveAll(baseCityList);
                 }

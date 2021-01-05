@@ -26,4 +26,11 @@ public class CountryTest {
         System.out.println(password);
     }
 
+    @Test
+    public void test3(){
+        for (int i = 0; i<10; i++){
+            System.out.println(i);
+        }
+    }
+
 }

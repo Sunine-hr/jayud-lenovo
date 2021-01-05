@@ -9,16 +9,18 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.OceanBillMapper;
 import com.jayud.mall.mapper.OceanCounterMapper;
 import com.jayud.mall.mapper.OceanWaybillCaseRelationMapper;
-import com.jayud.mall.mapper.OceanWaybillMapper;
 import com.jayud.mall.model.bo.OceanBillForm;
 import com.jayud.mall.model.bo.OceanCounterForm;
 import com.jayud.mall.model.bo.QueryOceanBillForm;
 import com.jayud.mall.model.po.OceanBill;
 import com.jayud.mall.model.po.OceanCounter;
-import com.jayud.mall.model.po.OceanWaybill;
-import com.jayud.mall.model.po.OceanWaybillCaseRelation;
-import com.jayud.mall.model.vo.*;
-import com.jayud.mall.service.*;
+import com.jayud.mall.model.vo.BillTaskRelevanceVO;
+import com.jayud.mall.model.vo.OceanBillVO;
+import com.jayud.mall.model.vo.OceanCounterVO;
+import com.jayud.mall.service.IBillTaskRelevanceService;
+import com.jayud.mall.service.IOceanBillService;
+import com.jayud.mall.service.IOceanCounterService;
+import com.jayud.mall.service.IOceanWaybillCaseRelationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,16 +46,10 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     OceanCounterMapper oceanCounterMapper;
 
     @Autowired
-    OceanWaybillMapper oceanWaybillMapper;
-
-    @Autowired
     OceanWaybillCaseRelationMapper oceanWaybillCaseRelationMapper;
 
     @Autowired
     IOceanCounterService oceanCounterService;
-
-    @Autowired
-    IOceanWaybillService oceanWaybillService;
 
     @Autowired
     IOceanWaybillCaseRelationService oceanWaybillCaseRelationService;
@@ -145,25 +141,25 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         List<OceanCounter> oceanCounterList = oceanCounterMapper.selectList(queryWrapper);
         List<OceanCounterVO> oceanCounterVOList = ConvertUtil.convertList(oceanCounterList, OceanCounterVO.class);
 
-        oceanCounterVOList.forEach( oceanCounterVO -> {
-            //1个柜子对应N个运单
-            Long oceanCounterId = oceanCounterVO.getId();
-            QueryWrapper<OceanWaybill> queryWrapperOceanWaybill = new QueryWrapper<>();
-            queryWrapperOceanWaybill.eq("ocean_counter_id", oceanCounterId);
-            List<OceanWaybill> oceanWaybillList = oceanWaybillMapper.selectList(queryWrapperOceanWaybill);
-            List<OceanWaybillVO> oceanWaybillVOList = ConvertUtil.convertList(oceanWaybillList, OceanWaybillVO.class);
-
-
-            oceanWaybillVOList.forEach(oceanWaybillVO -> {
-                //1个运单对应N个箱号
-                Long oceanWaybillId = oceanWaybillVO.getId();
-                QueryWrapper<OceanWaybillCaseRelation> queryWrapperOceanWaybillCaseRelation = new QueryWrapper<>();
-                List<OceanWaybillCaseRelationVO> xhxxList =
-                        oceanWaybillCaseRelationMapper.findXhxxByOceanWaybillId(oceanWaybillId);//根据运单id，查询箱号信息list
-                oceanWaybillVO.setOceanWaybillCaseRelationVOList(xhxxList);
-            });
-            oceanCounterVO.setOceanWaybillVOList(oceanWaybillVOList);
-        });
+//        oceanCounterVOList.forEach( oceanCounterVO -> {
+//            //1个柜子对应N个运单
+//            Long oceanCounterId = oceanCounterVO.getId();
+//            QueryWrapper<OceanWaybill> queryWrapperOceanWaybill = new QueryWrapper<>();
+//            queryWrapperOceanWaybill.eq("ocean_counter_id", oceanCounterId);
+//            List<OceanWaybill> oceanWaybillList = oceanWaybillMapper.selectList(queryWrapperOceanWaybill);
+//            List<OceanWaybillVO> oceanWaybillVOList = ConvertUtil.convertList(oceanWaybillList, OceanWaybillVO.class);
+//
+//
+//            oceanWaybillVOList.forEach(oceanWaybillVO -> {
+//                //1个运单对应N个箱号
+//                Long oceanWaybillId = oceanWaybillVO.getId();
+//                QueryWrapper<OceanWaybillCaseRelation> queryWrapperOceanWaybillCaseRelation = new QueryWrapper<>();
+//                List<OceanWaybillCaseRelationVO> xhxxList =
+//                        oceanWaybillCaseRelationMapper.findXhxxByOceanWaybillId(oceanWaybillId);//根据运单id，查询箱号信息list
+//                oceanWaybillVO.setOceanWaybillCaseRelationVOList(xhxxList);
+//            });
+//            oceanCounterVO.setOceanWaybillVOList(oceanWaybillVOList);
+//        });
         oceanBillVO.setOceanCounterVOList(oceanCounterVOList);
         return CommonResult.success(oceanBillVO);
     }

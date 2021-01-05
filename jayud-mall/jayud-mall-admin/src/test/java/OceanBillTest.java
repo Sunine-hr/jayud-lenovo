@@ -141,8 +141,8 @@ public class OceanBillTest {
         form1.setObId(null);
         form1.setCreateTime(LocalDateTime.now());
 
-        //1柜子对应N运单
-        List<OceanWaybillForm> oceanWaybillFormList = oceanWaybillFormList();
+//        //1柜子对应N运单
+//        List<OceanWaybillForm> oceanWaybillFormList = oceanWaybillFormList();
 //        form1.setOceanWaybillFormList(oceanWaybillFormList);
 
         oceanCounterForms.add(form1);
@@ -150,30 +150,30 @@ public class OceanBillTest {
         return oceanCounterForms;
     }
 
-    /**
-     * 1柜子对应N运单
-     * @return
-     */
-    public List<OceanWaybillForm> oceanWaybillFormList(){
-        // 1柜子对应N运单
-        List<OceanWaybillForm> oceanWaybillFormList = new ArrayList<>();
-
-        OceanWaybillForm form1 = new OceanWaybillForm();
-        form1.setId(null);
-        form1.setWaybillNo("YS202006000132");
-        form1.setDescribe("运输单1");
-        form1.setShippingInformation("上海市 上海市 杨浦区 沪青平公路333号");
-        form1.setOceanCounterId(null);//货柜信息
-
-
-        //1运单对应N箱号
-//        List<OceanWaybillCaseRelationForm> oceanWaybillCaseRelationFormList = oceanWaybillCaseRelationFormList();
-//        form1.setOceanWaybillCaseRelationFormList(oceanWaybillCaseRelationFormList);
-
-        oceanWaybillFormList.add(form1);
-
-        return oceanWaybillFormList;
-    }
+//    /**
+//     * 1柜子对应N运单
+//     * @return
+//     */
+//    public List<OceanWaybillForm> oceanWaybillFormList(){
+//        // 1柜子对应N运单
+//        List<OceanWaybillForm> oceanWaybillFormList = new ArrayList<>();
+//
+//        OceanWaybillForm form1 = new OceanWaybillForm();
+//        form1.setId(null);
+//        form1.setWaybillNo("YS202006000132");
+//        form1.setDescribe("运输单1");
+//        form1.setShippingInformation("上海市 上海市 杨浦区 沪青平公路333号");
+//        form1.setOceanCounterId(null);//货柜信息
+//
+//
+//        //1运单对应N箱号
+////        List<OceanWaybillCaseRelationForm> oceanWaybillCaseRelationFormList = oceanWaybillCaseRelationFormList();
+////        form1.setOceanWaybillCaseRelationFormList(oceanWaybillCaseRelationFormList);
+//
+//        oceanWaybillFormList.add(form1);
+//
+//        return oceanWaybillFormList;
+//    }
 
     /**
      * 1运单对应N箱号

@@ -3,24 +3,23 @@ package com.jayud.tms.service.impl;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.jayud.common.enums.ResultEnum;
-import com.jayud.common.exception.JayudBizException;
-import com.jayud.common.exception.VivoApiException;
-import com.jayud.common.utils.ConvertUtil;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.ApiResult;
 import com.jayud.common.enums.CreateUserTypeEnum;
-import com.jayud.common.enums.KafkaMsgEnums;
+import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.JayudBizException;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.tms.feign.FreightAirApiClient;
 import com.jayud.tms.feign.MsgClient;
 import com.jayud.tms.feign.OmsClient;
+import com.jayud.tms.mapper.OrderSendCarsMapper;
+import com.jayud.tms.model.bo.RejectOrderForm;
 import com.jayud.tms.model.bo.SendCarForm;
 import com.jayud.tms.model.po.OrderSendCars;
-import com.jayud.tms.mapper.OrderSendCarsMapper;
-import com.jayud.tms.model.vo.*;
 import com.jayud.tms.model.po.OrderTransport;
-import com.jayud.tms.model.vo.OrderSendCarsVO;
+import com.jayud.tms.model.vo.*;
 import com.jayud.tms.service.IOrderSendCarsService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.tms.service.IOrderTransportService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -129,16 +128,24 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
     /**
      * 派车驳回信息推送
      *
+     * @param form
      * @param orderTransport
      */
     @Override
-    public boolean dispatchRejectionMsgPush(OrderTransport orderTransport) {
+    public boolean dispatchRejectionMsgPush(RejectOrderForm form, OrderTransport orderTransport) {
+
         switch (CreateUserTypeEnum.getEnum(orderTransport.getCreateUserType())) {
             case VIVO:
-                ApiResult result = freightAirApiClient.forwarderDispatchRejected(orderTransport.getThirdPartyOrderNo());
-                if (result.getCode() != HttpStatus.SC_OK) {
-                    log.error("请求vivo派车推送接口失败 msg={}", result.getMsg());
-                    return false;
+                if (OrderStatusEnum.TMS_T_4_1.getCode().equals(form.getCmd())) {
+                    ApiResult result = freightAirApiClient.forwarderDispatchRejected(orderTransport.getThirdPartyOrderNo());
+                    if (result.getCode() != HttpStatus.SC_OK) {
+                        log.error("请求vivo派车推送接口失败 msg={}", result.getMsg());
+                        return false;
+                    }
+                } else if (Integer.parseInt(form.getCmd().
+                        split("_")[1])
+                        > Integer.parseInt(OrderStatusEnum.TMS_T_4_1.getCode().split("_")[1])) {
+                    throw new JayudBizException("vivo派车信息无法驳回");
                 }
         }
 

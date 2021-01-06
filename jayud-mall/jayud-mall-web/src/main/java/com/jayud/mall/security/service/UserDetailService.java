@@ -1,10 +1,10 @@
 package com.jayud.mall.security.service;
 
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.mall.admin.security.domain.BaseAuthVO;
-import com.jayud.mall.admin.security.domain.CustomerUser;
 import com.jayud.mall.model.bo.CustomerLoginForm;
 import com.jayud.mall.model.vo.CustomerVO;
+import com.jayud.mall.model.vo.domain.BaseAuthVO;
+import com.jayud.mall.model.vo.domain.CustomerUser;
 import com.jayud.mall.security.utils.ContextHolderUtils;
 import com.jayud.mall.service.ICustomerService;
 import org.slf4j.Logger;

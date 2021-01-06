@@ -1,4 +1,4 @@
-package com.jayud.mall.admin.security.domain;
+package com.jayud.mall.model.vo.domain;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonFormat;

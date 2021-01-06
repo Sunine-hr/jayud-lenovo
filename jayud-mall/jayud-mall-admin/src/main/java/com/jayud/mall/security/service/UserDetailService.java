@@ -1,11 +1,11 @@
 package com.jayud.mall.security.service;
 
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.mall.admin.security.domain.AuthUser;
-import com.jayud.mall.admin.security.domain.BaseAuthVO;
 import com.jayud.mall.model.bo.SystemUserLoginForm;
 import com.jayud.mall.model.po.SystemRole;
 import com.jayud.mall.model.vo.SystemUserVO;
+import com.jayud.mall.model.vo.domain.AuthUser;
+import com.jayud.mall.model.vo.domain.BaseAuthVO;
 import com.jayud.mall.security.utils.ContextHolderUtils;
 import com.jayud.mall.service.ISystemRoleService;
 import com.jayud.mall.service.ISystemUserService;

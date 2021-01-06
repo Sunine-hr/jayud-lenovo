@@ -1,8 +1,8 @@
-package com.jayud.mall.admin.security.service;
+package com.jayud.mall.service;
 
-import com.jayud.mall.admin.security.domain.AuthUser;
-import com.jayud.mall.admin.security.domain.BaseAuthVO;
-import com.jayud.mall.admin.security.domain.CustomerUser;
+import com.jayud.mall.model.vo.domain.AuthUser;
+import com.jayud.mall.model.vo.domain.BaseAuthVO;
+import com.jayud.mall.model.vo.domain.CustomerUser;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;

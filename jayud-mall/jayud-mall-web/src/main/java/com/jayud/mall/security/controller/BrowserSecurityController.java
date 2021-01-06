@@ -1,8 +1,8 @@
 package com.jayud.mall.security.controller;
 
-import com.jayud.mall.admin.security.domain.BaseAuthVO;
-import com.jayud.mall.admin.security.domain.CustomerUser;
-import com.jayud.mall.admin.security.service.BaseService;
+import com.jayud.mall.model.vo.domain.BaseAuthVO;
+import com.jayud.mall.model.vo.domain.CustomerUser;
+import com.jayud.mall.service.BaseService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiOperationSupport;

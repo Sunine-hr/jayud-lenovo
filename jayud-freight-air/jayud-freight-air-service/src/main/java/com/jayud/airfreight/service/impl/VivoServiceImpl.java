@@ -342,7 +342,7 @@ public class VivoServiceImpl implements VivoService {
     private Map<String, Object> doPost(String form, String url) {
         log.info("vivo参数:" + form);
         String feedback = HttpRequest.post(url)
-                .header("Authorization", "bearer " + String.format(getToken(null, null, null)))
+                .header("Authorization", "bearer " + getToken(null, null, null))
                 .header(Header.CONTENT_TYPE.name(), "multipart/form-data")
                 .form("transfer_data", form)
                 .execute()
@@ -384,7 +384,7 @@ public class VivoServiceImpl implements VivoService {
 
     private Map<String, Object> doPostWithFile(String form, File fw, String url) {
         String feedback = HttpRequest.post(url)
-                .header("Authorization", "bearer " + String.format(getToken(null, null, null)))
+                .header("Authorization", "bearer " + getToken(null, null, null))
                 .header(Header.CONTENT_TYPE.name(), "multipart/form-data")
                 .form("transfer_data", form)
                 .form("MultipartFile", fw)
@@ -439,7 +439,7 @@ public class VivoServiceImpl implements VivoService {
             String access_token = MapUtil.getStr(resultMap, "access_token");
             if (!StringUtils.isEmpty(access_token)) {
                 redisUtils.set(VIVO_TOEKN_STR, access_token, 82800);
-                return String.format("Bearer %s", access_token);
+                return String.format("bearer %s", access_token);
             }
 
             Asserts.fail(ResultEnum.UNAUTHORIZED, "vivo 授权失败");

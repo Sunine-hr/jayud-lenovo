@@ -172,18 +172,28 @@ public class VivoServiceImpl implements VivoService {
 
         String filePath = jsonObject.getStr("filePath");
         String file = jsonObject.getStr("fileName");
-        String[] tmp = file.split("\\.");
+        int count = file.lastIndexOf(".");
         String fileType = "";
-        if (tmp.length > 1) {
-            fileType = tmp[1];
+        String fileName = file;
+        if (count > 0) {
+            fileType = fileName.substring(fileName.lastIndexOf(".") + 1, file.length());
+            fileName = fileName.substring(0, fileName.lastIndexOf("."));
         }
         StringBuilder sb = new StringBuilder().append(form.getId())
-                .append("_").append(tmp[0])
+                .append("_").append(fileName)
                 .append("_");
         MultipartFile fileItem = FileUtil.createFileItem(filePath, sb.toString(), true, fileType);
         String url = urlBase + urlLadingFile;
         return postWithFile(form, fileItem, url);
     }
+
+    public static void main(String[] args) {
+        String fileName = "TMS与JYD接口文档 v3.2.excl";
+
+        System.out.println(fileName.substring(0, fileName.lastIndexOf(".")));
+        System.out.println(fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length()));
+    }
+
 
     @Override
     public Map<String, Object> forwarderLadingInfo(ForwarderLadingInfoForm form) {
@@ -746,7 +756,7 @@ public class VivoServiceImpl implements VivoService {
      * 推送反馈信息
      */
     @Override
-    public void pushExceptionFeedbackInfo(AirOrder airOrder, AirExceptionFeedback airExceptionFeedback) {
+    public void pushExceptionFeedbackInfo(AirOrder airOrder, AddAirExceptionFeedbackForm form, AirExceptionFeedback airExceptionFeedback) {
         String[] filePaths = airExceptionFeedback.getFilePath().split(",");
         String[] fileNames = airExceptionFeedback.getFileName().split(",");
         ApiResult result = this.fileClient.getBaseUrl();
@@ -768,8 +778,8 @@ public class VivoServiceImpl implements VivoService {
             msg.put("fileName", fileName);
             msg.put("abnormalyClassification", airExceptionFeedback.getType());
             msg.put("abnormal", airExceptionFeedback.getRemarks());
-            msg.put("occurrenceTime", airExceptionFeedback.getStartTime());
-            msg.put("exceptionFinishTime", airExceptionFeedback.getCompletionTime());
+            msg.put("occurrenceTime", DateUtils.str2LocalDateTime(form.getStartTime(), "-", "/"));
+            msg.put("exceptionFinishTime", DateUtils.str2LocalDateTime(form.getCompletionTime(), "-", "/"));
 //        request.put("msg", JSONUtil.toJsonStr(msg));
 //        msgClient.consume(request);
 
@@ -783,13 +793,4 @@ public class VivoServiceImpl implements VivoService {
     }
 
 
-    public static void main(String[] args) {
-//        UUID uuid = UUID.randomUUID();
-//        System.out.println(uuid.toString());
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("name", "张三");
-
-        System.out.println(JSONUtil.toJsonStr(Collections.singletonList(map)));
-    }
 }

@@ -1,6 +1,7 @@
 package com.jayud.airfreight.service;
 
 import cn.hutool.json.JSONObject;
+import com.jayud.airfreight.model.bo.AddAirExceptionFeedbackForm;
 import com.jayud.airfreight.model.bo.AirCargoRejected;
 import com.jayud.airfreight.model.bo.InputOrderTransportForm;
 import com.jayud.airfreight.model.bo.vivo.*;
@@ -126,5 +127,5 @@ public interface VivoService {
     /**
      * 推送反馈信息
      */
-    void pushExceptionFeedbackInfo(AirOrder airOrder, AirExceptionFeedback airExceptionFeedback);
+    void pushExceptionFeedbackInfo(AirOrder airOrder, AddAirExceptionFeedbackForm form, AirExceptionFeedback airExceptionFeedback);
 }

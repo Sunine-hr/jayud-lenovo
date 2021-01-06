@@ -154,6 +154,7 @@ public class CardInfoToForwarderForm {
         orderTransportForm.setTakeAdrForms2(shippingAddressList);
         orderTransportForm.setCreateUserType(CreateUserTypeEnum.VIVO.getCode());
         orderTransportForm.setLoginUser(UserOperator.getToken());
+        orderTransportForm.setVehicleType(1);
         return orderTransportForm;
     }
 

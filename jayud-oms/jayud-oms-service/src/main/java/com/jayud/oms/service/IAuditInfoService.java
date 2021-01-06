@@ -23,6 +23,11 @@ public interface IAuditInfoService extends IService<AuditInfo> {
     /**
      * 根据外键id查询最新的审核信息
      */
-    AuditInfo getAuditInfoLatestByExtId(Long id,String tableDesc);
+    AuditInfo getAuditInfoLatestByExtId(Long id, String tableDesc);
+
+    /**
+     * 根据驳回状态集合查询最新的驳回信息
+     */
+    public AuditInfo getLatestByRejectionStatus(Long orderId, String tableDesc, String... status);
 
 }

@@ -64,4 +64,11 @@ public interface FreightAirClient {
     @ApiModelProperty(value = "主订单下拉选项-飞机港口,贸易类型")
     @RequestMapping(value = "/api/airfreight/mainOrder/initAir")
     public ApiResult<Map<String, Object>> initAir();
+
+
+    /**
+     * 根据主单集合查询空运订单信息
+     */
+    @RequestMapping(value = "/api/airfreight/getAirOrderByMainOrderNos")
+    public ApiResult getAirOrderByMainOrderNos(@RequestParam("mainOrderNos") List<String> mainOrderNos);
 }

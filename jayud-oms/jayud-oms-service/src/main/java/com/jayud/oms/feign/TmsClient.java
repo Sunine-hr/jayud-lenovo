@@ -9,6 +9,7 @@ import com.jayud.oms.model.bo.TmsChangeStatusForm;
 import com.jayud.oms.model.vo.DriverOrderTakeAdrVO;
 import com.jayud.oms.model.vo.InitChangeStatusVO;
 import com.jayud.oms.model.vo.InputOrderTransportVO;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -69,7 +70,7 @@ public interface TmsClient {
      * 根据中港订单号查询中港订单信息
      */
     @RequestMapping(value = "/api/getTmsOrderByOrderNo")
-    public ApiResult getTmsOrderByOrderNo(@RequestParam("orderNo") String orderNo) ;
+    public ApiResult getTmsOrderByOrderNo(@RequestParam("orderNo") String orderNo);
 
     /**
      * PDF派车单
@@ -124,4 +125,10 @@ public interface TmsClient {
      */
     @RequestMapping(value = "/api/getOrderSendCarsByOrderNo")
     public ApiResult getOrderSendCarsByOrderNo(@RequestParam("orderNo") String orderNo);
+
+    /**
+     * 根据主订单号集合查询中港信息
+     */
+    @RequestMapping(value = "/api/getTmsOrderByMainOrderNos")
+    public ApiResult getTmsOrderByMainOrderNos(@RequestParam("mainOrderNos") List<String> mainOrderNos);
 }

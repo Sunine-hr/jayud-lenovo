@@ -559,7 +559,7 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
     @Override
     public List<AirOrder> getAirOrderByMainOrderNos(List<String> mainOrderNos) {
         QueryWrapper<AirOrder> condition = new QueryWrapper<>();
-        condition.lambda().in(AirOrder::getOrderNo, mainOrderNos);
+        condition.lambda().in(AirOrder::getMainOrderNo, mainOrderNos);
         return this.baseMapper.selectList(condition);
     }
 

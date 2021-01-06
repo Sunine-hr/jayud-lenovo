@@ -99,4 +99,9 @@ public interface IOrderTransportService extends IService<OrderTransport> {
      * @return
      */
     StatisticsDataNumberVO statisticsDataNumber();
+
+    /**
+     * 根据主订单号集合查询中港信息
+     */
+    public List<OrderTransport> getTmsOrderByMainOrderNos(List<String> mainOrders);
 }

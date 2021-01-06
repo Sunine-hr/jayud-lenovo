@@ -161,7 +161,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         Double totalWeight = 0.0;//总重量
         String prePath = String.valueOf(fileClient.getBaseUrl().getData());
         for (InputOrderTakeAdrVO inputOrderTakeAdrVO : inputOrderTakeAdrVOS) {
-            inputOrderTakeAdrVO.setTakeFiles(StringUtils.getFileViews(inputOrderTakeAdrVO.getFile(),inputOrderTakeAdrVO.getFileName(),prePath));
+            inputOrderTakeAdrVO.setTakeFiles(StringUtils.getFileViews(inputOrderTakeAdrVO.getFile(), inputOrderTakeAdrVO.getFileName(), prePath));
             if (CommonConstant.VALUE_1.equals(String.valueOf(inputOrderTakeAdrVO.getOprType()))) {//提货
                 orderTakeAdrForms1.add(inputOrderTakeAdrVO);
                 Integer pieceAmount = inputOrderTakeAdrVO.getPieceAmount();
@@ -206,8 +206,8 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         String prePath = fileClient.getBaseUrl().getData().toString();
         List<OrderTransportVO> pageList = pageInfo.getRecords();
         for (OrderTransportVO orderTransportVO : pageList) {
-            orderTransportVO.setTakeFiles1(StringUtils.getFileViews(orderTransportVO.getFile1(),orderTransportVO.getFileName1(),prePath));
-            orderTransportVO.setTakeFiles2(StringUtils.getFileViews(orderTransportVO.getFile2(),orderTransportVO.getFileName2(),prePath));
+            orderTransportVO.setTakeFiles1(StringUtils.getFileViews(orderTransportVO.getFile1(), orderTransportVO.getFileName1(), prePath));
+            orderTransportVO.setTakeFiles2(StringUtils.getFileViews(orderTransportVO.getFile2(), orderTransportVO.getFileName2(), prePath));
         }
         return pageInfo;
     }
@@ -462,6 +462,16 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     @Override
     public StatisticsDataNumberVO statisticsDataNumber() {
         return baseMapper.statisticsDataNumber();
+    }
+
+    /**
+     * 根据主订单号集合查询中港信息
+     */
+    @Override
+    public List<OrderTransport> getTmsOrderByMainOrderNos(List<String> mainOrders) {
+        QueryWrapper<OrderTransport> condition = new QueryWrapper<>();
+        condition.lambda().in(OrderTransport::getMainOrderNo, mainOrders);
+        return this.baseMapper.selectList(condition);
     }
 
 

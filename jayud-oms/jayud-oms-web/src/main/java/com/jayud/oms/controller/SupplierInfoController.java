@@ -269,7 +269,7 @@ public class SupplierInfoController {
 
     @ApiOperation(value = "下载供应商模板")
     @GetMapping(value = "/downloadExcel")
-    public void downloadExcel(HttpServletResponse response, HttpServletRequest request)throws IOException {
+    public void downloadExcel(HttpServletResponse response)throws IOException {
         //获取输入流，原始模板位置
         InputStream bis = new BufferedInputStream(new FileInputStream(new File(filePath)));
         //假如以中文名下载的话，设置下载文件名称
@@ -290,11 +290,9 @@ public class SupplierInfoController {
 
     @ApiOperation(value = "导入供应商信息")
     @PostMapping(value = "/uploadExcel")
-    public ResponseEntity<String> ajaxUploadExcel(MultipartFile file, HttpServletResponse response){
+    public CommonResult ajaxUploadExcel(MultipartFile file, HttpServletResponse response){
 
         String commentHTML=null;
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setContentType(new MediaType("text","html", Charset.forName("UTF-8")));
         try {
             commentHTML = supplierInfoService.importCustomerInfoExcel(response,file);
         } catch (Exception e1) {
@@ -302,9 +300,9 @@ public class SupplierInfoController {
         }
 
         if (com.alibaba.nacos.client.utils.StringUtils.isNotBlank(commentHTML)) {
-            return new ResponseEntity<String>(commentHTML, responseHeaders, org.springframework.http.HttpStatus.OK);
+            return CommonResult.success(commentHTML);
         }else {
-            return new ResponseEntity<String>("导入失败！", responseHeaders, org.springframework.http.HttpStatus.OK);
+            return CommonResult.error(ResultEnum.OPR_FAIL,"导入失败");
         }
 
     }

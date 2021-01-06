@@ -1,4 +1,4 @@
-package com.jayud.mall.enums;
+package com.jayud.common.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

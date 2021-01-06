@@ -1,4 +1,4 @@
-import com.jayud.mall.enums.OrderEnum;
+import com.jayud.common.enums.OrderEnum;
 import com.jayud.mall.model.bo.OrderInfoForm;
 import com.jayud.mall.model.vo.OrderCaseVO;
 import com.jayud.mall.model.vo.OrderPickVO;

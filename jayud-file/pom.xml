@@ -30,11 +30,6 @@
             <version>2.2.6.RELEASE</version>
         </dependency>
         <dependency>
-            <groupId>com.alibaba.nacos</groupId>
-            <artifactId>nacos-client</artifactId>
-            <version>1.3.2</version>
-        </dependency>
-        <dependency>
             <groupId>com.jayud</groupId>
             <artifactId>jayud-common</artifactId>
             <version>1.0</version>

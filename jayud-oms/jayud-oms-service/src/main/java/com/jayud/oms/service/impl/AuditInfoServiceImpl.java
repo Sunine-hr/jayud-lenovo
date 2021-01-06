@@ -45,4 +45,17 @@ public class AuditInfoServiceImpl extends ServiceImpl<AuditInfoMapper, AuditInfo
     public AuditInfo getAuditInfoLatestByExtId(Long id, String tableDesc) {
         return this.baseMapper.getLatestByExtId(id, tableDesc);
     }
+
+    /**
+     * 根据驳回状态集合查询最新的驳回信息
+     */
+    @Override
+    public AuditInfo getLatestByRejectionStatus(Long orderId, String tableDesc, String... status) {
+        QueryWrapper<AuditInfo> condition = new QueryWrapper<>();
+        condition.lambda().in(AuditInfo::getAuditStatus, status);
+        condition.lambda().eq(AuditInfo::getExtId, orderId).eq(AuditInfo::getExtDesc, tableDesc);
+        condition.lambda().orderByDesc(AuditInfo::getId);
+        List<AuditInfo> auditInfos = this.baseMapper.selectList(condition);
+        return auditInfos.size() > 0 ? auditInfos.get(0) : new AuditInfo();
+    }
 }

@@ -500,13 +500,42 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         if (airOrder == null) {
             return null;
         }
-        ApiResult result = this.omsClient.getMainOrderByOrderNos(Arrays.asList(airOrder.getMainOrderNo()));
+        ApiResult result = this.omsClient.getMainOrderByOrderNos(Collections.singletonList(airOrder.getMainOrderNo()));
         if (result.getCode() != HttpStatus.SC_OK) {
             log.error("查询主订单信息失败 mainOrderNo={}", airOrder.getMainOrderNo());
             throw new JayudBizException(ResultEnum.OPR_FAIL);
         }
-        return JSONUtil.toBean(JSONUtil.toJsonStr(result.getData()), Map.class);
+        JSONArray objects = new JSONArray(result.getData());
+        return JSONUtil.toBean(objects.getJSONObject(0), Map.class);
     }
+
+//    public static void main(String[] args) {
+//        JSONArray objects = new JSONArray("[{\n" +
+//                "\t\t\"bizBelongDepart\": \"2\",\n" +
+//                "\t\t\"classCode\": \"KY\",\n" +
+//                "\t\t\"orderNo\": \"M333348978246\",\n" +
+//                "\t\t\"bizUid\": 133,\n" +
+//                "\t\t\"bizCode\": \"KJKY_NLLY\",\n" +
+//                "\t\t\"customerCode\": \"VIVO_001\",\n" +
+//                "\t\t\"selectedServer\": \"KYDD\",\n" +
+//                "\t\t\"customerName\": \"VIVO\",\n" +
+//                "\t\t\"legalName\": \"法人代表01\",\n" +
+//                "\t\t\"upTime\": \"2021-01-05 17:11:19\",\n" +
+//                "\t\t\"unitAccount\": \"VIVO\",\n" +
+//                "\t\t\"customsRelease\": false,\n" +
+//                "\t\t\"legalEntityId\": 48,\n" +
+//                "\t\t\"createTime\": \"2021-01-05 15:47:31\",\n" +
+//                "\t\t\"unitCode\": \"VIVO_001\",\n" +
+//                "\t\t\"needInputCost\": true,\n" +
+//                "\t\t\"id\": 488,\n" +
+//                "\t\t\"bizUname\": \"test\",\n" +
+//                "\t\t\"createdUser\": \"VIVO\",\n" +
+//                "\t\t\"status\": 8,\n" +
+//                "\t\t\"upUser\": \"qqq\"\n" +
+//                "\t}]");
+//
+//        System.out.println(JSONUtil.toBean(objects.getJSONObject(0),Map.class));
+//    }
 
     /**
      * 异常反馈
@@ -522,6 +551,16 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         this.airExceptionFeedbackService.saveOrUpdate(airExceptionFeedback);
         //推送异常反馈
         this.pushExceptionFeedbackInfo(airExceptionFeedback);
+    }
+
+    /**
+     * 根据主订单号查询空运订单信息
+     */
+    @Override
+    public List<AirOrder> getAirOrderByMainOrderNos(List<String> mainOrderNos) {
+        QueryWrapper<AirOrder> condition = new QueryWrapper<>();
+        condition.lambda().in(AirOrder::getMainOrderNo, mainOrderNos);
+        return this.baseMapper.selectList(condition);
     }
 
     private void pushExceptionFeedbackInfo(AirExceptionFeedback airExceptionFeedback) {

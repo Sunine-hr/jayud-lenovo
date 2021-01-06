@@ -118,7 +118,7 @@ public class BookingSpaceForm {
     @JsonProperty("Consignee")
     @SerializedName("Consignee")
     @ApiModelProperty(value = "收货人")
-    @NotEmpty(message = "收货人不能为空")
+//    @NotEmpty(message = "收货人不能为空")
     @Length(max = 100, message = "收货人字段的最大长度为100")
     private String consignee;
 
@@ -296,7 +296,8 @@ public class BookingSpaceForm {
     public String checkTermsType() {
         String message = "贸易类型暂时不支持";
         for (AirOrderTermsEnum termsEnum : AirOrderTermsEnum.values()) {
-            if (termsEnum.getDesc().equals(this.tradeTerms.split(" ")[0])) {
+            this.tradeTerms = this.tradeTerms.split(" ")[0];
+            if (termsEnum.getDesc().equals(this.tradeTerms)){
                 message = "";
                 break;
             }

@@ -178,7 +178,12 @@ public class ExternalApiController {
         return ApiResult.ok(initComboxStrVOS);
     }
 
-
+    @ApiModelProperty(value = "查询空运订单信息")
+    @RequestMapping(value = "/api/airfreight/getAirOrderByMainOrderNos")
+    public ApiResult<AirOrder> getAirOrderByMainOrderNos(@RequestParam("mainOrderNos") List<String> mainOrderNos) {
+        List<AirOrder> airOrders = this.airOrderService.getAirOrderByMainOrderNos(mainOrderNos);
+        return ApiResult.ok(airOrders);
+    }
 
 //    /**
 //     * 关闭vivo空运单

@@ -125,13 +125,14 @@ public class CustomerInfoController {
     @PostMapping(value = "/existCustomerName")
     public CommonResult existCustomerName(@RequestBody Map<String,Object> param) {
         String customerName = MapUtil.getStr(param, "name");
+        Long id = Long.parseLong(MapUtil.getStr(param,"id"));
         if(StringUtil.isNullOrEmpty(customerName)){
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.like("name",customerName);
         List<CustomerInfo> customerInfos = customerInfoService.list(queryWrapper);
-        if(customerInfos != null && customerInfos.size() > 0){
+        if((id == null && customerInfos != null && customerInfos.size() > 0) || (id != null && customerInfos != null && customerInfos.size() > 1)){
             return CommonResult.error(ResultEnum.CUSTOMER_NAME_EXIST);
         }
         return CommonResult.success();

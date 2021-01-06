@@ -1,9 +1,9 @@
 package com.jayud.tms.service;
 
+import com.jayud.tms.model.bo.RejectOrderForm;
 import com.jayud.tms.model.bo.SendCarForm;
 import com.jayud.tms.model.po.OrderSendCars;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.tms.model.po.OrderSendCars;
 import com.jayud.tms.model.vo.DriverInfoPdfVO;
 import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.OrderSendCarsVO;
@@ -69,8 +69,9 @@ public interface IOrderSendCarsService extends IService<OrderSendCars> {
     /**
      * 派车驳回信息推送
      *
+     * @param form
      * @param orderTransport
      */
-    public boolean dispatchRejectionMsgPush(OrderTransport orderTransport);
+    public boolean dispatchRejectionMsgPush(RejectOrderForm form, OrderTransport orderTransport);
 
 }

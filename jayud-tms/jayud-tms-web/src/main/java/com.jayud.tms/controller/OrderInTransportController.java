@@ -531,10 +531,6 @@ public class OrderInTransportController {
             if (rejectOptions == 2) {//派车驳回
                 cmd = OrderStatusEnum.TMS_T_3_1.getCode();
                 deleteStatus.add(OrderStatusEnum.TMS_T_3.getCode());
-                //推送派车驳回消息
-                if (this.orderSendCarsService.dispatchRejectionMsgPush(orderTransport1)) {
-                    return CommonResult.error(ResultEnum.OPR_FAIL);
-                }
             }
             orderTransport.setStatus(cmd);
             auditInfoForm.setAuditStatus(cmd);
@@ -545,6 +541,11 @@ public class OrderInTransportController {
             auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_5_1.getCode());
             auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_5_1.getDesc());
         }
+        //推送派车驳回消息
+        if (this.orderSendCarsService.dispatchRejectionMsgPush(form,orderTransport1)) {
+            return CommonResult.error(ResultEnum.OPR_FAIL);
+        }
+
         omsClient.saveAuditInfo(auditInfoForm);
         if (rejectOptions == 1) { //驳回到订单编辑
             //删除这个订单下所有物流轨迹,重新走流程
@@ -608,6 +609,13 @@ public class OrderInTransportController {
         return CommonResult.success();
     }
 
+
+    @ApiOperation(value = "完成派车,orderId=中港订单id")
+    @PostMapping(value = "/completeSendCar")
+    public CommonResult completeSendCar(@RequestBody OprStatusForm form) {
+
+        return CommonResult.success();
+    }
 
 }
 

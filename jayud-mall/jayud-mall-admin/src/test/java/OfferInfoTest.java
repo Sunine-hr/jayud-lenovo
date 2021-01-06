@@ -13,7 +13,7 @@ public class OfferInfoTest {
         form.setNames("美西");
         form.setSailTime(LocalDateTime.now());
         form.setCutOffTime(LocalDateTime.now());
-        form.setDestinationPort("纽约州");
+//        form.setDestinationPort("纽约州");
 
         TestUtils.JSONObjectPrint(form);
 

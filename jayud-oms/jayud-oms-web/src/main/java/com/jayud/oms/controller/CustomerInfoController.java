@@ -373,7 +373,7 @@ public class CustomerInfoController {
 
     @ApiOperation(value = "下载客户模板")
     @GetMapping(value = "/downloadExcel")
-    public void downloadExcel(HttpServletResponse response,HttpServletRequest request)throws IOException {
+    public void downloadExcel(HttpServletResponse response)throws IOException {
         //获取输入流，原始模板位置
 
 //        String filePath = "D:\\CodeRepository1\\jayud-platform\\jayud-oms\\jayud-oms-web\\src\\main\\resources\\static\\客户模板.xls";
@@ -397,11 +397,11 @@ public class CustomerInfoController {
 
     @ApiOperation(value = "导入客户信息")
     @PostMapping(value = "/uploadExcel")
-    public  ResponseEntity<String> ajaxUploadExcel(MultipartFile file,HttpServletResponse response){
+    public  CommonResult ajaxUploadExcel(MultipartFile file,HttpServletResponse response){
 
         String commentHTML=null;
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setContentType(new MediaType("text","html", Charset.forName("UTF-8")));
+//        HttpHeaders responseHeaders = new HttpHeaders();
+//        responseHeaders.setContentType(new MediaType("text","html", Charset.forName("UTF-8")));
         try {
             commentHTML = customerInfoService.importCustomerInfoExcel(response,file);
         } catch (Exception e1) {
@@ -409,9 +409,10 @@ public class CustomerInfoController {
         }
 
         if (StringUtils.isNotBlank(commentHTML)) {
-            return new ResponseEntity<String>(commentHTML, responseHeaders, org.springframework.http.HttpStatus.OK);
+//            return new ResponseEntity<String>(commentHTML, responseHeaders, org.springframework.http.HttpStatus.OK);
+            return CommonResult.success(commentHTML);
         }else {
-            return new ResponseEntity<String>("导入失败！", responseHeaders, org.springframework.http.HttpStatus.OK);
+            return CommonResult.error(ResultEnum.OPR_FAIL,"导入失败");
         }
     }
 

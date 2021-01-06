@@ -15,10 +15,7 @@ import com.jayud.oauth.model.bo.OprSystemUserForm;
 import com.jayud.oauth.model.bo.QueryAccountForm;
 import com.jayud.oauth.model.enums.StatusEnum;
 import com.jayud.oauth.model.enums.SystemUserStatusEnum;
-import com.jayud.oauth.model.po.Company;
-import com.jayud.oauth.model.po.LegalEntity;
-import com.jayud.oauth.model.po.SystemRole;
-import com.jayud.oauth.model.po.SystemUser;
+import com.jayud.oauth.model.po.*;
 import com.jayud.oauth.model.vo.*;
 import com.jayud.oauth.service.*;
 import io.swagger.annotations.Api;
@@ -281,6 +278,45 @@ public class ExternalApiController {
     public ApiResult<LegalEntity> getLegalEntityByLegalIds(@RequestParam("legalId") List<Long> legalIds) {
         List<LegalEntity> legalEntity = this.legalEntityService.getBaseMapper().selectBatchIds(legalIds);
         return ApiResult.ok(legalEntity);
+    }
+
+    /**
+     * 根据部门名称查询部门id
+     */
+    @ApiOperation("根据部门名称查询部门id")
+    @RequestMapping(value = "/api/getDeptIdByDeptName")
+    public ApiResult getDeptIdByDeptName(@RequestParam("deptName") String deptName){
+        Department byDeptName = departmentService.getByDeptName(deptName);
+        if(byDeptName==null){
+            return ApiResult.error();
+        }
+        return ApiResult.ok(byDeptName.getIdCode());
+    }
+
+    /**
+     * 根据业务员名称查询业务员id
+     */
+    @ApiOperation("根据业务员名称查询业务员id")
+    @RequestMapping(value = "/api/getSystemUserBySystemName")
+    public ApiResult getSystemUserBySystemName(@RequestParam("name") String name){
+        SystemUser systemUserBySystemName = userService.getSystemUserBySystemName(name);
+        if(systemUserBySystemName==null){
+            return ApiResult.error();
+        }
+        return ApiResult.ok(systemUserBySystemName.getId());
+    }
+
+    /**
+     * 根据法人主体姓名查询法人主体信息
+     */
+    @ApiOperation("根据法人主体姓名查询法人主体信息")
+    @RequestMapping(value = "/api/getLegalEntityByLegalName")
+    public ApiResult getLegalEntityByLegalName(@RequestParam("name") String name){
+        LegalEntity legalEntityByLegalName = legalEntityService.getLegalEntityByLegalName(name);
+        if(legalEntityByLegalName==null){
+            return ApiResult.error();
+        }
+        return ApiResult.ok();
     }
 }
 

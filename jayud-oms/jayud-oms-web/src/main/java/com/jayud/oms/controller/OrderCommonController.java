@@ -10,16 +10,16 @@ import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.model.bo.*;
+import com.jayud.oms.model.enums.VehicleTypeEnum;
 import com.jayud.oms.model.po.LogisticsTrack;
 import com.jayud.oms.model.po.OrderPaymentCost;
 import com.jayud.oms.model.po.OrderReceivableCost;
 import com.jayud.oms.model.po.ProductClassify;
-import com.jayud.oms.model.vo.InputCostVO;
-import com.jayud.oms.model.vo.LogisticsTrackVO;
-import com.jayud.oms.model.vo.ProductClassifyVO;
+import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.ILogisticsTrackService;
 import com.jayud.oms.service.IOrderInfoService;
 import com.jayud.oms.service.IProductClassifyService;
+import com.jayud.oms.service.IVehicleInfoService;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -53,6 +53,9 @@ public class OrderCommonController {
 
     @Autowired
     private FileClient fileClient;
+
+    @Autowired
+    private IVehicleInfoService vehicleInfoService;
 
     @ApiOperation(value = "录入费用")
     @PostMapping(value = "/saveOrUpdateCost")
@@ -248,7 +251,26 @@ public class OrderCommonController {
     }
 
 
-
+    @ApiOperation(value = "初始化车型尺寸,区分车型")
+    @PostMapping(value = "/initVehicleSize")
+    public CommonResult<InitVehicleSizeInfoVO> initVehicleSize() {
+        InitVehicleSizeInfoVO initVehicleSizeInfoVO = new InitVehicleSizeInfoVO();
+        //柜车尺寸集合
+        List<VehicleSizeInfoVO> cabinetCars = new ArrayList<>();
+        //吨车尺寸集合
+        List<VehicleSizeInfoVO> tonCars = new ArrayList<>();
+        List<VehicleSizeInfoVO> vehicleSizeInfoVOS = vehicleInfoService.findVehicleSize();
+        for (VehicleSizeInfoVO obj : vehicleSizeInfoVOS) {
+            if(VehicleTypeEnum.CABINET_CAR.getCode() == obj.getVehicleType()){
+                cabinetCars.add(obj);
+            }else if(VehicleTypeEnum.TON_CAR.getCode() == obj.getVehicleType()){
+                tonCars.add(obj);
+            }
+        }
+        initVehicleSizeInfoVO.setCabinetCars(cabinetCars);
+        initVehicleSizeInfoVO.setTonCars(tonCars);
+        return CommonResult.success(initVehicleSizeInfoVO);
+    }
 
 
 }

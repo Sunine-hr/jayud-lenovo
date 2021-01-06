@@ -2,12 +2,10 @@ package com.jayud.airfreight.model.bo.vivo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
-import com.jayud.airfreight.model.bo.InputOrderForm;
 import com.jayud.airfreight.model.bo.InputOrderTakeAdrForm;
 import com.jayud.airfreight.model.bo.InputOrderTransportForm;
 import com.jayud.common.UserOperator;
 import com.jayud.common.enums.CreateUserTypeEnum;
-import com.jayud.common.enums.VehicleTypeEnum;
 import com.jayud.common.exception.VivoApiException;
 import com.jayud.common.utils.DateUtils;
 import io.swagger.annotations.ApiModelProperty;
@@ -131,7 +129,7 @@ public class CardInfoToForwarderForm {
      */
     public InputOrderTransportForm assemblyTmsObj() {
         InputOrderTransportForm orderTransportForm = new InputOrderTransportForm();
-        orderTransportForm.setVehicleSize(VehicleTypeEnum.getCode(this.demandTruckType));
+        orderTransportForm.setVehicleSize(this.demandTruckType);
         orderTransportForm.setPortCode(this.exportCustomsPort);
         orderTransportForm.setThirdPartyOrderNo(this.dispatchNo);
         //TODO 提货/送货地址等财务上了,进行修改

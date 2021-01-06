@@ -12,9 +12,9 @@ import com.jayud.airfreight.feign.TmsClient;
 import com.jayud.airfreight.model.bo.InputOrderTakeAdrForm;
 import com.jayud.airfreight.model.bo.InputOrderTransportForm;
 import com.jayud.airfreight.model.bo.vivo.*;
-import com.jayud.airfreight.model.po.AirBooking;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.airfreight.model.vo.GoodsVO;
+import com.jayud.airfreight.model.vo.VehicleSizeInfoVO;
 import com.jayud.airfreight.service.AirFreightService;
 import com.jayud.airfreight.service.IAirBookingService;
 import com.jayud.airfreight.service.IAirOrderService;
@@ -24,9 +24,7 @@ import com.jayud.common.VivoApiResult;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
-import com.jayud.common.enums.VehicleTypeEnum;
 import com.jayud.common.exception.JayudBizException;
-import com.jayud.common.utils.FileUtil;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.HttpRequester;
 import com.jayud.common.utils.ValidatorUtil;
@@ -220,7 +218,9 @@ public class ReceiveVivoController {
     @APILog
     public VivoApiResult carInfoToForwarder(@RequestBody @Valid CardInfoToForwarderForm form) {
         //车型
-        if (VehicleTypeEnum.getCode(form.getDemandTruckType()) == null) {
+        List<VehicleSizeInfoVO> vehicleSizeInfoVOS = omsClient.findVehicleSize().getData();
+        Boolean checkVehicleSize = vehicleSizeInfoVOS.stream().anyMatch(a -> a.getVehicleSize().equals(form.getDemandTruckType()) || false);
+        if (!checkVehicleSize) {
             log.warn("无法配对车型 size={}", form.getDemandTruckType());
             return VivoApiResult.error("无法配对车型");
         }

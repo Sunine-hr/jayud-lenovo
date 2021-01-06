@@ -1,6 +1,5 @@
 package com.jayud.tms.model.vo;
 
-import com.jayud.common.enums.VehicleSizeEnum;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -54,16 +53,13 @@ public class SendCarPdfVO {
     private String driverPhone;
 
     @ApiModelProperty(value = "车型(1-3T 2-5t 3-8T 4-10T)")
-    private Integer vehicleSize;
+    private String vehicleSize;
 
     @ApiModelProperty(value = "车型(1吨车 2柜车)")
     private Integer vehicleType;
 
     @ApiModelProperty(value = "车型(1吨车 2柜车)")
     private String vehicleTypeDesc;
-
-    @ApiModelProperty(value = "车型(1-3T 2-5t 3-8T 4-10T)")
-    private String vehicleSizeDesc;
 
     @ApiModelProperty(value = "柜号")
     private String cntrNo;
@@ -102,13 +98,6 @@ public class SendCarPdfVO {
             }else if(this.vehicleType == 2){
                 return "柜车";
             }
-        }
-        return "";
-    }
-
-    public String getVehicleSizeDesc() {
-        if(this.vehicleSize != null){
-           return VehicleSizeEnum.getDesc(this.vehicleSize);
         }
         return "";
     }

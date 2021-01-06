@@ -79,4 +79,8 @@
             vehicle_info w left join supplier_info s on w.supplier_id=s.id
         where w.id in (select di.vehicle_id from driver_info di where di.`name` = #{driverName})
     </select>
+
+    <select id="findVehicleSize" resultType="com.jayud.oms.model.vo.VehicleSizeInfoVO">
+        SELECT v.id,v.vehicle_size vehicleSize,v.vehicle_type vehicleType FROM vehicle_size_info v
+    </select>
 </mapper>

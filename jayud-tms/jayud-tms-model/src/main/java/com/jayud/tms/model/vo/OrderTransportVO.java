@@ -1,7 +1,6 @@
 package com.jayud.tms.model.vo;
 
 import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.enums.VehicleSizeEnum;
 import com.jayud.common.utils.FileView;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
@@ -59,10 +58,7 @@ public class OrderTransportVO {
     private String vehicleType;
 
     @ApiModelProperty(value = "车型尺寸")
-    private Integer vehicleSize;
-
-    @ApiModelProperty(value = "车型尺寸描述")
-    private String vehicleSizeDesc;
+    private String vehicleSize;
 
     @ApiModelProperty(value = "柜号")
     private String cntrNo;
@@ -197,13 +193,6 @@ public class OrderTransportVO {
 
     public String getStatusDesc() {
        return OrderStatusEnum.getDesc(this.status);
-    }
-
-    public String getVehicleSizeDesc() {
-        if(this.vehicleSize != null){
-            return VehicleSizeEnum.getDesc(this.vehicleSize);
-        }
-        return "";
     }
 
 }

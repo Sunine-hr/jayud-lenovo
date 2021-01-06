@@ -677,6 +677,15 @@ public class ExternalApiController {
         return ApiResult.ok(goods);
     }
 
+    /**
+     * 获取所有的车型尺寸
+     * @return
+     */
+    @RequestMapping(value = "/api/findVehicleSize")
+    ApiResult<List<VehicleSizeInfoVO>> findVehicleSize(){
+        List<VehicleSizeInfoVO> vehicleSizeInfoVOS = vehicleInfoService.findVehicleSize();
+        return ApiResult.ok(vehicleSizeInfoVOS);
+    }
 
 }
 

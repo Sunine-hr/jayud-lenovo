@@ -296,7 +296,8 @@ public class BookingSpaceForm {
     public String checkTermsType() {
         String message = "贸易类型暂时不支持";
         for (AirOrderTermsEnum termsEnum : AirOrderTermsEnum.values()) {
-            if (termsEnum.getDesc().equals(this.tradeTerms.split(" ")[0])) {
+            this.tradeTerms = this.tradeTerms.split(" ")[0];
+            if (termsEnum.getDesc().equals(this.tradeTerms)){
                 message = "";
                 break;
             }

@@ -1,10 +1,13 @@
 package com.jayud.common.utils;
 
+import com.jayud.common.exception.VivoApiException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -23,6 +26,7 @@ import java.util.List;
  * http://www.javalow.com
  * @date 2018-11-19-22:33
  **/
+@Slf4j
 public class DateUtils {
 
     /**
@@ -263,6 +267,7 @@ public class DateUtils {
         return nums[nums.length - 1];
     }
 
+
     /**
      * 时间字符转成 localDateTime
      *
@@ -276,6 +281,19 @@ public class DateUtils {
         }
         DateTimeFormatter df = DateTimeFormatter.ofPattern(pattern);
         return LocalDateTime.parse(dateStr, df);
+    }
+
+
+    public static LocalDateTime str2LocalDateTime(String date,String oldSymbol,String replaceSymbol) {
+        date = date.replace(replaceSymbol, oldSymbol);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtils.DATE_TIME_PATTERN);
+        try {
+            Date dateTime = simpleDateFormat.parse(date);
+            return DateUtils.date2LocalDateTime(dateTime);
+        } catch (ParseException e) {
+            log.error("时间格式转换失败 date={}", date);
+            throw new VivoApiException("时间格式转换失败");
+        }
     }
 
     /**

@@ -161,12 +161,10 @@ public class OrderComboxController {
         queryWrapper.eq("id_code", idCode);
         CustomerInfo customer = customerInfoService.getOne(queryWrapper);
         Map<String, Object> resultMap = new HashMap<>();
-        param = new HashMap<>();
-        param.put(SqlConstant.AUDIT_STATUS, CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());
-        List<CustomerInfo> allCustomerInfoList = customerInfoService.findCustomerInfoByCondition(param);
-        List<CustomerInfo> customerInfoList = allCustomerInfoList.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(CustomerInfo::getName))), ArrayList::new));
+        List<CustomerInfoVO> allCustomerInfoList = customerInfoService.relateUnitList(customer.getId());
+        List<CustomerInfoVO> customerInfoList = allCustomerInfoList.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(CustomerInfoVO::getName))), ArrayList::new));
         List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
-        for (CustomerInfo customerInfo : customerInfoList) {
+        for (CustomerInfoVO customerInfo : customerInfoList) {
             InitComboxStrVO comboxStrVO = new InitComboxStrVO();
             comboxStrVO.setCode(customerInfo.getIdCode());
             comboxStrVO.setName(customerInfo.getName());

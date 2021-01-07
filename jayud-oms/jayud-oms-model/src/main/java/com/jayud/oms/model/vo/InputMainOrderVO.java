@@ -32,7 +32,7 @@ public class InputMainOrderVO {
     private String legalName;
 
     @ApiModelProperty(value = "接单法人id")
-    private String legalEntityId;
+    private Long legalEntityId;
 
     @ApiModelProperty(value = "业务所属部门")
     private Long bizBelongDepart;

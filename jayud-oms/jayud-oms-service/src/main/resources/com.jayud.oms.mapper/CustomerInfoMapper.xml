@@ -106,7 +106,7 @@
         DATE_FORMAT(ci.`created_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
         ci.`updated_user` updatedTimeStr,ci.`audit_comment` auditComment,
         DATE_FORMAT(ci.`updated_time`,'%Y-%m-%d %H:%i:%S') updatedTimeStr,
-		(select crl.legal_entity_id from customer_rela_legal crl where crl.customer_info_id = ci.id) legalEntityIdStr
+		(select GROUP_CONCAT(crl.legal_entity_id) from customer_rela_legal crl where crl.customer_info_id = ci.id group by ci.id) legalEntityIdStr
         FROM
         customer_info ci
         LEFT JOIN department d

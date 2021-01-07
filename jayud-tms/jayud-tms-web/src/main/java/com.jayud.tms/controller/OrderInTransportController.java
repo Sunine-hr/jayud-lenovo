@@ -542,7 +542,7 @@ public class OrderInTransportController {
             auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_5_1.getDesc());
         }
         //推送派车驳回消息
-        if (this.orderSendCarsService.dispatchRejectionMsgPush(form, orderTransport1)) {
+        if (!this.orderSendCarsService.dispatchRejectionMsgPush(form, orderTransport1)) {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
 

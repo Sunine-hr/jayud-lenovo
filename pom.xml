@@ -11,8 +11,6 @@
     <modules>
         <!-- 公共包 -->
         <module>jayud-common</module>
-        <!-- 配置中心-->
-        <module>jayud-config</module>
         <!-- 文件上传 -->
         <module>jayud-file</module>
         <!-- 网关路由 -->

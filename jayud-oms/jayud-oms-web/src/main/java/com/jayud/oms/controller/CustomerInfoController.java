@@ -154,11 +154,11 @@ public class CustomerInfoController {
     @ApiOperation(value = "二期优化3:已关联客户(结算单位)列表,id = 客户ID")
     @PostMapping(value = "/relateUnitList")
     public CommonResult<List<CustomerInfoVO>> relateUnitList(@RequestBody Map<String,Object> param) {
-        Long id = Long.valueOf(MapUtil.getStr(param, "id"));
-        if(id == null){
+        String idStr = MapUtil.getStr(param, "id");
+        if(StringUtil.isNullOrEmpty(idStr)){
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        List<CustomerInfoVO> customerInfoVOS = customerInfoService.relateUnitList(id);
+        List<CustomerInfoVO> customerInfoVOS = customerInfoService.relateUnitList(Long.parseLong(idStr));
         return CommonResult.success(customerInfoVOS);
     }
 

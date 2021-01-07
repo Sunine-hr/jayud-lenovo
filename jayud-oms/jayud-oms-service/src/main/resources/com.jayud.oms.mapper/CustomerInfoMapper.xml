@@ -240,7 +240,7 @@
     </select>
 
     <select id="relateUnitList" parameterType="java.lang.Long" resultType="com.jayud.oms.model.vo.CustomerInfoVO">
-        select ci.id_code idCode,ci.`name`,ci.contact,ci.phone,ci.address from customer_info ci
+        select ci.id,ci.id_code idCode,ci.`name`,ci.contact,ci.phone,ci.address from customer_info ci
         where ci.id in
            (select cru.unit_id from customer_rela_unit cru
             where cru.customer_info_id = #{id})

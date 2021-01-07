@@ -45,7 +45,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         //定义分页参数
         Page<CustomerInfoVO> page = new Page(form.getPageNum(), form.getPageSize());
         //定义排序规则
-        page.addOrder(OrderItem.asc("ci.id"));
+        page.addOrder(OrderItem.desc("ci.id"));
         IPage<CustomerInfoVO> pageInfo = baseMapper.findCustomerInfoByPage(page, form);
         return pageInfo;
     }

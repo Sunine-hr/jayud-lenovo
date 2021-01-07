@@ -20,4 +20,17 @@
         id, cntr_no, cabinet_code, volume, cost, cid, status, ob_id, create_time
     </sql>
 
+    <select id="findOceanCounterVOByObId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.OceanCounterVO">
+        select
+        t.id,t.cntr_no,t.cabinet_code,t.volume,t.cost,t.cid,t.status,t.ob_id,t.create_time,
+        t1.name cabinetName,
+        t2.currency_code ccode, t2.currency_name cname
+        from ocean_counter t
+        left join cabinet_type t1 on t1.id_code = t.cabinet_code
+        left join currency_info t2 on t2.id = t.cid
+        left join ocean_bill t3 on t3.id = t.ob_id
+        where t3.id = #{obId}
+    </select>
+
 </mapper>

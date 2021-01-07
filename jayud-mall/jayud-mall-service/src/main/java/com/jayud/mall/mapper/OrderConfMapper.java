@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.mall.model.bo.QueryOrderConfForm;
 import com.jayud.mall.model.po.OrderConf;
+import com.jayud.mall.model.vo.OceanBillVO;
 import com.jayud.mall.model.vo.OceanCounterVO;
 import com.jayud.mall.model.vo.OfferInfoVO;
 import com.jayud.mall.model.vo.OrderConfVO;
@@ -53,4 +54,11 @@ public interface OrderConfMapper extends BaseMapper<OrderConf> {
      * @return
      */
     List<OceanCounterVO> findOceanCounterVOByOrderId(@Param("orderId") Long orderId);
+
+    /**
+     * 根据配载单id，获取提单信息
+     * @param orderId
+     * @return
+     */
+    List<OceanBillVO> findOceanBillVOByOrderId(@Param("orderId") Long orderId);
 }

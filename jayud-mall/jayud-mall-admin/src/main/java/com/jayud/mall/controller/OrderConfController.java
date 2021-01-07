@@ -3,8 +3,8 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
-import com.jayud.mall.model.bo.OceanBillForm;
 import com.jayud.mall.model.bo.OrderConfForm;
+import com.jayud.mall.model.bo.OrderConfParaForm;
 import com.jayud.mall.model.bo.QueryOrderConfForm;
 import com.jayud.mall.model.vo.OrderConfVO;
 import com.jayud.mall.service.INumberGeneratedService;
@@ -50,7 +50,7 @@ public class OrderConfController {
     @ApiOperation(value = "查看配载单详情")
     @PostMapping(value = "lookOrderConf")
     @ApiOperationSupport(order = 3)
-    public CommonResult<OrderConfVO> lookOrderConf(@RequestBody OceanBillForm form){
+    public CommonResult<OrderConfVO> lookOrderConf(@RequestBody OrderConfParaForm form){
         Long id = form.getId();
         return orderConfService.lookOrderConf(id);
     }

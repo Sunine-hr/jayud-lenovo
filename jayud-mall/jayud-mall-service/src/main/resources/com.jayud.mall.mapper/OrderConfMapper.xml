@@ -39,12 +39,12 @@
     <select id="findOrderConfById" parameterType="java.lang.Long"
             resultType="com.jayud.mall.model.vo.OrderConfVO" >
         select
-        t.id,t.order_no,t.tid,t.harbour_code,t.`status`,t.user_id,t.user_name,t.create_time,
-        t1.code_name tName,
-        t2.code_name harbourName
+        t.id,t.order_no,t.tid,t.destination_country_code,t.status,t.user_id,t.user_name,t.create_time,
+        t1.code_name tname,
+        t2.name destinationCountryName
         from order_conf t
-        LEFT JOIN transport_way t1 on t1.id = t.tid
-        LEFT JOIN harbour_info t2 on t2.id_code = t.harbour_code
+        left join transport_way t1 on t1.id = t.tid
+        left join country t2 on t2.code = t.destination_country_code
         WHERE
         t.id = #{id}
     </select>
@@ -52,7 +52,7 @@
     <select id="findOfferInfoVOByOrderId" parameterType="java.lang.Long"
             resultType="com.jayud.mall.model.vo.OfferInfoVO" >
         select
-        t.id,t.qie,t.`names`,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.`status`,t.user_id,t.user_name,t.create_time,
+        t.id,t.qie,t.names,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.status,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,
         CONCat(t4.code_name,'-',t5.code_name) route
         from offer_info t
         JOIN ocean_conf_detail t1 on t1.id_code = t.id and t1.types=1
@@ -75,6 +75,29 @@
         left join ocean_conf_detail t3 on t3.id_code = t1.id and t3.types=2
         left JOIN order_conf t4 on t4.id = t3.order_id
         where t4.id = #{orderId}
+    </select>
+    
+    <select id="findOceanBillVOByOrderId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.OceanBillVO">
+        select
+        t.id,t.tid,t.supplier_id,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time,t.task_id,t.operation_team_id,
+        t3.code_name    tname,
+        t4.company_name supplierName,
+        t5.code_name    startName,
+        t6.code_name    endName,
+        t7.code_name    taskName,
+        t8.group_name   operationTeamName
+        from
+        ocean_bill t
+        JOIN ocean_conf_detail t1 on t1.id_code = t.id and t1.types=2
+        JOIN order_conf t2 on t2.id = t1.order_id
+        left join transport_way t3 on t3.id = t.tid
+        left join  supplier_info t4 on t4.id = t.supplier_id
+        left join harbour_info t5 on t5.id_code = t.start_code
+        left join harbour_info t6 on t6.id_code = t.end_code
+        left join task_group t7 on t7.id = t.task_id
+        left join operation_team t8 on t8.id = t.operation_team_id
+        where t2.id = #{orderId}
     </select>
 
 

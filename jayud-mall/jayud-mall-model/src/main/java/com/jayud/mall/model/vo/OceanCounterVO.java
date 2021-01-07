@@ -30,7 +30,7 @@ public class OceanCounterVO {
     @ApiModelProperty(value = "费用")
     private BigDecimal cost;
 
-    @ApiModelProperty(value = "币种(currency_info 表id)")
+    @ApiModelProperty(value = "币种(currency_info id)")
     private Integer cid;
 
     @ApiModelProperty(value = "状态(0无效 1有效)")
@@ -42,6 +42,17 @@ public class OceanCounterVO {
 
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
+
+    /*柜型基本信息cabinet_type*/
+    @ApiModelProperty(value = "柜型基本信息-名称")
+    private String cabinetName;
+
+    /*币种currency_info*/
+    @ApiModelProperty(value = "币种-币种代码")
+    private String ccode;
+
+    @ApiModelProperty(value = "币种-币种名称")
+    private String cname;
 
     /*提单信息*/
     @ApiModelProperty(value = "提单信息-提单号(供应商提供)")

@@ -67,9 +67,28 @@ public class OceanBillVO {
     @JSONField(ordinal = 12)
     private Integer operationTeamId;
 
+    /*关联信息*/
+    @ApiModelProperty(value = "运输方式名称", position = 13)
+    private String tname;
+
+    @ApiModelProperty(value = "供应商名称", position = 14)
+    private String supplierName;
+
+    @ApiModelProperty(value = "起运港口名称", position = 15)
+    private String startName;
+
+    @ApiModelProperty(value = "目的港口名称", position = 16)
+    private String endName;
+
+    @ApiModelProperty(value = "任务分组名称", position = 17)
+    private String taskName;
+
+    @ApiModelProperty(value = "运营(服务)小组名称", position = 18)
+    private String operationTeamName;
+
     /*提单关联柜号信息*/
-    @ApiModelProperty(value = "提单关联柜号list", position = 13)
-    @JSONField(ordinal = 13)
+    @ApiModelProperty(value = "提单关联柜号list", position = 19)
+    @JSONField(ordinal = 19)
     private List<OceanCounterVO> oceanCounterVOList;
 
 

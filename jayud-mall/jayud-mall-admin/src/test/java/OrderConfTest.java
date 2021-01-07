@@ -14,7 +14,7 @@ public class OrderConfTest {
     public void test1(){
         QueryOrderConfForm form = new QueryOrderConfForm();
         form.setOrderNo("PZ202006SEA001");
-        form.setHarbourCode("NY");
+        //form.setHarbourCode("NY");
         TestUtils.JSONObjectPrint(form);
     }
 
@@ -25,13 +25,13 @@ public class OrderConfTest {
         form.setId(id);
         form.setOrderNo("PZ202006SEA001");
         form.setTid(1);
-        form.setHarbourCode("NY");
+        //form.setHarbourCode("NY");
         form.setStatus("1");
         form.setUserId(1);
         form.setUserName("admin");
         form.setCreateTime(LocalDateTime.now());
         List<OceanConfDetail> oceanConfDetailList = getOceanConfDetailList(id);
-        form.setOceanConfDetailList(oceanConfDetailList);
+        //form.setOceanConfDetailList(oceanConfDetailList);
         TestUtils.JSONObjectPrint(form);
     }
 

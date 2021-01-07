@@ -7,7 +7,6 @@
         <id column="id" property="id" />
         <result column="order_no" property="orderNo" />
         <result column="tid" property="tid" />
-        <result column="harbour_code" property="harbourCode" />
         <result column="status" property="status" />
         <result column="user_id" property="userId" />
         <result column="user_name" property="userName" />
@@ -16,30 +15,27 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, order_no, tid, harbour_code, status, user_id, user_name, create_time
+        id, order_no, tid, destination_country_code, status, user_id, user_name, create_time
     </sql>
 
-    <!--查询报价模板并分页-->
     <select id="findOrderConfByPage" parameterType="com.jayud.mall.model.bo.QueryOrderConfForm"
             resultType="com.jayud.mall.model.vo.OrderConfVO" >
         select
-        t.id,t.order_no,t.tid,t.harbour_code,t.`status`,t.user_id,t.user_name,t.create_time,
-        t1.code_name tName,
-        t2.code_name harbourName
+        t.id,t.order_no,t.tid,t.destination_country_code,t.status,t.user_id,t.user_name,t.create_time,
+        t1.code_name tname,
+        t2.name destinationCountryName
         from order_conf t
-        LEFT JOIN transport_way t1 on t1.id = t.tid
-        LEFT JOIN harbour_info t2 on t2.id_code = t.harbour_code
-        WHERE
-        1 = 1
+        left join transport_way t1 on t1.id = t.tid
+        left join country t2 on t2.code = t.destination_country_code
+        where 1=1
         <if test="form.orderNo != null and form.orderNo != ''">
-            AND t.`order_no` LIKE concat('%',#{form.orderNo},'%')
+            and t.order_no LIKE concat('%',#{form.orderNo},'%')
         </if>
-        <if test="form.harbourCode != null and form.harbourCode != ''">
-            AND t.`harbour_code` = #{form.harbourCode}
+        <if test="form.destinationCountryCode != null and form.destinationCountryCode != ''">
+            and t.destination_country_code = #{form.destinationCountryCode}
         </if>
     </select>
 
-    <!--查询配载单-->
     <select id="findOrderConfById" parameterType="java.lang.Long"
             resultType="com.jayud.mall.model.vo.OrderConfVO" >
         select
@@ -53,7 +49,6 @@
         t.id = #{id}
     </select>
 
-    <!--根据配载单id，获取报价信息-->
     <select id="findOfferInfoVOByOrderId" parameterType="java.lang.Long"
             resultType="com.jayud.mall.model.vo.OfferInfoVO" >
         select
@@ -68,7 +63,6 @@
         where t2.id = #{orderId}
     </select>
 
-    <!--据配载单id，获取提单柜号信息-->
     <select id="findOceanCounterVOByOrderId" parameterType="java.lang.Long"
             resultType="com.jayud.mall.model.vo.OceanCounterVO" >
         select

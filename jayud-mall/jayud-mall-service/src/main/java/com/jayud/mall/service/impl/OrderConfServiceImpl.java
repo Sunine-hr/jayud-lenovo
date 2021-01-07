@@ -2,6 +2,7 @@ package com.jayud.mall.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
@@ -44,8 +45,9 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
         //定义分页参数
         Page<OrderConfVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
-        //page.addOrder(OrderItem.desc("oc.id"));
-        IPage<OrderConfVO> pageInfo = orderConfMapper.findOrderConfByPage(page, form);
+        page.addOrder(OrderItem.desc("t.create_time"));
+        IPage<OrderConfVO> orderConfByPage = orderConfMapper.findOrderConfByPage(page, form);
+        IPage<OrderConfVO> pageInfo = orderConfByPage;
         return pageInfo;
     }
 
@@ -63,12 +65,12 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
         queryWrapper.eq("order_id", orderId);
         oceanConfDetailService.remove(queryWrapper);
 
-        List<OceanConfDetail> oceanConfDetailList = form.getOceanConfDetailList();
-        oceanConfDetailList.forEach(oceanConfDetail -> {
-            oceanConfDetail.setOrderId(orderId);
-        });
+//        List<OceanConfDetail> oceanConfDetailList = form.getOceanConfDetailList();
+//        oceanConfDetailList.forEach(oceanConfDetail -> {
+//            oceanConfDetail.setOrderId(orderId);
+//        });
         //再保存
-        oceanConfDetailService.saveOrUpdateBatch(oceanConfDetailList);
+//        oceanConfDetailService.saveOrUpdateBatch(oceanConfDetailList);
     }
 
     @Override
@@ -109,7 +111,7 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
 //            oceanCounterVO.setOceanWaybillVOList(oceanWaybillVOList);
 //        });
 
-        orderConfVO.setOceanCounterVOList(oceanCounterVOList);
+//        orderConfVO.setOceanCounterVOList(oceanCounterVOList);
         return CommonResult.success(orderConfVO);
     }
 

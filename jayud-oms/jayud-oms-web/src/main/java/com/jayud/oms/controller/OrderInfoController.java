@@ -194,6 +194,7 @@ public class OrderInfoController {
                 //清关参数校验
                 if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.XGQG.getCode())) {
                     if (StringUtil.isNullOrEmpty(inputOrderTransportForm.getHkLegalName()) ||
+                            inputOrderTransportForm.getHkLegalId() == null ||
                             StringUtil.isNullOrEmpty(inputOrderTransportForm.getHkUnitCode()) ||
                             StringUtil.isNullOrEmpty(inputOrderTransportForm.getIsHkClear())) {
                         return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());

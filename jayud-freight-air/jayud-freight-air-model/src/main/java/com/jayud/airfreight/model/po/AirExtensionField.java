@@ -57,6 +57,9 @@ public class AirExtensionField extends Model<AirExtensionField> {
     @ApiModelProperty(value = "状态(0禁用 1启用 2删除)")
     private Integer status;
 
+    @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo)")
+    private Integer createUserType;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

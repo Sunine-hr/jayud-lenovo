@@ -12,7 +12,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public enum ExtensionFieldTypeEnum {
 
-    VIVO(0, "vivo"),;
+    ONE(0, "其他类型"),TWO(1, "文件类型");
     private Integer code;
     private String desc;
 

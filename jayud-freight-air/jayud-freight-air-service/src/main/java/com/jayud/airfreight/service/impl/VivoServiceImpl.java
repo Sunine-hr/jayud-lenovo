@@ -24,7 +24,6 @@ import com.jayud.airfreight.service.VivoService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
-import com.jayud.common.VivoApiResult;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.*;
 import com.jayud.common.exception.Asserts;
@@ -518,7 +517,8 @@ public class VivoServiceImpl implements VivoService {
         field.setThirdPartyUniqueSign(form.getBookingNo());
         field.setBusinessTable(SqlConstant.AIR_ORDER);
         field.setCreateTime(LocalDateTime.now());
-        field.setType(ExtensionFieldTypeEnum.VIVO.getCode());
+        field.setType(ExtensionFieldTypeEnum.ONE.getCode());
+        field.setCreateUserType(CreateUserTypeEnum.VIVO.getCode());
         field.setRemarks(VivoInterfaceDescEnum.ONE.getDesc());
         airExtensionFieldService.save(field);
         //暂存订单
@@ -550,7 +550,7 @@ public class VivoServiceImpl implements VivoService {
         field.setThirdPartyUniqueSign(form.getDispatchNo());
         field.setBusinessTable(SqlConstant.ORDER_TRANSPORT);
         field.setCreateTime(LocalDateTime.now());
-        field.setType(ExtensionFieldTypeEnum.VIVO.getCode());
+        field.setType(ExtensionFieldTypeEnum.ONE.getCode());
         field.setRemarks(VivoInterfaceDescEnum.SIX.getDesc());
         airExtensionFieldService.save(field);
 
@@ -559,7 +559,7 @@ public class VivoServiceImpl implements VivoService {
         map.put("thirdPartyUniqueSign", form.getDispatchNo());
         map.put("businessTable", SqlConstant.ORDER_TRANSPORT);
         map.put("createTime", LocalDateTime.now());
-        map.put("type", ExtensionFieldTypeEnum.VIVO.getCode());
+        map.put("type", ExtensionFieldTypeEnum.ONE.getCode());
         map.put("remarks", VivoInterfaceDescEnum.SIX.getDesc());
         //保存冗余字段
         this.tmsClient.saveOrUpdateTmsExtensionField(JSONUtil.toJsonStr(map));
@@ -583,7 +583,8 @@ public class VivoServiceImpl implements VivoService {
                 .setBusinessId(airOrder.getId())
                 .setThirdPartyUniqueSign(bookingFileTransferDataForm.getBookingNo())
                 .setCreateTime(LocalDateTime.now())
-                .setType(ExtensionFieldTypeEnum.VIVO.getCode())
+                .setType(ExtensionFieldTypeEnum.TWO.getCode())
+                .setCreateUserType(CreateUserTypeEnum.VIVO.getCode())
                 .setValue(JSONUtil.toJsonStr(bookingFileTransferDataForm))
                 .setRemarks(VivoInterfaceDescEnum.FOUR.getDesc());
         return this.airExtensionFieldService.save(airExtensionField);

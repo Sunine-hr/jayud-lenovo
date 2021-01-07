@@ -140,14 +140,14 @@ public class BookingSpaceForm {
     @SerializedName("Total_volume")
     @ApiModelProperty(value = "订单总体积(保留两位小数)")
     @NotNull(message = "订单总体积不能为空")
-    @Length(max = 10, message = "订单总体积字段的最大长度为10")
+//    @Length(max = 10, message = "订单总体积字段的最大长度为10")
     private Float totalVolume;
 
     @JsonProperty("Total_gross_weight")
     @SerializedName("Total_gross_weight")
     @ApiModelProperty(value = "订单总毛重(保留两位小数)")
     @NotNull(message = "订单总毛重不能为空")
-    @Length(max = 10, message = "订单总毛重字段的最大长度为10")
+//    @Length(max = 10, message = "订单总毛重字段的最大长度为10")
     private Float totalGrossWeight;
 
     @JsonProperty("General_dimension")
@@ -161,7 +161,7 @@ public class BookingSpaceForm {
     @SerializedName("Pallet_Number")
     @ApiModelProperty(value = "卡板数")
     @NotNull(message = "卡板数不能为空")
-    @Length(max = 4, message = "卡板数字段的最大长度为4")
+//    @Length(max = 4, message = "卡板数字段的最大长度为4")
     private Integer palletNNumber;
 
     @JsonProperty("Pallet_Unit")
@@ -175,7 +175,7 @@ public class BookingSpaceForm {
     @SerializedName("Bulk_Box_Number")
     @ApiModelProperty(value = "散箱数")
     @NotNull(message = "散箱数不能为空")
-    @Length(max = 4, message = "散箱数字段的最大长度为4")
+//    @Length(max = 4, message = "散箱数字段的最大长度为4")
     private Integer bulkBoxNumber;
 
     @JsonProperty("Bulk_Box_Unit")

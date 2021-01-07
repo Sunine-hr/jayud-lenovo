@@ -646,8 +646,8 @@ public class VivoServiceImpl implements VivoService {
         msg.put("pickUpDate", DateUtils.LocalDateTime2Str(airOrder.getGoodTime(), "yyyy/M/dd HH:mm:ss"));
 //        msg.put("masterAirwayBill", airBooking.getMainNo());
         if (airBooking != null) {
-            msg.put("billOfLading", airBooking.getMainNo() + "/" + (StringUtils.isEmpty(airBooking.getSubNo()) ?
-                    "" : airBooking.getSubNo()));
+            msg.put("billOfLading", airBooking.getMainNo() + (StringUtils.isEmpty(airBooking.getSubNo()) ?
+                    "" : "/" + airBooking.getSubNo()));
             msg.put("flightNo", airBooking.getFlight());
             msg.put("chargedWeight", airBooking.getBillingWeight());
             msg.put("blWeight", airBooking.getBillLadingWeight());

@@ -13,7 +13,7 @@ public class NumberGeneratedUtils {
      * @param code
      * @return
      */
-    private String getOrderNoByCode(String code){
+    public String getOrderNoByCode(String code){
         return numberGeneratedService.getOrderNoByCode(code);
     }
 

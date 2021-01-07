@@ -50,12 +50,12 @@ public class OrderConfForm {
     private LocalDateTime createTime;
 
     /*(配载单)配置对应的报价与提单*/
-    @ApiModelProperty(value = "(配载单)配置对应的报价与提单-报价")
+    @ApiModelProperty(value = "(配载单)配置对应的报价与提单-报价", position = 9)
     @JSONField(ordinal = 9)
     private List<OceanConfDetail> offerInfoDetailList;
 
-    @ApiModelProperty(value = "(配载单)配置对应的报价与提单-提单")
-    @JSONField(ordinal = 9)
+    @ApiModelProperty(value = "(配载单)配置对应的报价与提单-提单", position = 10)
+    @JSONField(ordinal = 10)
     private List<OceanConfDetail> oceanBillDetailList;
 
 }

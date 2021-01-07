@@ -7,6 +7,7 @@ import com.jayud.mall.model.bo.OceanBillForm;
 import com.jayud.mall.model.bo.OrderConfForm;
 import com.jayud.mall.model.bo.QueryOrderConfForm;
 import com.jayud.mall.model.vo.OrderConfVO;
+import com.jayud.mall.service.INumberGeneratedService;
 import com.jayud.mall.service.IOrderConfService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -26,6 +27,8 @@ public class OrderConfController {
 
     @Autowired
     IOrderConfService orderConfService;
+    @Autowired
+    INumberGeneratedService numberGeneratedService;
 
     @ApiOperation(value = "分页查询配载单")
     @PostMapping("/findOrderConfByPage")
@@ -50,6 +53,15 @@ public class OrderConfController {
     public CommonResult<OrderConfVO> lookOrderConf(@RequestBody OceanBillForm form){
         Long id = form.getId();
         return orderConfService.lookOrderConf(id);
+    }
+
+    //获取配载单号
+    @ApiOperation(value = "获取配载单号")
+    @PostMapping(value = "getOrderConfNo")
+    @ApiOperationSupport(order = 4)
+    public CommonResult<String> getOrderConfNo(){
+        String orderNo = numberGeneratedService.getOrderNoByCode("order_conf_code");
+        return CommonResult.success(orderNo);
     }
 
 }

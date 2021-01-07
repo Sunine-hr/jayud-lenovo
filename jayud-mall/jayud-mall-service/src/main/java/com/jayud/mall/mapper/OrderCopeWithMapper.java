@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.po.OrderCopeWith;
 import com.jayud.mall.model.vo.OrderCopeWithVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -25,5 +26,5 @@ public interface OrderCopeWithMapper extends BaseMapper<OrderCopeWith> {
      * @param orderId
      * @return
      */
-    List<OrderCopeWithVO> findOrderCopeWithByOrderId(Long orderId);
+    List<OrderCopeWithVO> findOrderCopeWithByOrderId(@Param("orderId") Long orderId);
 }

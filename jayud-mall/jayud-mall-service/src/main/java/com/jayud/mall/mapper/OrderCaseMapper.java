@@ -8,6 +8,7 @@ import com.jayud.mall.model.po.OrderCase;
 import com.jayud.mall.model.vo.OrderCaseConfVO;
 import com.jayud.mall.model.vo.OrderCaseVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -30,19 +31,19 @@ public interface OrderCaseMapper extends BaseMapper<OrderCase> {
      * @param form
      * @return
      */
-    IPage<OrderCaseVO> findOrderCaseByPage(Page<OrderCaseVO> page, QueryOrderCaseForm form);
+    IPage<OrderCaseVO> findOrderCaseByPage(Page<OrderCaseVO> page, @Param("form") QueryOrderCaseForm form);
 
     /**
      * 根据订单id，查询订单箱号
      * @param orderId
      * @return
      */
-    List<OrderCaseVO> findOrderShopByOrderId(Long orderId);
+    List<OrderCaseVO> findOrderShopByOrderId(@Param("orderId") Long orderId);
 
     /**
      * 根据订单id，查询订单箱号，以及订单箱号的配载信息（运单号->柜号->提单号->配载单号）
      * @param orderId
      * @return
      */
-    List<OrderCaseConfVO> findOrderCaseConfByOrderId(Long orderId);
+    List<OrderCaseConfVO> findOrderCaseConfByOrderId(@Param("orderId") Long orderId);
 }

@@ -4,6 +4,7 @@ import com.jayud.mall.model.po.BillTask;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.vo.BillTaskVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -25,5 +26,5 @@ public interface BillTaskMapper extends BaseMapper<BillTask> {
      * @param obId
      * @return
      */
-    List<BillTaskVO> findbillTaskByObId(Long obId);
+    List<BillTaskVO> findbillTaskByObId(@Param("obId") Long obId);
 }

@@ -4,6 +4,7 @@ import com.jayud.mall.model.po.OrderCopeReceivable;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.vo.OrderCopeReceivableVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -25,5 +26,5 @@ public interface OrderCopeReceivableMapper extends BaseMapper<OrderCopeReceivabl
      * @param orderId
      * @return
      */
-    List<OrderCopeReceivableVO> findOrderCopeReceivableByOrderId(Long orderId);
+    List<OrderCopeReceivableVO> findOrderCopeReceivableByOrderId(@Param("orderId") Long orderId);
 }

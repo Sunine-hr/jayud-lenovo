@@ -21,30 +21,40 @@
         id, tid, supplier_id, order_id, start_code, end_code, sail_time, voyage_day, unit, create_time
     </sql>
 
-    <!--查询报价模板并分页-->
     <select id="findOceanBillByPage" parameterType="com.jayud.mall.model.bo.QueryOceanBillForm"
             resultType="com.jayud.mall.model.vo.OceanBillVO" >
         select
-        t.id,t.tid,t.supplier_id,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time
+        t.id,t.tid,t.supplier_id,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time,t.task_id,t.operation_team_id,
+        t1.code_name tname,
+        t2.company_name supplierName,
+        t3.code_name startName,
+        t4.code_name endName,
+        t5.code_name taskName,
+        t6.group_name operationTeamName
         from
         ocean_bill t
-        WHERE
-        1 = 1
+        left join transport_way t1 on t1.id = t.tid
+        left join  supplier_info t2 on t2.id = t.supplier_id
+        left join harbour_info t3 on t3.id_code = t.start_code
+        left join harbour_info t4 on t4.id_code = t.end_code
+        left join task_group t5 on t5.id = t.task_id
+        left join operation_team t6 on t6.id = t.operation_team_id
+        where 1=1
         /*报价名*/
         <if test="form.orderId != null and form.orderId != ''">
             AND t.`order_id` LIKE concat('%',#{form.orderId},'%')
         </if>
         /*开船日期*/
-        <if test="form.sailTime != null and form.sailTimeStart != null and form.sailTimeStart != '' and form.sailTimeEnd != null and form.sailTimeEnd != '' ">
-            and t.sail_time <![CDATA[ >= ]]> #{form.sailTimeStart} AND t.sail_time <![CDATA[ <= ]]> #{form.sailTimeEnd}
+        <if test="form.sailTime != null">
+            and t.sail_time <![CDATA[ >= ]]> concat(date_format(#{form.sailTime}, '%Y-%m-%d'), ' 00:00:00') AND t.sail_time <![CDATA[ <= ]]> concat(date_format(#{form.sailTime}, '%Y-%m-%d'), ' 23:23:59')
         </if>
         /*供应商*/
         <if test="form.supplierId != null">
             and t.supplier_id = #{form.supplierId}
         </if>
         /*目的港*/
-        <if test="form.endCode != null and form.endCode != ''">
-            AND t.`end_code` = #{form.endCode}
+        <if test="form.destinationCountryCode != null and form.destinationCountryCode != ''">
+            and t4.state_code = #{form.destinationCountryCode}
         </if>
         GROUP BY
         t.`id`

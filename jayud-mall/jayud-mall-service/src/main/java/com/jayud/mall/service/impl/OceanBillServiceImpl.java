@@ -51,11 +51,6 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
 
     @Override
     public IPage<OceanBillVO> findOceanBillByPage(QueryOceanBillForm form) {
-        //处理时间区间
-        if(form.getSailTime() != null){
-            form.setSailTimeStart(form.getSailTime().toLocalDate().toString() + " 00:00:00");
-            form.setSailTimeEnd(form.getSailTime().toLocalDate().toString() + " 23:23:59");
-        }
         //定义分页参数
         Page<OceanBillVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则

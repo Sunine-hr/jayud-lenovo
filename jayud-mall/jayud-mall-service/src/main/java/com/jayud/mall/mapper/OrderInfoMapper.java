@@ -1,12 +1,13 @@
 package com.jayud.mall.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.mall.model.bo.QueryOrderInfoForm;
 import com.jayud.mall.model.po.OrderInfo;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.vo.OrderInfoVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 /**
@@ -27,12 +28,12 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      * @param form
      * @return
      */
-    IPage<OrderInfoVO> findOrderInfoByPage(Page<OrderInfoVO> page, QueryOrderInfoForm form);
+    IPage<OrderInfoVO> findOrderInfoByPage(Page<OrderInfoVO> page,@Param("form") QueryOrderInfoForm form);
 
     /**
      * 查询订单
      * @param id
      * @return
      */
-    OrderInfoVO lookOrderInfoById(Long id);
+    OrderInfoVO lookOrderInfoById(@Param("id") Long id);
 }

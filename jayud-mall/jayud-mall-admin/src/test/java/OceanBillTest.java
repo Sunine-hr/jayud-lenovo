@@ -15,7 +15,7 @@ public class OceanBillTest {
         form.setOrderId("A00000000001");
         form.setSailTime(LocalDateTime.now());
         //form.setSupplierCode("HEUNG-A");
-        form.setEndCode("SH");
+        //form.setEndCode("SH");
         TestUtils.JSONObjectPrint(form);
 
     }

@@ -35,5 +35,5 @@ public interface QuotationTemplateMapper extends BaseMapper<QuotationTemplate> {
      * @param id
      * @return
      */
-    QuotationTemplateVO lookQuotationTemplate(Long id);
+    QuotationTemplateVO lookQuotationTemplate(@Param("id") Long id);
 }

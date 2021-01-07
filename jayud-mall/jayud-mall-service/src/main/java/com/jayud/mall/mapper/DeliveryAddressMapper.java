@@ -7,6 +7,7 @@ import com.jayud.mall.model.po.DeliveryAddress;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.vo.DeliveryAddressVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 /**
@@ -27,5 +28,5 @@ public interface DeliveryAddressMapper extends BaseMapper<DeliveryAddress> {
      * @param form
      * @return
      */
-    IPage<DeliveryAddressVO> findDeliveryAddressByPage(Page<DeliveryAddressVO> page, QueryDeliveryAddressForm form);
+    IPage<DeliveryAddressVO> findDeliveryAddressByPage(Page<DeliveryAddressVO> page,@Param("form") QueryDeliveryAddressForm form);
 }

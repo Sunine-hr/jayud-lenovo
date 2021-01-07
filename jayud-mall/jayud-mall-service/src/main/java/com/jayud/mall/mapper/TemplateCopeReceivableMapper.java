@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.po.TemplateCopeReceivable;
 import com.jayud.mall.model.vo.TemplateCopeReceivableVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -25,12 +26,12 @@ public interface TemplateCopeReceivableMapper extends BaseMapper<TemplateCopeRec
      * @param qie
      * @return
      */
-    List<TemplateCopeReceivableVO> findTemplateCopeReceivableOceanFeeByQie(Integer qie);
+    List<TemplateCopeReceivableVO> findTemplateCopeReceivableOceanFeeByQie(@Param("qie") Integer qie);
 
     /**
      * 根据报价模板id，查询应收费用明细（内陆费）
      * @param qie
      * @return
      */
-    List<TemplateCopeReceivableVO> findTemplateCopeReceivableInlandFeeListByQie(Integer qie);
+    List<TemplateCopeReceivableVO> findTemplateCopeReceivableInlandFeeListByQie(@Param("qie") Integer qie);
 }

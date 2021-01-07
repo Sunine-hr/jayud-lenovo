@@ -4,6 +4,7 @@ import com.jayud.mall.model.po.OrderPick;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.vo.OrderPickVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -25,5 +26,5 @@ public interface OrderPickMapper extends BaseMapper<OrderPick> {
      * @param orderId
      * @return
      */
-    List<OrderPickVO> findOrderPickByOrderId(Long orderId);
+    List<OrderPickVO> findOrderPickByOrderId(@Param("orderId") Long orderId);
 }

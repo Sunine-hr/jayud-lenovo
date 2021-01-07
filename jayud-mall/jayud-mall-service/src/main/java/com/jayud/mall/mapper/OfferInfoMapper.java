@@ -36,7 +36,7 @@ public interface OfferInfoMapper extends BaseMapper<OfferInfo> {
      * @param id
      * @return
      */
-    OfferInfoVO selectOfferInfoVO(Long id);
+    OfferInfoVO selectOfferInfoVO(@Param("id") Long id);
 
     /**
      * 分页查询报价(运价)
@@ -51,5 +51,5 @@ public interface OfferInfoMapper extends BaseMapper<OfferInfo> {
      * @param id
      * @return
      */
-    OfferInfoVO lookOfferInfoFare(Long id);
+    OfferInfoVO lookOfferInfoFare(@Param("id") Long id);
 }

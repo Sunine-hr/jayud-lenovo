@@ -45,7 +45,7 @@ public class AirExtensionField extends Model<AirExtensionField> {
     @ApiModelProperty(value = "数据(json格式)")
     private String value;
 
-    @ApiModelProperty(value = "类型(0:vivo,待定)")
+    @ApiModelProperty(value = "类型(0:其他类型,1:文件类型)")
     private Integer type;
 
     @ApiModelProperty(value = "创建时间")
@@ -56,6 +56,9 @@ public class AirExtensionField extends Model<AirExtensionField> {
 
     @ApiModelProperty(value = "状态(0禁用 1启用 2删除)")
     private Integer status;
+
+    @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo)")
+    private Integer createUserType;
 
     @Override
     protected Serializable pkVal() {

@@ -2,28 +2,29 @@ package com.jayud.airfreight.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.airfreight.feign.FileClient;
 import com.jayud.airfreight.feign.OauthClient;
 import com.jayud.airfreight.feign.OmsClient;
 import com.jayud.airfreight.model.bo.*;
 import com.jayud.airfreight.model.enums.ExceptionCausesEnum;
+import com.jayud.airfreight.model.po.AirExtensionField;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.airfreight.model.vo.AirOrderFormVO;
 import com.jayud.airfreight.model.vo.AirOrderVO;
 import com.jayud.airfreight.model.vo.GoodsVO;
+import com.jayud.airfreight.service.IAirExtensionFieldService;
 import com.jayud.airfreight.service.IAirOrderService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.InitComboxVO;
-import com.jayud.common.enums.BusinessTypeEnum;
-import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.enums.ProcessStatusEnum;
-import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.enums.*;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.Api;
@@ -60,8 +61,12 @@ public class AirOrderController {
     private IAirOrderService airOrderService;
     @Autowired
     private OauthClient oauthClient;
-//    @Autowired
+    //    @Autowired
 //    private IGoodsService goodsService;
+    @Autowired
+    private IAirExtensionFieldService airExtensionFieldService;
+    @Autowired
+    private FileClient fileClient;
 
     @ApiOperation(value = "分页查询空运订单")
     @PostMapping(value = "/findByPage")
@@ -304,6 +309,30 @@ public class AirOrderController {
     public CommonResult exceptionFeedback(@RequestBody @Valid AddAirExceptionFeedbackForm form) {
         this.airOrderService.exceptionFeedback(form);
         return CommonResult.success();
+    }
+
+    @ApiOperation(value = "查看接口文件 airOrderId=空运订单id")
+    @PostMapping(value = "/viewInterfaceFile")
+    public CommonResult viewInterfaceFile(@RequestBody Map<String, Object> map) {
+        Long airOrderId = MapUtil.getLong(map, "airOrderId");
+        if (airOrderId == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        Object url = this.fileClient.getBaseUrl().getData();
+
+        List<AirExtensionField> airExtensionFields = this.airExtensionFieldService.getByCondition(new AirExtensionField().setBusinessId(airOrderId)
+                .setType(ExtensionFieldTypeEnum.TWO.getCode()));
+        List<Object> list = new ArrayList<>();
+        for (AirExtensionField airExtensionField : airExtensionFields) {
+            if (StringUtils.isEmpty(airExtensionField.getValue())) {
+                continue;
+            }
+            JSONObject fileObj = new JSONObject(airExtensionField.getValue());
+            JSONObject fileView = fileObj.getJSONObject("fileView");
+            fileView.set("absolutePath", url + fileView.getStr("relativePath"));
+            list.add(fileView);
+        }
+        return CommonResult.success(list);
     }
 }
 

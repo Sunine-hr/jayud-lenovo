@@ -551,8 +551,14 @@ public class VivoServiceImpl implements VivoService {
         field.setBusinessTable(SqlConstant.ORDER_TRANSPORT);
         field.setCreateTime(LocalDateTime.now());
         field.setType(ExtensionFieldTypeEnum.ONE.getCode());
+        field.setCreateUserType(CreateUserTypeEnum.VIVO.getCode());
         field.setRemarks(VivoInterfaceDescEnum.SIX.getDesc());
-        airExtensionFieldService.save(field);
+        //保存中港扩展字段
+        ApiResult apiResult = this.tmsClient.saveOrUpdateTmsExtensionField(JSONUtil.toJsonStr(field));
+        if (!apiResult.isOk()) {
+            log.error("保存扩展字段报错 msg={}", apiResult.getMsg());
+            throw new VivoApiException(ResultEnum.OPR_FAIL.getMessage());
+        }
 
         Map<String, Object> map = new HashMap<>();
         map.put("value", JSONUtil.toJsonStr(form));

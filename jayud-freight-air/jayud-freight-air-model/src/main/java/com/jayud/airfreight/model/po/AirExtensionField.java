@@ -45,7 +45,7 @@ public class AirExtensionField extends Model<AirExtensionField> {
     @ApiModelProperty(value = "数据(json格式)")
     private String value;
 
-    @ApiModelProperty(value = "类型(0:vivo,待定)")
+    @ApiModelProperty(value = "类型(0:其他类型,1:文件类型)")
     private Integer type;
 
     @ApiModelProperty(value = "创建时间")

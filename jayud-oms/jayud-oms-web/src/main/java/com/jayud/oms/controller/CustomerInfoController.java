@@ -165,14 +165,14 @@ public class CustomerInfoController {
     @ApiOperation(value = "二期优化3:删除已关联客户(结算单位)列表,customerInfoId=客户ID,unitId=关联客户ID")
     @PostMapping(value = "/delRelateUnitList")
     public CommonResult delRelateUnitList(@RequestBody Map<String,Object> param) {
-        Long customerInfoId = Long.valueOf(MapUtil.getStr(param, "customerInfoId"));
-        Long unitId = Long.valueOf(MapUtil.getStr(param, "unitId"));
-        if(customerInfoId == null || unitId == null){
+        String customerInfoIdStr = MapUtil.getStr(param, "customerInfoId");
+        String unitIdStr = MapUtil.getStr(param, "unitId");
+        if(StringUtil.isNullOrEmpty(customerInfoIdStr) || StringUtil.isNullOrEmpty(unitIdStr)){
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         QueryWrapper removeWrapper = new QueryWrapper();
-        removeWrapper.eq("customer_info_id",customerInfoId);
-        removeWrapper.eq("unit_id",unitId);
+        removeWrapper.eq("customer_info_id",Long.parseLong(customerInfoIdStr));
+        removeWrapper.eq("unit_id",Long.parseLong(unitIdStr));
         customerRelaUnitService.remove(removeWrapper);
         return CommonResult.success();
     }

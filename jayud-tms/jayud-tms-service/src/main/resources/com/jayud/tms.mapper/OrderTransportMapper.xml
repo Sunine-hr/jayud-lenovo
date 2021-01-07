@@ -51,6 +51,7 @@
           ot.`order_no` orderNo,
           ot.`jiedan_user` jiedanUser,
           ot.`legal_name` legalName,
+          ot.legal_entity_id legalEntityId,
           DATE_FORMAT(ot.`jiedan_time`,'%Y-%m-%d %H:%i:%S') jiedanTimeStr,
           ot.`goods_type` goodsType,
           ot.`port_code` portCode,
@@ -81,6 +82,7 @@
           ot.`is_load_goods` isLoadGoods,
           ot.`is_unload_goods` isUnloadGoods,
           ot.`hk_legal_name` hkLegalName,
+          ot.hk_legal_id hkLegalId,
           ot.`hk_unit_code` hkUnitCode,
           ot.`is_hk_clear` isHkClear,
 		  ot.is_vehicle_weigh isVehicleWeigh

@@ -119,6 +119,9 @@ public class InputOrderTransportVO {
     @ApiModelProperty(value = "香港清关接单法人")
     private String hkLegalName;
 
+    @ApiModelProperty(value = "香港清关接单法人ID")
+    private Long hkLegalId;
+
     @ApiModelProperty(value = "香港清关结算单位")
     private String hkUnitCode;
 

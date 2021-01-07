@@ -152,6 +152,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
             inputOrderCustomsVO.setAirTransportNo(orderCustomsVO.getAirTransportNo());
             inputOrderCustomsVO.setAirTransportPics(StringUtils.getFileViews(orderCustomsVO.getAirTransportPic(), orderCustomsVO.getAirTransPicName(), prePath));
             inputOrderCustomsVO.setLegalName(orderCustomsVO.getLegalName());
+            inputOrderCustomsVO.setLegalEntityId(orderCustomsVO.getLegalEntityId());
             inputOrderCustomsVO.setBizModel(orderCustomsVO.getBizModel());
             //为了控制驳回编辑子订单之间互不影响,报关中驳回时所有子订单都应驳回
             inputOrderCustomsVO.setSubCustomsStatus(orderCustomsVO.getStatus());

@@ -80,6 +80,7 @@
             oc.`sea_trans_pic_name` seaTransPicName,
             oc.`is_agency_tax` isAgencyTax,
             oc.`legal_name` legalName,
+            oc.legal_entity_id legalEntityId,
             oc.`status` status
         FROM
             order_customs oc

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.CabinetTypeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.CabinetType">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="id_code" property="idCode" />
+        <result column="status" property="status" />
+        <result column="create_time" property="createTime" />
+        <result column="abbreviation" property="abbreviation" />
+        <result column="cubage" property="cubage" />
+        <result column="outerdiameter_long" property="outerdiameterLong" />
+        <result column="outerdiameter_width" property="outerdiameterWidth" />
+        <result column="outerdiameter_high" property="outerdiameterHigh" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name, id_code, status, create_time, abbreviation, cubage, outerdiameter_long, outerdiameter_width, outerdiameter_high
+    </sql>
+
+</mapper>

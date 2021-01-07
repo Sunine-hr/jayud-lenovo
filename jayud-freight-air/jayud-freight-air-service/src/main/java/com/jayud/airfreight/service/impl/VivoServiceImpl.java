@@ -543,22 +543,21 @@ public class VivoServiceImpl implements VivoService {
         orderForm.setOrderTransportForm(orderTransportForm);
         orderForm.setOrderForm(mainOrderForm);
 
-
         //保存vivo字段
-        AirExtensionField field = new AirExtensionField();
-        field.setValue(JSONUtil.toJsonStr(form));
-        field.setThirdPartyUniqueSign(form.getDispatchNo());
-        field.setBusinessTable(SqlConstant.ORDER_TRANSPORT);
-        field.setCreateTime(LocalDateTime.now());
-        field.setType(ExtensionFieldTypeEnum.ONE.getCode());
-        field.setCreateUserType(CreateUserTypeEnum.VIVO.getCode());
-        field.setRemarks(VivoInterfaceDescEnum.SIX.getDesc());
-        //保存中港扩展字段
-        ApiResult apiResult = this.tmsClient.saveOrUpdateTmsExtensionField(JSONUtil.toJsonStr(field));
-        if (!apiResult.isOk()) {
-            log.error("保存扩展字段报错 msg={}", apiResult.getMsg());
-            throw new VivoApiException(ResultEnum.OPR_FAIL.getMessage());
-        }
+//        AirExtensionField field = new AirExtensionField();
+//        field.setValue(JSONUtil.toJsonStr(form));
+//        field.setThirdPartyUniqueSign(form.getDispatchNo());
+//        field.setBusinessTable(SqlConstant.ORDER_TRANSPORT);
+//        field.setCreateTime(LocalDateTime.now());
+//        field.setType(ExtensionFieldTypeEnum.ONE.getCode());
+//        field.setCreateUserType(CreateUserTypeEnum.VIVO.getCode());
+//        field.setRemarks(VivoInterfaceDescEnum.SIX.getDesc());
+//        //保存中港扩展字段
+//        ApiResult apiResult = this.tmsClient.saveOrUpdateTmsExtensionField(JSONUtil.toJsonStr(field));
+//        if (!apiResult.isOk()) {
+//            log.error("保存扩展字段报错 msg={}", apiResult.getMsg());
+//            throw new VivoApiException(ResultEnum.OPR_FAIL.getMessage());
+//        }
 
         Map<String, Object> map = new HashMap<>();
         map.put("value", JSONUtil.toJsonStr(form));
@@ -567,8 +566,13 @@ public class VivoServiceImpl implements VivoService {
         map.put("createTime", LocalDateTime.now());
         map.put("type", ExtensionFieldTypeEnum.ONE.getCode());
         map.put("remarks", VivoInterfaceDescEnum.SIX.getDesc());
+        map.put("createUserType", CreateUserTypeEnum.VIVO.getCode());
         //保存冗余字段
-        this.tmsClient.saveOrUpdateTmsExtensionField(JSONUtil.toJsonStr(map));
+        ApiResult apiResult = this.tmsClient.saveOrUpdateTmsExtensionField(JSONUtil.toJsonStr(map));
+        if (!apiResult.isOk()) {
+            log.error("保存扩展字段报错 msg={}", apiResult.getMsg());
+            throw new VivoApiException(ResultEnum.OPR_FAIL.getMessage());
+        }
         //暂存订单
         ApiResult result = this.omsClient.holdOrder(orderForm);
         return result;

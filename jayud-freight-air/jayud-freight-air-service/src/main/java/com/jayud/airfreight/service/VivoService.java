@@ -9,6 +9,8 @@ import com.jayud.airfreight.model.po.AirBooking;
 import com.jayud.airfreight.model.po.AirExceptionFeedback;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.common.ApiResult;
+import com.jayud.common.VivoApiResult;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
@@ -128,4 +130,10 @@ public interface VivoService {
      * 推送反馈信息
      */
     void pushExceptionFeedbackInfo(AirOrder airOrder, AddAirExceptionFeedbackForm form, AirExceptionFeedback airExceptionFeedback);
+
+    /**
+     * 取消订舱单
+     * @param bookingCancelForm
+     */
+    public void bookingCancel(@RequestBody AirOrder bookingCancelForm) ;
 }

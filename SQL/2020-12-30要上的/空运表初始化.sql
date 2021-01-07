@@ -32,15 +32,16 @@ CREATE TABLE `air_booking` (
 CREATE TABLE `air_extension_field` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `business_id` bigint(20) DEFAULT NULL COMMENT '业务主键',
-  `third_party_unique_sign` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '第三方唯一标志',
-  `business_table` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '业务表(例如:air_order)',
-  `value` text CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT '数据(json格式)',
-  `type` int(10) NOT NULL COMMENT '类型(0:vivo,待定)',
+  `third_party_unique_sign` varchar(100) DEFAULT NULL COMMENT '第三方唯一标志',
+  `business_table` varchar(50) NOT NULL COMMENT '业务表(例如:air_order)',
+  `value` text COMMENT '数据(json格式)',
+  `type` int(10) NOT NULL COMMENT '类型(0:其他类型,1:文件类型)',
   `create_time` datetime NOT NULL COMMENT '创建时间',
-  `remarks` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '描述(也可以当key值使用)',
+  `remarks` varchar(255) DEFAULT NULL COMMENT '描述(也可以当key值使用)',
   `status` int(10) DEFAULT '1' COMMENT '状态(0禁用 1启用 2删除)',
+  `create_user_type` int(5) DEFAULT '0' COMMENT '创建人的类型(0:本系统,1:vivo)',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='空运扩展字段表';
+) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='空运扩展字段表';
 
 
 CREATE TABLE `air_order` (

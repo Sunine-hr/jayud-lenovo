@@ -31,7 +31,7 @@ public class TmsExtensionField extends Model<TmsExtensionField> {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "业务主键")
+    @ ApiModelProperty(value = "业务主键")
     private Long businessId;
 
     @ApiModelProperty(value = "第三方唯一标志")

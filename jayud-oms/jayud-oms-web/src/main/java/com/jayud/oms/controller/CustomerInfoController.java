@@ -33,20 +33,17 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.*;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 客户管理 前端控制器
@@ -121,18 +118,18 @@ public class CustomerInfoController {
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "二期优化3:新增和编辑时校验客户名称是否存在,name=客户姓名")
+    @ApiOperation(value = "二期优化3:新增和编辑时校验客户名称是否存在,name=客户姓名 id=客户ID")
     @PostMapping(value = "/existCustomerName")
     public CommonResult existCustomerName(@RequestBody Map<String,Object> param) {
         String customerName = MapUtil.getStr(param, "name");
-        Long id = Long.parseLong(MapUtil.getStr(param,"id"));
+        String id = MapUtil.getStr(param,"id");
         if(StringUtil.isNullOrEmpty(customerName)){
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.like("name",customerName);
         List<CustomerInfo> customerInfos = customerInfoService.list(queryWrapper);
-        if((id == null && customerInfos != null && customerInfos.size() > 0) || (id != null && customerInfos != null && customerInfos.size() > 1)){
+        if((StringUtil.isNullOrEmpty(id) && customerInfos != null && customerInfos.size() > 0) || ((!StringUtil.isNullOrEmpty(id)) && customerInfos != null && customerInfos.size() > 1)){
             return CommonResult.error(ResultEnum.CUSTOMER_NAME_EXIST);
         }
         return CommonResult.success();

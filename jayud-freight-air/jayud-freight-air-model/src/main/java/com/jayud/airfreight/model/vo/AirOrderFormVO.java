@@ -11,7 +11,6 @@ import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.TradeTypeEnum;
-import com.jayud.common.utils.HttpUtils;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -125,7 +124,7 @@ public class AirOrderFormVO {
 
     @JsonIgnore
     @ApiModelProperty(value = "法人主体")
-    private Long legalId;
+    private Long legalEntityId;
 
     @ApiModelProperty(value = "法人主体名称")
     private String subLegalName;
@@ -193,7 +192,7 @@ public class AirOrderFormVO {
         JSONArray legalEntitys = JSONArray.parseArray(JSON.toJSONString(legalEntityResult.getData()));
         for (int i = 0; i < legalEntitys.size(); i++) {
             JSONObject json = legalEntitys.getJSONObject(i);
-            if (this.legalId.equals(json.getLong("id"))) { //法人主体配对
+            if (this.legalEntityId.equals(json.getLong("id"))) { //法人主体配对
                 this.subLegalName = json.getString("legalName");
                 break;
             }

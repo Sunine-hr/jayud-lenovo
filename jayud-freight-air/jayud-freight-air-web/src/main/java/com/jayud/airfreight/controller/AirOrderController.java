@@ -10,7 +10,6 @@ import com.jayud.airfreight.feign.OauthClient;
 import com.jayud.airfreight.feign.OmsClient;
 import com.jayud.airfreight.model.bo.*;
 import com.jayud.airfreight.model.enums.ExceptionCausesEnum;
-import com.jayud.airfreight.model.po.AirExceptionFeedback;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.airfreight.model.vo.AirOrderFormVO;
 import com.jayud.airfreight.model.vo.AirOrderVO;
@@ -19,7 +18,6 @@ import com.jayud.airfreight.service.IAirOrderService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
-import com.jayud.common.UserOperator;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.InitComboxVO;
 import com.jayud.common.enums.BusinessTypeEnum;
@@ -33,14 +31,12 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.jayud.common.enums.OrderStatusEnum.AIR_A_2;
@@ -100,7 +96,7 @@ public class AirOrderController {
         for (AirOrderFormVO record : records) {
             airOrderIds.add(record.getId());
             mainOrder.add(record.getMainOrderNo());
-            entityIds.add(record.getLegalId());
+            entityIds.add(record.getLegalEntityId());
         }
         //查询商品信息
         List<GoodsVO> goods = this.omsClient.getGoodsByBusIds(airOrderIds, BusinessTypeEnum.KY.getCode()).getData();

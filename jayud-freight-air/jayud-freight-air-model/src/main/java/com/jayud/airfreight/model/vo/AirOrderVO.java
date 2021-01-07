@@ -52,7 +52,7 @@ public class AirOrderVO {
     private String settlementUnitCode;
 
     @ApiModelProperty(value = "接单法人id")
-    private Long legalId;
+    private Long legalEntityId;
 
     @ApiModelProperty(value = "接单法人")
     private Long legalName;

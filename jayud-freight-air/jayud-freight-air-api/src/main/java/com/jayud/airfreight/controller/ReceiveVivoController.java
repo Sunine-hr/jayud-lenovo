@@ -59,13 +59,9 @@ public class ReceiveVivoController {
     @Autowired
     private OmsClient omsClient;
     @Autowired
-    private OauthClient oauthClient;
-    @Autowired
     private VivoService vivoService;
     @Autowired
     private IAirOrderService airOrderService;
-    @Autowired
-    private FileClient fileClient;
     @Autowired
     private TmsClient tmsClient;
     @Autowired
@@ -114,12 +110,7 @@ public class ReceiveVivoController {
             log.error("当前状态无法取消订舱 processStatus={}", ProcessStatusEnum.getDesc(airOrder.getProcessStatus()));
             return VivoApiResult.error("当前状态无法取消订舱");
         }
-        //获取主订单号
-        //根据主订单号设置状态
-        Map<String, Object> map = new HashMap<>();
-        map.put("orderNo", airOrder.getMainOrderNo());
-        map.put("status", OrderStatusEnum.MAIN_6.getCode());
-        this.omsClient.updateByMainOrderNo(JSONUtil.toJsonStr(map));
+        this.vivoService.bookingCancel(airOrder);
         return VivoApiResult.success();
     }
 

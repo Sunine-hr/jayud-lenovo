@@ -148,6 +148,7 @@ public class CardInfoToForwarderForm {
             shippingAddress.setWeight(carInfoToForwarderLineForm.getGrossWeight().doubleValue());
             shippingAddress.setVolume(carInfoToForwarderLineForm.getVolume().doubleValue());
             //TODO 交仓仓库=送货联系人,这个等财务出来再改
+            shippingAddress.setContacts(carInfoToForwarderLineForm.getDeliveryWarehouse());
             shippingAddress.setAddress(carInfoToForwarderLineForm.getDeliveryWarehouseAddress());
             shippingAddressList.add(shippingAddress);
         }

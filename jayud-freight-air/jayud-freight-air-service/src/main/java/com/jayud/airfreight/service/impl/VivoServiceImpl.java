@@ -24,6 +24,7 @@ import com.jayud.airfreight.service.VivoService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
+import com.jayud.common.VivoApiResult;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.*;
 import com.jayud.common.exception.Asserts;
@@ -790,6 +791,23 @@ public class VivoServiceImpl implements VivoService {
                 throw new VivoApiException(fileName + "文件推送失败");
             }
         }
+    }
+
+    /**
+     * 取消订舱单
+     */
+    @Override
+    @Transactional
+    public void bookingCancel(AirOrder airOrder) {
+        //获取主订单号
+        //根据主订单号设置状态
+        Map<String, Object> map = new HashMap<>();
+        map.put("orderNo", airOrder.getMainOrderNo());
+        map.put("status", OrderStatusEnum.MAIN_6.getCode());
+        this.omsClient.updateByMainOrderNo(JSONUtil.toJsonStr(map));
+        //取消订单
+        this.airOrderService.updateById(new AirOrder()
+                .setId(airOrder.getId()).setProcessStatus(ProcessStatusEnum.CLOSE.getCode()));
     }
 
 

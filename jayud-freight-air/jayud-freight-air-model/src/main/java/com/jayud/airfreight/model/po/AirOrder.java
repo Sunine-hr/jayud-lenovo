@@ -52,7 +52,10 @@ public class AirOrder extends Model<AirOrder> {
     private String settlementUnitCode;
 
     @ApiModelProperty(value = "接单法人id")
-    private Long legalId;
+    private Long legalEntityId;
+
+    @ApiModelProperty(value = "接单法人名称")
+    private Long legalName;
 
     @ApiModelProperty(value = "进出口类型(1：进口，2：出口)")
     private Integer impAndExpType;

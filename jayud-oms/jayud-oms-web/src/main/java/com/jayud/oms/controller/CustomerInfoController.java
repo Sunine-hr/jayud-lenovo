@@ -247,6 +247,24 @@ public class CustomerInfoController {
         return CommonResult.success();
     }
 
+    @ApiOperation(value = "编辑及审核客户代码是否可填 id = 客户ID")
+    @PostMapping(value = "/isFillCustomerCode")
+    public CommonResult<Boolean> isFillCustomerCode(@RequestBody Map<String,Object> param) {
+        String customerInfoIdStr = MapUtil.getStr(param, "id");
+        if(StringUtil.isNullOrEmpty(customerInfoIdStr)){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("ext_id",Long.parseLong(customerInfoIdStr));
+        queryWrapper.eq("ext_desc",SqlConstant.CUSTOMER_INFO);
+        queryWrapper.eq("audit_status",CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());
+        List<AuditInfo> auditInfos = auditInfoService.list(queryWrapper);
+        if(auditInfos != null && auditInfos.size() > 0){
+            return CommonResult.success(false);
+        }
+        return CommonResult.success(true);
+    }
+
     @ApiOperation(value = "客户账号管理-修改时数据回显,id=客户账号ID")
     @PostMapping(value = "/getCustomerAccountInfo")
     public CommonResult<CustAccountVO> getCustomerAccountInfo(@RequestBody Map<String, Object> param) {

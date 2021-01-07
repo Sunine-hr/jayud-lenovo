@@ -55,7 +55,7 @@ public class AirOrderVO {
     private Long legalEntityId;
 
     @ApiModelProperty(value = "接单法人")
-    private Long legalName;
+    private String legalName;
 
     @ApiModelProperty(value = "进出口类型(1：进口，2：出口)")
     private Integer impAndExpType;

@@ -36,11 +36,11 @@ public class OrderConfForm {
     @JSONField(ordinal = 5)
     private String status;
 
-    @ApiModelProperty(value = "创建用户id", position = 6)
+    @ApiModelProperty(value = "创建用户id(system_user id)", position = 6)
     @JSONField(ordinal = 6)
     private Integer userId;
 
-    @ApiModelProperty(value = "创建用户名", position = 7)
+    @ApiModelProperty(value = "创建用户名(system_user name)", position = 7)
     @JSONField(ordinal = 7)
     private String userName;
 

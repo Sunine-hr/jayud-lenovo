@@ -65,6 +65,24 @@ public class OrderConfTest {
 
     @Test
     public void test3(){
+        OrderConfForm form = new OrderConfForm();
+        form.setOrderNo("JYD-PZ-210100007");
+
+        OceanConfDetail oceanConfDetail = new OceanConfDetail();
+        oceanConfDetail.setIdCode(1);
+        List<OceanConfDetail> offerInfoDetailList = new ArrayList<>();
+        offerInfoDetailList.add(oceanConfDetail);
+        form.setOfferInfoDetailList(offerInfoDetailList);
+
+
+        OceanConfDetail oceanConfDetail1 = new OceanConfDetail();
+        oceanConfDetail1.setIdCode(1);
+        List<OceanConfDetail> oceanBillDetailList = new ArrayList<>();
+        oceanBillDetailList.add(oceanConfDetail1);
+        form.setOceanBillDetailList(oceanBillDetailList);
+
+        TestUtils.JSONObjectPrint(form);
+
 
     }
 

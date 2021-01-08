@@ -2,6 +2,7 @@ package com.jayud.mall.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
@@ -205,7 +206,7 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
         //定义分页参数
         Page<OfferInfoVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
-        //page.addOrder(OrderItem.desc("oc.id"));
+        page.addOrder(OrderItem.desc("t.create_time"));
         IPage<OfferInfoVO> pageInfo = offerInfoMapper.findOfferInfoFareByPage(page, form);
 
         List<OfferInfoVO> records = pageInfo.getRecords();

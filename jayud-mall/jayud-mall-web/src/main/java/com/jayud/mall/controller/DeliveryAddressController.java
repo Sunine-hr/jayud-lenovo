@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/deliveryaddress")
-@Api(tags = "C005-C端-提货、收货地址基础数据表接口")
-@ApiSort(value = 5)
+@Api(tags = "C006-C端-提货、收货地址基础数据表接口")
+@ApiSort(value = 6)
 public class DeliveryAddressController {
 
     @Autowired

@@ -17,8 +17,8 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/phonemessages")
-@Api(tags = "C009-C端-手机短信接口")
-@ApiSort(value = 9)
+@Api(tags = "C005-C端-手机短信接口")
+@ApiSort(value = 5)
 public class PhoneMessagesController {
 
     @Autowired

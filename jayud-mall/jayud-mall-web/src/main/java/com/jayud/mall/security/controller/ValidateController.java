@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.Random;
 
 @RestController
-@Api(tags = "S002-C端-验证码控制器接口")
+@Api(tags = "C002-C端-验证码控制器接口")
 @ApiSort(value = 2)
 public class ValidateController {
 

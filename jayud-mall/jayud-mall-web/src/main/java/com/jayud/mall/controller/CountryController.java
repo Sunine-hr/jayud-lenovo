@@ -18,8 +18,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/country")
-@Api(tags = "C007-C端-国家基础信息接口")
-@ApiSort(value = 7)
+@Api(tags = "C008-C端-国家基础信息接口")
+@ApiSort(value = 8)
 public class CountryController {
 
     @Autowired

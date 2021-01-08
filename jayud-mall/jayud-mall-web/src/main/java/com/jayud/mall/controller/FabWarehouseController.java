@@ -18,8 +18,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/fabwarehouse")
-@Api(tags = "C006-C端-应收FBA仓库接口")
-@ApiSort(value = 6)
+@Api(tags = "C007-C端-应收FBA仓库接口")
+@ApiSort(value = 7)
 public class FabWarehouseController {
 
     @Autowired

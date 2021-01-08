@@ -8,9 +8,7 @@ import com.jayud.mall.model.bo.QueryOfferInfoFareForm;
 import com.jayud.mall.model.vo.FabWarehouseVO;
 import com.jayud.mall.model.vo.OfferInfoVO;
 import com.jayud.mall.service.IOfferInfoService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +19,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/offerinfo")
-@Api(tags = "C端-报价(运价)接口")
+@Api(tags = "C010-C端-报价(运价)接口")
+@ApiSort(value = 10)
 public class OfferInfoController {
 
     @Autowired
@@ -29,6 +28,7 @@ public class OfferInfoController {
 
     @ApiOperation(value = "分页查询报价(运价)")
     @PostMapping("/findOfferInfoFareByPage")
+    @ApiOperationSupport(order = 1)
     public CommonResult<CommonPageResult<OfferInfoVO>> findOfferInfoFareByPage(@RequestBody QueryOfferInfoFareForm form) {
         IPage<OfferInfoVO> pageList = offerInfoService.findOfferInfoFareByPage(form);
         CommonPageResult<OfferInfoVO> pageVO = new CommonPageResult(pageList);
@@ -37,6 +37,7 @@ public class OfferInfoController {
 
     @ApiOperation(value = "查看运价服务详情")
     @PostMapping("/lookOfferInfoFare")
+    @ApiOperationSupport(order = 2)
     public CommonResult<OfferInfoVO> lookOfferInfoFare(@RequestBody OfferInfoForm form) {
         Long id = form.getId();
         OfferInfoVO offerInfoVO = offerInfoService.lookOfferInfoFare(id);
@@ -45,6 +46,7 @@ public class OfferInfoController {
 
     @ApiModelProperty(value = "去下单-确认订单(查看选择运价)")
     @PostMapping("/purchaseOrders")
+    @ApiOperationSupport(order = 3)
     public CommonResult<OfferInfoVO> purchaseOrders(@RequestBody OfferInfoForm form){
         Long id = form.getId();
         OfferInfoVO offerInfoVO = offerInfoService.purchaseOrders(id);
@@ -55,6 +57,7 @@ public class OfferInfoController {
     //目的地仓库，可达仓库
     @ApiModelProperty(value = "查询运价，目的地仓库(可达仓库)")
     @PostMapping("/findFabWarehouse")
+    @ApiOperationSupport(order = 4)
     public CommonResult<List<FabWarehouseVO>> findFabWarehouse(@RequestBody OfferInfoForm form){
         Long id = form.getId();
         List<FabWarehouseVO> fabWarehouseVOList = offerInfoService.findFabWarehouse(id);

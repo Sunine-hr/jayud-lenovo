@@ -6,6 +6,8 @@ import com.jayud.mall.model.vo.OrderPickVO;
 import com.jayud.mall.service.IOrderPickService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperationSupport;
+import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,7 +18,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/orderpick")
-@Api(tags = "C端-订单对应提货信息表接口")
+@Api(tags = "C012-C端-订单对应提货信息表接口")
+@ApiSort(value = 12)
 public class OrderPickController {
 
     @Autowired
@@ -24,6 +27,7 @@ public class OrderPickController {
 
     @ApiModelProperty(value = "批量创建-订单对应提货地址(进仓单号)")
     @PostMapping("/createOrderPickList")
+    @ApiOperationSupport(order = 1)
     public CommonResult<List<OrderPickVO>> createOrderPickList(@RequestBody List<DeliveryAddressVO> form){
         List<OrderPickVO> orderPickVOList = orderPickService.createOrderPickList(form);
         return CommonResult.success(orderPickVOList);

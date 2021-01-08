@@ -24,7 +24,7 @@ public class NumberGeneratedUtils {
      * 替代为 getOrderNoByCode2 or getOrderNoByCode3 <br>
      * @deprecated replaced by <code>getOrderNoByCode2(String code)</code>
      * @see  #getOrderNoByCode2(String)
-     * @see  #getOrderNoByCode3(String) 
+     * @see  #getOrderNoByCode3(String)
      * @param code
      * @return
      */

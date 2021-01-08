@@ -1,5 +1,6 @@
 package com.jayud.airfreight.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.http.Header;
 import cn.hutool.http.HttpRequest;
@@ -701,6 +702,9 @@ public class VivoServiceImpl implements VivoService {
             log.error("获取文件地址失败");
             throw new JayudBizException("获取文件地址失败");
         }
+
+        //成功集合
+        List<Map<String, Object>> successData = new ArrayList<>();
         for (int i = 0; i < filePaths.length; i++) {
             String filePath = filePaths[i];
             String fileName = fileNames[i];
@@ -719,7 +723,16 @@ public class VivoServiceImpl implements VivoService {
             if (0 == MapUtil.getInt(resultMap, "status")) {
                 log.error("vivo货代抛转空运提单信息失败 bookingNo={} file={} msg={}", airOrder.getThirdPartyOrderNo(),
                         fileName, MapUtil.getStr(resultMap, "message"));
-//                throw new VivoApiException(MapUtil.getStr(resultMap, "message"));
+                if (!CollectionUtil.isEmpty(successData)) {
+                    successData.forEach(e -> {
+                        e.put("operationType", "delete");
+                        this.forwarderLadingFile(e);
+                    });
+                }
+                throw new JayudBizException(ResultEnum.VIVO_ERROR.getCode(),
+                        MapUtil.getStr(resultMap, "message"));
+            } else {
+                successData.add(msg);
             }
         }
 

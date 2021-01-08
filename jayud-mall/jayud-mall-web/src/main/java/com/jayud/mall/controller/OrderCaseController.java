@@ -4,10 +4,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.CreateOrderCaseForm;
 import com.jayud.mall.model.vo.OrderCaseVO;
 import com.jayud.mall.service.IOrderCaseService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiOperationSupport;
-import io.swagger.annotations.ApiSort;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,8 +22,9 @@ public class OrderCaseController {
     @Autowired
     IOrderCaseService orderCaseService;
 
+
     //批量添加箱号
-    @ApiModelProperty(value = "批量添加箱号")
+    @ApiOperation(value = "批量添加箱号")
     @PostMapping("/createOrderCaseList")
     @ApiOperationSupport(order = 1)
     public CommonResult<List<OrderCaseVO>> createOrderCaseList(@RequestBody CreateOrderCaseForm form){

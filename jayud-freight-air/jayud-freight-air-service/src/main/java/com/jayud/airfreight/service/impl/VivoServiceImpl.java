@@ -246,14 +246,17 @@ public class VivoServiceImpl implements VivoService {
     @Override
     public Map<String, Object> bookingRejected(AirOrder airOrder, AirCargoRejected airCargoRejected) {
         //修改订单状态待处理
-        Map<String, Object> map = new HashMap<>();
-        map.put("orderNo", airOrder.getMainOrderNo());
-        map.put("status", OrderStatusEnum.MAIN_8.getCode());
-        ApiResult result = this.omsClient.updateByMainOrderNo(JSONUtil.toJsonStr(map));
-        if (result.getCode() != HttpStatus.SC_OK) {
-            log.warn("修改主订单状态为待处理失败 mainOrderNo={}", airOrder.getMainOrderNo());
-            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        if (airCargoRejected.getRejectOptions() == 1) { //订单驳回
+            Map<String, Object> map = new HashMap<>();
+            map.put("orderNo", airOrder.getMainOrderNo());
+            map.put("status", OrderStatusEnum.MAIN_8.getCode());
+            ApiResult result = this.omsClient.updateByMainOrderNo(JSONUtil.toJsonStr(map));
+            if (result.getCode() != HttpStatus.SC_OK) {
+                log.warn("修改主订单状态为待处理失败 mainOrderNo={}", airOrder.getMainOrderNo());
+                throw new JayudBizException(ResultEnum.OPR_FAIL);
+            }
         }
+
         Integer status = airCargoRejected.getRejectOptions() == null ? VivoRejectionStatusEnum.PENDING_SUBMITTED.getCode()
                 : airCargoRejected.getRejectOptions();
         //驳回订单,数据作废
@@ -440,7 +443,7 @@ public class VivoServiceImpl implements VivoService {
         return null;
     }
 
-    
+
     private Boolean check4Success(String feedback) {
         Map<String, Object> map = JSONUtil.toBean(feedback, Map.class);
 

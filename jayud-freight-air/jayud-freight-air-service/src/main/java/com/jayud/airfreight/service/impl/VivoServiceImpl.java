@@ -268,11 +268,11 @@ public class VivoServiceImpl implements VivoService {
         Map<String, Object> resultMap = this.forwarderBookingRejected(airOrder.getThirdPartyOrderNo(), status);
         if (resultMap == null) {
             log.warn("请求vivo订舱驳回操作失败,返回响应为空,请联系客服");
-            throw new VivoApiException("请求vivo订舱驳回操作失败,返回响应为空,请联系客服");
+            throw new JayudBizException(ResultEnum.VIVO_ERROR.getCode(), "请求vivo订舱驳回操作失败,返回响应为空,请联系客服");
         }
         if (1 != MapUtil.getInt(resultMap, "status")) {
             log.warn("请求vivo订舱驳回操作失败 message={}", MapUtil.getStr(resultMap, "message"));
-            throw new VivoApiException("请求vivo订舱驳回操作失败 message=" + MapUtil.getStr(resultMap, "message"));
+            throw new JayudBizException(ResultEnum.VIVO_ERROR.getCode(), "请求vivo订舱驳回操作失败 message=" + MapUtil.getStr(resultMap, "message"));
         }
 
         return resultMap;

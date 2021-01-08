@@ -25,7 +25,7 @@
     <select id="findReceiveBillByPage" parameterType="com.jayud.finance.bo.QueryReceiveBillForm" resultType="com.jayud.finance.vo.OrderReceiveBillVO" >
         SELECT DISTINCT
         oi.legal_name legalName,
-        ci.unit_account unitAccount,
+        ci.`name` unitAccount,
         ifnull( orb.already_paid_amount, 0 ) alreadyPaidAmount,
         ifnull( orb.bill_order_num, 0 ) billOrderNum,
         ifnull( orb.bill_num, 0 ) billNum,
@@ -36,10 +36,10 @@
         left join customer_info ci on ci.unit_code = orc.customer_code
         LEFT JOIN order_info oi ON oi.order_no = orc.main_order_no
         left join order_receivable_bill orb on orb.legal_name = oi.legal_name
-        and orb.unit_account = ci.unit_account
+        and orb.unit_account = ci.`name`
         where orc.is_sum_to_main = 1 and orc.status = '3'
         <if test="form.unitAccount != null and form.unitAccount != ''">
-            and ci.unit_account like concat('%',#{form.unitAccount},'%')
+            and ci.`name` like concat('%',#{form.unitAccount},'%')
         </if>
         <if test="form.legalName != null and form.legalName != ''">
             and oi.legal_name like concat('%',#{form.legalName},'%')
@@ -62,22 +62,20 @@
             (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_entity_id = ao.legal_entity_id)) notPaidAmount,
             (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_entity_id = ao.legal_entity_id)) notPaidOrderNum,
         </if>
---              todo 提测把这个打开
---             ci.unit_account unitAccount,
+            ci.`name` unitAccount,
             ifnull( orb.already_paid_amount, 0 ) alreadyPaidAmount,
             ifnull( orb.bill_order_num, 0 ) billOrderNum,
             ifnull( orb.bill_num, 0 ) billNum
             FROM
             order_receivable_cost orc
---             todo 提测把这个打开
---             left join customer_info ci on ci.unit_code = orc.customer_code
+            left join customer_info ci on ci.`name` = orc.customer_code
             <if test="form.cmd == 'zgys'">
                 left join order_transport ot on ot.order_no = orc.order_no
                 left join order_receivable_bill orb on orb.legal_name = ot.legal_name
                 and orb.unit_account = orc.customer_name
                 where orc.is_sum_to_main = 0 and orc.sub_type = 'zgys' and orc.status = '3'
                 <if test="form.unitAccount != null and form.unitAccount != ''">
-                    and ci.unit_account like concat('%',#{form.unitAccount},'%')
+                    and ci.`name` like concat('%',#{form.unitAccount},'%')
                 </if>
                 <if test="form.legalName != null and form.legalName != ''">
                     and ot.legal_name like concat('%',#{form.legalName},'%')
@@ -89,7 +87,7 @@
                 and orb.unit_account = orc.customer_name
                 where orc.is_sum_to_main = 0 and orc.sub_type = 'bg' and orc.status = '3'
                 <if test="form.unitAccount != null and form.unitAccount != ''">
-                    and ci.unit_account like concat('%',#{form.unitAccount},'%')
+                    and ci.`name` like concat('%',#{form.unitAccount},'%')
                 </if>
                 <if test="form.legalName != null and form.legalName != ''">
                     and oc.legal_name like concat('%',#{form.legalName},'%')
@@ -102,8 +100,7 @@
                 and orb.unit_account = orc.customer_name
                 where orc.is_sum_to_main = 0 and orc.sub_type = 'ky' and orc.status = '3'
                 <if test="form.unitAccount != null and form.unitAccount != ''">
---                      todo 提测把这个打开
---                     and ci.unit_account like concat('%',#{form.unitAccount},'%')
+                    and ci.`name` like concat('%',#{form.unitAccount},'%')
                 </if>
                 <if test="form.legalName != null and form.legalName != ''">
                     and le.legal_name like concat('%',#{form.legalName},'%')
@@ -145,7 +142,7 @@
         orc.order_no subOrderNo,
         pb.`name` bizCodeDesc,
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
-        c.unit_account unitAccount,
+        c.`name` unitAccount,
         (SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' GROUP BY ot.order_no) goodsDesc,
         (SELECT GROUP_CONCAT(concat( ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id
         WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' GROUP BY ot.order_no) startAddress,
@@ -174,7 +171,7 @@
         FROM
         order_receivable_cost orc
         LEFT JOIN order_info oi ON orc.main_order_no = oi.order_no
-        left join customer_info c on c.unit_code = orc.customer_code
+        left join customer_info c on c.id_code = orc.customer_code
         LEFT JOIN product_biz pb ON pb.id_code = oi.biz_code
         LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
         LEFT JOIN order_send_cars osc ON ot.order_no = osc.order_no
@@ -189,7 +186,7 @@
         orc.id NOT IN ( SELECT orbd.cost_id FROM order_receivable_bill_detail orbd )
         and orc.is_bill != '2'
         and orc.`status` = '3'
-        and c.unit_account = #{form.unitAccount}
+        and c.`name` = #{form.unitAccount}
         <if test="form.cmd == 'main'">
             and oi.legal_name = #{form.legalName}
             and orc.is_sum_to_main = 1
@@ -203,8 +200,7 @@
             and orc.is_sum_to_main = 0 and orc.sub_type = 'bg'
         </if>
         <if test="form.cmd == 'ky'">
---             TODO 二期出来还要改
-            and ao.legal_entity_id = #{form.legalName}
+            and ao.legal_name = #{form.legalName}
             and orc.is_sum_to_main = 0 and orc.sub_type = 'ky'
         </if>
         ) temp where 1 = 1
@@ -348,7 +344,7 @@
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         oi.order_no orderNo,
         orc.order_no subOrderNo,
-        ci.unit_account unitAccount,
+        ci.`name` unitAccount,
         ( SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' group by ot.order_no) goodsDesc,
         ( SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' group by ot.order_no) startAddress,
         ( SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '2' group by ot.order_no) endAddress,
@@ -383,7 +379,7 @@
         <if test="cmd == 'zgys'">
             ot.legal_name legalName,
         </if>
-        ci.unit_account customerName
+        ci.`name` customerName
         FROM
         <if test="cmd == 'main'">
             order_info oi LEFT JOIN order_receivable_cost orc ON oi.order_no = orc.main_order_no

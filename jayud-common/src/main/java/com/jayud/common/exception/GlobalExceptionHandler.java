@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
 
     //处理vivo手动抛出的标准异常
     @ExceptionHandler(VivoApiException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public BaseApiResult handleVivoException(VivoApiException ex) {
         return new VivoApiResult(ex.getMessage());
     }
@@ -103,13 +103,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(JayudBizException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public BaseApiResult handleJayudBizException(JayudBizException e) {
         log.warn(e.getMessage(), e);
-
         int code = e.getCode();
         String msg = e.getMessage();
-
         return new ApiResult(code, msg);
     }
 }

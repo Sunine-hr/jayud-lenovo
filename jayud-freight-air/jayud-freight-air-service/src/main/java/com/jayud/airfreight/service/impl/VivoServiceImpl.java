@@ -624,7 +624,7 @@ public class VivoServiceImpl implements VivoService {
 
         if (0 == MapUtil.getInt(result, "status")) {
             log.error("远程调用推送确认订舱信息给vivo失败 msg={}", MapUtil.getStr(result, "message"));
-            throw new JayudBizException(ResultEnum.OPR_FAIL);
+            throw new JayudBizException(ResultEnum.VIVO_ERROR.getCode(), MapUtil.getStr(result, "message"));
         }
     }
 

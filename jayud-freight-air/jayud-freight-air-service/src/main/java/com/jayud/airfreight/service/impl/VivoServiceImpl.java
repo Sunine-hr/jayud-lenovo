@@ -188,14 +188,6 @@ public class VivoServiceImpl implements VivoService {
         return postWithFile(form, fileItem, url);
     }
 
-    public static void main(String[] args) {
-        String fileName = "TMS与JYD接口文档 v3.2.excl";
-
-        System.out.println(fileName.substring(0, fileName.lastIndexOf(".")));
-        System.out.println(fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length()));
-    }
-
-
     @Override
     public Map<String, Object> forwarderLadingInfo(ForwarderLadingInfoForm form) {
         String url = urlBase + urlLadingInfo;
@@ -343,7 +335,7 @@ public class VivoServiceImpl implements VivoService {
     private Map<String, Object> doPost(String form, String url) {
         log.info("vivo参数:" + form);
         String feedback = HttpRequest.post(url)
-                .header("Authorization", "bearer " + getToken(null, null, null))
+                .header("Authorization", getToken(null, null, null))
                 .header(Header.CONTENT_TYPE.name(), "multipart/form-data")
                 .form("transfer_data", form)
                 .execute()
@@ -385,7 +377,7 @@ public class VivoServiceImpl implements VivoService {
 
     private Map<String, Object> doPostWithFile(String form, File fw, String url) {
         String feedback = HttpRequest.post(url)
-                .header("Authorization", "bearer " + getToken(null, null, null))
+                .header("Authorization", getToken(null, null, null))
                 .header(Header.CONTENT_TYPE.name(), "multipart/form-data")
                 .form("transfer_data", form)
                 .form("MultipartFile", fw)
@@ -439,7 +431,7 @@ public class VivoServiceImpl implements VivoService {
             Map resultMap = JSONUtil.toBean(feedback, Map.class);
             String access_token = MapUtil.getStr(resultMap, "access_token");
             if (!StringUtils.isEmpty(access_token)) {
-                redisUtils.set(VIVO_TOEKN_STR, access_token, 82800);
+                redisUtils.set(VIVO_TOEKN_STR, String.format("bearer %s", access_token), 82800);
                 return String.format("bearer %s", access_token);
             }
 
@@ -448,6 +440,7 @@ public class VivoServiceImpl implements VivoService {
         return null;
     }
 
+    
     private Boolean check4Success(String feedback) {
         Map<String, Object> map = JSONUtil.toBean(feedback, Map.class);
 

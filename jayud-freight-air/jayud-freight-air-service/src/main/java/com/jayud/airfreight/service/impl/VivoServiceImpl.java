@@ -803,13 +803,25 @@ public class VivoServiceImpl implements VivoService {
             msg.put("exceptionFinishTime", DateUtils.str2LocalDateTime(form.getCompletionTime(), "-", "/"));
 //        request.put("msg", JSONUtil.toJsonStr(msg));
 //        msgClient.consume(request);
-
+            //成功集合
+            List<Map<String, Object>> successData = new ArrayList<>();
             Map<String, Object> resultMap = this.forwarderLadingFile(msg);
             if (0 == MapUtil.getInt(resultMap, "status")) {
                 log.error("[vivo]推送异常信息失败 bookingNo={} file={} msg={}", airOrder.getThirdPartyOrderNo(),
                         fileName, MapUtil.getStr(resultMap, "message"));
-                throw new VivoApiException(fileName + "文件推送失败");
+
+                if (!CollectionUtil.isEmpty(successData)) {
+                    successData.forEach(e -> {
+                        e.put("operationType", "delete");
+                        this.forwarderLadingFile(e);
+                    });
+                }
+                throw new JayudBizException(ResultEnum.VIVO_ERROR.getCode(),
+                        MapUtil.getStr(resultMap, "message"));
+            } else {
+                successData.add(msg);
             }
+
         }
     }
 

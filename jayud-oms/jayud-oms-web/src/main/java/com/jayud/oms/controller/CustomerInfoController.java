@@ -100,10 +100,10 @@ public class CustomerInfoController {
     public CommonResult saveOrUpdateCustomerInfo(@RequestBody @Valid AddCustomerInfoForm form) {
         CustomerInfo customerInfo = ConvertUtil.convert(form, CustomerInfo.class);
         if (form.getId() != null) {
-            customerInfo.setUpdatedUser(UserOperator.getToken());
+            customerInfo.setUpdatedUser(form.getLoginUserName());
             customerInfo.setUpdatedTime(DateUtils.getNowTime());
         } else {
-            customerInfo.setCreatedUser(UserOperator.getToken());
+            customerInfo.setCreatedUser(form.getLoginUserName());
         }
         //校验客户代码和客户名称的唯一性
         List<CustomerInfoVO> oldCustomerInfos = customerInfoService.existCustomerInfo(form.getIdCode(),form.getName());

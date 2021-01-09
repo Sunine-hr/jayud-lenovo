@@ -88,6 +88,9 @@ public class OrderCustomsVO {
     @ApiModelProperty(value = "接单法人")
     private String legalName;
 
+    @ApiModelProperty("接单法人ID")
+    private Long legalEntityId;
+
     @ApiModelProperty(value = "状态描述")
     private String statusDesc;
 

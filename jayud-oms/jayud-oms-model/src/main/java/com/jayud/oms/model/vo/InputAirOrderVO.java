@@ -1,15 +1,9 @@
 package com.jayud.oms.model.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.jayud.common.enums.OrderAddressEnum;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,10 +42,10 @@ public class InputAirOrderVO {
     private String settlementUnitCode;
 
     @ApiModelProperty(value = "接单法人id")
-    private Long legalId;
+    private Long legalEntityId;
 
     @ApiModelProperty(value = "接单法人")
-    private Long legalName;
+    private String legalName;
 
     @ApiModelProperty(value = "进出口类型(1：进口，2：出口)")
     private Integer impAndExpType;

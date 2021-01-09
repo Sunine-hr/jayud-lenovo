@@ -4,12 +4,12 @@ package com.jayud.airfreight.feign;
 import com.jayud.airfreight.model.bo.*;
 import com.jayud.airfreight.model.vo.GoodsVO;
 import com.jayud.airfreight.model.vo.OrderAddressVO;
+import com.jayud.airfreight.model.vo.VehicleSizeInfoVO;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.config.FeignRequestInterceptor;
 import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.common.entity.InitComboxVO;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -139,4 +139,11 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/getIdByOrderNo")
     ApiResult getIdByOrderNo(@RequestParam(value = "orderNo") String orderNo);
+
+    /**
+     * 获取所有的车型尺寸
+     * @return
+     */
+    @RequestMapping(value = "/api/findVehicleSize")
+    ApiResult<List<VehicleSizeInfoVO>> findVehicleSize();
 }

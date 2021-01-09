@@ -2,15 +2,12 @@ package com.jayud.oms.model.bo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.jayud.common.enums.OrderAddressEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +48,10 @@ public class InputAirOrderForm {
     private String settlementUnitCode;
 
     @ApiModelProperty(value = "操作主体id(接单法人id)")
-    private Long legalId;
+    private Long legalEntityId;
+
+    @ApiModelProperty(value = "操作主体名称(接单法人名称)")
+    private String legalName;
 
     @ApiModelProperty(value = "进出口类型(1：进口，2：出口)")
     private Integer impAndExpType;
@@ -106,7 +106,7 @@ public class InputAirOrderForm {
      */
     public boolean checkCreateOrder() {
         //空运
-        if (this.legalId == null || StringUtils.isEmpty(this.settlementUnitCode)
+        if (this.legalEntityId == null || StringUtils.isEmpty(this.settlementUnitCode)
                 || this.impAndExpType == null || this.terms == null
                 || StringUtils.isEmpty(this.portDepartureCode)
                 || StringUtils.isEmpty(this.portDestinationCode)

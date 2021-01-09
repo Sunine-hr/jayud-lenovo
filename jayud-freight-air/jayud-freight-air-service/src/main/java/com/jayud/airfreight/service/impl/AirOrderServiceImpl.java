@@ -509,33 +509,6 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         return JSONUtil.toBean(objects.getJSONObject(0), Map.class);
     }
 
-//    public static void main(String[] args) {
-//        JSONArray objects = new JSONArray("[{\n" +
-//                "\t\t\"bizBelongDepart\": \"2\",\n" +
-//                "\t\t\"classCode\": \"KY\",\n" +
-//                "\t\t\"orderNo\": \"M333348978246\",\n" +
-//                "\t\t\"bizUid\": 133,\n" +
-//                "\t\t\"bizCode\": \"KJKY_NLLY\",\n" +
-//                "\t\t\"customerCode\": \"VIVO_001\",\n" +
-//                "\t\t\"selectedServer\": \"KYDD\",\n" +
-//                "\t\t\"customerName\": \"VIVO\",\n" +
-//                "\t\t\"legalName\": \"法人代表01\",\n" +
-//                "\t\t\"upTime\": \"2021-01-05 17:11:19\",\n" +
-//                "\t\t\"unitAccount\": \"VIVO\",\n" +
-//                "\t\t\"customsRelease\": false,\n" +
-//                "\t\t\"legalEntityId\": 48,\n" +
-//                "\t\t\"createTime\": \"2021-01-05 15:47:31\",\n" +
-//                "\t\t\"unitCode\": \"VIVO_001\",\n" +
-//                "\t\t\"needInputCost\": true,\n" +
-//                "\t\t\"id\": 488,\n" +
-//                "\t\t\"bizUname\": \"test\",\n" +
-//                "\t\t\"createdUser\": \"VIVO\",\n" +
-//                "\t\t\"status\": 8,\n" +
-//                "\t\t\"upUser\": \"qqq\"\n" +
-//                "\t}]");
-//
-//        System.out.println(JSONUtil.toBean(objects.getJSONObject(0),Map.class));
-//    }
 
     /**
      * 异常反馈
@@ -550,7 +523,7 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
                 .setCreateTime(LocalDateTime.now());
         this.airExceptionFeedbackService.saveOrUpdate(airExceptionFeedback);
         //推送异常反馈
-        this.pushExceptionFeedbackInfo(airExceptionFeedback);
+        this.pushExceptionFeedbackInfo(form, airExceptionFeedback);
     }
 
     /**
@@ -563,7 +536,7 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         return this.baseMapper.selectList(condition);
     }
 
-    private void pushExceptionFeedbackInfo(AirExceptionFeedback airExceptionFeedback) {
+    private void pushExceptionFeedbackInfo(AddAirExceptionFeedbackForm form, AirExceptionFeedback airExceptionFeedback) {
         AirOrder airOrder = this.getById(airExceptionFeedback.getOrderId());
         if (CreateUserTypeEnum.VIVO.getCode().equals(airOrder.getCreateUserType())) {
             if (OrderStatusEnum.AIR_A_4.getCode().equals(airOrder.getStatus())
@@ -571,7 +544,7 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
                     || OrderStatusEnum.AIR_A_6.getCode().equals(airOrder.getStatus())
                     || OrderStatusEnum.AIR_A_7.getCode().equals(airOrder.getStatus())
                     || OrderStatusEnum.AIR_A_8.getCode().equals(airOrder.getStatus())) {
-                this.vivoService.pushExceptionFeedbackInfo(airOrder, airExceptionFeedback);
+                this.vivoService.pushExceptionFeedbackInfo(airOrder, form, airExceptionFeedback);
             } else {
                 throw new JayudBizException("当前订单只能在空运提单后才能进行反馈");
             }

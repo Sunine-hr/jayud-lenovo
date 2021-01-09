@@ -1,5 +1,6 @@
 package com.jayud.airfreight.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.http.Header;
 import cn.hutool.http.HttpRequest;
@@ -172,13 +173,15 @@ public class VivoServiceImpl implements VivoService {
 
         String filePath = jsonObject.getStr("filePath");
         String file = jsonObject.getStr("fileName");
-        String[] tmp = file.split("\\.");
+        int count = file.lastIndexOf(".");
         String fileType = "";
-        if (tmp.length > 1) {
-            fileType = tmp[1];
+        String fileName = file;
+        if (count > 0) {
+            fileType = fileName.substring(fileName.lastIndexOf(".") + 1, file.length());
+            fileName = fileName.substring(0, fileName.lastIndexOf("."));
         }
         StringBuilder sb = new StringBuilder().append(form.getId())
-                .append("_").append(tmp[0])
+                .append("_").append(fileName)
                 .append("_");
         MultipartFile fileItem = FileUtil.createFileItem(filePath, sb.toString(), true, fileType);
         String url = urlBase + urlLadingFile;
@@ -243,14 +246,17 @@ public class VivoServiceImpl implements VivoService {
     @Override
     public Map<String, Object> bookingRejected(AirOrder airOrder, AirCargoRejected airCargoRejected) {
         //修改订单状态待处理
-        Map<String, Object> map = new HashMap<>();
-        map.put("orderNo", airOrder.getMainOrderNo());
-        map.put("status", OrderStatusEnum.MAIN_8.getCode());
-        ApiResult result = this.omsClient.updateByMainOrderNo(JSONUtil.toJsonStr(map));
-        if (result.getCode() != HttpStatus.SC_OK) {
-            log.warn("修改主订单状态为待处理失败 mainOrderNo={}", airOrder.getMainOrderNo());
-            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        if (airCargoRejected.getRejectOptions() == 1) { //订单驳回
+            Map<String, Object> map = new HashMap<>();
+            map.put("orderNo", airOrder.getMainOrderNo());
+            map.put("status", OrderStatusEnum.MAIN_8.getCode());
+            ApiResult result = this.omsClient.updateByMainOrderNo(JSONUtil.toJsonStr(map));
+            if (result.getCode() != HttpStatus.SC_OK) {
+                log.warn("修改主订单状态为待处理失败 mainOrderNo={}", airOrder.getMainOrderNo());
+                throw new JayudBizException(ResultEnum.OPR_FAIL);
+            }
         }
+
         Integer status = airCargoRejected.getRejectOptions() == null ? VivoRejectionStatusEnum.PENDING_SUBMITTED.getCode()
                 : airCargoRejected.getRejectOptions();
         //驳回订单,数据作废
@@ -262,11 +268,11 @@ public class VivoServiceImpl implements VivoService {
         Map<String, Object> resultMap = this.forwarderBookingRejected(airOrder.getThirdPartyOrderNo(), status);
         if (resultMap == null) {
             log.warn("请求vivo订舱驳回操作失败,返回响应为空,请联系客服");
-            throw new VivoApiException("请求vivo订舱驳回操作失败,返回响应为空,请联系客服");
+            throw new JayudBizException(ResultEnum.VIVO_ERROR.getCode(), "请求vivo订舱驳回操作失败,返回响应为空,请联系客服");
         }
         if (1 != MapUtil.getInt(resultMap, "status")) {
             log.warn("请求vivo订舱驳回操作失败 message={}", MapUtil.getStr(resultMap, "message"));
-            throw new VivoApiException("请求vivo订舱驳回操作失败 message=" + MapUtil.getStr(resultMap, "message"));
+            throw new JayudBizException(ResultEnum.VIVO_ERROR.getCode(), "请求vivo订舱驳回操作失败 message=" + MapUtil.getStr(resultMap, "message"));
         }
 
         return resultMap;
@@ -332,7 +338,7 @@ public class VivoServiceImpl implements VivoService {
     private Map<String, Object> doPost(String form, String url) {
         log.info("vivo参数:" + form);
         String feedback = HttpRequest.post(url)
-                .header("Authorization", "bearer " + String.format(getToken(null, null, null)))
+                .header("Authorization", getToken(null, null, null))
                 .header(Header.CONTENT_TYPE.name(), "multipart/form-data")
                 .form("transfer_data", form)
                 .execute()
@@ -374,7 +380,7 @@ public class VivoServiceImpl implements VivoService {
 
     private Map<String, Object> doPostWithFile(String form, File fw, String url) {
         String feedback = HttpRequest.post(url)
-                .header("Authorization", "bearer " + String.format(getToken(null, null, null)))
+                .header("Authorization", getToken(null, null, null))
                 .header(Header.CONTENT_TYPE.name(), "multipart/form-data")
                 .form("transfer_data", form)
                 .form("MultipartFile", fw)
@@ -428,14 +434,15 @@ public class VivoServiceImpl implements VivoService {
             Map resultMap = JSONUtil.toBean(feedback, Map.class);
             String access_token = MapUtil.getStr(resultMap, "access_token");
             if (!StringUtils.isEmpty(access_token)) {
-                redisUtils.set(VIVO_TOEKN_STR, access_token, 82800);
-                return String.format("Bearer %s", access_token);
+                redisUtils.set(VIVO_TOEKN_STR, String.format("bearer %s", access_token), 82800);
+                return String.format("bearer %s", access_token);
             }
 
             Asserts.fail(ResultEnum.UNAUTHORIZED, "vivo 授权失败");
         }
         return null;
     }
+
 
     private Boolean check4Success(String feedback) {
         Map<String, Object> map = JSONUtil.toBean(feedback, Map.class);
@@ -507,7 +514,8 @@ public class VivoServiceImpl implements VivoService {
         field.setThirdPartyUniqueSign(form.getBookingNo());
         field.setBusinessTable(SqlConstant.AIR_ORDER);
         field.setCreateTime(LocalDateTime.now());
-        field.setType(ExtensionFieldTypeEnum.VIVO.getCode());
+        field.setType(ExtensionFieldTypeEnum.ONE.getCode());
+        field.setCreateUserType(CreateUserTypeEnum.VIVO.getCode());
         field.setRemarks(VivoInterfaceDescEnum.ONE.getDesc());
         airExtensionFieldService.save(field);
         //暂存订单
@@ -532,26 +540,36 @@ public class VivoServiceImpl implements VivoService {
         orderForm.setOrderTransportForm(orderTransportForm);
         orderForm.setOrderForm(mainOrderForm);
 
-
         //保存vivo字段
-        AirExtensionField field = new AirExtensionField();
-        field.setValue(JSONUtil.toJsonStr(form));
-        field.setThirdPartyUniqueSign(form.getDispatchNo());
-        field.setBusinessTable(SqlConstant.ORDER_TRANSPORT);
-        field.setCreateTime(LocalDateTime.now());
-        field.setType(ExtensionFieldTypeEnum.VIVO.getCode());
-        field.setRemarks(VivoInterfaceDescEnum.SIX.getDesc());
-        airExtensionFieldService.save(field);
+//        AirExtensionField field = new AirExtensionField();
+//        field.setValue(JSONUtil.toJsonStr(form));
+//        field.setThirdPartyUniqueSign(form.getDispatchNo());
+//        field.setBusinessTable(SqlConstant.ORDER_TRANSPORT);
+//        field.setCreateTime(LocalDateTime.now());
+//        field.setType(ExtensionFieldTypeEnum.ONE.getCode());
+//        field.setCreateUserType(CreateUserTypeEnum.VIVO.getCode());
+//        field.setRemarks(VivoInterfaceDescEnum.SIX.getDesc());
+//        //保存中港扩展字段
+//        ApiResult apiResult = this.tmsClient.saveOrUpdateTmsExtensionField(JSONUtil.toJsonStr(field));
+//        if (!apiResult.isOk()) {
+//            log.error("保存扩展字段报错 msg={}", apiResult.getMsg());
+//            throw new VivoApiException(ResultEnum.OPR_FAIL.getMessage());
+//        }
 
         Map<String, Object> map = new HashMap<>();
         map.put("value", JSONUtil.toJsonStr(form));
         map.put("thirdPartyUniqueSign", form.getDispatchNo());
         map.put("businessTable", SqlConstant.ORDER_TRANSPORT);
         map.put("createTime", LocalDateTime.now());
-        map.put("type", ExtensionFieldTypeEnum.VIVO.getCode());
+        map.put("type", ExtensionFieldTypeEnum.ONE.getCode());
         map.put("remarks", VivoInterfaceDescEnum.SIX.getDesc());
+        map.put("createUserType", CreateUserTypeEnum.VIVO.getCode());
         //保存冗余字段
-        this.tmsClient.saveOrUpdateTmsExtensionField(JSONUtil.toJsonStr(map));
+        ApiResult apiResult = this.tmsClient.saveOrUpdateTmsExtensionField(JSONUtil.toJsonStr(map));
+        if (!apiResult.isOk()) {
+            log.error("保存扩展字段报错 msg={}", apiResult.getMsg());
+            throw new VivoApiException(ResultEnum.OPR_FAIL.getMessage());
+        }
         //暂存订单
         ApiResult result = this.omsClient.holdOrder(orderForm);
         return result;
@@ -572,7 +590,8 @@ public class VivoServiceImpl implements VivoService {
                 .setBusinessId(airOrder.getId())
                 .setThirdPartyUniqueSign(bookingFileTransferDataForm.getBookingNo())
                 .setCreateTime(LocalDateTime.now())
-                .setType(ExtensionFieldTypeEnum.VIVO.getCode())
+                .setType(ExtensionFieldTypeEnum.TWO.getCode())
+                .setCreateUserType(CreateUserTypeEnum.VIVO.getCode())
                 .setValue(JSONUtil.toJsonStr(bookingFileTransferDataForm))
                 .setRemarks(VivoInterfaceDescEnum.FOUR.getDesc());
         return this.airExtensionFieldService.save(airExtensionField);
@@ -602,7 +621,7 @@ public class VivoServiceImpl implements VivoService {
 
         if (0 == MapUtil.getInt(result, "status")) {
             log.error("远程调用推送确认订舱信息给vivo失败 msg={}", MapUtil.getStr(result, "message"));
-            throw new JayudBizException(ResultEnum.OPR_FAIL);
+            throw new JayudBizException(ResultEnum.VIVO_ERROR.getCode(), MapUtil.getStr(result, "message"));
         }
     }
 
@@ -628,8 +647,8 @@ public class VivoServiceImpl implements VivoService {
         msg.put("pickUpDate", DateUtils.LocalDateTime2Str(airOrder.getGoodTime(), "yyyy/M/dd HH:mm:ss"));
 //        msg.put("masterAirwayBill", airBooking.getMainNo());
         if (airBooking != null) {
-            msg.put("billOfLading", airBooking.getMainNo() + "/" + (StringUtils.isEmpty(airBooking.getSubNo()) ?
-                    "" : airBooking.getSubNo()));
+            msg.put("billOfLading", airBooking.getMainNo() + (StringUtils.isEmpty(airBooking.getSubNo()) ?
+                    "" : "/" + airBooking.getSubNo()));
             msg.put("flightNo", airBooking.getFlight());
             msg.put("chargedWeight", airBooking.getBillingWeight());
             msg.put("blWeight", airBooking.getBillLadingWeight());
@@ -679,6 +698,9 @@ public class VivoServiceImpl implements VivoService {
             log.error("获取文件地址失败");
             throw new JayudBizException("获取文件地址失败");
         }
+
+        //成功集合
+        List<Map<String, Object>> successData = new ArrayList<>();
         for (int i = 0; i < filePaths.length; i++) {
             String filePath = filePaths[i];
             String fileName = fileNames[i];
@@ -697,7 +719,16 @@ public class VivoServiceImpl implements VivoService {
             if (0 == MapUtil.getInt(resultMap, "status")) {
                 log.error("vivo货代抛转空运提单信息失败 bookingNo={} file={} msg={}", airOrder.getThirdPartyOrderNo(),
                         fileName, MapUtil.getStr(resultMap, "message"));
-//                throw new VivoApiException(MapUtil.getStr(resultMap, "message"));
+                if (!CollectionUtil.isEmpty(successData)) {
+                    successData.forEach(e -> {
+                        e.put("operationType", "delete");
+                        this.forwarderLadingFile(e);
+                    });
+                }
+                throw new JayudBizException(ResultEnum.VIVO_ERROR.getCode(),
+                        MapUtil.getStr(resultMap, "message"));
+            } else {
+                successData.add(msg);
             }
         }
 
@@ -746,7 +777,7 @@ public class VivoServiceImpl implements VivoService {
      * 推送反馈信息
      */
     @Override
-    public void pushExceptionFeedbackInfo(AirOrder airOrder, AirExceptionFeedback airExceptionFeedback) {
+    public void pushExceptionFeedbackInfo(AirOrder airOrder, AddAirExceptionFeedbackForm form, AirExceptionFeedback airExceptionFeedback) {
         String[] filePaths = airExceptionFeedback.getFilePath().split(",");
         String[] fileNames = airExceptionFeedback.getFileName().split(",");
         ApiResult result = this.fileClient.getBaseUrl();
@@ -768,8 +799,8 @@ public class VivoServiceImpl implements VivoService {
             msg.put("fileName", fileName);
             msg.put("abnormalyClassification", airExceptionFeedback.getType());
             msg.put("abnormal", airExceptionFeedback.getRemarks());
-            msg.put("occurrenceTime", airExceptionFeedback.getStartTime());
-            msg.put("exceptionFinishTime", airExceptionFeedback.getCompletionTime());
+            msg.put("occurrenceTime", DateUtils.str2LocalDateTime(form.getStartTime(), "-", "/"));
+            msg.put("exceptionFinishTime", DateUtils.str2LocalDateTime(form.getCompletionTime(), "-", "/"));
 //        request.put("msg", JSONUtil.toJsonStr(msg));
 //        msgClient.consume(request);
 
@@ -782,14 +813,22 @@ public class VivoServiceImpl implements VivoService {
         }
     }
 
-
-    public static void main(String[] args) {
-//        UUID uuid = UUID.randomUUID();
-//        System.out.println(uuid.toString());
-
+    /**
+     * 取消订舱单
+     */
+    @Override
+    @Transactional
+    public void bookingCancel(AirOrder airOrder) {
+        //获取主订单号
+        //根据主订单号设置状态
         Map<String, Object> map = new HashMap<>();
-        map.put("name", "张三");
-
-        System.out.println(JSONUtil.toJsonStr(Collections.singletonList(map)));
+        map.put("orderNo", airOrder.getMainOrderNo());
+        map.put("status", OrderStatusEnum.MAIN_6.getCode());
+        this.omsClient.updateByMainOrderNo(JSONUtil.toJsonStr(map));
+        //取消订单
+        this.airOrderService.updateById(new AirOrder()
+                .setId(airOrder.getId()).setProcessStatus(ProcessStatusEnum.CLOSE.getCode()));
     }
+
+
 }

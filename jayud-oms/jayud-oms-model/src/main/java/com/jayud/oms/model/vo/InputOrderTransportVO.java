@@ -40,6 +40,9 @@ public class InputOrderTransportVO {
     @ApiModelProperty("接单法人")
     private String legalName;
 
+    @ApiModelProperty("接单法人ID")
+    private Long legalEntityId;
+
     @ApiModelProperty(value = "通关口岸")
     private String portName;
 
@@ -58,8 +61,8 @@ public class InputOrderTransportVO {
     @ApiModelProperty(value = "大陆车牌")
     private String licensePlate;
 
-    @ApiModelProperty(value = "车型(1-3T 2-5t 3-8T 4-10T)")
-    private Integer vehicleSize;
+    @ApiModelProperty(value = "车型(3T)")
+    private String vehicleSize;
 
     @ApiModelProperty(value = "车型(1吨车 2柜车)")
     private Integer vehicleType;
@@ -120,6 +123,9 @@ public class InputOrderTransportVO {
 
     @ApiModelProperty(value = "香港清关接单法人")
     private String hkLegalName;
+
+    @ApiModelProperty(value = "香港清关接单法人ID")
+    private Long hkLegalId;
 
     @ApiModelProperty(value = "香港清关结算单位")
     private String hkUnitCode;

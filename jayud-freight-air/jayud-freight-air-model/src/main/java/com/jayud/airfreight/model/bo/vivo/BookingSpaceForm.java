@@ -77,7 +77,7 @@ public class BookingSpaceForm {
     @SerializedName("Port_of_departure")
     @ApiModelProperty(value = "起运港")
     @NotEmpty(message = "起运港不可为空")
-//    @Length(min = 5, max = 5, message = "启运港代码长度为五位代码")
+    @Length(min = 5, max = 5, message = "启运港代码长度为五位代码")
     private String portOfDeparture;
 
     @JsonProperty("Destination")
@@ -91,7 +91,7 @@ public class BookingSpaceForm {
     @SerializedName("Port_of_destination")
     @ApiModelProperty(value = "目的港")
     @NotEmpty(message = "目的港不可为空")
-//    @Length(min = 5, max = 5, message = "目的港代码长度为五位代码")
+    @Length(min = 5, max = 5, message = "目的港代码长度为五位代码")
     private String portOfDestination;
 
     @JsonProperty("Trade_terms")

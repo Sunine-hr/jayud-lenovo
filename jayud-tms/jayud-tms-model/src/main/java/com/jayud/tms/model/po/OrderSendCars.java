@@ -41,8 +41,8 @@ public class OrderSendCars extends Model<OrderSendCars> {
     @ApiModelProperty(value = "车型(1吨车 2柜车)")
     private Integer vehicleType;
 
-    @ApiModelProperty(value = "车型(1-3T 2-5t 3-8T 4-10T)")
-    private Integer vehicleSize;
+    @ApiModelProperty(value = "车型(3T)")
+    private String vehicleSize;
 
     @ApiModelProperty(value = "柜号")
     private String cntrNo;

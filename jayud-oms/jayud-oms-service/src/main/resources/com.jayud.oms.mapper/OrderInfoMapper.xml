@@ -276,7 +276,8 @@
             oi.`unit_code` unitCode,
             oi.`unit_account` unitAccount,
             oi.`is_data_all` isDataAll,
-            oi.`status` status
+            oi.`status` status,
+            oi.legal_entity_id legalEntityId
         FROM
             order_info oi WHERE 1 = 1
         <if test="idValue != null and idValue != ''">

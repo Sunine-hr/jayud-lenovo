@@ -46,7 +46,7 @@ CREATE TABLE `air_order` (
   `status` char(10) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '状态(k_0待接单,k_1空运接单,k_2订舱,k_3订单入仓,\r\nk_4确认提单,k_5确认离港,k_6确认到港,k_7海外代理k_8确认签收)',
   `process_status` int(10) DEFAULT NULL COMMENT '流程状态(0:进行中,1:完成)',
   `settlement_unit_code` char(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '结算单位code',
-  `legal_id` bigint(20) DEFAULT NULL COMMENT '接单法人',
+  `legal_entity_id` bigint(20) DEFAULT NULL COMMENT '接单法人',
   `imp_and_exp_type` int(10) DEFAULT NULL COMMENT '进出口类型(1：进口，2：出口)',
   `terms` int(10) DEFAULT NULL COMMENT '贸易方式(0:CIF,1:DUU,2:FOB,3:DDP)',
   `port_departure_code` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '起运港代码',

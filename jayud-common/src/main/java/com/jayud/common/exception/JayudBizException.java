@@ -14,7 +14,7 @@ public class JayudBizException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     private String msg;
-    private int code = 500;
+    private Integer code = 500;
 
 
     public JayudBizException(ResultEnum resultEnum) {
@@ -28,12 +28,18 @@ public class JayudBizException extends RuntimeException {
         this.msg = msg;
     }
 
+    public JayudBizException(int code, String msg) {
+        super(msg);
+        this.msg = msg;
+        this.code = code;
+    }
+
     public JayudBizException(String msg, Throwable e) {
         super(msg, e);
         this.msg = msg;
     }
 
-    public JayudBizException(String msg, int code) {
+    public JayudBizException(String msg, Integer code) {
         super(msg);
         this.msg = msg;
         this.code = code;

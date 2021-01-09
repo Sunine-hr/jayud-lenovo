@@ -33,20 +33,17 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.*;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 客户管理 前端控制器
@@ -121,18 +118,18 @@ public class CustomerInfoController {
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "二期优化3:新增和编辑时校验客户名称是否存在,name=客户姓名")
+    @ApiOperation(value = "二期优化3:新增和编辑时校验客户名称是否存在,name=客户姓名 id=客户ID")
     @PostMapping(value = "/existCustomerName")
     public CommonResult existCustomerName(@RequestBody Map<String,Object> param) {
         String customerName = MapUtil.getStr(param, "name");
-        Long id = Long.parseLong(MapUtil.getStr(param,"id"));
+        String id = MapUtil.getStr(param,"id");
         if(StringUtil.isNullOrEmpty(customerName)){
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.like("name",customerName);
         List<CustomerInfo> customerInfos = customerInfoService.list(queryWrapper);
-        if((id == null && customerInfos != null && customerInfos.size() > 0) || (id != null && customerInfos != null && customerInfos.size() > 1)){
+        if((StringUtil.isNullOrEmpty(id) && customerInfos != null && customerInfos.size() > 0) || ((!StringUtil.isNullOrEmpty(id)) && customerInfos != null && customerInfos.size() > 1)){
             return CommonResult.error(ResultEnum.CUSTOMER_NAME_EXIST);
         }
         return CommonResult.success();
@@ -157,25 +154,25 @@ public class CustomerInfoController {
     @ApiOperation(value = "二期优化3:已关联客户(结算单位)列表,id = 客户ID")
     @PostMapping(value = "/relateUnitList")
     public CommonResult<List<CustomerInfoVO>> relateUnitList(@RequestBody Map<String,Object> param) {
-        Long id = Long.valueOf(MapUtil.getStr(param, "id"));
-        if(id == null){
+        String idStr = MapUtil.getStr(param, "id");
+        if(StringUtil.isNullOrEmpty(idStr)){
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        List<CustomerInfoVO> customerInfoVOS = customerInfoService.relateUnitList(id);
+        List<CustomerInfoVO> customerInfoVOS = customerInfoService.relateUnitList(Long.parseLong(idStr));
         return CommonResult.success(customerInfoVOS);
     }
 
     @ApiOperation(value = "二期优化3:删除已关联客户(结算单位)列表,customerInfoId=客户ID,unitId=关联客户ID")
     @PostMapping(value = "/delRelateUnitList")
     public CommonResult delRelateUnitList(@RequestBody Map<String,Object> param) {
-        Long customerInfoId = Long.valueOf(MapUtil.getStr(param, "customerInfoId"));
-        Long unitId = Long.valueOf(MapUtil.getStr(param, "unitId"));
-        if(customerInfoId == null || unitId == null){
+        String customerInfoIdStr = MapUtil.getStr(param, "customerInfoId");
+        String unitIdStr = MapUtil.getStr(param, "unitId");
+        if(StringUtil.isNullOrEmpty(customerInfoIdStr) || StringUtil.isNullOrEmpty(unitIdStr)){
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         QueryWrapper removeWrapper = new QueryWrapper();
-        removeWrapper.eq("customer_info_id",customerInfoId);
-        removeWrapper.eq("unit_id",unitId);
+        removeWrapper.eq("customer_info_id",Long.parseLong(customerInfoIdStr));
+        removeWrapper.eq("unit_id",Long.parseLong(unitIdStr));
         customerRelaUnitService.remove(removeWrapper);
         return CommonResult.success();
     }
@@ -248,6 +245,24 @@ public class CustomerInfoController {
         customerInfoService.updateById(customerInfo);
         auditInfoService.save(auditInfo);
         return CommonResult.success();
+    }
+
+    @ApiOperation(value = "编辑及审核客户代码是否可填 id = 客户ID")
+    @PostMapping(value = "/isFillCustomerCode")
+    public CommonResult<Boolean> isFillCustomerCode(@RequestBody Map<String,Object> param) {
+        String customerInfoIdStr = MapUtil.getStr(param, "id");
+        if(StringUtil.isNullOrEmpty(customerInfoIdStr)){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("ext_id",Long.parseLong(customerInfoIdStr));
+        queryWrapper.eq("ext_desc",SqlConstant.CUSTOMER_INFO);
+        queryWrapper.eq("audit_status",CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());
+        List<AuditInfo> auditInfos = auditInfoService.list(queryWrapper);
+        if(auditInfos != null && auditInfos.size() > 0){
+            return CommonResult.success(false);
+        }
+        return CommonResult.success(true);
     }
 
     @ApiOperation(value = "客户账号管理-修改时数据回显,id=客户账号ID")

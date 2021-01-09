@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.bo.QueryVehicleInfoForm;
 import com.jayud.oms.model.po.VehicleInfo;
 import com.jayud.oms.model.vo.VehicleInfoVO;
+import com.jayud.oms.model.vo.VehicleSizeInfoVO;
 
 import java.util.List;
 
@@ -48,4 +49,10 @@ public interface IVehicleInfoService extends IService<VehicleInfo> {
      * 根据司机查询车辆信息
      */
     List<VehicleInfoVO> findVehicleByDriverName(String driverName);
+
+    /**
+     * 获取所有的车型尺寸
+     * @return
+     */
+    List<VehicleSizeInfoVO> findVehicleSize();
 }

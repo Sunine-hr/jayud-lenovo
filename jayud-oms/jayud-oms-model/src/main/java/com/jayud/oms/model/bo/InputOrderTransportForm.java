@@ -32,8 +32,8 @@ public class InputOrderTransportForm {
     @ApiModelProperty(value = "车型(1吨车 2柜车)",required = true)
     private Integer vehicleType;
 
-    @ApiModelProperty(value = "车型(1-3T 2-5t 3-8T 4-10T)",required = true)
-    private Integer vehicleSize;
+    @ApiModelProperty(value = "车型(3T)",required = true)
+    private String vehicleSize;
 
     @ApiModelProperty(value = "柜号")
     private String cntrNo;
@@ -67,6 +67,9 @@ public class InputOrderTransportForm {
 
     @ApiModelProperty(value = "香港清关结算单位,选择了香港清关必填")
     private String hkUnitCode;
+
+    @ApiModelProperty(value = "香港清关接单法人ID,选择了香港清关必填")
+    private Long hkLegalId;
 
     @ApiModelProperty(value = "香港清关接单法人,选择了香港清关必填")
     private String hkLegalName;

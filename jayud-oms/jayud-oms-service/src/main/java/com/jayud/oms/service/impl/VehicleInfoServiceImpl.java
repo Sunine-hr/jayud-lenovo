@@ -10,6 +10,7 @@ import com.jayud.oms.model.bo.QueryVehicleInfoForm;
 import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.VehicleInfo;
 import com.jayud.oms.model.vo.VehicleInfoVO;
+import com.jayud.oms.model.vo.VehicleSizeInfoVO;
 import com.jayud.oms.service.IVehicleInfoService;
 import org.springframework.stereotype.Service;
 
@@ -112,6 +113,11 @@ public class VehicleInfoServiceImpl extends ServiceImpl<VehicleInfoMapper, Vehic
     @Override
     public List<VehicleInfoVO> findVehicleByDriverName(String driverName) {
         return baseMapper.findVehicleByDriverName(driverName);
+    }
+
+    @Override
+    public List<VehicleSizeInfoVO> findVehicleSize() {
+        return baseMapper.findVehicleSize();
     }
 
 

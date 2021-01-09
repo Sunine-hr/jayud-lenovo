@@ -59,7 +59,7 @@ public class ForwarderLadingInfoForm {
     private String masterAirwayBill;
 
     @JsonProperty("Flight_no")
-    @SerializedName("航班号")
+    @SerializedName("Flight_no")
     @ApiModelProperty(value = "航班号")
     @Length(max = 10, message = "字段的最大长度为10")
     private String flightNo;

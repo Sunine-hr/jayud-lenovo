@@ -103,7 +103,7 @@ public class OrderInfoController {
                 || inputMainOrderForm.getBizUid() == null
                 || StringUtil.isNullOrEmpty(inputMainOrderForm.getBizUname())
                 || StringUtil.isNullOrEmpty(inputMainOrderForm.getLegalName())
-//                || inputMainOrderForm.getLegalEntityId() == null
+                || inputMainOrderForm.getLegalEntityId() == null
                 || inputMainOrderForm.getBizBelongDepart() == null
                 || StringUtil.isNullOrEmpty(inputMainOrderForm.getBizCode())
                 || StringUtil.isNullOrEmpty(inputMainOrderForm.getClassCode())
@@ -127,7 +127,7 @@ public class OrderInfoController {
                         inputOrderCustomsForm.getGoodsType() == null ||
                         StringUtil.isNullOrEmpty(inputOrderCustomsForm.getBizModel()) ||
                         StringUtil.isNullOrEmpty(inputOrderCustomsForm.getLegalName()) ||
-//                        inputOrderCustomsForm.getLegalEntityId() == null ||
+                        inputOrderCustomsForm.getLegalEntityId() == null ||
                         StringUtil.isNullOrEmpty(inputOrderCustomsForm.getEncode()) ||//六联单号
                         inputOrderCustomsForm.getSubOrders() == null) {
                     return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
@@ -171,7 +171,7 @@ public class OrderInfoController {
                         inputOrderTransportForm.getVehicleSize() == null ||
                         inputOrderTransportForm.getWarehouseInfoId() == null ||
                         StringUtil.isNullOrEmpty(inputOrderTransportForm.getLegalName()) ||
-//                        inputOrderTransportForm.getLegalEntityId() == null ||
+                        inputOrderTransportForm.getLegalEntityId() == null ||
                         StringUtil.isNullOrEmpty(inputOrderTransportForm.getUnitCode())) {
                     return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
                 }
@@ -195,6 +195,7 @@ public class OrderInfoController {
                 //清关参数校验
                 if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.XGQG.getCode())) {
                     if (StringUtil.isNullOrEmpty(inputOrderTransportForm.getHkLegalName()) ||
+                            inputOrderTransportForm.getHkLegalId() == null ||
                             StringUtil.isNullOrEmpty(inputOrderTransportForm.getHkUnitCode()) ||
                             StringUtil.isNullOrEmpty(inputOrderTransportForm.getIsHkClear())) {
                         return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());

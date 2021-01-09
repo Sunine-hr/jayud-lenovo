@@ -17,12 +17,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.jayud</groupId>
-            <artifactId>jayud-config</artifactId>
-            <version>1.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
         </dependency>

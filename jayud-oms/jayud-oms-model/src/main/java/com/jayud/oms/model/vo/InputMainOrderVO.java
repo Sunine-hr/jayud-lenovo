@@ -31,6 +31,9 @@ public class InputMainOrderVO {
     @ApiModelProperty(value = "接单法人")
     private String legalName;
 
+    @ApiModelProperty(value = "接单法人id")
+    private Long legalEntityId;
+
     @ApiModelProperty(value = "业务所属部门")
     private Long bizBelongDepart;
 

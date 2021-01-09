@@ -390,6 +390,9 @@ public class VivoServiceImpl implements VivoService {
             return null;
         }
         log.info("响应参数:" + feedback);
+        if (fw.exists()) {
+            fw.delete();
+        }
         return JSONUtil.toBean(feedback, Map.class);
     }
 

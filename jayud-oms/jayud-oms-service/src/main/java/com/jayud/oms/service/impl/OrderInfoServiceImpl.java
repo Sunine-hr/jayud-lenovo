@@ -1,5 +1,7 @@
 package com.jayud.oms.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -29,10 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.jayud.common.enums.CreateUserTypeEnum.*;
@@ -94,6 +93,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private MsgClient msgClient;
     @Autowired
     private ISupplierInfoService supplierInfoService;
+    @Autowired
+    private IAuditInfoService auditInfoService;
+
+    private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(), SubOrderSignEnum.KY.getSignOne()};
 
     @Autowired
     private IServiceOrderService serviceOrderService;
@@ -160,8 +163,50 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             //定义排序规则
             page.addOrder(OrderItem.desc("temp.id"));
             pageInfo = baseMapper.findOrderInfoByPage(page, form);
+            //根据主订单查询子订单数据
+            List<OrderInfoVO> orderInfoVOs = pageInfo.getRecords();
+            if (CollectionUtil.isEmpty(orderInfoVOs)) {
+                return pageInfo;
+            }
+            List<String> mainOrderNoList = orderInfoVOs.stream().map(OrderInfoVO::getOrderNo).collect(Collectors.toList());
+            Map<String, Map<String, Object>> subOrderMap = this.getSubOrderByMainOrderNos(mainOrderNoList);
+            //查询子订单驳回原因
+            this.getSubOrderRejectionMsg(orderInfoVOs, subOrderMap);
         }
         return pageInfo;
+    }
+
+
+    /**
+     * 查询子订单驳回原因
+     *
+     * @return
+     */
+    private void getSubOrderRejectionMsg(List<OrderInfoVO> orderInfoVOs, Map<String, Map<String, Object>> subOrderMap) {
+
+        for (OrderInfoVO orderInfoVO : orderInfoVOs) {
+            Map<String, Object> subOrderInfos = subOrderMap.get(orderInfoVO.getOrderNo());
+            String[] rejectionStatus = OrderStatusEnum.getRejectionStatus(null);
+            StringBuffer sb = StringUtils.isEmpty(orderInfoVO.getRejectComment()) ? new StringBuffer() : new StringBuffer("," + orderInfoVO.getRejectComment());
+            subOrderInfos.forEach((key, value) -> {
+                if (value != null) {
+                    String tableDesc = SubOrderSignEnum.getSignOne2SignTwo(key);
+                    if (value instanceof Map) {
+                        Map<String, Object> map = (Map<String, Object>) value;
+                        AuditInfo auditInfo = this.auditInfoService.getLatestByRejectionStatus(Long.valueOf(map.get("id").toString()),
+                                tableDesc, rejectionStatus);
+                        if (!StringUtils.isEmpty(auditInfo.getAuditComment())) {
+                            sb.append(map.get("orderNo")).append("-")
+                                    .append(auditInfo.getAuditComment()).append(",");
+                        }
+                    }
+
+                }
+            });
+            if (!StringUtils.isEmpty(sb.toString())) {
+                orderInfoVO.setRejectComment(sb.substring(0, sb.length() - 1));
+            }
+        }
     }
 
     @Override
@@ -886,6 +931,50 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         QueryWrapper<OrderInfo> condition = new QueryWrapper<>();
         condition.lambda().eq(OrderInfo::getOrderNo, mainOrderNo);
         return update(orderInfo, condition);
+    }
+
+    /**
+     * 根据主订单号查询所有子订单数据
+     *
+     * @param mainOrderNoList
+     * @return
+     */
+    @Override
+    public Map<String, Map<String, Object>> getSubOrderByMainOrderNos(List<String> mainOrderNoList) {
+        //报关
+
+        //中港
+        ApiResult result = this.tmsClient.getTmsOrderByMainOrderNos(mainOrderNoList);
+        Map<String, Map<String, Object>> tmsOrderMap = this.object2Map(result.getData());
+
+        //空运
+        result = this.freightAirClient.getAirOrderByMainOrderNos(mainOrderNoList);
+        Map<String, Map<String, Object>> airOrderMap = this.object2Map(result.getData());
+
+        Map<String, Map<String, Object>> map = new HashMap<>();
+        for (String mainOrderNo : mainOrderNoList) {
+            Map<String, Object> subOrder = new HashMap<>();
+            subOrder.put(KEY_SUBORDER[0], tmsOrderMap.get(mainOrderNo));
+            subOrder.put(KEY_SUBORDER[1], airOrderMap.get(mainOrderNo));
+            map.put(mainOrderNo, subOrder);
+        }
+        return map;
+    }
+
+    /**
+     * 子订单使用
+     * JSONArray转Map
+     */
+    private Map<String, Map<String, Object>> object2Map(Object data) {
+        Map<String, Map<String, Object>> map = new HashMap<>();
+        if (data != null) {
+            JSONArray tmsOrders = new JSONArray(data);
+            for (int i = 0; i < tmsOrders.size(); i++) {
+                JSONObject tmsOrder = tmsOrders.getJSONObject(i);
+                map.put(tmsOrder.getStr("mainOrderNo"), tmsOrder.toBean(Map.class));
+            }
+        }
+        return map;
     }
 
 

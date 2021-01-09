@@ -340,7 +340,7 @@ public class VivoServiceImpl implements VivoService {
         if (StringUtils.isEmpty(feedback)) {
             return null;
         }
-        log.info("vivo返回参数:" + JSONUtil.toJsonStr(feedback));
+        log.info("vivo返回参数:" + feedback);
         return JSONUtil.toBean(feedback, Map.class);
     }
 
@@ -369,7 +369,6 @@ public class VivoServiceImpl implements VivoService {
             redisUtils.delete(VIVO_TOEKN_STR);
             map = this.doPostWithFile(data, fw, url);
         }
-        log.info("响应参数:" + gson.toJson(map));
         return map;
     }
 
@@ -384,6 +383,7 @@ public class VivoServiceImpl implements VivoService {
         if (StringUtils.isEmpty(feedback)) {
             return null;
         }
+        log.info("响应参数:" + feedback);
         return JSONUtil.toBean(feedback, Map.class);
     }
 

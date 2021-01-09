@@ -20,10 +20,9 @@ public enum OrderStatusEnum {
     CKBG("CKBG", "出口报关"),
     XGQG("XGQG", "香港清关"),
     KYDD("KYDD", "空运订单"),
-    ZGYSDD("ZGYSDD","中港运输订单"),
-    NLYSDD("NLYSDD","内陆运输订单"),
-    FW("FW","服务单"),
-    FWDD("FWDD","服务单订单"),
+    ZGYSDD("ZGYSDD", "中港运输订单"),
+    NLYSDD("NLYSDD", "内陆运输订单"),
+
 
     //主订单状态
     MAIN_1("1", "正常"),
@@ -210,6 +209,26 @@ public enum OrderStatusEnum {
         }
         if (OrderStatusEnum.AIR_A_2.getCode().equals(status)) {//入仓页面驳回
             return AIR_A_3_1;
+        }
+        return null;
+    }
+
+    /**
+     * 获取驳回状态
+     */
+    public static String[] getRejectionStatus(String... subOrderSigns) {
+        if (subOrderSigns == null) {
+            return new String[]{CUSTOMS_C_1_1.getCode(), CUSTOMS_C_5_1.getCode(),
+                    TMS_T_1_1.getCode(), TMS_T_2_1.getCode(), TMS_T_3_1.getCode(),
+                    TMS_T_3_2.getCode(), TMS_T_4_1.getCode(), TMS_T_5_1.getCode(),
+                    AIR_A_1_1.getCode(), AIR_A_2_1.getCode(), AIR_A_3_1.getCode(),
+                    AIR_A_3_2.getCode()};
+        }
+        for (String subOrderSign : subOrderSigns) {
+            //todo 有需要再补
+            if (SubOrderSignEnum.ZGYS.getSignOne().equals(subOrderSign)) {
+                return null;
+            }
         }
         return null;
     }

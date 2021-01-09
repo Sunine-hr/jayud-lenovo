@@ -71,14 +71,12 @@ public class ContractInfoController {
     public CommonResult<CommonPageResult<ContractInfoVO>> findContractInfoByPage(
             @Valid @RequestBody QueryContractInfoForm form) {
         IPage<ContractInfoVO> pageList = contractInfoService.findContractInfoByPage(form);
-        Object data = oauthClient.findLegalEntity().getData();
+        List<InitComboxVO> data = oauthClient.findLegalEntity().getData();
         //法人主体
         if (data != null) {
-            List<Map<String, Object>> maps = (List<Map<String, Object>>) data;
-
             Map<Long, String> map = new HashMap<>();
-            for (Map<String, Object> tmp : maps) {
-                map.put(Long.valueOf(tmp.get("id").toString()), tmp.get("name").toString());
+            for (InitComboxVO obj : data) {
+                map.put(obj.getId(), obj.getName());
             }
 
             for (ContractInfoVO record : pageList.getRecords()) {
@@ -211,7 +209,7 @@ public class ContractInfoController {
     @ApiOperation(value = "合同管理-下拉框-法人主体")
     @PostMapping(value = "/initLegalEntity")
     public CommonResult<List<InitComboxVO>> initLegalEntity() {
-        List<InitComboxVO> initComboxVOS = (List<InitComboxVO>) oauthClient.findLegalEntity().getData();
+        List<InitComboxVO> initComboxVOS = oauthClient.findLegalEntity().getData();
         return CommonResult.success(initComboxVOS);
     }
 

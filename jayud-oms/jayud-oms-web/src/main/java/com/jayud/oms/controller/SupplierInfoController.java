@@ -5,6 +5,7 @@ import cn.hutool.core.map.MapUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
@@ -21,13 +22,12 @@ import com.jayud.oms.model.po.AuditInfo;
 import com.jayud.oms.model.po.SupplierInfo;
 import com.jayud.oms.model.vo.EnumVO;
 import com.jayud.oms.model.vo.SupplierInfoVO;
-import com.jayud.oms.model.vo.SystemUserVO;
 import com.jayud.oms.service.IAuditInfoService;
 import com.jayud.oms.service.ISupplierInfoService;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +44,10 @@ import javax.validation.Valid;
 import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.jayud.oms.model.enums.AuditStatusEnum.*;
@@ -156,6 +159,23 @@ public class SupplierInfoController {
         } else {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
+    }
+
+    @ApiOperation(value = "二期优化3:新增和编辑时校验供应商名称是否存在,name=供应商名称")
+    @PostMapping(value = "/existSupplierName")
+    public CommonResult existSupplierName(@RequestBody Map<String,Object> param) {
+        String supplierName = MapUtil.getStr(param, "name");
+        Long id = Long.parseLong(MapUtil.getStr(param,"id"));
+        if(StringUtil.isNullOrEmpty(supplierName)){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.like("supplier_ch_name",supplierName);
+        List<SupplierInfo> supplierInfos = supplierInfoService.list(queryWrapper);
+        if((id == null && supplierInfos != null && supplierInfos.size() > 0) || (id != null && supplierInfos != null && supplierInfos.size() > 1)){
+            return CommonResult.error(ResultEnum.SUPPLIER_NAME_EXIST);
+        }
+        return CommonResult.success();
     }
 
     @ApiOperation("查询结算类型枚举")
@@ -293,8 +313,6 @@ public class SupplierInfoController {
     public CommonResult ajaxUploadExcel(MultipartFile file, HttpServletResponse response){
 
         String commentHTML=null;
-//        HttpHeaders responseHeaders = new HttpHeaders();
-//        responseHeaders.setContentType(new MediaType("text","html", Charset.forName("UTF-8")));
         try {
             commentHTML = supplierInfoService.importCustomerInfoExcel(response,file);
         } catch (Exception e1) {
@@ -302,7 +320,6 @@ public class SupplierInfoController {
         }
 
         if (com.alibaba.nacos.client.utils.StringUtils.isNotBlank(commentHTML)) {
-//            return new ResponseEntity<String>(commentHTML, responseHeaders, org.springframework.http.HttpStatus.OK);
             return CommonResult.success(commentHTML);
         }else {
             return CommonResult.error(ResultEnum.OPR_FAIL,"导入失败");

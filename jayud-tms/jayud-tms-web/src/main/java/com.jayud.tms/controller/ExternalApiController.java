@@ -203,6 +203,14 @@ public class ExternalApiController {
         List<OrderTransport> orderTransports = this.orderTransportService.getOrderTmsByCondition(new OrderTransport().setThirdPartyOrderNo(thirdPartyOrderNo));
         return ApiResult.ok(orderTransports.size() > 0 ? orderTransports.get(0) : null);
     }
+
+    @ApiModelProperty(value = "根据主订单号集合查询中港信息")
+    @RequestMapping(value = "/api/getTmsOrderByMainOrderNos")
+    public ApiResult getTmsOrderByMainOrderNos(@RequestParam("mainOrderNos") List<String> mainOrderNos) {
+        List<OrderTransport> orderTransports = this.orderTransportService.getTmsOrderByMainOrderNos(mainOrderNos);
+        return ApiResult.ok(orderTransports);
+    }
+
 }
 
 

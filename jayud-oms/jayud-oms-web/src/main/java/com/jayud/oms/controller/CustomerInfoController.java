@@ -125,13 +125,14 @@ public class CustomerInfoController {
     @PostMapping(value = "/existCustomerName")
     public CommonResult existCustomerName(@RequestBody Map<String,Object> param) {
         String customerName = MapUtil.getStr(param, "name");
+        Long id = Long.parseLong(MapUtil.getStr(param,"id"));
         if(StringUtil.isNullOrEmpty(customerName)){
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.like("name",customerName);
         List<CustomerInfo> customerInfos = customerInfoService.list(queryWrapper);
-        if(customerInfos != null && customerInfos.size() > 0){
+        if((id == null && customerInfos != null && customerInfos.size() > 0) || (id != null && customerInfos != null && customerInfos.size() > 1)){
             return CommonResult.error(ResultEnum.CUSTOMER_NAME_EXIST);
         }
         return CommonResult.success();
@@ -397,11 +398,9 @@ public class CustomerInfoController {
 
     @ApiOperation(value = "导入客户信息")
     @PostMapping(value = "/uploadExcel")
-    public  CommonResult ajaxUploadExcel(MultipartFile file,HttpServletResponse response){
+    public CommonResult ajaxUploadExcel(MultipartFile file, HttpServletResponse response){
 
         String commentHTML=null;
-//        HttpHeaders responseHeaders = new HttpHeaders();
-//        responseHeaders.setContentType(new MediaType("text","html", Charset.forName("UTF-8")));
         try {
             commentHTML = customerInfoService.importCustomerInfoExcel(response,file);
         } catch (Exception e1) {
@@ -409,7 +408,6 @@ public class CustomerInfoController {
         }
 
         if (StringUtils.isNotBlank(commentHTML)) {
-//            return new ResponseEntity<String>(commentHTML, responseHeaders, org.springframework.http.HttpStatus.OK);
             return CommonResult.success(commentHTML);
         }else {
             return CommonResult.error(ResultEnum.OPR_FAIL,"导入失败");

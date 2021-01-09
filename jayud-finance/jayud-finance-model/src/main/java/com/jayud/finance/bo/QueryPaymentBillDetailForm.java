@@ -1,12 +1,10 @@
 package com.jayud.finance.bo;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.Pattern;
-import java.time.LocalDateTime;
 
 /**
  * 应收/应付一致
@@ -26,13 +24,8 @@ public class QueryPaymentBillDetailForm extends BasePageForm {
     @ApiModelProperty(value = "账单编号")
     private String billNo;
 
-    @ApiModelProperty(value = "开始核算期")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime beginAccountTerm;
-
-    @ApiModelProperty(value = "结束核算期")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime endAccountTerm;
+    @ApiModelProperty(value = "核算期")
+    private String accountTermStr;
 
     @ApiModelProperty(value = "币种")
     private String currencyCode;

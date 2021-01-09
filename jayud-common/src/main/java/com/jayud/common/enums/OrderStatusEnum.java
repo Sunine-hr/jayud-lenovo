@@ -22,7 +22,8 @@ public enum OrderStatusEnum {
     KYDD("KYDD", "空运订单"),
     ZGYSDD("ZGYSDD","中港运输订单"),
     NLYSDD("NLYSDD","内陆运输订单"),
-
+    FW("FW","服务单"),
+    FWDD("FWDD","服务单订单"),
 
     //主订单状态
     MAIN_1("1", "正常"),

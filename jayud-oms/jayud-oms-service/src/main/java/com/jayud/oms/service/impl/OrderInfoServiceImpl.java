@@ -26,7 +26,6 @@ import io.netty.util.internal.StringUtil;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -95,6 +94,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private MsgClient msgClient;
     @Autowired
     private ISupplierInfoService supplierInfoService;
+
+    @Autowired
+    private IServiceOrderService serviceOrderService;
 
 
     @Override
@@ -627,6 +629,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 inputOrderVO.setAirOrderForm(airOrderVO);
             }
         }
+        //服务单信息
+        if(OrderStatusEnum.FW.getCode().equals(form.getClassCode())||
+                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.FWDD.getCode())){
+            InputOrderServiceVO orderServiceVO = serviceOrderService.getSerOrderDetails(inputMainOrderVO.getOrderNo());
+            if(orderServiceVO!=null){
+                inputOrderVO.setOrderServiceForm(orderServiceVO);
+            }
+        }
 
         return inputOrderVO;
     }
@@ -719,6 +729,17 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     : ProcessStatusEnum.DRAFT.getCode();
             airOrderForm.setProcessStatus(processStatus);
             this.freightAirClient.createOrder(airOrderForm);
+        }
+        //服务单
+        if(OrderStatusEnum.FW.getCode().equals(classCode)){
+            //创建服务单订单信息
+            InputOrderServiceForm orderServiceForm = form.getOrderServiceForm();
+            orderServiceForm.setMainOrderNo(mainOrderNo);
+            orderServiceForm.setLoginUser(UserOperator.getToken());
+            boolean result = serviceOrderService.createOrder(orderServiceForm);
+            if(!result){
+                return false;
+            }
         }
 
         return true;

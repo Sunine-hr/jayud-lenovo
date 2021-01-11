@@ -85,6 +85,9 @@ public class CustomerInfoVO {
     @ApiModelProperty(value = "审核状态描述")
     private String auditStatusDesc;
 
+    @ApiModelProperty(value = "是否有效")
+    private String status;
+
     @ApiModelProperty(value = "创建人")
     private String createdUser;
 

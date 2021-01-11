@@ -23,6 +23,7 @@
         <result column="ku_code" property="kuCode"/>
         <result column="yw_code" property="ywCode"/>
         <result column="audit_status" property="auditStatus"/>
+        <result column="status" property="status"/>
         <result column="created_user" property="createdUser"/>
         <result column="updated_user" property="updatedUser"/>
         <result column="updated_time" property="updatedTime"/>
@@ -32,7 +33,7 @@
     <sql id="Base_Column_List">
          id,name,id_code,types,contact,phone,address,email,tfn,
          if_contract,settlement_type,account_period,estate,department_code,ku_code,yw_code,audit_status,
-         created_user,updated_user,tax_type,tax_rate
+         created_user,updated_user,tax_type,tax_rate,status
     </sql>
 
     <select id="findCustomerInfoByPage" parameterType="com.jayud.oms.model.bo.QueryCustomerInfoForm"
@@ -102,6 +103,7 @@
               WHEN '11'
               THEN '审核拒绝'
         END) auditStatusDesc,
+        ci.status,
         ci.`created_user` createdUser,
         DATE_FORMAT(ci.`created_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
         ci.`updated_user` updatedTimeStr,ci.`audit_comment` auditComment,

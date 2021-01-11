@@ -60,7 +60,7 @@ public class OrderTransport extends Model<OrderTransport> {
     private String cntrPicName;
 
     @ApiModelProperty(value = "仓库代码(warehouse_info)")
-    private String warehouseInfoId;
+    private Long warehouseInfoId;
 
     @ApiModelProperty(value = "状态")
     private String status;

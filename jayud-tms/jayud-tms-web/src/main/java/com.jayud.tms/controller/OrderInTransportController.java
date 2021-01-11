@@ -295,7 +295,14 @@ public class OrderInTransportController {
             auditInfoForm.setAuditTypeDesc(CommonConstant.CAR_GO_CUSTOMS_DESC);
 
             //当选择的是虚拟仓时系统自动生成入仓出仓数据,即从车辆通关直接到车辆派送
-            autoOprWarehouse(form);
+            Boolean isVirtual = false;
+            OrderTransport orderTransport1 = orderTransportService.getById(form.getOrderId());
+            if(orderTransport1 != null && orderTransport1.getWarehouseInfoId() == null){
+                isVirtual = omsClient.isVirtualWarehouse(orderTransport1.getWarehouseInfoId()).getData();
+            }
+            if(isVirtual) {
+                autoOprWarehouse(form);
+            }
         }
         omsClient.saveAuditInfo(auditInfoForm);
         boolean result = orderTransportService.saveOrUpdate(orderTransport);

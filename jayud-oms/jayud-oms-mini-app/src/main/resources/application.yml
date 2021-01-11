@@ -85,6 +85,7 @@ jayud:
       - /swagger-resources/configuration/security
       - /swagger-ui.html
       - /webjars/**
+      - /api/isConfirmJieDan
     expired: 31536000
 
 

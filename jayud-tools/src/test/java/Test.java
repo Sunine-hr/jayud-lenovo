@@ -295,5 +295,13 @@ public class Test {
 
     }
 
+    @org.junit.Test
+    public void test15(){
+        String str = " \nBYT01231YYWB-AP";
+        System.out.println(str);
+        String s = str.replaceAll("\\s", "");//  "\\s"包含了回车换行制表符
+        System.out.println(s);
+    }
+
 
 }

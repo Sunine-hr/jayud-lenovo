@@ -98,6 +98,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(), SubOrderSignEnum.KY.getSignOne()};
 
+    @Autowired
+    private IServiceOrderService serviceOrderService;
+
 
     @Override
     public String oprMainOrder(InputMainOrderForm form) {
@@ -671,6 +674,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 inputOrderVO.setAirOrderForm(airOrderVO);
             }
         }
+        //服务单信息
+        if(OrderStatusEnum.FWD.getCode().equals(form.getClassCode())||
+                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.FWDDD.getCode())){
+            InputOrderServiceVO orderServiceVO = serviceOrderService.getSerOrderDetails(inputMainOrderVO.getOrderNo());
+            if(orderServiceVO!=null){
+                inputOrderVO.setOrderServiceForm(orderServiceVO);
+            }
+        }
 
         return inputOrderVO;
     }
@@ -763,6 +774,17 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     : ProcessStatusEnum.DRAFT.getCode();
             airOrderForm.setProcessStatus(processStatus);
             this.freightAirClient.createOrder(airOrderForm);
+        }
+        //服务单
+        if(OrderStatusEnum.FWD.getCode().equals(classCode)){
+            //创建服务单订单信息
+            InputOrderServiceForm orderServiceForm = form.getOrderServiceForm();
+            orderServiceForm.setMainOrderNo(mainOrderNo);
+            orderServiceForm.setLoginUser(UserOperator.getToken());
+            boolean result = serviceOrderService.createOrder(orderServiceForm);
+            if(!result){
+                return false;
+            }
         }
 
         return true;

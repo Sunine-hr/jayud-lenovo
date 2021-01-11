@@ -305,7 +305,7 @@ public class VivoServiceImpl implements VivoService {
             }
         }
         //token过期,重新请求
-        if ((map.get("message").toString().contains("已拒绝为此请求授权"))) {
+        if (map.get("Message") != null && map.get("Message").toString().contains("已拒绝为此请求授权")) {
             redisUtils.delete(VIVO_TOEKN_STR);
             map = this.doPost(data, url);
         }
@@ -377,7 +377,7 @@ public class VivoServiceImpl implements VivoService {
             }
         }
         //token过期,重新请求
-        if ((map.get("message").toString().contains("已拒绝为此请求授权"))) {
+        if (map.get("Message") != null && map.get("Message").toString().contains("已拒绝为此请求授权")) {
             redisUtils.delete(VIVO_TOEKN_STR);
             map = this.doPostWithFile(data, fw, url);
         }

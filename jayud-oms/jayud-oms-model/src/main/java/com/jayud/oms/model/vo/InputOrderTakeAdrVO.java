@@ -37,6 +37,9 @@ public class InputOrderTakeAdrVO {
     @ApiModelProperty(value = "提货/送货信息ID")
     private Long takeAdrId;
 
+    @ApiModelProperty(value = "类型(1提货 2送货)")
+    private Integer oprType;
+
     @ApiModelProperty(value = "提货日期")
     private String takeTimeStr;
 

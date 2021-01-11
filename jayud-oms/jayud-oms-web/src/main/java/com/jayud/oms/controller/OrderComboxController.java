@@ -9,11 +9,13 @@ import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.BeanUtils;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.oms.feign.FreightAirClient;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.enums.CustomerInfoStatusEnum;
 import com.jayud.oms.model.enums.RoleKeyEnum;
+import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
@@ -79,6 +81,9 @@ public class OrderComboxController {
     private FreightAirClient freightAirClient;
     @Autowired
     private ICustomerRelaLegalService relaLegalService;
+
+    @Autowired
+    private IServiceTypeService serviceTypeService;
 
     @ApiOperation(value = "创建订单-客户,业务员,合同,业务所属部门,通关口岸")
     @PostMapping(value = "/initCombox1")
@@ -384,6 +389,15 @@ public class OrderComboxController {
     public CommonResult<List<InitComboxVO>> initLegalEntity() {
         List<InitComboxVO> initComboxVOS = oauthClient.findLegalEntity().getData();
         return CommonResult.success(initComboxVOS);
+    }
+
+    @ApiOperation(value = "服务单 下拉选项-服务类型")
+    @PostMapping(value = "/initServiceType")
+    public CommonResult<List<ServiceTypeVO>> getEnableParentProductClassify(){
+        List<ServiceType> list = this.serviceTypeService.getEnableParentServiceType(StatusEnum.ENABLE.getCode());
+        List<ServiceTypeVO> result=new ArrayList<>();
+        list.forEach(tmp-> result.add(ConvertUtil.convert(tmp,ServiceTypeVO.class)));
+        return CommonResult.success(result);
     }
 }
 

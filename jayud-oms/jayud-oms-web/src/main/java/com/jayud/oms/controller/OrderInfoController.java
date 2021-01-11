@@ -47,6 +47,7 @@ public class OrderInfoController {
     @Autowired
     IAuditInfoService auditInfoService;
 
+    //获取订单列表，要判断账号所属法人主体，根据法人主体分页查询订单
 
     @ApiOperation(value = "外部报关放行/通过前审核/订单列表/费用审核")
     @PostMapping("/findOrderInfoByPage")
@@ -89,6 +90,7 @@ public class OrderInfoController {
         }
         //主订单参数校验
         InputMainOrderForm inputMainOrderForm = form.getOrderForm();
+        System.out.println(inputMainOrderForm.getClassCode());
         //待处理状态无法操作
         if (inputMainOrderForm.getOrderId() != null) {
             OrderInfo orderInfo = this.orderInfoService.getById(inputMainOrderForm.getOrderId());
@@ -206,6 +208,13 @@ public class OrderInfoController {
                 InputAirOrderForm airOrderForm = form.getAirOrderForm();
                 if (!airOrderForm.checkCreateOrder()) {
                     return CommonResult.error(ResultEnum.PARAM_ERROR);
+                }
+            }
+            //服务单参数校验
+            if(OrderStatusEnum.FWD.getCode().equals(inputMainOrderForm.getClassCode())){
+                InputOrderServiceForm orderServiceForm = form.getOrderServiceForm();
+                if (orderServiceForm.getType() == null) {
+                    return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
                 }
             }
         }

@@ -74,6 +74,9 @@ public class WarehouseInfo extends Model<VehicleInfo> {
     @ApiModelProperty(value = "审核备注")
     private String auditComment;
 
+    @ApiModelProperty(value = "是否虚拟仓")
+    private Boolean isVirtual;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

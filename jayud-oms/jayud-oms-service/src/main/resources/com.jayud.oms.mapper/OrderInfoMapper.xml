@@ -129,8 +129,8 @@
         takeAddress,
         (SELECT address FROM order_address oa where oa.`business_id` = a.id AND oa.`type` = 1 ORDER BY oa.`id` LIMIT 1)
         giveAddress,
-        '' subCustomsStatus,
-        '' subTmsStatus,
+        (SELECT oc.`status` FROM order_customs oc WHERE oc.`main_order_no`= oi.`order_no` LIMIT 1) subCustomsStatus,
+        (SELECT ot.`status` FROM order_transport ot WHERE ot.`main_order_no`= oi.`order_no` LIMIT 1) subTmsStatus,
         a.`status` subAirStatus,
         oi.`created_user` createdUser,
         DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,

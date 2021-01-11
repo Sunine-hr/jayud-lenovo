@@ -88,8 +88,8 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
     }
 
     @Override
-    public List<CustomerInfoVO> existCustomerInfo(String idCode, String name) {
-        return baseMapper.existCustomerInfo(idCode,name);
+    public List<CustomerInfoVO> existCustomerInfo(String idCode) {
+        return baseMapper.existCustomerInfo(idCode);
     }
 
     @Override

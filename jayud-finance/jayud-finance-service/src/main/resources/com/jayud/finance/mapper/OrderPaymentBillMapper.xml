@@ -203,8 +203,8 @@
             and opc.is_sum_to_main = 0 and opc.sub_type = 'bg'
         </if>
         <if test="form.cmd == 'ky'">
---         TODO 二期出来还要改
-            and ao.legal_entity_id = #{form.legalName}
+--         TODO 空运
+            and ao.legal_name = #{form.legalName}
             and opc.is_sum_to_main = 0 and opc.sub_type = 'ky'
         </if>
         ) temp where 1 = 1

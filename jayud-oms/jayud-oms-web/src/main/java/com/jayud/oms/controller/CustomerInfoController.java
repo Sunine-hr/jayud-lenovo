@@ -100,15 +100,14 @@ public class CustomerInfoController {
     public CommonResult saveOrUpdateCustomerInfo(@RequestBody @Valid AddCustomerInfoForm form) {
         CustomerInfo customerInfo = ConvertUtil.convert(form, CustomerInfo.class);
         if (form.getId() != null) {
-            customerInfo.setUpdatedUser(UserOperator.getToken());
+            customerInfo.setUpdatedUser(form.getLoginUserName());
             customerInfo.setUpdatedTime(DateUtils.getNowTime());
         } else {
-            customerInfo.setCreatedUser(UserOperator.getToken());
+            customerInfo.setCreatedUser(form.getLoginUserName());
         }
-        //校验客户代码和客户名称的唯一性
-        List<CustomerInfoVO> oldCustomerInfos = customerInfoService.existCustomerInfo(form.getIdCode(),form.getName());
-        if((oldCustomerInfos != null && oldCustomerInfos.size()>1) || (oldCustomerInfos != null && oldCustomerInfos.size() == 1 &&
-                oldCustomerInfos.get(0).getId() != form.getId())){
+        //校验客户代码的唯一性
+        List<CustomerInfoVO> oldCustomerInfos = customerInfoService.existCustomerInfo(form.getIdCode());
+        if((form.getId() == null && oldCustomerInfos != null && oldCustomerInfos.size() > 0) || (form.getId() != null && oldCustomerInfos != null && oldCustomerInfos.size() > 1)){
             return CommonResult.error(ResultEnum.CUSTOMER_CODE_EXIST);
         }
         customerInfo.setAuditStatus(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode());

@@ -61,10 +61,9 @@ public interface CustomerInfoMapper extends BaseMapper<CustomerInfo> {
     /**
      * 做客户代码和客户名称唯一性校验
      * @param idCode
-     * @param name
      * @return
      */
-    List<CustomerInfoVO> existCustomerInfo(@Param("idCode") String idCode,@Param("name") String name);
+    List<CustomerInfoVO> existCustomerInfo(@Param("idCode") String idCode);
 
     /**
      * 根据客户ID获取结算单位

@@ -3,17 +3,15 @@ package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.oms.model.bo.QueryCusAccountForm;
 import com.jayud.oms.model.bo.QueryCustomerInfoForm;
 import com.jayud.oms.model.bo.QueryRelUnitInfoListForm;
 import com.jayud.oms.model.po.CustomerInfo;
-import com.jayud.oms.model.vo.CustomerInfoVO;
-import com.jayud.oms.model.bo.QueryCusAccountForm;
 import com.jayud.oms.model.vo.CustAccountVO;
+import com.jayud.oms.model.vo.CustomerInfoVO;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -70,10 +68,9 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
     /**
      * 做客户代码和客户名称唯一性校验
      * @param idCode
-     * @param name
      * @return
      */
-    List<CustomerInfoVO> existCustomerInfo(String idCode,String name);
+    List<CustomerInfoVO> existCustomerInfo(String idCode);
 
     /**
      * 根据客户ID获取结算单位

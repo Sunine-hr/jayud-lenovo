@@ -20,6 +20,9 @@ public class InputOrderServiceVO {
     @ApiModelProperty(value = "服务类型(0:费用补录,1:单证费用,2:存仓费用,快递费用)")
     private Integer type;
 
+    @ApiModelProperty(value = "服务类型(0:费用补录,1:单证费用,2:存仓费用,快递费用)")
+    private String typeDesc;
+
     @ApiModelProperty(value = "关联订单")
     private String associatedOrder;
 

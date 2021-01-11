@@ -90,6 +90,7 @@ public class OrderInfoController {
         }
         //主订单参数校验
         InputMainOrderForm inputMainOrderForm = form.getOrderForm();
+        System.out.println(inputMainOrderForm.getClassCode());
         //待处理状态无法操作
         if (inputMainOrderForm.getOrderId() != null) {
             OrderInfo orderInfo = this.orderInfoService.getById(inputMainOrderForm.getOrderId());
@@ -210,7 +211,7 @@ public class OrderInfoController {
                 }
             }
             //服务单参数校验
-            if(OrderStatusEnum.FW.getCode().equals(inputMainOrderForm.getClassCode())){
+            if(OrderStatusEnum.FWD.getCode().equals(inputMainOrderForm.getClassCode())){
                 InputOrderServiceForm orderServiceForm = form.getOrderServiceForm();
                 if (orderServiceForm.getType() == null) {
                     return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());

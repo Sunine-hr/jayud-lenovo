@@ -675,8 +675,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
         }
         //服务单信息
-        if(OrderStatusEnum.FW.getCode().equals(form.getClassCode())||
-                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.FWDD.getCode())){
+        if(OrderStatusEnum.FWD.getCode().equals(form.getClassCode())||
+                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.FWDDD.getCode())){
             InputOrderServiceVO orderServiceVO = serviceOrderService.getSerOrderDetails(inputMainOrderVO.getOrderNo());
             if(orderServiceVO!=null){
                 inputOrderVO.setOrderServiceForm(orderServiceVO);
@@ -776,7 +776,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             this.freightAirClient.createOrder(airOrderForm);
         }
         //服务单
-        if(OrderStatusEnum.FW.getCode().equals(classCode)){
+        if(OrderStatusEnum.FWD.getCode().equals(classCode)){
             //创建服务单订单信息
             InputOrderServiceForm orderServiceForm = form.getOrderServiceForm();
             orderServiceForm.setMainOrderNo(mainOrderNo);

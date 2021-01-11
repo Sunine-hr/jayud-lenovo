@@ -9,12 +9,16 @@ import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.mapper.ServiceOrderMapper;
 import com.jayud.oms.model.bo.InputOrderServiceForm;
 import com.jayud.oms.model.bo.InputOrderTakeAdrForm;
+import com.jayud.oms.model.po.DeliveryAddress;
 import com.jayud.oms.model.po.OrderTakeAdr;
 import com.jayud.oms.model.po.ServiceOrder;
+import com.jayud.oms.model.po.ServiceType;
 import com.jayud.oms.model.vo.InputOrderServiceVO;
 import com.jayud.oms.model.vo.InputOrderTakeAdrVO;
+import com.jayud.oms.service.IDeliveryAddressService;
 import com.jayud.oms.service.IOrderTakeAdrService;
 import com.jayud.oms.service.IServiceOrderService;
+import com.jayud.oms.service.IServiceTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +42,12 @@ public class ServiceOrderServiceImpl extends ServiceImpl<ServiceOrderMapper, Ser
 
     @Autowired
     private IOrderTakeAdrService orderTakeAdrService;
+
+    @Autowired
+    private IDeliveryAddressService deliveryAddressService;
+
+    @Autowired
+    private IServiceTypeService serviceTypeService;
 
     /**
      * 创建服务单订单
@@ -63,7 +73,7 @@ public class ServiceOrderServiceImpl extends ServiceImpl<ServiceOrderMapper, Ser
         orderTakeAdrForms.addAll(orderTakeAdrForms1);
         orderTakeAdrForms.addAll(orderTakeAdrForms2);
 
-        String orderNo = null;
+        String orderNo = form.getOrderNo();
         if (serviceOrder.getId() != null) {//修改
             //修改时,先把以前的收货信息清空
             QueryWrapper queryWrapper = new QueryWrapper();
@@ -87,16 +97,33 @@ public class ServiceOrderServiceImpl extends ServiceImpl<ServiceOrderMapper, Ser
 
         }
         for (InputOrderTakeAdrForm inputOrderTakeAdrForm : orderTakeAdrForms) {
+
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("contacts",inputOrderTakeAdrForm.getContacts());
+            queryWrapper.eq("phone",inputOrderTakeAdrForm.getPhone());
+            queryWrapper.eq("address",inputOrderTakeAdrForm.getAddress());
+            DeliveryAddress deliveryAddress1 = null;
+            deliveryAddress1 = deliveryAddressService.getOne(queryWrapper);
+            if(deliveryAddress1==null){
+                DeliveryAddress deliveryAddress = new DeliveryAddress();
+                deliveryAddress.setContacts(inputOrderTakeAdrForm.getContacts());
+                deliveryAddress.setPhone(inputOrderTakeAdrForm.getPhone());
+                deliveryAddress.setAddress(inputOrderTakeAdrForm.getAddress());
+                deliveryAddressService.saveOrUpdate(deliveryAddress);
+                deliveryAddress1 = deliveryAddressService.getOne(queryWrapper);
+            }
+
             OrderTakeAdr orderTakeAdr = ConvertUtil.convert(inputOrderTakeAdrForm, OrderTakeAdr.class);
             orderTakeAdr.setOrderNo(orderNo);
+            orderTakeAdr.setDeliveryId(deliveryAddress1.getId().longValue());
             orderTakeAdr.setCreateTime(LocalDateTime.now());
             orderTakeAdr.setCreateUser(form.getLoginUser());
+            orderTakeAdr.setTakeTime(inputOrderTakeAdrForm.getTakeTimeStr());
             boolean b = orderTakeAdrService.saveOrUpdate(orderTakeAdr);
             if(b==false){
                 return b;
             }
         }
-
         boolean result = serviceOrderService.saveOrUpdate(serviceOrder);
         return result;
     }
@@ -121,6 +148,10 @@ public class ServiceOrderServiceImpl extends ServiceImpl<ServiceOrderMapper, Ser
         orderServiceVO.setId(serviceOrder.getId());
         orderServiceVO.setOrderNo(serviceOrder.getOrderNo());
         orderServiceVO.setMainOrderNo(serviceOrder.getMainOrderNo());
+        QueryWrapper queryWrapper1 = new QueryWrapper();
+        queryWrapper1.eq("id",serviceOrder.getType());
+        ServiceType serviceType = serviceTypeService.getOne(queryWrapper1);
+        orderServiceVO.setTypeDesc(serviceType.getType());
         orderServiceVO.setType(serviceOrder.getType());
         orderServiceVO.setAssociatedOrder(serviceOrder.getAssociatedOrder());
 
@@ -128,6 +159,7 @@ public class ServiceOrderServiceImpl extends ServiceImpl<ServiceOrderMapper, Ser
         List<InputOrderTakeAdrVO> list = orderTakeAdrService.findTakeGoodsInfo(serviceOrder.getOrderNo());
         List<InputOrderTakeAdrVO> takeAdrForms1 = new ArrayList<>();
         List<InputOrderTakeAdrVO> takeAdrForms2 = new ArrayList<>();
+
         for (InputOrderTakeAdrVO inputOrderTakeAdrVO : list) {
             if(inputOrderTakeAdrVO.getOprType().equals(Integer.valueOf(CommonConstant.VALUE_1))){
                 takeAdrForms1.add(inputOrderTakeAdrVO);

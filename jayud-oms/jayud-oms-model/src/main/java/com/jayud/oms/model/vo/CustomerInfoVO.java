@@ -88,6 +88,9 @@ public class CustomerInfoVO {
     @ApiModelProperty(value = "是否有效")
     private String status;
 
+    @ApiModelProperty(value = "是否有效 Boolean类型")
+    private Boolean statusDesc;
+
     @ApiModelProperty(value = "创建人")
     private String createdUser;
 
@@ -108,5 +111,12 @@ public class CustomerInfoVO {
             }
         }
         return legalEntityIds;
+    }
+
+    public Boolean getStatusDesc() {
+        if("1".equals(this.status)){
+            return true;
+        }
+        return false;
     }
 }

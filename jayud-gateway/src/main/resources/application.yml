@@ -70,23 +70,37 @@ spring:
             - StripPrefix=1
             - IgnoreGlobalFilterFactor
         - id: route-jayud-freight-air      #佳裕达物流系统jayud-freight-air服务端
-          uri: lb://jayud-freight-air-api  # uri以lb://开头（后面接的服务名称)
+          uri: lb://jayud-freight-air-web  # uri以lb://开头（后面接的服务名称)
           predicates:
             - Path=/jayudAir/**
+          filters:
+            - StripPrefix=1
+            - IgnoreGlobalFilterFactor
+        - id: route-jayud-freight-air      #佳裕达物流系统jayud-freight-air-api服务端
+          uri: lb://jayud-freight-air-api  # uri以lb://开头（后面接的服务名称)
+          predicates:
+            - Path=/jayudAirApi/**
           filters:
             - StripPrefix=1
             - IgnoreGlobalFilterFactor
         - id: route-jayud-mall-admin      #佳裕达jayud-mall-admin 服务端(南京电商后台)
           uri: lb://jayud-mall-admin      # uri以lb://开头（后面接的服务名称)
           predicates:
-          - Path=/jayudMallAdmin/**
+            - Path=/jayudMallAdmin/**
           filters:
-          - StripPrefix=1
-          - IgnoreGlobalFilterFactor
+            - StripPrefix=1
+            - IgnoreGlobalFilterFactor
         - id: route-jayud-tools      #佳裕达jayud-tools 佳裕达小工具项目
           uri: lb://jayud-tools      # uri以lb://开头（后面接的服务名称)
           predicates:
             - Path=/jayudTools/**
+          filters:
+            - StripPrefix=1
+            - IgnoreGlobalFilterFactor
+        - id: jayud-oms-mini-app    #佳裕达小程序服务端
+          uri: lb://jayud-oms-mini-app  # uri以lb://开头（后面接的服务名称)
+          predicates:
+            - Path=/jayudOmsMiniApp/**
           filters:
             - StripPrefix=1
             - IgnoreGlobalFilterFactor

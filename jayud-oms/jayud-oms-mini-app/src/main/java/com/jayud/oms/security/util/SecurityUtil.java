@@ -1,6 +1,7 @@
 package com.jayud.oms.security.util;
 
 import com.jayud.common.RedisUtils;
+import com.jayud.common.utils.SpringContextUtil;
 import com.jayud.oms.security.properties.JayudSecurityProperties;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

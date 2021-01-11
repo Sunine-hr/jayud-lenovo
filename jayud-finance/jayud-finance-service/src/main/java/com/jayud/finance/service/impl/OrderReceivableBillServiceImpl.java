@@ -66,7 +66,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         if ("main".equals(form.getCmd())) {
             pageInfo = baseMapper.findReceiveBillByPage(page, form);//法人主体/结算单位/可汇总主订单费用的维度统计
         } else if ("zgys".equals(form.getCmd()) ||
-                "bg".equals(form.getCmd()) || "ky".equals(form.getCmd())) {
+                "bg".equals(form.getCmd()) || "ky".equals(form.getCmd())) { //TODO 这个改成else判断
             pageInfo = baseMapper.findReceiveSubBillByPage(page, form);//法人主体/结算单位/子订单费用的维度统计
         }
         return pageInfo;

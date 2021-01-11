@@ -160,6 +160,7 @@
             LEFT JOIN cost_type ct ON opc.cost_type_id = ct.id
             LEFT JOIN cost_info ci ON opc.cost_code = ci.id_code
             left join order_customs oc on oc.order_no = opc.order_no
+            left join air_order ao on ao.order_no = opc.order_no
         WHERE
             (opbd1.bill_no = #{form.billNo} and opbd1.audit_status !='edit_del' )
              or
@@ -172,6 +173,9 @@
             </if>
             <if test="form.cmd == 'zgys'">
               ot.legal_name
+            </if>
+            <if test="form.cmd == 'ky'">
+                ao.legal_name
             </if>
               = (select opb1.legal_name from order_payment_bill opb1 left join order_payment_bill_detail opbd1 on opb1.id = opbd1.bill_id where opbd1.bill_no = #{form.billNo} limit 1)
               and si.supplier_ch_name = (select opb1.supplier_ch_name from order_payment_bill opb1 left join order_payment_bill_detail opbd1 on opb1.id = opbd1.bill_id where opbd1.bill_no = #{form.billNo} limit 1)

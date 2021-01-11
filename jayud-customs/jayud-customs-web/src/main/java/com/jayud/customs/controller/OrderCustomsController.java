@@ -350,8 +350,8 @@ public class OrderCustomsController {
             if (OrderStatusEnum.CUSTOMS_C_1_1.getCode().equals(form.getCmd())) {//确认接单驳回
                 orderCustom.setStatus(OrderStatusEnum.CUSTOMS_C_1_1.getCode());
 
-                auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_1_1.getCode());
-                auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_1_1.getDesc());
+                auditInfoForm.setAuditStatus(OrderStatusEnum.CUSTOMS_C_1_1.getCode());
+                auditInfoForm.setAuditTypeDesc(OrderStatusEnum.CUSTOMS_C_1_1.getDesc());
                 auditInfoForm.setAuditComment(form.getCause());
             }
 

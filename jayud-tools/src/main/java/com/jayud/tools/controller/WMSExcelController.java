@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -172,6 +173,24 @@ public class WMSExcelController {
                     List<ExportWMSDetail> newExportWMSDetailList = new ArrayList<>();
                     newExportWMSDetailList.addAll(exportWMSDetailList);
                     exportWMSData.setDetails(newExportWMSDetailList);
+                    BigDecimal totalDeliveryQuantity = new BigDecimal("0");//合计(送货数量)
+                    BigDecimal totalBoxes = new BigDecimal("0");//合计(箱数)
+                    for(int j = 0; j<newExportWMSDetailList.size(); j++){
+                        ExportWMSDetail exportWMSDetail = newExportWMSDetailList.get(j);
+                        String det_deliveryNumber = exportWMSDetail.getDeliveryNumber() != null ? exportWMSDetail.getDeliveryNumber() : "0";//送货数量
+                        String det_boxNumber = exportWMSDetail.getBoxNumber() != null ? exportWMSDetail.getBoxNumber() : "0";//箱数
+
+                        try{
+                            totalDeliveryQuantity = totalDeliveryQuantity.add(new BigDecimal(det_deliveryNumber));
+                            totalBoxes = totalBoxes.add(new BigDecimal(det_boxNumber));
+                        }catch(Exception e){
+                            e.printStackTrace();
+                            log.error("java.lang.NumberFormatException: null, det_deliveryNumber: " + det_deliveryNumber);
+                        }
+
+                    }
+                    exportWMSData.setTotalDeliveryQuantity(totalDeliveryQuantity.toString());
+                    exportWMSData.setTotalBoxes(totalBoxes.toString());
                     exportWMSDataList.add(exportWMSData);//保存上一批的数据
 
                     //清空
@@ -210,6 +229,18 @@ public class WMSExcelController {
                 List<ExportWMSDetail> newExportWMSDetailList = new ArrayList<>();
                 newExportWMSDetailList.addAll(exportWMSDetailList);
                 exportWMSData.setDetails(newExportWMSDetailList);
+                BigDecimal totalDeliveryQuantity = new BigDecimal("0");//合计(送货数量)
+                BigDecimal totalBoxes = new BigDecimal("0");//合计(箱数)
+                for(int j = 0; j<newExportWMSDetailList.size(); j++){
+                    ExportWMSDetail exportWMSDetail = newExportWMSDetailList.get(j);
+                    String det_deliveryNumber = exportWMSDetail.getDeliveryNumber() != null ? exportWMSDetail.getDeliveryNumber() : "0";//送货数量
+                    String det_boxNumber = exportWMSDetail.getBoxNumber() != null ? exportWMSDetail.getBoxNumber() : "0";//箱数
+                    totalDeliveryQuantity = totalDeliveryQuantity.add(new BigDecimal(det_deliveryNumber));
+                    totalBoxes = totalBoxes.add(new BigDecimal(det_boxNumber));
+
+                }
+                exportWMSData.setTotalDeliveryQuantity(totalDeliveryQuantity.toString());
+                exportWMSData.setTotalBoxes(totalBoxes.toString());
                 exportWMSDataList.add(exportWMSData);//保存上一批的数据
 
                 //清空

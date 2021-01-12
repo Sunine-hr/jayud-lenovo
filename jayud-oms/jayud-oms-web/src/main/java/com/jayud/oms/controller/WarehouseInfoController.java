@@ -71,7 +71,12 @@ public class WarehouseInfoController {
         if (this.warehouseInfoService.checkUnique(info)) {
             return CommonResult.error(400, "中转仓仓库已存在");
         }
-
+        if(!form.getIsVirtual()){//非虚拟仓时，以下信息必填
+            if(StringUtil.isNullOrEmpty(form.getContacts()) || StringUtil.isNullOrEmpty(form.getContactNumber()) ||
+               StringUtil.isNullOrEmpty(form.getAddress())){
+                return CommonResult.error(ResultEnum.PARAM_ERROR);
+            }
+        }
         WarehouseInfo warehouseInfo = ConvertUtil.convert(form, WarehouseInfo.class);
         if (this.warehouseInfoService.saveOrUpdateWarehouseInfo(warehouseInfo)) {
             return CommonResult.success();

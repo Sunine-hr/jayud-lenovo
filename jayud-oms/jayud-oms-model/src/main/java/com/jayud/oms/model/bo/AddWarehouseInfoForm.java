@@ -30,15 +30,12 @@ public class AddWarehouseInfoForm {
     private String warehouseName;
 
     @ApiModelProperty(value = "联系人")
-    @NotEmpty(message = "contacts is required")
     private String contacts;
 
     @ApiModelProperty(value = "联系电话")
-    @NotEmpty(message = "contactNumber is required")
     private String contactNumber;
 
     @ApiModelProperty(value = "地址")
-    @NotEmpty(message = "address is required")
     private String address;
 
 //    @ApiModelProperty(value = "省")

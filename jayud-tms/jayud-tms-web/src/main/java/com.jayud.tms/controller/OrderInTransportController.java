@@ -301,6 +301,7 @@ public class OrderInTransportController {
                 isVirtual = omsClient.isVirtualWarehouse(orderTransport1.getWarehouseInfoId()).getData();
             }
             if(isVirtual) {
+                orderTransport.setStatus(OrderStatusEnum.TMS_T_13.getCode());
                 autoOprWarehouse(form);
             }
         }
@@ -319,55 +320,48 @@ public class OrderInTransportController {
      */
     private Boolean autoOprWarehouse(OprStatusForm form){
         form.setBusinessType(BusinessTypeEnum.ZGYS.getCode());
-
-        OrderTransport orderTransport = new OrderTransport();
-        orderTransport.setId(form.getOrderId());
-        orderTransport.setUpdatedTime(LocalDateTime.now());
-        orderTransport.setUpdatedUser(UserOperator.getToken());
-
         AuditInfoForm auditInfoForm = new AuditInfoForm();
         auditInfoForm.setExtId(form.getOrderId());
         auditInfoForm.setExtDesc(SqlConstant.ORDER_TRANSPORT);
         auditInfoForm.setAuditUser(form.getOperatorUser());
 
-        if (CommonConstant.CAR_ENTER_WAREHOUSE.equals(form.getCmd())) {//车辆入仓
-            orderTransport.setStatus(OrderStatusEnum.TMS_T_10.getCode());
+        //车辆入仓
+        form.setStatus(OrderStatusEnum.TMS_T_10.getCode());
+        form.setStatusName(OrderStatusEnum.TMS_T_10.getDesc());
 
-            form.setStatus(OrderStatusEnum.TMS_T_10.getCode());
-            form.setStatusName(OrderStatusEnum.TMS_T_10.getDesc());
-
-            auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_10.getCode());
-            auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_10.getDesc());
-            auditInfoForm.setAuditComment("自动车辆入仓");
-        } else if (CommonConstant.CAR_OUT_WAREHOUSE.equals(form.getCmd())) {//车辆出仓
-            orderTransport.setStatus(OrderStatusEnum.TMS_T_13.getCode());
-
-            form.setStatus(OrderStatusEnum.TMS_T_13.getCode());
-            form.setStatusName(OrderStatusEnum.TMS_T_13.getDesc());
-
-            auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_13.getCode());
-            auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_13.getDesc());
-            auditInfoForm.setAuditComment("自动车辆出仓");
-
-            //车辆出仓后:中转仓卸货装货已完成
-            OprStatusForm tms11 = new OprStatusForm();
-            tms11.setMainOrderId(form.getMainOrderId());
-            tms11.setOrderId(form.getOrderId());
-            tms11.setStatus(OrderStatusEnum.TMS_T_11.getCode());
-            tms11.setStatusName(OrderStatusEnum.TMS_T_11.getDesc());
-            tms11.setBusinessType(BusinessTypeEnum.ZGYS.getCode());
-            omsClient.saveOprStatus(tms11);
-            OprStatusForm tms12 = new OprStatusForm();
-            tms12.setMainOrderId(form.getMainOrderId());
-            tms12.setOrderId(form.getOrderId());
-            tms12.setStatus(OrderStatusEnum.TMS_T_12.getCode());
-            tms12.setStatusName(OrderStatusEnum.TMS_T_12.getDesc());
-            tms11.setBusinessType(BusinessTypeEnum.ZGYS.getCode());
-            omsClient.saveOprStatus(tms12);
-        }
+        auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_10.getCode());
+        auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_10.getDesc());
+        auditInfoForm.setAuditComment("自动车辆入仓");
         omsClient.saveOprStatus(form);
         omsClient.saveAuditInfo(auditInfoForm);
-        return orderTransportService.saveOrUpdate(orderTransport);
+
+       //车辆出仓
+        form.setStatus(OrderStatusEnum.TMS_T_13.getCode());
+        form.setStatusName(OrderStatusEnum.TMS_T_13.getDesc());
+
+        auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_13.getCode());
+        auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_13.getDesc());
+        auditInfoForm.setAuditComment("自动车辆出仓");
+        omsClient.saveOprStatus(form);
+        omsClient.saveAuditInfo(auditInfoForm);
+
+        //车辆出仓后:中转仓卸货装货已完成
+        OprStatusForm tms11 = new OprStatusForm();
+        tms11.setMainOrderId(form.getMainOrderId());
+        tms11.setOrderId(form.getOrderId());
+        tms11.setStatus(OrderStatusEnum.TMS_T_11.getCode());
+        tms11.setStatusName(OrderStatusEnum.TMS_T_11.getDesc());
+        tms11.setBusinessType(BusinessTypeEnum.ZGYS.getCode());
+        omsClient.saveOprStatus(tms11);
+        OprStatusForm tms12 = new OprStatusForm();
+        tms12.setMainOrderId(form.getMainOrderId());
+        tms12.setOrderId(form.getOrderId());
+        tms12.setStatus(OrderStatusEnum.TMS_T_12.getCode());
+        tms12.setStatusName(OrderStatusEnum.TMS_T_12.getDesc());
+        tms11.setBusinessType(BusinessTypeEnum.ZGYS.getCode());
+        omsClient.saveOprStatus(tms12);
+
+        return true;
     }
 
 

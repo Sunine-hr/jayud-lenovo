@@ -226,6 +226,9 @@
         <if test="form.beginCreateTimeStr != null and form.beginCreateTimeStr !=''">
             and temp.createdTimeStr <![CDATA[>=]]> #{form.beginCreateTimeStr}
         </if>
+        <if test="form.cmd == 'myOrder'">
+            and temp.createdUser = #{form.loginUserName}
+        </if>
     </select>
 
     <select id="findGoCustomsAuditByPage" parameterType="com.jayud.oms.model.bo.QueryOrderInfoForm" resultType="com.jayud.oms.model.vo.OrderInfoVO" >

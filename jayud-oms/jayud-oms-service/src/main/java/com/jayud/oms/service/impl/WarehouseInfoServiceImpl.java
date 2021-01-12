@@ -2,13 +2,13 @@ package com.jayud.oms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.UserOperator;
 import com.jayud.oms.mapper.WarehouseInfoMapper;
 import com.jayud.oms.model.bo.QueryWarehouseInfoForm;
 import com.jayud.oms.model.enums.StatusEnum;
-import com.jayud.oms.model.po.ProductBiz;
 import com.jayud.oms.model.po.WarehouseInfo;
 import com.jayud.oms.model.vo.WarehouseInfoVO;
 import com.jayud.oms.service.IWarehouseInfoService;
@@ -31,6 +31,8 @@ public class WarehouseInfoServiceImpl extends ServiceImpl<WarehouseInfoMapper, W
     @Override
     public IPage<WarehouseInfoVO> findWarehouseInfoByPage(QueryWarehouseInfoForm form) {
         Page<WarehouseInfo> page = new Page<>(form.getPageNum(), form.getPageSize());
+        //定义排序规则
+        page.addOrder(OrderItem.desc("w.id"));
         return this.baseMapper.findWarehouseInfoByPage(page, form);
     }
 

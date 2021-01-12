@@ -40,5 +40,7 @@ public abstract class SqlConstant {
 
     public static final String BILL_NO = "bill_no";//账单编号
 
+    public static final String WAREHOUSE_INFO = "warehouseInfo表";
+
 
 }

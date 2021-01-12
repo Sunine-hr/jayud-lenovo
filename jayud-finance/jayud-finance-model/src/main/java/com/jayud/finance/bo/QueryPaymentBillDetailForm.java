@@ -41,7 +41,7 @@ public class QueryPaymentBillDetailForm extends BasePageForm {
             " cw_statement财务对账单", required = true)
     @Pattern(regexp = "(main_statement|zgys_statement|bg_statement|ky_statement" +
             "|statement_audit|zgys_statement_audit|bg_statement_audit|ky_statement_audit" +
-            "cw_statement)", message = "只允许填写特定值")
+            "|cw_statement)", message = "只允许填写特定值")
     private String cmd;
 
 }

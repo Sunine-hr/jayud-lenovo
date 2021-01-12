@@ -305,6 +305,7 @@ public class OrderComboxController {
     public CommonResult initWarehouseInfo() {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq(SqlConstant.STATUS, 1);
+        queryWrapper.eq(SqlConstant.AUDIT_STATUS, "2");
         List<WarehouseInfo> warehouseInfos = warehouseInfoService.list(queryWrapper);
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (WarehouseInfo warehouseInfo : warehouseInfos) {

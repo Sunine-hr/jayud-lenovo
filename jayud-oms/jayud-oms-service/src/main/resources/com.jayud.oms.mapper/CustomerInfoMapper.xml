@@ -23,6 +23,7 @@
         <result column="ku_code" property="kuCode"/>
         <result column="yw_code" property="ywCode"/>
         <result column="audit_status" property="auditStatus"/>
+        <result column="status" property="status"/>
         <result column="created_user" property="createdUser"/>
         <result column="updated_user" property="updatedUser"/>
         <result column="updated_time" property="updatedTime"/>
@@ -32,7 +33,7 @@
     <sql id="Base_Column_List">
          id,name,id_code,types,contact,phone,address,email,tfn,
          if_contract,settlement_type,account_period,estate,department_code,ku_code,yw_code,audit_status,
-         created_user,updated_user,tax_type,tax_rate
+         created_user,updated_user,tax_type,tax_rate,status
     </sql>
 
     <select id="findCustomerInfoByPage" parameterType="com.jayud.oms.model.bo.QueryCustomerInfoForm"
@@ -49,7 +50,8 @@
         ci.`created_user` createdUser,
         DATE_FORMAT(ci.`created_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
         ci.`updated_user` updatedUser,ci.`audit_comment` auditComment,
-        DATE_FORMAT(ci.`updated_time`,'%Y-%m-%d %H:%i:%S') updatedTimeStr
+        DATE_FORMAT(ci.`updated_time`,'%Y-%m-%d %H:%i:%S') updatedTimeStr,
+        ci.`status`
         FROM
         customer_info ci
         LEFT JOIN department d
@@ -57,7 +59,7 @@
         LEFT JOIN `system_user` su1
         ON su1.`id` = ci.`ku_id`
         LEFT JOIN `system_user` su2
-        ON su2.`id` = ci.`yw_id` where ci.`status` = 1
+        ON su2.`id` = ci.`yw_id` where 1 = 1
         <if test="form.name != null and form.name != ''">
             and ci.name like concat('%',#{form.name},'%')
         </if>
@@ -102,11 +104,12 @@
               WHEN '11'
               THEN '审核拒绝'
         END) auditStatusDesc,
+        ci.status,
         ci.`created_user` createdUser,
         DATE_FORMAT(ci.`created_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
         ci.`updated_user` updatedTimeStr,ci.`audit_comment` auditComment,
         DATE_FORMAT(ci.`updated_time`,'%Y-%m-%d %H:%i:%S') updatedTimeStr,
-		(select GROUP_CONCAT(crl.legal_entity_id) from customer_rela_legal crl where crl.customer_info_id = ci.id group by ci.id) legalEntityIdStr
+		(select GROUP_CONCAT(distinct crl.legal_entity_id) from customer_rela_legal crl where crl.customer_info_id = ci.id group by ci.id) legalEntityIdStr
         FROM
         customer_info ci
         LEFT JOIN department d

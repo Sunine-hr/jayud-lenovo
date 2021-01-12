@@ -136,18 +136,29 @@ public class CustomerInfoController {
 
     @ApiOperation(value = "二期优化3:删除客户信息(禁用)")
     @PostMapping(value = "/delCustomerInfo")
-    public CommonResult delCustomerInfo(@RequestBody DeleteForm form) {
-        List<CustomerInfo> customerInfos = new ArrayList<>();
-        for (Long id : form.getIds()) {
-            CustomerInfo customerInfo = new CustomerInfo();
-            customerInfo.setId(id);
-            customerInfo.setUpdatedTime(DateUtils.getNowTime());
-            customerInfo.setUpdatedUser(UserOperator.getToken());
-            customerInfo.setStatus("0");
-            customerInfos.add(customerInfo);
+    public CommonResult delCustomerInfo(@RequestBody Map<String,Object> param) {
+        String idStr = MapUtil.getStr(param,"id");
+        String tempStatus = MapUtil.getStr(param,"status");
+        if(StringUtil.isNullOrEmpty(idStr) || StringUtil.isNullOrEmpty(tempStatus)){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        customerInfoService.saveOrUpdateBatch(customerInfos);
-        return CommonResult.success();
+        String status;
+        Boolean isStatus = Boolean.valueOf(tempStatus);
+        if(isStatus){
+            status = "1";
+        }else {
+            status = "0";
+        }
+        CustomerInfo customerInfo = new CustomerInfo();
+        customerInfo.setId(Long.parseLong(idStr));
+        customerInfo.setUpdatedTime(DateUtils.getNowTime());
+        customerInfo.setUpdatedUser(UserOperator.getToken());
+        customerInfo.setStatus(status);
+        Boolean result = customerInfoService.saveOrUpdate(customerInfo);
+        if(result){
+            return CommonResult.success();
+        }
+        return CommonResult.error(ResultEnum.OPR_FAIL);
     }
 
     @ApiOperation(value = "二期优化3:已关联客户(结算单位)列表,id = 客户ID")

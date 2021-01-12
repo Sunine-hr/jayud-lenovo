@@ -106,10 +106,10 @@ public class OrderInTransportController {
             auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_1.getDesc());
         } else if (CommonConstant.CAR_TAKE_GOODS.equals(form.getCmd())) {//车辆提货
             //小程序司机需确认接单
-            Boolean isConfirmJieDan = omsMiniClient.isConfirmJieDan(form.getOrderId()).getData();
+           /* Boolean isConfirmJieDan = omsMiniClient.isConfirmJieDan(form.getOrderId()).getData();
             if (!isConfirmJieDan) {
                 return CommonResult.error(ResultEnum.IS_CONFIRM_JIE_DAN);
-            }
+            }*/
             orderTransport.setStatus(OrderStatusEnum.TMS_T_5.getCode());
 
             form.setStatus(OrderStatusEnum.TMS_T_5.getCode());

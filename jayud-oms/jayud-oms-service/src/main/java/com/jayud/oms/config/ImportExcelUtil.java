@@ -51,25 +51,50 @@ public class ImportExcelUtil {
 			if (sheet != null) {
 				// 遍历当前sheet中的所有行
 				int totalRow = sheet.getPhysicalNumberOfRows();
-				for (int j = 2; j < totalRow; j++) {
-					row = sheet.getRow(j);
-					if (row != null || row.getFirstCellNum() != j) {
-						// 遍历所有的列
-						List<String> li = new ArrayList<String>();
-						int a=row.getLastCellNum();
-						for (int y = row.getFirstCellNum(); y < row.getLastCellNum(); y++) {
-							cell = row.getCell(y);
-							String callCal = null;
-							if (cell == null || cell.equals("") || cell + "" == "") {
-								callCal = "";
-							} else {
-								callCal = getCellValue(cell) + "";
+				Row row1 = sheet.getRow(0);
+				if(row1.getLastCellNum()<3){
+					for (int j=2 ;j < totalRow; j++) {
+						row = sheet.getRow(j);
+						if (row != null || row.getFirstCellNum() != j) {
+							// 遍历所有的列
+							List<String> li = new ArrayList<String>();
+							int a=row.getLastCellNum();
+							for (int y = row.getFirstCellNum(); y < row.getLastCellNum(); y++) {
+								cell = row.getCell(y);
+								String callCal = null;
+								if (cell == null || cell.equals("") || cell + "" == "") {
+									callCal = "";
+								} else {
+									callCal = getCellValue(cell) + "";
+								}
+								li.add(callCal);
 							}
-							li.add(callCal);
+							list.add(li);
+							li = null;
+							//System.out.println(list.toString());
 						}
-						list.add(li);
-						li = null;
-						//System.out.println(list.toString());
+					}
+				}else{
+					for ( int j=1 ;j < totalRow; j++) {
+						row = sheet.getRow(j);
+						if (row != null || row.getFirstCellNum() != j) {
+							// 遍历所有的列
+							List<String> li = new ArrayList<String>();
+							int a=row.getLastCellNum();
+							for (int y = row.getFirstCellNum(); y < row.getLastCellNum(); y++) {
+								cell = row.getCell(y);
+								String callCal = null;
+								if (cell == null || cell.equals("") || cell + "" == "") {
+									callCal = "";
+								} else {
+									callCal = getCellValue(cell) + "";
+								}
+								li.add(callCal);
+							}
+							list.add(li);
+							li = null;
+							//System.out.println(list.toString());
+						}
 					}
 				}
 			  return list;

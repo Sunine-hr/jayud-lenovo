@@ -449,6 +449,13 @@ public class CustomerInfoController {
         }
     }
 
+    @ApiOperation(value = "判断是否有错误信息")
+    @PostMapping(value = "/checkMes")
+    public CommonResult checkMes()  {
+        boolean result = customerInfoService.checkMes();
+        return CommonResult.success(result);
+    }
+
 
 }
 

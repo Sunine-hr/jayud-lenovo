@@ -311,6 +311,14 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         return systemUser;
     }
 
+    @Override
+    public SystemUser getLoginUser(String loginName) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("name", loginName);
+        SystemUser systemUser = baseMapper.selectOne(queryWrapper);
+        return systemUser;
+    }
+
 
     /**
      * 添加登录记录

@@ -143,4 +143,6 @@ public interface ISystemUserService extends IService<SystemUser> {
      * 根据业务员姓名获取业务员id
      */
     SystemUser getSystemUserBySystemName(String name);
+
+    SystemUser getLoginUser(String loginName);
 }

@@ -143,7 +143,7 @@ public class CustomerInfoController {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         String status;
-        Boolean isStatus = Boolean.getBoolean(tempStatus);
+        Boolean isStatus = Boolean.valueOf(tempStatus);
         if(isStatus){
             status = "1";
         }else {

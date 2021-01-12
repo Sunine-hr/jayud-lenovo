@@ -50,7 +50,8 @@
         ci.`created_user` createdUser,
         DATE_FORMAT(ci.`created_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
         ci.`updated_user` updatedUser,ci.`audit_comment` auditComment,
-        DATE_FORMAT(ci.`updated_time`,'%Y-%m-%d %H:%i:%S') updatedTimeStr
+        DATE_FORMAT(ci.`updated_time`,'%Y-%m-%d %H:%i:%S') updatedTimeStr,
+        ci.`status`
         FROM
         customer_info ci
         LEFT JOIN department d
@@ -58,7 +59,7 @@
         LEFT JOIN `system_user` su1
         ON su1.`id` = ci.`ku_id`
         LEFT JOIN `system_user` su2
-        ON su2.`id` = ci.`yw_id` where ci.`status` = 1
+        ON su2.`id` = ci.`yw_id` where 1 = 1
         <if test="form.name != null and form.name != ''">
             and ci.name like concat('%',#{form.name},'%')
         </if>

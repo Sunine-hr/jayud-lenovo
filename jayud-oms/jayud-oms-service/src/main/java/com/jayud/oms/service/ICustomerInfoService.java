@@ -103,4 +103,6 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
      * @return
      */
     void insExcel(HttpServletResponse response) throws Exception;
+
+    boolean checkMes();
 }

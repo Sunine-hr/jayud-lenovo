@@ -32,18 +32,13 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.*;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -165,10 +160,11 @@ public class SupplierInfoController {
     @PostMapping(value = "/existSupplierName")
     public CommonResult existSupplierName(@RequestBody Map<String,Object> param) {
         String supplierName = MapUtil.getStr(param, "name");
-        Long id = Long.parseLong(MapUtil.getStr(param,"id"));
-        if(StringUtil.isNullOrEmpty(supplierName)){
+        String idStr = (MapUtil.getStr(param,"id"));
+        if(StringUtil.isNullOrEmpty(supplierName) || StringUtil.isNullOrEmpty(idStr)){
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
+        Long id = Long.valueOf(idStr);
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.like("supplier_ch_name",supplierName);
         List<SupplierInfo> supplierInfos = supplierInfoService.list(queryWrapper);
@@ -335,6 +331,13 @@ public class SupplierInfoController {
         } catch (Exception exception) {
             exception.printStackTrace();
         }
+    }
+
+    @ApiOperation(value = "判断是否有错误信息")
+    @PostMapping(value = "/checkMes")
+    public CommonResult checkMes()  {
+        boolean result = supplierInfoService.checkMes();
+        return CommonResult.success(result);
     }
 }
 

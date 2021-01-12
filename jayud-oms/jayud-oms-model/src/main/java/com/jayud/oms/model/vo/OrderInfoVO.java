@@ -2,6 +2,7 @@ package com.jayud.oms.model.vo;
 
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.utils.StringUtils;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -73,19 +74,21 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "中港运输状态,用于标识驳回可编辑")
     private String subTmsStatus;
 
-    @ApiModelProperty(value = "报关状态描述,用于标识驳回可编辑")
-    private String subCustomsDesc;
+//    @ApiModelProperty(value = "报关状态描述,用于标识驳回可编辑")
+//    private String subCustomsDesc;
 
-    @ApiModelProperty(value = "中港运输状态描述,用于标识驳回可编辑")
-    private String subTmsDesc;
+//    @ApiModelProperty(value = "中港运输状态描述,用于标识驳回可编辑")
+//    private String subTmsDesc;
 
 
     @ApiModelProperty(value = "空运状态,用于标识驳回可编辑")
     private String subAirStatus;
 
-    @ApiModelProperty(value = "空运状态描述,用于标识驳回可编辑")
-    private String subAirDesc;
+//    @ApiModelProperty(value = "空运状态描述,用于标识驳回可编辑")
+//    private String subAirDesc;
 
+    @ApiModelProperty(value = "备注")
+    private String remarks;
 
     @ApiModelProperty(value = "是否需要录入费用")
     private Boolean needInputCost;
@@ -101,16 +104,16 @@ public class OrderInfoVO {
     }
 
     public String getGoodsTypeDesc() {
-        if(CommonConstant.VALUE_1.equals(this.goodsType)){
+        if (CommonConstant.VALUE_1.equals(this.goodsType)) {
             goodsTypeDesc = CommonConstant.GOODS_TYPE_DESC_1;
-        }else if(CommonConstant.VALUE_2.equals(this.goodsType)){
+        } else if (CommonConstant.VALUE_2.equals(this.goodsType)) {
             goodsTypeDesc = CommonConstant.GOODS_TYPE_DESC_2;
         }
         return goodsTypeDesc;
     }
 
     public String getSubCustomsDesc() {
-        if(!StringUtil.isNullOrEmpty(this.subCustomsStatus)){
+        if (!StringUtil.isNullOrEmpty(this.subCustomsStatus)) {
             String desc = "";
             StringBuilder sb = new StringBuilder();
             String[] strs = this.subCustomsStatus.split(",");
@@ -125,13 +128,24 @@ public class OrderInfoVO {
         return "";
     }
 
-    public String getSubTmsDesc() {
-        return OrderStatusEnum.getDesc(this.subTmsStatus);
-    }
+//    public String getSubTmsDesc() {
+//        return OrderStatusEnum.getDesc(this.subTmsStatus);
+////    }
 
-    public void setSubAirStatus(String subAirStatus) {
-        this.subAirStatus = subAirStatus;
-        this.subAirDesc=OrderStatusEnum.getDesc(this.subAirStatus);
-    }
+//    public void setSubAirStatus(String subAirStatus) {
+//        this.subAirStatus = subAirStatus;
+////        this.subAirDesc=OrderStatusEnum.getDesc(this.subAirStatus);
+//    }
 
+    public String getRemarks() {
+        StringBuffer sb = new StringBuffer();
+        String[] descs = new String[]{OrderStatusEnum.getDesc(this.subTmsStatus),
+                this.getSubCustomsDesc(), OrderStatusEnum.getDesc(this.subAirStatus)};
+        for (String desc : descs) {
+            if (!StringUtils.isEmpty(desc)) {
+                sb.append(desc).append(",");
+            }
+        }
+        return sb.length() == 0 ? "" : sb.substring(0, sb.length() - 1);
+    }
 }

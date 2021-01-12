@@ -3,6 +3,8 @@ package com.jayud.oms.model.bo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
+
 @Data
 public class QueryOrderInfoForm extends BasePageForm{
 
@@ -28,8 +30,12 @@ public class QueryOrderInfoForm extends BasePageForm{
     private String classCode;
 
     @ApiModelProperty(value = "操作指令,cmd = noSubmit草稿 or submit全部 or costAudit费用审核 or outCustomsRelease外部报关放行" +
-            "or goCustomsAudit通关前审核 or dataNotAll待补全 or 待取消处理cancelled or 待驳回处理rejected")
+            "or goCustomsAudit通关前审核 or dataNotAll待补全 or 待取消处理cancelled or 待驳回处理rejected or 我的订单myOrder")
     private String cmd;
+
+    @ApiModelProperty(value = "当前登录用户,前台传",required = true)
+    @NotEmpty(message = "loginUserName is required")
+    private String loginUserName;
 
 
 }

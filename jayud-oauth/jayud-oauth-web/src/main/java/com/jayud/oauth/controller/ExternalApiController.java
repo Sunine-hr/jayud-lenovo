@@ -312,6 +312,13 @@ public class ExternalApiController {
         }
         return ApiResult.ok();
     }
+
+    @ApiOperation(value = "根据用户名获取用户所属法人主体")
+    @PostMapping(value = "/getLegalIdBySystemName")
+    public ApiResult getLegalIdBySystemName(@RequestParam("loginName") String loginName) {
+        SystemUser systemUser = userService.getLoginUser(loginName);
+        return null;
+    }
 }
 
 

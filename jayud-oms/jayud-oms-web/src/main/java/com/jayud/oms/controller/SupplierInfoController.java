@@ -336,5 +336,12 @@ public class SupplierInfoController {
             exception.printStackTrace();
         }
     }
+
+    @ApiOperation(value = "判断是否有错误信息")
+    @PostMapping(value = "/checkMes")
+    public CommonResult checkMes()  {
+        boolean result = supplierInfoService.checkMes();
+        return CommonResult.success(result);
+    }
 }
 

@@ -131,8 +131,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
 
             if (StringUtils.isNotBlank(lo.get(0))&&StringUtils.isNotBlank(lo.get(2))&&StringUtils.isNotBlank(lo.get(3))&&StringUtils.isNotBlank(lo.get(4))&&StringUtils.isNotBlank(lo.get(5))&&
                     StringUtils.isNotBlank(lo.get(7))&&StringUtils.isNotBlank(lo.get(8))&&StringUtils.isNotBlank(lo.get(9))&&
-                    StringUtils.isNotBlank(lo.get(10))&&StringUtils.isNotBlank(lo.get(11))&&StringUtils.isNotBlank(lo.get(15))&&
-                    StringUtils.isNotBlank(lo.get(16))&&StringUtils.isNotBlank(lo.get(17))) {//判断每行某个数据是否符合规范要求
+                   StringUtils.isNotBlank(lo.get(15))&& StringUtils.isNotBlank(lo.get(17))) {//判断每行某个数据是否符合规范要求
                 //符合要求，插入到数据库customerInfo表中
                 String s = saveCustomerInfoFromExcel(customerInfo, lo);
                 if(s.equals("添加成功")){
@@ -144,7 +143,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
                     for (int j = 0; j < lo.size(); j++) {
                         String a;
                         if(lo.get(j)==null||lo.get(j)==""){
-                            a = " ";
+                            a = "";
                         }else{
                             a = lo.get(j);
                         }
@@ -199,7 +198,11 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         if(customerInfo1!=null){
             return "客户信息已存在";
         }
-        customerInfo.setTypes(TypeUtils.getTypeCode(lo.get(2)));
+        Integer typeCode = TypeUtils.getTypeCode(lo.get(2));
+        if(typeCode==null){
+            return "该客户类型不存在";
+        }
+        customerInfo.setTypes(typeCode);
         customerInfo.setContact(lo.get(3));
         customerInfo.setPhone(lo.get(4));
         customerInfo.setAddress(lo.get(5));
@@ -225,12 +228,16 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         String departmentId = (String) deptIdByDeptName.getData();
         customerInfo.setDepartmentId(departmentId);
 
-        ApiResult systemUserBySystemName = oauthClient.getSystemUserBySystemName(lo.get(16));
-        if(systemUserBySystemName.getMsg().equals("fail")){
-            return "接单客服名称数据与系统不匹配";
+        if(lo.get(16)!=null){
+            ApiResult systemUserBySystemName = oauthClient.getSystemUserBySystemName(lo.get(16));
+            if(systemUserBySystemName.getMsg().equals("fail")){
+                return "接单客服名称数据与系统不匹配";
+            }
+            Long kuId = Long.parseLong(systemUserBySystemName.getData().toString());
+            customerInfo.setKuId(kuId);
+        }else{
+            customerInfo.setKuId(Long.parseLong(lo.get(16)));
         }
-        Long kuId = Long.parseLong(systemUserBySystemName.getData().toString());
-        customerInfo.setKuId(kuId);
 
         ApiResult systemUserBySystemName1 = oauthClient.getSystemUserBySystemName(lo.get(17));
         if(systemUserBySystemName1.getMsg().equals("fail")){
@@ -256,12 +263,21 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
             String fileName = "有误数据表（"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+"）.xls";
             //处理乱码
             fileName = new String(fileName.getBytes("utf-8"),"iso-8859-1");
-            response.setContentType("application/vnd.ms-excel");
+            //response.setContentType("application/vnd.ms-excel");
             response.setHeader("Content-disposition", "attachment;filename="+fileName);
             response.setBufferSize(1024);
             //导出excel的操作
             loadExcelUtil.expordExcel(os);
         }
+    }
+
+    @Override
+    public boolean checkMes() {
+        ArrayList<ArrayList<String>> fieldData = (ArrayList<ArrayList<String>>)hashMap.get("errorMsg");
+        if(fieldData!=null){
+            return true;
+        }
+        return false;
     }
 
 }

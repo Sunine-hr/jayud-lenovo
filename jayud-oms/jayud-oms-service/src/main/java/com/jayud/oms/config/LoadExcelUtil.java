@@ -90,6 +90,7 @@ public class LoadExcelUtil {
 		workBook = createWorkbook();
 		workBook.write(os);//将excel中的数据写到输出流中，用于文件的输出
 		os.close();
+		os.flush();
 	}
 
 	/**
@@ -150,6 +151,7 @@ public class LoadExcelUtil {
 		workBook = createWorkbook2();
 		workBook.write(os);//将excel中的数据写到输出流中，用于文件的输出
 		os.close();
+		os.flush();
 	}
  
 }

@@ -326,12 +326,16 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         supplierInfo.setTaxReceipt(lo.get(8));
         supplierInfo.setRate(lo.get(9));
 
-        ApiResult systemUserBySystemName = oauthClient.getSystemUserBySystemName(lo.get(10));
-        if(systemUserBySystemName.getMsg().equals("fail")){
-            return "采购人员名称数据与系统不匹配";
+        if(lo.get(10)!=null){
+            ApiResult systemUserBySystemName = oauthClient.getSystemUserBySystemName(lo.get(10));
+            if(systemUserBySystemName.getMsg().equals("fail")){
+                return "采购人员名称数据与系统不匹配";
+            }
+            Long buyerId = Long.parseLong(systemUserBySystemName.getData().toString());
+            supplierInfo.setBuyerId(buyerId);
+        }else{
+            supplierInfo.setBuyerId(Long.parseLong(lo.get(10)));
         }
-        Long buyerId = Long.parseLong(systemUserBySystemName.getData().toString());
-        supplierInfo.setBuyerId(buyerId);
 
         baseMapper.insert(supplierInfo);
         return "添加成功";
@@ -350,12 +354,21 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             String fileName = "有误数据表（"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+"）.xls";
             //处理乱码
             fileName = new String(fileName.getBytes("utf-8"),"iso-8859-1");
-            response.setContentType("application/vnd.ms-excel");
+//            response.setContentType("application/vnd.ms-excel");
             response.setHeader("Content-disposition", "attachment;filename="+fileName);
             response.setBufferSize(1024);
             //导出excel的操作
             loadExcelUtil.expordExcel2(os);
         }
+    }
+
+    @Override
+    public boolean checkMes() {
+        ArrayList<ArrayList<String>> fieldData = (ArrayList<ArrayList<String>>)hashMap.get("errorMsg");
+        if(fieldData!=null){
+            return true;
+        }
+        return false;
     }
 
 }

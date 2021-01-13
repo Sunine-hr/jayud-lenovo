@@ -10,7 +10,7 @@ import com.jayud.mall.model.po.OrderCase;
 import com.jayud.mall.model.vo.OrderCaseVO;
 import com.jayud.mall.service.INumberGeneratedService;
 import com.jayud.mall.service.IOrderCaseService;
-import com.jayud.mall.utils.SnowflakeUtils;
+import com.jayud.mall.utils.NumberGeneratedUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -62,9 +62,10 @@ public class OrderCaseServiceImpl extends ServiceImpl<OrderCaseMapper, OrderCase
             OrderCaseVO orderCaseVO = new OrderCaseVO();
 
             //mysql-生成单号，有规则
-            String cartonNO = numberGeneratedService.getOrderNoByCode("case_number");
+            //String cartonNO = numberGeneratedService.getOrderNoByCode("case_number");
+            String cartonNO = NumberGeneratedUtils.getOrderNoByCode2("case_number");
             //雪花算法,生成唯一的id，无规则
-            String orderNo = String.valueOf(SnowflakeUtils.getOrderNo());
+            //String orderNo = String.valueOf(SnowflakeUtils.getOrderNo());
             //orderCaseVO.setCartonNo("JYD-XD-" + i);//箱号生成规则，尝试一下雪花算法,生成唯一的id，无规则
             orderCaseVO.setCartonNo(cartonNO);
             orderCaseVO.setAsnWeight(weight);

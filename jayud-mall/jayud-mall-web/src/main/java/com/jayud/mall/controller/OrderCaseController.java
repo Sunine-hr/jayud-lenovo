@@ -28,6 +28,10 @@ public class OrderCaseController {
     @PostMapping("/createOrderCaseList")
     @ApiOperationSupport(order = 1)
     public CommonResult<List<OrderCaseVO>> createOrderCaseList(@RequestBody CreateOrderCaseForm form){
+        Integer cartons = form.getCartons();
+        if(cartons <= 0){
+            return CommonResult.error(-1, "总箱数不能小于或登录零");
+        }
         List<OrderCaseVO> orderCaseVOList = orderCaseService.createOrderCaseList(form);
         return CommonResult.success(orderCaseVOList);
     }

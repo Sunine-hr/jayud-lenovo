@@ -14,6 +14,7 @@ import com.jayud.oms.config.TypeUtils;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.QueryCustomerInfoForm;
 import com.jayud.oms.model.bo.QueryRelUnitInfoListForm;
+import com.jayud.oms.model.enums.CustomerInfoStatusEnum;
 import com.jayud.oms.model.po.CustomerInfo;
 import com.jayud.oms.model.vo.CustomerInfoVO;
 import com.jayud.oms.model.bo.QueryCusAccountForm;
@@ -225,7 +226,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         if(deptIdByDeptName.getMsg().equals("fail")){
             return "部门名称数据与系统不匹配";
         }
-        String departmentId = (String) deptIdByDeptName.getData();
+        String departmentId = String.valueOf(deptIdByDeptName.getData());
         customerInfo.setDepartmentId(departmentId);
 
         if(lo.get(16)!=null){
@@ -245,6 +246,9 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         }
         Long ywId = Long.parseLong(systemUserBySystemName1.getData().toString());
         customerInfo.setYwId(ywId);
+        customerInfo.setAuditStatus(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode());
+        ApiResult loginUser = oauthClient.getLoginUser();
+        customerInfo.setCreatedUser(loginUser.getData().toString());
 
         baseMapper.insert(customerInfo);
         return "添加成功";

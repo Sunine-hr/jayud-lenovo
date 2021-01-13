@@ -288,7 +288,7 @@ public class ExternalApiController {
         if(byDeptName==null){
             return ApiResult.error();
         }
-        return ApiResult.ok(byDeptName.getIdCode());
+        return ApiResult.ok(byDeptName.getId());
     }
 
 
@@ -318,6 +318,13 @@ public class ExternalApiController {
     public ApiResult getLegalIdBySystemName(@RequestParam("loginName") String loginName) {
         SystemUser systemUser = userService.getLoginUser(loginName);
         return null;
+    }
+
+    @ApiOperation(value = "获取当前登录用户的用户名")
+    @PostMapping(value = "/getLoginUserName")
+    public ApiResult getLoginUser() {
+        SystemUser systemUser = userService.getLoginUser();
+        return ApiResult.ok(systemUser.getUserName());
     }
 }
 

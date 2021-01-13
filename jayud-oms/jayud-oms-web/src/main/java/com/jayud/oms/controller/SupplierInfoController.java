@@ -156,12 +156,12 @@ public class SupplierInfoController {
         }
     }
 
-    @ApiOperation(value = "二期优化3:新增和编辑时校验供应商名称是否存在,name=供应商名称")
+    @ApiOperation(value = "二期优化3:新增和编辑时校验供应商名称是否存在,name=供应商名称 id=供应商ID")
     @PostMapping(value = "/existSupplierName")
     public CommonResult existSupplierName(@RequestBody Map<String,Object> param) {
         String supplierName = MapUtil.getStr(param, "name");
         String idStr = (MapUtil.getStr(param,"id"));
-        if(StringUtil.isNullOrEmpty(supplierName) || StringUtil.isNullOrEmpty(idStr)){
+        if(StringUtil.isNullOrEmpty(supplierName)){
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         Long id = Long.valueOf(idStr);

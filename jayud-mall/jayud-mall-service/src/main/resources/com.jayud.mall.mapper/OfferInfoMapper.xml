@@ -148,8 +148,8 @@
         t1.qid,
         t1.task_id,
         t1.remarks templateRemarks,
-        t2.code_name sName,
-        t3.code_name tName,
+        t2.code_name sname,
+        t3.code_name tname,
         t4.code_name startShipmentName,
         t5.code_name destinationPortName,
         t6.code_name taskName

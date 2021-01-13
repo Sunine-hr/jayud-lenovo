@@ -326,17 +326,17 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         supplierInfo.setTaxReceipt(lo.get(8));
         supplierInfo.setRate(lo.get(9));
 
-        if(lo.get(10)!=null){
-            ApiResult systemUserBySystemName = oauthClient.getSystemUserBySystemName(lo.get(10));
+        String s1 = lo.get(10);
+        if(s1==null||s1.equals("")||s1+""==""){
+            supplierInfo.setBuyerId(null);
+        }else{
+            ApiResult systemUserBySystemName = oauthClient.getSystemUserBySystemName(s1);
             if(systemUserBySystemName.getMsg().equals("fail")){
                 return "采购人员名称数据与系统不匹配";
             }
             Long buyerId = Long.parseLong(systemUserBySystemName.getData().toString());
             supplierInfo.setBuyerId(buyerId);
-        }else{
-            supplierInfo.setBuyerId(Long.parseLong(lo.get(10)));
         }
-
         baseMapper.insert(supplierInfo);
         return "添加成功";
     }

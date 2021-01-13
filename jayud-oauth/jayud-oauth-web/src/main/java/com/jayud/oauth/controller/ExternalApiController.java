@@ -310,7 +310,7 @@ public class ExternalApiController {
         if(legalEntityByLegalName==null){
             return ApiResult.error();
         }
-        return ApiResult.ok();
+        return ApiResult.ok(legalEntityByLegalName.getId());
     }
 
     @ApiOperation(value = "根据用户名获取用户所属法人主体")

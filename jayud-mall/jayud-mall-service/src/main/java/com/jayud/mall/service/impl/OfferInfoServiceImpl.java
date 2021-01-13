@@ -276,6 +276,16 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
                 templateCopeReceivableMapper.findTemplateCopeReceivableInlandFeeListByQie(qie);
         offerInfoVO.setInlandFeeList(inlandFeeList);
 
+        /*目的地仓库：可达仓库*/
+        String arriveWarehouse = offerInfoVO.getArriveWarehouse();
+        if(arriveWarehouse != null && arriveWarehouse != ""){
+            String[] arriveWarehouseArr = arriveWarehouse.split(",");
+            List<String> arriveWarehouseList = Arrays.asList(arriveWarehouseArr);
+            List<FabWarehouse> fabWarehouses = fabWarehouseMapper.selectBatchIds(arriveWarehouseList);
+            List<FabWarehouseVO> fabWarehouseVOList = ConvertUtil.convertList(fabWarehouses, FabWarehouseVO.class);
+            offerInfoVO.setFabWarehouseVOList(fabWarehouseVOList);
+        }
+
         return offerInfoVO;
     }
 

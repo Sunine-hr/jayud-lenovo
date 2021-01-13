@@ -39,7 +39,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.math.BigDecimal;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -216,8 +215,12 @@ public class WMSExcelController {
 
             JSONArray jsonArray = JSONArray.parseArray(json);
 
-            String templateFileName = URLDecoder.decode(this.getClass().getClassLoader().getResource("template_data/model2.xlsx").getPath(), "utf-8");
-            XSSFWorkbook templateWorkbook = new XSSFWorkbook(new FileInputStream(templateFileName));
+            //String templateFileName = URLDecoder.decode(this.getClass().getClassLoader().getResource("template_data/model2.xlsx").getPath(), "utf-8");
+            //XSSFWorkbook templateWorkbook = new XSSFWorkbook(new FileInputStream(templateFileName));
+
+            ClassPathResource classPathResource = new ClassPathResource("template_data/model2.xlsx");
+            InputStream inputStream = classPathResource.getInputStream();
+            XSSFWorkbook templateWorkbook = new XSSFWorkbook(inputStream);
 
             copyFirstSheet(templateWorkbook, jsonArray.size()-1);
 
@@ -237,7 +240,7 @@ public class WMSExcelController {
             response.setCharacterEncoding("utf-8");
             // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
             String filename = URLEncoder.encode(fileName, "utf-8");
-            response.setHeader("Content-disposition", "attachment;filename=" + filename + ".xls");
+            response.setHeader("Content-disposition", "attachment;filename=" + filename + ".xlsx");
             ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
 
             FillConfig fillConfig = FillConfig.builder().forceNewRow(Boolean.TRUE).build();

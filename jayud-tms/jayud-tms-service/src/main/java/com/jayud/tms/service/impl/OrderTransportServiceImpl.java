@@ -245,7 +245,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             String provinceName = orderSendCarsVO.getProvinceName() == null ? "" : orderSendCarsVO.getProvinceName();
             String cityName = orderSendCarsVO.getCityName() == null ? "" : orderSendCarsVO.getCityName();
             String address = orderSendCarsVO.getAddress() == null ? "" : orderSendCarsVO.getAddress();
-            sendCarPdfVO.setDeliveryAddress(orderSendCarsVO.getCountryName() + provinceName + cityName + address);
+            sendCarPdfVO.setDeliveryAddress(provinceName + cityName + address);
             sendCarPdfVO.setDeliveryPhone(orderSendCarsVO.getWarehouseNumber());
         } else if (takeGoodsInfo2.size() == 1) {
             String provinceName = takeGoodsInfo2.get(0).getStateName() == null ? "" : takeGoodsInfo2.get(0).getStateName();

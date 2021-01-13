@@ -44,7 +44,7 @@ public class OfferInfoController {
         return CommonResult.success(offerInfoVO);
     }
 
-    @ApiModelProperty(value = "去下单-确认订单(查看选择运价)")
+    @ApiOperation(value = "去下单-确认订单(查看选择运价)")
     @PostMapping("/purchaseOrders")
     @ApiOperationSupport(order = 3)
     public CommonResult<OfferInfoVO> purchaseOrders(@RequestBody OfferInfoForm form){
@@ -55,7 +55,7 @@ public class OfferInfoController {
 
 
     //目的地仓库，可达仓库
-    @ApiModelProperty(value = "查询运价，目的地仓库(可达仓库)")
+    @ApiOperation(value = "查询运价，目的地仓库(可达仓库)")
     @PostMapping("/findFabWarehouse")
     @ApiOperationSupport(order = 4)
     public CommonResult<List<FabWarehouseVO>> findFabWarehouse(@RequestBody OfferInfoForm form){

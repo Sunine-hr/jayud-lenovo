@@ -13,6 +13,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.jayud.common.CommonResult;
 import com.jayud.common.exception.ApiException;
 import com.jayud.tools.utils.ExcelUtil;
 import com.jayud.tools.utils.RedisUtils;
@@ -88,7 +89,7 @@ public class WMSExcelController {
     @ApiOperation(value = "WMS，龙岗仓库，博亚通制单程序,excel拆分")
     @PostMapping(value = "/excelSplit")
     @ApiOperationSupport(order = 1)
-    public void excelSplit(
+    public CommonResult excelSplit(
             @RequestParam(value = "userId",required=false) Long userId,
             @RequestParam("file") MultipartFile file,
             HttpServletRequest request,
@@ -99,51 +100,7 @@ public class WMSExcelController {
         //准备导出的数据
         prepareData(userId, file);
 
-        //准备导出数据到Excel，模板填充数据
-        try {
-            userId = (userId != null) ? userId : 1;//userId,不存在，设置为1
-            //导出的数据
-            String json = redisUtils.get(EXPORTWMSDATALIST+"_"+userId);
-
-            JSONArray jsonArray = JSONArray.parseArray(json);
-
-            String templateFileName = URLDecoder.decode(this.getClass().getClassLoader().getResource("template_data/model2.xlsx").getPath(), "utf-8");
-            XSSFWorkbook templateWorkbook = new XSSFWorkbook(new FileInputStream(templateFileName));
-
-            copyFirstSheet(templateWorkbook, jsonArray.size()-1);
-
-            String sheetNamePrefix = "";
-            for (int i = 0; i < templateWorkbook.getNumberOfSheets(); i++) {
-                String sheetName = sheetNamePrefix + (i + 1);
-                templateWorkbook.setSheetName(i, sheetName);
-            }
-
-            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-            templateWorkbook.write(outStream);
-            ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
-
-            String fileName = "输出装箱清单";
-
-            response.setContentType("application/vnd.ms-excel");
-            response.setCharacterEncoding("utf-8");
-            // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
-            String filename = URLEncoder.encode(fileName, "utf-8");
-            response.setHeader("Content-disposition", "attachment;filename=" + filename + ".xls");
-            ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
-
-            FillConfig fillConfig = FillConfig.builder().forceNewRow(Boolean.TRUE).build();
-            for (int i = 0; i < templateWorkbook.getNumberOfSheets(); i++) {
-                WriteSheet sheet = EasyExcel.writerSheet(i).build();
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                excelWriter.fill(jsonObject.getJSONArray("details"), fillConfig, sheet);
-                excelWriter.fill(jsonObject, sheet);
-            }
-            excelWriter.finish();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        return CommonResult.success("数据上传成功，已解析拆分完毕！");
     }
 
     @ApiOperation(value = "WMS，测试导出")
@@ -259,7 +216,7 @@ public class WMSExcelController {
 
             JSONArray jsonArray = JSONArray.parseArray(json);
 
-            String templateFileName = URLDecoder.decode(this.getClass().getClassLoader().getResource("template_data/模板2.xlsx").getPath(), "utf-8");
+            String templateFileName = URLDecoder.decode(this.getClass().getClassLoader().getResource("template_data/model2.xlsx").getPath(), "utf-8");
             XSSFWorkbook templateWorkbook = new XSSFWorkbook(new FileInputStream(templateFileName));
 
             copyFirstSheet(templateWorkbook, jsonArray.size()-1);

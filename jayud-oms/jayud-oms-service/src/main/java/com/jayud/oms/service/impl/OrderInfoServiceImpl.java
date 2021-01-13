@@ -704,8 +704,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
             if (StringUtil.isNullOrEmpty(orderCustomsForm.getSubCustomsStatus()) ||
                     (OrderStatusEnum.CUSTOMS_C_0.getCode().equals(orderCustomsForm.getSubCustomsStatus()) &&
-                            (OrderStatusEnum.MAIN_2.getCode().equals(inputMainOrderForm.getStatus()) ||
-                                    OrderStatusEnum.MAIN_4.getCode().equals(inputMainOrderForm.getStatus()) ||
+                            (OrderStatusEnum.MAIN_2.getCode().equals(inputMainOrderForm.getStatus().toString()) ||
+                                    OrderStatusEnum.MAIN_4.getCode().equals(inputMainOrderForm.getStatus().toString()) ||
                                     inputMainOrderForm.getStatus() == null)) ||
                     OrderStatusEnum.CUSTOMS_C_1_1.getCode().equals(orderCustomsForm.getSubCustomsStatus())) {
                 //如果没有生成子订单则不调用

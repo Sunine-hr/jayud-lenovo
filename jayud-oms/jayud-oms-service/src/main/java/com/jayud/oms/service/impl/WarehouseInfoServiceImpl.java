@@ -64,6 +64,7 @@ public class WarehouseInfoServiceImpl extends ServiceImpl<WarehouseInfoMapper, W
     public boolean saveOrUpdateWarehouseInfo(WarehouseInfo warehouseInfo) {
         if (Objects.isNull(warehouseInfo.getId())) {
             warehouseInfo.setStatus(StatusEnum.ENABLE.getCode())
+                    .setAuditStatus("1")
                     .setCreateTime(LocalDateTime.now())
                     .setCreateUser(UserOperator.getToken());
             return this.save(warehouseInfo);

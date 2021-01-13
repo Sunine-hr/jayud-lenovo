@@ -48,19 +48,19 @@
     <select id="findReceiveSubBillByPage" parameterType="com.jayud.finance.bo.QueryReceiveBillForm" resultType="com.jayud.finance.vo.OrderReceiveBillVO" >
         SELECT DISTINCT
             <if test="form.cmd == 'zgys'">
-            ot.legal_name legalName,
-            (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='zgys' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_transport o1 where o1.legal_name = ot.legal_name)) notPaidAmount,
-            (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='zgys' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_transport o1 where o1.legal_name = ot.legal_name)) notPaidOrderNum,
+            sub.legal_name legalName,
+            (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type=#{form.cmd} and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_transport o1 where o1.legal_name = sub.legal_name)) notPaidAmount,
+            (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type=#{form.cmd}  and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_transport o1 where o1.legal_name = sub.legal_name)) notPaidOrderNum,
             </if>
             <if test="form.cmd == 'bg'">
-            oc.legal_name legalName,
-                (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='bg' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_customs o1 where o1.legal_name = oc.legal_name)) notPaidAmount,
-                (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='bg' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_customs o1 where o1.legal_name = oc.legal_name)) notPaidOrderNum,
+            sub.legal_name legalName,
+                (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='bg' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_customs o1 where o1.legal_name = sub.legal_name)) notPaidAmount,
+                (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='bg' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_customs o1 where o1.legal_name = sub.legal_name)) notPaidOrderNum,
             </if>
         <if test="form.cmd == 'ky'">
-            le.legal_name legalName,
-            (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_entity_id = ao.legal_entity_id)) notPaidAmount,
-            (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_entity_id = ao.legal_entity_id)) notPaidOrderNum,
+            sub.legal_name legalName,
+            (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_entity_id = sub.legal_entity_id)) notPaidAmount,
+            (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_entity_id = sub.legal_entity_id)) notPaidOrderNum,
         </if>
             ci.`name` unitAccount,
             ifnull( orb.already_paid_amount, 0 ) alreadyPaidAmount,
@@ -70,40 +70,39 @@
             order_receivable_cost orc
             left join customer_info ci on ci.id_code = orc.customer_code
             <if test="form.cmd == 'zgys'">
-                left join order_transport ot on ot.order_no = orc.order_no
-                left join order_receivable_bill orb on orb.legal_name = ot.legal_name
+                left join order_transport sub on sub.order_no = orc.order_no
+                left join order_receivable_bill orb on orb.legal_name = sub.legal_name
                 and orb.unit_account = orc.customer_name
                 where orc.is_sum_to_main = 0 and orc.sub_type = 'zgys' and orc.status = '3'
                 <if test="form.unitAccount != null and form.unitAccount != ''">
                     and ci.`name` like concat('%',#{form.unitAccount},'%')
                 </if>
                 <if test="form.legalName != null and form.legalName != ''">
-                    and ot.legal_name like concat('%',#{form.legalName},'%')
+                    and sub.legal_name like concat('%',#{form.legalName},'%')
                 </if>
             </if>
             <if test="form.cmd == 'bg'">
-                left join order_customs oc on oc.order_no = orc.order_no
-                left join order_receivable_bill orb on orb.legal_name = oc.legal_name
+                left join order_customs sub on sub.order_no = orc.order_no
+                left join order_receivable_bill orb on orb.legal_name = sub.legal_name
                 and orb.unit_account = orc.customer_name
                 where orc.is_sum_to_main = 0 and orc.sub_type = 'bg' and orc.status = '3'
                 <if test="form.unitAccount != null and form.unitAccount != ''">
                     and ci.`name` like concat('%',#{form.unitAccount},'%')
                 </if>
                 <if test="form.legalName != null and form.legalName != ''">
-                    and oc.legal_name like concat('%',#{form.legalName},'%')
+                    and sub.legal_name like concat('%',#{form.legalName},'%')
                 </if>
             </if>
             <if test="form.cmd == 'ky'">
-                left join air_order ao on ao.order_no = orc.order_no
-                left join legal_entity le on ao.legal_entity_id=le.id
-                left join order_receivable_bill orb on orb.legal_name = le.legal_name
+                left join air_order sub on sub.order_no = orc.order_no
+                left join order_receivable_bill orb on orb.legal_name = sub.legal_name
                 and orb.unit_account = orc.customer_name
                 where orc.is_sum_to_main = 0 and orc.sub_type = 'ky' and orc.status = '3'
                 <if test="form.unitAccount != null and form.unitAccount != ''">
                     and ci.`name` like concat('%',#{form.unitAccount},'%')
                 </if>
                 <if test="form.legalName != null and form.legalName != ''">
-                    and le.legal_name like concat('%',#{form.legalName},'%')
+                    and sub.legal_name like concat('%',#{form.legalName},'%')
                 </if>
             </if>
     </select>
@@ -112,7 +111,7 @@
         DISTINCT
         op.bill_no billNo,
         op.account_term accountTermStr,
-        ( SELECT count( DISTINCT opbd.order_no ) FROM order_payment_bill_detail opbd WHERE opbd.bill_no = op.bill_no ) billNum,
+        ( SELECT count( DISTINCT orbd.order_no ) FROM order_receivable_bill_detail orbd WHERE orbd.bill_no = op.bill_no ) billNum,
         ( SELECT ifnull(sum( obct.money ),0) FROM order_bill_cost_total obct WHERE op.bill_no = obct.bill_no AND obct.currency_code = 'CNY' ) rmb,
         ( SELECT ifnull(sum( obct.money ),0) FROM order_bill_cost_total obct WHERE op.bill_no = obct.bill_no AND obct.currency_code = 'USD' ) dollar,
         ( SELECT ifnull(sum( obct.money ),0) FROM order_bill_cost_total obct WHERE op.bill_no = obct.bill_no AND obct.currency_code = 'EUR' ) euro,
@@ -133,6 +132,9 @@
         </if>
         <if test="form.cmd == 'bg'">
             and orb.is_main = 0 and orb.sub_type = 'bg'
+        </if>
+        <if test="form.cmd == 'ky'">
+            and orb.is_main = 0 and orb.sub_type = 'ky'
         </if>
     </select>
     <select id="findNotPaidBillByPage" parameterType="com.jayud.finance.bo.QueryNotPaidBillForm" resultType="com.jayud.finance.vo.ReceiveNotPaidBillVO" >

@@ -12,7 +12,19 @@ public class TypeUtils {
         if(desc.equals("货代")){
             return 3;
         }
-        return 0;
+        if(desc.equals("供应商")){
+            return 4;
+        }
+        if(desc.equals("工厂")){
+            return 5;
+        }
+        if(desc.equals("贸易")){
+            return 6;
+        }
+        if(desc.equals("国际")){
+            return 7;
+        }
+        return null;
     }
 
     public static String getIfContract(String str){
@@ -32,7 +44,7 @@ public class TypeUtils {
         if(str.equals("周结")){
             return 3;
         }
-        return 0;
+        return null;
     }
 
 }

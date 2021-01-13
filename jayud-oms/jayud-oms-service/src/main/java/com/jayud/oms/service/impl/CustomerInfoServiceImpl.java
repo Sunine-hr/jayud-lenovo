@@ -14,12 +14,15 @@ import com.jayud.oms.config.TypeUtils;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.QueryCustomerInfoForm;
 import com.jayud.oms.model.bo.QueryRelUnitInfoListForm;
+import com.jayud.oms.model.enums.CustomerInfoStatusEnum;
 import com.jayud.oms.model.po.CustomerInfo;
+import com.jayud.oms.model.po.CustomerRelaLegal;
 import com.jayud.oms.model.vo.CustomerInfoVO;
 import com.jayud.oms.model.bo.QueryCusAccountForm;
 import com.jayud.oms.service.ICustomerInfoService;
 import com.jayud.oms.model.vo.CustAccountVO;
 import com.jayud.oms.mapper.CustomerInfoMapper;
+import com.jayud.oms.service.ICustomerRelaLegalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -39,6 +43,12 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
 
     @Autowired
     private OauthClient oauthClient;
+
+    @Autowired
+    private ICustomerRelaLegalService customerRelaLegalService;
+
+    @Autowired
+    private ICustomerInfoService customerInfoService;
 
     @Override
     public IPage<CustomerInfoVO> findCustomerInfoByPage(QueryCustomerInfoForm form) {
@@ -189,6 +199,11 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
     }
 
     private String saveCustomerInfoFromExcel(CustomerInfo customerInfo, List<String> lo) {
+        //获取当前登陆用户
+        ApiResult loginUser = oauthClient.getLoginUser();
+        String loginName = (String)loginUser.getData();
+        customerInfo.setCreatedUser(loginName);
+
         customerInfo.setName(lo.get(0));
         customerInfo.setIdCode(lo.get(1));
         QueryWrapper queryWrapper = new QueryWrapper();
@@ -208,9 +223,15 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         customerInfo.setAddress(lo.get(5));
         customerInfo.setEmail(lo.get(6));
 
-        ApiResult legalEntityByLegalName = oauthClient.getLegalEntityByLegalName(lo.get(7));
-        if(legalEntityByLegalName.getMsg().equals("fail")){
-            return "法人主体数据与系统不匹配";
+        String s = lo.get(7);
+        String[] legalNames = s.split("/");
+        List<Long> legalId = new ArrayList<>();
+        for (String legalName : legalNames) {
+            ApiResult legalEntityByLegalName = oauthClient.getLegalEntityByLegalName(legalName);
+            if(legalEntityByLegalName.getMsg().equals("fail")){
+                return "法人主体数据与系统不匹配";
+            }
+            legalId.add(Long.parseLong(legalEntityByLegalName.getData().toString()));
         }
 
         customerInfo.setTfn(lo.get(8));
@@ -225,18 +246,19 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         if(deptIdByDeptName.getMsg().equals("fail")){
             return "部门名称数据与系统不匹配";
         }
-        String departmentId = (String) deptIdByDeptName.getData();
+        String departmentId = String.valueOf(deptIdByDeptName.getData());
         customerInfo.setDepartmentId(departmentId);
 
-        if(lo.get(16)!=null){
-            ApiResult systemUserBySystemName = oauthClient.getSystemUserBySystemName(lo.get(16));
+        String s1 = lo.get(16);
+        if(s1==null||s1.equals("")||s1+""==""){
+            customerInfo.setKuId(null);
+        }else{
+            ApiResult systemUserBySystemName = oauthClient.getSystemUserBySystemName(s1);
             if(systemUserBySystemName.getMsg().equals("fail")){
                 return "接单客服名称数据与系统不匹配";
             }
             Long kuId = Long.parseLong(systemUserBySystemName.getData().toString());
             customerInfo.setKuId(kuId);
-        }else{
-            customerInfo.setKuId(Long.parseLong(lo.get(16)));
         }
 
         ApiResult systemUserBySystemName1 = oauthClient.getSystemUserBySystemName(lo.get(17));
@@ -245,8 +267,20 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         }
         Long ywId = Long.parseLong(systemUserBySystemName1.getData().toString());
         customerInfo.setYwId(ywId);
+        customerInfo.setAuditStatus(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode());
+        customerInfoService.saveOrUpdate(customerInfo);
+        for (int i = 0; i < legalId.size(); i++) {
+            CustomerRelaLegal customerRelaLegal = new CustomerRelaLegal();
+            customerRelaLegal.setCustomerInfoId(customerInfo.getId());
+            customerRelaLegal.setLegalEntityId(legalId.get(i));
+            customerRelaLegal.setCreatedUser(loginName);
+            customerRelaLegal.setCreatedTime(LocalDateTime.now());
+            boolean save = customerRelaLegalService.save(customerRelaLegal);
+            if(!save){
+               return "法人主体添加失败";
+            }
+        }
 
-        baseMapper.insert(customerInfo);
         return "添加成功";
     }
 

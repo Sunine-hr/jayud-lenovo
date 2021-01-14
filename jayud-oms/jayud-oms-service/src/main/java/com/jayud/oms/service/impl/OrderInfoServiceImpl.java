@@ -187,7 +187,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         for (OrderInfoVO orderInfoVO : orderInfoVOs) {
             Map<String, Object> subOrderInfos = subOrderMap.get(orderInfoVO.getOrderNo());
             String[] rejectionStatus = OrderStatusEnum.getRejectionStatus(null);
-            StringBuffer sb = StringUtils.isEmpty(orderInfoVO.getRejectComment()) ? new StringBuffer() : new StringBuffer("," + orderInfoVO.getRejectComment());
+            StringBuffer sb = StringUtils.isEmpty(orderInfoVO.getRejectComment()) ? new StringBuffer() : new StringBuffer(orderInfoVO.getRejectComment() + ",");
             subOrderInfos.forEach((key, value) -> {
                 if (value != null) {
                     String tableDesc = SubOrderSignEnum.getSignOne2SignTwo(key);
@@ -675,10 +675,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
         }
         //服务单信息
-        if(OrderStatusEnum.FWD.getCode().equals(form.getClassCode())||
-                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.FWDDD.getCode())){
+        if (OrderStatusEnum.FWD.getCode().equals(form.getClassCode()) ||
+                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.FWDDD.getCode())) {
             InputOrderServiceVO orderServiceVO = serviceOrderService.getSerOrderDetails(inputMainOrderVO.getOrderNo());
-            if(orderServiceVO!=null){
+            if (orderServiceVO != null) {
                 inputOrderVO.setOrderServiceForm(orderServiceVO);
             }
         }

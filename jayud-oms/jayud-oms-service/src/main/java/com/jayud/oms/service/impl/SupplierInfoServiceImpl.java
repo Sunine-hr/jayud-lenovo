@@ -214,7 +214,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
     private HashMap<String,Object> hashMap = new HashMap<>();
 
     @Override
-    public String importCustomerInfoExcel(HttpServletResponse response, MultipartFile file)throws Exception{
+    public String importCustomerInfoExcel(HttpServletResponse response, MultipartFile file,String userName)throws Exception{
         InputStream in = null;
         List<List<String>>  listob = null;
 
@@ -238,7 +238,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             if (com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(0))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(2))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(3))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(4))&&
                     com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(5))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(6))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(7))) {//判断每行某个数据是否符合规范要求
                 //符合要求，插入到数据库customerInfo表中
-                String s = saveSupplierInfoFromExcel(supplierInfo, lo);
+                String s = saveSupplierInfoFromExcel(supplierInfo, lo,userName);
                 if(s.equals("添加成功")){
                     lo = null;
                     successCount += 1;
@@ -292,7 +292,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         return o;
     }
 
-    private String saveSupplierInfoFromExcel(SupplierInfo supplierInfo, List<String> lo) {
+    private String saveSupplierInfoFromExcel(SupplierInfo supplierInfo, List<String> lo,String userName) {
         supplierInfo.setSupplierChName(lo.get(0));
         supplierInfo.setSupplierCode(lo.get(1));
         QueryWrapper queryWrapper = new QueryWrapper();
@@ -337,6 +337,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             Long buyerId = Long.parseLong(systemUserBySystemName.getData().toString());
             supplierInfo.setBuyerId(buyerId);
         }
+        supplierInfo.setCreateUser(userName);
         baseMapper.insert(supplierInfo);
         return "添加成功";
     }

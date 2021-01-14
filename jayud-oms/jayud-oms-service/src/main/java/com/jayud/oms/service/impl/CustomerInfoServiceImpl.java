@@ -115,7 +115,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
     private HashMap<String,Object> hashMap = new HashMap<>();
 
     @Override
-    public String importCustomerInfoExcel(HttpServletResponse response,MultipartFile file)throws Exception{
+    public String importCustomerInfoExcel(HttpServletResponse response,MultipartFile file,String userName)throws Exception{
 //        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         InputStream in = null;
         List<List<String>>  listob = null;
@@ -143,7 +143,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
                     StringUtils.isNotBlank(lo.get(7))&&StringUtils.isNotBlank(lo.get(8))&&StringUtils.isNotBlank(lo.get(9))&&
                    StringUtils.isNotBlank(lo.get(15))&& StringUtils.isNotBlank(lo.get(17))) {//判断每行某个数据是否符合规范要求
                 //符合要求，插入到数据库customerInfo表中
-                String s = saveCustomerInfoFromExcel(customerInfo, lo);
+                String s = saveCustomerInfoFromExcel(customerInfo, lo,userName);
                 if(s.equals("添加成功")){
                     lo = null;
                     successCount += 1;
@@ -198,12 +198,10 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         return message;
     }
 
-    private String saveCustomerInfoFromExcel(CustomerInfo customerInfo, List<String> lo) {
+    private String saveCustomerInfoFromExcel(CustomerInfo customerInfo, List<String> lo,String userName) {
         //获取当前登陆用户
-        ApiResult loginUser = oauthClient.getLoginUser();
-        String loginName = (String)loginUser.getData();
-        customerInfo.setCreatedUser(loginName);
 
+        customerInfo.setCreatedUser(userName);
         customerInfo.setName(lo.get(0));
         customerInfo.setIdCode(lo.get(1));
         QueryWrapper queryWrapper = new QueryWrapper();
@@ -273,7 +271,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
             CustomerRelaLegal customerRelaLegal = new CustomerRelaLegal();
             customerRelaLegal.setCustomerInfoId(customerInfo.getId());
             customerRelaLegal.setLegalEntityId(legalId.get(i));
-            customerRelaLegal.setCreatedUser(loginName);
+            customerRelaLegal.setCreatedUser(userName);
             customerRelaLegal.setCreatedTime(LocalDateTime.now());
             boolean save = customerRelaLegalService.save(customerRelaLegal);
             if(!save){

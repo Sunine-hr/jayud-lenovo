@@ -730,7 +730,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             //创建中港订单信息
             InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
             if (!OrderStatusEnum.TMS_T_15.getCode().equals(orderTransportForm.getSubTmsStatus()) &&
-                !OrderStatusEnum.CUSTOMS_C_1_1.getCode().equals(form.getOrderCustomsForm().getSubCustomsStatus())) {
+                    ((!OrderStatusEnum.CUSTOMS_C_1_1.getCode().equals(form.getOrderCustomsForm().getSubCustomsStatus())) ||
+                       orderTransportForm.getIsGoodsEdit())) {
                 if (!selectedServer.contains(OrderStatusEnum.XGQG.getCode())) {
                     //若没有选择香港清关,则情况香港清关信息，避免信息有误
                     orderTransportForm.setHkLegalName(null);

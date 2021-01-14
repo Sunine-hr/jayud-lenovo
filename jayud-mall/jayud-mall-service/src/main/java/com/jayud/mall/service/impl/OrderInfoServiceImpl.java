@@ -496,13 +496,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         //保存-订单对应提货信息表：order_pick
         List<OrderPickVO> orderPickVOList = form.getOrderPickVOList();
-        List<OrderPick> orderPickList = ConvertUtil.convertList(orderPickVOList, OrderPick.class);
-        orderPickList.forEach(orderPick -> {
-            orderPick.setOrderId(orderInfo.getId());
-        });
-        QueryWrapper<OrderPick> orderPickQueryWrapper = new QueryWrapper<>();
-        orderPickQueryWrapper.eq("order_id", orderInfo.getId());
-        orderPickService.remove(orderPickQueryWrapper);
+        if(orderPickVOList.size() > 0){
+            List<OrderPick> orderPickList = ConvertUtil.convertList(orderPickVOList, OrderPick.class);
+            orderPickList.forEach(orderPick -> {
+                orderPick.setOrderId(orderInfo.getId());
+            });
+            QueryWrapper<OrderPick> orderPickQueryWrapper = new QueryWrapper<>();
+            orderPickQueryWrapper.eq("order_id", orderInfo.getId());
+            orderPickService.remove(orderPickQueryWrapper);
+            orderPickService.saveOrUpdateBatch(orderPickList);
+        }
 
         Integer offerInfoId = orderInfo.getOfferInfoId();
         //订单对应报关文件 order_customs_file
@@ -563,10 +566,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 //        OrderInfo orderInfo = this.getById(id);
 //        OrderInfoVO orderInfoVO = ConvertUtil.convert(orderInfo, OrderInfoVO.class);
 //        return CommonResult.success(orderInfoVO);
-
-
-
-
 
         return null;
     }

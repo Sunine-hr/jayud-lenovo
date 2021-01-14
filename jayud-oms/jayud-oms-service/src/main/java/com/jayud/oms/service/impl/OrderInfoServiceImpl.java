@@ -702,12 +702,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if (OrderStatusEnum.CBG.getCode().equals(classCode) ||
                 selectedServer.contains(OrderStatusEnum.CKBG.getCode())) {
             InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
-            if (StringUtil.isNullOrEmpty(orderCustomsForm.getSubCustomsStatus()) ||
+            if ((StringUtil.isNullOrEmpty(orderCustomsForm.getSubCustomsStatus()) ||
                     (OrderStatusEnum.CUSTOMS_C_0.getCode().equals(orderCustomsForm.getSubCustomsStatus()) &&
                             (OrderStatusEnum.MAIN_2.getCode().equals(inputMainOrderForm.getStatus().toString()) ||
                                     OrderStatusEnum.MAIN_4.getCode().equals(inputMainOrderForm.getStatus().toString()) ||
                                     inputMainOrderForm.getStatus() == null)) ||
-                    OrderStatusEnum.CUSTOMS_C_1_1.getCode().equals(orderCustomsForm.getSubCustomsStatus())) {
+                    OrderStatusEnum.CUSTOMS_C_1_1.getCode().equals(orderCustomsForm.getSubCustomsStatus())) && !form.getOrderTransportForm().getIsGoodsEdit()) {
                 //如果没有生成子订单则不调用
                 if (orderCustomsForm.getSubOrders() != null && orderCustomsForm.getSubOrders().size() >= 0) {
                     orderCustomsForm.setMainOrderNo(mainOrderNo);
@@ -729,7 +729,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 selectedServer.contains(OrderStatusEnum.ZGYSDD.getCode())) {
             //创建中港订单信息
             InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
-            if (!OrderStatusEnum.TMS_T_15.getCode().equals(orderTransportForm.getSubTmsStatus())) {
+            if (!OrderStatusEnum.TMS_T_15.getCode().equals(orderTransportForm.getSubTmsStatus()) &&
+                    ((!OrderStatusEnum.CUSTOMS_C_1_1.getCode().equals(form.getOrderCustomsForm().getSubCustomsStatus())) ||
+                       orderTransportForm.getIsGoodsEdit())) {
                 if (!selectedServer.contains(OrderStatusEnum.XGQG.getCode())) {
                     //若没有选择香港清关,则情况香港清关信息，避免信息有误
                     orderTransportForm.setHkLegalName(null);

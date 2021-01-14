@@ -92,7 +92,7 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
      * @param response
      * @return
      */
-    String importCustomerInfoExcel(HttpServletResponse response, MultipartFile file) throws Exception;
+    String importCustomerInfoExcel(HttpServletResponse response, MultipartFile file,String userName) throws Exception;
 
     /**
      * 下载错误文件

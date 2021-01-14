@@ -19,21 +19,21 @@ public class OrderInfoTest {
     @Test
     public void test1(){
         OrderInfoForm form = new OrderInfoForm();
-        form.setId(1L);
+        form.setId(null);
 
-        form.setOrderNo("780469814253850624");//订单号
+        form.setOrderNo(null);//订单号
         form.setCustomerId(1);
         form.setOfferInfoId(1);
         form.setStoreGoodsWarehouseCode("SH");
         form.setStoreGoodsWarehouseName("上海仓");
         form.setDestinationWarehouseCode("YMX1");
         form.setDestinationWarehouseName("亚马逊1仓");
-        form.setIsPick(1);
+        form.setIsPick(1);//是否上门提货(0否 1是,order_pick)
         form.setStatus(OrderEnum.DRAFT.getCode());
         form.setStatusName(OrderEnum.DRAFT.getName());
         form.setCreateUserId(null);
         form.setCreateUserName(null);
-        form.setOrderOrigin("1");
+        form.setOrderOrigin("1");//订单来源，默认为1，web端；
         form.setBolNo(null);//提单号
         form.setNeedDeclare(1);
         form.setNeedClearance(1);

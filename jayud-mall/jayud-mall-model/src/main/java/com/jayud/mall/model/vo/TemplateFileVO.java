@@ -42,4 +42,16 @@ public class TemplateFileVO {
     @JSONField(ordinal = 8)
     private String typesName;
 
+    @ApiModelProperty(value = "文件代码(quoted_file id_code)", position = 9)
+    @JSONField(ordinal = 9)
+    private String fileCode;
+
+    @ApiModelProperty(value = "是否审核(0否 1是)", position = 10)
+    @JSONField(ordinal = 10)
+    private Integer isCheck;
+
+    @ApiModelProperty(value = "模版文件地址", position = 11)
+    @JSONField(ordinal = 11)
+    private String templateUrl;
+
 }

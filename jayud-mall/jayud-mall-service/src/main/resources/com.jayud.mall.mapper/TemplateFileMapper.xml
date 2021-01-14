@@ -34,4 +34,19 @@
         ORDER BY t1.types ASC,t1.group_code ASC,t.qf_id ASC
     </select>
 
+    <!--给订单：根据`报价模板id`，查询`文件信息`-->
+    <select id="findTemplateFileByOrder" parameterType="com.jayud.mall.model.bo.TemplateFileOrderForm"
+            resultType="com.jayud.mall.model.vo.TemplateFileVO">
+        select
+        t.id,t.qie,t.file_name,t.options,t.remarks,t.qf_id,
+        t1.id_code fileCode,t1.is_check,t1.template_url
+        from template_file t
+        left join quoted_file t1 on t1.id = t.qf_id
+        left join quotation_template t2 on t2.id = t.qie
+        left join offer_info t3 on t3.qie = t2.id
+        where 1=1
+        and t1.group_code = #{form.groupCode}
+        and t3.id = #{form.offerInfoId}
+    </select>
+
 </mapper>

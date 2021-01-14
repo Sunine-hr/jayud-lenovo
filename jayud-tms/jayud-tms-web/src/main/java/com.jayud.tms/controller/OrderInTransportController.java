@@ -681,6 +681,10 @@ public class OrderInTransportController {
         }
         //TODO 订单状态需要提单后才能提交
         OrderTransport tmp = this.orderTransportService.getById(form.getOrderId());
+        if (OrderStatusEnum.TMS_T_15.getCode().equals(tmp.getStatus())){
+            return CommonResult.error(400,"该订单已完结");
+        }
+
         String status = tmp.getStatus();
         if (OrderStatusEnum.TMS_T_0.getCode().equals(status)
                 || OrderStatusEnum.TMS_T_1.getCode().equals(status)

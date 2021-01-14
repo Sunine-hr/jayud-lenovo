@@ -49,22 +49,21 @@
     </select>
     <select id="findPaymentSubBillByPage" parameterType="com.jayud.finance.bo.QueryPaymentBillForm" resultType="com.jayud.finance.vo.OrderPaymentBillVO" >
         SELECT DISTINCT
-        <if test="form.cmd != null and form.cmd != ''">
-            le.legal_name legalName,
-            sub.legal_entity_id legalEntityId,
-            (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type=#{form.cmd}  and t1.customer_code = opc.customer_code and t1.order_no in (select o1.order_no from ${dynamicSqlParam.table} o1 where o1.legal_entity_id = sub.legal_entity_id)) notPaidAmount,
-            (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type=#{form.cmd}  and t1.customer_code = opc.customer_code and t1.order_no in (select o1.order_no from ${dynamicSqlParam.table} o1 where o1.legal_entity_id = sub.legal_entity_id)) notPaidOrderNum,
+        <if test="form.cmd == 'zgys'">
+            ot.legal_name legalName,
+            (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='zgys' and t1.customer_code = opc.customer_code and t1.order_no in (select o1.order_no from order_transport o1 where o1.legal_name = ot.legal_name)) notPaidAmount,
+            (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='zgys' and t1.customer_code = opc.customer_code and t1.order_no in (select o1.order_no from order_transport o1 where o1.legal_name = ot.legal_name)) notPaidOrderNum,
         </if>
-<!--        <if test="form.cmd == 'bg'">-->
-<!--            oc.legal_name legalName,-->
-<!--            (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='bg' and t1.customer_code = opc.customer_code and t1.order_no in (select o1.order_no from order_customs o1 where o1.legal_name = oc.legal_name)) notPaidAmount,-->
-<!--            (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='bg' and t1.customer_code = opc.customer_code and t1.order_no in (select o1.order_no from order_customs o1 where o1.legal_name = oc.legal_name)) notPaidOrderNum,-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'ky'">-->
-<!--            le.legal_name legalName,-->
-<!--            (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = opc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_entity_id = ao.legal_entity_id)) notPaidAmount,-->
-<!--            (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = opc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_entity_id = ao.legal_entity_id)) notPaidOrderNum,-->
-<!--        </if>-->
+        <if test="form.cmd == 'bg'">
+            oc.legal_name legalName,
+            (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='bg' and t1.customer_code = opc.customer_code and t1.order_no in (select o1.order_no from order_customs o1 where o1.legal_name = oc.legal_name)) notPaidAmount,
+            (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='bg' and t1.customer_code = opc.customer_code and t1.order_no in (select o1.order_no from order_customs o1 where o1.legal_name = oc.legal_name)) notPaidOrderNum,
+        </if>
+        <if test="form.cmd == 'ky'">
+            le.legal_name legalName,
+            (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = opc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_entity_id = ao.legal_entity_id)) notPaidAmount,
+            (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = opc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_entity_id = ao.legal_entity_id)) notPaidOrderNum,
+        </if>
         si.supplier_ch_name supplierChName,
         ifnull( opb.already_paid_amount, 0 ) alreadyPaidAmount,
         ifnull( opb.bill_order_num, 0 ) billOrderNum,
@@ -72,44 +71,43 @@
         FROM
         order_payment_cost opc
         left join supplier_info si on si.supplier_code = opc.customer_code
-        <if test="form.cmd != null and form.cmd != ''">
-            left join ${dynamicSqlParam.table} sub on sub.order_no = opc.order_no
-            left join legal_entity le on sub.legal_entity_id = le.id
-            left join order_payment_bill opb on opb.legal_entity_id =sub.legal_entity_id
-            and opb.supplier_code = opc.customer_code
-            where opc.is_sum_to_main = 0 and opc.sub_type = #{form.cmd} and opc.status = '3'
+        <if test="form.cmd == 'zgys'">
+            left join order_transport ot on ot.order_no = opc.order_no
+            left join order_payment_bill opb on opb.legal_name = ot.legal_name
+            and opb.supplier_ch_name = opc.customer_name
+            where opc.is_sum_to_main = 0 and opc.sub_type = 'zgys' and opc.status = '3'
             <if test="form.supplierChName != null and form.supplierChName != ''">
                 and si.supplier_ch_name like concat('%',#{form.supplierChName},'%')
             </if>
             <if test="form.legalName != null and form.legalName != ''">
-                and sub.legal_name like concat('%',#{form.legalName},'%')
+                and ot.legal_name like concat('%',#{form.legalName},'%')
             </if>
         </if>
-<!--        <if test="form.cmd == 'bg'">-->
-<!--            left join order_customs oc on oc.order_no = opc.order_no-->
-<!--            left join order_payment_bill opb on opb.legal_name = oc.legal_name-->
-<!--            and opb.supplier_ch_name = opc.customer_name-->
-<!--            where opc.is_sum_to_main = 0 and opc.sub_type = 'bg' and opc.status = '3'-->
-<!--            <if test="form.supplierChName != null and form.supplierChName != ''">-->
-<!--                and si.supplier_ch_name like concat('%',#{form.supplierChName},'%')-->
-<!--            </if>-->
-<!--            <if test="form.legalName != null and form.legalName != ''">-->
-<!--                and oc.legal_name like concat('%',#{form.legalName},'%')-->
-<!--            </if>-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'ky'">-->
-<!--            left join air_order ao on ao.order_no = opc.order_no-->
-<!--            left join legal_entity le on ao.legal_entity_id=le.id-->
-<!--            left join order_payment_bill opb on opb.legal_name = le.legal_name-->
-<!--            and opb.supplier_ch_name = opc.customer_name-->
-<!--            where opc.is_sum_to_main = 0 and opc.sub_type = 'ky' and opc.status = '3'-->
-<!--            <if test="form.supplierChName != null and form.supplierChName != ''">-->
-<!--                and si.supplier_ch_name like concat('%',#{form.supplierChName},'%')-->
-<!--            </if>-->
-<!--            <if test="form.legalName != null and form.legalName != ''">-->
-<!--                and le.legal_name like concat('%',#{form.legalName},'%')-->
-<!--            </if>-->
-<!--        </if>-->
+        <if test="form.cmd == 'bg'">
+            left join order_customs oc on oc.order_no = opc.order_no
+            left join order_payment_bill opb on opb.legal_name = oc.legal_name
+            and opb.supplier_ch_name = opc.customer_name
+            where opc.is_sum_to_main = 0 and opc.sub_type = 'bg' and opc.status = '3'
+            <if test="form.supplierChName != null and form.supplierChName != ''">
+                and si.supplier_ch_name like concat('%',#{form.supplierChName},'%')
+            </if>
+            <if test="form.legalName != null and form.legalName != ''">
+                and oc.legal_name like concat('%',#{form.legalName},'%')
+            </if>
+        </if>
+        <if test="form.cmd == 'ky'">
+            left join air_order ao on ao.order_no = opc.order_no
+            left join legal_entity le on ao.legal_entity_id=le.id
+            left join order_payment_bill opb on opb.legal_name = le.legal_name
+            and opb.supplier_ch_name = opc.customer_name
+            where opc.is_sum_to_main = 0 and opc.sub_type = 'ky' and opc.status = '3'
+            <if test="form.supplierChName != null and form.supplierChName != ''">
+                and si.supplier_ch_name like concat('%',#{form.supplierChName},'%')
+            </if>
+            <if test="form.legalName != null and form.legalName != ''">
+                and le.legal_name like concat('%',#{form.legalName},'%')
+            </if>
+        </if>
     </select>
     <select id="findPaymentBillNum" parameterType="com.jayud.finance.bo.QueryPaymentBillNumForm" resultType="com.jayud.finance.vo.OrderPaymentBillNumVO" >
         SELECT

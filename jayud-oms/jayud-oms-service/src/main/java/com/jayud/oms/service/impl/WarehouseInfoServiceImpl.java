@@ -69,6 +69,7 @@ public class WarehouseInfoServiceImpl extends ServiceImpl<WarehouseInfoMapper, W
                     .setCreateUser(UserOperator.getToken());
             return this.save(warehouseInfo);
         } else {
+            warehouseInfo.setAuditStatus("1");
             return this.updateById(warehouseInfo);
         }
     }

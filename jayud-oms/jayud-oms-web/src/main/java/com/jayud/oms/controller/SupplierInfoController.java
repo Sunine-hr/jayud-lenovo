@@ -164,11 +164,10 @@ public class SupplierInfoController {
         if(StringUtil.isNullOrEmpty(supplierName)){
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        Long id = Long.valueOf(idStr);
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.like("supplier_ch_name",supplierName);
         List<SupplierInfo> supplierInfos = supplierInfoService.list(queryWrapper);
-        if((id == null && supplierInfos != null && supplierInfos.size() > 0) || (id != null && supplierInfos != null && supplierInfos.size() > 1)){
+        if((StringUtil.isNullOrEmpty(idStr) && supplierInfos != null && supplierInfos.size() > 0) || ((!StringUtil.isNullOrEmpty(idStr)) && supplierInfos != null && supplierInfos.size() > 1)){
             return CommonResult.error(ResultEnum.SUPPLIER_NAME_EXIST);
         }
         return CommonResult.success();

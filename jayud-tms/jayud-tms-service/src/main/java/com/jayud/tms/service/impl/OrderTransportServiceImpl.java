@@ -215,11 +215,11 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     @Override
     public SendCarPdfVO initPdfData(String orderNo, String classCode) {
         SendCarPdfVO sendCarPdfVO = baseMapper.initPdfData(orderNo, classCode);
-        //香港清关地址又说不要了BUG-237
-        sendCarPdfVO.setClearCustomsAddress("");
         if (sendCarPdfVO == null) {
             return new SendCarPdfVO();
         }
+        //香港清关地址又说不要了BUG-237
+        sendCarPdfVO.setClearCustomsAddress("");
         List<InputOrderTakeAdrVO> inputOrderTakeAdrVOS = orderTakeAdrService.findTakeGoodsInfo(orderNo);
         List<TakeGoodsInfoVO> takeGoodsInfo1 = new ArrayList<>();
         List<TakeGoodsInfoVO> takeGoodsInfo2 = new ArrayList<>();

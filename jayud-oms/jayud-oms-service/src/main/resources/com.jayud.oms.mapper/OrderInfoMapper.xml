@@ -51,6 +51,7 @@
         oi.`status`,
         oi.`class_code` classCode,
         pc1.name classCodeDesc,
+        oi.selected_server selectedServer,
         oi.`customer_name` customerName,
         oi.`customer_code` customerCode,
         oi.`legal_name` legalName,
@@ -84,6 +85,7 @@
         oi.`status`,
         oi.`class_code` classCode,
         pc2.name classCodeDesc,
+        oi.selected_server selectedServer,
         oi.`customer_name` customerName,
         oi.`customer_code` customerCode,
         oi.`legal_name` legalName,
@@ -121,6 +123,7 @@
         oi.`status`,
         oi.`class_code` classCode,
         pc2.name classCodeDesc,
+        oi.selected_server selectedServer,
         oi.`customer_name` customerName,
         oi.`customer_code` customerCode,
         oi.`legal_name` legalName,
@@ -158,6 +161,7 @@
         oi.`status`,
         oi.`class_code` classCode,
         pc2.name classCodeDesc,
+        oi.selected_server selectedServer,
         oi.`customer_name` customerName,
         oi.`customer_code` customerCode,
         oi.`legal_name` legalName,
@@ -192,7 +196,7 @@
             OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = temp.orderNo AND orc.`status` = '2' and orc.sub_type='main'))
         </if>
         <if test="form.cmd == 'outCustomsRelease'">
-            and temp.classCode = 'ZGYS' and temp.`status` = 1
+            and (temp.classCode = 'ZGYS' or temp.selectedServer like concat('%','ZGYSDD','%')) and temp.`status` = 1
             and temp.customsRelease = 0
             and not exists (SELECT 1 FROM order_customs oc WHERE oc.`main_order_no` = temp.orderNo)
         </if>
@@ -264,10 +268,13 @@
         LEFT JOIN service_order so ON oi.`order_no` = so.`main_order_no`
         LEFT JOIN port_info p ON ot.port_code = p.id_code
         LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`
-        WHERE oi.`class_code` = 'ZGYS'
+        WHERE
+        -- TODO 外包报关
+        (oi.`class_code` = 'ZGYS' or oi.selected_server like concat('%','ZGYSDD','%'))
         AND (ot.`status` = 'T_6' or (ot.`status` = 'T_5' AND ot.is_vehicle_weigh = 0))
         AND (oi.`customs_release` = 1
         OR
+        -- TODO 出口报关所有都放行才能进通关前审核
         ((SELECT COUNT(1) FROM logistics_track lt WHERE lt.`main_order_id` = oi.`id` AND lt.`status`='C_5') =
         (SELECT COUNT(1) FROM order_customs oc WHERE oc.`main_order_no` = oi.`order_no`)
         AND (SELECT COUNT(1) FROM logistics_track lt WHERE lt.`main_order_id` = oi.`id` AND lt.`status`='C_5') > 0)

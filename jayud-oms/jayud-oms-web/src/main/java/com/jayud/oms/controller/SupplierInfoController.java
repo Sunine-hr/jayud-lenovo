@@ -305,11 +305,11 @@ public class SupplierInfoController {
 
     @ApiOperation(value = "导入供应商信息")
     @PostMapping(value = "/uploadExcel")
-    public CommonResult ajaxUploadExcel(MultipartFile file, HttpServletResponse response){
+    public CommonResult ajaxUploadExcel(MultipartFile file, HttpServletResponse response,@RequestParam("userName") String userName){
 
         String commentHTML=null;
         try {
-            commentHTML = supplierInfoService.importCustomerInfoExcel(response,file);
+            commentHTML = supplierInfoService.importCustomerInfoExcel(response,file,userName);
         } catch (Exception e1) {
             e1.printStackTrace();
         }

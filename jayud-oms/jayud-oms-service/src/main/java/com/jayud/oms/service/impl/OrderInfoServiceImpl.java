@@ -702,12 +702,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if (OrderStatusEnum.CBG.getCode().equals(classCode) ||
                 selectedServer.contains(OrderStatusEnum.CKBG.getCode())) {
             InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
+            InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
             if ((StringUtil.isNullOrEmpty(orderCustomsForm.getSubCustomsStatus()) ||
                     (OrderStatusEnum.CUSTOMS_C_0.getCode().equals(orderCustomsForm.getSubCustomsStatus()) &&
                             (OrderStatusEnum.MAIN_2.getCode().equals(inputMainOrderForm.getStatus().toString()) ||
                                     OrderStatusEnum.MAIN_4.getCode().equals(inputMainOrderForm.getStatus().toString()) ||
                                     inputMainOrderForm.getStatus() == null)) ||
-                    OrderStatusEnum.CUSTOMS_C_1_1.getCode().equals(orderCustomsForm.getSubCustomsStatus())) && !form.getOrderTransportForm().getIsGoodsEdit()) {
+                    OrderStatusEnum.CUSTOMS_C_1_1.getCode().equals(orderCustomsForm.getSubCustomsStatus())) && (orderTransportForm == null || !orderTransportForm.getIsGoodsEdit())) {
                 //如果没有生成子订单则不调用
                 if (orderCustomsForm.getSubOrders() != null && orderCustomsForm.getSubOrders().size() >= 0) {
                     orderCustomsForm.setMainOrderNo(mainOrderNo);

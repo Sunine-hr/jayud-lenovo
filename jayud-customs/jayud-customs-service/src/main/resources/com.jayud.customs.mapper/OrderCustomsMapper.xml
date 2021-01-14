@@ -141,7 +141,7 @@
             AND oc.`status` = 'C_0'
         </if>
         <if test="form.orderNo != null and form.orderNo != ''">
-            AND oi.`order_no` = #{form.orderNo}
+            AND oc.`order_no` = #{form.orderNo}
         </if>
         <if test="form.customerName != null and form.customerName != ''">
             and oi.`customer_name` like concat('%',#{form.customerName},'%')

@@ -128,4 +128,10 @@ public interface OauthClient {
      */
     @RequestMapping(value = "/api/getLegalEntityByLegalName")
     public ApiResult getLegalEntityByLegalName(@RequestParam("name") String name);
+
+    /**
+     * 获取当前登录用户的用户名
+     */
+    @RequestMapping(value = "/getLoginUser")
+    public ApiResult getLoginUser();
 }

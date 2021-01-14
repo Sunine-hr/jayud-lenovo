@@ -39,4 +39,13 @@ public class SendCarListTempVO {
     @ApiModelProperty(value = "备注明细")
     private String remarks;
 
+    @ApiModelProperty(value = "大陆车牌")
+    private String plateNumber;
+
+    @ApiModelProperty(value = "大陆电话")
+    private String phone;
+
+    @ApiModelProperty(value = "入仓号")
+    private String enterWarehouseNo;
+
 }

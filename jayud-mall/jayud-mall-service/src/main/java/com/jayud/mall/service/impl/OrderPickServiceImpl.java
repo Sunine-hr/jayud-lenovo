@@ -7,6 +7,7 @@ import com.jayud.mall.model.vo.DeliveryAddressVO;
 import com.jayud.mall.model.vo.OrderPickVO;
 import com.jayud.mall.service.INumberGeneratedService;
 import com.jayud.mall.service.IOrderPickService;
+import com.jayud.mall.utils.NumberGeneratedUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +36,8 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
         List<OrderPickVO> orderPickVOList = new ArrayList<>();
         form.forEach(deliveryAddressVO -> {
             OrderPickVO orderPickVO = new OrderPickVO();
-            String warehouseNo = numberGeneratedService.getOrderNoByCode("warehouse_receipt");
+            //String warehouseNo = numberGeneratedService.getOrderNoByCode("warehouse_receipt");
+            String warehouseNo = NumberGeneratedUtils.getOrderNoByCode2("warehouse_receipt");
             orderPickVO.setWarehouseNo(warehouseNo);//进仓单号
             orderPickVO.setAddressId(deliveryAddressVO.getId());
             orderPickVO.setContacts(deliveryAddressVO.getContacts());

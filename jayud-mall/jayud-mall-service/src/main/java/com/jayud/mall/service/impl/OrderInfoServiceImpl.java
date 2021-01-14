@@ -452,6 +452,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CommonResult<OrderInfoVO> submitOrderInfo(OrderInfoForm form) {
+        CustomerUser customerUser = baseService.getCustomerUser();
+
         //保存-产品订单表：order_info
         OrderInfo orderInfo = ConvertUtil.convert(form, OrderInfo.class);
 
@@ -460,15 +462,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if(orderNo == null || orderNo == ""){
             orderNo = String.valueOf(SnowflakeUtils.getOrderNo());//雪花算法生成订单id
             orderInfo.setOrderNo(orderNo);
+            orderInfo.setCustomerId(customerUser.getId());
+            orderInfo.setCreateTime(LocalDateTime.now());
+            orderInfo.setCreateUserId(customerUser.getId());
+            orderInfo.setCreateUserName(customerUser.getUserName());
         }
         //PLACED_AN_ORDER(10, "已下单：编辑、查看订单详情 "),
         orderInfo.setStatus(OrderEnum.PLACED_AN_ORDER.getCode());//订单状态
         orderInfo.setStatusName(OrderEnum.PLACED_AN_ORDER.getName());//订单名称
         this.saveOrUpdate(orderInfo);
-
-        //提交订单，创建任务
-        List<WaybillTaskRelevanceVO> waybillTaskRelevanceVOS =
-                waybillTaskRelevanceService.saveWaybillTaskRelevance(orderInfo);
 
         //保存-订单对应箱号信息:order_case
         List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
@@ -501,7 +503,27 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         QueryWrapper<OrderPick> orderPickQueryWrapper = new QueryWrapper<>();
         orderPickQueryWrapper.eq("order_id", orderInfo.getId());
         orderPickService.remove(orderPickQueryWrapper);
-        orderPickService.saveOrUpdateBatch(orderPickList);
+
+        Integer offerInfoId = orderInfo.getOfferInfoId();
+        //订单对应报关文件 order_customs_file
+        //`need_declare` int(11) DEFAULT NULL COMMENT '是否需要报关0-否，1-是 (订单对应报关文件:order_customs_file)',
+        List<OrderCustomsFile> orderCustomsFileList = getOrderCustomsFiles(orderInfo, offerInfoId);
+        QueryWrapper<OrderCustomsFile> orderCustomsFileQueryWrapper = new QueryWrapper<>();
+        orderCustomsFileQueryWrapper.eq("order_id", orderInfo.getId());
+        orderCustomsFileService.remove(orderCustomsFileQueryWrapper);
+        orderCustomsFileService.saveOrUpdateBatch(orderCustomsFileList);
+
+        //订单对应清关文件 order_clearance_file
+        //`need_clearance` int(11) DEFAULT NULL COMMENT '是否需要清关0-否，1-是 (订单对应清关文件:order_clearance_file)',
+        List<OrderClearanceFile> orderClearanceFileList = getOrderClearanceFiles(orderInfo, offerInfoId);
+        QueryWrapper<OrderClearanceFile> orderClearanceFileQueryWrapper = new QueryWrapper<>();
+        orderClearanceFileQueryWrapper.eq("order_id", orderInfo.getId());
+        orderClearanceFileService.remove(orderClearanceFileQueryWrapper);
+        orderClearanceFileService.saveOrUpdateBatch(orderClearanceFileList);
+
+        //TODO 提交订单时，创建订单任务
+        List<WaybillTaskRelevanceVO> waybillTaskRelevanceVOS =
+                waybillTaskRelevanceService.saveWaybillTaskRelevance(orderInfo);
 
         return CommonResult.success(ConvertUtil.convert(orderInfo, OrderInfoVO.class));
 
@@ -516,7 +538,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderInfo.setStatusName(OrderEnum.PLACED_AN_ORDER.getName());
         this.saveOrUpdate(orderInfo);
 
-        //提交订单，创建任务
+        //TODO 提交订单时，创建订单任务
         List<WaybillTaskRelevanceVO> waybillTaskRelevanceVOS =
                 waybillTaskRelevanceService.saveWaybillTaskRelevance(orderInfo);
 

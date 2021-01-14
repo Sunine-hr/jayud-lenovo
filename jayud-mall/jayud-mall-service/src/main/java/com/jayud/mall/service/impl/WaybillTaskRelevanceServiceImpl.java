@@ -41,7 +41,10 @@ public class WaybillTaskRelevanceServiceImpl extends ServiceImpl<WaybillTaskRele
         Integer offerInfoId = orderInfo.getOfferInfoId();//报价id(服务id)
 
         //根据`报价id(服务id)`,查询运单任务列表
-        List<WaybillTaskVO> list = waybillTaskService.findWaybillTaskByOfferInfoId(offerInfoId);
+        //List<WaybillTaskVO> list = waybillTaskService.findWaybillTaskByOfferInfoId(offerInfoId);
+        //根据`订单id(order_info id)`,查询运单任务列表 orderInfoId
+        List<WaybillTaskVO> list = waybillTaskService.findWaybillTaskByOrderInfoId(orderInfoId);
+
         List<WaybillTaskRelevanceForm> waybillTaskRelevanceForms = new ArrayList<>();
         list.forEach(waybillTaskVO -> {
             WaybillTaskRelevanceForm form = new WaybillTaskRelevanceForm();

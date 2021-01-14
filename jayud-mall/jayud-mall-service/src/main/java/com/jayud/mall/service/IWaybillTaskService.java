@@ -21,6 +21,13 @@ public interface IWaybillTaskService extends IService<WaybillTask> {
      * @param OfferInfoId   报价id
      * @return
      */
+    @Deprecated
     List<WaybillTaskVO> findWaybillTaskByOfferInfoId(Integer OfferInfoId);
 
+    /**
+     * 根据订单id，查询运单任务信息list
+     * @param orderInfoId
+     * @return
+     */
+    List<WaybillTaskVO> findWaybillTaskByOrderInfoId(Long orderInfoId);
 }

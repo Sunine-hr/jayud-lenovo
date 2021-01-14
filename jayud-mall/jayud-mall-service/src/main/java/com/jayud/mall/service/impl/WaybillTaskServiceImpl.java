@@ -29,4 +29,10 @@ public class WaybillTaskServiceImpl extends ServiceImpl<WaybillTaskMapper, Waybi
         List<WaybillTaskVO> list = waybillTaskMapper.findWaybillTaskByOfferInfoId(OfferInfoId);
         return list;
     }
+
+    @Override
+    public List<WaybillTaskVO> findWaybillTaskByOrderInfoId(Long orderInfoId) {
+        List<WaybillTaskVO> list = waybillTaskMapper.findWaybillTaskByOrderInfoId(orderInfoId);
+        return list;
+    }
 }

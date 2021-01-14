@@ -26,5 +26,13 @@ public interface WaybillTaskMapper extends BaseMapper<WaybillTask> {
      * @param offerInfoId 报价id
      * @return
      */
+    @Deprecated
     List<WaybillTaskVO> findWaybillTaskByOfferInfoId(@Param(value = "offerInfoId") Integer offerInfoId);
+
+    /**
+     * 根据订单id，查询运单任务信息list
+     * @param orderInfoId
+     * @return
+     */
+    List<WaybillTaskVO> findWaybillTaskByOrderInfoId(@Param("orderInfoId") Long orderInfoId);
 }

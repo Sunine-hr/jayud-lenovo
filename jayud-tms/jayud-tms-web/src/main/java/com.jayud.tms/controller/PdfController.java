@@ -40,16 +40,16 @@ public class PdfController {
     @Autowired
     private IOrderSendCarsService sendCarsService;
 
-    @ApiOperation(value = "渲染数据,确认派车 orderNo=子订单号")
+    @ApiOperation(value = "渲染数据,确认派车 orderNo=订单号(主/子),entranceType=入口类型(1主订单,2子订单)")
     @PostMapping(value = "/initPdfData")
     public CommonResult<SendCarPdfVO> initPdfData(@RequestBody Map<String, Object> param) {
         String orderNo = MapUtil.getStr(param, CommonConstant.ORDER_NO);
-        String mainOrderNo = MapUtil.getStr(param, CommonConstant.MAI_ORDE_NO);
-        if (StringUtil.isNullOrEmpty(orderNo)&& (StringUtil.isNullOrEmpty(mainOrderNo))) {
+        Integer entranceType = MapUtil.getInt(param, "entranceType");
+        if (StringUtil.isNullOrEmpty(orderNo) && entranceType == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        if (StringUtil.isNullOrEmpty(orderNo)) {
-            List<OrderTransport> subOrders = this.orderTransportService.getOrderTmsByCondition(new OrderTransport().setMainOrderNo(mainOrderNo));
+        if (entranceType == 1) {
+            List<OrderTransport> subOrders = this.orderTransportService.getOrderTmsByCondition(new OrderTransport().setMainOrderNo(orderNo));
             if (CollectionUtil.isEmpty(subOrders)) {
                 return CommonResult.error(400, "不存在该订单信息");
             } else {
@@ -71,17 +71,17 @@ public class PdfController {
         return CommonResult.success(driverInfoPdfVO);
     }
 
-    @ApiOperation(value = "二期优化1：派车单,orderNo=子订单号,mainOrderNo=主订单号(主订单列表导出)")
+    @ApiOperation(value = "二期优化1：派车单,orderNo=订单号(主/子),entranceType=入口类型(1主订单,2子订单)")
     @PostMapping(value = "/initSendCarList")
     public CommonResult<SendCarListPdfVO> initSendCarList(@RequestBody Map<String, Object> param) {
         String orderNo = MapUtil.getStr(param, CommonConstant.ORDER_NO);
-        String mainOrderNo = MapUtil.getStr(param, CommonConstant.MAI_ORDE_NO);
-        if (StringUtil.isNullOrEmpty(orderNo) && (StringUtil.isNullOrEmpty(mainOrderNo))) {
+        Integer entranceType = MapUtil.getInt(param, "entranceType");
+        if (StringUtil.isNullOrEmpty(orderNo) && entranceType == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
 
-        if (StringUtil.isNullOrEmpty(orderNo)) {
-            List<OrderTransport> subOrders = this.orderTransportService.getOrderTmsByCondition(new OrderTransport().setMainOrderNo(mainOrderNo));
+        if (entranceType == 1) {
+            List<OrderTransport> subOrders = this.orderTransportService.getOrderTmsByCondition(new OrderTransport().setMainOrderNo(orderNo));
             if (CollectionUtil.isEmpty(subOrders)) {
                 return CommonResult.error(400, "不存在该订单信息");
             } else {

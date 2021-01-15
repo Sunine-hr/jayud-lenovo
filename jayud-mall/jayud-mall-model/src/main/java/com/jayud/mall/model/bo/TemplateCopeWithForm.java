@@ -19,7 +19,11 @@ public class TemplateCopeWithForm {
     @JSONField(ordinal = 2)
     private Integer qie;
 
-    @ApiModelProperty(value = "费用名称", position = 3)
+    @ApiModelProperty(value = "费用代码(cost_item cost_code)", position = 3)
+    @JSONField(ordinal = 3)
+    private String costCode;
+
+    @ApiModelProperty(value = "费用名称(cost_item cost_name)", position = 3)
     @JSONField(ordinal = 3)
     private String costName;
 

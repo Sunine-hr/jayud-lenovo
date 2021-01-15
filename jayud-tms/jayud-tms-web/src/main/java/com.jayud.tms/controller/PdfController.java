@@ -1,9 +1,11 @@
 package com.jayud.tms.controller;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.DriverInfoPdfVO;
 import com.jayud.tms.model.vo.SendCarListPdfVO;
 import com.jayud.tms.model.vo.SendCarPdfVO;
@@ -24,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -39,10 +42,19 @@ public class PdfController {
 
     @ApiOperation(value = "渲染数据,确认派车 orderNo=子订单号")
     @PostMapping(value = "/initPdfData")
-    public CommonResult<SendCarPdfVO> initPdfData(@RequestBody Map<String,Object> param) {
+    public CommonResult<SendCarPdfVO> initPdfData(@RequestBody Map<String, Object> param) {
         String orderNo = MapUtil.getStr(param, CommonConstant.ORDER_NO);
-        if(StringUtil.isNullOrEmpty(orderNo)){
+        String mainOrderNo = MapUtil.getStr(param, CommonConstant.MAI_ORDE_NO);
+        if (StringUtil.isNullOrEmpty(orderNo)&& (StringUtil.isNullOrEmpty(mainOrderNo))) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        if (StringUtil.isNullOrEmpty(orderNo)) {
+            List<OrderTransport> subOrders = this.orderTransportService.getOrderTmsByCondition(new OrderTransport().setMainOrderNo(mainOrderNo));
+            if (CollectionUtil.isEmpty(subOrders)) {
+                return CommonResult.error(400, "不存在该订单信息");
+            } else {
+                orderNo = subOrders.get(0).getOrderNo();
+            }
         }
         SendCarPdfVO sendCarPdfVO = orderTransportService.initPdfData(orderNo, CommonConstant.ZGYS);
         return CommonResult.success(sendCarPdfVO);
@@ -50,22 +62,33 @@ public class PdfController {
 
     @ApiOperation(value = "二期优化1：司机资料,orderNo=子订单号")
     @PostMapping(value = "/initDriverInfo")
-    public CommonResult<DriverInfoPdfVO> initDriverInfo(@RequestBody Map<String,Object> param) {
+    public CommonResult<DriverInfoPdfVO> initDriverInfo(@RequestBody Map<String, Object> param) {
         String orderNo = MapUtil.getStr(param, CommonConstant.ORDER_NO);
-        if(StringUtil.isNullOrEmpty(orderNo)){
+        if (StringUtil.isNullOrEmpty(orderNo)) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         DriverInfoPdfVO driverInfoPdfVO = sendCarsService.initDriverInfo(orderNo);
         return CommonResult.success(driverInfoPdfVO);
     }
 
-    @ApiOperation(value = "二期优化1：派车单,orderNo=子订单号")
+    @ApiOperation(value = "二期优化1：派车单,orderNo=子订单号,mainOrderNo=主订单号(主订单列表导出)")
     @PostMapping(value = "/initSendCarList")
-    public CommonResult<SendCarListPdfVO> initSendCarList(@RequestBody Map<String,Object> param) {
+    public CommonResult<SendCarListPdfVO> initSendCarList(@RequestBody Map<String, Object> param) {
         String orderNo = MapUtil.getStr(param, CommonConstant.ORDER_NO);
-        if(StringUtil.isNullOrEmpty(orderNo)){
+        String mainOrderNo = MapUtil.getStr(param, CommonConstant.MAI_ORDE_NO);
+        if (StringUtil.isNullOrEmpty(orderNo) && (StringUtil.isNullOrEmpty(mainOrderNo))) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
+
+        if (StringUtil.isNullOrEmpty(orderNo)) {
+            List<OrderTransport> subOrders = this.orderTransportService.getOrderTmsByCondition(new OrderTransport().setMainOrderNo(mainOrderNo));
+            if (CollectionUtil.isEmpty(subOrders)) {
+                return CommonResult.error(400, "不存在该订单信息");
+            } else {
+                orderNo = subOrders.get(0).getOrderNo();
+            }
+        }
+
         SendCarListPdfVO sendCarListPdfVO = sendCarsService.initSendCarList(orderNo);
         return CommonResult.success(sendCarListPdfVO);
     }
@@ -100,8 +123,6 @@ public class PdfController {
             }
         }
     }
-
-
 
 
 }

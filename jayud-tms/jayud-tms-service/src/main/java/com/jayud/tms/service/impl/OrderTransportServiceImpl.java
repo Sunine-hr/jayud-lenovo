@@ -475,4 +475,13 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     }
 
 
+    /**
+     * 根据主订单号集合查询中港详情
+     */
+    @Override
+    public List<OrderVO> getOrderTransportByMainOrderNo(List<String> mainOrders) {
+        return this.baseMapper.getOrderTransportByMainOrderNo(mainOrders);
+    }
+
+
 }

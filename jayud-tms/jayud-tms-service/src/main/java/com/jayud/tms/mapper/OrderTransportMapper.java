@@ -61,4 +61,11 @@ public interface OrderTransportMapper extends BaseMapper<OrderTransport> {
      * @return
      */
     StatisticsDataNumberVO statisticsDataNumber();
+
+    /**
+     * 根据主订单编号查询中港详情
+     * @param mainOrderNo
+     * @return
+     */
+    List<OrderVO> getOrderTransportByMainOrderNo(@Param("mainOrderNo") List<String> mainOrderNo);
 }

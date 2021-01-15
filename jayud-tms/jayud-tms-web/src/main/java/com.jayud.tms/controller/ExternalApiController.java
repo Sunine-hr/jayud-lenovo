@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -207,8 +208,11 @@ public class ExternalApiController {
     @ApiModelProperty(value = "根据主订单号集合查询中港信息")
     @RequestMapping(value = "/api/getTmsOrderByMainOrderNos")
     public ApiResult getTmsOrderByMainOrderNos(@RequestParam("mainOrderNos") List<String> mainOrderNos) {
-        List<OrderTransport> orderTransports = this.orderTransportService.getTmsOrderByMainOrderNos(mainOrderNos);
-        return ApiResult.ok(orderTransports);
+//        List<OrderTransport> orderTransports = this.orderTransportService.getTmsOrderByMainOrderNos(mainOrderNos);
+//        查询送货/收货地址信息
+//        List<String> orderNos = orderTransports.stream().map(OrderTransport::getOrderNo).collect(Collectors.toList());
+
+        return ApiResult.ok(this.orderTransportService.getOrderTransportByMainOrderNo(mainOrderNos));
     }
 
 }

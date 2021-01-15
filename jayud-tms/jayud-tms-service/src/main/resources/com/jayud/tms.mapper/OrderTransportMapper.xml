@@ -37,6 +37,25 @@
         <result column="is_vehicle_weigh" property="isVehicleWeigh"/>
     </resultMap>
 
+    <resultMap id="ResultMap" type="com.jayud.tms.model.vo.OrderVO">
+        <id column="id" property="id"/>
+        <result column="main_order_no" property="mainOrderNo"/>
+        <result column="order_no" property="orderNo"/>
+        <collection property="orderTakeAdrs" ofType="com.jayud.tms.model.vo.OrderTakeAdrVO" javaType="list">
+            <id column="id" property="id"/>
+            <result column="order_no" property="orderNo"/>
+            <result column="delivery_id" property="deliveryId"/>
+            <result column="take_time" property="takeTime"/>
+            <result column="goods_desc" property="goodsDesc"/>
+            <result column="plate_amount" property="plateAmount"/>
+            <result column="piece_amount" property="pieceAmount"/>
+            <result column="weight" property="weight"/>
+            <result column="volume" property="volume"/>
+            <result column="remarks" property="remarks"/>
+            <result column="opr_type" property="oprType"/>
+        </collection>
+    </resultMap>
+
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, main_order_no, order_no, port_code, goods_type, vehicle_type, vehicle_size, cntr_no, cntr_pic, cntrPicName,
@@ -361,5 +380,22 @@
             (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where oi.`status` = 'T_14') qrqs
         from
              dual
+    </select>
+
+
+    <select id="getOrderTransportByMainOrderNo" parameterType="list" resultMap="ResultMap">
+        select
+        ot.id,ot.main_order_no,ot.order_no,
+        ota.id,ota.order_no,ota.delivery_id,ota.take_time,
+        ota.goods_desc,ota.plate_amount,ota.piece_amount,
+        ota.weight,ota.volume,ota.remarks,ota.opr_type,ota.enter_warehouse_no
+        from order_transport ot
+        left join order_take_adr ota on ot.order_no=ota.order_no
+        <where>
+            and ot.main_order_no in
+            <foreach collection="mainOrderNo" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
     </select>
 </mapper>

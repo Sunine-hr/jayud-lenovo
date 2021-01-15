@@ -34,6 +34,10 @@ public class CostItemServiceImpl extends ServiceImpl<CostItemMapper, CostItem> i
         if(id != null){
             queryWrapper.eq("id", id);
         }
+        String identifying = form.getIdentifying();
+        if(identifying != null && identifying != ""){
+            queryWrapper.eq("identifying", identifying);
+        }
         String costCode = form.getCostCode();
         if(costCode != null && costCode != ""){
             queryWrapper.like("cost_code", costCode);
@@ -46,8 +50,13 @@ public class CostItemServiceImpl extends ServiceImpl<CostItemMapper, CostItem> i
         if(status != null && status != ""){
             queryWrapper.eq("status", status);
         }
+        List<String> notCostCodes = form.getNotCostCodes();
+        if(notCostCodes != null && notCostCodes.size()>0){
+            queryWrapper.notIn("cost_code", notCostCodes);
+        }
         List<CostItem> costItems = costItemMapper.selectList(queryWrapper);
         List<CostItemVO> costItemVOS = ConvertUtil.convertList(costItems, CostItemVO.class);
         return costItemVOS;
     }
+
 }

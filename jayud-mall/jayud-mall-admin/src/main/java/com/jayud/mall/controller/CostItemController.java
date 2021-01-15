@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -32,5 +33,41 @@ public class CostItemController {
         List<CostItemVO> list = costItemService.findCostItem(form);
         return CommonResult.success(list);
     }
+
+    //查询应付费用list
+    @ApiOperation(value = "查询应付费用list")
+    @PostMapping("/findCostItemByPay")
+    @ApiOperationSupport(order = 2)
+    public CommonResult<List<CostItemVO>> findCostItemByPay(@RequestBody CostItemForm form) {
+        form.setIdentifying("2");//辨认费用类型(1应收费用 2应付费用)
+        List<CostItemVO> list = costItemService.findCostItem(form);
+        return CommonResult.success(list);
+    }
+
+    //查询应收费用list
+    @ApiOperation(value = "查询应收费用list")
+    @PostMapping("/findCostItemByRec")
+    @ApiOperationSupport(order = 3)
+    public CommonResult<List<CostItemVO>> findCostItemByRec(@RequestBody CostItemForm form) {
+        form.setIdentifying("1");//辨认费用类型(1应收费用 2应付费用)
+        List<CostItemVO> list = costItemService.findCostItem(form);
+        return CommonResult.success(list);
+    }
+
+    //查询其他应收费用(过滤掉 海运费、内陆费)list
+    @ApiOperation(value = "查询应收费用list")
+    @PostMapping("/findCostItemByOtherRec")
+    @ApiOperationSupport(order = 4)
+    public CommonResult<List<CostItemVO>> findCostItemByOtherRec(@RequestBody CostItemForm form) {
+        form.setIdentifying("1");//辨认费用类型(1应收费用 2应付费用)
+        /*
+        JYD-REC-COS-00001,海运费
+        JYD-REC-COS-00002,内陆费
+         */
+        form.setNotCostCodes(Arrays.asList("JYD-REC-COS-00001","JYD-REC-COS-00002"));
+        List<CostItemVO> list = costItemService.findCostItem(form);
+        return CommonResult.success(list);
+    }
+
 
 }

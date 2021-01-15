@@ -25,9 +25,13 @@ public class TemplateCopeReceivableVO {
     @JSONField(ordinal = 3)
     private String costName;
 
-    @ApiModelProperty(value = "规格", position = 4)
+    @ApiModelProperty(value = "规格代码(quotation_type code;shipping_area warehouse_code)", position = 4)
     @JSONField(ordinal = 4)
     private String specificationCode;
+
+    @ApiModelProperty(value = "规格名称(quotation_type name;shipping_area warehouse_name)", position = 4)
+    @JSONField(ordinal = 4)
+    private String specificationName;
 
     @ApiModelProperty(value = "计算方式(1自动 2手动)", position = 5)
     @JSONField(ordinal = 5)

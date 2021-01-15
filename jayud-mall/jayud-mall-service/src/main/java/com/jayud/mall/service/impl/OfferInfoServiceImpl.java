@@ -230,15 +230,20 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
                 templateCopeReceivableMapper.findTemplateCopeReceivableOceanFeeByQie(qie);
         offerInfoVO.setOceanFeeList(oceanFeeList);
 
-        /*集货仓库*/
-        String areaId = offerInfoVO.getAreaId();
-        if(areaId != null && areaId != ""){
-            String[] areaIdArr = areaId.split(",");
-            List<String> areaIdList = Arrays.asList(areaIdArr);
-            List<ShippingArea> shippingAreas = shippingAreaMapper.selectBatchIds(areaIdList);
-            List<ShippingAreaVO> shippingAreaVOList = ConvertUtil.convertList(shippingAreas, ShippingAreaVO.class);
-            offerInfoVO.setShippingAreaVOList(shippingAreaVOList);
-        }
+        /*集货仓库：陆运费规格*/
+        List<TemplateCopeReceivableVO> inlandFeeList =
+                templateCopeReceivableMapper.findTemplateCopeReceivableInlandFeeListByQie(qie);
+        offerInfoVO.setInlandFeeList(inlandFeeList);
+
+//        /*集货仓库*/
+//        String areaId = offerInfoVO.getAreaId();
+//        if(areaId != null && areaId != ""){
+//            String[] areaIdArr = areaId.split(",");
+//            List<String> areaIdList = Arrays.asList(areaIdArr);
+//            List<ShippingArea> shippingAreas = shippingAreaMapper.selectBatchIds(areaIdList);
+//            List<ShippingAreaVO> shippingAreaVOList = ConvertUtil.convertList(shippingAreas, ShippingAreaVO.class);
+//            offerInfoVO.setShippingAreaVOList(shippingAreaVOList);
+//        }
 
         /*货物类型*/
         String gid = offerInfoVO.getGid();

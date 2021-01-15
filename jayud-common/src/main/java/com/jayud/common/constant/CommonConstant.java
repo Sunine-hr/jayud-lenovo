@@ -166,6 +166,8 @@ public abstract class CommonConstant {
 
     public static final String REJECT = "驳回";
 
+    public static final String MAI_ORDE_NO = "mainOrderNo";
+
     public static final String ORDER_NO = "orderNo";
 
     public static final String BIZ_CODE = "bizCode";

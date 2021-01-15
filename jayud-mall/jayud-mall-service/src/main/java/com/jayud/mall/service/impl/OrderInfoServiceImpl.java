@@ -58,6 +58,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     OrderPickMapper orderPickMapper;
 
     @Autowired
+    TemplateCopeReceivableMapper templateCopeReceivableMapper;
+
+    @Autowired
+    FabWarehouseMapper fabWarehouseMapper;
+
+    @Autowired
     IOrderCustomsFileService orderCustomsFileService;
 
     @Autowired
@@ -567,12 +573,24 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfo(orderInfoId);
         //报价id
         Integer offerInfoId = orderInfoVO.getOfferInfoId();
+        //报价模板id
+        Integer qie = orderInfoVO.getQie();
 
         //订柜尺寸[海运费]
+        /*订柜尺寸：海运费规格*/
+        List<TemplateCopeReceivableVO> oceanFeeList =
+                templateCopeReceivableMapper.findTemplateCopeReceivableOceanFeeByQie(qie);
+        orderInfoVO.setOceanFeeList(oceanFeeList);
 
         //集货仓库[陆运费]
+        /*集货仓库：陆运费规格*/
+        List<TemplateCopeReceivableVO> inlandFeeList =
+                templateCopeReceivableMapper.findTemplateCopeReceivableInlandFeeListByQie(offerInfoId);
+        orderInfoVO.setInlandFeeList(inlandFeeList);
 
         //目的仓库[根据运价(报价)获取]
+
+
 
         //关联的订单箱号
 

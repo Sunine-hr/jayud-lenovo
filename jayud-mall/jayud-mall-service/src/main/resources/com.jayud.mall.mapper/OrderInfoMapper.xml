@@ -69,7 +69,8 @@
         t1.names,t1.types,t1.sail_time,t1.cut_off_time,t1.jc_time,t1.jkc_time,t1.estimated_time,DATEDIFF(t1.estimated_time,t1.sail_time) voyage_day,t1.remarks,
         t2.start_shipment,t2.destination_port,
         t3.code_name startShipmentName,
-        t4.code_name destinationPortName
+        t4.code_name destinationPortName,
+        t1.qie
         from order_info t
         left join offer_info t1 on t1.id = t.offer_info_id
         left join quotation_template t2 on t2.id = t1.qie

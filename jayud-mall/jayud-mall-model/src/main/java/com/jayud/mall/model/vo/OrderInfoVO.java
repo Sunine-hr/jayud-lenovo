@@ -222,4 +222,19 @@ public class OrderInfoVO {
     @JSONField(ordinal = 45)
     private String destinationPortName;
 
+    @ApiModelProperty(value = "报价模板id(quotation_template id)", position = 46)
+    @JSONField(ordinal = 46)
+    private Integer qie;
+
+    //海运费：订柜尺寸(应收费用明细)
+    @ApiModelProperty(value = "海运费：订柜尺寸(应收费用明细)", position = 47)
+    @JSONField(ordinal = 47)
+    private List<TemplateCopeReceivableVO> oceanFeeList;
+
+    //内陆费：集货仓库(应收费用明细)
+    @ApiModelProperty(value = "内陆费：集货仓库(应收费用明细)", position = 48)
+    @JSONField(ordinal = 48)
+    private List<TemplateCopeReceivableVO> inlandFeeList;
+
+
 }

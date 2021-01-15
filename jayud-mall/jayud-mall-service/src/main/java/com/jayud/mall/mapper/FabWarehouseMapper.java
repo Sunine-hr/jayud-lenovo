@@ -10,6 +10,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * <p>
  * 应收/FBA仓库 Mapper 接口
@@ -29,4 +31,11 @@ public interface FabWarehouseMapper extends BaseMapper<FabWarehouse> {
      * @return
      */
     IPage<FabWarehouseVO> findFabWarehouseByPage(Page<FabWarehouse> page, @Param("form") QueryFabWarehouseForm form);
+
+    /**
+     * 根据报价模板id，查询可达仓库，目的仓库
+     * @param qie
+     * @return
+     */
+    List<FabWarehouseVO> findFabWarehouseByqie(@Param("qie") Integer qie);
 }

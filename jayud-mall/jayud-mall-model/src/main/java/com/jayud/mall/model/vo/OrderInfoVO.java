@@ -236,5 +236,9 @@ public class OrderInfoVO {
     @JSONField(ordinal = 48)
     private List<TemplateCopeReceivableVO> inlandFeeList;
 
+    //报价对应的目的仓库
+    @ApiModelProperty(value = "报价对应的目的仓库", position = 49)
+    @JSONField(ordinal = 49)
+    private List<FabWarehouseVO> fabWarehouseVOList;
 
 }

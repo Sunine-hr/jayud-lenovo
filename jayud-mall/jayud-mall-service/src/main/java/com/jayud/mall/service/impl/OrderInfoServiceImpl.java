@@ -588,9 +588,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 templateCopeReceivableMapper.findTemplateCopeReceivableInlandFeeListByQie(offerInfoId);
         orderInfoVO.setInlandFeeList(inlandFeeList);
 
-        //目的仓库[根据运价(报价)获取]
-
-
+        //目的仓库
+        List<FabWarehouseVO> fabWarehouseVOList = fabWarehouseMapper.findFabWarehouseByqie(qie);
+        orderInfoVO.setFabWarehouseVOList(fabWarehouseVOList);
 
         //关联的订单箱号
 

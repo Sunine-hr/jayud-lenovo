@@ -100,7 +100,7 @@ public class OrderInfoVO {
     @JSONField(ordinal = 18)
     private Integer needClearance;
 
-    @ApiModelProperty(value = "备注", position = 19)
+    @ApiModelProperty(value = "备注(订单备注)", position = 19)
     @JSONField(ordinal = 19)
     private String remark;
 

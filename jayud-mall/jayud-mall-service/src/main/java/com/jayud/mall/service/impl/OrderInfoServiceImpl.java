@@ -563,7 +563,27 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public CommonResult<OrderInfoVO> lookOrderInfo(OrderInfoForm form) {
         Long orderInfoId = form.getId();
+        //订单信息
         OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfo(orderInfoId);
+        //报价id
+        Integer offerInfoId = orderInfoVO.getOfferInfoId();
+
+        //订柜尺寸[海运费]
+
+        //集货仓库[陆运费]
+
+        //目的仓库[根据运价(报价)获取]
+
+        //关联的订单箱号
+
+        //关联的订单商品
+
+        //是否上门提货[是] -- 提货地址
+
+        //其他费用
+
+        //费用明细
+
         return CommonResult.success(orderInfoVO);
     }
 

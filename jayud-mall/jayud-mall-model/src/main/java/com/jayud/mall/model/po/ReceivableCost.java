@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="ReceivableCost对象", description="应收/应付费用名称")
+@ApiModel(value="ReceivableCost对象", description="应收-应付,费用名称")
 public class ReceivableCost extends Model<ReceivableCost> {
 
     private static final long serialVersionUID = 1L;

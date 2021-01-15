@@ -14,7 +14,11 @@ public class QuotationTypeVO {
     @JSONField(ordinal = 1)
     private Long id;
 
-    @ApiModelProperty(value = "报价类型名", position = 2)
+    @ApiModelProperty(value = "报价类型代码", position = 2)
+    @JSONField(ordinal = 2)
+    private String code;
+
+    @ApiModelProperty(value = "报价类型名称", position = 2)
     @JSONField(ordinal = 2)
     private String name;
 

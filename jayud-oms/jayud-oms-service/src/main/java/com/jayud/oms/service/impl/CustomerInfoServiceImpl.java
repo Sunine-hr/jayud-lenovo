@@ -133,7 +133,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         int failCount=0;
         //导入字段条件判断
         ArrayList<ArrayList<String>> fieldData = new ArrayList<ArrayList<String>>();//必填值为空的数据行
-        CustomerInfo customerInfo = new CustomerInfo();//格式无误的数据行
+//        CustomerInfo customerInfo = new CustomerInfo();//格式无误的数据行
         String msg = null;
         int lisize = listob.size();
         for (int i = 0; i < lisize; i++) {
@@ -143,7 +143,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
                     StringUtils.isNotBlank(lo.get(7))&&StringUtils.isNotBlank(lo.get(8))&&StringUtils.isNotBlank(lo.get(9))&&
                    StringUtils.isNotBlank(lo.get(15))&& StringUtils.isNotBlank(lo.get(17))) {//判断每行某个数据是否符合规范要求
                 //符合要求，插入到数据库customerInfo表中
-                String s = saveCustomerInfoFromExcel(customerInfo, lo,userName);
+                String s = saveCustomerInfoFromExcel( lo,userName);
                 if(s.equals("添加成功")){
                     lo = null;
                     successCount += 1;
@@ -162,6 +162,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
                     }
                     dataString.add(s);
                     fieldData.add(dataString);
+                    lo=null;
                 }
 
             } else {
@@ -198,9 +199,8 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         return message;
     }
 
-    private String saveCustomerInfoFromExcel(CustomerInfo customerInfo, List<String> lo,String userName) {
-        //获取当前登陆用户
-
+    private String saveCustomerInfoFromExcel(List<String> lo,String userName) {
+        CustomerInfo customerInfo = new CustomerInfo();
         customerInfo.setCreatedUser(userName);
         customerInfo.setName(lo.get(0));
         customerInfo.setIdCode(lo.get(1));
@@ -266,19 +266,21 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         Long ywId = Long.parseLong(systemUserBySystemName1.getData().toString());
         customerInfo.setYwId(ywId);
         customerInfo.setAuditStatus(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode());
-        customerInfoService.saveOrUpdate(customerInfo);
-        for (int i = 0; i < legalId.size(); i++) {
-            CustomerRelaLegal customerRelaLegal = new CustomerRelaLegal();
-            customerRelaLegal.setCustomerInfoId(customerInfo.getId());
-            customerRelaLegal.setLegalEntityId(legalId.get(i));
-            customerRelaLegal.setCreatedUser(userName);
-            customerRelaLegal.setCreatedTime(LocalDateTime.now());
-            boolean save = customerRelaLegalService.save(customerRelaLegal);
-            if(!save){
-               return "法人主体添加失败";
+        boolean b = this.customerInfoService.saveOrUpdate(customerInfo);
+        if(b){
+            for (int i = 0; i < legalId.size(); i++) {
+                CustomerRelaLegal customerRelaLegal = new CustomerRelaLegal();
+                customerRelaLegal.setCustomerInfoId(customerInfo.getId());
+                customerRelaLegal.setLegalEntityId(legalId.get(i));
+                customerRelaLegal.setCreatedUser(userName);
+                customerRelaLegal.setCreatedTime(LocalDateTime.now());
+                boolean save = customerRelaLegalService.save(customerRelaLegal);
+                if(!save){
+                    return "法人主体添加失败";
+                }
             }
         }
-
+        customerInfo = null;
         return "添加成功";
     }
 

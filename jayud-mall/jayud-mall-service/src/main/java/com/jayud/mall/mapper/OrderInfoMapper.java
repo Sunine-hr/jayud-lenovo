@@ -36,4 +36,11 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      * @return
      */
     OrderInfoVO lookOrderInfoById(@Param("id") Long id);
+
+    /**
+     * 提交订单，查看订单详情
+     * @param orderInfoId
+     * @return
+     */
+    OrderInfoVO lookOrderInfo(@Param("orderInfoId") Long orderInfoId);
 }

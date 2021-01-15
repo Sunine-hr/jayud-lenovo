@@ -45,11 +45,11 @@ public class OrderInfo extends Model<OrderInfo> {
     @JSONField(ordinal = 4)
     private Integer offerInfoId;
 
-    @ApiModelProperty(value = "订柜尺寸[海运费](template_cope_receivable specification_code)", position = 4)
+    @ApiModelProperty(value = "订柜尺寸[海运费](template_cope_receivable specification_code -> quotation_type code)", position = 4)
     @JSONField(ordinal = 4)
     private String reserveSize;
 
-    @ApiModelProperty(value = "集货仓库代码(shipping_area warehouse_code)", position = 5)
+    @ApiModelProperty(value = "集货仓库代码[内陆费](template_cope_receivable specification_code ->shipping_area warehouse_code)", position = 5)
     @JSONField(ordinal = 5)
     private String storeGoodsWarehouseCode;
 

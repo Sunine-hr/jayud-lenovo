@@ -314,7 +314,8 @@
         left join driver_info di on di.id = osc.driver_info_id
         left join vehicle_info vi on vi.id = osc.vehicle_id
         LEFT JOIN supplier_info si ON vi.supplier_id = si.`id`
-        WHERE (oi.`class_code` = 'ZGYS' or oi.class_code='KY')
+        WHERE
+         -- (oi.`class_code` = 'ZGYS' or oi.class_code='KY')
         <if test="orderNo != null and orderNo != ''">
             and ot.order_no = #{orderNo}
         </if>

@@ -598,9 +598,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         //是否上门提货[是] -- 提货地址
 
-        //其他费用
+        //TODO 其他费用 暂时不做
 
-        //费用明细
+        //TODO 费用明细 暂时不做
 
         return CommonResult.success(orderInfoVO);
     }

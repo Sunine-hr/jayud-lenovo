@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -75,7 +76,7 @@ public class UserDetailService implements UserDetailsService {
      * @throws UsernameNotFoundException
      */
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username){
         logger.debug("权限框架-加载用户");
         HttpServletRequest request = ContextHolderUtils.getRequest();
         String password = request.getParameter(passwordParameter);
@@ -96,7 +97,7 @@ public class UserDetailService implements UserDetailsService {
         //帐号启用状态：0->Off 启用；1->On 停用
         if(userVO.getStatus()==1) {
             logger.debug("用户账号未启用，无法登陆 （手机号／邮箱）:{}", username);
-            throw new UsernameNotFoundException("用户账号未启用！");
+            throw new DisabledException("用户账号被禁用！");
         }
         // security bcryptPasswordEncoder自定义密码验证
         BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();

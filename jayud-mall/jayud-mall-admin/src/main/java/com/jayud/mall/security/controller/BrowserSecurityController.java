@@ -1,5 +1,7 @@
 package com.jayud.mall.security.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayud.mall.model.vo.domain.AuthUser;
 import com.jayud.mall.model.vo.domain.BaseAuthVO;
 import com.jayud.mall.service.BaseService;
@@ -17,8 +19,6 @@ import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
-import org.springframework.security.web.savedrequest.SavedRequest;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -30,7 +30,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 浏览器安全控制器BrowserSecurityController
@@ -63,6 +66,9 @@ public class BrowserSecurityController {
      */
     @Autowired
     BaseService baseService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @ApiOperation(value = "测试spring security")
     @ApiOperationSupport(order = 1)
@@ -106,24 +112,50 @@ public class BrowserSecurityController {
     @ApiOperation(value = "在未登录的情况下，当用户访问html资源的时候跳转到登录页，否则返回JSON格式数据，状态码为401")
     @ApiOperationSupport(order = 5)
     @GetMapping("/authentication/require")
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public String requireAuthentication(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        SavedRequest savedRequest = requestCache.getRequest(request, response);
-        if (savedRequest != null) {
-            String targetUrl = savedRequest.getRedirectUrl();
-            if (StringUtils.endsWithIgnoreCase(targetUrl, ".html"))
-                //在未登录的情况下，当用户访问html资源的时候跳转到登录页
-                redirectStrategy.sendRedirect(request, response, "/login.html");
-        }
-        return "访问的资源需要身份认证！";
+    @ResponseStatus(HttpStatus.UNAUTHORIZED) //UNAUTHORIZED(401, "Unauthorized"),
+    public void requireAuthentication(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//        SavedRequest savedRequest = requestCache.getRequest(request, response);
+//        if (savedRequest != null) {
+//            String targetUrl = savedRequest.getRedirectUrl();
+//            if (StringUtils.endsWithIgnoreCase(targetUrl, ".html"))
+//                //在未登录的情况下，当用户访问html资源的时候跳转到登录页
+//                redirectStrategy.sendRedirect(request, response, "/login.html");
+//        }
+
+        response.setContentType("application/json;charset=utf-8");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        PrintWriter out = response.getWriter();
+        Map<String,Object> map = new HashMap<>();
+        map.put("code",401);
+        map.put("msg","未登录,访问的资源需要身份认证！");
+        map.put("data", null);
+        out.write(objectMapper.writeValueAsString(map));
+        out.flush();
+        out.close();
     }
 
     @ApiOperation(value = "session失效")
     @ApiOperationSupport(order = 6)
     @GetMapping("/session/invalid")
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public String sessionInvalid(){
-        return "session已失效，请重新认证";
+    @ResponseStatus(HttpStatus.FORBIDDEN) //FORBIDDEN(403, "Forbidden"),
+    public void sessionInvalid(HttpServletResponse response){
+        response.setContentType("application/json;charset=utf-8");
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        PrintWriter out = null;
+        try {
+            out = response.getWriter();
+            Map<String,Object> map = new HashMap<>();
+            map.put("code",403);
+            map.put("msg","session已失效，请重新认证");
+            map.put("data",null);
+            out.write(objectMapper.writeValueAsString(map));
+        } catch (JsonProcessingException e){
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        out.flush();
+        out.close();
     }
 
     @ApiOperation(value = "退出登录")

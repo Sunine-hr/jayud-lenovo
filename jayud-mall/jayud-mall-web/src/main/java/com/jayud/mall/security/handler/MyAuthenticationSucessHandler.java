@@ -14,6 +14,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>自定义登录成功逻辑</p>
@@ -34,19 +37,31 @@ public class MyAuthenticationSucessHandler implements AuthenticationSuccessHandl
      * json字符串处理
      */
     @Autowired
-    private ObjectMapper mapper;
+    private ObjectMapper objectMapper;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        //输出如下JSON信息
+//        //输出如下JSON信息
+//        response.setContentType("application/json;charset=utf-8");
+//        response.getWriter().write(mapper.writeValueAsString(authentication));
+//
+////        //登录成功后页面将跳转回引发跳转的页面
+////        SavedRequest savedRequest = requestCache.getRequest(request, response);
+////        redirectStrategy.sendRedirect(request, response, savedRequest.getRedirectUrl());
+//
+////        //登录成功指定跳转的页面，比如跳转到`/index`
+////        redirectStrategy.sendRedirect(request, response, "/index");
+
+        Map<String,Object> map = new HashMap<>();
+        map.put("code",200);
+        map.put("msg","登录成功");
+        map.put("data",authentication);
         response.setContentType("application/json;charset=utf-8");
-        response.getWriter().write(mapper.writeValueAsString(authentication));
+        response.setStatus(HttpServletResponse.SC_OK);
+        PrintWriter out = response.getWriter();
+        out.write(objectMapper.writeValueAsString(map));
+        out.flush();
+        out.close();
 
-//        //登录成功后页面将跳转回引发跳转的页面
-//        SavedRequest savedRequest = requestCache.getRequest(request, response);
-//        redirectStrategy.sendRedirect(request, response, savedRequest.getRedirectUrl());
-
-//        //登录成功指定跳转的页面，比如跳转到`/index`
-//        redirectStrategy.sendRedirect(request, response, "/index");
     }
 }

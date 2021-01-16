@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -99,7 +100,7 @@ public class UserDetailService implements UserDetailsService {
         //启用状态，默认为1，1是0否
         if(customerVO.getStatus()==0) {
             logger.debug("用户账号未启用，无法登陆(手机号):{}", username);
-            throw new UsernameNotFoundException("用户账号未启用！");
+            throw new DisabledException("用户账号被禁用！");
         }
         // security bcryptPasswordEncoder自定义密码验证
         BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();

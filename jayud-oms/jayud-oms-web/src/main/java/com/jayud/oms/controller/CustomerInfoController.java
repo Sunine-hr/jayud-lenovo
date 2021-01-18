@@ -89,7 +89,7 @@ public class CustomerInfoController {
     @PostMapping(value = "/getCustomerInfoById")
     public CommonResult<CustomerInfoVO> getCustomerInfoById(@RequestBody Map<String, Object> param) {
         String id = MapUtil.getStr(param, "id");
-        if(StringUtil.isNullOrEmpty(id)){
+        if (StringUtil.isNullOrEmpty(id)) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         return CommonResult.success(customerInfoService.getCustomerInfoById(Long.valueOf(id)));
@@ -99,6 +99,8 @@ public class CustomerInfoController {
     @PostMapping(value = "/saveOrUpdateCustomerInfo")
     public CommonResult saveOrUpdateCustomerInfo(@RequestBody @Valid AddCustomerInfoForm form) {
         CustomerInfo customerInfo = ConvertUtil.convert(form, CustomerInfo.class);
+        //空字符串设置null
+        form.setIdCode(StringUtils.isEmpty(form.getIdCode()) ? null : form.getIdCode());
         if (form.getId() != null) {
             customerInfo.setUpdatedUser(form.getLoginUserName());
             customerInfo.setUpdatedTime(DateUtils.getNowTime());
@@ -107,7 +109,8 @@ public class CustomerInfoController {
         }
         //校验客户代码的唯一性
         List<CustomerInfoVO> oldCustomerInfos = customerInfoService.existCustomerInfo(form.getIdCode());
-        if((form.getId() == null && oldCustomerInfos != null && oldCustomerInfos.size() > 0) || (form.getId() != null && oldCustomerInfos != null && oldCustomerInfos.size() > 1)){
+        if ((form.getId() == null && oldCustomerInfos != null && oldCustomerInfos.size() > 0)
+                || (form.getId() != null && oldCustomerInfos != null && oldCustomerInfos.size() > 1)) {
             return CommonResult.error(ResultEnum.CUSTOMER_CODE_EXIST);
         }
         customerInfo.setAuditStatus(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode());
@@ -119,16 +122,16 @@ public class CustomerInfoController {
 
     @ApiOperation(value = "二期优化3:新增和编辑时校验客户名称是否存在,name=客户姓名 id=客户ID")
     @PostMapping(value = "/existCustomerName")
-    public CommonResult existCustomerName(@RequestBody Map<String,Object> param) {
+    public CommonResult existCustomerName(@RequestBody Map<String, Object> param) {
         String customerName = MapUtil.getStr(param, "name");
-        String id = MapUtil.getStr(param,"id");
-        if(StringUtil.isNullOrEmpty(customerName)){
+        String id = MapUtil.getStr(param, "id");
+        if (StringUtil.isNullOrEmpty(customerName)) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.like("name",customerName);
+        queryWrapper.like("name", customerName);
         List<CustomerInfo> customerInfos = customerInfoService.list(queryWrapper);
-        if((StringUtil.isNullOrEmpty(id) && customerInfos != null && customerInfos.size() > 0) || ((!StringUtil.isNullOrEmpty(id)) && customerInfos != null && customerInfos.size() > 1)){
+        if ((StringUtil.isNullOrEmpty(id) && customerInfos != null && customerInfos.size() > 0) || ((!StringUtil.isNullOrEmpty(id)) && customerInfos != null && customerInfos.size() > 1)) {
             return CommonResult.error(ResultEnum.CUSTOMER_NAME_EXIST);
         }
         return CommonResult.success();
@@ -136,17 +139,17 @@ public class CustomerInfoController {
 
     @ApiOperation(value = "二期优化3:删除客户信息(禁用)")
     @PostMapping(value = "/delCustomerInfo")
-    public CommonResult delCustomerInfo(@RequestBody Map<String,Object> param) {
-        String idStr = MapUtil.getStr(param,"id");
-        String tempStatus = MapUtil.getStr(param,"status");
-        if(StringUtil.isNullOrEmpty(idStr) || StringUtil.isNullOrEmpty(tempStatus)){
+    public CommonResult delCustomerInfo(@RequestBody Map<String, Object> param) {
+        String idStr = MapUtil.getStr(param, "id");
+        String tempStatus = MapUtil.getStr(param, "status");
+        if (StringUtil.isNullOrEmpty(idStr) || StringUtil.isNullOrEmpty(tempStatus)) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         String status;
         Boolean isStatus = Boolean.valueOf(tempStatus);
-        if(isStatus){
+        if (isStatus) {
             status = "1";
-        }else {
+        } else {
             status = "0";
         }
         CustomerInfo customerInfo = new CustomerInfo();
@@ -155,7 +158,7 @@ public class CustomerInfoController {
         customerInfo.setUpdatedUser(UserOperator.getToken());
         customerInfo.setStatus(status);
         Boolean result = customerInfoService.saveOrUpdate(customerInfo);
-        if(result){
+        if (result) {
             return CommonResult.success();
         }
         return CommonResult.error(ResultEnum.OPR_FAIL);
@@ -163,9 +166,9 @@ public class CustomerInfoController {
 
     @ApiOperation(value = "二期优化3:已关联客户(结算单位)列表,id = 客户ID")
     @PostMapping(value = "/relateUnitList")
-    public CommonResult<List<CustomerInfoVO>> relateUnitList(@RequestBody Map<String,Object> param) {
+    public CommonResult<List<CustomerInfoVO>> relateUnitList(@RequestBody Map<String, Object> param) {
         String idStr = MapUtil.getStr(param, "id");
-        if(StringUtil.isNullOrEmpty(idStr)){
+        if (StringUtil.isNullOrEmpty(idStr)) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         List<CustomerInfoVO> customerInfoVOS = customerInfoService.relateUnitList(Long.parseLong(idStr));
@@ -174,15 +177,15 @@ public class CustomerInfoController {
 
     @ApiOperation(value = "二期优化3:删除已关联客户(结算单位)列表,customerInfoId=客户ID,unitId=关联客户ID")
     @PostMapping(value = "/delRelateUnitList")
-    public CommonResult delRelateUnitList(@RequestBody Map<String,Object> param) {
+    public CommonResult delRelateUnitList(@RequestBody Map<String, Object> param) {
         String customerInfoIdStr = MapUtil.getStr(param, "customerInfoId");
         String unitIdStr = MapUtil.getStr(param, "unitId");
-        if(StringUtil.isNullOrEmpty(customerInfoIdStr) || StringUtil.isNullOrEmpty(unitIdStr)){
+        if (StringUtil.isNullOrEmpty(customerInfoIdStr) || StringUtil.isNullOrEmpty(unitIdStr)) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         QueryWrapper removeWrapper = new QueryWrapper();
-        removeWrapper.eq("customer_info_id",Long.parseLong(customerInfoIdStr));
-        removeWrapper.eq("unit_id",Long.parseLong(unitIdStr));
+        removeWrapper.eq("customer_info_id", Long.parseLong(customerInfoIdStr));
+        removeWrapper.eq("unit_id", Long.parseLong(unitIdStr));
         customerRelaUnitService.remove(removeWrapper);
         return CommonResult.success();
     }
@@ -198,12 +201,11 @@ public class CustomerInfoController {
     @PostMapping(value = "/confirmRelateUnit")
     public CommonResult<List<CustomerInfoVO>> confirmRelateUnit(@RequestBody ConfirmRelateUnitForm form) {
         Boolean result = customerRelaUnitService.confirmRelateUnit(form);
-        if(!result){
+        if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
         return CommonResult.success();
     }
-
 
 
     @ApiOperation(value = "审核客户信息")
@@ -239,8 +241,12 @@ public class CustomerInfoController {
                 auditInfo.setAuditTypeDesc(CustomerInfoStatusEnum.CW_WAIT_AUDIT.getDesc());
             } else if (CustomerInfoStatusEnum.CW_WAIT_AUDIT.getCode().equals(auditStatus)) {//财务审核流程
                 //客户代码此处必填项
-                if(StringUtil.isNullOrEmpty(form.getIdCode())){
+                if (StringUtil.isNullOrEmpty(form.getIdCode())) {
                     return CommonResult.error(ResultEnum.OPR_FAIL);
+                }
+                //TODO 判断是否存在客户代码
+                if (this.customerInfoService.exitCode(customerInfo.getId(),form.getIdCode())) {
+                    return CommonResult.error(400,"客户代码已存在");
                 }
                 customerInfo.setIdCode(form.getIdCode());
                 customerInfo.setAuditStatus(CustomerInfoStatusEnum.ZJB_WAIT_AUDIT.getCode());
@@ -259,17 +265,17 @@ public class CustomerInfoController {
 
     @ApiOperation(value = "编辑及审核客户代码是否可填 id = 客户ID")
     @PostMapping(value = "/isFillCustomerCode")
-    public CommonResult<Boolean> isFillCustomerCode(@RequestBody Map<String,Object> param) {
+    public CommonResult<Boolean> isFillCustomerCode(@RequestBody Map<String, Object> param) {
         String customerInfoIdStr = MapUtil.getStr(param, "id");
-        if(StringUtil.isNullOrEmpty(customerInfoIdStr)){
+        if (StringUtil.isNullOrEmpty(customerInfoIdStr)) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("ext_id",Long.parseLong(customerInfoIdStr));
-        queryWrapper.eq("ext_desc",SqlConstant.CUSTOMER_INFO);
-        queryWrapper.eq("audit_status",CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());
+        queryWrapper.eq("ext_id", Long.parseLong(customerInfoIdStr));
+        queryWrapper.eq("ext_desc", SqlConstant.CUSTOMER_INFO);
+        queryWrapper.eq("audit_status", CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());
         List<AuditInfo> auditInfos = auditInfoService.list(queryWrapper);
-        if(auditInfos != null && auditInfos.size() > 0){
+        if (auditInfos != null && auditInfos.size() > 0) {
             return CommonResult.success(false);
         }
         return CommonResult.success(true);
@@ -399,20 +405,20 @@ public class CustomerInfoController {
 
     @ApiOperation(value = "下载客户模板")
     @GetMapping(value = "/downloadExcel")
-    public void downloadExcel(HttpServletResponse response)throws IOException {
+    public void downloadExcel(HttpServletResponse response) throws IOException {
         //获取输入流，原始模板位置
         InputStream bis = new BufferedInputStream(new FileInputStream(new File(filePath)));
         //假如以中文名下载的话，设置下载文件名称
         String filename = "客户模板.xls";
         //转码，免得文件名中文乱码
         //设置文件下载头
-        response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename,"UTF-8"));
+        response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename, "UTF-8"));
         //1.设置文件ContentType类型，这样设置，会自动判断下载文件类型
         response.setContentType("application/vnd.ms-excel;charset=utf-8");
 
         BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
         int len = 0;
-        while((len = bis.read()) != -1){
+        while ((len = bis.read()) != -1) {
             out.write(len);
             out.flush();
         }
@@ -421,28 +427,28 @@ public class CustomerInfoController {
 
     @ApiOperation(value = "导入客户信息")
     @PostMapping(value = "/uploadExcel")
-    public CommonResult ajaxUploadExcel(MultipartFile file, HttpServletResponse response,@RequestParam("userName") String userName){
+    public CommonResult ajaxUploadExcel(MultipartFile file, HttpServletResponse response, @RequestParam("userName") String userName) {
 
-        System.out.println("userName:======="+userName);
-        String commentHTML=null;
+        System.out.println("userName:=======" + userName);
+        String commentHTML = null;
         try {
-            commentHTML = customerInfoService.importCustomerInfoExcel(response,file,userName);
+            commentHTML = customerInfoService.importCustomerInfoExcel(response, file, userName);
         } catch (Exception e1) {
             e1.printStackTrace();
         }
 
         if (StringUtils.isNotBlank(commentHTML)) {
             return CommonResult.success(commentHTML);
-        }else {
-            return CommonResult.error(ResultEnum.OPR_FAIL,"导入失败");
+        } else {
+            return CommonResult.error(ResultEnum.OPR_FAIL, "导入失败");
         }
     }
 
     @ApiOperation(value = "下载错误信息")
     @GetMapping(value = "/downloadErrorExcel")
-    public void downloadErrorExcel( HttpServletResponse response,@RequestParam("userName") String userName)  {
+    public void downloadErrorExcel(HttpServletResponse response, @RequestParam("userName") String userName) {
         try {
-            customerInfoService.insExcel(response,userName);
+            customerInfoService.insExcel(response, userName);
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -450,7 +456,7 @@ public class CustomerInfoController {
 
     @ApiOperation(value = "判断是否有错误信息")
     @PostMapping(value = "/checkMes")
-    public CommonResult checkMes(@RequestParam("userName") String userName){
+    public CommonResult checkMes(@RequestParam("userName") String userName) {
         boolean result = customerInfoService.checkMes(userName);
         return CommonResult.success(result);
     }

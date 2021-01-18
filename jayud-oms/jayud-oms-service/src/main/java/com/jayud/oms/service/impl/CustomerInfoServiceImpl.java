@@ -112,13 +112,13 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         return baseMapper.findRelateUnitList(form);
     }
 
-    private HashMap<String,Object> hashMap = new HashMap<>();
+    private HashMap<String, Object> hashMap = new HashMap<>();
 
     @Override
-    public String importCustomerInfoExcel(HttpServletResponse response,MultipartFile file,String userName)throws Exception{
+    public String importCustomerInfoExcel(HttpServletResponse response, MultipartFile file, String userName) throws Exception {
 //        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         InputStream in = null;
-        List<List<String>>  listob = null;
+        List<List<String>> listob = null;
 //        MultipartFile file = multipartRequest.getFile("upfile");
 
         if (file.isEmpty()) {
@@ -129,8 +129,8 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
 
         in.close();
 
-        int successCount=0;
-        int failCount=0;
+        int successCount = 0;
+        int failCount = 0;
         //导入字段条件判断
         ArrayList<ArrayList<String>> fieldData = new ArrayList<ArrayList<String>>();//必填值为空的数据行
 //        CustomerInfo customerInfo = new CustomerInfo();//格式无误的数据行
@@ -139,22 +139,22 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         for (int i = 0; i < lisize; i++) {
             List<String> lo = listob.get(i);
 
-            if (StringUtils.isNotBlank(lo.get(0))&&StringUtils.isNotBlank(lo.get(2))&&StringUtils.isNotBlank(lo.get(3))&&StringUtils.isNotBlank(lo.get(4))&&StringUtils.isNotBlank(lo.get(5))&&
-                    StringUtils.isNotBlank(lo.get(7))&&StringUtils.isNotBlank(lo.get(8))&&StringUtils.isNotBlank(lo.get(9))&&
-                   StringUtils.isNotBlank(lo.get(15))&& StringUtils.isNotBlank(lo.get(17))) {//判断每行某个数据是否符合规范要求
+            if (StringUtils.isNotBlank(lo.get(0)) && StringUtils.isNotBlank(lo.get(2)) && StringUtils.isNotBlank(lo.get(3)) && StringUtils.isNotBlank(lo.get(4)) && StringUtils.isNotBlank(lo.get(5)) &&
+                    StringUtils.isNotBlank(lo.get(7)) && StringUtils.isNotBlank(lo.get(8)) && StringUtils.isNotBlank(lo.get(9)) &&
+                    StringUtils.isNotBlank(lo.get(15)) && StringUtils.isNotBlank(lo.get(17))) {//判断每行某个数据是否符合规范要求
                 //符合要求，插入到数据库customerInfo表中
-                String s = saveCustomerInfoFromExcel( lo,userName);
-                if(s.equals("添加成功")){
+                String s = saveCustomerInfoFromExcel(lo, userName);
+                if (s.equals("添加成功")) {
                     lo = null;
                     successCount += 1;
-                }else{
+                } else {
                     //不符合要求的数据，返回给用户
                     ArrayList<String> dataString = new ArrayList<String>();
                     for (int j = 0; j < lo.size(); j++) {
                         String a;
-                        if(lo.get(j)==null||lo.get(j)==""){
+                        if (lo.get(j) == null || lo.get(j) == "") {
                             a = "";
-                        }else{
+                        } else {
                             a = lo.get(j);
                         }
 
@@ -162,7 +162,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
                     }
                     dataString.add(s);
                     fieldData.add(dataString);
-                    lo=null;
+                    lo = null;
                 }
 
             } else {
@@ -170,9 +170,9 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
                 ArrayList<String> dataString = new ArrayList<String>();
                 for (int j = 0; j < lo.size(); j++) {
                     String a;
-                    if(lo.get(j)==null||lo.get(j)==""){
+                    if (lo.get(j) == null || lo.get(j) == "") {
                         a = " ";
-                    }else{
+                    } else {
                         a = lo.get(j);
                     }
 
@@ -184,35 +184,35 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
             }
 
         }
-        failCount=fieldData.size();
-        String message=null;
-        if (failCount>0) {
+        failCount = fieldData.size();
+        String message = null;
+        if (failCount > 0) {
             //不符合规范的数据保存在redis中，重新生成EXCEL表
-            hashMap.put(userName,fieldData);
+            hashMap.put(userName, fieldData);
 
 //            insExcel(fieldData,response);
-            message="成功导入"+successCount+"行，未成功导入"+failCount+"行,请在有误数据表内查看!";
-        }else{
-            message="全部导入成功！";
+            message = "成功导入" + successCount + "行，未成功导入" + failCount + "行,请在有误数据表内查看!";
+        } else {
+            message = "全部导入成功！";
         }
 
         return message;
     }
 
-    private String saveCustomerInfoFromExcel(List<String> lo,String userName) {
+    private String saveCustomerInfoFromExcel(List<String> lo, String userName) {
         CustomerInfo customerInfo = new CustomerInfo();
         customerInfo.setCreatedUser(userName);
         customerInfo.setName(lo.get(0));
         customerInfo.setIdCode(lo.get(1));
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("name",lo.get(0));
-        queryWrapper.eq("id_code",lo.get(1));
+        queryWrapper.eq("name", lo.get(0));
+        queryWrapper.eq("id_code", lo.get(1));
         CustomerInfo customerInfo1 = baseMapper.selectOne(queryWrapper);
-        if(customerInfo1!=null){
+        if (customerInfo1 != null) {
             return "客户信息已存在";
         }
         Integer typeCode = TypeUtils.getTypeCode(lo.get(2));
-        if(typeCode==null){
+        if (typeCode == null) {
             return "该客户类型不存在";
         }
         customerInfo.setTypes(typeCode);
@@ -226,7 +226,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         List<Long> legalId = new ArrayList<>();
         for (String legalName : legalNames) {
             ApiResult legalEntityByLegalName = oauthClient.getLegalEntityByLegalName(legalName);
-            if(legalEntityByLegalName.getMsg().equals("fail")){
+            if (legalEntityByLegalName.getMsg().equals("fail")) {
                 return "法人主体数据与系统不匹配";
             }
             legalId.add(Long.parseLong(legalEntityByLegalName.getData().toString()));
@@ -238,24 +238,24 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         customerInfo.setAccountPeriod(lo.get(11));
         customerInfo.setTaxType(lo.get(12));
         customerInfo.setTaxRate(lo.get(13));
-        if(lo.get(14)==null){
+        if (lo.get(14) == null) {
             customerInfo.setEstate(null);
         }
         customerInfo.setEstate(Integer.parseInt(lo.get(14)));
 
         ApiResult deptIdByDeptName = oauthClient.getDeptIdByDeptName(lo.get(15));
-        if(deptIdByDeptName.getMsg().equals("fail")){
+        if (deptIdByDeptName.getMsg().equals("fail")) {
             return "部门名称数据与系统不匹配";
         }
         String departmentId = String.valueOf(deptIdByDeptName.getData());
         customerInfo.setDepartmentId(departmentId);
 
         String s1 = lo.get(16);
-        if(s1==null||s1.equals("")||s1+""==""){
+        if (s1 == null || s1.equals("") || s1 + "" == "") {
             customerInfo.setKuId(null);
-        }else{
+        } else {
             ApiResult systemUserBySystemName = oauthClient.getSystemUserBySystemName(s1);
-            if(systemUserBySystemName.getMsg().equals("fail")){
+            if (systemUserBySystemName.getMsg().equals("fail")) {
                 return "接单客服名称数据与系统不匹配";
             }
             Long kuId = Long.parseLong(systemUserBySystemName.getData().toString());
@@ -263,14 +263,14 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         }
 
         ApiResult systemUserBySystemName1 = oauthClient.getSystemUserBySystemName(lo.get(17));
-        if(systemUserBySystemName1.getMsg().equals("fail")){
+        if (systemUserBySystemName1.getMsg().equals("fail")) {
             return "业务员名称数据与系统不匹配";
         }
         Long ywId = Long.parseLong(systemUserBySystemName1.getData().toString());
         customerInfo.setYwId(ywId);
         customerInfo.setAuditStatus(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode());
         boolean b = this.customerInfoService.saveOrUpdate(customerInfo);
-        if(b){
+        if (b) {
             for (int i = 0; i < legalId.size(); i++) {
                 CustomerRelaLegal customerRelaLegal = new CustomerRelaLegal();
                 customerRelaLegal.setCustomerInfoId(customerInfo.getId());
@@ -278,7 +278,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
                 customerRelaLegal.setCreatedUser(userName);
                 customerRelaLegal.setCreatedTime(LocalDateTime.now());
                 boolean save = customerRelaLegalService.save(customerRelaLegal);
-                if(!save){
+                if (!save) {
                     return "法人主体添加失败";
                 }
             }
@@ -288,20 +288,20 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
     }
 
 
-    public void insExcel(HttpServletResponse response,String userName) throws Exception{
-        ArrayList<ArrayList<String>> fieldData = (ArrayList<ArrayList<String>>)hashMap.get(userName);
-        if(fieldData!=null&&fieldData.size()>0){//如果存在不规范行，则重新生成表
+    public void insExcel(HttpServletResponse response, String userName) throws Exception {
+        ArrayList<ArrayList<String>> fieldData = (ArrayList<ArrayList<String>>) hashMap.get(userName);
+        if (fieldData != null && fieldData.size() > 0) {//如果存在不规范行，则重新生成表
             //使用ExcelFileGenerator完成导出
             LoadExcelUtil loadExcelUtil = new LoadExcelUtil(fieldData);
             OutputStream os = response.getOutputStream();
             //导出excel建议加上重置输出流，可以不加该代码，但是如果不加必须要保证输出流中不应该在存在其他数据，否则导出会有问题
             response.reset();
             //配置：//文件名
-            String fileName = "有误数据表（"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+"）.xls";
+            String fileName = "有误数据表（" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "）.xls";
             //处理乱码
-            fileName = new String(fileName.getBytes("utf-8"),"iso-8859-1");
+            fileName = new String(fileName.getBytes("utf-8"), "iso-8859-1");
             //response.setContentType("application/vnd.ms-excel");
-            response.setHeader("Content-disposition", "attachment;filename="+fileName);
+            response.setHeader("Content-disposition", "attachment;filename=" + fileName);
             response.setBufferSize(1024);
             //导出excel的操作
             loadExcelUtil.expordExcel(os);
@@ -310,11 +310,22 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
 
     @Override
     public boolean checkMes(String userName) {
-        ArrayList<ArrayList<String>> fieldData = (ArrayList<ArrayList<String>>)hashMap.get(userName);
-        if(fieldData!=null){
+        ArrayList<ArrayList<String>> fieldData = (ArrayList<ArrayList<String>>) hashMap.get(userName);
+        if (fieldData != null) {
             return true;
         }
         return false;
+    }
+
+    /**
+     * 校验客户代码唯一性
+     */
+    @Override
+    public boolean exitCode(Long customerId, String idCode) {
+        QueryWrapper<CustomerInfo> condition = new QueryWrapper<>();
+        condition.lambda().eq(CustomerInfo::getIdCode, idCode);
+        condition.lambda().ne(CustomerInfo::getId, customerId);
+        return this.count(condition) > 0;
     }
 
 }

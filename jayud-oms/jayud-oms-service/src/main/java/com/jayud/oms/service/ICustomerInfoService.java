@@ -102,4 +102,9 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
     void insExcel(HttpServletResponse response,String userName) throws Exception;
 
     boolean checkMes(String userName);
+
+    /**
+     * 校验客户代码唯一性
+     */
+    public boolean exitCode(Long customerId,String idCode);
 }

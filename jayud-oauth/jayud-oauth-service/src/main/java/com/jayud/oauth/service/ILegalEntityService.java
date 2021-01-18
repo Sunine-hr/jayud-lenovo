@@ -17,4 +17,5 @@ public interface ILegalEntityService extends IService<LegalEntity> {
     List<LegalEntityVO> findLegalEntity(Map<String,String> param);
 
     LegalEntity getLegalEntityByLegalName(String name);
+
 }

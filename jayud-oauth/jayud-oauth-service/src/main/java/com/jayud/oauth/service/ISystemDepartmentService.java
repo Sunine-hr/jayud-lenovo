@@ -2,6 +2,7 @@ package com.jayud.oauth.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.oauth.model.bo.AddCompanyForm;
 import com.jayud.oauth.model.bo.AddDepartmentForm;
 import com.jayud.oauth.model.po.Department;
 import com.jayud.oauth.model.vo.DepartmentVO;
@@ -44,4 +45,10 @@ public interface ISystemDepartmentService extends IService<Department> {
      * @param deptName
      */
     Department getByDeptName(String deptName);
+
+    /**
+     * 新增主体简称/编辑
+     * @param form
+     */
+    void saveOrUpdateCompany(AddCompanyForm form);
 }

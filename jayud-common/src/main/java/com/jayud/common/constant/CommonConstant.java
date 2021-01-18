@@ -176,6 +176,8 @@ public abstract class CommonConstant {
 
     public static final String DEPARTMENT_ID = "departmentId";
 
+    public static final String LEGAl_IDS = "legalIds";
+
     public static final String WORK = "work";
 
     public static final String DEPARTMENT = "department";

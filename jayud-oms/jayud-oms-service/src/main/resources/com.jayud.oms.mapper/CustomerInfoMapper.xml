@@ -35,54 +35,54 @@
          created_user,updated_user,tax_type,tax_rate
     </sql>
 
-    <select id="findCustomerInfoByPage" parameterType="com.jayud.oms.model.bo.QueryCustomerInfoForm"
-            resultType="com.jayud.oms.model.vo.CustomerInfoVO">
-        SELECT
-        ci.id,ci.name,ci.`id_code` idCode,ci.`types`,ci.`contact`,ci.`phone`,ci.`address`,ci.`email`,ci.`tfn`,ci.`if_contract` ifContract,
-        ci.`settlement_type` settlementType,ci.`account_period` accountPeriod,ci.`estate`,ci.`department_id` departmentId,d.`name` departmentName,
-        ci.`ku_id` kuId,su1.`user_name` kuName,ci.`yw_id` ywId,su2.`user_name` ywName,ci.`audit_status` auditStatus,
-        (CASE ci.`audit_status` WHEN '0' THEN '待客服审核'
-        WHEN '1' THEN '待财务审核'
-        WHEN '2' THEN '待总经办审核'
-        WHEN '10' THEN '审核通过'
-        WHEN '11' THEN '审核拒绝' END) auditStatusDesc,
-        ci.`created_user` createdUser,
-        DATE_FORMAT(ci.`created_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
-        ci.`updated_user` updatedUser,ci.`audit_comment` auditComment,
-        DATE_FORMAT(ci.`updated_time`,'%Y-%m-%d %H:%i:%S') updatedTimeStr
-        FROM
-        customer_info ci
-        LEFT JOIN department d
-        ON ci.`department_id` = d.`id`
-        LEFT JOIN `system_user` su1
-        ON su1.`id` = ci.`ku_id`
-        LEFT JOIN `system_user` su2
-        ON su2.`id` = ci.`yw_id` where ci.`status` = 1
-        <if test="form.name != null and form.name != ''">
-            and ci.name like concat('%',#{form.name},'%')
-        </if>
-        <if test="form.idCode != null and form.idCode != ''">
-            and ci.id_code like concat('%',#{form.idCode},'%')
-        </if>
-        <if test="form.ywId != null and form.ywId != ''">
-            and ci.yw_id = #{form.ywId}
-        </if>
-        <if test="form.contact != null and form.contact != ''">
-            and ci.contact like concat('%',#{form.contact},'%')
-        </if>
-        <if test="form.auditStatus != null and form.auditStatus != ''">
-            and ci.audit_status = #{form.auditStatus}
-        </if>
-        <if test="form.cmd == 'kf'">
-            and ci.audit_status = 0
-        </if>
-        <if test="form.cmd == 'cw'">
-            and ci.audit_status = 1
-        </if>
-        <if test="form.cmd == 'zjb'">
-            and ci.audit_status = 2
-        </if>
-    </select>
+<!--    <select id="findCustomerInfoByPage" parameterType="com.jayud.oms.model.bo.QueryCustomerInfoForm"-->
+<!--            resultType="com.jayud.oms.model.vo.CustomerInfoVO">-->
+<!--        SELECT-->
+<!--        ci.id,ci.name,ci.`id_code` idCode,ci.`types`,ci.`contact`,ci.`phone`,ci.`address`,ci.`email`,ci.`tfn`,ci.`if_contract` ifContract,-->
+<!--        ci.`settlement_type` settlementType,ci.`account_period` accountPeriod,ci.`estate`,ci.`department_id` departmentId,d.`name` departmentName,-->
+<!--        ci.`ku_id` kuId,su1.`user_name` kuName,ci.`yw_id` ywId,su2.`user_name` ywName,ci.`audit_status` auditStatus,-->
+<!--        (CASE ci.`audit_status` WHEN '0' THEN '待客服审核'-->
+<!--        WHEN '1' THEN '待财务审核'-->
+<!--        WHEN '2' THEN '待总经办审核'-->
+<!--        WHEN '10' THEN '审核通过'-->
+<!--        WHEN '11' THEN '审核拒绝' END) auditStatusDesc,-->
+<!--        ci.`created_user` createdUser,-->
+<!--        DATE_FORMAT(ci.`created_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,-->
+<!--        ci.`updated_user` updatedUser,ci.`audit_comment` auditComment,-->
+<!--        DATE_FORMAT(ci.`updated_time`,'%Y-%m-%d %H:%i:%S') updatedTimeStr-->
+<!--        FROM-->
+<!--        customer_info ci-->
+<!--        LEFT JOIN department d-->
+<!--        ON ci.`department_id` = d.`id`-->
+<!--        LEFT JOIN `system_user` su1-->
+<!--        ON su1.`id` = ci.`ku_id`-->
+<!--        LEFT JOIN `system_user` su2-->
+<!--        ON su2.`id` = ci.`yw_id` where ci.`status` = 1-->
+<!--        <if test="form.name != null and form.name != ''">-->
+<!--            and ci.name like concat('%',#{form.name},'%')-->
+<!--        </if>-->
+<!--        <if test="form.idCode != null and form.idCode != ''">-->
+<!--            and ci.id_code like concat('%',#{form.idCode},'%')-->
+<!--        </if>-->
+<!--        <if test="form.ywId != null and form.ywId != ''">-->
+<!--            and ci.yw_id = #{form.ywId}-->
+<!--        </if>-->
+<!--        <if test="form.contact != null and form.contact != ''">-->
+<!--            and ci.contact like concat('%',#{form.contact},'%')-->
+<!--        </if>-->
+<!--        <if test="form.auditStatus != null and form.auditStatus != ''">-->
+<!--            and ci.audit_status = #{form.auditStatus}-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'kf'">-->
+<!--            and ci.audit_status = 0-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'cw'">-->
+<!--            and ci.audit_status = 1-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'zjb'">-->
+<!--            and ci.audit_status = 2-->
+<!--        </if>-->
+<!--    </select>-->
 
     <select id="getCustomerInfoById" resultType="com.jayud.oms.model.vo.CustomerInfoVO">
         SELECT
@@ -258,5 +258,62 @@
         <if test="form.idCode != null and form.idCode != ''">
             and ci.id_code like concat('%',#{form.idCode},'%')
         </if>
+    </select>
+
+    <select id="findCustomerInfoByPage" resultType="com.jayud.oms.model.vo.CustomerInfoVO">
+        SELECT
+        ci.id,ci.name,ci.`id_code` idCode,ci.`types`,ci.`contact`,ci.`phone`,ci.`address`,ci.`email`,ci.`tfn`,ci.`if_contract` ifContract,
+        ci.`settlement_type` settlementType,ci.`account_period` accountPeriod,ci.`estate`,ci.`department_id` departmentId,d.`name` departmentName,
+        ci.`ku_id` kuId,su1.`user_name` kuName,ci.`yw_id` ywId,su2.`user_name` ywName,ci.`audit_status` auditStatus,
+        (CASE ci.`audit_status` WHEN '0' THEN '待客服审核'
+        WHEN '1' THEN '待财务审核'
+        WHEN '2' THEN '待总经办审核'
+        WHEN '10' THEN '审核通过'
+        WHEN '11' THEN '审核拒绝' END) auditStatusDesc,
+        ci.`created_user` createdUser,
+        DATE_FORMAT(ci.`created_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
+        ci.`updated_user` updatedUser,ci.`audit_comment` auditComment,
+        DATE_FORMAT(ci.`updated_time`,'%Y-%m-%d %H:%i:%S') updatedTimeStr
+        FROM
+        `customer_info` ci
+        LEFT JOIN department d
+        ON ci.`department_id` = d.`id`
+        LEFT JOIN `system_user` su1
+        ON su1.`id` = ci.`ku_id`
+        LEFT JOIN `system_user` su2
+        ON su2.`id` = ci.`yw_id`
+        LEFT JOIN `customer_rela_legal` crl ON ci.`id` = crl.`customer_info_id`
+         where ci.`status` = 1
+        <if test="form.name != null and form.name != ''">
+            and ci.name like concat('%',#{form.name},'%')
+        </if>
+        <if test="form.idCode != null and form.idCode != ''">
+            and ci.id_code like concat('%',#{form.idCode},'%')
+        </if>
+        <if test="form.ywId != null and form.ywId != ''">
+            and ci.yw_id = #{form.ywId}
+        </if>
+        <if test="form.contact != null and form.contact != ''">
+            and ci.contact like concat('%',#{form.contact},'%')
+        </if>
+        <if test="form.auditStatus != null and form.auditStatus != ''">
+            and ci.audit_status = #{form.auditStatus}
+        </if>
+        <if test="form.cmd == 'kf'">
+            and ci.audit_status = 0
+        </if>
+        <if test="form.cmd == 'cw'">
+            and ci.audit_status = 1
+        </if>
+        <if test="form.cmd == 'zjb'">
+            and ci.audit_status = 2
+        </if>
+        <if test="legalIds != null">
+            and crl.`legal_entity_id` in
+               <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                   #{legalId}
+               </foreach>
+        </if>
+
     </select>
 </mapper>

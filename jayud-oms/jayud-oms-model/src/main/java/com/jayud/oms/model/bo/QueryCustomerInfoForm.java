@@ -24,6 +24,9 @@ public class QueryCustomerInfoForm extends BasePageForm{
     @ApiModelProperty(value = "联系人")
     private String contact;
 
+    @ApiModelProperty(value = "当前登录用户")
+    private String loginUser;
+
     @ApiModelProperty(value = "审核状态 ( 0-待客服审核 1-待财务审核 2-待总经办审核 10-通过 11-拒绝)")
     private Integer auditStatus;
 

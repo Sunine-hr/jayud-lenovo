@@ -11,6 +11,7 @@ import com.jayud.oms.model.bo.QueryCusAccountForm;
 import com.jayud.oms.model.vo.CustAccountVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.kafka.common.protocol.types.Field;
 
 import java.util.List;
 import java.util.Map;
@@ -79,4 +80,13 @@ public interface CustomerInfoMapper extends BaseMapper<CustomerInfo> {
      * @return
      */
     List<CustomerInfoVO> findRelateUnitList(@Param("form") QueryRelUnitInfoListForm form);
+
+    /**
+     * 根据法人主体获取客户列表分页
+     * @param page
+     * @param form
+     * @param legalIds
+     * @return
+     */
+    IPage<CustomerInfoVO> findCustomerInfoByPage(Page page, @Param("form") QueryCustomerInfoForm form, @Param("legalIds")List<Long> legalIds);
 }

@@ -61,6 +61,9 @@ public class SystemUserController {
     @Autowired
     ISystemCompanyService companyService;
 
+    @Autowired
+    ISystemUserLegalService systemUserLegalService;
+
     /**
      * 登录接口
      *
@@ -331,7 +334,7 @@ public class SystemUserController {
             systemUser.setStatus(SystemUserStatusEnum.OFF.getCode());
             systemUser.setCreatedUser(loginUser);
         }
-        userService.saveOrUpdateSystemUser(systemUser);
+        userService.saveOrUpdateSystemUser(systemUser,form.getLegalId());
         return CommonResult.success();
     }
 
@@ -503,6 +506,20 @@ public class SystemUserController {
         return CommonResult.success(initComboxs);
     }
 
+    @ApiOperation(value = "账户管理-新增数据初始化-所属法人主体")
+    @PostMapping(value = "/initUserAccountLegalEntity")
+    public CommonResult<List<InitComboxVO>> initUserAccountLegalEntity() {
+        List<InitComboxVO> initComboxs = new ArrayList<>();
+        List<LegalEntity> legalEntities = legalEntityService.list();
+        for (LegalEntity legalEntity : legalEntities) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(legalEntity.getId());
+            initComboxVO.setName(legalEntity.getLegalName());
+            initComboxs.add(initComboxVO);
+        }
+        return CommonResult.success(initComboxs);
+    }
+
     @ApiOperation(value = "账户管理-新增数据初始化-所属公司")
     @PostMapping(value = "/initUserAccountCompany")
     public CommonResult<List<InitComboxVO>> initUserAccountCompany() {
@@ -554,6 +571,8 @@ public class SystemUserController {
         if (systemUser == null || systemUser.getDepartmentId() == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
+        List<Long> legalIds = systemUserLegalService.getLegalId(systemUser.getId());
+        result.put(CommonConstant.LEGAl_IDS,legalIds);
         result.put(CommonConstant.WORK, systemUser.getWorkName());
         result.put(CommonConstant.DEPARTMENT_ID, systemUser.getDepartmentId());
         return CommonResult.success(result);
@@ -593,6 +612,13 @@ public class SystemUserController {
 
         SystemUser user = new SystemUser().setId(form.getId()).setPassword(MD5.encode(form.getPassword()));
         this.userService.saveOrUpdateSystemUser(user);
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "新增公司/编辑")
+    @PostMapping(value = "/addCompany")
+    public CommonResult addCompany(@RequestBody AddCompanyForm form){
+        departmentService.saveOrUpdateCompany(form);
         return CommonResult.success();
     }
 

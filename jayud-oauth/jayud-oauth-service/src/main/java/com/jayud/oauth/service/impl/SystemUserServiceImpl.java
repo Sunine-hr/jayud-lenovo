@@ -20,6 +20,7 @@ import com.jayud.oauth.model.bo.QueryAccountForm;
 import com.jayud.oauth.model.bo.QuerySystemUserForm;
 import com.jayud.oauth.model.enums.StatusEnum;
 import com.jayud.oauth.model.po.SystemUser;
+import com.jayud.oauth.model.po.SystemUserLegal;
 import com.jayud.oauth.model.po.SystemUserLoginLog;
 import com.jayud.oauth.model.vo.*;
 import com.jayud.oauth.service.*;
@@ -33,6 +34,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +77,9 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     @Autowired
     ISystemUserRoleRelationService roleRelationService;
+
+    @Autowired
+    ISystemUserLegalService systemUserLegalService;
 
     @Override
     public SystemUser selectByName(String name) {
@@ -189,6 +194,20 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             roleRelationService.removeRelationByUserId(userIds);
             //创建角色
             roleRelationService.createRelation(form.getRoleId(), form.getId());
+
+            //删除之前绑定的法人主体
+            Long id = form.getId();
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("user_id",id);
+            systemUserLegalService.remove(queryWrapper);
+            //创建
+            List<Long> legalEntityIds = form.getLegalEntityIds();
+            for (Long legalEntityId : legalEntityIds) {
+                SystemUserLegal systemUserLegal = new SystemUserLegal();
+                systemUserLegal.setLegalId(legalEntityId);
+                systemUserLegal.setUserId(id);
+                systemUserLegalService.save(systemUserLegal);
+            }
         } else if ("delete".equals(form.getCmd())) {
             SystemUser systemUser = ConvertUtil.convert(form, SystemUser.class);
             systemUser.setStatus(0);
@@ -309,6 +328,21 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         SystemUser systemUser = baseMapper.selectOne(queryWrapper);
 
         return systemUser;
+    }
+
+    @Override
+    public void saveOrUpdateSystemUser(SystemUser systemUser, Long legalId) {
+        if (systemUser.getId() == null) {
+            systemUser.setCreatedUser(UserOperator.getToken());
+        } else {
+            systemUser.setUpdatedUser(UserOperator.getToken());
+            systemUser.setUpdatedTime(DateUtils.getNowTime());
+        }
+        saveOrUpdate(systemUser);
+        SystemUserLegal legal = new SystemUserLegal();
+        legal.setUserId(systemUser.getId());
+        legal.setLegalId(legalId);
+        systemUserLegalService.saveOrUpdate(legal);
     }
 
 

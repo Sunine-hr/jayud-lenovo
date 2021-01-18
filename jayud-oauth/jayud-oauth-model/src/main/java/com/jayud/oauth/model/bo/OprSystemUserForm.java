@@ -4,7 +4,10 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class OprSystemUserForm {
@@ -39,13 +42,17 @@ public class OprSystemUserForm {
     @NotEmpty(message = "角色ID不能为空")
     private Long roleId;
 
-    @ApiModelProperty(value = "所属公司ID",required = true)
-    @NotEmpty(message = "所属公司ID不能为空")
-    private Long companyId;
+//    @ApiModelProperty(value = "所属公司ID",required = true)
+//    @NotEmpty(message = "所属公司ID不能为空")
+//    private Long companyId;
+//
+//    @ApiModelProperty(value = "所属上级ID",required = true)
+//    @NotEmpty(message = "所属上级ID不能为空")
+//    private Long superiorId;
 
-    @ApiModelProperty(value = "所属上级ID",required = true)
-    @NotEmpty(message = "所属上级ID不能为空")
-    private Long superiorId;
+    @ApiModelProperty(value = "法人主体ID集合",required = true)
+    @NotNull(message = "legalEntityIds is required")
+    private List<Long> legalEntityIds = new ArrayList<>();
 
     @ApiModelProperty(value = "操作指令",required = true)
     @Pattern(regexp = "update|delete",message = "cmd requires 'update' or 'delete' only")

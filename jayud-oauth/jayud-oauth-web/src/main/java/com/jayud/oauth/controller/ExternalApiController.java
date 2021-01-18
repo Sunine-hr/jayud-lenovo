@@ -49,8 +49,12 @@ public class ExternalApiController {
 
     @Autowired
     ISystemUserRoleRelationService userRoleRelationService;
+
     @Autowired
     private ISystemCompanyService systemCompanyService;
+
+    @Autowired
+    ISystemUserLegalService systemUserLegalService;
 
     @ApiOperation(value = "获取所有部门")
     @RequestMapping(value = "/api/findDepartment")
@@ -169,8 +173,8 @@ public class ExternalApiController {
         systemUser.setName(form.getName());
         systemUser.setUserName(form.getUserName());
         systemUser.setEnUserName(form.getEnUserName());
-        systemUser.setSuperiorId(form.getDepartmentChargeId());
-        systemUser.setCompanyId(form.getCompanyId());
+//        systemUser.setSuperiorId(form.getDepartmentChargeId());
+//        systemUser.setCompanyId(form.getCompanyId());
         systemUser.setId(form.getId());
         systemUser.setPassword("E10ADC3949BA59ABBE56E057F20F883E");//默认密码为:123456
         systemUser.setStatus(SystemUserStatusEnum.ON.getCode());//账户为启用状态
@@ -316,8 +320,9 @@ public class ExternalApiController {
     @ApiOperation(value = "根据用户名获取用户所属法人主体")
     @PostMapping(value = "/getLegalIdBySystemName")
     public ApiResult getLegalIdBySystemName(@RequestParam("loginName") String loginName) {
-        SystemUser systemUser = userService.getLoginUser(loginName);
-        return null;
+        SystemUser systemUser = userService.getSystemUserBySystemName(loginName);
+        List<Long> legalId = systemUserLegalService.getLegalId(systemUser.getId());
+        return ApiResult.ok(legalId);
     }
 }
 

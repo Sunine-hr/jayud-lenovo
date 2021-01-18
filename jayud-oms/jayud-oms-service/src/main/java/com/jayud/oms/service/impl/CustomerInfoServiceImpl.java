@@ -46,7 +46,12 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         Page<CustomerInfoVO> page = new Page(form.getPageNum(), form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.desc("ci.id"));
-        IPage<CustomerInfoVO> pageInfo = baseMapper.findCustomerInfoByPage(page, form);
+
+        //获取当前用户所属法人主体
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUser());
+        System.out.println("userAdmin:================"+form.getLoginUser());
+        List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();
+        IPage<CustomerInfoVO> pageInfo = baseMapper.findCustomerInfoByPage(page,form,legalIds);
         return pageInfo;
     }
 

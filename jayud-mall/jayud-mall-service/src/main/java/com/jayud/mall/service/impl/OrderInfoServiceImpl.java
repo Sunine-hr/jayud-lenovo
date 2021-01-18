@@ -540,23 +540,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     @Override
-    public CommonResult<OrderInfoVO> draftSubmitOrderInfo(OrderInfoForm form) {
-        Long id = form.getId();
-        OrderInfo orderInfo = this.getById(id);
-        //PLACED_AN_ORDER(10, "已下单：编辑、查看订单详情 "),
-        orderInfo.setStatus(OrderEnum.PLACED_AN_ORDER.getCode());
-        orderInfo.setStatusName(OrderEnum.PLACED_AN_ORDER.getName());
-        this.saveOrUpdate(orderInfo);
-
-        //TODO 提交订单时，创建订单任务
-        List<WaybillTaskRelevanceVO> waybillTaskRelevanceVOS =
-                waybillTaskRelevanceService.saveWaybillTaskRelevance(orderInfo);
-
-        OrderInfoVO orderInfoVO = ConvertUtil.convert(orderInfo, OrderInfoVO.class);
-        return CommonResult.success(orderInfoVO);
-    }
-
-    @Override
     public CommonResult<OrderInfoVO> draftCancelOrderInfo(OrderInfoForm form) {
         Long id = form.getId();
         OrderInfo orderInfo = this.getById(id);
@@ -608,6 +591,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //是否上门提货[是] -- 有提货地址
         //(0否 1是,order_pick)
         if(isPick == 1){
+            //订单关联提货地址
             List<OrderPickVO> orderPickVOList = orderPickMapper.findOrderPickByOrderId(orderInfoId);
             orderInfoVO.setOrderPickVOList(orderPickVOList);
         }

@@ -36,18 +36,10 @@ public class OrderInfoController {
         return orderInfoService.submitOrderInfo(form);
     }
 
-    //订单列表-草稿-提交
-    @ApiOperation(value = "订单列表-草稿-提交")
-    @PostMapping("/draftSubmitOrderInfo")
-    @ApiOperationSupport(order = 3)
-    public CommonResult<OrderInfoVO> draftSubmitOrderInfo(@RequestBody OrderInfoForm form){
-        return orderInfoService.draftSubmitOrderInfo(form);
-    }
-
     //订单列表-草稿-取消
     @ApiOperation(value = "订单列表-草稿-取消")
     @PostMapping("/draftCancelOrderInfo")
-    @ApiOperationSupport(order = 4)
+    @ApiOperationSupport(order = 3)
     public CommonResult<OrderInfoVO> draftCancelOrderInfo(@RequestBody OrderInfoForm form){
         return orderInfoService.draftCancelOrderInfo(form);
     }
@@ -55,7 +47,7 @@ public class OrderInfoController {
     //订单列表-查看订单详情
     @ApiOperation(value = "订单列表-查看订单详情")
     @PostMapping("/lookOrderInfo")
-    @ApiOperationSupport(order = 5)
+    @ApiOperationSupport(order = 4)
     public CommonResult<OrderInfoVO> lookOrderInfo(@RequestBody OrderInfoForm form){
         return orderInfoService.lookOrderInfo(form);
     }

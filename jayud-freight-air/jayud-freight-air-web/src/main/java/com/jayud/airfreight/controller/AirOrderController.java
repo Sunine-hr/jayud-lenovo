@@ -177,9 +177,10 @@ public class AirOrderController {
             case AIR_A_7: //海外代理
                 StringBuilder sb = new StringBuilder();
                 form.getProxyServiceType().forEach(e -> sb.append(e).append(","));
+                String proxyServiceType = sb.length() == 0 ? null : sb.substring(0, sb.length() - 1);
                 this.airOrderService.updateProcessStatus(new AirOrder()
                         .setOverseasSuppliersId(form.getAgentSupplierId())
-                        .setProxyServiceType(sb.substring(0, sb.length() - 1)), form);
+                        .setProxyServiceType(proxyServiceType), form);
                 break;
             case AIR_A_8: //确认签收
                 this.airOrderService.updateProcessStatus(new AirOrder(), form);

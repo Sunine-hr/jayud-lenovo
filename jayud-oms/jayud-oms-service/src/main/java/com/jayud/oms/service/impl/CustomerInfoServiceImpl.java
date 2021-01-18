@@ -188,7 +188,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         String message=null;
         if (failCount>0) {
             //不符合规范的数据保存在redis中，重新生成EXCEL表
-            hashMap.put("errorMsg",fieldData);
+            hashMap.put(userName,fieldData);
 
 //            insExcel(fieldData,response);
             message="成功导入"+successCount+"行，未成功导入"+failCount+"行,请在有误数据表内查看!";
@@ -238,6 +238,9 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         customerInfo.setAccountPeriod(lo.get(11));
         customerInfo.setTaxType(lo.get(12));
         customerInfo.setTaxRate(lo.get(13));
+        if(lo.get(14)==null){
+            customerInfo.setEstate(null);
+        }
         customerInfo.setEstate(Integer.parseInt(lo.get(14)));
 
         ApiResult deptIdByDeptName = oauthClient.getDeptIdByDeptName(lo.get(15));
@@ -285,8 +288,8 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
     }
 
 
-    public void insExcel(HttpServletResponse response) throws Exception{
-        ArrayList<ArrayList<String>> fieldData = (ArrayList<ArrayList<String>>)hashMap.get("errorMsg");
+    public void insExcel(HttpServletResponse response,String userName) throws Exception{
+        ArrayList<ArrayList<String>> fieldData = (ArrayList<ArrayList<String>>)hashMap.get(userName);
         if(fieldData!=null&&fieldData.size()>0){//如果存在不规范行，则重新生成表
             //使用ExcelFileGenerator完成导出
             LoadExcelUtil loadExcelUtil = new LoadExcelUtil(fieldData);
@@ -306,8 +309,8 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
     }
 
     @Override
-    public boolean checkMes() {
-        ArrayList<ArrayList<String>> fieldData = (ArrayList<ArrayList<String>>)hashMap.get("errorMsg");
+    public boolean checkMes(String userName) {
+        ArrayList<ArrayList<String>> fieldData = (ArrayList<ArrayList<String>>)hashMap.get(userName);
         if(fieldData!=null){
             return true;
         }

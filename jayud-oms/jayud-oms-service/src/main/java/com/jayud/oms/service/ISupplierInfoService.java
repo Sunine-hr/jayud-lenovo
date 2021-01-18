@@ -68,7 +68,7 @@ public interface ISupplierInfoService extends IService<SupplierInfo> {
      * @param response
      * @return
      */
-    void insExcel(HttpServletResponse response) throws Exception;
+    void insExcel(HttpServletResponse response,String userName) throws Exception;
 
-    boolean checkMes();
+    boolean checkMes(String userName);
 }

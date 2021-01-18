@@ -401,8 +401,6 @@ public class CustomerInfoController {
     @GetMapping(value = "/downloadExcel")
     public void downloadExcel(HttpServletResponse response)throws IOException {
         //获取输入流，原始模板位置
-
-//        String filePath = "D:\\CodeRepository1\\jayud-platform\\jayud-oms\\jayud-oms-web\\src\\main\\resources\\static\\客户模板.xls";
         InputStream bis = new BufferedInputStream(new FileInputStream(new File(filePath)));
         //假如以中文名下载的话，设置下载文件名称
         String filename = "客户模板.xls";
@@ -442,9 +440,9 @@ public class CustomerInfoController {
 
     @ApiOperation(value = "下载错误信息")
     @GetMapping(value = "/downloadErrorExcel")
-    public void downloadErrorExcel( HttpServletResponse response)  {
+    public void downloadErrorExcel( HttpServletResponse response,@RequestParam("userName") String userName)  {
         try {
-            customerInfoService.insExcel(response);
+            customerInfoService.insExcel(response,userName);
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -452,8 +450,8 @@ public class CustomerInfoController {
 
     @ApiOperation(value = "判断是否有错误信息")
     @PostMapping(value = "/checkMes")
-    public CommonResult checkMes()  {
-        boolean result = customerInfoService.checkMes();
+    public CommonResult checkMes(@RequestParam("userName") String userName){
+        boolean result = customerInfoService.checkMes(userName);
         return CommonResult.success(result);
     }
 

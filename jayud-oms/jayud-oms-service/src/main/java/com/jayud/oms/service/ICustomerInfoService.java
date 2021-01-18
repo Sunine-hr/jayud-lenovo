@@ -99,7 +99,7 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
      * @param response
      * @return
      */
-    void insExcel(HttpServletResponse response) throws Exception;
+    void insExcel(HttpServletResponse response,String userName) throws Exception;
 
-    boolean checkMes();
+    boolean checkMes(String userName);
 }

@@ -324,9 +324,9 @@ public class SupplierInfoController {
 
     @ApiOperation(value = "下载错误信息")
     @GetMapping(value = "/downloadErrorExcel")
-    public void downloadErrorExcel( HttpServletResponse response)  {
+    public void downloadErrorExcel( HttpServletResponse response,@RequestParam("userName") String userName)  {
         try {
-            supplierInfoService.insExcel(response);
+            supplierInfoService.insExcel(response,userName);
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -334,8 +334,8 @@ public class SupplierInfoController {
 
     @ApiOperation(value = "判断是否有错误信息")
     @PostMapping(value = "/checkMes")
-    public CommonResult checkMes()  {
-        boolean result = supplierInfoService.checkMes();
+    public CommonResult checkMes(@RequestParam("userName") String userName)  {
+        boolean result = supplierInfoService.checkMes(userName);
         return CommonResult.success(result);
     }
 }

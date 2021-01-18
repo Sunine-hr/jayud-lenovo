@@ -320,12 +320,6 @@ public class ExternalApiController {
         return null;
     }
 
-    @ApiOperation(value = "获取当前登录用户的用户名")
-    @PostMapping(value = "/getLoginUserName")
-    public ApiResult getLoginUser() {
-        SystemUser systemUser = userService.getLoginUser();
-        return ApiResult.ok(systemUser.getUserName());
-    }
 }
 
 

@@ -57,6 +57,19 @@
         LEFT JOIN currency_info t3 on t3.id = t2.cid
     </select>
 
+    <!--其他费用：过滤掉 `海运费`,`内陆费`-->
+    <select id="findTemplateCopeReceivableOtherFeeListByQie" parameterType="java.lang.Integer"
+            resultType="com.jayud.mall.model.vo.TemplateCopeReceivableVO">
+        select
+        t.id,t.qie,t.cost_code,t.cost_name,t.specification_code,t.specification_name,t.calculate_way,t.count,t.unit,t.source,t.unit_price,t.cid,t.amount,t.remarks,
+        t1.currency_code,
+        CONCAT(t.amount,' ',t1.currency_code) amountFormat
+        from template_cope_receivable t
+        LEFT JOIN currency_info t1 on t1.id = t.cid
+        where t.qie=#{qie}
+        and t.cost_code not in('JYD-REC-COS-00001','JYD-REC-COS-00002');
+    </select>
+
 
 
 </mapper>

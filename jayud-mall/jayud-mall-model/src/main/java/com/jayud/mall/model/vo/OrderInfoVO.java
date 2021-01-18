@@ -241,4 +241,9 @@ public class OrderInfoVO {
     @JSONField(ordinal = 49)
     private List<FabWarehouseVO> fabWarehouseVOList;
 
+    //订单费用明细
+    @ApiModelProperty(value = "订单费用明细", position = 50)
+    @JSONField(ordinal = 50)
+    private OrderCostDetailVO orderCostDetailVO;
+
 }

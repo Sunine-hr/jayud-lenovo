@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -575,6 +576,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         Integer offerInfoId = orderInfoVO.getOfferInfoId();
         //报价模板id
         Integer qie = orderInfoVO.getQie();
+        //是否上门提货 (0否 1是,order_pick)
+        Integer isPick = orderInfoVO.getIsPick();
 
         //订柜尺寸[海运费]
         /*订柜尺寸：海运费规格*/
@@ -585,7 +588,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //集货仓库[陆运费]
         /*集货仓库：陆运费规格*/
         List<TemplateCopeReceivableVO> inlandFeeList =
-                templateCopeReceivableMapper.findTemplateCopeReceivableInlandFeeListByQie(offerInfoId);
+                templateCopeReceivableMapper.findTemplateCopeReceivableInlandFeeListByQie(qie);
         orderInfoVO.setInlandFeeList(inlandFeeList);
 
         //目的仓库
@@ -593,16 +596,90 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderInfoVO.setFabWarehouseVOList(fabWarehouseVOList);
 
         //关联的订单箱号
+        /*订单对应箱号信息:order_case*/
+        List<OrderCaseVO> orderCaseVOList = orderCaseMapper.findOrderShopByOrderId(orderInfoId);
+        orderInfoVO.setOrderCaseVOList(orderCaseVOList);
 
         //关联的订单商品
+        /*订单对应商品：order_shop*/
+        List<OrderShopVO> orderShopVOList = orderShopMapper.findOrderShopByOrderId(orderInfoId);
+        orderInfoVO.setOrderShopVOList(orderShopVOList);
 
-        //是否上门提货[是] -- 提货地址
+        //是否上门提货[是] -- 有提货地址
+        //(0否 1是,order_pick)
+        if(isPick == 1){
+            List<OrderPickVO> orderPickVOList = orderPickMapper.findOrderPickByOrderId(orderInfoId);
+            orderInfoVO.setOrderPickVOList(orderPickVOList);
+        }
 
-        //TODO 其他费用 暂时不做
+        //TODO 其他费用 不做，删掉，放入`费用明细`
+        //费用明细
+        OrderCostDetailVO orderCostDetailVO =
+                getOrderCostDetailVO(orderInfoVO, qie, oceanFeeList, inlandFeeList);
 
-        //TODO 费用明细 暂时不做
+        orderInfoVO.setOrderCostDetailVO(orderCostDetailVO);//订单费用明细
 
         return CommonResult.success(orderInfoVO);
+    }
+
+    /**
+     * 获取订单费用明细
+     * @param orderInfoVO 订单信息
+     * @param qie   报价模板id
+     * @param oceanFeeList 海运费
+     * @param inlandFeeList 内陆费
+     * @return
+     */
+    private OrderCostDetailVO getOrderCostDetailVO(
+            OrderInfoVO orderInfoVO, Integer qie,
+            List<TemplateCopeReceivableVO> oceanFeeList, List<TemplateCopeReceivableVO> inlandFeeList) {
+        //费用明细
+        OrderCostDetailVO orderCostDetailVO = new OrderCostDetailVO();
+        List<TemplateCopeReceivableVO> costDetails = new ArrayList<>();
+
+        //费用明细-海运费
+        //订柜尺寸[海运费](template_cope_receivable specification_code -> quotation_type code)
+        String reserveSize = orderInfoVO.getReserveSize();
+        TemplateCopeReceivableVO oceanFee = new TemplateCopeReceivableVO();
+        for (TemplateCopeReceivableVO templateCopeReceivableVO : oceanFeeList) {
+            String specificationCode = templateCopeReceivableVO.getSpecificationCode();
+            //规格相等
+            if(specificationCode.equals(reserveSize)){
+                oceanFee = templateCopeReceivableVO;
+                break;
+            }
+        }
+        costDetails.add(oceanFee);
+
+        //费用明细-陆运费
+        //集货仓库代码[内陆费](template_cope_receivable specification_code ->shipping_area warehouse_code)
+        String storeGoodsWarehouseCode = orderInfoVO.getStoreGoodsWarehouseCode();
+        TemplateCopeReceivableVO inlandFee = new TemplateCopeReceivableVO();
+        for(TemplateCopeReceivableVO templateCopeReceivableVO : inlandFeeList){
+            String specificationCode = templateCopeReceivableVO.getSpecificationCode();
+            if(specificationCode.equals(storeGoodsWarehouseCode)){
+                inlandFee = templateCopeReceivableVO;
+                break;
+            }
+        }
+        costDetails.add(inlandFee);
+
+        //费用明细-其他费用
+        List<TemplateCopeReceivableVO> otherFeeList =
+                templateCopeReceivableMapper.findTemplateCopeReceivableOtherFeeListByQie(qie);
+        costDetails.addAll(otherFeeList);
+
+        BigDecimal amountTotal = new BigDecimal("0");//汇总金额
+        for (TemplateCopeReceivableVO costDetail : costDetails){
+            BigDecimal amount = costDetail.getAmount() != null ? costDetail.getAmount() : new BigDecimal("0");
+            amountTotal = amountTotal.add(amount);
+        }
+        String currencyCode = costDetails.get(0).getCurrencyCode();//金额的币种，默认取第一个
+        String amountTotalFormat = amountTotal.toString() + " " + currencyCode;
+
+        orderCostDetailVO.setCostDetails(costDetails);
+        orderCostDetailVO.setAmountTotal(amountTotalFormat);
+        return orderCostDetailVO;
     }
 
 

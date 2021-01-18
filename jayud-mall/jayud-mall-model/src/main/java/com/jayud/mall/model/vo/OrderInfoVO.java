@@ -62,7 +62,8 @@ public class OrderInfoVO {
             "10 已下单：编辑、查看订单详情 " +
             "20 已收货：编辑、查看订单详情 " +
             "30 订单确认：确认计柜重（不可修改订单信息） " +
-            "40 转运中：查看订单详情 50 已签收：账单确认、查看订单详情", position = 10
+            "40 转运中：查看订单详情 " +
+            "50 已签收：账单确认、查看订单详情", position = 10
     )
     @JSONField(ordinal = 10)
     private Integer status;

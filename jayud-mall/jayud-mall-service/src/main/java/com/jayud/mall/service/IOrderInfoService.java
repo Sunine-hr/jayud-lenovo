@@ -144,8 +144,10 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      */
     CommonResult<OrderInfoVO> lookOrderInfo(OrderInfoForm form);
 
-
-
-
-
+    /**
+     * web端分页查询订单列表
+     * @param form
+     * @return
+     */
+    IPage<OrderInfoVO> findWebOrderInfoByPage(QueryOrderInfoForm form);
 }

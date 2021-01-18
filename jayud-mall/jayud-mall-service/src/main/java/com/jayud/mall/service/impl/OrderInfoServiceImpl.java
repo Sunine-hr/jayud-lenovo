@@ -2,6 +2,7 @@ package com.jayud.mall.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
@@ -604,6 +605,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderInfoVO.setOrderCostDetailVO(orderCostDetailVO);//订单费用明细
 
         return CommonResult.success(orderInfoVO);
+    }
+
+    @Override
+    public IPage<OrderInfoVO> findWebOrderInfoByPage(QueryOrderInfoForm form) {
+        //定义分页参数
+        Page<OrderInfoVO> page = new Page(form.getPageNum(),form.getPageSize());
+        //定义排序规则
+        page.addOrder(OrderItem.desc("t.id"));
+        IPage<OrderInfoVO> pageInfo = orderInfoMapper.findWebOrderInfoByPage(page, form);
+        return pageInfo;
     }
 
     /**

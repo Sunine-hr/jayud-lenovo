@@ -48,8 +48,6 @@
         <if test="form.orderNo != null and form.orderNo != ''">
             AND t.order_no LIKE CONCAT('%',#{form.orderNo},'%')
         </if>
-        GROUP BY
-        t.`id`
     </select>
 
     <select id="lookOrderInfoById" parameterType="java.lang.Long"
@@ -78,6 +76,12 @@
         left join harbour_info t4 on t4.id_code = t2.destination_port
         where 1=1
         and t.id = #{orderInfoId}
+    </select>
+
+    <select id="findWebOrderInfoByPage" parameterType="com.jayud.mall.model.bo.QueryOrderInfoForm"
+            resultType="com.jayud.mall.model.vo.OrderInfoVO">
+
+
     </select>
 
 

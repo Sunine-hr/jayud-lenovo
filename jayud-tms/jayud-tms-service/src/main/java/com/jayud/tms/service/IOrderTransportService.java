@@ -104,4 +104,9 @@ public interface IOrderTransportService extends IService<OrderTransport> {
      * 根据主订单号集合查询中港信息
      */
     public List<OrderTransport> getTmsOrderByMainOrderNos(List<String> mainOrders);
+
+    /**
+     * 根据主订单号集合查询中港详情
+     */
+    public List<OrderVO> getOrderTransportByMainOrderNo(List<String> mainOrders);
 }

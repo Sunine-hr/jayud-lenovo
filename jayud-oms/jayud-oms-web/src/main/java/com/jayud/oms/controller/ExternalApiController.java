@@ -687,6 +687,20 @@ public class ExternalApiController {
         return ApiResult.ok(vehicleSizeInfoVOS);
     }
 
+    /**
+     * 是否是虚拟仓
+     * @param warehouseInfoId
+     * @return
+     */
+    @RequestMapping(value = "/api/isVirtualWarehouse")
+    ApiResult<Boolean> isVirtualWarehouse(@RequestParam("warehouseInfoId") Long warehouseInfoId){
+         WarehouseInfo warehouseInfo = warehouseInfoService.getById(warehouseInfoId);
+         if(warehouseInfo != null && warehouseInfo.getIsVirtual() != null){
+             return ApiResult.ok(warehouseInfo.getIsVirtual());
+         }
+        return ApiResult.ok(false);
+    }
+
 }
 
 

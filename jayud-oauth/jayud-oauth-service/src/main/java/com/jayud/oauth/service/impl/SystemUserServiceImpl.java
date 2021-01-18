@@ -78,9 +78,6 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     @Autowired
     ISystemUserRoleRelationService roleRelationService;
 
-    @Autowired
-    ISystemUserLegalService systemUserLegalService;
-
     @Override
     public SystemUser selectByName(String name) {
         QueryWrapper queryWrapper = new QueryWrapper();

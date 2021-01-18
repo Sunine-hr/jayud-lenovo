@@ -130,7 +130,8 @@
             (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
             ELSE FALSE
             END) isCost,
-            oi.`need_input_cost` needInputCost
+            oi.`need_input_cost` needInputCost,
+            (select ot.car_weigh_num from order_transport ot where ot.main_order_no = oi.order_no) carWeighNum
         FROM
           order_customs oc,
           order_info oi
@@ -140,7 +141,7 @@
             AND oc.`status` = 'C_0'
         </if>
         <if test="form.orderNo != null and form.orderNo != ''">
-            AND oi.`order_no` = #{form.orderNo}
+            AND oc.`order_no` = #{form.orderNo}
         </if>
         <if test="form.customerName != null and form.customerName != ''">
             and oi.`customer_name` like concat('%',#{form.customerName},'%')

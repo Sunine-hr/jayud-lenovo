@@ -108,6 +108,9 @@ public class CustomsOrderInfoVO {
     @ApiModelProperty(value = "是否需要录入费用")
     private Boolean needInputCost;
 
+    @ApiModelProperty(value = "过磅数KG")
+    private Double carWeighNum;
+
     public void setGoodsTypeDesc(Integer goodsType){
         if(goodsType == 1){
             this.goodsTypeDesc = "进口";

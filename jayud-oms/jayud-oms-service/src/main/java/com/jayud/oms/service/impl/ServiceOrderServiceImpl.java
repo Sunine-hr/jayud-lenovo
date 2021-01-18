@@ -98,24 +98,15 @@ public class ServiceOrderServiceImpl extends ServiceImpl<ServiceOrderMapper, Ser
         }
         for (InputOrderTakeAdrForm inputOrderTakeAdrForm : orderTakeAdrForms) {
 
-            QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.eq("contacts",inputOrderTakeAdrForm.getContacts());
-            queryWrapper.eq("phone",inputOrderTakeAdrForm.getPhone());
-            queryWrapper.eq("address",inputOrderTakeAdrForm.getAddress());
-            DeliveryAddress deliveryAddress1 = null;
-            deliveryAddress1 = deliveryAddressService.getOne(queryWrapper);
-            if(deliveryAddress1==null){
-                DeliveryAddress deliveryAddress = new DeliveryAddress();
-                deliveryAddress.setContacts(inputOrderTakeAdrForm.getContacts());
-                deliveryAddress.setPhone(inputOrderTakeAdrForm.getPhone());
-                deliveryAddress.setAddress(inputOrderTakeAdrForm.getAddress());
-                deliveryAddressService.saveOrUpdate(deliveryAddress);
-                deliveryAddress1 = deliveryAddressService.getOne(queryWrapper);
-            }
+            DeliveryAddress deliveryAddress = new DeliveryAddress();
+            deliveryAddress.setContacts(inputOrderTakeAdrForm.getContacts());
+            deliveryAddress.setPhone(inputOrderTakeAdrForm.getPhone());
+            deliveryAddress.setAddress(inputOrderTakeAdrForm.getAddress());
+            deliveryAddressService.saveOrUpdate(deliveryAddress);
 
             OrderTakeAdr orderTakeAdr = ConvertUtil.convert(inputOrderTakeAdrForm, OrderTakeAdr.class);
             orderTakeAdr.setOrderNo(orderNo);
-            orderTakeAdr.setDeliveryId(deliveryAddress1.getId().longValue());
+            orderTakeAdr.setDeliveryId(deliveryAddress.getId().longValue());
             orderTakeAdr.setCreateTime(LocalDateTime.now());
             orderTakeAdr.setCreateUser(form.getLoginUser());
             orderTakeAdr.setTakeTime(inputOrderTakeAdrForm.getTakeTimeStr());

@@ -214,7 +214,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
     private HashMap<String,Object> hashMap = new HashMap<>();
 
     @Override
-    public String importCustomerInfoExcel(HttpServletResponse response, MultipartFile file)throws Exception{
+    public String importCustomerInfoExcel(HttpServletResponse response, MultipartFile file,String userName)throws Exception{
         InputStream in = null;
         List<List<String>>  listob = null;
 
@@ -238,7 +238,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             if (com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(0))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(2))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(3))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(4))&&
                     com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(5))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(6))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(7))) {//判断每行某个数据是否符合规范要求
                 //符合要求，插入到数据库customerInfo表中
-                String s = saveSupplierInfoFromExcel(supplierInfo, lo);
+                String s = saveSupplierInfoFromExcel(supplierInfo, lo,userName);
                 if(s.equals("添加成功")){
                     lo = null;
                     successCount += 1;
@@ -281,7 +281,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         String o=null;
         if (failCount>0) {
             //不符合规范的数据保存在redis中，重新生成EXCEL表
-            hashMap.put("errorMsg",fieldData);
+            hashMap.put(userName,fieldData);
 
 //            insExcel(fieldData,response);
             o="成功导入"+successCount+"行，未成功导入"+failCount+"行,请在有误数据表内查看!";
@@ -292,7 +292,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         return o;
     }
 
-    private String saveSupplierInfoFromExcel(SupplierInfo supplierInfo, List<String> lo) {
+    private String saveSupplierInfoFromExcel(SupplierInfo supplierInfo, List<String> lo,String userName) {
         supplierInfo.setSupplierChName(lo.get(0));
         supplierInfo.setSupplierCode(lo.get(1));
         QueryWrapper queryWrapper = new QueryWrapper();
@@ -326,24 +326,25 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         supplierInfo.setTaxReceipt(lo.get(8));
         supplierInfo.setRate(lo.get(9));
 
-        if(lo.get(10)!=null){
-            ApiResult systemUserBySystemName = oauthClient.getSystemUserBySystemName(lo.get(10));
+        String s1 = lo.get(10);
+        if(s1==null||s1.equals("")||s1+""==""){
+            supplierInfo.setBuyerId(null);
+        }else{
+            ApiResult systemUserBySystemName = oauthClient.getSystemUserBySystemName(s1);
             if(systemUserBySystemName.getMsg().equals("fail")){
                 return "采购人员名称数据与系统不匹配";
             }
             Long buyerId = Long.parseLong(systemUserBySystemName.getData().toString());
             supplierInfo.setBuyerId(buyerId);
-        }else{
-            supplierInfo.setBuyerId(Long.parseLong(lo.get(10)));
         }
-
+        supplierInfo.setCreateUser(userName);
         baseMapper.insert(supplierInfo);
         return "添加成功";
     }
 
 
-    public void insExcel(HttpServletResponse response) throws Exception{
-        ArrayList<ArrayList<String>> fieldData = (ArrayList<ArrayList<String>>)hashMap.get("errorMsg");
+    public void insExcel(HttpServletResponse response,String userName) throws Exception{
+        ArrayList<ArrayList<String>> fieldData = (ArrayList<ArrayList<String>>)hashMap.get(userName);
         if(fieldData!=null&&fieldData.size()>0){//如果存在不规范行，则重新生成表
             //使用ExcelFileGenerator完成导出
             LoadExcelUtil loadExcelUtil = new LoadExcelUtil(fieldData);
@@ -363,8 +364,8 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
     }
 
     @Override
-    public boolean checkMes() {
-        ArrayList<ArrayList<String>> fieldData = (ArrayList<ArrayList<String>>)hashMap.get("errorMsg");
+    public boolean checkMes(String userName) {
+        ArrayList<ArrayList<String>> fieldData = (ArrayList<ArrayList<String>>)hashMap.get(userName);
         if(fieldData!=null){
             return true;
         }

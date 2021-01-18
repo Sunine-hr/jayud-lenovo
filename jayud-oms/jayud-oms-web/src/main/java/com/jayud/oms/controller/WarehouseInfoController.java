@@ -1,18 +1,24 @@
 package com.jayud.oms.controller;
 
 
+import cn.hutool.core.map.MapUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.model.bo.AddWarehouseInfoForm;
 import com.jayud.oms.model.bo.AuditWarehouseForm;
 import com.jayud.oms.model.bo.QueryWarehouseInfoForm;
+import com.jayud.oms.model.po.AuditInfo;
 import com.jayud.oms.model.po.WarehouseInfo;
 import com.jayud.oms.model.vo.WarehouseInfoVO;
+import com.jayud.oms.service.IAuditInfoService;
 import com.jayud.oms.service.IRegionCityService;
 import com.jayud.oms.service.IWarehouseInfoService;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,8 +49,12 @@ public class WarehouseInfoController {
 
     @Autowired
     private IWarehouseInfoService warehouseInfoService;
+
     @Autowired
     private IRegionCityService regionCityService;
+
+    @Autowired
+    private IAuditInfoService auditInfoService;
 
     @ApiOperation(value = "分页查询中转仓库信息")
     @PostMapping(value = "/findWarehouseInfoByPage")
@@ -59,7 +71,12 @@ public class WarehouseInfoController {
         if (this.warehouseInfoService.checkUnique(info)) {
             return CommonResult.error(400, "中转仓仓库已存在");
         }
-
+        if(!form.getIsVirtual()){//非虚拟仓时，以下信息必填
+            if(StringUtil.isNullOrEmpty(form.getContacts()) || StringUtil.isNullOrEmpty(form.getContactNumber()) ||
+               StringUtil.isNullOrEmpty(form.getAddress())){
+                return CommonResult.error(ResultEnum.PARAM_ERROR);
+            }
+        }
         WarehouseInfo warehouseInfo = ConvertUtil.convert(form, WarehouseInfo.class);
         if (this.warehouseInfoService.saveOrUpdateWarehouseInfo(warehouseInfo)) {
             return CommonResult.success();
@@ -101,6 +118,34 @@ public class WarehouseInfoController {
         warehouseInfo.setWarehouseCode(form.getWarehouseCode());
         warehouseInfo.setAuditStatus(form.getAuditStatus());
         warehouseInfoService.updateById(warehouseInfo);
+
+        AuditInfo auditInfo = new AuditInfo();
+        auditInfo.setExtId(form.getId());
+        auditInfo.setAuditTypeDesc("中转仓审核");
+        auditInfo.setAuditStatus(form.getAuditStatus());
+        auditInfo.setAuditUser(form.getLoginUserName());
+        auditInfo.setCreatedUser(form.getLoginUserName());
+        auditInfo.setAuditTime(LocalDateTime.now());
+        auditInfo.setExtDesc(SqlConstant.WAREHOUSE_INFO);
+        auditInfoService.save(auditInfo);//保存操作记录
         return CommonResult.success();
+    }
+
+    @ApiOperation(value = "编辑及审核中转仓代码是否可填 id = 客户ID")
+    @PostMapping(value = "/isFillWarehouseCode")
+    public CommonResult<Boolean> isFillWarehouseCode(@RequestBody Map<String,Object> param) {
+        String warehouseIdStr = MapUtil.getStr(param, "id");
+        if(StringUtil.isNullOrEmpty(warehouseIdStr)){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("ext_id",Long.parseLong(warehouseIdStr));
+        queryWrapper.eq("ext_desc", SqlConstant.WAREHOUSE_INFO);
+        queryWrapper.eq("audit_status", "2");
+        List<AuditInfo> auditInfos = auditInfoService.list(queryWrapper);
+        if(auditInfos != null && auditInfos.size() > 0){
+            return CommonResult.success(false);
+        }
+        return CommonResult.success(true);
     }
 }

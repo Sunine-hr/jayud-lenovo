@@ -25,4 +25,8 @@ public class AuditWarehouseForm {
     @ApiModelProperty("状态 2-通过 0-拒绝")
     @Pattern(regexp = "(0|2)", message = "只允许填写0 or 2")
     private String auditStatus;
+
+    @ApiModelProperty(value = "当前登录用户,前台传",required = true)
+    @NotEmpty(message = "loginUserName is required")
+    private String loginUserName;
 }

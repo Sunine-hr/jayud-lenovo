@@ -215,11 +215,11 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     @Override
     public SendCarPdfVO initPdfData(String orderNo, String classCode) {
         SendCarPdfVO sendCarPdfVO = baseMapper.initPdfData(orderNo, classCode);
-        //香港清关地址又说不要了BUG-237
-        sendCarPdfVO.setClearCustomsAddress("");
         if (sendCarPdfVO == null) {
             return new SendCarPdfVO();
         }
+        //香港清关地址又说不要了BUG-237
+        sendCarPdfVO.setClearCustomsAddress("");
         List<InputOrderTakeAdrVO> inputOrderTakeAdrVOS = orderTakeAdrService.findTakeGoodsInfo(orderNo);
         List<TakeGoodsInfoVO> takeGoodsInfo1 = new ArrayList<>();
         List<TakeGoodsInfoVO> takeGoodsInfo2 = new ArrayList<>();
@@ -245,7 +245,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             String provinceName = orderSendCarsVO.getProvinceName() == null ? "" : orderSendCarsVO.getProvinceName();
             String cityName = orderSendCarsVO.getCityName() == null ? "" : orderSendCarsVO.getCityName();
             String address = orderSendCarsVO.getAddress() == null ? "" : orderSendCarsVO.getAddress();
-            sendCarPdfVO.setDeliveryAddress(orderSendCarsVO.getCountryName() + provinceName + cityName + address);
+            sendCarPdfVO.setDeliveryAddress(provinceName + cityName + address);
             sendCarPdfVO.setDeliveryPhone(orderSendCarsVO.getWarehouseNumber());
         } else if (takeGoodsInfo2.size() == 1) {
             String provinceName = takeGoodsInfo2.get(0).getStateName() == null ? "" : takeGoodsInfo2.get(0).getStateName();
@@ -472,6 +472,15 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         QueryWrapper<OrderTransport> condition = new QueryWrapper<>();
         condition.lambda().in(OrderTransport::getMainOrderNo, mainOrders);
         return this.baseMapper.selectList(condition);
+    }
+
+
+    /**
+     * 根据主订单号集合查询中港详情
+     */
+    @Override
+    public List<OrderVO> getOrderTransportByMainOrderNo(List<String> mainOrders) {
+        return this.baseMapper.getOrderTransportByMainOrderNo(mainOrders);
     }
 
 

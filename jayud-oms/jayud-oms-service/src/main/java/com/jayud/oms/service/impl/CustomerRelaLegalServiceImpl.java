@@ -1,5 +1,6 @@
 package com.jayud.oms.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.oms.mapper.CustomerRelaLegalMapper;
 import com.jayud.oms.model.bo.AddCustomerInfoForm;
@@ -24,6 +25,11 @@ public class CustomerRelaLegalServiceImpl extends ServiceImpl<CustomerRelaLegalM
 
     @Override
     public Boolean saveCusRelLegal(AddCustomerInfoForm form) {
+        //保存关系时先清空现有的
+        QueryWrapper removeWrapper = new QueryWrapper();
+        removeWrapper.eq("customer_info_id",form.getId());
+        remove(removeWrapper);
+
         List<CustomerRelaLegal> customerRelaLegals = new ArrayList<>();
         for (Long legalEntityId : form.getLegalEntityIds()) {
             CustomerRelaLegal customerRelaLegal = new CustomerRelaLegal();

@@ -84,6 +84,9 @@ public class InputOrderCustomsForm {
     @ApiModelProperty(value = "接单法人")
     private String legalName;
 
+    @ApiModelProperty(value = "接单法人ID")
+    private Long legalEntityId;
+
     @ApiModelProperty(value = "报关类型 CBG-纯报关 CKBG-出口报关,前台忽略")
     private String classCode;
 

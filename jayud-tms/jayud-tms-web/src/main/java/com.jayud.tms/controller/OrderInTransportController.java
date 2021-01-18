@@ -106,10 +106,10 @@ public class OrderInTransportController {
             auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_1.getDesc());
         } else if (CommonConstant.CAR_TAKE_GOODS.equals(form.getCmd())) {//车辆提货
             //小程序司机需确认接单
-            Boolean isConfirmJieDan = omsMiniClient.isConfirmJieDan(form.getOrderId()).getData();
+           /* Boolean isConfirmJieDan = omsMiniClient.isConfirmJieDan(form.getOrderId()).getData();
             if (!isConfirmJieDan) {
                 return CommonResult.error(ResultEnum.IS_CONFIRM_JIE_DAN);
-            }
+            }*/
             orderTransport.setStatus(OrderStatusEnum.TMS_T_5.getCode());
 
             form.setStatus(OrderStatusEnum.TMS_T_5.getCode());
@@ -291,6 +291,17 @@ public class OrderInTransportController {
                 form.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
                 form.setStatusName(OrderStatusEnum.TMS_T_9.getDesc());
                 omsClient.saveOprStatus(form);
+
+                //当选择的是虚拟仓时系统自动生成入仓出仓数据,即从车辆通关直接到车辆派送
+                Boolean isVirtual = false;
+                OrderTransport orderTransport1 = orderTransportService.getById(form.getOrderId());
+                if(orderTransport1 != null && orderTransport1.getWarehouseInfoId() != null){
+                    isVirtual = omsClient.isVirtualWarehouse(orderTransport1.getWarehouseInfoId()).getData();
+                }
+                if(isVirtual) {
+                    orderTransport.setStatus(OrderStatusEnum.TMS_T_13.getCode());
+                    autoOprWarehouse(form);
+                }
             }
             auditInfoForm.setAuditTypeDesc(CommonConstant.CAR_GO_CUSTOMS_DESC);
         }
@@ -300,6 +311,57 @@ public class OrderInTransportController {
             return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
         return CommonResult.success();
+    }
+
+    /**
+     * 当选择的是虚拟仓时系统自动生成入仓出仓数据,即从车辆通关直接到车辆派送
+     * @param form
+     * @return
+     */
+    private Boolean autoOprWarehouse(OprStatusForm form){
+        form.setBusinessType(BusinessTypeEnum.ZGYS.getCode());
+        AuditInfoForm auditInfoForm = new AuditInfoForm();
+        auditInfoForm.setExtId(form.getOrderId());
+        auditInfoForm.setExtDesc(SqlConstant.ORDER_TRANSPORT);
+        auditInfoForm.setAuditUser(form.getOperatorUser());
+
+        //车辆入仓
+        form.setStatus(OrderStatusEnum.TMS_T_10.getCode());
+        form.setStatusName(OrderStatusEnum.TMS_T_10.getDesc());
+
+        auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_10.getCode());
+        auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_10.getDesc());
+        auditInfoForm.setAuditComment("自动车辆入仓");
+        omsClient.saveOprStatus(form);
+        omsClient.saveAuditInfo(auditInfoForm);
+
+       //车辆出仓
+        form.setStatus(OrderStatusEnum.TMS_T_13.getCode());
+        form.setStatusName(OrderStatusEnum.TMS_T_13.getDesc());
+
+        auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_13.getCode());
+        auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_13.getDesc());
+        auditInfoForm.setAuditComment("自动车辆出仓");
+        omsClient.saveOprStatus(form);
+        omsClient.saveAuditInfo(auditInfoForm);
+
+        //车辆出仓后:中转仓卸货装货已完成
+        OprStatusForm tms11 = new OprStatusForm();
+        tms11.setMainOrderId(form.getMainOrderId());
+        tms11.setOrderId(form.getOrderId());
+        tms11.setStatus(OrderStatusEnum.TMS_T_11.getCode());
+        tms11.setStatusName(OrderStatusEnum.TMS_T_11.getDesc());
+        tms11.setBusinessType(BusinessTypeEnum.ZGYS.getCode());
+        omsClient.saveOprStatus(tms11);
+        OprStatusForm tms12 = new OprStatusForm();
+        tms12.setMainOrderId(form.getMainOrderId());
+        tms12.setOrderId(form.getOrderId());
+        tms12.setStatus(OrderStatusEnum.TMS_T_12.getCode());
+        tms12.setStatusName(OrderStatusEnum.TMS_T_12.getDesc());
+        tms11.setBusinessType(BusinessTypeEnum.ZGYS.getCode());
+        omsClient.saveOprStatus(tms12);
+
+        return true;
     }
 
 
@@ -619,6 +681,10 @@ public class OrderInTransportController {
         }
         //TODO 订单状态需要提单后才能提交
         OrderTransport tmp = this.orderTransportService.getById(form.getOrderId());
+        if (OrderStatusEnum.TMS_T_15.getCode().equals(tmp.getStatus())){
+            return CommonResult.error(400,"该订单已完结");
+        }
+
         String status = tmp.getStatus();
         if (OrderStatusEnum.TMS_T_0.getCode().equals(status)
                 || OrderStatusEnum.TMS_T_1.getCode().equals(status)

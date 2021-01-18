@@ -9,7 +9,6 @@ import com.jayud.tms.model.bo.OprStatusForm;
 import com.jayud.tms.model.vo.DriverInfoLinkVO;
 import com.jayud.tms.model.vo.InitComboxVO;
 import com.jayud.tms.model.vo.OrderStatusVO;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -110,12 +109,20 @@ public interface OmsClient {
      * 根据车辆主键查询车辆信息
      */
     @RequestMapping(value = "/api/getVehicleInfoById")
-    public ApiResult getVehicleInfoById(@RequestParam("vehicleId") Long vehicleId);
+    ApiResult getVehicleInfoById(@RequestParam("vehicleId") Long vehicleId);
 
     /**
      * 根据主订单号查询法人主体信息
      */
     @RequestMapping(value = "/api/getLegalEntityInfoByOrderNo")
-    public ApiResult getLegalEntityInfoByOrderNo(@RequestParam("mainOrderNo") String mainOrderNo);
+    ApiResult getLegalEntityInfoByOrderNo(@RequestParam("mainOrderNo") String mainOrderNo);
+
+    /**
+     * 是否是虚拟仓
+     * @param warehouseInfoId
+     * @return
+     */
+    @RequestMapping(value = "/api/isVirtualWarehouse")
+    ApiResult<Boolean> isVirtualWarehouse(@RequestParam("warehouseInfoId") Long warehouseInfoId);
 
 }

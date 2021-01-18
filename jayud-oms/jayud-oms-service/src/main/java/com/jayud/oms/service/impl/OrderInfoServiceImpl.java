@@ -172,42 +172,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             Map<String, Map<String, Object>> subOrderMap = this.getSubOrderByMainOrderNos(mainOrderNoList);
             //查询子订单驳回原因
             this.getSubOrderRejectionMsg(orderInfoVOs, subOrderMap);
+            //组装主订单数据
+            assemblyMasterOrderData(orderInfoVOs, subOrderMap);
         }
         return pageInfo;
     }
 
-
-    /**
-     * 查询子订单驳回原因
-     *
-     * @return
-     */
-    private void getSubOrderRejectionMsg(List<OrderInfoVO> orderInfoVOs, Map<String, Map<String, Object>> subOrderMap) {
-
-        for (OrderInfoVO orderInfoVO : orderInfoVOs) {
-            Map<String, Object> subOrderInfos = subOrderMap.get(orderInfoVO.getOrderNo());
-            String[] rejectionStatus = OrderStatusEnum.getRejectionStatus(null);
-            StringBuffer sb = StringUtils.isEmpty(orderInfoVO.getRejectComment()) ? new StringBuffer() : new StringBuffer("," + orderInfoVO.getRejectComment());
-            subOrderInfos.forEach((key, value) -> {
-                if (value != null) {
-                    String tableDesc = SubOrderSignEnum.getSignOne2SignTwo(key);
-                    if (value instanceof Map) {
-                        Map<String, Object> map = (Map<String, Object>) value;
-                        AuditInfo auditInfo = this.auditInfoService.getLatestByRejectionStatus(Long.valueOf(map.get("id").toString()),
-                                tableDesc, rejectionStatus);
-                        if (!StringUtils.isEmpty(auditInfo.getAuditComment())) {
-                            sb.append(map.get("orderNo")).append("-")
-                                    .append(auditInfo.getAuditComment()).append(",");
-                        }
-                    }
-
-                }
-            });
-            if (!StringUtils.isEmpty(sb.toString())) {
-                orderInfoVO.setRejectComment(sb.substring(0, sb.length() - 1));
-            }
-        }
-    }
 
     @Override
     public InputMainOrderVO getMainOrderById(Long idValue) {
@@ -675,10 +645,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
         }
         //服务单信息
-        if(OrderStatusEnum.FWD.getCode().equals(form.getClassCode())||
-                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.FWDDD.getCode())){
+        if (OrderStatusEnum.FWD.getCode().equals(form.getClassCode()) ||
+                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.FWDDD.getCode())) {
             InputOrderServiceVO orderServiceVO = serviceOrderService.getSerOrderDetails(inputMainOrderVO.getOrderNo());
-            if(orderServiceVO!=null){
+            if (orderServiceVO != null) {
                 inputOrderVO.setOrderServiceForm(orderServiceVO);
             }
         }
@@ -702,12 +672,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if (OrderStatusEnum.CBG.getCode().equals(classCode) ||
                 selectedServer.contains(OrderStatusEnum.CKBG.getCode())) {
             InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
-            if (StringUtil.isNullOrEmpty(orderCustomsForm.getSubCustomsStatus()) ||
-                    (OrderStatusEnum.CUSTOMS_C_0.getCode().equals(orderCustomsForm.getSubCustomsStatus()) &&
-                            (OrderStatusEnum.MAIN_2.getCode().equals(inputMainOrderForm.getStatus()) ||
-                                    OrderStatusEnum.MAIN_4.getCode().equals(inputMainOrderForm.getStatus()) ||
-                                    inputMainOrderForm.getStatus() == null)) ||
-                    OrderStatusEnum.CUSTOMS_C_1_1.getCode().equals(orderCustomsForm.getSubCustomsStatus())) {
+
+            //查询编辑条件
+            //主订单草稿状态,可以对所有订单进行编辑
+            //创建订单如果没有选择资料齐全,提交订单报关状态待是补全状态,可以进行编辑,报关状态待接单或者没有创建状态
+            if (this.queryEditOrderCondition(orderCustomsForm.getSubCustomsStatus(),
+                    inputMainOrderForm.getStatus(), SubOrderSignEnum.BG.getSignOne(), form)) {
                 //如果没有生成子订单则不调用
                 if (orderCustomsForm.getSubOrders() != null && orderCustomsForm.getSubOrders().size() >= 0) {
                     orderCustomsForm.setMainOrderNo(mainOrderNo);
@@ -724,12 +694,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
             }
         }
+
         //中港运输并且并且订单状态为驳回或为空或为待接单
         if (OrderStatusEnum.ZGYS.getCode().equals(classCode) ||
                 selectedServer.contains(OrderStatusEnum.ZGYSDD.getCode())) {
             //创建中港订单信息
             InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
-            if (!OrderStatusEnum.TMS_T_15.getCode().equals(orderTransportForm.getSubTmsStatus())) {
+            if (this.queryEditOrderCondition(orderTransportForm.getSubTmsStatus(),
+                    inputMainOrderForm.getStatus(), SubOrderSignEnum.ZGYS.getSignOne(), form)) {
                 if (!selectedServer.contains(OrderStatusEnum.XGQG.getCode())) {
                     //若没有选择香港清关,则情况香港清关信息，避免信息有误
                     orderTransportForm.setHkLegalName(null);
@@ -766,23 +738,26 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //空运
         if (OrderStatusEnum.KY.getCode().equals(classCode)) {
             InputAirOrderForm airOrderForm = form.getAirOrderForm();
-            //拼装地址信息
-            airOrderForm.assemblyAddress();
-            airOrderForm.setMainOrderNo(mainOrderNo);
-            airOrderForm.setCreateUser(UserOperator.getToken());
-            Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
-                    : ProcessStatusEnum.DRAFT.getCode();
-            airOrderForm.setProcessStatus(processStatus);
-            this.freightAirClient.createOrder(airOrderForm);
+            if (this.queryEditOrderCondition(airOrderForm.getStatus(),
+                    inputMainOrderForm.getStatus(), SubOrderSignEnum.KY.getSignOne(), form)) {
+                //拼装地址信息
+                airOrderForm.assemblyAddress();
+                airOrderForm.setMainOrderNo(mainOrderNo);
+                airOrderForm.setCreateUser(UserOperator.getToken());
+                Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
+                        : ProcessStatusEnum.DRAFT.getCode();
+                airOrderForm.setProcessStatus(processStatus);
+                this.freightAirClient.createOrder(airOrderForm);
+            }
         }
         //服务单
-        if(OrderStatusEnum.FWD.getCode().equals(classCode)){
+        if (OrderStatusEnum.FWD.getCode().equals(classCode)) {
             //创建服务单订单信息
             InputOrderServiceForm orderServiceForm = form.getOrderServiceForm();
             orderServiceForm.setMainOrderNo(mainOrderNo);
             orderServiceForm.setLoginUser(UserOperator.getToken());
             boolean result = serviceOrderService.createOrder(orderServiceForm);
-            if(!result){
+            if (!result) {
                 return false;
             }
         }
@@ -802,7 +777,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             changeStatusVOS.addAll(cbgList);
         }
         //获取中港运输信息
-        if (OrderStatusEnum.ZGYS.getCode().equals(form.getClassCode())) {
+        if (OrderStatusEnum.ZGYS.getCode().equals(form.getClassCode())
+                || inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.ZGYSDD.getCode())) {
             InitChangeStatusVO initChangeStatusVO = tmsClient.getTransportOrderNo(inputMainOrderVO.getOrderNo()).getData();
             changeStatusVOS.add(initChangeStatusVO);
         }
@@ -1098,6 +1074,138 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 break;
             default:
         }
+    }
+
+    /**
+     * 查询是否可编辑
+     */
+    private boolean queryEditOrderCondition(String orderStatus, Integer mainOrderStatus,
+                                            String orderType, InputOrderForm form) {
+
+
+        //主订单是草稿状态,和初始化时候可以通过校验
+        if (mainOrderStatus == null || OrderStatusEnum.MAIN_2.getCode().equals(String.valueOf(mainOrderStatus))) {
+            return true;
+        }
+        String mainOrderStatusStr = String.valueOf(mainOrderStatus);
+        if (StringUtils.isEmpty(orderStatus)) {
+            return true;
+        }
+
+        //报关
+        if (SubOrderSignEnum.BG.getSignOne().equals(orderType)) {
+            InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
+            if (OrderStatusEnum.CUSTOMS_C_1_1.getCode().equals(orderStatus)
+                    && (orderTransportForm.getIsGoodsEdit() == null
+                    || !orderTransportForm.getIsGoodsEdit())) {
+                return true;
+            }
+            if (OrderStatusEnum.MAIN_4.getCode().equals(mainOrderStatusStr)) {
+                return true;
+            }
+            return false;
+        }
+        //中港
+        if (SubOrderSignEnum.ZGYS.getSignOne().equals(orderType)) {
+            InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
+            if (orderTransportForm.getIsGoodsEdit()) { //货物编辑可以进行编辑
+                return true;
+            }
+
+        }
+        //只有中港的货物编辑,驳回可以编辑
+        if (SubOrderSignEnum.ZGYS.getSignOne().equals(orderType)) {
+            if (OrderStatusEnum.getRejectionStatus(orderStatus, orderType) != null) {
+                return true;
+            }
+        } else {
+            //其他情况下,货物编辑==null和false情况下,子订单驳回才能编辑
+            InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
+            if (OrderStatusEnum.getRejectionStatus(orderStatus, orderType) != null
+                    && (orderTransportForm.getIsGoodsEdit() == null
+                    || !orderTransportForm.getIsGoodsEdit())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    /**
+     * 查询子订单驳回原因
+     *
+     * @return
+     */
+    private void getSubOrderRejectionMsg(List<OrderInfoVO> orderInfoVOs, Map<String, Map<String, Object>> subOrderMap) {
+        for (OrderInfoVO orderInfoVO : orderInfoVOs) {
+            Map<String, Object> subOrderInfos = subOrderMap.get(orderInfoVO.getOrderNo());
+            String[] rejectionStatus = OrderStatusEnum.getRejectionStatus(null);
+            StringBuffer sb = StringUtils.isEmpty(orderInfoVO.getRejectComment()) ? new StringBuffer() : new StringBuffer(orderInfoVO.getRejectComment() + ",");
+            subOrderInfos.forEach((key, value) -> {
+                if (value != null) {
+                    String tableDesc = SubOrderSignEnum.getSignOne2SignTwo(key);
+                    if (value instanceof Map) {
+                        Map<String, Object> map = (Map<String, Object>) value;
+                        AuditInfo auditInfo = this.auditInfoService.getLatestByRejectionStatus(Long.valueOf(map.get("id").toString()),
+                                tableDesc, rejectionStatus);
+                        if (!StringUtils.isEmpty(auditInfo.getAuditComment())) {
+                            sb.append(map.get("orderNo")).append("-")
+                                    .append(auditInfo.getAuditComment()).append(",");
+                        }
+                    }
+
+                }
+            });
+            if (!StringUtils.isEmpty(sb.toString())) {
+                orderInfoVO.setRejectComment(sb.substring(0, sb.length() - 1));
+            }
+        }
+    }
+
+    /**
+     * 组装数据
+     *
+     * @param orderInfoVOs
+     * @param subOrderMap
+     */
+    private void assemblyMasterOrderData(List<OrderInfoVO> orderInfoVOs,
+                                         Map<String, Map<String, Object>> subOrderMap) {
+        for (OrderInfoVO orderInfoVO : orderInfoVOs) {
+            //商品值
+            Map<String, Object> subOrderInfos = subOrderMap.get(orderInfoVO.getOrderNo());
+            //增加中港信息字段
+            //增加空运信息字段
+            //商品信息组合
+            orderInfoVO.setGoodsInfo(assemblySubOrderGoods(subOrderInfos));
+        }
+
+    }
+
+    private String assemblySubOrderGoods(Map<String, Object> subOrderInfos) {
+        //中港商品信息
+        Object tmsOrder = subOrderInfos.get(KEY_SUBORDER[0]);
+        StringBuffer goodsInfos = new StringBuffer();
+        if (tmsOrder != null) {
+            JSONObject tmsOrderJSON = new JSONObject(tmsOrder);
+            JSONArray orderTakeAdrs = tmsOrderJSON.getJSONArray("orderTakeAdrs");
+            for (int i = 0; i < orderTakeAdrs.size(); i++) {
+                JSONObject orderTakeAdr = orderTakeAdrs.getJSONObject(0);
+                goodsInfos.append(orderTakeAdr.getStr("goodsDesc"))
+                        .append("/")
+                        .append(orderTakeAdr.getInt("plateAmount", 0)).append("板")
+                        .append("/")
+                        .append(orderTakeAdr.getInt("pieceAmount", 0)).append("件")
+                        .append("/")
+                        .append(orderTakeAdr.getDouble("weight", 0.0)).append("重量")
+                        .append(",");
+            }
+
+        }
+        //空运商品信息
+
+        return goodsInfos.toString();
+
     }
 
 }

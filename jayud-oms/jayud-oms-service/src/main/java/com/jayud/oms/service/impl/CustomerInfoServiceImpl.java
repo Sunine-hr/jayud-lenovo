@@ -14,12 +14,15 @@ import com.jayud.oms.config.TypeUtils;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.QueryCustomerInfoForm;
 import com.jayud.oms.model.bo.QueryRelUnitInfoListForm;
+import com.jayud.oms.model.enums.CustomerInfoStatusEnum;
 import com.jayud.oms.model.po.CustomerInfo;
+import com.jayud.oms.model.po.CustomerRelaLegal;
 import com.jayud.oms.model.vo.CustomerInfoVO;
 import com.jayud.oms.model.bo.QueryCusAccountForm;
 import com.jayud.oms.service.ICustomerInfoService;
 import com.jayud.oms.model.vo.CustAccountVO;
 import com.jayud.oms.mapper.CustomerInfoMapper;
+import com.jayud.oms.service.ICustomerRelaLegalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -39,6 +43,12 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
 
     @Autowired
     private OauthClient oauthClient;
+
+    @Autowired
+    private ICustomerRelaLegalService customerRelaLegalService;
+
+    @Autowired
+    private ICustomerInfoService customerInfoService;
 
     @Override
     public IPage<CustomerInfoVO> findCustomerInfoByPage(QueryCustomerInfoForm form) {
@@ -93,8 +103,8 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
     }
 
     @Override
-    public List<CustomerInfoVO> existCustomerInfo(String idCode, String name) {
-        return baseMapper.existCustomerInfo(idCode,name);
+    public List<CustomerInfoVO> existCustomerInfo(String idCode) {
+        return baseMapper.existCustomerInfo(idCode);
     }
 
     @Override
@@ -110,7 +120,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
     private HashMap<String,Object> hashMap = new HashMap<>();
 
     @Override
-    public String importCustomerInfoExcel(HttpServletResponse response,MultipartFile file)throws Exception{
+    public String importCustomerInfoExcel(HttpServletResponse response,MultipartFile file,String userName)throws Exception{
 //        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         InputStream in = null;
         List<List<String>>  listob = null;
@@ -128,7 +138,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         int failCount=0;
         //导入字段条件判断
         ArrayList<ArrayList<String>> fieldData = new ArrayList<ArrayList<String>>();//必填值为空的数据行
-        CustomerInfo customerInfo = new CustomerInfo();//格式无误的数据行
+//        CustomerInfo customerInfo = new CustomerInfo();//格式无误的数据行
         String msg = null;
         int lisize = listob.size();
         for (int i = 0; i < lisize; i++) {
@@ -138,7 +148,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
                     StringUtils.isNotBlank(lo.get(7))&&StringUtils.isNotBlank(lo.get(8))&&StringUtils.isNotBlank(lo.get(9))&&
                    StringUtils.isNotBlank(lo.get(15))&& StringUtils.isNotBlank(lo.get(17))) {//判断每行某个数据是否符合规范要求
                 //符合要求，插入到数据库customerInfo表中
-                String s = saveCustomerInfoFromExcel(customerInfo, lo);
+                String s = saveCustomerInfoFromExcel( lo,userName);
                 if(s.equals("添加成功")){
                     lo = null;
                     successCount += 1;
@@ -157,6 +167,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
                     }
                     dataString.add(s);
                     fieldData.add(dataString);
+                    lo=null;
                 }
 
             } else {
@@ -182,7 +193,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         String message=null;
         if (failCount>0) {
             //不符合规范的数据保存在redis中，重新生成EXCEL表
-            hashMap.put("errorMsg",fieldData);
+            hashMap.put(userName,fieldData);
 
 //            insExcel(fieldData,response);
             message="成功导入"+successCount+"行，未成功导入"+failCount+"行,请在有误数据表内查看!";
@@ -193,7 +204,9 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         return message;
     }
 
-    private String saveCustomerInfoFromExcel(CustomerInfo customerInfo, List<String> lo) {
+    private String saveCustomerInfoFromExcel(List<String> lo,String userName) {
+        CustomerInfo customerInfo = new CustomerInfo();
+        customerInfo.setCreatedUser(userName);
         customerInfo.setName(lo.get(0));
         customerInfo.setIdCode(lo.get(1));
         QueryWrapper queryWrapper = new QueryWrapper();
@@ -213,9 +226,15 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         customerInfo.setAddress(lo.get(5));
         customerInfo.setEmail(lo.get(6));
 
-        ApiResult legalEntityByLegalName = oauthClient.getLegalEntityByLegalName(lo.get(7));
-        if(legalEntityByLegalName.getMsg().equals("fail")){
-            return "法人主体数据与系统不匹配";
+        String s = lo.get(7);
+        String[] legalNames = s.split("/");
+        List<Long> legalId = new ArrayList<>();
+        for (String legalName : legalNames) {
+            ApiResult legalEntityByLegalName = oauthClient.getLegalEntityByLegalName(legalName);
+            if(legalEntityByLegalName.getMsg().equals("fail")){
+                return "法人主体数据与系统不匹配";
+            }
+            legalId.add(Long.parseLong(legalEntityByLegalName.getData().toString()));
         }
 
         customerInfo.setTfn(lo.get(8));
@@ -224,24 +243,28 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         customerInfo.setAccountPeriod(lo.get(11));
         customerInfo.setTaxType(lo.get(12));
         customerInfo.setTaxRate(lo.get(13));
-        customerInfo.setEstate(Integer.getInteger(lo.get(14)));
+        if(lo.get(14)==null){
+            customerInfo.setEstate(null);
+        }
+        customerInfo.setEstate(Integer.parseInt(lo.get(14)));
 
         ApiResult deptIdByDeptName = oauthClient.getDeptIdByDeptName(lo.get(15));
         if(deptIdByDeptName.getMsg().equals("fail")){
             return "部门名称数据与系统不匹配";
         }
-        String departmentId = (String) deptIdByDeptName.getData();
+        String departmentId = String.valueOf(deptIdByDeptName.getData());
         customerInfo.setDepartmentId(departmentId);
 
-        if(lo.get(16)!=null){
-            ApiResult systemUserBySystemName = oauthClient.getSystemUserBySystemName(lo.get(16));
+        String s1 = lo.get(16);
+        if(s1==null||s1.equals("")||s1+""==""){
+            customerInfo.setKuId(null);
+        }else{
+            ApiResult systemUserBySystemName = oauthClient.getSystemUserBySystemName(s1);
             if(systemUserBySystemName.getMsg().equals("fail")){
                 return "接单客服名称数据与系统不匹配";
             }
             Long kuId = Long.parseLong(systemUserBySystemName.getData().toString());
             customerInfo.setKuId(kuId);
-        }else{
-            customerInfo.setKuId(Long.parseLong(lo.get(16)));
         }
 
         ApiResult systemUserBySystemName1 = oauthClient.getSystemUserBySystemName(lo.get(17));
@@ -250,14 +273,28 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         }
         Long ywId = Long.parseLong(systemUserBySystemName1.getData().toString());
         customerInfo.setYwId(ywId);
-
-        baseMapper.insert(customerInfo);
+        customerInfo.setAuditStatus(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode());
+        boolean b = this.customerInfoService.saveOrUpdate(customerInfo);
+        if(b){
+            for (int i = 0; i < legalId.size(); i++) {
+                CustomerRelaLegal customerRelaLegal = new CustomerRelaLegal();
+                customerRelaLegal.setCustomerInfoId(customerInfo.getId());
+                customerRelaLegal.setLegalEntityId(legalId.get(i));
+                customerRelaLegal.setCreatedUser(userName);
+                customerRelaLegal.setCreatedTime(LocalDateTime.now());
+                boolean save = customerRelaLegalService.save(customerRelaLegal);
+                if(!save){
+                    return "法人主体添加失败";
+                }
+            }
+        }
+        customerInfo = null;
         return "添加成功";
     }
 
 
-    public void insExcel(HttpServletResponse response) throws Exception{
-        ArrayList<ArrayList<String>> fieldData = (ArrayList<ArrayList<String>>)hashMap.get("errorMsg");
+    public void insExcel(HttpServletResponse response,String userName) throws Exception{
+        ArrayList<ArrayList<String>> fieldData = (ArrayList<ArrayList<String>>)hashMap.get(userName);
         if(fieldData!=null&&fieldData.size()>0){//如果存在不规范行，则重新生成表
             //使用ExcelFileGenerator完成导出
             LoadExcelUtil loadExcelUtil = new LoadExcelUtil(fieldData);
@@ -277,8 +314,8 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
     }
 
     @Override
-    public boolean checkMes() {
-        ArrayList<ArrayList<String>> fieldData = (ArrayList<ArrayList<String>>)hashMap.get("errorMsg");
+    public boolean checkMes(String userName) {
+        ArrayList<ArrayList<String>> fieldData = (ArrayList<ArrayList<String>>)hashMap.get(userName);
         if(fieldData!=null){
             return true;
         }

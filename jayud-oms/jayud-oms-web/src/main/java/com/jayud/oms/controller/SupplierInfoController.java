@@ -32,18 +32,13 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.*;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -161,18 +156,18 @@ public class SupplierInfoController {
         }
     }
 
-    @ApiOperation(value = "二期优化3:新增和编辑时校验供应商名称是否存在,name=供应商名称")
+    @ApiOperation(value = "二期优化3:新增和编辑时校验供应商名称是否存在,name=供应商名称 id=供应商ID")
     @PostMapping(value = "/existSupplierName")
     public CommonResult existSupplierName(@RequestBody Map<String,Object> param) {
         String supplierName = MapUtil.getStr(param, "name");
-        Long id = Long.parseLong(MapUtil.getStr(param,"id"));
+        String idStr = (MapUtil.getStr(param,"id"));
         if(StringUtil.isNullOrEmpty(supplierName)){
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.like("supplier_ch_name",supplierName);
         List<SupplierInfo> supplierInfos = supplierInfoService.list(queryWrapper);
-        if((id == null && supplierInfos != null && supplierInfos.size() > 0) || (id != null && supplierInfos != null && supplierInfos.size() > 1)){
+        if((StringUtil.isNullOrEmpty(idStr) && supplierInfos != null && supplierInfos.size() > 0) || ((!StringUtil.isNullOrEmpty(idStr)) && supplierInfos != null && supplierInfos.size() > 1)){
             return CommonResult.error(ResultEnum.SUPPLIER_NAME_EXIST);
         }
         return CommonResult.success();
@@ -310,11 +305,11 @@ public class SupplierInfoController {
 
     @ApiOperation(value = "导入供应商信息")
     @PostMapping(value = "/uploadExcel")
-    public CommonResult ajaxUploadExcel(MultipartFile file, HttpServletResponse response){
+    public CommonResult ajaxUploadExcel(MultipartFile file, HttpServletResponse response,@RequestParam("userName") String userName){
 
         String commentHTML=null;
         try {
-            commentHTML = supplierInfoService.importCustomerInfoExcel(response,file);
+            commentHTML = supplierInfoService.importCustomerInfoExcel(response,file,userName);
         } catch (Exception e1) {
             e1.printStackTrace();
         }
@@ -329,9 +324,9 @@ public class SupplierInfoController {
 
     @ApiOperation(value = "下载错误信息")
     @GetMapping(value = "/downloadErrorExcel")
-    public void downloadErrorExcel( HttpServletResponse response)  {
+    public void downloadErrorExcel( HttpServletResponse response,@RequestParam("userName") String userName)  {
         try {
-            supplierInfoService.insExcel(response);
+            supplierInfoService.insExcel(response,userName);
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -339,8 +334,8 @@ public class SupplierInfoController {
 
     @ApiOperation(value = "判断是否有错误信息")
     @PostMapping(value = "/checkMes")
-    public CommonResult checkMes()  {
-        boolean result = supplierInfoService.checkMes();
+    public CommonResult checkMes(@RequestParam("userName") String userName)  {
+        boolean result = supplierInfoService.checkMes(userName);
         return CommonResult.success(result);
     }
 }

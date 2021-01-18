@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.http.Header;
 import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -304,7 +305,7 @@ public class VivoServiceImpl implements VivoService {
             }
         }
         //token过期,重新请求
-        if ((map.get("message").toString().contains("已拒绝为此请求授权"))) {
+        if (map.get("Message") != null && map.get("Message").toString().contains("已拒绝为此请求授权")) {
             redisUtils.delete(VIVO_TOEKN_STR);
             map = this.doPost(data, url);
         }
@@ -337,15 +338,20 @@ public class VivoServiceImpl implements VivoService {
 
     private Map<String, Object> doPost(String form, String url) {
         log.info("vivo参数:" + form);
-        String feedback = HttpRequest.post(url)
-                .header("Authorization", getToken(null, null, null))
+        String token = getToken(null, null, null);
+
+        HttpResponse response = HttpRequest.post(url)
+                .header("Authorization", token)
                 .header(Header.CONTENT_TYPE.name(), "multipart/form-data")
                 .form("transfer_data", form)
-                .execute()
-                .body();
+                .execute();
+        String feedback = response.body();
+
         if (StringUtils.isEmpty(feedback)) {
             return null;
         }
+//        log.info("报文:" + response.toString());
+        log.info("请求token信息:" + token);
         log.info("vivo返回参数:" + feedback);
         return JSONUtil.toBean(feedback, Map.class);
     }
@@ -371,7 +377,7 @@ public class VivoServiceImpl implements VivoService {
             }
         }
         //token过期,重新请求
-        if ((map.get("message").toString().contains("已拒绝为此请求授权"))) {
+        if (map.get("Message") != null && map.get("Message").toString().contains("已拒绝为此请求授权")) {
             redisUtils.delete(VIVO_TOEKN_STR);
             map = this.doPostWithFile(data, fw, url);
         }
@@ -390,6 +396,9 @@ public class VivoServiceImpl implements VivoService {
             return null;
         }
         log.info("响应参数:" + feedback);
+        if (fw.exists()) {
+            fw.delete();
+        }
         return JSONUtil.toBean(feedback, Map.class);
     }
 
@@ -803,13 +812,25 @@ public class VivoServiceImpl implements VivoService {
             msg.put("exceptionFinishTime", DateUtils.str2LocalDateTime(form.getCompletionTime(), "-", "/"));
 //        request.put("msg", JSONUtil.toJsonStr(msg));
 //        msgClient.consume(request);
-
+            //成功集合
+            List<Map<String, Object>> successData = new ArrayList<>();
             Map<String, Object> resultMap = this.forwarderLadingFile(msg);
             if (0 == MapUtil.getInt(resultMap, "status")) {
                 log.error("[vivo]推送异常信息失败 bookingNo={} file={} msg={}", airOrder.getThirdPartyOrderNo(),
                         fileName, MapUtil.getStr(resultMap, "message"));
-                throw new VivoApiException(fileName + "文件推送失败");
+
+                if (!CollectionUtil.isEmpty(successData)) {
+                    successData.forEach(e -> {
+                        e.put("operationType", "delete");
+                        this.forwarderLadingFile(e);
+                    });
+                }
+                throw new JayudBizException(ResultEnum.VIVO_ERROR.getCode(),
+                        MapUtil.getStr(resultMap, "message"));
+            } else {
+                successData.add(msg);
             }
+
         }
     }
 

@@ -44,6 +44,7 @@ public class LegalEntityServiceImpl extends ServiceImpl<LegalEntityMapper, Legal
     public LegalEntity getLegalEntityByLegalName(String name) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("legal_name",name);
+        queryWrapper.eq("audit_status",2);
         LegalEntity legalEntity = baseMapper.selectOne(queryWrapper);
         return legalEntity;
     }

@@ -292,7 +292,7 @@ public class ExternalApiController {
         if(byDeptName==null){
             return ApiResult.error();
         }
-        return ApiResult.ok(byDeptName.getIdCode());
+        return ApiResult.ok(byDeptName.getId());
     }
 
 
@@ -314,7 +314,7 @@ public class ExternalApiController {
         if(legalEntityByLegalName==null){
             return ApiResult.error();
         }
-        return ApiResult.ok();
+        return ApiResult.ok(legalEntityByLegalName.getId());
     }
 
     @ApiOperation(value = "根据用户名获取用户所属法人主体")
@@ -324,6 +324,7 @@ public class ExternalApiController {
         List<Long> legalId = systemUserLegalService.getLegalId(systemUser.getId());
         return ApiResult.ok(legalId);
     }
+
 }
 
 

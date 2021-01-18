@@ -1,9 +1,11 @@
 package com.jayud.tms.controller;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.DriverInfoPdfVO;
 import com.jayud.tms.model.vo.SendCarListPdfVO;
 import com.jayud.tms.model.vo.SendCarPdfVO;
@@ -24,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -37,12 +40,21 @@ public class PdfController {
     @Autowired
     private IOrderSendCarsService sendCarsService;
 
-    @ApiOperation(value = "渲染数据,确认派车 orderNo=子订单号")
+    @ApiOperation(value = "渲染数据,确认派车 orderNo=订单号(主/子),entranceType=入口类型(1主订单,2子订单)")
     @PostMapping(value = "/initPdfData")
-    public CommonResult<SendCarPdfVO> initPdfData(@RequestBody Map<String,Object> param) {
+    public CommonResult<SendCarPdfVO> initPdfData(@RequestBody Map<String, Object> param) {
         String orderNo = MapUtil.getStr(param, CommonConstant.ORDER_NO);
-        if(StringUtil.isNullOrEmpty(orderNo)){
+        Integer entranceType = MapUtil.getInt(param, "entranceType");
+        if (StringUtil.isNullOrEmpty(orderNo) && entranceType == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        if (entranceType == 1) {
+            List<OrderTransport> subOrders = this.orderTransportService.getOrderTmsByCondition(new OrderTransport().setMainOrderNo(orderNo));
+            if (CollectionUtil.isEmpty(subOrders)) {
+                return CommonResult.error(400, "不存在该订单信息");
+            } else {
+                orderNo = subOrders.get(0).getOrderNo();
+            }
         }
         SendCarPdfVO sendCarPdfVO = orderTransportService.initPdfData(orderNo, CommonConstant.ZGYS);
         return CommonResult.success(sendCarPdfVO);
@@ -50,22 +62,33 @@ public class PdfController {
 
     @ApiOperation(value = "二期优化1：司机资料,orderNo=子订单号")
     @PostMapping(value = "/initDriverInfo")
-    public CommonResult<DriverInfoPdfVO> initDriverInfo(@RequestBody Map<String,Object> param) {
+    public CommonResult<DriverInfoPdfVO> initDriverInfo(@RequestBody Map<String, Object> param) {
         String orderNo = MapUtil.getStr(param, CommonConstant.ORDER_NO);
-        if(StringUtil.isNullOrEmpty(orderNo)){
+        if (StringUtil.isNullOrEmpty(orderNo)) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         DriverInfoPdfVO driverInfoPdfVO = sendCarsService.initDriverInfo(orderNo);
         return CommonResult.success(driverInfoPdfVO);
     }
 
-    @ApiOperation(value = "二期优化1：派车单,orderNo=子订单号")
+    @ApiOperation(value = "二期优化1：派车单,orderNo=订单号(主/子),entranceType=入口类型(1主订单,2子订单)")
     @PostMapping(value = "/initSendCarList")
-    public CommonResult<SendCarListPdfVO> initSendCarList(@RequestBody Map<String,Object> param) {
+    public CommonResult<SendCarListPdfVO> initSendCarList(@RequestBody Map<String, Object> param) {
         String orderNo = MapUtil.getStr(param, CommonConstant.ORDER_NO);
-        if(StringUtil.isNullOrEmpty(orderNo)){
+        Integer entranceType = MapUtil.getInt(param, "entranceType");
+        if (StringUtil.isNullOrEmpty(orderNo) && entranceType == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
+
+        if (entranceType == 1) {
+            List<OrderTransport> subOrders = this.orderTransportService.getOrderTmsByCondition(new OrderTransport().setMainOrderNo(orderNo));
+            if (CollectionUtil.isEmpty(subOrders)) {
+                return CommonResult.error(400, "不存在该订单信息");
+            } else {
+                orderNo = subOrders.get(0).getOrderNo();
+            }
+        }
+
         SendCarListPdfVO sendCarListPdfVO = sendCarsService.initSendCarList(orderNo);
         return CommonResult.success(sendCarListPdfVO);
     }
@@ -100,8 +123,6 @@ public class PdfController {
             }
         }
     }
-
-
 
 
 }

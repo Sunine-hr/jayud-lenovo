@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 /**
  * <p>
@@ -29,15 +30,12 @@ public class AddWarehouseInfoForm {
     private String warehouseName;
 
     @ApiModelProperty(value = "联系人")
-    @NotEmpty(message = "contacts is required")
     private String contacts;
 
     @ApiModelProperty(value = "联系电话")
-    @NotEmpty(message = "contactNumber is required")
     private String contactNumber;
 
     @ApiModelProperty(value = "地址")
-    @NotEmpty(message = "address is required")
     private String address;
 
 //    @ApiModelProperty(value = "省")
@@ -66,4 +64,7 @@ public class AddWarehouseInfoForm {
     @ApiModelProperty(value = "邮编")
     private String zipCode;
 
+    @ApiModelProperty(value = "是否虚拟仓",required = true)
+    @NotNull(message = "isVirtual is required")
+    private Boolean isVirtual;
 }

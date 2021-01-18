@@ -1,4 +1,4 @@
-package com.jayud.tms.model.po;
+package com.jayud.tms.model.vo;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
@@ -9,20 +9,13 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
- * <p>
  * 中港运输订单
- * </p>
- *
- * @author chuanmei
- * @since 2020-09-15
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value = "OrderTransport对象", description = "中港运输订单")
-public class OrderTransport extends Model<OrderTransport> {
+public class OrderVO extends Model<OrderVO> {
 
     private static final long serialVersionUID = 1L;
 
@@ -139,6 +132,9 @@ public class OrderTransport extends Model<OrderTransport> {
 
     @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo)")
     private Integer createUserType;
+
+    @ApiModelProperty(value = "提货/送货地址")
+    private List<OrderTakeAdrVO> orderTakeAdrs;
 
 
     @Override

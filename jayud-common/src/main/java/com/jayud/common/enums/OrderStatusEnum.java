@@ -216,6 +216,22 @@ public enum OrderStatusEnum {
     }
 
     /**
+     * 获取驳回枚举
+     */
+    public static String getRejectionStatus(String status, String subOrderSigns) {
+        String[] rejectionStatus = getRejectionStatus(subOrderSigns);
+        if (rejectionStatus == null) {
+            return null;
+        }
+        for (String tmp : rejectionStatus) {
+            if (tmp.equals(status)) {
+                return tmp;
+            }
+        }
+        return null;
+    }
+
+    /**
      * 获取驳回状态
      */
     public static String[] getRejectionStatus(String... subOrderSigns) {
@@ -229,7 +245,17 @@ public enum OrderStatusEnum {
         for (String subOrderSign : subOrderSigns) {
             //todo 有需要再补
             if (SubOrderSignEnum.ZGYS.getSignOne().equals(subOrderSign)) {
-                return null;
+                return new String[]{
+                        TMS_T_1_1.getCode(), TMS_T_2_1.getCode(),
+                        TMS_T_3_2.getCode(), TMS_T_4_1.getCode(), TMS_T_5_1.getCode()};
+            }
+            if (SubOrderSignEnum.KY.getSignOne().equals(subOrderSign)) {
+                return new String[]{
+                        AIR_A_1_1.getCode(), AIR_A_2_1.getCode(), AIR_A_3_1.getCode(),
+                        AIR_A_3_2.getCode()};
+            }
+            if (SubOrderSignEnum.BG.getSignOne().equals(subOrderSign)) {
+                return new String[]{CUSTOMS_C_1_1.getCode()};
             }
         }
         return null;

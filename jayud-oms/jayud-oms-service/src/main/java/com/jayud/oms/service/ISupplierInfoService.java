@@ -61,14 +61,14 @@ public interface ISupplierInfoService extends IService<SupplierInfo> {
      * @param response
      * @return
      */
-    String importCustomerInfoExcel(HttpServletResponse response, MultipartFile file) throws Exception;
+    String importCustomerInfoExcel(HttpServletResponse response, MultipartFile file,String userName) throws Exception;
 
     /**
      * 下载错误文件
      * @param response
      * @return
      */
-    void insExcel(HttpServletResponse response) throws Exception;
+    void insExcel(HttpServletResponse response,String userName) throws Exception;
 
-    boolean checkMes();
+    boolean checkMes(String userName);
 }

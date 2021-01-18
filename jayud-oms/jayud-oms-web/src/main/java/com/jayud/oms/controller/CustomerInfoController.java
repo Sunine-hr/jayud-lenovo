@@ -100,15 +100,14 @@ public class CustomerInfoController {
     public CommonResult saveOrUpdateCustomerInfo(@RequestBody @Valid AddCustomerInfoForm form) {
         CustomerInfo customerInfo = ConvertUtil.convert(form, CustomerInfo.class);
         if (form.getId() != null) {
-            customerInfo.setUpdatedUser(UserOperator.getToken());
+            customerInfo.setUpdatedUser(form.getLoginUserName());
             customerInfo.setUpdatedTime(DateUtils.getNowTime());
         } else {
-            customerInfo.setCreatedUser(UserOperator.getToken());
+            customerInfo.setCreatedUser(form.getLoginUserName());
         }
-        //校验客户代码和客户名称的唯一性
-        List<CustomerInfoVO> oldCustomerInfos = customerInfoService.existCustomerInfo(form.getIdCode(),form.getName());
-        if((oldCustomerInfos != null && oldCustomerInfos.size()>1) || (oldCustomerInfos != null && oldCustomerInfos.size() == 1 &&
-                oldCustomerInfos.get(0).getId() != form.getId())){
+        //校验客户代码的唯一性
+        List<CustomerInfoVO> oldCustomerInfos = customerInfoService.existCustomerInfo(form.getIdCode());
+        if((form.getId() == null && oldCustomerInfos != null && oldCustomerInfos.size() > 0) || (form.getId() != null && oldCustomerInfos != null && oldCustomerInfos.size() > 1)){
             return CommonResult.error(ResultEnum.CUSTOMER_CODE_EXIST);
         }
         customerInfo.setAuditStatus(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode());
@@ -137,18 +136,29 @@ public class CustomerInfoController {
 
     @ApiOperation(value = "二期优化3:删除客户信息(禁用)")
     @PostMapping(value = "/delCustomerInfo")
-    public CommonResult delCustomerInfo(@RequestBody DeleteForm form) {
-        List<CustomerInfo> customerInfos = new ArrayList<>();
-        for (Long id : form.getIds()) {
-            CustomerInfo customerInfo = new CustomerInfo();
-            customerInfo.setId(id);
-            customerInfo.setUpdatedTime(DateUtils.getNowTime());
-            customerInfo.setUpdatedUser(UserOperator.getToken());
-            customerInfo.setStatus("0");
-            customerInfos.add(customerInfo);
+    public CommonResult delCustomerInfo(@RequestBody Map<String,Object> param) {
+        String idStr = MapUtil.getStr(param,"id");
+        String tempStatus = MapUtil.getStr(param,"status");
+        if(StringUtil.isNullOrEmpty(idStr) || StringUtil.isNullOrEmpty(tempStatus)){
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        customerInfoService.saveOrUpdateBatch(customerInfos);
-        return CommonResult.success();
+        String status;
+        Boolean isStatus = Boolean.valueOf(tempStatus);
+        if(isStatus){
+            status = "1";
+        }else {
+            status = "0";
+        }
+        CustomerInfo customerInfo = new CustomerInfo();
+        customerInfo.setId(Long.parseLong(idStr));
+        customerInfo.setUpdatedTime(DateUtils.getNowTime());
+        customerInfo.setUpdatedUser(UserOperator.getToken());
+        customerInfo.setStatus(status);
+        Boolean result = customerInfoService.saveOrUpdate(customerInfo);
+        if(result){
+            return CommonResult.success();
+        }
+        return CommonResult.error(ResultEnum.OPR_FAIL);
     }
 
     @ApiOperation(value = "二期优化3:已关联客户(结算单位)列表,id = 客户ID")
@@ -391,8 +401,6 @@ public class CustomerInfoController {
     @GetMapping(value = "/downloadExcel")
     public void downloadExcel(HttpServletResponse response)throws IOException {
         //获取输入流，原始模板位置
-
-//        String filePath = "D:\\CodeRepository1\\jayud-platform\\jayud-oms\\jayud-oms-web\\src\\main\\resources\\static\\客户模板.xls";
         InputStream bis = new BufferedInputStream(new FileInputStream(new File(filePath)));
         //假如以中文名下载的话，设置下载文件名称
         String filename = "客户模板.xls";
@@ -413,11 +421,12 @@ public class CustomerInfoController {
 
     @ApiOperation(value = "导入客户信息")
     @PostMapping(value = "/uploadExcel")
-    public CommonResult ajaxUploadExcel(MultipartFile file, HttpServletResponse response){
+    public CommonResult ajaxUploadExcel(MultipartFile file, HttpServletResponse response,@RequestParam("userName") String userName){
 
+        System.out.println("userName:======="+userName);
         String commentHTML=null;
         try {
-            commentHTML = customerInfoService.importCustomerInfoExcel(response,file);
+            commentHTML = customerInfoService.importCustomerInfoExcel(response,file,userName);
         } catch (Exception e1) {
             e1.printStackTrace();
         }
@@ -431,9 +440,9 @@ public class CustomerInfoController {
 
     @ApiOperation(value = "下载错误信息")
     @GetMapping(value = "/downloadErrorExcel")
-    public void downloadErrorExcel( HttpServletResponse response)  {
+    public void downloadErrorExcel( HttpServletResponse response,@RequestParam("userName") String userName)  {
         try {
-            customerInfoService.insExcel(response);
+            customerInfoService.insExcel(response,userName);
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -441,8 +450,8 @@ public class CustomerInfoController {
 
     @ApiOperation(value = "判断是否有错误信息")
     @PostMapping(value = "/checkMes")
-    public CommonResult checkMes()  {
-        boolean result = customerInfoService.checkMes();
+    public CommonResult checkMes(@RequestParam("userName") String userName){
+        boolean result = customerInfoService.checkMes(userName);
         return CommonResult.success(result);
     }
 

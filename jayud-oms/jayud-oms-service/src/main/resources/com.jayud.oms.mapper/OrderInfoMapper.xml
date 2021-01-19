@@ -263,9 +263,7 @@
         oi.`customs_release`  customsRelease,
         oi.selected_server selectedServer
         FROM
-        order_info oi LEFT JOIN order_transport ot ON
-        oi.`order_no` = ot.`main_order_no`
-        LEFT JOIN service_order so ON oi.`order_no` = so.`main_order_no`
+        order_info oi LEFT JOIN order_transport ot ON oi.`order_no` = ot.`main_order_no`
         LEFT JOIN port_info p ON ot.port_code = p.id_code
         LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`
         WHERE

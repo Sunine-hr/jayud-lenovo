@@ -273,7 +273,7 @@
         <if test="form.cmd == 'T_15'">
             AND ot.`status` = 'T_14'
         </if>
-        <if test="form.cmd != 'list'">
+        <if test="form.cmd == 'list'">
             AND (oi.`status`= 1 or oi.`status`=4)
         </if>
         <if test="form.cmd == 'costAudit'">

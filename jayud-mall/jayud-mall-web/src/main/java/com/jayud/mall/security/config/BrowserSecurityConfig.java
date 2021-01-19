@@ -1,5 +1,6 @@
 package com.jayud.mall.security.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayud.mall.security.handler.MyAuthenticationFailureHandler;
 import com.jayud.mall.security.handler.MyAuthenticationSucessHandler;
 import com.jayud.mall.security.handler.MyLogOutSuccessHandler;
@@ -16,7 +17,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>定义浏览器Security配置,继承WebSecurityConfigurerAdapter</p>
@@ -55,6 +60,9 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Autowired
     private DataSource dataSource;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     /**
      * <p>配置PasswordEncoder</p>
@@ -102,14 +110,44 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
         //配置需要http验证
         http
             //.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class) // 添加验证码校验过滤器
-            .formLogin() // 表单登录
-                //使用数据库,注释下面的内容
-                //.usernameParameter("username") /* 默认值 username */
-                //.passwordParameter("password") /* 默认值 password */
-                .loginPage("/authentication/require") // 登录跳转 URL
-                .loginProcessingUrl("/login") // 处理表单登录 URL
-                .successHandler(authenticationSucessHandler) // 处理登录成功
-                .failureHandler(authenticationFailureHandler) // 处理登录失败
+            .httpBasic()
+            .authenticationEntryPoint((request,response,authException) -> {
+                response.setContentType("application/json;charset=utf-8");
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                PrintWriter out = response.getWriter();
+                Map<String,Object> map = new HashMap<>();
+                map.put("code",403);
+                map.put("msg","未登录");
+                map.put("data",null);
+                out.write(objectMapper.writeValueAsString(map));
+                out.flush();
+                out.close();
+            })
+            .and()
+                .formLogin() // 表单登录
+                    //使用数据库,注释下面的内容
+                    //.usernameParameter("username") /* 默认值 username */
+                    //.passwordParameter("password") /* 默认值 password */
+    //                .loginPage("/authentication/require") // 登录跳转 URL
+                    .loginPage("/login.html") // 登录跳转 URL
+                    .loginProcessingUrl("/login") // 处理表单登录 URL
+                    .successHandler(authenticationSucessHandler) // 处理登录成功
+                    .failureHandler(authenticationFailureHandler) // 处理登录失败
+            .and().
+                exceptionHandling()
+                //没有权限，返回json
+                .accessDeniedHandler((request,response,ex) -> {
+                    response.setContentType("application/json;charset=utf-8");
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    PrintWriter out = response.getWriter();
+                    Map<String,Object> map = new HashMap<String,Object>();
+                    map.put("code",403);
+                    map.put("msg","权限不足");
+                    map.put("data",null);
+                    out.write(objectMapper.writeValueAsString(map));
+                    out.flush();
+                    out.close();
+                })
             .and()
                 .rememberMe() // 添加记住我功能
                 .tokenRepository(persistentTokenRepository()) // 配置 token 持久化仓库
@@ -137,9 +175,9 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/configuration/security").permitAll()
                 .anyRequest()  // 所有请求
                 .authenticated() // 都需要认证
-            .and()
-                .sessionManagement() // 添加 Session管理器
-                .invalidSessionUrl("/session/invalid") // Session失效后跳转到这个链接
+//            .and()
+//                .sessionManagement() // 添加 Session管理器
+//                .invalidSessionUrl("/session/invalid") // Session失效后跳转到这个链接
             .and()
                 .logout() // 配置退出登录
                 .logoutUrl("/signout")

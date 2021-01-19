@@ -380,6 +380,9 @@
         <if test="cmd == 'zgys'">
             ot.legal_name legalName,
         </if>
+        <if test="cmd == 'ky'">
+            ao.legal_name legalName,
+        </if>
             si.supplier_ch_name customerName
         FROM
         <if test="cmd == 'main'">
@@ -390,6 +393,9 @@
         </if>
         <if test="cmd == 'zgys'">
             order_transport ot LEFT JOIN order_payment_cost opc on ot.order_no = opc.order_no
+        </if>
+        <if test="cmd == 'ky'">
+            air_order ao LEFT JOIN order_payment_cost opc on ao.order_no = opc.order_no
         </if>
             left join supplier_info si on si.supplier_code = opc.customer_code
         WHERE

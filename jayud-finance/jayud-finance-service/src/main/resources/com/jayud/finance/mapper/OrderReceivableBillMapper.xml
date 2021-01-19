@@ -356,7 +356,7 @@
         FROM
         order_info oi
         left join order_receivable_cost orc on orc.main_order_no = oi.order_no
-        left join customer_info ci on ci.unit_code = orc.customer_code
+        left join customer_info ci on ci.id_code = orc.customer_code
         where 1 = 1
         <if test="costIds != null and costIds.size>0">
             and orc.id in
@@ -379,6 +379,9 @@
         <if test="cmd == 'zgys'">
             ot.legal_name legalName,
         </if>
+        <if test="cmd == 'ky'">
+            ao.legal_name legalName,
+        </if>
         ci.`name` customerName
         FROM
         <if test="cmd == 'main'">
@@ -390,7 +393,10 @@
         <if test="cmd == 'zgys'">
             order_transport ot LEFT JOIN order_receivable_cost orc on ot.order_no = orc.order_no
         </if>
-            left join customer_info ci on ci.unit_code = orc.customer_code
+        <if test="cmd == 'ky'">
+            air_order ao LEFT JOIN order_receivable_cost orc on ao.order_no = orc.order_no
+        </if>
+            left join customer_info ci on ci.id_code = orc.customer_code
         WHERE
             orc.id IN
          <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">

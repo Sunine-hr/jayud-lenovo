@@ -136,6 +136,9 @@
         <if test="form.cmd == 'bg'">
             and opb.is_main = 0 and opb.sub_type = 'bg'
         </if>
+        <if test="form.cmd == 'ky'">
+            and opb.is_main = 0 and opb.sub_type = 'ky'
+        </if>
     </select>
 
     <select id="findNotPaidBillByPage" parameterType="com.jayud.finance.bo.QueryNotPaidBillForm" resultType="com.jayud.finance.vo.PaymentNotPaidBillVO" >

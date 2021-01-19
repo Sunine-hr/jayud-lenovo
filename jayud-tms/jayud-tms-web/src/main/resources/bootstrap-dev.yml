@@ -3,3 +3,12 @@ jayud:
     server-addr: 113.100.140.250:8848
     config:
       namespace: c19b4244-6c37-4ca2-ba49-a27404ca3f74
+mybatis-plus:
+  mapper-locations: classpath:com/jayud/tms.mapper/*.xml
+  typeAliasesPackage: com.jayud.model
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto

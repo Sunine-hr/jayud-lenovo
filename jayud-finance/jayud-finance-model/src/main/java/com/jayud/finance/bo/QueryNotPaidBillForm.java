@@ -1,6 +1,7 @@
 package com.jayud.finance.bo;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -42,4 +43,17 @@ public class QueryNotPaidBillForm extends BasePageForm {
     @ApiModelProperty(value = "操作指令 cmd=main主订单操作 or zgys子订单操作 or bg子订单操作", required = true)
     @Pattern(regexp = "(main|zgys|bg|ky)", message = "只允许填写main or zgys or bg ")
     private String cmd;
+
+
+//    @ApiModelProperty(value = "业务类型")
+//    @JsonIgnore
+//    public Integer businessType;
+//
+//
+//    public void setCmd(String cmd) {
+//        this.cmd = cmd;
+//        //设置业务类型
+//    }
+
+
 }

@@ -130,15 +130,19 @@
         <if test="form.cmd == 'main'">
              and opb.is_main = 1
         </if>
-        <if test="form.cmd == 'zgys'">
-            and opb.is_main = 0 and opb.sub_type = 'zgys'
+--         TODO 2021-01-20修改的不知道会不影响之前传梅版本财务
+        <if test="form.cmd != null and form.cmd !=''">
+            and opb.is_main = 0 and opb.sub_type = #{form.cmd}
         </if>
-        <if test="form.cmd == 'bg'">
-            and opb.is_main = 0 and opb.sub_type = 'bg'
-        </if>
-        <if test="form.cmd == 'ky'">
-            and opb.is_main = 0 and opb.sub_type = 'ky'
-        </if>
+<!--        <if test="form.cmd == 'zgys'">-->
+<!--            and opb.is_main = 0 and opb.sub_type = 'zgys'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'bg'">-->
+<!--            and opb.is_main = 0 and opb.sub_type = 'bg'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'ky'">-->
+<!--            and opb.is_main = 0 and opb.sub_type = 'ky'-->
+<!--        </if>-->
     </select>
 
     <select id="findNotPaidBillByPage" parameterType="com.jayud.finance.bo.QueryNotPaidBillForm" resultType="com.jayud.finance.vo.PaymentNotPaidBillVO" >

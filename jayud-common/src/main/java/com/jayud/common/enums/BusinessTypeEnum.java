@@ -6,7 +6,7 @@ import lombok.Getter;
 import java.util.Objects;
 
 /**
- * 业务类型(空运,中港运输,纯报关)
+ * 业务类型(空运,中港运输,纯报关,...)
  */
 @Getter
 @AllArgsConstructor
@@ -33,4 +33,19 @@ public enum BusinessTypeEnum {
         }
         return -1;
     }
+
+
+    /**
+     * main|zgys|bg|ky
+     * @param cmd
+     * @return
+     */
+//    public static Integer getCode(String cmd) {
+//        for (BusinessTypeEnum value : values()) {
+//            if (Objects.equals(cmd, value.getDesc())) {
+//                return value.getCode();
+//            }
+//        }
+//        return -1;
+//    }
 }

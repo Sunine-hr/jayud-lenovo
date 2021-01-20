@@ -79,7 +79,7 @@ public class GlobalExceptionHandler {
 
     // 捕捉其他所有异常
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public BaseApiResult globalException(HttpServletRequest request, Throwable ex) {
         log.error(ex.getMessage(), ex);
         if (request.getRequestURI().contains(vivoBaseRequestmap)) {

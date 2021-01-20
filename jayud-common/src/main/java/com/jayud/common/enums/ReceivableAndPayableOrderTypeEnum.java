@@ -13,7 +13,7 @@ import java.util.Objects;
 public enum ReceivableAndPayableOrderTypeEnum {
     MAIN("main", "主订单"), KY("ky", "空运")
     , CBG("bg", "纯报关"), ZGYS("zgys", "中港运输"),
-    SYSTEM("system", "本系统");
+    OTHER("other", "其他");
     private String code;
     private String desc;
 
@@ -41,6 +41,6 @@ public enum ReceivableAndPayableOrderTypeEnum {
                 return value;
             }
         }
-        return SYSTEM;
+        return OTHER;
     }
 }

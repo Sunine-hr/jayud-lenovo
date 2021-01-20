@@ -4,9 +4,13 @@ import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.HttpContextUtils;
+import com.jayud.common.RedisUtils;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.HttpRequester;
+import com.jayud.common.utils.HttpUtils;
 import com.jayud.common.utils.MD5;
 import com.jayud.oauth.model.bo.*;
 import com.jayud.oauth.model.enums.SystemUserStatusEnum;
@@ -60,6 +64,8 @@ public class SystemUserController {
 
     @Autowired
     ISystemCompanyService companyService;
+    @Autowired
+    private RedisUtils redisUtils;
 
     /**
      * 登录接口
@@ -83,7 +89,7 @@ public class SystemUserController {
 
         //登录逻辑
         SystemUserVO userVO = userService.login(token);
-        if(userVO.getIsError() != null && userVO.getIsError()){
+        if (userVO.getIsError() != null && userVO.getIsError()) {
             return CommonResult.error(ResultEnum.LOGIN_FAIL);
         }
         return CommonResult.success(userVO);
@@ -99,6 +105,9 @@ public class SystemUserController {
     public CommonResult logout() {
         //登出
         userService.logout();
+        String token = HttpRequester.getHead("token");
+        //清除token
+        redisUtils.delete(token);
         return CommonResult.success();
     }
 
@@ -449,7 +458,7 @@ public class SystemUserController {
     public CommonResult<List<InitComboxVO>> initPurchaseUser() {
         Map<String, Object> param = new HashMap<>();
         param.put("status", "1");
-        param.put("user_type",1);
+        param.put("user_type", 1);
         List<InitComboxVO> initComboxs = new ArrayList<>();
         List<SystemUser> systemUsers = userService.findUserByCondition(param);
         for (SystemUser systemUser : systemUsers) {
@@ -588,7 +597,7 @@ public class SystemUserController {
         }
         String oldPassWord = MD5.encode(form.getOldPassword());
         if (!this.userService.getById(form.getId()).getPassword().equals(oldPassWord)) {
-            return CommonResult.error(400,"密码错误");
+            return CommonResult.error(400, "密码错误");
         }
 
         SystemUser user = new SystemUser().setId(form.getId()).setPassword(MD5.encode(form.getPassword()));

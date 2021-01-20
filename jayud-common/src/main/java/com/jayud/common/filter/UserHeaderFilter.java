@@ -60,7 +60,7 @@ public class UserHeaderFilter implements Filter {
         else {
             String token = request.getHeader("token");
             if (StringUtils.isNotEmpty(token)) {
-                String user = redisUtils.get(token,10000l);
+                String user = redisUtils.get(token,10000L);
                 UserOperator.setToken(user);
             }
         }

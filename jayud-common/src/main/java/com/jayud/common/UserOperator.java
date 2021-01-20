@@ -17,16 +17,16 @@ public class UserOperator {
     }
 
     public static String getToken() {
-        String name = user.get();
-        if (StringUtils.isEmpty(name)) {
+//        String name = user.get();
+//        if (StringUtils.isEmpty(name)) {
             String token = HttpRequester.getHead("token");
             if (StringUtils.isEmpty(token)) {
                 return null;
             }
             RedisUtils redisUtils = SpringContextUtil.getBean(RedisUtils.class);
             return redisUtils.get(token);
-        }
-        return name;
+//        }
+//        return name;
     }
 
     public static void setToken(String token) {

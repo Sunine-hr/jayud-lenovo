@@ -185,11 +185,12 @@ public class ApiControllerTest {
 
     /**
      * 测试我的线程方法
+     * 执行批量推送数据 @mfc
      */
     @Test
     public void myThread(){
 
-        ExcelReader reader = ExcelUtil.getReader("D:\\文档\\work-A03-金蝶\\2020-12-21，数据推送\\1-418.xlsx");
+        ExcelReader reader = ExcelUtil.getReader("D:\\文档\\work-A03-金蝶\\bug和修改\\2021-01-20\\1-33.xlsx");
         List<List<Object>> readAll = reader.read();
         List<String> apply_no_list = new ArrayList<>();
         log.info("报关单号...");

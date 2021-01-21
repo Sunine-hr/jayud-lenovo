@@ -15,3 +15,16 @@ hystrix:
 ribbon:
   ReadTimeout: 30000
   ConnectTimeout: 30000
+spring:
+  redis:
+    host: ${redis.server.url}
+    port: ${redis.server.port}
+    password: ${redis.server.password}
+    timeout: 2000s
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${jayud.datasource.ip}:${jayud.datasource.port}/${business.customs.datasource.name}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: ${jayud.datasource.username}
+    password: ${jayud.datasource.password}
+    configuration:
+      maximum-pool-size: 2

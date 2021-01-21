@@ -26,11 +26,11 @@ public class SystemUserLegalServiceImpl extends ServiceImpl<SystemUserLegalMappe
     @Override
     public List<Long> getLegalId(Long id) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("user_id",id);
+        queryWrapper.eq("system_user_id",id);
         List<SystemUserLegal> list = baseMapper.selectList(queryWrapper);
         List<Long> longs = new ArrayList<>();
         for (SystemUserLegal systemUserLegal : list) {
-            longs.add(systemUserLegal.getId());
+            longs.add(systemUserLegal.getLegalId());
         }
         return longs;
     }

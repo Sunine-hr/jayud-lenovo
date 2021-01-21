@@ -27,34 +27,34 @@
         id, name, contract_no, contract_name, contract_url, business_type, legal_entity, start_date, end_date, status, created_user, created_time, updated_user, updated_time, type, bind_id
     </sql>
 
-    <select id="findContractInfoByPage" parameterType="com.jayud.oms.model.bo.QueryContractInfoForm" resultType="com.jayud.oms.model.vo.ContractInfoVO" >
-            SELECT
-              ci.`id`,
-              ci.`name`,
-              ci.`contract_no` contractNo,
-              ci.`contract_url` contractUrl,
-              ci.`contract_name` contractName,
-              ci.`business_type` businessType,
-              ci.`legal_entity` legalEntity,
-              DATE_FORMAT(ci.`start_date`, '%Y-%m-%d') startDate,
-              DATE_FORMAT(ci.`end_date`, '%Y-%m-%d') endDate,
-              ci.`created_user` createdUser,
-              DATE_FORMAT(
-                ci.`created_time`,
-                '%Y-%m-%d %H:%i:%S'
-              ) createdTimeStr
-            FROM
-              contract_info ci where ci.status = 1
-            <if test="form.type !=null and form.type !=''">
-                and ci.type = #{form.type}
-            </if>
-            <if test="form.name != null and form.name != ''">
-                and ci.name like concat('%',#{form.name},'%')
-            </if>
-            <if test="form.contractNo != null and form.contractNo != ''">
-                and ci.contract_no like concat('%',#{form.contractNo},'%')
-            </if>
-    </select>
+<!--    <select id="findContractInfoByPage" parameterType="com.jayud.oms.model.bo.QueryContractInfoForm" resultType="com.jayud.oms.model.vo.ContractInfoVO" >-->
+<!--            SELECT-->
+<!--              ci.`id`,-->
+<!--              ci.`name`,-->
+<!--              ci.`contract_no` contractNo,-->
+<!--              ci.`contract_url` contractUrl,-->
+<!--              ci.`contract_name` contractName,-->
+<!--              ci.`business_type` businessType,-->
+<!--              ci.`legal_entity` legalEntity,-->
+<!--              DATE_FORMAT(ci.`start_date`, '%Y-%m-%d') startDate,-->
+<!--              DATE_FORMAT(ci.`end_date`, '%Y-%m-%d') endDate,-->
+<!--              ci.`created_user` createdUser,-->
+<!--              DATE_FORMAT(-->
+<!--                ci.`created_time`,-->
+<!--                '%Y-%m-%d %H:%i:%S'-->
+<!--              ) createdTimeStr-->
+<!--            FROM-->
+<!--              contract_info ci where ci.status = 1-->
+<!--            <if test="form.type !=null and form.type !=''">-->
+<!--                and ci.type = #{form.type}-->
+<!--            </if>-->
+<!--            <if test="form.name != null and form.name != ''">-->
+<!--                and ci.name like concat('%',#{form.name},'%')-->
+<!--            </if>-->
+<!--            <if test="form.contractNo != null and form.contractNo != ''">-->
+<!--                and ci.contract_no like concat('%',#{form.contractNo},'%')-->
+<!--            </if>-->
+<!--    </select>-->
     <select id="getContractInfoById" resultType="com.jayud.oms.model.vo.ContractInfoVO" >
         SELECT
         ci.`id`,
@@ -76,5 +76,40 @@
         FROM
         contract_info ci where
         ci.id = #{id}
+    </select>
+
+    <select id="findContractInfoByPage" parameterType="com.jayud.oms.model.bo.QueryContractInfoForm" resultType="com.jayud.oms.model.vo.ContractInfoVO" >
+        SELECT
+        ci.`id`,
+        ci.`name`,
+        ci.`contract_no` contractNo,
+        ci.`contract_url` contractUrl,
+        ci.`contract_name` contractName,
+        ci.`business_type` businessType,
+        ci.`legal_entity` legalEntity,
+        DATE_FORMAT(ci.`start_date`, '%Y-%m-%d') startDate,
+        DATE_FORMAT(ci.`end_date`, '%Y-%m-%d') endDate,
+        ci.`created_user` createdUser,
+        DATE_FORMAT(
+        ci.`created_time`,
+        '%Y-%m-%d %H:%i:%S'
+        ) createdTimeStr
+        FROM
+        contract_info ci where ci.status = 1
+        <if test="form.type !=null and form.type !=''">
+            and ci.type = #{form.type}
+        </if>
+        <if test="form.name != null and form.name != ''">
+            and ci.name like concat('%',#{form.name},'%')
+        </if>
+        <if test="form.contractNo != null and form.contractNo != ''">
+            and ci.contract_no like concat('%',#{form.contractNo},'%')
+        </if>
+        <if test="legalIds != null">
+            and ci.`legal_entity` in
+            <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                #{legalId}
+            </foreach>
+        </if>
     </select>
 </mapper>

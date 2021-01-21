@@ -144,10 +144,4 @@ public interface ISystemUserService extends IService<SystemUser> {
      */
     SystemUser getSystemUserBySystemName(String name);
 
-    /**
-     * 更新或修改用户
-     *
-     * @param systemUser
-     */
-    void saveOrUpdateSystemUser(SystemUser systemUser, Long legalId);
 }

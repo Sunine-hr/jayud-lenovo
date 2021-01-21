@@ -68,4 +68,13 @@ public interface OrderTransportMapper extends BaseMapper<OrderTransport> {
      * @return
      */
     List<OrderVO> getOrderTransportByMainOrderNo(@Param("mainOrderNo") List<String> mainOrderNo);
+
+    /**
+     * 分页查询
+     * @param legalIds
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<OrderTransportVO> findTransportOrderByPage(Page<OrderTransportVO> page, @Param("form")QueryOrderTmsForm form, @Param("legalIds")List<Long> legalIds);
 }

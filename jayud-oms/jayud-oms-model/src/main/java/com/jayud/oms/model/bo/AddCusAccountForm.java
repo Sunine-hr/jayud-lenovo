@@ -10,7 +10,7 @@ import javax.validation.constraints.NotEmpty;
  * 添加客户账号
  */
 @Data
-public class AddCusAccountForm extends BasePageForm {
+public class  AddCusAccountForm extends BasePageForm {
 
     @ApiModelProperty(value = "主键，修改时传")
     private Long id;

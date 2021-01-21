@@ -218,21 +218,21 @@
         </if>
     </select>
 
-    <select id="findCustomerBasicsInfoByPage" parameterType="com.jayud.oms.model.bo.QueryCustomerInfoForm"
-            resultType="com.jayud.oms.model.vo.CustomerInfoVO">
-        select
-        id,name,id_code idCode,contact,phone,address,email,created_time createdTimeStr
-        from customer_info
-        <where>
-            audit_status = 10
-            <if test="form.name != null and form.name != ''">
-                and name like concat('%',#{form.name},'%')
-            </if>
-            <if test="form.idCode != null and form.idCode != ''">
-                and id_code like concat('%',#{form.idCode},'%')
-            </if>
-        </where>
-    </select>
+<!--    <select id="findCustomerBasicsInfoByPage" parameterType="com.jayud.oms.model.bo.QueryCustomerInfoForm"-->
+<!--            resultType="com.jayud.oms.model.vo.CustomerInfoVO">-->
+<!--        select-->
+<!--        id,name,id_code idCode,contact,phone,address,email,created_time createdTimeStr-->
+<!--        from customer_info-->
+<!--        <where>-->
+<!--            audit_status = 10-->
+<!--            <if test="form.name != null and form.name != ''">-->
+<!--                and name like concat('%',#{form.name},'%')-->
+<!--            </if>-->
+<!--            <if test="form.idCode != null and form.idCode != ''">-->
+<!--                and id_code like concat('%',#{form.idCode},'%')-->
+<!--            </if>-->
+<!--        </where>-->
+<!--    </select>-->
 
     <select id="existCustomerInfo" resultType="com.jayud.oms.model.vo.CustomerInfoVO">
         select id,name,id_code idCode from customer_info where id_code = #{idCode}
@@ -314,5 +314,27 @@
                </foreach>
         </if>
 
+    </select>
+
+    <select id="findCustomerBasicsInfoByPage"
+            resultType="com.jayud.oms.model.vo.CustomerInfoVO">
+        select
+        ci.id,name,id_code idCode,contact,phone,address,email,ci.created_time createdTimeStr
+        from customer_info ci LEFT JOIN `customer_rela_legal` crl ON ci.`id` = crl.`customer_info_id`
+        <where>
+            audit_status = 10
+            <if test="form.name != null and form.name != ''">
+                and name like concat('%',#{form.name},'%')
+            </if>
+            <if test="form.idCode != null and form.idCode != ''">
+                and id_code like concat('%',#{form.idCode},'%')
+            </if>
+            <if test="legalIds != null">
+                and crl.`legal_entity_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
+            </if>
+        </where>
     </select>
 </mapper>

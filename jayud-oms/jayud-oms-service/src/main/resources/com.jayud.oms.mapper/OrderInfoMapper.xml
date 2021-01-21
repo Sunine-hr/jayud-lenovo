@@ -45,6 +45,7 @@
         oi.id,
         oi.`order_no` orderNo,
         oi.`biz_code` bizCode,
+        oi.`legal_entity_id` legal_entity_id,
         oc.`goods_type` goodsType,
         oc.`port_code` portCode,
         oc.`port_name` portName,
@@ -79,6 +80,7 @@
         oi.id,
         oi.`order_no` orderNo,
         oi.`biz_code` bizCode,
+        oi.`legal_entity_id` legal_entity_id,
         ot.`goods_type` goodsType,
         ot.`port_code` portCode,
         p.`name` portName,
@@ -117,6 +119,7 @@
         oi.id,
         oi.`order_no` orderNo,
         oi.`biz_code` bizCode,
+        oi.`legal_entity_id` legal_entity_id,
         a.`imp_and_exp_type` goodsType,
         '' portCode,
         '' portName,
@@ -155,6 +158,7 @@
         oi.id,
         oi.`order_no` orderNo,
         oi.`biz_code` bizCode,
+        oi.`legal_entity_id` legal_entity_id,
         '' goodsType,
         '' portCode,
         '' portName,
@@ -233,6 +237,13 @@
         <if test="form.cmd == 'myOrder'">
             and temp.createdUser = #{form.loginUserName}
         </if>
+
+        <if test="legalIds != null">
+            and temp.`legal_entity_id` in
+            <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                #{legalId}
+            </foreach>
+        </if>
     </select>
 
     <select id="findGoCustomsAuditByPage" parameterType="com.jayud.oms.model.bo.QueryOrderInfoForm" resultType="com.jayud.oms.model.vo.OrderInfoVO" >
@@ -265,7 +276,6 @@
         FROM
         order_info oi LEFT JOIN order_transport ot ON
         oi.`order_no` = ot.`main_order_no`
-        LEFT JOIN service_order so ON oi.`order_no` = so.`main_order_no`
         LEFT JOIN port_info p ON ot.port_code = p.id_code
         LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`
         WHERE
@@ -299,6 +309,13 @@
         </if>
         <if test="form.beginCreateTimeStr != null and form.beginCreateTimeStr !=''">
             and DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') <![CDATA[>=]]> #{form.beginCreateTimeStr}
+        </if>
+
+        <if test="legalIds != null">
+            and oi.`legal_entity_id` in
+            <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                #{legalId}
+            </foreach>
         </if>
     </select>
 
@@ -337,27 +354,66 @@
           (SELECT
             COUNT(1)
           FROM
-            order_info o1) AS allCount,
+            order_info o1 WHERE
+        <if test="legalIds != null">
+             o1.`legal_entity_id` in
+             <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                   #{legalId}
+             </foreach>
+        </if>
+        ) AS allCount,
+
           (SELECT
             COUNT(1)
           FROM
             order_info o2
-          WHERE o2.status = '2') AS preSubmitCount,
+          WHERE o2.status = '2'
+        <if test="legalIds != null">
+            and o2.`legal_entity_id` in
+            <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                #{legalId}
+            </foreach>
+        </if>
+        ) AS preSubmitCount,
+
           (SELECT
             COUNT(1)
           FROM
             order_info o3
-          WHERE o3.status = '4') AS dataNotAllCount,
+          WHERE o3.status = '4'
+        <if test="legalIds != null">
+            and o3.`legal_entity_id` in
+            <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                #{legalId}
+            </foreach>
+        </if>
+          ) AS dataNotAllCount,
+
            (SELECT
             COUNT(1)
           FROM
             order_info o6
-          WHERE o6.status = '6') AS cancelledCount,
+          WHERE o6.status = '6'
+        <if test="legalIds != null">
+            and o6.`legal_entity_id` in
+            <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                #{legalId}
+            </foreach>
+        </if>
+          ) AS cancelledCount,
+
            (SELECT
             COUNT(1)
           FROM
             order_info o7
-          WHERE o7.status = '7') AS pendingRejectedCount
+          WHERE o7.status = '7'
+        <if test="legalIds != null">
+            and o7.`legal_entity_id` in
+            <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                #{legalId}
+            </foreach>
+        </if>
+          ) AS pendingRejectedCount
         FROM
           DUAL
     </select>

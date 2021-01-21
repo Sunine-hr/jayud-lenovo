@@ -101,6 +101,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Autowired
     private IServiceOrderService serviceOrderService;
 
+    @Autowired
+    private OauthClient oauthClient;
 
     @Override
     public String oprMainOrder(InputMainOrderForm form) {
@@ -155,14 +157,18 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //定义分页参数
         Page<OrderInfoVO> page = new Page(form.getPageNum(), form.getPageSize());
         IPage<OrderInfoVO> pageInfo = null;
+
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
+        List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();
+
         if (CommonConstant.GO_CUSTOMS_AUDIT.equals(form.getCmd())) {
             //定义排序规则
             page.addOrder(OrderItem.desc("oi.id"));
-            pageInfo = baseMapper.findGoCustomsAuditByPage(page, form);
+            pageInfo = baseMapper.findGoCustomsAuditByPage(page, form,legalIds);
         } else {
             //定义排序规则
             page.addOrder(OrderItem.desc("temp.id"));
-            pageInfo = baseMapper.findOrderInfoByPage(page, form);
+            pageInfo = baseMapper.findOrderInfoByPage(page, form,legalIds);
             //根据主订单查询子订单数据
             List<OrderInfoVO> orderInfoVOs = pageInfo.getRecords();
             if (CollectionUtil.isEmpty(orderInfoVOs)) {
@@ -860,8 +866,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     @Override
-    public OrderDataCountVO countOrderData() {
-        return baseMapper.countOrderData();
+    public OrderDataCountVO countOrderData(String loginUserName) {
+
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(loginUserName);
+        List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();
+
+        return baseMapper.countOrderData(legalIds);
     }
 
     @Override

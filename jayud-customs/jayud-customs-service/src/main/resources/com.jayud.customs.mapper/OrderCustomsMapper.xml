@@ -90,51 +90,153 @@
         </if>
     </select>
 
-    <select id="findCustomsOrderByPage" parameterType="com.jayud.customs.model.bo.QueryCustomsOrderInfoForm" resultType="com.jayud.customs.model.vo.CustomsOrderInfoVO" >
+<!--    <select id="findCustomsOrderByPage" parameterType="com.jayud.customs.model.bo.QueryCustomsOrderInfoForm" resultType="com.jayud.customs.model.vo.CustomsOrderInfoVO" >-->
+<!--        SELECT-->
+<!--          oc.`id`,-->
+<!--          oi.`order_no` mainOrderNo,-->
+<!--          oc.`order_no` orderNo,-->
+<!--          oc.`goods_type` goodsType,-->
+<!--          oc.`port_name` portName,-->
+<!--          oc.`status` status,-->
+<!--          oi.`customer_name` customerName,-->
+<!--          oi.customer_code customerCode,-->
+<!--          oi.legal_name legalName,-->
+<!--          oi.unit_code unitCode,-->
+<!--          oc.legal_name subLegalName,-->
+<!--          oc.unit_code subUnitCode,-->
+<!--          '' goodsInfo,-->
+<!--          oc.`encode`,-->
+<!--          oc.`description` fileStr,-->
+<!--          oc.`desc_name` fileNameStr,-->
+<!--          oc.`created_user` createdUser,-->
+<!--          DATE_FORMAT(-->
+<!--            oc.`created_time`,-->
+<!--            '%Y-%m-%d %H:%i:%S'-->
+<!--          ) createdTimeStr,-->
+<!--            oc.`entrust_no` entrustNo,-->
+<!--            '' unifiedNumber,-->
+<!--            oc.`updated_time` updatedTimeStr,-->
+<!--            (SELECT lt.description FROM-->
+<!--            logistics_track lt-->
+<!--            WHERE lt.order_id = oc.`id`-->
+<!--            ORDER BY lt.created_time desc-->
+<!--            LIMIT 1) remarks,-->
+<!--            '' yunCustomsNo,-->
+<!--            oi.`biz_code` bizCode,-->
+<!--            oi.`class_code` classCode,-->
+<!--             (select pc.`name` from product_classify pc where pc.f_id = '0' and pc.id_code = oi.class_code) classCodeDesc,-->
+<!--            oi.`id` mainOrderId,-->
+<!--            (CASE  WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +-->
+<!--            (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE-->
+<!--            ELSE FALSE-->
+<!--            END) isCost,-->
+<!--            oi.`need_input_cost` needInputCost,-->
+<!--            (select ot.car_weigh_num from order_transport ot where ot.main_order_no = oi.order_no) carWeighNum-->
+<!--        FROM-->
+<!--          order_customs oc,-->
+<!--          order_info oi-->
+<!--        WHERE oc.`main_order_no` = oi.`order_no`-->
+<!--        and oi.`status` = 1-->
+<!--        <if test="form.cmd == 'confirmOrder'">-->
+<!--            AND oc.`status` = 'C_0'-->
+<!--        </if>-->
+<!--        <if test="form.orderNo != null and form.orderNo != ''">-->
+<!--            AND oc.`order_no` = #{form.orderNo}-->
+<!--        </if>-->
+<!--        <if test="form.customerName != null and form.customerName != ''">-->
+<!--            and oi.`customer_name` like concat('%',#{form.customerName},'%')-->
+<!--        </if>-->
+<!--        <if test="form.encode != null and form.encode != ''">-->
+<!--            AND oc.`encode` = #{form.encode}-->
+<!--        </if>-->
+<!--        <if test="form.entrustNo != null and form.entrustNo != ''">-->
+<!--            AND oc.`entrust_no` = #{form.entrustNo}-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'exceptionOrder'">-->
+<!--            AND oc.`status` = 'C_6_2'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'auditFail'">-->
+<!--            AND oc.`status` = 'C_5_1'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'issueOrder'">-->
+<!--            AND oc.`status` = 'C_1'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'toCheck'">-->
+<!--            AND oc.`status` = 'C_2'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'declare'">-->
+<!--            AND oc.`status` = 'C_3'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'releaseConfirm'">-->
+<!--            AND oc.`status` = 'C_4'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'goCustomsConfirm'">-->
+<!--            AND oc.`status` = 'C_5' and oc.class_code = 'CBG'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'costAudit'">-->
+<!--            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = oc.order_no AND opc.`status` = '2' and opc.sub_type = 'bg')-->
+<!--            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = oc.order_no AND orc.`status` = '2' and orc.sub_type = 'bg'))-->
+<!--        </if>-->
+<!--    </select>-->
+    <select id="statisticsDataNumber"  resultType="com.jayud.customs.model.vo.StatisticsDataNumberVO" >
+    select
+        (SELECT count(1) FROM order_customs oc,order_info oi WHERE oc.`main_order_no` = oi.`order_no` and oi.`status` = 1 AND oc.`status` = 'C_0') bgjd,
+        (SELECT count(1) FROM order_customs oc,order_info oi WHERE oc.`main_order_no` = oi.`order_no` and oi.`status` = 1 AND oc.`status` = 'C_1') bgdd,
+        (SELECT count(1) FROM order_customs oc,order_info oi WHERE oc.`main_order_no` = oi.`order_no` and oi.`status` = 1 AND oc.`status` = 'C_2') bgfh,
+        (SELECT count(1) FROM order_customs oc,order_info oi WHERE oc.`main_order_no` = oi.`order_no` and oi.`status` = 1 AND oc.`status` = 'C_3') bgsb,
+        (SELECT count(1) FROM order_customs oc,order_info oi WHERE oc.`main_order_no` = oi.`order_no` and oi.`status` = 1 AND oc.`status` = 'C_4') bgfx,
+        (SELECT count(1) FROM order_customs oc,order_info oi WHERE oc.`main_order_no` = oi.`order_no` and oi.`status` = 1 AND oc.`status` = 'C_5_1') bhlb,
+        (SELECT count(1) FROM order_customs oc,order_info oi WHERE oc.`main_order_no` = oi.`order_no` and oi.`status` = 1 AND oc.`status` = 'C_5') tgqr,
+        (SELECT count(1) FROM order_customs oc,order_info oi WHERE oc.`main_order_no` = oi.`order_no` and oi.`status` = 1 AND oc.`status` = 'C_6_2') bgyc
+    from
+        dual
+    </select>
+
+    <select id="findCustomsOrderByPage" resultType="com.jayud.customs.model.vo.CustomsOrderInfoVO" >
         SELECT
-          oc.`id`,
-          oi.`order_no` mainOrderNo,
-          oc.`order_no` orderNo,
-          oc.`goods_type` goodsType,
-          oc.`port_name` portName,
-          oc.`status` status,
-          oi.`customer_name` customerName,
-          oi.customer_code customerCode,
-          oi.legal_name legalName,
-          oi.unit_code unitCode,
-          oc.legal_name subLegalName,
-          oc.unit_code subUnitCode,
-          '' goodsInfo,
-          oc.`encode`,
-          oc.`description` fileStr,
-          oc.`desc_name` fileNameStr,
-          oc.`created_user` createdUser,
-          DATE_FORMAT(
-            oc.`created_time`,
-            '%Y-%m-%d %H:%i:%S'
-          ) createdTimeStr,
-            oc.`entrust_no` entrustNo,
-            '' unifiedNumber,
-            oc.`updated_time` updatedTimeStr,
-            (SELECT lt.description FROM
-            logistics_track lt
-            WHERE lt.order_id = oc.`id`
-            ORDER BY lt.created_time desc
-            LIMIT 1) remarks,
-            '' yunCustomsNo,
-            oi.`biz_code` bizCode,
-            oi.`class_code` classCode,
-             (select pc.`name` from product_classify pc where pc.f_id = '0' and pc.id_code = oi.class_code) classCodeDesc,
-            oi.`id` mainOrderId,
-            (CASE  WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
-            (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
-            ELSE FALSE
-            END) isCost,
-            oi.`need_input_cost` needInputCost,
-            (select ot.car_weigh_num from order_transport ot where ot.main_order_no = oi.order_no) carWeighNum
+        oc.`id`,
+        oi.`order_no` mainOrderNo,
+        oc.`order_no` orderNo,
+        oc.`goods_type` goodsType,
+        oc.`port_name` portName,
+        oc.`status` status,
+        oi.`customer_name` customerName,
+        oi.customer_code customerCode,
+        oi.legal_name legalName,
+        oi.unit_code unitCode,
+        oc.legal_name subLegalName,
+        oc.unit_code subUnitCode,
+        '' goodsInfo,
+        oc.`encode`,
+        oc.`description` fileStr,
+        oc.`desc_name` fileNameStr,
+        oc.`created_user` createdUser,
+        DATE_FORMAT(
+        oc.`created_time`,
+        '%Y-%m-%d %H:%i:%S'
+        ) createdTimeStr,
+        oc.`entrust_no` entrustNo,
+        '' unifiedNumber,
+        oc.`updated_time` updatedTimeStr,
+        (SELECT lt.description FROM
+        logistics_track lt
+        WHERE lt.order_id = oc.`id`
+        ORDER BY lt.created_time desc
+        LIMIT 1) remarks,
+        '' yunCustomsNo,
+        oi.`biz_code` bizCode,
+        oi.`class_code` classCode,
+        (select pc.`name` from product_classify pc where pc.f_id = '0' and pc.id_code = oi.class_code) classCodeDesc,
+        oi.`id` mainOrderId,
+        (CASE  WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
+        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
+        ELSE FALSE
+        END) isCost,
+        oi.`need_input_cost` needInputCost,
+        (select ot.car_weigh_num from order_transport ot where ot.main_order_no = oi.order_no) carWeighNum
         FROM
-          order_customs oc,
-          order_info oi
+        order_customs oc,
+        order_info oi
         WHERE oc.`main_order_no` = oi.`order_no`
         and oi.`status` = 1
         <if test="form.cmd == 'confirmOrder'">
@@ -177,18 +279,12 @@
             AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = oc.order_no AND opc.`status` = '2' and opc.sub_type = 'bg')
             OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = oc.order_no AND orc.`status` = '2' and orc.sub_type = 'bg'))
         </if>
-    </select>
-    <select id="statisticsDataNumber"  resultType="com.jayud.customs.model.vo.StatisticsDataNumberVO" >
-    select
-        (SELECT count(1) FROM order_customs oc,order_info oi WHERE oc.`main_order_no` = oi.`order_no` and oi.`status` = 1 AND oc.`status` = 'C_0') bgjd,
-        (SELECT count(1) FROM order_customs oc,order_info oi WHERE oc.`main_order_no` = oi.`order_no` and oi.`status` = 1 AND oc.`status` = 'C_1') bgdd,
-        (SELECT count(1) FROM order_customs oc,order_info oi WHERE oc.`main_order_no` = oi.`order_no` and oi.`status` = 1 AND oc.`status` = 'C_2') bgfh,
-        (SELECT count(1) FROM order_customs oc,order_info oi WHERE oc.`main_order_no` = oi.`order_no` and oi.`status` = 1 AND oc.`status` = 'C_3') bgsb,
-        (SELECT count(1) FROM order_customs oc,order_info oi WHERE oc.`main_order_no` = oi.`order_no` and oi.`status` = 1 AND oc.`status` = 'C_4') bgfx,
-        (SELECT count(1) FROM order_customs oc,order_info oi WHERE oc.`main_order_no` = oi.`order_no` and oi.`status` = 1 AND oc.`status` = 'C_5_1') bhlb,
-        (SELECT count(1) FROM order_customs oc,order_info oi WHERE oc.`main_order_no` = oi.`order_no` and oi.`status` = 1 AND oc.`status` = 'C_5') tgqr,
-        (SELECT count(1) FROM order_customs oc,order_info oi WHERE oc.`main_order_no` = oi.`order_no` and oi.`status` = 1 AND oc.`status` = 'C_6_2') bgyc
-    from
-        dual
+
+        <if test="legalIds != null">
+            and oc.`legal_entity_id` in
+            <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                #{legalId}
+            </foreach>
+        </if>
     </select>
 </mapper>

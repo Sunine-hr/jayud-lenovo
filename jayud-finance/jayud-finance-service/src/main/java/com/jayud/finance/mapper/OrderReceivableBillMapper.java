@@ -121,4 +121,23 @@ public interface OrderReceivableBillMapper extends BaseMapper<OrderReceivableBil
      * @return
      */
     String getWarehouseAddress(@Param("orderNo") String orderNo);
+
+
+
+
+    /**
+     * 主订单应收出账单分页查询
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<OrderReceiveBillVO> findReceiveBillByPage(Page<OrderReceiveBillVO> page, @Param("form")QueryReceiveBillForm form, @Param("legalIds")List<Long> legalIds);
+
+    /**
+     * 子订单应收出账单分页查询
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<OrderReceiveBillVO> findReceiveSubBillByPage(Page<OrderReceiveBillVO> page, @Param("form")QueryReceiveBillForm form, @Param("legalIds")List<Long> legalIds);
 }

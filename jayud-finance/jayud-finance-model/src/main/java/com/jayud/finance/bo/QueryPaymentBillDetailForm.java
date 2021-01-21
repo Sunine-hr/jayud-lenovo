@@ -4,6 +4,7 @@ package com.jayud.finance.bo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
 /**
@@ -43,5 +44,9 @@ public class QueryPaymentBillDetailForm extends BasePageForm {
             "|statement_audit|zgys_statement_audit|bg_statement_audit|ky_statement_audit" +
             "|cw_statement)", message = "只允许填写特定值")
     private String cmd;
+
+    @ApiModelProperty(value = "当前登录用户名",required = true)
+    @NotEmpty(message = "legalName is required")
+    private String loginUserName;
 
 }

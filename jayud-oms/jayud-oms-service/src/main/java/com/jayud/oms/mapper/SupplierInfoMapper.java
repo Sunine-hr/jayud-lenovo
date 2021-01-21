@@ -10,6 +10,8 @@ import com.jayud.oms.model.vo.SupplierInfoVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * <p>
  * 供应商信息 Mapper 接口
@@ -24,4 +26,6 @@ public interface SupplierInfoMapper extends BaseMapper<SupplierInfo> {
     IPage<SupplierInfoVO> findSupplierInfoByPage(Page page, @Param(value = "form") QuerySupplierInfoForm form);
 
     IPage<SupplierInfoVO> findAuditSupplierInfoByPage(Page page, @Param(value = "form") QueryAuditSupplierInfoForm form);
+
+    IPage<SupplierInfoVO> findSupplierInfoByPage(Page page, @Param(value = "form") QuerySupplierInfoForm form,@Param("legalIds") List<Long> legalIds);
 }

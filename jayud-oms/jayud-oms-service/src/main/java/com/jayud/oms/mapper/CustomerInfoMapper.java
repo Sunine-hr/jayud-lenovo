@@ -88,4 +88,9 @@ public interface CustomerInfoMapper extends BaseMapper<CustomerInfo> {
      * @return
      */
     IPage<CustomerInfoVO> findCustomerInfoByPage(Page page, @Param("form") QueryCustomerInfoForm form, @Param("legalIds")List<Long> legalIds);
+
+    /**
+     * 分页查询客户基础数据
+     */
+    IPage<CustomerInfoVO> findCustomerBasicsInfoByPage(Page page, @Param("form") QueryCustomerInfoForm form,@Param("legalIds")List<Long> legalIds);
 }

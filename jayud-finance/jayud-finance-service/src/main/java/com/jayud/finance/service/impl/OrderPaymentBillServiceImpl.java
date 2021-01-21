@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
@@ -13,6 +14,7 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
+import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.mapper.OrderPaymentBillMapper;
 import com.jayud.finance.po.OrderBillCostTotal;
@@ -64,22 +66,35 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
     @Autowired
     ICurrencyRateService currencyRateService;
 
+    @Autowired
+    OauthClient oauthClient;
+
     @Override
     public IPage<OrderPaymentBillVO> findPaymentBillByPage(QueryPaymentBillForm form) {
+
+        //获取当前用户所属法人主体
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
+        List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();
+
         //定义分页参数
         Page<OrderPaymentBillVO> page = new Page(form.getPageNum(),form.getPageSize());
         IPage<OrderPaymentBillVO> pageInfo = null;
         if ("main".equals(form.getCmd())) {
-            pageInfo = baseMapper.findPaymentBillByPage(page, form);//法人主体/供应商/可汇总主订单费用的维度统计
+            pageInfo = baseMapper.findPaymentBillByPage(page, form, legalIds);//法人主体/供应商/可汇总主订单费用的维度统计
         } else if ("zgys".equals(form.getCmd()) || "bg".equals(form.getCmd())
                 || "ky".equals(form.getCmd())) {
-            pageInfo = baseMapper.findPaymentSubBillByPage(page, form);//法人主体/供应商/子订单费用的维度统计
+            pageInfo = baseMapper.findPaymentSubBillByPage(page, form, legalIds);//法人主体/供应商/子订单费用的维度统计
         }
         return pageInfo;
     }
 
     @Override
     public Map<String, Object> findPaymentBillNum(QueryPaymentBillNumForm form) {
+
+//        //获取当前用户所属法人主体
+//        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
+//        List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();
+
         List<OrderPaymentBillNumVO> resultList = baseMapper.findPaymentBillNum(form);
         Map<String, Object> result = new HashMap<>();
         result.put(CommonConstant.LIST, resultList);

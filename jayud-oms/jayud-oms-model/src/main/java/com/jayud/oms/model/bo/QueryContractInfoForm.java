@@ -21,4 +21,7 @@ public class QueryContractInfoForm extends BasePageForm{
     @NotEmpty(message = "type is required")
     private String type;
 
+    @ApiModelProperty(value = "当前登录用户")
+    private String loginUserName;
+
 }

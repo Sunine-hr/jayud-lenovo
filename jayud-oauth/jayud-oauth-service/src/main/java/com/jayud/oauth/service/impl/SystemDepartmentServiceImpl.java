@@ -59,12 +59,14 @@ public class SystemDepartmentServiceImpl extends ServiceImpl<SystemDepartmentMap
             department.setCreatedUser(loginUser);
             if(form.getFId() != null && !"".equals(form.getFId())){
                 department.setFId(form.getFId());
-            }else {
-                department.setFId(0L);
             }
             department.setName(form.getName());
         }
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("id",form.getFId());
+        Department department1 = baseMapper.selectOne(queryWrapper);
         department.setName(form.getName());
+        department.setLegalId(department1.getLegalId());
         saveOrUpdate(department);
     }
 
@@ -94,5 +96,6 @@ public class SystemDepartmentServiceImpl extends ServiceImpl<SystemDepartmentMap
         department.setName(form.getName());
         saveOrUpdate(department);
     }
+
 
 }

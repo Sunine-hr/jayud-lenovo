@@ -173,8 +173,8 @@ public class ExternalApiController {
         systemUser.setName(form.getName());
         systemUser.setUserName(form.getUserName());
         systemUser.setEnUserName(form.getEnUserName());
-//        systemUser.setSuperiorId(form.getDepartmentChargeId());
-//        systemUser.setCompanyId(form.getCompanyId());
+        systemUser.setSuperiorId(form.getDepartmentChargeId());
+        systemUser.setCompanyId(form.getCompanyId());
         systemUser.setId(form.getId());
         systemUser.setPassword("E10ADC3949BA59ABBE56E057F20F883E");//默认密码为:123456
         systemUser.setStatus(SystemUserStatusEnum.ON.getCode());//账户为启用状态
@@ -318,7 +318,7 @@ public class ExternalApiController {
     }
 
     @ApiOperation(value = "根据用户名获取用户所属法人主体")
-    @PostMapping(value = "/getLegalIdBySystemName")
+    @RequestMapping(value = "/api/getLegalIdBySystemName")
     public ApiResult getLegalIdBySystemName(@RequestParam("loginName") String loginName) {
         SystemUser systemUser = userService.getSystemUserBySystemName(loginName);
         List<Long> legalId = systemUserLegalService.getLegalId(systemUser.getId());

@@ -22,7 +22,7 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="SystemUserRoleRelation对象", description="")
+@ApiModel(value="SystemUserLegal对象", description="用户与法人主体关系")
 public class SystemUserLegal extends Model<SystemUserLegal> {
 
     private static final long serialVersionUID = 1L;
@@ -32,7 +32,7 @@ public class SystemUserLegal extends Model<SystemUserLegal> {
     private Long id;
 
     @ApiModelProperty(value = "用户ID")
-    private Long userId;
+    private Long systemUserId;
 
     @ApiModelProperty(value = "法人主体ID")
     private Long legalId;

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
@@ -12,6 +13,7 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
+import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.mapper.OrderReceivableBillMapper;
 import com.jayud.finance.po.OrderBillCostTotal;
@@ -58,16 +60,24 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
     @Autowired
     ICurrencyRateService currencyRateService;
 
+    @Autowired
+    OauthClient oauthClient;
+
     @Override
     public IPage<OrderReceiveBillVO> findReceiveBillByPage(QueryReceiveBillForm form) {
+
+        //获取当前用户所属法人主体
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
+        List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();
+
         //定义分页参数
         Page<OrderReceiveBillVO> page = new Page(form.getPageNum(), form.getPageSize());
         IPage<OrderReceiveBillVO> pageInfo = null;
         if ("main".equals(form.getCmd())) {
-            pageInfo = baseMapper.findReceiveBillByPage(page, form);//法人主体/结算单位/可汇总主订单费用的维度统计
+            pageInfo = baseMapper.findReceiveBillByPage(page, form,legalIds);//法人主体/结算单位/可汇总主订单费用的维度统计
         } else if ("zgys".equals(form.getCmd()) ||
                 "bg".equals(form.getCmd()) || "ky".equals(form.getCmd())) {
-            pageInfo = baseMapper.findReceiveSubBillByPage(page, form);//法人主体/结算单位/子订单费用的维度统计
+            pageInfo = baseMapper.findReceiveSubBillByPage(page, form,legalIds);//法人主体/结算单位/子订单费用的维度统计
         }
         return pageInfo;
     }

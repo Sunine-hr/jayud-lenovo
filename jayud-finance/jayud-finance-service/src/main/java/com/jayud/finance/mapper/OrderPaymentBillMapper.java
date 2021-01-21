@@ -115,4 +115,25 @@ public interface OrderPaymentBillMapper extends BaseMapper<OrderPaymentBill> {
      */
     List<Long> findSaveConfirmData(@Param("costIds") List<Long> costIds);
 
+
+
+
+    /**
+     * 主订单应付出账单分页查询
+     * @param page
+     * @param form
+     * @param legalIds
+     * @return
+     */
+    IPage<OrderPaymentBillVO> findPaymentBillByPage(Page<OrderPaymentBillVO> page,@Param("form") QueryPaymentBillForm form,@Param("legalIds") List<Long> legalIds);
+
+    /**
+     * 子订单应付出账单分页查询
+     * @param page
+     * @param form
+     * @param legalIds
+     * @return
+     */
+    IPage<OrderPaymentBillVO> findPaymentSubBillByPage(Page<OrderPaymentBillVO> page, @Param("form")QueryPaymentBillForm form,@Param("legalIds") List<Long> legalIds);
+
 }

@@ -17,10 +17,7 @@ import com.jayud.oauth.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -334,7 +331,7 @@ public class SystemUserController {
             systemUser.setStatus(SystemUserStatusEnum.OFF.getCode());
             systemUser.setCreatedUser(loginUser);
         }
-        userService.saveOrUpdateSystemUser(systemUser,form.getLegalId());
+        userService.saveOrUpdateSystemUser(systemUser);
         return CommonResult.success();
     }
 
@@ -571,8 +568,8 @@ public class SystemUserController {
         if (systemUser == null || systemUser.getDepartmentId() == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
-        List<Long> legalIds = systemUserLegalService.getLegalId(systemUser.getId());
-        result.put(CommonConstant.LEGAl_IDS,legalIds);
+        List<Long> legalEntityIds = systemUserLegalService.getLegalId(systemUser.getId());
+        result.put(CommonConstant.LEGAl_IDS,legalEntityIds);
         result.put(CommonConstant.WORK, systemUser.getWorkName());
         result.put(CommonConstant.DEPARTMENT_ID, systemUser.getDepartmentId());
         return CommonResult.success(result);
@@ -622,5 +619,13 @@ public class SystemUserController {
         return CommonResult.success();
     }
 
+    @ApiOperation(value = "修改主体简称，回写数据")
+    @PostMapping(value = "/updateCompany")
+    public CommonResult updateCompany(@RequestBody Map<String, Object> param){
+        Long departmentId = Long.valueOf(MapUtil.getStr(param, CommonConstant.ID));
+        List<DepartmentVO> department = departmentService.findDepartment(departmentId);
+        DepartmentVO departmentVO = department.get(0);
+        return CommonResult.success(departmentVO);
+    }
 }
 

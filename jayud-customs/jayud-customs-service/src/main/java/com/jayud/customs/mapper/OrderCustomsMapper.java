@@ -42,4 +42,15 @@ public interface OrderCustomsMapper extends BaseMapper<OrderCustoms> {
      * @return
      */
     StatisticsDataNumberVO statisticsDataNumber();
+
+
+
+    /**
+     * 分页查询
+     * @param page
+     * @param form
+     * @param legalIds
+     * @return
+     */
+    IPage<CustomsOrderInfoVO> findCustomsOrderByPage(Page<CustomsOrderInfoVO> page,@Param("form") QueryCustomsOrderInfoForm form,@Param("legalIds") List<Long> legalIds);
 }

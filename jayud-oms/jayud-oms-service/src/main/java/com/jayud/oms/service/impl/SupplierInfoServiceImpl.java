@@ -66,7 +66,12 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
     @Override
     public IPage<SupplierInfoVO> findSupplierInfoByPage(QuerySupplierInfoForm form) {
         Page<SupplierInfoVO> page = new Page<>(form.getPageNum(), form.getPageSize());
-        IPage<SupplierInfoVO> iPage = this.baseMapper.findSupplierInfoByPage(page, form);
+
+        //获取当前用户的法人主体
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
+        List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();
+
+        IPage<SupplierInfoVO> iPage = this.baseMapper.findSupplierInfoByPage(page, form,legalIds);
         for (SupplierInfoVO record : iPage.getRecords()) {
             if (StringUtils.isEmpty(record.getProductClassify())) {
                 continue;
@@ -235,8 +240,10 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         for (int i = 0; i < lisize; i++) {
             List<String> lo = listob.get(i);
 
-            if (com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(0))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(2))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(3))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(4))&&
-                    com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(5))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(6))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(7))) {//判断每行某个数据是否符合规范要求
+            if (com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(0))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(1))&&com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(2))&&
+                    com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(3))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(4))&&
+                    com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(5))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(6))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(7))&&
+            com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(8))&&com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(9))) {//判断每行某个数据是否符合规范要求
                 //符合要求，插入到数据库customerInfo表中
                 String s = saveSupplierInfoFromExcel(supplierInfo, lo,userName);
                 if(s.equals("添加成功")){
@@ -355,7 +362,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             String fileName = "有误数据表（"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+"）.xls";
             //处理乱码
             fileName = new String(fileName.getBytes("utf-8"),"iso-8859-1");
-//            response.setContentType("application/vnd.ms-excel");
+
             response.setHeader("Content-disposition", "attachment;filename="+fileName);
             response.setBufferSize(1024);
             //导出excel的操作

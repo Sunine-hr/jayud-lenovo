@@ -23,4 +23,8 @@ public class QueryPaymentBillNumForm{
     @Pattern(regexp = "(main|zgys|bg|ky)", message = "只允许填写main or zgys or bg or ky ")
     private String cmd;
 
+    @ApiModelProperty(value = "当前登录用户名",required = true)
+    @NotEmpty(message = "legalName is required")
+    private String loginUserName;
+
 }

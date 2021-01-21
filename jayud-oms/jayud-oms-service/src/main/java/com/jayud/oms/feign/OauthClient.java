@@ -130,8 +130,8 @@ public interface OauthClient {
     public ApiResult getLegalEntityByLegalName(@RequestParam("name") String name);
 
     /**
-     * 获取当前登录用户的用户名
+     * 根据用户名获取用户所属法人主体
      */
-    @RequestMapping(value = "/getLoginUser")
-    public ApiResult getLoginUser();
+    @RequestMapping(value = "/api/getLegalIdBySystemName")
+    public ApiResult getLegalIdBySystemName(@RequestParam("loginName") String loginName) ;
 }

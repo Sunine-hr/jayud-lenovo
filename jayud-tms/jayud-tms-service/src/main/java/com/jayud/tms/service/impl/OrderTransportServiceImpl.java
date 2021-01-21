@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
@@ -13,6 +14,7 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.tms.feign.FileClient;
+import com.jayud.tms.feign.OauthClient;
 import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.mapper.OrderTransportMapper;
 import com.jayud.tms.model.bo.*;
@@ -67,6 +69,9 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 
     @Autowired
     FileClient fileClient;
+
+    @Autowired
+    OauthClient oauthClient;
 
 
     @Override
@@ -202,7 +207,12 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         Page<OrderTransportVO> page = new Page(form.getPageNum(), form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.desc("ot.id"));
-        IPage<OrderTransportVO> pageInfo = baseMapper.findTransportOrderByPage(page, form);
+
+        //获取当前用户所属法人主体
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
+        List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();
+
+        IPage<OrderTransportVO> pageInfo = baseMapper.findTransportOrderByPage(page, form,legalIds);
         String prePath = fileClient.getBaseUrl().getData().toString();
         List<OrderTransportVO> pageList = pageInfo.getRecords();
         for (OrderTransportVO orderTransportVO : pageList) {

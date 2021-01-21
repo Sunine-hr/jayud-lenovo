@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.ApiResult;
+import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.QueryContractInfoForm;
 import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.ContractInfo;
@@ -31,13 +33,22 @@ public class ContractInfoServiceImpl extends ServiceImpl<ContractInfoMapper, Con
     @Autowired
     private IProductClassifyService productClassifyService;
 
+    @Autowired
+    private OauthClient oauthClient;
+
+
     @Override
     public IPage<ContractInfoVO> findContractInfoByPage(QueryContractInfoForm form) {
         //定义分页参数
         Page<ContractInfoVO> page = new Page(form.getPageNum(), form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.asc("ci.id"));
-        IPage<ContractInfoVO> pageInfo = baseMapper.findContractInfoByPage(page, form);
+
+        //获取当前用户所属法人主体
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
+        List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();
+
+        IPage<ContractInfoVO> pageInfo = baseMapper.findContractInfoByPage(page, form,legalIds);
         List<ContractInfoVO> contractInfoVOS = pageInfo.getRecords();
         List<ProductClassify> productBizs = productClassifyService.getEnableParentProductClassify(StatusEnum.ENABLE.getCode());//服务类型
         for (ContractInfoVO contractInfoVO : contractInfoVOS) {

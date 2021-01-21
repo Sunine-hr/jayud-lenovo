@@ -3,6 +3,7 @@ package com.jayud.oauth.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.oauth.model.bo.AddCompanyForm;
 import com.jayud.oauth.model.bo.AddDepartmentForm;
 import com.jayud.oauth.model.po.Department;
 import com.jayud.oauth.model.vo.DepartmentVO;
@@ -58,12 +59,14 @@ public class SystemDepartmentServiceImpl extends ServiceImpl<SystemDepartmentMap
             department.setCreatedUser(loginUser);
             if(form.getFId() != null && !"".equals(form.getFId())){
                 department.setFId(form.getFId());
-            }else {
-                department.setFId(0L);
             }
             department.setName(form.getName());
         }
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("id",form.getFId());
+        Department department1 = baseMapper.selectOne(queryWrapper);
         department.setName(form.getName());
+        department.setLegalId(department1.getLegalId());
         saveOrUpdate(department);
     }
 
@@ -74,5 +77,25 @@ public class SystemDepartmentServiceImpl extends ServiceImpl<SystemDepartmentMap
         Department department = baseMapper.selectOne(queryWrapper);
         return department;
     }
+
+    @Override
+    public void saveOrUpdateCompany(AddCompanyForm form) {
+        Department department = new Department();
+        String loginUser = userService.getLoginUser().getName();
+        if(form.getId() != null) {
+            department.setUpdatedUser(loginUser);
+            department.setId(form.getId());
+        }else {
+            department.setCreatedUser(loginUser);
+            if(form.getLegalId() != null && !"".equals(form.getLegalId())){
+                department.setLegalId(form.getLegalId());
+            }
+            department.setName(form.getName());
+        }
+        department.setFId(0l);
+        department.setName(form.getName());
+        saveOrUpdate(department);
+    }
+
 
 }

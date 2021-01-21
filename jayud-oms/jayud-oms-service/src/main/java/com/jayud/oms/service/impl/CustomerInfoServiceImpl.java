@@ -56,7 +56,11 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         Page<CustomerInfoVO> page = new Page(form.getPageNum(), form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.desc("ci.id"));
-        IPage<CustomerInfoVO> pageInfo = baseMapper.findCustomerInfoByPage(page, form);
+
+        //获取当前用户所属法人主体
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
+        List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();
+        IPage<CustomerInfoVO> pageInfo = baseMapper.findCustomerInfoByPage(page,form,legalIds);
         return pageInfo;
     }
 
@@ -94,7 +98,12 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
     @Override
     public IPage<CustomerInfoVO> findCustomerBasicsInfoByPage(QueryCustomerInfoForm form) {
         Page<CustomerInfo> page = new Page<>(form.getPageNum(), form.getPageSize());
-        return this.baseMapper.findCustomerBasicsInfoByPage(page, form);
+
+        //获取当前用户所属法人主体
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
+        List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();
+
+        return this.baseMapper.findCustomerBasicsInfoByPage(page, form,legalIds);
     }
 
     @Override

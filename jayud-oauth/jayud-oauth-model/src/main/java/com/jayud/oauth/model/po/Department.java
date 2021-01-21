@@ -40,4 +40,8 @@ public class Department extends Model<Department> {
     @ApiModelProperty(value = "修改人")
     private String updatedUser;
 
+    @ApiModelProperty(value = "主体id")
+    private Long legalId;
+
+
 }

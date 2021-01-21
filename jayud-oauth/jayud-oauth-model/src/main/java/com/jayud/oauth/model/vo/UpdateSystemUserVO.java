@@ -3,6 +3,10 @@ package com.jayud.oauth.model.vo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author bocong.zheng
@@ -46,11 +50,15 @@ public class UpdateSystemUserVO {
     @ApiModelProperty(value = "所属公司")
     private String companyName;
 
-    @ApiModelProperty(value = "所属上级id")
-    private Long superiorId;
+//    @ApiModelProperty(value = "所属上级id")
+//    private Long superiorId;
+//
+//    @ApiModelProperty(value = "所属上级")
+//    private String superiorName;
 
-    @ApiModelProperty(value = "所属上级")
-    private String superiorName;
+    @ApiModelProperty(value = "法人主体ID集合",required = true)
+    @NotNull(message = "legalEntityIds is required")
+    private List<Long> legalEntityIds = new ArrayList<>();
 
     //以下字段是为了给组织架构处编辑员工回显
     @ApiModelProperty(value = "联系电话")

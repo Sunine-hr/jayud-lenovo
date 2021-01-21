@@ -41,33 +41,33 @@
          tax_receipt, rate, buyer_id, status, create_user, create_time, update_time, update_user
     </sql>
 
-    <select id="findSupplierInfoByPage" parameterType="com.jayud.oms.model.bo.QuerySupplierInfoForm"
-            resultType="com.jayud.oms.model.vo.SupplierInfoVO">
-        select
-        s.id, s.supplier_code supplierCode,
-        s.product_classify_ids productClassify,
-        s.supplier_ch_name supplierChName,
-        s.supplier_en_name supplierEnName,
-        s.state_code stateCode, s.contacts, s.company_name companyName,
-        s.contact_number contactNumber,
-        s.contact_phone contactPhone, s.address, s.pid, s.pname, s.cid, s.cname,
-        s.zip_code zipCode, s.ext_setting_id extSettingId,
-        settlement_type settlementType, payment_day paymentDay,
-        tax_receipt tax_receipt, rate,
-        s.buyer_id buyerId,s.status,
-        s.create_user createUser, s.create_time createTime,
-        s.update_time updateTime,s.update_user updateUser
-        from
-        supplier_info s
-        <where>
-            <if test="form.supplierCode!=null and form.supplierCode!=''">
-                and s.supplier_code like concat ('%',#{form.supplierCode},'%')
-            </if>
-            <if test="form.supplierChName!=null and form.supplierChName!=''">
-                and s.supplier_ch_name like concat ('%',#{form.supplierChName},'%')
-            </if>
-        </where>
-    </select>
+<!--    <select id="findSupplierInfoByPage" parameterType="com.jayud.oms.model.bo.QuerySupplierInfoForm"-->
+<!--            resultType="com.jayud.oms.model.vo.SupplierInfoVO">-->
+<!--        select-->
+<!--        s.id, s.supplier_code supplierCode,-->
+<!--        s.product_classify_ids productClassify,-->
+<!--        s.supplier_ch_name supplierChName,-->
+<!--        s.supplier_en_name supplierEnName,-->
+<!--        s.state_code stateCode, s.contacts, s.company_name companyName,-->
+<!--        s.contact_number contactNumber,-->
+<!--        s.contact_phone contactPhone, s.address, s.pid, s.pname, s.cid, s.cname,-->
+<!--        s.zip_code zipCode, s.ext_setting_id extSettingId,-->
+<!--        settlement_type settlementType, payment_day paymentDay,-->
+<!--        tax_receipt tax_receipt, rate,-->
+<!--        s.buyer_id buyerId,s.status,-->
+<!--        s.create_user createUser, s.create_time createTime,-->
+<!--        s.update_time updateTime,s.update_user updateUser-->
+<!--        from-->
+<!--        supplier_info s-->
+<!--        <where>-->
+<!--            <if test="form.supplierCode!=null and form.supplierCode!=''">-->
+<!--                and s.supplier_code like concat ('%',#{form.supplierCode},'%')-->
+<!--            </if>-->
+<!--            <if test="form.supplierChName!=null and form.supplierChName!=''">-->
+<!--                and s.supplier_ch_name like concat ('%',#{form.supplierChName},'%')-->
+<!--            </if>-->
+<!--        </where>-->
+<!--    </select>-->
 
 
     <select id="findAuditSupplierInfoByPage" parameterType="com.jayud.oms.model.bo.QueryAuditSupplierInfoForm"
@@ -97,6 +97,34 @@
                 and s.supplier_ch_name like concat ('%',#{form.supplierChName},'%')
             </if>
             and a.audit_status = #{form.auditStatus}
+        </where>
+    </select>
+
+    <select id="findSupplierInfoByPage"
+            resultType="com.jayud.oms.model.vo.SupplierInfoVO">
+        select
+        s.id, s.supplier_code supplierCode,
+        s.product_classify_ids productClassify,
+        s.supplier_ch_name supplierChName,
+        s.supplier_en_name supplierEnName,
+        s.state_code stateCode, s.contacts, s.company_name companyName,
+        s.contact_number contactNumber,
+        s.contact_phone contactPhone, s.address, s.pid, s.pname, s.cid, s.cname,
+        s.zip_code zipCode, s.ext_setting_id extSettingId,
+        settlement_type settlementType, payment_day paymentDay,
+        tax_receipt tax_receipt, rate,
+        s.buyer_id buyerId,s.status,
+        s.create_user createUser, s.create_time createTime,
+        s.update_time updateTime,s.update_user updateUser
+        from
+        supplier_info s
+        <where>
+            <if test="form.supplierCode!=null and form.supplierCode!=''">
+                and s.supplier_code like concat ('%',#{form.supplierCode},'%')
+            </if>
+            <if test="form.supplierChName!=null and form.supplierChName!=''">
+                and s.supplier_ch_name like concat ('%',#{form.supplierChName},'%')
+            </if>
         </where>
     </select>
 

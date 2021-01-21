@@ -13,6 +13,8 @@ import com.jayud.oms.model.vo.OrderInfoVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * <p>
  * 主订单基础数据表 Mapper 接口
@@ -50,8 +52,9 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
     /**
      * 统计订单数据
      * @return
+     * @param legalIds
      */
-    OrderDataCountVO countOrderData();
+    OrderDataCountVO countOrderData(@Param("legalIds") List<Long> legalIds);
 
     /**
      * 二期优化1：通关前审核，通关前复核
@@ -67,4 +70,19 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      */
     InitGoCustomsAuditVO initGoCustomsAudit2(@Param("form") InitGoCustomsAuditForm form);
 
+    /**
+     * 分页查询订单
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<OrderInfoVO> findOrderInfoByPage(Page<OrderInfoVO> page, @Param("form")QueryOrderInfoForm form, @Param("legalIds")List<Long> legalIds);
+
+    /**
+     * 分页查询通关前审核
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<OrderInfoVO> findGoCustomsAuditByPage(Page<OrderInfoVO> page, @Param("form")QueryOrderInfoForm form,@Param("legalIds") List<Long> legalIds);
 }

@@ -77,7 +77,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         Page<OrderPaymentBillDetailVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.desc("opbd.make_time"));
-        IPage<OrderPaymentBillDetailVO> pageInfo = baseMapper.findPaymentBillDetailByPage(page, form);
+        IPage<OrderPaymentBillDetailVO> pageInfo = baseMapper.findPaymentBillDetailByPage(page, form) ;
         return pageInfo;
     }
 

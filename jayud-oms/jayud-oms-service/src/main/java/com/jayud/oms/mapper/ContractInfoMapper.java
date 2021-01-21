@@ -9,6 +9,8 @@ import com.jayud.oms.model.vo.ContractInfoVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 
 @Mapper
 public interface ContractInfoMapper extends BaseMapper<ContractInfo> {
@@ -27,4 +29,12 @@ public interface ContractInfoMapper extends BaseMapper<ContractInfo> {
      * @return
      */
     ContractInfoVO getContractInfoById(Long id);
+
+    /**
+     * 获取合同列表分页
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<ContractInfoVO> findContractInfoByPage(Page<ContractInfoVO> page,@Param("form") QueryContractInfoForm form,@Param("legalIds") List<Long> legalIds);
 }

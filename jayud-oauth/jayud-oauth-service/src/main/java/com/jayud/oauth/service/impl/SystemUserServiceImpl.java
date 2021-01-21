@@ -19,8 +19,7 @@ import com.jayud.oauth.model.bo.OprSystemUserForm;
 import com.jayud.oauth.model.bo.QueryAccountForm;
 import com.jayud.oauth.model.bo.QuerySystemUserForm;
 import com.jayud.oauth.model.enums.StatusEnum;
-import com.jayud.oauth.model.po.SystemUser;
-import com.jayud.oauth.model.po.SystemUserLoginLog;
+import com.jayud.oauth.model.po.*;
 import com.jayud.oauth.model.vo.*;
 import com.jayud.oauth.service.*;
 import io.netty.util.internal.StringUtil;
@@ -33,6 +32,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +75,13 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     @Autowired
     ISystemUserRoleRelationService roleRelationService;
+
+    @Autowired
+    ISystemUserLegalService systemUserLegalService;
+
+    @Autowired
+    ILegalEntityService legalEntityService;
+
 
     @Override
     public SystemUser selectByName(String name) {
@@ -152,12 +159,18 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         //定义排序规则
         page.addOrder(OrderItem.asc("su.id"));
         IPage<SystemUserVO> pageInfo = this.baseMapper.getPageList(page, form);
+        List<SystemUserVO> records = pageInfo.getRecords();
+        for (SystemUserVO record : records) {
+            System.out.println(record);
+        }
         return pageInfo;
     }
 
     @Override
     public UpdateSystemUserVO getSystemUser(Long id) {
         UpdateSystemUserVO updateSystemUserVO = baseMapper.getSystemUser(id);
+        List<Long> legalId = systemUserLegalService.getLegalId(id);
+        updateSystemUserVO.setLegalEntityIds(legalId);
         return updateSystemUserVO;
     }
 
@@ -189,6 +202,20 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             roleRelationService.removeRelationByUserId(userIds);
             //创建角色
             roleRelationService.createRelation(form.getRoleId(), form.getId());
+
+            //删除之前绑定的法人主体
+            Long id = form.getId();
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("system_user_id",id);
+            systemUserLegalService.remove(queryWrapper);
+            //创建
+            List<Long> legalEntityIds = form.getLegalEntityIds();
+            for (Long legalEntityId : legalEntityIds) {
+                SystemUserLegal systemUserLegal = new SystemUserLegal();
+                systemUserLegal.setLegalId(legalEntityId);
+                systemUserLegal.setSystemUserId(id);
+                systemUserLegalService.save(systemUserLegal);
+            }
         } else if ("delete".equals(form.getCmd())) {
             SystemUser systemUser = ConvertUtil.convert(form, SystemUser.class);
             systemUser.setStatus(0);
@@ -261,6 +288,14 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             systemUser.setUpdatedTime(DateUtils.getNowTime());
         }
         saveOrUpdate(systemUser);
+        if(systemUser.getDepartmentId()!=null){
+            SystemUserLegal systemUserLegal = new SystemUserLegal();
+            systemUserLegal.setSystemUserId(systemUser.getId());
+            Long departmentId = systemUser.getDepartmentId();
+            Department department = departmentService.getById(departmentId);
+            systemUserLegal.setLegalId(department.getLegalId());
+            systemUserLegalService.saveOrUpdate(systemUserLegal);
+        }
     }
 
     @Override
@@ -310,15 +345,6 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
         return systemUser;
     }
-
-    @Override
-    public SystemUser getLoginUser(String loginName) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("name", loginName);
-        SystemUser systemUser = baseMapper.selectOne(queryWrapper);
-        return systemUser;
-    }
-
 
     /**
      * 添加登录记录

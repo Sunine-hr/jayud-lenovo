@@ -2,11 +2,9 @@ package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.common.ApiResult;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.OrderInfo;
 import com.jayud.oms.model.vo.*;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Map;
@@ -138,8 +136,9 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * 统计订单数据
      *
      * @return
+     * @param loginUserName
      */
-    OrderDataCountVO countOrderData();
+    OrderDataCountVO countOrderData(String loginUserName);
 
     /**
      * 根据客户名称获取订单信息

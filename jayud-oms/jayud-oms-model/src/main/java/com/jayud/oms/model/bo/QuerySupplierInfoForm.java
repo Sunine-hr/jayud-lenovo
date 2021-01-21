@@ -31,4 +31,7 @@ public class QuerySupplierInfoForm extends BasePageForm {
     @ApiModelProperty(value = "供应商名称(中)")
     private String supplierChName;
 
+    @ApiModelProperty(value = "当前登录用户")
+    private String loginUserName;
+
 }

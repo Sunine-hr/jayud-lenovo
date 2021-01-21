@@ -49,8 +49,12 @@ public class ExternalApiController {
 
     @Autowired
     ISystemUserRoleRelationService userRoleRelationService;
+
     @Autowired
     private ISystemCompanyService systemCompanyService;
+
+    @Autowired
+    ISystemUserLegalService systemUserLegalService;
 
     @ApiOperation(value = "获取所有部门")
     @RequestMapping(value = "/api/findDepartment")
@@ -314,10 +318,11 @@ public class ExternalApiController {
     }
 
     @ApiOperation(value = "根据用户名获取用户所属法人主体")
-    @PostMapping(value = "/getLegalIdBySystemName")
+    @RequestMapping(value = "/api/getLegalIdBySystemName")
     public ApiResult getLegalIdBySystemName(@RequestParam("loginName") String loginName) {
-        SystemUser systemUser = userService.getLoginUser(loginName);
-        return null;
+        SystemUser systemUser = userService.getSystemUserBySystemName(loginName);
+        List<Long> legalId = systemUserLegalService.getLegalId(systemUser.getId());
+        return ApiResult.ok(legalId);
     }
 
 }

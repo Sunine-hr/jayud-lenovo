@@ -21,9 +21,37 @@
         <result column="note" property="note"/>
         <result column="created_time" property="createdTime"/>
         <result column="created_user" property="createdUser"/>
-        <result column="created_time" property="createdTime"/>
         <result column="updated_time" property="updatedTime"/>
         <result column="updated_user" property="updatedUser"/>
+    </resultMap>
+
+    <resultMap id="BaseResultMap2" type="com.jayud.oauth.model.vo.SystemUserVO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="password" property="password"/>
+        <result column="userName" property="userName"/>
+        <result column="enUserName" property="enUserName"/>
+        <result column="phone" property="phone"/>
+        <result column="department_id" property="departmentId"/>
+        <result column="work_id" property="workId"/>
+        <result column="workName" property="workName"/>
+        <result column="roleId" property="roleId"/>
+        <result column="roleName" property="roleName"/>
+        <result column="company_id" property="companyId"/>
+        <result column="superior_id" property="superiorId"/>
+        <result column="superiorName" property="superiorName"/>
+        <result column="login_time" property="loginTime"/>
+        <result column="auditStatusDesc" property="auditStatusDesc"/>
+        <result column="status" property="status"/>
+        <result column="note" property="note"/>
+        <result column="createdTime" property="createdTime"/>
+        <result column="createdUser" property="createdUser"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="updated_user" property="updatedUser"/>
+        <collection property="legalEntities" ofType="com.jayud.oauth.model.po.LegalEntity">
+            <result column="lid" property="id"></result>
+            <result column="legalName" property="legalName"></result>
+        </collection>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -45,7 +73,7 @@
     </sql>
 
     <select id="getPageList" parameterType="com.jayud.oauth.model.bo.QuerySystemUserForm"
-            resultType="com.jayud.oauth.model.vo.QuerySystemUserVO">
+            resultMap="BaseResultMap2">
         SELECT
         su.id,
         su.name,
@@ -65,7 +93,7 @@
         END
         ) auditStatusDesc,
         sr.`name` roleName,
-        c.`company_name` companyName,
+--         c.`company_name` companyName,
         su.`created_time` createdTime,
         DATE_FORMAT(su.`created_time`,'%Y-%m-%d %H:%i:%S') strCreatedTime,
         su.`created_user` createdUser,
@@ -77,15 +105,21 @@
         su.`work_name` workName,
         sr.`id` roleId,
         su.note,
-        su.`audit_status` auditStatus
+        su.`audit_status` auditStatus,
+        le.`id` lid,
+        le.`legal_name` legalName
         FROM
         `system_user` su
         LEFT JOIN system_user_role_relation surr
         ON surr.`user_id` = su.`id`
         LEFT JOIN system_role sr
         ON sr.`id` = surr.`role_id`
-        LEFT JOIN company c
-        ON su.`company_id` = c.`id`
+--         LEFT JOIN company c
+--         ON su.`company_id` = c.`id`
+        LEFT JOIN system_user_legal sul
+        ON su.`id` = sul.`system_user_id`
+        LEFT JOIN legal_entity le
+        ON le.`id` = sul.`legal_id`
         LEFT JOIN department dt
         ON dt.`id` = su.`department_id`
         WHERE su.user_type = '1'
@@ -98,7 +132,7 @@
                 and su.`audit_status` = '1'
             </if>
             <if test="form.companyId != null and form.companyId !=''">
-                and su.company_id = #{form.companyId}
+                and le.`id` = #{form.companyId}
             </if>
             <if test="form.auditStatus != null and form.auditStatus != ''">
                 and su.audit_status = #{form.auditStatus}

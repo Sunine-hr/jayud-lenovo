@@ -5,6 +5,9 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 添加客户账号
@@ -33,6 +36,10 @@ public class AddCusAccountForm extends BasePageForm{
     @ApiModelProperty(value = "所属公司ID",required = true)
     @NotEmpty(message = "companyId is required")
     private Long companyId;
+
+    @ApiModelProperty(value = "法人主体ID集合",required = true)
+    @NotNull(message = "legalEntityIds is required")
+    private List<Long> legalEntityIds = new ArrayList<>();
 
     @ApiModelProperty(value = "所属上级ID",required = true)
     @NotEmpty(message = "departmentChargeId is required")

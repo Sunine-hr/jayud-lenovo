@@ -5,11 +5,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.customs.feign.FileClient;
+import com.jayud.customs.feign.OauthClient;
 import com.jayud.customs.feign.OmsClient;
 import com.jayud.customs.mapper.OrderCustomsMapper;
 import com.jayud.customs.model.bo.InputOrderCustomsForm;
@@ -45,6 +47,9 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
 
     @Autowired
     RedisUtils redisUtils;
+
+    @Autowired
+    OauthClient oauthClient;
 
     @Override
     public boolean isExistOrder(String orderNo) {
@@ -109,11 +114,16 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
 
     @Override
     public IPage<CustomsOrderInfoVO> findCustomsOrderByPage(QueryCustomsOrderInfoForm form) {
+
+        //获取当前用户所属法人主体
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
+        List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();
+
         //定义分页参数
         Page<CustomsOrderInfoVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.desc("oc.id"));
-        IPage<CustomsOrderInfoVO> pageInfo = baseMapper.findCustomsOrderByPage(page, form);
+        IPage<CustomsOrderInfoVO> pageInfo = baseMapper.findCustomsOrderByPage(page, form,legalIds);
         //处理附件
         List<CustomsOrderInfoVO> customsOrderInfoVOS = pageInfo.getRecords();
         String prePath = fileClient.getBaseUrl().getData().toString();

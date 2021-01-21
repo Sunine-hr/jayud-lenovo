@@ -1,7 +1,12 @@
 package com.jayud.oauth.model.vo;
 
+import com.jayud.oauth.model.po.LegalEntity;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author bocong.zheng
@@ -17,6 +22,9 @@ public class SystemUserVO {
 
     @ApiModelProperty(value = "密码")
     private String password;
+
+    @ApiModelProperty(value = "审核状态")
+    private String auditStatusDesc;
 
     @ApiModelProperty(value = "用户名")
     private String userName;
@@ -75,4 +83,46 @@ public class SystemUserVO {
     @ApiModelProperty(value = "登录错误")
     private Boolean isError;
 
+    @ApiModelProperty(value = "法人主体id集合")
+    private List<Long> legalEntityIds = new ArrayList<>();
+
+    @ApiModelProperty(value = "法人主体名称拼接字符串")
+    private String legalEntityIdStr;
+
+    @ApiModelProperty(value = "法人主体集合")
+    private List<LegalEntity> legalEntities;
+
+//    public List<Long> getLegalEntityIds() {
+//        if(!StringUtil.isNullOrEmpty(this.legalEntityIdStr)){
+//            String[] strs = this.legalEntityIdStr.split(",");
+//            for (String str : strs) {
+//                legalEntityIds.add(Long.valueOf(str));
+//            }
+//        }
+//        return legalEntityIds;
+//    }
+
+    public String getLegalEntityIdStr() {
+        legalEntityIdStr = "";
+        if(this.legalEntities!=null){
+            for (int i = 0; i < legalEntities.size(); i++) {
+                if(i==legalEntities.size()-1){
+                    legalEntityIdStr = legalEntityIdStr+legalEntities.get(i).getLegalName();
+                }else{
+                    legalEntityIdStr = legalEntityIdStr+legalEntities.get(i).getLegalName()+",";
+                }
+            }
+        }
+        return legalEntityIdStr;
+    }
+
+    public List<Long> getLegalEntityIds() {
+        legalEntityIds.clear();
+        if (this.legalEntities != null) {
+            for (LegalEntity legalEntity : legalEntities) {
+                legalEntityIds.add(legalEntity.getId());
+            }
+        }
+        return legalEntityIds;
+    }
 }

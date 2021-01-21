@@ -144,5 +144,4 @@ public interface ISystemUserService extends IService<SystemUser> {
      */
     SystemUser getSystemUserBySystemName(String name);
 
-    SystemUser getLoginUser(String loginName);
 }

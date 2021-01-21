@@ -118,6 +118,10 @@
         <if test="form.applyStatus != null and form.applyStatus !=''">
             and orbd.apply_status = #{form.applyStatus}
         </if>
+
+        <if test="form.loginUserName != null and form.loginUserName !=''">
+            and orbd.created_user = #{form.loginUserName}
+        </if>
     </select>
     <select id="findEditSBillByPage" parameterType="com.jayud.finance.bo.QueryEditBillForm" resultType="com.jayud.finance.vo.PaymentNotPaidBillVO" >
         SELECT

@@ -9,6 +9,7 @@ import com.jayud.oms.model.bo.QueryRelUnitInfoListForm;
 import com.jayud.oms.model.po.CustomerInfo;
 import com.jayud.oms.model.vo.CustAccountVO;
 import com.jayud.oms.model.vo.CustomerInfoVO;
+import com.jayud.oms.model.vo.InitComboxStrVO;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -107,4 +108,10 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
      * 校验客户代码唯一性
      */
     public boolean exitCode(Long customerId,String idCode);
+
+    /**
+     * 初始化审核通过客户
+     * @return
+     */
+    List<InitComboxStrVO> initApprovedCustomer();
 }

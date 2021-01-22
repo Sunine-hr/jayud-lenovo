@@ -99,6 +99,7 @@ public class OrderComboxController {
             InitComboxStrVO comboxStrVO = new InitComboxStrVO();
             comboxStrVO.setCode(customerInfo.getIdCode());
             comboxStrVO.setName(customerInfo.getName() + " (" + customerInfo.getIdCode() + ")");
+            comboxStrVO.setId(customerInfo.getId());
             comboxStrVOS.add(comboxStrVO);
         }
         resultMap.put(CommonConstant.CUSTOMERS, comboxStrVOS);
@@ -394,11 +395,17 @@ public class OrderComboxController {
 
     @ApiOperation(value = "服务单 下拉选项-服务类型")
     @PostMapping(value = "/initServiceType")
-    public CommonResult<List<ServiceTypeVO>> getEnableParentProductClassify(){
+    public CommonResult<List<ServiceTypeVO>> getEnableParentProductClassify() {
         List<ServiceType> list = this.serviceTypeService.getEnableParentServiceType(StatusEnum.ENABLE.getCode());
-        List<ServiceTypeVO> result=new ArrayList<>();
-        list.forEach(tmp-> result.add(ConvertUtil.convert(tmp,ServiceTypeVO.class)));
+        List<ServiceTypeVO> result = new ArrayList<>();
+        list.forEach(tmp -> result.add(ConvertUtil.convert(tmp, ServiceTypeVO.class)));
         return CommonResult.success(result);
+    }
+
+    @ApiOperation(value = "客户 下拉选项-审核通过客户")
+    @PostMapping(value = "/initApprovedCustomer")
+    public CommonResult<List<InitComboxStrVO>> initApprovedCustomer() {
+        return CommonResult.success(this.customerInfoService.initApprovedCustomer());
     }
 }
 

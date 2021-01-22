@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.ApiResult;
+import com.jayud.common.constant.SqlConstant;
 import com.jayud.oms.config.ImportExcelUtil;
 import com.jayud.oms.config.LoadExcelUtil;
 import com.jayud.oms.config.TypeUtils;
@@ -19,6 +20,7 @@ import com.jayud.oms.model.po.CustomerInfo;
 import com.jayud.oms.model.po.CustomerRelaLegal;
 import com.jayud.oms.model.vo.CustomerInfoVO;
 import com.jayud.oms.model.bo.QueryCusAccountForm;
+import com.jayud.oms.model.vo.InitComboxStrVO;
 import com.jayud.oms.service.ICustomerInfoService;
 import com.jayud.oms.model.vo.CustAccountVO;
 import com.jayud.oms.mapper.CustomerInfoMapper;
@@ -35,6 +37,7 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -59,8 +62,8 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
 
         //获取当前用户所属法人主体
         ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
-        List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();
-        IPage<CustomerInfoVO> pageInfo = baseMapper.findCustomerInfoByPage(page,form,legalIds);
+        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+        IPage<CustomerInfoVO> pageInfo = baseMapper.findCustomerInfoByPage(page, form, legalIds);
         return pageInfo;
     }
 
@@ -101,9 +104,9 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
 
         //获取当前用户所属法人主体
         ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
-        List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();
+        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
 
-        return this.baseMapper.findCustomerBasicsInfoByPage(page, form,legalIds);
+        return this.baseMapper.findCustomerBasicsInfoByPage(page, form, legalIds);
     }
 
     @Override
@@ -335,6 +338,23 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         condition.lambda().eq(CustomerInfo::getIdCode, idCode);
         condition.lambda().ne(CustomerInfo::getId, customerId);
         return this.count(condition) > 0;
+    }
+
+    @Override
+    public List<InitComboxStrVO> initApprovedCustomer() {
+        Map<String, Object> param = new HashMap<>();
+        param.put(SqlConstant.AUDIT_STATUS, CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());
+        List<CustomerInfo> allCustomerInfoList = customerInfoService.findCustomerInfoByCondition(param);
+        List<CustomerInfo> customerInfoList = allCustomerInfoList.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(CustomerInfo::getName))), ArrayList::new));
+        List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
+        for (CustomerInfo customerInfo : customerInfoList) {
+            InitComboxStrVO comboxStrVO = new InitComboxStrVO();
+            comboxStrVO.setCode(customerInfo.getIdCode());
+            comboxStrVO.setName(customerInfo.getName() + " (" + customerInfo.getIdCode() + ")");
+            comboxStrVO.setId(customerInfo.getId());
+            comboxStrVOS.add(comboxStrVO);
+        }
+        return comboxStrVOS;
     }
 
 }

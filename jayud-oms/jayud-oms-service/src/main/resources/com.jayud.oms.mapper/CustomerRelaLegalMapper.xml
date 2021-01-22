@@ -4,11 +4,11 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.CustomerRelaLegal">
-        <id column="id" property="id" />
-        <result column="customer_info_id" property="customerInfoId" />
-        <result column="legal_entity_id" property="legalEntityId" />
-        <result column="created_user" property="createdUser" />
-        <result column="created_time" property="createdTime" />
+        <id column="id" property="id"/>
+        <result column="customer_info_id" property="customerInfoId"/>
+        <result column="legal_entity_id" property="legalEntityId"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="created_time" property="createdTime"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -16,13 +16,16 @@
         id, customer_info_id, legal_entity_id, created_user, created_time
     </sql>
 
-    <select id="findLegalByCustomerId" parameterType="java.lang.Long" resultType="com.jayud.oms.model.vo.LegalEntityVO">
+    <select id="findLegalByCustomerId"  resultType="com.jayud.oms.model.vo.LegalEntityVO">
         SELECT
-            le.id,
-			le.legal_name legalName
+        le.id,
+        le.legal_name legalName
         FROM
-            customer_rela_legal crl
-            LEFT JOIN legal_entity le on le.id = crl.legal_entity_id
+        customer_rela_legal crl
+        LEFT JOIN legal_entity le on le.id = crl.legal_entity_id
         where crl.customer_info_id = #{id}
+        <if test="auditStatus!=null and auditStatus!=''">
+            and le.audit_status=#{auditStatus}
+        </if>
     </select>
 </mapper>

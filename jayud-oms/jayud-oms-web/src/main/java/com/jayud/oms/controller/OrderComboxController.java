@@ -13,9 +13,7 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.oms.feign.FreightAirClient;
 import com.jayud.oms.feign.OauthClient;
-import com.jayud.oms.model.enums.CustomerInfoStatusEnum;
-import com.jayud.oms.model.enums.RoleKeyEnum;
-import com.jayud.oms.model.enums.StatusEnum;
+import com.jayud.oms.model.enums.*;
 import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
@@ -216,7 +214,8 @@ public class OrderComboxController {
         resultMap.put("departmentId", customer.getDepartmentId());
 
         //查询法人主体
-        List<LegalEntityVO> legalEntityVOS = relaLegalService.findLegalByCustomerId(customer.getId());
+        List<LegalEntityVO> legalEntityVOS = relaLegalService.findLegalByCustomerId(customer.getId(),
+                LegalEntityAuditStatusEnum.SUCCESS.getCode());
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (LegalEntityVO legalEntityVO : legalEntityVOS) {
             InitComboxVO comboxVO = new InitComboxVO();
@@ -386,7 +385,7 @@ public class OrderComboxController {
     }
 
 
-    @ApiOperation(value = "二期优化3:新增客户列表 初始化法人主体")
+    @ApiOperation(value = "二期优化3:新增客户列表 初始化审核通过法人主体")
     @PostMapping(value = "/initLegalEntity")
     public CommonResult<List<InitComboxVO>> initLegalEntity() {
         List<InitComboxVO> initComboxVOS = oauthClient.findLegalEntity().getData();

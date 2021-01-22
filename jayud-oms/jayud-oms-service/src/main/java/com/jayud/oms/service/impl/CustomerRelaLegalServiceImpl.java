@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author chuanmei
@@ -27,7 +27,7 @@ public class CustomerRelaLegalServiceImpl extends ServiceImpl<CustomerRelaLegalM
     public Boolean saveCusRelLegal(AddCustomerInfoForm form) {
         //保存关系时先清空现有的
         QueryWrapper removeWrapper = new QueryWrapper();
-        removeWrapper.eq("customer_info_id",form.getId());
+        removeWrapper.eq("customer_info_id", form.getId());
         remove(removeWrapper);
 
         List<CustomerRelaLegal> customerRelaLegals = new ArrayList<>();
@@ -42,7 +42,7 @@ public class CustomerRelaLegalServiceImpl extends ServiceImpl<CustomerRelaLegalM
     }
 
     @Override
-    public List<LegalEntityVO> findLegalByCustomerId(Long id) {
-        return baseMapper.findLegalByCustomerId(id);
+    public List<LegalEntityVO> findLegalByCustomerId(Long id, String auditStatus) {
+        return baseMapper.findLegalByCustomerId(id, Long.valueOf(auditStatus));
     }
 }

@@ -22,7 +22,8 @@ public interface CustomerRelaLegalMapper extends BaseMapper<CustomerRelaLegal> {
     /**
      * 根据客户ID获取相关联的法人主体
      * @param id
+     * @param auditStatus
      * @return
      */
-    List<LegalEntityVO> findLegalByCustomerId(@Param("id") Long id);
+    List<LegalEntityVO> findLegalByCustomerId(@Param("id") Long id, Long auditStatus);
 }

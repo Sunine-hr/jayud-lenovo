@@ -27,8 +27,7 @@ public interface ICustomerRelaLegalService extends IService<CustomerRelaLegal> {
 
     /**
      * 根据客户ID获取相关联的法人主体
-     * @param id
      * @return
      */
-    List<LegalEntityVO> findLegalByCustomerId(Long id);
+    List<LegalEntityVO> findLegalByCustomerId(Long id, String auditStatus);
 }

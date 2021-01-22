@@ -144,9 +144,10 @@ public class AirOrderFormVO {
         for (GoodsVO goods : goodsList) {
             if (this.id.equals(goods.getBusinessId())
                     && BusinessTypeEnum.KY.getCode().equals(goods.getBusinessType())) {
-                sb.append(goods.getName()).append("+")
-                        .append(goods.getBulkCargoAmount()).append(goods.getBulkCargoUnit())
-                        .append("+").append("重量").append(goods.getTotalWeight()).append("KG")
+                sb.append(goods.getName())
+                        .append("/").append(goods.getPlateAmount() == null ? 0 : goods.getPlateAmount()).append(goods.getPlateUnit())
+                        .append("/").append(goods.getBulkCargoAmount()).append(goods.getBulkCargoUnit())
+                        .append("/").append("重量").append(goods.getTotalWeight()).append("KG")
                         .append(",");
             }
         }

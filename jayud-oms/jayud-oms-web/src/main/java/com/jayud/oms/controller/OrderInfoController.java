@@ -121,7 +121,7 @@ public class OrderInfoController {
                     OrderStatusEnum.CBG.getCode().equals(form.getOrderForm().getClassCode())) {
                 //报关订单参数校验
                 InputOrderCustomsForm inputOrderCustomsForm = form.getOrderCustomsForm();
-                inputOrderCustomsForm.checkCustomsInfoParam();
+                form.checkCustomsParam();
 //                if (inputOrderCustomsForm == null ||
 //                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getPortCode()) ||
 //                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getPortName()) ||

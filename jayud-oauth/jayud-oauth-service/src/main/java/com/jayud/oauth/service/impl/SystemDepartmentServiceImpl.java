@@ -82,14 +82,12 @@ public class SystemDepartmentServiceImpl extends ServiceImpl<SystemDepartmentMap
     public void saveOrUpdateCompany(AddCompanyForm form) {
         Department department = new Department();
         String loginUser = userService.getLoginUser().getName();
-        if(form.getId() != null) {
+        if(form.getId() != null && form.getId()!=-1l) {
             department.setUpdatedUser(loginUser);
             department.setId(form.getId());
         }else {
             department.setCreatedUser(loginUser);
-            if(form.getLegalId() != null && !"".equals(form.getLegalId())){
-                department.setLegalId(form.getLegalId());
-            }
+            department.setLegalId(form.getLegalId());
             department.setName(form.getName());
         }
         department.setFId(0l);

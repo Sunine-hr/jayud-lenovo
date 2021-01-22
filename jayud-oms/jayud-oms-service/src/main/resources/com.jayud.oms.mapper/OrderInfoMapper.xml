@@ -234,16 +234,30 @@
         <if test="form.beginCreateTimeStr != null and form.beginCreateTimeStr !=''">
             and temp.createdTimeStr <![CDATA[>=]]> #{form.beginCreateTimeStr}
         </if>
-        <if test="form.cmd == 'myOrder'">
-            and temp.createdUser = #{form.loginUserName}
-        </if>
 
-        <if test="legalIds != null">
-            and temp.`legal_entity_id` in
-            <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
-                #{legalId}
-            </foreach>
-        </if>
+        <choose>
+            <when test="form.cmd == 'myOrder'">
+                and temp.createdUser = #{form.loginUserName}
+            </when>
+            <otherwise>
+                <if test="legalIds != null">
+                    and temp.`legal_entity_id` in
+                    <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                        #{legalId}
+                    </foreach>
+                </if>
+            </otherwise>
+        </choose>
+
+<!--        <if test="form.cmd == 'myOrder'">-->
+<!--            and temp.createdUser = #{form.loginUserName}-->
+<!--        </if>-->
+<!--        <if test="legalIds != null">-->
+<!--            and temp.`legal_entity_id` in-->
+<!--            <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
+<!--                #{legalId}-->
+<!--            </foreach>-->
+<!--        </if>-->
     </select>
 
     <select id="findGoCustomsAuditByPage" parameterType="com.jayud.oms.model.bo.QueryOrderInfoForm" resultType="com.jayud.oms.model.vo.OrderInfoVO" >
@@ -355,12 +369,19 @@
             COUNT(1)
           FROM
             order_info o1 WHERE
-        <if test="legalIds != null">
-             o1.`legal_entity_id` in
-             <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
-                   #{legalId}
-             </foreach>
-        </if>
+        <choose>
+            <when test="form.cmd == 'myOrder'">
+                 o1.created_user = #{form.loginUserName}
+            </when>
+            <otherwise>
+                <if test="legalIds != null">
+                     o1.`legal_entity_id` in
+                    <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                        #{legalId}
+                    </foreach>
+                </if>
+            </otherwise>
+        </choose>
         ) AS allCount,
 
           (SELECT
@@ -368,12 +389,19 @@
           FROM
             order_info o2
           WHERE o2.status = '2'
-        <if test="legalIds != null">
-            and o2.`legal_entity_id` in
-            <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
-                #{legalId}
-            </foreach>
-        </if>
+        <choose>
+            <when test="form.cmd == 'myOrder'">
+                and o2.created_user = #{form.loginUserName}
+            </when>
+            <otherwise>
+                <if test="legalIds != null">
+                    and o2.`legal_entity_id` in
+                    <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                        #{legalId}
+                    </foreach>
+                </if>
+            </otherwise>
+        </choose>
         ) AS preSubmitCount,
 
           (SELECT
@@ -381,12 +409,19 @@
           FROM
             order_info o3
           WHERE o3.status = '4'
-        <if test="legalIds != null">
-            and o3.`legal_entity_id` in
-            <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
-                #{legalId}
-            </foreach>
-        </if>
+        <choose>
+            <when test="form.cmd == 'myOrder'">
+                and o3.created_user = #{form.loginUserName}
+            </when>
+            <otherwise>
+                <if test="legalIds != null">
+                    and o3.`legal_entity_id` in
+                    <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                        #{legalId}
+                    </foreach>
+                </if>
+            </otherwise>
+        </choose>
           ) AS dataNotAllCount,
 
            (SELECT
@@ -394,12 +429,19 @@
           FROM
             order_info o6
           WHERE o6.status = '6'
-        <if test="legalIds != null">
-            and o6.`legal_entity_id` in
-            <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
-                #{legalId}
-            </foreach>
-        </if>
+        <choose>
+            <when test="form.cmd == 'myOrder'">
+                and o6.created_user = #{form.loginUserName}
+            </when>
+            <otherwise>
+                <if test="legalIds != null">
+                    and o6.`legal_entity_id` in
+                    <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                        #{legalId}
+                    </foreach>
+                </if>
+            </otherwise>
+        </choose>
           ) AS cancelledCount,
 
            (SELECT
@@ -407,12 +449,19 @@
           FROM
             order_info o7
           WHERE o7.status = '7'
-        <if test="legalIds != null">
-            and o7.`legal_entity_id` in
-            <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
-                #{legalId}
-            </foreach>
-        </if>
+        <choose>
+            <when test="form.cmd == 'myOrder'">
+                and o7.created_user = #{form.loginUserName}
+            </when>
+            <otherwise>
+                <if test="legalIds != null">
+                    and o7.`legal_entity_id` in
+                    <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                        #{legalId}
+                    </foreach>
+                </if>
+            </otherwise>
+        </choose>
           ) AS pendingRejectedCount
         FROM
           DUAL

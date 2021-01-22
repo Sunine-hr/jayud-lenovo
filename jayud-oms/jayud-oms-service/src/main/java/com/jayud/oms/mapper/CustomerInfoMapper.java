@@ -93,4 +93,9 @@ public interface CustomerInfoMapper extends BaseMapper<CustomerInfo> {
      * 分页查询客户基础数据
      */
     IPage<CustomerInfoVO> findCustomerBasicsInfoByPage(Page page, @Param("form") QueryCustomerInfoForm form,@Param("legalIds")List<Long> legalIds);
+
+    /**
+     * 根据法人主体获取对应下的客户列表
+     */
+    List<CustomerInfo> findCustomerInfoByCondition(@Param("legalIds")List<Long> legalIds);
 }

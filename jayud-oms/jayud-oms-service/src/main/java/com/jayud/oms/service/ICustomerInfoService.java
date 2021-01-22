@@ -42,8 +42,9 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
      * 根据条件获取客户
      *
      * @return
+     * @param param
      */
-    List<CustomerInfo> findCustomerInfoByCondition(Map<String, Object> param);
+    List<CustomerInfo> findCustomerInfoByCondition(List<Long> param);
 
 
     /**

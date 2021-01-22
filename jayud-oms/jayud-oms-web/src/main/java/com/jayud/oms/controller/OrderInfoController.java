@@ -54,7 +54,7 @@ public class OrderInfoController {
     public CommonResult<Map<String, Object>> findOrderInfoByPage(@RequestBody QueryOrderInfoForm form) {
         IPage<OrderInfoVO> pageList = orderInfoService.findOrderInfoByPage(form);
         CommonPageResult<OrderInfoVO> pageVO = new CommonPageResult(pageList);
-        OrderDataCountVO orderDataCountVO = orderInfoService.countOrderData(form.getLoginUserName());
+        OrderDataCountVO orderDataCountVO = orderInfoService.countOrderData(form);
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put(CommonConstant.PAGE_LIST, pageVO);//分页数据
         resultMap.put(CommonConstant.ALL_COUNT, orderDataCountVO.getAllCount());//所有订单数量

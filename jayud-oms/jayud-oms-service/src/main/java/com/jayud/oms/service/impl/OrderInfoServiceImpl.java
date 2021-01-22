@@ -866,12 +866,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     @Override
-    public OrderDataCountVO countOrderData(String loginUserName) {
+    public OrderDataCountVO countOrderData(QueryOrderInfoForm form) {
 
-        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(loginUserName);
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
         List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();
 
-        return baseMapper.countOrderData(legalIds);
+        return baseMapper.countOrderData(form,legalIds);
     }
 
     @Override

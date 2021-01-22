@@ -384,7 +384,7 @@ public class CustomerInfoController {
     @ApiOperation(value = "供应商账号-新增-所属公司")
     @PostMapping(value = "/initCompany")
     public CommonResult<List<InitComboxVO>> initCompany() {
-        List<CustomerInfo> customerInfos = customerInfoService.findCustomerInfoByCondition(new HashMap<>());
+        List<CustomerInfo> customerInfos = customerInfoService.findCustomerInfoByCondition(new ArrayList<>());
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (CustomerInfo customerInfo : customerInfos) {
             InitComboxVO initComboxVO = new InitComboxVO();

@@ -4,6 +4,7 @@ package com.jayud.oms.controller;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
@@ -26,10 +27,7 @@ import com.jayud.oms.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -172,10 +170,11 @@ public class ContractInfoController {
 
     @ApiOperation(value = "合同管理-下拉框合并返回")
     @PostMapping(value = "/findComboxs3")
-    public CommonResult<Map<String, Object>> findComboxs3() {
+    public CommonResult<Map<String, Object>> findComboxs3(@RequestBody Map<String, Object> param) {
+        String loginUserName = MapUtil.getStr(param, "loginUserName");
         Map<String, Object> resultMap = new HashMap<>();
         //客户名称
-        resultMap.put("customers", initCustomer().getData());
+        resultMap.put("customers", initCustomer(loginUserName).getData());
         //供应商名称
         resultMap.put("suppliers", initSupplierInfo().getData());
         //服务类型
@@ -191,11 +190,14 @@ public class ContractInfoController {
      */
     @ApiOperation(value = "合同管理-下拉框-客户名称")
     @PostMapping(value = "/initCustomer")
-    public CommonResult<List<InitComboxVO>> initCustomer() {
-        Map<String, Object> param = new HashMap<String, Object>();
-        param.put("audit_status", CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());//有效的，审核通过的客户名称
-        param.put("status", "1");
-        List<CustomerInfo> customerInfos = customerInfoService.findCustomerInfoByCondition(param);
+    public CommonResult<List<InitComboxVO>> initCustomer(String loginUserName) {
+
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(loginUserName);
+        List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();
+//        Map<String, Object> param = new HashMap<String, Object>();
+//        param.put("audit_status", CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());//有效的，审核通过的客户名称
+//        param.put("status", "1");
+        List<CustomerInfo> customerInfos = customerInfoService.findCustomerInfoByCondition(legalIds);
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (CustomerInfo customerInfo : customerInfos) {
             InitComboxVO initComboxVO = new InitComboxVO();

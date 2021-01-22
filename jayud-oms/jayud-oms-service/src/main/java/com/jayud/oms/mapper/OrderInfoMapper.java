@@ -54,7 +54,7 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      * @return
      * @param legalIds
      */
-    OrderDataCountVO countOrderData(@Param("legalIds") List<Long> legalIds);
+    OrderDataCountVO countOrderData(@Param("form")QueryOrderInfoForm form,@Param("legalIds") List<Long> legalIds);
 
     /**
      * 二期优化1：通关前审核，通关前复核

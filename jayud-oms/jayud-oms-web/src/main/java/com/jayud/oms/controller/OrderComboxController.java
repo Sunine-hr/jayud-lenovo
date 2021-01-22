@@ -24,10 +24,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -85,12 +82,15 @@ public class OrderComboxController {
 
     @ApiOperation(value = "创建订单-客户,业务员,合同,业务所属部门,通关口岸")
     @PostMapping(value = "/initCombox1")
-    public CommonResult<Map<String, Object>> initCombox1() {
+    public CommonResult<Map<String, Object>> initCombox1(@RequestParam("loginUserName") String loginUserName) {
+
+        //获取当前用户所属法人主体
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(loginUserName);
+        List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();
+
         Map<String, Object> resultMap = new HashMap<>();
         //客户
-        Map<String, Object> param = new HashMap<>();
-        param.put(SqlConstant.AUDIT_STATUS, CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());
-        List<CustomerInfo> allCustomerInfoList = customerInfoService.findCustomerInfoByCondition(param);
+        List<CustomerInfo> allCustomerInfoList = customerInfoService.findCustomerInfoByCondition(legalIds);
         List<CustomerInfo> customerInfoList = allCustomerInfoList.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(CustomerInfo::getName))), ArrayList::new));
         List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
         for (CustomerInfo customerInfo : customerInfoList) {

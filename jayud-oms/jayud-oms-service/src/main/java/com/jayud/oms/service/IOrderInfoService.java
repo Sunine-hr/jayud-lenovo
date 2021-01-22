@@ -138,7 +138,7 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      * @param loginUserName
      */
-    OrderDataCountVO countOrderData(String loginUserName);
+    OrderDataCountVO countOrderData(QueryOrderInfoForm loginUserName);
 
     /**
      * 根据客户名称获取订单信息

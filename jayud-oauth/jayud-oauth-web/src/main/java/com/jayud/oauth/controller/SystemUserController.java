@@ -1,6 +1,7 @@
 package com.jayud.oauth.controller;
 
 import cn.hutool.core.map.MapUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
@@ -516,6 +517,8 @@ public class SystemUserController {
     @PostMapping(value = "/initUserAccountLegalEntity")
     public CommonResult<List<InitComboxVO>> initUserAccountLegalEntity() {
         List<InitComboxVO> initComboxs = new ArrayList<>();
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("audit_status","2");
         List<LegalEntity> legalEntities = legalEntityService.list();
         for (LegalEntity legalEntity : legalEntities) {
             InitComboxVO initComboxVO = new InitComboxVO();

@@ -337,4 +337,20 @@
             </if>
         </where>
     </select>
+
+    <select id="findCustomerInfoByCondition"
+            resultType="com.jayud.oms.model.po.CustomerInfo">
+        select
+        ci.id,name,id_code idCode,contact,phone,address,email,ci.created_time createdTimeStr
+        from customer_info ci LEFT JOIN `customer_rela_legal` crl ON ci.`id` = crl.`customer_info_id`
+        <where>
+            audit_status = 10 and status = '1'
+            <if test="legalIds != null">
+                and crl.`legal_entity_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
+            </if>
+        </where>
+    </select>
 </mapper>

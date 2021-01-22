@@ -1,8 +1,11 @@
 package com.jayud.oms.model.bo;
 
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.FileView;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
@@ -10,6 +13,7 @@ import java.util.List;
 
 
 @Data
+@Slf4j
 public class InputOrderCustomsForm {
 
     @ApiModelProperty(value = "主订单号,前台忽略")
@@ -81,10 +85,10 @@ public class InputOrderCustomsForm {
     @ApiModelProperty(value = "是否代垫税金1-是 0-否")
     private String isAgencyTax;
 
-    @ApiModelProperty(value = "接单法人",required = true)
+    @ApiModelProperty(value = "接单法人", required = true)
     private String legalName;
 
-    @ApiModelProperty(value = "接单法人ID",required = true)
+    @ApiModelProperty(value = "接单法人ID", required = true)
     private Long legalEntityId;
 
     @ApiModelProperty(value = "报关类型 CBG-纯报关 CKBG-出口报关,前台忽略")
@@ -101,4 +105,64 @@ public class InputOrderCustomsForm {
     private String subCustomsStatus;
 
 
+    public void checkCustomsInfoParam() {
+        String title = "报关:";
+        StringBuffer sb = new StringBuffer();
+        boolean isSuccess = true;
+        if (StringUtil.isNullOrEmpty(this.getPortCode())) {
+            sb.append("通关口岸code").append("参数不能为空").append(",");
+            isSuccess = false;
+        }
+        if (StringUtil.isNullOrEmpty(this.getPortName())) {
+            sb.append("通关口岸").append("参数不能为空").append(",");
+            isSuccess = false;
+        }
+        if (this.getGoodsType() == null) {
+            sb.append("货物流向").append("参数不能为空").append(",");
+            isSuccess = false;
+        }
+        if (StringUtil.isNullOrEmpty(this.getBizModel())) {
+            sb.append("业务模式").append("参数不能为空").append(",");
+            isSuccess = false;
+        }
+        if (StringUtil.isNullOrEmpty(this.getLegalName())) {
+            sb.append("接单法人").append("参数不能为空").append(",");
+            isSuccess = false;
+        }
+        if (this.getLegalEntityId() == null) {
+            sb.append("接单法人").append("参数不能为空").append(",");
+            isSuccess = false;
+        }
+        //只用中港才有六联单号
+        if ("1".equals(this.bizModel) && StringUtil.isNullOrEmpty(this.getEncode())) {//六联单号
+            sb.append("六联单号").append("参数不能为空").append(",");
+            isSuccess = false;
+        } else {
+            //六联单号必须为13位的纯数字
+            String encode = this.getEncode();
+            if (!(encode.matches("[0-9]{1,}") && encode.length() == 13)) {
+                sb.append("六联单号必须为13位的纯数字").append(",");
+                isSuccess = false;
+            }
+        }
+        if (this.getSubOrders() == null) {
+            sb.append("子订单").append("参数不能为空").append(",");
+            isSuccess = false;
+        } else {
+            //校验子订单数据
+            if (this.getSubOrders().size() == 0) {
+                sb.append("子订单数据为0条").append(",");
+                isSuccess = false;
+            }
+        }
+        if (isSuccess) {
+            String msg = title + sb.substring(0, sb.length() - 1);
+            log.warn(msg);
+            throw new JayudBizException(msg);
+        }
+        //校验报关子订单参数
+        for (InputSubOrderCustomsForm subOrderCustomsForm : subOrders) {
+            subOrderCustomsForm.checkSubOrderCustoms();
+        }
+    }
 }

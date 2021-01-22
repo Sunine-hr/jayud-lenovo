@@ -90,7 +90,6 @@ public class OrderInfoController {
         }
         //主订单参数校验
         InputMainOrderForm inputMainOrderForm = form.getOrderForm();
-        System.out.println(inputMainOrderForm.getClassCode());
         //待处理状态无法操作
         if (inputMainOrderForm.getOrderId() != null) {
             OrderInfo orderInfo = this.orderInfoService.getById(inputMainOrderForm.getOrderId());
@@ -122,22 +121,23 @@ public class OrderInfoController {
                     OrderStatusEnum.CBG.getCode().equals(form.getOrderForm().getClassCode())) {
                 //报关订单参数校验
                 InputOrderCustomsForm inputOrderCustomsForm = form.getOrderCustomsForm();
-                if (inputOrderCustomsForm == null ||
-                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getPortCode()) ||
-                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getPortName()) ||
-                        inputOrderCustomsForm.getGoodsType() == null ||
-                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getBizModel()) ||
-                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getLegalName()) ||
-                        inputOrderCustomsForm.getLegalEntityId() == null ||
-                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getEncode()) ||//六联单号
-                        inputOrderCustomsForm.getSubOrders() == null) {
-                    return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
-                }
-                //六联单号必须为13位的纯数字
-                String encode = inputOrderCustomsForm.getEncode();
-                if (!(encode.matches("[0-9]{1,}") && encode.length() == 13)) {
-                    return CommonResult.error(ResultEnum.ENCODE_PURE_NUMBERS);
-                }
+                inputOrderCustomsForm.checkCustomsInfoParam();
+//                if (inputOrderCustomsForm == null ||
+//                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getPortCode()) ||
+//                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getPortName()) ||
+//                        inputOrderCustomsForm.getGoodsType() == null ||
+//                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getBizModel()) ||
+//                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getLegalName()) ||
+//                        inputOrderCustomsForm.getLegalEntityId() == null ||
+//                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getEncode()) ||//六联单号
+//                        inputOrderCustomsForm.getSubOrders() == null) {
+//                    return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+//                }
+//                //六联单号必须为13位的纯数字
+//                String encode = inputOrderCustomsForm.getEncode();
+//                if (!(encode.matches("[0-9]{1,}") && encode.length() == 13)) {
+//                    return CommonResult.error(ResultEnum.ENCODE_PURE_NUMBERS);
+//                }
                 //附件处理
                 inputOrderCustomsForm.setCntrPic(StringUtils.getFileStr(inputOrderCustomsForm.getCntrPics()));
                 inputOrderCustomsForm.setCntrPicName(StringUtils.getFileNameStr(inputOrderCustomsForm.getCntrPics()));
@@ -148,18 +148,18 @@ public class OrderInfoController {
                 inputOrderCustomsForm.setSeaTransportPic(StringUtils.getFileStr(inputOrderCustomsForm.getAirTransportPics()));
                 inputOrderCustomsForm.setSeaTransPicName(StringUtils.getFileNameStr(inputOrderCustomsForm.getAirTransportPics()));
                 //报关订单中的子订单
-                List<InputSubOrderCustomsForm> subOrders = inputOrderCustomsForm.getSubOrders();
-                if (subOrders.size() == 0) {
-                    return CommonResult.error(ResultEnum.PARAM_ERROR);
-                }
-                for (InputSubOrderCustomsForm subOrderCustomsForm : subOrders) {
-                    if (StringUtil.isNullOrEmpty(subOrderCustomsForm.getOrderNo())
-                            || StringUtil.isNullOrEmpty(subOrderCustomsForm.getTitle())
-                            || StringUtil.isNullOrEmpty(subOrderCustomsForm.getUnitCode())
-                            || StringUtil.isNullOrEmpty(subOrderCustomsForm.getIsTitle())) {
-                        return CommonResult.error(ResultEnum.PARAM_ERROR);
-                    }
-                }
+//                List<InputSubOrderCustomsForm> subOrders = inputOrderCustomsForm.getSubOrders();
+//                if (subOrders.size() == 0) {
+//                    return CommonResult.error(ResultEnum.PARAM_ERROR);
+//                }
+//                for (InputSubOrderCustomsForm subOrderCustomsForm : subOrders) {
+//                    if (StringUtil.isNullOrEmpty(subOrderCustomsForm.getOrderNo())
+//                            || StringUtil.isNullOrEmpty(subOrderCustomsForm.getTitle())
+//                            || StringUtil.isNullOrEmpty(subOrderCustomsForm.getUnitCode())
+//                            || StringUtil.isNullOrEmpty(subOrderCustomsForm.getIsTitle())) {
+//                        return CommonResult.error(ResultEnum.PARAM_ERROR);
+//                    }
+//                }
             }
             //中港订单参数校验
             if (OrderStatusEnum.ZGYS.getCode().equals(inputMainOrderForm.getClassCode())) {
@@ -211,7 +211,7 @@ public class OrderInfoController {
                 }
             }
             //服务单参数校验
-            if(OrderStatusEnum.FWD.getCode().equals(inputMainOrderForm.getClassCode())){
+            if (OrderStatusEnum.FWD.getCode().equals(inputMainOrderForm.getClassCode())) {
                 InputOrderServiceForm orderServiceForm = form.getOrderServiceForm();
                 if (orderServiceForm.getType() == null) {
                     return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());

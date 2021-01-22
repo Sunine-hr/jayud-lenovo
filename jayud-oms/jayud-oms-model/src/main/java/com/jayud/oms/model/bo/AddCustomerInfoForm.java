@@ -93,4 +93,9 @@ public class AddCustomerInfoForm {
     @ApiModelProperty(value = "当前登录用户,前台传",required = true)
     private String loginUserName;
 
+
+    @ApiModelProperty(value = "依赖结算单位id集合")
+    @NotNull(message = "unitCodeIds is required")
+    private List<Long> unitCodeIds;
+
 }

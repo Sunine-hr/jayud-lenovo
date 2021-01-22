@@ -55,4 +55,14 @@ public class OrderTakeAdrServiceImpl extends ServiceImpl<OrderTakeAdrMapper, Ord
         return this.baseMapper.selectList(condition);
     }
 
+    @Override
+    public List<OrderTakeAdr> getOrderTakeAdrByOrderNos(List<String> orderNoList, Integer oprType) {
+        QueryWrapper<OrderTakeAdr> condition = new QueryWrapper<>();
+        condition.lambda().in(OrderTakeAdr::getOrderNo, orderNoList);
+        if (oprType != null) {
+            condition.lambda().eq(OrderTakeAdr::getOprType, oprType);
+        }
+        return this.baseMapper.selectList(condition);
+    }
+
 }

@@ -61,55 +61,55 @@ public class OrderCommonController {
     @PostMapping(value = "/saveOrUpdateCost")
     public CommonResult saveOrUpdateCost(@RequestBody InputCostForm form) {
         if (form == null || form.getMainOrderId() == null) {
-            return CommonResult.error(400,"参数不合法");
+            return CommonResult.error(400, "参数不合法");
         }
 
-        if("preSubmit_sub".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())){
+        if ("preSubmit_sub".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())) {
             if (form.getPaymentCostList() == null ||
                     form.getReceivableCostList() == null || form.getReceivableCostList().size() == 0 ||
                     form.getPaymentCostList().size() == 0) {
-                return CommonResult.error(400,"参数不合法");
+                return CommonResult.error(400, "参数不合法");
             }
         }
 
-        if("preSubmit_sub".equals(form.getCmd()) || "submit_sub".equals(form.getCmd())){
-            if(StringUtil.isNullOrEmpty(form.getOrderNo()) || StringUtil.isNullOrEmpty(form.getSubLegalName()) ||
-               StringUtil.isNullOrEmpty(form.getSubUnitCode())){
-                return CommonResult.error(400,"参数不合法");
+        if ("preSubmit_sub".equals(form.getCmd()) || "submit_sub".equals(form.getCmd())) {
+            if (StringUtil.isNullOrEmpty(form.getOrderNo()) || StringUtil.isNullOrEmpty(form.getSubLegalName()) ||
+                    StringUtil.isNullOrEmpty(form.getSubUnitCode())) {
+                return CommonResult.error(400, "参数不合法");
             }
         }
-        if("submit_main".equals(form.getCmd()) || "submit_sub".equals(form.getCmd())){
+        if ("submit_main".equals(form.getCmd()) || "submit_sub".equals(form.getCmd())) {
             List<InputPaymentCostForm> paymentCostForms = form.getPaymentCostList();
             List<InputReceivableCostForm> receivableCostForms = form.getReceivableCostList();
             for (InputPaymentCostForm paymentCost : paymentCostForms) {
-                if(StringUtil.isNullOrEmpty(paymentCost.getCustomerCode())
-                || StringUtil.isNullOrEmpty(paymentCost.getCostCode())
-                || paymentCost.getCostTypeId() == null || paymentCost.getCostGenreId() == null
-                || StringUtil.isNullOrEmpty(paymentCost.getUnit())
-                || paymentCost.getUnitPrice() == null || paymentCost.getNumber() == null
-                || StringUtil.isNullOrEmpty(paymentCost.getCurrencyCode())
-                || paymentCost.getAmount() == null || paymentCost.getExchangeRate() == null
-                || paymentCost.getChangeAmount() == null){
-                    return CommonResult.error(400,"参数不合法");
+                if (StringUtil.isNullOrEmpty(paymentCost.getCustomerCode())
+                        || StringUtil.isNullOrEmpty(paymentCost.getCostCode())
+                        || paymentCost.getCostTypeId() == null || paymentCost.getCostGenreId() == null
+                        || StringUtil.isNullOrEmpty(paymentCost.getUnit())
+                        || paymentCost.getUnitPrice() == null || paymentCost.getNumber() == null
+                        || StringUtil.isNullOrEmpty(paymentCost.getCurrencyCode())
+                        || paymentCost.getAmount() == null || paymentCost.getExchangeRate() == null
+                        || paymentCost.getChangeAmount() == null) {
+                    return CommonResult.error(400, "参数不合法");
                 }
             }
             for (InputReceivableCostForm receivableCost : receivableCostForms) {
-                if(StringUtil.isNullOrEmpty(receivableCost.getCustomerCode())
+                if (StringUtil.isNullOrEmpty(receivableCost.getCustomerCode())
                         || StringUtil.isNullOrEmpty(receivableCost.getCostCode())
                         || receivableCost.getCostTypeId() == null || receivableCost.getCostGenreId() == null
                         || StringUtil.isNullOrEmpty(receivableCost.getUnit())
                         || receivableCost.getUnitPrice() == null || receivableCost.getNumber() == null
                         || StringUtil.isNullOrEmpty(receivableCost.getCurrencyCode())
                         || receivableCost.getAmount() == null || receivableCost.getExchangeRate() == null
-                        || receivableCost.getChangeAmount() == null){
-                    return CommonResult.error(400,"参数不合法");
+                        || receivableCost.getChangeAmount() == null) {
+                    return CommonResult.error(400, "参数不合法");
                 }
             }
         }
         //1.需求为，提交审核按钮跟在每一条记录后面 2.暂存是保存所有未提交审核的数据  3.提交审核的数据不可编辑和删除
         boolean result = orderInfoService.saveOrUpdateCost(form);
-        if(!result){
-            return CommonResult.error(400,"调用失败");
+        if (!result) {
+            return CommonResult.error(400, "调用失败");
         }
         return CommonResult.success();
     }
@@ -117,41 +117,56 @@ public class OrderCommonController {
     @ApiOperation(value = "费用详情")
     @PostMapping(value = "/getCostDetail")
     public CommonResult<InputCostVO> getCostDetail(@RequestBody @Valid GetCostDetailForm form) {
-        if(OrderOprCmdEnum.SUB_COST.getCode().equals(form.getCmd()) || OrderOprCmdEnum.SUB_COST_AUDIT.getCode().equals(form.getCmd())){
-            if(StringUtil.isNullOrEmpty(form.getSubOrderNo())){
-                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+        if (OrderOprCmdEnum.SUB_COST.getCode().equals(form.getCmd()) || OrderOprCmdEnum.SUB_COST_AUDIT.getCode().equals(form.getCmd())) {
+            if (StringUtil.isNullOrEmpty(form.getSubOrderNo())) {
+                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }
         }
         InputCostVO inputCostVO = orderInfoService.getCostDetail(form);
         return CommonResult.success(inputCostVO);
     }
 
+    @ApiOperation(value = "获取费用详情子订单信息")
+    @PostMapping(value = "/getCostDetailSubOrderInfo")
+    public CommonResult<Map<String, Object>> subOrderFeeDetails(Map<String, Object> map) {
+        Map<String, Object> result = new HashMap<>();
+        String mainOrderNo = MapUtil.getStr(map, "mainOrderNo");
+        if (mainOrderNo == null) {
+            mainOrderNo = MapUtil.getStr(map, "orderNo");
+        }
+//
+        result.put("mainOrderNo", mainOrderNo);
+        result.put("subOrderNo", MapUtil.getStr(map, "orderNp"));
+        result.put("goodsInfo", MapUtil.getStr(map, "goodsInfo"));
+        result.put("vehicleSize", MapUtil.getStr(map, "vehicleSize"));
+        return CommonResult.success(result);
+    }
 
 
     @ApiOperation(value = "费用审核")
     @PostMapping(value = "/auditCost")
     public CommonResult auditCost(@RequestBody AuditCostForm form) {
-        if(form.getStatus() == null || "".equals(form.getStatus()) || !("3".equals(form.getStatus()) ||
+        if (form.getStatus() == null || "".equals(form.getStatus()) || !("3".equals(form.getStatus()) ||
                 "0".equals(form.getStatus())) || form.getPaymentCosts() == null ||
-           form.getReceivableCosts() == null ){
-            return CommonResult.error(400,"参数不合法");
+                form.getReceivableCosts() == null) {
+            return CommonResult.error(400, "参数不合法");
         }
-        if((form.getPaymentCosts().size() + form.getReceivableCosts().size()) == 0){
-            return CommonResult.error(400,"参数不合法");
+        if ((form.getPaymentCosts().size() + form.getReceivableCosts().size()) == 0) {
+            return CommonResult.error(400, "参数不合法");
         }
-        for(OrderPaymentCost paymentCost : form.getPaymentCosts()){
-            if(paymentCost.getId() == null || "".equals(paymentCost.getId())){
-                return CommonResult.error(400,"参数不合法");
+        for (OrderPaymentCost paymentCost : form.getPaymentCosts()) {
+            if (paymentCost.getId() == null || "".equals(paymentCost.getId())) {
+                return CommonResult.error(400, "参数不合法");
             }
         }
-        for(OrderReceivableCost receivableCost : form.getReceivableCosts()){
-            if(receivableCost.getId() == null || "".equals(receivableCost.getId())){
-                return CommonResult.error(400,"参数不合法");
+        for (OrderReceivableCost receivableCost : form.getReceivableCosts()) {
+            if (receivableCost.getId() == null || "".equals(receivableCost.getId())) {
+                return CommonResult.error(400, "参数不合法");
             }
         }
         boolean result = orderInfoService.auditCost(form);
-        if(!result){
-            return CommonResult.error(400,"调用失败");
+        if (!result) {
+            return CommonResult.error(400, "调用失败");
         }
         return CommonResult.success();
     }
@@ -166,8 +181,8 @@ public class OrderCommonController {
     @ApiOperation(value = "反馈状态确认")
     @PostMapping(value = "/confirmReplyStatus")
     public CommonResult confirmReplyStatus(@RequestBody LogisticsTrackForm form) {
-        if(form == null || form.getLogisticsTrackForms() == null || form.getLogisticsTrackForms().size() == 0){
-            return CommonResult.error(400,"参数不合法");
+        if (form == null || form.getLogisticsTrackForms() == null || form.getLogisticsTrackForms().size() == 0) {
+            return CommonResult.error(400, "参数不合法");
         }
         List<LogisticsTrack> logisticsTracks = new ArrayList<>();
         for (LogisticsTrackVO logisticsTrack : form.getLogisticsTrackForms()) {
@@ -179,14 +194,14 @@ public class OrderCommonController {
             track.setStatusName(logisticsTrack.getStatusName());
             track.setDescription(logisticsTrack.getDescription());
             track.setOperatorUser(logisticsTrack.getOperatorUser());
-            track.setOperatorTime(DateUtils.str2LocalDateTime(logisticsTrack.getOperatorTime(),DateUtils.DATE_TIME_PATTERN));
+            track.setOperatorTime(DateUtils.str2LocalDateTime(logisticsTrack.getOperatorTime(), DateUtils.DATE_TIME_PATTERN));
             //处理附件
             List<FileView> fileViews = logisticsTrack.getFileViewList();
             track.setStatusPic(StringUtils.getFileStr(fileViews));
             track.setStatusPicName(StringUtils.getFileNameStr(fileViews));
             logisticsTracks.add(track);
         }
-        if(logisticsTracks.size() > 0) {
+        if (logisticsTracks.size() > 0) {
             logisticsTrackService.saveOrUpdateBatch(logisticsTracks);
         }
         return CommonResult.success();
@@ -194,12 +209,12 @@ public class OrderCommonController {
 
     @ApiOperation(value = "创建订单界面获取业务类型 classCode=订单类型")
     @PostMapping(value = "/findCreateOrderClass")
-    public CommonResult findCreateOrderClass(@RequestBody Map<String,Object> param) {
+    public CommonResult findCreateOrderClass(@RequestBody Map<String, Object> param) {
         String prePath = fileClient.getBaseUrl().getData().toString();
-        String classCode = MapUtil.getStr(param,"classCode");
+        String classCode = MapUtil.getStr(param, "classCode");
         List<ProductClassify> productClassifys = productClassifyService.findProductClassify(new HashMap<>());
         List<ProductClassifyVO> productClassifyVOS = new ArrayList<>();
-        productClassifys.forEach(x ->{
+        productClassifys.forEach(x -> {
             ProductClassifyVO productClassifyVO = new ProductClassifyVO();
             productClassifyVO.setId(x.getId());
             productClassifyVO.setFId(x.getFId());
@@ -208,10 +223,10 @@ public class OrderCommonController {
             productClassifyVO.setIsOptional(x.getIsOptional());
             productClassifyVO.setObviousPic(prePath + x.getObviousPic());
             productClassifyVO.setVaguePic(prePath + x.getVaguePic());
-            if(x.getFId() == 0){
+            if (x.getFId() == 0) {
                 List<ProductClassifyVO> subObjects = new ArrayList<>();
-                productClassifys.forEach(v ->{
-                    if(v.getFId().equals(x.getId())){
+                productClassifys.forEach(v -> {
+                    if (v.getFId().equals(x.getId())) {
                         ProductClassifyVO subObject = new ProductClassifyVO();
                         subObject.setId(v.getId());
                         subObject.setFId(v.getFId());
@@ -219,7 +234,7 @@ public class OrderCommonController {
                         subObject.setName(v.getName());
                         //处理步骤描述
                         String desc = v.getDescription();
-                        if(desc != null){
+                        if (desc != null) {
                             String[] descs = desc.split(";");
                             subObject.setDescs(descs);
                         }
@@ -230,15 +245,15 @@ public class OrderCommonController {
                 productClassifyVOS.add(productClassifyVO);
             }
         });
-        if(classCode != null && !"".equals(classCode)){
+        if (classCode != null && !"".equals(classCode)) {
             List<ProductClassifyVO> finalProductClassify = new ArrayList<>();
             for (ProductClassifyVO productClass : productClassifyVOS) {
-                if(classCode.equals(productClass.getIdCode())){
+                if (classCode.equals(productClass.getIdCode())) {
                     finalProductClassify.add(productClass);
                 }
             }
             return CommonResult.success(finalProductClassify);
-        }else {
+        } else {
             return CommonResult.success(productClassifyVOS);
         }
     }
@@ -261,9 +276,9 @@ public class OrderCommonController {
         List<VehicleSizeInfoVO> tonCars = new ArrayList<>();
         List<VehicleSizeInfoVO> vehicleSizeInfoVOS = vehicleInfoService.findVehicleSize();
         for (VehicleSizeInfoVO obj : vehicleSizeInfoVOS) {
-            if(VehicleTypeEnum.CABINET_CAR.getCode() == obj.getVehicleType()){
+            if (VehicleTypeEnum.CABINET_CAR.getCode() == obj.getVehicleType()) {
                 cabinetCars.add(obj);
-            }else if(VehicleTypeEnum.TON_CAR.getCode() == obj.getVehicleType()){
+            } else if (VehicleTypeEnum.TON_CAR.getCode() == obj.getVehicleType()) {
                 tonCars.add(obj);
             }
         }

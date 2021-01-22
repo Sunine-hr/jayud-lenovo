@@ -1,7 +1,9 @@
 package com.jayud.tms.model.vo;
 
+import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.FileView;
+import com.jayud.tms.model.po.OrderTakeAdr;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -158,18 +160,21 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "创建时间")
     private String createdTimeStr;
 
+    @ApiModelProperty(value = "商品信息")
+    private String goodsInfo;
+
 
     public String getEntireAddress1() {
         String stateName1 = this.stateName1;
         String cityName1 = this.cityName1;
         String address1 = this.address1;
-        if(StringUtil.isNullOrEmpty(this.stateName1)){
+        if (StringUtil.isNullOrEmpty(this.stateName1)) {
             stateName1 = "";
         }
-        if(StringUtil.isNullOrEmpty(this.cityName1)){
+        if (StringUtil.isNullOrEmpty(this.cityName1)) {
             cityName1 = "";
         }
-        if(StringUtil.isNullOrEmpty(this.address1)){
+        if (StringUtil.isNullOrEmpty(this.address1)) {
             address1 = "";
         }
         return this.entireAddress1 = stateName1 + cityName1 + address1;
@@ -179,20 +184,38 @@ public class OrderTransportVO {
         String stateName2 = this.stateName2;
         String cityName2 = this.cityName2;
         String address2 = this.address2;
-        if(StringUtil.isNullOrEmpty(this.stateName2)){
+        if (StringUtil.isNullOrEmpty(this.stateName2)) {
             stateName2 = "";
         }
-        if(StringUtil.isNullOrEmpty(this.cityName2)){
+        if (StringUtil.isNullOrEmpty(this.cityName2)) {
             cityName2 = "";
         }
-        if(StringUtil.isNullOrEmpty(this.address2)){
+        if (StringUtil.isNullOrEmpty(this.address2)) {
             address2 = "";
         }
         return this.entireAddress2 = stateName2 + cityName2 + address2;
     }
 
+    /**
+     * 组装商品信息
+     */
+    public void assemblyGoodsInfo(List<OrderTakeAdr> orderTakeAdrs) {
+        StringBuilder sb = new StringBuilder();
+
+        for (OrderTakeAdr orderTakeAdr : orderTakeAdrs) {
+            if (this.orderNo.equals(orderTakeAdr.getOrderNo())) {
+                sb.append(orderTakeAdr.getGoodsDesc())
+                        .append("/").append(orderTakeAdr.getPlateAmount() == null ? 0 : orderTakeAdr.getPlateAmount()).append("板")
+                        .append("/").append(orderTakeAdr.getPieceAmount()).append("件")
+                        .append("/").append("重量").append(orderTakeAdr.getWeight()).append("KG")
+                        .append(",");
+            }
+        }
+        this.goodsInfo = sb.substring(0, sb.length() - 1);
+    }
+
     public String getStatusDesc() {
-       return OrderStatusEnum.getDesc(this.status);
+        return OrderStatusEnum.getDesc(this.status);
     }
 
 }

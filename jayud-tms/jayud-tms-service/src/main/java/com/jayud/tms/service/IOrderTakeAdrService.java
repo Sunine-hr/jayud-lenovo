@@ -42,4 +42,9 @@ public interface IOrderTakeAdrService extends IService<OrderTakeAdr> {
     List<OrderTakeAdr> getOrderTakeAdrByOrderNo(String orderNo,Integer oprType);
 
 
+    /**
+     * 批量获取提货/送货信息
+     */
+    List<OrderTakeAdr> getOrderTakeAdrByOrderNos(List<String> orderNoList,Integer oprType);
+
 }

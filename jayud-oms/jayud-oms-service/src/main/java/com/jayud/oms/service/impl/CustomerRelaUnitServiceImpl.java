@@ -1,6 +1,7 @@
 package com.jayud.oms.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.UserOperator;
 import com.jayud.oms.mapper.CustomerRelaUnitMapper;
 import com.jayud.oms.model.bo.ConfirmRelateUnitForm;
 import com.jayud.oms.model.bo.CustomerInfoForm;
@@ -13,7 +14,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author chuanmei
@@ -33,5 +34,18 @@ public class CustomerRelaUnitServiceImpl extends ServiceImpl<CustomerRelaUnitMap
             customerRelaUnitList.add(customerRelaUnit);
         }
         return saveBatch(customerRelaUnitList);
+    }
+
+    @Override
+    public void saveBatchRelaUnit(Long customerId, List<Long> unitCodeIds) {
+        List<CustomerRelaUnit> customerRelaUnitList = new ArrayList<>();
+        for (Long unitCodeId : unitCodeIds) {
+            CustomerRelaUnit customerRelaUnit = new CustomerRelaUnit();
+            customerRelaUnit.setCustomerInfoId(customerId);
+            customerRelaUnit.setUnitId(unitCodeId);
+            customerRelaUnit.setCreatedUser(UserOperator.getToken());
+            customerRelaUnitList.add(customerRelaUnit);
+        }
+        saveBatch(customerRelaUnitList);
     }
 }

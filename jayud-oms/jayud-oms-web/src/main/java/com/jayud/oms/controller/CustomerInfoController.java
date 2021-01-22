@@ -98,25 +98,27 @@ public class CustomerInfoController {
     @ApiOperation(value = "新增编辑客户")
     @PostMapping(value = "/saveOrUpdateCustomerInfo")
     public CommonResult saveOrUpdateCustomerInfo(@RequestBody @Valid AddCustomerInfoForm form) {
-        CustomerInfo customerInfo = ConvertUtil.convert(form, CustomerInfo.class);
-        //空字符串设置null
-        form.setIdCode(StringUtils.isEmpty(form.getIdCode()) ? null : form.getIdCode());
-        if (form.getId() != null) {
-            customerInfo.setUpdatedUser(form.getLoginUserName());
-            customerInfo.setUpdatedTime(DateUtils.getNowTime());
-        } else {
-            customerInfo.setCreatedUser(form.getLoginUserName());
-        }
         //校验客户代码的唯一性
-        List<CustomerInfoVO> oldCustomerInfos = customerInfoService.existCustomerInfo(form.getIdCode());
-        if ((form.getId() == null && oldCustomerInfos != null && oldCustomerInfos.size() > 0)
-                || (form.getId() != null && oldCustomerInfos != null && oldCustomerInfos.size() > 1)) {
-            return CommonResult.error(ResultEnum.CUSTOMER_CODE_EXIST);
+        if (!StringUtils.isEmpty(form.getIdCode())) {
+            List<CustomerInfoVO> oldCustomerInfos = customerInfoService.existCustomerInfo(form.getIdCode());
+            if ((form.getId() == null && oldCustomerInfos != null && oldCustomerInfos.size() > 0)
+                    || (form.getId() != null && oldCustomerInfos != null && oldCustomerInfos.size() > 1)) {
+                return CommonResult.error(ResultEnum.CUSTOMER_CODE_EXIST);
+            }
         }
-        customerInfo.setAuditStatus(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode());
-        customerInfoService.saveOrUpdate(customerInfo);//保存客户信息
-        form.setId(customerInfo.getId());
-        customerRelaLegalService.saveCusRelLegal(form);//保存客户和法人主体关系
+
+
+        CustomerInfo customerInfo = ConvertUtil.convert(form, CustomerInfo.class);
+//        //空字符串设置null
+//        form.setIdCode(StringUtils.isEmpty(form.getIdCode()) ? null : form.getIdCode());
+//        if (form.getId() != null) {
+//            customerInfo.setUpdatedUser(form.getLoginUserName());
+//            customerInfo.setUpdatedTime(DateUtils.getNowTime());
+//        } else {
+//            customerInfo.setCreatedUser(form.getLoginUserName());
+//        }
+        this.customerInfoService.saveOrUpdateCustomerInfo(form,customerInfo);
+
         return CommonResult.success();
     }
 
@@ -246,8 +248,8 @@ public class CustomerInfoController {
                     return CommonResult.error(ResultEnum.OPR_FAIL);
                 }
                 //TODO 判断是否存在客户代码
-                if (this.customerInfoService.exitCode(customerInfo.getId(),form.getIdCode())) {
-                    return CommonResult.error(400,"客户代码已存在");
+                if (this.customerInfoService.exitCode(customerInfo.getId(), form.getIdCode())) {
+                    return CommonResult.error(400, "客户代码已存在");
                 }
                 customerInfo.setIdCode(form.getIdCode());
                 customerInfo.setAuditStatus(CustomerInfoStatusEnum.ZJB_WAIT_AUDIT.getCode());

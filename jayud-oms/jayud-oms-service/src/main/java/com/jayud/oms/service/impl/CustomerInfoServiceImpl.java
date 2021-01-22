@@ -8,16 +8,20 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.ApiResult;
+import com.jayud.common.UserOperator;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.oms.config.ImportExcelUtil;
 import com.jayud.oms.config.LoadExcelUtil;
 import com.jayud.oms.config.TypeUtils;
 import com.jayud.oms.feign.OauthClient;
+import com.jayud.oms.model.bo.AddCustomerInfoForm;
 import com.jayud.oms.model.bo.QueryCustomerInfoForm;
 import com.jayud.oms.model.bo.QueryRelUnitInfoListForm;
 import com.jayud.oms.model.enums.CustomerInfoStatusEnum;
 import com.jayud.oms.model.po.CustomerInfo;
 import com.jayud.oms.model.po.CustomerRelaLegal;
+import com.jayud.oms.model.po.CustomerRelaUnit;
 import com.jayud.oms.model.vo.CustomerInfoVO;
 import com.jayud.oms.model.bo.QueryCusAccountForm;
 import com.jayud.oms.model.vo.InitComboxStrVO;
@@ -25,6 +29,7 @@ import com.jayud.oms.service.ICustomerInfoService;
 import com.jayud.oms.model.vo.CustAccountVO;
 import com.jayud.oms.mapper.CustomerInfoMapper;
 import com.jayud.oms.service.ICustomerRelaLegalService;
+import com.jayud.oms.service.ICustomerRelaUnitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +57,8 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
 
     @Autowired
     private ICustomerInfoService customerInfoService;
+    @Autowired
+    private ICustomerRelaUnitService customerRelaUnitService;
 
     @Override
     public IPage<CustomerInfoVO> findCustomerInfoByPage(QueryCustomerInfoForm form) {
@@ -355,6 +362,30 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
             comboxStrVOS.add(comboxStrVO);
         }
         return comboxStrVOS;
+    }
+
+
+    /**
+     * 保存/编辑客户信息
+     */
+    @Override
+    @Transactional
+    public void saveOrUpdateCustomerInfo(AddCustomerInfoForm form, CustomerInfo customerInfo) {
+        customerInfo.setIdCode(StringUtils.isEmpty(customerInfo.getIdCode()) ? null : customerInfo.getIdCode());
+        if (customerInfo.getId() != null) {
+            customerInfo.setUpdatedUser(UserOperator.getToken());
+            customerInfo.setUpdatedTime(DateUtils.getNowTime());
+        } else {
+            customerInfo.setCreatedUser(UserOperator.getToken())
+                    .setCreatedTime(DateUtils.getNowTime());
+        }
+        customerInfo.setAuditStatus(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode());
+        customerInfoService.saveOrUpdate(customerInfo);//保存客户信息
+        form.setId(customerInfo.getId());
+        //保存客户和法人主体关系
+        this.customerRelaLegalService.saveCusRelLegal(form);
+        //保存客户和结算单位关系
+        this.customerRelaUnitService.saveBatchRelaUnit(customerInfo.getId(), form.getUnitCodeIds());
     }
 
 }

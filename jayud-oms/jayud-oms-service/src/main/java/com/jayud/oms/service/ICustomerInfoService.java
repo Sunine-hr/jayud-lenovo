@@ -3,6 +3,7 @@ package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.oms.model.bo.AddCustomerInfoForm;
 import com.jayud.oms.model.bo.QueryCusAccountForm;
 import com.jayud.oms.model.bo.QueryCustomerInfoForm;
 import com.jayud.oms.model.bo.QueryRelUnitInfoListForm;
@@ -68,6 +69,7 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
 
     /**
      * 做客户代码和客户名称唯一性校验
+     *
      * @param idCode
      * @return
      */
@@ -75,6 +77,7 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
 
     /**
      * 根据客户ID获取结算单位
+     *
      * @param id
      * @return
      */
@@ -82,6 +85,7 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
 
     /**
      * 查询审核通过的关联客户,并且没有关联当前客户的
+     *
      * @param form
      * @return
      */
@@ -89,29 +93,34 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
 
     /**
      * 导入客户信息
+     *
      * @param file
      * @param response
      * @return
      */
-    String importCustomerInfoExcel(HttpServletResponse response, MultipartFile file,String userName) throws Exception;
+    String importCustomerInfoExcel(HttpServletResponse response, MultipartFile file, String userName) throws Exception;
 
     /**
      * 下载错误文件
+     *
      * @param response
      * @return
      */
-    void insExcel(HttpServletResponse response,String userName) throws Exception;
+    void insExcel(HttpServletResponse response, String userName) throws Exception;
 
     boolean checkMes(String userName);
 
     /**
      * 校验客户代码唯一性
      */
-    public boolean exitCode(Long customerId,String idCode);
+    public boolean exitCode(Long customerId, String idCode);
 
     /**
      * 初始化审核通过客户
+     *
      * @return
      */
     List<InitComboxStrVO> initApprovedCustomer();
+
+    void saveOrUpdateCustomerInfo(AddCustomerInfoForm form, CustomerInfo customerInfo);
 }

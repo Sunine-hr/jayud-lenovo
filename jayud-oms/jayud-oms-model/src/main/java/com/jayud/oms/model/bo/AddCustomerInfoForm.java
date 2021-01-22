@@ -95,7 +95,6 @@ public class AddCustomerInfoForm {
 
 
     @ApiModelProperty(value = "依赖结算单位id集合")
-    @NotNull(message = "unitCodeIds is required")
     private List<Long> unitCodeIds;
 
 }

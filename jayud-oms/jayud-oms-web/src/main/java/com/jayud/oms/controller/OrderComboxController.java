@@ -82,8 +82,8 @@ public class OrderComboxController {
 
     @ApiOperation(value = "创建订单-客户,业务员,合同,业务所属部门,通关口岸")
     @PostMapping(value = "/initCombox1")
-    public CommonResult<Map<String, Object>> initCombox1(@RequestParam("loginUserName") String loginUserName) {
-
+    public CommonResult<Map<String, Object>> initCombox1(@RequestBody Map<String, Object> param) {
+        String loginUserName = MapUtil.getStr(param, "loginUserName");
         //获取当前用户所属法人主体
         ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(loginUserName);
         List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();

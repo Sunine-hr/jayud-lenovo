@@ -6,17 +6,3 @@ jayud:
     server-addr: 172.18.239.242:8848
     config:
       namespace:
-
-spring:
-  redis:
-    host: 127.0.0.1
-    port: 6379
-    password: 'jayud@)@)'
-    timeout: 2000s
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://rm-wz9m40gpm90c230wo.mysql.rds.aliyuncs.com:3306/jayud_platform?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: jayuddb
-    password: jayud@)@)
-    configuration:
-      maximum-pool-size: 2

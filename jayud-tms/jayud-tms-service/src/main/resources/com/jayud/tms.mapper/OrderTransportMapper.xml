@@ -568,7 +568,7 @@
         WHERE
          (oi.`class_code` = 'ZGYS' or oi.class_code='KY')
         <if test="orderNo != null and orderNo != ''">
-            ot.order_no = #{orderNo}
+            and ot.order_no = #{orderNo}
         </if>
     </select>
 

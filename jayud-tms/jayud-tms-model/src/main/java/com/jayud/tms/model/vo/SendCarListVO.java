@@ -1,7 +1,10 @@
 package com.jayud.tms.model.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 /**
  * 派车单
@@ -25,7 +28,8 @@ public class SendCarListVO {
     private String enterWarehouseNo;
 
     @ApiModelProperty(value = "送货时间")
-    private String takeTimeStr;
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime takeTimeStr;
 
     @ApiModelProperty(value = "派送地址")
     private String address;

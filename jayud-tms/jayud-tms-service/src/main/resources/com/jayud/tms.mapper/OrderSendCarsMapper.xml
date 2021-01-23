@@ -91,7 +91,7 @@
 		ota1.enter_warehouse_no enterWarehouseNo,
         (select DATE_FORMAT(ota.take_time, '%Y-%m-%d' ) from order_take_adr ota where ota.opr_type = '1' and ota.order_no = ot.order_no limit 1) createTimeStr,
         di.`name`,
-        DATE_FORMAT(ota1.take_time, '%Y-%m-%d' ) takeTimeStr,
+        ota1.take_time takeTimeStr,
         CONCAT(ifnull(da.state_name,''),ifnull(da.city_name,''),da.address) address,
         ota1.piece_amount pieceAmount,
         ota1.weight,

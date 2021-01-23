@@ -266,10 +266,12 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             sendCarPdfVO.setDeliveryAddress(provinceName + cityName + address);
             sendCarPdfVO.setDeliveryPhone(orderSendCarsVO.getWarehouseNumber());
         } else if (takeGoodsInfo2.size() == 1) {
-            String provinceName = takeGoodsInfo2.get(0).getStateName() == null ? "" : takeGoodsInfo2.get(0).getStateName();
-            String cityName = takeGoodsInfo2.get(0).getCityName() == null ? "" : takeGoodsInfo2.get(0).getCityName();
-            String address = takeGoodsInfo2.get(0).getAddress() == null ? "" : takeGoodsInfo2.get(0).getAddress();
-            sendCarPdfVO.setDeliveryAddress(provinceName + cityName + address);
+            TakeGoodsInfoVO takeGoodsInfoVO = takeGoodsInfo2.get(0);
+            String provinceName = takeGoodsInfoVO.getStateName() == null ? "" : takeGoodsInfo2.get(0).getStateName();
+            String cityName = takeGoodsInfoVO.getCityName() == null ? "" : takeGoodsInfo2.get(0).getCityName();
+            String address = takeGoodsInfoVO.getAddress() == null ? "" : takeGoodsInfo2.get(0).getAddress();
+            sendCarPdfVO.setDeliveryAddress(provinceName + cityName + address + ";"
+                    + takeGoodsInfoVO.getContacts() + " " + takeGoodsInfoVO.getPhone());
             sendCarPdfVO.setDeliveryContacts(takeGoodsInfo2.get(0).getContacts());
             sendCarPdfVO.setDeliveryPhone(takeGoodsInfo2.get(0).getPhone());
         }

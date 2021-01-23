@@ -60,7 +60,7 @@ public class AirOrder extends Model<AirOrder> {
     @ApiModelProperty(value = "进出口类型(1：进口，2：出口)")
     private Integer impAndExpType;
 
-    @ApiModelProperty(value = "贸易方式(0:CIF,1:DUU,2:FOB,3:DDP)")
+    @ApiModelProperty(value = "贸易方式(0:CIF,1:DDU,2:FOB,3:DDP)")
     private Integer terms;
 
     @ApiModelProperty(value = "起运港代码")

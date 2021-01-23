@@ -13,7 +13,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public enum AirOrderTermsEnum {
     CIF(0, "CIF"),
-    DUU(1, "DUU"),
+    DDU(1, "DDU"),
     FOB(2, "FOB"),
     DDP(3, "DDP"),
     CFR(4, "CFR"),

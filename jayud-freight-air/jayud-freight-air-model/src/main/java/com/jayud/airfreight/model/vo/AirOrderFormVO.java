@@ -51,7 +51,7 @@ public class AirOrderFormVO {
     @ApiModelProperty(value = "进出口类型描述")
     private String impAndExpTypeDesc;
 
-    @ApiModelProperty(value = "业务类型(贸易方式0:CIF,1:DUU,2:FOB,3:DDP)")
+    @ApiModelProperty(value = "业务类型(贸易方式0:CIF,1:DDU,2:FOB,3:DDP)")
     private String terms;
 
     @ApiModelProperty(value = "状态(A_0待接单,A_1空运接单,A_2订舱,A_3订单入仓,A_4确认提单,A_5确认离港,A_6确认到港,A_7海外代理,A_8确认签收)")

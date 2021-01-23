@@ -53,7 +53,7 @@ public class InputAirOrderVO {
     @ApiModelProperty(value = "进出口类型")
     private String impAndExpTypeDesc;
 
-    @ApiModelProperty(value = "贸易方式(0:CIF,1:DUU,2:FOB,3:DDP)")
+    @ApiModelProperty(value = "贸易方式(0:CIF,1:DDU,2:FOB,3:DDP)")
     private Integer terms;
 
     @ApiModelProperty(value = "贸易方式描述")

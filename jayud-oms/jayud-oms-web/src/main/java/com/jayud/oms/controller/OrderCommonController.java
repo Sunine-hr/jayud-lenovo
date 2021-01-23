@@ -128,17 +128,21 @@ public class OrderCommonController {
 
     @ApiOperation(value = "获取费用详情子订单信息")
     @PostMapping(value = "/getCostDetailSubOrderInfo")
-    public CommonResult<Map<String, Object>> subOrderFeeDetails(Map<String, Object> map) {
+    public CommonResult<Map<String, Object>> subOrderFeeDetails(@RequestBody Map<String, Object> map) {
         Map<String, Object> result = new HashMap<>();
-        String mainOrderNo = MapUtil.getStr(map, "mainOrderNo");
+        String mainOrderNo = MapUtil.getStr(map, "mainOrderNo"); //获取子订单的主订单号
+        Boolean isMainOrder=false;
         if (mainOrderNo == null) {
+            isMainOrder=true;
             mainOrderNo = MapUtil.getStr(map, "orderNo");
         }
 //
         result.put("mainOrderNo", mainOrderNo);
-        result.put("subOrderNo", MapUtil.getStr(map, "orderNp"));
+        result.put("subOrderNo", MapUtil.getStr(map, "orderNo"));
         result.put("goodsInfo", MapUtil.getStr(map, "goodsInfo"));
         result.put("vehicleSize", MapUtil.getStr(map, "vehicleSize"));
+        result.put("customerName",MapUtil.getStr(map,"customerName"));
+        result.put("isMainOrder",isMainOrder);
         return CommonResult.success(result);
     }
 

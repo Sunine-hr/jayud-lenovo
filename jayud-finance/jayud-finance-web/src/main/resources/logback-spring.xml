@@ -87,4 +87,11 @@
     <!-- 级别依次为【从高到低】：FATAL > ERROR > WARN > INFO > DEBUG > TRACE  -->
     <logger name="com.jayud.finance" level="INFO"/>
     <logger name="org.springframework" level="INFO"/>
+
+
+    <logger name="com.alibaba.nacos.client">
+        <level value="ERROR" />
+    </logger>
+    <logger name="com.jayud" level="DEBUG"/>
+    <logger name="org.springframework" level="INFO"/>
 </configuration>

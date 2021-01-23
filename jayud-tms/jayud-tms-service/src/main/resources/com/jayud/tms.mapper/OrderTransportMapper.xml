@@ -284,43 +284,6 @@
 <!--            = '2' and orc.sub_type = 'zgys'))-->
 <!--        </if>-->
 <!--    </select>-->
-    <select id="initPdfData" resultType="com.jayud.tms.model.vo.SendCarPdfVO">
-        SELECT
-        ot.`legal_name` legalName,
-        '' enLegalName,
-        '' tel,
-        '' fax,
-        ot.`order_no` orderNo,
-        DATE_FORMAT(
-        ot.`jiedan_time`,
-        '%Y-%m-%d %H:%i:%S'
-        ) jiedanTimeStr,
-        vi.plate_number licensePlate,
-        vi.hk_number hkLicensePlate,
-        di.phone driverPhone,
-        ifnull(osc.`vehicle_size`,ot.vehicle_size) vehicleSize,
-        ifnull(osc.`vehicle_type`,ot.vehicle_type) vehicleType,
-        ifnull(osc.cntr_no,ot.cntr_no) cntrNo,
-        p.`name` portName,
-        ot.`goods_type` goodsType,
-        '' jiedanUser,
-        si.`supplier_ch_name` clearCustomsAddress,
-        (SELECT su.phone FROM `system_user` su WHERE su.name = ot.`jiedan_user`) jiedanPhone
-        FROM
-        order_transport ot
-        LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no`
-        LEFT JOIN order_send_cars osc ON osc.`order_no` = ot.`order_no`
-        LEFT JOIN port_info p ON p.`id_code` = ot.`port_code`
-        left join driver_info di on di.id = osc.driver_info_id
-        left join vehicle_info vi on vi.id = osc.vehicle_id
-        LEFT JOIN supplier_info si ON vi.supplier_id = si.`id`
-        WHERE
-         -- (oi.`class_code` = 'ZGYS' or oi.class_code='KY')
-        <if test="orderNo != null and orderNo != ''">
-            and ot.order_no = #{orderNo}
-        </if>
-    </select>
-
 
     <select id="getDriverOrderTransport" parameterType="com.jayud.tms.model.bo.QueryDriverOrderTransportForm"
             resultType="com.jayud.tms.model.vo.DriverOrderTransportVO">
@@ -603,88 +566,88 @@
         left join vehicle_info vi on vi.id = osc.vehicle_id
         LEFT JOIN supplier_info si ON vi.supplier_id = si.`id`
         WHERE
-         -- (oi.`class_code` = 'ZGYS' or oi.class_code='KY')
+         (oi.`class_code` = 'ZGYS' or oi.class_code='KY')
         <if test="orderNo != null and orderNo != ''">
             ot.order_no = #{orderNo}
         </if>
     </select>
 
 
-    <select id="getDriverOrderTransport" parameterType="com.jayud.tms.model.bo.QueryDriverOrderTransportForm"
-            resultType="com.jayud.tms.model.vo.DriverOrderTransportVO">
-        select
-        ot.id,ot.order_no orderNo,pf.name portName,ot.status,
-        ot.created_time time,
-        (select name from region_city where id=w.state_code) receivingProvince,
-        (select name from region_city where id=w.city_code) receivingCity,
-        (select name from region_city where id=w.area_code) receivingArea,
-        w.address,w.contacts,w.contact_number contactNumber
-        from
-        order_send_cars oc left join order_transport ot on oc.order_no =ot.order_no
-        left join port_info pf on pf.id_code = ot.port_code
-        left join warehouse_info w on oc.warehouse_info_id= w.id
-        <where>
-            <if test="form.status !=null and form.status !=''">
-                and ot.status = #{form.status}
-            </if>
-            <if test="form.orderNo !=null and form.orderNo !=''">
-                and ot.order_no like concat('%',#{form.orderNo},'%')
-            </if>
-            <if test="form.driverId !=null">
-                and oc.driver_info_id = #{form.driverId}
-            </if>
-            <if test="form.orderIds !=null">
-                and ot.id in
-                <foreach collection="form.orderIds" index="index" item="item" open="(" separator="," close=")">
-                    #{item}
-                </foreach>
-            </if>
-            <if test="form.excludeOrderIds !=null and form.status !=null and form.status!=''">
-                and ot.id not in
-                <foreach collection="form.excludeOrderIds" index="index" item="item" open="(" separator="," close=")">
-                    #{item}
-                </foreach>
-            </if>
-            and ot.status in
-            <foreach collection="status" index="index" item="item" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </where>
-    </select>
-    <select id="statisticsDataNumber" resultType="com.jayud.tms.model.vo.StatisticsDataNumberVO">
-        select
-            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` = 'T_0' AND oi.`status` in ('1','4')) ysjd,
-            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` = 'T_1' ) yspc,
-            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` = 'T_2' ) yssh,
-            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` = 'T_3_1' ) bhcxdy,
-            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` = 'T_3' ) qrpc,
-            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` = 'T_4' ) clth,
-            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` = 'T_5' ) clgb,
-            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` = 'T_7' ) tgqfh,
-            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` in ('T_8','T_9_1','T_9_2')) cltg,
-            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`is_hk_clear` = '1' and ot.clear_customs_no is null AND oi.`status` in ('1','4')) xgqg,
-            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where oi.`status` = 'T_9') clrc,
-            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where oi.`status` = 'T_10') clcc,
-            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where oi.`status` = 'T_13') clps,
-            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where oi.`status` = 'T_14') qrqs
-        from
-             dual
-    </select>
+<!--    <select id="getDriverOrderTransport" parameterType="com.jayud.tms.model.bo.QueryDriverOrderTransportForm"-->
+<!--            resultType="com.jayud.tms.model.vo.DriverOrderTransportVO">-->
+<!--        select-->
+<!--        ot.id,ot.order_no orderNo,pf.name portName,ot.status,-->
+<!--        ot.created_time time,-->
+<!--        (select name from region_city where id=w.state_code) receivingProvince,-->
+<!--        (select name from region_city where id=w.city_code) receivingCity,-->
+<!--        (select name from region_city where id=w.area_code) receivingArea,-->
+<!--        w.address,w.contacts,w.contact_number contactNumber-->
+<!--        from-->
+<!--        order_send_cars oc left join order_transport ot on oc.order_no =ot.order_no-->
+<!--        left join port_info pf on pf.id_code = ot.port_code-->
+<!--        left join warehouse_info w on oc.warehouse_info_id= w.id-->
+<!--        <where>-->
+<!--            <if test="form.status !=null and form.status !=''">-->
+<!--                and ot.status = #{form.status}-->
+<!--            </if>-->
+<!--            <if test="form.orderNo !=null and form.orderNo !=''">-->
+<!--                and ot.order_no like concat('%',#{form.orderNo},'%')-->
+<!--            </if>-->
+<!--            <if test="form.driverId !=null">-->
+<!--                and oc.driver_info_id = #{form.driverId}-->
+<!--            </if>-->
+<!--            <if test="form.orderIds !=null">-->
+<!--                and ot.id in-->
+<!--                <foreach collection="form.orderIds" index="index" item="item" open="(" separator="," close=")">-->
+<!--                    #{item}-->
+<!--                </foreach>-->
+<!--            </if>-->
+<!--            <if test="form.excludeOrderIds !=null and form.status !=null and form.status!=''">-->
+<!--                and ot.id not in-->
+<!--                <foreach collection="form.excludeOrderIds" index="index" item="item" open="(" separator="," close=")">-->
+<!--                    #{item}-->
+<!--                </foreach>-->
+<!--            </if>-->
+<!--            and ot.status in-->
+<!--            <foreach collection="status" index="index" item="item" open="(" separator="," close=")">-->
+<!--                #{item}-->
+<!--            </foreach>-->
+<!--        </where>-->
+<!--    </select>-->
+<!--    <select id="statisticsDataNumber" resultType="com.jayud.tms.model.vo.StatisticsDataNumberVO">-->
+<!--        select-->
+<!--            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` = 'T_0' AND oi.`status` in ('1','4')) ysjd,-->
+<!--            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` = 'T_1' ) yspc,-->
+<!--            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` = 'T_2' ) yssh,-->
+<!--            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` = 'T_3_1' ) bhcxdy,-->
+<!--            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` = 'T_3' ) qrpc,-->
+<!--            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` = 'T_4' ) clth,-->
+<!--            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` = 'T_5' ) clgb,-->
+<!--            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` = 'T_7' ) tgqfh,-->
+<!--            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`status` in ('T_8','T_9_1','T_9_2')) cltg,-->
+<!--            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where ot.`is_hk_clear` = '1' and ot.clear_customs_no is null AND oi.`status` in ('1','4')) xgqg,-->
+<!--            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where oi.`status` = 'T_9') clrc,-->
+<!--            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where oi.`status` = 'T_10') clcc,-->
+<!--            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where oi.`status` = 'T_13') clps,-->
+<!--            (SELECT  count(1)  FROM order_transport ot LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no` LEFT JOIN port_info p ON p.`id_code` = ot.`port_code` LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code` where oi.`status` = 'T_14') qrqs-->
+<!--        from-->
+<!--             dual-->
+<!--    </select>-->
 
 
-    <select id="getOrderTransportByMainOrderNo" parameterType="list" resultMap="ResultMap">
-        select
-        ot.id,ot.main_order_no,ot.order_no,
-        ota.id,ota.order_no,ota.delivery_id,ota.take_time,
-        ota.goods_desc,ota.plate_amount,ota.piece_amount,
-        ota.weight,ota.volume,ota.remarks,ota.opr_type,ota.enter_warehouse_no
-        from order_transport ot
-        left join order_take_adr ota on ot.order_no=ota.order_no
-        <where>
-            and ot.main_order_no in
-            <foreach collection="mainOrderNo" index="index" item="item" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </where>
-    </select>
+<!--    <select id="getOrderTransportByMainOrderNo" parameterType="list" resultMap="ResultMap">-->
+<!--        select-->
+<!--        ot.id,ot.main_order_no,ot.order_no,-->
+<!--        ota.id,ota.order_no,ota.delivery_id,ota.take_time,-->
+<!--        ota.goods_desc,ota.plate_amount,ota.piece_amount,-->
+<!--        ota.weight,ota.volume,ota.remarks,ota.opr_type,ota.enter_warehouse_no-->
+<!--        from order_transport ot-->
+<!--        left join order_take_adr ota on ot.order_no=ota.order_no-->
+<!--        <where>-->
+<!--            and ot.main_order_no in-->
+<!--            <foreach collection="mainOrderNo" index="index" item="item" open="(" separator="," close=")">-->
+<!--                #{item}-->
+<!--            </foreach>-->
+<!--        </where>-->
+<!--    </select>-->
 </mapper>

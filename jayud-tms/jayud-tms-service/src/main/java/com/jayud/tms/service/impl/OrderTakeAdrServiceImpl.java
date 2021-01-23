@@ -1,5 +1,6 @@
 package com.jayud.tms.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.tms.mapper.OrderTakeAdrMapper;
@@ -9,6 +10,7 @@ import com.jayud.tms.model.vo.InputOrderTakeAdrVO;
 import com.jayud.tms.service.IOrderTakeAdrService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,8 +30,8 @@ public class OrderTakeAdrServiceImpl extends ServiceImpl<OrderTakeAdrMapper, Ord
     }
 
     @Override
-    public List<DriverOrderTakeAdrVO> getDriverOrderTakeAdr(List<String> orderNoList,Integer oprType) {
-        return this.baseMapper.getDriverOrderTakeAdr(orderNoList,oprType);
+    public List<DriverOrderTakeAdrVO> getDriverOrderTakeAdr(List<String> orderNoList, Integer oprType) {
+        return this.baseMapper.getDriverOrderTakeAdr(orderNoList, oprType);
     }
 
     /**
@@ -57,6 +59,9 @@ public class OrderTakeAdrServiceImpl extends ServiceImpl<OrderTakeAdrMapper, Ord
 
     @Override
     public List<OrderTakeAdr> getOrderTakeAdrByOrderNos(List<String> orderNoList, Integer oprType) {
+        if (CollectionUtil.isEmpty(orderNoList)) {
+            return new ArrayList<>();
+        }
         QueryWrapper<OrderTakeAdr> condition = new QueryWrapper<>();
         condition.lambda().in(OrderTakeAdr::getOrderNo, orderNoList);
         if (oprType != null) {

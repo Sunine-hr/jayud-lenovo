@@ -213,7 +213,7 @@
             left join air_order ao on ao.order_no = orc.order_no
         WHERE
         orc.id NOT IN ( SELECT orbd.cost_id FROM order_receivable_bill_detail orbd )
-        and orc.is_bill != '2'
+        and (orc.is_bill != '2' and orc.is_bill!='save_confirm')
         and orc.`status` = '3'
         and c.`name` = #{form.unitAccount}
         <if test="form.cmd == 'main'">
@@ -493,18 +493,18 @@
         SELECT DISTINCT
         <if test="form.cmd == 'zgys'">
             ot.legal_name legalName,
-            (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='zgys' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_transport o1 where o1.legal_name = ot.legal_name)) notPaidAmount,
-            (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='zgys' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_transport o1 where o1.legal_name = ot.legal_name)) notPaidOrderNum,
+            (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where (t1.is_bill != '2' and t1.is_bill!='save_confirm') AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='zgys' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_transport o1 where o1.legal_name = ot.legal_name)) notPaidAmount,
+            (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where  (t1.is_bill != '2' and t1.is_bill!='save_confirm') AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='zgys' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_transport o1 where o1.legal_name = ot.legal_name)) notPaidOrderNum,
         </if>
         <if test="form.cmd == 'bg'">
             oc.legal_name legalName,
-            (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='bg' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_customs o1 where o1.legal_name = oc.legal_name)) notPaidAmount,
-            (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='bg' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_customs o1 where o1.legal_name = oc.legal_name)) notPaidOrderNum,
+            (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where  (t1.is_bill != '2' and t1.is_bill!='save_confirm') AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='bg' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_customs o1 where o1.legal_name = oc.legal_name)) notPaidAmount,
+            (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where  (t1.is_bill != '2' and t1.is_bill!='save_confirm') AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='bg' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_customs o1 where o1.legal_name = oc.legal_name)) notPaidOrderNum,
         </if>
         <if test="form.cmd == 'ky'">
             le.legal_name legalName,
-            (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_entity_id = ao.legal_entity_id)) notPaidAmount,
-            (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_entity_id = ao.legal_entity_id)) notPaidOrderNum,
+            (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where  (t1.is_bill != '2' and t1.is_bill != 'save_confirm') AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_entity_id = ao.legal_entity_id)) notPaidAmount,
+            (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where  (t1.is_bill != '2' and t1.is_bill != 'save_confirm') AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_entity_id = ao.legal_entity_id)) notPaidOrderNum,
         </if>
         ci.`name` unitAccount,
         ifnull( orb.already_paid_amount, 0 ) alreadyPaidAmount,
@@ -571,5 +571,6 @@
                 </foreach>
             </if>
         </if>
+
     </select>
 </mapper>

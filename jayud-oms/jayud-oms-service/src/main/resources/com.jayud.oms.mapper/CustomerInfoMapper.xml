@@ -282,7 +282,7 @@
         LEFT JOIN `system_user` su2
         ON su2.`id` = ci.`yw_id`
         LEFT JOIN `customer_rela_legal` crl ON ci.`id` = crl.`customer_info_id`
-         where ci.`status` = 1
+         where 1 = 1
         <if test="form.name != null and form.name != ''">
             and ci.name like concat('%',#{form.name},'%')
         </if>

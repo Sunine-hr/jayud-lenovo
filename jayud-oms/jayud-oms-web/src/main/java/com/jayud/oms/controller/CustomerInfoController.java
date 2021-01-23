@@ -374,17 +374,18 @@ public class CustomerInfoController {
         return CommonResult.success(initComboxVOS);
     }
 
-    @ApiOperation(value = "供应商账号-新增-角色")
+    @ApiOperation(value = "客户账号-新增-角色")
     @PostMapping(value = "/initRole")
     public CommonResult<List<InitComboxVO>> initRole() {
         List<InitComboxVO> initComboxVOS = (List<InitComboxVO>) oauthClient.findRole().getData();
         return CommonResult.success(initComboxVOS);
     }
 
-    @ApiOperation(value = "供应商账号-新增-所属公司")
+    @ApiOperation(value = "客户账号-新增-所属公司")
     @PostMapping(value = "/initCompany")
     public CommonResult<List<InitComboxVO>> initCompany() {
-        List<CustomerInfo> customerInfos = customerInfoService.findCustomerInfoByCondition(new ArrayList<>());
+        List list = new ArrayList();
+        List<CustomerInfo> customerInfos = customerInfoService.findCustomerInfoByCondition(list);
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (CustomerInfo customerInfo : customerInfos) {
             InitComboxVO initComboxVO = new InitComboxVO();
@@ -395,8 +396,7 @@ public class CustomerInfoController {
         return CommonResult.success(initComboxVOS);
     }
 
-
-    @ApiOperation(value = "供应商账号-新增-所属上级")
+    @ApiOperation(value = "客户账号-新增-所属上级")
     @PostMapping(value = "/initDepartCharge")
     public CommonResult<List<InitComboxVO>> initDepartCharge() {
         List<InitComboxVO> initComboxVOS = (List<InitComboxVO>) oauthClient.findCustAccount().getData();

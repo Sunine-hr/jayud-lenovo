@@ -55,7 +55,7 @@ CREATE TABLE `air_order` (
   `legal_name` varchar(50) DEFAULT NULL COMMENT '接单法人名称',
   `legal_entity_id` bigint(20) DEFAULT NULL COMMENT '接单法人id',
   `imp_and_exp_type` int(10) DEFAULT NULL COMMENT '进出口类型(1：进口，2：出口)',
-  `terms` int(10) DEFAULT NULL COMMENT '贸易方式(0:CIF,1:DUU,2:FOB,3:DDP,4:CFR,5:CPT,6:CNF,7:CIP)',
+  `terms` int(10) DEFAULT NULL COMMENT '贸易方式(0:CIF,1:DDU,2:FOB,3:DDP,4:CFR,5:CPT,6:CNF,7:CIP)',
   `port_departure_code` varchar(20) DEFAULT NULL COMMENT '起运港代码',
   `port_destination_code` varchar(20) DEFAULT NULL COMMENT '目的港代码',
   `overseas_suppliers_id` bigint(20) DEFAULT NULL COMMENT '海外供应商id',

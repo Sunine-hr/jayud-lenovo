@@ -155,7 +155,7 @@ public class InputOrderCustomsForm {
                 isSuccess = false;
             }
         }
-        if (isSuccess) {
+        if (!isSuccess) {
             String msg = title + sb.substring(0, sb.length() - 1);
             log.warn(msg);
             throw new JayudBizException(msg);

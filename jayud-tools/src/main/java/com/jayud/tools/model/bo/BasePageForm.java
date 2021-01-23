@@ -1,5 +1,6 @@
 package com.jayud.tools.model.bo;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -9,10 +10,12 @@ import lombok.Data;
 @Data
 public class BasePageForm {
 
-    @ApiModelProperty("页码")
+    @ApiModelProperty(value = "页码", position = 101)
+    @JSONField(ordinal = 101)
     private Integer pageNum = 1;
 
-    @ApiModelProperty("页长")
+    @ApiModelProperty(value = "页长", position = 102)
+    @JSONField(ordinal = 102)
     private Integer pageSize = 10;
 
 

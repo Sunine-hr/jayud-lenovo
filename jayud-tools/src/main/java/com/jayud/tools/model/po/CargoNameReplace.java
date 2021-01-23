@@ -1,5 +1,6 @@
 package com.jayud.tools.model.po;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -28,15 +29,18 @@ public class CargoNameReplace extends Model<CargoNameReplace> {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "主键ID")
+    @ApiModelProperty(value = "主键ID", position = 1)
     @TableId(value = "id", type = IdType.AUTO)
+    @JSONField(ordinal = 1)
     private Long id;
 
-    @ApiModelProperty(value = "(原)货品名称")
+    @ApiModelProperty(value = "(原)货品名称", position = 2)
+    @JSONField(ordinal = 2)
     private String hpmc;
 
-    @ApiModelProperty(value = "替换名称")
+    @ApiModelProperty(value = "替换名称", position = 3)
     @TableField("replaceName")
+    @JSONField(ordinal = 3)
     private String replaceName;
 
 

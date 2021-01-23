@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class QuerySensitiveCommodityForm extends BasePageForm{
 
-    @ApiModelProperty(value = "品名")
+    @ApiModelProperty(value = "品名", position = 1)
     private String name;
 
 

@@ -86,7 +86,7 @@ public class OrderComboxController {
         String loginUserName = MapUtil.getStr(param, "loginUserName");
         //获取当前用户所属法人主体
         ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(loginUserName);
-        List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();
+        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
 
         Map<String, Object> resultMap = new HashMap<>();
         //客户
@@ -168,19 +168,27 @@ public class OrderComboxController {
         List<CustomerInfoVO> allCustomerInfoList = customerInfoService.relateUnitList(customer.getId());
         List<CustomerInfoVO> customerInfoList = allCustomerInfoList.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(CustomerInfoVO::getName))), ArrayList::new));
         List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
+
+        //默认关联自己
+        InitComboxStrVO customerComboxVO = new InitComboxStrVO();
+        customerComboxVO.setCode(customer.getIdCode());
+        customerComboxVO.setName(customer.getName());
+        comboxStrVOS.add(customerComboxVO);
+
         for (CustomerInfoVO customerInfo : customerInfoList) {
-            InitComboxStrVO comboxStrVO = new InitComboxStrVO();
-            comboxStrVO.setCode(customerInfo.getIdCode());
-            comboxStrVO.setName(customerInfo.getName());
-            comboxStrVOS.add(comboxStrVO);
+            customerComboxVO = new InitComboxStrVO();
+            customerComboxVO.setCode(customerInfo.getIdCode());
+            customerComboxVO.setName(customerInfo.getName());
+            comboxStrVOS.add(customerComboxVO);
         }
+
         //如果没有结算单位,客户本身作为结算单位
-        if (comboxStrVOS.size() == 0) {
-            InitComboxStrVO comboxStrVO = new InitComboxStrVO();
-            comboxStrVO.setCode(customer.getIdCode());
-            comboxStrVO.setName(customer.getName());
-            comboxStrVOS.add(comboxStrVO);
-        }
+//        if (comboxStrVOS.size() == 0) {
+//            InitComboxStrVO comboxStrVO = new InitComboxStrVO();
+//            comboxStrVO.setCode(customer.getIdCode());
+//            comboxStrVO.setName(customer.getName());
+//            comboxStrVOS.add(comboxStrVO);
+//        }
         resultMap.put("units", comboxStrVOS);
 
         List<SupplierInfo> supplierInfos = supplierInfoService.getApprovedSupplier(

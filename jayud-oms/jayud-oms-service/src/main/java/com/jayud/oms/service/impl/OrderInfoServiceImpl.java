@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -159,16 +160,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         IPage<OrderInfoVO> pageInfo = null;
 
         ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
-        List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();
+        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
 
         if (CommonConstant.GO_CUSTOMS_AUDIT.equals(form.getCmd())) {
             //定义排序规则
             page.addOrder(OrderItem.desc("oi.id"));
-            pageInfo = baseMapper.findGoCustomsAuditByPage(page, form,legalIds);
+            pageInfo = baseMapper.findGoCustomsAuditByPage(page, form, legalIds);
         } else {
             //定义排序规则
             page.addOrder(OrderItem.desc("temp.id"));
-            pageInfo = baseMapper.findOrderInfoByPage(page, form,legalIds);
+            pageInfo = baseMapper.findOrderInfoByPage(page, form, legalIds);
             //根据主订单查询子订单数据
             List<OrderInfoVO> orderInfoVOs = pageInfo.getRecords();
             if (CollectionUtil.isEmpty(orderInfoVOs)) {
@@ -307,7 +308,49 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         InputCostVO inputCostVO = new InputCostVO();
         inputCostVO.setPaymentCostList(inputPaymentCostVOS);
         inputCostVO.setReceivableCostList(inputReceivableCostVOS);
+        //计算费用,利润/合计币种
+        this.calculateCost(inputCostVO);
+
         return inputCostVO;
+    }
+
+    /**
+     * 计算费用,利润/合计币种
+     *
+     * @param inputCostVO
+     */
+    private void calculateCost(InputCostVO inputCostVO) {
+        Map<String, Integer> receivableCost = new HashMap<>();//应收币种
+        Map<String, Integer> paymentCost = new HashMap<>();//应付币种
+        //应付总本币
+        BigDecimal receivableCostTotal = new BigDecimal(0);
+        //应收总本币
+        BigDecimal paymentCostTotal = new BigDecimal(0);
+        //计算应收
+        for (InputReceivableCostVO receivableCostVO : inputCostVO.getReceivableCostList()) {
+            receivableCost.merge(receivableCostVO.getCurrencyName(), receivableCostVO.getNumber(), Integer::sum);
+            //合计应收本币金额
+            receivableCostTotal = receivableCostTotal.add(receivableCostVO.getChangeAmount());
+        }
+        //计算应付
+        for (InputPaymentCostVO inputPaymentCostVO : inputCostVO.getPaymentCostList()) {
+            paymentCost.merge(inputPaymentCostVO.getCurrencyName(), inputPaymentCostVO.getNumber(), Integer::sum);
+            //合计应付本币金额
+            paymentCostTotal = paymentCostTotal.add(inputPaymentCostVO.getChangeAmount());
+        }
+        //计算利润
+        inputCostVO.setProfit(receivableCostTotal.subtract(paymentCostTotal));
+        //拼接应收币种数量
+        StringBuffer receivableCostStr = new StringBuffer();
+        receivableCost.forEach((k, v) -> {
+            receivableCostStr.append(v).append(k).append(" ");
+        });
+        StringBuffer paymentCostStr = new StringBuffer();
+        paymentCost.forEach((k, v) -> {
+            paymentCostStr.append(v).append(k).append(" ");
+        });
+        inputCostVO.setCurrencyReceivable(receivableCostStr.toString());
+        inputCostVO.setCurrencyPayable(paymentCostStr.toString());
     }
 
     @Override
@@ -869,9 +912,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     public OrderDataCountVO countOrderData(QueryOrderInfoForm form) {
 
         ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
-        List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();
+        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
 
-        return baseMapper.countOrderData(form,legalIds);
+        return baseMapper.countOrderData(form, legalIds);
     }
 
     @Override

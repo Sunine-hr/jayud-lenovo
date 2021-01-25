@@ -134,10 +134,11 @@ public class InputOrderCustomsForm {
             isSuccess = false;
         }
         //只用中港才有六联单号
-        if ("1".equals(this.bizModel) && StringUtil.isNullOrEmpty(this.getEncode())) {//六联单号
-            sb.append("六联单号").append("参数不能为空").append(",");
-            isSuccess = false;
-        } else {
+        if ("1".equals(this.bizModel)) {
+            if ( StringUtil.isNullOrEmpty(this.getEncode())) {//六联单号
+                sb.append("六联单号").append("参数不能为空").append(",");
+                isSuccess = false;
+            }
             //六联单号必须为13位的纯数字
             String encode = this.getEncode();
             if (!(encode.matches("[0-9]{1,}") && encode.length() == 13)) {
@@ -145,6 +146,7 @@ public class InputOrderCustomsForm {
                 isSuccess = false;
             }
         }
+
         if (this.getSubOrders() == null) {
             sb.append("子订单").append("参数不能为空").append(",");
             isSuccess = false;

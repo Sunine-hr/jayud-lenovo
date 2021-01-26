@@ -259,6 +259,85 @@
         </if>
     </select>
 
+    <select id="findCustomerBasicsInfoByPage"
+            resultType="com.jayud.oms.model.vo.CustomerInfoVO">
+        select
+        ci.id,name,id_code idCode,contact,phone,address,email,ci.created_time createdTimeStr
+        from customer_info ci LEFT JOIN `customer_rela_legal` crl ON ci.`id` = crl.`customer_info_id`
+        <where>
+            audit_status = 10
+            <if test="form.name != null and form.name != ''">
+                and name like concat('%',#{form.name},'%')
+            </if>
+            <if test="form.idCode != null and form.idCode != ''">
+                and id_code like concat('%',#{form.idCode},'%')
+            </if>
+            <if test="legalIds != null">
+                and crl.`legal_entity_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="getCustomerInfoByCondition"
+            resultType="com.jayud.oms.model.po.CustomerInfo">
+        select
+        ci.id,name,id_code idCode,contact,phone,address,email,ci.created_time createdTimeStr
+        from customer_info ci LEFT JOIN `customer_rela_legal` crl ON ci.`id` = crl.`customer_info_id`
+        <where>
+            audit_status = 10 and status = '1'
+            <if test="legalIds != null and legalIds.size>0">
+                and crl.`legal_entity_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <resultMap id="BaseResultMap2" type="com.jayud.oms.model.vo.CustomerInfoVO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="id_code" property="idCode"/>
+        <result column="types" property="types"/>
+        <result column="contact" property="contact"/>
+        <result column="phone" property="phone"/>
+        <result column="address" property="address"/>
+        <result column="email" property="email"/>
+        <result column="tfn" property="tfn"/>
+        <result column="ifContract" property="ifContract"/>
+        <result column="settlementType" property="settlementType"/>
+        <result column="accountPeriod" property="accountPeriod"/>
+        <result column="tax_type" property="taxType"/>
+        <result column="tax_rate" property="taxRate"/>
+        <result column="estate" property="estate"/>
+        <result column="departmentId" property="departmentId"/>
+        <result column="kuId" property="kuId"/>
+        <result column="ywId" property="ywId"/>
+        <result column="departmentName" property="departmentName"/>
+        <result column="kuName" property="kuName"/>
+        <result column="ywName" property="ywName"/>
+        <result column="status" property="status"/>
+        <result column="auditComment" property="auditComment"/>
+        <result column="auditStatusDesc" property="auditStatusDesc"/>
+        <result column="audit_status" property="auditStatus"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="createdTimeStr" property="createdTimeStr"/>
+        <result column="updated_user" property="updatedUser"/>
+        <result column="updated_time" property="updatedTime"/>
+<!--        <collection property="legalEntities" ofType="com.jayud.oms.model.vo.LegalEntityVO" column="id" select="getLegalEntity">-->
+        <collection property="legalEntities" ofType="com.jayud.oms.model.vo.LegalEntityVO">
+            <result column="lid" property="id"></result>
+            <result column="legalName" property="legalName"></result>
+        </collection>
+    </resultMap>
+
+<!--    <select id="getLegalEntity" resultType="com.jayud.oms.model.vo.LegalEntityVO">-->
+<!--        select le.`id` lid,le.`legal_name` legalName from  legal_entity le LEFT JOIN `customer_rela_legal` crl on le.`id` = crl.`legal_id` where crl.`customer_info_id` = #{id}-->
+<!--    </select>-->
+
     <select id="findCustomerInfoByPage" resultType="com.jayud.oms.model.vo.CustomerInfoVO">
         SELECT
         ci.id,ci.name,ci.`id_code` idCode,ci.`types`,ci.`contact`,ci.`phone`,ci.`address`,ci.`email`,ci.`tfn`,ci.`if_contract` ifContract,
@@ -282,7 +361,7 @@
         LEFT JOIN `system_user` su2
         ON su2.`id` = ci.`yw_id`
         LEFT JOIN `customer_rela_legal` crl ON ci.`id` = crl.`customer_info_id`
-         where 1 = 1
+        where 1 = 1
         <if test="form.name != null and form.name != ''">
             and ci.name like concat('%',#{form.name},'%')
         </if>
@@ -309,48 +388,11 @@
         </if>
         <if test="legalIds != null">
             and crl.`legal_entity_id` in
-               <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
-                   #{legalId}
-               </foreach>
+            <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                #{legalId}
+            </foreach>
         </if>
 
     </select>
 
-    <select id="findCustomerBasicsInfoByPage"
-            resultType="com.jayud.oms.model.vo.CustomerInfoVO">
-        select
-        ci.id,name,id_code idCode,contact,phone,address,email,ci.created_time createdTimeStr
-        from customer_info ci LEFT JOIN `customer_rela_legal` crl ON ci.`id` = crl.`customer_info_id`
-        <where>
-            audit_status = 10
-            <if test="form.name != null and form.name != ''">
-                and name like concat('%',#{form.name},'%')
-            </if>
-            <if test="form.idCode != null and form.idCode != ''">
-                and id_code like concat('%',#{form.idCode},'%')
-            </if>
-            <if test="legalIds != null">
-                and crl.`legal_entity_id` in
-                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
-                    #{legalId}
-                </foreach>
-            </if>
-        </where>
-    </select>
-
-    <select id="findCustomerInfoByCondition"
-            resultType="com.jayud.oms.model.po.CustomerInfo">
-        select
-        ci.id,name,id_code idCode,contact,phone,address,email,ci.created_time createdTimeStr
-        from customer_info ci LEFT JOIN `customer_rela_legal` crl ON ci.`id` = crl.`customer_info_id`
-        <where>
-            audit_status = 10 and status = '1'
-            <if test="legalIds != null">
-                and crl.`legal_entity_id` in
-                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
-                    #{legalId}
-                </foreach>
-            </if>
-        </where>
-    </select>
 </mapper>

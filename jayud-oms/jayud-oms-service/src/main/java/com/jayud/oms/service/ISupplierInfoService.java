@@ -71,4 +71,11 @@ public interface ISupplierInfoService extends IService<SupplierInfo> {
     void insExcel(HttpServletResponse response,String userName) throws Exception;
 
     boolean checkMes(String userName);
+
+    /**
+     * 获取通过审核的供应商列表
+     * @param
+     * @return
+     */
+    List<SupplierInfo> findSupplierInfoByCondition();
 }

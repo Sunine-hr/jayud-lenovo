@@ -80,9 +80,20 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
     }
 
     @Override
-    public List<CustomerInfo> findCustomerInfoByCondition(List<Long> legalIds) {
-        List<CustomerInfo> list = baseMapper.findCustomerInfoByCondition(legalIds);
+    public List<CustomerInfo> getCustomerInfoByCondition(List<Long> legalIds) {
+        List<CustomerInfo> list = baseMapper.getCustomerInfoByCondition(legalIds);
         return list;
+    }
+
+    @Override
+    public List<CustomerInfo> findCustomerInfoByCondition(Map<String, Object> param) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status", "1");
+        for (String key : param.keySet()) {
+            String value = String.valueOf(param.get(key));
+            queryWrapper.eq(key, value);
+        }
+        return baseMapper.selectList(queryWrapper);
     }
 
     @Override
@@ -345,8 +356,9 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
     @Override
     public List<InitComboxStrVO> initApprovedCustomer() {
         Map<String, Object> param = new HashMap<>();
-//        param.put(SqlConstant.AUDIT_STATUS, CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());
-        List<CustomerInfo> allCustomerInfoList = customerInfoService.findCustomerInfoByCondition(new ArrayList<>());
+        param.put(SqlConstant.AUDIT_STATUS, CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());
+
+        List<CustomerInfo> allCustomerInfoList = customerInfoService.findCustomerInfoByCondition(param);
         List<CustomerInfo> customerInfoList = allCustomerInfoList.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(CustomerInfo::getName))), ArrayList::new));
         List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
         for (CustomerInfo customerInfo : customerInfoList) {

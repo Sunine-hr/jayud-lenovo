@@ -48,7 +48,7 @@
         <result column="createdUser" property="createdUser"/>
         <result column="updated_time" property="updatedTime"/>
         <result column="updated_user" property="updatedUser"/>
-        <collection property="legalEntities" ofType="com.jayud.oauth.model.po.LegalEntity">
+        <collection property="legalEntities" ofType="com.jayud.oauth.model.po.LegalEntity" column="id" select="getLegalEntity">
             <result column="lid" property="id"></result>
             <result column="legalName" property="legalName"></result>
         </collection>
@@ -105,9 +105,9 @@
         su.`work_name` workName,
         sr.`id` roleId,
         su.note,
-        su.`audit_status` auditStatus,
-        le.`id` lid,
-        le.`legal_name` legalName
+        su.`audit_status` auditStatus
+--         le.`id` lid,
+--         le.`legal_name` legalName
         FROM
         `system_user` su
         LEFT JOIN system_user_role_relation surr
@@ -116,10 +116,10 @@
         ON sr.`id` = surr.`role_id`
 --         LEFT JOIN company c
 --         ON su.`company_id` = c.`id`
-        LEFT JOIN system_user_legal sul
-        ON su.`id` = sul.`system_user_id`
-        LEFT JOIN legal_entity le
-        ON le.`id` = sul.`legal_id`
+--         LEFT JOIN system_user_legal sul
+--         ON su.`id` = sul.`system_user_id`
+--         LEFT JOIN legal_entity le
+--         ON le.`id` = sul.`legal_id`
         LEFT JOIN department dt
         ON dt.`id` = su.`department_id`
         WHERE su.user_type = '1'
@@ -131,9 +131,9 @@
             <if test="form.cmd == 'isAudit'">
                 and su.`audit_status` = '1'
             </if>
-            <if test="form.companyId != null and form.companyId !=''">
-                and le.`id` = #{form.companyId}
-            </if>
+<!--            <if test="form.companyId != null and form.companyId !=''">-->
+<!--                and le.`id` = #{form.companyId}-->
+<!--            </if>-->
             <if test="form.auditStatus != null and form.auditStatus != ''">
                 and su.audit_status = #{form.auditStatus}
             </if>
@@ -149,6 +149,10 @@
                 </foreach>
             </if>
         </if>
+    </select>
+    
+    <select id="getLegalEntity" resultType="com.jayud.oauth.model.po.LegalEntity">
+        select le.`id` id,le.`legal_name` legalName from  legal_entity le LEFT JOIN system_user_legal sul on le.`id` = sul.`legal_id` where sul.`system_user_id` = #{id}
     </select>
 
     <select id="findOrgStructureCharge" resultType="com.jayud.oauth.model.vo.DepartmentChargeVO">

@@ -34,7 +34,7 @@
         id, main_order_no, order_no, third_party_order_no, status, process_status, settlement_unit_code, imp_and_exp_type, terms, port_departure_code, port_destination_code, overseas_suppliers_code, proxy_service_type, good_time, is_freight_collect, is_other_expenses_paid, is_dangerous_goods, is_charged, create_user, create_time, update_user, update_time
     </sql>
 
-    <select id="findByPage" parameterType="com.jayud.airfreight.model.bo.QueryAirOrderForm"
+    <select id="findByPage"
             resultType="com.jayud.airfreight.model.vo.AirOrderFormVO">
         select
         a.id,
@@ -93,6 +93,13 @@
                 '2' and opc.sub_type = 'ky')
                 OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = a.order_no AND orc.`status` =
                 '2' and orc.sub_type = 'ky'))
+            </if>
+
+            <if test="legalIds != null">
+                and a.`legal_entity_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
             </if>
 
         </where>

@@ -15,6 +15,7 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.*;
+import com.jayud.oms.model.enums.AuditStatusEnum;
 import com.jayud.oms.model.enums.CustomerInfoStatusEnum;
 import com.jayud.oms.model.enums.RoleKeyEnum;
 import com.jayud.oms.model.enums.UserTypeEnum;
@@ -30,6 +31,7 @@ import com.jayud.oms.service.ICustomerRelaUnitService;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -384,8 +386,9 @@ public class CustomerInfoController {
     @ApiOperation(value = "客户账号-新增-所属公司")
     @PostMapping(value = "/initCompany")
     public CommonResult<List<InitComboxVO>> initCompany() {
-        List list = new ArrayList();
-        List<CustomerInfo> customerInfos = customerInfoService.findCustomerInfoByCondition(list);
+        Map param = new HashMap();
+        param.put("audit_status",AuditStatusEnum.SUCCESS.getCode());
+        List<CustomerInfo> customerInfos = customerInfoService.findCustomerInfoByCondition(param);
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (CustomerInfo customerInfo : customerInfos) {
             InitComboxVO initComboxVO = new InitComboxVO();
@@ -431,8 +434,8 @@ public class CustomerInfoController {
     @ApiOperation(value = "导入客户信息")
     @PostMapping(value = "/uploadExcel")
     public CommonResult ajaxUploadExcel(MultipartFile file, HttpServletResponse response, @RequestParam("userName") String userName) {
-
         System.out.println("userName:=======" + userName);
+
         String commentHTML = null;
         try {
             commentHTML = customerInfoService.importCustomerInfoExcel(response, file, userName);
@@ -450,6 +453,7 @@ public class CustomerInfoController {
     @ApiOperation(value = "下载错误信息")
     @GetMapping(value = "/downloadErrorExcel")
     public void downloadErrorExcel(HttpServletResponse response, @RequestParam("userName") String userName) {
+        System.out.println("downloadErrorExcel:userName========================"+userName);
         try {
             customerInfoService.insExcel(response, userName);
         } catch (Exception exception) {
@@ -459,7 +463,9 @@ public class CustomerInfoController {
 
     @ApiOperation(value = "判断是否有错误信息")
     @PostMapping(value = "/checkMes")
-    public CommonResult checkMes(@RequestParam("userName") String userName) {
+    public CommonResult checkMes(@RequestBody Map<String, Object> param) {
+        String userName = MapUtil.getStr(param, "loginUserName");
+        System.out.println("checkMes:userName========================"+userName);
         boolean result = customerInfoService.checkMes(userName);
         return CommonResult.success(result);
     }

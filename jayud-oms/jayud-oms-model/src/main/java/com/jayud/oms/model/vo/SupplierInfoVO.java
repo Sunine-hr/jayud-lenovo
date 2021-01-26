@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.lang.StringUtils;
 
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,6 +74,13 @@ public class SupplierInfoVO {
 
     @ApiModelProperty(value = "状态(0无效 1有效)")
     private String status;
+
+    @ApiModelProperty(value = "法人主体id", required = true)
+    @NotEmpty(message = "legal_entity_id is required")
+    private Long legalEntityId;
+
+    @ApiModelProperty(value = "法人主体", required = true)
+    private String legalEntityName;
 
     @ApiModelProperty(value = "创建人")
     private String createUser;

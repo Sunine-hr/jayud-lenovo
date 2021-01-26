@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.airfreight.feign.MsgClient;
+import com.jayud.airfreight.feign.OauthClient;
 import com.jayud.airfreight.feign.OmsClient;
 import com.jayud.airfreight.mapper.AirOrderMapper;
 import com.jayud.airfreight.model.bo.*;
@@ -69,6 +70,9 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
     private VivoServiceImpl vivoService;
     @Autowired
     private IAirExceptionFeedbackService airExceptionFeedbackService;
+
+    @Autowired
+    private OauthClient oauthClient;
 
     //创建订单
     @Override
@@ -153,8 +157,12 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
             form.setProcessStatusList(Collections.singletonList(ProcessStatusEnum.PROCESSING.getCode()));
         }
 
+        //获取当前用户所属法人主体
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
+        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+
         Page<AirOrder> page = new Page<>(form.getPageNum(), form.getPageSize());
-        return this.baseMapper.findByPage(page, form);
+        return this.baseMapper.findByPage(page, form,legalIds);
     }
 
 

@@ -90,7 +90,7 @@ public class OrderComboxController {
 
         Map<String, Object> resultMap = new HashMap<>();
         //客户
-        List<CustomerInfo> allCustomerInfoList = customerInfoService.findCustomerInfoByCondition(legalIds);
+        List<CustomerInfo> allCustomerInfoList = customerInfoService.getCustomerInfoByCondition(legalIds);
         List<CustomerInfo> customerInfoList = allCustomerInfoList.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(CustomerInfo::getName))), ArrayList::new));
         List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
         for (CustomerInfo customerInfo : customerInfoList) {

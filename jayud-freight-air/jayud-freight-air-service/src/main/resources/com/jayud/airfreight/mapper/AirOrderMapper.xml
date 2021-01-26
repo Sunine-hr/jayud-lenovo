@@ -51,6 +51,7 @@
         ab.warehousing_no warehousingNo,
         a.settlement_unit_code subUnitCode,
         a.legal_entity_id,
+        ab.agent_supplier_id supplierId,
         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = a.`order_no`) +
         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = a.`order_no`)>0 THEN TRUE
         ELSE FALSE

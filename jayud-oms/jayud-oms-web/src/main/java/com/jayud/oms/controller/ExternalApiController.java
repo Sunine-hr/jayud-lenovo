@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -292,7 +293,7 @@ public class ExternalApiController {
                 }
                 //获取现存数据有多少暂存的，改为未出账
                 QueryWrapper queryWrapper = new QueryWrapper();
-                queryWrapper.eq("is_bill","1");
+                queryWrapper.eq("is_bill", "1");
                 List<OrderPaymentCost> existPaymentCosts = paymentCostService.list(queryWrapper);
                 for (OrderPaymentCost existPaymentCost : existPaymentCosts) {
                     OrderPaymentCost delCost = new OrderPaymentCost();
@@ -301,17 +302,17 @@ public class ExternalApiController {
                     delCosts.add(delCost);
                 }
                 //把原来暂存的清除,更新未出账
-                if(delCosts.size() > 0){
+                if (delCosts.size() > 0) {
                     paymentCostService.updateBatchById(delCosts);
                 }
-            }else if("del".equals(form.getCmd())){//删除对账单
+            } else if ("del".equals(form.getCmd())) {//删除对账单
                 for (Long costId : form.getCostIds()) {
                     OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
                     orderPaymentCost.setId(costId);
                     orderPaymentCost.setIsBill("0");//未出账
                     paymentCosts.add(orderPaymentCost);
                 }
-            }else{//生成应收账单
+            } else {//生成应收账单
                 for (Long costId : form.getCostIds()) {
                     OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
                     orderPaymentCost.setId(costId);
@@ -320,9 +321,9 @@ public class ExternalApiController {
                 }
             }
             result = paymentCostService.updateBatchById(paymentCosts);
-        }else if("receivable".equals(form.getOprType())){
+        } else if ("receivable".equals(form.getOprType())) {
             List<OrderReceivableCost> receivableCosts = new ArrayList<>();
-            if(form.getCmd().contains("pre")){//暂存应付
+            if (form.getCmd().contains("pre")) {//暂存应付
                 List<OrderReceivableCost> delCosts = new ArrayList<>();
                 for (Long costId : form.getCostIds()) {
                     OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
@@ -332,7 +333,7 @@ public class ExternalApiController {
                 }
                 //获取现存数据有多少暂存的，改为未出账
                 QueryWrapper queryWrapper = new QueryWrapper();
-                queryWrapper.eq("is_bill","1");
+                queryWrapper.eq("is_bill", "1");
                 List<OrderReceivableCost> existReceivableCosts = receivableCostService.list(queryWrapper);
                 for (OrderReceivableCost existReceivableCost : existReceivableCosts) {
                     OrderReceivableCost delCost = new OrderReceivableCost();
@@ -341,17 +342,17 @@ public class ExternalApiController {
                     delCosts.add(delCost);
                 }
                 //把原来暂存的清除,更新未出账
-                if(delCosts.size() > 0) {
+                if (delCosts.size() > 0) {
                     receivableCostService.updateBatchById(delCosts);
                 }
-            }else if("del".equals(form.getCmd())){//删除对账单
+            } else if ("del".equals(form.getCmd())) {//删除对账单
                 for (Long costId : form.getCostIds()) {
                     OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
                     orderReceivableCost.setId(costId);
                     orderReceivableCost.setIsBill("0");//未出账
                     receivableCosts.add(orderReceivableCost);
                 }
-            }else{//生成应付账单
+            } else {//生成应付账单
                 for (Long costId : form.getCostIds()) {
                     OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
                     orderReceivableCost.setId(costId);
@@ -405,9 +406,9 @@ public class ExternalApiController {
      */
     @ApiOperation(value = "编辑保存确定")
     @RequestMapping(value = "api/editSaveConfirm")
-    public ApiResult editSaveConfirm(@RequestParam("costIds") List<Long> costIds,@RequestParam("oprType") String oprType,
-                                     @RequestParam("cmd") String cmd){
-        if("save_confirm".equals(cmd)) {
+    public ApiResult editSaveConfirm(@RequestParam("costIds") List<Long> costIds, @RequestParam("oprType") String oprType,
+                                     @RequestParam("cmd") String cmd) {
+        if ("save_confirm".equals(cmd)) {
             if ("receivable".equals(oprType)) {
                 OrderReceivableCost receivableCost = new OrderReceivableCost();
                 receivableCost.setIsBill("save_confirm");//持续操作中的过度状态
@@ -421,7 +422,7 @@ public class ExternalApiController {
                 updateWrapper.in("id", costIds);
                 paymentCostService.update(paymentCost, updateWrapper);
             }
-        }else if("edit_del".equals(cmd)){
+        } else if ("edit_del".equals(cmd)) {
             if ("receivable".equals(oprType)) {
                 OrderReceivableCost receivableCost = new OrderReceivableCost();
                 receivableCost.setIsBill("0");//从save_confirm状态回滚到未出账-0状态
@@ -441,12 +442,13 @@ public class ExternalApiController {
 
     /**
      * 提交财务审核时，财务可能编辑费用类型
+     *
      * @param forms
      * @param cmd
      * @return
      */
     @RequestMapping(value = "api/oprCostGenreByCw")
-    ApiResult<Boolean> oprCostGenreByCw(@RequestBody List<OrderCostForm> forms,@RequestParam("cmd") String cmd){
+    ApiResult<Boolean> oprCostGenreByCw(@RequestBody List<OrderCostForm> forms, @RequestParam("cmd") String cmd) {
         if ("receivable".equals(cmd)) {
             for (OrderCostForm orderCost : forms) {
                 OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
@@ -471,19 +473,20 @@ public class ExternalApiController {
 
     /**
      * 开票审核通过之后，需要反推汇率和本币金额到费用录入表
+     *
      * @param forms
      * @param cmd
      * @return
      */
     @RequestMapping(value = "api/writeBackCostData")
-    ApiResult writeBackCostData(@RequestBody List<OrderCostForm> forms, @RequestParam("cmd") String cmd){
+    ApiResult writeBackCostData(@RequestBody List<OrderCostForm> forms, @RequestParam("cmd") String cmd) {
         if ("receivable".equals(cmd)) {
             for (OrderCostForm orderCost : forms) {
                 //获取该条费用以出账时结算币种的汇率和本币金额
                 InputReceivableCostVO sCost = receivableCostService.getWriteBackSCostData(orderCost.getCostId());
                 //汇率校验
-                if(sCost.getExchangeRate() == null || sCost.getExchangeRate().compareTo(new BigDecimal("0")) == 0){
-                    return ApiResult.error(10001,"请配置原始币种:"+sCost.getOCurrencyName()+",兑换币种:人民币的汇率");
+                if (sCost.getExchangeRate() == null || sCost.getExchangeRate().compareTo(new BigDecimal("0")) == 0) {
+                    return ApiResult.error(10001, "请配置原始币种:" + sCost.getOCurrencyName() + ",兑换币种:人民币的汇率");
                 }
                 OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
                 orderReceivableCost.setId(orderCost.getCostId());
@@ -498,8 +501,8 @@ public class ExternalApiController {
                 //获取该条费用以出账时结算币种的汇率和本币金额
                 InputPaymentCostVO fCost = paymentCostService.getWriteBackFCostData(orderCost.getCostId());
                 //汇率校验
-                if(fCost.getExchangeRate() == null || fCost.getExchangeRate().compareTo(new BigDecimal("0")) == 0){
-                    return ApiResult.error(10001,"请配置原始币种:"+fCost.getOCurrencyName()+",兑换币种:人民币的汇率");
+                if (fCost.getExchangeRate() == null || fCost.getExchangeRate().compareTo(new BigDecimal("0")) == 0) {
+                    return ApiResult.error(10001, "请配置原始币种:" + fCost.getOCurrencyName() + ",兑换币种:人民币的汇率");
                 }
                 OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
                 orderPaymentCost.setId(orderCost.getCostId());
@@ -515,10 +518,11 @@ public class ExternalApiController {
 
     /**
      * 获取所有可用的费用类型
+     *
      * @return
      */
     @RequestMapping(value = "api/findEnableCostGenre")
-    ApiResult<List<InitComboxVO>> findEnableCostGenre(){
+    ApiResult<List<InitComboxVO>> findEnableCostGenre() {
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         List<CostGenre> costGenres = costGenreService.getEnableCostGenre();
         for (CostGenre costGenre : costGenres) {
@@ -679,28 +683,39 @@ public class ExternalApiController {
 
     /**
      * 获取所有的车型尺寸
+     *
      * @return
      */
     @RequestMapping(value = "/api/findVehicleSize")
-    ApiResult<List<VehicleSizeInfoVO>> findVehicleSize(){
+    ApiResult<List<VehicleSizeInfoVO>> findVehicleSize() {
         List<VehicleSizeInfoVO> vehicleSizeInfoVOS = vehicleInfoService.findVehicleSize();
         return ApiResult.ok(vehicleSizeInfoVOS);
     }
 
     /**
      * 是否是虚拟仓
+     *
      * @param warehouseInfoId
      * @return
      */
     @RequestMapping(value = "/api/isVirtualWarehouse")
-    ApiResult<Boolean> isVirtualWarehouse(@RequestParam("warehouseInfoId") Long warehouseInfoId){
-         WarehouseInfo warehouseInfo = warehouseInfoService.getById(warehouseInfoId);
-         if(warehouseInfo != null && warehouseInfo.getIsVirtual() != null){
-             return ApiResult.ok(warehouseInfo.getIsVirtual());
-         }
+    ApiResult<Boolean> isVirtualWarehouse(@RequestParam("warehouseInfoId") Long warehouseInfoId) {
+        WarehouseInfo warehouseInfo = warehouseInfoService.getById(warehouseInfoId);
+        if (warehouseInfo != null && warehouseInfo.getIsVirtual() != null) {
+            return ApiResult.ok(warehouseInfo.getIsVirtual());
+        }
         return ApiResult.ok(false);
     }
 
+    /**
+     * 根据供应商id集合查询供应商信息
+     * @return
+     */
+    @RequestMapping(value = "/api/getSupplierInfoByIds")
+    ApiResult<Collection<SupplierInfo>> getSupplierInfoByIds(@RequestParam("supplierIds") List<Long> supplierIds) {
+        Collection<SupplierInfo> supplierInfos = supplierInfoService.listByIds(supplierIds);
+        return ApiResult.ok(supplierInfos);
+    }
 }
 
 

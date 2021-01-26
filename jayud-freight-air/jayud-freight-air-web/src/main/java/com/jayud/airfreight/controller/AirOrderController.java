@@ -2,10 +2,9 @@ package com.jayud.airfreight.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.airfreight.feign.FileClient;
 import com.jayud.airfreight.feign.OauthClient;
@@ -38,7 +37,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static com.jayud.common.enums.OrderStatusEnum.AIR_A_2;
 
@@ -77,7 +79,7 @@ public class AirOrderController {
             ApiResult result = omsClient.getByCustomerName(form.getCustomerName());
             Object data = result.getData();
             if (data != null && ((List) data).size() > 0) {
-                JSONArray mainOrders = JSONArray.parseArray(JSON.toJSONString(data));
+                JSONArray mainOrders = new JSONArray(data);
                 form.assemblyMainOrderNo(mainOrders);
             } else {
                 form.setMainOrderNos(Collections.singletonList("-1"));
@@ -98,10 +100,12 @@ public class AirOrderController {
         List<Long> airOrderIds = new ArrayList<>();
         List<String> mainOrder = new ArrayList<>();
         List<Long> entityIds = new ArrayList<>();
+        List<Long> supplierIds = new ArrayList<>();
         for (AirOrderFormVO record : records) {
             airOrderIds.add(record.getId());
             mainOrder.add(record.getMainOrderNo());
             entityIds.add(record.getLegalEntityId());
+            supplierIds.add(record.getSupplierId());
         }
         //查询商品信息
         List<GoodsVO> goods = this.omsClient.getGoodsByBusIds(airOrderIds, BusinessTypeEnum.KY.getCode()).getData();
@@ -110,6 +114,12 @@ public class AirOrderController {
         if (CollectionUtils.isNotEmpty(entityIds)) {
             legalEntityResult = this.oauthClient.getLegalEntityByLegalIds(entityIds);
         }
+        //查询供应商信息
+        JSONArray supplierInfo = null;
+        if (CollectionUtils.isNotEmpty(supplierIds)) {
+            supplierInfo = new JSONArray(this.omsClient.getSupplierInfoByIds(supplierIds).getData());
+        }
+
 
         //查询主订单信息
         ApiResult result = omsClient.getMainOrderByOrderNos(mainOrder);
@@ -120,6 +130,8 @@ public class AirOrderController {
             record.assemblyMainOrderData(result.getData());
             //组装法人名称
             record.assemblyLegalEntity(legalEntityResult);
+            //拼装供应商
+            record.assemblySupplierInfo(supplierInfo);
         }
         return CommonResult.success(new CommonPageResult(page));
     }

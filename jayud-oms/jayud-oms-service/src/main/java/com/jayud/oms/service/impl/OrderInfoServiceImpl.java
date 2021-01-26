@@ -320,23 +320,23 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      * @param inputCostVO
      */
     private void calculateCost(InputCostVO inputCostVO) {
-        Map<String, Integer> receivableCost = new HashMap<>();//应收币种
-        Map<String, Integer> paymentCost = new HashMap<>();//应付币种
+        Map<String, BigDecimal> receivableCost = new HashMap<>();//应收币种
+        Map<String, BigDecimal> paymentCost = new HashMap<>();//应付币种
         //应付总本币
         BigDecimal receivableCostTotal = new BigDecimal(0);
         //应收总本币
         BigDecimal paymentCostTotal = new BigDecimal(0);
         //计算应收
         for (InputReceivableCostVO receivableCostVO : inputCostVO.getReceivableCostList()) {
-            receivableCost.merge(receivableCostVO.getCurrencyName(), receivableCostVO.getNumber(), Integer::sum);
+            receivableCost.merge(receivableCostVO.getCurrencyName(), receivableCostVO.getAmount(), BigDecimal::add);
             //合计应收本币金额
             receivableCostTotal = receivableCostTotal.add(receivableCostVO.getChangeAmount());
         }
         //计算应付
-        for (InputPaymentCostVO inputPaymentCostVO : inputCostVO.getPaymentCostList()) {
-            paymentCost.merge(inputPaymentCostVO.getCurrencyName(), inputPaymentCostVO.getNumber(), Integer::sum);
+        for (InputPaymentCostVO paymentCostVO : inputCostVO.getPaymentCostList()) {
+            paymentCost.merge(paymentCostVO.getCurrencyName(), paymentCostVO.getAmount(), BigDecimal::add);
             //合计应付本币金额
-            paymentCostTotal = paymentCostTotal.add(inputPaymentCostVO.getChangeAmount());
+            paymentCostTotal = paymentCostTotal.add(paymentCostVO.getChangeAmount());
         }
         //计算利润
         inputCostVO.setProfit(receivableCostTotal.subtract(paymentCostTotal));

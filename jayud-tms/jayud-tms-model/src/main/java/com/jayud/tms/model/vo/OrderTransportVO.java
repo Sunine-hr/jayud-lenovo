@@ -38,6 +38,9 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "货物流向(1进口 2出口)")
     private Integer goodsType;
 
+    @ApiModelProperty(value = "货物流向描述")
+    private Integer goodsTypeDesc;
+
     @ApiModelProperty(value = "状态")
     private String status;
 
@@ -163,6 +166,11 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "商品信息")
     private String goodsInfo;
 
+    @ApiModelProperty(value = "中转仓库")
+    private String warehouseName;
+
+    @ApiModelProperty(value = "供应商代码")
+    private String supplierCode;
 
     public String getEntireAddress1() {
         String stateName1 = this.stateName1;
@@ -218,4 +226,19 @@ public class OrderTransportVO {
         return OrderStatusEnum.getDesc(this.status);
     }
 
+
+    public void setGoodsType(Integer goodsType) {
+        this.goodsType = goodsType;
+    }
+
+    public String getGoodsTypeDesc() {
+        if (goodsType != null) {
+            if (this.goodsType == 1) {
+                return "进口";
+            } else if (this.goodsType == 2) {
+                return "出口";
+            }
+        }
+        return "";
+    }
 }

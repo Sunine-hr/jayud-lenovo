@@ -1,8 +1,8 @@
 package com.jayud.airfreight.model.vo;
 
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jayud.airfreight.model.enums.AirOrderTermsEnum;
@@ -135,6 +135,13 @@ public class AirOrderFormVO {
     @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo)")
     private Boolean createUserType;
 
+    @ApiModelProperty(value = "供应商id")
+    private Long supplierId;
+
+    @ApiModelProperty(value = "供应商代码")
+    private String supplierCode;
+
+
     /**
      * 组装商品信息
      */
@@ -161,20 +168,36 @@ public class AirOrderFormVO {
         if (mainOrderObjs == null) {
             return;
         }
-        JSONArray mainOrders = JSONArray.parseArray(JSON.toJSONString(mainOrderObjs));
+        JSONArray mainOrders = new JSONArray(JSON.toJSONString(mainOrderObjs));
         for (int i = 0; i < mainOrders.size(); i++) {
             JSONObject json = mainOrders.getJSONObject(i);
-            if (this.mainOrderNo.equals(json.getString("orderNo"))) { //主订单配对
-                this.customerName = json.getString("customerName");
-                this.customerCode = json.getString("customerCode");
-                this.mainOrderId = json.getString("id");
-                this.bizUname = json.getString("bizUname");
-                this.bizCode = json.getString("bizCode");
-                this.classCode = json.getString("classCode");
+            if (this.mainOrderNo.equals(json.getStr("orderNo"))) { //主订单配对
+                this.customerName = json.getStr("customerName");
+                this.customerCode = json.getStr("customerCode");
+                this.mainOrderId = json.getStr("id");
+                this.bizUname = json.getStr("bizUname");
+                this.bizCode = json.getStr("bizCode");
+                this.classCode = json.getStr("classCode");
                 break;
             }
         }
 
+    }
+
+    /**
+     * 组装供应商数据
+     */
+    public void assemblySupplierInfo(JSONArray supplierInfo) {
+        if (supplierInfo == null) {
+            return;
+        }
+        for (int i = 0; i < supplierInfo.size(); i++) {
+            JSONObject json = supplierInfo.getJSONObject(i);
+            if (this.supplierId != null && this.supplierId.equals(json.getLong("id"))) { //供应商配对
+                this.supplierCode = json.getStr("supplierCode");
+                break;
+            }
+        }
     }
 
     /**
@@ -190,11 +213,11 @@ public class AirOrderFormVO {
             log.warn("请求法人主体信息失败");
             return;
         }
-        JSONArray legalEntitys = JSONArray.parseArray(JSON.toJSONString(legalEntityResult.getData()));
+        JSONArray legalEntitys = new JSONArray(JSON.toJSONString(legalEntityResult.getData()));
         for (int i = 0; i < legalEntitys.size(); i++) {
             JSONObject json = legalEntitys.getJSONObject(i);
             if (this.legalEntityId.equals(json.getLong("id"))) { //法人主体配对
-                this.subLegalName = json.getString("legalName");
+                this.subLegalName = json.getStr("legalName");
                 break;
             }
         }

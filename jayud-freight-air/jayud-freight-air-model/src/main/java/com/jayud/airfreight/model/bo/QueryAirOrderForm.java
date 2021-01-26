@@ -1,12 +1,11 @@
 package com.jayud.airfreight.model.bo;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +54,7 @@ public class QueryAirOrderForm extends BasePageForm {
         mainOrderNos = new ArrayList<>(mainOrders.size());
         for (int i = 0; i < mainOrders.size(); i++) {
             JSONObject tmp = mainOrders.getJSONObject(i);
-            mainOrderNos.add(tmp.getString("orderNo"));
+            mainOrderNos.add(tmp.getStr("orderNo"));
         }
     }
 }

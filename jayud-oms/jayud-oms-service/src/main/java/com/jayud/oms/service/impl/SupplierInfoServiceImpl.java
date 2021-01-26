@@ -9,7 +9,6 @@ import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.config.ImportExcelUtil;
 import com.jayud.oms.config.LoadExcelUtil;
-import com.jayud.oms.config.TypeUtils;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.mapper.SupplierInfoMapper;
 import com.jayud.oms.model.bo.AddSupplierInfoForm;
@@ -20,6 +19,7 @@ import com.jayud.oms.model.enums.AuditTypeDescEnum;
 import com.jayud.oms.model.enums.SettlementTypeEnum;
 import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.*;
+import com.jayud.oms.model.vo.LegalEntityVO;
 import com.jayud.oms.model.vo.SupplierInfoVO;
 import com.jayud.oms.service.IAuditInfoService;
 import com.jayud.oms.service.IProductClassifyService;
@@ -31,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileDescriptor;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -88,6 +87,10 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             }
             record.setProductClassify(sb.substring(0, sb.length() - 1));
             record.setSettlementType(SettlementTypeEnum.getDesc(record.getSettlementType()));
+
+            //获取法人主体
+            LegalEntityVO legalEntityVO = ConvertUtil.convert(oauthClient.getLegalEntityByLegalId(record.getLegalEntityId()).getData(),LegalEntityVO.class);
+            record.setLegalEntityName(legalEntityVO.getLegalName());
             //查询审核状态
             AuditInfo auditInfo = this.auditInfoService.getAuditInfoLatestByExtId(record.getId(), AuditTypeDescEnum.ONE.getTable());
             record.setAuditStatus(AuditStatusEnum.getDesc(auditInfo.getAuditStatus()));
@@ -243,7 +246,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             if (com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(0))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(1))&&com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(2))&&
                     com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(3))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(4))&&
                     com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(5))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(6))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(7))&&
-            com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(8))&&com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(9))) {//判断每行某个数据是否符合规范要求
+            com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(8))&&com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(9))&&com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(11))) {//判断每行某个数据是否符合规范要求
                 //符合要求，插入到数据库customerInfo表中
                 String s = saveSupplierInfoFromExcel(supplierInfo, lo,userName);
                 if(s.equals("添加成功")){
@@ -344,8 +347,22 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             Long buyerId = Long.parseLong(systemUserBySystemName.getData().toString());
             supplierInfo.setBuyerId(buyerId);
         }
+        ApiResult legalEntityByLegalName = oauthClient.getLegalEntityByLegalName(lo.get(11));
+        if (legalEntityByLegalName.getMsg().equals("fail")) {
+            return "法人主体数据与系统不匹配";
+        }
+        supplierInfo.setLegalEntityId(Long.parseLong(legalEntityByLegalName.getData().toString()));
         supplierInfo.setCreateUser(userName);
         baseMapper.insert(supplierInfo);
+        boolean b = auditInfoService.saveOrUpdateAuditInfo(new AuditInfo()
+                .setExtId(supplierInfo.getId())
+                .setExtDesc(AuditTypeDescEnum.ONE.getTable())
+                .setAuditTypeDesc(AuditTypeDescEnum.ONE.getDesc())
+                .setAuditStatus(AuditStatusEnum.CW_WAIT.getCode())
+        );
+        if(!b){
+            return "审核状态添加失败";
+        }
         return "添加成功";
     }
 
@@ -377,6 +394,21 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             return true;
         }
         return false;
+    }
+
+    @Override
+    public List<SupplierInfo> findSupplierInfoByCondition() {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status","1");
+        List<SupplierInfo> list = baseMapper.selectList(queryWrapper);
+        List<SupplierInfo> supplierInfos = new ArrayList<>();
+        for (SupplierInfo supplierInfo : list) {
+            AuditInfo auditInfo = this.auditInfoService.getAuditInfoLatestByExtId(supplierInfo.getId(), AuditTypeDescEnum.ONE.getTable());
+            if(auditInfo.getAuditStatus().equals("10")){
+                supplierInfos.add(supplierInfo);
+            }
+        }
+        return supplierInfos;
     }
 
 }

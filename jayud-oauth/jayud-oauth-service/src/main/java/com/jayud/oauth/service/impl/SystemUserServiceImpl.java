@@ -159,9 +159,23 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         //定义排序规则
         page.addOrder(OrderItem.asc("su.id"));
         IPage<SystemUserVO> pageInfo = this.baseMapper.getPageList(page, form);
-        List<SystemUserVO> records = pageInfo.getRecords();
-        for (SystemUserVO record : records) {
-            System.out.println(record);
+        if(form.getCompanyId()!=null){
+            List<SystemUserVO> records = pageInfo.getRecords();
+            List<SystemUserVO> records2 = new ArrayList<>();
+            for (SystemUserVO record : records) {
+
+                List<Long> legalEntityIds = record.getLegalEntityIds();
+                    for (Long legalEntityId : legalEntityIds) {
+                        if(legalEntityId!=null){
+                            if(legalEntityId.equals(form.getCompanyId())){
+                                records2.add(record);
+                            }
+                        }
+                    }
+            }
+            pageInfo.setRecords(records2);
+            pageInfo.setTotal(records2.size());
+            pageInfo.setPages(records2.size()%pageInfo.getSize()==0?records2.size()/pageInfo.getSize():records2.size()/pageInfo.getSize()+1);
         }
         return pageInfo;
     }

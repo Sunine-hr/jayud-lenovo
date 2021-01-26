@@ -117,7 +117,6 @@ public class SystemUserVO {
     }
 
     public List<Long> getLegalEntityIds() {
-        legalEntityIds.clear();
         if (this.legalEntities != null) {
             for (LegalEntity legalEntity : legalEntities) {
                 legalEntityIds.add(legalEntity.getId());

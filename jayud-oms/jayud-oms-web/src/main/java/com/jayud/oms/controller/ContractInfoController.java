@@ -197,7 +197,7 @@ public class ContractInfoController {
 //        Map<String, Object> param = new HashMap<String, Object>();
 //        param.put("audit_status", CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());//有效的，审核通过的客户名称
 //        param.put("status", "1");
-        List<CustomerInfo> customerInfos = customerInfoService.findCustomerInfoByCondition(legalIds);
+        List<CustomerInfo> customerInfos = customerInfoService.getCustomerInfoByCondition(legalIds);
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (CustomerInfo customerInfo : customerInfos) {
             InitComboxVO initComboxVO = new InitComboxVO();

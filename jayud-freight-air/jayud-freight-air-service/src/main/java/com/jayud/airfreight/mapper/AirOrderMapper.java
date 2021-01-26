@@ -23,7 +23,7 @@ import java.util.List;
 @Mapper
 public interface AirOrderMapper extends BaseMapper<AirOrder> {
 
-    IPage<AirOrderFormVO> findByPage(Page page, @Param("form") QueryAirOrderForm form);
+    IPage<AirOrderFormVO> findByPage(Page page, @Param("form") QueryAirOrderForm form,@Param("legalIds") List<Long> legalIds);
 
     AirOrderVO getAirOrder(Long airOrderId);
 }

@@ -307,10 +307,16 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         supplierInfo.setSupplierCode(lo.get(1));
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("supplier_ch_name",lo.get(0));
-        queryWrapper.eq("supplier_code",lo.get(1));
+
         SupplierInfo supplierInfo1 = baseMapper.selectOne(queryWrapper);
         if(supplierInfo1!=null){
-            return "供应商信息已存在";
+            return "供应商名称已存在";
+        }
+        QueryWrapper queryWrapper1 = new QueryWrapper();
+        queryWrapper1.eq("supplier_code",lo.get(1));
+        SupplierInfo supplierInfo2 = baseMapper.selectOne(queryWrapper1);
+        if(supplierInfo2!=null){
+            return "供应商代码已存在";
         }
 
         String[] str = lo.get(2).split("/");

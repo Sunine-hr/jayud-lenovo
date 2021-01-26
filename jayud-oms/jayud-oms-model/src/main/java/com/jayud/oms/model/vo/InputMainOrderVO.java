@@ -16,6 +16,9 @@ public class InputMainOrderVO {
     @ApiModelProperty(value = "客户code")
     private String customerCode;
 
+    @ApiModelProperty(value = "客户id")
+    private Long customerId;
+
     @ApiModelProperty(value = "客户名称")
     private String customerName;
 

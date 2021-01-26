@@ -37,6 +37,9 @@ public class AddGoodsForm {
     @ApiModelProperty(value = "业务类型(0:空运)")
     private Integer businessType;
 
+    @ApiModelProperty(value = "订单号")
+    private String orderNo;
+
     @ApiModelProperty(value = "标签（空运是唛头）")
     private String label;
 

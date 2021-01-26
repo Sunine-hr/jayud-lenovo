@@ -28,6 +28,9 @@ public class AddGoodsForm {
     @ApiModelProperty(value = "业务主键(根据类型选择对应表的主键) 前端不用管")
     private Long businessId;
 
+    @ApiModelProperty(value = "订单号")
+    private String orderNo;
+
     @ApiModelProperty(value = "标签（空运是唛头）")
     private String label;
 

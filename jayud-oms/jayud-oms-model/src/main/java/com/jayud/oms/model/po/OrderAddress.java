@@ -42,7 +42,10 @@ public class OrderAddress extends Model<OrderAddress> {
     @ApiModelProperty(value = "绑定商品id")
     private Long bindGoodsId;
 
-    @ApiModelProperty(value = "业务类型(0:空运)")
+    @ApiModelProperty(value = "订单号")
+    private String orderNo;
+
+    @ApiModelProperty(value = "业务类型(参考BusinessTypeEnum)")
     private Integer businessType;
 
     @ApiModelProperty(value = "公司名称")

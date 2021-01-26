@@ -34,8 +34,11 @@ public class Goods extends Model<Goods> {
     @ApiModelProperty(value = "业务主键(根据类型选择对应表的主键)")
     private Long businessId;
 
-    @ApiModelProperty(value = "业务类型(0:空运)")
+    @ApiModelProperty(value = "业务类型(参考BusinessTypeEnum)")
     private Integer businessType;
+
+    @ApiModelProperty(value = "订单号")
+    private String orderNo;
 
     @ApiModelProperty(value = "标签（空运是唛头）")
     private String label;

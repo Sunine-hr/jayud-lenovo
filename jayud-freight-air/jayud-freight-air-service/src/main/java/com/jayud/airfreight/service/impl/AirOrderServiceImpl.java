@@ -94,6 +94,7 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
 
         List<AddOrderAddressForm> orderAddressForms = addAirOrderForm.getOrderAddressForms();
         for (AddOrderAddressForm orderAddressForm : orderAddressForms) {
+            orderAddressForm.setOrderNo(airOrder.getOrderNo());
             orderAddressForm.setBusinessType(BusinessTypeEnum.KY.getCode());
             orderAddressForm.setBusinessId(airOrder.getId());
             orderAddressForm.setCreateTime(LocalDateTime.now());
@@ -106,6 +107,7 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
 
         List<AddGoodsForm> goodsForms = addAirOrderForm.getGoodsForms();
         for (AddGoodsForm goodsForm : goodsForms) {
+            goodsForm.setOrderNo(airOrder.getOrderNo());
             goodsForm.setBusinessId(airOrder.getId());
             goodsForm.setBusinessType(BusinessTypeEnum.KY.getCode());
         }

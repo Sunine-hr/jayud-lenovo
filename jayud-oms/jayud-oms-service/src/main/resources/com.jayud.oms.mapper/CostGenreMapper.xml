@@ -23,7 +23,7 @@
     <select id="findCostGenreByPage" parameterType="com.jayud.oms.model.bo.QueryCostGenreForm"
     resultType="com.jayud.oms.model.vo.CostGenreVO">
         select
-            id, code, name, remarks, status,
+            id, code, name, remarks, status,tax_rate taxRate,
             create_time createTime,
             create_user createUser,
             update_time updateTime,

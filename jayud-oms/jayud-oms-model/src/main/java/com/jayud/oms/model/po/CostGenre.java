@@ -3,6 +3,8 @@ package com.jayud.oms.model.po;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
@@ -36,6 +38,9 @@ public class CostGenre extends Model<CostGenre> {
 
     @ApiModelProperty(value = "费用类型名称")
     private String name;
+
+    @ApiModelProperty(value = "税率")
+    private BigDecimal taxRate;
 
     @ApiModelProperty(value = "描述")
     private String remarks;

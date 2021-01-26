@@ -11,9 +11,12 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.BeanUtils;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.FreightAirClient;
 import com.jayud.oms.feign.OauthClient;
-import com.jayud.oms.model.enums.*;
+import com.jayud.oms.model.enums.LegalEntityAuditStatusEnum;
+import com.jayud.oms.model.enums.RoleKeyEnum;
+import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
@@ -24,7 +27,10 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -181,6 +187,10 @@ public class OrderComboxController {
             customerComboxVO.setName(customerInfo.getName());
             comboxStrVOS.add(customerComboxVO);
         }
+        //去重重复客户code
+        comboxStrVOS = comboxStrVOS.stream().collect(Collectors.collectingAndThen(
+                Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(InitComboxStrVO::getCode))), ArrayList::new));
+
 
         //如果没有结算单位,客户本身作为结算单位
 //        if (comboxStrVOS.size() == 0) {
@@ -235,6 +245,20 @@ public class OrderComboxController {
 
         return CommonResult.success(resultMap);
     }
+
+//    @ApiOperation(value = "获取选中费用对象")
+//    @PostMapping(value = "/getSelectedFeeObj")
+//    public CommonResult getFeeObj(@RequestBody QueryFeeObjForm form) {
+//        //获取选中结算单位对象
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("subUnitCode", form.getSubUnitCode());
+//
+//        //获取选中中港供应商
+//
+//
+//        return null;
+//    }
+
 
     @ApiOperation(value = "纯报关-通关口岸")
     @PostMapping(value = "/initPort")
@@ -354,29 +378,42 @@ public class OrderComboxController {
     @PostMapping(value = "/initCostGenre")
     public CommonResult<List<InitComboxVO>> initCostGenre(@RequestBody Map<String, Object> param) {
         String code = MapUtil.getStr(param, CommonConstant.BIZ_CODE);
-        QueryWrapper queryProductBiz = new QueryWrapper();
-        queryProductBiz.eq(SqlConstant.ID_CODE, code);
-        ProductBiz productBiz = productBizService.getOne(queryProductBiz);
-        if (productBiz == null || StringUtil.isNullOrEmpty(productBiz.getCostGenreIds())) {
-            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+        List<ProductBiz> productBizs = new ArrayList<>();
+        if (!StringUtils.isEmpty(code)) {
+            QueryWrapper queryProductBiz = new QueryWrapper();
+            queryProductBiz.eq(SqlConstant.ID_CODE, code);
+            productBizs = productBizService.list(queryProductBiz);
+        } else {
+            productBizs = productBizService.getEnableProductBiz();
         }
-        String[] cids = productBiz.getCostGenreIds().split(CommonConstant.COMMA);
+        if (productBizs.size() == 0) {
+            return CommonResult.success();
+        }
+
+//        if (productBiz == null || StringUtil.isNullOrEmpty(productBiz.getCostGenreIds())) {
+//            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+//        }
         List<InitComboxVO> costTypeComboxs = new ArrayList<>();
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(SqlConstant.STATUS, CommonConstant.VALUE_1);
-        queryWrapper.in(SqlConstant.ID, cids);
+        queryWrapper.eq(SqlConstant.STATUS, StatusEnum.ENABLE.getCode());
         List<CostGenre> costGenres = costGenreService.list(queryWrapper);
         for (CostGenre costGenre : costGenres) {
             InitComboxVO initComboxVO = new InitComboxVO();
             initComboxVO.setName(costGenre.getName());
             initComboxVO.setId(costGenre.getId());
-            if (productBiz.getCostGenreDefault() == costGenre.getId()) {
-                initComboxVO.setIsDefault(true);
-            } else {
-                initComboxVO.setIsDefault(false);
+            initComboxVO.setTaxRate(costGenre.getTaxRate());
+            if (productBizs.size() == 1) {
+                ProductBiz productBiz = productBizs.get(0);
+                if (productBiz.getCostGenreDefault().equals(costGenre.getId())) {
+                    initComboxVO.setIsDefault(true);
+                } else {
+                    initComboxVO.setIsDefault(false);
+                }
             }
+
             costTypeComboxs.add(initComboxVO);
         }
+
         return CommonResult.success(costTypeComboxs);
     }
 

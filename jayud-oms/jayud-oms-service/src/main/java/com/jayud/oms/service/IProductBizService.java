@@ -60,7 +60,13 @@ public interface IProductBizService extends IService<ProductBiz> {
 
     /**
      * 校验唯一性
+     *
      * @return
      */
     boolean checkUnique(ProductBiz productBiz);
+
+    /**
+     * 获取启用业务类型
+     */
+    public List<ProductBiz> getEnableProductBiz();
 }

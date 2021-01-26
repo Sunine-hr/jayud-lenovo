@@ -11,6 +11,7 @@ import com.jayud.oms.model.bo.QueryCostGenreForm;
 import com.jayud.oms.model.po.CostGenre;
 import com.jayud.oms.model.vo.CostGenreVO;
 import com.jayud.oms.service.ICostGenreService;
+import com.jayud.oms.service.IProductBizService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +41,8 @@ public class CostGenreController {
 
     @Autowired
     private ICostGenreService costGenreService;
+    @Autowired
+    private IProductBizService productBizService;
 
     @ApiOperation("分页查询费用类型")
     @PostMapping("/findCostGenreByPage")

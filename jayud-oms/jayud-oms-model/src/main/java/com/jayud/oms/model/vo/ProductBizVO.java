@@ -38,9 +38,6 @@ public class ProductBizVO {
     @ApiModelProperty(value = "业务名")
     private String name;
 
-    @ApiModelProperty(value = "税率")
-    private BigDecimal taxRate;
-
     @ApiModelProperty(value = "费用类型id集合（多个主键用逗号隔开）")
     @JsonIgnore
     private String costGenreIds;

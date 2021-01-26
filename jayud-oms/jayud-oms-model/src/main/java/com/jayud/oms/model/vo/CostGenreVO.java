@@ -11,6 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -35,6 +36,9 @@ public class CostGenreVO {
 
     @ApiModelProperty(value = "费用类型名称")
     private String name;
+
+    @ApiModelProperty(value = "税率")
+    private BigDecimal taxRate;
 
     @ApiModelProperty(value = "描述")
     private String remarks;

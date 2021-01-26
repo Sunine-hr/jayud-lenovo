@@ -39,9 +39,6 @@ public class ProductBiz extends Model<ProductBiz> {
     @ApiModelProperty(value = "业务名")
     private String name;
 
-    @ApiModelProperty(value = "税率")
-    private BigDecimal taxRate;
-
     @ApiModelProperty(value = "费用类型id集合（多个主键用逗号隔开）")
     private String costGenreIds;
 

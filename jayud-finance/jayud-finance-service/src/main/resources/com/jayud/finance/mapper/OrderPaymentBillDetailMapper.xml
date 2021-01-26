@@ -400,7 +400,7 @@
             obct.money_type='1' and obct.currency_code = 'EUR') euro,
             (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = opbd.cost_id and
             obct.money_type='1' and obct.currency_code = 'HKD') hKDollar,
-            ifnull(opbd.tax_rate,(select pb.tax_rate from product_biz pb where pb.id_code = oi.biz_code)) taxRate,
+            ifnull(opbd.tax_rate,(select cg.tax_rate from cost_genre cg where cg.id = opc.cost_genre_id)) taxRate,
             opbd.remarks,
             opbd.created_time createTimeStr,
             opbd.bill_no

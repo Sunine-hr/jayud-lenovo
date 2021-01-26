@@ -182,4 +182,14 @@ public class ProductBizServiceImpl extends ServiceImpl<ProductBizMapper, Product
 
     }
 
+    /**
+     * 获取启用业务类型
+     */
+    @Override
+    public List<ProductBiz> getEnableProductBiz() {
+        QueryWrapper<ProductBiz> condition = new QueryWrapper<>();
+        condition.lambda().eq(ProductBiz::getStatus, StatusEnum.ENABLE.getCode());
+        return this.baseMapper.selectList(condition);
+    }
+
 }

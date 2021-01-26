@@ -3,6 +3,8 @@ package com.jayud.oms.model.vo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class InitComboxVO {
 
@@ -14,5 +16,8 @@ public class InitComboxVO {
 
     @ApiModelProperty(value = "是否默认")
     private Boolean isDefault;
+
+    @ApiModelProperty(value = "税率 录用费用使用")
+    private BigDecimal taxRate;
 
 }

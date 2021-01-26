@@ -42,10 +42,6 @@ public class AddProductBizForm extends Model<AddProductBizForm> {
     @NotEmpty(message = "name is required")
     private String name;
 
-    @ApiModelProperty(value = "税率")
-    @NotNull(message = "taxRate is required")
-    private BigDecimal taxRate;
-
     @ApiModelProperty(value = "费用类型集合")
     private List<CostGenreVO> costGenreVOs;
 

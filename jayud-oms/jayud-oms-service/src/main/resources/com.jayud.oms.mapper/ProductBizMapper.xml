@@ -29,7 +29,6 @@
             resultType="com.jayud.oms.model.vo.ProductBizVO">
         select
         id, id_code idCode, name,
-        tax_rate taxRate,
         cost_genre_ids costGenreIds, cost_genre_default costGenreDefault,
         status,sorts,
         create_time createTime,

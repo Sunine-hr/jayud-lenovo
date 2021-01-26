@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="OrderReceivableBill对象", description="")
+@ApiModel(value = "OrderReceivableBill对象", description = "")
 public class OrderReceivableBill extends Model<OrderReceivableBill> {
 
     private static final long serialVersionUID = 1L;
@@ -66,6 +66,11 @@ public class OrderReceivableBill extends Model<OrderReceivableBill> {
     @ApiModelProperty(value = "修改时间")
     private LocalDateTime updatedTime;
 
+    @ApiModelProperty(value = "法人主体id")
+    private Long legalEntityId;
+
+    @ApiModelProperty(value = "结算单位code")
+    private String unitCode;
 
     @Override
     protected Serializable pkVal() {

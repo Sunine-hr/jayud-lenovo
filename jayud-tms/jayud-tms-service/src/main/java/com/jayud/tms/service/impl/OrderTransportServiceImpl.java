@@ -263,15 +263,17 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             String provinceName = orderSendCarsVO.getProvinceName() == null ? "" : orderSendCarsVO.getProvinceName();
             String cityName = orderSendCarsVO.getCityName() == null ? "" : orderSendCarsVO.getCityName();
             String address = orderSendCarsVO.getAddress() == null ? "" : orderSendCarsVO.getAddress();
-            sendCarPdfVO.setDeliveryAddress(provinceName + cityName + address);
+            String detailedAddress = provinceName + cityName + address;
+            sendCarPdfVO.setDeliveryAddress(detailedAddress +
+                    " 联系人:" + orderSendCarsVO.getWarehouseContacts() + orderSendCarsVO.getWarehouseNumber());
             sendCarPdfVO.setDeliveryPhone(orderSendCarsVO.getWarehouseNumber());
         } else if (takeGoodsInfo2.size() == 1) {
             TakeGoodsInfoVO takeGoodsInfoVO = takeGoodsInfo2.get(0);
             String provinceName = takeGoodsInfoVO.getStateName() == null ? "" : takeGoodsInfo2.get(0).getStateName();
             String cityName = takeGoodsInfoVO.getCityName() == null ? "" : takeGoodsInfo2.get(0).getCityName();
             String address = takeGoodsInfoVO.getAddress() == null ? "" : takeGoodsInfo2.get(0).getAddress();
-            sendCarPdfVO.setDeliveryAddress(provinceName + cityName + address + ";"
-                    + takeGoodsInfoVO.getContacts() + " " + takeGoodsInfoVO.getPhone());
+            sendCarPdfVO.setDeliveryAddress(provinceName + cityName + address +
+                    " 联系人:" + takeGoodsInfoVO.getContacts() + " " + takeGoodsInfoVO.getPhone());
             sendCarPdfVO.setDeliveryContacts(takeGoodsInfo2.get(0).getContacts());
             sendCarPdfVO.setDeliveryPhone(takeGoodsInfo2.get(0).getPhone());
         }

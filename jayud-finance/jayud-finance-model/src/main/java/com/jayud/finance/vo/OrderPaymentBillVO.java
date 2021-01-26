@@ -30,5 +30,10 @@ public class OrderPaymentBillVO {
     @ApiModelProperty(value = "未出账订单数")
     private Integer notPaidOrderNum;
 
+    @ApiModelProperty(value = "法人主体id")
+    private Long legalEntityId;
+
+    @ApiModelProperty(value = "供应商code")
+    private String supplierCode;
 
 }

@@ -13,6 +13,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -131,9 +132,10 @@ public interface OrderPaymentBillMapper extends BaseMapper<OrderPaymentBill> {
      * 子订单应付出账单分页查询
      * @param page
      * @param form
+     * @param sqlParam
      * @param legalIds
      * @return
      */
-    IPage<OrderPaymentBillVO> findPaymentSubBillByPage(Page<OrderPaymentBillVO> page, @Param("form")QueryPaymentBillForm form,@Param("legalIds") List<Long> legalIds);
+    IPage<OrderPaymentBillVO> findPaymentSubBillByPage(Page<OrderPaymentBillVO> page, @Param("form") QueryPaymentBillForm form, Map<String, Object> dynamicSqlParam, @Param("legalIds") List<Long> legalIds);
 
 }

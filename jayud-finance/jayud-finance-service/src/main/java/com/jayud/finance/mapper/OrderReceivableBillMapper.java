@@ -13,6 +13,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -139,5 +140,5 @@ public interface OrderReceivableBillMapper extends BaseMapper<OrderReceivableBil
      * @param form
      * @return
      */
-    IPage<OrderReceiveBillVO> findReceiveSubBillByPage(Page<OrderReceiveBillVO> page, @Param("form")QueryReceiveBillForm form, @Param("legalIds")List<Long> legalIds);
+    IPage<OrderReceiveBillVO> findReceiveSubBillByPage(Page<OrderReceiveBillVO> page, @Param("form") QueryReceiveBillForm form, Map<String, Object> dynamicSqlParam, @Param("legalIds") List<Long> legalIds);
 }

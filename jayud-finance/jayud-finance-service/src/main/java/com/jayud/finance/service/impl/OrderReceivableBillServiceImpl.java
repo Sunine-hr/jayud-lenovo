@@ -9,6 +9,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.finance.bo.*;
@@ -75,9 +76,10 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         IPage<OrderReceiveBillVO> pageInfo = null;
         if ("main".equals(form.getCmd())) {
             pageInfo = baseMapper.findReceiveBillByPage(page, form,legalIds);//法人主体/结算单位/可汇总主订单费用的维度统计
-        } else if ("zgys".equals(form.getCmd()) ||
-                "bg".equals(form.getCmd()) || "ky".equals(form.getCmd())) {
-            pageInfo = baseMapper.findReceiveSubBillByPage(page, form,legalIds);//法人主体/结算单位/子订单费用的维度统计
+        } else  {
+            //动态sql参数
+            Map<String, Object> sqlParam = this.dynamicSQLFindReceiveBillByPageParam(form);
+            pageInfo = baseMapper.findReceiveSubBillByPage(page, form,sqlParam,legalIds);//法人主体/结算单位/子订单费用的维度统计
         }
         return pageInfo;
     }
@@ -208,6 +210,8 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             queryWrapper.eq("sub_type", form.getSubType());
             queryWrapper.eq("legal_name", receiveBillForm.getLegalName());
             queryWrapper.eq("unit_account", receiveBillForm.getUnitAccount());
+
+
             OrderReceivableBill existBill = baseMapper.selectOne(queryWrapper);
             if (existBill != null && existBill.getId() != null) {
                 orderReceivableBill.setId(existBill.getId());
@@ -367,5 +371,9 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         return baseMapper.getWarehouseAddress(orderNo);
     }
 
-
+    private Map<String, Object> dynamicSQLFindReceiveBillByPageParam(QueryReceiveBillForm form) {
+        Map<String, Object> sqlParam = new HashMap<>();
+        sqlParam.put("table", SubOrderSignEnum.getSignOne2SignTwo(form.getCmd()).split("表")[0]);
+        return sqlParam;
+    }
 }

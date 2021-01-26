@@ -4,10 +4,7 @@ package com.jayud.tms.controller;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.common.CommonPageResult;
-import com.jayud.common.CommonResult;
-import com.jayud.common.RedisUtils;
-import com.jayud.common.UserOperator;
+import com.jayud.common.*;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.DelOprStatusForm;
@@ -23,6 +20,7 @@ import com.jayud.tms.feign.OmsMiniClient;
 import com.jayud.tms.model.bo.*;
 import com.jayud.tms.model.po.OrderSendCars;
 import com.jayud.tms.model.po.OrderTransport;
+import com.jayud.tms.model.vo.InputOrderTransportVO;
 import com.jayud.tms.model.vo.OrderSendCarsVO;
 import com.jayud.tms.model.vo.OrderStatusVO;
 import com.jayud.tms.model.vo.OrderTransportVO;
@@ -32,10 +30,7 @@ import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
@@ -295,10 +290,10 @@ public class OrderInTransportController {
                 //当选择的是虚拟仓时系统自动生成入仓出仓数据,即从车辆通关直接到车辆派送
                 Boolean isVirtual = false;
                 OrderTransport orderTransport1 = orderTransportService.getById(form.getOrderId());
-                if(orderTransport1 != null && orderTransport1.getWarehouseInfoId() != null){
+                if (orderTransport1 != null && orderTransport1.getWarehouseInfoId() != null) {
                     isVirtual = omsClient.isVirtualWarehouse(orderTransport1.getWarehouseInfoId()).getData();
                 }
-                if(isVirtual) {
+                if (isVirtual) {
                     orderTransport.setStatus(OrderStatusEnum.TMS_T_13.getCode());
                     autoOprWarehouse(form);
                 }
@@ -315,10 +310,11 @@ public class OrderInTransportController {
 
     /**
      * 当选择的是虚拟仓时系统自动生成入仓出仓数据,即从车辆通关直接到车辆派送
+     *
      * @param form
      * @return
      */
-    private Boolean autoOprWarehouse(OprStatusForm form){
+    private Boolean autoOprWarehouse(OprStatusForm form) {
         form.setBusinessType(BusinessTypeEnum.ZGYS.getCode());
         AuditInfoForm auditInfoForm = new AuditInfoForm();
         auditInfoForm.setExtId(form.getOrderId());
@@ -335,7 +331,7 @@ public class OrderInTransportController {
         omsClient.saveOprStatus(form);
         omsClient.saveAuditInfo(auditInfoForm);
 
-       //车辆出仓
+        //车辆出仓
         form.setStatus(OrderStatusEnum.TMS_T_13.getCode());
         form.setStatusName(OrderStatusEnum.TMS_T_13.getDesc());
 
@@ -681,8 +677,8 @@ public class OrderInTransportController {
         }
         //TODO 订单状态需要提单后才能提交
         OrderTransport tmp = this.orderTransportService.getById(form.getOrderId());
-        if (OrderStatusEnum.TMS_T_15.getCode().equals(tmp.getStatus())){
-            return CommonResult.error(400,"该订单已完结");
+        if (OrderStatusEnum.TMS_T_15.getCode().equals(tmp.getStatus())) {
+            return CommonResult.error(400, "该订单已完结");
         }
 
         String status = tmp.getStatus();
@@ -728,6 +724,18 @@ public class OrderInTransportController {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
         return CommonResult.success();
+    }
+
+
+    @ApiOperation(value = "获取中港子订单详情 mainOrderNo=主订单号")
+    @RequestMapping(value = "/getOrderTransportDetails")
+    public CommonResult<InputOrderTransportVO> getOrderTransport(@RequestBody Map<String, String> map) {
+        String mainOrderNo = MapUtil.getStr(map, "mainOrderNo");
+        if (StringUtils.isEmpty(mainOrderNo)) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        InputOrderTransportVO inputOrderTransportVO = orderTransportService.getOrderTransport(mainOrderNo);
+        return CommonResult.success(inputOrderTransportVO);
     }
 
 }

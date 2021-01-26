@@ -103,6 +103,9 @@ public class CustomerInfoVO {
     @ApiModelProperty(value = "更新时间")
     private String updatedTimeStr;
 
+    @ApiModelProperty(value = "法人主体集合")
+    private List<LegalEntityVO> legalEntities;
+
     public List<Long> getLegalEntityIds() {
         if(!StringUtil.isNullOrEmpty(this.legalEntityIdStr)){
             String[] strs = this.legalEntityIdStr.split(",");

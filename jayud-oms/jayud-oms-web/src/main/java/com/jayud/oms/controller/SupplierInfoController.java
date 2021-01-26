@@ -19,8 +19,10 @@ import com.jayud.oms.model.enums.AuditTypeDescEnum;
 import com.jayud.oms.model.enums.SettlementTypeEnum;
 import com.jayud.oms.model.enums.UserTypeEnum;
 import com.jayud.oms.model.po.AuditInfo;
+import com.jayud.oms.model.po.CustomerInfo;
 import com.jayud.oms.model.po.SupplierInfo;
 import com.jayud.oms.model.vo.EnumVO;
+import com.jayud.oms.model.vo.InitComboxVO;
 import com.jayud.oms.model.vo.SupplierInfoVO;
 import com.jayud.oms.service.IAuditInfoService;
 import com.jayud.oms.service.ISupplierInfoService;
@@ -224,7 +226,7 @@ public class SupplierInfoController {
         //角色
         resultMap.put("roles", oauthClient.findRole().getData());
         //所属公司
-        resultMap.put("companys", oauthClient.getCompany().getData());
+        resultMap.put("companys", initCompany());
         //所属上级
         resultMap.put("departCharges", oauthClient.findCustAccount().getData());
         return CommonResult.success(resultMap);
@@ -276,8 +278,20 @@ public class SupplierInfoController {
     @ApiOperation(value = "供应商账号-所属公司")
     @PostMapping(value = "/initCompany")
     public CommonResult initCompany() {
-        return CommonResult.success(oauthClient.getCompany().getData());
+        List<SupplierInfo> supplierInfos = supplierInfoService.findSupplierInfoByCondition();
+        List<InitComboxVO> initComboxVOS = new ArrayList<>();
+        for (SupplierInfo supplierInfo : supplierInfos) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(supplierInfo.getId());
+            initComboxVO.setName(supplierInfo.getSupplierChName());
+            initComboxVOS.add(initComboxVO);
+        }
+        return CommonResult.success(initComboxVOS);
     }
+
+
+
+
 
     @Value("${address.supplierAddr}")
     private String filePath;
@@ -334,7 +348,8 @@ public class SupplierInfoController {
 
     @ApiOperation(value = "判断是否有错误信息")
     @PostMapping(value = "/checkMes")
-    public CommonResult checkMes(@RequestParam("userName") String userName)  {
+    public CommonResult checkMes(@RequestBody Map<String, Object> param)  {
+        String userName = MapUtil.getStr(param, "loginUserName");
         boolean result = supplierInfoService.checkMes(userName);
         return CommonResult.success(result);
     }

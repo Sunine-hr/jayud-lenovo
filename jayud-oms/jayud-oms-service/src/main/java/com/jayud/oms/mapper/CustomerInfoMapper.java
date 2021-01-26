@@ -97,5 +97,5 @@ public interface CustomerInfoMapper extends BaseMapper<CustomerInfo> {
     /**
      * 根据法人主体获取对应下的客户列表
      */
-    List<CustomerInfo> findCustomerInfoByCondition(@Param("legalIds")List<Long> legalIds);
+    List<CustomerInfo> getCustomerInfoByCondition(@Param("legalIds")List<Long> legalIds);
 }

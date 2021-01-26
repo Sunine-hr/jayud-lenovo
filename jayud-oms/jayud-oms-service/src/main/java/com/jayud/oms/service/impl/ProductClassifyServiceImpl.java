@@ -57,6 +57,7 @@ public class ProductClassifyServiceImpl extends ServiceImpl<ProductClassifyMappe
     public ProductClassify getProductClassifyId(String str) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("name", str);
+        queryWrapper.eq("f_id", 0);
         ProductClassify productClassify = baseMapper.selectOne(queryWrapper);
         return productClassify;
     }

@@ -519,7 +519,7 @@ public class SystemUserController {
         List<InitComboxVO> initComboxs = new ArrayList<>();
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("audit_status","2");
-        List<LegalEntity> legalEntities = legalEntityService.list();
+        List<LegalEntity> legalEntities = legalEntityService.list(queryWrapper);
         for (LegalEntity legalEntity : legalEntities) {
             InitComboxVO initComboxVO = new InitComboxVO();
             initComboxVO.setId(legalEntity.getId());

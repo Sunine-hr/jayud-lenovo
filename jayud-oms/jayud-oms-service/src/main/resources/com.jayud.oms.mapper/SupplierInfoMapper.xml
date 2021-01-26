@@ -27,6 +27,7 @@
         <result column="rate" property="rate" />
         <result column="buyer_id" property="buyerId" />
         <result column="status" property="status" />
+        <result column="legalEntityId" property="legal_entity_id" />
         <result column="create_user" property="createUser" />
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
@@ -38,7 +39,7 @@
         id, supplier_code, product_classify_id, supplier_ch_name, supplier_en_name,
          state_code, contacts, company_name, contact_number, contact_phone, address,
          pid, pname, cid, cname, zip_code, ext_setting_id, settlement_type, payment_day,
-         tax_receipt, rate, buyer_id, status, create_user, create_time, update_time, update_user
+         tax_receipt, rate, buyer_id, status, create_user, create_time, update_time, update_user,legal_entity_id
     </sql>
 
 <!--    <select id="findSupplierInfoByPage" parameterType="com.jayud.oms.model.bo.QuerySupplierInfoForm"-->
@@ -115,7 +116,8 @@
         tax_receipt tax_receipt, rate,
         s.buyer_id buyerId,s.status,
         s.create_user createUser, s.create_time createTime,
-        s.update_time updateTime,s.update_user updateUser
+        s.update_time updateTime,s.update_user updateUser,
+        s.`legal_entity_id` legalEntityId
         from
         supplier_info s
         <where>
@@ -124,6 +126,12 @@
             </if>
             <if test="form.supplierChName!=null and form.supplierChName!=''">
                 and s.supplier_ch_name like concat ('%',#{form.supplierChName},'%')
+            </if>
+            <if test="legalIds != null and legalIds.size>0">
+                and s.`legal_entity_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
             </if>
         </where>
     </select>

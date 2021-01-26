@@ -21,4 +21,10 @@ public interface OauthClient {
     @ApiOperation("根据法人主体id集合查询法人主体信息")
     @RequestMapping(value = "/api/getLegalEntityByLegalIds")
     public ApiResult getLegalEntityByLegalIds(@RequestParam("legalId") List<Long> legalIds);
+
+    /**
+     * 根据用户名获取用户所属法人主体
+     */
+    @RequestMapping(value = "/api/getLegalIdBySystemName")
+    public ApiResult getLegalIdBySystemName(@RequestParam("loginName") String loginName) ;
 }

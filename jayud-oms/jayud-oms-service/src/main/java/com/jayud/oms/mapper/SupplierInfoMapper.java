@@ -23,7 +23,7 @@ import java.util.List;
 @Mapper
 public interface SupplierInfoMapper extends BaseMapper<SupplierInfo> {
 
-    IPage<SupplierInfoVO> findSupplierInfoByPage(Page page, @Param(value = "form") QuerySupplierInfoForm form);
+//    IPage<SupplierInfoVO> findSupplierInfoByPage(Page page, @Param(value = "form") QuerySupplierInfoForm form);
 
     IPage<SupplierInfoVO> findAuditSupplierInfoByPage(Page page, @Param(value = "form") QueryAuditSupplierInfoForm form);
 

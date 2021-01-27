@@ -218,15 +218,18 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
                 orderPaymentBill.setId(existBill.getId());
                 orderPaymentBill.setUpdatedTime(LocalDateTime.now());
                 orderPaymentBill.setUpdatedUser(UserOperator.getToken());
-            } else {
-                //查询法人主体id
-                Object data = oauthClient.getAllLegalEntityByLegalName(paymentBillForm.getLegalName()).getData();
-                Long legalEntityId = new JSONObject(data).getLong("id");
-                //查询供应商代码
-                data = omsClient.getSupplierInfoByName(paymentBillForm.getSupplierChName()).getData();
-                String supplierCode = new JSONObject(data).getStr("supplierCode");
-                orderPaymentBill.setLegalEntityId(legalEntityId).setSupplierCode(supplierCode);
+                orderPaymentBill.setLegalEntityId(null);
+                orderPaymentBill.setSupplierCode(null);
             }
+//            else {
+//                //查询法人主体id
+//                Object data = oauthClient.getAllLegalEntityByLegalName(paymentBillForm.getLegalName()).getData();
+//                Long legalEntityId = new JSONObject(data).getLong("id");
+//                //查询供应商代码
+//                data = omsClient.getSupplierInfoByName(paymentBillForm.getSupplierChName()).getData();
+//                String supplierCode = new JSONObject(data).getStr("supplierCode");
+//                orderPaymentBill.setLegalEntityId(legalEntityId).setSupplierCode(supplierCode);
+//            }
 
 
             orderPaymentBill.setCreatedUser(UserOperator.getToken());

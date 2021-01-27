@@ -218,15 +218,18 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
                 orderReceivableBill.setId(existBill.getId());
                 orderReceivableBill.setUpdatedTime(LocalDateTime.now());
                 orderReceivableBill.setUpdatedUser(form.getLoginUserName());
-            } else {
-                //查询法人主体id
-                Object data = oauthClient.getAllLegalEntityByLegalName(receiveBillForm.getLegalName()).getData();
-                Long legalEntityId = new JSONObject(data).getLong("id");
-                //查询结算单位code
-                data = omsClient.getCustomerInfoByName(receiveBillForm.getUnitAccount()).getData();
-                String unitCode = new JSONObject(data).getStr("idCode");//获取客户代码
-                orderReceivableBill.setLegalEntityId(legalEntityId).setUnitCode(unitCode);
+                orderReceivableBill.setLegalEntityId(null);
+                orderReceivableBill.setUnitCode(null);
             }
+//            else {
+//                //查询法人主体id
+//                Object data = oauthClient.getAllLegalEntityByLegalName(receiveBillForm.getLegalName()).getData();
+//                Long legalEntityId = new JSONObject(data).getLong("id");
+//                //查询结算单位code
+//                data = omsClient.getCustomerInfoByName(receiveBillForm.getUnitAccount()).getData();
+//                String unitCode = new JSONObject(data).getStr("idCode");//获取客户代码
+//                orderReceivableBill.setLegalEntityId(legalEntityId).setUnitCode(unitCode);
+//            }
 
             orderReceivableBill.setCreatedUser(form.getLoginUserName());
             result = saveOrUpdate(orderReceivableBill);

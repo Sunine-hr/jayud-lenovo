@@ -231,10 +231,16 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         customerInfo.setIdCode(lo.get(1));
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("name", lo.get(0));
-        queryWrapper.eq("id_code", lo.get(1));
         CustomerInfo customerInfo1 = baseMapper.selectOne(queryWrapper);
         if (customerInfo1 != null) {
-            return "客户信息已存在";
+            return "客户名称已存在";
+        }
+
+        QueryWrapper queryWrapper1 = new QueryWrapper();
+        queryWrapper1.eq("id_code", lo.get(1));
+        CustomerInfo customerInfo2 = baseMapper.selectOne(queryWrapper1);
+        if (customerInfo2 != null) {
+            return "客户代码已存在";
         }
         Integer typeCode = TypeUtils.getTypeCode(lo.get(2));
         if (typeCode == null) {

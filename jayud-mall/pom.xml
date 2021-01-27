@@ -17,6 +17,7 @@
         <module>jayud-mall-service</module>
         <module>jayud-mall-web</module>
         <module>jayud-mall-admin</module>
+        <module>jayud-mall-security</module>
     </modules>
     <name>jayud-mall</name>
     <description>南京商城项目</description>
@@ -32,12 +33,7 @@
             <artifactId>druid-spring-boot-starter</artifactId>
             <version>1.1.21</version>
         </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.41</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/io.springfox/springfox-swagger2 -->
+        <!-- springfox-swagger2 -->
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>

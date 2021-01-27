@@ -25,6 +25,12 @@
             <version>1.0</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.jayud</groupId>
+            <artifactId>jayud-mall-security</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
+        </dependency>
         <!--spring security 用户-认证 、授权 、攻击防护 （防止伪造身份）-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -35,12 +41,6 @@
             <groupId>org.springframework.social</groupId>
             <artifactId>spring-social-config</artifactId>
             <version>1.1.6.RELEASE</version>
-        </dependency>
-        <!--jwt-->
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
-            <version>0.7.0</version>
         </dependency>
     </dependencies>
 

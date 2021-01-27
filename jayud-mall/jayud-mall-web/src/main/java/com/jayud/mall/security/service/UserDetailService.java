@@ -1,38 +1,31 @@
 package com.jayud.mall.security.service;
 
-import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.model.bo.CustomerLoginForm;
 import com.jayud.mall.model.vo.CustomerVO;
-import com.jayud.mall.model.vo.domain.BaseAuthVO;
-import com.jayud.mall.model.vo.domain.CustomerUser;
-import com.jayud.mall.security.utils.ContextHolderUtils;
+import com.jayud.mall.security.entity.SecurityUser;
+import com.jayud.mall.security.entity.UserDTO;
 import com.jayud.mall.service.ICustomerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * 自定义用户认证
  */
 @Configuration
+@Service("userDetailsService")
 public class UserDetailService implements UserDetailsService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -82,42 +75,65 @@ public class UserDetailService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        logger.debug("权限框架-加载用户");
-        HttpServletRequest request = ContextHolderUtils.getRequest();
-        String password = request.getParameter(passwordParameter);
-        logger.info("password = {}", password);
+//        logger.debug("权限框架-加载用户");
+//        HttpServletRequest request = ContextHolderUtils.getRequest();
+//        String password = request.getParameter(passwordParameter);
+//        logger.info("password = {}", password);
+//
+//        List<GrantedAuthority> auths = new ArrayList<>();
+//
+//        CustomerLoginForm loginForm = new CustomerLoginForm();
+//        loginForm.setLoginname(username);
+//        CustomerVO customerVO = customerService.customerLogin(loginForm);
+//        //客户认证
+//        if (customerVO == null) {
+//            logger.debug("找不到该用户(手机号):{}", username);
+//            throw new UsernameNotFoundException("找不到该用户！");
+//        }
+//        //启用状态，默认为1，1是0否
+//        if(customerVO.getStatus()==0) {
+//            logger.debug("用户账号未启用，无法登陆(手机号):{}", username);
+//            throw new DisabledException("用户账号被禁用！");
+//        }
+//        // security bcryptPasswordEncoder自定义密码验证
+//        BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
+//        if (!bcryptPasswordEncoder.matches(password,customerVO.getPasswd())){
+//            throw new BadCredentialsException("密码错误，请重新输入");
+//        }
+//
+//        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("注册客户");//角色写死
+//        auths.add(authority);
+//
+//        //存放用户信息-授权用户
+//        CustomerUser customerUser = ConvertUtil.convert(customerVO, CustomerUser.class);
+//        getHttpSession().setAttribute(BaseAuthVO.WEB_CUSTOMER_USER_LOGIN_SESSION_KEY, customerUser);
+//        User user = new User(customerUser.getUserName(), customerUser.getPasswd(),
+//                true, true, true, true,
+//                auths);
+//
+//        return user;
 
-        List<GrantedAuthority> auths = new ArrayList<>();
 
+        //根据用户名查询数据
         CustomerLoginForm loginForm = new CustomerLoginForm();
         loginForm.setLoginname(username);
         CustomerVO customerVO = customerService.customerLogin(loginForm);
-        //客户认证
-        if (customerVO == null) {
-            logger.debug("找不到该用户(手机号):{}", username);
-            throw new UsernameNotFoundException("找不到该用户！");
+        //判断
+        if(customerVO == null) {
+            throw new UsernameNotFoundException("用户不存在");
         }
-        //启用状态，默认为1，1是0否
-        if(customerVO.getStatus()==0) {
-            logger.debug("用户账号未启用，无法登陆(手机号):{}", username);
-            throw new DisabledException("用户账号被禁用！");
-        }
-        // security bcryptPasswordEncoder自定义密码验证
-        BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
-        if (!bcryptPasswordEncoder.matches(password,customerVO.getPasswd())){
-            throw new BadCredentialsException("密码错误，请重新输入");
-        }
+        UserDTO curUser = new UserDTO();
+        curUser.setUsername(customerVO.getPhone());
+        curUser.setPassword(customerVO.getPasswd());
+//        BeanUtils.copyProperties(customerVO,curUser);
 
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("注册客户");//角色写死
-        auths.add(authority);
+        //根据用户查询用户权限列表
+//        List<String> permissionValueList = permissionService.selectPermissionValueByUserId(user.getId());
+        List<String> permissionValueList = Arrays.asList("注册客户");
+        SecurityUser securityUser = new SecurityUser();
+        securityUser.setCurrentUserInfo(curUser);
+        securityUser.setPermissionValueList(permissionValueList);
+        return securityUser;
 
-        //存放用户信息-授权用户
-        CustomerUser customerUser = ConvertUtil.convert(customerVO, CustomerUser.class);
-        getHttpSession().setAttribute(BaseAuthVO.WEB_CUSTOMER_USER_LOGIN_SESSION_KEY, customerUser);
-        User user = new User(customerUser.getUserName(), customerUser.getPasswd(),
-                true, true, true, true,
-                auths);
-
-        return user;
     }
 }

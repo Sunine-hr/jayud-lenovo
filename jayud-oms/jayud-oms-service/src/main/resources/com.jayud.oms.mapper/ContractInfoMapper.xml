@@ -105,7 +105,7 @@
         <if test="form.contractNo != null and form.contractNo != ''">
             and ci.contract_no like concat('%',#{form.contractNo},'%')
         </if>
-        <if test="legalIds != null">
+        <if test="legalIds != null and legalIds.size>0">
             and ci.`legal_entity` in
             <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
                 #{legalId}

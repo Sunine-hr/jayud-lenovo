@@ -498,7 +498,7 @@
             <if test="form.legalName != null and form.legalName != ''">
                 and le.legal_name like concat('%',#{form.legalName},'%')
             </if>
-            <if test="legalIds != null">
+            <if test="legalIds != null and legalIds.size>0">
                 and sub.`legal_entity_id` in
                 <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
                     #{legalId}

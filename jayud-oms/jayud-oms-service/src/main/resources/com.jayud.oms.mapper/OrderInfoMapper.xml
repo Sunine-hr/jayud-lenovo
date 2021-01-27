@@ -254,7 +254,7 @@
                 and temp.createdUser = #{form.loginUserName}
             </when>
             <otherwise>
-                <if test="legalIds != null">
+                <if test="legalIds != null and legalIds.size>0">
                     and temp.`legal_entity_id` in
                     <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
                         #{legalId}
@@ -345,7 +345,7 @@
             and DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') <![CDATA[>=]]> #{form.beginCreateTimeStr}
         </if>
 
-        <if test="legalIds != null">
+        <if test="legalIds != null and legalIds.size>0">
             and oi.`legal_entity_id` in
             <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
                 #{legalId}
@@ -399,7 +399,7 @@
                 o1.created_user = #{form.loginUserName}
             </when>
             <otherwise>
-                <if test="legalIds != null">
+                <if test="legalIds != null and legalIds.size>0">
                     o1.`legal_entity_id` in
                     <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
                         #{legalId}
@@ -419,7 +419,7 @@
                 and o2.created_user = #{form.loginUserName}
             </when>
             <otherwise>
-                <if test="legalIds != null">
+                <if test="legalIds != null and legalIds.size>0">
                     and o2.`legal_entity_id` in
                     <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
                         #{legalId}
@@ -439,7 +439,7 @@
                 and o3.created_user = #{form.loginUserName}
             </when>
             <otherwise>
-                <if test="legalIds != null">
+                <if test="legalIds != null and legalIds.size>0">
                     and o3.`legal_entity_id` in
                     <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
                         #{legalId}
@@ -459,7 +459,7 @@
                 and o6.created_user = #{form.loginUserName}
             </when>
             <otherwise>
-                <if test="legalIds != null">
+                <if test="legalIds != null and legalIds.size>0">
                     and o6.`legal_entity_id` in
                     <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
                         #{legalId}
@@ -479,7 +479,7 @@
                 and o7.created_user = #{form.loginUserName}
             </when>
             <otherwise>
-                <if test="legalIds != null">
+                <if test="legalIds != null and legalIds.size>0">
                     and o7.`legal_entity_id` in
                     <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
                         #{legalId}

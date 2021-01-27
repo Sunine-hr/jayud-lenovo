@@ -23,4 +23,16 @@ public interface IDeliveryAddressService extends IService<DeliveryAddress> {
      * @return
      */
     List<DeliveryAddressVO> findDeliveryAddress(QueryDeliveryAddressForm form);
+
+    /**
+     * 根据手机号查询联系人信息
+     * @param phone
+     * @return
+     */
+    List<DeliveryAddress> getContactInfoByPhone(String phone);
+
+    /**
+     * 获取最新的联系人信息
+     */
+    List<DeliveryAddress> getLastContactInfo();
 }

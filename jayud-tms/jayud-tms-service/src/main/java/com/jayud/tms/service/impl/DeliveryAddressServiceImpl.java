@@ -1,5 +1,6 @@
 package com.jayud.tms.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.tms.mapper.DeliveryAddressMapper;
 import com.jayud.tms.model.bo.QueryDeliveryAddressForm;
@@ -24,5 +25,22 @@ public class DeliveryAddressServiceImpl extends ServiceImpl<DeliveryAddressMappe
     @Override
     public List<DeliveryAddressVO> findDeliveryAddress(QueryDeliveryAddressForm form) {
         return baseMapper.findDeliveryAddress(form);
+    }
+
+    @Override
+    public List<DeliveryAddress> getContactInfoByPhone(String phone) {
+        QueryWrapper<DeliveryAddress> condition = new QueryWrapper<>();
+        condition.lambda().eq(DeliveryAddress::getPhone, phone);
+        return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 获取最新的联系人信息
+     */
+    @Override
+    public List<DeliveryAddress> getLastContactInfo() {
+        QueryWrapper<DeliveryAddress> condition = new QueryWrapper<>();
+        condition.lambda().orderByDesc(DeliveryAddress::getId);
+        return this.baseMapper.selectList(condition);
     }
 }

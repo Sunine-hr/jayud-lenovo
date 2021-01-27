@@ -213,7 +213,7 @@ public class AirOrderFormVO {
             log.warn("请求法人主体信息失败");
             return;
         }
-        JSONArray legalEntitys = new JSONArray(JSON.toJSONString(legalEntityResult.getData()));
+        JSONArray legalEntitys = new JSONArray(legalEntityResult.getData());
         for (int i = 0; i < legalEntitys.size(); i++) {
             JSONObject json = legalEntitys.getJSONObject(i);
             if (this.legalEntityId.equals(json.getLong("id"))) { //法人主体配对

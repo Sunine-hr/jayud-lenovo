@@ -66,6 +66,11 @@ public class OrderPaymentBill extends Model<OrderPaymentBill> {
     @ApiModelProperty(value = "修改时间")
     private LocalDateTime updatedTime;
 
+    @ApiModelProperty(value = "法人主体id")
+    private Long legalEntityId;
+
+    @ApiModelProperty(value = "供应商code")
+    private String supplierCode;
 
     @Override
     protected Serializable pkVal() {

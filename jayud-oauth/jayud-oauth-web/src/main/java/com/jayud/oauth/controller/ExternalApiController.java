@@ -11,6 +11,7 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.oauth.model.bo.AddCusAccountForm;
+import com.jayud.oauth.model.bo.AuditSystemUserForm;
 import com.jayud.oauth.model.bo.OprSystemUserForm;
 import com.jayud.oauth.model.bo.QueryAccountForm;
 import com.jayud.oauth.model.enums.StatusEnum;
@@ -287,9 +288,9 @@ public class ExternalApiController {
 
     @ApiOperation("根据部门名称查询部门id")
     @RequestMapping(value = "/api/getDeptIdByDeptName")
-    public ApiResult getDeptIdByDeptName(@RequestParam("deptName") String deptName){
+    public ApiResult getDeptIdByDeptName(@RequestParam("deptName") String deptName) {
         Department byDeptName = departmentService.getByDeptName(deptName);
-        if(byDeptName==null){
+        if (byDeptName == null) {
             return ApiResult.error();
         }
         return ApiResult.ok(byDeptName.getId());
@@ -298,20 +299,30 @@ public class ExternalApiController {
 
     @ApiOperation("根据业务员名称查询业务员id")
     @RequestMapping(value = "/api/getSystemUserBySystemName")
-    public ApiResult getSystemUserBySystemName(@RequestParam("name") String name){
+    public ApiResult getSystemUserBySystemName(@RequestParam("name") String name) {
         SystemUser systemUserBySystemName = userService.getSystemUserBySystemName(name);
-        if(systemUserBySystemName==null){
+        if (systemUserBySystemName == null) {
             return ApiResult.error();
         }
         return ApiResult.ok(systemUserBySystemName.getId());
     }
 
 
-    @ApiOperation("根据法人主体姓名查询法人主体信息")
+    @ApiOperation("根据法人主体姓名查询审核通过法人主体信息")
     @RequestMapping(value = "/api/getLegalEntityByLegalName")
-    public ApiResult getLegalEntityByLegalName(@RequestParam("name") String name){
-        LegalEntity legalEntityByLegalName = legalEntityService.getLegalEntityByLegalName(name);
-        if(legalEntityByLegalName==null){
+    public ApiResult getLegalEntityByLegalName(@RequestParam("name") String name) {
+        LegalEntity legalEntityByLegalName = legalEntityService.getLegalEntityByLegalName(name, 2);
+        if (legalEntityByLegalName == null) {
+            return ApiResult.error();
+        }
+        return ApiResult.ok(legalEntityByLegalName.getId());
+    }
+
+    @ApiOperation("根据法人主体姓名查询法人主体信息")
+    @RequestMapping(value = "/api/getAllLegalEntityByLegalName")
+    public ApiResult getAllLegalEntityByLegalName(@RequestParam("name") String name) {
+        LegalEntity legalEntityByLegalName = legalEntityService.getLegalEntityByLegalName(name, null);
+        if (legalEntityByLegalName == null) {
             return ApiResult.error();
         }
         return ApiResult.ok(legalEntityByLegalName.getId());

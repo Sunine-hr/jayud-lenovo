@@ -1,5 +1,6 @@
 package com.jayud.finance.service.impl;
 
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -32,10 +33,7 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -220,7 +218,17 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
                 orderPaymentBill.setId(existBill.getId());
                 orderPaymentBill.setUpdatedTime(LocalDateTime.now());
                 orderPaymentBill.setUpdatedUser(UserOperator.getToken());
+            } else {
+                //查询法人主体id
+                Object data = oauthClient.getAllLegalEntityByLegalName(paymentBillForm.getLegalName()).getData();
+                Long legalEntityId = new JSONObject(data).getLong("id");
+                //查询供应商代码
+                data = omsClient.getSupplierInfoByName(paymentBillForm.getSupplierChName()).getData();
+                String supplierCode = new JSONObject(data).getStr("supplierCode");
+                orderPaymentBill.setLegalEntityId(legalEntityId).setSupplierCode(supplierCode);
             }
+
+
             orderPaymentBill.setCreatedUser(UserOperator.getToken());
             result = saveOrUpdate(orderPaymentBill);
             if (!result) {

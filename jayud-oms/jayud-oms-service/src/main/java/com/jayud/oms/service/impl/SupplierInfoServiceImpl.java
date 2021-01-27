@@ -417,4 +417,14 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         return supplierInfos;
     }
 
+    /**
+     * 根据供应商名称查询供应商信息
+     */
+    @Override
+    public SupplierInfo getByName(String name) {
+        QueryWrapper<SupplierInfo> condition = new QueryWrapper<>();
+        condition.lambda().eq(SupplierInfo::getSupplierChName, name);
+        return this.getOne(condition);
+    }
+
 }

@@ -78,4 +78,9 @@ public interface ISupplierInfoService extends IService<SupplierInfo> {
      * @return
      */
     List<SupplierInfo> findSupplierInfoByCondition();
+
+    /**
+     * 根据供应商名称查询供应商信息
+     */
+   SupplierInfo getByName(String name);
 }

@@ -395,4 +395,14 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         this.customerRelaUnitService.saveBatchRelaUnit(customerInfo.getId(), form.getUnitCodeIds());
     }
 
+    /**
+     * 根据客户名称查询客户信息
+     */
+    @Override
+    public CustomerInfo getByName(String name) {
+        QueryWrapper<CustomerInfo> condition = new QueryWrapper<>();
+        condition.lambda().eq(CustomerInfo::getName, name);
+        return this.getOne(condition);
+    }
+
 }

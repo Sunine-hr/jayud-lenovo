@@ -28,6 +28,7 @@ public interface OmsClient {
 
     /**
      * 记录审核信息
+     *
      * @param form
      * @return
      */
@@ -36,6 +37,7 @@ public interface OmsClient {
 
     /**
      * 币种
+     *
      * @return
      */
     @RequestMapping(value = "api/initCurrencyInfo")
@@ -43,6 +45,7 @@ public interface OmsClient {
 
     /**
      * 币种
+     *
      * @return
      */
     @RequestMapping(value = "api/initCurrencyInfo2")
@@ -50,26 +53,29 @@ public interface OmsClient {
 
     /**
      * 编辑保存确定
+     *
      * @param costIds
      * @param oprType 是应付还是应收
      * @return
      */
     @RequestMapping(value = "api/editSaveConfirm")
-    ApiResult<Boolean> editSaveConfirm(@RequestParam("costIds") List<Long> costIds,@RequestParam("oprType") String oprType,
-                                        @RequestParam("cmd") String cmd);
+    ApiResult<Boolean> editSaveConfirm(@RequestParam("costIds") List<Long> costIds, @RequestParam("oprType") String oprType,
+                                       @RequestParam("cmd") String cmd);
 
     /**
      * 提交财务审核时，财务可能编辑费用类型
+     *
      * @param forms
      * @param cmd
      * @return
      */
     @RequestMapping(value = "api/oprCostGenreByCw")
-    ApiResult<Boolean> oprCostGenreByCw(@RequestBody List<OrderCostForm> forms,@RequestParam("cmd") String cmd);
+    ApiResult<Boolean> oprCostGenreByCw(@RequestBody List<OrderCostForm> forms, @RequestParam("cmd") String cmd);
 
 
     /**
      * 开票审核通过之后，需要反推汇率和本币金额到费用录入表
+     *
      * @param forms
      * @param cmd
      * @return
@@ -79,8 +85,21 @@ public interface OmsClient {
 
     /**
      * 获取所有可用的费用类型
+     *
      * @return
      */
     @RequestMapping(value = "api/findEnableCostGenre")
     ApiResult<List<InitComboxVO>> findEnableCostGenre();
+
+    /**
+     * 根据供应商名称查询供应商信息
+     */
+    @RequestMapping(value = "/api/getSupplierInfoByName")
+    ApiResult getSupplierInfoByName(@RequestParam("name") String name);
+
+    /**
+     * 根据客户名称查询客户信息
+     */
+    @RequestMapping(value = "/api/getCustomerInfoByName")
+    public ApiResult getCustomerInfoByName(String name);
 }

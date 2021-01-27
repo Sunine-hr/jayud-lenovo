@@ -41,16 +41,16 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
     /**
      * 根据条件获取客户
      *
-     * @return
      * @param param
+     * @return
      */
     List<CustomerInfo> getCustomerInfoByCondition(List<Long> param);
 
     /**
      * 根据条件获取客户
      *
-     * @return
      * @param param
+     * @return
      */
     List<CustomerInfo> findCustomerInfoByCondition(Map<String, Object> param);
 
@@ -131,4 +131,11 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
     List<InitComboxStrVO> initApprovedCustomer();
 
     void saveOrUpdateCustomerInfo(AddCustomerInfoForm form, CustomerInfo customerInfo);
+
+
+    /**
+     * 根据客户名称查询客户信息
+     */
+    public CustomerInfo getByName(String name);
+
 }

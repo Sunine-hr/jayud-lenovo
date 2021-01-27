@@ -29,4 +29,10 @@ public class OrderPaymentBillForm {
     @ApiModelProperty(value = "账单数",required = true)
     @NotNull(message = "billNum is required")
     private Integer billNum;
+
+    @ApiModelProperty(value = "法人主体id")
+    private Long legalEntityId;
+
+    @ApiModelProperty(value = "供应商code")
+    private String supplierCode;
 }

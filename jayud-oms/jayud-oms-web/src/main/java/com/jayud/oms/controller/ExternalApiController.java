@@ -709,12 +709,32 @@ public class ExternalApiController {
 
     /**
      * 根据供应商id集合查询供应商信息
+     *
      * @return
      */
     @RequestMapping(value = "/api/getSupplierInfoByIds")
     ApiResult<Collection<SupplierInfo>> getSupplierInfoByIds(@RequestParam("supplierIds") List<Long> supplierIds) {
         Collection<SupplierInfo> supplierInfos = supplierInfoService.listByIds(supplierIds);
         return ApiResult.ok(supplierInfos);
+    }
+
+
+    /**
+     * 根据供应商名称查询供应商信息
+     */
+    @RequestMapping(value = "/api/getSupplierInfoByName")
+    ApiResult<SupplierInfo> getSupplierInfoByName(@RequestParam("name") String name) {
+        SupplierInfo supplierInfo = this.supplierInfoService.getByName(name);
+        return ApiResult.ok(supplierInfo);
+    }
+
+    /**
+     * 根据客户名称查询客户信息
+     */
+    @RequestMapping(value = "/api/getCustomerInfoByName")
+    public ApiResult getCustomerInfoByName(String name) {
+        CustomerInfo customerInfo = this.customerInfoService.getByName(name);
+        return ApiResult.ok(customerInfo);
     }
 }
 

@@ -23,7 +23,7 @@ public class LegalEntityServiceImpl extends ServiceImpl<LegalEntityMapper, Legal
     @Override
     public IPage<LegalEntityVO> findLegalEntityByPage(QueryLegalEntityForm form) {
         //定义分页参数
-        Page<SystemUser> page = new Page(form.getPageNum(),form.getPageSize());
+        Page<SystemUser> page = new Page(form.getPageNum(), form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.desc("le.id"));
         IPage<LegalEntityVO> pageInfo = this.baseMapper.findLegalEntityByPage(page, form);
@@ -33,20 +33,21 @@ public class LegalEntityServiceImpl extends ServiceImpl<LegalEntityMapper, Legal
     @Override
     public List<LegalEntityVO> findLegalEntity(Map<String, String> param) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        for(String key : param.keySet()){
+        for (String key : param.keySet()) {
             String value = String.valueOf(param.get(key));
-            queryWrapper.eq(key,value);
+            queryWrapper.eq(key, value);
         }
-        return ConvertUtil.convertList(baseMapper.selectList(queryWrapper),LegalEntityVO.class);
+        return ConvertUtil.convertList(baseMapper.selectList(queryWrapper), LegalEntityVO.class);
     }
 
     @Override
-    public LegalEntity getLegalEntityByLegalName(String name) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("legal_name",name);
-        queryWrapper.eq("audit_status",2);
-        LegalEntity legalEntity = baseMapper.selectOne(queryWrapper);
-        return legalEntity;
+    public LegalEntity getLegalEntityByLegalName(String name, Integer auditStatus) {
+        QueryWrapper<LegalEntity> condition = new QueryWrapper();
+        condition.lambda().eq(LegalEntity::getLegalName, name);
+        if (auditStatus != null) {
+            condition.lambda().eq(LegalEntity::getAuditStatus, auditStatus);
+        }
+        return baseMapper.selectOne(condition);
     }
 
 

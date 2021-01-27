@@ -230,6 +230,11 @@ public class ReceiveBillDetailController {
     public void exportSBillDetail(@RequestParam(value = "billNo", required = true) String billNo,
                                   HttpServletResponse response) throws IOException {
         List<ViewBilToOrderVO> list = billDetailService.viewSBillDetail(billNo);
+        //地址只展示6个字符
+        list.forEach(e -> {
+            e.setStartAddress(e.getStartAddress().substring(0, 6));
+            e.setEndAddress(e.getEndAddress().substring(0, 6));
+        });
 
         TypeUtils.compatibleWithJavaBean = true;
 

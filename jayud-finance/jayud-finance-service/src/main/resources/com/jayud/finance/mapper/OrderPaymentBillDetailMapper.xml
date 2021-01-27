@@ -269,6 +269,7 @@
     <select id="getViewBill" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewBillVO">
         SELECT DISTINCT
             opb.legal_name legalName,
+            opb.legal_entity_id legalEntityId,
             opbd.account_term accountTermStr,
             opb.supplier_ch_name customerName,
             opbd.bill_no billNo,

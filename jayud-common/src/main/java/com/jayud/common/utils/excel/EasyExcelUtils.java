@@ -57,7 +57,7 @@ public class EasyExcelUtils {
         setColumnWidth(entity, sheet);
 
         // 处理中文不能自动调整列宽的问题
-//        setSizeColumn(sheet,entity.getTableHead().size());
+        setSizeColumn(sheet, entity.getTableHead().size());
 //        workbook.write(out);
 //        workbook.close();
 
@@ -135,12 +135,14 @@ public class EasyExcelUtils {
         }
         //样式
         CellStyle cellStyle = workbook.createCellStyle();
+//        XSSFCellStyle xsStyle = (XSSFCellStyle)cellStyle;
         cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
         cellStyle.setAlignment(CENTER);
         cellStyle.setBorderBottom(THIN);
         cellStyle.setBorderTop(THIN);
         cellStyle.setBorderRight(THIN);
         cellStyle.setBorderLeft(THIN);
+        cellStyle.setWrapText(true);
 
 
         Row row = sheet.createRow(rowNum);
@@ -177,6 +179,7 @@ public class EasyExcelUtils {
         cellStyle.setBorderTop(THIN);
         cellStyle.setBorderRight(THIN);
         cellStyle.setBorderLeft(THIN);
+        cellStyle.setWrapText(true);
 
         JSONArray tableDatas = entity.getTableData();
 
@@ -331,7 +334,7 @@ public class EasyExcelUtils {
                 "FR:深圳市佳裕达国际货运代理有限公司-账单编号: JYD803_SZ_2020060028"));
 //        easyExcelEntity.setTableHead(Arrays.asList("序号", "建单日期", "订单编号", "客户"
 //                , "启运地", "目的地", "车牌号", "车型", "件数", "毛重(KGS)", "报关单号"));
-        demo.autoGeneration("d://Demo1.xlsx", easyExcelEntity);
+        autoGeneration("d://Demo1.xlsx", easyExcelEntity);
     }
 
 

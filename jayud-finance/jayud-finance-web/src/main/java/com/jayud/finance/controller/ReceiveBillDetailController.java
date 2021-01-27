@@ -19,6 +19,7 @@ import com.jayud.common.utils.excel.EasyExcelEntity;
 import com.jayud.common.utils.excel.EasyExcelUtils;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
+import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.service.IOrderReceivableBillDetailService;
 import com.jayud.finance.util.StringUtils;
@@ -45,6 +46,8 @@ public class ReceiveBillDetailController {
 
     @Autowired
     IOrderReceivableBillDetailService billDetailService;
+    @Autowired
+    private OauthClient oauthClient;
 
     @ApiOperation(value = "应收对账单列表,应收对账单审核列表,财务应收对账单列表")
     @PostMapping("/findReceiveBillDetailByPage")
@@ -56,7 +59,7 @@ public class ReceiveBillDetailController {
 
     @ApiOperation(value = "提交财务 billNos=账单编号集合,必须客服主管审核通过,状态为B_2")
     @PostMapping("/submitSCw")
-    public CommonResult submitSCw(@RequestBody ListForm form){
+    public CommonResult submitSCw(@RequestBody ListForm form) {
         return billDetailService.submitSCw(form);
     }
 
@@ -64,10 +67,10 @@ public class ReceiveBillDetailController {
     @RequestMapping(value = "/exportSBill", method = RequestMethod.GET)
     @ResponseBody
     public void exportSBill(QueryPaymentBillDetailForm form,
-                                 HttpServletResponse response) throws IOException {
+                            HttpServletResponse response) throws IOException {
         //获取数据
         List<OrderPaymentBillDetailVO> initList = billDetailService.findReceiveBillDetail(form);
-        List<ExportOrderSBillDetailVO> list = ConvertUtil.convertList(initList,ExportOrderSBillDetailVO.class);
+        List<ExportOrderSBillDetailVO> list = ConvertUtil.convertList(initList, ExportOrderSBillDetailVO.class);
 
         ExcelWriter writer = ExcelUtil.getWriter(true);
 
@@ -101,7 +104,7 @@ public class ReceiveBillDetailController {
         ServletOutputStream out = response.getOutputStream();
         String name = StringUtils.toUtf8String("应收对账单");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
-        response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
+        response.setHeader("Content-Disposition", "attachment;filename=" + name + ".xlsx");
 
         writer.flush(out);
         writer.close();
@@ -114,15 +117,15 @@ public class ReceiveBillDetailController {
     public CommonResult applyInvoice(@RequestBody @Valid ApplyInvoiceForm form) {
         //1.财务对账审核通过
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("bill_no",form.getBillNo());
+        queryWrapper.eq("bill_no", form.getBillNo());
         List<OrderReceivableBillDetail> orderReceivableBillDetails = billDetailService.list(queryWrapper);
         OrderReceivableBillDetail orderReceivableBillDetail = orderReceivableBillDetails.get(0);
-        if(orderReceivableBillDetail != null && !(BillEnum.B_4.getCode().equals(orderReceivableBillDetail.getAuditStatus()) ||
-                BillEnum.B_5_1.getCode().equals(orderReceivableBillDetail.getAuditStatus()))){
-            return CommonResult.error(10000,"不满足付款申请的条件");
+        if (orderReceivableBillDetail != null && !(BillEnum.B_4.getCode().equals(orderReceivableBillDetail.getAuditStatus()) ||
+                BillEnum.B_5_1.getCode().equals(orderReceivableBillDetail.getAuditStatus()))) {
+            return CommonResult.error(10000, "不满足付款申请的条件");
         }
         Boolean result = billDetailService.applyInvoice(form);
-        if(!result){
+        if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
         return CommonResult.success();
@@ -130,21 +133,21 @@ public class ReceiveBillDetailController {
 
     @ApiOperation(value = "开票申请作废,billNo=列表里面取")
     @PostMapping("/applyInvoiceCancel")
-    public CommonResult applyInvoiceCancel(@RequestBody Map<String,Object> param) {
+    public CommonResult applyInvoiceCancel(@RequestBody Map<String, Object> param) {
         String billNo = MapUtil.getStr(param, "billNo");
         //1.财务开票申请审核不通过
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("bill_no",billNo);
+        queryWrapper.eq("bill_no", billNo);
         List<OrderReceivableBillDetail> orderReceivableBillDetails = billDetailService.list(queryWrapper);
         OrderReceivableBillDetail orderReceivableBillDetail = orderReceivableBillDetails.get(0);
-        if(orderReceivableBillDetail != null && !BillEnum.B_6_1.getCode().equals(orderReceivableBillDetail.getAuditStatus())){
-            return CommonResult.error(10000,"不满足付款申请作废的条件");
+        if (orderReceivableBillDetail != null && !BillEnum.B_6_1.getCode().equals(orderReceivableBillDetail.getAuditStatus())) {
+            return CommonResult.error(10000, "不满足付款申请作废的条件");
         }
-        if(orderReceivableBillDetail != null && BillEnum.F_4.getCode().equals(orderReceivableBillDetail.getApplyStatus())){
-            return CommonResult.error(10000,"开票申请已作废");
+        if (orderReceivableBillDetail != null && BillEnum.F_4.getCode().equals(orderReceivableBillDetail.getApplyStatus())) {
+            return CommonResult.error(10000, "开票申请已作废");
         }
         Boolean result = billDetailService.applyInvoiceCancel(billNo);
-        if(!result){
+        if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
         return CommonResult.success();
@@ -163,15 +166,15 @@ public class ReceiveBillDetailController {
     public CommonResult editSSaveConfirm(@RequestBody EditSBillForm form) {
         //参数校验
         List<OrderReceiveBillDetailForm> receiveBillDetailForms = form.getReceiveBillDetailForms();
-        if(receiveBillDetailForms == null || receiveBillDetailForms.size() == 0){
+        if (receiveBillDetailForms == null || receiveBillDetailForms.size() == 0) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         List<Long> costIds = new ArrayList<>();
         for (OrderReceiveBillDetailForm formObject : receiveBillDetailForms) {
-           costIds.add(formObject.getCostId());
+            costIds.add(formObject.getCostId());
         }
         Boolean result = billDetailService.editSSaveConfirm(costIds);
-        if(!result){
+        if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
         return CommonResult.success();
@@ -182,7 +185,7 @@ public class ReceiveBillDetailController {
     public CommonResult editSDel(@RequestBody EditSBillForm form) {
         //参数校验
         List<OrderReceiveBillDetailForm> delCosts = form.getDelCosts();
-        if(delCosts == null || delCosts.size() == 0){
+        if (delCosts == null || delCosts.size() == 0) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         List<Long> costIds = new ArrayList<>();
@@ -190,7 +193,7 @@ public class ReceiveBillDetailController {
             costIds.add(formObject.getCostId());
         }
         Boolean result = billDetailService.editSDel(costIds);
-        if(!result){
+        if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
         return CommonResult.success();
@@ -200,8 +203,8 @@ public class ReceiveBillDetailController {
     @PostMapping("/editSBill")
     public CommonResult editSBill(@RequestBody EditSBillForm form) {
         //参数校验
-        if(StringUtil.isNullOrEmpty(form.getBillNo()) || StringUtil.isNullOrEmpty(form.getCmd())
-        || StringUtil.isNullOrEmpty(form.getLoginUserName())){
+        if (StringUtil.isNullOrEmpty(form.getBillNo()) || StringUtil.isNullOrEmpty(form.getCmd())
+                || StringUtil.isNullOrEmpty(form.getLoginUserName())) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         return billDetailService.editSBill(form);
@@ -209,14 +212,14 @@ public class ReceiveBillDetailController {
 
     @ApiOperation(value = "对账单详情，对账单审核详情")
     @PostMapping("/viewSBillDetail")
-    public CommonResult<Map<String,Object>> viewSBillDetail(@RequestBody @Valid ViewBillDetailForm form) {
-        Map<String,Object> resultMap = new HashMap<>();
+    public CommonResult<Map<String, Object>> viewSBillDetail(@RequestBody @Valid ViewBillDetailForm form) {
+        Map<String, Object> resultMap = new HashMap<>();
         List<ViewBilToOrderVO> list = billDetailService.viewSBillDetail(form.getBillNo());
-        resultMap.put(CommonConstant.LIST,list);//分页数据
+        resultMap.put(CommonConstant.LIST, list);//分页数据
         List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHead(form.getBillNo());
-        resultMap.put(CommonConstant.SHEET_HEAD,sheetHeadVOS);//表头
+        resultMap.put(CommonConstant.SHEET_HEAD, sheetHeadVOS);//表头
         ViewBillVO viewBillVO = billDetailService.getViewSBill(form.getBillNo());
-        resultMap.put(CommonConstant.WHOLE_DATA,viewBillVO);//全局数据
+        resultMap.put(CommonConstant.WHOLE_DATA, viewBillVO);//全局数据
         return CommonResult.success(resultMap);
     }
 
@@ -224,8 +227,8 @@ public class ReceiveBillDetailController {
     @ApiOperation(value = "导出对账单详情")
     @RequestMapping(value = "/exportSBillDetail", method = RequestMethod.GET)
     @ResponseBody
-    public void exportSBillDetail(@RequestParam(value = "billNo",required=true) String billNo,
-                                   HttpServletResponse response) throws IOException {
+    public void exportSBillDetail(@RequestParam(value = "billNo", required = true) String billNo,
+                                  HttpServletResponse response) throws IOException {
         List<ViewBilToOrderVO> list = billDetailService.viewSBillDetail(billNo);
 
         TypeUtils.compatibleWithJavaBean = true;
@@ -245,6 +248,11 @@ public class ReceiveBillDetailController {
                 dynamicHead.put(sheetHeadVO.getName(), sheetHeadVO.getViewName());
             }
         }
+        //查询人主体信息
+        cn.hutool.json.JSONArray tmp = new cn.hutool.json.JSONArray(this.oauthClient
+                .getLegalEntityByLegalIds(Collections.singletonList(viewBillVO.getLegalEntityId())).getData());
+        cn.hutool.json.JSONObject legalEntityJson = tmp.getJSONObject(0);
+
 
         EasyExcelEntity entity = new EasyExcelEntity();
         entity.setSheetName("客户应付对账单");
@@ -287,24 +295,43 @@ public class ReceiveBillDetailController {
 
         //尾部
         List<String> bottomData = new ArrayList<>();
-        bottomData.add(" " + EasyExcelUtils.SPLIT_SYMBOL + "制 单 人:" + viewBillVO.getMakeUser());
-        bottomData.add(" " + EasyExcelUtils.SPLIT_SYMBOL + "制单时间:" + viewBillVO.getMakeTimeStr());
-        bottomData.add(" " + EasyExcelUtils.SPLIT_SYMBOL + "审 单 人:" + viewBillVO.getMakeUser());
-        bottomData.add(" " + EasyExcelUtils.SPLIT_SYMBOL + "审单时间:" + viewBillVO.getMakeTimeStr());
+        bottomData.add(new StringBuilder()
+                .append("公司名称:").append(legalEntityJson.getStr("legalName", ""))
+                .append(EasyExcelUtils.SPLIT_SYMBOL)
+                .append("制 单 人:").append(viewBillVO.getMakeUser()).toString());
+        bottomData.add(new StringBuilder()
+                .append("开户银行:").append(legalEntityJson.getStr("bank", ""))
+                .append(EasyExcelUtils.SPLIT_SYMBOL)
+                .append("制单时间:").append(viewBillVO.getMakeTimeStr()).toString());
+        bottomData.add(new StringBuilder()
+                .append("开户账号:").append(legalEntityJson.getStr("accountOpen", ""))
+                .append(EasyExcelUtils.SPLIT_SYMBOL)
+                .append("审 单 人:").append(viewBillVO.getMakeUser()).toString());
+        bottomData.add(new StringBuilder()
+                .append("纳税人识别号:").append(legalEntityJson.getStr("taxIdentificationNum", ""))
+                .append(EasyExcelUtils.SPLIT_SYMBOL)
+                .append("审单时间:").append(viewBillVO.getMakeTimeStr()).toString());
+        bottomData.add(new StringBuilder()
+                .append("公司地址:").append(legalEntityJson.getStr("rigisAddress", ""))
+                .append(EasyExcelUtils.SPLIT_SYMBOL).toString());
+        bottomData.add(new StringBuilder()
+                .append("联系电话:").append(legalEntityJson.getStr("phone", ""))
+                .append(EasyExcelUtils.SPLIT_SYMBOL).toString());
         entity.setBottomData(bottomData);
 
         Workbook workbook = EasyExcelUtils.autoGeneration("", entity);
 
 
-        ServletOutputStream out=response.getOutputStream();
+        ServletOutputStream out = response.getOutputStream();
         String name = StringUtils.toUtf8String("客户应收对账单");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
-        response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
+        response.setHeader("Content-Disposition", "attachment;filename=" + name + ".xlsx");
 
         workbook.write(out);
         workbook.close();
         IoUtil.close(out);
     }
+
 
     /***
      * 对账单审核模块
@@ -321,10 +348,10 @@ public class ReceiveBillDetailController {
     @RequestMapping(value = "/exportAuditSBill", method = RequestMethod.GET)
     @ResponseBody
     public void exportAuditSBill(QueryPaymentBillDetailForm form,
-                           HttpServletResponse response) throws IOException {
+                                 HttpServletResponse response) throws IOException {
         //获取数据
         List<OrderPaymentBillDetailVO> initList = billDetailService.findReceiveBillDetail(form);
-        List<ExportOrderSBillDetailVO> list = ConvertUtil.convertList(initList,ExportOrderSBillDetailVO.class);
+        List<ExportOrderSBillDetailVO> list = ConvertUtil.convertList(initList, ExportOrderSBillDetailVO.class);
 
         ExcelWriter writer = ExcelUtil.getWriter(true);
 
@@ -357,7 +384,7 @@ public class ReceiveBillDetailController {
         ServletOutputStream out = response.getOutputStream();
         String name = StringUtils.toUtf8String("应收对账单审核列表");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
-        response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
+        response.setHeader("Content-Disposition", "attachment;filename=" + name + ".xlsx");
 
         writer.flush(out);
         writer.close();
@@ -369,16 +396,17 @@ public class ReceiveBillDetailController {
      * 2.客服主管-应付反审核 kf_f_reject
      * 3.财务-应收反审核 cw_s_reject
      * 4.财务-应付反审核 cw_f_reject
+     *
      * @param form
      * @return
      */
     @ApiOperation(value = "反审核,billNos=账单编号集合")
     @PostMapping("/contrarySAudit")
     public CommonResult contrarySAudit(@RequestBody ListForm form) {
-        if(form.getBillNos() == null || form.getBillNos().size() == 0 || StringUtil.isNullOrEmpty(form.getCmd())){
+        if (form.getBillNos() == null || form.getBillNos().size() == 0 || StringUtil.isNullOrEmpty(form.getCmd())) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-       return billDetailService.contrarySAudit(form);
+        return billDetailService.contrarySAudit(form);
     }
 
 }

@@ -328,19 +328,19 @@
         <result column="createdTimeStr" property="createdTimeStr"/>
         <result column="updated_user" property="updatedUser"/>
         <result column="updated_time" property="updatedTime"/>
-<!--        <collection property="legalEntities" ofType="com.jayud.oms.model.vo.LegalEntityVO" column="id" select="getLegalEntity">-->
-        <collection property="legalEntities" ofType="com.jayud.oms.model.vo.LegalEntityVO">
+        <collection property="legalEntities" ofType="com.jayud.oms.model.vo.LegalEntityVO" column="id" select="getLegalEntity">
+<!--        <collection property="legalEntities" ofType="com.jayud.oms.model.vo.LegalEntityVO">-->
             <result column="lid" property="id"></result>
             <result column="legalName" property="legalName"></result>
         </collection>
     </resultMap>
 
-<!--    <select id="getLegalEntity" resultType="com.jayud.oms.model.vo.LegalEntityVO">-->
-<!--        select le.`id` lid,le.`legal_name` legalName from  legal_entity le LEFT JOIN `customer_rela_legal` crl on le.`id` = crl.`legal_id` where crl.`customer_info_id` = #{id}-->
-<!--    </select>-->
+    <select id="getLegalEntity" resultType="com.jayud.oms.model.vo.LegalEntityVO">
+        select le.`id` lid,le.`legal_name` legalName from  legal_entity le LEFT JOIN `customer_rela_legal` crl on le.`id` = crl.`legal_id` where crl.`customer_info_id` = #{id}
+    </select>
 
     <select id="findCustomerInfoByPage" resultType="com.jayud.oms.model.vo.CustomerInfoVO">
-        SELECT
+        SELECT distinct
         ci.id,ci.name,ci.`id_code`
         idCode,ci.`types`,ci.`contact`,ci.`phone`,ci.`address`,ci.`email`,ci.`tfn`,ci.`if_contract` ifContract,
         ci.`settlement_type` settlementType,ci.`account_period` accountPeriod,ci.`estate`,ci.`department_id`
@@ -355,7 +355,8 @@
         ci.`created_user` createdUser,
         DATE_FORMAT(ci.`created_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
         ci.`updated_user` updatedUser,ci.`audit_comment` auditComment,
-        DATE_FORMAT(ci.`updated_time`,'%Y-%m-%d %H:%i:%S') updatedTimeStr
+        DATE_FORMAT(ci.`updated_time`,'%Y-%m-%d %H:%i:%S') updatedTimeStr,
+        (select GROUP_CONCAT(crl.legal_entity_id) from customer_rela_legal crl where crl.customer_info_id = ci.id group by ci.id) legalEntityIdStr
         FROM
         `customer_info` ci
         LEFT JOIN department d

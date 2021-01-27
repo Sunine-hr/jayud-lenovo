@@ -68,7 +68,7 @@ public class AddSupplierInfoForm {
     private Long buyerId;
 
     @ApiModelProperty(value = "法人主体id", required = true)
-    @NotEmpty(message = "legal_entity_id is required")
+    @NotNull(message = "legalEntityId is required")
     private Long legalEntityId;
 
 }

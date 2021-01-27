@@ -108,6 +108,7 @@
         su.`audit_status` auditStatus
 --         le.`id` lid,
 --         le.`legal_name` legalName
+
         FROM
         `system_user` su
         LEFT JOIN system_user_role_relation surr
@@ -131,9 +132,9 @@
             <if test="form.cmd == 'isAudit'">
                 and su.`audit_status` = '1'
             </if>
-<!--            <if test="form.companyId != null and form.companyId !=''">-->
-<!--                and le.`id` = #{form.companyId}-->
-<!--            </if>-->
+            <if test="form.companyId != null and form.companyId !=''">
+                and (select GROUP_CONCAT(sul.legal_id) from system_user_legal sul where sul.system_user_id = su.id group by su.id) like concat('%',#{form.companyId},'%')
+            </if>
             <if test="form.auditStatus != null and form.auditStatus != ''">
                 and su.audit_status = #{form.auditStatus}
             </if>

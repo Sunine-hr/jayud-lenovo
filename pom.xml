@@ -27,7 +27,7 @@
         <module>jayud-freight-air</module>
         <module>jayud-mall</module>
         <module>jayud-tools</module>
-
+        <module>jayud-ocean-ship</module>
 
     </modules>
     <parent>

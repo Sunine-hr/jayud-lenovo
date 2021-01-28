@@ -29,6 +29,15 @@ public enum SettlementTypeEnum {
         return "";
     }
 
+    public static String getCode(String desc) {
+        for (SettlementTypeEnum value : values()) {
+            if (Objects.equals(desc, value.getDesc())) {
+                return value.getCode();
+            }
+        }
+        return "";
+    }
+
 
 
     public String getCode() {

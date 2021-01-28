@@ -52,6 +52,7 @@
             wi.`warehouse_name` warehouseName,
             wi.`contacts` warehouseContacts,
             wi.`contact_number` warehouseNumber,
+            wi.is_virtual, isVirtual,
             '中国' countryName,
             ( SELECT rc.NAME FROM region_city rc WHERE rc.id = wi.state_code LIMIT 1 ) AS provinceName,
             ( SELECT rc.NAME FROM region_city rc WHERE rc.id = wi.city_code LIMIT 1 ) AS cityName,

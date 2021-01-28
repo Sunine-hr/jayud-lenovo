@@ -215,6 +215,18 @@ public class ExternalApiController {
         return ApiResult.ok(this.orderTransportService.getOrderTransportByMainOrderNo(mainOrderNos));
     }
 
+//    @ApiModelProperty(value = "根据订单号获取供应商信息")
+//    @RequestMapping(value = "/api/getSupplierNoBySubOrderNo")
+//    public ApiResult getSupplierNoBySubOrderNo(@RequestParam("subOrderNo") String subOrderNo) {
+//        //根据订单号获取派车信息
+//        OrderSendCars orderSendCars = this.orderSendCarsService.getOrderSendCarsByOrderNo(subOrderNo);
+//        if (orderSendCars == null) {
+//            return ApiResult.ok();
+//        }
+//        //根据车辆id查询供应商id
+//        orderSendCars.getVehicleId();
+//    }
+
 }
 
 

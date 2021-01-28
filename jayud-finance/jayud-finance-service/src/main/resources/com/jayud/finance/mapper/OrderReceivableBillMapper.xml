@@ -139,13 +139,18 @@
         FROM
         order_receivable_bill_detail ob left join order_receivable_bill orb on ob.bill_id = orb.id
         where orb.legal_name = #{form.legalName} and orb.unit_account = #{form.unitAccount}
-        <if test="form.cmd == 'main'">
-            and orb.is_main = 1
-        </if>
---          TODO 2021-01-20 修改的不知道会不影响之前传梅版本财务
-        <if test="form.cmd != null and form.cmd !=''">
-            and orb.is_main = 0 and orb.sub_type = #{form.cmd}
-        </if>
+        <choose>
+            <when test="form.cmd == 'main'">
+                and orb.is_main = 1
+            </when>
+            <otherwise>
+                -- TODO 2021-01-20 修改的不知道会不影响之前传梅版本财务
+                <if test="form.cmd != null and form.cmd !=''">
+                    and orb.is_main = 0 and orb.sub_type = #{form.cmd}
+                </if>
+            </otherwise>
+        </choose>
+
 <!--        <if test="form.cmd == 'zgys'">-->
 <!--            and orb.is_main = 0 and orb.sub_type = 'zgys'-->
 <!--        </if>-->

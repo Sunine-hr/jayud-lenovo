@@ -73,7 +73,8 @@
         oi.`need_input_cost` needInputCost,
         oi.`customs_release` customsRelease,
         (select ai.audit_comment from audit_info ai where ai.ext_id = oc.id and ai.audit_status = 'C_1_1' order by
-        ai.created_time desc limit 1) rejectComment
+        ai.created_time desc limit 1) rejectComment,
+        oi.unit_code unitCode
         FROM
         order_info oi LEFT JOIN order_customs oc ON oi.`order_no` = oc.`main_order_no`
         LEFT JOIN product_classify pc1 ON pc1.`id_code` = oi.`class_code`
@@ -115,7 +116,8 @@
         oi.`customs_release` customsRelease,
         (select ai.audit_comment from audit_info ai where ai.ext_id in (select oc.id from order_customs oc where
         oc.main_order_no = oi.order_no) and ai.audit_status = 'C_1_1' order by ai.created_time desc limit 1)
-        rejectComment
+        rejectComment,
+        oi.unit_code unitCode
         FROM
         order_info oi LEFT JOIN order_transport ot ON
         oi.`order_no` = ot.`main_order_no`
@@ -156,7 +158,8 @@
         END) isCost,
         oi.`need_input_cost` needInputCost,
         oi.`customs_release` customsRelease,
-        '' rejectComment
+        '' rejectComment,
+        oi.unit_code unitCode
         FROM
         order_info oi LEFT JOIN air_order a ON
         oi.`order_no` = a.`main_order_no`
@@ -195,7 +198,8 @@
         END) isCost,
         oi.`need_input_cost` needInputCost,
         oi.`customs_release` customsRelease,
-        '' rejectComment
+        '' rejectComment,
+        oi.unit_code unitCode
         FROM
         order_info oi LEFT JOIN service_order so ON
         oi.`order_no` = so.`main_order_no`

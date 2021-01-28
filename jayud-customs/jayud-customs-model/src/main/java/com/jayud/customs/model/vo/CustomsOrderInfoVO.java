@@ -57,6 +57,9 @@ public class CustomsOrderInfoVO {
     @ApiModelProperty(value = "子订单结算单位")
     private String subUnitCode;
 
+    @ApiModelProperty(value = "费用录用默认结算单位")
+    private String defaultUnitCode;
+
     @ApiModelProperty(value = "货物信息")
     private String goodsInfo;
 
@@ -111,19 +114,23 @@ public class CustomsOrderInfoVO {
     @ApiModelProperty(value = "过磅数KG")
     private Double carWeighNum;
 
-    public void setGoodsTypeDesc(Integer goodsType){
-        if(goodsType == 1){
+    public void setGoodsTypeDesc(Integer goodsType) {
+        if (goodsType == 1) {
             this.goodsTypeDesc = "进口";
-        }else if(goodsType == 2){
+        } else if (goodsType == 2) {
             this.goodsTypeDesc = "出口";
         }
     }
 
     public String getStatusDesc() {
-        if(!StringUtil.isNullOrEmpty(this.status)){
+        if (!StringUtil.isNullOrEmpty(this.status)) {
             return OrderStatusEnum.getDesc(this.status);
         }
         return "";
     }
 
+    public void setSubUnitCode(String subUnitCode) {
+        this.subUnitCode = subUnitCode;
+        this.defaultUnitCode = subUnitCode;
+    }
 }

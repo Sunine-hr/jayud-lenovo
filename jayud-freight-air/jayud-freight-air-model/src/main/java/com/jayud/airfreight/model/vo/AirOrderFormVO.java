@@ -122,8 +122,7 @@ public class AirOrderFormVO {
     @ApiModelProperty(value = "结算单位code")
     private String subUnitCode;
 
-    @JsonIgnore
-    @ApiModelProperty(value = "法人主体")
+    @ApiModelProperty(value = "法人主体id")
     private Long legalEntityId;
 
     @ApiModelProperty(value = "法人主体名称")
@@ -139,8 +138,10 @@ public class AirOrderFormVO {
     private Long supplierId;
 
     @ApiModelProperty(value = "供应商代码")
-    private String supplierCode;
+    private String defaultSupplierCode;
 
+    @ApiModelProperty(value = "费用录用默认结算单位")
+    private String defaultUnitCode;
 
     /**
      * 组装商品信息
@@ -194,7 +195,7 @@ public class AirOrderFormVO {
         for (int i = 0; i < supplierInfo.size(); i++) {
             JSONObject json = supplierInfo.getJSONObject(i);
             if (this.supplierId != null && this.supplierId.equals(json.getLong("id"))) { //供应商配对
-                this.supplierCode = json.getStr("supplierCode");
+                this.defaultSupplierCode = json.getStr("supplierCode");
                 break;
             }
         }
@@ -243,4 +244,8 @@ public class AirOrderFormVO {
         this.processStatusDesc = ProcessStatusEnum.getDesc(processStatus);
     }
 
+    public void setSubUnitCode(String subUnitCode) {
+        this.subUnitCode = subUnitCode;
+        this.defaultUnitCode = subUnitCode;
+    }
 }

@@ -169,8 +169,13 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "中转仓库")
     private String warehouseName;
 
+
     @ApiModelProperty(value = "供应商代码")
-    private String supplierCode;
+    private String defaultSupplierCode;
+
+    @ApiModelProperty(value = "结算单位code")
+    private String defaultUnitCode;
+
 
     public String getEntireAddress1() {
         String stateName1 = this.stateName1;
@@ -240,5 +245,10 @@ public class OrderTransportVO {
             }
         }
         return "";
+    }
+
+    public void setSubUnitCode(String subUnitCode) {
+        this.subUnitCode = subUnitCode;
+        this.defaultUnitCode = subUnitCode;
     }
 }

@@ -31,7 +31,7 @@ public class MysqlGenerator {
                 "jayud-mall\\jayud-mall-service"
         };
         for (String model : models) {
-            shell(model,"supplier_info_service_type_relation");
+            shell(model,"cabinet_type");
 
 
         }
@@ -65,9 +65,9 @@ public class MysqlGenerator {
         DataSourceConfig dsc = new DataSourceConfig();
         dsc.setDbType(DbType.MYSQL);
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
-        dsc.setUsername("jayudtest");
-        dsc.setPassword("jayudtest");
-        dsc.setUrl("jdbc:mysql://rm-wz9m40gpm90c230wobo.mysql.rds.aliyuncs.com:3306/jayud_shop?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC");
+        dsc.setUsername("root");
+        dsc.setPassword("1234");
+        dsc.setUrl("jdbc:mysql://113.100.140.250:6334/jayud_shop?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC");
         mpg.setDataSource(dsc);
 
         // 策略配置
@@ -103,7 +103,7 @@ public class MysqlGenerator {
             focList.add(new FileOutConfig("/templates/mapper.xml.vm") {
                 @Override
                 public String outputFile(TableInfo tableInfo) {
-                    return path + "/src/main/resources/com/jayud/mall/mapper"
+                    return path + "/src/main/resources/com.jayud.mall.mapper"
                             + "/" + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
                 }
             });

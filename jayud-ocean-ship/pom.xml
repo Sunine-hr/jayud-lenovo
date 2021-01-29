@@ -15,6 +15,12 @@
     <name>jayud-ocean-ship</name>
     <description>海运管理系统</description>
 
+    <modules>
+        <module>jayud-ocean-ship-model</module>
+        <module>jayud-ocean-ship-service</module>
+        <module>jayud-ocean-ship-web</module>
+    </modules>
+
     <dependencies>
         <dependency>
             <groupId>com.jayud</groupId>
@@ -26,6 +32,25 @@
             <artifactId>druid-spring-boot-starter</artifactId>
             <version>1.1.21</version>
         </dependency>
+
+<!--        &lt;!&ndash; mybatis-plus集成依赖包 &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>com.baomidou</groupId>-->
+<!--            <artifactId>mybatis-plus-boot-starter</artifactId>-->
+<!--            <version>3.4.0</version>-->
+<!--        </dependency>-->
+<!--        &lt;!&ndash; mybatis-plus分页插件 &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>com.baomidou</groupId>-->
+<!--            <artifactId>mybatis-plus</artifactId>-->
+<!--            <version>3.4.0</version>-->
+<!--        </dependency>-->
+<!--        &lt;!&ndash; 默认模板引擎 &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.velocity</groupId>-->
+<!--            <artifactId>velocity-engine-core</artifactId>-->
+<!--            <version>2.0</version>-->
+<!--        </dependency>-->
     </dependencies>
 
 </project>

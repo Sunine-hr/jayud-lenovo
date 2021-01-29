@@ -26,11 +26,11 @@ import java.util.Map;
 public class MysqlGenerator {
 
     public static void main(String[] args) {
-        String[] models = {"jayud-oms\\jayud-oms-model",
-                "jayud-oms\\jayud-oms-service",
-                "jayud-oms\\jayud-oms-web"};
+        String[] models = {"jayud-ocean-ship\\jayud-ocean-ship-model",
+                "jayud-ocean-ship\\jayud-ocean-ship-service",
+                "jayud-ocean-ship\\jayud-ocean-ship-web"};
         for (String model : models) {
-            shell(model,"order_address");
+            shell(model,"sea_port");
 
         }
     }
@@ -49,7 +49,7 @@ public class MysqlGenerator {
         gc.setBaseResultMap(true);// XML ResultMap
         gc.setBaseColumnList(true);// XML columList
         gc.setSwagger2(true);
-        gc.setAuthor("LDR");
+        gc.setAuthor("LLJ");
 
         // 自定义文件命名，注意 %s 会自动填充表实体属性！
         gc.setMapperName("%sMapper");
@@ -63,9 +63,9 @@ public class MysqlGenerator {
         DataSourceConfig dsc = new DataSourceConfig();
         dsc.setDbType(DbType.MYSQL);
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
-        dsc.setUsername("jayudtest");
-        dsc.setPassword("jayudtest");
-        dsc.setUrl("jdbc:mysql://rm-wz9m40gpm90c230wobo.mysql.rds.aliyuncs.com/jayud_oms");
+        dsc.setUsername("root");
+        dsc.setPassword("1234");
+        dsc.setUrl("jdbc:mysql://113.100.140.250:6334/jayud_oms?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&autoReconnect=true");
         mpg.setDataSource(dsc);
 
         // 策略配置
@@ -78,7 +78,7 @@ public class MysqlGenerator {
         String pack = "";
         // 包配置
         PackageConfig pc = new PackageConfig();
-        pc.setParent("com.jayud.oms");
+        pc.setParent("com.jayud.oceanship");
         pc.setEntity("model.po");
         pc.setController("controller");
         pc.setMapper("mapper");
@@ -101,7 +101,7 @@ public class MysqlGenerator {
             focList.add(new FileOutConfig("/templates/mapper.xml.vm") {
                 @Override
                 public String outputFile(TableInfo tableInfo) {
-                    return path + "/src/main/resources/com/jayud/oms/mapper"
+                    return path + "/src/main/resources/com/jayud/oceanship/mapper"
                             + "/" + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
                 }
             });

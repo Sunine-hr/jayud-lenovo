@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oceanship.mapper.SeaBookshipMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oceanship.model.po.SeaBookship">
+        <id column="id" property="id" />
+        <result column="status" property="status" />
+        <result column="sea_order_no" property="seaOrderNo" />
+        <result column="sea_order_id" property="seaOrderId" />
+        <result column="agent_supplier_id" property="agentSupplierId" />
+        <result column="warehousing_no" property="warehousingNo" />
+        <result column="main_no" property="mainNo" />
+        <result column="sub_no" property="subNo" />
+        <result column="ship_company" property="shipCompany" />
+        <result column="ship_name" property="shipName" />
+        <result column="ship_number" property="shipNumber" />
+        <result column="etd" property="etd" />
+        <result column="atd" property="atd" />
+        <result column="eta" property="eta" />
+        <result column="ata" property="ata" />
+        <result column="delivery_wharf" property="deliveryWharf" />
+        <result column="file_path" property="filePath" />
+        <result column="file_name" property="fileName" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="bill_lading_weight" property="billLadingWeight" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, status, sea_order_no, sea_order_id, agent_supplier_id, warehousing_no, main_no, sub_no, ship_company, ship_name, ship_number, etd, atd, eta, ata, delivery_wharf, file_path, file_name, create_user, create_time, update_user, update_time, bill_lading_weight
+    </sql>
+
+</mapper>

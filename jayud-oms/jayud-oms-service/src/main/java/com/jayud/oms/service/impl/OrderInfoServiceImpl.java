@@ -105,6 +105,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Autowired
     private OauthClient oauthClient;
 
+    @Autowired
+    private OceanShipClient oceanShipClient;
+
     @Override
     public String oprMainOrder(InputMainOrderForm form) {
         OrderInfo orderInfo = ConvertUtil.convert(form, OrderInfo.class);
@@ -808,6 +811,21 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             boolean result = serviceOrderService.createOrder(orderServiceForm);
             if (!result) {
                 return false;
+            }
+        }
+        //海运
+        if (OrderStatusEnum.HY.getCode().equals(classCode)) {
+            InputSeaOrderForm seaOrderForm = form.getSeaOrderForm();
+            if (this.queryEditOrderCondition(seaOrderForm.getStatus(),
+                    inputMainOrderForm.getStatus(), SubOrderSignEnum.HY.getSignOne(), form)) {
+                //拼装地址信息
+                seaOrderForm.assemblyAddress();
+                seaOrderForm.setMainOrderNo(mainOrderNo);
+                seaOrderForm.setCreateUser(UserOperator.getToken());
+                Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
+                        : ProcessStatusEnum.DRAFT.getCode();
+                seaOrderForm.setProcessStatus(processStatus);
+                this.oceanShipClient.createOrder(seaOrderForm);
             }
         }
 

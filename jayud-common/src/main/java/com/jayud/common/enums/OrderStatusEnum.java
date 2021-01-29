@@ -24,6 +24,7 @@ public enum OrderStatusEnum {
     NLYSDD("NLYSDD", "内陆运输订单"),
     FWD("FWD", "服务单"),
     FWDDD("FWDDD", "服务单订单"),
+    HY("海运","HY"),
 
 
     //主订单状态

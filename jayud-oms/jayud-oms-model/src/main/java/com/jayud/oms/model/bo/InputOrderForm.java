@@ -23,6 +23,9 @@ public class InputOrderForm {
     @ApiModelProperty(value = "服务单")
     private InputOrderServiceForm orderServiceForm;
 
+    @ApiModelProperty(value = "服务单")
+    private InputSeaOrderForm seaOrderForm;
+
     @ApiModelProperty(value = "操作指令:cmd=preSubmit or submit", required = true)
     private String cmd;
 

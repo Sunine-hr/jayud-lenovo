@@ -217,6 +217,13 @@ public class OrderInfoController {
                     return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
                 }
             }
+            //海运校验参数
+            if (OrderStatusEnum.HY.getCode().equals(inputMainOrderForm.getClassCode())) {
+                InputSeaOrderForm seaOrderForm = form.getSeaOrderForm();
+                if (!seaOrderForm.checkCreateOrder()) {
+                    return CommonResult.error(ResultEnum.PARAM_ERROR);
+                }
+            }
         }
 
         boolean result = orderInfoService.createOrder(form);

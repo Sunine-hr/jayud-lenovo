@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oceanship.mapper.SeaOrderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oceanship.model.po.SeaOrder">
+        <id column="id" property="id" />
+        <result column="main_order_no" property="mainOrderNo" />
+        <result column="order_no" property="orderNo" />
+        <result column="status" property="status" />
+        <result column="process_status" property="processStatus" />
+        <result column="unit_code" property="unitCode" />
+        <result column="legal_name" property="legalName" />
+        <result column="legal_entity_id" property="legalEntityId" />
+        <result column="imp_and_exp_type" property="impAndExpType" />
+        <result column="terms" property="terms" />
+        <result column="port_departure_code" property="portDepartureCode" />
+        <result column="port_destination_code" property="portDestinationCode" />
+        <result column="overseas_suppliers_id" property="overseasSuppliersId" />
+        <result column="proxy_service_type" property="proxyServiceType" />
+        <result column="good_time" property="goodTime" />
+        <result column="is_freight_collect" property="isFreightCollect" />
+        <result column="is_other_expenses_paid" property="isOtherExpensesPaid" />
+        <result column="is_dangerous_goods" property="isDangerousGoods" />
+        <result column="is_charged" property="isCharged" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="need_input_cost" property="needInputCost" />
+        <result column="order_taker" property="orderTaker" />
+        <result column="receiving_orders_date" property="receivingOrdersDate" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, main_order_no, order_no, status, process_status, unit_code, legal_name, legal_entity_id, imp_and_exp_type, terms, port_departure_code, port_destination_code, overseas_suppliers_id, proxy_service_type, good_time, is_freight_collect, is_other_expenses_paid, is_dangerous_goods, is_charged, create_user, create_time, update_user, update_time, need_input_cost, order_taker, receiving_orders_date
+    </sql>
+
+</mapper>

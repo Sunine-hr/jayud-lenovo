@@ -85,9 +85,10 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void batchSaveCustomerGoods(List<CustomerGoodsVO> list) {
+        CustomerUser customerUser = baseService.getCustomerUser();
         list.forEach(customerGoodsVO -> {
             String typesName = customerGoodsVO.getTypesName();
-            customerGoodsVO.setCustomerId(1);//客户ID(customer id)
+            customerGoodsVO.setCustomerId(customerUser.getId());//客户ID(customer id)
             customerGoodsVO.setStatus(0);//审核状态代码：1-审核通过，0-等待审核，-1-审核不通过
             if(typesName != null && typesName.equalsIgnoreCase("普货")){
                 customerGoodsVO.setTypes(1);

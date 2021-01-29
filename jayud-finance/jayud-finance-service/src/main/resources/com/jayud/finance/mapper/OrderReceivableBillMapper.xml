@@ -469,7 +469,7 @@
         oi.legal_name legalName,
         oi.legal_entity_id legalEntityId,
         ci.`name` unitAccount,
-        orc.customer_code unitCode,
+        ci.id_code unitCode,
         ifnull( orb.already_paid_amount, 0 ) alreadyPaidAmount,
         ifnull( orb.bill_order_num, 0 ) billOrderNum,
         ifnull( orb.bill_num, 0 ) billNum,
@@ -480,7 +480,7 @@
         left join customer_info ci on ci.id_code = orc.customer_code
         LEFT JOIN order_info oi ON oi.order_no = orc.main_order_no
         left join order_receivable_bill orb on orb.legal_entity_id = oi.legal_entity_id
-        and orb.unit_account = ci.`name` and is_main=1
+        and orb.unit_code = ci.id_code and orb.is_main=1
         where orc.is_sum_to_main = 1 and orc.status = '3'
         <if test="form.unitAccount != null and form.unitAccount != ''">
             and ci.`name` like concat('%',#{form.unitAccount},'%')

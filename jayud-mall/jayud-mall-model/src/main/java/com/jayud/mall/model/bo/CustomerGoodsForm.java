@@ -4,7 +4,9 @@ import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @Data
@@ -42,6 +44,8 @@ public class CustomerGoodsForm {
 
     @ApiModelProperty(value = "商品重量(KG)", position = 8)
     @JSONField(ordinal = 8)
+    @NotNull(message = "商品重量(KG)必填")
+    @Min(value = 0,message = "仅能为数字，且最小值为0")
     private BigDecimal weight;
 
     @ApiModelProperty(value = "长", position = 9)

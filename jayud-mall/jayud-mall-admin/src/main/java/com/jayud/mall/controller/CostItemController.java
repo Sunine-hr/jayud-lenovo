@@ -55,7 +55,7 @@ public class CostItemController {
     }
 
     //查询其他应收费用(过滤掉 海运费、内陆费)list
-    @ApiOperation(value = "查询应收费用list")
+    @ApiOperation(value = "查询其他应收费用list")
     @PostMapping("/findCostItemByOtherRec")
     @ApiOperationSupport(order = 4)
     public CommonResult<List<CostItemVO>> findCostItemByOtherRec(@RequestBody CostItemForm form) {

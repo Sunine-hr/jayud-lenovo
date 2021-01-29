@@ -647,6 +647,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.ZGYSDD.getCode())) {
             InputOrderTransportVO inputOrderTransportVO = tmsClient.getOrderTransport(inputMainOrderVO.getOrderNo()).getData();
             if (inputOrderTransportVO != null) {
+                //组装车型/柜号
+                inputOrderTransportVO.assembleModelAndCntrNo();
+
                 //附件信息
                 List<FileView> allPics = new ArrayList<>();
                 allPics.addAll(StringUtils.getFileViews(inputOrderTransportVO.getCntrPic(), inputOrderTransportVO.getCntrPicName(), prePath));

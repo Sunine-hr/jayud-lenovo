@@ -7,6 +7,7 @@ import com.jayud.oms.model.bo.ConfirmRelateUnitForm;
 import com.jayud.oms.model.bo.CustomerInfoForm;
 import com.jayud.oms.model.po.CustomerRelaUnit;
 import com.jayud.oms.service.ICustomerRelaUnitService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -38,6 +39,9 @@ public class CustomerRelaUnitServiceImpl extends ServiceImpl<CustomerRelaUnitMap
 
     @Override
     public void saveBatchRelaUnit(Long customerId, List<Long> unitCodeIds) {
+        if (CollectionUtils.isEmpty(unitCodeIds)) {
+            return;
+        }
         List<CustomerRelaUnit> customerRelaUnitList = new ArrayList<>();
         for (Long unitCodeId : unitCodeIds) {
             CustomerRelaUnit customerRelaUnit = new CustomerRelaUnit();

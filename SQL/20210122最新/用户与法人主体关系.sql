@@ -1,5 +1,8 @@
 --部门新增legal_id字段
-alter table department add column name bigint(20) comment '法人主体id';
+alter table department add column legal_id bigint(20) comment '法人主体id';
+
+--供应商增加法人主体id字段
+alter table supplier_info add column legal_entity_id bigint(20) comment '法人主体id';
 
 --新建用户与法人主体关系表
 DROP TABLE IF EXISTS `system_user_legal`;

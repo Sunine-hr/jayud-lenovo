@@ -4,6 +4,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 
 @Data
@@ -23,6 +24,7 @@ public class CustomerGoodsForm {
 
     @ApiModelProperty(value = "中文名", position = 4)
     @JSONField(ordinal = 4)
+    @NotEmpty(message = "中文名必填")
     private String nameCn;
 
     @ApiModelProperty(value = "英文名", position = 5)

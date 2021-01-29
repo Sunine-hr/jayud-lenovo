@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -51,7 +52,7 @@ public class CustomerGoodsController {
     @ApiOperation(value = "保存商品信息")
     @PostMapping("/saveCustomerGoods")
     @ApiOperationSupport(order = 2)
-    public CommonResult<CustomerGoodsVO> saveCustomerGoods(@RequestBody CustomerGoodsForm form){
+    public CommonResult<CustomerGoodsVO> saveCustomerGoods(@Valid @RequestBody CustomerGoodsForm form){
         CustomerGoodsVO customerGoodsVO = customerGoodsService.saveCustomerGoods(form);
         return CommonResult.success(customerGoodsVO);
     }
@@ -111,7 +112,7 @@ public class CustomerGoodsController {
     @ApiOperation(value = "批量保存-客户商品")
     @PostMapping(value = "/batchSaveCustomerGoods")
     @ApiOperationSupport(order = 5)
-    public CommonResult batchSaveCustomerGoods(@RequestBody List<CustomerGoodsVO> list){
+    public CommonResult batchSaveCustomerGoods(@Valid @RequestBody List<CustomerGoodsVO> list){
         customerGoodsService.batchSaveCustomerGoods(list);
         return CommonResult.success("批量保存-客户商品，成功！");
     }

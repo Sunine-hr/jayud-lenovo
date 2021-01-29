@@ -532,6 +532,7 @@
             left join legal_entity le on sub.legal_entity_id = le.id
             left join order_receivable_bill orb on orb.legal_entity_id = sub.legal_entity_id
             and orb.unit_code = orc.customer_code
+            and orb.sub_type = #{form.cmd}
             where orc.is_sum_to_main = 0 and orc.sub_type = #{form.cmd} and orc.status = '3'
             <if test="form.unitAccount != null and form.unitAccount != ''">
                 and ci.`name` like concat('%',#{form.unitAccount},'%')

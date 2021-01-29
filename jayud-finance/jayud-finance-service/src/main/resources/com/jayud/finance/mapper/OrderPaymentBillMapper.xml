@@ -491,6 +491,7 @@
             left join legal_entity le on sub.legal_entity_id = le.id
             left join order_payment_bill opb on opb.legal_entity_id =sub.legal_entity_id
             and opb.supplier_code = opc.customer_code
+            and opb.sub_type = #{form.cmd}
             where opc.is_sum_to_main = 0 and opc.sub_type = #{form.cmd} and opc.status = '3'
             <if test="form.supplierChName != null and form.supplierChName != ''">
                 and si.supplier_ch_name like concat('%',#{form.supplierChName},'%')

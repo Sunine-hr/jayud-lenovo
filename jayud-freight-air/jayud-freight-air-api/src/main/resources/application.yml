@@ -1,5 +1,5 @@
 server:
-  port: 8211
+  port: 9001
   servlet:
     context-path: ${airApi.content.path}
 
@@ -46,15 +46,7 @@ spring:
         wall:
           config:
             multi-statement-allow: true
-mybatis-plus:
-  mapper-locations: classpath:com.jayud.oms.mapper/*.xml
-  typeAliasesPackage: com.jayud.model
-  configuration:
-    map-underscore-to-camel-case: true
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-  global-config:
-    db-config:
-      id-type: auto
+
 swagger:
   enable: true
 logging:

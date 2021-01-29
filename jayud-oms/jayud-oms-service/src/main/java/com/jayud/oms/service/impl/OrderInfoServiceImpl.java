@@ -328,12 +328,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         BigDecimal paymentCostTotal = new BigDecimal(0);
         //计算应收
         for (InputReceivableCostVO receivableCostVO : inputCostVO.getReceivableCostList()) {
+            if (receivableCostVO.getAmount() == null || receivableCostVO.getChangeAmount() == null) return;
             receivableCost.merge(receivableCostVO.getCurrencyName(), receivableCostVO.getAmount(), BigDecimal::add);
             //合计应收本币金额
             receivableCostTotal = receivableCostTotal.add(receivableCostVO.getChangeAmount());
         }
         //计算应付
         for (InputPaymentCostVO paymentCostVO : inputCostVO.getPaymentCostList()) {
+            if (paymentCostVO.getAmount() == null || paymentCostVO.getChangeAmount() == null) return;
             paymentCost.merge(paymentCostVO.getCurrencyName(), paymentCostVO.getAmount(), BigDecimal::add);
             //合计应付本币金额
             paymentCostTotal = paymentCostTotal.add(paymentCostVO.getChangeAmount());

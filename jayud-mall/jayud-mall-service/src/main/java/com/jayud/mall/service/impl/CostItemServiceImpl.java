@@ -3,6 +3,7 @@ package com.jayud.mall.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.model.bo.CostItemForm;
+import com.jayud.mall.model.bo.CostItemSupForm;
 import com.jayud.mall.model.po.CostItem;
 import com.jayud.mall.mapper.CostItemMapper;
 import com.jayud.mall.model.vo.CostItemVO;
@@ -57,6 +58,12 @@ public class CostItemServiceImpl extends ServiceImpl<CostItemMapper, CostItem> i
         List<CostItem> costItems = costItemMapper.selectList(queryWrapper);
         List<CostItemVO> costItemVOS = ConvertUtil.convertList(costItems, CostItemVO.class);
         return costItemVOS;
+    }
+
+    @Override
+    public List<CostItemVO> findCostItemBySupId(CostItemSupForm form) {
+        List<CostItemVO> list = costItemMapper.findCostItemBySupId(form);
+        return list;
     }
 
 }

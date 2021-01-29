@@ -2,6 +2,7 @@ package com.jayud.mall.controller;
 
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.CostItemForm;
+import com.jayud.mall.model.bo.CostItemSupForm;
 import com.jayud.mall.model.vo.CostItemVO;
 import com.jayud.mall.service.ICostItemService;
 import io.swagger.annotations.Api;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
 
@@ -69,5 +71,12 @@ public class CostItemController {
         return CommonResult.success(list);
     }
 
+    @ApiOperation(value = "根据供应商id，获取供应商费用（应付费用信息）")
+    @PostMapping("/findCostItemBySupId")
+    @ApiOperationSupport(order = 2)
+    public CommonResult<List<CostItemVO>> findCostItemBySupId(@Valid @RequestBody CostItemSupForm form) {
+        List<CostItemVO> list = costItemService.findCostItemBySupId(form);
+        return CommonResult.success(list);
+    }
 
 }

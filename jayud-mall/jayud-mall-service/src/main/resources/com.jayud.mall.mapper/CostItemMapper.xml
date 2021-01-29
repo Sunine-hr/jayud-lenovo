@@ -17,4 +17,18 @@
         id, cost_code, cost_name, user_id, user_name, create_time
     </sql>
 
+
+    <select id="findCostItemBySupId" parameterType="com.jayud.mall.model.bo.CostItemSupForm"
+            resultType="com.jayud.mall.model.vo.CostItemVO">
+        select
+        t.id,t.identifying,t.cost_code,t.cost_name,t.status,t.user_id,t.user_name,t.create_time
+        from cost_item t
+        left join supplier_cost t1 on t1.cost_item_id = t.id
+        where 1=1
+        <if test="form.supplierInfoId != null and form.supplierInfoId != ''">
+            and t1.supplier_info_id = #{form.supplierInfoId}
+        </if>
+
+    </select>
+
 </mapper>

@@ -1,4 +1,4 @@
-package com.jayud.mall.config;
+package com.jayud.mall.utils;
 
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;

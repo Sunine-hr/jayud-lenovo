@@ -227,24 +227,28 @@ public class OrderInfoVO {
     @JSONField(ordinal = 46)
     private Integer qie;
 
-    //海运费：订柜尺寸(应收费用明细)
-    @ApiModelProperty(value = "海运费：订柜尺寸(应收费用明细)", position = 47)
+    @ApiModelProperty(value = "发货数量(箱)", position = 47)
     @JSONField(ordinal = 47)
+    private Integer quantityShipped;
+
+    //海运费：订柜尺寸(应收费用明细)
+    @ApiModelProperty(value = "海运费：订柜尺寸(应收费用明细)", position = 48)
+    @JSONField(ordinal = 48)
     private List<TemplateCopeReceivableVO> oceanFeeList;
 
     //内陆费：集货仓库(应收费用明细)
-    @ApiModelProperty(value = "内陆费：集货仓库(应收费用明细)", position = 48)
-    @JSONField(ordinal = 48)
+    @ApiModelProperty(value = "内陆费：集货仓库(应收费用明细)", position = 49)
+    @JSONField(ordinal = 49)
     private List<TemplateCopeReceivableVO> inlandFeeList;
 
     //报价对应的目的仓库
-    @ApiModelProperty(value = "报价对应的目的仓库", position = 49)
-    @JSONField(ordinal = 49)
+    @ApiModelProperty(value = "报价对应的目的仓库", position = 50)
+    @JSONField(ordinal = 50)
     private List<FabWarehouseVO> fabWarehouseVOList;
 
     //订单费用明细
-    @ApiModelProperty(value = "订单费用明细", position = 50)
-    @JSONField(ordinal = 50)
+    @ApiModelProperty(value = "订单费用明细", position = 51)
+    @JSONField(ordinal = 51)
     private OrderCostDetailVO orderCostDetailVO;
 
 }

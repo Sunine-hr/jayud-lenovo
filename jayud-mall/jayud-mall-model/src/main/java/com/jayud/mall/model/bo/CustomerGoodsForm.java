@@ -20,6 +20,7 @@ public class CustomerGoodsForm {
 
     @ApiModelProperty(value = "SKU商品编码", position = 3)
     @JSONField(ordinal = 3)
+    @NotEmpty(message = "SKU商品编码必填")
     private String sku;
 
     @ApiModelProperty(value = "中文名", position = 4)

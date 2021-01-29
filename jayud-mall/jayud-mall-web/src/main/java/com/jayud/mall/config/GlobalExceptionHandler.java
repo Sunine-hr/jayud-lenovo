@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
         }
 
         exception.printStackTrace();
-        return CommonResult.error(ResultEnum.PARAM_ERROR, errorMsg.toString() );
+        return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), errorMsg.toString(), errorMsg.toString() );
     }
 
 }

@@ -111,7 +111,6 @@
 <!--    </select>-->
     <select id="findPaymentBillNum" parameterType="com.jayud.finance.bo.QueryPaymentBillNumForm" resultType="com.jayud.finance.vo.OrderPaymentBillNumVO" >
         SELECT
-          DISTINCT
             op.bill_no billNo,
             op.account_term accountTermStr,
             ( SELECT count( DISTINCT opbd.order_no ) FROM order_payment_bill_detail opbd WHERE opbd.bill_no = op.bill_no ) billNum,
@@ -138,6 +137,7 @@
                 </if>
             </otherwise>
         </choose>
+        group by bill_no
 
 <!--        <if test="form.cmd == 'zgys'">-->
 <!--            and opb.is_main = 0 and opb.sub_type = 'zgys'-->

@@ -13,6 +13,8 @@ import com.jayud.mall.model.bo.CustomerGoodsForm;
 import com.jayud.mall.model.bo.QueryCustomerGoodsForm;
 import com.jayud.mall.model.po.CustomerGoods;
 import com.jayud.mall.model.vo.CustomerGoodsVO;
+import com.jayud.mall.model.vo.domain.CustomerUser;
+import com.jayud.mall.service.BaseService;
 import com.jayud.mall.service.ICustomerGoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,9 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
 
     @Autowired
     CustomerGoodsMapper customerGoodsMapper;
+    @Autowired
+    BaseService baseService;
+
 
     @Override
     public IPage<CustomerGoodsVO> findCustomerGoodsByPage(QueryCustomerGoodsForm form) {
@@ -69,7 +74,9 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CustomerGoodsVO saveCustomerGoods(CustomerGoodsForm form) {
+        CustomerUser customerUser = baseService.getCustomerUser();
         CustomerGoods customerGoods = ConvertUtil.convert(form, CustomerGoods.class);
+        customerGoods.setCustomerId(customerUser.getId());
         this.saveOrUpdate(customerGoods);
         CustomerGoodsVO customerGoodsVO = ConvertUtil.convert(customerGoods, CustomerGoodsVO.class);
         return customerGoodsVO;

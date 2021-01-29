@@ -8,6 +8,8 @@ import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.CustomerGoodsForm;
 import com.jayud.mall.model.bo.QueryCustomerGoodsForm;
 import com.jayud.mall.model.vo.CustomerGoodsVO;
+import com.jayud.mall.model.vo.domain.CustomerUser;
+import com.jayud.mall.service.BaseService;
 import com.jayud.mall.service.ICustomerGoodsService;
 import com.jayud.mall.utils.ExcelTemplateUtil;
 import io.swagger.annotations.Api;
@@ -32,12 +34,15 @@ public class CustomerGoodsController {
 
     @Autowired
     ICustomerGoodsService customerGoodsService;
+    @Autowired
+    BaseService baseService;
 
     @ApiOperation(value = "分页查询客户商品")
     @PostMapping("/findCustomerGoodsByPage")
     @ApiOperationSupport(order = 1)
     public CommonResult<CommonPageResult<CustomerGoodsVO>> findCustomerGoodsByPage(@RequestBody QueryCustomerGoodsForm form) {
-        form.setCustomerId(1);//当前登录客户
+        CustomerUser customerUser = baseService.getCustomerUser();
+        form.setCustomerId(customerUser.getId());//当前登录客户
         IPage<CustomerGoodsVO> pageList = customerGoodsService.findCustomerGoodsByPage(form);
         CommonPageResult<CustomerGoodsVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);

@@ -1,4 +1,4 @@
-package com.jayud.oceanship.model.po;
+package com.jayud.oceanship.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.extension.activerecord.Model;

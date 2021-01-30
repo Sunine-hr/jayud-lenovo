@@ -1,6 +1,6 @@
 package com.jayud.oceanship.service.impl;
 
-import com.jayud.oceanship.model.po.Goods;
+import com.jayud.oceanship.po.Goods;
 import com.jayud.oceanship.mapper.GoodsMapper;
 import com.jayud.oceanship.service.IGoodsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;

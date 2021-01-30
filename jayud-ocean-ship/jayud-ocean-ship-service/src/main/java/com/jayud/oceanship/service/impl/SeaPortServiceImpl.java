@@ -2,7 +2,7 @@ package com.jayud.oceanship.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.entity.InitComboxStrVO;
-import com.jayud.oceanship.model.po.SeaPort;
+import com.jayud.oceanship.po.SeaPort;
 import com.jayud.oceanship.mapper.SeaPortMapper;
 import com.jayud.oceanship.service.ISeaPortService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;

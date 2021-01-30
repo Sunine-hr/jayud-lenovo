@@ -3,7 +3,7 @@
 <mapper namespace="com.jayud.oceanship.mapper.SeaPortMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.jayud.oceanship.model.po.SeaPort">
+    <resultMap id="BaseResultMap" type="com.jayud.oceanship.po.SeaPort">
         <id column="id" property="id" />
         <result column="code" property="code" />
         <result column="name" property="name" />

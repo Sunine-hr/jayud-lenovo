@@ -1,6 +1,6 @@
 package com.jayud.oceanship.mapper;
 
-import com.jayud.oceanship.model.po.OrderAddress;
+import com.jayud.oceanship.po.OrderAddress;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

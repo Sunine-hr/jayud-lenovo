@@ -3,7 +3,7 @@
 <mapper namespace="com.jayud.oceanship.mapper.LogisticsTrackMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.jayud.oceanship.model.po.LogisticsTrack">
+    <resultMap id="BaseResultMap" type="com.jayud.oceanship.po.LogisticsTrack">
         <id column="id" property="id" />
         <result column="main_order_id" property="mainOrderId" />
         <result column="order_id" property="orderId" />

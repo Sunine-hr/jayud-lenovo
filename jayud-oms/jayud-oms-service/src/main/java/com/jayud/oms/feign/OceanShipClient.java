@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public interface OceanShipClient {
 
     /**
-     * 创建空运单
+     * 创建海运单
      */
     @RequestMapping(value = "/api/oceanship/createOrder")
     ApiResult createOrder(@RequestBody InputSeaOrderForm inputSeaOrderForm);

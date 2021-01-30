@@ -1,7 +1,7 @@
 package com.jayud.oceanship.service;
 
 import com.jayud.common.entity.InitComboxStrVO;
-import com.jayud.oceanship.model.po.SeaPort;
+import com.jayud.oceanship.po.SeaPort;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;

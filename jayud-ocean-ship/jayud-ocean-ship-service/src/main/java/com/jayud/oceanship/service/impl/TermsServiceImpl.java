@@ -1,15 +1,12 @@
 package com.jayud.oceanship.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.InitComboxVO;
-import com.jayud.oceanship.model.po.Terms;
+import com.jayud.oceanship.po.Terms;
 import com.jayud.oceanship.mapper.TermsMapper;
 import com.jayud.oceanship.service.ITermsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
-import java.nio.channels.NonWritableChannelException;
 import java.util.ArrayList;
 import java.util.List;
 

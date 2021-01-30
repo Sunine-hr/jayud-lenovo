@@ -1,6 +1,6 @@
 package com.jayud.oceanship.service;
 
-import com.jayud.oceanship.model.po.LogisticsTrack;
+import com.jayud.oceanship.po.LogisticsTrack;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

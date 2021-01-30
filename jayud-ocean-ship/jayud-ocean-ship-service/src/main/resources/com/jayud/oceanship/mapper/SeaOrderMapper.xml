@@ -3,7 +3,7 @@
 <mapper namespace="com.jayud.oceanship.mapper.SeaOrderMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.jayud.oceanship.model.po.SeaOrder">
+    <resultMap id="BaseResultMap" type="com.jayud.oceanship.po.SeaOrder">
         <id column="id" property="id" />
         <result column="main_order_no" property="mainOrderNo" />
         <result column="order_no" property="orderNo" />

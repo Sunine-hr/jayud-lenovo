@@ -3,7 +3,7 @@
 <mapper namespace="com.jayud.oceanship.mapper.GoodsMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.jayud.oceanship.model.po.Goods">
+    <resultMap id="BaseResultMap" type="com.jayud.oceanship.po.Goods">
         <id column="id" property="id" />
         <result column="business_id" property="businessId" />
         <result column="business_type" property="businessType" />

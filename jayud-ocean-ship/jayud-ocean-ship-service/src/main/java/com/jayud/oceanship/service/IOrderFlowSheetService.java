@@ -1,6 +1,6 @@
 package com.jayud.oceanship.service;
 
-import com.jayud.oceanship.model.po.OrderFlowSheet;
+import com.jayud.oceanship.po.OrderFlowSheet;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

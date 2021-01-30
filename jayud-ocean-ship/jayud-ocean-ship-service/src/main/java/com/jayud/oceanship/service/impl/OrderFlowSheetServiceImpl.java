@@ -1,6 +1,6 @@
 package com.jayud.oceanship.service.impl;
 
-import com.jayud.oceanship.model.po.OrderFlowSheet;
+import com.jayud.oceanship.po.OrderFlowSheet;
 import com.jayud.oceanship.mapper.OrderFlowSheetMapper;
 import com.jayud.oceanship.service.IOrderFlowSheetService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;

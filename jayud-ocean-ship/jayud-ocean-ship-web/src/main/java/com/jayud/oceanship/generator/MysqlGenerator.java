@@ -30,7 +30,7 @@ public class MysqlGenerator {
                 "jayud-ocean-ship\\jayud-ocean-ship-service",
                 "jayud-ocean-ship\\jayud-ocean-ship-web"};
         for (String model : models) {
-            shell(model,"sea_port");
+            shell(model,"order_status");
 
         }
     }

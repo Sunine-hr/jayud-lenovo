@@ -1,6 +1,6 @@
 package com.jayud.oceanship.mapper;
 
-import com.jayud.oceanship.model.po.SeaPort;
+import com.jayud.oceanship.po.SeaPort;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

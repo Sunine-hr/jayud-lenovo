@@ -1,4 +1,4 @@
-package com.jayud.oceanship.model.po;
+package com.jayud.oceanship.po;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import java.time.LocalDateTime;
@@ -32,8 +32,8 @@ public class OrderFlowSheet extends Model<OrderFlowSheet> {
     @ApiModelProperty(value = "主订单号")
     private String mainOrderNo;
 
-    @ApiModelProperty(value = "业务类型id")
-    private Long productClassifyId;
+    @ApiModelProperty(value = "业务类型id_code")
+    private String productClassifyId;
 
     @ApiModelProperty(value = "业务类型")
     private String productClassifyName;
@@ -42,7 +42,7 @@ public class OrderFlowSheet extends Model<OrderFlowSheet> {
     private String status;
 
     @ApiModelProperty(value = "流程名")
-    private String statusAnme;
+    private String statusName;
 
     @ApiModelProperty(value = "是否完成(0:未完成;1:已完成)")
     private String complete;

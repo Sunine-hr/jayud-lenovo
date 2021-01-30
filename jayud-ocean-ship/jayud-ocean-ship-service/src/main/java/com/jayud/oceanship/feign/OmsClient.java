@@ -5,7 +5,10 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.config.FeignRequestInterceptor;
 import com.jayud.common.entity.InitComboxVO;
+import com.jayud.oceanship.bo.AddGoodsForm;
+import com.jayud.oceanship.bo.AddOrderAddressForm;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -54,6 +57,7 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/initSupplierInfo")
     CommonResult<List<InitComboxVO>> initSupplierInfo();
+
 //
 //    /**
 //     * 根据客户id查询客户信息
@@ -101,19 +105,19 @@ public interface OmsClient {
 //     */
 //    @RequestMapping(value = "/api/deleteLogisticsTrackByType")
 //    ApiResult deleteLogisticsTrackByType(@RequestParam("orderId") Long orderId, @RequestParam("type") Integer type);
-//
-//    /**
-//     * 批量保存/修改商品信息
-//     */
-//    @RequestMapping(value = "/api/saveOrUpdateGoodsBatch")
-//    public ApiResult saveOrUpdateGoodsBatch(@RequestBody List<AddGoodsForm> goodsForms);
-//
-//    /**
-//     * 批量保存/修改订单地址信息
-//     */
-//    @RequestMapping(value = "/api/saveOrUpdateOrderAddressBatch")
-//    public ApiResult saveOrUpdateOrderAddressBatch(@RequestBody List<AddOrderAddressForm> forms);
-//
+
+    /**
+     * 批量保存/修改商品信息
+     */
+    @RequestMapping(value = "/api/saveOrUpdateGoodsBatch")
+    public ApiResult saveOrUpdateGoodsBatch(@RequestBody List<AddGoodsForm> goodsForms);
+
+    /**
+     * 批量保存/修改订单地址信息
+     */
+    @RequestMapping(value = "/api/saveOrUpdateOrderAddressBatch")
+    public ApiResult saveOrUpdateOrderAddressBatch(@RequestBody List<AddOrderAddressForm> forms);
+
 //    /**
 //     * 根据业务id集合查询订单地址
 //     */

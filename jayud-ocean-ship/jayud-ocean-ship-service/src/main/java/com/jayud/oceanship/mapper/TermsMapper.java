@@ -1,6 +1,6 @@
 package com.jayud.oceanship.mapper;
 
-import com.jayud.oceanship.model.po.Terms;
+import com.jayud.oceanship.po.Terms;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

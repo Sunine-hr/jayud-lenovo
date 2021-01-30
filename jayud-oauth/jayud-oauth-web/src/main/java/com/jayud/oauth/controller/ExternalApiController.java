@@ -336,6 +336,14 @@ public class ExternalApiController {
         return ApiResult.ok(legalId);
     }
 
+    @ApiOperation(value = "根据用户名获取用户所属法人主体")
+    @RequestMapping(value = "/api/getLegalNameBySystemName")
+    public ApiResult getLegalNameBySystemName(@RequestParam("loginName") String loginName){
+        SystemUser systemUser = userService.getSystemUserBySystemName(loginName);
+        List<String> legalName = systemUserLegalService.getLegalName(systemUser.getId());
+        return ApiResult.ok(legalName);
+    }
+
 }
 
 

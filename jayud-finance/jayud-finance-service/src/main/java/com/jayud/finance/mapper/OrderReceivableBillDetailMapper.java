@@ -26,9 +26,10 @@ public interface OrderReceivableBillDetailMapper extends BaseMapper<OrderReceiva
      * 应收对账单分页查询
      * @param page
      * @param form
+     * @param data
      * @return
      */
-    IPage<OrderPaymentBillDetailVO> findReceiveBillDetailByPage(Page page, @Param("form") QueryPaymentBillDetailForm form);
+    IPage<OrderPaymentBillDetailVO> findReceiveBillDetailByPage(Page page, @Param("form") QueryPaymentBillDetailForm form, @Param("data")List<String> data);
 
     /**
      * 导出应收对账单分页查询

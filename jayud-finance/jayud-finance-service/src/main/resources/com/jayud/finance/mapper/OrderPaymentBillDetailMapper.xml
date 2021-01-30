@@ -592,8 +592,14 @@
         <if test="form.applyStatus != null and form.applyStatus !=''">
             and opbd.apply_status = #{form.applyStatus}
         </if>
-        <if test="form.loginUserName != null and form.loginUserName !=''">
-            and opbd.created_user = #{form.loginUserName}
+<!--        <if test="form.loginUserName != null and form.loginUserName !=''">-->
+<!--            and opbd.created_user = #{form.loginUserName}-->
+<!--        </if>-->
+        <if test="data != null and data.size>0">
+            and opb.legal_name in
+            <foreach collection="data" item="legalName" open="(" separator="," close=")">
+                #{legalName}
+            </foreach>
         </if>
     </select>
 </mapper>

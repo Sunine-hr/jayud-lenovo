@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -194,6 +195,12 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
             templateCopeReceivableFormList.forEach(templateCopeReceivableForm -> {
                 TemplateCopeReceivable templateCopeReceivable = ConvertUtil.convert(templateCopeReceivableForm, TemplateCopeReceivable.class);
                 templateCopeReceivable.setQie(id.intValue());
+                //计算 总金额=数量 * 单价
+                Integer c = templateCopeReceivable.getCount() == null ? 0 : templateCopeReceivable.getCount();//数量
+                BigDecimal count = new BigDecimal(c.toString());
+                BigDecimal unitPrice = templateCopeReceivable.getUnitPrice() == null ? new BigDecimal("0") : templateCopeReceivable.getUnitPrice();//单价
+                BigDecimal amount = count.multiply(unitPrice);
+                templateCopeReceivable.setAmount(amount);
                 list.add(templateCopeReceivable);
             });
             //保存
@@ -211,6 +218,12 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
             templateCopeWithFormList.forEach(templateCopeWithForm -> {
                 TemplateCopeWith templateCopeWith = ConvertUtil.convert(templateCopeWithForm, TemplateCopeWith.class);
                 templateCopeWith.setQie(id.intValue());
+                //计算 总金额=数量 * 单价
+                Integer c = templateCopeWith.getCount() == null ? 0 : templateCopeWith.getCount();//数量
+                BigDecimal count = new BigDecimal(c.toString());
+                BigDecimal unitPrice = templateCopeWith.getUnitPrice() == null ? new BigDecimal("0") : templateCopeWith.getUnitPrice();//单价
+                BigDecimal amount = count.multiply(unitPrice);
+                templateCopeWith.setAmount(amount);
                 list.add(templateCopeWith);
             });
             //保存

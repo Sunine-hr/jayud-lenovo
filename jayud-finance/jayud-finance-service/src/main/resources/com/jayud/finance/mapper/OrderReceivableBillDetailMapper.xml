@@ -119,9 +119,6 @@
             and orbd.apply_status = #{form.applyStatus}
         </if>
 
-<!--        <if test="form.loginUserName != null and form.loginUserName !=''">-->
-<!--            and orbd.created_user = #{form.loginUserName}-->
-<!--        </if>-->
         <if test="data != null and data.size>0">
             and orb.legal_name in
             <foreach collection="data" item="legalName" open="(" separator="," close=")">

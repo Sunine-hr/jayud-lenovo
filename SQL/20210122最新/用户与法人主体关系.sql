@@ -11,6 +11,4 @@ CREATE TABLE `system_user_legal`  (
   `legal_id` bigint(20) NULL DEFAULT NULL COMMENT '法人主体id',
   `system_user_id` bigint(20) NULL DEFAULT NULL COMMENT '用户信息id',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 14 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Fixed;
-
-SET FOREIGN_KEY_CHECKS = 1;
+) ENGINE = InnoDB;

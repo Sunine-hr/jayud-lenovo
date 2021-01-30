@@ -88,6 +88,6 @@
     <logger name="com.alibaba.nacos.client">
         <level value="ERROR" />
     </logger>
-    <logger name="com.jayud" level="DEBUG"/>
+    <logger name="com.jayud" level="INFO"/>
     <logger name="org.springframework" level="INFO"/>
 </configuration>

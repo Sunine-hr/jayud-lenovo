@@ -13,6 +13,7 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
+import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.mapper.OrderPaymentBillDetailMapper;
 import com.jayud.finance.po.OrderBillCostTotal;
@@ -71,13 +72,21 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     @Autowired
     ICurrencyRateService currencyRateService;
 
+    @Autowired
+    OauthClient oauthClient;
+
     @Override
     public IPage<OrderPaymentBillDetailVO> findPaymentBillDetailByPage(QueryPaymentBillDetailForm form) {
         //定义分页参数
         Page<OrderPaymentBillDetailVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.desc("opbd.make_time"));
-        IPage<OrderPaymentBillDetailVO> pageInfo = baseMapper.findPaymentBillDetailByPage(page, form) ;
+
+        //获取当前用户法人主体名字
+        ApiResult legalNameBySystemName = oauthClient.getLegalNameBySystemName(form.getLoginUserName());
+        List<String> data =(List<String>) legalNameBySystemName.getData();
+
+        IPage<OrderPaymentBillDetailVO> pageInfo = baseMapper.findPaymentBillDetailByPage(page, form,data) ;
         return pageInfo;
     }
 

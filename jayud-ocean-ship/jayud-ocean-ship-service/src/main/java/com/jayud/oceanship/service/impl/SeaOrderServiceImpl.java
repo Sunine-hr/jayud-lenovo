@@ -14,18 +14,22 @@ import com.jayud.oceanship.bo.AddSeaOrderForm;
 import com.jayud.oceanship.feign.OmsClient;
 import com.jayud.oceanship.po.OrderFlowSheet;
 import com.jayud.oceanship.po.OrderStatus;
+import com.jayud.oceanship.po.SeaBookship;
 import com.jayud.oceanship.po.SeaOrder;
 import com.jayud.oceanship.mapper.SeaOrderMapper;
-import com.jayud.oceanship.service.IOrderFlowSheetService;
-import com.jayud.oceanship.service.IOrderStatusService;
-import com.jayud.oceanship.service.ISeaOrderService;
+import com.jayud.oceanship.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.oceanship.vo.GoodsVO;
+import com.jayud.oceanship.vo.OrderAddressVO;
+import com.jayud.oceanship.vo.SeaBookshipVO;
+import com.jayud.oceanship.vo.SeaOrderVO;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -47,6 +51,12 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
 
     @Autowired
     private IOrderStatusService orderStatusService;
+
+    @Autowired
+    private ISeaBookshipService seaBookshipService;
+
+    @Autowired
+    private ITermsService termsService;
 
     @Override
     @Transactional
@@ -155,5 +165,34 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         QueryWrapper<SeaOrder> condition = new QueryWrapper<>();
         condition.lambda().eq(SeaOrder::getMainOrderNo, orderNo);
         return this.getOne(condition);
+    }
+
+    @Override
+    public SeaOrderVO getSeaOrderByOrderNO(Long id) {
+        Integer businessType = BusinessTypeEnum.HY.getCode();
+        //海运订单信息
+        SeaOrderVO seaOrderVO = this.baseMapper.getSeaOrder(id);
+        //查询商品信息
+        ApiResult<List<GoodsVO>> result = this.omsClient.getGoodsByBusIds(Collections.singletonList(id), businessType);
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.warn("查询商品信息失败 airOrderId={}");
+        }
+        seaOrderVO.setGoodsForms(result.getData());
+        //查询地址信息
+        ApiResult<List<OrderAddressVO>> resultOne = this.omsClient.getOrderAddressByBusIds(Collections.singletonList(id), businessType);
+        if (resultOne.getCode() != HttpStatus.SC_OK) {
+            log.warn("查询订单地址信息失败 airOrderId={}");
+        }
+        //处理地址信息
+        for (OrderAddressVO address : resultOne.getData()) {
+            seaOrderVO.processingAddress(address);
+        }
+        //查询贸易方式
+        seaOrderVO.setTermsDesc(this.termsService.getById(seaOrderVO.getTerms()).getName());
+        //查询订船信息
+        SeaBookship seaBookship = this.seaBookshipService.getEnableBySeaOrderId(id);
+        SeaBookshipVO seaBookshipVO = ConvertUtil.convert(seaBookship,SeaBookshipVO.class);
+        seaOrderVO.setSeaBookshipVO(seaBookshipVO);
+        return seaOrderVO;
     }
 }

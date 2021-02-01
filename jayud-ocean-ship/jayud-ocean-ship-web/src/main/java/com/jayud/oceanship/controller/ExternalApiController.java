@@ -4,7 +4,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.oceanship.bo.AddSeaOrderForm;
 import com.jayud.oceanship.po.SeaOrder;
 import com.jayud.oceanship.service.ISeaOrderService;
-import com.jayud.oceanship.vo.InputSeaOrderVO;
+import com.jayud.oceanship.vo.SeaOrderVO;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class ExternalApiController {
      * @param addSeaOrderForm
      * @return
      */
-    @RequestMapping(value = "/api/airfreight/createOrder")
+    @RequestMapping(value = "/api/oceanship/createOrder")
     public ApiResult createOrder(@RequestBody AddSeaOrderForm addSeaOrderForm) {
         seaOrderService.createOrder(addSeaOrderForm);
         return ApiResult.ok();
@@ -42,8 +42,9 @@ public class ExternalApiController {
      * 根据主订单号获取海运单信息
      */
     @RequestMapping(value = "/api/oceanship/getSeaOrderDetails")
-    ApiResult<InputSeaOrderVO> getSeaOrderDetails(String orderNo){
+    ApiResult<SeaOrderVO> getSeaOrderDetails(String orderNo){
         SeaOrder seaOrder = seaOrderService.getByMainOrderNO(orderNo);
-        return null;
+        SeaOrderVO seaOrderVO = seaOrderService.getSeaOrderByOrderNO(seaOrder.getId());
+        return ApiResult.ok(seaOrderVO);
     }
 }

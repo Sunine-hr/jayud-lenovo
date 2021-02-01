@@ -37,4 +37,34 @@
         id, main_order_no, order_no, status, process_status, unit_code, legal_name, legal_entity_id, imp_and_exp_type, terms, port_departure_code, port_destination_code, overseas_suppliers_id, proxy_service_type, good_time, is_freight_collect, is_other_expenses_paid, is_dangerous_goods, is_charged, create_user, create_time, update_user, update_time, need_input_cost, order_taker, receiving_orders_date
     </sql>
 
+<!-- 根据订单ID获取订单信息-->
+    <select id="getSeaOrder" parameterType="long" resultType="com.jayud.oceanship.vo.SeaOrderVO">
+        select so.id,so.main_order_no mainOrderNo,so.order_no orderNo,so.status,
+        so.process_status processStatus,
+        so.unit_code unitCode,
+        so.legal_name legalName,
+        so.legal_entity_id legalEntityId,
+        so.imp_and_exp_type impAndExpType,
+        so.terms,
+        so.port_departure_code portDepartureCode,
+        sp.name portDeparture,
+        so.port_destination_code portDestinationCode,
+        sp1.name portDestination,
+        so.good_time goodTime,
+        so.is_freight_collect isFreightCollect,
+        so.is_other_expenses_paid isOtherExpensesPaid,
+        so.is_dangerous_goods isDangerousGoods,
+        so.is_charged isCharged,
+        so.create_user createUser,
+        so.create_time,
+        so.update_user,
+        so.update_time,
+        so.need_input_cost,
+        so.unit_department_id
+        from sea_order so
+        left join sea_port sp on so.port_departure_code = sp.code
+        left join sea_port sp1 on so.port_destination_code sp.code
+        where id = #{id} order by so.id
+    </select>
+
 </mapper>

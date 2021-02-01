@@ -2,13 +2,15 @@ package com.jayud.oceanship.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.jayud.oceanship.bo.AddGoodsForm;
-import com.jayud.oceanship.bo.AddOrderAddressForm;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.common.enums.ProcessStatusEnum;
+import com.jayud.common.enums.TradeTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -21,7 +23,7 @@ import java.util.List;
  */
 @Data
 @Slf4j
-public class InputSeaOrderVO {
+public class SeaOrderVO {
 
     private static final long serialVersionUID = 1L;
 
@@ -41,6 +43,9 @@ public class InputSeaOrderVO {
     @ApiModelProperty(value = "流程状态(0:进行中,1:完成,2:草稿,3.关闭)")
     private Integer processStatus;
 
+    @ApiModelProperty(value = "流程状态描述")
+    private String processStatusDesc;
+
     @ApiModelProperty(value = "结算单位code")
     private String unitCode;
 
@@ -53,16 +58,29 @@ public class InputSeaOrderVO {
     @ApiModelProperty(value = "进出口类型(1：进口，2：出口)")
     private Integer impAndExpType;
 
+    @ApiModelProperty(value = "进出口类型")
+    private String impAndExpTypeDesc;
+
     @ApiModelProperty(value = "贸易方式(0:FOB,1:CIF,2:DAP,3:FAC,4:DDU,5:DDP)")
     private Integer terms;
+
+    @ApiModelProperty(value = "贸易方式描述")
+    private String termsDesc;
 
     @ApiModelProperty(value = "起运港代码")
     private String portDepartureCode;
 
+    @ApiModelProperty(value = "起运港")
+    private String portDeparture;
+
     @ApiModelProperty(value = "目的港代码")
     private String portDestinationCode;
 
+    @ApiModelProperty(value = "目的港")
+    private String portDestination;
+
     @ApiModelProperty(value = "货好时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime goodTime;
 
     @ApiModelProperty(value = "运费是否到付(1代表true,0代表false)")
@@ -80,20 +98,45 @@ public class InputSeaOrderVO {
     @ApiModelProperty(value = "创建人(登录用户)")
     private String createUser;
 
+    @ApiModelProperty(value = "订船信息")
+    private SeaBookshipVO seaBookshipVO;
+
     @ApiModelProperty(value = "发货地址集合")
-    private List<AddOrderAddressForm> deliveryAddress;
+    private List<OrderAddressVO> deliveryAddress;
 
     @ApiModelProperty(value = "收货地址集合")
-    private List<AddOrderAddressForm> shippingAddress;
+    private List<OrderAddressVO> shippingAddress;
 
     @ApiModelProperty(value = "通知地址集合")
-    private List<AddOrderAddressForm> notificationAddress;
+    private List<OrderAddressVO> notificationAddress;
 
     @ApiModelProperty(value = "空运订单地址信息")
-    private List<AddOrderAddressForm> orderAddressForms;
+    private List<OrderAddressVO> orderAddressForms;
 
     @ApiModelProperty(value = "货品信息")
-    private List<AddGoodsForm> goodsForms;
+    private List<GoodsVO> goodsForms;
 
+    public void processingAddress(OrderAddressVO addressVO) {
+        switch (addressVO.getType()) {
+            case 0:
+                this.deliveryAddress = Collections.singletonList(addressVO);
+                break;
+            case 1:
+                this.shippingAddress = Collections.singletonList(addressVO);
+                break;
+            case 2:
+                this.notificationAddress = Collections.singletonList(addressVO);
+                break;
+        }
+    }
 
+    public void setImpAndExpType(Integer impAndExpType) {
+        this.impAndExpType = impAndExpType;
+        this.impAndExpTypeDesc = TradeTypeEnum.getDesc(impAndExpType);
+    }
+
+    public void setProcessStatus(Integer processStatus) {
+        this.processStatus = processStatus;
+        this.processStatusDesc = ProcessStatusEnum.getDesc(processStatus);
+    }
 }

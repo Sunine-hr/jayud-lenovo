@@ -7,6 +7,8 @@ import com.jayud.common.config.FeignRequestInterceptor;
 import com.jayud.common.entity.InitComboxVO;
 import com.jayud.oceanship.bo.AddGoodsForm;
 import com.jayud.oceanship.bo.AddOrderAddressForm;
+import com.jayud.oceanship.vo.GoodsVO;
+import com.jayud.oceanship.vo.OrderAddressVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -118,20 +120,20 @@ public interface OmsClient {
     @RequestMapping(value = "/api/saveOrUpdateOrderAddressBatch")
     public ApiResult saveOrUpdateOrderAddressBatch(@RequestBody List<AddOrderAddressForm> forms);
 
-//    /**
-//     * 根据业务id集合查询订单地址
-//     */
-//    @RequestMapping(value = "/api/getOrderAddressByBusIds")
-//    public ApiResult<List<OrderAddressVO>> getOrderAddressByBusIds(@RequestParam("orderId") List<Long> orderId,
-//                                                                   @RequestParam("businessType") Integer businessType);
-//
-//    /**
-//     * 根据订单id集合查询商品信息
-//     */
-//    @RequestMapping(value = "/api/getGoodsByBusIds")
-//    public ApiResult<List<GoodsVO>> getGoodsByBusIds(@RequestParam("orderId") List<Long> orderId,
-//                                                     @RequestParam("businessType") Integer businessType);
-//
+    /**
+     * 根据业务id集合查询订单地址
+     */
+    @RequestMapping(value = "/api/getOrderAddressByBusIds")
+    public ApiResult<List<OrderAddressVO>> getOrderAddressByBusIds(@RequestParam("orderId") List<Long> orderId,
+                                                                   @RequestParam("businessType") Integer businessType);
+
+    /**
+     * 根据订单id集合查询商品信息
+     */
+    @RequestMapping(value = "/api/getGoodsByBusIds")
+    public ApiResult<List<GoodsVO>> getGoodsByBusIds(@RequestParam("orderId") List<Long> orderId,
+                                                     @RequestParam("businessType") Integer businessType);
+
 //    /**
 //     * 获取主订单ID
 //     */

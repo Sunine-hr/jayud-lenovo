@@ -13,4 +13,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ISeaBookshipService extends IService<SeaBookship> {
 
+    /**
+     * 根据订单id获取订船信息
+     * @param id
+     * @return
+     */
+    SeaBookship getEnableBySeaOrderId(Long id);
 }

@@ -44,4 +44,9 @@ public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
      */
     InputPaymentCostVO getWriteBackFCostData(Long costId);
 
+    /**
+     * 根据主订单号/子订单号批量获取提交审核通过费用
+     */
+    List<OrderPaymentCost> getCostSubmittedByOrderNos(List<String> mainOrders,List<String> subOrderNos);
+
 }

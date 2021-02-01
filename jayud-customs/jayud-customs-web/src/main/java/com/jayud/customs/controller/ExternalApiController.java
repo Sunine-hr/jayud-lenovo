@@ -40,12 +40,12 @@ public class ExternalApiController {
 
     @ApiOperation(value = "获取子订单信息")
     @RequestMapping(value = "/api/getCustomsOrderNum")
-    ApiResult getCustomsOrderNum(@RequestParam(value = "mainOrderNo") String mainOrderNo){
+    ApiResult getCustomsOrderNum(@RequestParam(value = "mainOrderNo") String mainOrderNo) {
         int customsNum = 0;
         Map<String, Object> param = new HashMap<>();
-        param.put("main_order_no",mainOrderNo);
+        param.put("main_order_no", mainOrderNo);
         List<OrderCustomsVO> orderCustomsVOS = orderCustomsService.findOrderCustomsByCondition(param);
-        if(orderCustomsVOS != null){
+        if (orderCustomsVOS != null) {
             customsNum = orderCustomsVOS.size();
         }
         return ApiResult.ok(customsNum);
@@ -53,7 +53,7 @@ public class ExternalApiController {
 
     @ApiOperation(value = "获取子订单详情")
     @RequestMapping(value = "/api/getCustomsDetail")
-    ApiResult getCustomsDetail(@RequestParam(value = "mainOrderNo") String mainOrderNo){
+    ApiResult getCustomsDetail(@RequestParam(value = "mainOrderNo") String mainOrderNo) {
         InputOrderCustomsVO inputOrderCustomsVO = orderCustomsService.getOrderCustomsDetail(mainOrderNo);
         return ApiResult.ok(inputOrderCustomsVO);
     }
@@ -61,20 +61,21 @@ public class ExternalApiController {
 
     /**
      * 创建报关单
+     *
      * @param form
      * @return
      */
     @RequestMapping(value = "/api/createOrderCustoms")
-    ApiResult createOrderCustoms(@RequestBody InputOrderCustomsForm form){
+    ApiResult createOrderCustoms(@RequestBody InputOrderCustomsForm form) {
         boolean result = orderCustomsService.oprOrderCustoms(form);
         return ApiResult.ok(result);
     }
 
     @ApiOperation(value = "获取报关订单单号")
     @RequestMapping(value = "/api/findCustomsOrderNo")
-    ApiResult findCustomsOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo){
+    ApiResult findCustomsOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(SqlConstant.MAIN_ORDER_NO,mainOrderNo);
+        queryWrapper.eq(SqlConstant.MAIN_ORDER_NO, mainOrderNo);
         List<OrderCustoms> orderCustoms = orderCustomsService.list(queryWrapper);
         List<InitChangeStatusVO> changeStatusVOS = new ArrayList<>();
         for (OrderCustoms orderCustom : orderCustoms) {
@@ -91,7 +92,7 @@ public class ExternalApiController {
 
     @ApiOperation(value = "修改报关状态")
     @RequestMapping(value = "/api/changeCustomsStatus")
-    ApiResult changeCustomsStatus(@RequestBody List<CustomsChangeStatusForm> form){
+    ApiResult changeCustomsStatus(@RequestBody List<CustomsChangeStatusForm> form) {
         for (CustomsChangeStatusForm customs : form) {
             OrderCustoms orderCustoms = new OrderCustoms();
             orderCustoms.setStatus(customs.getStatus());
@@ -99,10 +100,17 @@ public class ExternalApiController {
             orderCustoms.setUpdatedUser(customs.getLoginUser());
             orderCustoms.setUpdatedTime(LocalDateTime.now());
             QueryWrapper<OrderCustoms> updateWrapper = new QueryWrapper<>();
-            updateWrapper.eq(SqlConstant.ORDER_NO,customs.getOrderNo());
-            orderCustomsService.update(orderCustoms,updateWrapper);
+            updateWrapper.eq(SqlConstant.ORDER_NO, customs.getOrderNo());
+            orderCustomsService.update(orderCustoms, updateWrapper);
         }
         return ApiResult.ok();
+    }
+
+
+    @ApiOperation(value = "根据主订单集合查询所有报关信息")
+    @RequestMapping(value = "/api/getCustomsOrderByMainOrderNos")
+    ApiResult getCustomsOrderByMainOrderNos(@RequestParam("mainOrderNos") List<String> mainOrderNos) {
+        return ApiResult.ok(this.orderCustomsService.getCustomsOrderByMainOrderNos(mainOrderNos));
     }
 
 }

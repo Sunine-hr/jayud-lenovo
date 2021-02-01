@@ -8,6 +8,7 @@ import com.jayud.oms.model.po.OrderPaymentCost;
 import com.jayud.oms.model.vo.DriverOrderPaymentCostVO;
 import com.jayud.oms.model.vo.InputPaymentCostVO;
 import com.jayud.oms.service.IOrderPaymentCostService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -46,6 +47,21 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
     @Override
     public InputPaymentCostVO getWriteBackFCostData(Long costId) {
         return baseMapper.getWriteBackFCostData(costId);
+    }
+
+    /**
+     * 根据主订单号/子订单号批量获取提交审核通过费用
+     */
+    @Override
+    public List<OrderPaymentCost> getCostSubmittedByOrderNos(List<String> mainOrders,
+                                                             List<String> subOrderNos) {
+        if (CollectionUtils.isNotEmpty(mainOrders)){
+
+        }else {
+
+        }
+
+        return null;
     }
 
 }

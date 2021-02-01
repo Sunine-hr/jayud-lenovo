@@ -8,6 +8,7 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderOprCmdEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
@@ -48,15 +49,15 @@ public class OrderCustomsController {
 
     @ApiOperation(value = "确认:生成报关子订单号,num=生成报关单数")
     @PostMapping(value = "/createOrderNo")
-    public CommonResult<List<InputSubOrderCustomsForm>> createOrderNo(@RequestBody Map<String,Object> param) {
+    public CommonResult<List<InputSubOrderCustomsForm>> createOrderNo(@RequestBody Map<String, Object> param) {
         List<InputSubOrderCustomsForm> stringList = new ArrayList<>();
-        int num = Integer.valueOf(MapUtil.getStr(param,"num"));
+        int num = Integer.valueOf(MapUtil.getStr(param, "num"));
         String code = "BG";//报关类型
         for (int i = 0; i < num; i++) {//产品类别code+随机数
             String result = StringUtils.loadNum(code, 12);
             //校验子订单号是否存在,false=存在
             boolean isExist = orderCustomsService.isExistOrder(result);
-            if(!isExist){
+            if (!isExist) {
                 i = i - 1;
             }
             InputSubOrderCustomsForm inputSubOrderCustomsForm = new InputSubOrderCustomsForm();
@@ -78,9 +79,9 @@ public class OrderCustomsController {
     @ApiOperation(value = "报关接单")
     @PostMapping(value = "/confirmOrder")
     public CommonResult confirmOrder(@RequestBody OprStatusForm form) {
-        if(form.getOrderId() == null || form.getMainOrderId() == null ||
-           StringUtil.isNullOrEmpty(form.getOperatorUser())){
-            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+        if (form.getOrderId() == null || form.getMainOrderId() == null ||
+                StringUtil.isNullOrEmpty(form.getOperatorUser())) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
         OrderCustoms orderCustoms = new OrderCustoms();
         orderCustoms.setId(form.getOrderId());
@@ -95,6 +96,7 @@ public class OrderCustomsController {
         form.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
         form.setStatus(OrderStatusEnum.CUSTOMS_C_1.getCode());
         form.setStatusName(OrderStatusEnum.CUSTOMS_C_1.getDesc());
+        form.setBusinessType(BusinessTypeEnum.BG.getCode());
         omsClient.saveOprStatus(form);
 
         //保存操作记录
@@ -109,8 +111,8 @@ public class OrderCustomsController {
         omsClient.saveAuditInfo(auditInfoForm);
 
         boolean result = orderCustomsService.saveOrUpdate(orderCustoms);
-        if(!result){
-            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(),ResultEnum.OPR_FAIL.getMessage());
+        if (!result) {
+            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
         return CommonResult.success();
     }
@@ -119,14 +121,14 @@ public class OrderCustomsController {
     @PostMapping(value = "/inputEntrustNo")
     public CommonResult inputEntrustNo(@RequestBody OprStatusForm form) {
         //参数校验
-        if(form.getOrderId() == null || StringUtil.isNullOrEmpty(form.getCmd()) ||
+        if (form.getOrderId() == null || StringUtil.isNullOrEmpty(form.getCmd()) ||
                 form.getMainOrderId() == null ||
-                StringUtil.isNullOrEmpty(form.getEntrustNo())){
-            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+                StringUtil.isNullOrEmpty(form.getEntrustNo())) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
-        if(OrderOprCmdEnum.ISSUE_ORDER.getCode().equals(form.getCmd())){//重新打单时不用填操作人操作时间
-            if(StringUtil.isNullOrEmpty(form.getOperatorUser())){
-                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+        if (OrderOprCmdEnum.ISSUE_ORDER.getCode().equals(form.getCmd())) {//重新打单时不用填操作人操作时间
+            if (StringUtil.isNullOrEmpty(form.getOperatorUser())) {
+                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }
         }
         OrderCustoms orderCustoms = new OrderCustoms();
@@ -138,7 +140,7 @@ public class OrderCustomsController {
         orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_2.getCode());
 
         //记录操作状态
-        if(OrderOprCmdEnum.RE_ISSUE_ORDER.getCode().equals(form.getCmd())){
+        if (OrderOprCmdEnum.RE_ISSUE_ORDER.getCode().equals(form.getCmd())) {
             //把C_2/C_3/C_4/的记录删除
             DelOprStatusForm delOprStatusForm = new DelOprStatusForm();
             delOprStatusForm.setOrderId(form.getOrderId());
@@ -154,6 +156,7 @@ public class OrderCustomsController {
         form.setStatus(OrderStatusEnum.CUSTOMS_C_2.getCode());
         form.setStatusName(OrderStatusEnum.CUSTOMS_C_2.getDesc());
         form.setEntrustNo(form.getEntrustNo());
+        form.setBusinessType(BusinessTypeEnum.BG.getCode());
         omsClient.saveOprStatus(form);
 
         //保存操作记录
@@ -168,8 +171,8 @@ public class OrderCustomsController {
         omsClient.saveAuditInfo(auditInfoForm);
 
         boolean result = orderCustomsService.saveOrUpdate(orderCustoms);
-        if(!result){
-            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(),ResultEnum.OPR_FAIL.getMessage());
+        if (!result) {
+            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
         return CommonResult.success();
     }
@@ -177,9 +180,9 @@ public class OrderCustomsController {
     @ApiOperation(value = "报关复核")
     @PostMapping(value = "/toCheckOrder")
     public CommonResult auditOrderRelease(@RequestBody OprStatusForm form) {
-        if(form.getOrderId() == null || form.getMainOrderId() == null ||
-                StringUtil.isNullOrEmpty(form.getOperatorUser())){
-            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+        if (form.getOrderId() == null || form.getMainOrderId() == null ||
+                StringUtil.isNullOrEmpty(form.getOperatorUser())) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
         OrderCustoms orderCustoms = new OrderCustoms();
         orderCustoms.setId(form.getOrderId());
@@ -192,6 +195,7 @@ public class OrderCustomsController {
         form.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
         form.setStatus(OrderStatusEnum.CUSTOMS_C_3.getCode());
         form.setStatusName(OrderStatusEnum.CUSTOMS_C_3.getDesc());
+        form.setBusinessType(BusinessTypeEnum.BG.getCode());
         omsClient.saveOprStatus(form);
 
         //保存操作记录
@@ -206,8 +210,8 @@ public class OrderCustomsController {
         omsClient.saveAuditInfo(auditInfoForm);
 
         boolean result = orderCustomsService.saveOrUpdate(orderCustoms);
-        if(!result){
-            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(),ResultEnum.OPR_FAIL.getMessage());
+        if (!result) {
+            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
         return CommonResult.success();
     }
@@ -215,35 +219,37 @@ public class OrderCustomsController {
     @ApiOperation(value = "报关申报/放行确认/审核不通过-编辑完成/通关完成/通关查验/通关其他异常")
     @PostMapping(value = "/oprOrder")
     public CommonResult oprOrder(@RequestBody OprStatusForm form) {
-        if(StringUtil.isNullOrEmpty(form.getCmd()) || form.getOrderId() == null ||
-                form.getMainOrderId() == null ){
-            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+        if (StringUtil.isNullOrEmpty(form.getCmd()) || form.getOrderId() == null ||
+                form.getMainOrderId() == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
+        form.setBusinessType(BusinessTypeEnum.BG.getCode());
+
         OrderCustoms orderCustoms = new OrderCustoms();
         orderCustoms.setId(form.getOrderId());
 
         Boolean flag = true;//是否是流程节点中操作状态
-        if(OrderOprCmdEnum.DECLARE.getCode().equals(form.getCmd())) {//报关申报
+        if (OrderOprCmdEnum.DECLARE.getCode().equals(form.getCmd())) {//报关申报
             if (StringUtil.isNullOrEmpty(form.getOperatorUser())) {
-                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }
             orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_4.getCode());
             form.setStatus(OrderStatusEnum.CUSTOMS_C_4.getCode());
             form.setStatusName(OrderStatusEnum.CUSTOMS_C_4.getDesc());
-        }else if(OrderOprCmdEnum.RELEASE_CONFIRM.getCode().equals(form.getCmd())){//放行确认
-            if(OrderStatusEnum.CUSTOMS_C_5.getCode().equals(form.getStatus()) ||
-                    OrderStatusEnum.CUSTOMS_C_5_1.getCode().equals(form.getStatus())){
+        } else if (OrderOprCmdEnum.RELEASE_CONFIRM.getCode().equals(form.getCmd())) {//放行确认
+            if (OrderStatusEnum.CUSTOMS_C_5.getCode().equals(form.getStatus()) ||
+                    OrderStatusEnum.CUSTOMS_C_5_1.getCode().equals(form.getStatus())) {
                 orderCustoms.setStatus(form.getStatus());
-                if(OrderStatusEnum.CUSTOMS_C_5.getCode().equals(form.getStatus())){
+                if (OrderStatusEnum.CUSTOMS_C_5.getCode().equals(form.getStatus())) {
                     form.setStatus(form.getStatus());
                     form.setStatusName(OrderStatusEnum.CUSTOMS_C_5.getDesc());
-                }else {
+                } else {
                     flag = false;
                 }
-            }else {
-                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+            } else {
+                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }
-        } else if(OrderOprCmdEnum.AUDIT_FAIL_EDIT.getCode().equals(form.getCmd())){//审核不通过-编辑完成
+        } else if (OrderOprCmdEnum.AUDIT_FAIL_EDIT.getCode().equals(form.getCmd())) {//审核不通过-编辑完成
             orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_4.getCode());
             form.setStatus(OrderStatusEnum.CUSTOMS_C_4.getCode());
             form.setStatusName(OrderStatusEnum.CUSTOMS_C_4.getDesc());
@@ -255,28 +261,28 @@ public class OrderCustomsController {
             strs.add(OrderStatusEnum.CUSTOMS_C_4.getCode());
             delOprStatusForm.setStatus(strs);
             omsClient.delSpecOprStatus(delOprStatusForm);
-        } else if(OrderOprCmdEnum.GO_CUSTOMS_SUCCESS.getCode().equals(form.getCmd())){//通关完成
-            if(form.getGoCustomsTime() == null){
-                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+        } else if (OrderOprCmdEnum.GO_CUSTOMS_SUCCESS.getCode().equals(form.getCmd())) {//通关完成
+            if (form.getGoCustomsTime() == null) {
+                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }
             orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_6.getCode());
-            orderCustoms.setGoCustomsTime(DateUtils.str2LocalDateTime(form.getGoCustomsTime(),DateUtils.DATE_TIME_PATTERN));
+            orderCustoms.setGoCustomsTime(DateUtils.str2LocalDateTime(form.getGoCustomsTime(), DateUtils.DATE_TIME_PATTERN));
             form.setStatus(OrderStatusEnum.CUSTOMS_C_6.getCode());
             form.setStatusName(OrderStatusEnum.CUSTOMS_C_6.getDesc());
-        }else if(OrderOprCmdEnum.CUSTOMS_CHECK.getCode().equals(form.getCmd())){//通关查验
-            if(form.getPreGoCustomsTime() == null){
-                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+        } else if (OrderOprCmdEnum.CUSTOMS_CHECK.getCode().equals(form.getCmd())) {//通关查验
+            if (form.getPreGoCustomsTime() == null) {
+                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }
             orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_6_1.getCode());
-            orderCustoms.setPreGoCustomsTime(DateUtils.str2LocalDateTime(form.getPreGoCustomsTime(),DateUtils.DATE_TIME_PATTERN));
+            orderCustoms.setPreGoCustomsTime(DateUtils.str2LocalDateTime(form.getPreGoCustomsTime(), DateUtils.DATE_TIME_PATTERN));
             form.setStatus(OrderStatusEnum.CUSTOMS_C_6_1.getCode());
             form.setStatusName(OrderStatusEnum.CUSTOMS_C_6_1.getDesc());
-        }else if(OrderOprCmdEnum.CUSTOMS_EXCEP.getCode().equals(form.getCmd())){//通关其他异常
-            if(form.getPreGoCustomsTime() == null){
-                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMessage());
+        } else if (OrderOprCmdEnum.CUSTOMS_EXCEP.getCode().equals(form.getCmd())) {//通关其他异常
+            if (form.getPreGoCustomsTime() == null) {
+                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
             }
             orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_6_2.getCode());
-            orderCustoms.setPreGoCustomsTime(DateUtils.str2LocalDateTime(form.getPreGoCustomsTime(),DateUtils.DATE_TIME_PATTERN));
+            orderCustoms.setPreGoCustomsTime(DateUtils.str2LocalDateTime(form.getPreGoCustomsTime(), DateUtils.DATE_TIME_PATTERN));
             form.setStatus(OrderStatusEnum.CUSTOMS_C_6_2.getCode());
             form.setStatusName(OrderStatusEnum.CUSTOMS_C_6_2.getDesc());
             flag = false;
@@ -286,9 +292,10 @@ public class OrderCustomsController {
         boolean result = orderCustomsService.saveOrUpdate(orderCustoms);
 
         //只保存操作成功，既能推动流程的状态,便于流程节点的展示
-        if(flag){
+        if (flag) {
             form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
             form.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
+
             omsClient.saveOprStatus(form);
         }
 
@@ -303,7 +310,7 @@ public class OrderCustomsController {
         auditInfoForm.setFileViews(form.getFileViewList());
         omsClient.saveAuditInfo(auditInfoForm);
         if (!result) {
-            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(),ResultEnum.OPR_FAIL.getMessage());
+            return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
         return CommonResult.success();
     }
@@ -319,6 +326,7 @@ public class OrderCustomsController {
 
     /**
      * 该接口针对填各种驳回
+     *
      * @param form
      * @return
      */
@@ -330,7 +338,7 @@ public class OrderCustomsController {
         }
         //根据主订单号查询所有的报关子订单
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(SqlConstant.MAIN_ORDER_NO,form.getMainOrderNo());
+        queryWrapper.eq(SqlConstant.MAIN_ORDER_NO, form.getMainOrderNo());
         List<OrderCustoms> orderCustoms = orderCustomsService.list(queryWrapper);
         List<OrderCustoms> orderCustomsList = new ArrayList<>();
         for (OrderCustoms temp : orderCustoms) {
@@ -359,7 +367,7 @@ public class OrderCustomsController {
             omsClient.saveAuditInfo(auditInfoForm);
         }
         boolean result = true;
-        if(orderCustomsList.size() > 0) {
+        if (orderCustomsList.size() > 0) {
             result = orderCustomsService.updateBatchById(orderCustomsList);
         }
         if (!result) {

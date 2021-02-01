@@ -240,6 +240,7 @@ public class OrderInTransportController {
         auditInfoForm.setAuditStatus(form.getStatus());
         auditInfoForm.setAuditComment(form.getDescription());
         auditInfoForm.setExtDesc(SqlConstant.ORDER_TRANSPORT);
+        form.setBusinessType(BusinessTypeEnum.ZGYS.getCode());
 
         if (CommonConstant.GO_CUSTOMS_AUDIT.equals(form.getCmd())) {//通关前审核：操作是在主订单处，但是是针对主订单下的中港子订单
             if (!(OrderStatusEnum.TMS_T_7.getCode().equals(form.getStatus()) ||

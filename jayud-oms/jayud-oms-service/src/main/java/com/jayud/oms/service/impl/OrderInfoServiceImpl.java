@@ -626,6 +626,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 allPics.addAll(inputOrderCustomsVO.getAirTransportPics());
                 allPics.addAll(inputOrderCustomsVO.getSeaTransportPics());
                 inputOrderCustomsVO.setAllPics(allPics);
+                //其余附件信息
+                //获取反馈操作人时上传的附件
+                List<FileView> attachments = this.logisticsTrackService.getAttachments(inputOrderCustomsVO.getId()
+                        , BusinessTypeEnum.BG.getCode(), prePath);
+                allPics.addAll(attachments);
+
                 //循环处理接单人和接单时间
                 List<InputSubOrderCustomsVO> inputSubOrderCustomsVOS = inputOrderCustomsVO.getSubOrders();
                 for (InputSubOrderCustomsVO inputSubOrderCustomsVO : inputSubOrderCustomsVOS) {
@@ -655,12 +661,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 List<FileView> allPics = new ArrayList<>();
                 allPics.addAll(StringUtils.getFileViews(inputOrderTransportVO.getCntrPic(), inputOrderTransportVO.getCntrPicName(), prePath));
                 //获取反馈操作人时上传的附件
-                QueryWrapper queryWrapper = new QueryWrapper();
-                queryWrapper.eq(SqlConstant.ORDER_ID, inputOrderTransportVO.getId());
-                List<LogisticsTrack> logisticsTracks = logisticsTrackService.list(queryWrapper);
-                for (LogisticsTrack logisticsTrack : logisticsTracks) {
-                    allPics.addAll(StringUtils.getFileViews(logisticsTrack.getStatusPic(), logisticsTrack.getStatusPicName(), prePath));
-                }
+
+                List<FileView> attachments = this.logisticsTrackService.getAttachments(inputOrderTransportVO.getId()
+                        , BusinessTypeEnum.ZGYS.getCode(), prePath);
+                allPics.addAll(attachments);
+
                 inputOrderTransportVO.setAllPics(allPics);
 
                 //设置提货信息的客户

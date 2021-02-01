@@ -57,6 +57,9 @@ public class AirOrderFormVO {
     @ApiModelProperty(value = "状态(A_0待接单,A_1空运接单,A_2订舱,A_3订单入仓,A_4确认提单,A_5确认离港,A_6确认到港,A_7海外代理,A_8确认签收)")
     private String status;
 
+    @ApiModelProperty(value = "状态(A_0待接单,A_1空运接单,A_2订舱,A_3订单入仓,A_4确认提单,A_5确认离港,A_6确认到港,A_7海外代理,A_8确认签收)")
+    private String subAirStatusDesc;
+
     @ApiModelProperty(value = "状态描述")
     private String statusDesc;
 
@@ -227,7 +230,7 @@ public class AirOrderFormVO {
 
     public void setStatus(String status) {
         this.status = status;
-        this.statusDesc = OrderStatusEnum.getDesc(status);
+        this.subAirStatusDesc = OrderStatusEnum.getDesc(status);
     }
 
     public void setTerms(Integer terms) {
@@ -241,7 +244,7 @@ public class AirOrderFormVO {
 
     public void setProcessStatus(Integer processStatus) {
         this.processStatus = processStatus;
-        this.processStatusDesc = ProcessStatusEnum.getDesc(processStatus);
+        this.statusDesc = ProcessStatusEnum.getDesc(processStatus);
     }
 
     public void setSubUnitCode(String subUnitCode) {

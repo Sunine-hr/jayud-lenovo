@@ -25,9 +25,9 @@ public class TemplateCopeWithVO {
     @JSONField(ordinal = 3)
     private String costName;
 
-    @ApiModelProperty(value = "供应商代码", position = 4)
+    @ApiModelProperty(value = "供应商id(supplier_info id)", position = 4)
     @JSONField(ordinal = 4)
-    private String supplierCode;
+    private Integer supplierId;
 
     @ApiModelProperty(value = "计算方式(1自动 2手动)", position = 5)
     @JSONField(ordinal = 5)
@@ -61,5 +61,14 @@ public class TemplateCopeWithVO {
     @JSONField(ordinal = 12)
     private String remarks;
 
+    //供应商代码
+    @ApiModelProperty(value = "供应商代码", position = 13)
+    @JSONField(ordinal = 13)
+    private String supplierCode;
+
+    //供应商名称
+    @ApiModelProperty(value = "供应商名称", position = 14)
+    @JSONField(ordinal = 14)
+    private String supplierName;
 
 }

@@ -325,11 +325,7 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
         quotationTemplateVO.setTemplateCopeReceivableVOList(templateCopeReceivableVOList);
 
         //报价对应应付费用明细list
-        QueryWrapper<TemplateCopeWith> query2 = new QueryWrapper<>();
-        query2.eq("qie", qie);
-        List<TemplateCopeWith> templateCopeWiths = templateCopeWithMapper.selectList(query2);
-        List<TemplateCopeWithVO> templateCopeWithVOList =
-                ConvertUtil.convertList(templateCopeWiths, TemplateCopeWithVO.class);
+        List<TemplateCopeWithVO> templateCopeWithVOList = templateCopeWithMapper.selectListByQie(qie);
         quotationTemplateVO.setTemplateCopeWithVOList(templateCopeWithVOList);
 
         //模板对应模块信息list，文件信息

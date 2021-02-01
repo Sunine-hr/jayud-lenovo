@@ -231,7 +231,7 @@ public class PaymentBillDetailController {
                                  HttpServletResponse response) throws IOException {
         List<ViewFBilToOrderVO> list = billDetailService.viewBillDetail(billNo);
         //地址只展示6个字符
-        list.forEach(e -> {
+        list.stream().filter(e -> e.getEndAddress() != null && e.getEndAddress().length() > 6).forEach(e -> {
             e.setStartAddress(e.getStartAddress().substring(0, 6));
             e.setEndAddress(e.getEndAddress().substring(0, 6));
         });

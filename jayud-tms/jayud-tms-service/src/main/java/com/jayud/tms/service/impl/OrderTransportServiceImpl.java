@@ -259,14 +259,16 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             return sendCarPdfVO;
         }
         if (takeGoodsInfo2.size() > 1) {//获取中转仓信息
-            sendCarPdfVO.setDeliveryContacts(orderSendCarsVO.getWarehouseContacts());
-            String provinceName = orderSendCarsVO.getProvinceName() == null ? "" : orderSendCarsVO.getProvinceName();
-            String cityName = orderSendCarsVO.getCityName() == null ? "" : orderSendCarsVO.getCityName();
-            String address = orderSendCarsVO.getAddress() == null ? "" : orderSendCarsVO.getAddress();
-            String detailedAddress = provinceName + cityName + address;
-            sendCarPdfVO.setDeliveryAddress(detailedAddress +
-                    " 联系人:" + orderSendCarsVO.getWarehouseContacts() +" "+ orderSendCarsVO.getWarehouseNumber());
-            sendCarPdfVO.setDeliveryPhone(orderSendCarsVO.getWarehouseNumber());
+            if (!orderSendCarsVO.getIsVirtual()){
+                sendCarPdfVO.setDeliveryContacts(orderSendCarsVO.getWarehouseContacts());
+                String provinceName = orderSendCarsVO.getProvinceName() == null ? "" : orderSendCarsVO.getProvinceName();
+                String cityName = orderSendCarsVO.getCityName() == null ? "" : orderSendCarsVO.getCityName();
+                String address = orderSendCarsVO.getAddress() == null ? "" : orderSendCarsVO.getAddress();
+                String detailedAddress = provinceName + cityName + address;
+                sendCarPdfVO.setDeliveryAddress(detailedAddress +
+                        " 联系人:" + orderSendCarsVO.getWarehouseContacts() +" "+ orderSendCarsVO.getWarehouseNumber());
+                sendCarPdfVO.setDeliveryPhone(orderSendCarsVO.getWarehouseNumber());
+            }
         } else if (takeGoodsInfo2.size() == 1) {
             TakeGoodsInfoVO takeGoodsInfoVO = takeGoodsInfo2.get(0);
             String provinceName = takeGoodsInfoVO.getStateName() == null ? "" : takeGoodsInfo2.get(0).getStateName();

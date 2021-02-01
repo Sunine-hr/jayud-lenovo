@@ -1,6 +1,5 @@
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.nacos.common.util.Md5Utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayud.mall.model.bo.*;
@@ -38,15 +37,15 @@ public class Test {
     /**
      * 测试密码文本字符串是否相同
      */
-    @org.junit.Test
-    public void test1(){
-        String pwd = "123456";
-        System.out.println(Md5Utils.getMD5(pwd.getBytes()).toUpperCase());//E10ADC3949BA59ABBE56E057F20F883E
-//        System.out.println("lll");
-        if("E10ADC3949BA59ABBE56E057F20F883E".equalsIgnoreCase(Md5Utils.getMD5(pwd.getBytes()))){
-            System.out.println("true");
-        }
-    }
+//    @org.junit.Test
+//    public void test1(){
+//        String pwd = "123456";
+//        System.out.println(Md5Utils.getMD5(pwd.getBytes()).toUpperCase());//E10ADC3949BA59ABBE56E057F20F883E
+////        System.out.println("lll");
+//        if("E10ADC3949BA59ABBE56E057F20F883E".equalsIgnoreCase(Md5Utils.getMD5(pwd.getBytes()))){
+//            System.out.println("true");
+//        }
+//    }
 
     /**
      * 生成登录的json测试文本
@@ -127,12 +126,12 @@ public class Test {
     /**
      * 密码大小写
      */
-    @org.junit.Test
-    public void test6(){
-        String pwd = Md5Utils.getMD5("123456".getBytes());//e10adc3949ba59abbe56e057f20f883e
-        System.out.println(pwd.toLowerCase());//e10adc3949ba59abbe56e057f20f883e    小写
-        System.out.println(pwd.toUpperCase());//E10ADC3949BA59ABBE56E057F20F883E    大写
-    }
+//    @org.junit.Test
+//    public void test6(){
+//        String pwd = Md5Utils.getMD5("123456".getBytes());//e10adc3949ba59abbe56e057f20f883e
+//        System.out.println(pwd.toLowerCase());//e10adc3949ba59abbe56e057f20f883e    小写
+//        System.out.println(pwd.toUpperCase());//E10ADC3949BA59ABBE56E057F20F883E    大写
+//    }
 
     /**
      * 查询用户表单json参数

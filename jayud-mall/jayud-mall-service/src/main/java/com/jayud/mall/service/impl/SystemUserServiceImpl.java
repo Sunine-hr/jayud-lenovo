@@ -1,6 +1,6 @@
 package com.jayud.mall.service.impl;
 
-import com.alibaba.nacos.common.util.Md5Utils;
+import com.alibaba.nacos.common.utils.Md5Utils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;

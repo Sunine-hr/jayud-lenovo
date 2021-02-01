@@ -125,7 +125,8 @@ public class LoadExcelUtil {
 			headRow.createCell(8).setCellValue("税票种类");
 			headRow.createCell(9).setCellValue("税率");
 			headRow.createCell(10).setCellValue("采购人员");
-			headRow.createCell(11).setCellValue("原因");
+			headRow.createCell(11).setCellValue("法人主体");
+			headRow.createCell(12).setCellValue("原因");
 
 			//处理excel的数据，遍历所有的结果
 			for (int k = 0; k < (rows < SPLIT_COUNT ? rows : SPLIT_COUNT); k++) {

@@ -87,7 +87,7 @@ public class OrderSendCarsVO {
     @ApiModelProperty(value = "仓库详细地址")
     private String address;
 
-
-
+    @ApiModelProperty(value = "是否虚拟仓")
+    public Boolean isVirtual;
 
 }

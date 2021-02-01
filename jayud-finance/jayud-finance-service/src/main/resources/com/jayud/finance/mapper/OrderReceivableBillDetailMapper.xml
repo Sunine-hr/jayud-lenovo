@@ -43,7 +43,7 @@
         push_kingdee_count
     </sql>
 
-    <select id="findReceiveBillDetailByPage" parameterType="com.jayud.finance.bo.QueryPaymentBillDetailForm" resultType="com.jayud.finance.vo.OrderPaymentBillDetailVO" >
+    <select id="findReceiveBillDetailByPage" resultType="com.jayud.finance.vo.OrderPaymentBillDetailVO" >
         SELECT distinct
         orbd.bill_no billNo,
         orb.legal_name legalName,
@@ -119,8 +119,11 @@
             and orbd.apply_status = #{form.applyStatus}
         </if>
 
-        <if test="form.loginUserName != null and form.loginUserName !=''">
-            and orbd.created_user = #{form.loginUserName}
+        <if test="data != null and data.size>0">
+            and orb.legal_name in
+            <foreach collection="data" item="legalName" open="(" separator="," close=")">
+                #{legalName}
+            </foreach>
         </if>
     </select>
     <select id="findEditSBillByPage" parameterType="com.jayud.finance.bo.QueryEditBillForm" resultType="com.jayud.finance.vo.PaymentNotPaidBillVO" >

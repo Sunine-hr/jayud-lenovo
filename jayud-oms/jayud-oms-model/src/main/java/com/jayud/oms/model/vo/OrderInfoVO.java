@@ -99,6 +99,12 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "驳回原因,目前只要求显示报关驳回的")
     private String rejectComment;
 
+    @ApiModelProperty(value = "结算单位")
+    private String unitCode;
+
+    @ApiModelProperty(value = "费用录用默认结算单位")
+    private String defaultUnitCode;
+
     public String getStatusDesc() {
         return OrderStatusEnum.getDesc(this.status);
     }
@@ -147,5 +153,11 @@ public class OrderInfoVO {
             }
         }
         return sb.length() == 0 ? "" : sb.substring(0, sb.length() - 1);
+    }
+
+
+    public void setUnitCode(String unitCode) {
+        this.unitCode = unitCode;
+        this.defaultUnitCode = unitCode;
     }
 }

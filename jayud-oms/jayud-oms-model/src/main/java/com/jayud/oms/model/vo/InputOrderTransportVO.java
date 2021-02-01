@@ -3,6 +3,7 @@ package com.jayud.oms.model.vo;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.FileView;
+import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -78,6 +79,9 @@ public class InputOrderTransportVO {
 
     @ApiModelProperty(value = "柜号")
     private String cntrNo;
+
+    @ApiModelProperty(value = "车型/柜号")
+    private String modelAndCntrNo;
 
     @ApiModelProperty(value = "运输公司")
     private String supplierChName;
@@ -159,9 +163,9 @@ public class InputOrderTransportVO {
     private String subTmsStatus;
 
     public String getGoodsTypeDesc() {
-        if(CommonConstant.VALUE_1.equals(this.goodsType)){
+        if (CommonConstant.VALUE_1.equals(this.goodsType)) {
             goodsTypeDesc = CommonConstant.GOODS_TYPE_DESC_1;
-        }else if(CommonConstant.VALUE_2.equals(this.goodsType)){
+        } else if (CommonConstant.VALUE_2.equals(this.goodsType)) {
             goodsTypeDesc = CommonConstant.GOODS_TYPE_DESC_2;
         }
         return goodsTypeDesc;
@@ -192,26 +196,34 @@ public class InputOrderTransportVO {
             this.statusDesc = OrderStatusEnum.TMS_T_8.getDesc();
         } else if (OrderStatusEnum.TMS_T_8_1.getCode().equals(status)) {
             this.statusDesc = OrderStatusEnum.TMS_T_8_1.getDesc();
-        } else if(OrderStatusEnum.TMS_T_9.getCode().equals(status)){
+        } else if (OrderStatusEnum.TMS_T_9.getCode().equals(status)) {
             this.statusDesc = OrderStatusEnum.TMS_T_9.getDesc();
-        } else if(OrderStatusEnum.TMS_T_9_1.getCode().equals(status)){
+        } else if (OrderStatusEnum.TMS_T_9_1.getCode().equals(status)) {
             this.statusDesc = OrderStatusEnum.TMS_T_9_1.getDesc();
-        } else if(OrderStatusEnum.TMS_T_9_2.getCode().equals(status)){
+        } else if (OrderStatusEnum.TMS_T_9_2.getCode().equals(status)) {
             this.statusDesc = OrderStatusEnum.TMS_T_9_2.getDesc();
-        } else if(OrderStatusEnum.TMS_T_10.getCode().equals(status)){
+        } else if (OrderStatusEnum.TMS_T_10.getCode().equals(status)) {
             this.statusDesc = OrderStatusEnum.TMS_T_10.getDesc();
-        } else if(OrderStatusEnum.TMS_T_11.getCode().equals(status)){
+        } else if (OrderStatusEnum.TMS_T_11.getCode().equals(status)) {
             this.statusDesc = OrderStatusEnum.TMS_T_11.getDesc();
-        } else if(OrderStatusEnum.TMS_T_12.getCode().equals(status)){
+        } else if (OrderStatusEnum.TMS_T_12.getCode().equals(status)) {
             this.statusDesc = OrderStatusEnum.TMS_T_12.getDesc();
-        } else if(OrderStatusEnum.TMS_T_13.getCode().equals(status)){
+        } else if (OrderStatusEnum.TMS_T_13.getCode().equals(status)) {
             this.statusDesc = OrderStatusEnum.TMS_T_13.getDesc();
-        } else if(OrderStatusEnum.TMS_T_14.getCode().equals(status)){
+        } else if (OrderStatusEnum.TMS_T_14.getCode().equals(status)) {
             this.statusDesc = OrderStatusEnum.TMS_T_14.getDesc();
-        } else if(OrderStatusEnum.TMS_T_15.getCode().equals(status)){
+        } else if (OrderStatusEnum.TMS_T_15.getCode().equals(status)) {
             this.statusDesc = OrderStatusEnum.TMS_T_15.getDesc();
         }
     }
 
 
+    public void assembleModelAndCntrNo() {
+        String vehicleSize = this.vehicleSize;
+        if (this.vehicleType == 2) {
+            String cntrNo = StringUtils.isEmpty(this.cntrNo) ? "" : this.cntrNo;
+            vehicleSize = vehicleSize + "/" + cntrNo;
+        }
+        this.modelAndCntrNo = vehicleSize;
+    }
 }

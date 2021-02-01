@@ -18,4 +18,6 @@ import java.util.List;
 public interface ISystemUserLegalService extends IService<SystemUserLegal> {
 
     List<Long> getLegalId(Long id);
+
+    List<String> getLegalName(Long id);
 }

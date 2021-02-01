@@ -22,4 +22,27 @@ public class GetCostDetailForm {
     @NotEmpty(message = "cmd is required")
     private String cmd;
 
+    @ApiModelProperty(value = "子订单类型")
+    private String subType;
+
+    public void setCmd(String cmd) {
+        //重新组合
+        if (cmd.contains("main")) {
+            this.cmd = cmd;
+        } else {
+            this.cmd = cmd.substring(cmd.indexOf("_") + 1, cmd.length());
+            this.subType=cmd.substring(0,cmd.indexOf("_"));
+        }
+//        this.cmd = cmd;
+    }
+
+    public static void main(String[] args) {
+        String cmd = "zgys_sub_cost_audit";
+        if (cmd.contains("main")) {
+            System.out.println(cmd);
+        } else {
+            System.out.println(cmd.substring(cmd.indexOf("_") + 1, cmd.length()));
+            System.out.println(cmd.substring(0, cmd.indexOf("_")));
+        }
+    }
 }

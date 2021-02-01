@@ -337,7 +337,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         supplierInfo.setContacts(lo.get(3));
         supplierInfo.setContactNumber(lo.get(4));
         supplierInfo.setAddress(lo.get(5));
-        supplierInfo.setSettlementType(lo.get(6));
+        supplierInfo.setSettlementType(SettlementTypeEnum.getCode(lo.get(6)));
         supplierInfo.setPaymentDay(lo.get(7));
         supplierInfo.setTaxReceipt(lo.get(8));
         supplierInfo.setRate(lo.get(9));

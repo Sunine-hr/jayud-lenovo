@@ -446,7 +446,7 @@
         ) fileName2,
         oi.selected_server selectedServer,
         ot.car_weigh_num carWeighNum,
-        si.supplier_code
+        si.supplier_code defaultSupplierCode
         FROM
         order_transport ot
         LEFT JOIN order_info oi
@@ -515,6 +515,12 @@
         <if test="form.cmd == 'clearCustoms'">
             AND ot.`is_hk_clear` = '1' and ot.clear_customs_no is null
             AND oi.`status` in ('1','4')
+            <if test="legalIds != null and legalIds.size>0">
+                and ot.`hk_legal_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
+            </if>
         </if>
         <if test="form.cmd == 'T_10'">
             AND ot.`status` = 'T_9'
@@ -539,7 +545,7 @@
             = '2' and orc.sub_type = 'zgys'))
         </if>
 
-        <if test="legalIds != null">
+        <if test="legalIds != null and legalIds.size>0">
             and ot.`legal_entity_id` in
             <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
                 #{legalId}

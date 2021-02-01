@@ -2,7 +2,9 @@ package com.jayud.oceanship.controller;
 
 import com.jayud.common.ApiResult;
 import com.jayud.oceanship.bo.AddSeaOrderForm;
+import com.jayud.oceanship.po.SeaOrder;
 import com.jayud.oceanship.service.ISeaOrderService;
+import com.jayud.oceanship.vo.InputSeaOrderVO;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,5 +36,14 @@ public class ExternalApiController {
     public ApiResult createOrder(@RequestBody AddSeaOrderForm addSeaOrderForm) {
         seaOrderService.createOrder(addSeaOrderForm);
         return ApiResult.ok();
+    }
+
+    /**
+     * 根据主订单号获取海运单信息
+     */
+    @RequestMapping(value = "/api/oceanship/getSeaOrderDetails")
+    ApiResult<InputSeaOrderVO> getSeaOrderDetails(String orderNo){
+        SeaOrder seaOrder = seaOrderService.getByMainOrderNO(orderNo);
+        return null;
     }
 }

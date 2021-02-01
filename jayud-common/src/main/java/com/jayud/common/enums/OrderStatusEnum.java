@@ -25,7 +25,7 @@ public enum OrderStatusEnum {
     FWD("FWD", "服务单"),
     FWDDD("FWDDD", "服务单订单"),
     HY("海运","HY"),
-
+    HYDD("HYDD", "海运订单"),
 
     //主订单状态
     MAIN_1("1", "正常"),

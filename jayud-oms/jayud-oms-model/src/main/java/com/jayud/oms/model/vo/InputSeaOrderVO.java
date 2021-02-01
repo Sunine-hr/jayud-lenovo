@@ -1,7 +1,9 @@
-package com.jayud.oms.model.bo;
+package com.jayud.oms.model.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.jayud.oms.model.bo.AddGoodsForm;
+import com.jayud.oms.model.bo.AddOrderAddressForm;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +24,7 @@ import java.util.List;
  */
 @Data
 @Slf4j
-public class InputSeaOrderForm {
+public class InputSeaOrderVO {
 
     private static final long serialVersionUID = 1L;
 
@@ -96,52 +98,5 @@ public class InputSeaOrderForm {
     @ApiModelProperty(value = "货品信息")
     private List<AddGoodsForm> goodsForms;
 
-    /**
-     * 校验创建空运子订单参数
-     */
-    public boolean checkCreateOrder() {
-        //空运
-        if (this.legalEntityId == null || StringUtils.isEmpty(this.unitCode)
-                || this.impAndExpType == null || this.terms == null
-                || StringUtils.isEmpty(this.portDepartureCode)
-                || StringUtils.isEmpty(this.portDestinationCode)
-                || this.goodTime == null) {
-            return false;
-        }
-        // 发货/收货地址是必填项
-        if (CollectionUtils.isEmpty(this.deliveryAddress)) {
-            log.warn("发货地址信息不能为空");
-            return false;
-        }
-        if (CollectionUtils.isEmpty(this.shippingAddress)) {
-            log.warn("收货地址信息不能为空");
-            return false;
-        }
-        if (this.notificationAddress.size() == 0 ||
-                StringUtils.isEmpty(this.notificationAddress.get(0).getAddress())) {
-            this.notificationAddress = null;
-        }
 
-        //货品信息
-        for (AddGoodsForm goodsForm : goodsForms) {
-            if (!goodsForm.checkCreateAirOrder()) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * 拼装地址
-     */
-    public void assemblyAddress() {
-        this.orderAddressForms = new ArrayList<>();
-        this.orderAddressForms.addAll(this.deliveryAddress);
-        this.orderAddressForms.addAll(this.shippingAddress);
-        if (CollectionUtils.isNotEmpty(this.notificationAddress)
-                && StringUtils.isNotEmpty(this.notificationAddress.get(0).getAddress())) {
-            this.orderAddressForms.addAll(this.notificationAddress);
-        }
-    }
 }

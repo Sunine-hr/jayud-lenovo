@@ -149,4 +149,11 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         condition.lambda().eq(SeaOrder::getOrderNo, orderNo);
         return this.count(condition) > 0;
     }
+
+    @Override
+    public SeaOrder getByMainOrderNO(String orderNo) {
+        QueryWrapper<SeaOrder> condition = new QueryWrapper<>();
+        condition.lambda().eq(SeaOrder::getMainOrderNo, orderNo);
+        return this.getOne(condition);
+    }
 }

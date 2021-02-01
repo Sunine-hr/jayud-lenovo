@@ -607,7 +607,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     @Override
-    public InputOrderVO getOrderDetail(GetOrderDetailForm form) {
+    public InputOrderVO  getOrderDetail(GetOrderDetailForm form) {
         String prePath = String.valueOf(fileClient.getBaseUrl().getData());
 
         InputOrderVO inputOrderVO = new InputOrderVO();
@@ -703,6 +703,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             if (orderServiceVO != null) {
                 inputOrderVO.setOrderServiceForm(orderServiceVO);
             }
+        }
+        //获取海运信息
+        if(OrderStatusEnum.HY.getCode().equals(form.getClassCode())||inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.HYDD.getCode())){
+            InputSeaOrderVO seaOrderVO = this.oceanShipClient.getSeaOrderDetails(inputMainOrderVO.getOrderNo()).getData();
+
         }
 
         return inputOrderVO;

@@ -32,4 +32,10 @@ public interface ISeaOrderService extends IService<SeaOrder> {
      * @return
      */
     boolean isExistOrder(String orderNo);
+    /**
+     * 根据主订单号获取订单信息
+     * @param orderNo
+     * @return
+     */
+    SeaOrder getByMainOrderNO(String orderNo);
 }

@@ -21,4 +21,7 @@ public class InputOrderVO {
 
     @ApiModelProperty(value = "服务单")
     private InputOrderServiceVO orderServiceForm;
+
+    @ApiModelProperty(value = "海运单")
+    private InputSeaOrderVO seaOrderForm;
 }

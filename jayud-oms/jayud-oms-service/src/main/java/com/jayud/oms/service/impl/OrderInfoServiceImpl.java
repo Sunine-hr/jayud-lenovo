@@ -1299,7 +1299,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      * @return
      */
     private String assemblySubOrderStatus(Map<String, Object> subOrderInfos) {
-        //中港商品信息
         StringBuffer subOrderStatus = new StringBuffer();
         for (String subOrderType : KEY_SUBORDER) {
             Object subOrder = subOrderInfos.get(subOrderType);
@@ -1310,7 +1309,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         .append("-").append(OrderStatusEnum.getDesc(jsonObject.getStr("status"))).append(",");
             }
         }
-        return subOrderStatus.substring(0, subOrderStatus.length() - 1);
+        return subOrderStatus.toString();
     }
 
 }

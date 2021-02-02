@@ -177,12 +177,21 @@ public class OrderCustomsController {
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "报关复核")
+    @ApiOperation(value = "报关复核/报关二复")
     @PostMapping(value = "/toCheckOrder")
     public CommonResult auditOrderRelease(@RequestBody OprStatusForm form) {
         if (form.getOrderId() == null || form.getMainOrderId() == null ||
                 StringUtil.isNullOrEmpty(form.getOperatorUser())) {
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+        }
+
+        //查询报关子订单
+        OrderCustoms customsInfo = this.orderCustomsService.getById(form.getOrderId());
+        //根据订单获取下个节点信息
+        OrderStatusEnum statusEnum = OrderStatusEnum.getCustomsOrderNextStatus(customsInfo.getStatus());
+        if (!OrderStatusEnum.CUSTOMS_C_2.equals(statusEnum)&&
+                !OrderStatusEnum.CUSTOMS_C_3.equals(statusEnum)){
+
         }
         OrderCustoms orderCustoms = new OrderCustoms();
         orderCustoms.setId(form.getOrderId());

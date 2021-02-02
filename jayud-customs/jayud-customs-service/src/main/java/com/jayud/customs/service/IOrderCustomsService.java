@@ -9,6 +9,7 @@ import com.jayud.customs.model.vo.CustomsOrderInfoVO;
 import com.jayud.customs.model.vo.InputOrderCustomsVO;
 import com.jayud.customs.model.vo.OrderCustomsVO;
 import com.jayud.customs.model.vo.StatisticsDataNumberVO;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Map;
@@ -63,5 +64,11 @@ public interface IOrderCustomsService extends IService<OrderCustoms> {
      * @return
      */
     StatisticsDataNumberVO statisticsDataNumber();
+
+
+    /**
+     * 根据主订单集合查询所有报关信息
+     */
+    List<OrderCustoms> getCustomsOrderByMainOrderNos(@RequestParam("mainOrderNos") List<String> mainOrderNos);
 
 }

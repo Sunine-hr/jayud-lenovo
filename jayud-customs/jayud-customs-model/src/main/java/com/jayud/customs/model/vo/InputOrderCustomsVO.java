@@ -11,6 +11,9 @@ import java.util.List;
 @Data
 public class InputOrderCustomsVO {
 
+    @ApiModelProperty(value = "报关订单id")
+    private Long id;
+
     @ApiModelProperty(value = "通关口岸code")
     private String portCode;
 

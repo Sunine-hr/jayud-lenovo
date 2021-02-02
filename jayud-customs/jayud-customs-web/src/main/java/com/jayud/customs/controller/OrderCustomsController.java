@@ -187,31 +187,33 @@ public class OrderCustomsController {
 
         //查询报关子订单
         OrderCustoms customsInfo = this.orderCustomsService.getById(form.getOrderId());
+        if (!OrderStatusEnum.CUSTOMS_C_2.getCode().equals(customsInfo.getStatus()) &&
+                !OrderStatusEnum.CUSTOMS_C_3.getCode().equals(customsInfo.getStatus())) {
+            return CommonResult.error(400, "当前订单无法操作");
+        }
         //根据订单获取下个节点信息
         OrderStatusEnum statusEnum = OrderStatusEnum.getCustomsOrderNextStatus(customsInfo.getStatus());
-        if (!OrderStatusEnum.CUSTOMS_C_2.equals(statusEnum)&&
-                !OrderStatusEnum.CUSTOMS_C_3.equals(statusEnum)){
 
-        }
+
         OrderCustoms orderCustoms = new OrderCustoms();
         orderCustoms.setId(form.getOrderId());
-        orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_3.getCode());
+        orderCustoms.setStatus(statusEnum.getCode());
         orderCustoms.setUpdatedTime(LocalDateTime.now());
         orderCustoms.setUpdatedUser(UserOperator.getToken());
 
         //保存操作节点
         form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
         form.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
-        form.setStatus(OrderStatusEnum.CUSTOMS_C_3.getCode());
-        form.setStatusName(OrderStatusEnum.CUSTOMS_C_3.getDesc());
+        form.setStatus(statusEnum.getCode());
+        form.setStatusName(statusEnum.getDesc());
         form.setBusinessType(BusinessTypeEnum.BG.getCode());
         omsClient.saveOprStatus(form);
 
         //保存操作记录
         AuditInfoForm auditInfoForm = new AuditInfoForm();
         auditInfoForm.setAuditComment(form.getDescription());
-        auditInfoForm.setAuditStatus(OrderStatusEnum.CUSTOMS_C_3.getCode());
-        auditInfoForm.setAuditTypeDesc(OrderStatusEnum.CUSTOMS_C_3.getDesc());
+        auditInfoForm.setAuditStatus(statusEnum.getCode());
+        auditInfoForm.setAuditTypeDesc(statusEnum.getDesc());
         auditInfoForm.setExtId(form.getOrderId());
         auditInfoForm.setExtDesc(SqlConstant.ORDER_CUSTOMS);
         auditInfoForm.setAuditUser(form.getOperatorUser());
@@ -225,7 +227,7 @@ public class OrderCustomsController {
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "报关申报/放行确认/审核不通过-编辑完成/通关完成/通关查验/通关其他异常")
+    @ApiOperation(value = "报关申报/报关放行/放行确认/审核不通过-编辑完成/通关完成/通关查验/通关其他异常")
     @PostMapping(value = "/oprOrder")
     public CommonResult oprOrder(@RequestBody OprStatusForm form) {
         if (StringUtil.isNullOrEmpty(form.getCmd()) || form.getOrderId() == null ||
@@ -233,6 +235,11 @@ public class OrderCustomsController {
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
         form.setBusinessType(BusinessTypeEnum.BG.getCode());
+
+        //查询订单信息
+        OrderCustoms customsInfo = this.orderCustomsService.getById(form.getOrderId());
+        OrderStatusEnum statusEnum = OrderStatusEnum.getCustomsOrderNextStatus(customsInfo.getStatus());
+        form.checkParam(statusEnum);
 
         OrderCustoms orderCustoms = new OrderCustoms();
         orderCustoms.setId(form.getOrderId());
@@ -245,6 +252,11 @@ public class OrderCustomsController {
             orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_4.getCode());
             form.setStatus(OrderStatusEnum.CUSTOMS_C_4.getCode());
             form.setStatusName(OrderStatusEnum.CUSTOMS_C_4.getDesc());
+        } else if (OrderOprCmdEnum.CUSTOMS_CLEARANCE.getCode().equals(form.getCmd())) { //报关放行
+            orderCustoms.setStatus(OrderStatusEnum.CUSTOMS_C_10.getCode());
+            orderCustoms.setYunCustomsNo(form.getYunCustomsNo());
+            form.setStatus(OrderStatusEnum.CUSTOMS_C_10.getCode());
+            form.setStatusName(OrderStatusEnum.CUSTOMS_C_10.getDesc());
         } else if (OrderOprCmdEnum.RELEASE_CONFIRM.getCode().equals(form.getCmd())) {//放行确认
             if (OrderStatusEnum.CUSTOMS_C_5.getCode().equals(form.getStatus()) ||
                     OrderStatusEnum.CUSTOMS_C_5_1.getCode().equals(form.getStatus())) {

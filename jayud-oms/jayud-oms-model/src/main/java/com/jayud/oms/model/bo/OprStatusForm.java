@@ -57,4 +57,13 @@ public class OprStatusForm {
     @ApiModelProperty(value = "业务类型(0:空运),(1,纯报关),ZGYS(2,中港运输)")
     private Integer businessType;
 
+    @ApiModelProperty(value = "外部报关六联单号附件")
+    private List<FileView> encodePics = new ArrayList<>();
+
+    @ApiModelProperty(value = "外部舱单附件")
+    private List<FileView> manifestAttachment = new ArrayList<>();
+
+    @ApiModelProperty(value = "报关单附件")
+    private List<FileView> customsOrderAttachment = new ArrayList<>();
+
 }

@@ -1305,7 +1305,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         .append("-").append(OrderStatusEnum.getDesc(jsonObject.getStr("status"))).append(",");
             }
         }
-        return subOrderStatus.substring(0, subOrderStatus.length() - 1);
+        return subOrderStatus.toString();
     }
 
 }

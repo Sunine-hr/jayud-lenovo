@@ -619,18 +619,21 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode())) {
             InputOrderCustomsVO inputOrderCustomsVO = customsClient.getCustomsDetail(inputMainOrderVO.getOrderNo()).getData();
             if (inputOrderCustomsVO != null) {
-                //附件处理
+                //创建订单页面头附件
                 List<FileView> allPics = new ArrayList<>();
                 allPics.addAll(inputOrderCustomsVO.getCntrPics());
                 allPics.addAll(inputOrderCustomsVO.getEncodePics());
                 allPics.addAll(inputOrderCustomsVO.getAirTransportPics());
                 allPics.addAll(inputOrderCustomsVO.getSeaTransportPics());
-                inputOrderCustomsVO.setAllPics(allPics);
                 //其余附件信息
                 //获取反馈操作人时上传的附件
-                List<FileView> attachments = this.logisticsTrackService.getAttachments(inputOrderCustomsVO.getId()
-                        , BusinessTypeEnum.BG.getCode(), prePath);
-                allPics.addAll(attachments);
+                for (InputSubOrderCustomsVO subOrder : inputOrderCustomsVO.getSubOrders()) {
+                    List<FileView> attachments = this.logisticsTrackService.getAttachments(subOrder.getSubOrderId()
+                            , BusinessTypeEnum.BG.getCode(), prePath);//节点附件
+                    allPics.addAll(subOrder.getFileViews());//子报关附件
+                    allPics.addAll(attachments);
+                }
+                inputOrderCustomsVO.setAllPics(allPics);
 
                 //循环处理接单人和接单时间
                 List<InputSubOrderCustomsVO> inputSubOrderCustomsVOS = inputOrderCustomsVO.getSubOrders();
@@ -658,10 +661,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 inputOrderTransportVO.assembleModelAndCntrNo();
 
                 //附件信息
-                List<FileView> allPics = new ArrayList<>();
-                allPics.addAll(StringUtils.getFileViews(inputOrderTransportVO.getCntrPic(), inputOrderTransportVO.getCntrPicName(), prePath));
+                List<FileView> allPics = new ArrayList<>(StringUtils.getFileViews(inputOrderTransportVO.getCntrPic(), inputOrderTransportVO.getCntrPicName(), prePath));
                 //获取反馈操作人时上传的附件
-
                 List<FileView> attachments = this.logisticsTrackService.getAttachments(inputOrderTransportVO.getId()
                         , BusinessTypeEnum.ZGYS.getCode(), prePath);
                 allPics.addAll(attachments);
@@ -1300,7 +1301,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             Object subOrder = subOrderInfos.get(subOrderType);
             JSONArray array = new JSONArray(subOrder);
             for (int i = 0; i < array.size(); i++) {
-                JSONObject jsonObject = array.getJSONObject(0);
+                JSONObject jsonObject = array.getJSONObject(i);
                 subOrderStatus.append(jsonObject.getStr("orderNo"))
                         .append("-").append(OrderStatusEnum.getDesc(jsonObject.getStr("status"))).append(",");
             }

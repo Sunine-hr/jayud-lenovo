@@ -199,11 +199,12 @@
         oc.`order_no` orderNo,
         oc.`goods_type` goodsType,
         oc.`port_name` portName,
-        oc.`status` status,
+        oc.`status` subCustomsStatus,
         oi.`customer_name` customerName,
         oi.customer_code customerCode,
         oi.legal_name legalName,
         oi.unit_code unitCode,
+        oi.status,
         oc.legal_name subLegalName,
         oc.unit_code subUnitCode,
         '' goodsInfo,
@@ -280,7 +281,7 @@
             OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = oc.order_no AND orc.`status` = '2' and orc.sub_type = 'bg'))
         </if>
 
-        <if test="legalIds != null">
+        <if test="legalIds != null and legalIds.size>0">
             and oc.`legal_entity_id` in
             <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
                 #{legalId}

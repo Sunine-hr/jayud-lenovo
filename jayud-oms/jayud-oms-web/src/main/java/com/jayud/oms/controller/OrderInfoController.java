@@ -277,6 +277,10 @@ public class OrderInfoController {
         orderInfo.setUpUser(UserOperator.getToken());
         orderInfo.setUpTime(LocalDateTime.now());
         boolean result = orderInfoService.updateById(orderInfo);
+
+        //TODO 上传仓单文件/六联单号文件/上传舱单文件/上传报关单文件
+
+
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }

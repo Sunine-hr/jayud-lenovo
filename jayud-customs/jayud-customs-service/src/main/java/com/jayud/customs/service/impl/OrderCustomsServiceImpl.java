@@ -54,9 +54,9 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
     @Override
     public boolean isExistOrder(String orderNo) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("order_no",orderNo);
+        queryWrapper.eq("order_no", orderNo);
         List<OrderCustoms> orderCustomsList = baseMapper.selectList(queryWrapper);
-        if(orderCustomsList == null || orderCustomsList.size() == 0) {
+        if (orderCustomsList == null || orderCustomsList.size() == 0) {
             return true;
         }
         return false;
@@ -67,7 +67,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
         try {
             //暂存或提交只是主订单的状态不一样，子订单的操作每次先根据主订单号清空子订单
             QueryWrapper<OrderCustoms> queryWrapper = new QueryWrapper<OrderCustoms>();
-            queryWrapper.eq("main_order_no",form.getMainOrderNo());
+            queryWrapper.eq("main_order_no", form.getMainOrderNo());
             remove(queryWrapper);
             //子订单数据初始化处理
             //设置子订单号/报关抬头/结算单位/附件
@@ -96,11 +96,11 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 customs.setSeaTransPicName(StringUtils.getFileNameStr(form.getSeaTransportPics()));
                 orderCustomsList.add(customs);
             }
-            if(!orderCustomsList.isEmpty()) {
+            if (!orderCustomsList.isEmpty()) {
                 saveOrUpdateBatch(orderCustomsList);
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
@@ -117,13 +117,13 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
 
         //获取当前用户所属法人主体
         ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
-        List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();
+        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
 
         //定义分页参数
-        Page<CustomsOrderInfoVO> page = new Page(form.getPageNum(),form.getPageSize());
+        Page<CustomsOrderInfoVO> page = new Page(form.getPageNum(), form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.desc("oc.id"));
-        IPage<CustomsOrderInfoVO> pageInfo = baseMapper.findCustomsOrderByPage(page, form,legalIds);
+        IPage<CustomsOrderInfoVO> pageInfo = baseMapper.findCustomsOrderByPage(page, form, legalIds);
         //处理附件
         List<CustomsOrderInfoVO> customsOrderInfoVOS = pageInfo.getRecords();
         String prePath = fileClient.getBaseUrl().getData().toString();
@@ -132,11 +132,10 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
             //处理子订单附件信息
             String fileStr = customsOrder.getFileStr();
             String fileNameStr = customsOrder.getFileNameStr();
-            customsOrder.setFileViews(StringUtils.getFileViews(fileStr,fileNameStr,prePath));
+            customsOrder.setFileViews(StringUtils.getFileViews(fileStr, fileNameStr, prePath));
         }
         return pageInfo;
     }
-
 
 
     @Override
@@ -149,6 +148,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
         if (orderCustomsVOS != null && orderCustomsVOS.size() > 0) {
             OrderCustomsVO orderCustomsVO = orderCustomsVOS.get(0);
             //设置纯报关头部分
+            inputOrderCustomsVO.setId(orderCustomsVO.getSubOrderId());
             inputOrderCustomsVO.setPortCode(orderCustomsVO.getPortCode());
             inputOrderCustomsVO.setPortName(orderCustomsVO.getPortName());
             inputOrderCustomsVO.setGoodsType(orderCustomsVO.getGoodsType());
@@ -193,5 +193,15 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
     @Override
     public StatisticsDataNumberVO statisticsDataNumber() {
         return baseMapper.statisticsDataNumber();
+    }
+
+    /**
+     * 根据主订单集合查询所有报关信息
+     */
+    @Override
+    public List<OrderCustoms> getCustomsOrderByMainOrderNos(List<String> mainOrderNos) {
+        QueryWrapper<OrderCustoms> condition = new QueryWrapper<>();
+        condition.lambda().in(OrderCustoms::getMainOrderNo, mainOrderNos);
+        return this.baseMapper.selectList(condition);
     }
 }

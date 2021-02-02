@@ -6,6 +6,7 @@ import com.jayud.oms.model.bo.CustomsChangeStatusForm;
 import com.jayud.oms.model.bo.InputOrderCustomsForm;
 import com.jayud.oms.model.vo.InitChangeStatusVO;
 import com.jayud.oms.model.vo.InputOrderCustomsVO;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,5 +58,11 @@ public interface CustomsClient {
      */
     @RequestMapping(value = "/api/changeCustomsStatus")
     ApiResult changeCustomsStatus(@RequestBody List<CustomsChangeStatusForm> form);
+
+    /**
+     * 根据主订单集合查询所有报关信息
+     */
+    @RequestMapping(value = "/api/getCustomsOrderByMainOrderNos")
+    ApiResult getCustomsOrderByMainOrderNos(@RequestParam("mainOrderNos") List<String> mainOrderNos);
 
 }

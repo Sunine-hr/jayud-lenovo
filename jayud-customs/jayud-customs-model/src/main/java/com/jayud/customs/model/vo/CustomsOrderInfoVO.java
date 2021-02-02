@@ -39,6 +39,12 @@ public class CustomsOrderInfoVO {
     @ApiModelProperty(value = "状态描述")
     private String statusDesc;
 
+    @ApiModelProperty(value = "报关状态")
+    private String subCustomsStatus;
+
+    @ApiModelProperty(value = "报关状态描述")
+    private String subCustomsStatusDesc;
+
     @ApiModelProperty(value = "客户名称")
     private String customerName;
 
@@ -127,6 +133,11 @@ public class CustomsOrderInfoVO {
             return OrderStatusEnum.getDesc(this.status);
         }
         return "";
+    }
+
+    public void setSubCustomsStatus(String subCustomsStatus) {
+        this.subCustomsStatus = subCustomsStatus;
+        this.subCustomsStatusDesc = OrderStatusEnum.getDesc(subCustomsStatus);
     }
 
     public void setSubUnitCode(String subUnitCode) {

@@ -74,6 +74,9 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "中港运输状态,用于标识驳回可编辑")
     private String subTmsStatus;
 
+    @ApiModelProperty(value = "中港运输状态,用于标识驳回可编辑")
+    private String subTmsStatusDesc;
+
     @ApiModelProperty(value = "是否需要录入费用")
     private Boolean needInputCost;
 
@@ -169,12 +172,14 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "中转仓库")
     private String warehouseName;
 
-
     @ApiModelProperty(value = "供应商代码")
     private String defaultSupplierCode;
 
     @ApiModelProperty(value = "结算单位code")
     private String defaultUnitCode;
+
+    @ApiModelProperty(value = "是否费用提交审核")
+    private Boolean isCostSubmitted;
 
 
     public String getEntireAddress1() {
@@ -250,5 +255,10 @@ public class OrderTransportVO {
     public void setSubUnitCode(String subUnitCode) {
         this.subUnitCode = subUnitCode;
         this.defaultUnitCode = subUnitCode;
+    }
+
+    public void setSubTmsStatus(String subTmsStatus) {
+        this.subTmsStatus = subTmsStatus;
+        this.subTmsStatusDesc = OrderStatusEnum.getDesc(subTmsStatus);
     }
 }

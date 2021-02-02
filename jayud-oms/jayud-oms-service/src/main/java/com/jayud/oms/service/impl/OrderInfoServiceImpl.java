@@ -630,7 +630,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 for (InputSubOrderCustomsVO subOrder : inputOrderCustomsVO.getSubOrders()) {
                     List<FileView> attachments = this.logisticsTrackService.getAttachments(subOrder.getSubOrderId()
                             , BusinessTypeEnum.BG.getCode(), prePath);//节点附件
-                    allPics.addAll(subOrder.getFileViews());//子报关附件
                     allPics.addAll(attachments);
                 }
                 inputOrderCustomsVO.setAllPics(allPics);

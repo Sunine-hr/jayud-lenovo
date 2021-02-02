@@ -245,6 +245,7 @@ public class AirOrderFormVO {
     public void setProcessStatus(Integer processStatus) {
         this.processStatus = processStatus;
         this.statusDesc = ProcessStatusEnum.getDesc(processStatus);
+        this.processStatusDesc=ProcessStatusEnum.getDesc(processStatus);
     }
 
     public void setSubUnitCode(String subUnitCode) {

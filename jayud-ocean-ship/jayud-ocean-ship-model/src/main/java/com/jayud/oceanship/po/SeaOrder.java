@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -69,6 +71,7 @@ public class SeaOrder extends Model<SeaOrder> {
     private String proxyServiceType;
 
     @ApiModelProperty(value = "货好时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime goodTime;
 
     @ApiModelProperty(value = "运费是否到付(1代表true,0代表false)")
@@ -87,12 +90,14 @@ public class SeaOrder extends Model<SeaOrder> {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
     @ApiModelProperty(value = "更新时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "是否需要录入费用(0:false,1:true)")
@@ -102,6 +107,7 @@ public class SeaOrder extends Model<SeaOrder> {
     private String orderTaker;
 
     @ApiModelProperty(value = "接单日期")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime receivingOrdersDate;
 
 

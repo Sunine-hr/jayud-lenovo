@@ -63,8 +63,89 @@
         so.unit_department_id
         from sea_order so
         left join sea_port sp on so.port_departure_code = sp.code
-        left join sea_port sp1 on so.port_destination_code sp.code
+        left join sea_port sp1 on so.port_destination_code = sp1.code
         where id = #{id} order by so.id
+    </select>
+
+<!--  分页获取订单列表-->
+    <select id="findByPage" resultType="com.jayud.oceanship.vo.SeaOrderFormVO">
+        select so.id,so.main_order_no mainOrderNo,so.order_no orderNo,so.status,
+        so.process_status processStatus,
+        so.unit_code unitCode,
+        so.legal_name legalName,
+        so.legal_entity_id legalEntityId,
+        so.imp_and_exp_type impAndExpType,
+        so.terms,
+        so.port_departure_code portDepartureCode,
+        sp.name portDeparture,
+        so.port_destination_code portDestinationCode,
+        sp1.name portDestination,
+        so.good_time goodTime,
+        sb.ship_company shipCompany,
+        sb.ship_name shipName,
+        sb.ship_number shipNumber,
+        sb.eta,sb.etd,
+        sb.warehousing_no warehousingNo,
+        sb.agent_supplier_id supplierId,
+        so.create_user createUser,
+        so.create_time,
+        so.update_user,
+        so.update_time,
+        so.need_input_cost,
+        so.unit_code unitCode,
+        so.unit_department_id,
+        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = so.`order_no`) +
+        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = so.`order_no`)>0 THEN TRUE
+        ELSE FALSE
+        END) cost
+        from sea_order so
+        left join sea_port sp on so.port_departure_code = sp.code
+        left join sea_port sp1 on so.port_destination_code = sp1.code
+        left join sea_bookship sb on sb.sea_order_id = so.id and (ab.`status` != 2 OR ab.`status` IS NULL)
+        <where>
+            <if test="form.orderNo !=null and form.orderNo!=''">
+                and so.order_no like concat('%',#{form.orderNo},'%')
+            </if>
+            <if test="form.portDeparture !=null and form.portDeparture!=''">
+                and sp.name like concat('%',#{form.portDeparture},'%')
+            </if>
+            <if test="form.portDestination !=null and form.portDestination!=''">
+                and sp1.name like concat('%',#{form.portDestination},'%')
+            </if>
+            <if test="form.mainOrderNos !=null and form.mainOrderNos.size > 0">
+                and so.main_order_no IN
+                <foreach collection="form.mainOrderNos" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="form.status !=null and form.status!=''">
+                and so.status = #{form.status}
+            </if>
+            <if test="form.processStatusList!=null and form.processStatusList.size>0">
+                and so.process_status IN
+                <foreach collection="form.processStatusList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="form.createTime !=null and form.createTime!=''">
+                and so.create_time = #{form.createTime}
+            </if>
+            <if test="form.cmd == 'costAudit'">
+                AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = so.order_no AND opc.`status` =
+                '2' and opc.sub_type = 'hy')
+                OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = so.order_no AND orc.`status` =
+                '2' and orc.sub_type = 'hy'))
+            </if>
+
+            <if test="legalIds != null and legalIds.size>0">
+                and so.`legal_entity_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
+            </if>
+
+        </where>
+        order by so.id desc
     </select>
 
 </mapper>

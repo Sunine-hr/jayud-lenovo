@@ -147,11 +147,11 @@ public interface OmsClient {
 //     */
 //    @RequestMapping(value = "/api/findVehicleSize")
 //    ApiResult<List<VehicleSizeInfoVO>> findVehicleSize();
-//
-//    /**
-//     * 根据供应商id集合查询供应商信息
-//     * @return
-//     */
-//    @RequestMapping(value = "/api/getSupplierInfoByIds")
-//    ApiResult getSupplierInfoByIds(@RequestParam("supplierIds") List<Long> supplierIds);
+
+    /**
+     * 根据供应商id集合查询供应商信息
+     * @return
+     */
+    @RequestMapping(value = "/api/getSupplierInfoByIds")
+    ApiResult getSupplierInfoByIds(@RequestParam("supplierIds") List<Long> supplierIds);
 }

@@ -1,8 +1,11 @@
 package com.jayud.oceanship.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.oceanship.bo.AddSeaOrderForm;
+import com.jayud.oceanship.bo.QuerySeaOrderForm;
 import com.jayud.oceanship.po.SeaOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.oceanship.vo.SeaOrderFormVO;
 import com.jayud.oceanship.vo.SeaOrderVO;
 
 /**
@@ -46,4 +49,11 @@ public interface ISeaOrderService extends IService<SeaOrder> {
      * @return
      */
     SeaOrderVO getSeaOrderByOrderNO(Long id);
+
+    /**
+     * 分页获取海运订单信息
+     * @param form
+     * @return
+     */
+    IPage<SeaOrderFormVO> findByPage(QuerySeaOrderForm form);
 }

@@ -1,12 +1,16 @@
 package com.jayud.oms.model.bo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.common.enums.OrderAttachmentTypeEnum;
 import com.jayud.common.utils.FileView;
+import com.jayud.oms.model.po.OrderAttachment;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class OprStatusForm {
@@ -66,4 +70,14 @@ public class OprStatusForm {
     @ApiModelProperty(value = "报关单附件")
     private List<FileView> customsOrderAttachment = new ArrayList<>();
 
+    /**
+     * 组合附件
+     */
+    public Map<String, List<FileView>> assemblyAttachment() {
+        Map<String, List<FileView>> map = new HashMap<>(3);
+        map.put(OrderAttachmentTypeEnum.SIX_SHEET_ATTACHMENT.getDesc(), encodePics);
+        map.put(OrderAttachmentTypeEnum.MANIFEST_ATTACHMENT.getDesc(), manifestAttachment);
+        map.put(OrderAttachmentTypeEnum.CUSTOMS_ATTACHMENT.getDesc(), customsOrderAttachment);
+        return map;
+    }
 }

@@ -4,134 +4,142 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.finance.po.OrderReceivableBill">
-        <id column="id" property="id" />
-        <result column="legal_name" property="legalName" />
-        <result column="unit_account" property="unitAccount" />
-        <result column="already_paid_amount" property="alreadyPaidAmount" />
-        <result column="bill_order_num" property="billOrderNum" />
-        <result column="bill_num" property="billNum" />
-        <result column="sub_type" property="subType" />
-        <result column="is_main" property="isMain" />
-        <result column="created_user" property="createdUser" />
-        <result column="created_time" property="createdTime" />
-        <result column="updated_user" property="updatedUser" />
-        <result column="updated_time" property="updatedTime" />
+        <id column="id" property="id"/>
+        <result column="legal_name" property="legalName"/>
+        <result column="unit_account" property="unitAccount"/>
+        <result column="already_paid_amount" property="alreadyPaidAmount"/>
+        <result column="bill_order_num" property="billOrderNum"/>
+        <result column="bill_num" property="billNum"/>
+        <result column="sub_type" property="subType"/>
+        <result column="is_main" property="isMain"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_user" property="updatedUser"/>
+        <result column="updated_time" property="updatedTime"/>
     </resultMap>
 
-<!--    <sql id="TmsGoods">-->
-<!--        (SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' GROUP BY ot.order_no) goodsDesc,-->
-<!--        (SELECT GROUP_CONCAT(concat( ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id-->
-<!--        WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' GROUP BY ot.order_no) startAddress,-->
-<!--        (SELECT GROUP_CONCAT(concat( ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id-->
-<!--        WHERE ota.order_no = ot.order_no AND ota.opr_type = '2' GROUP BY ot.order_no) endAddress,-->
-<!--    </sql>-->
+    <!--    <sql id="TmsGoods">-->
+    <!--        (SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' GROUP BY ot.order_no) goodsDesc,-->
+    <!--        (SELECT GROUP_CONCAT(concat( ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id-->
+    <!--        WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' GROUP BY ot.order_no) startAddress,-->
+    <!--        (SELECT GROUP_CONCAT(concat( ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id-->
+    <!--        WHERE ota.order_no = ot.order_no AND ota.opr_type = '2' GROUP BY ot.order_no) endAddress,-->
+    <!--    </sql>-->
 
-<!--    <sql id="GoodsAndOrderAddress">-->
-<!--	    (SELECT GROUP_CONCAT(g.name) FROM goods g WHERE g.business_id = ao.id AND g.business_type = 0 GROUP BY g.business_id,g.business_type) goodsDesc,-->
-<!--        (SELECT GROUP_CONCAT(addr.address) FROM order_address addr WHERE addr.business_id = ao.id AND addr.business_type = 0 and (addr.type=0 or addr.type=3) GROUP BY addr.business_id,addr.business_type) startAddress,-->
-<!--        (SELECT GROUP_CONCAT(addr.address) FROM order_address addr WHERE addr.business_id = ao.id AND addr.business_type = 0 and (addr.type=1 or addr.type=4) GROUP BY addr.business_id,addr.business_type) endAddress,-->
-<!--    </sql>-->
+    <!--    <sql id="GoodsAndOrderAddress">-->
+    <!--	    (SELECT GROUP_CONCAT(g.name) FROM goods g WHERE g.business_id = ao.id AND g.business_type = 0 GROUP BY g.business_id,g.business_type) goodsDesc,-->
+    <!--        (SELECT GROUP_CONCAT(addr.address) FROM order_address addr WHERE addr.business_id = ao.id AND addr.business_type = 0 and (addr.type=0 or addr.type=3) GROUP BY addr.business_id,addr.business_type) startAddress,-->
+    <!--        (SELECT GROUP_CONCAT(addr.address) FROM order_address addr WHERE addr.business_id = ao.id AND addr.business_type = 0 and (addr.type=1 or addr.type=4) GROUP BY addr.business_id,addr.business_type) endAddress,-->
+    <!--    </sql>-->
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, legal_name, unit_account, already_paid_amount, bill_order_num, bill_num, sub_type, is_main, created_user, created_time, updated_user, updated_time
     </sql>
-<!--    <select id="findReceiveBillByPage" parameterType="com.jayud.finance.bo.QueryReceiveBillForm" resultType="com.jayud.finance.vo.OrderReceiveBillVO" >-->
-<!--        SELECT DISTINCT-->
-<!--        oi.legal_name legalName,-->
-<!--        ci.`name` unitAccount,-->
-<!--        ifnull( orb.already_paid_amount, 0 ) alreadyPaidAmount,-->
-<!--        ifnull( orb.bill_order_num, 0 ) billOrderNum,-->
-<!--        ifnull( orb.bill_num, 0 ) billNum,-->
-<!--        (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '1' and t1.status = '3' and t1.customer_code = orc.customer_code  and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidAmount,-->
-<!--        (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '1' and t1.status = '3' and t1.customer_code = orc.customer_code and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidOrderNum-->
-<!--        FROM-->
-<!--        order_receivable_cost orc-->
-<!--        left join customer_info ci on ci.id_code = orc.customer_code-->
-<!--        LEFT JOIN order_info oi ON oi.order_no = orc.main_order_no-->
-<!--        left join order_receivable_bill orb on orb.legal_name = oi.legal_name-->
-<!--        and orb.unit_account = ci.`name`-->
-<!--        where orc.is_sum_to_main = 1 and orc.status = '3'-->
-<!--        <if test="form.unitAccount != null and form.unitAccount != ''">-->
-<!--            and ci.`name` like concat('%',#{form.unitAccount},'%')-->
-<!--        </if>-->
-<!--        <if test="form.legalName != null and form.legalName != ''">-->
-<!--            and oi.legal_name like concat('%',#{form.legalName},'%')-->
-<!--        </if>-->
-<!--    </select>-->
-<!--    <select id="findReceiveSubBillByPage" parameterType="com.jayud.finance.bo.QueryReceiveBillForm" resultType="com.jayud.finance.vo.OrderReceiveBillVO" >-->
-<!--        SELECT DISTINCT-->
-<!--            <if test="form.cmd == 'zgys'">-->
-<!--            ot.legal_name legalName,-->
-<!--            (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='zgys' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_transport o1 where o1.legal_name = ot.legal_name)) notPaidAmount,-->
-<!--            (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='zgys' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_transport o1 where o1.legal_name = ot.legal_name)) notPaidOrderNum,-->
-<!--            </if>-->
-<!--            <if test="form.cmd == 'bg'">-->
-<!--            oc.legal_name legalName,-->
-<!--                (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='bg' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_customs o1 where o1.legal_name = oc.legal_name)) notPaidAmount,-->
-<!--                (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='bg' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_customs o1 where o1.legal_name = oc.legal_name)) notPaidOrderNum,-->
-<!--            </if>-->
-<!--        <if test="form.cmd == 'ky'">-->
-<!--            le.legal_name legalName,-->
-<!--            (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_entity_id = ao.legal_entity_id)) notPaidAmount,-->
-<!--            (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_entity_id = ao.legal_entity_id)) notPaidOrderNum,-->
-<!--        </if>-->
-<!--            ci.`name` unitAccount,-->
-<!--            ifnull( orb.already_paid_amount, 0 ) alreadyPaidAmount,-->
-<!--            ifnull( orb.bill_order_num, 0 ) billOrderNum,-->
-<!--            ifnull( orb.bill_num, 0 ) billNum-->
-<!--            FROM-->
-<!--            order_receivable_cost orc-->
-<!--            left join customer_info ci on ci.id_code = orc.customer_code-->
-<!--            <if test="form.cmd == 'zgys'">-->
-<!--                left join order_transport ot on ot.order_no = orc.order_no-->
-<!--                left join order_receivable_bill orb on orb.legal_name = ot.legal_name-->
-<!--                and orb.unit_account = orc.customer_name-->
-<!--                where orc.is_sum_to_main = 0 and orc.sub_type = 'zgys' and orc.status = '3'-->
-<!--                <if test="form.unitAccount != null and form.unitAccount != ''">-->
-<!--                    and ci.`name` like concat('%',#{form.unitAccount},'%')-->
-<!--                </if>-->
-<!--                <if test="form.legalName != null and form.legalName != ''">-->
-<!--                    and ot.legal_name like concat('%',#{form.legalName},'%')-->
-<!--                </if>-->
-<!--            </if>-->
-<!--            <if test="form.cmd == 'bg'">-->
-<!--                left join order_customs oc on oc.order_no = orc.order_no-->
-<!--                left join order_receivable_bill orb on orb.legal_name = oc.legal_name-->
-<!--                and orb.unit_account = orc.customer_name-->
-<!--                where orc.is_sum_to_main = 0 and orc.sub_type = 'bg' and orc.status = '3'-->
-<!--                <if test="form.unitAccount != null and form.unitAccount != ''">-->
-<!--                    and ci.`name` like concat('%',#{form.unitAccount},'%')-->
-<!--                </if>-->
-<!--                <if test="form.legalName != null and form.legalName != ''">-->
-<!--                    and oc.legal_name like concat('%',#{form.legalName},'%')-->
-<!--                </if>-->
-<!--            </if>-->
-<!--            <if test="form.cmd == 'ky'">-->
-<!--                left join air_order ao on ao.order_no = orc.order_no-->
-<!--                left join legal_entity le on ao.legal_entity_id=le.id-->
-<!--                left join order_receivable_bill orb on orb.legal_name = le.legal_name-->
-<!--                and orb.unit_account = orc.customer_name-->
-<!--                where orc.is_sum_to_main = 0 and orc.sub_type = 'ky' and orc.status = '3'-->
-<!--                <if test="form.unitAccount != null and form.unitAccount != ''">-->
-<!--                    and ci.`name` like concat('%',#{form.unitAccount},'%')-->
-<!--                </if>-->
-<!--                <if test="form.legalName != null and form.legalName != ''">-->
-<!--                    and le.legal_name like concat('%',#{form.legalName},'%')-->
-<!--                </if>-->
-<!--            </if>-->
-<!--    </select>-->
-    <select id="findReceiveBillNum" parameterType="com.jayud.finance.bo.QueryReceiveBillNumForm" resultType="com.jayud.finance.vo.OrderPaymentBillNumVO" >
+    <!--    <select id="findReceiveBillByPage" parameterType="com.jayud.finance.bo.QueryReceiveBillForm" resultType="com.jayud.finance.vo.OrderReceiveBillVO" >-->
+    <!--        SELECT DISTINCT-->
+    <!--        oi.legal_name legalName,-->
+    <!--        ci.`name` unitAccount,-->
+    <!--        ifnull( orb.already_paid_amount, 0 ) alreadyPaidAmount,-->
+    <!--        ifnull( orb.bill_order_num, 0 ) billOrderNum,-->
+    <!--        ifnull( orb.bill_num, 0 ) billNum,-->
+    <!--        (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '1' and t1.status = '3' and t1.customer_code = orc.customer_code  and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidAmount,-->
+    <!--        (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '1' and t1.status = '3' and t1.customer_code = orc.customer_code and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidOrderNum-->
+    <!--        FROM-->
+    <!--        order_receivable_cost orc-->
+    <!--        left join customer_info ci on ci.id_code = orc.customer_code-->
+    <!--        LEFT JOIN order_info oi ON oi.order_no = orc.main_order_no-->
+    <!--        left join order_receivable_bill orb on orb.legal_name = oi.legal_name-->
+    <!--        and orb.unit_account = ci.`name`-->
+    <!--        where orc.is_sum_to_main = 1 and orc.status = '3'-->
+    <!--        <if test="form.unitAccount != null and form.unitAccount != ''">-->
+    <!--            and ci.`name` like concat('%',#{form.unitAccount},'%')-->
+    <!--        </if>-->
+    <!--        <if test="form.legalName != null and form.legalName != ''">-->
+    <!--            and oi.legal_name like concat('%',#{form.legalName},'%')-->
+    <!--        </if>-->
+    <!--    </select>-->
+    <!--    <select id="findReceiveSubBillByPage" parameterType="com.jayud.finance.bo.QueryReceiveBillForm" resultType="com.jayud.finance.vo.OrderReceiveBillVO" >-->
+    <!--        SELECT DISTINCT-->
+    <!--            <if test="form.cmd == 'zgys'">-->
+    <!--            ot.legal_name legalName,-->
+    <!--            (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='zgys' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_transport o1 where o1.legal_name = ot.legal_name)) notPaidAmount,-->
+    <!--            (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='zgys' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_transport o1 where o1.legal_name = ot.legal_name)) notPaidOrderNum,-->
+    <!--            </if>-->
+    <!--            <if test="form.cmd == 'bg'">-->
+    <!--            oc.legal_name legalName,-->
+    <!--                (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='bg' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_customs o1 where o1.legal_name = oc.legal_name)) notPaidAmount,-->
+    <!--                (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='bg' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_customs o1 where o1.legal_name = oc.legal_name)) notPaidOrderNum,-->
+    <!--            </if>-->
+    <!--        <if test="form.cmd == 'ky'">-->
+    <!--            le.legal_name legalName,-->
+    <!--            (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_entity_id = ao.legal_entity_id)) notPaidAmount,-->
+    <!--            (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_entity_id = ao.legal_entity_id)) notPaidOrderNum,-->
+    <!--        </if>-->
+    <!--            ci.`name` unitAccount,-->
+    <!--            ifnull( orb.already_paid_amount, 0 ) alreadyPaidAmount,-->
+    <!--            ifnull( orb.bill_order_num, 0 ) billOrderNum,-->
+    <!--            ifnull( orb.bill_num, 0 ) billNum-->
+    <!--            FROM-->
+    <!--            order_receivable_cost orc-->
+    <!--            left join customer_info ci on ci.id_code = orc.customer_code-->
+    <!--            <if test="form.cmd == 'zgys'">-->
+    <!--                left join order_transport ot on ot.order_no = orc.order_no-->
+    <!--                left join order_receivable_bill orb on orb.legal_name = ot.legal_name-->
+    <!--                and orb.unit_account = orc.customer_name-->
+    <!--                where orc.is_sum_to_main = 0 and orc.sub_type = 'zgys' and orc.status = '3'-->
+    <!--                <if test="form.unitAccount != null and form.unitAccount != ''">-->
+    <!--                    and ci.`name` like concat('%',#{form.unitAccount},'%')-->
+    <!--                </if>-->
+    <!--                <if test="form.legalName != null and form.legalName != ''">-->
+    <!--                    and ot.legal_name like concat('%',#{form.legalName},'%')-->
+    <!--                </if>-->
+    <!--            </if>-->
+    <!--            <if test="form.cmd == 'bg'">-->
+    <!--                left join order_customs oc on oc.order_no = orc.order_no-->
+    <!--                left join order_receivable_bill orb on orb.legal_name = oc.legal_name-->
+    <!--                and orb.unit_account = orc.customer_name-->
+    <!--                where orc.is_sum_to_main = 0 and orc.sub_type = 'bg' and orc.status = '3'-->
+    <!--                <if test="form.unitAccount != null and form.unitAccount != ''">-->
+    <!--                    and ci.`name` like concat('%',#{form.unitAccount},'%')-->
+    <!--                </if>-->
+    <!--                <if test="form.legalName != null and form.legalName != ''">-->
+    <!--                    and oc.legal_name like concat('%',#{form.legalName},'%')-->
+    <!--                </if>-->
+    <!--            </if>-->
+    <!--            <if test="form.cmd == 'ky'">-->
+    <!--                left join air_order ao on ao.order_no = orc.order_no-->
+    <!--                left join legal_entity le on ao.legal_entity_id=le.id-->
+    <!--                left join order_receivable_bill orb on orb.legal_name = le.legal_name-->
+    <!--                and orb.unit_account = orc.customer_name-->
+    <!--                where orc.is_sum_to_main = 0 and orc.sub_type = 'ky' and orc.status = '3'-->
+    <!--                <if test="form.unitAccount != null and form.unitAccount != ''">-->
+    <!--                    and ci.`name` like concat('%',#{form.unitAccount},'%')-->
+    <!--                </if>-->
+    <!--                <if test="form.legalName != null and form.legalName != ''">-->
+    <!--                    and le.legal_name like concat('%',#{form.legalName},'%')-->
+    <!--                </if>-->
+    <!--            </if>-->
+    <!--    </select>-->
+    <select id="findReceiveBillNum" parameterType="com.jayud.finance.bo.QueryReceiveBillNumForm"
+            resultType="com.jayud.finance.vo.OrderPaymentBillNumVO">
         SELECT
         ob.bill_no billNo,
         ob.account_term accountTermStr,
-        ( SELECT count( DISTINCT orbd.order_no ) FROM order_receivable_bill_detail orbd WHERE ob.bill_no = orbd.bill_no ) billNum,
-        ( SELECT ifnull(sum( obct.money ),0) FROM order_bill_cost_total obct WHERE ob.bill_no = obct.bill_no AND obct.currency_code = 'CNY' ) rmb,
-        ( SELECT ifnull(sum( obct.money ),0) FROM order_bill_cost_total obct WHERE ob.bill_no = obct.bill_no AND obct.currency_code = 'USD' ) dollar,
-        ( SELECT ifnull(sum( obct.money ),0) FROM order_bill_cost_total obct WHERE ob.bill_no = obct.bill_no AND obct.currency_code = 'EUR' ) euro,
-        ( SELECT ifnull(sum( obct.money ),0) FROM order_bill_cost_total obct WHERE ob.bill_no = obct.bill_no AND obct.currency_code = 'HKD' ) hKDollar,
-        (select ifnull(sum(obct.local_money),0) from order_bill_cost_total obct where obct.bill_no = ob.bill_no) localAmount,
-        (select ifnull(sum(cav.real_receive_money),0) from cancel_after_verification cav where cav.bill_no = ob.bill_no) heXiaoAmount,
+        ( SELECT count( DISTINCT orbd.order_no ) FROM order_receivable_bill_detail orbd WHERE ob.bill_no = orbd.bill_no
+        ) billNum,
+        ( SELECT ifnull(sum( obct.money ),0) FROM order_bill_cost_total obct WHERE ob.bill_no = obct.bill_no AND
+        obct.currency_code = 'CNY' ) rmb,
+        ( SELECT ifnull(sum( obct.money ),0) FROM order_bill_cost_total obct WHERE ob.bill_no = obct.bill_no AND
+        obct.currency_code = 'USD' ) dollar,
+        ( SELECT ifnull(sum( obct.money ),0) FROM order_bill_cost_total obct WHERE ob.bill_no = obct.bill_no AND
+        obct.currency_code = 'EUR' ) euro,
+        ( SELECT ifnull(sum( obct.money ),0) FROM order_bill_cost_total obct WHERE ob.bill_no = obct.bill_no AND
+        obct.currency_code = 'HKD' ) hKDollar,
+        (select ifnull(sum(obct.local_money),0) from order_bill_cost_total obct where obct.bill_no = ob.bill_no)
+        localAmount,
+        (select ifnull(sum(cav.real_receive_money),0) from cancel_after_verification cav where cav.bill_no = ob.bill_no)
+        heXiaoAmount,
         ob.audit_status billStatus,
         ob.make_user makeUser,
         DATE_FORMAT(ob.make_time,'%Y-%m-%d %H:%i:%S') makeTimeStr
@@ -150,17 +158,18 @@
             </otherwise>
         </choose>
         group by bill_no
-<!--        <if test="form.cmd == 'zgys'">-->
-<!--            and orb.is_main = 0 and orb.sub_type = 'zgys'-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'bg'">-->
-<!--            and orb.is_main = 0 and orb.sub_type = 'bg'-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'ky'">-->
-<!--            and orb.is_main = 0 and orb.sub_type = 'ky'-->
-<!--        </if>-->
+        <!--        <if test="form.cmd == 'zgys'">-->
+        <!--            and orb.is_main = 0 and orb.sub_type = 'zgys'-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'bg'">-->
+        <!--            and orb.is_main = 0 and orb.sub_type = 'bg'-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'ky'">-->
+        <!--            and orb.is_main = 0 and orb.sub_type = 'ky'-->
+        <!--        </if>-->
     </select>
-    <select id="findNotPaidBillByPage" parameterType="com.jayud.finance.bo.QueryNotPaidBillForm" resultType="com.jayud.finance.vo.ReceiveNotPaidBillVO" >
+    <select id="findNotPaidBillByPage" parameterType="com.jayud.finance.bo.QueryNotPaidBillForm"
+            resultType="com.jayud.finance.vo.ReceiveNotPaidBillVO">
         select * from (
         SELECT DISTINCT
         orc.main_order_no orderNo,
@@ -168,34 +177,42 @@
         pb.`name` bizCodeDesc,
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         c.`name` unitAccount,
-<!--        <choose>-->
-<!--            <when test="form.cmd == 'zgys'">-->
-<!--                <include refid="TmsGoods"/>-->
-<!--                ot.vehicle_size vehicleSize,-->
-<!--                (select sum(ota.plate_amount) from order_take_adr ota where ota.order_no = ot.order_no) pieceNum,-->
-<!--                (select sum(ota.weight) from order_take_adr ota where ota.order_no = ot.order_no)	weight,-->
-<!--                concat( vi.plate_number,',', vi.hk_number ) licensePlate,-->
-<!--            </when>-->
-<!--            <otherwise>-->
-<!--                <include refid="GoodsAndOrderAddress"/>-->
-<!--            </otherwise>-->
-<!--        </choose>-->
-        (SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' GROUP BY ot.order_no) goodsDesc,
-        (SELECT GROUP_CONCAT(concat( ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id
+        <!--        <choose>-->
+        <!--            <when test="form.cmd == 'zgys'">-->
+        <!--                <include refid="TmsGoods"/>-->
+        <!--                ot.vehicle_size vehicleSize,-->
+        <!--                (select sum(ota.plate_amount) from order_take_adr ota where ota.order_no = ot.order_no) pieceNum,-->
+        <!--                (select sum(ota.weight) from order_take_adr ota where ota.order_no = ot.order_no)	weight,-->
+        <!--                concat( vi.plate_number,',', vi.hk_number ) licensePlate,-->
+        <!--            </when>-->
+        <!--            <otherwise>-->
+        <!--                <include refid="GoodsAndOrderAddress"/>-->
+        <!--            </otherwise>-->
+        <!--        </choose>-->
+        (SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota WHERE ota.order_no = ot.order_no AND ota.opr_type =
+        '1' GROUP BY ot.order_no) goodsDesc,
+        (SELECT GROUP_CONCAT(concat( ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN
+        order_take_adr ota ON da.id = ota.delivery_id
         WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' GROUP BY ot.order_no) startAddress,
-        (SELECT GROUP_CONCAT(concat( ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id
+        (SELECT GROUP_CONCAT(concat( ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN
+        order_take_adr ota ON da.id = ota.delivery_id
         WHERE ota.order_no = ot.order_no AND ota.opr_type = '2' GROUP BY ot.order_no) endAddress,
-        ( SELECT GROUP_CONCAT( oc.yun_customs_no SEPARATOR ',' ) FROM order_customs oc WHERE oc.main_order_no = oi.order_no ) yunCustomsNo,
+        ( SELECT GROUP_CONCAT( oc.yun_customs_no SEPARATOR ',' ) FROM order_customs oc WHERE oc.main_order_no =
+        oi.order_no ) yunCustomsNo,
         cg.`name` costGenreName,
         ct.code_name costTypeName,
         ci.`name` costName,
-        (SELECT sum(rmb.amount) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'CNY' GROUP BY
+        (SELECT sum(rmb.amount) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'CNY' GROUP
+        BY
         rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) rmb,
-        (SELECT sum(rmb.amount) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'USD' GROUP BY
+        (SELECT sum(rmb.amount) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'USD' GROUP
+        BY
         rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) dollar,
-        (SELECT sum(rmb.amount) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'EUR' GROUP BY
+        (SELECT sum(rmb.amount) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'EUR' GROUP
+        BY
         rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) euro,
-        (SELECT sum(rmb.amount) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'HKD' GROUP BY
+        (SELECT sum(rmb.amount) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'HKD' GROUP
+        BY
         rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) hKDollar,
         (SELECT sum(rmb.change_amount) FROM order_receivable_cost rmb WHERE rmb.id = orc.id GROUP BY
         rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) localAmount,
@@ -209,12 +226,11 @@
         LEFT JOIN cost_genre cg ON orc.cost_genre_id = cg.id
         LEFT JOIN cost_type ct ON orc.cost_type_id = ct.id
         LEFT JOIN cost_info ci ON orc.cost_code = ci.id_code
-            LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
-            LEFT JOIN order_send_cars osc ON ot.order_no = osc.order_no
-            left join order_customs oc on oc.order_no = orc.order_no
-            left join driver_info di on di.id = osc.driver_info_id
-            left join vehicle_info vi on vi.id = di.vehicle_id
-            left join air_order ao on ao.order_no = orc.order_no
+        LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
+        LEFT JOIN order_send_cars osc ON ot.order_no = osc.order_no
+        left join order_customs oc on oc.order_no = orc.order_no
+        left join vehicle_info vi on vi.id = osc.vehicle_id
+        left join air_order ao on ao.order_no = orc.order_no
         WHERE
         orc.id NOT IN ( SELECT orbd.cost_id FROM order_receivable_bill_detail orbd )
         and (orc.is_bill != '2' and orc.is_bill!='save_confirm')
@@ -265,7 +281,7 @@
             and temp.createdTimeStr <![CDATA[>=]]> #{form.beginCreatedTimeStr}
         </if>
     </select>
-    <select id="getSBillOrderNum"  resultType="java.lang.Integer" >
+    <select id="getSBillOrderNum" resultType="java.lang.Integer">
       SELECT
 	    count( DISTINCT orbd.order_no ) billOrderNum
       FROM
@@ -276,7 +292,7 @@
         AND orb.unit_account = #{unitAccount}
         AND orb.sub_type = #{subType}
     </select>
-    <select id="getSAlreadyPaidAmount"  resultType="java.math.BigDecimal" >
+    <select id="getSAlreadyPaidAmount" resultType="java.math.BigDecimal">
       SELECT
 	    ifnull(sum(orbd.local_amount),0) billOrderNum
       FROM
@@ -287,7 +303,7 @@
         AND orb.unit_account = #{unitAccount}
         AND orb.sub_type = #{subType}
     </select>
-    <select id="getSBillNum"  resultType="java.lang.Integer" >
+    <select id="getSBillNum" resultType="java.lang.Integer">
       SELECT
 	    count( DISTINCT orbd.bill_no ) billOrderNum
       FROM
@@ -301,7 +317,8 @@
     <select id="findSheetHead" parameterType="java.util.List" resultType="com.jayud.finance.vo.SheetHeadVO">
         SELECT
         CONCAT( orc.cost_code, orc.currency_code ) NAME,
-        concat((select ci.name from cost_info ci where ci.id_code = orc.cost_code),'(',(select ci.currency_name from currency_info ci where ci.  currency_code = orc.currency_code),')') viewName,
+        concat((select ci.name from cost_info ci where ci.id_code = orc.cost_code),'(',(select ci.currency_name from
+        currency_info ci where ci. currency_code = orc.currency_code),')') viewName,
         sum( orc.amount )
         FROM
         order_receivable_cost orc
@@ -318,7 +335,8 @@
 
         SELECT
         concat('T',orc.currency_code) NAME,
-        concat('合计(',(select ci.currency_name from currency_info ci where ci.  currency_code = orc.currency_code),')') viewName,
+        concat('合计(',(select ci.currency_name from currency_info ci where ci. currency_code = orc.currency_code),')')
+        viewName,
         sum( orc.amount )
         FROM
         order_receivable_cost orc
@@ -378,14 +396,24 @@
         oi.order_no orderNo,
         orc.order_no subOrderNo,
         ci.`name` unitAccount,
-        ( SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' group by ot.order_no) goodsDesc,
-        ( SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' group by ot.order_no) startAddress,
-        ( SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '2' group by ot.order_no) endAddress,
-        (select concat(vi.plate_number,',',vi.hk_number) from order_send_cars osc left join order_transport ot on osc.order_no = ot.order_no left join driver_info di on di.id = osc.driver_info_id left join vehicle_info vi on vi.id = di.vehicle_id where ot.main_order_no = oi.order_no) licensePlate,
-        (select ot.vehicle_size from order_transport ot where ot.main_order_no = oi.order_no)  vehicleSize,
-        (select sum(ota.piece_amount) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1') pieceNum,
-        (select sum(ota.weight) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1') weight,
-        (select GROUP_CONCAT(oc.yun_customs_no,',') from order_customs oc where oc.main_order_no = oi.order_no) yunCustomsNo
+        ( SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota LEFT JOIN order_transport ot on ota.order_no =
+        ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' group by ot.order_no) goodsDesc,
+        ( SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN
+        order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where
+        ot.main_order_no = oi.order_no and ota.opr_type = '1' group by ot.order_no) startAddress,
+        ( SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN
+        order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where
+        ot.main_order_no = oi.order_no and ota.opr_type = '2' group by ot.order_no) endAddress,
+        (select concat(vi.plate_number,',',vi.hk_number) from order_send_cars osc left join order_transport ot on
+        osc.order_no = ot.order_no left join driver_info di on di.id = osc.driver_info_id left join vehicle_info vi on
+        vi.id = di.vehicle_id where ot.main_order_no = oi.order_no) licensePlate,
+        (select ot.vehicle_size from order_transport ot where ot.main_order_no = oi.order_no) vehicleSize,
+        (select sum(ota.piece_amount) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no
+        where ot.main_order_no = oi.order_no and ota.opr_type = '1') pieceNum,
+        (select sum(ota.weight) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where
+        ot.main_order_no = oi.order_no and ota.opr_type = '1') weight,
+        (select GROUP_CONCAT(oc.yun_customs_no,',') from order_customs oc where oc.main_order_no = oi.order_no)
+        yunCustomsNo
         FROM
         order_info oi
         left join order_receivable_cost orc on orc.main_order_no = oi.order_no
@@ -429,12 +457,12 @@
         <if test="cmd == 'ky'">
             air_order ao LEFT JOIN order_receivable_cost orc on ao.order_no = orc.order_no
         </if>
-            left join customer_info ci on ci.id_code = orc.customer_code
+        left join customer_info ci on ci.id_code = orc.customer_code
         WHERE
-            orc.id IN
-         <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
+        orc.id IN
+        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
             #{item}
-         </foreach>
+        </foreach>
     </select>
     <select id="findSaveConfirmData" parameterType="java.util.List" resultType="java.lang.Long">
         SELECT
@@ -462,8 +490,7 @@
     </select>
 
 
-
-    <select id="findReceiveBillByPage" resultType="com.jayud.finance.vo.OrderReceiveBillVO" >
+    <select id="findReceiveBillByPage" resultType="com.jayud.finance.vo.OrderReceiveBillVO">
         SELECT DISTINCT
         oi.legal_name legalName,
         oi.legal_entity_id legalEntityId,
@@ -472,8 +499,12 @@
         ifnull( orb.already_paid_amount, 0 ) alreadyPaidAmount,
         ifnull( orb.bill_order_num, 0 ) billOrderNum,
         ifnull( orb.bill_num, 0 ) billNum,
-        (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '1' and t1.status = '3' and t1.customer_code = orc.customer_code  and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidAmount,
-        (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '1' and t1.status = '3' and t1.customer_code = orc.customer_code and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidOrderNum
+        (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND
+        t1.is_sum_to_main = '1' and t1.status = '3' and t1.customer_code = orc.customer_code and t1.main_order_no in
+        (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidAmount,
+        (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND
+        t1.is_sum_to_main = '1' and t1.status = '3' and t1.customer_code = orc.customer_code and t1.main_order_no in
+        (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidOrderNum
         FROM
         order_receivable_cost orc
         left join customer_info ci on ci.id_code = orc.customer_code
@@ -495,28 +526,34 @@
             </foreach>
         </if>
     </select>
-    <select id="findReceiveSubBillByPage" resultType="com.jayud.finance.vo.OrderReceiveBillVO" >
+    <select id="findReceiveSubBillByPage" resultType="com.jayud.finance.vo.OrderReceiveBillVO">
         SELECT DISTINCT
-<!--        <if test="form.cmd == 'zgys'">-->
-<!--            ot.legal_name legalName,-->
-<!--            (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where (t1.is_bill != '2' and t1.is_bill!='save_confirm') AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='zgys' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_transport o1 where o1.legal_name = ot.legal_name)) notPaidAmount,-->
-<!--            (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where  (t1.is_bill != '2' and t1.is_bill!='save_confirm') AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='zgys' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_transport o1 where o1.legal_name = ot.legal_name)) notPaidOrderNum,-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'bg'">-->
-<!--            oc.legal_name legalName,-->
-<!--            (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where  (t1.is_bill != '2' and t1.is_bill!='save_confirm') AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='bg' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_customs o1 where o1.legal_name = oc.legal_name)) notPaidAmount,-->
-<!--            (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where  (t1.is_bill != '2' and t1.is_bill!='save_confirm') AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='bg' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_customs o1 where o1.legal_name = oc.legal_name)) notPaidOrderNum,-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'ky'">-->
-<!--            le.legal_name legalName,-->
-<!--            (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where  (t1.is_bill != '2' and t1.is_bill != 'save_confirm') AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_entity_id = ao.legal_entity_id)) notPaidAmount,-->
-<!--            (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where  (t1.is_bill != '2' and t1.is_bill != 'save_confirm') AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_entity_id = ao.legal_entity_id)) notPaidOrderNum,-->
-<!--        </if>-->
+        <!--        <if test="form.cmd == 'zgys'">-->
+        <!--            ot.legal_name legalName,-->
+        <!--            (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where (t1.is_bill != '2' and t1.is_bill!='save_confirm') AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='zgys' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_transport o1 where o1.legal_name = ot.legal_name)) notPaidAmount,-->
+        <!--            (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where  (t1.is_bill != '2' and t1.is_bill!='save_confirm') AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='zgys' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_transport o1 where o1.legal_name = ot.legal_name)) notPaidOrderNum,-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'bg'">-->
+        <!--            oc.legal_name legalName,-->
+        <!--            (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where  (t1.is_bill != '2' and t1.is_bill!='save_confirm') AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='bg' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_customs o1 where o1.legal_name = oc.legal_name)) notPaidAmount,-->
+        <!--            (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where  (t1.is_bill != '2' and t1.is_bill!='save_confirm') AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='bg' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from order_customs o1 where o1.legal_name = oc.legal_name)) notPaidOrderNum,-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'ky'">-->
+        <!--            le.legal_name legalName,-->
+        <!--            (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where  (t1.is_bill != '2' and t1.is_bill != 'save_confirm') AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_entity_id = ao.legal_entity_id)) notPaidAmount,-->
+        <!--            (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where  (t1.is_bill != '2' and t1.is_bill != 'save_confirm') AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_entity_id = ao.legal_entity_id)) notPaidOrderNum,-->
+        <!--        </if>-->
         <if test="form.cmd != null and form.cmd != ''">
             le.legal_name legalName,
             sub.legal_entity_id legalEntityId,
-            (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type=#{form.cmd} and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from  ${dynamicSqlParam.table}  o1 where o1.legal_entity_id = sub.legal_entity_id)) notPaidAmount,
-            (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type=#{form.cmd}  and t1.customer_code = orc.customer_code and t1.order_no in (select o1.order_no from  ${dynamicSqlParam.table} o1 where o1.legal_entity_id = sub.legal_entity_id)) notPaidOrderNum,
+            (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND
+            t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type=#{form.cmd} and t1.customer_code =
+            orc.customer_code and t1.order_no in (select o1.order_no from ${dynamicSqlParam.table} o1 where
+            o1.legal_entity_id = sub.legal_entity_id)) notPaidAmount,
+            (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND
+            t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type=#{form.cmd} and t1.customer_code =
+            orc.customer_code and t1.order_no in (select o1.order_no from ${dynamicSqlParam.table} o1 where
+            o1.legal_entity_id = sub.legal_entity_id)) notPaidOrderNum,
         </if>
         ci.`name` unitAccount,
         orc.customer_code unitCode,
@@ -547,64 +584,64 @@
             </if>
         </if>
 
-<!--        <if test="form.cmd == 'zgys'">-->
-<!--            left join order_transport ot on ot.order_no = orc.order_no-->
-<!--            left join order_receivable_bill orb on orb.legal_name = ot.legal_name-->
-<!--            and orb.unit_account = orc.customer_name-->
-<!--            where orc.is_sum_to_main = 0 and orc.sub_type = 'zgys' and orc.status = '3'-->
-<!--            <if test="form.unitAccount != null and form.unitAccount != ''">-->
-<!--                and ci.`name` like concat('%',#{form.unitAccount},'%')-->
-<!--            </if>-->
-<!--            <if test="form.legalName != null and form.legalName != ''">-->
-<!--                and ot.legal_name like concat('%',#{form.legalName},'%')-->
-<!--            </if>-->
+        <!--        <if test="form.cmd == 'zgys'">-->
+        <!--            left join order_transport ot on ot.order_no = orc.order_no-->
+        <!--            left join order_receivable_bill orb on orb.legal_name = ot.legal_name-->
+        <!--            and orb.unit_account = orc.customer_name-->
+        <!--            where orc.is_sum_to_main = 0 and orc.sub_type = 'zgys' and orc.status = '3'-->
+        <!--            <if test="form.unitAccount != null and form.unitAccount != ''">-->
+        <!--                and ci.`name` like concat('%',#{form.unitAccount},'%')-->
+        <!--            </if>-->
+        <!--            <if test="form.legalName != null and form.legalName != ''">-->
+        <!--                and ot.legal_name like concat('%',#{form.legalName},'%')-->
+        <!--            </if>-->
 
-<!--            <if test="legalIds != null">-->
-<!--                and ot.`legal_entity_id` in-->
-<!--                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
-<!--                    #{legalId}-->
-<!--                </foreach>-->
-<!--            </if>-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'bg'">-->
-<!--            left join order_customs oc on oc.order_no = orc.order_no-->
-<!--            left join order_receivable_bill orb on orb.legal_name = oc.legal_name-->
-<!--            and orb.unit_account = orc.customer_name-->
-<!--            where orc.is_sum_to_main = 0 and orc.sub_type = 'bg' and orc.status = '3'-->
-<!--            <if test="form.unitAccount != null and form.unitAccount != ''">-->
-<!--                and ci.`name` like concat('%',#{form.unitAccount},'%')-->
-<!--            </if>-->
-<!--            <if test="form.legalName != null and form.legalName != ''">-->
-<!--                and oc.legal_name like concat('%',#{form.legalName},'%')-->
-<!--            </if>-->
+        <!--            <if test="legalIds != null">-->
+        <!--                and ot.`legal_entity_id` in-->
+        <!--                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
+        <!--                    #{legalId}-->
+        <!--                </foreach>-->
+        <!--            </if>-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'bg'">-->
+        <!--            left join order_customs oc on oc.order_no = orc.order_no-->
+        <!--            left join order_receivable_bill orb on orb.legal_name = oc.legal_name-->
+        <!--            and orb.unit_account = orc.customer_name-->
+        <!--            where orc.is_sum_to_main = 0 and orc.sub_type = 'bg' and orc.status = '3'-->
+        <!--            <if test="form.unitAccount != null and form.unitAccount != ''">-->
+        <!--                and ci.`name` like concat('%',#{form.unitAccount},'%')-->
+        <!--            </if>-->
+        <!--            <if test="form.legalName != null and form.legalName != ''">-->
+        <!--                and oc.legal_name like concat('%',#{form.legalName},'%')-->
+        <!--            </if>-->
 
-<!--            <if test="legalIds != null">-->
-<!--                and oc.`legal_entity_id` in-->
-<!--                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
-<!--                    #{legalId}-->
-<!--                </foreach>-->
-<!--            </if>-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'ky'">-->
-<!--            left join air_order ao on ao.order_no = orc.order_no-->
-<!--            left join legal_entity le on ao.legal_entity_id=le.id-->
-<!--            left join order_receivable_bill orb on orb.legal_name = le.legal_name-->
-<!--            and orb.unit_account = orc.customer_name-->
-<!--            where orc.is_sum_to_main = 0 and orc.sub_type = 'ky' and orc.status = '3'-->
-<!--            <if test="form.unitAccount != null and form.unitAccount != ''">-->
-<!--                and ci.`name` like concat('%',#{form.unitAccount},'%')-->
-<!--            </if>-->
-<!--            <if test="form.legalName != null and form.legalName != ''">-->
-<!--                and le.legal_name like concat('%',#{form.legalName},'%')-->
-<!--            </if>-->
+        <!--            <if test="legalIds != null">-->
+        <!--                and oc.`legal_entity_id` in-->
+        <!--                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
+        <!--                    #{legalId}-->
+        <!--                </foreach>-->
+        <!--            </if>-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'ky'">-->
+        <!--            left join air_order ao on ao.order_no = orc.order_no-->
+        <!--            left join legal_entity le on ao.legal_entity_id=le.id-->
+        <!--            left join order_receivable_bill orb on orb.legal_name = le.legal_name-->
+        <!--            and orb.unit_account = orc.customer_name-->
+        <!--            where orc.is_sum_to_main = 0 and orc.sub_type = 'ky' and orc.status = '3'-->
+        <!--            <if test="form.unitAccount != null and form.unitAccount != ''">-->
+        <!--                and ci.`name` like concat('%',#{form.unitAccount},'%')-->
+        <!--            </if>-->
+        <!--            <if test="form.legalName != null and form.legalName != ''">-->
+        <!--                and le.legal_name like concat('%',#{form.legalName},'%')-->
+        <!--            </if>-->
 
-<!--            <if test="legalIds != null">-->
-<!--                and ao.`legal_entity_id` in-->
-<!--                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
-<!--                    #{legalId}-->
-<!--                </foreach>-->
-<!--            </if>-->
-<!--        </if>-->
+        <!--            <if test="legalIds != null">-->
+        <!--                and ao.`legal_entity_id` in-->
+        <!--                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
+        <!--                    #{legalId}-->
+        <!--                </foreach>-->
+        <!--            </if>-->
+        <!--        </if>-->
 
     </select>
 </mapper>

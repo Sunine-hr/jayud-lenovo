@@ -190,8 +190,7 @@
         LEFT JOIN product_biz pb ON oi.biz_code = pb.id_code
         LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
         LEFT JOIN order_send_cars osc ON ot.order_no = osc.transport_no
-        left join driver_info di on di.id = osc.driver_info_id
-        left join vehicle_info vi on vi.id = di.vehicle_id
+        left join vehicle_info vi on vi.id = osc.vehicle_id
         LEFT JOIN cost_genre cg ON opc.cost_genre_id = cg.id
         LEFT JOIN cost_type ct ON opc.cost_type_id = ct.id
         LEFT JOIN cost_info ci ON opc.cost_code = ci.id_code

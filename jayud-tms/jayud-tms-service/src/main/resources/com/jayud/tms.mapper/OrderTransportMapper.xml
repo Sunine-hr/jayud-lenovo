@@ -119,7 +119,7 @@
           LEFT JOIN warehouse_info wi
             ON ot.warehouse_info_id = wi.`id`
 		  left join driver_info di on di.id = osc.driver_info_id
-		  left join vehicle_info vi on vi.id = di.vehicle_id
+		  left join vehicle_info vi on vi.id = osc.vehicle_id
 		  LEFT JOIN supplier_info si ON si.`id` = vi.supplier_id
           where ot.`main_order_no` = #{mainOrderNo}
     </select>

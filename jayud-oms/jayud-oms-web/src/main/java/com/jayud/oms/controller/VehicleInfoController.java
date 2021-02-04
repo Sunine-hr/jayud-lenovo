@@ -7,6 +7,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.BeanUtils;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.model.bo.AddVehicleInfoForm;
 import com.jayud.oms.model.bo.QueryVehicleInfoForm;
 import com.jayud.oms.model.enums.StatusEnum;
@@ -52,6 +53,8 @@ public class VehicleInfoController {
     private ISupplierInfoService supplierInfoService;
     @Autowired
     private IDriverInfoService driverInfoService;
+    @Autowired
+    private FileClient fileClient;
 
     @ApiOperation(value = "分页查询车辆信息")
     @PostMapping(value = "/findVehicleInfoByPage")
@@ -59,12 +62,15 @@ public class VehicleInfoController {
         IPage<VehicleInfoVO> iPage = vehicleInfoService.findVehicleInfoByPage(form);
         //根据司机id司机批量查询司机名称
         List<VehicleInfoVO> vehicleInfoVOS = iPage.getRecords();
+        Object url = fileClient.getBaseUrl().getData();
+
         for (VehicleInfoVO vehicleInfoVO : vehicleInfoVOS) {
             List<Long> driverIds = vehicleInfoVO.getDriverIds();
             if (!CollectionUtils.isEmpty(driverIds)) {
                 vehicleInfoVO.setDriverNames(this.driverInfoService.assemblyDriverName(driverIds));
             }
-
+            //附件信息
+            vehicleInfoVO.setFileViews(com.jayud.common.utils.StringUtils.getFileViews(vehicleInfoVO.getFiles(), vehicleInfoVO.getFileName(), url.toString()));
         }
 
         //供应商待审核状态，无法进行编辑

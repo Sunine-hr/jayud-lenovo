@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.common.utils.FileView;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.enums.VehicleTypeEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -71,6 +73,12 @@ public class VehicleInfoVO {
     @ApiModelProperty(value = "附件,多个时用逗号分隔")
     private String files;
 
+    @ApiModelProperty(value = "附件名称,多个时用逗号分隔")
+    private String fileName;
+
+    @ApiModelProperty(value = "附件集合")
+    private List<FileView> fileViews = new ArrayList<>();
+
     @ApiModelProperty(value = "启用状态0-禁用，1-启用")
     private String status;
 
@@ -126,4 +134,5 @@ public class VehicleInfoVO {
         }
         this.driverIds = driverIds;
     }
+
 }

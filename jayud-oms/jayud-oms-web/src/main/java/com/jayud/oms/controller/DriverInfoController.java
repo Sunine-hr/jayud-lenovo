@@ -119,7 +119,7 @@ public class DriverInfoController {
     }
 
 
-    @ApiOperation(value = "查询审核通过的司机")
+    @ApiOperation(value = "车辆管理关联司机:查询审核通过的司机")
     @PostMapping(value = "/getEnableDriverInfo")
     public CommonResult<List<DriverInfo>> getEnableDriverInfo() {
         return CommonResult.success(this.driverInfoService.getEnableDriverInfo());

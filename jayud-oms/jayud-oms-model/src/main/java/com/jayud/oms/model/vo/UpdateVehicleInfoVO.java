@@ -1,6 +1,7 @@
 package com.jayud.oms.model.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.common.utils.FileView;
 import com.jayud.oms.model.enums.VehicleTypeEnum;
 import com.jayud.oms.model.po.DriverInfo;
 import io.swagger.annotations.ApiModelProperty;
@@ -59,6 +60,12 @@ public class UpdateVehicleInfoVO {
     @ApiModelProperty(value = "附件,多个时用逗号分隔")
     private String files;
 
+    @ApiModelProperty(value = "附件名称,多个时用逗号分隔")
+    private String fileName;
+
+    @ApiModelProperty(value = "附件集合")
+    private List<FileView> fileViews = new ArrayList<>();
+
     @ApiModelProperty(value = "启用状态0-禁用，1-启用")
     private String status;
 
@@ -92,4 +99,5 @@ public class UpdateVehicleInfoVO {
         }
         this.driverIds = driverIds;
     }
+
 }

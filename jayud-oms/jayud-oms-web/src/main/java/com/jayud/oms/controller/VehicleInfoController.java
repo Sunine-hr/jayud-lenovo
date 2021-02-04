@@ -145,6 +145,8 @@ public class VehicleInfoController {
         UpdateVehicleInfoVO vehicleInfoVO = ConvertUtil.convert(vehicleInfo, UpdateVehicleInfoVO.class);
         Collection<DriverInfo> driverInfos = this.driverInfoService.listByIds(vehicleInfoVO.getDriverIds());
         vehicleInfoVO.setDriverInfos(new ArrayList<>(driverInfos));
+        Object url = fileClient.getBaseUrl().getData();
+        vehicleInfoVO.setFileViews(com.jayud.common.utils.StringUtils.getFileViews(vehicleInfo.getFiles(), vehicleInfo.getFileName(), url.toString()));
 
         return CommonResult.success(vehicleInfoVO);
     }

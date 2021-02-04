@@ -319,6 +319,21 @@ public class OrderInTransportController {
     }
 
     /**
+     * 通关前复核页面详情信息
+     * TODO 用了oms模块的出口报关接口
+     */
+    @ApiOperation(value = "通关前复核详情信息 mainOrderNo=主订单号")
+    @PostMapping(value = "/reviewDetailsBeforePassing")
+    public CommonResult reviewDetailsBeforePassing(@RequestBody Map<String, Object> map) {
+        String mainOrderNo = MapUtil.getStr(map, "mainOrderNo");
+        if (StringUtils.isEmpty(mainOrderNo)) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        return CommonResult.success(this.omsClient.initGoCustomsAudit(mainOrderNo).getData());
+    }
+
+
+    /**
      * 当选择的是虚拟仓时系统自动生成入仓出仓数据,即从车辆通关直接到车辆派送
      *
      * @param form

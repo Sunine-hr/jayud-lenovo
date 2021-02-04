@@ -22,8 +22,8 @@ public class QueryDriverInfoForm extends BasePageForm {
     @ApiModelProperty(value = "香港/大陆电话")
     private String phone;
 
-    @ApiModelProperty(value = "车牌号")
-    private String carNumber;
+//    @ApiModelProperty(value = "车牌号")
+//    private String carNumber;
 
     @ApiModelProperty(value = "状态 0禁用 1启用")
     private String status;

@@ -36,8 +36,8 @@ public class DriverInfoVO {
     @ApiModelProperty(value = "司机姓名")
     private String name;
 
-    @ApiModelProperty(value = "是否主司机(0否 1是)")
-    private String isMain;
+//    @ApiModelProperty(value = "是否主司机(0否 1是)")
+//    private String isMain;
 
     @ApiModelProperty(value = "香港电话")
     private String hkPhone;
@@ -45,11 +45,11 @@ public class DriverInfoVO {
     @ApiModelProperty(value = "大陆电话")
     private String phone;
 
-    @ApiModelProperty(value = "车牌号id")
-    private Long vehicleId;
-
-    @ApiModelProperty(value = "车牌号")
-    private String carNumber;
+//    @ApiModelProperty(value = "车牌号id")
+//    private Long vehicleId;
+//
+//    @ApiModelProperty(value = "车牌号")
+//    private String carNumber;
 
     @ApiModelProperty(value = "身份证号")
     private String idNo;
@@ -57,11 +57,11 @@ public class DriverInfoVO {
     @ApiModelProperty(value = "驾驶证")
     private String drivingNo;
 
-    @ApiModelProperty(value = "供应商id")
-    private Long supplierId;
-
-    @ApiModelProperty(value = "供应商名字")
-    private String supplierName;
+//    @ApiModelProperty(value = "供应商id")
+//    private Long supplierId;
+//
+//    @ApiModelProperty(value = "供应商名字")
+//    private String supplierName;
 
     @ApiModelProperty(value = "启用状态0-禁用，1-启用")
     private String status;
@@ -104,13 +104,13 @@ public class DriverInfoVO {
     /**
      * 拼接车牌号
      */
-    public void splicingPlateNumber() {
-        StringBuilder sb = new StringBuilder();
-        if (list.size() == 2) {
-            this.carNumber = sb.append(list.get(0)).append("/").append(list.get(1)).toString();
-        } else {
-            this.carNumber = sb.append(list.get(0)).toString();
-        }
-
-    }
+//    public void splicingPlateNumber() {
+//        StringBuilder sb = new StringBuilder();
+//        if (list.size() == 2) {
+//            this.carNumber = sb.append(list.get(0)).append("/").append(list.get(1)).toString();
+//        } else {
+//            this.carNumber = sb.append(list.get(0)).toString();
+//        }
+//
+//    }
 }

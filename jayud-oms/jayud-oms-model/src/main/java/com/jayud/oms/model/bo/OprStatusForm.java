@@ -1,9 +1,13 @@
 package com.jayud.oms.model.bo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.common.CommonResult;
 import com.jayud.common.enums.OrderAttachmentTypeEnum;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.FileView;
 import com.jayud.oms.model.po.OrderAttachment;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -69,6 +73,27 @@ public class OprStatusForm {
 
     @ApiModelProperty(value = "报关单附件")
     private List<FileView> customsOrderAttachment = new ArrayList<>();
+
+    /**
+     * 外部报关参数校验
+     */
+    public void checkExternalCustomsDeclarationParam(){
+        if (this.mainOrderId == null || StringUtil.isNullOrEmpty(this.operatorUser) ||
+                StringUtil.isNullOrEmpty(this.encode)) {
+            throw new JayudBizException(ResultEnum.PARAM_ERROR);
+        }
+        //六联单号必须为13位的纯数字
+        String encode = this.encode;
+        if (!(encode.matches("[0-9]{1,}") && encode.length() == 13)) {
+            throw new JayudBizException(ResultEnum.ENCODE_PURE_NUMBERS);
+        }
+        if (this.manifestAttachment.size()==0) {
+            throw new JayudBizException(400,"上传舱单文件");
+        }
+        if (this.customsOrderAttachment.size()==0) {
+            throw new JayudBizException(400,"上传报关文件");
+        }
+    }
 
     /**
      * 组合附件

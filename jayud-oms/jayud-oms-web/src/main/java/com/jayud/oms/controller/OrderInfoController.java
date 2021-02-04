@@ -250,15 +250,7 @@ public class OrderInfoController {
     @ApiOperation(value = "外部报关放行")
     @PostMapping(value = "/outCustomsRelease")
     public CommonResult outCustomsRelease(@RequestBody OprStatusForm form) {
-        if (form.getMainOrderId() == null || StringUtil.isNullOrEmpty(form.getOperatorUser()) ||
-                StringUtil.isNullOrEmpty(form.getEncode())) {
-            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
-        }
-        //六联单号必须为13位的纯数字
-        String encode = form.getEncode();
-        if (!(encode.matches("[0-9]{1,}") && encode.length() == 13)) {
-            return CommonResult.error(ResultEnum.ENCODE_PURE_NUMBERS);
-        }
+        form.checkExternalCustomsDeclarationParam();
         //外部报关放行:1.对主订单放行  2.随时可操作  3.没有出口报关的中港运输的单才可进行外部报关放行,有出口报关的就进行报关模块的报关放行
         //外部报关放行不体现在流程节点中
         AuditInfo auditInfo = new AuditInfo();
@@ -292,8 +284,8 @@ public class OrderInfoController {
                 , new OrderAttachment().setStatus(StatusEnum.DISABLE.getCode()));
 
         Map<String, List<FileView>> attachment = form.assemblyAttachment();
-        List<OrderAttachment> list=new ArrayList<>();
-        attachment.forEach((k,v)->{
+        List<OrderAttachment> list = new ArrayList<>();
+        attachment.forEach((k, v) -> {
             OrderAttachment orderAttachment = new OrderAttachment().setFileName(StringUtils.getFileNameStr(v))
                     .setFilePath(StringUtils.getFileStr(v))
                     .setMainOrderNo(tmp.getOrderNo()).setStatus(StatusEnum.ENABLE.getCode())
@@ -314,6 +306,7 @@ public class OrderInfoController {
     @PostMapping(value = "/initGoCustomsAudit")
     public CommonResult<InitGoCustomsAuditVO> initGoCustomsAudit(@RequestBody @Valid InitGoCustomsAuditForm form) {
         InitGoCustomsAuditVO initGoCustomsAuditVO = orderInfoService.initGoCustomsAudit(form);
+        initGoCustomsAuditVO.setGoodsInfo(form.getGoodsInfo());
         return CommonResult.success(initGoCustomsAuditVO);
     }
 

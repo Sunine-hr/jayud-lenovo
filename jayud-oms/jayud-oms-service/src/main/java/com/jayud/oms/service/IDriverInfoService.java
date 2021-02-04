@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.vo.DriverInfoLinkVO;
 import com.jayud.oms.model.vo.DriverInfoVO;
 
+import java.util.List;
+
 /**
  * <p>
  * 供应商对应司机信息 服务类
@@ -19,6 +21,7 @@ public interface IDriverInfoService extends IService<DriverInfo> {
 
     /**
      * 分页查询司机信息
+     *
      * @param form
      * @return
      */
@@ -26,6 +29,7 @@ public interface IDriverInfoService extends IService<DriverInfo> {
 
     /**
      * 新增编辑司机信息
+     *
      * @param driverInfo
      * @return
      */
@@ -37,6 +41,7 @@ public interface IDriverInfoService extends IService<DriverInfo> {
 
     /**
      * 司机下拉框联动车辆供应商，大陆车牌，香港车牌，司机电话
+     *
      * @param driverId
      * @return
      */
@@ -45,8 +50,19 @@ public interface IDriverInfoService extends IService<DriverInfo> {
 
     /**
      * 根据司机大陆手机查询用户
+     *
      * @param phone
      * @return
      */
     DriverInfo getByPhone(String phone);
+
+    /**
+     * 查询启用的司机
+     */
+    List<DriverInfo> getEnableDriverInfo();
+
+    /**
+     * 根据司机id集合拼装司机名称
+     */
+    public String assemblyDriverName(List<Long> ids);
 }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.oms.model.bo.QueryVehicleInfoForm;
 import com.jayud.oms.model.po.VehicleInfo;
+import com.jayud.oms.model.vo.VehicleDetailsVO;
 import com.jayud.oms.model.vo.VehicleInfoVO;
 import com.jayud.oms.model.vo.VehicleSizeInfoVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -30,6 +31,7 @@ public interface VehicleInfoMapper extends BaseMapper<VehicleInfo> {
 
     /**
      * 根据司机查询车辆信息
+     *
      * @param driverName
      * @return
      */
@@ -37,8 +39,16 @@ public interface VehicleInfoMapper extends BaseMapper<VehicleInfo> {
 
     /**
      * 获取所有的车型尺寸
+     *
      * @return
      */
     List<VehicleSizeInfoVO> findVehicleSize();
+
+    /**
+     * 获取所有的车型尺寸
+     *
+     * @return
+     */
+    VehicleDetailsVO getVehicleDetailsById(@Param("vehicleId") Long vehicleId);
 }
 

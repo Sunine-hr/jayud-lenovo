@@ -1,13 +1,12 @@
-package com.jayud.oms.model.bo;
+package com.jayud.oms.model.vo;
 
-import com.jayud.common.utils.FileView;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.oms.model.enums.VehicleTypeEnum;
 import com.jayud.oms.model.po.DriverInfo;
-import com.jayud.oms.model.vo.DriverInfoVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,22 +19,20 @@ import java.util.List;
  * @since 2020-11-04
  */
 @Data
-public class AddVehicleInfoForm {
+public class UpdateVehicleInfoVO {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "主键ID,修改时必传")
+    @ApiModelProperty(value = "主键")
     private Long id;
 
     @ApiModelProperty(value = "大陆车牌")
-    @NotEmpty(message = "plateNumber is required")
     private String plateNumber;
 
     @ApiModelProperty(value = "香港车牌")
     private String hkNumber;
 
     @ApiModelProperty(value = "供应商id")
-    @NotNull(message = "supplierId is required")
     private Long supplierId;
 
     @ApiModelProperty(value = "牌头公司")
@@ -45,8 +42,6 @@ public class AddVehicleInfoForm {
     private String ptFax;
 
     @ApiModelProperty(value = "车辆类型(1吨车 2柜车)")
-    @NotNull(message = "carType is required")
-//    @Pattern(regexp = "1|2",message = "carType requires '1' or '2' only")
     private Integer carType;
 
     @ApiModelProperty(value = "牌头电话")
@@ -61,11 +56,11 @@ public class AddVehicleInfoForm {
     @ApiModelProperty(value = "吉车重量")
     private String weight;
 
-//    @ApiModelProperty(value = "附件,多个时用逗号分隔")
-//    private String files;
+    @ApiModelProperty(value = "附件,多个时用逗号分隔")
+    private String files;
 
-    @ApiModelProperty(value = "附件地址集合")
-    private List<FileView> fileViews = new ArrayList<>();
+    @ApiModelProperty(value = "启用状态0-禁用，1-启用")
+    private String status;
 
     @ApiModelProperty(value = "寮步密码")
     private String steppingCode;
@@ -76,12 +71,25 @@ public class AddVehicleInfoForm {
     @ApiModelProperty(value = "车辆吨位")
     private String vehicleTonnage;
 
-    @ApiModelProperty(value = "司机对象")
-    @NotNull(message = "需要关联司机")
-    private List<AddDriverInfoForm> driverInfos;
+    @ApiModelProperty(value = "司机id(多个用,隔开)")
+    private String driverInfoIds;
+
+    @ApiModelProperty(value = "司机名称(多个用,隔开)")
+    private List<DriverInfo> driverInfos;
+
+    @ApiModelProperty(value = "司机id集合")
+    private List<Long> driverIds;
 
     @ApiModelProperty(value = "主司机id")
-    @NotNull(message = "请选择主司机")
     private Long mainDriverId;
 
+
+    public void setDriverInfoIds(String driverInfoIds) {
+        this.driverInfoIds = driverInfoIds;
+        List<Long> driverIds = new ArrayList<>();
+        for (String driverInfoId : driverInfoIds.split(",")) {
+            driverIds.add(Long.valueOf(driverInfoId));
+        }
+        this.driverIds = driverIds;
+    }
 }

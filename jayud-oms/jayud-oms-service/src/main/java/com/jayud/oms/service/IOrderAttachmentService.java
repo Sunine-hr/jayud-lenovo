@@ -19,4 +19,9 @@ public interface IOrderAttachmentService extends IService<OrderAttachment> {
      * 根据主订单和描述修改附件信息
      */
     public boolean update(String mainOrderNo, List<String> remarks, OrderAttachment orderAttachment);
+
+    /**
+     * 根据订单号和描述信息集合获取附件
+     */
+    public List<OrderAttachment> getByMainOrderNoAndRemarks(String mainOrderNo,List<String> remarksList);
 }

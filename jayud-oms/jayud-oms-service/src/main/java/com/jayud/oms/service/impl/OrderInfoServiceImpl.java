@@ -50,61 +50,47 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Autowired
     RedisUtils redisUtils;
-
     @Autowired
     IProductBizService productBizService;
-
     @Autowired
     IOrderPaymentCostService paymentCostService;
-
     @Autowired
     IOrderReceivableCostService receivableCostService;
-
     @Autowired
     IOrderStatusService orderStatusService;
-
     @Autowired
     ILogisticsTrackService logisticsTrackService;
-
     @Autowired
     ICurrencyInfoService currencyInfoService;
-
     @Autowired
     ICostInfoService costInfoService;
-
     @Autowired
     CustomsClient customsClient;
-
     @Autowired
     TmsClient tmsClient;
-
     @Autowired
     ICostTypeService costTypeService;
-
     @Autowired
     FileClient fileClient;
-
     @Autowired
     ICustomerInfoService customerInfoService;
-
     @Autowired
     private FreightAirClient freightAirClient;
-
     @Autowired
     private MsgClient msgClient;
     @Autowired
     private ISupplierInfoService supplierInfoService;
     @Autowired
     private IAuditInfoService auditInfoService;
+    @Autowired
+    private IServiceOrderService serviceOrderService;
+    @Autowired
+    private OauthClient oauthClient;
+    @Autowired
+    private IOrderAttachmentService orderAttachmentService;
 
     private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(),
             SubOrderSignEnum.KY.getSignOne(), SubOrderSignEnum.BG.getSignOne()};
-
-    @Autowired
-    private IServiceOrderService serviceOrderService;
-
-    @Autowired
-    private OauthClient oauthClient;
 
     @Override
     public String oprMainOrder(InputMainOrderForm form) {
@@ -936,13 +922,49 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public InitGoCustomsAuditVO initGoCustomsAudit(InitGoCustomsAuditForm form) {
         InitGoCustomsAuditVO initGoCustomsAuditVO = new InitGoCustomsAuditVO();
+        //查询主订单信息
+        OrderInfo orderInfo = this.getById(form.getOrderNo());
+
         String prePath = fileClient.getBaseUrl().getData().toString();
-        if (form.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode())) {//出口报关
+        if (orderInfo.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode())) {//出口报关
             initGoCustomsAuditVO = baseMapper.initGoCustomsAudit1(form);
+            //内部报关附件
+            //查询报关六联单号附件
+            List<FileView> encodePics = this.customsClient.getEncodePicByMainOrderNo(form.getOrderNo()).getData();
+
+            String[] statusList = {OrderStatusEnum.CUSTOMS_C_9.getCode(), OrderStatusEnum.CUSTOMS_C_10.getCode()};
+            for (int i = 0; i < statusList.length; i++) {
+                String status = statusList[i];
+                List<LogisticsTrack> logisticsTracks = this.logisticsTrackService.getByCondition(new LogisticsTrack()
+                        .setMainOrderId(orderInfo.getId()).setStatus(status));
+                if (CollectionUtil.isEmpty(logisticsTracks)) {
+                    continue;
+                }
+                LogisticsTrack logisticsTrack = logisticsTracks.get(logisticsTracks.size() - 1);
+                List<FileView> fileViews = StringUtils.getFileViews(logisticsTrack.getStatusPic()
+                        , logisticsTrack.getStatusPicName(), prePath);
+                switch (i) { //设置舱单文件
+                    case 0:
+                        initGoCustomsAuditVO.setManifestAttachment(fileViews);
+                        break;
+                    case 1: //设置报关文件
+                        initGoCustomsAuditVO.setCustomsOrderAttachment(fileViews);
+                        break;
+                }
+            }
+            initGoCustomsAuditVO.setEncodePics(encodePics);
+
         } else {//外部报关放行
             initGoCustomsAuditVO = baseMapper.initGoCustomsAudit2(form);
+            //外部报关附件
+            List<OrderAttachment> orderAttachments = orderAttachmentService.getByMainOrderNoAndRemarks(form.getOrderNo()
+                    , Arrays.asList(OrderAttachmentTypeEnum.SIX_SHEET_ATTACHMENT.getDesc(),
+                            OrderAttachmentTypeEnum.MANIFEST_ATTACHMENT.getDesc(),
+                            OrderAttachmentTypeEnum.CUSTOMS_ATTACHMENT.getDesc()));
+
+            initGoCustomsAuditVO.distributeFiles(orderAttachments, prePath);
         }
-        initGoCustomsAuditVO.setFileViewList(StringUtils.getFileViews(initGoCustomsAuditVO.getFileStr(), initGoCustomsAuditVO.getFileNameStr(), prePath));
+//        initGoCustomsAuditVO.setFileViewList(StringUtils.getFileViews(initGoCustomsAuditVO.getFileStr(), initGoCustomsAuditVO.getFileNameStr(), prePath));
         return initGoCustomsAuditVO;
     }
 

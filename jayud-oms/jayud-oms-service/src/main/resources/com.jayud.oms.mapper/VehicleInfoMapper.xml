@@ -4,28 +4,71 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.VehicleInfo">
-        <id column="id" property="id" />
-        <result column="plate_number" property="plateNumber" />
-        <result column="hk_number" property="hkNumber" />
-        <result column="supplier_id" property="supplierId" />
-        <result column="supplier_name" property="supplierName" />
-        <result column="pt_company" property="ptCompany" />
-        <result column="pt_fax" property="ptFax" />
-        <result column="car_type" property="carType" />
-        <result column="pt_phone" property="ptPhone" />
-        <result column="customs_code" property="customsCode" />
-        <result column="card_number" property="cardNumber" />
-        <result column="weight" property="weight" />
-        <result column="files" property="files" />
-        <result column="status" property="status" />
-        <result column="create_user" property="createUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
-        <result column="update_user" property="updateUser" />
-        <result column="stepping_code" property="steppingCode" />
-        <result column="enterprise_code" property="enterpriseCode" />
-        <result column="vehicle_tonnage" property="vehicleTonnage" />
-        <result column="file_name" property="fileName" />
+        <id column="id" property="id"/>
+        <result column="plate_number" property="plateNumber"/>
+        <result column="hk_number" property="hkNumber"/>
+        <result column="supplier_id" property="supplierId"/>
+        <result column="supplier_name" property="supplierName"/>
+        <result column="pt_company" property="ptCompany"/>
+        <result column="pt_fax" property="ptFax"/>
+        <result column="car_type" property="carType"/>
+        <result column="pt_phone" property="ptPhone"/>
+        <result column="customs_code" property="customsCode"/>
+        <result column="card_number" property="cardNumber"/>
+        <result column="weight" property="weight"/>
+        <result column="files" property="files"/>
+        <result column="status" property="status"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="stepping_code" property="steppingCode"/>
+        <result column="enterprise_code" property="enterpriseCode"/>
+        <result column="vehicle_tonnage" property="vehicleTonnage"/>
+        <result column="file_name" property="fileName"/>
+    </resultMap>
+
+    <!-- 车辆详情 -->
+    <resultMap id="VehicleDetailsMap" type="com.jayud.oms.model.vo.VehicleDetailsVO">
+        <id column="id" property="id"/>
+        <result column="plate_number" property="plateNumber"/>
+        <result column="hk_number" property="hkNumber"/>
+        <result column="supplier_id" property="supplierId"/>
+        <result column="supplier_name" property="supplierName"/>
+        <result column="pt_company" property="ptCompany"/>
+        <result column="pt_fax" property="ptFax"/>
+        <result column="car_type" property="carType"/>
+        <result column="pt_phone" property="ptPhone"/>
+        <result column="customs_code" property="customsCode"/>
+        <result column="card_number" property="cardNumber"/>
+        <result column="weight" property="weight"/>
+        <result column="files" property="files"/>
+        <result column="status" property="status"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="stepping_code" property="steppingCode"/>
+        <result column="enterprise_code" property="enterpriseCode"/>
+        <result column="vehicle_tonnage" property="vehicleTonnage"/>
+        <result column="file_name" property="fileName"/>
+        <result column="driver_info_ids" property="driverInfoIds"/>
+        <result column="main_driver_id" property="mainDriverId"/>
+        <association property="supplierInfoVO" javaType="com.jayud.oms.model.vo.SupplierInfoVO">
+            <id column="id" property="id"/>
+            <result column="supplier_code" property="supplierCode"/>
+<!--            <result column="product_classify_id" property="productClassifyIds"/>-->
+            <result column="supplier_ch_name" property="supplierChName"/>
+            <result column="contacts" property="contacts"/>
+            <result column="contact_number" property="contactNumber"/>
+            <result column="address" property="address"/>
+            <result column="settlement_type" property="settlementType"/>
+            <result column="payment_day" property="paymentDay"/>
+            <result column="tax_receipt" property="taxReceipt"/>
+            <result column="rate" property="rate"/>
+            <result column="buyer_id" property="buyerId"/>
+            <result column="status" property="status"/>
+        </association>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -66,7 +109,7 @@
                 and s.supplier_ch_name like concat('%',#{form.supplierName},'%')
             </if>
         </where>
-
+        order by id desc
     </select>
     <select id="findVehicleByDriverName" resultType="com.jayud.oms.model.vo.VehicleInfoVO">
         select
@@ -82,5 +125,14 @@
 
     <select id="findVehicleSize" resultType="com.jayud.oms.model.vo.VehicleSizeInfoVO">
         SELECT v.id,v.vehicle_size vehicleSize,v.vehicle_type vehicleType FROM vehicle_size_info v
+    </select>
+
+    <select id="getVehicleDetailsById" parameterType="java.lang.Long" resultMap="VehicleDetailsMap">
+        select
+        v.*,s.*
+        from
+        vehicle_info v
+        left join supplier_info s on v.supplier_id=s.id
+        where v.id=#{vehicleId}
     </select>
 </mapper>

@@ -5,6 +5,9 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.utils.FileView;
+import com.jayud.common.utils.StringUtils;
+import com.jayud.customs.feign.FileClient;
 import com.jayud.customs.model.bo.CustomsChangeStatusForm;
 import com.jayud.customs.model.bo.InputOrderCustomsForm;
 import com.jayud.customs.model.po.OrderCustoms;
@@ -21,10 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @RestController
@@ -33,9 +33,10 @@ public class ExternalApiController {
 
     @Autowired
     IOrderCustomsService orderCustomsService;
-
     @Autowired
     RedisUtils redisUtils;
+    @Autowired
+    private FileClient fileClient;
 
 
     @ApiOperation(value = "获取子订单信息")
@@ -111,6 +112,24 @@ public class ExternalApiController {
     @RequestMapping(value = "/api/getCustomsOrderByMainOrderNos")
     ApiResult getCustomsOrderByMainOrderNos(@RequestParam("mainOrderNos") List<String> mainOrderNos) {
         return ApiResult.ok(this.orderCustomsService.getCustomsOrderByMainOrderNos(mainOrderNos));
+    }
+
+    @ApiOperation(value = "根据主订单查询六联单号附件")
+    @RequestMapping(value = "/api/getEncodePicByMainOrderNo")
+    public ApiResult getEncodePicByMainOrderNo(@RequestParam("mainOrderNos") String mainOrderNo) {
+        List<OrderCustoms> orderCustoms = this.orderCustomsService.getCustomsOrderByMainOrderNos(Collections.singletonList(mainOrderNo));
+        List<FileView> fileViews = new ArrayList<>();
+        Object url = fileClient.getBaseUrl().getData();
+        for (int i = 1; i < orderCustoms.size(); i++) {
+            OrderCustoms orderCustom = orderCustoms.get(i);
+            if (!StringUtils.isEmpty(orderCustom.getEncodePicName())) {
+                List<FileView> files = StringUtils.getFileViews(orderCustom.getEncodePic(),
+                        orderCustom.getEncodePicName(), url.toString());
+                fileViews.addAll(files);
+            }
+        }
+
+        return ApiResult.ok(fileViews);
     }
 
 }

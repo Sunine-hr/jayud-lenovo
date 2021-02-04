@@ -1197,7 +1197,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         //报关
         if (SubOrderSignEnum.BG.getSignOne().equals(orderType)) {
-            InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
+            InputOrderTransportForm orderTransportForm = form.getOrderTransportForm() == null
+                    ? new InputOrderTransportForm() : form.getOrderTransportForm();
+
             if (OrderStatusEnum.CUSTOMS_C_1_1.getCode().equals(orderStatus)
                     && (orderTransportForm.getIsGoodsEdit() == null
                     || !orderTransportForm.getIsGoodsEdit())) {

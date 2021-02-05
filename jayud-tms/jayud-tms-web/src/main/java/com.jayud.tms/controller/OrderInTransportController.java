@@ -308,7 +308,7 @@ public class OrderInTransportController {
                     autoOprWarehouse(form);
                 }
             }
-            auditInfoForm.setAuditTypeDesc(CommonConstant.CAR_GO_CUSTOMS_DESC);
+            auditInfoForm.setAuditTypeDesc(OrderStatusEnum.getDesc(form.getStatus()));
         }
         omsClient.saveAuditInfo(auditInfoForm);
         boolean result = orderTransportService.saveOrUpdate(orderTransport);

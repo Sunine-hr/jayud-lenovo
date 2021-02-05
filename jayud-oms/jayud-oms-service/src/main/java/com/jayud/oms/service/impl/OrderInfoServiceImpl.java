@@ -923,7 +923,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     public InitGoCustomsAuditVO initGoCustomsAudit(InitGoCustomsAuditForm form) {
         InitGoCustomsAuditVO initGoCustomsAuditVO = new InitGoCustomsAuditVO();
         //查询主订单信息
-        OrderInfo orderInfo = this.getById(form.getOrderNo());
+        OrderInfo orderInfo = this.getByOrderNos(Collections.singletonList(form.getOrderNo())).get(0);
 
         String prePath = fileClient.getBaseUrl().getData().toString();
         if (orderInfo.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode())) {//出口报关

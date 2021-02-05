@@ -271,7 +271,7 @@ public class ExternalApiController {
         return ApiResult.ok(initComboxVOS);
     }
 
-    @ApiOperation(value = "初始化车辆下拉框")
+    @ApiOperation(value = "初始化车辆下拉框 (确认派车)")
     @RequestMapping(value = "api/initVehicleInfo")
     public ApiResult<VehicleInfoLinkVO> initVehicleInfo(@RequestParam("vehicleId") Long vehicleId) {
         VehicleDetailsVO vehicleDetailsVO = this.vehicleInfoService.getVehicleDetailsById(vehicleId);
@@ -280,8 +280,16 @@ public class ExternalApiController {
         tmp.setDriverInfos(vehicleDetailsVO.getDriverInfoVOS());
         tmp.setHkNumber(vehicleDetailsVO.getHkNumber());
         tmp.setSupplierName(vehicleDetailsVO.getSupplierInfoVO().getSupplierChName());
+        tmp.setMainDriverId(vehicleDetailsVO.getMainDriverId());
 
         return ApiResult.ok(tmp);
+    }
+
+    @ApiOperation(value = "根据车辆id获取车辆和供应商信息")
+    @RequestMapping(value = "api/getVehicleAndSupplierInfo")
+    public ApiResult<VehicleInfoLinkVO> getVehicleAndSupplierInfo(@RequestParam("vehicleId") Long vehicleId) {
+        VehicleDetailsVO vehicleDetailsVO = this.vehicleInfoService.getVehicleAndSupplierInfo(vehicleId);
+        return ApiResult.ok(vehicleDetailsVO);
     }
 
     /**
@@ -295,9 +303,6 @@ public class ExternalApiController {
         return ApiResult.ok(driverInfo);
     }
 
-    /**
-     * 根据车辆id
-     */
 
     /**
      * 应付暂存
@@ -763,6 +768,7 @@ public class ExternalApiController {
 
     /**
      * 通关前审核/中港通关前复核页面详情
+     *
      * @return
      */
     @RequestMapping(value = "/api/initGoCustomsAudit")

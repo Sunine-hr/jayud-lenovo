@@ -257,7 +257,7 @@ public class OrderCustomsController {
             orderCustoms.setYunCustomsNo(form.getYunCustomsNo());
             form.setStatus(OrderStatusEnum.CUSTOMS_C_10.getCode());
             form.setStatusName(OrderStatusEnum.CUSTOMS_C_10.getDesc());
-        } else if (OrderOprCmdEnum.RELEASE_CONFIRM.getCode().equals(form.getCmd())) {//放行确认
+        } else if (OrderOprCmdEnum.RELEASE_CONFIRM.getCode().equals(form.getCmd())) {//放行审核
             if (OrderStatusEnum.CUSTOMS_C_5.getCode().equals(form.getStatus()) ||
                     OrderStatusEnum.CUSTOMS_C_5_1.getCode().equals(form.getStatus())) {
                 orderCustoms.setStatus(form.getStatus());

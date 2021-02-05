@@ -353,7 +353,9 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
     public boolean exitCode(Long customerId, String idCode) {
         QueryWrapper<CustomerInfo> condition = new QueryWrapper<>();
         condition.lambda().eq(CustomerInfo::getIdCode, idCode);
-        condition.lambda().ne(CustomerInfo::getId, customerId);
+        if (customerId != null) {
+            condition.lambda().ne(CustomerInfo::getId, customerId);
+        }
         return this.count(condition) > 0;
     }
 
@@ -407,6 +409,19 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         QueryWrapper<CustomerInfo> condition = new QueryWrapper<>();
         condition.lambda().eq(CustomerInfo::getName, name);
         return this.getOne(condition);
+    }
+
+    /**
+     * 校验客户名称唯一性
+     */
+    @Override
+    public boolean exitName(Long customerId, String name) {
+        QueryWrapper<CustomerInfo> condition = new QueryWrapper<>();
+        condition.lambda().eq(CustomerInfo::getName, name);
+        if (customerId != null) {
+            condition.lambda().ne(CustomerInfo::getId, customerId);
+        }
+        return this.count(condition) > 0;
     }
 
 }

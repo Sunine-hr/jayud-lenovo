@@ -138,4 +138,9 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
      */
     public CustomerInfo getByName(String name);
 
+    /**
+     * 校验客户名称唯一性
+     */
+    public boolean exitName(Long customerId, String name);
+
 }

@@ -447,7 +447,9 @@
         ) fileName2,
         oi.selected_server selectedServer,
         ot.car_weigh_num carWeighNum,
-        si.supplier_code defaultSupplierCode
+        si.supplier_code defaultSupplierCode,
+        os.vehicle_id vehicleId,
+        os.driver_info_id driverInfoId
         FROM
         order_transport ot
         LEFT JOIN order_info oi

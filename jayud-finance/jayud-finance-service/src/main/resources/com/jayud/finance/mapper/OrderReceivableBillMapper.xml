@@ -217,7 +217,8 @@
         (SELECT sum(rmb.change_amount) FROM order_receivable_cost rmb WHERE rmb.id = orc.id GROUP BY
         rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) localAmount,
         orc.id costId,
-        orc.is_bill isBill
+        orc.is_bill isBill,
+        concat(vi.plate_number,' / ',vi.hk_number) licensePlate
         FROM
         order_receivable_cost orc
         LEFT JOIN order_info oi ON orc.main_order_no = oi.order_no
@@ -404,9 +405,9 @@
         ( SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN
         order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where
         ot.main_order_no = oi.order_no and ota.opr_type = '2' group by ot.order_no) endAddress,
-        (select concat(vi.plate_number,',',vi.hk_number) from order_send_cars osc left join order_transport ot on
-        osc.order_no = ot.order_no left join driver_info di on di.id = osc.driver_info_id left join vehicle_info vi on
-        vi.id = di.vehicle_id where ot.main_order_no = oi.order_no) licensePlate,
+        (select concat(vi.plate_number,' / ',vi.hk_number) from order_send_cars osc left join order_transport ot on
+        osc.order_no = ot.order_no left join vehicle_info vi on
+        vi.id = osc.vehicle_id where ot.main_order_no = oi.order_no) licensePlate,
         (select ot.vehicle_size from order_transport ot where ot.main_order_no = oi.order_no) vehicleSize,
         (select sum(ota.piece_amount) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no
         where ot.main_order_no = oi.order_no and ota.opr_type = '1') pieceNum,

@@ -150,5 +150,11 @@ public class VehicleInfoServiceImpl extends ServiceImpl<VehicleInfoMapper, Vehic
         return vehicleDetail;
     }
 
-
+    /**
+     * 根据车辆id获取车辆和供应商信息
+     */
+    @Override
+    public VehicleDetailsVO getVehicleAndSupplierInfo(Long vehicleId) {
+        return this.baseMapper.getVehicleDetailsById(vehicleId);
+    }
 }

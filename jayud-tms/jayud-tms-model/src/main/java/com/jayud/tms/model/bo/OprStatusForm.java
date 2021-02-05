@@ -52,10 +52,10 @@ public class OprStatusForm {
     @ApiModelProperty(value = "过磅数")
     private Double carWeighNum;
 
-    @ApiModelProperty(value = "司机ID")
+    @ApiModelProperty(value = "香港清关司机ID")
     private Long driverInfoId;
 
-    @ApiModelProperty(value = "车辆ID")
+    @ApiModelProperty(value = "香港清关车辆ID")
     private Long vehicleId;
 
     @ApiModelProperty(value = "无缝单号")

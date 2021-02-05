@@ -149,4 +149,9 @@ public interface OmsClient {
     @RequestMapping(value = "/api/initGoCustomsAudit")
     public ApiResult initGoCustomsAudit(@RequestParam("mainOrderNo") String mainOrderNo);
 
+    /**
+     * 根据车辆id获取车辆和供应商信息
+     */
+    @RequestMapping(value = "api/getVehicleAndSupplierInfo")
+    public ApiResult getVehicleAndSupplierInfo(@RequestParam("vehicleId") Long vehicleId);
 }

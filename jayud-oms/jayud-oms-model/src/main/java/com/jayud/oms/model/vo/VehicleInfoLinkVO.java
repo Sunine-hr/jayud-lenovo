@@ -15,6 +15,9 @@ public class VehicleInfoLinkVO {
     @ApiModelProperty(value = "供应商名字")
     private String supplierName;
 
+    @ApiModelProperty(value = "主司机id")
+    private Long mainDriverId;
+
     @ApiModelProperty(value = "司机信息")
     private List<DriverInfoVO> driverInfos = new ArrayList<>();
 }

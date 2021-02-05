@@ -27,5 +27,10 @@ public interface SupplierInfoMapper extends BaseMapper<SupplierInfo> {
 
     IPage<SupplierInfoVO> findAuditSupplierInfoByPage(Page page, @Param(value = "form") QueryAuditSupplierInfoForm form);
 
-    IPage<SupplierInfoVO> findSupplierInfoByPage(Page page, @Param(value = "form") QuerySupplierInfoForm form,@Param("legalIds") List<Long> legalIds);
+    IPage<SupplierInfoVO> findSupplierInfoByPage(Page page, @Param(value = "form") QuerySupplierInfoForm form, @Param("legalIds") List<Long> legalIds);
+
+    List<SupplierInfo> getApprovedSupplier(@Param("supplierStatus") String supplierStatus,
+                                           @Param("auditStatus") String auditStatus,
+                                           @Param("tablesDesc") String tablesDesc,
+                                           @Param("supplierIds") List<Long> supplierIds);
 }

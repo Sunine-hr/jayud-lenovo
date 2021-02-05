@@ -70,7 +70,7 @@ public class OprStatusForm {
 
     public void checkParam(OrderStatusEnum statusEnum) {
         switch (statusEnum) {
-            case CUSTOMS_C_5://报关放行
+            case CUSTOMS_C_10://报关放行
                 if (StringUtil.isNullOrEmpty(this.operatorUser)) {
                     throw new JayudBizException(400,"操作人不能为空");
                 }

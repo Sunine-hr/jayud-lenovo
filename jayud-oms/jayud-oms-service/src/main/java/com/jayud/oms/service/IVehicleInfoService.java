@@ -63,5 +63,8 @@ public interface IVehicleInfoService extends IService<VehicleInfo> {
      */
     VehicleDetailsVO getVehicleDetailsById(Long vehicleId);
 
-
+    /**
+     * 根据车辆id获取车辆和供应商信息
+     */
+    VehicleDetailsVO getVehicleAndSupplierInfo(Long vehicleId);
 }

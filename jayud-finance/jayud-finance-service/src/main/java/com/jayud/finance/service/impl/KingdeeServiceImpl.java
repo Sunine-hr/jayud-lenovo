@@ -112,7 +112,7 @@ public class KingdeeServiceImpl implements KingdeeService {
         header.put("Cookie", cookieService.getCookie(k3CloudConfig));
         String content = buildParam(formId, constructReceivableBill(reqForm));
 
-        log.debug("请求内容：{}", content);
+        log.info("请求内容：{}", content);
 
         String result = KingdeeHttpUtil.httpPost(k3CloudConfig.getSave(), header, content);
 
@@ -153,7 +153,7 @@ public class KingdeeServiceImpl implements KingdeeService {
             Map<String, Object> header = new HashMap<>();
             header.put("Cookie", cookieService.getCookie(k3CloudConfig));
             String content = buildParam(formId, constructPayableBill(reqForm));
-            log.debug("请求内容：{}", content);
+            log.info("请求内容：{}", content);
 
             String result = KingdeeHttpUtil.httpPost(k3CloudConfig.getSave(), header, content);
 
@@ -885,8 +885,21 @@ public class KingdeeServiceImpl implements KingdeeService {
     private Map<String, Object> putPayableEntityDetail(JSONObject detailBasic, APARDetailForm detailForm, BigDecimal noTaxTotalPrice, BigDecimal taxTotal) {
         //计价单位默认Pcs
         String priceUnitIdPacked = "Pcs";
-
         Map<String, Object> detail = detailBasic.getInnerMap();
+
+        //TODO 数量和金额，正负项要一致,金蝶就是要求，金额是负数时，数量也要是负数   @财务-闫兴丽
+        //TODO 如果是传所有字段过去，数量是负数，单价等是正数，金额负数            @金蝶-袁工
+        BigDecimal zero = new BigDecimal ("0");
+        //"FTaxPrice 含税单价" 大于等于 "0"
+        if(detailForm.getTaxPrice().compareTo(zero) > -1){
+            detailForm.setPriceQty(detailForm.getPriceQty());//保持不变，默认为正数1
+        }else{
+            //计价数量 设置为 负数
+            detailForm.setPriceQty(detailForm.getPriceQty().negate());//negate 取反
+            //含税单价 设置为 正数
+            detailForm.setTaxPrice(detailForm.getTaxPrice().negate());//negate 取反
+        }
+
         //物料编码
         putPackedProperty(detail, "FMATERIALID", detailForm.getMaterialIdPacked());
         //物料名称
@@ -964,6 +977,20 @@ public class KingdeeServiceImpl implements KingdeeService {
         String priceUnitIdPacked = "Pcs";
 
         Map<String, Object> detail = detailBasic.getInnerMap();
+
+        //TODO 数量和金额，正负项要一致,金蝶就是要求，金额是负数时，数量也要是负数   @财务-闫兴丽
+        //TODO 如果是传所有字段过去，数量是负数，单价等是正数，金额负数            @金蝶-袁工
+        BigDecimal zero = new BigDecimal ("0");
+        //"FTaxPrice 含税单价" 大于等于 "0"
+        if(detailForm.getTaxPrice().compareTo(zero) > -1){
+            detailForm.setPriceQty(detailForm.getPriceQty());//保持不变，默认为正数1
+        }else{
+            //计价数量 设置为 负数
+            detailForm.setPriceQty(detailForm.getPriceQty().negate());//negate 取反
+            //含税单价 设置为 正数
+            detailForm.setTaxPrice(detailForm.getTaxPrice().negate());//negate 取反
+        }
+
         //物料编码
         putPackedProperty(detail, "FMATERIALID", detailForm.getMaterialIdPacked());
         //物料名称

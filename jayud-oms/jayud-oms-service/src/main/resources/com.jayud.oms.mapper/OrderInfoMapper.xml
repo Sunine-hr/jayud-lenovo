@@ -266,7 +266,7 @@
         </if>
 
         <choose>
-            <when test="form.cmd == 'myOrder'">
+            <when test="form.entrance == 'myOrder'">
                 and temp.createdUser = #{form.loginUserName}
             </when>
             <otherwise>
@@ -411,7 +411,7 @@
         FROM
         order_info o1 WHERE
         <choose>
-            <when test="form.cmd == 'myOrder'">
+            <when test="form.entrance == 'myOrder'">
                 o1.created_user = #{form.loginUserName}
             </when>
             <otherwise>
@@ -431,7 +431,7 @@
         order_info o2
         WHERE o2.status = '2'
         <choose>
-            <when test="form.cmd == 'myOrder'">
+            <when test="form.entrance == 'myOrder'">
                 and o2.created_user = #{form.loginUserName}
             </when>
             <otherwise>
@@ -451,7 +451,7 @@
         order_info o3
         WHERE o3.status = '4'
         <choose>
-            <when test="form.cmd == 'myOrder'">
+            <when test="form.entrance == 'myOrder'">
                 and o3.created_user = #{form.loginUserName}
             </when>
             <otherwise>
@@ -471,7 +471,7 @@
         order_info o6
         WHERE o6.status = '6'
         <choose>
-            <when test="form.cmd == 'myOrder'">
+            <when test="form.entrance == 'myOrder'">
                 and o6.created_user = #{form.loginUserName}
             </when>
             <otherwise>
@@ -491,7 +491,7 @@
         order_info o7
         WHERE o7.status = '7'
         <choose>
-            <when test="form.cmd == 'myOrder'">
+            <when test="form.entrance == 'myOrder'">
                 and o7.created_user = #{form.loginUserName}
             </when>
             <otherwise>

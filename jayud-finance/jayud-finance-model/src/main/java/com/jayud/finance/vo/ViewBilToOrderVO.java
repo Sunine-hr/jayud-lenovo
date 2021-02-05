@@ -52,5 +52,15 @@ public class ViewBilToOrderVO {
     @JsonIgnore
     private List<String> totalCost;
 
+    public void interceptAddress(String startAddress, String endAddress) {
+        if (startAddress != null && startAddress.length() > 6) {
+            startAddress=startAddress.substring(0,6);
+        }
+        if (endAddress != null && endAddress.length() > 6) {
+            endAddress=endAddress.substring(0,6);
+        }
+        this.startAddress=startAddress;
+        this.endAddress=endAddress;
+    }
 
 }

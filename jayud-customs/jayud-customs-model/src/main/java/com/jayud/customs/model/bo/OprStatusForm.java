@@ -1,5 +1,6 @@
 package com.jayud.customs.model.bo;
 
+import com.jayud.common.UserOperator;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.FileView;
@@ -27,7 +28,7 @@ public class OprStatusForm {
 
     @ApiModelProperty(value = "操作人", required = true)
     @NotNull(message = "操作人不能为空")
-    private String operatorUser;
+    private String operatorUser= UserOperator.getToken();
 
     @ApiModelProperty(value = "操作时间", required = true)
     @NotNull(message = "操作时间不能为空")

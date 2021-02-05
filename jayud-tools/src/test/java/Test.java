@@ -295,5 +295,15 @@ public class Test {
 
     }
 
+    @org.junit.Test
+    public void test15(){
+        BigDecimal bignum1 = new BigDecimal("10");//10 2 0
+        System.out.println(bignum1);
+        BigDecimal b = bignum1.negate();//取负数
+        System.out.println(b);
+
+    }
+
+
 
 }

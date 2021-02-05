@@ -218,7 +218,7 @@
         rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) localAmount,
         orc.id costId,
         orc.is_bill isBill,
-        concat(vi.plate_number,' / ',vi.hk_number) licensePlate
+        concat(vi.plate_number,ifnull('/',''),vi.hk_number) licensePlate
         FROM
         order_receivable_cost orc
         LEFT JOIN order_info oi ON orc.main_order_no = oi.order_no

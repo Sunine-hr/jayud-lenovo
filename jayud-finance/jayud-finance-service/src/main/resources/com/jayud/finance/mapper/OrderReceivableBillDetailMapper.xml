@@ -136,7 +136,7 @@
            (SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' GROUP BY ot.order_no) goodsDesc,
            (SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' GROUP BY ot.order_no) startAddress,
            (SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id WHERE ota.order_no = ot.order_no AND ota.opr_type = '2' GROUP BY ot.order_no) endAddress,
-            concat( vi.plate_number,',',vi.hk_number ) licensePlate,
+            concat( vi.plate_number,ifnull('/',''),vi.hk_number ) licensePlate,
             ( SELECT GROUP_CONCAT( oc.yun_customs_no SEPARATOR ',' ) FROM order_customs oc WHERE oc.main_order_no = oi.order_no ) yunCustomsNo,
             cg.`name` costGenreName,
             orc.cost_genre_id costGenreId,
@@ -257,8 +257,8 @@
         ( SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' GROUP BY ot.order_no) goodsDesc,
         ( SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address)) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' GROUP BY ot.order_no) startAddress,
         ( SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address)) FROM delivery_address da LEFT JOIN order_take_adr ota on da.id = ota.delivery_id LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '2' GROUP BY ot.order_no) endAddress,
-        (select concat(vi.plate_number,',',vi.hk_number) from order_send_cars osc left join order_transport ot on osc.order_no = ot.order_no left join driver_info di on di.id = osc.driver_info_id
-		left join vehicle_info vi on vi.id = di.vehicle_id	where ot.main_order_no = oi.order_no) licensePlate,
+        (select concat(vi.plate_number,ifnull('/',''),vi.hk_number) from order_send_cars osc left join order_transport ot on osc.order_no = ot.order_no
+		left join vehicle_info vi on vi.id = osc.vehicle_id	where ot.main_order_no = oi.order_no) licensePlate,
         (select ot.vehicle_size from order_transport ot where ot.main_order_no = oi.order_no)  vehicleSize,
         (select sum(ota.piece_amount) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1') pieceNum,
         (select sum(ota.weight) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1') weight,
@@ -307,7 +307,7 @@
         left join order_transport ot on ot.order_no = ota.order_no where ot.main_order_no = oi.order_no and ota.opr_type
         = '2' GROUP BY ot.order_no) endAddress,
         (select concat( vi.plate_number,',',vi.hk_number ) from order_send_cars osc left join order_transport ot
-        on osc.order_no = ot.order_no left join driver_info di on di.id = osc.driver_info_id left join vehicle_info vi on vi.id = di.vehicle_id where ot.main_order_no = oi.order_no) licensePlate,
+        on osc.order_no = ot.order_no left join vehicle_info vi on vi.id = osc.vehicle_id where ot.main_order_no = oi.order_no) licensePlate,
         (select GROUP_CONCAT(oc.yun_customs_no) from order_customs oc where oc.main_order_no = oi.order_no group by oc.main_order_no) yunCustomsNo,
         (select cg.`name` from cost_genre cg where cg.id = orc.cost_genre_id) costGenreName,
         orc.cost_genre_id,

@@ -58,7 +58,9 @@ public class FinanceController {
     @Autowired
     KingdeeService service;
 
-    /**财务核算*/
+    /**
+     * 财务核算
+     */
     @ApiOperation(value = "财务核算列表")
     @PostMapping("/findFinanceAccountByPage")
     public CommonResult<CommonPageResult<FinanceAccountVO>> findFinanceAccountByPage(@RequestBody @Valid QueryFinanceAccountForm form) {
@@ -71,7 +73,7 @@ public class FinanceController {
     @RequestMapping(value = "/exportCwBill", method = RequestMethod.GET)
     @ResponseBody
     public void exportCwBill(QueryFinanceAccountForm form,
-                            HttpServletResponse response) throws IOException {
+                             HttpServletResponse response) throws IOException {
         //获取数据
         List<FinanceAccountVO> list = paymentBillDetailService.findFinanceAccount(form);
 
@@ -111,35 +113,37 @@ public class FinanceController {
         ServletOutputStream out = response.getOutputStream();
         String name = StringUtils.toUtf8String("财务核算列表");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
-        response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
+        response.setHeader("Content-Disposition", "attachment;filename=" + name + ".xlsx");
 
         writer.flush(out);
         writer.close();
         IoUtil.close(out);
     }
 
-    /**对账单管理*/
+    /**
+     * 对账单管理
+     */
     @ApiOperation(value = "应付对账单审核列表,对账单明细")
     @PostMapping("/findFBillAuditByPage")
-    public CommonResult<Map<String,Object>> findFBillAuditByPage(@RequestBody @Valid QueryFBillAuditForm form) {
+    public CommonResult<Map<String, Object>> findFBillAuditByPage(@RequestBody @Valid QueryFBillAuditForm form) {
         IPage<PaymentNotPaidBillVO> pageList = paymentBillDetailService.findFBillAuditByPage(form);
         CommonPageResult<PaymentNotPaidBillVO> pageVO = new CommonPageResult(pageList);
-        Map<String,Object> resultMap = new HashMap<>();
-        resultMap.put("pageList",pageVO);//列表
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("pageList", pageVO);//列表
         ViewBillVO viewBillVO = paymentBillDetailService.getViewBill(form.getBillNo());
-        resultMap.put(CommonConstant.WHOLE_DATA,viewBillVO);//全局数据
+        resultMap.put(CommonConstant.WHOLE_DATA, viewBillVO);//全局数据
         return CommonResult.success(resultMap);
     }
 
     @ApiOperation(value = "应收对账单审核列表,对账单明细")
     @PostMapping("/findSBillAuditByPage")
-    public CommonResult<Map<String,Object>> findSBillAuditByPage(@RequestBody @Valid QueryFBillAuditForm form) {
+    public CommonResult<Map<String, Object>> findSBillAuditByPage(@RequestBody @Valid QueryFBillAuditForm form) {
         IPage<PaymentNotPaidBillVO> pageList = receivableBillDetailService.findSBillAuditByPage(form);
         CommonPageResult<PaymentNotPaidBillVO> pageVO = new CommonPageResult(pageList);
-        Map<String,Object> resultMap = new HashMap<>();
-        resultMap.put("pageList",pageVO);//列表
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("pageList", pageVO);//列表
         ViewBillVO viewBillVO = receivableBillDetailService.getViewSBill(form.getBillNo());
-        resultMap.put(CommonConstant.WHOLE_DATA,viewBillVO);//全局数据
+        resultMap.put(CommonConstant.WHOLE_DATA, viewBillVO);//全局数据
         return CommonResult.success(resultMap);
     }
 
@@ -147,7 +151,7 @@ public class FinanceController {
     @RequestMapping(value = "/exportFBillDetailList", method = RequestMethod.GET)
     @ResponseBody
     public void exportFBillDetailList(QueryFBillAuditForm form,
-                                    HttpServletResponse response) throws IOException {
+                                      HttpServletResponse response) throws IOException {
         List<PaymentNotPaidBillVO> list = paymentBillDetailService.findFBillAudit(form);
         ExcelWriter writer = ExcelUtil.getWriter(true);
 
@@ -177,10 +181,10 @@ public class FinanceController {
         writer.write(list, true);
 
         //out为OutputStream，需要写出到的目标流
-        ServletOutputStream out=response.getOutputStream();
+        ServletOutputStream out = response.getOutputStream();
         String name = StringUtils.toUtf8String("客户应付对账单");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
-        response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
+        response.setHeader("Content-Disposition", "attachment;filename=" + name + ".xlsx");
 
         writer.flush(out);
         writer.close();
@@ -221,10 +225,10 @@ public class FinanceController {
         writer.write(list, true);
 
         //out为OutputStream，需要写出到的目标流
-        ServletOutputStream out=response.getOutputStream();
+        ServletOutputStream out = response.getOutputStream();
         String name = StringUtils.toUtf8String("客户应收对账单");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
-        response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
+        response.setHeader("Content-Disposition", "attachment;filename=" + name + ".xlsx");
 
         writer.flush(out);
         writer.close();
@@ -233,8 +237,8 @@ public class FinanceController {
 
     @ApiOperation(value = "核销列表")
     @PostMapping("/heXiaoList")
-    public CommonResult<List<HeXiaoListVO>> heXiaoList(@RequestBody Map<String,Object> param) {
-        String billNo = MapUtil.getStr(param,"billNo");
+    public CommonResult<List<HeXiaoListVO>> heXiaoList(@RequestBody Map<String, Object> param) {
+        String billNo = MapUtil.getStr(param, "billNo");
         List<HeXiaoListVO> heXiaoList = verificationService.heXiaoList(billNo);
         return CommonResult.success(heXiaoList);
     }
@@ -247,16 +251,16 @@ public class FinanceController {
 
     @ApiOperation(value = "付款审核列表 billNo = 账单编号")
     @PostMapping("/findFCostList")
-    public CommonResult<List<FCostVO>> findFCostList(@RequestBody Map<String,Object> param) {
-        String billNo = MapUtil.getStr(param,"billNo");
+    public CommonResult<List<FCostVO>> findFCostList(@RequestBody Map<String, Object> param) {
+        String billNo = MapUtil.getStr(param, "billNo");
         List<FCostVO> fCostVOS = paymentBillDetailService.findFCostList(billNo);
         return CommonResult.success(fCostVOS);
     }
 
     @ApiOperation(value = "开票审核列表 billNo = 账单编号")
     @PostMapping("/findSCostList")
-    public CommonResult<List<FCostVO>> findSCostList(@RequestBody Map<String,Object> param) {
-        String billNo = MapUtil.getStr(param,"billNo");
+    public CommonResult<List<FCostVO>> findSCostList(@RequestBody Map<String, Object> param) {
+        String billNo = MapUtil.getStr(param, "billNo");
         List<FCostVO> fCostVOS = receivableBillDetailService.findSCostList(billNo);
         return CommonResult.success(fCostVOS);
     }
@@ -275,8 +279,8 @@ public class FinanceController {
 
     @ApiOperation(value = "开票核销列表,付款核销列表 billNo=账单编号")
     @PostMapping("/findInvoiceList")
-    public CommonResult<List<MakeInvoiceVO>> findInvoiceList(@RequestBody Map<String,Object> param) {
-        String billNo = MapUtil.getStr(param,"billNo");
+    public CommonResult<List<MakeInvoiceVO>> findInvoiceList(@RequestBody Map<String, Object> param) {
+        String billNo = MapUtil.getStr(param, "billNo");
         List<MakeInvoiceVO> invoiceVOS = makeInvoiceService.findInvoiceList(billNo);
         return CommonResult.success(invoiceVOS);
     }
@@ -289,15 +293,14 @@ public class FinanceController {
 
     @ApiOperation(value = "开票核销作废,付款核销作废 invoiceId开票ID或付款ID")
     @PostMapping("/makeInvoiceDel")
-    public CommonResult makeInvoiceDel(@RequestBody Map<String,Object> param) {
-        Long inVoiceId = Long.parseLong(MapUtil.getStr(param,"invoiceId"));
+    public CommonResult makeInvoiceDel(@RequestBody Map<String, Object> param) {
+        Long inVoiceId = Long.parseLong(MapUtil.getStr(param, "invoiceId"));
         Boolean result = makeInvoiceService.makeInvoiceDel(inVoiceId);
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
         return CommonResult.success();
     }
-
 
 
     /**
@@ -315,37 +318,38 @@ public class FinanceController {
         Boolean flag = false;
         for (String billNo : form.getBillNos()) {
             QueryWrapper queryWrapper1 = new QueryWrapper();
-            queryWrapper1.eq("bill_no",billNo);
+            queryWrapper1.eq("bill_no", billNo);
             List<OrderReceivableBillDetail> tempObjects = receivableBillDetailService.list(queryWrapper1);
-            if(tempObjects != null && tempObjects.size()>0){
+            if (tempObjects != null && tempObjects.size() > 0) {
                 OrderReceivableBillDetail tempObject = tempObjects.get(0);
-                if(StringUtil.isNullOrEmpty(tempObject.getAuditStatus()) || !BillEnum.B_6.getCode().equals(tempObject.getAuditStatus())){
+                if (StringUtil.isNullOrEmpty(tempObject.getAuditStatus()) || !BillEnum.B_6.getCode().equals(tempObject.getAuditStatus())) {
                     flag = true;
-                    sb.append(tempObject.getBillNo()+";");
+                    sb.append(tempObject.getBillNo() + ";");
                 }
             }
         }
         sb.append("财务未审核通过,不能推送金蝶");
-        if(flag) {
+        if (flag) {
             return CommonResult.error(10001, sb.toString());
         }
         //构建数据，推金蝶
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.in("bill_no",form.getBillNos());
+        queryWrapper.in("bill_no", form.getBillNos());
         List<OrderReceivableBillDetail> receivableBillDetails = receivableBillDetailService.list(queryWrapper);
         for (OrderReceivableBillDetail receivableBillDetail : receivableBillDetails) {
             List<ReceivableHeaderForm> reqForm = receivableBillDetailService.getReceivableHeaderForm(receivableBillDetail.getBillNo());
             for (ReceivableHeaderForm tempReqForm : reqForm) {
-                List<APARDetailForm> entityDetail = receivableBillDetailService.findReceivableHeaderDetail(tempReqForm.getBillNo(),tempReqForm.getBusinessNo());
+                List<APARDetailForm> entityDetail = receivableBillDetailService.findReceivableHeaderDetail(tempReqForm.getBillNo(), tempReqForm.getBusinessNo());
                 tempReqForm.setEntityDetail(entityDetail);
                 logger.info("推送金蝶传参:" + reqForm);
                 service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), tempReqForm);
             }
             OrderReceivableBillDetail tempObject = new OrderReceivableBillDetail();
-            tempObject.setPushKingdeeCount(receivableBillDetail.getPushKingdeeCount() + 1);
+            Integer num = receivableBillDetail.getPushKingdeeCount() == null ? 0 : receivableBillDetail.getPushKingdeeCount();
+            tempObject.setPushKingdeeCount(num + 1);
             QueryWrapper updateWrapper = new QueryWrapper();
-            updateWrapper.eq("bill_no",receivableBillDetail.getBillNo());
-            receivableBillDetailService.update(tempObject,updateWrapper);
+            updateWrapper.eq("bill_no", receivableBillDetail.getBillNo());
+            receivableBillDetailService.update(tempObject, updateWrapper);
         }
         return CommonResult.success();
     }
@@ -365,28 +369,28 @@ public class FinanceController {
         Boolean flag = false;
         for (String billNo : form.getBillNos()) {
             QueryWrapper queryWrapper1 = new QueryWrapper();
-            queryWrapper1.eq("bill_no",billNo);
+            queryWrapper1.eq("bill_no", billNo);
             List<OrderPaymentBillDetail> tempObjects = receivableBillDetailService.list(queryWrapper1);
-            if(tempObjects != null && tempObjects.size()>0){
+            if (tempObjects != null && tempObjects.size() > 0) {
                 OrderPaymentBillDetail tempObject = tempObjects.get(0);
-                if(StringUtil.isNullOrEmpty(tempObject.getAuditStatus()) || !BillEnum.B_6.getCode().equals(tempObject.getAuditStatus())){
+                if (StringUtil.isNullOrEmpty(tempObject.getAuditStatus()) || !BillEnum.B_6.getCode().equals(tempObject.getAuditStatus())) {
                     flag = true;
-                    sb.append(tempObject.getBillNo()+";");
+                    sb.append(tempObject.getBillNo() + ";");
                 }
             }
         }
         sb.append("财务未审核通过,不能推送金蝶");
-        if(flag) {
+        if (flag) {
             return CommonResult.error(10001, sb.toString());
         }
         //构建数据，推金蝶
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.in("bill_no",form.getBillNos());
+        queryWrapper.in("bill_no", form.getBillNos());
         List<OrderPaymentBillDetail> paymentBillDetailList = paymentBillDetailService.list(queryWrapper);
         for (OrderPaymentBillDetail paymentBillDetail : paymentBillDetailList) {
             List<PayableHeaderForm> reqForm = paymentBillDetailService.getPayableHeaderForm(paymentBillDetail.getBillNo());
             for (PayableHeaderForm tempReqForm : reqForm) {
-                List<APARDetailForm> entityDetail = paymentBillDetailService.findPayableHeaderDetail(tempReqForm.getBillNo(),tempReqForm.getBusinessNo());
+                List<APARDetailForm> entityDetail = paymentBillDetailService.findPayableHeaderDetail(tempReqForm.getBillNo(), tempReqForm.getBusinessNo());
                 tempReqForm.setEntityDetail(entityDetail);
                 logger.info("推送金蝶传参:" + reqForm);
                 service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), tempReqForm);
@@ -394,8 +398,8 @@ public class FinanceController {
             OrderPaymentBillDetail tempObject = new OrderPaymentBillDetail();
             tempObject.setPushKingdeeCount(paymentBillDetail.getPushKingdeeCount() + 1);
             QueryWrapper updateWrapper = new QueryWrapper();
-            updateWrapper.eq("bill_no",paymentBillDetail.getBillNo());
-            paymentBillDetailService.update(tempObject,updateWrapper);
+            updateWrapper.eq("bill_no", paymentBillDetail.getBillNo());
+            paymentBillDetailService.update(tempObject, updateWrapper);
         }
         return CommonResult.success();
     }
@@ -405,13 +409,13 @@ public class FinanceController {
     public CommonResult<List<InitComboxStrVO>> initBillStatus() {
         List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
         for (BillEnum billEnum : BillEnum.values()) {
-            if(BillEnum.B_1.getCode().equals(billEnum.getCode()) || BillEnum.B_2.getCode().equals(billEnum.getCode()) ||
-               BillEnum.B_2_1.getCode().equals(billEnum.getCode()) || BillEnum.B_3.getCode().equals(billEnum.getCode()) ||
-               BillEnum.B_4.getCode().equals(billEnum.getCode()) || BillEnum.B_4_1.getCode().equals(billEnum.getCode()) ||
-               BillEnum.B_5.getCode().equals(billEnum.getCode()) || BillEnum.B_5_1.getCode().equals(billEnum.getCode()) ||
-               BillEnum.B_6.getCode().equals(billEnum.getCode()) || BillEnum.B_6_1.getCode().equals(billEnum.getCode()) ||
-               BillEnum.B_7.getCode().equals(billEnum.getCode()) || BillEnum.B_8.getCode().equals(billEnum.getCode()) ||
-               BillEnum.B_9.getCode().equals(billEnum.getCode())){
+            if (BillEnum.B_1.getCode().equals(billEnum.getCode()) || BillEnum.B_2.getCode().equals(billEnum.getCode()) ||
+                    BillEnum.B_2_1.getCode().equals(billEnum.getCode()) || BillEnum.B_3.getCode().equals(billEnum.getCode()) ||
+                    BillEnum.B_4.getCode().equals(billEnum.getCode()) || BillEnum.B_4_1.getCode().equals(billEnum.getCode()) ||
+                    BillEnum.B_5.getCode().equals(billEnum.getCode()) || BillEnum.B_5_1.getCode().equals(billEnum.getCode()) ||
+                    BillEnum.B_6.getCode().equals(billEnum.getCode()) || BillEnum.B_6_1.getCode().equals(billEnum.getCode()) ||
+                    BillEnum.B_7.getCode().equals(billEnum.getCode()) || BillEnum.B_8.getCode().equals(billEnum.getCode()) ||
+                    BillEnum.B_9.getCode().equals(billEnum.getCode())) {
                 InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
                 initComboxStrVO.setCode(billEnum.getCode());
                 initComboxStrVO.setName(billEnum.getDesc());
@@ -423,22 +427,22 @@ public class FinanceController {
 
     @ApiOperation(value = "开票/付款申请,核销,开票/付款核销界面的金额初始化,billNo=账单编号")
     @PostMapping(value = "/getCostAmountView")
-    public CommonResult<CostAmountVO> getCostAmountView(@RequestBody Map<String,Object> param) {
-        String billNo = MapUtil.getStr(param,"billNo");
-        if(StringUtil.isNullOrEmpty(billNo)){
+    public CommonResult<CostAmountVO> getCostAmountView(@RequestBody Map<String, Object> param) {
+        String billNo = MapUtil.getStr(param, "billNo");
+        if (StringUtil.isNullOrEmpty(billNo)) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         CostAmountVO costAmountVO = new CostAmountVO();
         CostAmountVO costFAmountVO = paymentBillDetailService.getFCostAmountView(billNo);
         CostAmountVO costSAmountVO = receivableBillDetailService.getSCostAmountView(billNo);
         costAmountVO.setBillNo(billNo);
-        if(costSAmountVO != null) {
+        if (costSAmountVO != null) {
             costAmountVO.setYsAmount(costSAmountVO.getYsAmount());
             costAmountVO.setYsCurrency(costSAmountVO.getYsCurrency());
             costAmountVO.setWsAmount(costSAmountVO.getWsAmount());
             costAmountVO.setWsCurrency(costSAmountVO.getWsCurrency());
         }
-        if(costFAmountVO != null) {
+        if (costFAmountVO != null) {
             costAmountVO.setYfAmount(costFAmountVO.getYfAmount());
             costAmountVO.setYfCurrency(costFAmountVO.getYfCurrency());
             costAmountVO.setDfAmount(costFAmountVO.getDfAmount());

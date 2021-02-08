@@ -141,9 +141,10 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
     /**
      *编辑保存确定
      * @param costIds
+     * @param form
      * @return
      */
-    Boolean editSSaveConfirm(List<Long> costIds);
+    Boolean editSSaveConfirm(List<Long> costIds, EditSBillForm form);
 
     /**
      * 编辑删除
@@ -184,4 +185,9 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      */
     List<OrderReceivableBillDetail> getNowSOrderExist(String legalName, String unitAccount, String subType,String orderNo);
 
+    /**
+     * 获取编辑账单数
+     * @param billNo
+     */
+    int getEditBillNum(String billNo);
 }

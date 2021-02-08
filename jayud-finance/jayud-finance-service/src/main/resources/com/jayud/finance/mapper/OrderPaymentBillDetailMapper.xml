@@ -598,14 +598,15 @@
         desc limit 1) heXiaoUser,
         (select c.real_receive_time from cancel_after_verification c where c.bill_no = opbd.bill_no order by
         c.created_time desc limit 1) heXiaoTimeStr,
-        opbd.push_kingdee_count
+        opbd.push_kingdee_count,
+        opbd.push_kingdee_count pushKingdeeCount
         FROM
         order_payment_bill_detail opbd
         left join
         (select t.bill_no,max(t.make_time) make_time from order_payment_bill_detail t group by t.bill_no) tt on
         opbd.bill_no = tt.bill_no
         LEFT JOIN order_payment_bill opb ON opbd.bill_id = opb.id
-        where opbd.make_time = tt.make_time
+        where opbd.make_time = tt.make_time and opbd.audit_status != 'edit_del'
         <if test="form.cmd == 'main_statement'">
             and opb.is_main = 1
         </if>
@@ -661,5 +662,6 @@
                 #{legalName}
             </foreach>
         </if>
+        group by opbd.bill_no
     </select>
 </mapper>

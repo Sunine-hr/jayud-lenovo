@@ -21,6 +21,7 @@ import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.po.OrderPaymentBillDetail;
+import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.service.IOrderPaymentBillDetailService;
 import com.jayud.finance.util.StringUtils;
 import com.jayud.finance.vo.*;
@@ -173,7 +174,7 @@ public class PaymentBillDetailController {
         for (OrderPaymentBillDetailForm formObject : paymentBillDetailForms) {
             costIds.add(formObject.getCostId());
         }
-        Boolean result = billDetailService.editFSaveConfirm(costIds);
+        Boolean result = billDetailService.editFSaveConfirm(costIds,form);
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
@@ -187,6 +188,15 @@ public class PaymentBillDetailController {
         List<OrderPaymentBillDetailForm> delCosts = form.getDelCosts();
         if (delCosts == null || delCosts.size() == 0) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        //查询账单详情id查询账单信息
+        Long billDetailId = delCosts.get(0).getBillDetailId();
+        if (billDetailId != null) {
+            OrderPaymentBillDetail orderPaymentBillDetail = this.billDetailService.getById(billDetailId);
+            //查询编辑账单数量
+            if (this.billDetailService.getEditBillNum(orderPaymentBillDetail.getBillNo()) < 1) {
+                return CommonResult.error(400, "需要保留一条已出的账单费用");
+            }
         }
         List<Long> costIds = new ArrayList<>();
         for (OrderPaymentBillDetailForm formObject : delCosts) {

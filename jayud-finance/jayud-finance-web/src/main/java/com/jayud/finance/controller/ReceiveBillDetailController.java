@@ -173,7 +173,7 @@ public class ReceiveBillDetailController {
         for (OrderReceiveBillDetailForm formObject : receiveBillDetailForms) {
             costIds.add(formObject.getCostId());
         }
-        Boolean result = billDetailService.editSSaveConfirm(costIds);
+        Boolean result = billDetailService.editSSaveConfirm(costIds, form);
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
@@ -188,6 +188,16 @@ public class ReceiveBillDetailController {
         if (delCosts == null || delCosts.size() == 0) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
+        //查询账单详情id查询账单信息
+        Long billDetailId = delCosts.get(0).getBillDetailId();
+        if (billDetailId != null) {
+            OrderReceivableBillDetail orderReceivableBillDetail = this.billDetailService.getById(billDetailId);
+            //查询编辑账单数量
+            if (this.billDetailService.getEditBillNum(orderReceivableBillDetail.getBillNo()) <= 1) {
+                return CommonResult.error(400, "需要保留一条已出的账单费用");
+            }
+        }
+
         List<Long> costIds = new ArrayList<>();
         for (OrderReceiveBillDetailForm formObject : delCosts) {
             costIds.add(formObject.getCostId());
@@ -240,12 +250,8 @@ public class ReceiveBillDetailController {
             }
         });
 
-
-
         TypeUtils.compatibleWithJavaBean = true;
-
         JSONArray datas = JSONArray.parseArray(JSON.toJSONString(list));
-
         ViewBillVO viewBillVO = billDetailService.getViewSBill(billNo);
 
         //头部数据重组
@@ -274,31 +280,15 @@ public class ReceiveBillDetailController {
         titles.add(viewBillVO.getLegalName());
         titles.add("客户应收款对帐单");
         StringBuilder sb = new StringBuilder();
-        titles.add(sb.append("对账日期:")
-                .
-
-                        append(viewBillVO.getAccountTermStr()).
-
-                        toString());
+        titles.add(sb.append("对账日期:").append(viewBillVO.getAccountTermStr()).toString());
         entity.setTitle(titles);
         //组装台头
         List<String> stageHeads = new ArrayList<>();
         stageHeads.add("TO:" + viewBillVO.getCustomerName());
-        sb = new
-
-                StringBuilder();
-        stageHeads.add(sb.append("FR:").
-
-                append(viewBillVO.getLegalName()).
-
-                append(EasyExcelUtils.SPLIT_SYMBOL)
-                .
-
-                        append("账单编号:").
-
-                        append(viewBillVO.getBillNo()).
-
-                        toString());
+        sb = new StringBuilder();
+        stageHeads.add(sb.append("FR:").append(viewBillVO.getLegalName())
+                .append(EasyExcelUtils.SPLIT_SYMBOL)
+                .append("账单编号:").append(viewBillVO.getBillNo()).toString());
         entity.setStageHead(stageHeads);
         //组装表头信息
         entity.setTableHead(headMap);
@@ -325,108 +315,48 @@ public class ReceiveBillDetailController {
 
         //尾部
         List<String> bottomData = new ArrayList<>();
+        bottomData.add(new StringBuilder()
+                .append("公司名称:")
+                .append(legalEntityJson.getStr("legalName", ""))
+                .append(EasyExcelUtils.SPLIT_SYMBOL)
+                .append("制 单 人:")
+                .append(viewBillVO.getMakeUser())
+                .toString());
         bottomData.add(new
-
                 StringBuilder()
-                .
-
-                        append("公司名称:").
-
-                        append(legalEntityJson.getStr("legalName", ""))
-                .
-
-                        append(EasyExcelUtils.SPLIT_SYMBOL)
-                .
-
-                        append("制 单 人:").
-
-                        append(viewBillVO.getMakeUser()).
-
-                        toString());
+                .append("开户银行:")
+                .append(legalEntityJson.getStr("bank", ""))
+                .append(EasyExcelUtils.SPLIT_SYMBOL)
+                .append("制单时间:")
+                .append(viewBillVO.getMakeTimeStr())
+                .toString());
+        bottomData.add(new StringBuilder()
+                .append("开户账号:")
+                .append(legalEntityJson.getStr("accountOpen", ""))
+                .append(EasyExcelUtils.SPLIT_SYMBOL)
+                .append("审 单 人:")
+                .append(viewBillVO.getMakeUser())
+                .toString());
+        bottomData.add(new StringBuilder()
+                .append("纳税人识别号:")
+                .append(legalEntityJson.getStr("taxIdentificationNum", ""))
+                .append(EasyExcelUtils.SPLIT_SYMBOL)
+                .append("审单时间:")
+                .append(viewBillVO.getMakeTimeStr())
+                .toString());
         bottomData.add(new
-
                 StringBuilder()
-                .
-
-                        append("开户银行:").
-
-                        append(legalEntityJson.getStr("bank", ""))
-                .
-
-                        append(EasyExcelUtils.SPLIT_SYMBOL)
-                .
-
-                        append("制单时间:").
-
-                        append(viewBillVO.getMakeTimeStr()).
-
-                        toString());
-        bottomData.add(new
-
-                StringBuilder()
-                .
-
-                        append("开户账号:").
-
-                        append(legalEntityJson.getStr("accountOpen", ""))
-                .
-
-                        append(EasyExcelUtils.SPLIT_SYMBOL)
-                .
-
-                        append("审 单 人:").
-
-                        append(viewBillVO.getMakeUser()).
-
-                        toString());
-        bottomData.add(new
-
-                StringBuilder()
-                .
-
-                        append("纳税人识别号:").
-
-                        append(legalEntityJson.getStr("taxIdentificationNum", ""))
-                .
-
-                        append(EasyExcelUtils.SPLIT_SYMBOL)
-                .
-
-                        append("审单时间:").
-
-                        append(viewBillVO.getMakeTimeStr()).
-
-                        toString());
-        bottomData.add(new
-
-                StringBuilder()
-                .
-
-                        append("公司地址:").
-
-                        append(legalEntityJson.getStr("rigisAddress", ""))
-                .
-
-                        append(EasyExcelUtils.SPLIT_SYMBOL).
-
-                        toString());
-        bottomData.add(new
-
-                StringBuilder()
-                .
-
-                        append("联系电话:").
-
-                        append(legalEntityJson.getStr("phone", ""))
-                .
-
-                        append(EasyExcelUtils.SPLIT_SYMBOL).
-
-                        toString());
+                .append("公司地址:")
+                .append(legalEntityJson.getStr("rigisAddress", ""))
+                .append(EasyExcelUtils.SPLIT_SYMBOL)
+                .toString());
+        bottomData.add(new StringBuilder()
+                .append("联系电话:")
+                .append(legalEntityJson.getStr("phone", ""))
+                .append(EasyExcelUtils.SPLIT_SYMBOL)
+                .toString());
         entity.setBottomData(bottomData);
-
         Workbook workbook = EasyExcelUtils.autoGeneration("", entity);
-
 
         ServletOutputStream out = response.getOutputStream();
         String name = StringUtils.toUtf8String("客户应收对账单");

@@ -1,11 +1,18 @@
 package com.jayud.finance.controller;
 
+import cn.hutool.http.HttpStatus;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.utils.HttpUtils;
 import com.jayud.finance.bo.*;
+import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.service.IOrderReceivableBillService;
 import com.jayud.finance.vo.*;
 import io.netty.util.internal.StringUtil;
@@ -31,6 +38,8 @@ public class ReceiveBillController {
 
     @Autowired
     IOrderReceivableBillService billService;
+    @Autowired
+    OmsClient omsClient;
 
     @ApiOperation(value = "应收出账单列表(主订单/子订单)")
     @PostMapping("/findReceiveBillByPage")
@@ -85,10 +94,39 @@ public class ReceiveBillController {
         List<ViewBilToOrderVO> list = billService.viewReceiveBill(costIds);
         resultMap.put(CommonConstant.LIST, list);//分页数据
         List<SheetHeadVO> sheetHeadVOS = billService.findSheetHead(costIds);
-        resultMap.put(CommonConstant.SHEET_HEAD,sheetHeadVOS);//表头
-        ViewBillVO viewBillVO = billService.getViewBillByCostIds(costIds,form.getCmd());
-        resultMap.put(CommonConstant.WHOLE_DATA,viewBillVO);//全局数据
+        resultMap.put(CommonConstant.SHEET_HEAD, sheetHeadVOS);//表头
+        ViewBillVO viewBillVO = billService.getViewBillByCostIds(costIds, form.getCmd());
+        resultMap.put(CommonConstant.WHOLE_DATA, viewBillVO);//全局数据
         return CommonResult.success(resultMap);
+    }
+
+
+    @ApiOperation(value = "查询应收费用币种信息")
+    @PostMapping("/getReceivableCost")
+    public CommonResult getReceivableCostCurrencyInfo(@RequestBody List<OrderReceiveBillDetailForm> forms) {
+        List<Long> costIds = new ArrayList<>();
+        for (OrderReceiveBillDetailForm form : forms) {
+            if (form.getCostId() == null) {
+                return CommonResult.error(ResultEnum.PARAM_ERROR);
+            }
+            costIds.add(form.getCostId());
+        }
+        ApiResult result = this.omsClient.getCostCurrencyInfo(costIds, 0);
+        if (result.getCode() != HttpStatus.HTTP_OK) {
+            return CommonResult.error(ResultEnum.OPR_FAIL);
+        }
+        //组装数据
+        JSONArray datas = new JSONArray(result.getData());
+        List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
+        for (int i = 0; i < datas.size(); i++) {
+            JSONObject data = datas.getJSONObject(i);
+            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+            initComboxStrVO.setCode(data.getStr("currencyCode"));
+            initComboxStrVO.setName(data.getStr("currencyName"));
+            initComboxStrVO.setNote("");
+            initComboxStrVOS.add(initComboxStrVO);
+        }
+        return CommonResult.success(initComboxStrVOS);
     }
 
 

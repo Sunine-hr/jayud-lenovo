@@ -176,9 +176,10 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
     /**
      *编辑保存确定
      * @param costIds
+     * @param form
      * @return
      */
-    Boolean editFSaveConfirm(List<Long> costIds);
+    Boolean editFSaveConfirm(List<Long> costIds, EditBillForm form);
 
     /**
      * 编辑删除
@@ -219,4 +220,10 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      */
     List<OrderPaymentBillDetail> getNowFOrderExist(String legalName, String supplierChName, String subType, String orderNo);
 
+
+    /**
+     * 获取编辑账单数
+     * @param billNo
+     */
+    int getEditBillNum(String billNo);
 }

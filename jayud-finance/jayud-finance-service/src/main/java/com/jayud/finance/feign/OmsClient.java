@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * finance模块消费oms模块的接口
@@ -60,7 +61,7 @@ public interface OmsClient {
      */
     @RequestMapping(value = "api/editSaveConfirm")
     ApiResult<Boolean> editSaveConfirm(@RequestParam("costIds") List<Long> costIds, @RequestParam("oprType") String oprType,
-                                       @RequestParam("cmd") String cmd);
+                                       @RequestParam("cmd") String cmd, @RequestParam("param") Map<String, Object> param);
 
     /**
      * 提交财务审核时，财务可能编辑费用类型
@@ -102,4 +103,30 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/getCustomerInfoByName")
     public ApiResult getCustomerInfoByName(String name);
+
+    /**
+     * 批量修改费用状态
+     *
+     * @param costIds 费用主键
+     * @param isBill
+     * @param status  费用状态
+     * @param type    类型(0:应收,1:应付)
+     * @return
+     */
+    @RequestMapping(value = "/api/batchUpdateCostStatus")
+    public ApiResult batchUpdateCostStatus(@RequestParam("costIds") List<Long> costIds,
+                                           @RequestParam("isBill") String isBill,
+                                           @RequestParam("status") Integer status,
+                                           @RequestParam("type") Integer type);
+
+    /**
+     * 根据费用主键集合批量查询费用币种信息
+     *
+     * @param costIds 费用主键
+     * @param type    类型(0:应收,1:应付)
+     * @return
+     */
+    @RequestMapping(value = "/api/getCostCurrencyInfo")
+    public ApiResult getCostCurrencyInfo(@RequestParam("costIds") List<Long> costIds,
+                                         @RequestParam("type") Integer type);
 }

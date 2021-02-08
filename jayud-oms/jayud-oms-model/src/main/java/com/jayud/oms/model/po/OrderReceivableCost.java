@@ -105,6 +105,9 @@ public class OrderReceivableCost extends Model<OrderReceivableCost> {
     @ApiModelProperty(value = "录用费用类型")
     private String subType;
 
+    @ApiModelProperty(value = "暂存绑定账单号")
+    private String tmpBillNo;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

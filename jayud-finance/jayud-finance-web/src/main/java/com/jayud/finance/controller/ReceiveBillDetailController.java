@@ -21,6 +21,7 @@ import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.po.OrderReceivableBillDetail;
+import com.jayud.finance.service.IOrderBillCostTotalService;
 import com.jayud.finance.service.IOrderReceivableBillDetailService;
 import com.jayud.finance.util.StringUtils;
 import com.jayud.finance.vo.*;
@@ -48,6 +49,8 @@ public class ReceiveBillDetailController {
     IOrderReceivableBillDetailService billDetailService;
     @Autowired
     private OauthClient oauthClient;
+    @Autowired
+    private IOrderBillCostTotalService orderBillCostTotalService;
 
     @ApiOperation(value = "应收对账单列表,应收对账单审核列表,财务应收对账单列表")
     @PostMapping("/findReceiveBillDetailByPage")
@@ -226,7 +229,7 @@ public class ReceiveBillDetailController {
         Map<String, Object> resultMap = new HashMap<>();
         List<ViewBilToOrderVO> list = billDetailService.viewSBillDetail(form.getBillNo());
         resultMap.put(CommonConstant.LIST, list);//分页数据
-        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHead(form.getBillNo());
+        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHead(form.getBillNo(), new HashMap<>());
         resultMap.put(CommonConstant.SHEET_HEAD, sheetHeadVOS);//表头
         ViewBillVO viewBillVO = billDetailService.getViewSBill(form.getBillNo());
         resultMap.put(CommonConstant.WHOLE_DATA, viewBillVO);//全局数据
@@ -254,18 +257,22 @@ public class ReceiveBillDetailController {
         JSONArray datas = JSONArray.parseArray(JSON.toJSONString(list));
         ViewBillVO viewBillVO = billDetailService.getViewSBill(billNo);
 
+        Map<String, Object> callbackArg = new HashMap<>();
         //头部数据重组
-        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHead(billNo);
+        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHead(billNo, callbackArg);
+        int index = Integer.parseInt(callbackArg.get("fixHeadIndex").toString()) - 1;
         LinkedHashMap<String, String> headMap = new LinkedHashMap<>();
         LinkedHashMap<String, String> dynamicHead = new LinkedHashMap<>();
-        for (
-                int i = 0; i < sheetHeadVOS.size(); i++) {
+        for (int i = 0; i < sheetHeadVOS.size(); i++) {
             SheetHeadVO sheetHeadVO = sheetHeadVOS.get(i);
             headMap.put(sheetHeadVO.getName(), sheetHeadVO.getViewName());
-            if (i > 11) {
+            if (i > index) {
                 dynamicHead.put(sheetHeadVO.getName(), sheetHeadVO.getViewName());
             }
         }
+
+        //计算结算币种
+        this.orderBillCostTotalService.calculateSettlementCurrency(headMap, dynamicHead, datas, "2");
 
         //查询人主体信息
         cn.hutool.json.JSONArray tmp = new cn.hutool.json.JSONArray(this.oauthClient
@@ -297,8 +304,7 @@ public class ReceiveBillDetailController {
         //合计
         LinkedHashMap<String, BigDecimal> costTotal = new LinkedHashMap<>();
 
-        for (
-                int i = 0; i < datas.size(); i++) {
+        for (int i = 0; i < datas.size(); i++) {
             JSONObject jsonObject = datas.getJSONObject(i);
             dynamicHead.forEach((k, v) -> {
                 BigDecimal cost = jsonObject.getBigDecimal(k);
@@ -311,7 +317,7 @@ public class ReceiveBillDetailController {
 
         }
         entity.setTotalData(costTotal);
-        entity.setTotalIndex(11);
+        entity.setTotalIndex(index);
 
         //尾部
         List<String> bottomData = new ArrayList<>();
@@ -444,5 +450,6 @@ public class ReceiveBillDetailController {
         }
         return billDetailService.contrarySAudit(form);
     }
+
 
 }

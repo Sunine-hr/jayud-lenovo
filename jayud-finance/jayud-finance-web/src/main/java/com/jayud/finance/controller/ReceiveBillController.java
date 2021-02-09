@@ -79,6 +79,7 @@ public class ReceiveBillController {
                 return CommonResult.error(ResultEnum.PARAM_ERROR);
             }
         }
+        form.checkCreateReceiveBill();
         return billService.createReceiveBill(form);
     }
 

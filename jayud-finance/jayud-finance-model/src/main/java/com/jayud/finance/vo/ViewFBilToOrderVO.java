@@ -8,6 +8,8 @@ import lombok.Data;
  */
 @Data
 public class ViewFBilToOrderVO {
+    @ApiModelProperty(value = "账单编号")
+    private String billNo;
 
     @ApiModelProperty(value = "创建日期")
     private String createdTimeStr;
@@ -45,6 +47,11 @@ public class ViewFBilToOrderVO {
     @ApiModelProperty(value = "报关单号")
     private String yunCustomsNo;
 
+    @ApiModelProperty(value = "结算币种code")
+    private String settlementCurrencyCode;
+
+    @ApiModelProperty(value = "结算币种")
+    private String settlementCurrency;
 
     public void interceptAddress() {
         String startAddress=this.startAddress;

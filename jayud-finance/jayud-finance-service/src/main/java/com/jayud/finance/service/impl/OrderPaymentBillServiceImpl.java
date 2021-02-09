@@ -258,6 +258,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             //开始保存费用维度的金额信息  以结算币种进行转换后保存
             List<OrderBillCostTotal> orderBillCostTotals = new ArrayList<>();
             for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
+                String currentCurrencyCode = orderBillCostTotalVO.getCurrencyCode();
                 orderBillCostTotalVO.setBillNo(form.getBillNo());
                 orderBillCostTotalVO.setCurrencyCode(settlementCurrency);
                 BigDecimal money = orderBillCostTotalVO.getMoney();//录入费用时的金额
@@ -269,6 +270,8 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
                 orderBillCostTotalVO.setMoney(money);
                 OrderBillCostTotal orderBillCostTotal = ConvertUtil.convert(orderBillCostTotalVO, OrderBillCostTotal.class);
                 orderBillCostTotal.setLocalMoney(orderBillCostTotalVO.getLocalMoney());
+                orderBillCostTotal.setExchangeRate(exchangeRate);
+                orderBillCostTotal.setCurrentCurrencyCode(currentCurrencyCode);
                 orderBillCostTotal.setMoneyType("1");
                 orderBillCostTotals.add(orderBillCostTotal);
             }

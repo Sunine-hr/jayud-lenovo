@@ -1,8 +1,11 @@
 package com.jayud.finance.bo;
 
 
+import com.jayud.common.exception.JayudBizException;
+import com.jayud.finance.vo.InitComboxStrVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.collections4.CollectionUtils;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
@@ -43,8 +46,21 @@ public class CreateReceiveBillForm {
     private String loginUserName;
 
     @ApiModelProperty(value = "是否自定义汇率", required = true)
-    private Boolean isCustomExchangeRate;
+    private boolean isCustomExchangeRate;
 
-    @ApiModelProperty(value = "自定义汇率", required = true)
-    private List<Map<String, String>> customExchangeRate;
+    @ApiModelProperty(value = "自定义汇率")
+    private List<InitComboxStrVO> customExchangeRate;
+
+    /**
+     * 校验出账单参数
+     */
+    public void checkCreateReceiveBill() {
+
+        //校验自定义汇率
+        if (isCustomExchangeRate) {
+            if (CollectionUtils.isEmpty(customExchangeRate)) {
+                throw new JayudBizException(400, "请配置自定义汇率");
+            }
+        }
+    }
 }

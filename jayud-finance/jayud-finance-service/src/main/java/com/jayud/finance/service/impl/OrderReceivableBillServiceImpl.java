@@ -132,6 +132,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             costIds.add(receiveBillDetailForm.getCostId());
             orderNos.add(receiveBillDetailForm.getOrderNo());
         }
+
         String settlementCurrency = form.getSettlementCurrency();
         List<OrderBillCostTotalVO> orderBillCostTotalVOS = new ArrayList<>();
         //校验是否配置了相应币种的汇率
@@ -141,6 +142,16 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             sb.append("请配置[");
             Boolean flag = true;
             orderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, settlementCurrency, form.getAccountTermStr());
+            //是否自定义汇率
+            if (form.isCustomExchangeRate()) {
+                //组装数据
+                Map<String, BigDecimal> customExchangeRate = new HashMap<>();
+                form.getCustomExchangeRate().forEach(e -> customExchangeRate.put(e.getCode(), e.getNote() == null ? new BigDecimal(0) : new BigDecimal(e.getNote())));
+                orderBillCostTotalVOS.forEach(e -> {
+                    e.setExchangeRate(customExchangeRate.get(e.getCurrencyCode()));
+                });
+            }
+
             for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                 BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();//如果费率为0，则抛异常回滚数据
                 if ((exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0) && !orderBillCostTotalVO.getCurrencyCode().equals(settlementCurrency)) {
@@ -257,6 +268,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             //开始保存费用维度的金额信息  以结算币种进行转换后保存
             List<OrderBillCostTotal> orderBillCostTotals = new ArrayList<>();
             for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
+                String currentCurrencyCode = orderBillCostTotalVO.getCurrencyCode();
                 orderBillCostTotalVO.setBillNo(form.getBillNo());
                 orderBillCostTotalVO.setCurrencyCode(settlementCurrency);
                 BigDecimal money = orderBillCostTotalVO.getMoney();//录入费用时的金额
@@ -269,6 +281,8 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
                 OrderBillCostTotal orderBillCostTotal = ConvertUtil.convert(orderBillCostTotalVO, OrderBillCostTotal.class);
                 orderBillCostTotal.setLocalMoney(orderBillCostTotalVO.getLocalMoney());//本币金额
                 orderBillCostTotal.setMoneyType("2");
+                orderBillCostTotal.setExchangeRate(exchangeRate);
+                orderBillCostTotal.setCurrentCurrencyCode(currentCurrencyCode);
                 orderBillCostTotals.add(orderBillCostTotal);
             }
             result = costTotalService.saveBatch(orderBillCostTotals);
@@ -389,4 +403,6 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         sqlParam.put("table", SubOrderSignEnum.getSignOne2SignTwo(form.getCmd()).split("表")[0]);
         return sqlParam;
     }
+
+
 }

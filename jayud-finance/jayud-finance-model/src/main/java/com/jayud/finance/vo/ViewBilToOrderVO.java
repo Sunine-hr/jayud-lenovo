@@ -11,6 +11,8 @@ import java.util.List;
  */
 @Data
 public class ViewBilToOrderVO {
+    @ApiModelProperty(value = "账单编号")
+    private String billNo;
 
     @ApiModelProperty(value = "创建日期")
     private String createdTimeStr;
@@ -51,6 +53,12 @@ public class ViewBilToOrderVO {
     @ApiModelProperty(value = "合计费用")
     @JsonIgnore
     private List<String> totalCost;
+
+    @ApiModelProperty(value = "结算币种code")
+    private String settlementCurrencyCode;
+
+    @ApiModelProperty(value = "结算币种")
+    private String settlementCurrency;
 
     public void interceptAddress(String startAddress, String endAddress) {
         if (startAddress != null && startAddress.length() > 6) {

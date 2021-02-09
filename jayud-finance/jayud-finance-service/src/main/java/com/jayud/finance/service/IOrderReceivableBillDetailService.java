@@ -8,6 +8,7 @@ import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.vo.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -87,7 +88,7 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      * 对账单详情表头
      * @return
      */
-    List<SheetHeadVO> findSSheetHead(String billNo);
+    List<SheetHeadVO> findSSheetHead(String billNo,Map<String,Object> callbackArg);
 
     /**
      * 对账单详情的全局数据部分

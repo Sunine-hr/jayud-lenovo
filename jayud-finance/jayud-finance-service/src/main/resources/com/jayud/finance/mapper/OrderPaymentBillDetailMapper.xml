@@ -260,6 +260,7 @@
         SELECT distinct
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         oi.order_no orderNo,
+        opbd.bill_no billNo,
 		(select opc.order_no from order_payment_cost opc where opc.id = opbd.cost_id) subOrderNo,
         opb.supplier_ch_name supplierChName,
         ( SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' group by ot.order_no) goodsDesc,
@@ -271,7 +272,9 @@
         (select sum(ota.piece_amount) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1') pieceNum,
         (select sum(ota.weight) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1') weight,
         (select GROUP_CONCAT(ota.goods_desc) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' group by ota.order_no) goodsDesc,
-        (select oc.yun_customs_no from order_customs oc where oc.main_order_no = oi.order_no limit 1) yunCustomsNo
+        (select oc.yun_customs_no from order_customs oc where oc.main_order_no = oi.order_no limit 1) yunCustomsNo,
+        opbd.settlement_currency settlementCurrencyCode,
+        (select currency_name from currency_info ci where ci.currency_code=opbd.settlement_currency) settlementCurrency
         FROM
         order_info oi
 		LEFT JOIN order_payment_bill_detail opbd on opbd.order_no = oi.order_no
@@ -525,6 +528,8 @@
             left join order_info oi on oi.order_no = opc.main_order_no
             left join order_payment_bill_detail opbd on opbd.cost_id = opc.id
 			left join order_payment_bill opb on opb.id = opbd.bill_id
+			left join order_bill_cost_total orbct on orbct.bill_no = opbd.bill_no
+			and orbct.cost_id = opbd.cost_id and money_type='1'
             left join department d on d.id = oi.biz_belong_depart
             left join supplier_info si on si.supplier_code = opc.customer_code
         where opbd.bill_no = #{billNo}

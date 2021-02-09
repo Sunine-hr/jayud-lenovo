@@ -22,6 +22,7 @@ import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.po.OrderPaymentBillDetail;
 import com.jayud.finance.po.OrderReceivableBillDetail;
+import com.jayud.finance.service.IOrderBillCostTotalService;
 import com.jayud.finance.service.IOrderPaymentBillDetailService;
 import com.jayud.finance.util.StringUtils;
 import com.jayud.finance.vo.*;
@@ -49,6 +50,8 @@ public class PaymentBillDetailController {
     IOrderPaymentBillDetailService billDetailService;
     @Autowired
     private OauthClient oauthClient;
+    @Autowired
+    private IOrderBillCostTotalService orderBillCostTotalService;
 
     @ApiOperation(value = "应付对账单列表,应付对账单审核列表,财务应付对账单列表")
     @PostMapping("/findPaymentBillDetailByPage")
@@ -174,7 +177,7 @@ public class PaymentBillDetailController {
         for (OrderPaymentBillDetailForm formObject : paymentBillDetailForms) {
             costIds.add(formObject.getCostId());
         }
-        Boolean result = billDetailService.editFSaveConfirm(costIds,form);
+        Boolean result = billDetailService.editFSaveConfirm(costIds, form);
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
@@ -267,6 +270,9 @@ public class PaymentBillDetailController {
                 dynamicHead.put(sheetHeadVO.getName(), sheetHeadVO.getViewName());
             }
         }
+
+        //计算结算币种
+        this.orderBillCostTotalService.calculateSettlementCurrency(headMap, dynamicHead, datas, "1");
 
         //查询人主体信息
         cn.hutool.json.JSONArray tmp = new cn.hutool.json.JSONArray(this.oauthClient

@@ -449,7 +449,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
     }
 
     @Override
-    public List<SheetHeadVO> findSSheetHead(String billNo) {
+    public List<SheetHeadVO> findSSheetHead(String billNo,Map<String,Object> callbackArg) {
         List<SheetHeadVO> allHeadList = new ArrayList<>();
         List<SheetHeadVO> fixHeadList = new ArrayList<>();
         try {
@@ -464,6 +464,8 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 sheetHeadVO.setViewName(String.valueOf(f.get(viewBilToOrderVO)));
                 fixHeadList.add(sheetHeadVO);
             }
+            //固定头部数目
+            callbackArg.put("fixHeadIndex",fixHeadList.size());
         } catch (Exception e) {
             e.printStackTrace();
         }

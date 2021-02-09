@@ -20,7 +20,6 @@ import com.jayud.finance.mapper.OrderPaymentBillDetailMapper;
 import com.jayud.finance.po.OrderBillCostTotal;
 import com.jayud.finance.po.OrderPaymentBill;
 import com.jayud.finance.po.OrderPaymentBillDetail;
-import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.service.*;
 import com.jayud.finance.util.ReflectUtil;
 import com.jayud.finance.vo.*;
@@ -460,7 +459,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     }
 
     @Override
-    public List<SheetHeadVO> findSheetHead(String billNo) {
+    public List<SheetHeadVO> findSheetHead(String billNo, Map<String, Object> callbackArg) {
         List<SheetHeadVO> allHeadList = new ArrayList<>();
         List<SheetHeadVO> fixHeadList = new ArrayList<>();
         try {
@@ -475,6 +474,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 sheetHeadVO.setViewName(String.valueOf(f.get(viewBilToOrderVO)));
                 fixHeadList.add(sheetHeadVO);
             }
+            callbackArg.put("fixHeadIndex", fixHeadList.size());
         } catch (Exception e) {
             e.printStackTrace();
         }

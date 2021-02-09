@@ -21,7 +21,6 @@ import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.po.OrderPaymentBillDetail;
-import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.service.IOrderBillCostTotalService;
 import com.jayud.finance.service.IOrderPaymentBillDetailService;
 import com.jayud.finance.util.StringUtils;
@@ -229,7 +228,7 @@ public class PaymentBillDetailController {
         Map<String, Object> resultMap = new HashMap<>();
         List<ViewFBilToOrderVO> list = billDetailService.viewBillDetail(form.getBillNo());
         resultMap.put(CommonConstant.LIST, list);//分页数据
-        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSheetHead(form.getBillNo());
+        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSheetHead(form.getBillNo(), new HashMap<>());
         resultMap.put(CommonConstant.SHEET_HEAD, sheetHeadVOS);//表头
         ViewBillVO viewBillVO = billDetailService.getViewBill(form.getBillNo());
         resultMap.put(CommonConstant.WHOLE_DATA, viewBillVO);//全局数据
@@ -259,14 +258,16 @@ public class PaymentBillDetailController {
 
         ViewBillVO viewBillVO = billDetailService.getViewBill(billNo);
 
+        Map<String, Object> callbackArg = new HashMap<>();
         //头部数据重组
-        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSheetHead(billNo);
+        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSheetHead(billNo, callbackArg);
+        int index = Integer.parseInt(callbackArg.get("fixHeadIndex").toString()) - 1;
         LinkedHashMap<String, String> headMap = new LinkedHashMap<>();
         LinkedHashMap<String, String> dynamicHead = new LinkedHashMap<>();
         for (int i = 0; i < sheetHeadVOS.size(); i++) {
             SheetHeadVO sheetHeadVO = sheetHeadVOS.get(i);
             headMap.put(sheetHeadVO.getName(), sheetHeadVO.getViewName());
-            if (i > 11) {
+            if (i > index) {
                 dynamicHead.put(sheetHeadVO.getName(), sheetHeadVO.getViewName());
             }
         }
@@ -316,7 +317,7 @@ public class PaymentBillDetailController {
 
         }
         entity.setTotalData(costTotal);
-        entity.setTotalIndex(11);
+        entity.setTotalIndex(index);
 
         //尾部
         List<String> bottomData = new ArrayList<>();

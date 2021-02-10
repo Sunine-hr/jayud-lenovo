@@ -2,6 +2,7 @@ package com.jayud.oms.model.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.jayud.common.utils.FileView;
 import com.jayud.oms.model.bo.AddGoodsForm;
 import com.jayud.oms.model.bo.AddOrderAddressForm;
 import io.swagger.annotations.ApiModelProperty;
@@ -65,8 +66,20 @@ public class InputSeaOrderVO {
     @ApiModelProperty(value = "目的港代码")
     private String portDestinationCode;
 
+    @ApiModelProperty(value = "柜型大小")
+    private Integer cabinetSize;
+
+    @ApiModelProperty(value = "柜型类型")
+    private Integer cabinetType;
+
+    @ApiModelProperty(value = "柜型大小")
+    private String cabinetSizeName;
+
+    @ApiModelProperty(value = "柜型类型")
+    private String cabinetTypeName;
+
     @ApiModelProperty(value = "货好时间")
-    private LocalDateTime goodTime;
+    private String goodTime;
 
     @ApiModelProperty(value = "运费是否到付(1代表true,0代表false)")
     private Boolean isFreightCollect = false;
@@ -83,6 +96,9 @@ public class InputSeaOrderVO {
     @ApiModelProperty(value = "创建人(登录用户)")
     private String createUser;
 
+    @ApiModelProperty(value = "订船信息")
+    private InputSeaBookshipVO seaBookshipVO;
+
     @ApiModelProperty(value = "发货地址集合")
     private List<AddOrderAddressForm> deliveryAddress;
 
@@ -97,6 +113,21 @@ public class InputSeaOrderVO {
 
     @ApiModelProperty(value = "货品信息")
     private List<AddGoodsForm> goodsForms;
+
+    @ApiModelProperty(value = "所有附件信息")
+    private List<FileView> allPics = new ArrayList<>();
+
+    @ApiModelProperty(value = "接单人(登录用户名)")
+    private String orderTaker;
+
+    @ApiModelProperty(value = "接单日期")
+    private String receivingOrdersDate;
+
+    @ApiModelProperty(value = "海外代理供应商id")
+    private Long overseasSuppliersId;
+
+    @ApiModelProperty(value = "海外代理供应商")
+    private String overseasSuppliers;
 
 
 }

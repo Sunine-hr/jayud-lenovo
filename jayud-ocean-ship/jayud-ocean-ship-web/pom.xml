@@ -10,16 +10,20 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>jayud-ocean-ship-web</artifactId>
+
+
     <dependencies>
         <dependency>
             <groupId>com.jayud</groupId>
             <artifactId>jayud-ocean-ship-service</artifactId>
             <version>1.0</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.jayud</groupId>
             <artifactId>jayud-ocean-ship-model</artifactId>
             <version>1.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
     <build>

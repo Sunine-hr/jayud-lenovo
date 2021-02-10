@@ -34,6 +34,10 @@ public abstract class SqlConstant {
 
     public static final String AIR_BOOKING = "air_booking表";
 
+    public static final String SEA_ORDER = "sea_order表";
+
+    public static final String SEA_BOOKSHIP = "sea_bookship表";
+
     public static final String F_ID = "f_id";
 
     public static final String ID_CODE = "id_code";

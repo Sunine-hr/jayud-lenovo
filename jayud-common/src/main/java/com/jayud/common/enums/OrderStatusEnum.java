@@ -24,7 +24,7 @@ public enum OrderStatusEnum {
     NLYSDD("NLYSDD", "内陆运输订单"),
     FWD("FWD", "服务单"),
     FWDDD("FWDDD", "服务单订单"),
-    HY("海运","HY"),
+    HY("HY","海运"),
     HYDD("HYDD", "海运订单"),
 
     //主订单状态
@@ -105,10 +105,12 @@ public enum OrderStatusEnum {
     //海运订单状态流程节点
     SEA_S_0("S_0","待接单"),
     SEA_S_1("S_1","海运接单"),
-    SEA_S_1_1("S_1_1","订单驳回"),
+    SEA_S_1_1("S_1_1","海运接单驳回"),
     SEA_S_2("S_2","海运订船"),
-    SEA_S_2_2("S_2_2","订船驳回"),
+    SEA_S_2_1("S_2_1","订船驳回"),
     SEA_S_3("S_3","确认入仓"),
+    SEA_S_3_1("S_3_1","订单入仓驳回"),
+    SEA_S_3_2("S_3_2","订船驳回编辑"),
     SEA_S_4("S_4","提交补料"),
     SEA_S_5("S_5","提单草稿确认"),
     SEA_S_6("S_6","确认装船"),
@@ -233,6 +235,55 @@ public enum OrderStatusEnum {
         return null;
     }
 
+
+    /**
+     * 获取海运下个节点
+     * 如果是驳回状态就是当前状态
+     */
+    public static OrderStatusEnum getSeaOrderNextStatus(String currentStatus) {
+
+        if (SEA_S_3_2.getCode().equals(currentStatus)) {
+            return OrderStatusEnum.SEA_S_3_2;
+        }
+        List<OrderStatusEnum> statusEnums = getSeaOrderProcess();
+        for (OrderStatusEnum statusEnum : statusEnums) {
+            if(statusEnum.getCode().equals(currentStatus)){
+                return statusEnum;
+            }
+        }
+
+        return null;
+    }
+
+    public static List<OrderStatusEnum> getSeaOrderProcess() {
+        List<OrderStatusEnum> statusEnums = new ArrayList<>();
+        statusEnums.add(SEA_S_0);
+        statusEnums.add(SEA_S_1);
+        statusEnums.add(SEA_S_2);
+        statusEnums.add(SEA_S_3);
+        statusEnums.add(SEA_S_4);
+        statusEnums.add(SEA_S_5);
+        statusEnums.add(SEA_S_6);
+        statusEnums.add(SEA_S_7);
+        statusEnums.add(SEA_S_8);
+        statusEnums.add(SEA_S_9);
+        statusEnums.add(SEA_S_10);
+        return statusEnums;
+    }
+
+    public static OrderStatusEnum getSeaOrderRejection(String status) {
+        if (OrderStatusEnum.SEA_S_0.getCode().equals(status)) {//接单页面驳回
+            return SEA_S_1_1;
+        }
+        if (OrderStatusEnum.SEA_S_1.getCode().equals(status)) {//订舱页面驳回
+            return SEA_S_2_1;
+        }
+        if (OrderStatusEnum.SEA_S_2.getCode().equals(status)) {//入仓页面驳回
+            return SEA_S_3_1;
+        }
+        return null;
+    }
+
     /**
      * 获取驳回枚举
      */
@@ -258,7 +309,7 @@ public enum OrderStatusEnum {
                     TMS_T_1_1.getCode(), TMS_T_2_1.getCode(), TMS_T_3_1.getCode(),
                     TMS_T_3_2.getCode(), TMS_T_4_1.getCode(), TMS_T_5_1.getCode(),
                     AIR_A_1_1.getCode(), AIR_A_2_1.getCode(), AIR_A_3_1.getCode(),
-                    AIR_A_3_2.getCode()};
+                    AIR_A_3_2.getCode(),SEA_S_1_1.getCode(),SEA_S_2_1.getCode(),SEA_S_3_1.getCode(),SEA_S_3_2.getCode()};
         }
         for (String subOrderSign : subOrderSigns) {
             //todo 有需要再补
@@ -274,6 +325,11 @@ public enum OrderStatusEnum {
             }
             if (SubOrderSignEnum.BG.getSignOne().equals(subOrderSign)) {
                 return new String[]{CUSTOMS_C_1_1.getCode()};
+            }
+            if(SubOrderSignEnum.HY.getSignOne().equals(subOrderSign)){
+                return new String[]{
+                        SEA_S_1_1.getCode(),SEA_S_2_1.getCode(),SEA_S_3_1.getCode(),SEA_S_3_2.getCode()
+                };
             }
         }
         return null;

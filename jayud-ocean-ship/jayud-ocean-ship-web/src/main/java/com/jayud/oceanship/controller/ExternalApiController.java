@@ -10,7 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 被外部模块调用的处理接口
@@ -42,9 +45,21 @@ public class ExternalApiController {
      * 根据主订单号获取海运单信息
      */
     @RequestMapping(value = "/api/oceanship/getSeaOrderDetails")
-    ApiResult<SeaOrderVO> getSeaOrderDetails(String orderNo){
+    ApiResult<SeaOrderVO> getSeaOrderDetails(@RequestParam("orderNo")String orderNo){
         SeaOrder seaOrder = seaOrderService.getByMainOrderNO(orderNo);
         SeaOrderVO seaOrderVO = seaOrderService.getSeaOrderByOrderNO(seaOrder.getId());
         return ApiResult.ok(seaOrderVO);
     }
+
+    /**
+     * 根据主订单号集合获取海运订单信息
+     * @param mainOrderNoList
+     * @return
+     */
+    @RequestMapping(value = "/api/oceanship/getSeaOrderByMainOrderNos")
+    ApiResult getSeaOrderByMainOrderNos(@RequestBody List<String> mainOrderNoList){
+        List<SeaOrder> seaOrders = this.seaOrderService.getSeaOrderByOrderNOs(mainOrderNoList);
+        return ApiResult.ok(seaOrders);
+    }
+
 }

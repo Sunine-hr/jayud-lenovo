@@ -4,9 +4,12 @@ package com.jayud.oceanship.feign;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.config.FeignRequestInterceptor;
+import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.common.entity.InitComboxVO;
 import com.jayud.oceanship.bo.AddGoodsForm;
 import com.jayud.oceanship.bo.AddOrderAddressForm;
+import com.jayud.oceanship.bo.AuditInfoForm;
+import com.jayud.oceanship.bo.SeaProcessOptForm;
 import com.jayud.oceanship.vo.GoodsVO;
 import com.jayud.oceanship.vo.OrderAddressVO;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -37,20 +40,20 @@ public interface OmsClient {
     @RequestMapping(value = "/api/mainOrder/getByOrderNos")
     ApiResult getMainOrderByOrderNos(@RequestParam("orderNos") List<String> orderNos);
 
-//    /**
-//     * 只记录成功操作流程状态
-//     */
-//    @RequestMapping(value = "/api/saveOprStatus")
-//    ApiResult saveOprStatus(@RequestBody AirProcessOptForm form);
-//
-//    /**
-//     * 记录审核信息
-//     *
-//     * @param form
-//     * @return
-//     */
-//    @RequestMapping(value = "/api/saveAuditInfo")
-//    ApiResult saveAuditInfo(@RequestBody AuditInfoForm form);
+    /**
+     * 只记录成功操作流程状态
+     */
+    @RequestMapping(value = "/api/saveOprStatus")
+    ApiResult saveOprStatus(@RequestBody SeaProcessOptForm form);
+
+    /**
+     * 记录审核信息
+     *
+     * @param form
+     * @return
+     */
+    @RequestMapping(value = "/api/saveAuditInfo")
+    ApiResult saveAuditInfo(@RequestBody AuditInfoForm form);
 
     /**
      * 初始化审核通过车辆供应商
@@ -74,22 +77,22 @@ public interface OmsClient {
 //    @RequestMapping(value = "/api/holdOrder")
 //    ApiResult holdOrder(@RequestBody InputOrderForm form);
 //
-//    /**
-//     * 删除特定单的操作流程
-//     *
-//     * @param form
-//     * @return
-//     */
-//    @RequestMapping(value = "/api/delSpecOprStatus")
-//    ApiResult delSpecOprStatus(@RequestBody DelOprStatusForm form);
-//
-//
-//    /**
-//     * 查询物流轨迹节点
-//     */
-//    @RequestMapping(value = "/api/getLogisticsTrackNode")
-//    ApiResult getLogisticsTrackNode(@RequestBody String condition);
-//
+    /**
+     * 删除特定单的操作流程
+     *
+     * @param form
+     * @return
+     */
+    @RequestMapping(value = "/api/delSpecOprStatus")
+    ApiResult delSpecOprStatus(@RequestBody DelOprStatusForm form);
+
+
+    /**
+     * 查询物流轨迹节点
+     */
+    @RequestMapping(value = "/api/getLogisticsTrackNode")
+    ApiResult getLogisticsTrackNode(@RequestBody String condition);
+
 //    /**
 //     * 根据主订单号修改主订单
 //     */
@@ -101,12 +104,12 @@ public interface OmsClient {
 //     */
 //    @RequestMapping(value = "/api/getPortCodeByName")
 //    public ApiResult getPortCodeByName(@RequestBody String name);
-//
-//    /**
-//     * 根据orderId和类型删除物流轨迹跟踪表
-//     */
-//    @RequestMapping(value = "/api/deleteLogisticsTrackByType")
-//    ApiResult deleteLogisticsTrackByType(@RequestParam("orderId") Long orderId, @RequestParam("type") Integer type);
+
+    /**
+     * 根据orderId和类型删除物流轨迹跟踪表
+     */
+    @RequestMapping(value = "/api/deleteLogisticsTrackByType")
+    ApiResult deleteLogisticsTrackByType(@RequestParam("orderId") Long orderId, @RequestParam("type") Integer type);
 
     /**
      * 批量保存/修改商品信息
@@ -154,4 +157,10 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/getSupplierInfoByIds")
     ApiResult getSupplierInfoByIds(@RequestParam("supplierIds") List<Long> supplierIds);
+
+    /**
+     * 获取柜车大小类型
+     */
+    @RequestMapping(value = "/api/getVehicleSizeInfo")
+    ApiResult getVehicleSizeInfo();
 }

@@ -20,7 +20,7 @@ import java.util.Map;
  * mysql 代码生成器演示例子
  * </p>
  *
- * @author hanbin
+ * @author
  * @since 2019年8月20日11:30:39
  */
 public class MysqlGenerator {
@@ -30,7 +30,7 @@ public class MysqlGenerator {
                 "jayud-ocean-ship\\jayud-ocean-ship-service",
                 "jayud-ocean-ship\\jayud-ocean-ship-web"};
         for (String model : models) {
-            shell(model,"order_status");
+            shell(model,"cabinet_type");
 
         }
     }

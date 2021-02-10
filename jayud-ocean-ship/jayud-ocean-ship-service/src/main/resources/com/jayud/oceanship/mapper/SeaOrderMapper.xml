@@ -39,13 +39,15 @@
 
 <!-- 根据订单ID获取订单信息-->
     <select id="getSeaOrder" parameterType="long" resultType="com.jayud.oceanship.vo.SeaOrderVO">
-        select so.id,so.main_order_no mainOrderNo,so.order_no orderNo,so.status,
+        select so.id orderId,so.main_order_no mainOrderNo,so.order_no orderNo,so.status,
         so.process_status processStatus,
         so.unit_code unitCode,
         so.legal_name legalName,
         so.legal_entity_id legalEntityId,
         so.imp_and_exp_type impAndExpType,
         so.terms,
+        so.order_taker operatorUser,
+        so.receiving_orders_date operatorTime,
         so.port_departure_code portDepartureCode,
         sp.name portDeparture,
         so.port_destination_code portDestinationCode,
@@ -56,19 +58,90 @@
         so.is_dangerous_goods isDangerousGoods,
         so.is_charged isCharged,
         so.create_user createUser,
-        so.create_time,
+        so.create_time createTime,
         so.update_user,
         so.update_time,
         so.need_input_cost,
-        so.unit_department_id
+        so.unit_department_id unitDepartmentId,
+        so.cabinet_size cabinetSize,
+        so.cabinet_type cabinetType,
+        so.paper_strip_seal paperStripSeal,
+        so.cut_replenish_time cutReplenishTime,
+        so.cabinet_number cabinetNumber,
+        oi.customer_name customerName,
+        oi.id mainOrderId,
+        oi.biz_uname bizName,
+        oi.contract_no contractNo,
+        terms.name termsDesc
         from sea_order so
         left join sea_port sp on so.port_departure_code = sp.code
         left join sea_port sp1 on so.port_destination_code = sp1.code
-        where id = #{id} order by so.id
+        left join order_info oi on so.main_order_no = oi.order_no
+        left join terms on terms.id = so.terms
+        where so.id = #{id}
     </select>
 
+    <resultMap id="map1" type="com.jayud.oceanship.vo.SeaOrderFormVO">
+        <result column="id" property="id"></result>
+        <result column="mainOrderNo" property="mainOrderNo"></result>
+        <result column="orderNo" property="orderNo"></result>
+        <result column="status" property="status"></result>
+        <result column="processStatus" property="processStatus"></result>
+        <result column="unitCode" property="unitCode"></result>
+        <result column="legalName" property="subLegalName"></result>
+        <result column="legalEntityId" property="legalEntityId"></result>
+        <result column="impAndExpType" property="impAndExpType"></result>
+        <result column="terms" property="terms"></result>
+        <result column="termsDesc" property="termsDesc"></result>
+        <result column="portDepartureCode" property="portDepartureCode"></result>
+        <result column="portDepartureName" property="portDepartureName"></result>
+        <result column="portDestinationCode" property="portDestinationCode"></result>
+        <result column="portDestinationName" property="portDestinationName"></result>
+        <result column="goodTime" property="goodTime"></result>
+        <result column="createUser" property="createUser"></result>
+        <result column="create_time" property="createTime"></result>
+        <result column="update_user" property="updateUser"></result>
+        <result column="update_time" property="updateTime"></result>
+        <result column="need_input_cost" property="needInputCost"></result>
+        <result column="unit_code" property="subUnitCode"></result>
+        <result column="unit_department_id" property="unit_department_id"></result>
+        <result column="name" property="termsDesc"></result>
+        <result column="cost" property="cost"></result>
+        <result column="cut_replenish_time" property="cutReplenishTime"></result>
+        <result column="cabinet_size" property="cabinetSize"></result>
+        <result column="cabinet_type" property="cabinetType"></result>
+        <result column="cabinet_number" property="cabinetNumber"></result>
+        <result column="cabinet_type_name" property="cabinetTypeName"></result>
+        <result column="cabinet_number_name" property="cabinetNumberName"></result>
+        <result column="paper_strip_seal" property="paperStripSeal"></result>
+
+        <association property="seaBookShipForm" javaType="com.jayud.oceanship.vo.SeaBookshipVO">
+            <result column="sid" property="id"></result>
+            <result column="bstatus" property="status"></result>
+            <result column="sea_order_no" property="seaOrderNo"></result>
+            <result column="sea_order_id" property="seaOrderId"></result>
+            <result column="shipCompany" property="shipCompany"></result>
+            <result column="shipName" property="shipName"></result>
+            <result column="shipNumber" property="shipNumber"></result>
+            <result column="eta" property="eta"></result>
+            <result column="etd" property="etd"></result>
+            <result column="atd" property="atd"></result>
+            <result column="ata" property="ata"></result>
+            <result column="main_no" property="mainNo"></result>
+            <result column="sub_no" property="subNo"></result>
+            <result column="warehousingNo" property="warehousingNo"></result>
+            <result column="delivery_wharf" property="deliveryWharf"></result>
+            <result column="supplierId" property="agentSupplierId"></result>
+            <result column="bill_lading_weight" property="billLadingWeight"></result>
+            <result column="file_path" property="filePath"></result>
+            <result column="file_name" property="fileName"></result>
+        </association>
+
+    </resultMap>
+
 <!--  分页获取订单列表-->
-    <select id="findByPage" resultType="com.jayud.oceanship.vo.SeaOrderFormVO">
+<!--    <select id="findByPage" resultType="com.jayud.oceanship.vo.SeaOrderFormVO">-->
+    <select id="findByPage" resultMap="map1">
         select so.id,so.main_order_no mainOrderNo,so.order_no orderNo,so.status,
         so.process_status processStatus,
         so.unit_code unitCode,
@@ -77,16 +150,25 @@
         so.imp_and_exp_type impAndExpType,
         so.terms,
         so.port_departure_code portDepartureCode,
-        sp.name portDeparture,
+        sp.name portDepartureName,
         so.port_destination_code portDestinationCode,
-        sp1.name portDestination,
+        sp1.name portDestinationName,
         so.good_time goodTime,
+        sb.id sid,
+        sb.sea_order_no,
+        sb.status bstatus,
+        sb.sea_order_id,
         sb.ship_company shipCompany,
         sb.ship_name shipName,
         sb.ship_number shipNumber,
-        sb.eta,sb.etd,
+        sb.eta,sb.etd,sb.ata,sb.atd,
+        sb.bill_lading_weight,
+        sb.main_no,sb.sub_no,
         sb.warehousing_no warehousingNo,
+        sb.delivery_wharf,
         sb.agent_supplier_id supplierId,
+        sb.file_path,
+        sb.file_name,
         so.create_user createUser,
         so.create_time,
         so.update_user,
@@ -94,6 +176,14 @@
         so.need_input_cost,
         so.unit_code unitCode,
         so.unit_department_id,
+        so.cut_replenish_time,
+        so.cabinet_number,
+        so.paper_strip_seal,
+        so.cabinet_size,
+        so.cabinet_type,
+        so.cabinet_size_name,
+        so.cabinet_type_name,
+        terms.name termsDesc,
         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = so.`order_no`) +
         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = so.`order_no`)>0 THEN TRUE
         ELSE FALSE
@@ -101,7 +191,8 @@
         from sea_order so
         left join sea_port sp on so.port_departure_code = sp.code
         left join sea_port sp1 on so.port_destination_code = sp1.code
-        left join sea_bookship sb on sb.sea_order_id = so.id and (ab.`status` != 2 OR ab.`status` IS NULL)
+        left join sea_bookship sb on sb.sea_order_id = so.id and (sb.`status` != 2 OR sb.`status` IS NULL)
+        left join terms on so.terms = terms.id
         <where>
             <if test="form.orderNo !=null and form.orderNo!=''">
                 and so.order_no like concat('%',#{form.orderNo},'%')

@@ -29,10 +29,13 @@ public class SeaOrderVO {
 
     @ApiModelProperty(value = "海运订单主键")
     @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    private Long orderId;
 
     @ApiModelProperty(value = "主订单编号")
     private String mainOrderNo;
+
+    @ApiModelProperty(value = "主订单编号")
+    private Long mainOrderId;
 
     @ApiModelProperty(value = "海运订单编号")
     private String orderNo;
@@ -79,6 +82,12 @@ public class SeaOrderVO {
     @ApiModelProperty(value = "目的港")
     private String portDestination;
 
+    @ApiModelProperty(value = "操作人")
+    private String operatorUser;
+
+    @ApiModelProperty(value = "操作时间")
+    private String operatorTime;
+
     @ApiModelProperty(value = "货好时间")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime goodTime;
@@ -98,6 +107,9 @@ public class SeaOrderVO {
     @ApiModelProperty(value = "创建人(登录用户)")
     private String createUser;
 
+    @ApiModelProperty(value = "创建人(登录用户)")
+    private LocalDateTime createTime;
+
     @ApiModelProperty(value = "订船信息")
     private SeaBookshipVO seaBookshipVO;
 
@@ -110,11 +122,48 @@ public class SeaOrderVO {
     @ApiModelProperty(value = "通知地址集合")
     private List<OrderAddressVO> notificationAddress;
 
-    @ApiModelProperty(value = "空运订单地址信息")
+    @ApiModelProperty(value = "海运订单地址信息")
     private List<OrderAddressVO> orderAddressForms;
 
     @ApiModelProperty(value = "货品信息")
     private List<GoodsVO> goodsForms;
+
+    @ApiModelProperty(value = "结算部门")
+    private Long unitDepartmentId;
+
+    @ApiModelProperty(value = "柜号")
+    private String cabinetNumber;
+
+    @ApiModelProperty(value = "封条")
+    private String paperStripSeal;
+
+    @ApiModelProperty(value = "柜型大小")
+    private Integer cabinetSize;
+
+    @ApiModelProperty(value = "柜型类型")
+    private Integer cabinetType;
+
+    @ApiModelProperty(value = "柜型大小")
+    private String cabinetSizeName;
+
+    @ApiModelProperty(value = "柜型类型")
+    private String cabinetTypeName;
+
+    @ApiModelProperty(value = "截补料时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime cutReplenishTime;
+
+    @ApiModelProperty(value = "客户名称")
+    private String customerName;
+
+    @ApiModelProperty(value = "业务员")
+    private String bizName;
+
+    @ApiModelProperty(value = "合同号")
+    private String contractNo;
+
+    @ApiModelProperty(value = "供应商名称")
+    private String supplierName;
 
     public void processingAddress(OrderAddressVO addressVO) {
         switch (addressVO.getType()) {

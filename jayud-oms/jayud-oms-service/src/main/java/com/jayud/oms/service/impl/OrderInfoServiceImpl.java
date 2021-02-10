@@ -97,7 +97,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Autowired
     private IAuditInfoService auditInfoService;
 
-    private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(), SubOrderSignEnum.KY.getSignOne()};
+    private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(), SubOrderSignEnum.KY.getSignOne(),SubOrderSignEnum.HY.getSignOne()};
 
     @Autowired
     private IServiceOrderService serviceOrderService;
@@ -712,7 +712,19 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //获取海运信息
         if(OrderStatusEnum.HY.getCode().equals(form.getClassCode())||inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.HYDD.getCode())){
             InputSeaOrderVO seaOrderVO = this.oceanShipClient.getSeaOrderDetails(inputMainOrderVO.getOrderNo()).getData();
-
+            if (seaOrderVO != null) {
+                //查询供应商
+                InputSeaBookshipVO seaBookshipVO = seaOrderVO.getSeaBookshipVO();
+                if (seaBookshipVO != null && seaBookshipVO.getAgentSupplierId() != null) {
+                    SupplierInfo supplierInfo = this.supplierInfoService.getById(seaBookshipVO.getAgentSupplierId());
+                    seaBookshipVO.setAgentSupplier(supplierInfo.getSupplierChName());
+                }
+                //添加附件
+                List<FileView> attachments = this.logisticsTrackService.getAttachments(seaOrderVO.getId()
+                        , BusinessTypeEnum.HY.getCode(), prePath);
+                seaOrderVO.setAllPics(attachments);
+                inputOrderVO.setSeaOrderForm(seaOrderVO);
+            }
         }
 
         return inputOrderVO;
@@ -824,6 +836,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
         }
         //海运
+        System.out.println(OrderStatusEnum.HY.getCode().equals(classCode));
         if (OrderStatusEnum.HY.getCode().equals(classCode)) {
             InputSeaOrderForm seaOrderForm = form.getSeaOrderForm();
             if (this.queryEditOrderCondition(seaOrderForm.getStatus(),
@@ -1008,13 +1021,20 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         result = this.freightAirClient.getAirOrderByMainOrderNos(mainOrderNoList);
         Map<String, Map<String, Object>> airOrderMap = this.object2Map(result.getData());
 
+        //海运
+        result = this.oceanShipClient.getSeaOrderByMainOrderNos(mainOrderNoList);
+        Map<String, Map<String, Object>> seaOrderMap = this.object2Map(result.getData());
+
         Map<String, Map<String, Object>> map = new HashMap<>();
         for (String mainOrderNo : mainOrderNoList) {
             Map<String, Object> subOrder = new HashMap<>();
             subOrder.put(KEY_SUBORDER[0], tmsOrderMap.get(mainOrderNo));
             subOrder.put(KEY_SUBORDER[1], airOrderMap.get(mainOrderNo));
+            subOrder.put(KEY_SUBORDER[2], seaOrderMap.get(mainOrderNo));
             map.put(mainOrderNo, subOrder);
         }
+
+
         return map;
     }
 

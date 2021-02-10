@@ -7,6 +7,7 @@ import com.jayud.oceanship.po.SeaOrder;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.oceanship.vo.SeaOrderFormVO;
 import com.jayud.oceanship.vo.SeaOrderVO;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
  * @author LLJ
  * @since 2021-01-28
  */
+@Mapper
 public interface SeaOrderMapper extends BaseMapper<SeaOrder> {
 
     /**
@@ -35,5 +37,5 @@ public interface SeaOrderMapper extends BaseMapper<SeaOrder> {
      * @param legalIds
      * @return
      */
-    IPage<SeaOrderFormVO> findByPage(Page<SeaOrder> page,@Param("form") QuerySeaOrderForm form,@Param("legalIds") List<Long> legalIds);
+    IPage<SeaOrderFormVO> findByPage(Page<SeaOrderFormVO> page,@Param("form") QuerySeaOrderForm form,@Param("legalIds") List<Long> legalIds);
 }

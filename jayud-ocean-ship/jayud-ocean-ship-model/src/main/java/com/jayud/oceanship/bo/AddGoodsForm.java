@@ -31,7 +31,7 @@ public class AddGoodsForm {
     @ApiModelProperty(value = "订单号")
     private String orderNo;
 
-    @ApiModelProperty(value = "标签（空运是唛头）")
+    @ApiModelProperty(value = "标签（海运,空运是唛头）")
     private String label;
 
     @ApiModelProperty(value = "货品名称")

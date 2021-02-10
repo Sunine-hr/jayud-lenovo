@@ -19,4 +19,18 @@ public interface ISeaBookshipService extends IService<SeaBookship> {
      * @return
      */
     SeaBookship getEnableBySeaOrderId(Long id);
+
+    /**
+     * 添加/修改订船操作
+     * @param seaBookship
+     */
+    void saveOrUpdateBookShip(SeaBookship seaBookship);
+
+    /**
+     * 根据订单id修改订船信息
+     * @param id
+     * @param seaBookship
+     * @return
+     */
+    boolean updateBySeaOrderId(Long id, SeaBookship seaBookship);
 }

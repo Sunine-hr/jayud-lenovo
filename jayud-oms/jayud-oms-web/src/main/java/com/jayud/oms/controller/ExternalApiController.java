@@ -14,6 +14,7 @@ import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.*;
+import com.jayud.oms.model.enums.VehicleTypeEnum;
 import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
@@ -735,6 +736,21 @@ public class ExternalApiController {
     public ApiResult getCustomerInfoByName(String name) {
         CustomerInfo customerInfo = this.customerInfoService.getByName(name);
         return ApiResult.ok(customerInfo);
+    }
+
+    /**
+     * 获取柜车大小类型
+     */
+    @RequestMapping(value = "api/getVehicleSizeInfo")
+    ApiResult getCabinetType(){
+        List<VehicleSizeInfoVO> vehicleSizeInfoVOS = vehicleInfoService.findVehicleSize();
+        List<VehicleSizeInfoVO> cabinetCars = new ArrayList<>();
+        for (VehicleSizeInfoVO obj : vehicleSizeInfoVOS) {
+            if (VehicleTypeEnum.CABINET_CAR.getCode() == obj.getVehicleType()) {
+                cabinetCars.add(obj);
+            }
+        }
+        return ApiResult.ok(cabinetCars);
     }
 }
 

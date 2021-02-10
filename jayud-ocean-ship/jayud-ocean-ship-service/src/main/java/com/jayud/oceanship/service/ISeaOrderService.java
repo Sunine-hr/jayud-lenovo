@@ -1,12 +1,13 @@
 package com.jayud.oceanship.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.oceanship.bo.AddSeaOrderForm;
-import com.jayud.oceanship.bo.QuerySeaOrderForm;
+import com.jayud.oceanship.bo.*;
 import com.jayud.oceanship.po.SeaOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oceanship.vo.SeaOrderFormVO;
 import com.jayud.oceanship.vo.SeaOrderVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -56,4 +57,56 @@ public interface ISeaOrderService extends IService<SeaOrder> {
      * @return
      */
     IPage<SeaOrderFormVO> findByPage(QuerySeaOrderForm form);
+
+    /**
+     * 改变流程状态
+     * @param seaOrder
+     * @param form
+     */
+    void updateProcessStatus(SeaOrder seaOrder, SeaProcessOptForm form);
+
+    /**
+     * 海运流程操作状态
+     * @param form
+     */
+    void seaProcessOptRecord(SeaProcessOptForm form);
+
+    /**
+     * 订船操作
+     * @param form
+     */
+    void doSeaBookShipOpt(SeaProcessOptForm form);
+
+
+    void updateOrSaveProcessStatus(SeaProcessOptForm form);
+
+    /**
+     * 获取订单详情
+     * @param seaOrderId
+     * @return
+     */
+    SeaOrderVO getSeaOrderDetails(Long seaOrderId);
+
+    /**
+     * 订单驳回
+     * @param seaOrder
+     * @param auditInfoForm
+     * @param seaCargoRejected
+     */
+    void orderReceiving(SeaOrder seaOrder, AuditInfoForm auditInfoForm, SeaCargoRejected seaCargoRejected);
+
+    /**
+     * 通用驳回操作
+     * @param seaOrder
+     * @param auditInfoForm
+     * @param seaCargoRejected
+     */
+    void rejectedOpt(SeaOrder seaOrder, AuditInfoForm auditInfoForm, SeaCargoRejected seaCargoRejected);
+
+    /**
+     * 根据主订单号集合获取海运订单信息
+     * @param mainOrderNoList
+     * @return
+     */
+    List<SeaOrder> getSeaOrderByOrderNOs(List<String> mainOrderNoList);
 }

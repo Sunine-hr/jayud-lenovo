@@ -1,15 +1,12 @@
-package com.jayud.oceanship.vo;
+package com.jayud.oms.model.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.utils.FileView;
-import com.jayud.common.utils.StringUtils;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -25,12 +22,10 @@ import java.util.List;
  * @since 2021-01-28
  */
 @Data
-public class SeaBookshipVO extends Model<SeaBookshipVO> {
-
-    private static final long serialVersionUID=1L;
+public class InputSeaBookshipVO {
 
     @ApiModelProperty(value = "主键")
-      @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     @ApiModelProperty(value = "状态(0:确认,1:待确认,2:删除)")
@@ -44,6 +39,9 @@ public class SeaBookshipVO extends Model<SeaBookshipVO> {
 
     @ApiModelProperty(value = "代理供应商id")
     private Long agentSupplierId;
+
+    @ApiModelProperty(value = "代理供应商")
+    private String agentSupplier;
 
     @ApiModelProperty(value = "入仓号")
     private String warehousingNo;
@@ -99,22 +97,13 @@ public class SeaBookshipVO extends Model<SeaBookshipVO> {
     @ApiModelProperty(value = "提单重量")
     private Double billLadingWeight;
 
+    @ApiModelProperty(value = "附件集合")
+    private List<FileView> fileViewList = new ArrayList<>();
+
     @ApiModelProperty(value = "提单文件路径(多个逗号隔开)")
     private String filePath;
 
     @ApiModelProperty(value = "提单文件名称(多个逗号隔开)")
     private String fileName;
-
-    @ApiModelProperty(value = "附件集合")
-    private List<FileView> fileViewList = new ArrayList<>();
-
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
-
-    public void getFile(String path){
-        this.fileViewList = StringUtils.getFileViews(this.getFilePath(),this.getFileName(),path);
-    }
 
 }

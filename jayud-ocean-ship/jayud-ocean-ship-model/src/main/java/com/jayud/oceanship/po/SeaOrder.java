@@ -64,6 +64,18 @@ public class SeaOrder extends Model<SeaOrder> {
     @ApiModelProperty(value = "目的港代码")
     private String portDestinationCode;
 
+    @ApiModelProperty(value = "柜型大小")
+    private Integer cabinetSize;
+
+    @ApiModelProperty(value = "柜型类型")
+    private Integer cabinetType;
+
+    @ApiModelProperty(value = "柜型大小")
+    private String cabinetSizeName;
+
+    @ApiModelProperty(value = "柜型类型")
+    private String cabinetTypeName;
+
     @ApiModelProperty(value = "海外供应商id")
     private Long overseasSuppliersId;
 
@@ -110,6 +122,18 @@ public class SeaOrder extends Model<SeaOrder> {
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime receivingOrdersDate;
 
+    @ApiModelProperty(value = "截补料时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime cutReplenishTime;
+
+    @ApiModelProperty(value = "结算部门")
+    private Long unitDepartmentId;
+
+    @ApiModelProperty(value = "柜号")
+    private String cabinetNumber;
+
+    @ApiModelProperty(value = "封条")
+    private String paperStripSeal;
 
     @Override
     protected Serializable pkVal() {

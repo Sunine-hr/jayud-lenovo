@@ -8,10 +8,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 /**
  * oms模块消费sea模块的接口
  */
-@FeignClient("jayud-ocean-ship-web")
+@FeignClient(value = "jayud-ocean-ship-web")
 public interface OceanShipClient {
 
     /**
@@ -25,4 +27,12 @@ public interface OceanShipClient {
      */
     @RequestMapping(value = "/api/oceanship/getSeaOrderDetails")
     ApiResult<InputSeaOrderVO> getSeaOrderDetails(@RequestParam("orderNo") String orderNo);
+
+    /**
+     * 根据主订单号集合获取海运订单信息
+     * @param mainOrderNoList
+     * @return
+     */
+    @RequestMapping(value = "/api/oceanship/getSeaOrderByMainOrderNos")
+    ApiResult getSeaOrderByMainOrderNos(@RequestBody List<String> mainOrderNoList);
 }

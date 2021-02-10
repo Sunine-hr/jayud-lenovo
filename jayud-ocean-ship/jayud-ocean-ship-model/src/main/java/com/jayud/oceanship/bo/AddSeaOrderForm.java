@@ -2,6 +2,7 @@ package com.jayud.oceanship.bo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,7 @@ public class AddSeaOrderForm {
 
     @ApiModelProperty(value = "海运订单主键")
     @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    private Long orderId;
 
     @ApiModelProperty(value = "主订单编号")
     private String mainOrderNo;
@@ -63,8 +64,20 @@ public class AddSeaOrderForm {
     @ApiModelProperty(value = "目的港代码")
     private String portDestinationCode;
 
+    @ApiModelProperty(value = "柜型大小")
+    private Integer cabinetSize;
+
+    @ApiModelProperty(value = "柜型类型")
+    private Integer cabinetType;
+
+    @ApiModelProperty(value = "柜型大小")
+    private String cabinetSizeName;
+
+    @ApiModelProperty(value = "柜型类型")
+    private String cabinetTypeName;
+
     @ApiModelProperty(value = "货好时间")
-    private LocalDateTime goodTime;
+    private String goodTime;
 
     @ApiModelProperty(value = "运费是否到付(1代表true,0代表false)")
     private Boolean isFreightCollect;
@@ -96,11 +109,21 @@ public class AddSeaOrderForm {
     @ApiModelProperty(value = "货品信息")
     private List<AddGoodsForm> goodsForms;
 
+    @ApiModelProperty(value = "提单文件路径(多个逗号隔开)")
+    private String filePath;
+
+    @ApiModelProperty(value = "提单文件名称(多个逗号隔开)")
+    private String fileName;
+
+    @ApiModelProperty(value = "附件集合")
+    private List<FileView> fileViewList = new ArrayList<>();
+
+
     /**
-     * 校验创建空运子订单参数
+     * 校验创建海运子订单参数
      */
     public boolean checkCreateOrder() {
-        //空运
+        //海运
         if (this.legalEntityId == null || StringUtils.isEmpty(this.unitCode)
                 || this.impAndExpType == null || this.terms == null
                 || StringUtils.isEmpty(this.portDepartureCode)

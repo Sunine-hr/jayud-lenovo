@@ -1,11 +1,14 @@
 package com.jayud.oceanship.controller;
 
+import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.InitComboxVO;
 import com.jayud.oceanship.feign.OmsClient;
+import com.jayud.oceanship.service.ICabinetTypeService;
 import com.jayud.oceanship.service.ISeaPortService;
 import com.jayud.oceanship.service.ITermsService;
+import com.jayud.oceanship.vo.CabinetType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Api(tags = "空运模块公用接口")
+@Api(tags = "海运模块公用接口")
 @RestController
 @Slf4j
 @RequestMapping("/common")
@@ -34,6 +37,9 @@ public class CommonController {
     @Autowired
     private ITermsService terms;
 
+    @Autowired
+    private ICabinetTypeService cabinetTypeService;
+
     @ApiOperation(value = "下拉框(审核通过的供应商)")
     @PostMapping(value = "/initSupplierInfo")
     public CommonResult initSupplierInfo() {
@@ -46,15 +52,20 @@ public class CommonController {
     }
 
     @ApiOperation(value = "主订单下拉选项-船舶港口，贸易类型")
-    @PostMapping(value = "/mainOrder/initAir")
+    @PostMapping(value = "/mainOrder/initSea")
     public CommonResult<Map<String, Object>> initAir() {
         List<InitComboxStrVO> initComboxStrVOS = this.seaPortService.initSeaPort();
         List<InitComboxVO> initComboxVO = this.terms.initTerms();
+        ApiResult clientVehicleSizeInfo = omsClient.getVehicleSizeInfo();
+        List<InitComboxVO> list = cabinetTypeService.initCabinetType();
         Map<String, Object> response = new HashMap<>();
         //空运港口下拉选项
         response.put("seaPorts", initComboxStrVOS);
         //贸易类型下拉选项
         response.put("seaTerms", initComboxVO);
+
+        response.put("cabinetSize",clientVehicleSizeInfo.getData());
+        response.put("cabinetType",list);
         return CommonResult.success(response);
     }
 

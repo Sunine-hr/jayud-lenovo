@@ -63,8 +63,20 @@ public class InputSeaOrderForm {
     @ApiModelProperty(value = "目的港代码")
     private String portDestinationCode;
 
+    @ApiModelProperty(value = "柜型大小")
+    private Integer cabinetSize;
+
+    @ApiModelProperty(value = "柜型类型")
+    private Integer cabinetType;
+
+    @ApiModelProperty(value = "柜型大小")
+    private String cabinetSizeName;
+
+    @ApiModelProperty(value = "柜型类型")
+    private String cabinetTypeName;
+
     @ApiModelProperty(value = "货好时间")
-    private LocalDateTime goodTime;
+    private String goodTime;
 
     @ApiModelProperty(value = "运费是否到付(1代表true,0代表false)")
     private Boolean isFreightCollect = false;
@@ -95,6 +107,12 @@ public class InputSeaOrderForm {
 
     @ApiModelProperty(value = "货品信息")
     private List<AddGoodsForm> goodsForms;
+
+    @ApiModelProperty(value = "提单文件路径(多个逗号隔开)")
+    private String filePath;
+
+    @ApiModelProperty(value = "提单文件名称(多个逗号隔开)")
+    private String fileName;
 
     /**
      * 校验创建空运子订单参数

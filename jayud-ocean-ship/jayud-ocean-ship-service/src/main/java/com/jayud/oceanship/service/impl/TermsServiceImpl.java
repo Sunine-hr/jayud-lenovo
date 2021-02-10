@@ -1,10 +1,12 @@
 package com.jayud.oceanship.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.entity.InitComboxVO;
 import com.jayud.oceanship.po.Terms;
 import com.jayud.oceanship.mapper.TermsMapper;
 import com.jayud.oceanship.service.ITermsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,7 +25,7 @@ public class TermsServiceImpl extends ServiceImpl<TermsMapper, Terms> implements
 
     @Override
     public List<InitComboxVO> initTerms() {
-        List<Terms> terms = baseMapper.selectList(null);
+        List<Terms> terms = this.baseMapper.list();
         List<InitComboxVO> list = new ArrayList<>();
         for (Terms term : terms) {
             InitComboxVO initComboxVO = new InitComboxVO();

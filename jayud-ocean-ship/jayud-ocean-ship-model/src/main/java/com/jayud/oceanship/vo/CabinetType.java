@@ -1,4 +1,4 @@
-package com.jayud.oceanship.po;
+package com.jayud.oceanship.vo;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import java.time.LocalDateTime;
@@ -10,33 +10,33 @@ import lombok.EqualsAndHashCode;
 
 /**
  * <p>
- * 
+ * 柜型表
  * </p>
  *
  * @author LLJ
- * @since 2021-01-28
+ * @since 2021-02-05
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="Terms对象", description="贸易方式表")
-public class Terms extends Model<Terms> {
+@ApiModel(value="CabinetType对象", description="柜型表")
+public class CabinetType extends Model<CabinetType> {
 
     private static final long serialVersionUID=1L;
 
     @ApiModelProperty(value = "主键id")
-      private Integer id;
+      private Long id;
 
-    @ApiModelProperty(value = "场景姓名")
+    @ApiModelProperty(value = "柜型")
     private String name;
-
-    @ApiModelProperty(value = "描述")
-    private String termDesc;
 
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "创建人")
     private String createUser;
+
+    @ApiModelProperty(value = "状态")
+    private String status;
 
 
     @Override

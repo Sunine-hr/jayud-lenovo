@@ -344,7 +344,7 @@ public class FinanceController {
                 List<APARDetailForm> entityDetail = receivableBillDetailService.findReceivableHeaderDetail(tempReqForm.getBillNo(), tempReqForm.getBusinessNo());
                 tempReqForm.setEntityDetail(entityDetail);
                 logger.info("推送金蝶传参:" + reqForm);
-                service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), tempReqForm);
+                result=service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), tempReqForm);
             }
             if (result.getCode() == HttpStatus.HTTP_OK) {
                 OrderReceivableBillDetail tempObject = new OrderReceivableBillDetail();

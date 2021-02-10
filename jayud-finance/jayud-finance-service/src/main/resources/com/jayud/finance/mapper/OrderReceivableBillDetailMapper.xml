@@ -418,7 +418,7 @@
     </select>
     <select id="getReceivableHeaderForm" parameterType="java.lang.String"
             resultType="com.jayud.finance.bo.ReceivableHeaderForm">
-        SELECT DISTINCT
+        SELECT
             orb.unit_account customerName,
             orb.legal_name settleOrgName,
             orbd.settlement_currency currency,
@@ -437,6 +437,7 @@
             left join department d on d.id = oi.biz_belong_depart
             left join customer_info ci on ci.id_code = orc.customer_code
         where orbd.bill_no = #{billNo}
+        group by orbd.bill_no
     </select>
     <select id="findReceivableHeaderDetail" parameterType="java.lang.String"
             resultType="com.jayud.finance.bo.APARDetailForm">

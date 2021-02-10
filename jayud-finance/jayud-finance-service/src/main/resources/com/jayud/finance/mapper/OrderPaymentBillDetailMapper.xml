@@ -518,7 +518,7 @@
     </select>
     <select id="getPayableHeaderForm" parameterType="java.lang.String"
             resultType="com.jayud.finance.bo.PayableHeaderForm">
-        SELECT distinct
+        SELECT
             opb.supplier_ch_name supplierName,
             opb.legal_name settleOrgName,
             opbd.settlement_currency currency,
@@ -538,6 +538,7 @@
             left join department d on d.id = oi.biz_belong_depart
             left join supplier_info si on si.supplier_code = opc.customer_code
         where opbd.bill_no = #{billNo}
+        group by opbd.bill_no
     </select>
     <select id="findPayableHeaderDetail" parameterType="java.lang.String"
             resultType="com.jayud.finance.bo.APARDetailForm">

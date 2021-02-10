@@ -46,15 +46,38 @@ public class OrderBillCostTotalServiceImpl extends ServiceImpl<OrderBillCostTota
      * @param moneyType   1-应付 2-应收
      */
     @Override
-    public void calculateSettlementCurrency(LinkedHashMap<String, String> headMap,
-                                            LinkedHashMap<String, String> dynamicHead,
-                                            JSONArray datas,
-                                            String moneyType) {
+    public void exportSettlementCurrency(LinkedHashMap<String, String> headMap,
+                                         LinkedHashMap<String, String> dynamicHead,
+                                         JSONArray datas,
+                                         String moneyType) {
         String key = "totalSettlementCurrency";
         String head = "合计结算币种（" + datas.getJSONObject(0).getString("settlementCurrency") + "）";
         //头部结算币种
         dynamicHead.put(key, head);
         headMap.put(key, head);
+        //计算结算币种
+        this.calculateSettlementCurrency(key, datas, moneyType);
+//        for (int i = 0; i < datas.size(); i++) {
+//            JSONObject object = datas.getJSONObject(i);
+//            QueryWrapper<OrderBillCostTotal> condition = new QueryWrapper<>();
+//            condition.lambda().eq(OrderBillCostTotal::getBillNo, object.getString("billNo"))
+//                    .eq(OrderBillCostTotal::getOrderNo, object.getString("subOrderNo") == null
+//                            ? object.getString("orderNo") : object.getString("subOrderNo"))
+//                    .eq(OrderBillCostTotal::getMoneyType, moneyType);
+//            List<OrderBillCostTotal> orderBillCostTotals = this.baseMapper.selectList(condition);
+//            //合计结算币种
+//            BigDecimal money = orderBillCostTotals.stream().map(OrderBillCostTotal::getMoney).reduce(BigDecimal.ZERO, BigDecimal::add);
+//            object.put(key, money);
+//        }
+
+
+    }
+
+    /**
+     * 计算结算币种
+     */
+    @Override
+    public void calculateSettlementCurrency(String key, JSONArray datas, String moneyType) {
         //计算结算币种
         for (int i = 0; i < datas.size(); i++) {
             JSONObject object = datas.getJSONObject(i);
@@ -68,8 +91,5 @@ public class OrderBillCostTotalServiceImpl extends ServiceImpl<OrderBillCostTota
             BigDecimal money = orderBillCostTotals.stream().map(OrderBillCostTotal::getMoney).reduce(BigDecimal.ZERO, BigDecimal::add);
             object.put(key, money);
         }
-
-
-
     }
 }

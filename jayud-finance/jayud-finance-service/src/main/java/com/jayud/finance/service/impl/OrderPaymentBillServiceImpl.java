@@ -272,6 +272,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
                 orderBillCostTotal.setLocalMoney(orderBillCostTotalVO.getLocalMoney());
                 orderBillCostTotal.setExchangeRate(exchangeRate);
                 orderBillCostTotal.setCurrentCurrencyCode(currentCurrencyCode);
+                orderBillCostTotal.setOrderNo(orderBillCostTotalVO.getOrderNo() == null ? orderBillCostTotalVO.getMainOrderNo() : orderBillCostTotalVO.getOrderNo());
                 orderBillCostTotal.setMoneyType("1");
                 orderBillCostTotals.add(orderBillCostTotal);
             }

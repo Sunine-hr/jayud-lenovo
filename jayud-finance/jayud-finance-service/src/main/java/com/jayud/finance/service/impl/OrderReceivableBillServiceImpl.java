@@ -283,6 +283,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
                 orderBillCostTotal.setMoneyType("2");
                 orderBillCostTotal.setExchangeRate(exchangeRate);
                 orderBillCostTotal.setCurrentCurrencyCode(currentCurrencyCode);
+                orderBillCostTotal.setOrderNo(orderBillCostTotalVO.getOrderNo() == null ? orderBillCostTotalVO.getMainOrderNo() : orderBillCostTotalVO.getOrderNo());
                 orderBillCostTotals.add(orderBillCostTotal);
             }
             result = costTotalService.saveBatch(orderBillCostTotals);

@@ -22,6 +22,7 @@
     <select id="findOrderFBillCostTotal" parameterType="java.util.HashMap" resultType="com.jayud.finance.vo.OrderBillCostTotalVO">
         SELECT
         opc.order_no orderNo,
+        opc.main_order_no mainOrderNo,
         opc.currency_code currencyCode,
         opc.id costId,
         ci.`name` costInfoName,
@@ -46,6 +47,7 @@
     <select id="findOrderSBillCostTotal" parameterType="java.util.HashMap" resultType="com.jayud.finance.vo.OrderBillCostTotalVO">
         SELECT
         orc.order_no orderNo,
+        orc.main_order_no mainOrderNo,
         orc.currency_code currencyCode,
         orc.id costId,
         ci.`name` costInfoName,

@@ -110,6 +110,13 @@ public class PaymentNotPaidBillVO {
     @ApiModelProperty(value = "货物描述")
     private String goodsDesc;
 
+    @ApiModelProperty(value = "结算币种")
+    private String settlementCurrency;
 
+    @ApiModelProperty(value = "结算金额")
+    private String settlementAmount;
+
+    @ApiModelProperty(value = "汇率")
+    private String exchangeRate;
 
 }

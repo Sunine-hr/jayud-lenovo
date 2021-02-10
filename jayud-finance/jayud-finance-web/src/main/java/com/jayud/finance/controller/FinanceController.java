@@ -2,6 +2,7 @@ package com.jayud.finance.controller;
 
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.http.HttpStatus;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -338,18 +339,21 @@ public class FinanceController {
         List<OrderReceivableBillDetail> receivableBillDetails = receivableBillDetailService.list(queryWrapper);
         for (OrderReceivableBillDetail receivableBillDetail : receivableBillDetails) {
             List<ReceivableHeaderForm> reqForm = receivableBillDetailService.getReceivableHeaderForm(receivableBillDetail.getBillNo());
+            CommonResult result = null;
             for (ReceivableHeaderForm tempReqForm : reqForm) {
                 List<APARDetailForm> entityDetail = receivableBillDetailService.findReceivableHeaderDetail(tempReqForm.getBillNo(), tempReqForm.getBusinessNo());
                 tempReqForm.setEntityDetail(entityDetail);
                 logger.info("推送金蝶传参:" + reqForm);
                 service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), tempReqForm);
             }
-            OrderReceivableBillDetail tempObject = new OrderReceivableBillDetail();
-            Integer num = receivableBillDetail.getPushKingdeeCount() == null ? 0 : receivableBillDetail.getPushKingdeeCount();
-            tempObject.setPushKingdeeCount(num + 1);
-            QueryWrapper updateWrapper = new QueryWrapper();
-            updateWrapper.eq("bill_no", receivableBillDetail.getBillNo());
-            receivableBillDetailService.update(tempObject, updateWrapper);
+            if (result.getCode() == HttpStatus.HTTP_OK) {
+                OrderReceivableBillDetail tempObject = new OrderReceivableBillDetail();
+                Integer num = receivableBillDetail.getPushKingdeeCount() == null ? 0 : receivableBillDetail.getPushKingdeeCount();
+                tempObject.setPushKingdeeCount(num + 1);
+                QueryWrapper updateWrapper = new QueryWrapper();
+                updateWrapper.eq("bill_no", receivableBillDetail.getBillNo());
+                receivableBillDetailService.update(tempObject, updateWrapper);
+            }
         }
         return CommonResult.success();
     }
@@ -389,17 +393,20 @@ public class FinanceController {
         List<OrderPaymentBillDetail> paymentBillDetailList = paymentBillDetailService.list(queryWrapper);
         for (OrderPaymentBillDetail paymentBillDetail : paymentBillDetailList) {
             List<PayableHeaderForm> reqForm = paymentBillDetailService.getPayableHeaderForm(paymentBillDetail.getBillNo());
+            CommonResult result = null;
             for (PayableHeaderForm tempReqForm : reqForm) {
                 List<APARDetailForm> entityDetail = paymentBillDetailService.findPayableHeaderDetail(tempReqForm.getBillNo(), tempReqForm.getBusinessNo());
                 tempReqForm.setEntityDetail(entityDetail);
                 logger.info("推送金蝶传参:" + reqForm);
-                service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), tempReqForm);
+                result = service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), tempReqForm);
             }
-            OrderPaymentBillDetail tempObject = new OrderPaymentBillDetail();
-            tempObject.setPushKingdeeCount(paymentBillDetail.getPushKingdeeCount() + 1);
-            QueryWrapper updateWrapper = new QueryWrapper();
-            updateWrapper.eq("bill_no", paymentBillDetail.getBillNo());
-            paymentBillDetailService.update(tempObject, updateWrapper);
+            if (result.getCode() == HttpStatus.HTTP_OK) {
+                OrderPaymentBillDetail tempObject = new OrderPaymentBillDetail();
+                tempObject.setPushKingdeeCount(paymentBillDetail.getPushKingdeeCount() + 1);
+                QueryWrapper updateWrapper = new QueryWrapper();
+                updateWrapper.eq("bill_no", paymentBillDetail.getBillNo());
+                paymentBillDetailService.update(tempObject, updateWrapper);
+            }
         }
         return CommonResult.success();
     }

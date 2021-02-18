@@ -1255,7 +1255,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         List<Map<String, Object>> maps = (List<Map<String, Object>>) value;
                         for (Map<String, Object> map : maps) {
                             AuditInfo auditInfo = this.auditInfoService.getLatestByRejectionStatus(Long.valueOf(map.get("id").toString()),
-                                    tableDesc, rejectionStatus);
+                                    tableDesc+"表", rejectionStatus);
                             if (!StringUtils.isEmpty(auditInfo.getAuditComment())) {
                                 sb.append(map.get("orderNo")).append("-")
                                         .append(auditInfo.getAuditComment()).append(",");

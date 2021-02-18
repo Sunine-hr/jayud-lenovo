@@ -411,29 +411,35 @@
         <if test="cmd == 'main'">
             oi.legal_name legalName,
         </if>
-        <if test="cmd == 'bg'">
-            oc.legal_name legalName,
+        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+            sub.legal_name legalName,
         </if>
-        <if test="cmd == 'zgys'">
-            ot.legal_name legalName,
-        </if>
-        <if test="cmd == 'ky'">
-            ao.legal_name legalName,
-        </if>
+<!--        <if test="cmd == 'bg'">-->
+<!--            oc.legal_name legalName,-->
+<!--        </if>-->
+<!--        <if test="cmd == 'zgys'">-->
+<!--            ot.legal_name legalName,-->
+<!--        </if>-->
+<!--        <if test="cmd == 'ky'">-->
+<!--            ao.legal_name legalName,-->
+<!--        </if>-->
         si.supplier_ch_name customerName
         FROM
         <if test="cmd == 'main'">
             order_info oi LEFT JOIN order_payment_cost opc ON oi.order_no = opc.main_order_no
         </if>
-        <if test="cmd == 'bg'">
-            order_customs oc LEFT JOIN order_payment_cost opc on oc.order_no = opc.order_no
+        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+            ${dynamicSqlParam.table} sub LEFT JOIN order_payment_cost opc on sub.order_no = opc.order_no
         </if>
-        <if test="cmd == 'zgys'">
-            order_transport ot LEFT JOIN order_payment_cost opc on ot.order_no = opc.order_no
-        </if>
-        <if test="cmd == 'ky'">
-            air_order ao LEFT JOIN order_payment_cost opc on ao.order_no = opc.order_no
-        </if>
+<!--        <if test="cmd == 'bg'">-->
+<!--            order_customs oc LEFT JOIN order_payment_cost opc on oc.order_no = opc.order_no-->
+<!--        </if>-->
+<!--        <if test="cmd == 'zgys'">-->
+<!--            order_transport ot LEFT JOIN order_payment_cost opc on ot.order_no = opc.order_no-->
+<!--        </if>-->
+<!--        <if test="cmd == 'ky'">-->
+<!--            air_order ao LEFT JOIN order_payment_cost opc on ao.order_no = opc.order_no-->
+<!--        </if>-->
         left join supplier_info si on si.supplier_code = opc.customer_code
         WHERE
         opc.id IN

@@ -49,4 +49,9 @@ public interface IOrderBillCostTotalService extends IService<OrderBillCostTotal>
      * 计算结算币种
      */
     public void calculateSettlementCurrency(String key, JSONArray datas, String moneyType);
+
+    /**
+     * 根据账单编号和类型查询出账单详细信息
+     */
+    public List<OrderBillCostTotal> getByBillNo(List<String> billNo,String moneyType);
 }

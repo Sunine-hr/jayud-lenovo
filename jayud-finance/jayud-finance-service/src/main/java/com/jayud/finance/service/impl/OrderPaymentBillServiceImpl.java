@@ -1,5 +1,6 @@
 package com.jayud.finance.service.impl;
 
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -16,6 +17,7 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
+import com.jayud.finance.enums.OrderBillCostTotalTypeEnum;
 import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.mapper.OrderPaymentBillMapper;
@@ -82,7 +84,9 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             pageInfo = baseMapper.findPaymentBillByPage(page, form, legalIds);//法人主体/供应商/可汇总主订单费用的维度统计
         } else {
             //动态sql参数
-            Map<String, Object> sqlParam = this.dynamicSQLFindReceiveBillByPageParam(form);
+            Map<String,Object> param=new HashMap<>();
+            param.put("cmd",form.getCmd());
+            Map<String, Object> sqlParam = this.dynamicSQLFindReceiveBillByPageParam(param);
             pageInfo = baseMapper.findPaymentSubBillByPage(page, form, sqlParam, legalIds);//法人主体/供应商/子订单费用的维度统计
         }
         return pageInfo;
@@ -96,6 +100,16 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
 //        List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();
 
         List<OrderPaymentBillNumVO> resultList = baseMapper.findPaymentBillNum(form);
+        //查询结算汇率
+        List<String> billNos = resultList.stream().map(OrderPaymentBillNumVO::getBillNo).collect(Collectors.toList());
+        List<OrderBillCostTotal> costTotals = this.costTotalService.getByBillNo(billNos, OrderBillCostTotalTypeEnum.PAYMENT.getCode());
+        //查询币种名称
+        List<InitComboxStrVO> data = omsClient.initCurrencyInfo().getData();
+        Map<String, String> currencyMap = data.stream().collect(Collectors.toMap(InitComboxStrVO::getCode, InitComboxStrVO::getName));
+        for (OrderPaymentBillNumVO billNumVO : resultList) {
+            billNumVO.assembleSettlementRate(costTotals,currencyMap);
+        }
+
         Map<String, Object> result = new HashMap<>();
         result.put(CommonConstant.LIST, resultList);
         return result;
@@ -359,7 +373,10 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
 
     @Override
     public ViewBillVO getViewBillByCostIds(List<Long> costIds, String cmd) {
-        return baseMapper.getViewBillByCostIds(costIds, cmd);
+        Map<String, Object> param = new HashMap<>();
+        param.put("cmd", cmd);
+        Map<String, Object> dynamicSqlParam = this.dynamicSQLFindReceiveBillByPageParam(param);
+        return baseMapper.getViewBillByCostIds(costIds, cmd,dynamicSqlParam);
     }
 
     @Override
@@ -404,9 +421,10 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         return baseMapper.findSaveConfirmData(costIds);
     }
 
-    private Map<String, Object> dynamicSQLFindReceiveBillByPageParam(QueryPaymentBillForm form) {
+    private Map<String, Object> dynamicSQLFindReceiveBillByPageParam(Map<String,Object> param) {
+        String cmd = MapUtil.getStr(param,"cmd");
         Map<String, Object> sqlParam = new HashMap<>();
-        sqlParam.put("table", SubOrderSignEnum.getSignOne2SignTwo(form.getCmd()).split("表")[0]);
+        sqlParam.put("table", SubOrderSignEnum.getSignOne2SignTwo(cmd));
         return sqlParam;
     }
 }

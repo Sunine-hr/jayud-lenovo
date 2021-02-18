@@ -92,4 +92,15 @@ public class OrderBillCostTotalServiceImpl extends ServiceImpl<OrderBillCostTota
             object.put(key, money);
         }
     }
+
+    /**
+     * 根据账单编号和类型查询出账单详细信息
+     */
+    @Override
+    public List<OrderBillCostTotal> getByBillNo(List<String> billNo, String moneyType) {
+        QueryWrapper<OrderBillCostTotal> condition = new QueryWrapper<>();
+        condition.lambda().in(OrderBillCostTotal::getBillNo, billNo)
+                .eq(OrderBillCostTotal::getMoneyType, moneyType);
+        return this.baseMapper.selectList(condition);
+    }
 }

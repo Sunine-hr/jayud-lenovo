@@ -716,21 +716,21 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 return false;
             }
         }
-        //已存在的数据删除,只在账单详情表做记录
-        List<Long> editDelIds = costIds.stream().filter(item -> !saveConfirmIds.contains(item)).collect(toList());
-        if (editDelIds != null && editDelIds.size() > 0) {
-            OrderReceivableBillDetail receivableBillDetail = new OrderReceivableBillDetail();
-            receivableBillDetail.setAuditStatus("edit_del");//持续操作中的过度状态
-            QueryWrapper updateWrapper = new QueryWrapper();
-            updateWrapper.in("cost_id", editDelIds);
-            result = update(receivableBillDetail, updateWrapper);
-            if (!result) {
-                return false;
-            }
-
-            //修改录用费用状态
-//            this.omsClient.batchUpdateCostStatus(editDelIds, "0", 1, 0);
-        }
+        //已存在的数据删除,只在账单详情表做记录 TODO 不做标记,前端逻辑删除,暂存需要传删除对象
+//        List<Long> editDelIds = costIds.stream().filter(item -> !saveConfirmIds.contains(item)).collect(toList());
+//        if (editDelIds != null && editDelIds.size() > 0) {
+//            OrderReceivableBillDetail receivableBillDetail = new OrderReceivableBillDetail();
+//            receivableBillDetail.setAuditStatus("edit_del");//持续操作中的过度状态
+//            QueryWrapper updateWrapper = new QueryWrapper();
+//            updateWrapper.in("cost_id", editDelIds);
+//            result = update(receivableBillDetail, updateWrapper);
+//            if (!result) {
+//                return false;
+//            }
+//
+//            //修改录用费用状态
+////            this.omsClient.batchUpdateCostStatus(editDelIds, "0", 1, 0);
+//        }
         return true;
     }
 
@@ -782,7 +782,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
     private void deleteCost(EditSBillForm form) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("bill_no", form.getBillNo());
-        //处理需要删除的费用,获取删除标识的账单详情
+        //处理需要删除的费用,获取删除标识的账单详情 TODO 直接获取前端传入删除对象集合
         queryWrapper.eq("audit_status", "edit_del");
         List<OrderReceivableBillDetail> delCosts = baseMapper.selectList(queryWrapper);
         List<Long> delCostIds = new ArrayList<>();

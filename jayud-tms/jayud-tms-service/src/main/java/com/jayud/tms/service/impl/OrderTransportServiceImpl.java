@@ -220,6 +220,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         List<String> subOrderNos = records.stream().map(OrderTransportVO::getOrderNo).collect(Collectors.toList());
         //查询提货商品信息
         List<OrderTakeAdr> orderTakeAdrs = this.orderTakeAdrService.getOrderTakeAdrByOrderNos(subOrderNos, OrderTakeAdrTypeEnum.ONE.getCode());
+        //是否录用费用
 
         List<OrderTransportVO> pageList = pageInfo.getRecords();
         for (OrderTransportVO orderTransportVO : pageList) {

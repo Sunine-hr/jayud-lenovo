@@ -97,7 +97,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Autowired
     private IAuditInfoService auditInfoService;
 
-    private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(), SubOrderSignEnum.KY.getSignOne(),SubOrderSignEnum.HY.getSignOne()};
+    private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(),
+            SubOrderSignEnum.KY.getSignOne(),SubOrderSignEnum.HY.getSignOne(), SubOrderSignEnum.BG.getSignOne()};
 
     @Autowired
     private IServiceOrderService serviceOrderService;
@@ -621,13 +622,21 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode())) {
             InputOrderCustomsVO inputOrderCustomsVO = customsClient.getCustomsDetail(inputMainOrderVO.getOrderNo()).getData();
             if (inputOrderCustomsVO != null) {
-                //附件处理
+                //创建订单页面头附件
                 List<FileView> allPics = new ArrayList<>();
                 allPics.addAll(inputOrderCustomsVO.getCntrPics());
                 allPics.addAll(inputOrderCustomsVO.getEncodePics());
                 allPics.addAll(inputOrderCustomsVO.getAirTransportPics());
                 allPics.addAll(inputOrderCustomsVO.getSeaTransportPics());
+                //其余附件信息
+                //获取反馈操作人时上传的附件
+                for (InputSubOrderCustomsVO subOrder : inputOrderCustomsVO.getSubOrders()) {
+                    List<FileView> attachments = this.logisticsTrackService.getAttachments(subOrder.getSubOrderId()
+                            , BusinessTypeEnum.BG.getCode(), prePath);//节点附件
+                    allPics.addAll(attachments);
+                }
                 inputOrderCustomsVO.setAllPics(allPics);
+
                 //循环处理接单人和接单时间
                 List<InputSubOrderCustomsVO> inputSubOrderCustomsVOS = inputOrderCustomsVO.getSubOrders();
                 for (InputSubOrderCustomsVO inputSubOrderCustomsVO : inputSubOrderCustomsVOS) {
@@ -654,15 +663,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 inputOrderTransportVO.assembleModelAndCntrNo();
 
                 //附件信息
-                List<FileView> allPics = new ArrayList<>();
-                allPics.addAll(StringUtils.getFileViews(inputOrderTransportVO.getCntrPic(), inputOrderTransportVO.getCntrPicName(), prePath));
+                List<FileView> allPics = new ArrayList<>(StringUtils.getFileViews(inputOrderTransportVO.getCntrPic(), inputOrderTransportVO.getCntrPicName(), prePath));
                 //获取反馈操作人时上传的附件
-                QueryWrapper queryWrapper = new QueryWrapper();
-                queryWrapper.eq(SqlConstant.ORDER_ID, inputOrderTransportVO.getId());
-                List<LogisticsTrack> logisticsTracks = logisticsTrackService.list(queryWrapper);
-                for (LogisticsTrack logisticsTrack : logisticsTracks) {
-                    allPics.addAll(StringUtils.getFileViews(logisticsTrack.getStatusPic(), logisticsTrack.getStatusPicName(), prePath));
-                }
+                List<FileView> attachments = this.logisticsTrackService.getAttachments(inputOrderTransportVO.getId()
+                        , BusinessTypeEnum.ZGYS.getCode(), prePath);
+                allPics.addAll(attachments);
+
                 inputOrderTransportVO.setAllPics(allPics);
 
                 //设置提货信息的客户
@@ -1012,14 +1018,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public Map<String, Map<String, Object>> getSubOrderByMainOrderNos(List<String> mainOrderNoList) {
         //报关
+        ApiResult result = this.customsClient.getCustomsOrderByMainOrderNos(mainOrderNoList);
+        Map<String, List<Map<String, Object>>> customsOrderMap = this.object2Map(result.getData());
 
         //中港
-        ApiResult result = this.tmsClient.getTmsOrderByMainOrderNos(mainOrderNoList);
-        Map<String, Map<String, Object>> tmsOrderMap = this.object2Map(result.getData());
+        result = this.tmsClient.getTmsOrderByMainOrderNos(mainOrderNoList);
+        Map<String, List<Map<String, Object>>> tmsOrderMap = this.object2Map(result.getData());
 
         //空运
         result = this.freightAirClient.getAirOrderByMainOrderNos(mainOrderNoList);
-        Map<String, Map<String, Object>> airOrderMap = this.object2Map(result.getData());
+        Map<String, List<Map<String, Object>>> airOrderMap = this.object2Map(result.getData());
 
         //海运
         result = this.oceanShipClient.getSeaOrderByMainOrderNos(mainOrderNoList);
@@ -1031,6 +1039,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             subOrder.put(KEY_SUBORDER[0], tmsOrderMap.get(mainOrderNo));
             subOrder.put(KEY_SUBORDER[1], airOrderMap.get(mainOrderNo));
             subOrder.put(KEY_SUBORDER[2], seaOrderMap.get(mainOrderNo));
+            subOrder.put(KEY_SUBORDER[3], customsOrderMap.get(mainOrderNo));
             map.put(mainOrderNo, subOrder);
         }
 
@@ -1042,14 +1051,23 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      * 子订单使用
      * JSONArray转Map
      */
-    private Map<String, Map<String, Object>> object2Map(Object data) {
-        Map<String, Map<String, Object>> map = new HashMap<>();
+    private Map<String, List<Map<String, Object>>> object2Map(Object data) {
+        Map<String, List<Map<String, Object>>> map = new HashMap<>();
         if (data != null) {
-            JSONArray tmsOrders = new JSONArray(data);
-            for (int i = 0; i < tmsOrders.size(); i++) {
-                JSONObject tmsOrder = tmsOrders.getJSONObject(i);
-                map.put(tmsOrder.getStr("mainOrderNo"), tmsOrder.toBean(Map.class));
+            JSONArray orders = new JSONArray(data);
+            for (int i = 0; i < orders.size(); i++) {
+                JSONObject order = orders.getJSONObject(i);
+                List<Map<String, Object>> subOrder = map.get(order.getStr("mainOrderNo"));
+                if (subOrder != null) {
+                    subOrder.add(order.toBean(Map.class));
+                    map.put(order.getStr("mainOrderNo"), subOrder);
+                } else {
+                    List<Map<String, Object>> list = new ArrayList<>();
+                    list.add(order.toBean(Map.class));
+                    map.put(order.getStr("mainOrderNo"), list);
+                }
             }
+
         }
         return map;
     }
@@ -1246,16 +1264,17 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             subOrderInfos.forEach((key, value) -> {
                 if (value != null) {
                     String tableDesc = SubOrderSignEnum.getSignOne2SignTwo(key);
-                    if (value instanceof Map) {
-                        Map<String, Object> map = (Map<String, Object>) value;
-                        AuditInfo auditInfo = this.auditInfoService.getLatestByRejectionStatus(Long.valueOf(map.get("id").toString()),
-                                tableDesc, rejectionStatus);
-                        if (!StringUtils.isEmpty(auditInfo.getAuditComment())) {
-                            sb.append(map.get("orderNo")).append("-")
-                                    .append(auditInfo.getAuditComment()).append(",");
+                    if (value instanceof List) {
+                        List<Map<String, Object>> maps = (List<Map<String, Object>>) value;
+                        for (Map<String, Object> map : maps) {
+                            AuditInfo auditInfo = this.auditInfoService.getLatestByRejectionStatus(Long.valueOf(map.get("id").toString()),
+                                    tableDesc, rejectionStatus);
+                            if (!StringUtils.isEmpty(auditInfo.getAuditComment())) {
+                                sb.append(map.get("orderNo")).append("-")
+                                        .append(auditInfo.getAuditComment()).append(",");
+                            }
                         }
                     }
-
                 }
             });
             if (!StringUtils.isEmpty(sb.toString())) {
@@ -1275,6 +1294,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         for (OrderInfoVO orderInfoVO : orderInfoVOs) {
             //商品值
             Map<String, Object> subOrderInfos = subOrderMap.get(orderInfoVO.getOrderNo());
+            //订单状态
+            orderInfoVO.setSubOrderStatusDesc(assemblySubOrderStatus(subOrderInfos));
             //增加中港信息字段
             //增加空运信息字段
             //商品信息组合
@@ -1288,7 +1309,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         Object tmsOrder = subOrderInfos.get(KEY_SUBORDER[0]);
         StringBuffer goodsInfos = new StringBuffer();
         if (tmsOrder != null) {
-            JSONObject tmsOrderJSON = new JSONObject(tmsOrder);
+            JSONObject tmsOrderJSON = new JSONArray(tmsOrder).getJSONObject(0);
             JSONArray orderTakeAdrs = tmsOrderJSON.getJSONArray("orderTakeAdrs");
             for (int i = 0; i < orderTakeAdrs.size(); i++) {
                 JSONObject orderTakeAdr = orderTakeAdrs.getJSONObject(0);
@@ -1307,6 +1328,27 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         return goodsInfos.toString();
 
+    }
+
+    /**
+     * 组装订单状态
+     *
+     * @param subOrderInfos
+     * @return
+     */
+    private String assemblySubOrderStatus(Map<String, Object> subOrderInfos) {
+        //中港商品信息
+        StringBuffer subOrderStatus = new StringBuffer();
+        for (String subOrderType : KEY_SUBORDER) {
+            Object subOrder = subOrderInfos.get(subOrderType);
+            JSONArray array = new JSONArray(subOrder);
+            for (int i = 0; i < array.size(); i++) {
+                JSONObject jsonObject = array.getJSONObject(i);
+                subOrderStatus.append(jsonObject.getStr("orderNo"))
+                        .append("-").append(OrderStatusEnum.getDesc(jsonObject.getStr("status"))).append(",");
+            }
+        }
+        return subOrderStatus.toString();
     }
 
 }

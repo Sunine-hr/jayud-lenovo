@@ -87,8 +87,8 @@ public class OrderInfoVO {
 //    @ApiModelProperty(value = "空运状态描述,用于标识驳回可编辑")
 //    private String subAirDesc;
 
-    @ApiModelProperty(value = "备注")
-    private String remarks;
+//    @ApiModelProperty(value = "备注")
+//    private String remarks;
 
     @ApiModelProperty(value = "是否需要录入费用")
     private Boolean needInputCost;
@@ -104,6 +104,21 @@ public class OrderInfoVO {
 
     @ApiModelProperty(value = "费用录用默认结算单位")
     private String defaultUnitCode;
+
+    @ApiModelProperty(value = "子订单状态描述")
+    private String subOrderStatusDesc;
+
+    @ApiModelProperty(value = "子订单状态描述增加换行")
+    private String subOrderStatusDescOne;
+
+//    @ApiModelProperty(value = "中港订单号")
+//    private String tmsOrderNo;
+//
+//    @ApiModelProperty(value = "报关订单号")
+//    private String customsOrderNo;
+//
+//    @ApiModelProperty(value = "空运订单号")
+//    private String airOrderNo;
 
     public String getStatusDesc() {
         return OrderStatusEnum.getDesc(this.status);
@@ -143,17 +158,39 @@ public class OrderInfoVO {
 ////        this.subAirDesc=OrderStatusEnum.getDesc(this.subAirStatus);
 //    }
 
-    public String getRemarks() {
-        StringBuffer sb = new StringBuffer();
-        String[] descs = new String[]{OrderStatusEnum.getDesc(this.subTmsStatus),
-                this.getSubCustomsDesc(), OrderStatusEnum.getDesc(this.subAirStatus)};
-        for (String desc : descs) {
-            if (!StringUtils.isEmpty(desc)) {
-                sb.append(desc).append(",");
-            }
-        }
-        return sb.length() == 0 ? "" : sb.substring(0, sb.length() - 1);
+
+//    public String getSubOrderStatusDesc() {
+//        StringBuffer sb = new StringBuffer();
+//        String[] descs = new String[]{
+//                this.tmsOrderNo + "-" + OrderStatusEnum.getDesc(this.subTmsStatus),
+//                this.customsOrderNo + "-" + this.getSubCustomsDesc(),
+//                this.airOrderNo + "-" + OrderStatusEnum.getDesc(this.subAirStatus)};
+//
+//        for (String desc : descs) {
+//            if (!StringUtils.isEmpty(desc) && desc.split("-").length > 1) {
+//                sb.append(desc).append(",");
+//            }
+//        }
+//        return sb.length() == 0 ? "" : sb.substring(0, sb.length() - 1);
+//    }
+
+    public void setSubOrderStatusDesc(String subOrderStatusDesc) {
+        this.subOrderStatusDesc = subOrderStatusDesc;
+        this.subOrderStatusDescOne = subOrderStatusDesc.replaceAll(",", "<br/>");
     }
+
+
+//    public String getRemarks() {
+//        StringBuffer sb = new StringBuffer();
+//        String[] descs = new String[]{OrderStatusEnum.getDesc(this.subTmsStatus),
+//                this.getSubCustomsDesc(), OrderStatusEnum.getDesc(this.subAirStatus)};
+//        for (String desc : descs) {
+//            if (!StringUtils.isEmpty(desc)) {
+//                sb.append(desc).append(",");
+//            }
+//        }
+//        return sb.length() == 0 ? "" : sb.substring(0, sb.length() - 1);
+//    }
 
 
     public void setUnitCode(String unitCode) {

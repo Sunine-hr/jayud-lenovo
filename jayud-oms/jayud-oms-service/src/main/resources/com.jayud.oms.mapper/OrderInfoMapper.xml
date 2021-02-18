@@ -75,6 +75,9 @@
         (select ai.audit_comment from audit_info ai where ai.ext_id = oc.id and ai.audit_status = 'C_1_1' order by
         ai.created_time desc limit 1) rejectComment,
         oi.unit_code unitCode
+--         oc.`order_no` customsOrderNo,
+--         '' tmsOrderNo,
+--         '' airOrderNo
         FROM
         order_info oi LEFT JOIN order_customs oc ON oi.`order_no` = oc.`main_order_no`
         LEFT JOIN product_classify pc1 ON pc1.`id_code` = oi.`class_code`
@@ -118,6 +121,9 @@
         oc.main_order_no = oi.order_no) and ai.audit_status = 'C_1_1' order by ai.created_time desc limit 1)
         rejectComment,
         oi.unit_code unitCode
+--         '' customsOrderNo,
+--         ot.order_no tmsOrderNo,
+--         '' airOrderNo
         FROM
         order_info oi LEFT JOIN order_transport ot ON
         oi.`order_no` = ot.`main_order_no`
@@ -160,6 +166,9 @@
         oi.`customs_release` customsRelease,
         '' rejectComment,
         oi.unit_code unitCode
+--         '' customsOrderNo,
+--         '' tmsOrderNo,
+--         a.order_no airOrderNo
         FROM
         order_info oi LEFT JOIN air_order a ON
         oi.`order_no` = a.`main_order_no`
@@ -200,6 +209,9 @@
         oi.`customs_release` customsRelease,
         '' rejectComment,
         oi.unit_code unitCode
+--         '' customsOrderNo,
+--         '' tmsOrderNo,
+--         '' airOrderNo
         FROM
         order_info oi LEFT JOIN service_order so ON
         oi.`order_no` = so.`main_order_no`

@@ -188,7 +188,7 @@ public class SeaOrderController {
 
             //处理地址信息
             for (OrderAddressVO address : resultOne.getData()) {
-                if(address.getOrderNO().equals(record.getOrderNo())){
+                if(address.getOrderNo().equals(record.getOrderNo())){
                     record.processingAddress(address);
                 }
             }

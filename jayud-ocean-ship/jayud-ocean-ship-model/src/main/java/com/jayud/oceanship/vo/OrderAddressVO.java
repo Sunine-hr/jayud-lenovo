@@ -26,7 +26,7 @@ public class OrderAddressVO {
     private Integer type;
 
     @ApiModelProperty(value = "订单号")
-    private String orderNO;
+    private String orderNo;
 
     @ApiModelProperty(value = "公司")
     private String company;

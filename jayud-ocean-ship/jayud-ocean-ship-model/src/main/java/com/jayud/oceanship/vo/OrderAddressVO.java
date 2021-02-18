@@ -25,6 +25,9 @@ public class OrderAddressVO {
     @ApiModelProperty(value = "类型(0:发货,1:收货,2:通知)")
     private Integer type;
 
+    @ApiModelProperty(value = "订单号")
+    private String orderNO;
+
     @ApiModelProperty(value = "公司")
     private String company;
 

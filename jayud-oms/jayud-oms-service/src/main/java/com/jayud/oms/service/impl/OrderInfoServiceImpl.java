@@ -1031,7 +1031,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         //海运
         result = this.oceanShipClient.getSeaOrderByMainOrderNos(mainOrderNoList);
-        Map<String, Map<String, Object>> seaOrderMap = this.object2Map(result.getData());
+        Map<String, List<Map<String, Object>>> seaOrderMap = this.object2Map(result.getData());
 
         Map<String, Map<String, Object>> map = new HashMap<>();
         for (String mainOrderNo : mainOrderNoList) {

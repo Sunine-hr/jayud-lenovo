@@ -3,7 +3,7 @@ server:
   servlet:
     context-path: ${mall.content.path}
     session:
-      timeout: 3600 # Session的有效期 s(秒)
+      timeout: 86400 # Session的有效期 s(秒) 60*60*24 设置为24小时
 spring:
   servlet:
     multipart:

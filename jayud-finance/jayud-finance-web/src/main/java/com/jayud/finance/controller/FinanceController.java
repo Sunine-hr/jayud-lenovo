@@ -5,12 +5,16 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.http.HttpStatus;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.utils.excel.EasyExcelEntity;
+import com.jayud.common.utils.excel.EasyExcelUtils;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.enums.FormIDEnum;
@@ -21,7 +25,9 @@ import com.jayud.finance.util.StringUtils;
 import com.jayud.finance.vo.*;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +37,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 
 
 @RestController
@@ -154,41 +158,83 @@ public class FinanceController {
     public void exportFBillDetailList(QueryFBillAuditForm form,
                                       HttpServletResponse response) throws IOException {
         List<PaymentNotPaidBillVO> list = paymentBillDetailService.findFBillAudit(form);
-        ExcelWriter writer = ExcelUtil.getWriter(true);
+//        ExcelWriter writer = ExcelUtil.getWriter(true);
+//
+//        //自定义标题别名
+//        writer.addHeaderAlias("orderNo", "订单编号");
+//        writer.addHeaderAlias("subOrderNo", "子订单编号");
+//        writer.addHeaderAlias("billNo", "账单编号");
+//        writer.addHeaderAlias("bizCodeDesc", "业务类型");
+//        writer.addHeaderAlias("createdTimeStr", "日期");
+//        writer.addHeaderAlias("supplierChName", "供应商");
+//        writer.addHeaderAlias("goodsDesc", "货物信息");
+//        writer.addHeaderAlias("startAddress", "起运地");
+//        writer.addHeaderAlias("endAddress", "目的地");
+//        writer.addHeaderAlias("licensePlate", "车牌号");
+//        writer.addHeaderAlias("yunCustomsNo", "报关单号");
+//        writer.addHeaderAlias("costTypeName", "费用类别");
+//        writer.addHeaderAlias("costGenreName", "费用类型");
+//        writer.addHeaderAlias("costName", "费用名称");
+//        writer.addHeaderAlias("rmb", "人民币");
+//        writer.addHeaderAlias("dollar", "美元");
+//        writer.addHeaderAlias("euro", "欧元");
+//        writer.addHeaderAlias("hKDollar", "港币");
+//        writer.addHeaderAlias("taxRate", "税率");
+//        writer.addHeaderAlias("remarks", "费用备注");
+//        writer.addHeaderAlias("settlementCurrency", "结算币种");
+//        writer.addHeaderAlias("settlementAmount", "结算金额");
+//        writer.addHeaderAlias("exchangeRate", "汇率");
+//
+//
+//        // 一次性写出内容，使用默认样式，强制输出标题
+//        writer.write(list, true);
+//
+//        //out为OutputStream，需要写出到的目标流
+//        ServletOutputStream out = response.getOutputStream();
+//        String name = StringUtils.toUtf8String("客户应付对账单");
+//        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
+//        response.setHeader("Content-Disposition", "attachment;filename=" + name + ".xlsx");
+//
+//        writer.flush(out);
+//        writer.close();
+//        IoUtil.close(out);
 
-        //自定义标题别名
-        writer.addHeaderAlias("orderNo", "订单编号");
-        writer.addHeaderAlias("subOrderNo", "子订单编号");
-        writer.addHeaderAlias("billNo", "账单编号");
-        writer.addHeaderAlias("bizCodeDesc", "业务类型");
-        writer.addHeaderAlias("createdTimeStr", "日期");
-        writer.addHeaderAlias("supplierChName", "供应商");
-        writer.addHeaderAlias("goodsDesc", "货物信息");
-        writer.addHeaderAlias("startAddress", "起运地");
-        writer.addHeaderAlias("endAddress", "目的地");
-        writer.addHeaderAlias("licensePlate", "车牌号");
-        writer.addHeaderAlias("yunCustomsNo", "报关单号");
-        writer.addHeaderAlias("costTypeName", "费用类别");
-        writer.addHeaderAlias("costGenreName", "费用类型");
-        writer.addHeaderAlias("costName", "费用名称");
-        writer.addHeaderAlias("rmb", "人民币");
-        writer.addHeaderAlias("dollar", "美元");
-        writer.addHeaderAlias("euro", "欧元");
-        writer.addHeaderAlias("hKDollar", "港币");
-        writer.addHeaderAlias("taxRate", "税率");
-        writer.addHeaderAlias("remarks", "费用备注");
+        LinkedHashMap<String, String> headMap = new LinkedHashMap<>();
+        headMap.put("orderNo", "订单编号");
+        headMap.put("subOrderNo", "子订单编号");
+        headMap.put("billNo", "账单编号");
+        headMap.put("bizCodeDesc", "业务类型");
+        headMap.put("createdTimeStr", "日期");
+        headMap.put("supplierChName", "供应商");
+        headMap.put("goodsDesc", "货物信息");
+        headMap.put("startAddress", "起运地");
+        headMap.put("endAddress", "目的地");
+        headMap.put("licensePlate", "车牌号");
+        headMap.put("yunCustomsNo", "报关单号");
+        headMap.put("costTypeName", "费用类别");
+        headMap.put("costGenreName", "费用类型");
+        headMap.put("costName", "费用名称");
+        headMap.put("rmb", "人民币");
+        headMap.put("dollar", "美元");
+        headMap.put("euro", "欧元");
+        headMap.put("hKDollar", "港币");
+        headMap.put("taxRate", "税率");
+        headMap.put("remarks", "费用备注");
+        headMap.put("settlementCurrency", "结算币种");
+        headMap.put("settlementAmount", "结算金额");
+        headMap.put("exchangeRate", "汇率");
+        EasyExcelEntity entity = new EasyExcelEntity();
+        entity.setTableHead(headMap);
+        entity.setTableData(JSONArray.parseArray(JSON.toJSONString(list)));
+        Workbook workbook = EasyExcelUtils.autoGeneration("", entity);
 
-        // 一次性写出内容，使用默认样式，强制输出标题
-        writer.write(list, true);
-
-        //out为OutputStream，需要写出到的目标流
         ServletOutputStream out = response.getOutputStream();
         String name = StringUtils.toUtf8String("客户应付对账单");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
         response.setHeader("Content-Disposition", "attachment;filename=" + name + ".xlsx");
 
-        writer.flush(out);
-        writer.close();
+        workbook.write(out);
+        workbook.close();
         IoUtil.close(out);
     }
 
@@ -198,41 +244,83 @@ public class FinanceController {
     public void exportSBillDetailList(QueryFBillAuditForm form,
                                       HttpServletResponse response) throws IOException {
         List<PaymentNotPaidBillVO> list = receivableBillDetailService.findSBillAudit(form);
-        ExcelWriter writer = ExcelUtil.getWriter(true);
+//        ExcelWriter writer = ExcelUtil.getWriter(true);
+//
+//        //自定义标题别名
+//        writer.addHeaderAlias("orderNo", "订单编号");
+//        writer.addHeaderAlias("subOrderNo", "子订单编号");
+//        writer.addHeaderAlias("billNo", "账单编号");
+//        writer.addHeaderAlias("bizCodeDesc", "业务类型");
+//        writer.addHeaderAlias("createdTimeStr", "日期");
+//        writer.addHeaderAlias("customerName", "客户");
+//        writer.addHeaderAlias("goodsDesc", "货物信息");
+//        writer.addHeaderAlias("startAddress", "起运地");
+//        writer.addHeaderAlias("endAddress", "目的地");
+//        writer.addHeaderAlias("licensePlate", "车牌号");
+//        writer.addHeaderAlias("yunCustomsNo", "报关单号");
+//        writer.addHeaderAlias("costTypeName", "费用类别");
+//        writer.addHeaderAlias("costGenreName", "费用类型");
+//        writer.addHeaderAlias("costName", "费用名称");
+//        writer.addHeaderAlias("rmb", "人民币");
+//        writer.addHeaderAlias("dollar", "美元");
+//        writer.addHeaderAlias("euro", "欧元");
+//        writer.addHeaderAlias("hKDollar", "港币");
+//        writer.addHeaderAlias("taxRate", "税率");
+//        writer.addHeaderAlias("remarks", "费用备注");
+//        writer.addHeaderAlias("settlementCurrency", "结算币种");
+//        writer.addHeaderAlias("settlementAmount", "结算金额");
+//        writer.addHeaderAlias("exchangeRate", "汇率");
+//
+//
+//        // 一次性写出内容，使用默认样式，强制输出标题
+//        writer.write(list, true);
+//
+//        //out为OutputStream，需要写出到的目标流
+//        ServletOutputStream out = response.getOutputStream();
+//        String name = StringUtils.toUtf8String("客户应收对账单");
+//        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
+//        response.setHeader("Content-Disposition", "attachment;filename=" + name + ".xlsx");
+//
+//        writer.flush(out);
+//        writer.close();
+//        IoUtil.close(out);
 
-        //自定义标题别名
-        writer.addHeaderAlias("orderNo", "订单编号");
-        writer.addHeaderAlias("subOrderNo", "子订单编号");
-        writer.addHeaderAlias("billNo", "账单编号");
-        writer.addHeaderAlias("bizCodeDesc", "业务类型");
-        writer.addHeaderAlias("createdTimeStr", "日期");
-        writer.addHeaderAlias("customerName", "客户");
-        writer.addHeaderAlias("goodsDesc", "货物信息");
-        writer.addHeaderAlias("startAddress", "起运地");
-        writer.addHeaderAlias("endAddress", "目的地");
-        writer.addHeaderAlias("licensePlate", "车牌号");
-        writer.addHeaderAlias("yunCustomsNo", "报关单号");
-        writer.addHeaderAlias("costTypeName", "费用类别");
-        writer.addHeaderAlias("costGenreName", "费用类型");
-        writer.addHeaderAlias("costName", "费用名称");
-        writer.addHeaderAlias("rmb", "人民币");
-        writer.addHeaderAlias("dollar", "美元");
-        writer.addHeaderAlias("euro", "欧元");
-        writer.addHeaderAlias("hKDollar", "港币");
-        writer.addHeaderAlias("taxRate", "税率");
-        writer.addHeaderAlias("remarks", "费用备注");
+        LinkedHashMap<String, String> headMap = new LinkedHashMap<>();
+        headMap.put("orderNo", "订单编号");
+        headMap.put("subOrderNo", "子订单编号");
+        headMap.put("billNo", "账单编号");
+        headMap.put("bizCodeDesc", "业务类型");
+        headMap.put("createdTimeStr", "日期");
+        headMap.put("customerName", "客户");
+        headMap.put("goodsDesc", "货物信息");
+        headMap.put("startAddress", "起运地");
+        headMap.put("endAddress", "目的地");
+        headMap.put("licensePlate", "车牌号");
+        headMap.put("yunCustomsNo", "报关单号");
+        headMap.put("costTypeName", "费用类别");
+        headMap.put("costGenreName", "费用类型");
+        headMap.put("costName", "费用名称");
+        headMap.put("rmb", "人民币");
+        headMap.put("dollar", "美元");
+        headMap.put("euro", "欧元");
+        headMap.put("hKDollar", "港币");
+        headMap.put("taxRate", "税率");
+        headMap.put("remarks", "费用备注");
+        headMap.put("settlementCurrency", "结算币种");
+        headMap.put("settlementAmount", "结算金额");
+        headMap.put("exchangeRate", "汇率");
+        EasyExcelEntity entity = new EasyExcelEntity();
+        entity.setTableHead(headMap);
+        entity.setTableData(JSONArray.parseArray(JSON.toJSONString(list)));
+        Workbook workbook = EasyExcelUtils.autoGeneration("", entity);
 
-        // 一次性写出内容，使用默认样式，强制输出标题
-        writer.write(list, true);
-
-        //out为OutputStream，需要写出到的目标流
         ServletOutputStream out = response.getOutputStream();
         String name = StringUtils.toUtf8String("客户应收对账单");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
         response.setHeader("Content-Disposition", "attachment;filename=" + name + ".xlsx");
 
-        writer.flush(out);
-        writer.close();
+        workbook.write(out);
+        workbook.close();
         IoUtil.close(out);
     }
 
@@ -344,7 +432,7 @@ public class FinanceController {
                 List<APARDetailForm> entityDetail = receivableBillDetailService.findReceivableHeaderDetail(tempReqForm.getBillNo(), tempReqForm.getBusinessNo());
                 tempReqForm.setEntityDetail(entityDetail);
                 logger.info("推送金蝶传参:" + reqForm);
-                result=service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), tempReqForm);
+                result = service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), tempReqForm);
             }
             if (result.getCode() == HttpStatus.HTTP_OK) {
                 OrderReceivableBillDetail tempObject = new OrderReceivableBillDetail();

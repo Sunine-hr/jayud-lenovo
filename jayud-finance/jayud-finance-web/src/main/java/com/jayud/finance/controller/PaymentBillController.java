@@ -68,6 +68,7 @@ public class PaymentBillController {
     @ApiOperation(value = "暂存和生成应付账单")
     @PostMapping("/createBill")
     public CommonResult createPaymentBill(@RequestBody @Valid CreatePaymentBillForm form) {
+        form.checkCreateReceiveBill();
         return billService.createPaymentBill(form);
     }
 

@@ -156,6 +156,15 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             sb.append("请配置[");
             Boolean flag = true;
             orderBillCostTotalVOS = costTotalService.findOrderFBillCostTotal(costIds, settlementCurrency, form.getAccountTermStr());
+            //是否自定义汇率
+            if (form.getIsCustomExchangeRate()) {
+                //组装数据
+                Map<String, BigDecimal> customExchangeRate = new HashMap<>();
+                form.getCustomExchangeRate().forEach(e -> customExchangeRate.put(e.getCode(), e.getNote() == null ? new BigDecimal(0) : new BigDecimal(e.getNote())));
+                orderBillCostTotalVOS.forEach(e -> {
+                    e.setExchangeRate(customExchangeRate.get(e.getCurrencyCode()));
+                });
+            }
             for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                 BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();//如果费率为0，则抛异常回滚数据
                 if ((exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0) && !orderBillCostTotalVO.getCurrencyCode().equals(settlementCurrency)) {

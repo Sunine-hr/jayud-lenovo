@@ -156,7 +156,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             Boolean flag = true;
             orderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, settlementCurrency, form.getAccountTermStr());
             //是否自定义汇率
-            if (form.isCustomExchangeRate()) {
+            if (form.getIsCustomExchangeRate()) {
                 //组装数据
                 Map<String, BigDecimal> customExchangeRate = new HashMap<>();
                 form.getCustomExchangeRate().forEach(e -> customExchangeRate.put(e.getCode(), e.getNote() == null ? new BigDecimal(0) : new BigDecimal(e.getNote())));

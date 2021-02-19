@@ -15,8 +15,8 @@ import java.util.List;
 @Data
 public class PaymentNotPaidBillVO {
 
-    @ApiModelProperty(value = "账单详情ID")
-    private Long billDetailId;
+//    @ApiModelProperty(value = "账单详情ID")
+//    private Long billDetailId;
 
     @ApiModelProperty(value = "订单编号")
     private String orderNo;

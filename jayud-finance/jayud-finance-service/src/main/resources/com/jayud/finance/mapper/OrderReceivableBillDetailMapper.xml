@@ -214,7 +214,7 @@
         WHERE
         ( orbd1.bill_no = #{form.billNo} )
         or
-        (orc.is_bill = 'save_confirm' and orbd1.bill_no = #{form.billNo}
+        (orc.is_bill = 'save_confirm' and orc.tmp_bill_no = #{form.billNo}
         and
         <if test="form.cmd == 'main'">
             oi.legal_name

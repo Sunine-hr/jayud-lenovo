@@ -39,7 +39,7 @@ import java.util.Map;
  * 浏览器安全控制器BrowserSecurityController
  */
 @RestController
-@Api(tags = "S001-后台-Security安全接口")
+@Api(tags = "A001-admin-Security接口")
 @ApiSort(value = 1)
 public class BrowserSecurityController {
 
@@ -70,14 +70,14 @@ public class BrowserSecurityController {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @ApiOperation(value = "测试spring security")
+    @ApiOperation(value = "测试SpringSecurity")
     @ApiOperationSupport(order = 1)
     @GetMapping("hello")
     public String hello() {
         return "hello spring security";
     }
 
-    @ApiOperation(value = "测试")
+    @ApiOperation(value = "测试hi")
     @ApiOperationSupport(order = 2)
     @PostMapping(value = "/hi")
     public String hi(){
@@ -109,7 +109,7 @@ public class BrowserSecurityController {
         return authentication;
     }
 
-    @ApiOperation(value = "在未登录的情况下，当用户访问html资源的时候跳转到登录页，否则返回JSON格式数据，状态码为401")
+    @ApiOperation(value = "在未登录的情况下,状态码为401")
     @ApiOperationSupport(order = 5)
     @GetMapping("/authentication/require")
     @ResponseStatus(HttpStatus.UNAUTHORIZED) //UNAUTHORIZED(401, "Unauthorized"),
@@ -158,7 +158,7 @@ public class BrowserSecurityController {
         out.close();
     }
 
-    @ApiOperation(value = "退出登录")
+    @ApiOperation(value = "退出登录成功")
     @ApiOperationSupport(order = 7)
     @GetMapping("/signout/success")
     public String signout() {

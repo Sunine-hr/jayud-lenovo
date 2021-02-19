@@ -20,6 +20,7 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oceanship.bo.*;
 import com.jayud.oceanship.enums.SeaBookShipStatusEnum;
+import com.jayud.oceanship.feign.FileClient;
 import com.jayud.oceanship.feign.OauthClient;
 import com.jayud.oceanship.feign.OmsClient;
 import com.jayud.oceanship.po.*;
@@ -28,14 +29,12 @@ import com.jayud.oceanship.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.oceanship.vo.*;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -69,6 +68,9 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
 
     @Autowired
     private OauthClient oauthClient;
+
+    @Autowired
+    private FileClient fileClient;
 
     @Override
     @Transactional
@@ -126,6 +128,8 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
             orderAddressForm.setBusinessType(BusinessTypeEnum.HY.getCode());
             orderAddressForm.setBusinessId(seaOrder.getId());
             orderAddressForm.setCreateTime(LocalDateTime.now());
+            orderAddressForm.setFileName(StringUtils.getFileNameStr(orderAddressForm.getTakeFiles()));
+            orderAddressForm.setFilePath(StringUtils.getFileStr(orderAddressForm.getTakeFiles()));
         }
         //批量保存用户地址
         ApiResult result = this.omsClient.saveOrUpdateOrderAddressBatch(orderAddressForms);
@@ -252,7 +256,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         this.seaProcessOptRecord(form);
 
         //完成订单状态
-        finishAirOrderOpt(seaOrder);
+        finishSeaOrderOpt(seaOrder);
     }
 
     /**
@@ -297,7 +301,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
 
     }
 
-    private void finishAirOrderOpt(SeaOrder seaOrder) {
+    private void finishSeaOrderOpt(SeaOrder seaOrder) {
         if (OrderStatusEnum.SEA_S_8.getCode().equals(seaOrder.getStatus())) {
             //查询海运订单信息
             SeaOrder tmp = this.getById(seaOrder.getId());
@@ -371,7 +375,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         this.seaProcessOptRecord(form);
 
         //完成订单状态
-        finishAirOrderOpt(seaOrder);
+        finishSeaOrderOpt(seaOrder);
     }
 
     /**
@@ -381,8 +385,10 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
      */
     @Override
     public SeaOrderVO getSeaOrderDetails(Long seaOrderId) {
+
+        String prePath = String.valueOf(fileClient.getBaseUrl().getData());
         Integer businessType = BusinessTypeEnum.HY.getCode();
-        //空运订单信息
+        //海运订单信息
         SeaOrderVO seaOrder = this.baseMapper.getSeaOrder(seaOrderId);
         //查询商品信息
         ApiResult<List<GoodsVO>> result = this.omsClient.getGoodsByBusIds(Collections.singletonList(seaOrderId), businessType);
@@ -397,12 +403,14 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         }
         //处理地址信息
         for (OrderAddressVO address : resultOne.getData()) {
+            address.getFile(prePath);
             seaOrder.processingAddress(address);
         }
 
         //查询订舱信息
         SeaBookship seaBookship = this.seaBookshipService.getEnableBySeaOrderId(seaOrderId);
         SeaBookshipVO convert = ConvertUtil.convert(seaBookship, SeaBookshipVO.class);
+        convert.getFile(prePath);
         seaOrder.setSeaBookshipVO(convert);
 
         System.out.println("status========================"+seaOrder.getStatus());

@@ -13,16 +13,11 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.TradeTypeEnum;
 import com.jayud.common.utils.FileView;
-import com.jayud.oceanship.bo.AddOrderAddressForm;
-import com.jayud.oceanship.bo.AddSeaBookShipForm;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,7 +60,7 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
     @ApiModelProperty(value = "客户名称")
     private String customerName;
 
-    @ApiModelProperty(value = "客户代码")
+    //@ApiModelProperty(value = "客户代码")
     private String customerCode;
 
     @ApiModelProperty(value = "货物信息")
@@ -152,20 +147,20 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
     private LocalDateTime updateTime;
 
     //是否需要录入费用(0:false,1:true)
-    @ApiModelProperty(value = "是否需要录入费用")
+    //@ApiModelProperty(value = "是否需要录入费用")
     private Boolean needInputCost;
 
-    @ApiModelProperty(value = "订单业务人员名称")
+    @ApiModelProperty(value = "业务员")
     private String bizUname;
 
-    @ApiModelProperty(value = "对应业务类型")
+    //@ApiModelProperty(value = "对应业务类型")
     private String bizCode;
 
-    @ApiModelProperty(value = "订单类别")
+    //@ApiModelProperty(value = "订单类别")
     private String classCode;
 
     //结算单位code
-    @ApiModelProperty(value = "结算单位")
+    //@ApiModelProperty(value = "结算单位")
     private String subUnitCode;
 
     //@ApiModelProperty(value = "法人主体id")
@@ -174,16 +169,16 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
     @ApiModelProperty(value = "法人主体名称")
     private String subLegalName;
 
-    @ApiModelProperty(value = "是否录用费用")
+    //@ApiModelProperty(value = "是否录用费用")
     private Boolean cost;
 
     //@ApiModelProperty(value = "供应商id")
     //private Long supplierId;
 
-    @ApiModelProperty(value = "供应商代码")
+    //@ApiModelProperty(value = "供应商代码")
     private String defaultSupplierCode;
 
-    @ApiModelProperty(value = "费用录用默认结算单位")
+    //@ApiModelProperty(value = "费用录用默认结算单位")
     private String defaultUnitCode;
 
     @ApiModelProperty(value = "货好时间")
@@ -191,21 +186,21 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
     private LocalDateTime goodTime;
 
     //@ApiModelProperty(value = "运费是否到付(1代表true,0代表false)")
-    private Boolean isFreightCollect = false;
+    private Boolean isFreightCollect;
 
     //@ApiModelProperty(value = "其他费用是否到付(1代表true,0代表false)")
-    private Boolean isOtherExpensesPaid = false;
+    private Boolean isOtherExpensesPaid;
 
     //@ApiModelProperty(value = "是否危险品(1代表true,0代表false)")
-    private Boolean isDangerousGoods = false;
+    private Boolean isDangerousGoods;
 
     //@ApiModelProperty(value = "是否带电(1代表true,0代表false)")
-    private Boolean isCharged = false;
+    private Boolean isCharged;
 
-    @ApiModelProperty(value = "柜型大小")
+    //@ApiModelProperty(value = "柜型大小")
     private Integer cabinetSize;
 
-    @ApiModelProperty(value = "柜型类型")
+    //@ApiModelProperty(value = "柜型类型")
     private Integer cabinetType;
 
     @ApiModelProperty(value = "柜型大小")
@@ -218,16 +213,16 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime cutReplenishTime;
 
-    @ApiModelProperty(value = "发货地址")
+    //@ApiModelProperty(value = "发货地址")
     private List<OrderAddressVO> deliveryAddress;
 
-    @ApiModelProperty(value = "收货地址")
+    //@ApiModelProperty(value = "收货地址")
     private List<OrderAddressVO> shippingAddress;
 
-    @ApiModelProperty(value = "通知地址")
+    //@ApiModelProperty(value = "通知地址")
     private List<OrderAddressVO> notificationAddress;
 
-    @ApiModelProperty(value = "货品信息")
+    //@ApiModelProperty(value = "货品信息")
     private List<GoodsVO> goodsVOS;
 
     //@ApiModelProperty(value = "提单文件路径(多个逗号隔开)")
@@ -257,7 +252,7 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
         for (GoodsVO goods : goodsList) {
             if (this.id.equals(goods.getBusinessId())
                     && BusinessTypeEnum.HY.getCode().equals(goods.getBusinessType())) {
-                sb.append(goods.getName()).append("\\xa0\\xa0")
+                sb.append(goods.getName())
                         .append(" ").append(goods.getPlateAmount() == null ? 0 : goods.getPlateAmount()).append(goods.getPlateUnit())
                         .append(",").append(goods.getBulkCargoAmount()).append(goods.getBulkCargoUnit())
                         .append(",").append("重量:").append(goods.getTotalWeight()).append("KG")

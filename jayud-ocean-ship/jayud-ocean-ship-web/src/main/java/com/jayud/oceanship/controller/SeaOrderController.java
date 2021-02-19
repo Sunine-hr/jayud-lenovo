@@ -29,11 +29,9 @@ import com.jayud.oceanship.feign.OmsClient;
 import com.jayud.oceanship.po.OrderFlowSheet;
 import com.jayud.oceanship.po.SeaOrder;
 import com.jayud.oceanship.po.SeaPort;
-import com.jayud.oceanship.po.Terms;
 import com.jayud.oceanship.service.IOrderFlowSheetService;
 import com.jayud.oceanship.service.ISeaOrderService;
 import com.jayud.oceanship.service.ISeaPortService;
-import com.jayud.oceanship.service.ITermsService;
 import com.jayud.oceanship.vo.GoodsVO;
 import com.jayud.oceanship.vo.OrderAddressVO;
 import com.jayud.oceanship.vo.SeaOrderFormVO;
@@ -41,11 +39,11 @@ import com.jayud.oceanship.vo.SeaOrderVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -188,6 +186,7 @@ public class SeaOrderController {
 
             //处理地址信息
             for (OrderAddressVO address : resultOne.getData()) {
+                address.getFile(prePath);
                 if(address.getOrderNo().equals(record.getOrderNo())){
                     record.processingAddress(address);
                 }
@@ -365,11 +364,18 @@ public class SeaOrderController {
     @PostMapping(value = "/uploadExcel")
     public CommonResult uploadExcel(@RequestBody SeaProcessOptForm seaProcessOptForm , HttpServletRequest request, HttpServletResponse response) {
         ClassPathResource classPathResource = new ClassPathResource("static/海运补料.xls");
+        String filename1 = classPathResource.getFilename();
 
         try {
             InputStream inputStream = classPathResource.getInputStream();
-
-            HSSFWorkbook templateWorkbook = new HSSFWorkbook(inputStream);
+            Workbook templateWorkbook = null;
+            String fileType = filename1.substring(filename1.lastIndexOf("."));
+            if (".xls".equals(fileType)) {
+                templateWorkbook = new HSSFWorkbook(inputStream); // 2003-
+            } else if (".xlsx".equals(fileType)) {
+                templateWorkbook = new XSSFWorkbook(inputStream); // 2007+
+            }
+            //HSSFWorkbook templateWorkbook = new HSSFWorkbook(inputStream);
 
             ByteArrayOutputStream outStream = new ByteArrayOutputStream();
             templateWorkbook.write(outStream);

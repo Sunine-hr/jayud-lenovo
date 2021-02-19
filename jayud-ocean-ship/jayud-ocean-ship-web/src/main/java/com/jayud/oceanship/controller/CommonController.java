@@ -1,14 +1,14 @@
 package com.jayud.oceanship.controller;
 
-import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.InitComboxVO;
+import com.jayud.common.enums.ResultEnum;
 import com.jayud.oceanship.feign.OmsClient;
+import com.jayud.oceanship.service.ICabinetSizeService;
 import com.jayud.oceanship.service.ICabinetTypeService;
 import com.jayud.oceanship.service.ISeaPortService;
 import com.jayud.oceanship.service.ITermsService;
-import com.jayud.oceanship.vo.CabinetType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +39,9 @@ public class CommonController {
     @Autowired
     private ICabinetTypeService cabinetTypeService;
 
+    @Autowired
+    private ICabinetSizeService cabinetSizeService;
+
     @ApiOperation(value = "下拉框(审核通过的供应商)")
     @PostMapping(value = "/initSupplierInfo")
     public CommonResult initSupplierInfo() {
@@ -56,7 +58,7 @@ public class CommonController {
     public CommonResult<Map<String, Object>> initAir() {
         List<InitComboxStrVO> initComboxStrVOS = this.seaPortService.initSeaPort();
         List<InitComboxVO> initComboxVO = this.terms.initTerms();
-        ApiResult clientVehicleSizeInfo = omsClient.getVehicleSizeInfo();
+        List<InitComboxVO> list1 = cabinetSizeService.initCabinetSize();
         List<InitComboxVO> list = cabinetTypeService.initCabinetType();
         Map<String, Object> response = new HashMap<>();
         //空运港口下拉选项
@@ -64,7 +66,7 @@ public class CommonController {
         //贸易类型下拉选项
         response.put("seaTerms", initComboxVO);
 
-        response.put("cabinetSize",clientVehicleSizeInfo.getData());
+        response.put("cabinetSize",list1);
         response.put("cabinetType",list);
         return CommonResult.success(response);
     }

@@ -2,11 +2,14 @@ package com.jayud.oceanship.bo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.lang.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -57,6 +60,15 @@ public class AddOrderAddressForm {
 
     @ApiModelProperty(value = "备注")
     private String remarks;
+
+    @ApiModelProperty(value = "附件路径(多个逗号隔开)")
+    private String filePath;
+
+    @ApiModelProperty(value = "附件名称(多个逗号隔开)")
+    private String fileName;
+
+    @ApiModelProperty(value = "附件")
+    private List<FileView> takeFiles = new ArrayList<>();
 
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;

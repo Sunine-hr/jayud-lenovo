@@ -30,7 +30,7 @@ public class MysqlGenerator {
                 "jayud-ocean-ship\\jayud-ocean-ship-service",
                 "jayud-ocean-ship\\jayud-ocean-ship-web"};
         for (String model : models) {
-            shell(model,"cabinet_type");
+            shell(model,"cabinet_size");
 
         }
     }
@@ -79,7 +79,7 @@ public class MysqlGenerator {
         // 包配置
         PackageConfig pc = new PackageConfig();
         pc.setParent("com.jayud.oceanship");
-        pc.setEntity("model.po");
+        pc.setEntity("po");
         pc.setController("controller");
         pc.setMapper("mapper");
         pc.setService("service");

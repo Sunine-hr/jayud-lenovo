@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,7 +102,7 @@ public class AddSeaOrderForm {
     @ApiModelProperty(value = "通知地址集合")
     private List<AddOrderAddressForm> notificationAddress;
 
-    @ApiModelProperty(value = "空运订单地址信息")
+    @ApiModelProperty(value = "海运订单地址信息")
     private List<AddOrderAddressForm> orderAddressForms;
 
     @ApiModelProperty(value = "货品信息")

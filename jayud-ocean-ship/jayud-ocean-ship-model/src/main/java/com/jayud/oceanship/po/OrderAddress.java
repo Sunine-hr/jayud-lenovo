@@ -5,6 +5,10 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -67,6 +71,12 @@ public class OrderAddress extends Model<OrderAddress> {
 
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
+
+    @ApiModelProperty(value = "附件路径(多个逗号隔开)")
+    private String filePath;
+
+    @ApiModelProperty(value = "附件名称(多个逗号隔开)")
+    private String fileName;
 
     @ApiModelProperty(value = "交货日期(提货日期/送货日期)")
     private LocalDateTime deliveryDate;

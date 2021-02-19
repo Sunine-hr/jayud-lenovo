@@ -112,8 +112,12 @@
         <result column="cabinet_type" property="cabinetType"></result>
         <result column="cabinet_number" property="cabinetNumber"></result>
         <result column="cabinet_type_name" property="cabinetTypeName"></result>
-        <result column="cabinet_number_name" property="cabinetNumberName"></result>
+        <result column="cabinet_size_name" property="cabinetSizeName"></result>
         <result column="paper_strip_seal" property="paperStripSeal"></result>
+        <result column="is_freight_collect" property="isFreightCollect"></result>
+        <result column="is_other_expenses_paid" property="isOtherExpensesPaid"></result>
+        <result column="is_dangerous_goods" property="isDangerousGoods"></result>
+        <result column="is_charged" property="isCharged"></result>
 
         <association property="seaBookShipForm" javaType="com.jayud.oceanship.vo.SeaBookshipVO">
             <result column="sid" property="id"></result>
@@ -181,6 +185,10 @@
         so.paper_strip_seal,
         so.cabinet_size,
         so.cabinet_type,
+        so.is_freight_collect,
+        so.is_other_expenses_paid,
+        so.is_dangerous_goods,
+        so.is_charged,
         so.cabinet_size_name,
         so.cabinet_type_name,
         terms.name termsDesc,

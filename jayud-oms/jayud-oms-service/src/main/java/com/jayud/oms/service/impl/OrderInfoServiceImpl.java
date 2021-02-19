@@ -490,6 +490,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                                     if (subOrder.getProcessCode().equals(x.getChildren().get(x.getChildren().size() - 1).getProcessCode())) {
                                         x.setStatus("3");//已完成
                                         x.setStatusChangeTime(DateUtils.getLocalToStr(subTrack.get(0).getOperatorTime()));
+                                        x.setOperator(subTrack.get(0).getOperatorUser());
                                     }
                                 }
                             } else { //没有特殊操作,通用处理
@@ -501,6 +502,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                                         if (subOrder.getProcessCode().equals(x.getChildren().get(x.getChildren().size() - 1).getProcessCode())) {
                                             x.setStatus("3");//已完成
                                             x.setStatusChangeTime(DateUtils.getLocalToStr(subTrack.get(0).getOperatorTime()));
+                                            x.setOperator(subTrack.get(0).getOperatorUser());
                                         }
                                     }
                                 }
@@ -523,6 +525,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     } else if (subTrack.size() == containStates.length) {
                         x.setStatus("3");//已完成
                         x.setStatusChangeTime(DateUtils.getLocalToStr(subTrack.get(0).getOperatorTime()));
+                        x.setOperator(subTrack.get(0).getOperatorUser());
                     }
                 }
             }
@@ -581,10 +584,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                             if (subTrack != null && subTrack.size() > 0) {
                                 subOrder.setStatus("3");//已完成
                                 subOrder.setStatusChangeTime(DateUtils.getLocalToStr(subTrack.get(0).getOperatorTime()));
+                                subOrder.setOperator(subTrack.get(0).getOperatorUser());
                                 x.setStatus("2");//进行中
                                 if (subOrder.getProcessCode().equals(x.getChildren().get(x.getChildren().size() - 1).getProcessCode())) {
                                     x.setStatus("3");//已完成
                                     x.setStatusChangeTime(DateUtils.getLocalToStr(subTrack.get(0).getOperatorTime()));
+                                    x.setOperator(subTrack.get(0).getOperatorUser());
                                 }
                             }
                         }
@@ -601,6 +606,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     } else if (subTrack.size() == containStates.length) {
                         x.setStatus("3");//已完成
                         x.setStatusChangeTime(DateUtils.getLocalToStr(subTrack.get(0).getOperatorTime()));
+                        x.setOperator(subTrack.get(0).getOperatorUser());
                     }
                 }
             }

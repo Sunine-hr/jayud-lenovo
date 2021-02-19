@@ -30,7 +30,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/systemuser")
-@Api(tags = "S003-后台-用户管理")
+@Api(tags = "A003-admin-用户管理")
 @ApiSort(value = 3)
 public class SystemUserController {
 
@@ -56,6 +56,7 @@ public class SystemUserController {
 
     @ApiOperation(value = "登录接口")
     @ApiOperationSupport(order = 2)
+    @Deprecated
     @PostMapping(value = "/login")
     public CommonResult<SystemUserVO> login(@Valid @RequestBody SystemUserLoginForm loginForm) {
         SystemUserVO userVO = userService.login(loginForm);

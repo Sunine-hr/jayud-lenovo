@@ -2,6 +2,7 @@ package com.jayud.finance.bo;
 
 
 import com.jayud.common.exception.JayudBizException;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.finance.vo.InitComboxStrVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -60,6 +61,9 @@ public class CreateReceiveBillForm {
         if (isCustomExchangeRate) {
             if (CollectionUtils.isEmpty(customExchangeRate)) {
                 throw new JayudBizException(400, "请配置自定义汇率");
+            }
+            if (customExchangeRate.stream().anyMatch(e -> StringUtils.isEmpty(e.getNote()))) {
+                throw new JayudBizException(400, "请配置汇率");
             }
         }
     }

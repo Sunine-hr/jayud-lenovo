@@ -324,19 +324,23 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 //根据费用ID统计费用信息,将原始费用信息根据结算币种进行转换
                 List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, settlementCurrency, existObject.getAccountTerm());
                 for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
+                    String currencyCode = orderBillCostTotalVO.getCurrencyCode();
                     orderBillCostTotalVO.setBillNo(form.getBillNo());
-                    orderBillCostTotalVO.setCurrencyCode(settlementCurrency);
-                    BigDecimal money = orderBillCostTotalVO.getMoney();//录入费用时的金额
-                    BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();
-                    if (exchangeRate == null || exchangeRate.compareTo(new BigDecimal("0")) == 0) {
-                        exchangeRate = new BigDecimal("1");
-                    }
-                    money = money.multiply(exchangeRate);
-                    orderBillCostTotalVO.setMoney(money);
+//                    BigDecimal money = orderBillCostTotalVO.getMoney();//录入费用时的金额
+//                    BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();
+//                    if (exchangeRate == null || exchangeRate.compareTo(new BigDecimal("0")) == 0) {
+//                        exchangeRate = new BigDecimal("1");
+//                    }
+//                    money = money.multiply(exchangeRate);
+//                    orderBillCostTotalVO.setMoney(money);
                     OrderBillCostTotal orderBillCostTotal = ConvertUtil.convert(orderBillCostTotalVO, OrderBillCostTotal.class);
                     orderBillCostTotal.setLocalMoney(orderBillCostTotalVO.getLocalMoney());
+                    orderBillCostTotal.setMoney(null);
+                    orderBillCostTotal.setExchangeRate(null);
                     orderBillCostTotal.setOrderNo(orderBillCostTotal.getOrderNo() == null ? orderBillCostTotalVO.getMainOrderNo() : orderBillCostTotal.getOrderNo());
                     orderBillCostTotal.setMoneyType("2");
+                    orderBillCostTotal.setCurrentCurrencyCode(currencyCode);
+                    orderBillCostTotal.setCurrencyCode(settlementCurrency);
                     orderBillCostTotals.add(orderBillCostTotal);
                 }
                 result = costTotalService.saveBatch(orderBillCostTotals);
@@ -721,7 +725,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         }
         //已存在的数据删除,只在账单详情表做记录 TODO 不做标记,前端逻辑删除,暂存需要传删除对象
         List<Long> editDelIds = costIds.stream().filter(item -> !saveConfirmIds.contains(item)).collect(toList());
-        if (editDelIds != null && editDelIds.size() > 0) {
+        if (editDelIds.size() > 0) {
             OrderReceivableBillDetail receivableBillDetail = new OrderReceivableBillDetail();
             receivableBillDetail.setAuditStatus("edit_del");//持续操作中的过度状态
             QueryWrapper updateWrapper = new QueryWrapper();
@@ -730,7 +734,6 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             if (!result) {
                 return false;
             }
-
             //修改录用费用状态
 //            this.omsClient.batchUpdateCostStatus(editDelIds, "0", 1, 0);
         }
@@ -837,6 +840,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
 
     /**
      * 统计账单数据
+     *
      * @param billNo
      */
     private void statisticsBill(String billNo) {

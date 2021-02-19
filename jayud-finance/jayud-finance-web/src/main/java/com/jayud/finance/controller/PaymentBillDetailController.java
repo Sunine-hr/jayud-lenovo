@@ -446,4 +446,13 @@ public class PaymentBillDetailController {
         return billDetailService.contraryAudit(form);
     }
 
+    @ApiOperation(value = "获取修改应付对账单信息,billNo=账单编号")
+    @PostMapping("/getUpdateBillDetail")
+    public CommonResult getUpdateBillDetail(@RequestBody Map<String, Object> map) {
+        String billNo = MapUtil.getStr(map, "billNo");
+        if (com.jayud.common.utils.StringUtils.isEmpty(billNo)) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        return CommonResult.success(orderBillCostTotalService.getEditBillByBillNo(billNo, 1));
+    }
 }

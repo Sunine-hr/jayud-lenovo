@@ -175,6 +175,7 @@
         (opbd1.bill_no = #{form.billNo} )
         or
         (opc.is_bill = 'save_confirm' and opc.tmp_bill_no = #{form.billNo}
+        and
         <if test="form.cmd == 'main'">
             oi.legal_name
         </if>

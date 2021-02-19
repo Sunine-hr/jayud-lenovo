@@ -332,19 +332,23 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 //根据费用ID统计费用信息,将原始费用信息根据结算币种进行转换
                 List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderFBillCostTotal(costIds, settlementCurrency, existObject.getAccountTerm());
                 for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
+                    String currencyCode = orderBillCostTotalVO.getCurrencyCode();
                     orderBillCostTotalVO.setBillNo(form.getBillNo());
-                    orderBillCostTotalVO.setCurrencyCode(settlementCurrency);
-                    BigDecimal money = orderBillCostTotalVO.getMoney();//录入费用时的金额
-                    BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();
-                    if (exchangeRate == null || exchangeRate.compareTo(new BigDecimal("0")) == 0) {
-                        exchangeRate = new BigDecimal("1");
-                    }
-                    money = money.multiply(exchangeRate);
-                    orderBillCostTotalVO.setMoney(money);
+//                    BigDecimal money = orderBillCostTotalVO.getMoney();//录入费用时的金额
+//                    BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();
+//                    if (exchangeRate == null || exchangeRate.compareTo(new BigDecimal("0")) == 0) {
+//                        exchangeRate = new BigDecimal("1");
+//                    }
+//                    money = money.multiply(exchangeRate);
+//                    orderBillCostTotalVO.setMoney(money);
                     OrderBillCostTotal orderBillCostTotal = ConvertUtil.convert(orderBillCostTotalVO, OrderBillCostTotal.class);
                     orderBillCostTotal.setLocalMoney(orderBillCostTotalVO.getLocalMoney());
+                    orderBillCostTotal.setMoney(null);
+                    orderBillCostTotal.setExchangeRate(null);
                     orderBillCostTotal.setOrderNo(orderBillCostTotal.getOrderNo() == null ? orderBillCostTotalVO.getMainOrderNo() : orderBillCostTotal.getOrderNo());
                     orderBillCostTotal.setMoneyType("1");
+                    orderBillCostTotal.setCurrentCurrencyCode(currencyCode);
+                    orderBillCostTotal.setCurrencyCode(settlementCurrency);
                     orderBillCostTotals.add(orderBillCostTotal);
                 }
                 result = costTotalService.saveBatch(orderBillCostTotals);

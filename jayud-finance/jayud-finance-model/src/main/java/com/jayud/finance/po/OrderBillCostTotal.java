@@ -23,7 +23,7 @@ import java.math.BigDecimal;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="OrderBillCostTotal对象", description="")
+@ApiModel(value = "OrderBillCostTotal对象", description = "")
 public class OrderBillCostTotal extends Model<OrderBillCostTotal> {
 
     private static final long serialVersionUID = 1L;
@@ -64,6 +64,9 @@ public class OrderBillCostTotal extends Model<OrderBillCostTotal> {
 
     @ApiModelProperty(value = "结算汇率")
     private BigDecimal exchangeRate;
+
+    @ApiModelProperty(value = "是否自定义汇率")
+    private Boolean isCustomExchangeRate;
 
     @Override
     protected Serializable pkVal() {

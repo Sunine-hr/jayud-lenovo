@@ -297,6 +297,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
                 orderBillCostTotal.setExchangeRate(exchangeRate);
                 orderBillCostTotal.setCurrentCurrencyCode(currentCurrencyCode);
                 orderBillCostTotal.setOrderNo(orderBillCostTotalVO.getOrderNo() == null ? orderBillCostTotalVO.getMainOrderNo() : orderBillCostTotalVO.getOrderNo());
+                orderBillCostTotal.setIsCustomExchangeRate(form.getIsCustomExchangeRate());
                 orderBillCostTotals.add(orderBillCostTotal);
             }
             result = costTotalService.saveBatch(orderBillCostTotals);
@@ -414,7 +415,6 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
     public String getWarehouseAddress(String orderNo) {
         return baseMapper.getWarehouseAddress(orderNo);
     }
-
 
 
     private Map<String, Object> dynamicSQLFindReceiveBillByPageParam(Map<String, Object> map) {

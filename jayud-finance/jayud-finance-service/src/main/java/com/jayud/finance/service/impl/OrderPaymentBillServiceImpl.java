@@ -84,8 +84,8 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             pageInfo = baseMapper.findPaymentBillByPage(page, form, legalIds);//法人主体/供应商/可汇总主订单费用的维度统计
         } else {
             //动态sql参数
-            Map<String,Object> param=new HashMap<>();
-            param.put("cmd",form.getCmd());
+            Map<String, Object> param = new HashMap<>();
+            param.put("cmd", form.getCmd());
             Map<String, Object> sqlParam = this.dynamicSQLFindReceiveBillByPageParam(param);
             pageInfo = baseMapper.findPaymentSubBillByPage(page, form, sqlParam, legalIds);//法人主体/供应商/子订单费用的维度统计
         }
@@ -107,7 +107,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         List<InitComboxStrVO> data = omsClient.initCurrencyInfo().getData();
         Map<String, String> currencyMap = data.stream().collect(Collectors.toMap(InitComboxStrVO::getCode, InitComboxStrVO::getName));
         for (OrderPaymentBillNumVO billNumVO : resultList) {
-            billNumVO.assembleSettlementRate(costTotals,currencyMap);
+            billNumVO.assembleSettlementRate(costTotals, currencyMap);
         }
 
         Map<String, Object> result = new HashMap<>();
@@ -297,6 +297,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
                 orderBillCostTotal.setCurrentCurrencyCode(currentCurrencyCode);
                 orderBillCostTotal.setOrderNo(orderBillCostTotalVO.getOrderNo() == null ? orderBillCostTotalVO.getMainOrderNo() : orderBillCostTotalVO.getOrderNo());
                 orderBillCostTotal.setMoneyType("1");
+                orderBillCostTotal.setIsCustomExchangeRate(form.getIsCustomExchangeRate());
                 orderBillCostTotals.add(orderBillCostTotal);
             }
             result = costTotalService.saveBatch(orderBillCostTotals);
@@ -385,7 +386,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         Map<String, Object> param = new HashMap<>();
         param.put("cmd", cmd);
         Map<String, Object> dynamicSqlParam = this.dynamicSQLFindReceiveBillByPageParam(param);
-        return baseMapper.getViewBillByCostIds(costIds, cmd,dynamicSqlParam);
+        return baseMapper.getViewBillByCostIds(costIds, cmd, dynamicSqlParam);
     }
 
     @Override
@@ -430,8 +431,8 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         return baseMapper.findSaveConfirmData(costIds);
     }
 
-    private Map<String, Object> dynamicSQLFindReceiveBillByPageParam(Map<String,Object> param) {
-        String cmd = MapUtil.getStr(param,"cmd");
+    private Map<String, Object> dynamicSQLFindReceiveBillByPageParam(Map<String, Object> param) {
+        String cmd = MapUtil.getStr(param, "cmd");
         Map<String, Object> sqlParam = new HashMap<>();
         sqlParam.put("table", SubOrderSignEnum.getSignOne2SignTwo(cmd));
         return sqlParam;

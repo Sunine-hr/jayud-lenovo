@@ -3,17 +3,28 @@ package com.jayud.finance.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.common.exception.JayudBizException;
+import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.po.OrderBillCostTotal;
 import com.jayud.finance.mapper.OrderBillCostTotalMapper;
+import com.jayud.finance.po.OrderPaymentBillDetail;
+import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.service.IOrderBillCostTotalService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.finance.service.IOrderPaymentBillDetailService;
+import com.jayud.finance.service.IOrderReceivableBillDetailService;
+import com.jayud.finance.vo.EditBillDateilVO;
+import com.jayud.finance.vo.InitComboxStrVO;
 import com.jayud.finance.vo.OrderBillCostTotalVO;
 import com.jayud.finance.vo.ViewBilToOrderVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -25,6 +36,13 @@ import java.util.List;
  */
 @Service
 public class OrderBillCostTotalServiceImpl extends ServiceImpl<OrderBillCostTotalMapper, OrderBillCostTotal> implements IOrderBillCostTotalService {
+
+    @Autowired
+    private IOrderReceivableBillDetailService orderReceivableBillDetailService;
+    @Autowired
+    private IOrderPaymentBillDetailService orderPaymentBillDetailService;
+    @Autowired
+    private OmsClient omsClient;
 
     @Override
     public List<OrderBillCostTotalVO> findOrderFBillCostTotal(List<Long> costIds, String settlementCurrency, String accountTermStr) {
@@ -102,5 +120,67 @@ public class OrderBillCostTotalServiceImpl extends ServiceImpl<OrderBillCostTota
         condition.lambda().in(OrderBillCostTotal::getBillNo, billNo)
                 .eq(OrderBillCostTotal::getMoneyType, moneyType);
         return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 根据账单编号查询编辑对账账单详情
+     *
+     * @param billNo
+     * @param type   类型(0:应收,1:应付)
+     * @return
+     */
+    @Override
+    public EditBillDateilVO getEditBillByBillNo(String billNo, Integer type) {
+        //根据账单编号查询对账单详情:账单编号,核算期,结算币种,是否自定义汇率
+        //自定义汇率
+        EditBillDateilVO editBillDateilVO = new EditBillDateilVO();
+        editBillDateilVO.setBillNo(billNo);
+        String moneyType = null;
+        switch (type) {
+            case 0: //应收
+                List<OrderReceivableBillDetail> receivableBillDetails = this.orderReceivableBillDetailService.getByBillNo(billNo);
+                if (receivableBillDetails.size() == 0) {
+                    throw new JayudBizException(400, "未找到相应对账单信息");
+                }
+                OrderReceivableBillDetail orderReceivableBillDetail = receivableBillDetails.get(0);
+                editBillDateilVO.setAccountTermStr(orderReceivableBillDetail.getAccountTerm());
+                editBillDateilVO.setSettlementCurrency(orderReceivableBillDetail.getSettlementCurrency());
+                moneyType = "2";
+                break;
+            case 1: //应付
+                List<OrderPaymentBillDetail> paymentBillDetails = this.orderPaymentBillDetailService.getByCondition(
+                        new OrderPaymentBillDetail().setBillNo(billNo));
+                if (paymentBillDetails.size() == 0) {
+                    throw new JayudBizException(400, "未找到相应对账单信息");
+                }
+                OrderPaymentBillDetail paymentBillDetail = paymentBillDetails.get(0);
+                editBillDateilVO.setAccountTermStr(paymentBillDetail.getAccountTerm());
+                editBillDateilVO.setSettlementCurrency(paymentBillDetail.getSettlementCurrency());
+                moneyType = "1";
+                break;
+            default:
+                throw new JayudBizException("不存在这种操作类型");
+        }
+
+        QueryWrapper<OrderBillCostTotal> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderBillCostTotal::getBillNo, billNo).eq(OrderBillCostTotal::getMoneyType, moneyType);
+        List<OrderBillCostTotal> orderBillCostTotals = this.baseMapper.selectList(condition);
+
+        Boolean isCustomExchangeRate = false;
+        List<InitComboxStrVO> customExchangeRate = new ArrayList<>();
+        List<InitComboxStrVO> data = omsClient.initCurrencyInfo().getData();
+        for (OrderBillCostTotal orderBillCostTotal : orderBillCostTotals) {
+            if (orderBillCostTotal.getIsCustomExchangeRate() != null) {
+                isCustomExchangeRate = orderBillCostTotal.getIsCustomExchangeRate();
+            }
+            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+            initComboxStrVO.setCode(orderBillCostTotal.getCurrentCurrencyCode());
+            initComboxStrVO.setNote(orderBillCostTotal.getExchangeRate() == null ? "0" : orderBillCostTotal.getExchangeRate().toPlainString());
+            customExchangeRate.add(initComboxStrVO);
+        }
+        editBillDateilVO.setIsCustomExchangeRate(isCustomExchangeRate);
+        editBillDateilVO.setCustomExchangeRate(customExchangeRate);
+        editBillDateilVO.assembleCurrencyName(data);
+        return editBillDateilVO;
     }
 }

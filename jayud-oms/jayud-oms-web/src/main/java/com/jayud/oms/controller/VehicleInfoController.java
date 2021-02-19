@@ -7,13 +7,17 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.BeanUtils;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.model.bo.AddVehicleInfoForm;
 import com.jayud.oms.model.bo.QueryVehicleInfoForm;
 import com.jayud.oms.model.enums.StatusEnum;
+import com.jayud.oms.model.po.DriverInfo;
 import com.jayud.oms.model.po.SupplierInfo;
 import com.jayud.oms.model.po.VehicleInfo;
 import com.jayud.oms.model.vo.InitComboxVO;
+import com.jayud.oms.model.vo.UpdateVehicleInfoVO;
 import com.jayud.oms.model.vo.VehicleInfoVO;
+import com.jayud.oms.service.IDriverInfoService;
 import com.jayud.oms.service.ISupplierInfoService;
 import com.jayud.oms.service.IVehicleInfoService;
 import io.swagger.annotations.Api;
@@ -27,9 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -49,11 +51,27 @@ public class VehicleInfoController {
     private IVehicleInfoService vehicleInfoService;
     @Autowired
     private ISupplierInfoService supplierInfoService;
+    @Autowired
+    private IDriverInfoService driverInfoService;
+    @Autowired
+    private FileClient fileClient;
 
     @ApiOperation(value = "分页查询车辆信息")
     @PostMapping(value = "/findVehicleInfoByPage")
     public CommonResult<CommonPageResult<VehicleInfoVO>> findVehicleInfoByPage(@RequestBody QueryVehicleInfoForm form) {
         IPage<VehicleInfoVO> iPage = vehicleInfoService.findVehicleInfoByPage(form);
+        //根据司机id司机批量查询司机名称
+        List<VehicleInfoVO> vehicleInfoVOS = iPage.getRecords();
+        Object url = fileClient.getBaseUrl().getData();
+
+        for (VehicleInfoVO vehicleInfoVO : vehicleInfoVOS) {
+            List<Long> driverIds = vehicleInfoVO.getDriverIds();
+            if (!CollectionUtils.isEmpty(driverIds)) {
+                vehicleInfoVO.setDriverNames(this.driverInfoService.assemblyDriverName(driverIds));
+            }
+            //附件信息
+            vehicleInfoVO.setFileViews(com.jayud.common.utils.StringUtils.getFileViews(vehicleInfoVO.getFiles(), vehicleInfoVO.getFileName(), url.toString()));
+        }
 
         //供应商待审核状态，无法进行编辑
         List<SupplierInfo> supplierInfos = supplierInfoService.getApprovedSupplier(
@@ -82,8 +100,14 @@ public class VehicleInfoController {
         if (this.vehicleInfoService.checkUnique(info)) {
             return CommonResult.error(400, "大陆车牌已存在");
         }
+        StringBuffer sb = new StringBuffer();
+        form.getDriverInfos().forEach(e ->
+        {
+            sb.append(e.getId()).append(",");
+        });
 
         VehicleInfo vehicleInfo = ConvertUtil.convert(form, VehicleInfo.class);
+        vehicleInfo.setDriverInfoIds(sb.toString());
         //拼接附件地址
         vehicleInfo.setFiles(com.jayud.common.utils.StringUtils.getFileStr(form.getFileViews()))
                 .setFileName(com.jayud.common.utils.StringUtils.getFileNameStr(form.getFileViews()));
@@ -118,7 +142,13 @@ public class VehicleInfoController {
         }
         Long id = Long.parseLong(map.get("id"));
         VehicleInfo vehicleInfo = this.vehicleInfoService.getById(id);
-        return CommonResult.success(ConvertUtil.convert(vehicleInfo, VehicleInfoVO.class));
+        UpdateVehicleInfoVO vehicleInfoVO = ConvertUtil.convert(vehicleInfo, UpdateVehicleInfoVO.class);
+        Collection<DriverInfo> driverInfos = this.driverInfoService.listByIds(vehicleInfoVO.getDriverIds());
+        vehicleInfoVO.setDriverInfos(new ArrayList<>(driverInfos));
+        Object url = fileClient.getBaseUrl().getData();
+        vehicleInfoVO.setFileViews(com.jayud.common.utils.StringUtils.getFileViews(vehicleInfo.getFiles(), vehicleInfo.getFileName(), url.toString()));
+
+        return CommonResult.success(vehicleInfoVO);
     }
 
 

@@ -4,34 +4,34 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.SupplierInfo">
-        <id column="id" property="id" />
-        <result column="supplier_code" property="supplierCode" />
-        <result column="product_classify_id" property="productClassifyIds" />
-        <result column="supplier_ch_name" property="supplierChName" />
-        <result column="supplier_en_name" property="supplierEnName" />
-        <result column="state_code" property="stateCode" />
-        <result column="contacts" property="contacts" />
-        <result column="company_name" property="companyName" />
-        <result column="contact_number" property="contactNumber" />
-        <result column="contact_phone" property="contactPhone" />
-        <result column="address" property="address" />
-        <result column="pid" property="pid" />
-        <result column="pname" property="pname" />
-        <result column="cid" property="cid" />
-        <result column="cname" property="cname" />
-        <result column="zip_code" property="zipCode" />
-        <result column="ext_setting_id" property="extSettingId" />
-        <result column="settlement_type" property="settlementType" />
-        <result column="payment_day" property="paymentDay" />
-        <result column="tax_receipt" property="taxReceipt" />
-        <result column="rate" property="rate" />
-        <result column="buyer_id" property="buyerId" />
-        <result column="status" property="status" />
-        <result column="legalEntityId" property="legal_entity_id" />
-        <result column="create_user" property="createUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
-        <result column="update_user" property="updateUser" />
+        <id column="id" property="id"/>
+        <result column="supplier_code" property="supplierCode"/>
+        <result column="product_classify_id" property="productClassifyIds"/>
+        <result column="supplier_ch_name" property="supplierChName"/>
+        <result column="supplier_en_name" property="supplierEnName"/>
+        <result column="state_code" property="stateCode"/>
+        <result column="contacts" property="contacts"/>
+        <result column="company_name" property="companyName"/>
+        <result column="contact_number" property="contactNumber"/>
+        <result column="contact_phone" property="contactPhone"/>
+        <result column="address" property="address"/>
+        <result column="pid" property="pid"/>
+        <result column="pname" property="pname"/>
+        <result column="cid" property="cid"/>
+        <result column="cname" property="cname"/>
+        <result column="zip_code" property="zipCode"/>
+        <result column="ext_setting_id" property="extSettingId"/>
+        <result column="settlement_type" property="settlementType"/>
+        <result column="payment_day" property="paymentDay"/>
+        <result column="tax_receipt" property="taxReceipt"/>
+        <result column="rate" property="rate"/>
+        <result column="buyer_id" property="buyerId"/>
+        <result column="status" property="status"/>
+        <result column="legalEntityId" property="legal_entity_id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -42,33 +42,33 @@
          tax_receipt, rate, buyer_id, status, create_user, create_time, update_time, update_user,legal_entity_id
     </sql>
 
-<!--    <select id="findSupplierInfoByPage" parameterType="com.jayud.oms.model.bo.QuerySupplierInfoForm"-->
-<!--            resultType="com.jayud.oms.model.vo.SupplierInfoVO">-->
-<!--        select-->
-<!--        s.id, s.supplier_code supplierCode,-->
-<!--        s.product_classify_ids productClassify,-->
-<!--        s.supplier_ch_name supplierChName,-->
-<!--        s.supplier_en_name supplierEnName,-->
-<!--        s.state_code stateCode, s.contacts, s.company_name companyName,-->
-<!--        s.contact_number contactNumber,-->
-<!--        s.contact_phone contactPhone, s.address, s.pid, s.pname, s.cid, s.cname,-->
-<!--        s.zip_code zipCode, s.ext_setting_id extSettingId,-->
-<!--        settlement_type settlementType, payment_day paymentDay,-->
-<!--        tax_receipt tax_receipt, rate,-->
-<!--        s.buyer_id buyerId,s.status,-->
-<!--        s.create_user createUser, s.create_time createTime,-->
-<!--        s.update_time updateTime,s.update_user updateUser-->
-<!--        from-->
-<!--        supplier_info s-->
-<!--        <where>-->
-<!--            <if test="form.supplierCode!=null and form.supplierCode!=''">-->
-<!--                and s.supplier_code like concat ('%',#{form.supplierCode},'%')-->
-<!--            </if>-->
-<!--            <if test="form.supplierChName!=null and form.supplierChName!=''">-->
-<!--                and s.supplier_ch_name like concat ('%',#{form.supplierChName},'%')-->
-<!--            </if>-->
-<!--        </where>-->
-<!--    </select>-->
+    <!--    <select id="findSupplierInfoByPage" parameterType="com.jayud.oms.model.bo.QuerySupplierInfoForm"-->
+    <!--            resultType="com.jayud.oms.model.vo.SupplierInfoVO">-->
+    <!--        select-->
+    <!--        s.id, s.supplier_code supplierCode,-->
+    <!--        s.product_classify_ids productClassify,-->
+    <!--        s.supplier_ch_name supplierChName,-->
+    <!--        s.supplier_en_name supplierEnName,-->
+    <!--        s.state_code stateCode, s.contacts, s.company_name companyName,-->
+    <!--        s.contact_number contactNumber,-->
+    <!--        s.contact_phone contactPhone, s.address, s.pid, s.pname, s.cid, s.cname,-->
+    <!--        s.zip_code zipCode, s.ext_setting_id extSettingId,-->
+    <!--        settlement_type settlementType, payment_day paymentDay,-->
+    <!--        tax_receipt tax_receipt, rate,-->
+    <!--        s.buyer_id buyerId,s.status,-->
+    <!--        s.create_user createUser, s.create_time createTime,-->
+    <!--        s.update_time updateTime,s.update_user updateUser-->
+    <!--        from-->
+    <!--        supplier_info s-->
+    <!--        <where>-->
+    <!--            <if test="form.supplierCode!=null and form.supplierCode!=''">-->
+    <!--                and s.supplier_code like concat ('%',#{form.supplierCode},'%')-->
+    <!--            </if>-->
+    <!--            <if test="form.supplierChName!=null and form.supplierChName!=''">-->
+    <!--                and s.supplier_ch_name like concat ('%',#{form.supplierChName},'%')-->
+    <!--            </if>-->
+    <!--        </where>-->
+    <!--    </select>-->
 
 
     <select id="findAuditSupplierInfoByPage" parameterType="com.jayud.oms.model.bo.QueryAuditSupplierInfoForm"
@@ -134,6 +134,42 @@
                 </foreach>
             </if>
         </where>
+    </select>
+
+    <select id="getApprovedSupplier" resultType="com.jayud.oms.model.po.SupplierInfo">
+        select
+        s.id, s.supplier_code supplierCode,
+        s.product_classify_ids productClassify,
+        s.supplier_ch_name supplierChName,
+        s.supplier_en_name supplierEnName,
+        s.state_code stateCode, s.contacts, s.company_name companyName,
+        s.contact_number contactNumber,
+        s.contact_phone contactPhone, s.address, s.pid, s.pname, s.cid, s.cname,
+        s.zip_code zipCode, s.ext_setting_id extSettingId,
+        settlement_type settlementType, payment_day paymentDay,
+        tax_receipt tax_receipt, rate,
+        s.buyer_id buyerId,s.status,
+        s.create_user createUser, s.create_time createTime,
+        s.update_time updateTime,s.update_user updateUser,
+        s.`legal_entity_id` legalEntityId
+        from supplier_info s
+        <where>
+            and s.status=#{supplierStatus}
+            and s.id in (select a.ext_id from audit_info a
+            where
+            a.ext_desc=#{tablesDesc}
+            and a.audit_status=#{auditStatus}
+            <if test="supplierIds != null and supplierIds.size()>0">
+                and a.ext_id in
+                <foreach collection="supplierIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            group by ext_id, ext_desc
+            order by id desc
+            )
+        </where>
+
     </select>
 
 </mapper>

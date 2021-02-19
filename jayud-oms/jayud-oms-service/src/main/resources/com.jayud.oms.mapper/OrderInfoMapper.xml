@@ -308,7 +308,7 @@
         </if>
 
         <choose>
-            <when test="form.cmd == 'myOrder'">
+            <when test="form.entrance == 'myOrder'">
                 and temp.createdUser = #{form.loginUserName}
             </when>
             <otherwise>
@@ -346,7 +346,7 @@
         oi.`customer_name` customerName,
         oi.`customer_code` customerCode,
         oi.`legal_name` legalName,
-        (SELECT CONCAT(ota.`goods_desc`,' ',ota.`piece_amount`,'件',',','重量',ota.`weight`,'KG') FROM order_take_adr ota
+        (SELECT CONCAT(ota.`goods_desc`,'/',ota.`piece_amount`,'件','/','重量',ota.`weight`,'KG') FROM order_take_adr ota
         WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 1 ORDER BY ota.`id` LIMIT 1) goodsInfo,
         (SELECT concat(ifnull(da.state_name,''),ifnull(da.city_name,''),da.address) FROM order_take_adr ota LEFT JOIN
         delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 1
@@ -453,7 +453,7 @@
         FROM
         order_info o1 WHERE
         <choose>
-            <when test="form.cmd == 'myOrder'">
+            <when test="form.entrance == 'myOrder'">
                 o1.created_user = #{form.loginUserName}
             </when>
             <otherwise>
@@ -473,7 +473,7 @@
         order_info o2
         WHERE o2.status = '2'
         <choose>
-            <when test="form.cmd == 'myOrder'">
+            <when test="form.entrance == 'myOrder'">
                 and o2.created_user = #{form.loginUserName}
             </when>
             <otherwise>
@@ -493,7 +493,7 @@
         order_info o3
         WHERE o3.status = '4'
         <choose>
-            <when test="form.cmd == 'myOrder'">
+            <when test="form.entrance == 'myOrder'">
                 and o3.created_user = #{form.loginUserName}
             </when>
             <otherwise>
@@ -513,7 +513,7 @@
         order_info o6
         WHERE o6.status = '6'
         <choose>
-            <when test="form.cmd == 'myOrder'">
+            <when test="form.entrance == 'myOrder'">
                 and o6.created_user = #{form.loginUserName}
             </when>
             <otherwise>
@@ -533,7 +533,7 @@
         order_info o7
         WHERE o7.status = '7'
         <choose>
-            <when test="form.cmd == 'myOrder'">
+            <when test="form.entrance == 'myOrder'">
                 and o7.created_user = #{form.loginUserName}
             </when>
             <otherwise>
@@ -553,6 +553,7 @@
         SELECT
             (select oc.encode from order_customs oc where oc.main_order_no = oi.order_no limit 1) encode,
             (SELECT vi.plate_number FROM vehicle_info vi LEFT JOIN order_send_cars osc ON vi.id = osc.vehicle_id WHERE osc.order_no = ot.order_no) plateNumber,
+            (SELECT d.name FROM driver_info d LEFT JOIN order_send_cars osc ON d.id = osc.driver_info_id WHERE osc.order_no = ot.order_no) driverName,
             (select oc.encode_pic_name from order_customs oc where oc.main_order_no = oi.order_no limit 1) fileNameStr,
             (select oc.encode_pic from order_customs oc where oc.main_order_no = oi.order_no limit 1) fileStr
         FROM
@@ -565,6 +566,7 @@
     SELECT
         oi.encode,
         (select vi.plate_number from vehicle_info vi left join order_send_cars osc on vi.id = osc.vehicle_id where osc.order_no = ot.order_no) plateNumber,
+        (SELECT d.name FROM driver_info d LEFT JOIN order_send_cars osc ON d.id = osc.driver_info_id WHERE osc.order_no = ot.order_no) driverName,
         (select ai.status_file_name from audit_info ai where ai.audit_status = 'E_C_0' and ai.ext_id = oi.id order by ai.created_time desc limit 1) fileNameStr,
         (select ai.status_file from audit_info ai where ai.audit_status = 'E_C_0' and ai.ext_id = oi.id order by ai.created_time desc limit 1) fileStr
     FROM

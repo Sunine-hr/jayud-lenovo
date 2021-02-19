@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.bo.QueryVehicleInfoForm;
 import com.jayud.oms.model.po.VehicleInfo;
+import com.jayud.oms.model.vo.VehicleDetailsVO;
 import com.jayud.oms.model.vo.VehicleInfoVO;
 import com.jayud.oms.model.vo.VehicleSizeInfoVO;
 
@@ -55,4 +56,15 @@ public interface IVehicleInfoService extends IService<VehicleInfo> {
      * @return
      */
     List<VehicleSizeInfoVO> findVehicleSize();
+
+
+    /**
+     * 根据车辆id查询车辆详情
+     */
+    VehicleDetailsVO getVehicleDetailsById(Long vehicleId);
+
+    /**
+     * 根据车辆id获取车辆和供应商信息
+     */
+    VehicleDetailsVO getVehicleAndSupplierInfo(Long vehicleId);
 }

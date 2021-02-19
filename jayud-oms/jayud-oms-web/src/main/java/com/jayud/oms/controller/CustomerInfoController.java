@@ -108,7 +108,10 @@ public class CustomerInfoController {
                 return CommonResult.error(ResultEnum.CUSTOMER_CODE_EXIST);
             }
         }
-
+        //校验客户名称是否唯一性
+        if (this.customerInfoService.exitName(form.getId(), form.getName())) {
+            return CommonResult.error(400,"该客户名称已存在");
+        }
 
         CustomerInfo customerInfo = ConvertUtil.convert(form, CustomerInfo.class);
 //        //空字符串设置null
@@ -119,7 +122,7 @@ public class CustomerInfoController {
 //        } else {
 //            customerInfo.setCreatedUser(form.getLoginUserName());
 //        }
-        this.customerInfoService.saveOrUpdateCustomerInfo(form,customerInfo);
+        this.customerInfoService.saveOrUpdateCustomerInfo(form, customerInfo);
 
         return CommonResult.success();
     }
@@ -387,7 +390,7 @@ public class CustomerInfoController {
     @PostMapping(value = "/initCompany")
     public CommonResult<List<InitComboxVO>> initCompany() {
         Map param = new HashMap();
-        param.put("audit_status",AuditStatusEnum.SUCCESS.getCode());
+        param.put("audit_status", AuditStatusEnum.SUCCESS.getCode());
         List<CustomerInfo> customerInfos = customerInfoService.findCustomerInfoByCondition(param);
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (CustomerInfo customerInfo : customerInfos) {
@@ -453,7 +456,7 @@ public class CustomerInfoController {
     @ApiOperation(value = "下载错误信息")
     @GetMapping(value = "/downloadErrorExcel")
     public void downloadErrorExcel(HttpServletResponse response, @RequestParam("userName") String userName) {
-        System.out.println("downloadErrorExcel:userName========================"+userName);
+        System.out.println("downloadErrorExcel:userName========================" + userName);
         try {
             customerInfoService.insExcel(response, userName);
         } catch (Exception exception) {
@@ -465,7 +468,7 @@ public class CustomerInfoController {
     @PostMapping(value = "/checkMes")
     public CommonResult checkMes(@RequestBody Map<String, Object> param) {
         String userName = MapUtil.getStr(param, "loginUserName");
-        System.out.println("checkMes:userName========================"+userName);
+        System.out.println("checkMes:userName========================" + userName);
         boolean result = customerInfoService.checkMes(userName);
         return CommonResult.success(result);
     }

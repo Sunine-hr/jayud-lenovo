@@ -30,7 +30,7 @@ public class OrderStatusVO {
     @ApiModelProperty(value = "流程状态变更时间")
     private String statusChangeTime;
 
-    @ApiModelProperty(value = "流程状态变更操作人")
+    @ApiModelProperty(value = "操作人")
     private String operator;
 
     @ApiModelProperty(value = "子流程")

@@ -2,11 +2,11 @@ package com.jayud.oms.feign;
 
 
 import com.jayud.common.ApiResult;
+import com.jayud.common.utils.FileView;
 import com.jayud.oms.model.bo.CustomsChangeStatusForm;
 import com.jayud.oms.model.bo.InputOrderCustomsForm;
 import com.jayud.oms.model.vo.InitChangeStatusVO;
 import com.jayud.oms.model.vo.InputOrderCustomsVO;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +28,7 @@ public interface CustomsClient {
 
     /**
      * 获取报关订单详情
+     *
      * @param mainOrderNo
      * @return
      */
@@ -36,6 +37,7 @@ public interface CustomsClient {
 
     /**
      * 创建报关单
+     *
      * @param form
      * @return
      */
@@ -44,6 +46,7 @@ public interface CustomsClient {
 
     /**
      * 获取报关订单单号
+     *
      * @param mainOrderNo
      * @return
      */
@@ -53,6 +56,7 @@ public interface CustomsClient {
 
     /**
      * 更改报关单状态
+     *
      * @param form
      * @return
      */
@@ -65,4 +69,10 @@ public interface CustomsClient {
     @RequestMapping(value = "/api/getCustomsOrderByMainOrderNos")
     ApiResult getCustomsOrderByMainOrderNos(@RequestParam("mainOrderNos") List<String> mainOrderNos);
 
+
+    /**
+     * 根据主订单查询六联单号附件
+     */
+    @RequestMapping(value = "/api/getEncodePicByMainOrderNo")
+    public ApiResult<List<FileView>> getEncodePicByMainOrderNo(@RequestParam("mainOrderNos") String mainOrderNo);
 }

@@ -32,33 +32,43 @@ public class OrderTransComboxController {
     @ApiOperation(value = "中转仓库和车辆供应商")
     @PostMapping(value = "/initSendCarCombox")
     public CommonResult initWarehouseInfo() {
-        Map<String,Object> resultMap = new HashMap<>();
+        Map<String, Object> resultMap = new HashMap<>();
         List<InitComboxVO> supplierInfo = omsClient.initSupplierInfo().getData();
         List<InitComboxVO> warehouseInfo = omsClient.initWarehouseInfo().getData();
-        resultMap.put(CommonConstant.SUPPLIERINFO,supplierInfo);
-        resultMap.put(CommonConstant.WAREHOUSEINFO,warehouseInfo);
+        resultMap.put(CommonConstant.SUPPLIERINFO, supplierInfo);
+        resultMap.put(CommonConstant.WAREHOUSEINFO, warehouseInfo);
         return CommonResult.success(resultMap);
     }
 
+    //TODO 从司机绑定多辆车到一部车绑多个司机
+//    @ApiOperation(value = "运输派车-司机姓名")
+//    @PostMapping(value = "/initDriver")
+//    public CommonResult<List<InitComboxVO>> initDriver() {
+//        List<InitComboxVO> driverInfo = omsClient.initDriver().getData();
+//        return CommonResult.success(driverInfo);
+//    }
 
-    @ApiOperation(value = "运输派车-司机姓名")
-    @PostMapping(value = "/initDriver")
-    public CommonResult<List<InitComboxVO>> initDriver() {
-        List<InitComboxVO> driverInfo = omsClient.initDriver().getData();
-        return CommonResult.success(driverInfo);
+//    @ApiOperation(value = "运输派车-司机姓名联动车辆供应商，大陆车牌，香港车牌，司机电话 id = 司机隐藏值")
+//    @PostMapping(value = "/initDriverInfo")
+//    public CommonResult<DriverInfoLinkVO> initDriverInfo(@RequestBody Map<String, Object> param) {
+//        Long driverId = Long.valueOf(MapUtil.getStr(param, "id"));
+//        DriverInfoLinkVO driverInfo = omsClient.initDriverInfo(driverId).getData();
+//        return CommonResult.success(driverInfo);
+//    }
+
+    @ApiOperation(value = "运输派车页面-下拉车辆信息")
+    @PostMapping(value = "/initVehicle")
+    public CommonResult<List<InitComboxVO>> initVehicle() {
+        List<InitComboxVO> initComboxVOS = omsClient.initVehicle().getData();
+        return CommonResult.success(initComboxVOS);
     }
 
-    @ApiOperation(value = "运输派车-司机姓名联动车辆供应商，大陆车牌，香港车牌，司机电话 id = 司机隐藏值")
-    @PostMapping(value = "/initDriverInfo")
-    public CommonResult<DriverInfoLinkVO> initDriverInfo(@RequestBody Map<String,Object> param) {
-        Long driverId = Long.valueOf(MapUtil.getStr(param,"id"));
-        DriverInfoLinkVO driverInfo = omsClient.initDriverInfo(driverId).getData();
-        return CommonResult.success(driverInfo);
+    @ApiOperation(value = "运输派车-大陆车牌联动车辆供应商，大陆车牌，香港车牌，司机电话 id = 车辆id")
+    @PostMapping(value = "/initVehicleInfo")
+    public CommonResult initDriverInfo(@RequestBody Map<String, Object> param) {
+        Long driverId = Long.valueOf(MapUtil.getStr(param, "id"));
+        return CommonResult.success(omsClient.initVehicleInfo(driverId).getData());
     }
-
-
-
-
 
 }
 

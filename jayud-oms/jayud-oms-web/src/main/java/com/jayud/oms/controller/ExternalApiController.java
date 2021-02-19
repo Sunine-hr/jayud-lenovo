@@ -15,6 +15,7 @@ import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.enums.VehicleTypeEnum;
+import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
@@ -265,6 +266,42 @@ public class ExternalApiController {
         return CommonResult.success(initComboxVOS);
     }
 
+    @ApiOperation(value = "初始化车辆下拉框")
+    @RequestMapping(value = "api/initVehicle")
+    public ApiResult<List<VehicleInfo>> initVehicle() {
+        List<VehicleInfo> vehicleInfos = vehicleInfoService
+                .getVehicleInfoByStatus(StatusEnum.ENABLE.getCode());
+        List<InitComboxVO> initComboxVOS = new ArrayList<>();
+        for (VehicleInfo vehicleInfo : vehicleInfos) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(vehicleInfo.getId());
+            initComboxVO.setName(vehicleInfo.getPlateNumber());
+            initComboxVOS.add(initComboxVO);
+        }
+        return ApiResult.ok(initComboxVOS);
+    }
+
+    @ApiOperation(value = "初始化车辆下拉框 (确认派车)")
+    @RequestMapping(value = "api/initVehicleInfo")
+    public ApiResult<VehicleInfoLinkVO> initVehicleInfo(@RequestParam("vehicleId") Long vehicleId) {
+        VehicleDetailsVO vehicleDetailsVO = this.vehicleInfoService.getVehicleDetailsById(vehicleId);
+        //组装数据
+        VehicleInfoLinkVO tmp = new VehicleInfoLinkVO();
+        tmp.setDriverInfos(vehicleDetailsVO.getDriverInfoVOS());
+        tmp.setHkNumber(vehicleDetailsVO.getHkNumber());
+        tmp.setSupplierName(vehicleDetailsVO.getSupplierInfoVO().getSupplierChName());
+        tmp.setMainDriverId(vehicleDetailsVO.getMainDriverId());
+
+        return ApiResult.ok(tmp);
+    }
+
+    @ApiOperation(value = "根据车辆id获取车辆和供应商信息")
+    @RequestMapping(value = "api/getVehicleAndSupplierInfo")
+    public ApiResult<VehicleInfoLinkVO> getVehicleAndSupplierInfo(@RequestParam("vehicleId") Long vehicleId) {
+        VehicleDetailsVO vehicleDetailsVO = this.vehicleInfoService.getVehicleAndSupplierInfo(vehicleId);
+        return ApiResult.ok(vehicleDetailsVO);
+    }
+
     /**
      * 司机下拉框联动车辆供应商，大陆车牌，香港车牌，司机电话
      *
@@ -275,6 +312,7 @@ public class ExternalApiController {
         DriverInfoLinkVO driverInfo = driverInfoService.getDriverInfoLink(driverId);
         return ApiResult.ok(driverInfo);
     }
+
 
     /**
      * 应付暂存
@@ -751,6 +789,29 @@ public class ExternalApiController {
             }
         }
         return ApiResult.ok(cabinetCars);
+    }
+
+    /**
+     * 通关前审核/中港通关前复核页面详情
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/initGoCustomsAudit")
+    public ApiResult initGoCustomsAudit(@RequestParam("mainOrderNo") String mainOrderNo) {
+        InitGoCustomsAuditForm form = new InitGoCustomsAuditForm();
+        form.setOrderNo(mainOrderNo);
+        return ApiResult.ok(this.orderInfoService.initGoCustomsAudit(form));
+    }
+
+    /**
+     * 是否费用提交审核(应收+应付)
+     */
+    @RequestMapping(value = "/api/isCostSubmitted")
+    public ApiResult isCostSubmitted(@RequestParam("mainOrderNos") List<String> mainOrderNos
+            , @RequestParam("orderNos") List<String> orderNos) {
+
+
+        return ApiResult.ok();
     }
 }
 

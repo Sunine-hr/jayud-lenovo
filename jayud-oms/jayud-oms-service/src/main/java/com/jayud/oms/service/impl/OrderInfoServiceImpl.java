@@ -105,6 +105,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Autowired
     private OauthClient oauthClient;
+    @Autowired
+    private IOrderAttachmentService orderAttachmentService;
+
+    private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(),
+            SubOrderSignEnum.KY.getSignOne(), SubOrderSignEnum.BG.getSignOne()};
 
     @Autowired
     private OceanShipClient oceanShipClient;
@@ -478,6 +483,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                                     }
                                     subOrder.setStatus("3");
                                     subOrder.setStatusChangeTime(DateUtils.getLocalToStr(subTrack.get(0).getOperatorTime()));
+                                    subOrder.setOperator(subTrack.get(0).getOperatorUser());
                                 }
                             }
                             //中港运输除出口报关其他子流程节点
@@ -486,6 +492,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                                 if (subTrack != null && subTrack.size() > 0) {
                                     subOrder.setStatus("3");//已完成
                                     subOrder.setStatusChangeTime(DateUtils.getLocalToStr(subTrack.get(0).getOperatorTime()));
+                                    subOrder.setOperator(subTrack.get(0).getOperatorUser());
                                     x.setStatus("2");//进行中
                                     if (subOrder.getProcessCode().equals(x.getChildren().get(x.getChildren().size() - 1).getProcessCode())) {
                                         x.setStatus("3");//已完成
@@ -497,12 +504,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                                 if (subTrack != null && subTrack.size() > 0) {
                                     subOrder.setStatus("3");//已完成
                                     subOrder.setStatusChangeTime(DateUtils.getLocalToStr(subTrack.get(0).getOperatorTime()));
+                                    subOrder.setOperator(subTrack.get(0).getOperatorUser());
                                     x.setStatus("2");//进行中
                                     if (subOrder.getProcessCode().equals(x.getChildren().get(x.getChildren().size() - 1).getProcessCode())) {
                                         if (subOrder.getProcessCode().equals(x.getChildren().get(x.getChildren().size() - 1).getProcessCode())) {
                                             x.setStatus("3");//已完成
                                             x.setStatusChangeTime(DateUtils.getLocalToStr(subTrack.get(0).getOperatorTime()));
                                             x.setOperator(subTrack.get(0).getOperatorUser());
+
                                         }
                                     }
                                 }
@@ -973,13 +982,49 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public InitGoCustomsAuditVO initGoCustomsAudit(InitGoCustomsAuditForm form) {
         InitGoCustomsAuditVO initGoCustomsAuditVO = new InitGoCustomsAuditVO();
+        //查询主订单信息
+        OrderInfo orderInfo = this.getByOrderNos(Collections.singletonList(form.getOrderNo())).get(0);
+
         String prePath = fileClient.getBaseUrl().getData().toString();
-        if (form.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode())) {//出口报关
+        if (orderInfo.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode())) {//出口报关
             initGoCustomsAuditVO = baseMapper.initGoCustomsAudit1(form);
+            //内部报关附件
+            //查询报关六联单号附件
+            List<FileView> encodePics = this.customsClient.getEncodePicByMainOrderNo(form.getOrderNo()).getData();
+
+            String[] statusList = {OrderStatusEnum.CUSTOMS_C_9.getCode(), OrderStatusEnum.CUSTOMS_C_10.getCode()};
+            for (int i = 0; i < statusList.length; i++) {
+                String status = statusList[i];
+                List<LogisticsTrack> logisticsTracks = this.logisticsTrackService.getByCondition(new LogisticsTrack()
+                        .setMainOrderId(orderInfo.getId()).setStatus(status));
+                if (CollectionUtil.isEmpty(logisticsTracks)) {
+                    continue;
+                }
+                LogisticsTrack logisticsTrack = logisticsTracks.get(logisticsTracks.size() - 1);
+                List<FileView> fileViews = StringUtils.getFileViews(logisticsTrack.getStatusPic()
+                        , logisticsTrack.getStatusPicName(), prePath);
+                switch (i) { //设置舱单文件
+                    case 0:
+                        initGoCustomsAuditVO.setManifestAttachment(fileViews);
+                        break;
+                    case 1: //设置报关文件
+                        initGoCustomsAuditVO.setCustomsOrderAttachment(fileViews);
+                        break;
+                }
+            }
+            initGoCustomsAuditVO.setEncodePics(encodePics);
+
         } else {//外部报关放行
             initGoCustomsAuditVO = baseMapper.initGoCustomsAudit2(form);
+            //外部报关附件
+            List<OrderAttachment> orderAttachments = orderAttachmentService.getByMainOrderNoAndRemarks(form.getOrderNo()
+                    , Arrays.asList(OrderAttachmentTypeEnum.SIX_SHEET_ATTACHMENT.getDesc(),
+                            OrderAttachmentTypeEnum.MANIFEST_ATTACHMENT.getDesc(),
+                            OrderAttachmentTypeEnum.CUSTOMS_ATTACHMENT.getDesc()));
+
+            initGoCustomsAuditVO.distributeFiles(orderAttachments, prePath);
         }
-        initGoCustomsAuditVO.setFileViewList(StringUtils.getFileViews(initGoCustomsAuditVO.getFileStr(), initGoCustomsAuditVO.getFileNameStr(), prePath));
+//        initGoCustomsAuditVO.setFileViewList(StringUtils.getFileViews(initGoCustomsAuditVO.getFileStr(), initGoCustomsAuditVO.getFileNameStr(), prePath));
         return initGoCustomsAuditVO;
     }
 
@@ -1035,21 +1080,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         result = this.freightAirClient.getAirOrderByMainOrderNos(mainOrderNoList);
         Map<String, List<Map<String, Object>>> airOrderMap = this.object2Map(result.getData());
 
-        //海运
-        result = this.oceanShipClient.getSeaOrderByMainOrderNos(mainOrderNoList);
-        Map<String, List<Map<String, Object>>> seaOrderMap = this.object2Map(result.getData());
-
         Map<String, Map<String, Object>> map = new HashMap<>();
         for (String mainOrderNo : mainOrderNoList) {
             Map<String, Object> subOrder = new HashMap<>();
             subOrder.put(KEY_SUBORDER[0], tmsOrderMap.get(mainOrderNo));
             subOrder.put(KEY_SUBORDER[1], airOrderMap.get(mainOrderNo));
-            subOrder.put(KEY_SUBORDER[2], seaOrderMap.get(mainOrderNo));
-            subOrder.put(KEY_SUBORDER[3], customsOrderMap.get(mainOrderNo));
+            subOrder.put(KEY_SUBORDER[2], customsOrderMap.get(mainOrderNo));
             map.put(mainOrderNo, subOrder);
         }
-
-
         return map;
     }
 
@@ -1219,7 +1257,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         //报关
         if (SubOrderSignEnum.BG.getSignOne().equals(orderType)) {
-            InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
+            InputOrderTransportForm orderTransportForm = form.getOrderTransportForm() == null
+                    ? new InputOrderTransportForm() : form.getOrderTransportForm();
+
             if (OrderStatusEnum.CUSTOMS_C_1_1.getCode().equals(orderStatus)
                     && (orderTransportForm.getIsGoodsEdit() == null
                     || !orderTransportForm.getIsGoodsEdit())) {
@@ -1343,7 +1383,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      * @return
      */
     private String assemblySubOrderStatus(Map<String, Object> subOrderInfos) {
-        //中港商品信息
         StringBuffer subOrderStatus = new StringBuffer();
         for (String subOrderType : KEY_SUBORDER) {
             Object subOrder = subOrderInfos.get(subOrderType);

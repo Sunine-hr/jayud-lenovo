@@ -3,6 +3,7 @@ package com.jayud.oms.model.po;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -23,7 +24,7 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="DriverInfo对象", description="供应商对应司机信息")
+@ApiModel(value = "DriverInfo对象", description = "供应商对应司机信息")
 public class DriverInfo extends Model<DriverInfo> {
 
     private static final long serialVersionUID = 1L;
@@ -35,8 +36,8 @@ public class DriverInfo extends Model<DriverInfo> {
     @ApiModelProperty(value = "司机姓名")
     private String name;
 
-    @ApiModelProperty(value = "是否主司机(0否 1是)")
-    private String isMain;
+//    @ApiModelProperty(value = "是否主司机(0否 1是)")
+//    private String isMain;
 
     @ApiModelProperty(value = "香港电话")
     private String hkPhone;
@@ -44,8 +45,8 @@ public class DriverInfo extends Model<DriverInfo> {
     @ApiModelProperty(value = "大陆电话")
     private String phone;
 
-    @ApiModelProperty(value = "车牌号(vehicle_info id)")
-    private Long vehicleId;
+//    @ApiModelProperty(value = "车牌号(vehicle_info id)")
+//    private Long vehicleId;
 
     @ApiModelProperty(value = "身份证号")
     private String idNo;

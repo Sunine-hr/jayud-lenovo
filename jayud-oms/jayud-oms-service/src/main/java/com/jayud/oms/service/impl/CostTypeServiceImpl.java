@@ -72,17 +72,19 @@ public class CostTypeServiceImpl extends ServiceImpl<CostTypeMapper, CostType> i
         CostType costType = ConvertUtil.convert(form, CostType.class);
 
         //判断是否代收代垫， 是-费用类别后面加-Y，否则-N
-        String sign = form.getIsPayCollection() ? "-Y" : "-N";
+//        String sign = form.getIsPayCollection() ? "-Y" : "-N";
 
         if (Objects.isNull(costType.getId())) {
             costType
-                    .setCodeName(form.getCodeName() + sign)
+//                    .setCodeName(form.getCodeName() + sign)
+                    .setCodeName(form.getCodeName())
                     .setCreateTime(LocalDateTime.now())
                     .setCreateUser(UserOperator.getToken());
             return this.save(costType);
         } else {
-            String str = form.getCodeName().substring(0, form.getCodeName().indexOf("-"));
-            costType.setCodeName(str + sign)
+//            String str = form.getCodeName().substring(0, form.getCodeName().indexOf("-"));
+            costType.setCodeName(form.getCodeName())
+//                    .setCodeName(str + sign)
                     .setCode(null)
                     .setUpdateTime(LocalDateTime.now())
                     .setUpdateUser(UserOperator.getToken());

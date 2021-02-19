@@ -94,6 +94,12 @@ public class VehicleInfo extends Model<VehicleInfo> {
     @ApiModelProperty(value = "附件名称，多个用逗号隔开")
     private String fileName;
 
+    @ApiModelProperty(value = "司机id(多个用,隔开)")
+    private String driverInfoIds;
+
+    @ApiModelProperty(value = "主司机id")
+    private Long mainDriverId;
+
 
     @Override
     protected Serializable pkVal() {

@@ -68,9 +68,9 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
 
         //获取当前用户的法人主体
         ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
-        List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();
+        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
 
-        IPage<SupplierInfoVO> iPage = this.baseMapper.findSupplierInfoByPage(page, form,legalIds);
+        IPage<SupplierInfoVO> iPage = this.baseMapper.findSupplierInfoByPage(page, form, legalIds);
         for (SupplierInfoVO record : iPage.getRecords()) {
             if (StringUtils.isEmpty(record.getProductClassify())) {
                 continue;
@@ -89,7 +89,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             record.setSettlementType(SettlementTypeEnum.getDesc(record.getSettlementType()));
 
             //获取法人主体
-            LegalEntityVO legalEntityVO = ConvertUtil.convert(oauthClient.getLegalEntityByLegalId(record.getLegalEntityId()).getData(),LegalEntityVO.class);
+            LegalEntityVO legalEntityVO = ConvertUtil.convert(oauthClient.getLegalEntityByLegalId(record.getLegalEntityId()).getData(), LegalEntityVO.class);
             record.setLegalEntityName(legalEntityVO.getLegalName());
             //查询审核状态
             AuditInfo auditInfo = this.auditInfoService.getAuditInfoLatestByExtId(record.getId(), AuditTypeDescEnum.ONE.getTable());
@@ -171,6 +171,36 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
 
     /**
      * 获取启用审核通过供应商
+     * TODO 暂时不能用
+     */
+    @Override
+    public List<SupplierInfo> getApprovedSupplier(List<Long> supplierIds) {
+
+        List<SupplierInfo> approvedSupplier = this.baseMapper.getApprovedSupplier(StatusEnum.ENABLE.getCode(),
+                AuditStatusEnum.SUCCESS.getCode(), AuditTypeDescEnum.ONE.getTable(), supplierIds);
+//        QueryWrapper<SupplierInfo> condition = new QueryWrapper<>();
+//        if (fields != null) {
+//            condition.select(fields);
+//        }
+//        condition.lambda().eq(SupplierInfo::getStatus, StatusEnum.ENABLE.getCode());
+//        List<SupplierInfo> supplierInfos = this.baseMapper.selectList(condition);
+//        //查询所有审核通过的供应商
+//        List<SupplierInfo> tmp = new ArrayList<>();
+//        for (SupplierInfo supplierInfo : supplierInfos) {
+//            AuditInfo info = this.auditInfoService.getAuditInfoLatestByExtId(supplierInfo.getId()
+//                    , AuditTypeDescEnum.ONE.getTable());
+//            if (info == null) {
+//                continue;
+//            }
+//            if (AuditStatusEnum.SUCCESS.getCode().equals(info.getAuditStatus())) {
+//                tmp.add(supplierInfo);
+//            }
+//        }
+        return approvedSupplier;
+    }
+
+    /**
+     * 获取启用审核通过供应商
      */
     @Override
     public List<SupplierInfo> getApprovedSupplier(String... fields) {
@@ -194,6 +224,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         }
         return tmp;
     }
+
 
     /**
      * 校验唯一性
@@ -219,12 +250,12 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         return this.count(condition) > 0;
     }
 
-    private HashMap<String,Object> hashMap = new HashMap<>();
+    private HashMap<String, Object> hashMap = new HashMap<>();
 
     @Override
-    public String importCustomerInfoExcel(HttpServletResponse response, MultipartFile file,String userName)throws Exception{
+    public String importCustomerInfoExcel(HttpServletResponse response, MultipartFile file, String userName) throws Exception {
         InputStream in = null;
-        List<List<String>>  listob = null;
+        List<List<String>> listob = null;
 
         if (file.isEmpty()) {
             throw new Exception("文件不存在！");
@@ -234,8 +265,8 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
 
         in.close();
 
-        int successCount=0;
-        int failCount=0;
+        int successCount = 0;
+        int failCount = 0;
         //导入字段条件判断
         ArrayList<ArrayList<String>> fieldData = new ArrayList<ArrayList<String>>();//必填值为空的数据行
         SupplierInfo supplierInfo = new SupplierInfo();//格式无误的数据行
@@ -243,23 +274,23 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         for (int i = 0; i < lisize; i++) {
             List<String> lo = listob.get(i);
 
-            if (com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(0))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(1))&&com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(2))&&
-                    com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(3))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(4))&&
-                    com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(5))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(6))&& com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(7))&&
-            com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(8))&&com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(9))&&com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(11))) {//判断每行某个数据是否符合规范要求
+            if (com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(0)) && com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(1)) && com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(2)) &&
+                    com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(3)) && com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(4)) &&
+                    com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(5)) && com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(6)) && com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(7)) &&
+                    com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(8)) && com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(9)) && com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(11))) {//判断每行某个数据是否符合规范要求
                 //符合要求，插入到数据库customerInfo表中
-                String s = saveSupplierInfoFromExcel(supplierInfo, lo,userName);
-                if(s.equals("添加成功")){
+                String s = saveSupplierInfoFromExcel(supplierInfo, lo, userName);
+                if (s.equals("添加成功")) {
                     lo = null;
                     successCount += 1;
-                }else{
+                } else {
                     //数据不符合要求
                     ArrayList<String> dataString = new ArrayList<String>();
                     for (int j = 0; j < lo.size(); j++) {
                         String a;
-                        if(lo.get(j)==null||lo.get(j)==""){
+                        if (lo.get(j) == null || lo.get(j) == "") {
                             a = "null";
-                        }else{
+                        } else {
                             a = lo.get(j);
                         }
 
@@ -274,9 +305,9 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
                 ArrayList<String> dataString = new ArrayList<String>();
                 for (int j = 0; j < lo.size(); j++) {
                     String a;
-                    if(lo.get(j)==null||lo.get(j)==""){
+                    if (lo.get(j) == null || lo.get(j) == "") {
                         a = "null";
-                    }else{
+                    } else {
                         a = lo.get(j);
                     }
 
@@ -287,48 +318,48 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             }
 
         }
-        failCount=fieldData.size();
-        String o=null;
-        if (failCount>0) {
+        failCount = fieldData.size();
+        String o = null;
+        if (failCount > 0) {
             //不符合规范的数据保存在redis中，重新生成EXCEL表
-            hashMap.put(userName,fieldData);
+            hashMap.put(userName, fieldData);
 
 //            insExcel(fieldData,response);
-            o="成功导入"+successCount+"行，未成功导入"+failCount+"行,请在有误数据表内查看!";
-        }else{
-            o="全部导入成功！";
+            o = "成功导入" + successCount + "行，未成功导入" + failCount + "行,请在有误数据表内查看!";
+        } else {
+            o = "全部导入成功！";
         }
 
         return o;
     }
 
-    private String saveSupplierInfoFromExcel(SupplierInfo supplierInfo, List<String> lo,String userName) {
+    private String saveSupplierInfoFromExcel(SupplierInfo supplierInfo, List<String> lo, String userName) {
         supplierInfo.setSupplierChName(lo.get(0));
         supplierInfo.setSupplierCode(lo.get(1));
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("supplier_ch_name",lo.get(0));
+        queryWrapper.eq("supplier_ch_name", lo.get(0));
 
         SupplierInfo supplierInfo1 = baseMapper.selectOne(queryWrapper);
-        if(supplierInfo1!=null){
+        if (supplierInfo1 != null) {
             return "供应商名称已存在";
         }
         QueryWrapper queryWrapper1 = new QueryWrapper();
-        queryWrapper1.eq("supplier_code",lo.get(1));
+        queryWrapper1.eq("supplier_code", lo.get(1));
         SupplierInfo supplierInfo2 = baseMapper.selectOne(queryWrapper1);
-        if(supplierInfo2!=null){
+        if (supplierInfo2 != null) {
             return "供应商代码已存在";
         }
 
         String[] str = lo.get(2).split("/");
         StringBuffer stringBuffer = new StringBuffer();
-        for(int i = 0 ; i<str.length ; i++){
+        for (int i = 0; i < str.length; i++) {
             ProductClassify productClassify = productClassifyService.getProductClassifyId(str[i]);
-            if(productClassify==null){
-                return str[i]+"该服务类型不存在";
+            if (productClassify == null) {
+                return str[i] + "该服务类型不存在";
             }
-            if(i==str.length-1){
+            if (i == str.length - 1) {
                 stringBuffer.append(productClassify.getId().toString());
-            }else{
+            } else {
                 stringBuffer.append(productClassify.getId().toString()).append(",");
             }
         }
@@ -343,11 +374,11 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         supplierInfo.setRate(lo.get(9));
 
         String s1 = lo.get(10);
-        if(s1==null||s1.equals("")||s1+""==""){
+        if (s1 == null || s1.equals("") || s1 + "" == "") {
             supplierInfo.setBuyerId(null);
-        }else{
+        } else {
             ApiResult systemUserBySystemName = oauthClient.getSystemUserBySystemName(s1);
-            if(systemUserBySystemName.getMsg().equals("fail")){
+            if (systemUserBySystemName.getMsg().equals("fail")) {
                 return "采购人员名称数据与系统不匹配";
             }
             Long buyerId = Long.parseLong(systemUserBySystemName.getData().toString());
@@ -366,27 +397,27 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
                 .setAuditTypeDesc(AuditTypeDescEnum.ONE.getDesc())
                 .setAuditStatus(AuditStatusEnum.CW_WAIT.getCode())
         );
-        if(!b){
+        if (!b) {
             return "审核状态添加失败";
         }
         return "添加成功";
     }
 
 
-    public void insExcel(HttpServletResponse response,String userName) throws Exception{
-        ArrayList<ArrayList<String>> fieldData = (ArrayList<ArrayList<String>>)hashMap.get(userName);
-        if(fieldData!=null&&fieldData.size()>0){//如果存在不规范行，则重新生成表
+    public void insExcel(HttpServletResponse response, String userName) throws Exception {
+        ArrayList<ArrayList<String>> fieldData = (ArrayList<ArrayList<String>>) hashMap.get(userName);
+        if (fieldData != null && fieldData.size() > 0) {//如果存在不规范行，则重新生成表
             //使用ExcelFileGenerator完成导出
             LoadExcelUtil loadExcelUtil = new LoadExcelUtil(fieldData);
             OutputStream os = response.getOutputStream();
             //导出excel建议加上重置输出流，可以不加该代码，但是如果不加必须要保证输出流中不应该在存在其他数据，否则导出会有问题
             response.reset();
             //配置：//文件名
-            String fileName = "有误数据表（"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+"）.xls";
+            String fileName = "有误数据表（" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "）.xls";
             //处理乱码
-            fileName = new String(fileName.getBytes("utf-8"),"iso-8859-1");
+            fileName = new String(fileName.getBytes("utf-8"), "iso-8859-1");
 
-            response.setHeader("Content-disposition", "attachment;filename="+fileName);
+            response.setHeader("Content-disposition", "attachment;filename=" + fileName);
             response.setBufferSize(1024);
             //导出excel的操作
             loadExcelUtil.expordExcel2(os);
@@ -395,8 +426,8 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
 
     @Override
     public boolean checkMes(String userName) {
-        ArrayList<ArrayList<String>> fieldData = (ArrayList<ArrayList<String>>)hashMap.get(userName);
-        if(fieldData!=null){
+        ArrayList<ArrayList<String>> fieldData = (ArrayList<ArrayList<String>>) hashMap.get(userName);
+        if (fieldData != null) {
             return true;
         }
         return false;
@@ -405,12 +436,12 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
     @Override
     public List<SupplierInfo> findSupplierInfoByCondition() {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("status","1");
+        queryWrapper.eq("status", "1");
         List<SupplierInfo> list = baseMapper.selectList(queryWrapper);
         List<SupplierInfo> supplierInfos = new ArrayList<>();
         for (SupplierInfo supplierInfo : list) {
             AuditInfo auditInfo = this.auditInfoService.getAuditInfoLatestByExtId(supplierInfo.getId(), AuditTypeDescEnum.ONE.getTable());
-            if(auditInfo.getAuditStatus().equals("10")){
+            if (auditInfo.getAuditStatus().equals("10")) {
                 supplierInfos.add(supplierInfo);
             }
         }

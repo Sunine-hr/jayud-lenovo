@@ -181,6 +181,11 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "是否费用提交审核")
     private Boolean isCostSubmitted;
 
+    @ApiModelProperty(value = "车辆id")
+    private Long vehicleId;
+
+    @ApiModelProperty(value = "司机id")
+    private Long driverInfoId;
 
     public String getEntireAddress1() {
         String stateName1 = this.stateName1;

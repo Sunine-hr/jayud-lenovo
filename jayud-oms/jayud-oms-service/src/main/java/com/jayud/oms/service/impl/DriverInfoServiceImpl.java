@@ -11,13 +11,14 @@ import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.DriverInfo;
 import com.jayud.oms.model.vo.DriverInfoLinkVO;
 import com.jayud.oms.model.vo.DriverInfoVO;
-import com.jayud.oms.model.vo.VehicleInfoVO;
 import com.jayud.oms.service.IDriverInfoService;
 import com.jayud.oms.service.IVehicleInfoService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -103,21 +104,30 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
         return this.updateById(driverInfo);
     }
 
+    /**
+     * TODO 车辆管理关联关系更改,小程序需要更改
+     *
+     * @param driverId
+     * @return
+     */
     @Override
     public DriverInfoLinkVO getDriverInfoLink(Long driverId) {
         DriverInfo driverInfo = getById(driverId);
-        if(driverInfo != null){
-            DriverInfoLinkVO driverInfoLinkVO = new DriverInfoLinkVO();
-            driverInfoLinkVO.setDriverName(driverInfo.getName());
-            driverInfoLinkVO.setDriverPhone(driverInfo.getPhone());
-
-            //根据司机名称获取车辆信息
-            List<VehicleInfoVO> vehicleInfoVO = vehicleInfoService.findVehicleByDriverName(driverInfo.getName());
-            driverInfoLinkVO.setVehicleInfoVOList(vehicleInfoVO);
-            return driverInfoLinkVO;
-        }
+//        if(driverInfo != null){
+//            DriverInfoLinkVO driverInfoLinkVO = new DriverInfoLinkVO();
+//            driverInfoLinkVO.setDriverName(driverInfo.getName());
+//            driverInfoLinkVO.setDriverPhone(driverInfo.getPhone());
+//
+//            //根据司机名称获取车辆信息
+//            List<VehicleInfoVO> vehicleInfoVO = vehicleInfoService.findVehicleByDriverName(driverInfo.getName());
+//            driverInfoLinkVO.setVehicleInfoVOList(vehicleInfoVO);
+//            return driverInfoLinkVO;
+//        }
         return new DriverInfoLinkVO();
     }
+
+
+
 
 
     /**
@@ -131,6 +141,30 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
         QueryWrapper<DriverInfo> condition = new QueryWrapper<>();
         condition.lambda().eq(DriverInfo::getPhone, phone);
         return this.baseMapper.selectOne(condition);
+    }
+
+    /**
+     * 查询启用的司机
+     */
+    @Override
+    public List<DriverInfo> getEnableDriverInfo() {
+        QueryWrapper<DriverInfo> condition = new QueryWrapper<>();
+        condition.lambda().eq(DriverInfo::getStatus, StatusEnum.ENABLE.getCode());
+        return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 根据司机id集合拼装司机名称
+     */
+    @Override
+    public String assemblyDriverName(List<Long> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return null;
+        }
+        Collection<DriverInfo> driverInfos = this.listByIds(ids);
+        StringBuilder sb = new StringBuilder();
+        driverInfos.forEach(e -> sb.append(e.getName()).append(","));
+        return sb.toString();
     }
 
 }

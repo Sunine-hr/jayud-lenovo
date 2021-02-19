@@ -46,6 +46,11 @@ public interface ISupplierInfoService extends IService<SupplierInfo> {
     /**
      * 获取启用审核通过供应商
      */
+    List<SupplierInfo> getApprovedSupplier(List<Long> supplierIds);
+
+    /**
+     * 获取启用审核通过供应商
+     */
     List<SupplierInfo> getApprovedSupplier(String... fields);
 
     /**
@@ -57,23 +62,26 @@ public interface ISupplierInfoService extends IService<SupplierInfo> {
 
     /**
      * 导入供应商信息
+     *
      * @param file
      * @param response
      * @return
      */
-    String importCustomerInfoExcel(HttpServletResponse response, MultipartFile file,String userName) throws Exception;
+    String importCustomerInfoExcel(HttpServletResponse response, MultipartFile file, String userName) throws Exception;
 
     /**
      * 下载错误文件
+     *
      * @param response
      * @return
      */
-    void insExcel(HttpServletResponse response,String userName) throws Exception;
+    void insExcel(HttpServletResponse response, String userName) throws Exception;
 
     boolean checkMes(String userName);
 
     /**
      * 获取通过审核的供应商列表
+     *
      * @param
      * @return
      */
@@ -82,5 +90,5 @@ public interface ISupplierInfoService extends IService<SupplierInfo> {
     /**
      * 根据供应商名称查询供应商信息
      */
-   SupplierInfo getByName(String name);
+    SupplierInfo getByName(String name);
 }

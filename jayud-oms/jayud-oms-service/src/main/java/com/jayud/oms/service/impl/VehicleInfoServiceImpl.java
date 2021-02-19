@@ -5,16 +5,25 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.UserOperator;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.mapper.VehicleInfoMapper;
 import com.jayud.oms.model.bo.QueryVehicleInfoForm;
 import com.jayud.oms.model.enums.StatusEnum;
+import com.jayud.oms.model.po.DriverInfo;
 import com.jayud.oms.model.po.VehicleInfo;
+import com.jayud.oms.model.vo.DriverInfoVO;
+import com.jayud.oms.model.vo.VehicleDetailsVO;
 import com.jayud.oms.model.vo.VehicleInfoVO;
 import com.jayud.oms.model.vo.VehicleSizeInfoVO;
+import com.jayud.oms.service.IDriverInfoService;
 import com.jayud.oms.service.IVehicleInfoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,6 +38,8 @@ import java.util.Objects;
 @Service
 public class VehicleInfoServiceImpl extends ServiceImpl<VehicleInfoMapper, VehicleInfo> implements IVehicleInfoService {
 
+    @Autowired
+    private IDriverInfoService driverInfoService;
 
     /**
      * 分页查询车辆信息
@@ -120,5 +131,30 @@ public class VehicleInfoServiceImpl extends ServiceImpl<VehicleInfoMapper, Vehic
         return baseMapper.findVehicleSize();
     }
 
+    /**
+     * 根据车辆id查询车辆详情
+     */
+    @Override
+    public VehicleDetailsVO getVehicleDetailsById(Long vehicleId) {
+        VehicleDetailsVO vehicleDetail = this.baseMapper.getVehicleDetailsById(vehicleId);
+        //司机信息
+        Collection<DriverInfo> driverInfos = this.driverInfoService.listByIds(vehicleDetail.getDriverIds());
+        if (!CollectionUtils.isEmpty(driverInfos)) {
+            List<DriverInfoVO> list = new ArrayList<>();
+            for (DriverInfo driverInfo : driverInfos) {
+                list.add(ConvertUtil.convert(driverInfo, DriverInfoVO.class));
+            }
+            vehicleDetail.setDriverInfoVOS(list);
+        }
 
+        return vehicleDetail;
+    }
+
+    /**
+     * 根据车辆id获取车辆和供应商信息
+     */
+    @Override
+    public VehicleDetailsVO getVehicleAndSupplierInfo(Long vehicleId) {
+        return this.baseMapper.getVehicleDetailsById(vehicleId);
+    }
 }

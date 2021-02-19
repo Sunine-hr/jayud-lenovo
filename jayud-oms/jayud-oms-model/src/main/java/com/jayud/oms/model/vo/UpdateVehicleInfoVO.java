@@ -1,19 +1,12 @@
 package com.jayud.oms.model.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.utils.FileView;
-import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.enums.VehicleTypeEnum;
-import io.swagger.annotations.ApiModel;
+import com.jayud.oms.model.po.DriverInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +20,7 @@ import java.util.List;
  * @since 2020-11-04
  */
 @Data
-public class VehicleInfoVO {
+public class UpdateVehicleInfoVO {
 
     private static final long serialVersionUID = 1L;
 
@@ -43,9 +36,6 @@ public class VehicleInfoVO {
     @ApiModelProperty(value = "供应商id")
     private Long supplierId;
 
-    @ApiModelProperty(value = "供应商名字")
-    private String supplierName;
-
     @ApiModelProperty(value = "牌头公司")
     private String ptCompany;
 
@@ -54,9 +44,6 @@ public class VehicleInfoVO {
 
     @ApiModelProperty(value = "车辆类型(1吨车 2柜车)")
     private Integer carType;
-
-    @ApiModelProperty(value = "车辆名称(1吨车 2柜车)")
-    private String carTypeName;
 
     @ApiModelProperty(value = "牌头电话")
     private String ptPhone;
@@ -82,20 +69,6 @@ public class VehicleInfoVO {
     @ApiModelProperty(value = "启用状态0-禁用，1-启用")
     private String status;
 
-    @ApiModelProperty(value = "创建人")
-    private String createUser;
-
-    @ApiModelProperty(value = "创建时间")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createTime;
-
-    @ApiModelProperty(value = "更新时间")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updateTime;
-
-    @ApiModelProperty(value = "更新人")
-    private String updateUser;
-
     @ApiModelProperty(value = "寮步密码")
     private String steppingCode;
 
@@ -105,14 +78,11 @@ public class VehicleInfoVO {
     @ApiModelProperty(value = "车辆吨位")
     private String vehicleTonnage;
 
-    @ApiModelProperty(value = "是否能编辑")
-    private Boolean isExist;
-
-//    @ApiModelProperty(value = "司机id(多个用,隔开)")
-//    private String driverInfoIds;
+    @ApiModelProperty(value = "司机id(多个用,隔开)")
+    private String driverInfoIds;
 
     @ApiModelProperty(value = "司机名称(多个用,隔开)")
-    private String driverNames;
+    private List<DriverInfo> driverInfos;
 
     @ApiModelProperty(value = "司机id集合")
     private List<Long> driverIds;
@@ -121,13 +91,8 @@ public class VehicleInfoVO {
     private Long mainDriverId;
 
 
-    public void setCarType(Integer carType) {
-        this.carTypeName = VehicleTypeEnum.getDesc(carType);
-        this.carType = carType;
-    }
-
     public void setDriverInfoIds(String driverInfoIds) {
-//        this.driverInfoIds = driverInfoIds;
+        this.driverInfoIds = driverInfoIds;
         List<Long> driverIds = new ArrayList<>();
         for (String driverInfoId : driverInfoIds.split(",")) {
             driverIds.add(Long.valueOf(driverInfoId));

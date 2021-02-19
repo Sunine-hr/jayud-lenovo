@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,20 +44,20 @@ public class DriverInfoController {
     @PostMapping(value = "/findDriverInfoByPage")
     public CommonResult<CommonPageResult<DriverInfoVO>> findVehicleInfoByPage(@RequestBody QueryDriverInfoForm form) {
         IPage<DriverInfoVO> iPage = driverInfoService.findDriverInfoByPage(form);
-        for (DriverInfoVO record : iPage.getRecords()) {
-            //拼接车牌
-            record.splicingPlateNumber();
-        }
+//        for (DriverInfoVO record : iPage.getRecords()) {
+//            //拼接车牌
+//            record.splicingPlateNumber();
+//        }
         return CommonResult.success(new CommonPageResult<>(iPage));
     }
 
     @ApiOperation(value = "新增编辑司机信息")
     @PostMapping(value = "/saveOrUpdateDriverInfo")
     public CommonResult saveOrUpdateDriverInfo(@Valid @RequestBody AddDriverInfoForm form) {
-        /*DriverInfo info = new DriverInfo().setId(form.getId()).setName(form.getName());
+        DriverInfo info = new DriverInfo().setId(form.getId()).setName(form.getName());
         if (this.driverInfoService.checkUnique(info)) {
             return CommonResult.error(400, "司机姓名已存在");
-        }*/
+        }
         //校验手机是否存在
         DriverInfo tmp = this.driverInfoService.getByPhone(form.getPhone());
         if (tmp != null && !tmp.getId().equals(form.getId())) {
@@ -115,6 +116,13 @@ public class DriverInfoController {
         } else {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
+    }
+
+
+    @ApiOperation(value = "车辆管理关联司机:查询审核通过的司机")
+    @PostMapping(value = "/getEnableDriverInfo")
+    public CommonResult<List<DriverInfo>> getEnableDriverInfo() {
+        return CommonResult.success(this.driverInfoService.getEnableDriverInfo());
     }
 }
 

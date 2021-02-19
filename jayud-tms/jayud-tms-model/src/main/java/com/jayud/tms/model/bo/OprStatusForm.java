@@ -1,5 +1,6 @@
 package com.jayud.tms.model.bo;
 
+import com.jayud.common.UserOperator;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -26,7 +27,7 @@ public class OprStatusForm {
     private String statusName;
 
     @ApiModelProperty(value = "操作人")
-    private String operatorUser;
+    private String operatorUser= UserOperator.getToken();
 
     @ApiModelProperty(value = "操作时间")
     private String operatorTime;

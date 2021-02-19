@@ -30,7 +30,7 @@ public class QueryOrderInfoForm extends BasePageForm{
     private String classCode;
 
     @ApiModelProperty(value = "操作指令,cmd = noSubmit草稿 or submit全部 or costAudit费用审核 or outCustomsRelease外部报关放行" +
-            "or goCustomsAudit通关前审核 or dataNotAll待补全 or 待取消处理cancelled or 待驳回处理rejected or 我的订单myOrder")
+            "or goCustomsAudit通关前审核 or dataNotAll待补全 or 待取消处理cancelled or 待驳回处理rejected ")
     private String cmd;
 
     @ApiModelProperty(value = "当前登录用户,前台传",required = true)
@@ -38,4 +38,6 @@ public class QueryOrderInfoForm extends BasePageForm{
     private String loginUserName;
 
 
+    @ApiModelProperty(value = "菜单入口 我的订单myOrder")
+    private String entrance;
 }

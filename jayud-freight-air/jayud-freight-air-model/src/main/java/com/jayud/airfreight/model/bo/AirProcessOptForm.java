@@ -2,6 +2,7 @@ package com.jayud.airfreight.model.bo;
 
 import com.jayud.airfreight.model.po.AirBooking;
 import com.jayud.airfreight.model.po.AirOrder;
+import com.jayud.common.UserOperator;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.JayudBizException;
@@ -30,7 +31,7 @@ public class AirProcessOptForm {
     private Long orderId;
 
     @ApiModelProperty(value = "操作人")
-    private String operatorUser;
+    private String operatorUser = UserOperator.getToken();
 
     @ApiModelProperty(value = "操作时间")
     private String operatorTime;

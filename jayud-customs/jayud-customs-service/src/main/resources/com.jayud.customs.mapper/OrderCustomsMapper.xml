@@ -267,11 +267,17 @@
         <if test="form.cmd == 'toCheck'">
             AND oc.`status` = 'C_2'
         </if>
-        <if test="form.cmd == 'declare'">
+        <if test="form.cmd == 'twoCheck'">
             AND oc.`status` = 'C_3'
         </if>
-        <if test="form.cmd == 'releaseConfirm'">
+        <if test="form.cmd == 'declare'">
+            AND oc.`status` = 'C_9'
+        </if>
+        <if test="form.cmd == 'customsClearance'">
             AND oc.`status` = 'C_4'
+        </if>
+        <if test="form.cmd == 'releaseConfirm'">
+            AND oc.`status` = 'C_10'
         </if>
         <if test="form.cmd == 'goCustomsConfirm'">
             AND oc.`status` = 'C_5' and oc.class_code = 'CBG'

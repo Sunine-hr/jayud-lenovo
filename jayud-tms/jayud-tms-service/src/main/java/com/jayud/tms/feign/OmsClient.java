@@ -2,6 +2,7 @@ package com.jayud.tms.feign;
 
 
 import com.jayud.common.ApiResult;
+import com.jayud.common.CommonResult;
 import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.tms.model.bo.AuditInfoForm;
 import com.jayud.tms.model.bo.HandleSubProcessForm;
@@ -9,6 +10,7 @@ import com.jayud.tms.model.bo.OprStatusForm;
 import com.jayud.tms.model.vo.DriverInfoLinkVO;
 import com.jayud.tms.model.vo.InitComboxVO;
 import com.jayud.tms.model.vo.OrderStatusVO;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -97,12 +99,26 @@ public interface OmsClient {
 
 
     /**
-     * 司机下拉框联动车辆供应商，大陆车牌，香港车牌，司机电话
-     *
-     * @return
+     * 初始化车辆下拉框
      */
-    @RequestMapping(value = "/api/initDriverInfo")
-    ApiResult<DriverInfoLinkVO> initDriverInfo(@RequestParam("driverId") Long driverId);
+    @RequestMapping(value = "api/initVehicle")
+    ApiResult<List<InitComboxVO>> initVehicle();
+
+//    /**
+//     * 司机下拉框联动车辆供应商，大陆车牌，香港车牌，司机电话
+//     *
+//     * @return
+//     */
+//    @RequestMapping(value = "/api/initDriverInfo")
+//    ApiResult<DriverInfoLinkVO> initDriverInfo(@RequestParam("driverId") Long driverId);
+
+
+    @ApiOperation(value = "初始化车辆下拉框")
+    /**
+     * 陆车牌下拉框联动车辆供应商，大陆车牌，香港车牌，司机电话
+     */
+    @RequestMapping(value = "api/initVehicleInfo")
+    public ApiResult initVehicleInfo(@RequestParam("vehicleId") Long vehicleId);
 
 
     /**
@@ -119,10 +135,23 @@ public interface OmsClient {
 
     /**
      * 是否是虚拟仓
+     *
      * @param warehouseInfoId
      * @return
      */
     @RequestMapping(value = "/api/isVirtualWarehouse")
     ApiResult<Boolean> isVirtualWarehouse(@RequestParam("warehouseInfoId") Long warehouseInfoId);
 
+    /**
+     * 通关前审核/中港通关前复核页面详情
+     * @return
+     */
+    @RequestMapping(value = "/api/initGoCustomsAudit")
+    public ApiResult initGoCustomsAudit(@RequestParam("mainOrderNo") String mainOrderNo);
+
+    /**
+     * 根据车辆id获取车辆和供应商信息
+     */
+    @RequestMapping(value = "api/getVehicleAndSupplierInfo")
+    public ApiResult getVehicleAndSupplierInfo(@RequestParam("vehicleId") Long vehicleId);
 }

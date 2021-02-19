@@ -28,14 +28,12 @@
     <select id="findDriverInfoByPage" parameterType="com.jayud.oms.model.bo.QueryDriverInfoForm"
             resultType="com.jayud.oms.model.vo.DriverInfoVO">
         select
-            d.id, name, is_main isMain, hk_phone hkPhone,
-            phone, vehicle_id vehicleId, id_no idNo, driving_no drivingNo, d.status,
+            d.id, name, hk_phone hkPhone,
+            phone, id_no idNo, driving_no drivingNo, d.status,
             d.create_user createUser, d.create_time createTime,
-            d.update_time updateTime, d.update_user updateUser,
-            v.plate_number plateNumber,
-            v.hk_number hkNumber
+            d.update_time updateTime, d.update_user updateUser
         from
-            driver_info d left join vehicle_info v on d.vehicle_id=v.id
+            driver_info d
         <where>
             <if test="form.status!=null and form.status!=''">
                 and d.status= #{form.status}
@@ -49,12 +47,12 @@
                 or
                 d.hk_phone like concat('%',#{form.phone},'%'))
             </if>
-            <if test="form.carNumber!=null and form.carNumber!=''">
-                and
-                (v.plate_number like concat('%',#{form.carNumber},'%')
-                or
-                v.hk_number like concat('%',#{form.carNumber},'%'))
-            </if>
+<!--            <if test="form.carNumber!=null and form.carNumber!=''">-->
+<!--                and-->
+<!--                (v.plate_number like concat('%',#{form.carNumber},'%')-->
+<!--                or-->
+<!--                v.hk_number like concat('%',#{form.carNumber},'%'))-->
+<!--            </if>-->
         </where>
     </select>
 

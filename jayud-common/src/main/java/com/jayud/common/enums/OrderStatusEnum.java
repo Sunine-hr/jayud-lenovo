@@ -48,8 +48,10 @@ public enum OrderStatusEnum {
     CUSTOMS_C_1_1("C_1_1", "报关接单驳回"),
     CUSTOMS_C_2("C_2", "报关打单"),
     CUSTOMS_C_3("C_3", "报关复核"),
+    CUSTOMS_C_9("C_9", "报关二复"),
     CUSTOMS_C_4("C_4", "报关申报"),
-    CUSTOMS_C_5("C_5", "报关放行"),
+    CUSTOMS_C_10("C_10", "报关放行"),
+    CUSTOMS_C_5("C_5", "放行审核"),
     CUSTOMS_C_5_1("C_5_1", "报关放行驳回"),//仅报关子订单状态用
     CUSTOMS_C_6("C_6", "通关确认"),
     CUSTOMS_C_6_1("C_6_1", "通关查验"),//仅报关子订单状态用
@@ -155,59 +157,6 @@ public enum OrderStatusEnum {
         }
         return "";
     }
-
-    /**
-     * 获取空运上个节点
-     * 如果是驳回状态就是当前状态
-     */
-    public static OrderStatusEnum getAirOrderPreStatus(String currentStatus) {
-
-        if (AIR_A_3_2.getCode().equals(currentStatus)) {
-            return OrderStatusEnum.AIR_A_3_2;
-        }
-
-        List<OrderStatusEnum> statusEnums = getAirOrderProcess();
-
-        for (int i = 0; i < statusEnums.size(); i++) {
-            OrderStatusEnum orderStatusEnum = statusEnums.get(i);
-            if (orderStatusEnum.getCode().equals(currentStatus)) {
-                if (i == 0) {
-                    return AIR_A_0;
-                }
-                return statusEnums.get(i - 1);
-            }
-        }
-
-        return null;
-    }
-
-
-    /**
-     * 获取空运下个节点
-     * 如果是驳回状态就是当前状态
-     */
-    public static OrderStatusEnum getAirOrderNextStatus(String currentStatus) {
-
-        if (AIR_A_2_1.getCode().equals(currentStatus)) {
-            return OrderStatusEnum.AIR_A_2_1;
-        }
-        List<OrderStatusEnum> statusEnums = getAirOrderProcess();
-
-        boolean next = true;
-        for (int i = 0; i < statusEnums.size(); i++) {
-            OrderStatusEnum orderStatusEnum = statusEnums.get(i);
-            if (orderStatusEnum.getCode().equals(currentStatus)) {
-                next = false;
-                continue;
-            }
-            if (!next) {
-                return orderStatusEnum;
-            }
-        }
-
-        return null;
-    }
-
     public static List<OrderStatusEnum> getAirOrderProcess() {
         List<OrderStatusEnum> statusEnums = new ArrayList<>();
         statusEnums.add(AIR_A_0);
@@ -221,6 +170,89 @@ public enum OrderStatusEnum {
         statusEnums.add(AIR_A_8);
         return statusEnums;
     }
+
+    public static List<OrderStatusEnum> getCustomsProcess() {
+        List<OrderStatusEnum> statusEnums = new ArrayList<>();
+        statusEnums.add(CUSTOMS_C_0);
+        statusEnums.add(CUSTOMS_C_1);
+        statusEnums.add(CUSTOMS_C_2);
+        statusEnums.add(CUSTOMS_C_3);
+        statusEnums.add(CUSTOMS_C_9);
+        statusEnums.add(CUSTOMS_C_4);
+        statusEnums.add(CUSTOMS_C_10);
+        statusEnums.add(CUSTOMS_C_5);
+        statusEnums.add(CUSTOMS_C_6);
+        return statusEnums;
+    }
+
+    /**
+     * 获取空运上个节点
+     * 如果是驳回状态就是当前状态
+     */
+    public static OrderStatusEnum getAirOrderPreStatus(String currentStatus) {
+        if (AIR_A_3_2.getCode().equals(currentStatus)) {
+            return OrderStatusEnum.AIR_A_3_2;
+        }
+        List<OrderStatusEnum> statusEnums = getAirOrderProcess();
+        for (int i = 0; i < statusEnums.size(); i++) {
+            OrderStatusEnum orderStatusEnum = statusEnums.get(i);
+            if (orderStatusEnum.getCode().equals(currentStatus)) {
+                if (i == 0) {
+                    return AIR_A_0;
+                }
+                return statusEnums.get(i - 1);
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     * 获取空运下个节点
+     * 如果是驳回状态就是当前状态
+     */
+    public static OrderStatusEnum getAirOrderNextStatus(String currentStatus) {
+        if (AIR_A_2_1.getCode().equals(currentStatus)) {
+            return OrderStatusEnum.AIR_A_2_1;
+        }
+        List<OrderStatusEnum> statusEnums = getAirOrderProcess();
+        boolean next = true;
+        for (int i = 0; i < statusEnums.size(); i++) {
+            OrderStatusEnum orderStatusEnum = statusEnums.get(i);
+            if (orderStatusEnum.getCode().equals(currentStatus)) {
+                next = false;
+                continue;
+            }
+            if (!next) {
+                return orderStatusEnum;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 获取空运下个节点
+     * 如果是驳回状态就是当前状态
+     */
+    public static OrderStatusEnum getCustomsOrderNextStatus(String currentStatus) {
+//        if (AIR_A_2_1.getCode().equals(currentStatus)) {
+//            return OrderStatusEnum.AIR_A_2_1;
+//        }
+        List<OrderStatusEnum> statusEnums = getCustomsProcess();
+        boolean next = true;
+        for (int i = 0; i < statusEnums.size(); i++) {
+            OrderStatusEnum orderStatusEnum = statusEnums.get(i);
+            if (orderStatusEnum.getCode().equals(currentStatus)) {
+                next = false;
+                continue;
+            }
+            if (!next) {
+                return orderStatusEnum;
+            }
+        }
+        return null;
+    }
+
 
     public static OrderStatusEnum getAirOrderRejection(String status) {
         if (OrderStatusEnum.AIR_A_0.getCode().equals(status)) {//接单页面驳回

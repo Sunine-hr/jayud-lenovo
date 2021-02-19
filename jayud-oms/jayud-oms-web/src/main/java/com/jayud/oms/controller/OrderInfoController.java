@@ -8,14 +8,19 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.enums.OrderAttachmentTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.enums.StatusEnum;
+import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.AuditInfo;
+import com.jayud.oms.model.po.OrderAttachment;
 import com.jayud.oms.model.po.OrderInfo;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.IAuditInfoService;
+import com.jayud.oms.service.IOrderAttachmentService;
 import com.jayud.oms.service.IOrderInfoService;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
@@ -29,10 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @RestController
@@ -43,9 +45,10 @@ public class OrderInfoController {
 
     @Autowired
     IOrderInfoService orderInfoService;
-
     @Autowired
     IAuditInfoService auditInfoService;
+    @Autowired
+    private IOrderAttachmentService orderAttachmentService;
 
     //获取订单列表，要判断账号所属法人主体，根据法人主体分页查询订单
 
@@ -254,15 +257,7 @@ public class OrderInfoController {
     @ApiOperation(value = "外部报关放行")
     @PostMapping(value = "/outCustomsRelease")
     public CommonResult outCustomsRelease(@RequestBody OprStatusForm form) {
-        if (form.getMainOrderId() == null || StringUtil.isNullOrEmpty(form.getOperatorUser()) ||
-                StringUtil.isNullOrEmpty(form.getEncode())) {
-            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
-        }
-        //六联单号必须为13位的纯数字
-        String encode = form.getEncode();
-        if (!(encode.matches("[0-9]{1,}") && encode.length() == 13)) {
-            return CommonResult.error(ResultEnum.ENCODE_PURE_NUMBERS);
-        }
+        form.checkExternalCustomsDeclarationParam();
         //外部报关放行:1.对主订单放行  2.随时可操作  3.没有出口报关的中港运输的单才可进行外部报关放行,有出口报关的就进行报关模块的报关放行
         //外部报关放行不体现在流程节点中
         AuditInfo auditInfo = new AuditInfo();
@@ -286,7 +281,26 @@ public class OrderInfoController {
         boolean result = orderInfoService.updateById(orderInfo);
 
         //TODO 上传仓单文件/六联单号文件/上传舱单文件/上传报关单文件
+        //查询主单信息
+        OrderInfo tmp = this.orderInfoService.getById(form.getMainOrderId());
+        //先把已有文件修改为禁用状态
+        this.orderAttachmentService.update(tmp.getOrderNo(),
+                Arrays.asList(OrderAttachmentTypeEnum.CUSTOMS_ATTACHMENT.getDesc(),
+                        OrderAttachmentTypeEnum.MANIFEST_ATTACHMENT.getDesc(),
+                        OrderAttachmentTypeEnum.SIX_SHEET_ATTACHMENT.getDesc())
+                , new OrderAttachment().setStatus(StatusEnum.DISABLE.getCode()));
 
+        Map<String, List<FileView>> attachment = form.assemblyAttachment();
+        List<OrderAttachment> list = new ArrayList<>();
+        attachment.forEach((k, v) -> {
+            OrderAttachment orderAttachment = new OrderAttachment().setFileName(StringUtils.getFileNameStr(v))
+                    .setFilePath(StringUtils.getFileStr(v))
+                    .setMainOrderNo(tmp.getOrderNo()).setStatus(StatusEnum.ENABLE.getCode())
+                    .setUploadTime(LocalDateTime.now())
+                    .setRemarks(k);
+            list.add(orderAttachment);
+        });
+        this.orderAttachmentService.saveBatch(list);
 
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
@@ -299,6 +313,7 @@ public class OrderInfoController {
     @PostMapping(value = "/initGoCustomsAudit")
     public CommonResult<InitGoCustomsAuditVO> initGoCustomsAudit(@RequestBody @Valid InitGoCustomsAuditForm form) {
         InitGoCustomsAuditVO initGoCustomsAuditVO = orderInfoService.initGoCustomsAudit(form);
+        initGoCustomsAuditVO.setGoodsInfo(form.getGoodsInfo());
         return CommonResult.success(initGoCustomsAuditVO);
     }
 

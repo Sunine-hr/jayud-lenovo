@@ -140,6 +140,9 @@ public class OrderCustoms extends Model<OrderCustoms> {
     @ApiModelProperty(value = "是否需要录入费用")
     private Boolean needInputCost;
 
+    @ApiModelProperty(value = "报关单号")
+    private String yunCustomsNo;
+
     @ApiModelProperty(value = "接单人")
     private String jiedanUser;
 

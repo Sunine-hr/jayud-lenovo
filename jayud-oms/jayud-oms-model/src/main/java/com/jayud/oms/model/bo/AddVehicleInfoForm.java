@@ -1,6 +1,8 @@
 package com.jayud.oms.model.bo;
 
 import com.jayud.common.utils.FileView;
+import com.jayud.oms.model.po.DriverInfo;
+import com.jayud.oms.model.vo.DriverInfoVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -13,6 +15,7 @@ import java.util.List;
  * <p>
  * 供应商对应车辆信息
  * </p>
+ *
  * @author 李达荣
  * @since 2020-11-04
  */
@@ -72,5 +75,13 @@ public class AddVehicleInfoForm {
 
     @ApiModelProperty(value = "车辆吨位")
     private String vehicleTonnage;
+
+    @ApiModelProperty(value = "司机对象")
+    @NotNull(message = "需要关联司机")
+    private List<AddDriverInfoForm> driverInfos;
+
+    @ApiModelProperty(value = "主司机id")
+    @NotNull(message = "请选择主司机")
+    private Long mainDriverId;
 
 }

@@ -15,26 +15,24 @@ import com.jayud.oms.config.ImportExcelUtil;
 import com.jayud.oms.config.LoadExcelUtil;
 import com.jayud.oms.config.TypeUtils;
 import com.jayud.oms.feign.OauthClient;
+import com.jayud.oms.mapper.CustomerInfoMapper;
 import com.jayud.oms.model.bo.AddCustomerInfoForm;
+import com.jayud.oms.model.bo.QueryCusAccountForm;
 import com.jayud.oms.model.bo.QueryCustomerInfoForm;
 import com.jayud.oms.model.bo.QueryRelUnitInfoListForm;
 import com.jayud.oms.model.enums.CustomerInfoStatusEnum;
 import com.jayud.oms.model.po.CustomerInfo;
 import com.jayud.oms.model.po.CustomerRelaLegal;
-import com.jayud.oms.model.po.CustomerRelaUnit;
+import com.jayud.oms.model.vo.CustAccountVO;
 import com.jayud.oms.model.vo.CustomerInfoVO;
-import com.jayud.oms.model.bo.QueryCusAccountForm;
 import com.jayud.oms.model.vo.InitComboxStrVO;
 import com.jayud.oms.service.ICustomerInfoService;
-import com.jayud.oms.model.vo.CustAccountVO;
-import com.jayud.oms.mapper.CustomerInfoMapper;
 import com.jayud.oms.service.ICustomerRelaLegalService;
 import com.jayud.oms.service.ICustomerRelaUnitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
@@ -355,7 +353,9 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
     public boolean exitCode(Long customerId, String idCode) {
         QueryWrapper<CustomerInfo> condition = new QueryWrapper<>();
         condition.lambda().eq(CustomerInfo::getIdCode, idCode);
-        condition.lambda().ne(CustomerInfo::getId, customerId);
+        if (customerId != null) {
+            condition.lambda().ne(CustomerInfo::getId, customerId);
+        }
         return this.count(condition) > 0;
     }
 
@@ -409,6 +409,19 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         QueryWrapper<CustomerInfo> condition = new QueryWrapper<>();
         condition.lambda().eq(CustomerInfo::getName, name);
         return this.getOne(condition);
+    }
+
+    /**
+     * 校验客户名称唯一性
+     */
+    @Override
+    public boolean exitName(Long customerId, String name) {
+        QueryWrapper<CustomerInfo> condition = new QueryWrapper<>();
+        condition.lambda().eq(CustomerInfo::getName, name);
+        if (customerId != null) {
+            condition.lambda().ne(CustomerInfo::getId, customerId);
+        }
+        return this.count(condition) > 0;
     }
 
 }

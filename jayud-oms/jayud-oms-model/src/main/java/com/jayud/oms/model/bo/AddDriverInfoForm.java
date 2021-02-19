@@ -26,9 +26,9 @@ public class AddDriverInfoForm {
     @NotEmpty(message = "name is required")
     private String name;
 
-    @ApiModelProperty(value = "是否主司机(0否 1是)")
-    @NotEmpty(message = "isMain is required")
-    private String isMain;
+//    @ApiModelProperty(value = "是否主司机(0否 1是)")
+//    @NotEmpty(message = "isMain is required")
+//    private String isMain;
 
     @ApiModelProperty(value = "香港电话")
     private String hkPhone;
@@ -37,9 +37,9 @@ public class AddDriverInfoForm {
     @NotEmpty(message = "phone is required")
     private String phone;
 
-    @ApiModelProperty(value = "车牌号id")
-    @NotNull(message = "vehicleId is required")
-    private Long vehicleId;
+//    @ApiModelProperty(value = "车牌号id")
+//    @NotNull(message = "vehicleId is required")
+//    private Long vehicleId;
 
     @ApiModelProperty(value = "身份证号")
     private String idNo;

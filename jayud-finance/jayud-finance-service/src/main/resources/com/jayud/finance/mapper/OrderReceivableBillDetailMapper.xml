@@ -80,33 +80,58 @@
         orbd.bill_no = tt.bill_no
         LEFT JOIN order_receivable_bill orb ON orbd.bill_id = orb.id
         where orbd.make_time = tt.make_time
-        <if test="form.cmd == 'main_statement'">
-            and orb.is_main = 1
-        </if>
-        <if test="form.cmd == 'statement_audit'">
-            and orb.is_main = 1 and orbd.audit_status in ('B_1','B_2')
-        </if>
-        <if test="form.cmd == 'cw_statement'">
-            and (orbd.audit_status in ('B_3','B_4','B_5','B_5_1','B_6') or orbd.apply_status='4')
-        </if>
-        <if test="form.cmd == 'zgys_statement'">
-            and orb.is_main = 0 and orb.sub_type = 'zgys'
-        </if>
-        <if test="form.cmd == 'zgys_statement_audit'">
-            and orb.is_main = 0 and orb.sub_type = 'zgys' and orbd.audit_status in ('B_1','B_2')
-        </if>
-        <if test="form.cmd == 'bg_statement'">
-            and orb.is_main = 0 and orb.sub_type = 'bg'
-        </if>
-        <if test="form.cmd == 'bg_statement_audit'">
-            and orb.is_main = 0 and orb.sub_type = 'bg' and orbd.audit_status in ('B_1','B_2')
-        </if>
-        <if test="form.cmd == 'ky_statement'">
-            and orb.is_main = 0 and orb.sub_type = 'ky'
-        </if>
-        <if test="form.cmd == 'ky_statement_audit'">
-            and orb.is_main = 0 and orb.sub_type = 'ky' and orbd.audit_status in ('B_1','B_2')
-        </if>
+        <!--        <if test="form.cmd == 'main_statement'">-->
+        <!--            and orb.is_main = 1-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'statement_audit'">-->
+        <!--            and orb.is_main = 1 and orbd.audit_status in ('B_1','B_2')-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'cw_statement'">-->
+        <!--            and (orbd.audit_status in ('B_3','B_4','B_5','B_5_1','B_6') or orbd.apply_status='4')-->
+        <!--        </if>-->
+
+<!--        <if test="form.cmd == 'zgys_statement'">-->
+<!--            and orb.is_main = 0 and orb.sub_type = 'zgys'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'zgys_statement_audit'">-->
+<!--            and orb.is_main = 0 and orb.sub_type = 'zgys' and orbd.audit_status in ('B_1','B_2')-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'bg_statement'">-->
+<!--            and orb.is_main = 0 and orb.sub_type = 'bg'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'bg_statement_audit'">-->
+<!--            and orb.is_main = 0 and orb.sub_type = 'bg' and orbd.audit_status in ('B_1','B_2')-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'ky_statement'">-->
+<!--            and orb.is_main = 0 and orb.sub_type = 'ky'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'ky_statement_audit'">-->
+<!--            and orb.is_main = 0 and orb.sub_type = 'ky' and orbd.audit_status in ('B_1','B_2')-->
+<!--        </if>-->
+
+        <choose>
+            <when test="form.cmd == 'main_statement'">
+                and orb.is_main = 1
+            </when>
+            <when test="form.cmd == 'statement_audit'">
+                and orb.is_main = 1 and orbd.audit_status in ('B_1','B_2')
+            </when>
+            <when test="form.cmd == 'cw_statement'">
+                and (orbd.audit_status in ('B_3','B_4','B_5','B_5_1','B_6') or orbd.apply_status='4')
+            </when>
+            <otherwise>
+                <choose>
+                    <when test="form.cmd != null and form.cmd != '' and form.cmd.contains('statement_audit')">
+                        and orb.is_main = 0 and orb.sub_type = #{form.subType} and orbd.audit_status in ('B_1','B_2')
+                    </when>
+                    <when test="form.cmd !=null and form.cmd !=''">
+                        and orb.is_main = 0 and orb.sub_type = #{form.subType}
+                    </when>
+                </choose>
+            </otherwise>
+        </choose>
+
+
         <if test="form.unitAccount != null and form.unitAccount != ''">
             and orb.unit_account like concat('%',#{form.unitAccount},'%')
         </if>
@@ -189,7 +214,7 @@
         WHERE
         ( orbd1.bill_no = #{form.billNo} )
         or
-        (orc.is_bill = 'save_confirm'
+        (orc.is_bill = 'save_confirm' and orbd1.bill_no = #{form.billNo}
         and
         <if test="form.cmd == 'main'">
             oi.legal_name
@@ -359,7 +384,8 @@
         ifnull(orbd.tax_rate,(select cg.tax_rate from cost_genre cg where cg.id = orc.cost_genre_id)) taxRate,
         orbd.remarks,
         orbd.bill_no,
-        (select ci.currency_name from currency_info ci where ci.currency_code = orbd.settlement_currency) settlementCurrency,
+        (select ci.currency_name from currency_info ci where ci.currency_code = orbd.settlement_currency)
+        settlementCurrency,
         orbct.money settlementAmount,orbct.exchange_rate exchangeRate
         FROM
         order_receivable_bill_detail orbd

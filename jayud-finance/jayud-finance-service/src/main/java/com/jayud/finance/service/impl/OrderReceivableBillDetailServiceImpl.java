@@ -1,5 +1,7 @@
 package com.jayud.finance.service.impl;
 
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -31,10 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -259,36 +258,37 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                         return CommonResult.error(ResultEnum.OPR_FAIL);
                     }
                 }
-                //获取账单信息
-                OrderReceivableBill orderReceivableBill = receivableBillService.getById(existObject.getBillId());
-                //生成对账单数据
-                //对现有账单信息进行修改
-                String subType = orderReceivableBill.getSubType();
-                //1.统计已出账金额alreadyPaidAmount
-                BigDecimal nowBillAmount = receiveBillDetailForms.stream().map(OrderReceiveBillDetailForm::getLocalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-                BigDecimal alreadyPaidAmount = receivableBillService.getSAlreadyPaidAmount(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), subType);
-                orderReceivableBill.setAlreadyPaidAmount(alreadyPaidAmount.add(nowBillAmount));
-                //2.统计已出账订单数billOrderNum
-                List<String> validOrders = new ArrayList<>();
-                orderNos = orderNos.stream().distinct().collect(Collectors.toList());
-                for (String orderNo : orderNos) {
-                    List<OrderReceivableBillDetail> orderNoObjects = getNowSOrderExist(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), subType, orderNo);
-                    if (orderNoObjects == null || orderNoObjects.size() == 0) {
-                        validOrders.add(orderNo);
-                    }
-                }
-                Integer nowBillOrderNum = validOrders.size();
-                Integer billOrderNum = receivableBillService.getSBillOrderNum(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), subType);
-                orderReceivableBill.setBillOrderNum(billOrderNum + nowBillOrderNum);
-                //3.统计账单数billNum
-                Integer billNum = receivableBillService.getSBillNum(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), subType);
-                orderReceivableBill.setBillNum(billNum);
-                orderReceivableBill.setUpdatedTime(LocalDateTime.now());
-                orderReceivableBill.setUpdatedUser(form.getLoginUserName());
-                result = receivableBillService.updateById(orderReceivableBill);
-                if (!result) {
-                    return CommonResult.error(ResultEnum.OPR_FAIL);
-                }
+//                //获取账单信息
+//                OrderReceivableBill orderReceivableBill = receivableBillService.getById(existObject.getBillId());
+//                //生成对账单数据
+//                //对现有账单信息进行修改
+//                String subType = orderReceivableBill.getSubType();
+//                //1.统计已出账金额alreadyPaidAmount
+//                BigDecimal nowBillAmount = receiveBillDetailForms.stream().map(OrderReceiveBillDetailForm::getLocalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+//                BigDecimal alreadyPaidAmount = receivableBillService.getSAlreadyPaidAmount(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), subType);
+//                orderReceivableBill.setAlreadyPaidAmount(alreadyPaidAmount.add(nowBillAmount));
+//                //2.统计已出账订单数billOrderNum
+//                List<String> validOrders = new ArrayList<>();
+//                orderNos = orderNos.stream().distinct().collect(Collectors.toList());
+//                for (String orderNo : orderNos) {
+//                    List<OrderReceivableBillDetail> orderNoObjects = getNowSOrderExist(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), subType, orderNo);
+//                    if (orderNoObjects == null || orderNoObjects.size() == 0) {
+//                        validOrders.add(orderNo);
+//                    }
+//                }
+//                Integer nowBillOrderNum = validOrders.size();
+//                Integer billOrderNum = receivableBillService.getSBillOrderNum(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), subType);
+//                orderReceivableBill.setBillOrderNum(billOrderNum + nowBillOrderNum);
+//                //3.统计账单数billNum
+//                Integer billNum = receivableBillService.getSBillNum(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), subType);
+//                orderReceivableBill.setBillNum(billNum);
+//                orderReceivableBill.setUpdatedTime(LocalDateTime.now());
+//                orderReceivableBill.setUpdatedUser(form.getLoginUserName());
+//                result = receivableBillService.updateById(orderReceivableBill);
+//                if (!result) {
+//                    return CommonResult.error(ResultEnum.OPR_FAIL);
+//                }
+
                 //开始保存对账单详情数据
                 //获取剩余旧数据的状态和结算期和结算币种,账单编号维度
                 List<OrderReceivableBillDetail> receiveBillDetails = ConvertUtil.convertList(receiveBillDetailForms, OrderReceivableBillDetail.class);
@@ -335,6 +335,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                     orderBillCostTotalVO.setMoney(money);
                     OrderBillCostTotal orderBillCostTotal = ConvertUtil.convert(orderBillCostTotalVO, OrderBillCostTotal.class);
                     orderBillCostTotal.setLocalMoney(orderBillCostTotalVO.getLocalMoney());
+                    orderBillCostTotal.setOrderNo(orderBillCostTotal.getOrderNo() == null ? orderBillCostTotalVO.getMainOrderNo() : orderBillCostTotal.getOrderNo());
                     orderBillCostTotal.setMoneyType("2");
                     orderBillCostTotals.add(orderBillCostTotal);
                 }
@@ -345,6 +346,8 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             }
             //剔除费用
             this.deleteCost(form);
+            //统计账单数据
+            this.statisticsBill(form.getBillNo());
         }
         if ("submit".equals(form.getCmd())) {//客服提交
             Boolean result = editSBillSubmit(form.getBillNo(), form.getLoginUserName());
@@ -449,7 +452,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
     }
 
     @Override
-    public List<SheetHeadVO> findSSheetHead(String billNo,Map<String,Object> callbackArg) {
+    public List<SheetHeadVO> findSSheetHead(String billNo, Map<String, Object> callbackArg) {
         List<SheetHeadVO> allHeadList = new ArrayList<>();
         List<SheetHeadVO> fixHeadList = new ArrayList<>();
         try {
@@ -465,7 +468,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 fixHeadList.add(sheetHeadVO);
             }
             //固定头部数目
-            callbackArg.put("fixHeadIndex",fixHeadList.size());
+            callbackArg.put("fixHeadIndex", fixHeadList.size());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -717,20 +720,20 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             }
         }
         //已存在的数据删除,只在账单详情表做记录 TODO 不做标记,前端逻辑删除,暂存需要传删除对象
-//        List<Long> editDelIds = costIds.stream().filter(item -> !saveConfirmIds.contains(item)).collect(toList());
-//        if (editDelIds != null && editDelIds.size() > 0) {
-//            OrderReceivableBillDetail receivableBillDetail = new OrderReceivableBillDetail();
-//            receivableBillDetail.setAuditStatus("edit_del");//持续操作中的过度状态
-//            QueryWrapper updateWrapper = new QueryWrapper();
-//            updateWrapper.in("cost_id", editDelIds);
-//            result = update(receivableBillDetail, updateWrapper);
-//            if (!result) {
-//                return false;
-//            }
-//
-//            //修改录用费用状态
-////            this.omsClient.batchUpdateCostStatus(editDelIds, "0", 1, 0);
-//        }
+        List<Long> editDelIds = costIds.stream().filter(item -> !saveConfirmIds.contains(item)).collect(toList());
+        if (editDelIds != null && editDelIds.size() > 0) {
+            OrderReceivableBillDetail receivableBillDetail = new OrderReceivableBillDetail();
+            receivableBillDetail.setAuditStatus("edit_del");//持续操作中的过度状态
+            QueryWrapper updateWrapper = new QueryWrapper();
+            updateWrapper.in("cost_id", editDelIds);
+            result = update(receivableBillDetail, updateWrapper);
+            if (!result) {
+                return false;
+            }
+
+            //修改录用费用状态
+//            this.omsClient.batchUpdateCostStatus(editDelIds, "0", 1, 0);
+        }
         return true;
     }
 
@@ -811,5 +814,52 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             //4.修改录用费用状态
             this.omsClient.batchUpdateCostStatus(delCostIds, "0", 1, 0);
         }
+    }
+
+    /**
+     * 根据账单编号查询应收账单详情
+     */
+    @Override
+    public List<OrderReceivableBillDetail> getByBillNo(String billNo) {
+        QueryWrapper<OrderReceivableBillDetail> condition = new QueryWrapper<>();
+        condition.lambda().in(OrderReceivableBillDetail::getBillNo, billNo);
+        return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 根据条件查询账单详情信息
+     */
+    @Override
+    public List<OrderReceivableBillDetail> getByCondition(OrderReceivableBillDetail orderReceivableBillDetail) {
+        QueryWrapper<OrderReceivableBillDetail> condition = new QueryWrapper<>(orderReceivableBillDetail);
+        return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 统计账单数据
+     * @param billNo
+     */
+    private void statisticsBill(String billNo) {
+        List<OrderReceivableBillDetail> receivableBillDetails = this.getByBillNo(billNo);
+        //查询账单主键
+        OrderReceivableBillDetail billDetail = receivableBillDetails.get(0);
+        List<OrderReceivableBillDetail> list = this.getByCondition(new OrderReceivableBillDetail().setBillId(billDetail.getBillId()));
+        BigDecimal alreadyPaidAmount = new BigDecimal(0);
+        Set<String> orderNos = new HashSet<>();
+        Set<String> billNos = new HashSet<>();
+        for (OrderReceivableBillDetail receivableBillDetail : list) {
+            //统计已出账金额
+            alreadyPaidAmount = alreadyPaidAmount.add(receivableBillDetail.getLocalAmount());
+            //统计已出账订单数
+            orderNos.add(receivableBillDetail.getOrderNo());
+            //统计账单数
+            billNos.add(receivableBillDetail.getBillNo());
+        }
+        OrderReceivableBill orderReceivableBill = new OrderReceivableBill()
+                .setId(billDetail.getBillId()).setAlreadyPaidAmount(alreadyPaidAmount)
+                .setBillOrderNum(orderNos.size())
+                .setBillNum(billNos.size());
+
+        this.receivableBillService.updateById(orderReceivableBill);
     }
 }

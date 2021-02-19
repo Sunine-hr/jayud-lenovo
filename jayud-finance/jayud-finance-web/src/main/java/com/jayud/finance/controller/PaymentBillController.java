@@ -103,9 +103,9 @@ public class PaymentBillController {
         return CommonResult.success(resultMap);
     }
 
-    @ApiOperation(value = "查询应收费用币种信息")
-    @PostMapping("/getReceivableCost")
-    public CommonResult getReceivableCostCurrencyInfo(@RequestBody List<OrderPaymentBillDetailForm> forms) {
+    @ApiOperation(value = "查询应付费用币种信息")
+    @PostMapping("/getPaymentCost")
+    public CommonResult getPaymentCostCurrencyInfo(@RequestBody List<OrderPaymentBillDetailForm> forms) {
         List<Long> costIds = new ArrayList<>();
         for (OrderPaymentBillDetailForm form : forms) {
             if (form.getCostId() == null) {

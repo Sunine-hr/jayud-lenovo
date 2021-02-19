@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.CommonResult;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.po.OrderPaymentBillDetail;
+import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.vo.*;
 
 import java.util.List;
@@ -227,4 +228,9 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      * @param billNo
      */
     int getEditBillNum(String billNo);
+
+    /**
+     * 根据条件查询账单详情信息
+     */
+    public List<OrderPaymentBillDetail> getByCondition(OrderPaymentBillDetail orderPaymentBillDetail);
 }

@@ -1,5 +1,6 @@
 package com.jayud.finance.vo;
 
+import com.jayud.finance.enums.BillEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -119,4 +120,11 @@ public class PaymentNotPaidBillVO {
     @ApiModelProperty(value = "汇率")
     private String exchangeRate;
 
+    @ApiModelProperty(value = "是否删除")
+    private Boolean isDelete;
+
+    public void setAuditStatus(String auditStatus) {
+        this.auditStatus = auditStatus;
+        this.isDelete = auditStatus.equals(BillEnum.EDIT_DEL.getCode());
+    }
 }

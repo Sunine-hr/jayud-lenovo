@@ -196,7 +196,7 @@ public class PaymentBillDetailController {
         if (billDetailId != null) {
             OrderPaymentBillDetail orderPaymentBillDetail = this.billDetailService.getById(billDetailId);
             //查询编辑账单数量
-            if (this.billDetailService.getEditBillNum(orderPaymentBillDetail.getBillNo()) < 1) {
+            if (this.billDetailService.getEditBillNum(orderPaymentBillDetail.getBillNo()) <= 1) {
                 return CommonResult.error(400, "需要保留一条已出的账单费用");
             }
         }

@@ -61,7 +61,7 @@ public interface OmsClient {
      */
     @RequestMapping(value = "api/editSaveConfirm")
     ApiResult<Boolean> editSaveConfirm(@RequestParam("costIds") List<Long> costIds, @RequestParam("oprType") String oprType,
-                                       @RequestParam("cmd") String cmd, @RequestParam("param") Map<String, Object> param);
+                                       @RequestParam("cmd") String cmd, @RequestBody Map<String, Object> param);
 
     /**
      * 提交财务审核时，财务可能编辑费用类型
@@ -129,4 +129,15 @@ public interface OmsClient {
     @RequestMapping(value = "/api/getCostCurrencyInfo")
     public ApiResult getCostCurrencyInfo(@RequestParam("costIds") List<Long> costIds,
                                          @RequestParam("type") Integer type);
+
+    /**
+     * 根据费用主键集合批量查询费用信息
+     *
+     * @param costIds 费用主键
+     * @param type    类型(0:应收,1:应付)
+     * @return
+     */
+    @RequestMapping(value = "/api/getCostCurrencyInfo")
+    public ApiResult getCostInfo(@RequestParam("costIds") List<Long> costIds,
+                                 @RequestParam("type") Integer type);
 }

@@ -1,9 +1,11 @@
 package com.jayud.finance.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.CommonResult;
 import com.jayud.finance.bo.*;
+import com.jayud.finance.po.OrderReceivableBill;
 import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.vo.*;
 
@@ -191,4 +193,15 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      * @param billNo
      */
     int getEditBillNum(String billNo);
+
+    /**
+     * 根据账单编号查询应收账单详情
+     */
+    public List<OrderReceivableBillDetail> getByBillNo(String billNo);
+
+
+    /**
+     * 根据条件查询账单详情信息
+     */
+    public List<OrderReceivableBillDetail> getByCondition(OrderReceivableBillDetail orderReceivableBillDetail);
 }

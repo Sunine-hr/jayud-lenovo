@@ -172,9 +172,9 @@
         left join order_customs oc on oc.order_no = opc.order_no
         left join air_order ao on ao.order_no = opc.order_no
         WHERE
-        (opbd1.bill_no = #{form.billNo} and opbd1.audit_status !='edit_del' )
+        (opbd1.bill_no = #{form.billNo} )
         or
-        (opc.is_bill = 'save_confirm' and
+        (opc.is_bill = 'save_confirm' and orbd1.bill_no = #{form.billNo}
         <if test="form.cmd == 'main'">
             oi.legal_name
         </if>
@@ -619,33 +619,58 @@
         opbd.bill_no = tt.bill_no
         LEFT JOIN order_payment_bill opb ON opbd.bill_id = opb.id
         where opbd.make_time = tt.make_time and opbd.audit_status != 'edit_del'
-        <if test="form.cmd == 'main_statement'">
-            and opb.is_main = 1
-        </if>
-        <if test="form.cmd == 'statement_audit'">
-            and opb.is_main = 1 and opbd.audit_status in ('B_1','B_2')
-        </if>
-        <if test="form.cmd == 'cw_statement'">
-            and (opbd.audit_status in ('B_3','B_4','B_5','B_5_1','B_6') or opbd.apply_status='4')
-        </if>
-        <if test="form.cmd == 'zgys_statement'">
-            and opb.is_main = 0 and opb.sub_type = 'zgys'
-        </if>
-        <if test="form.cmd == 'zgys_statement_audit'">
-            and opb.is_main = 0 and opb.sub_type = 'zgys' and opbd.audit_status IN ('B_1','B_2')
-        </if>
-        <if test="form.cmd == 'bg_statement'">
-            and opb.is_main = 0 and opb.sub_type = 'bg'
-        </if>
-        <if test="form.cmd == 'bg_statement_audit'">
-            and opb.is_main = 0 and opb.sub_type = 'bg' and opbd.audit_status IN ('B_1','B_2')
-        </if>
-        <if test="form.cmd == 'ky_statement'">
-            and opb.is_main = 0 and opb.sub_type = 'ky'
-        </if>
-        <if test="form.cmd == 'ky_statement_audit'">
-            and opb.is_main = 0 and opb.sub_type = 'ky' and opbd.audit_status IN ('B_1','B_2')
-        </if>
+<!--        <if test="form.cmd == 'main_statement'">-->
+<!--            and opb.is_main = 1-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'statement_audit'">-->
+<!--            and opb.is_main = 1 and opbd.audit_status in ('B_1','B_2')-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'cw_statement'">-->
+<!--            and (opbd.audit_status in ('B_3','B_4','B_5','B_5_1','B_6') or opbd.apply_status='4')-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'zgys_statement'">-->
+<!--            and opb.is_main = 0 and opb.sub_type = 'zgys'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'zgys_statement_audit'">-->
+<!--            and opb.is_main = 0 and opb.sub_type = 'zgys' and opbd.audit_status IN ('B_1','B_2')-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'bg_statement'">-->
+<!--            and opb.is_main = 0 and opb.sub_type = 'bg'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'bg_statement_audit'">-->
+<!--            and opb.is_main = 0 and opb.sub_type = 'bg' and opbd.audit_status IN ('B_1','B_2')-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'ky_statement'">-->
+<!--            and opb.is_main = 0 and opb.sub_type = 'ky'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'ky_statement_audit'">-->
+<!--            and opb.is_main = 0 and opb.sub_type = 'ky' and opbd.audit_status IN ('B_1','B_2')-->
+<!--        </if>-->
+
+        <choose>
+            <when test="form.cmd == 'main_statement'">
+                and opb.is_main = 1
+            </when>
+            <when test="form.cmd == 'statement_audit'">
+                and opb.is_main = 1 and opbd.audit_status in ('B_1','B_2')
+            </when>
+            <when test="form.cmd == 'cw_statement'">
+                and (opbd.audit_status in ('B_3','B_4','B_5','B_5_1','B_6') or opbd.apply_status='4')
+            </when>
+            <otherwise>
+                <choose>
+                    <when test="form.cmd != null and form.cmd != '' and form.cmd.contains('statement_audit')">
+                        and opb.is_main = 0 and opb.sub_type = #{form.subType} and opbd.audit_status IN ('B_1','B_2')
+                    </when>
+                    <when test="form.cmd !=null and form.cmd !=''">
+                        and opb.is_main = 0 and opb.sub_type =  #{form.subType}
+                    </when>
+                </choose>
+            </otherwise>
+        </choose>
+
+
+
         <if test="form.supplierChName != null and form.supplierChName != ''">
             and opb.supplier_ch_name like concat('%',#{form.supplierChName},'%')
         </if>

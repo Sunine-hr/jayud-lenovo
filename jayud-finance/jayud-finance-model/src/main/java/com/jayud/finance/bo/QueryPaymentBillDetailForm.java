@@ -1,6 +1,7 @@
 package com.jayud.finance.bo;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -45,8 +46,16 @@ public class QueryPaymentBillDetailForm extends BasePageForm {
             "|cw_statement)", message = "只允许填写特定值")
     private String cmd;
 
-    @ApiModelProperty(value = "当前登录用户名",required = true)
+    @ApiModelProperty(value = "子订单类型")
+    @JsonIgnore
+    private String subType;
+
+    @ApiModelProperty(value = "当前登录用户名", required = true)
     @NotEmpty(message = "legalName is required")
     private String loginUserName;
 
+    public void setCmd(String cmd) {
+        this.cmd = cmd;
+        this.subType = cmd.split("_")[0];
+    }
 }

@@ -111,3 +111,10 @@ spring:
           filters:
             - StripPrefix=1
             - IgnoreGlobalFilterFactor
+        - id: route-jayud-mall-web      #佳裕达jayud-mall-web 服务端(南京电商C端[客户端])
+            uri: lb://jayud-mall-web      # uri以lb://开头（后面接的服务名称)
+            predicates:
+              - Path=/jayudMallWeb/**
+            filters:
+              - StripPrefix=1
+              - IgnoreGlobalFilterFactor

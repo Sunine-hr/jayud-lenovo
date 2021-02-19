@@ -108,13 +108,13 @@ public class ReceiveBillController {
 
     @ApiOperation(value = "查询应收费用币种信息")
     @PostMapping("/getReceivableCost")
-    public CommonResult getReceivableCostCurrencyInfo(@RequestBody List<OrderReceiveBillDetailForm> forms) {
+    public CommonResult getReceivableCostCurrencyInfo(@RequestBody Map<String, Object> map) {
         List<Long> costIds = new ArrayList<>();
-        for (OrderReceiveBillDetailForm form : forms) {
-            if (form.getCostId() == null) {
+        for (Object costId : MapUtil.get(map, "costIds", List.class)) {
+            if (costId == null) {
                 return CommonResult.error(ResultEnum.PARAM_ERROR);
             }
-            costIds.add(form.getCostId());
+            costIds.add(Long.parseLong(costId.toString()));
         }
         ApiResult result = this.omsClient.getCostCurrencyInfo(costIds, 0);
         if (result.getCode() != HttpStatus.HTTP_OK) {

@@ -1,5 +1,6 @@
 package com.jayud.finance.controller;
 
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.http.HttpStatus;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
@@ -105,13 +106,13 @@ public class PaymentBillController {
 
     @ApiOperation(value = "查询应付费用币种信息")
     @PostMapping("/getPaymentCost")
-    public CommonResult getPaymentCostCurrencyInfo(@RequestBody List<OrderPaymentBillDetailForm> forms) {
+    public CommonResult getPaymentCostCurrencyInfo(@RequestBody Map<String, Object> map) {
         List<Long> costIds = new ArrayList<>();
-        for (OrderPaymentBillDetailForm form : forms) {
-            if (form.getCostId() == null) {
+        for (Object costId : MapUtil.get(map, "costIds", List.class)) {
+            if (costId == null) {
                 return CommonResult.error(ResultEnum.PARAM_ERROR);
             }
-            costIds.add(form.getCostId());
+            costIds.add(Long.parseLong(costId.toString()));
         }
         ApiResult result = this.omsClient.getCostCurrencyInfo(costIds, 1);
         if (result.getCode() != HttpStatus.HTTP_OK) {

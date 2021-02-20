@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/actionitem")
-@Api(tags = "S022-后台-操作项接口")
+@Api(tags = "A022-admin-操作项接口")
 @ApiSort(value = 22)
 public class ActionItemController {
 

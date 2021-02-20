@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/actioncombination")
-@Api(tags = "S023-后台-操作项组合接口")
+@Api(tags = "A023-admin-操作项组合接口")
 @ApiSort(value = 23)
 public class ActionCombinationController {
 
@@ -43,10 +43,10 @@ public class ActionCombinationController {
         return actionCombinationService.saveActionCombination(form);
     }
 
-    @ApiOperation(value = "查询操作项组合详细接口")
+    @ApiOperation(value = "根据id查询操作项组合详情")
     @PostMapping("/findActionCombinationById")
     @ApiOperationSupport(order = 3)
-    public CommonResult<ActionCombinationVO> findActionCombinationById(@RequestBody ActionCombinationParaForm form){
+    public CommonResult<ActionCombinationVO> findActionCombinationById(@Valid @RequestBody ActionCombinationParaForm form){
         Integer id = form.getId();
         return actionCombinationService.findActionCombinationById(id);
     }
@@ -54,7 +54,7 @@ public class ActionCombinationController {
     @ApiOperation(value = "停用-操作项组合详细接口")
     @PostMapping("/disabledActionCombination")
     @ApiOperationSupport(order = 4)
-    public CommonResult<ActionCombinationVO> disabledActionCombination(@RequestBody ActionCombinationParaForm form){
+    public CommonResult<ActionCombinationVO> disabledActionCombination(@Valid @RequestBody ActionCombinationParaForm form){
         Integer id = form.getId();
         return actionCombinationService.disabledActionCombination(id);
     }

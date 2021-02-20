@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/costitem")
-@Api(tags = "S016-后台-费用项目接口")
+@Api(tags = "A016-admin-费用项目接口")
 @ApiSort(value = 16)
 public class CostItemController {
 

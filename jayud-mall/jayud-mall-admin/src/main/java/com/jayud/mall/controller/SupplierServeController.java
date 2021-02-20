@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/supplierserve")
-@Api(tags = "S015-后台-供应商服务接口")
+@Api(tags = "A015-admin-供应商服务接口")
 @ApiSort(value = 15)
 public class SupplierServeController {
 

@@ -22,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/supplierinfo")
-@Api(tags = "S014-后台-供应商信息接口")
+@Api(tags = "A014-admin-供应商信息接口")
 @ApiSort(value = 14)
 public class SupplierInfoController {
 

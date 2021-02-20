@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/supplierservicetype")
-@Api(tags = "S013-后台-供应商服务类型接口")
+@Api(tags = "A013-admin-供应商服务类型接口")
 @ApiSort(value = 13)
 public class SupplierServiceTypeController {
 

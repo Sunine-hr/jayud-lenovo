@@ -22,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/customer")
-@Api(tags = "S017-后台-客户接口")
+@Api(tags = "A017-admin-客户接口")
 @ApiSort(value = 17)
 public class CustomerController {
 

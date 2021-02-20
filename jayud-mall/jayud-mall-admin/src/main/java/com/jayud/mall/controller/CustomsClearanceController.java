@@ -22,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/customsclearance")
-@Api(tags = "S012-后台-清关商品资料接口")
+@Api(tags = "A012-admin-清关商品资料接口")
 @ApiSort(value = 12)
 public class CustomsClearanceController {
 

@@ -51,7 +51,7 @@ public class ActionCombinationController {
         return actionCombinationService.findActionCombinationById(id);
     }
 
-    @ApiOperation(value = "停用-操作项组合详细接口")
+    @ApiOperation(value = "停用-操作项组合")
     @PostMapping("/disabledActionCombination")
     @ApiOperationSupport(order = 4)
     public CommonResult<ActionCombinationVO> disabledActionCombination(@Valid @RequestBody ActionCombinationParaForm form){

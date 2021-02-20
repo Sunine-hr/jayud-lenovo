@@ -31,7 +31,7 @@ public class InputCostForm {
     private String cmd;
 
     @ApiModelProperty(value = "区分费用类型，主订单=main 中港订单=zgys 报关=bg" +
-            "空运=ky", required = true)
+            "空运=ky 海运=hy", required = true)
     private String subType;
 
 }

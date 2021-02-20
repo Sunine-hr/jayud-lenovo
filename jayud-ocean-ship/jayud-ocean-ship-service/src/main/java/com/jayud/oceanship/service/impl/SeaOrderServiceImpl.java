@@ -210,8 +210,6 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         for (OrderAddressVO address : resultOne.getData()) {
             seaOrderVO.processingAddress(address);
         }
-        //查询贸易方式
-        seaOrderVO.setTermsDesc(this.termsService.getById(seaOrderVO.getTerms()).getName());
         //查询订船信息
         SeaBookship seaBookship = this.seaBookshipService.getEnableBySeaOrderId(id);
         SeaBookshipVO seaBookshipVO = ConvertUtil.convert(seaBookship,SeaBookshipVO.class);

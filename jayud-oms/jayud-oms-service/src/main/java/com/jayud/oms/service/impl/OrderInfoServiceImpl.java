@@ -108,9 +108,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Autowired
     private IOrderAttachmentService orderAttachmentService;
 
-    private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(),
-            SubOrderSignEnum.KY.getSignOne(), SubOrderSignEnum.BG.getSignOne()};
-
     @Autowired
     private OceanShipClient oceanShipClient;
 
@@ -426,7 +423,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             } else {
                 orderStatusVOS.forEach(v -> {
                     if (v.getId() == x.getFId()) {
-                        v.addChildren(orderStatus);
+                        if(v.getSorts()!=0){
+                            v.addChildren(orderStatus);
+                        }
                     }
                 });
             }
@@ -570,7 +569,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             } else {
                 orderStatusVOS.forEach(v -> {
                     if (v.getId() == x.getFId()) {
-                        v.addChildren(orderStatus);
+                        if(v.getSorts()!=0){
+                            v.addChildren(orderStatus);
+                        }
                     }
                 });
             }

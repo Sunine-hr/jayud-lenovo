@@ -4,7 +4,7 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.oceanship.po.SeaOrder">
-        <id column="id" property="id" />
+        <id column="id" property="orderId" />
         <result column="main_order_no" property="mainOrderNo" />
         <result column="order_no" property="orderNo" />
         <result column="status" property="status" />
@@ -72,7 +72,9 @@
         oi.id mainOrderId,
         oi.biz_uname bizName,
         oi.contract_no contractNo,
-        terms.name termsDesc
+        terms.name termsDesc,
+        so.cabinet_size_name cabinetSizeName,
+        so.cabinet_type_name cabinetTypeName
         from sea_order so
         left join sea_port sp on so.port_departure_code = sp.code
         left join sea_port sp1 on so.port_destination_code = sp1.code
@@ -99,7 +101,8 @@
         <result column="portDestinationName" property="portDestinationName"></result>
         <result column="goodTime" property="goodTime"></result>
         <result column="createUser" property="createUser"></result>
-        <result column="create_time" property="createTime"></result>
+        <result column="create_time" property="createdTimeStr"></result>
+        <result column="create_time" property="createdTime"></result>
         <result column="update_user" property="updateUser"></result>
         <result column="update_time" property="updateTime"></result>
         <result column="need_input_cost" property="needInputCost"></result>

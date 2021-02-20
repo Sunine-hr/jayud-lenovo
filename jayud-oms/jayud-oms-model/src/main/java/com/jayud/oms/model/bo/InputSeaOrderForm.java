@@ -102,7 +102,7 @@ public class InputSeaOrderForm {
     @ApiModelProperty(value = "通知地址集合")
     private List<AddOrderAddressForm> notificationAddress;
 
-    @ApiModelProperty(value = "空运订单地址信息")
+    @ApiModelProperty(value = "海运订单地址信息")
     private List<AddOrderAddressForm> orderAddressForms;
 
     @ApiModelProperty(value = "货品信息")
@@ -115,10 +115,10 @@ public class InputSeaOrderForm {
     private String fileName;
 
     /**
-     * 校验创建空运子订单参数
+     * 校验创建海运子订单参数
      */
     public boolean checkCreateOrder() {
-        //空运
+        //海运
         if (this.legalEntityId == null || StringUtils.isEmpty(this.unitCode)
                 || this.impAndExpType == null || this.terms == null
                 || StringUtils.isEmpty(this.portDepartureCode)

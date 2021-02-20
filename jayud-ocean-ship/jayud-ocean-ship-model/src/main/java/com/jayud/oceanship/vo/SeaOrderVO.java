@@ -83,10 +83,10 @@ public class SeaOrderVO {
     private String portDestination;
 
     @ApiModelProperty(value = "操作人")
-    private String operatorUser;
+    private String orderTaker;
 
     @ApiModelProperty(value = "操作时间")
-    private String operatorTime;
+    private String receivingOrdersDate;
 
     @ApiModelProperty(value = "货好时间")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")

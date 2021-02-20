@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/country")
-@Api(tags = "S008-后台-国家基础信息接口")
+@Api(tags = "A008-admin-国家基础信息接口")
 @ApiSort(value = 8)
 public class CountryController {
 

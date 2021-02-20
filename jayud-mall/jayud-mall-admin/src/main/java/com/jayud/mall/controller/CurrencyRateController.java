@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/currencyrate")
-@Api(tags = "S010-后台-币种汇率接口")
+@Api(tags = "A010-admin-币种汇率接口")
 @ApiSort(value = 10)
 public class CurrencyRateController {
 

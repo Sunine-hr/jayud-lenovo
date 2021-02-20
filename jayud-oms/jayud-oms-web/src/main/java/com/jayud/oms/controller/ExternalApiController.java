@@ -850,11 +850,13 @@ public class ExternalApiController {
                 for (OrderReceivableCost orderReceivableCost : orderReceivableCosts) {
                     currencyCodes.add(orderReceivableCost.getCurrencyCode());
                 }
+                break;
             case 1: //应付
                 Collection<OrderPaymentCost> orderPaymentCosts = this.orderPaymentCostService.listByIds(costIds);
                 for (OrderPaymentCost orderPaymentCost : orderPaymentCosts) {
                     currencyCodes.add(orderPaymentCost.getCurrencyCode());
                 }
+                break;
         }
         return ApiResult.ok(this.currencyInfoService.getByCodes(currencyCodes));
 

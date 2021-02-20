@@ -37,8 +37,11 @@ public class QuerySeaOrderForm extends BasePageForm {
     @ApiModelProperty(value = "目的地港口")
     private String portDestination;
 
-    @ApiModelProperty(value = "创建时间")
-    private String createTime;
+    @ApiModelProperty(value = "开始时间")
+    private String startTime;
+
+    @ApiModelProperty(value = "结束时间")
+    private String endTime;
 
     @ApiModelProperty(value = "主订单号")
     @JsonIgnore

@@ -742,7 +742,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     seaBookshipVO.setAgentSupplier(supplierInfo.getSupplierChName());
                 }
                 //添加附件
-                List<FileView> attachments = this.logisticsTrackService.getAttachments(seaOrderVO.getId()
+                List<FileView> attachments = this.logisticsTrackService.getAttachments(seaOrderVO.getOrderId()
                         , BusinessTypeEnum.HY.getCode(), prePath);
                 seaOrderVO.setAllPics(attachments);
                 inputOrderVO.setSeaOrderForm(seaOrderVO);
@@ -1081,12 +1081,17 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         result = this.freightAirClient.getAirOrderByMainOrderNos(mainOrderNoList);
         Map<String, List<Map<String, Object>>> airOrderMap = this.object2Map(result.getData());
 
+        //海运
+        result = this.oceanShipClient.getSeaOrderByMainOrderNos(mainOrderNoList);
+        Map<String, List<Map<String, Object>>> seaOrderMap = this.object2Map(result.getData());
+
         Map<String, Map<String, Object>> map = new HashMap<>();
         for (String mainOrderNo : mainOrderNoList) {
             Map<String, Object> subOrder = new HashMap<>();
             subOrder.put(KEY_SUBORDER[0], tmsOrderMap.get(mainOrderNo));
             subOrder.put(KEY_SUBORDER[1], airOrderMap.get(mainOrderNo));
-            subOrder.put(KEY_SUBORDER[2], customsOrderMap.get(mainOrderNo));
+            subOrder.put(KEY_SUBORDER[2], seaOrderMap.get(mainOrderNo));
+            subOrder.put(KEY_SUBORDER[3], customsOrderMap.get(mainOrderNo));
             map.put(mainOrderNo, subOrder);
         }
         return map;

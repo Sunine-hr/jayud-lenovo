@@ -192,6 +192,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
 
     @Override
     public SeaOrderVO getSeaOrderByOrderNO(Long id) {
+        String prePath = String.valueOf(fileClient.getBaseUrl().getData());
         Integer businessType = BusinessTypeEnum.HY.getCode();
         //海运订单信息
         SeaOrderVO seaOrderVO = this.baseMapper.getSeaOrder(id);
@@ -208,6 +209,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         }
         //处理地址信息
         for (OrderAddressVO address : resultOne.getData()) {
+            address.getFile(prePath);
             seaOrderVO.processingAddress(address);
         }
         //查询订船信息
@@ -306,7 +308,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
             List<Terms> terms = termsService.list();
 
             for (Terms term : terms) {
-                if(term.getName().equals("FOB")||term.getName().equals("CIF")||term.getName().equals("DAP")||term.getName().equals("FAC")){
+                if(term.getName().equals("FOB")||term.getName().equals("CIF")||term.getName().equals("DAP")||term.getName().equals("FCA")){
                     if(term.getId().equals(tmp.getTerms())){
                         SeaOrder seaOrder1 = new SeaOrder();
                         seaOrder1.setId(tmp.getId());

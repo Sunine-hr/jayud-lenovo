@@ -18,8 +18,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/operationteammember")
-@Api(tags = "S019-后台-运营(服务)小组成员接口")
-@ApiSort(value = 19)
+@Api(tags = "A020-admin-运营(服务)小组成员接口")
+@ApiSort(value = 20)
 public class OperationTeamMemberController {
 
     @Autowired

@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/customergoods")
-@Api(tags = "S021-后台-客户商品接口")
-@ApiSort(value = 21)
+@Api(tags = "A018-admin-客户商品接口")
+@ApiSort(value = 18)
 public class CustomerGoodsController {
 
     @Autowired

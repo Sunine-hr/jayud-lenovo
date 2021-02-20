@@ -18,8 +18,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/taskmemberrelation")
-@Api(tags = "S020-后台-任务成员关系表接口")
-@ApiSort(value = 20)
+@Api(tags = "A021-admin-任务成员关系表接口")
+@ApiSort(value = 21)
 public class TaskMemberRelationController {
 
     @Autowired

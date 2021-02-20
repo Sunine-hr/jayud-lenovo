@@ -67,8 +67,11 @@ public class SystemUserVO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedTime;
 
-    @ApiModelProperty(value = "用户的角色", position = 17)
+    @ApiModelProperty(value = "用户的角色list", position = 17)
     private List<SystemRoleVO> systemRoleVOS;
+
+    @ApiModelProperty(value = "用户角色id，List<long>", position = 18)
+    private List<Long> roleIds;
     
 
 }

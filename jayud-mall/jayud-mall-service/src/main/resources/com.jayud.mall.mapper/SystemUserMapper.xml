@@ -150,12 +150,23 @@
         <result column="updated_time" property="updatedTime"/>
         <!--角色集合-->
         <collection property="systemRoleVOS" column="id" ofType="com.jayud.mall.model.vo.SystemRoleVO" select="selectSystemRoleByUserId"></collection>
+        <!--角色id-->
+        <collection property="roleIds" column="id" ofType="java.lang.Long" select="selectSystemRoleIdByUserId"></collection>
     </resultMap>
 
     <!--根据用户id，查询用户角色-->
     <select id="selectSystemRoleByUserId" parameterType="java.lang.Long"
             resultType="com.jayud.mall.model.vo.SystemRoleVO">
         select t.id, t.role_name, t.role_describe, t.create_by, t.create_time, t.update_by, t.update_time
+        from system_role t
+        join system_user_role_relation t1 on t1.role_id = t.id
+        where t1.user_id = #{id}
+    </select>
+
+    <!--根据用户id，查询用户角色id-->
+    <select id="selectSystemRoleIdByUserId" parameterType="java.lang.Long"
+            resultType="java.lang.Long">
+        select t.id
         from system_role t
         join system_user_role_relation t1 on t1.role_id = t.id
         where t1.user_id = #{id}

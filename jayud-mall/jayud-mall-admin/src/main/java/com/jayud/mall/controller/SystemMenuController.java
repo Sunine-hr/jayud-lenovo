@@ -21,7 +21,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/systemmenu")
-@Api(tags = "S005-后台-菜单管理")
+@Api(tags = "A005-admin-菜单管理")
 @ApiSort(value = 5)
 public class SystemMenuController {
 
@@ -29,7 +29,7 @@ public class SystemMenuController {
     ISystemMenuService menuService;
 
 
-    @ApiOperation(value = "菜单管理-查询所有菜单")
+    @ApiOperation(value = "查询所有菜单")
     @PostMapping(value = "/findAllMenuVO")
     @ApiOperationSupport(order = 1)
     public CommonResult<List<SystemMenuVO>> findAllMenuVO(){

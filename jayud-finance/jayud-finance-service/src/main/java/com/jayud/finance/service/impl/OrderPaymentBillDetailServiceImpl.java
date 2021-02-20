@@ -197,6 +197,8 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         }
         //取原账单下得信息
         OrderPaymentBillDetail existObject = paymentBillDetailList.get(0);
+        //结算币种
+        String settlementCurrency = form.getSettlementCurrency();
         //客服保存/提交
         if ("save".equals(form.getCmd()) || "submit".equals(form.getCmd())) {
             //可编辑的条件：客服主管审核对账单不通过,客服主管反审核对账单，财务审核对账单不通过，财务反审核
@@ -216,7 +218,17 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 StringBuilder sb = new StringBuilder();
                 sb.append("请配置[");
                 Boolean flag = true;
-                List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderFBillCostTotal(costIds, existObject.getSettlementCurrency(), existObject.getAccountTerm());
+                List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderFBillCostTotal(costIds, settlementCurrency, form.getAccountTermStr());
+                //是否自定义汇率
+                if (form.getIsCustomExchangeRate()) {
+                    //组装数据
+                    Map<String, BigDecimal> customExchangeRate = new HashMap<>();
+                    form.getCustomExchangeRate().forEach(e -> customExchangeRate.put(e.getCode(), e.getNote() == null ? new BigDecimal(0) : new BigDecimal(e.getNote())));
+                    orderBillCostTotalVOS.forEach(e -> {
+                        e.setExchangeRate(customExchangeRate.get(e.getCurrencyCode()));
+                    });
+                }
+
                 for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                     BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();//如果费率为0，则抛异常回滚数据
                     if ((exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0) && !orderBillCostTotalVO.getCurrencyCode().equals(existObject.getSettlementCurrency())) {
@@ -300,26 +312,30 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 this.statisticsBill(form.getBillNo());
                 //开始保存对账单详情数据
                 //获取剩余旧数据的状态和结算期和结算币种,账单编号维度
-                String settlementCurrency = existObject.getSettlementCurrency();
                 List<OrderPaymentBillDetail> paymentBillDetails = ConvertUtil.convertList(paymentBillDetailForms, OrderPaymentBillDetail.class);
                 for (int i = 0; i < paymentBillDetails.size(); i++) {
-                    paymentBillDetails.get(i).setStatus("1");
-                    paymentBillDetails.get(i).setBillNo(form.getBillNo());
-                    paymentBillDetails.get(i).setBillId(existObject.getBillId());
-                    paymentBillDetails.get(i).setAccountTerm(existObject.getAccountTerm());
-                    paymentBillDetails.get(i).setSettlementCurrency(settlementCurrency);
-                    paymentBillDetails.get(i).setAuditStatus("edit_no_commit");
-                    paymentBillDetails.get(i).setCreatedOrderTime(DateUtils.convert2Date(paymentBillDetailForms.get(i).getCreatedTimeStr(), DateUtils.DATE_PATTERN));
-                    paymentBillDetails.get(i).setMakeUser(form.getLoginUserName());
-                    paymentBillDetails.get(i).setMakeTime(LocalDateTime.now());
-                    paymentBillDetails.get(i).setCreatedUser(form.getLoginUserName());
+                    OrderPaymentBillDetail paymentBillDetail = paymentBillDetails.get(i);
+                    paymentBillDetail.setId(paymentBillDetailForms.get(i).getBillDetailId());
+                    if (paymentBillDetail.getId() == null) {
+                        paymentBillDetail.setMakeUser(UserOperator.getToken());
+                        paymentBillDetail.setMakeTime(LocalDateTime.now());
+                        paymentBillDetail.setCreatedUser(UserOperator.getToken());
+                    }
+
+                    paymentBillDetail.setStatus("1");
+                    paymentBillDetail.setBillNo(form.getBillNo());
+                    paymentBillDetail.setBillId(existObject.getBillId());
+                    paymentBillDetail.setAccountTerm(form.getAccountTermStr());
+                    paymentBillDetail.setSettlementCurrency(settlementCurrency);
+                    paymentBillDetail.setAuditStatus("edit_no_commit");
+                    paymentBillDetail.setCreatedOrderTime(DateUtils.convert2Date(paymentBillDetailForms.get(i).getCreatedTimeStr(), DateUtils.DATE_PATTERN));
                 }
                 //解决报错时重复添加数据问题
                 QueryWrapper queryWrapper1 = new QueryWrapper();
                 queryWrapper1.in("cost_id", costIds);
                 remove(queryWrapper1);
 
-                result = saveBatch(paymentBillDetails);
+                result = saveOrUpdateBatch(paymentBillDetails);
                 if (!result) {
                     return CommonResult.error(ResultEnum.OPR_FAIL);
                 }
@@ -330,7 +346,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 //开始保存费用维度的金额信息  以结算币种进行转换后保存
                 List<OrderBillCostTotal> orderBillCostTotals = new ArrayList<>();
                 //根据费用ID统计费用信息,将原始费用信息根据结算币种进行转换
-                List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderFBillCostTotal(costIds, settlementCurrency, existObject.getAccountTerm());
+                List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderFBillCostTotal(costIds, settlementCurrency, form.getAccountTermStr());
                 for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                     String currencyCode = orderBillCostTotalVO.getCurrencyCode();
                     orderBillCostTotalVO.setBillNo(form.getBillNo());
@@ -349,6 +365,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                     orderBillCostTotal.setMoneyType("1");
                     orderBillCostTotal.setCurrentCurrencyCode(currencyCode);
                     orderBillCostTotal.setCurrencyCode(settlementCurrency);
+                    orderBillCostTotal.setIsCustomExchangeRate(form.getIsCustomExchangeRate());
                     orderBillCostTotals.add(orderBillCostTotal);
                 }
                 result = costTotalService.saveBatch(orderBillCostTotals);

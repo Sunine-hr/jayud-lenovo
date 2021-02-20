@@ -22,7 +22,7 @@ import java.util.Map;
 public interface OmsClient {
 
     /**
-     * 应付暂存
+     * 应付/应付暂存
      */
     @RequestMapping(value = "/api/oprCostBill")
     ApiResult<Boolean> oprCostBill(@RequestBody OprCostBillForm form);

@@ -75,20 +75,6 @@ public class OrderBillCostTotalServiceImpl extends ServiceImpl<OrderBillCostTota
         headMap.put(key, head);
         //计算结算币种
         this.calculateSettlementCurrency(key, datas, moneyType);
-//        for (int i = 0; i < datas.size(); i++) {
-//            JSONObject object = datas.getJSONObject(i);
-//            QueryWrapper<OrderBillCostTotal> condition = new QueryWrapper<>();
-//            condition.lambda().eq(OrderBillCostTotal::getBillNo, object.getString("billNo"))
-//                    .eq(OrderBillCostTotal::getOrderNo, object.getString("subOrderNo") == null
-//                            ? object.getString("orderNo") : object.getString("subOrderNo"))
-//                    .eq(OrderBillCostTotal::getMoneyType, moneyType);
-//            List<OrderBillCostTotal> orderBillCostTotals = this.baseMapper.selectList(condition);
-//            //合计结算币种
-//            BigDecimal money = orderBillCostTotals.stream().map(OrderBillCostTotal::getMoney).reduce(BigDecimal.ZERO, BigDecimal::add);
-//            object.put(key, money);
-//        }
-
-
     }
 
     /**

@@ -178,7 +178,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
     @Override
     @Transactional
     public CommonResult editSBill(EditSBillForm form) {
-        List<OrderReceiveBillDetailForm> receiveBillDetailForms = form.getReceiveBillDetailForms();//账单详细信息
+        List<OrderReceiveBillDetailForm> addReceiveBillDetailForms = form.getReceiveBillDetailForms();//账单详细信息
         //该账单编号下必须有账单信息才可编辑
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("bill_no", form.getBillNo());
@@ -188,6 +188,8 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         }
         //取原账单下得信息
         OrderReceivableBillDetail existObject = receivableBillDetails.get(0);
+        //结算币种
+        String settlementCurrency = form.getSettlementCurrency();
         //客服保存/提交
         if ("save".equals(form.getCmd()) || "submit".equals(form.getCmd())) {
             //可编辑的条件：客服主管审核对账单不通过,客服主管反审核对账单，财务审核对账单不通过，财务反审核
@@ -199,15 +201,25 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 return CommonResult.error(10001, "不符合操作条件");
             }
             //校验本次提交的数据是否配置汇率
-            if ("submit".equals(form.getCmd()) && receiveBillDetailForms.size() > 0) {
+            if ("submit".equals(form.getCmd()) && addReceiveBillDetailForms.size() > 0) {
                 List<Long> costIds = new ArrayList<>();
-                for (OrderReceiveBillDetailForm tempObject : receiveBillDetailForms) {
+                for (OrderReceiveBillDetailForm tempObject : addReceiveBillDetailForms) {
                     costIds.add(tempObject.getCostId());
                 }
                 StringBuilder sb = new StringBuilder();
                 sb.append("请配置[");
                 Boolean flag = true;
-                List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, existObject.getSettlementCurrency(), existObject.getAccountTerm());
+                List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, settlementCurrency, form.getAccountTermStr());
+                //是否自定义汇率
+                if (form.getIsCustomExchangeRate()) {
+                    //组装数据
+                    Map<String, BigDecimal> customExchangeRate = new HashMap<>();
+                    form.getCustomExchangeRate().forEach(e -> customExchangeRate.put(e.getCode(), e.getNote() == null ? new BigDecimal(0) : new BigDecimal(e.getNote())));
+                    orderBillCostTotalVOS.forEach(e -> {
+                        e.setExchangeRate(customExchangeRate.get(e.getCurrencyCode()));
+                    });
+                }
+
                 for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                     BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();//如果费率为0，则抛异常回滚数据
                     if ((exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0) && !orderBillCostTotalVO.getCurrencyCode().equals(existObject.getSettlementCurrency())) {
@@ -238,13 +250,13 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             }
 
             //处理要新增的费用
-            if (receiveBillDetailForms.size() > 0) {
+            if (addReceiveBillDetailForms.size() > 0) {
                 Boolean result = true;//结果标识
 
                 //生成账单需要修改order_receivable_cost表的is_bill
                 List<Long> costIds = new ArrayList<>();
                 List<String> orderNos = new ArrayList<>(); //为了统计已出账订单数
-                for (OrderReceiveBillDetailForm receiveBillDetail : receiveBillDetailForms) {
+                for (OrderReceiveBillDetailForm receiveBillDetail : addReceiveBillDetailForms) {
                     costIds.add(receiveBillDetail.getCostId());
                     orderNos.add(receiveBillDetail.getOrderNo());
                 }
@@ -291,19 +303,24 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
 
                 //开始保存对账单详情数据
                 //获取剩余旧数据的状态和结算期和结算币种,账单编号维度
-                List<OrderReceivableBillDetail> receiveBillDetails = ConvertUtil.convertList(receiveBillDetailForms, OrderReceivableBillDetail.class);
-                String settlementCurrency = existObject.getSettlementCurrency();
+                List<OrderReceivableBillDetail> receiveBillDetails = ConvertUtil.convertList(addReceiveBillDetailForms, OrderReceivableBillDetail.class);
+
                 for (int i = 0; i < receiveBillDetails.size(); i++) {
-                    receiveBillDetails.get(i).setStatus("1");
-                    receiveBillDetails.get(i).setBillNo(form.getBillNo());
-                    receiveBillDetails.get(i).setBillId(existObject.getBillId());
-                    receiveBillDetails.get(i).setAccountTerm(existObject.getAccountTerm());
-                    receiveBillDetails.get(i).setSettlementCurrency(settlementCurrency);
-                    receiveBillDetails.get(i).setAuditStatus("edit_no_commit");//编辑保存未提交的，给前台做区分
-                    receiveBillDetails.get(i).setCreatedOrderTime(DateUtils.stringToDate(receiveBillDetailForms.get(i).getCreatedTimeStr(), DateUtils.DATE_PATTERN));
-                    receiveBillDetails.get(i).setMakeUser(form.getLoginUserName());
-                    receiveBillDetails.get(i).setMakeTime(LocalDateTime.now());
-                    receiveBillDetails.get(i).setCreatedUser(form.getLoginUserName());
+                    OrderReceivableBillDetail orderReceivableBillDetail = receiveBillDetails.get(i);
+                    orderReceivableBillDetail.setId(addReceiveBillDetailForms.get(i).getBillDetailId());
+                    if (orderReceivableBillDetail.getId() == null) {
+                        orderReceivableBillDetail.setMakeUser(UserOperator.getToken());
+                        orderReceivableBillDetail.setMakeTime(LocalDateTime.now());
+                        orderReceivableBillDetail.setCreatedUser(UserOperator.getToken());
+                    }
+
+                    orderReceivableBillDetail.setStatus("1");
+                    orderReceivableBillDetail.setBillNo(form.getBillNo());
+                    orderReceivableBillDetail.setBillId(existObject.getBillId());
+                    orderReceivableBillDetail.setAccountTerm(form.getAccountTermStr());
+                    orderReceivableBillDetail.setSettlementCurrency(settlementCurrency);
+                    orderReceivableBillDetail.setAuditStatus("edit_no_commit");//编辑保存未提交的，给前台做区分
+                    orderReceivableBillDetail.setCreatedOrderTime(DateUtils.stringToDate(addReceiveBillDetailForms.get(i).getCreatedTimeStr(), DateUtils.DATE_PATTERN));
                 }
 
                 //解决报错时重复添加数据问题
@@ -311,7 +328,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 queryWrapper1.in("cost_id", costIds);
                 remove(queryWrapper1);
 
-                result = saveBatch(receiveBillDetails);
+                result = saveOrUpdateBatch(receiveBillDetails);
                 if (!result) {
                     return CommonResult.error(ResultEnum.OPR_FAIL);
                 }
@@ -322,25 +339,24 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 //开始保存费用维度的金额信息  以结算币种进行转换后保存
                 List<OrderBillCostTotal> orderBillCostTotals = new ArrayList<>();
                 //根据费用ID统计费用信息,将原始费用信息根据结算币种进行转换
-                List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, settlementCurrency, existObject.getAccountTerm());
+                List<OrderBillCostTotalVO> orderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, settlementCurrency, form.getAccountTermStr());
                 for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                     String currencyCode = orderBillCostTotalVO.getCurrencyCode();
                     orderBillCostTotalVO.setBillNo(form.getBillNo());
-//                    BigDecimal money = orderBillCostTotalVO.getMoney();//录入费用时的金额
-//                    BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();
-//                    if (exchangeRate == null || exchangeRate.compareTo(new BigDecimal("0")) == 0) {
-//                        exchangeRate = new BigDecimal("1");
-//                    }
-//                    money = money.multiply(exchangeRate);
-//                    orderBillCostTotalVO.setMoney(money);
+                    BigDecimal money = orderBillCostTotalVO.getMoney();//录入费用时的金额
+                    BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();
+                    if (exchangeRate == null || exchangeRate.compareTo(new BigDecimal("0")) == 0) {
+                        exchangeRate = new BigDecimal("1");
+                    }
+                    money = money.multiply(exchangeRate);
+                    orderBillCostTotalVO.setMoney(money);
                     OrderBillCostTotal orderBillCostTotal = ConvertUtil.convert(orderBillCostTotalVO, OrderBillCostTotal.class);
                     orderBillCostTotal.setLocalMoney(orderBillCostTotalVO.getLocalMoney());
-                    orderBillCostTotal.setMoney(null);
-                    orderBillCostTotal.setExchangeRate(null);
                     orderBillCostTotal.setOrderNo(orderBillCostTotal.getOrderNo() == null ? orderBillCostTotalVO.getMainOrderNo() : orderBillCostTotal.getOrderNo());
                     orderBillCostTotal.setMoneyType("2");
                     orderBillCostTotal.setCurrentCurrencyCode(currencyCode);
                     orderBillCostTotal.setCurrencyCode(settlementCurrency);
+                    orderBillCostTotal.setIsCustomExchangeRate(form.getIsCustomExchangeRate());
                     orderBillCostTotals.add(orderBillCostTotal);
                 }
                 result = costTotalService.saveBatch(orderBillCostTotals);
@@ -362,7 +378,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         if ("cw_save".equals(form.getCmd())) {//财务编辑
             List<OrderReceivableBillDetail> receiveBillDetails = new ArrayList<>();
             List<OrderCostForm> orderCostForms = new ArrayList<>();
-            for (OrderReceiveBillDetailForm receiveBillDetailForm : receiveBillDetailForms) {
+            for (OrderReceiveBillDetailForm receiveBillDetailForm : addReceiveBillDetailForms) {
                 OrderReceivableBillDetail receivableBillDetail = new OrderReceivableBillDetail();
                 receivableBillDetail.setId(receiveBillDetailForm.getBillDetailId());
                 receivableBillDetail.setTaxRate(receiveBillDetailForm.getTaxRate());//税率

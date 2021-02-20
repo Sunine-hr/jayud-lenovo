@@ -305,14 +305,14 @@ public class ExternalApiController {
 
 
     /**
-     * 应付暂存
+     * 应付/应收暂存
      */
     @RequestMapping(value = "/api/oprCostBill")
     ApiResult<Boolean> oprCostBill(@RequestBody OprCostBillForm form) {
         Boolean result = false;
         if ("payment".equals(form.getOprType())) {
             List<OrderPaymentCost> paymentCosts = new ArrayList<>();
-            if (form.getCmd().contains("pre")) {//暂存应收
+            if (form.getCmd().contains("pre")) {//暂存应付
                 List<OrderPaymentCost> delCosts = new ArrayList<>();
                 for (Long costId : form.getCostIds()) {
                     OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
@@ -341,7 +341,7 @@ public class ExternalApiController {
                     orderPaymentCost.setIsBill("0");//未出账
                     paymentCosts.add(orderPaymentCost);
                 }
-            } else {//生成应收账单
+            } else {//生成应付账单
                 for (Long costId : form.getCostIds()) {
                     OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
                     orderPaymentCost.setId(costId);
@@ -352,7 +352,7 @@ public class ExternalApiController {
             result = paymentCostService.updateBatchById(paymentCosts);
         } else if ("receivable".equals(form.getOprType())) {
             List<OrderReceivableCost> receivableCosts = new ArrayList<>();
-            if (form.getCmd().contains("pre")) {//暂存应付
+            if (form.getCmd().contains("pre")) {//暂存应收
                 List<OrderReceivableCost> delCosts = new ArrayList<>();
                 for (Long costId : form.getCostIds()) {
                     OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
@@ -381,7 +381,7 @@ public class ExternalApiController {
                     orderReceivableCost.setIsBill("0");//未出账
                     receivableCosts.add(orderReceivableCost);
                 }
-            } else {//生成应付账单
+            } else {//生成应收账单
                 for (Long costId : form.getCostIds()) {
                     OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
                     orderReceivableCost.setId(costId);

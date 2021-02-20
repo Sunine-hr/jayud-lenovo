@@ -220,6 +220,7 @@ public class ReceiveBillDetailController {
                 || StringUtil.isNullOrEmpty(form.getLoginUserName())) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
+        form.checkEditSBill();
         return billDetailService.editSBill(form);
     }
 

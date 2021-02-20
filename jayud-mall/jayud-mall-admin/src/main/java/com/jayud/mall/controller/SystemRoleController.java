@@ -23,7 +23,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/systemrole")
-@Api(tags = "S004-后台-角色管理")
+@Api(tags = "A004-admin-角色管理")
 @ApiSort(value = 4)
 public class SystemRoleController {
 
@@ -41,7 +41,7 @@ public class SystemRoleController {
     @ApiOperation(value = "删除角色")
     @PostMapping(value = "/deleteRole")
     @ApiOperationSupport(order = 2)
-    public CommonResult deleteRole(@RequestBody SaveSystemParaForm form){
+    public CommonResult deleteRole(@Valid @RequestBody SaveSystemParaForm form){
         Long id = form.getId();
         roleService.deleteRole(id);
         return CommonResult.success("删除角色成功！");
@@ -50,7 +50,7 @@ public class SystemRoleController {
     @ApiOperation(value = "根据id获取角色信息")
     @PostMapping(value = "/getRoleById")
     @ApiOperationSupport(order = 3)
-    public CommonResult<SystemRoleVO> getRoleById(@RequestBody SaveSystemParaForm form){
+    public CommonResult<SystemRoleVO> getRoleById(@Valid @RequestBody SaveSystemParaForm form){
         Long id = form.getId();
         SystemRoleVO role = roleService.getRole(id);
         return CommonResult.success(role);
@@ -59,7 +59,7 @@ public class SystemRoleController {
     @ApiOperation(value = "角色分页查询")
     @PostMapping(value = "/findRoleByPage")
     @ApiOperationSupport(order = 4)
-    public CommonResult<CommonPageResult<SystemRoleVO>> findRoleByPage(@RequestBody QueryRoleForm form){
+    public CommonResult<CommonPageResult<SystemRoleVO>> findRoleByPage(@Valid @RequestBody QueryRoleForm form){
         IPage<SystemRoleVO> pageList = roleService.findRoleByPage(form);
         CommonPageResult<SystemRoleVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
@@ -68,7 +68,7 @@ public class SystemRoleController {
     @ApiOperation(value = "查询角色list")
     @PostMapping("/findRole")
     @ApiOperationSupport(order = 5)
-    public CommonResult<List<SystemRoleVO>> findRole(@RequestBody QueryRoleForm form) {
+    public CommonResult<List<SystemRoleVO>> findRole(@Valid @RequestBody QueryRoleForm form) {
         List<SystemRoleVO> list = roleService.findRole(form);
         return CommonResult.success(list);
     }

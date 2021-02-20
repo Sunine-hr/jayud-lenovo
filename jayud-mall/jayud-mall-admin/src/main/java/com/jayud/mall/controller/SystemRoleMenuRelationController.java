@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/system/rolemenu")
-@Api(tags = "S007-后台-角色菜单管理")
+@Api(tags = "A007-admin-角色菜单管理")
 @ApiSort(value = 7)
 public class SystemRoleMenuRelationController {
 

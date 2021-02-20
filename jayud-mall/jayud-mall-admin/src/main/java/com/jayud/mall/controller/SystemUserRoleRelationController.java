@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/system/userrole")
-@Api(tags = "S006-后台-用户角色管理")
+@Api(tags = "A006-admin-用户角色管理")
 @ApiSort(value = 6)
 public class SystemUserRoleRelationController {
 

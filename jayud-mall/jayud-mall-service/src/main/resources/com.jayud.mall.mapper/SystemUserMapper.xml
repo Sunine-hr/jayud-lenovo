@@ -67,7 +67,7 @@
     </delete>
 
     <!--根据用户Id查询用户-->
-    <select id="getUser" parameterType="Long" resultType="com.jayud.mall.model.vo.SystemUserVO">
+    <select id="getUser" parameterType="Long" resultMap="SystemUserVOResultMap">
         select
         <include refid="Base_Column_List"/>
         from system_user where id = #{id}
@@ -99,7 +99,7 @@
 
     <!--查询用户分页-->
     <select id="findUserByPage" parameterType="com.jayud.mall.model.bo.QueryUserForm"
-            resultType="com.jayud.mall.model.vo.SystemUserVO" >
+            resultMap="SystemUserVOResultMap" >
         select
         t.id,t.name,t.password,t.user_name,t.en_user_name,t.phone,t.email,t.company,t.wkno,t.login_time,t.`status`,t.note,t.created_user,t.created_time,t.updated_user,t.updated_time
         from system_user t
@@ -128,6 +128,37 @@
             and t.id = t1.user_id
         </if>
 
+    </select>
+
+    <!--用户VO(包含角色list)-->
+    <resultMap id="SystemUserVOResultMap" type="com.jayud.mall.model.vo.SystemUserVO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="password" property="password"/>
+        <result column="user_name" property="userName"/>
+        <result column="en_user_name" property="enUserName"/>
+        <result column="phone" property="phone"/>
+        <result column="email" property="email"/>
+        <result column="company" property="company" />
+        <result column="wkno" property="wkno" />
+        <result column="login_time" property="loginTime" />
+        <result column="status" property="status" />
+        <result column="note" property="note"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_user" property="updatedUser"/>
+        <result column="updated_time" property="updatedTime"/>
+        <!--角色集合-->
+        <collection property="systemRoleVOS" column="id" ofType="com.jayud.mall.model.vo.SystemRoleVO" select="selectSystemRoleByUserId"></collection>
+    </resultMap>
+
+    <!--根据用户id，查询用户角色-->
+    <select id="selectSystemRoleByUserId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.SystemRoleVO">
+        select t.id, t.role_name, t.role_describe, t.create_by, t.create_time, t.update_by, t.update_time
+        from system_role t
+        join system_user_role_relation t1 on t1.role_id = t.id
+        where t1.user_id = #{id}
     </select>
 
 

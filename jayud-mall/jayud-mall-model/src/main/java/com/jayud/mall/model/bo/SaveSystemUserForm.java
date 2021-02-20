@@ -4,6 +4,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 /**
@@ -42,6 +43,7 @@ public class SaveSystemUserForm {
 
     @ApiModelProperty(value = "用户角色id，List<long>", position = 8)
     @JSONField(ordinal = 8)
+    @NotEmpty(message = "用户角色不能为空")
     private List<Long> roleIds;
 
 

@@ -224,7 +224,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         if(systemUser == null){
             return CommonResult.error(-1, "用户不存在，无法删除");
         }
-        Integer status = systemUser.getStatus();//帐号启用状态：0->Off 启用；1->On 停用
+        Integer status = systemUser.getStatus();//帐号启用状态：0-> 启用；1-> 停用
         if(!status.equals(1)){
             return CommonResult.error(-1, "用户未停用，无法删除");
         }

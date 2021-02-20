@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author mfc
@@ -66,6 +67,8 @@ public class SystemUserVO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedTime;
 
+    @ApiModelProperty(value = "用户的角色", position = 17)
+    private List<SystemRoleVO> systemRoleVOS;
     
 
 }

@@ -7,6 +7,7 @@ import com.jayud.mall.model.bo.QueryUserForm;
 import com.jayud.mall.model.bo.ResetUserPwdForm;
 import com.jayud.mall.model.bo.SaveSystemUserForm;
 import com.jayud.mall.model.po.SystemUser;
+import com.jayud.mall.model.vo.SystemRoleVO;
 import com.jayud.mall.model.vo.SystemUserVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -90,6 +91,13 @@ public interface SystemUserMapper extends BaseMapper<SystemUser> {
      */
     IPage<SystemUserVO> findUserByPage(Page<SystemUserVO> page, @Param("form") QueryUserForm form);
 
+
+    /**
+     * 根据用户id，查询用户角色
+     * @param id 用户id
+     * @return
+     */
+    List<SystemRoleVO> selectSystemRoleByUserId(@Param("id") Long id);
 
 
 }

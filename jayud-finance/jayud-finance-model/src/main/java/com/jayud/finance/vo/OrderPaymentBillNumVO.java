@@ -82,7 +82,7 @@ public class OrderPaymentBillNumVO {
                         .append("-")
                         .append(outOfCurrency == null ? "" : outOfCurrency)
                         .append(" 汇率").append(next.getExchangeRate())
-                        .append("\n");
+                        .append("<br/>");
                 iterator.remove();
             }
         }

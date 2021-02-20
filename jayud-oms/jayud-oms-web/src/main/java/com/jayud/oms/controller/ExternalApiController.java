@@ -31,10 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 
 @RestController
@@ -85,7 +82,10 @@ public class ExternalApiController {
     private IGoodsService goodsService;
     @Autowired
     private IOrderAddressService orderAddressService;
-
+    @Autowired
+    private IOrderReceivableCostService orderReceivableCostService;
+    @Autowired
+    private IOrderPaymentCostService orderPaymentCostService;
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
@@ -315,14 +315,14 @@ public class ExternalApiController {
 
 
     /**
-     * 应付暂存
+     * 应付/应收暂存
      */
     @RequestMapping(value = "/api/oprCostBill")
     ApiResult<Boolean> oprCostBill(@RequestBody OprCostBillForm form) {
         Boolean result = false;
         if ("payment".equals(form.getOprType())) {
             List<OrderPaymentCost> paymentCosts = new ArrayList<>();
-            if (form.getCmd().contains("pre")) {//暂存应收
+            if (form.getCmd().contains("pre")) {//暂存应付
                 List<OrderPaymentCost> delCosts = new ArrayList<>();
                 for (Long costId : form.getCostIds()) {
                     OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
@@ -351,7 +351,7 @@ public class ExternalApiController {
                     orderPaymentCost.setIsBill("0");//未出账
                     paymentCosts.add(orderPaymentCost);
                 }
-            } else {//生成应收账单
+            } else {//生成应付账单
                 for (Long costId : form.getCostIds()) {
                     OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
                     orderPaymentCost.setId(costId);
@@ -362,7 +362,7 @@ public class ExternalApiController {
             result = paymentCostService.updateBatchById(paymentCosts);
         } else if ("receivable".equals(form.getOprType())) {
             List<OrderReceivableCost> receivableCosts = new ArrayList<>();
-            if (form.getCmd().contains("pre")) {//暂存应付
+            if (form.getCmd().contains("pre")) {//暂存应收
                 List<OrderReceivableCost> delCosts = new ArrayList<>();
                 for (Long costId : form.getCostIds()) {
                     OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
@@ -391,7 +391,7 @@ public class ExternalApiController {
                     orderReceivableCost.setIsBill("0");//未出账
                     receivableCosts.add(orderReceivableCost);
                 }
-            } else {//生成应付账单
+            } else {//生成应收账单
                 for (Long costId : form.getCostIds()) {
                     OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
                     orderReceivableCost.setId(costId);
@@ -446,17 +446,20 @@ public class ExternalApiController {
     @ApiOperation(value = "编辑保存确定")
     @RequestMapping(value = "api/editSaveConfirm")
     public ApiResult editSaveConfirm(@RequestParam("costIds") List<Long> costIds, @RequestParam("oprType") String oprType,
-                                     @RequestParam("cmd") String cmd) {
+                                     @RequestParam("cmd") String cmd, @RequestBody Map<String, Object> param) {
         if ("save_confirm".equals(cmd)) {
             if ("receivable".equals(oprType)) {
                 OrderReceivableCost receivableCost = new OrderReceivableCost();
-                receivableCost.setIsBill("save_confirm");//持续操作中的过度状态
+                receivableCost.setIsBill("save_confirm")//持续操作中的过度状态
+                        .setTmpBillNo(param.get("billNo").toString());//TODO 等待前端更改,需要前端传账单编号
                 QueryWrapper updateWrapper = new QueryWrapper();
                 updateWrapper.in("id", costIds);
                 receivableCostService.update(receivableCost, updateWrapper);
             } else if ("payment".equals(oprType)) {
                 OrderPaymentCost paymentCost = new OrderPaymentCost();
-                paymentCost.setIsBill("save_confirm");//持续操作中的过度状态
+                paymentCost.setIsBill("save_confirm")
+                        .setTmpBillNo(param.get("billNo").toString());//TODO 等待前端更改,需要前端传账单编号
+                ;//持续操作中的过度状态
                 QueryWrapper updateWrapper = new QueryWrapper();
                 updateWrapper.in("id", costIds);
                 paymentCostService.update(paymentCost, updateWrapper);
@@ -465,12 +468,14 @@ public class ExternalApiController {
             if ("receivable".equals(oprType)) {
                 OrderReceivableCost receivableCost = new OrderReceivableCost();
                 receivableCost.setIsBill("0");//从save_confirm状态回滚到未出账-0状态
+                receivableCost.setStatus(1);//草稿状态
                 QueryWrapper updateWrapper = new QueryWrapper();
                 updateWrapper.in("id", costIds);
                 receivableCostService.update(receivableCost, updateWrapper);
             } else if ("payment".equals(oprType)) {
                 OrderPaymentCost paymentCost = new OrderPaymentCost();
                 paymentCost.setIsBill("0");//从save_confirm状态回滚到未出账-0状态
+                paymentCost.setStatus(1);//草稿状态
                 QueryWrapper updateWrapper = new QueryWrapper();
                 updateWrapper.in("id", costIds);
                 paymentCostService.update(paymentCost, updateWrapper);
@@ -812,6 +817,94 @@ public class ExternalApiController {
 
 
         return ApiResult.ok();
+    }
+
+
+    /**
+     * 批量修改费用状态
+     *
+     * @param costIds 费用主键
+     * @param isBill
+     * @param status  费用状态
+     * @param type    类型(0:应收,1:应付)
+     * @return
+     */
+    @RequestMapping(value = "/api/batchUpdateCostStatus")
+    public ApiResult batchUpdateCostStatus(@RequestParam("costIds") List<Long> costIds,
+                                           @RequestParam("isBill") String isBill,
+                                           @RequestParam("status") Integer status,
+                                           @RequestParam("type") Integer type) {
+        switch (type) {
+            case 0: //应收
+                List<OrderReceivableCost> orderReceivableCosts = new ArrayList<>();
+                for (Long costId : costIds) {
+                    OrderReceivableCost orderReceivableCost = new OrderReceivableCost()
+                            .setId(costId).setIsBill(isBill).setStatus(status);
+                    orderReceivableCosts.add(orderReceivableCost);
+                }
+                return ApiResult.ok(this.orderReceivableCostService.updateBatchById(orderReceivableCosts));
+            case 1: //应付
+                List<OrderPaymentCost> orderPaymentCosts = new ArrayList<>();
+                for (Long costId : costIds) {
+                    OrderPaymentCost orderPaymentCost = new OrderPaymentCost()
+                            .setId(costId).setIsBill(isBill).setStatus(status);
+                    orderPaymentCosts.add(orderPaymentCost);
+                }
+                return ApiResult.ok(this.orderPaymentCostService.updateBatchById(orderPaymentCosts));
+            default:
+                return ApiResult.ok();
+        }
+
+    }
+
+    /**
+     * 根据费用主键集合批量查询费用币种信息
+     *
+     * @param costIds 费用主键
+     * @param type    类型(0:应收,1:应付)
+     * @return
+     */
+    @RequestMapping(value = "/api/getCostCurrencyInfo")
+    public ApiResult getCostCurrencyInfo(@RequestParam("costIds") List<Long> costIds,
+                                         @RequestParam("type") Integer type) {
+
+        Set<String> currencyCodes = new HashSet<>();
+        switch (type) {
+            case 0: //应收
+                Collection<OrderReceivableCost> orderReceivableCosts = this.orderReceivableCostService.listByIds(costIds);
+                for (OrderReceivableCost orderReceivableCost : orderReceivableCosts) {
+                    currencyCodes.add(orderReceivableCost.getCurrencyCode());
+                }
+            case 1: //应付
+                Collection<OrderPaymentCost> orderPaymentCosts = this.orderPaymentCostService.listByIds(costIds);
+                for (OrderPaymentCost orderPaymentCost : orderPaymentCosts) {
+                    currencyCodes.add(orderPaymentCost.getCurrencyCode());
+                }
+        }
+        return ApiResult.ok(this.currencyInfoService.getByCodes(currencyCodes));
+
+    }
+
+    /**
+     * 根据费用主键集合批量查询费用信息
+     *
+     * @param costIds 费用主键
+     * @param type    类型(0:应收,1:应付)
+     * @return
+     */
+    @RequestMapping(value = "/api/getCostInfo")
+    public ApiResult getCostInfo(@RequestParam("costIds") List<Long> costIds,
+                                 @RequestParam("type") Integer type) {
+        switch (type) {
+            case 0: //应收
+                Collection<OrderReceivableCost> orderReceivableCosts = this.orderReceivableCostService.listByIds(costIds);
+                return ApiResult.ok(orderReceivableCosts);
+            case 1: //应付
+                Collection<OrderPaymentCost> orderPaymentCosts = this.orderPaymentCostService.listByIds(costIds);
+                return ApiResult.ok(orderPaymentCosts);
+        }
+        return ApiResult.error("找不到对应费用");
+
     }
 }
 

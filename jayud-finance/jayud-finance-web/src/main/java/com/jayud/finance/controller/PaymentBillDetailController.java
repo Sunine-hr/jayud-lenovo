@@ -21,6 +21,7 @@ import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.po.OrderPaymentBillDetail;
+import com.jayud.finance.service.IOrderBillCostTotalService;
 import com.jayud.finance.service.IOrderPaymentBillDetailService;
 import com.jayud.finance.util.StringUtils;
 import com.jayud.finance.vo.*;
@@ -48,6 +49,8 @@ public class PaymentBillDetailController {
     IOrderPaymentBillDetailService billDetailService;
     @Autowired
     private OauthClient oauthClient;
+    @Autowired
+    private IOrderBillCostTotalService orderBillCostTotalService;
 
     @ApiOperation(value = "应付对账单列表,应付对账单审核列表,财务应付对账单列表")
     @PostMapping("/findPaymentBillDetailByPage")
@@ -173,7 +176,7 @@ public class PaymentBillDetailController {
         for (OrderPaymentBillDetailForm formObject : paymentBillDetailForms) {
             costIds.add(formObject.getCostId());
         }
-        Boolean result = billDetailService.editFSaveConfirm(costIds);
+        Boolean result = billDetailService.editFSaveConfirm(costIds, form);
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
@@ -187,6 +190,15 @@ public class PaymentBillDetailController {
         List<OrderPaymentBillDetailForm> delCosts = form.getDelCosts();
         if (delCosts == null || delCosts.size() == 0) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        //查询账单详情id查询账单信息
+        Long billDetailId = delCosts.get(0).getBillDetailId();
+        if (billDetailId != null) {
+            OrderPaymentBillDetail orderPaymentBillDetail = this.billDetailService.getById(billDetailId);
+            //查询编辑账单数量
+            if (this.billDetailService.getEditBillNum(orderPaymentBillDetail.getBillNo()) <= 1) {
+                return CommonResult.error(400, "需要保留一条已出的账单费用");
+            }
         }
         List<Long> costIds = new ArrayList<>();
         for (OrderPaymentBillDetailForm formObject : delCosts) {
@@ -216,7 +228,7 @@ public class PaymentBillDetailController {
         Map<String, Object> resultMap = new HashMap<>();
         List<ViewFBilToOrderVO> list = billDetailService.viewBillDetail(form.getBillNo());
         resultMap.put(CommonConstant.LIST, list);//分页数据
-        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSheetHead(form.getBillNo());
+        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSheetHead(form.getBillNo(), new HashMap<>());
         resultMap.put(CommonConstant.SHEET_HEAD, sheetHeadVOS);//表头
         ViewBillVO viewBillVO = billDetailService.getViewBill(form.getBillNo());
         resultMap.put(CommonConstant.WHOLE_DATA, viewBillVO);//全局数据
@@ -246,17 +258,22 @@ public class PaymentBillDetailController {
 
         ViewBillVO viewBillVO = billDetailService.getViewBill(billNo);
 
+        Map<String, Object> callbackArg = new HashMap<>();
         //头部数据重组
-        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSheetHead(billNo);
+        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSheetHead(billNo, callbackArg);
+        int index = Integer.parseInt(callbackArg.get("fixHeadIndex").toString()) - 1;
         LinkedHashMap<String, String> headMap = new LinkedHashMap<>();
         LinkedHashMap<String, String> dynamicHead = new LinkedHashMap<>();
         for (int i = 0; i < sheetHeadVOS.size(); i++) {
             SheetHeadVO sheetHeadVO = sheetHeadVOS.get(i);
             headMap.put(sheetHeadVO.getName(), sheetHeadVO.getViewName());
-            if (i > 11) {
+            if (i > index) {
                 dynamicHead.put(sheetHeadVO.getName(), sheetHeadVO.getViewName());
             }
         }
+
+        //计算结算币种
+        this.orderBillCostTotalService.exportSettlementCurrency(headMap, dynamicHead, datas, "1");
 
         //查询人主体信息
         cn.hutool.json.JSONArray tmp = new cn.hutool.json.JSONArray(this.oauthClient
@@ -300,7 +317,7 @@ public class PaymentBillDetailController {
 
         }
         entity.setTotalData(costTotal);
-        entity.setTotalIndex(11);
+        entity.setTotalIndex(index);
 
         //尾部
         List<String> bottomData = new ArrayList<>();
@@ -429,4 +446,13 @@ public class PaymentBillDetailController {
         return billDetailService.contraryAudit(form);
     }
 
+    @ApiOperation(value = "获取修改应付对账单信息,billNo=账单编号")
+    @PostMapping("/getUpdateBillDetail")
+    public CommonResult getUpdateBillDetail(@RequestBody Map<String, Object> map) {
+        String billNo = MapUtil.getStr(map, "billNo");
+        if (com.jayud.common.utils.StringUtils.isEmpty(billNo)) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        return CommonResult.success(orderBillCostTotalService.getEditBillByBillNo(billNo, 1));
+    }
 }

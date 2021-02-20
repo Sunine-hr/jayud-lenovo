@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.CommonResult;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.po.OrderPaymentBillDetail;
+import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.vo.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -97,7 +99,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      *
      * @return
      */
-    List<SheetHeadVO> findSheetHead(String billNo);
+    List<SheetHeadVO> findSheetHead(String billNo, Map<String, Object> callbackArg);
 
     /**
      * 对账单详情的全局数据部分
@@ -176,9 +178,10 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
     /**
      *编辑保存确定
      * @param costIds
+     * @param form
      * @return
      */
-    Boolean editFSaveConfirm(List<Long> costIds);
+    Boolean editFSaveConfirm(List<Long> costIds, EditBillForm form);
 
     /**
      * 编辑删除
@@ -219,4 +222,15 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      */
     List<OrderPaymentBillDetail> getNowFOrderExist(String legalName, String supplierChName, String subType, String orderNo);
 
+
+    /**
+     * 获取编辑账单数
+     * @param billNo
+     */
+    int getEditBillNum(String billNo);
+
+    /**
+     * 根据条件查询账单详情信息
+     */
+    public List<OrderPaymentBillDetail> getByCondition(OrderPaymentBillDetail orderPaymentBillDetail);
 }

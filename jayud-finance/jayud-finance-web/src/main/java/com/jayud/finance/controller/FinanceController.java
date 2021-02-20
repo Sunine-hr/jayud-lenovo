@@ -2,14 +2,19 @@ package com.jayud.finance.controller;
 
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.http.HttpStatus;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.utils.excel.EasyExcelEntity;
+import com.jayud.common.utils.excel.EasyExcelUtils;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.enums.FormIDEnum;
@@ -20,7 +25,9 @@ import com.jayud.finance.util.StringUtils;
 import com.jayud.finance.vo.*;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +37,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 
 
 @RestController
@@ -58,7 +63,9 @@ public class FinanceController {
     @Autowired
     KingdeeService service;
 
-    /**财务核算*/
+    /**
+     * 财务核算
+     */
     @ApiOperation(value = "财务核算列表")
     @PostMapping("/findFinanceAccountByPage")
     public CommonResult<CommonPageResult<FinanceAccountVO>> findFinanceAccountByPage(@RequestBody @Valid QueryFinanceAccountForm form) {
@@ -71,7 +78,7 @@ public class FinanceController {
     @RequestMapping(value = "/exportCwBill", method = RequestMethod.GET)
     @ResponseBody
     public void exportCwBill(QueryFinanceAccountForm form,
-                            HttpServletResponse response) throws IOException {
+                             HttpServletResponse response) throws IOException {
         //获取数据
         List<FinanceAccountVO> list = paymentBillDetailService.findFinanceAccount(form);
 
@@ -111,35 +118,37 @@ public class FinanceController {
         ServletOutputStream out = response.getOutputStream();
         String name = StringUtils.toUtf8String("财务核算列表");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
-        response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
+        response.setHeader("Content-Disposition", "attachment;filename=" + name + ".xlsx");
 
         writer.flush(out);
         writer.close();
         IoUtil.close(out);
     }
 
-    /**对账单管理*/
+    /**
+     * 对账单管理
+     */
     @ApiOperation(value = "应付对账单审核列表,对账单明细")
     @PostMapping("/findFBillAuditByPage")
-    public CommonResult<Map<String,Object>> findFBillAuditByPage(@RequestBody @Valid QueryFBillAuditForm form) {
+    public CommonResult<Map<String, Object>> findFBillAuditByPage(@RequestBody @Valid QueryFBillAuditForm form) {
         IPage<PaymentNotPaidBillVO> pageList = paymentBillDetailService.findFBillAuditByPage(form);
         CommonPageResult<PaymentNotPaidBillVO> pageVO = new CommonPageResult(pageList);
-        Map<String,Object> resultMap = new HashMap<>();
-        resultMap.put("pageList",pageVO);//列表
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("pageList", pageVO);//列表
         ViewBillVO viewBillVO = paymentBillDetailService.getViewBill(form.getBillNo());
-        resultMap.put(CommonConstant.WHOLE_DATA,viewBillVO);//全局数据
+        resultMap.put(CommonConstant.WHOLE_DATA, viewBillVO);//全局数据
         return CommonResult.success(resultMap);
     }
 
     @ApiOperation(value = "应收对账单审核列表,对账单明细")
     @PostMapping("/findSBillAuditByPage")
-    public CommonResult<Map<String,Object>> findSBillAuditByPage(@RequestBody @Valid QueryFBillAuditForm form) {
+    public CommonResult<Map<String, Object>> findSBillAuditByPage(@RequestBody @Valid QueryFBillAuditForm form) {
         IPage<PaymentNotPaidBillVO> pageList = receivableBillDetailService.findSBillAuditByPage(form);
         CommonPageResult<PaymentNotPaidBillVO> pageVO = new CommonPageResult(pageList);
-        Map<String,Object> resultMap = new HashMap<>();
-        resultMap.put("pageList",pageVO);//列表
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("pageList", pageVO);//列表
         ViewBillVO viewBillVO = receivableBillDetailService.getViewSBill(form.getBillNo());
-        resultMap.put(CommonConstant.WHOLE_DATA,viewBillVO);//全局数据
+        resultMap.put(CommonConstant.WHOLE_DATA, viewBillVO);//全局数据
         return CommonResult.success(resultMap);
     }
 
@@ -147,43 +156,85 @@ public class FinanceController {
     @RequestMapping(value = "/exportFBillDetailList", method = RequestMethod.GET)
     @ResponseBody
     public void exportFBillDetailList(QueryFBillAuditForm form,
-                                    HttpServletResponse response) throws IOException {
+                                      HttpServletResponse response) throws IOException {
         List<PaymentNotPaidBillVO> list = paymentBillDetailService.findFBillAudit(form);
-        ExcelWriter writer = ExcelUtil.getWriter(true);
+//        ExcelWriter writer = ExcelUtil.getWriter(true);
+//
+//        //自定义标题别名
+//        writer.addHeaderAlias("orderNo", "订单编号");
+//        writer.addHeaderAlias("subOrderNo", "子订单编号");
+//        writer.addHeaderAlias("billNo", "账单编号");
+//        writer.addHeaderAlias("bizCodeDesc", "业务类型");
+//        writer.addHeaderAlias("createdTimeStr", "日期");
+//        writer.addHeaderAlias("supplierChName", "供应商");
+//        writer.addHeaderAlias("goodsDesc", "货物信息");
+//        writer.addHeaderAlias("startAddress", "起运地");
+//        writer.addHeaderAlias("endAddress", "目的地");
+//        writer.addHeaderAlias("licensePlate", "车牌号");
+//        writer.addHeaderAlias("yunCustomsNo", "报关单号");
+//        writer.addHeaderAlias("costTypeName", "费用类别");
+//        writer.addHeaderAlias("costGenreName", "费用类型");
+//        writer.addHeaderAlias("costName", "费用名称");
+//        writer.addHeaderAlias("rmb", "人民币");
+//        writer.addHeaderAlias("dollar", "美元");
+//        writer.addHeaderAlias("euro", "欧元");
+//        writer.addHeaderAlias("hKDollar", "港币");
+//        writer.addHeaderAlias("taxRate", "税率");
+//        writer.addHeaderAlias("remarks", "费用备注");
+//        writer.addHeaderAlias("settlementCurrency", "结算币种");
+//        writer.addHeaderAlias("settlementAmount", "结算金额");
+//        writer.addHeaderAlias("exchangeRate", "汇率");
+//
+//
+//        // 一次性写出内容，使用默认样式，强制输出标题
+//        writer.write(list, true);
+//
+//        //out为OutputStream，需要写出到的目标流
+//        ServletOutputStream out = response.getOutputStream();
+//        String name = StringUtils.toUtf8String("客户应付对账单");
+//        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
+//        response.setHeader("Content-Disposition", "attachment;filename=" + name + ".xlsx");
+//
+//        writer.flush(out);
+//        writer.close();
+//        IoUtil.close(out);
 
-        //自定义标题别名
-        writer.addHeaderAlias("orderNo", "订单编号");
-        writer.addHeaderAlias("subOrderNo", "子订单编号");
-        writer.addHeaderAlias("billNo", "账单编号");
-        writer.addHeaderAlias("bizCodeDesc", "业务类型");
-        writer.addHeaderAlias("createdTimeStr", "日期");
-        writer.addHeaderAlias("supplierChName", "供应商");
-        writer.addHeaderAlias("goodsDesc", "货物信息");
-        writer.addHeaderAlias("startAddress", "起运地");
-        writer.addHeaderAlias("endAddress", "目的地");
-        writer.addHeaderAlias("licensePlate", "车牌号");
-        writer.addHeaderAlias("yunCustomsNo", "报关单号");
-        writer.addHeaderAlias("costTypeName", "费用类别");
-        writer.addHeaderAlias("costGenreName", "费用类型");
-        writer.addHeaderAlias("costName", "费用名称");
-        writer.addHeaderAlias("rmb", "人民币");
-        writer.addHeaderAlias("dollar", "美元");
-        writer.addHeaderAlias("euro", "欧元");
-        writer.addHeaderAlias("hKDollar", "港币");
-        writer.addHeaderAlias("taxRate", "税率");
-        writer.addHeaderAlias("remarks", "费用备注");
+        LinkedHashMap<String, String> headMap = new LinkedHashMap<>();
+        headMap.put("orderNo", "订单编号");
+        headMap.put("subOrderNo", "子订单编号");
+        headMap.put("billNo", "账单编号");
+        headMap.put("bizCodeDesc", "业务类型");
+        headMap.put("createdTimeStr", "日期");
+        headMap.put("supplierChName", "供应商");
+        headMap.put("goodsDesc", "货物信息");
+        headMap.put("startAddress", "起运地");
+        headMap.put("endAddress", "目的地");
+        headMap.put("licensePlate", "车牌号");
+        headMap.put("yunCustomsNo", "报关单号");
+        headMap.put("costTypeName", "费用类别");
+        headMap.put("costGenreName", "费用类型");
+        headMap.put("costName", "费用名称");
+        headMap.put("rmb", "人民币");
+        headMap.put("dollar", "美元");
+        headMap.put("euro", "欧元");
+        headMap.put("hKDollar", "港币");
+        headMap.put("taxRate", "税率");
+        headMap.put("remarks", "费用备注");
+        headMap.put("settlementCurrency", "结算币种");
+        headMap.put("settlementAmount", "结算金额");
+        headMap.put("exchangeRate", "汇率");
+        EasyExcelEntity entity = new EasyExcelEntity();
+        entity.setTableHead(headMap);
+        entity.setTableData(JSONArray.parseArray(JSON.toJSONString(list)));
+        Workbook workbook = EasyExcelUtils.autoGeneration("", entity);
 
-        // 一次性写出内容，使用默认样式，强制输出标题
-        writer.write(list, true);
-
-        //out为OutputStream，需要写出到的目标流
-        ServletOutputStream out=response.getOutputStream();
+        ServletOutputStream out = response.getOutputStream();
         String name = StringUtils.toUtf8String("客户应付对账单");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
-        response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
+        response.setHeader("Content-Disposition", "attachment;filename=" + name + ".xlsx");
 
-        writer.flush(out);
-        writer.close();
+        workbook.write(out);
+        workbook.close();
         IoUtil.close(out);
     }
 
@@ -193,48 +244,90 @@ public class FinanceController {
     public void exportSBillDetailList(QueryFBillAuditForm form,
                                       HttpServletResponse response) throws IOException {
         List<PaymentNotPaidBillVO> list = receivableBillDetailService.findSBillAudit(form);
-        ExcelWriter writer = ExcelUtil.getWriter(true);
+//        ExcelWriter writer = ExcelUtil.getWriter(true);
+//
+//        //自定义标题别名
+//        writer.addHeaderAlias("orderNo", "订单编号");
+//        writer.addHeaderAlias("subOrderNo", "子订单编号");
+//        writer.addHeaderAlias("billNo", "账单编号");
+//        writer.addHeaderAlias("bizCodeDesc", "业务类型");
+//        writer.addHeaderAlias("createdTimeStr", "日期");
+//        writer.addHeaderAlias("customerName", "客户");
+//        writer.addHeaderAlias("goodsDesc", "货物信息");
+//        writer.addHeaderAlias("startAddress", "起运地");
+//        writer.addHeaderAlias("endAddress", "目的地");
+//        writer.addHeaderAlias("licensePlate", "车牌号");
+//        writer.addHeaderAlias("yunCustomsNo", "报关单号");
+//        writer.addHeaderAlias("costTypeName", "费用类别");
+//        writer.addHeaderAlias("costGenreName", "费用类型");
+//        writer.addHeaderAlias("costName", "费用名称");
+//        writer.addHeaderAlias("rmb", "人民币");
+//        writer.addHeaderAlias("dollar", "美元");
+//        writer.addHeaderAlias("euro", "欧元");
+//        writer.addHeaderAlias("hKDollar", "港币");
+//        writer.addHeaderAlias("taxRate", "税率");
+//        writer.addHeaderAlias("remarks", "费用备注");
+//        writer.addHeaderAlias("settlementCurrency", "结算币种");
+//        writer.addHeaderAlias("settlementAmount", "结算金额");
+//        writer.addHeaderAlias("exchangeRate", "汇率");
+//
+//
+//        // 一次性写出内容，使用默认样式，强制输出标题
+//        writer.write(list, true);
+//
+//        //out为OutputStream，需要写出到的目标流
+//        ServletOutputStream out = response.getOutputStream();
+//        String name = StringUtils.toUtf8String("客户应收对账单");
+//        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
+//        response.setHeader("Content-Disposition", "attachment;filename=" + name + ".xlsx");
+//
+//        writer.flush(out);
+//        writer.close();
+//        IoUtil.close(out);
 
-        //自定义标题别名
-        writer.addHeaderAlias("orderNo", "订单编号");
-        writer.addHeaderAlias("subOrderNo", "子订单编号");
-        writer.addHeaderAlias("billNo", "账单编号");
-        writer.addHeaderAlias("bizCodeDesc", "业务类型");
-        writer.addHeaderAlias("createdTimeStr", "日期");
-        writer.addHeaderAlias("customerName", "客户");
-        writer.addHeaderAlias("goodsDesc", "货物信息");
-        writer.addHeaderAlias("startAddress", "起运地");
-        writer.addHeaderAlias("endAddress", "目的地");
-        writer.addHeaderAlias("licensePlate", "车牌号");
-        writer.addHeaderAlias("yunCustomsNo", "报关单号");
-        writer.addHeaderAlias("costTypeName", "费用类别");
-        writer.addHeaderAlias("costGenreName", "费用类型");
-        writer.addHeaderAlias("costName", "费用名称");
-        writer.addHeaderAlias("rmb", "人民币");
-        writer.addHeaderAlias("dollar", "美元");
-        writer.addHeaderAlias("euro", "欧元");
-        writer.addHeaderAlias("hKDollar", "港币");
-        writer.addHeaderAlias("taxRate", "税率");
-        writer.addHeaderAlias("remarks", "费用备注");
+        LinkedHashMap<String, String> headMap = new LinkedHashMap<>();
+        headMap.put("orderNo", "订单编号");
+        headMap.put("subOrderNo", "子订单编号");
+        headMap.put("billNo", "账单编号");
+        headMap.put("bizCodeDesc", "业务类型");
+        headMap.put("createdTimeStr", "日期");
+        headMap.put("customerName", "客户");
+        headMap.put("goodsDesc", "货物信息");
+        headMap.put("startAddress", "起运地");
+        headMap.put("endAddress", "目的地");
+        headMap.put("licensePlate", "车牌号");
+        headMap.put("yunCustomsNo", "报关单号");
+        headMap.put("costTypeName", "费用类别");
+        headMap.put("costGenreName", "费用类型");
+        headMap.put("costName", "费用名称");
+        headMap.put("rmb", "人民币");
+        headMap.put("dollar", "美元");
+        headMap.put("euro", "欧元");
+        headMap.put("hKDollar", "港币");
+        headMap.put("taxRate", "税率");
+        headMap.put("remarks", "费用备注");
+        headMap.put("settlementCurrency", "结算币种");
+        headMap.put("settlementAmount", "结算金额");
+        headMap.put("exchangeRate", "汇率");
+        EasyExcelEntity entity = new EasyExcelEntity();
+        entity.setTableHead(headMap);
+        entity.setTableData(JSONArray.parseArray(JSON.toJSONString(list)));
+        Workbook workbook = EasyExcelUtils.autoGeneration("", entity);
 
-        // 一次性写出内容，使用默认样式，强制输出标题
-        writer.write(list, true);
-
-        //out为OutputStream，需要写出到的目标流
-        ServletOutputStream out=response.getOutputStream();
+        ServletOutputStream out = response.getOutputStream();
         String name = StringUtils.toUtf8String("客户应收对账单");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
-        response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
+        response.setHeader("Content-Disposition", "attachment;filename=" + name + ".xlsx");
 
-        writer.flush(out);
-        writer.close();
+        workbook.write(out);
+        workbook.close();
         IoUtil.close(out);
     }
 
     @ApiOperation(value = "核销列表")
     @PostMapping("/heXiaoList")
-    public CommonResult<List<HeXiaoListVO>> heXiaoList(@RequestBody Map<String,Object> param) {
-        String billNo = MapUtil.getStr(param,"billNo");
+    public CommonResult<List<HeXiaoListVO>> heXiaoList(@RequestBody Map<String, Object> param) {
+        String billNo = MapUtil.getStr(param, "billNo");
         List<HeXiaoListVO> heXiaoList = verificationService.heXiaoList(billNo);
         return CommonResult.success(heXiaoList);
     }
@@ -247,16 +340,16 @@ public class FinanceController {
 
     @ApiOperation(value = "付款审核列表 billNo = 账单编号")
     @PostMapping("/findFCostList")
-    public CommonResult<List<FCostVO>> findFCostList(@RequestBody Map<String,Object> param) {
-        String billNo = MapUtil.getStr(param,"billNo");
+    public CommonResult<List<FCostVO>> findFCostList(@RequestBody Map<String, Object> param) {
+        String billNo = MapUtil.getStr(param, "billNo");
         List<FCostVO> fCostVOS = paymentBillDetailService.findFCostList(billNo);
         return CommonResult.success(fCostVOS);
     }
 
     @ApiOperation(value = "开票审核列表 billNo = 账单编号")
     @PostMapping("/findSCostList")
-    public CommonResult<List<FCostVO>> findSCostList(@RequestBody Map<String,Object> param) {
-        String billNo = MapUtil.getStr(param,"billNo");
+    public CommonResult<List<FCostVO>> findSCostList(@RequestBody Map<String, Object> param) {
+        String billNo = MapUtil.getStr(param, "billNo");
         List<FCostVO> fCostVOS = receivableBillDetailService.findSCostList(billNo);
         return CommonResult.success(fCostVOS);
     }
@@ -275,8 +368,8 @@ public class FinanceController {
 
     @ApiOperation(value = "开票核销列表,付款核销列表 billNo=账单编号")
     @PostMapping("/findInvoiceList")
-    public CommonResult<List<MakeInvoiceVO>> findInvoiceList(@RequestBody Map<String,Object> param) {
-        String billNo = MapUtil.getStr(param,"billNo");
+    public CommonResult<List<MakeInvoiceVO>> findInvoiceList(@RequestBody Map<String, Object> param) {
+        String billNo = MapUtil.getStr(param, "billNo");
         List<MakeInvoiceVO> invoiceVOS = makeInvoiceService.findInvoiceList(billNo);
         return CommonResult.success(invoiceVOS);
     }
@@ -289,15 +382,14 @@ public class FinanceController {
 
     @ApiOperation(value = "开票核销作废,付款核销作废 invoiceId开票ID或付款ID")
     @PostMapping("/makeInvoiceDel")
-    public CommonResult makeInvoiceDel(@RequestBody Map<String,Object> param) {
-        Long inVoiceId = Long.parseLong(MapUtil.getStr(param,"invoiceId"));
+    public CommonResult makeInvoiceDel(@RequestBody Map<String, Object> param) {
+        Long inVoiceId = Long.parseLong(MapUtil.getStr(param, "invoiceId"));
         Boolean result = makeInvoiceService.makeInvoiceDel(inVoiceId);
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
         return CommonResult.success();
     }
-
 
 
     /**
@@ -315,37 +407,41 @@ public class FinanceController {
         Boolean flag = false;
         for (String billNo : form.getBillNos()) {
             QueryWrapper queryWrapper1 = new QueryWrapper();
-            queryWrapper1.eq("bill_no",billNo);
+            queryWrapper1.eq("bill_no", billNo);
             List<OrderReceivableBillDetail> tempObjects = receivableBillDetailService.list(queryWrapper1);
-            if(tempObjects != null && tempObjects.size()>0){
+            if (tempObjects != null && tempObjects.size() > 0) {
                 OrderReceivableBillDetail tempObject = tempObjects.get(0);
-                if(StringUtil.isNullOrEmpty(tempObject.getAuditStatus()) || !BillEnum.B_6.getCode().equals(tempObject.getAuditStatus())){
+                if (StringUtil.isNullOrEmpty(tempObject.getAuditStatus()) || !BillEnum.B_6.getCode().equals(tempObject.getAuditStatus())) {
                     flag = true;
-                    sb.append(tempObject.getBillNo()+";");
+                    sb.append(tempObject.getBillNo() + ";");
                 }
             }
         }
         sb.append("财务未审核通过,不能推送金蝶");
-        if(flag) {
+        if (flag) {
             return CommonResult.error(10001, sb.toString());
         }
         //构建数据，推金蝶
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.in("bill_no",form.getBillNos());
+        queryWrapper.in("bill_no", form.getBillNos());
         List<OrderReceivableBillDetail> receivableBillDetails = receivableBillDetailService.list(queryWrapper);
         for (OrderReceivableBillDetail receivableBillDetail : receivableBillDetails) {
             List<ReceivableHeaderForm> reqForm = receivableBillDetailService.getReceivableHeaderForm(receivableBillDetail.getBillNo());
+            CommonResult result = null;
             for (ReceivableHeaderForm tempReqForm : reqForm) {
-                List<APARDetailForm> entityDetail = receivableBillDetailService.findReceivableHeaderDetail(tempReqForm.getBillNo(),tempReqForm.getBusinessNo());
+                List<APARDetailForm> entityDetail = receivableBillDetailService.findReceivableHeaderDetail(tempReqForm.getBillNo(), tempReqForm.getBusinessNo());
                 tempReqForm.setEntityDetail(entityDetail);
                 logger.info("推送金蝶传参:" + reqForm);
-                service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), tempReqForm);
+                result = service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), tempReqForm);
             }
-            OrderReceivableBillDetail tempObject = new OrderReceivableBillDetail();
-            tempObject.setPushKingdeeCount(receivableBillDetail.getPushKingdeeCount() + 1);
-            QueryWrapper updateWrapper = new QueryWrapper();
-            updateWrapper.eq("bill_no",receivableBillDetail.getBillNo());
-            receivableBillDetailService.update(tempObject,updateWrapper);
+            if (result.getCode() == HttpStatus.HTTP_OK) {
+                OrderReceivableBillDetail tempObject = new OrderReceivableBillDetail();
+                Integer num = receivableBillDetail.getPushKingdeeCount() == null ? 0 : receivableBillDetail.getPushKingdeeCount();
+                tempObject.setPushKingdeeCount(num + 1);
+                QueryWrapper updateWrapper = new QueryWrapper();
+                updateWrapper.eq("bill_no", receivableBillDetail.getBillNo());
+                receivableBillDetailService.update(tempObject, updateWrapper);
+            }
         }
         return CommonResult.success();
     }
@@ -365,37 +461,40 @@ public class FinanceController {
         Boolean flag = false;
         for (String billNo : form.getBillNos()) {
             QueryWrapper queryWrapper1 = new QueryWrapper();
-            queryWrapper1.eq("bill_no",billNo);
+            queryWrapper1.eq("bill_no", billNo);
             List<OrderPaymentBillDetail> tempObjects = receivableBillDetailService.list(queryWrapper1);
-            if(tempObjects != null && tempObjects.size()>0){
+            if (tempObjects != null && tempObjects.size() > 0) {
                 OrderPaymentBillDetail tempObject = tempObjects.get(0);
-                if(StringUtil.isNullOrEmpty(tempObject.getAuditStatus()) || !BillEnum.B_6.getCode().equals(tempObject.getAuditStatus())){
+                if (StringUtil.isNullOrEmpty(tempObject.getAuditStatus()) || !BillEnum.B_6.getCode().equals(tempObject.getAuditStatus())) {
                     flag = true;
-                    sb.append(tempObject.getBillNo()+";");
+                    sb.append(tempObject.getBillNo() + ";");
                 }
             }
         }
         sb.append("财务未审核通过,不能推送金蝶");
-        if(flag) {
+        if (flag) {
             return CommonResult.error(10001, sb.toString());
         }
         //构建数据，推金蝶
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.in("bill_no",form.getBillNos());
+        queryWrapper.in("bill_no", form.getBillNos());
         List<OrderPaymentBillDetail> paymentBillDetailList = paymentBillDetailService.list(queryWrapper);
         for (OrderPaymentBillDetail paymentBillDetail : paymentBillDetailList) {
             List<PayableHeaderForm> reqForm = paymentBillDetailService.getPayableHeaderForm(paymentBillDetail.getBillNo());
+            CommonResult result = null;
             for (PayableHeaderForm tempReqForm : reqForm) {
-                List<APARDetailForm> entityDetail = paymentBillDetailService.findPayableHeaderDetail(tempReqForm.getBillNo(),tempReqForm.getBusinessNo());
+                List<APARDetailForm> entityDetail = paymentBillDetailService.findPayableHeaderDetail(tempReqForm.getBillNo(), tempReqForm.getBusinessNo());
                 tempReqForm.setEntityDetail(entityDetail);
                 logger.info("推送金蝶传参:" + reqForm);
-                service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), tempReqForm);
+                result = service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), tempReqForm);
             }
-            OrderPaymentBillDetail tempObject = new OrderPaymentBillDetail();
-            tempObject.setPushKingdeeCount(paymentBillDetail.getPushKingdeeCount() + 1);
-            QueryWrapper updateWrapper = new QueryWrapper();
-            updateWrapper.eq("bill_no",paymentBillDetail.getBillNo());
-            paymentBillDetailService.update(tempObject,updateWrapper);
+            if (result.getCode() == HttpStatus.HTTP_OK) {
+                OrderPaymentBillDetail tempObject = new OrderPaymentBillDetail();
+                tempObject.setPushKingdeeCount(paymentBillDetail.getPushKingdeeCount() + 1);
+                QueryWrapper updateWrapper = new QueryWrapper();
+                updateWrapper.eq("bill_no", paymentBillDetail.getBillNo());
+                paymentBillDetailService.update(tempObject, updateWrapper);
+            }
         }
         return CommonResult.success();
     }
@@ -405,13 +504,13 @@ public class FinanceController {
     public CommonResult<List<InitComboxStrVO>> initBillStatus() {
         List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
         for (BillEnum billEnum : BillEnum.values()) {
-            if(BillEnum.B_1.getCode().equals(billEnum.getCode()) || BillEnum.B_2.getCode().equals(billEnum.getCode()) ||
-               BillEnum.B_2_1.getCode().equals(billEnum.getCode()) || BillEnum.B_3.getCode().equals(billEnum.getCode()) ||
-               BillEnum.B_4.getCode().equals(billEnum.getCode()) || BillEnum.B_4_1.getCode().equals(billEnum.getCode()) ||
-               BillEnum.B_5.getCode().equals(billEnum.getCode()) || BillEnum.B_5_1.getCode().equals(billEnum.getCode()) ||
-               BillEnum.B_6.getCode().equals(billEnum.getCode()) || BillEnum.B_6_1.getCode().equals(billEnum.getCode()) ||
-               BillEnum.B_7.getCode().equals(billEnum.getCode()) || BillEnum.B_8.getCode().equals(billEnum.getCode()) ||
-               BillEnum.B_9.getCode().equals(billEnum.getCode())){
+            if (BillEnum.B_1.getCode().equals(billEnum.getCode()) || BillEnum.B_2.getCode().equals(billEnum.getCode()) ||
+                    BillEnum.B_2_1.getCode().equals(billEnum.getCode()) || BillEnum.B_3.getCode().equals(billEnum.getCode()) ||
+                    BillEnum.B_4.getCode().equals(billEnum.getCode()) || BillEnum.B_4_1.getCode().equals(billEnum.getCode()) ||
+                    BillEnum.B_5.getCode().equals(billEnum.getCode()) || BillEnum.B_5_1.getCode().equals(billEnum.getCode()) ||
+                    BillEnum.B_6.getCode().equals(billEnum.getCode()) || BillEnum.B_6_1.getCode().equals(billEnum.getCode()) ||
+                    BillEnum.B_7.getCode().equals(billEnum.getCode()) || BillEnum.B_8.getCode().equals(billEnum.getCode()) ||
+                    BillEnum.B_9.getCode().equals(billEnum.getCode())) {
                 InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
                 initComboxStrVO.setCode(billEnum.getCode());
                 initComboxStrVO.setName(billEnum.getDesc());
@@ -423,22 +522,22 @@ public class FinanceController {
 
     @ApiOperation(value = "开票/付款申请,核销,开票/付款核销界面的金额初始化,billNo=账单编号")
     @PostMapping(value = "/getCostAmountView")
-    public CommonResult<CostAmountVO> getCostAmountView(@RequestBody Map<String,Object> param) {
-        String billNo = MapUtil.getStr(param,"billNo");
-        if(StringUtil.isNullOrEmpty(billNo)){
+    public CommonResult<CostAmountVO> getCostAmountView(@RequestBody Map<String, Object> param) {
+        String billNo = MapUtil.getStr(param, "billNo");
+        if (StringUtil.isNullOrEmpty(billNo)) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         CostAmountVO costAmountVO = new CostAmountVO();
         CostAmountVO costFAmountVO = paymentBillDetailService.getFCostAmountView(billNo);
         CostAmountVO costSAmountVO = receivableBillDetailService.getSCostAmountView(billNo);
         costAmountVO.setBillNo(billNo);
-        if(costSAmountVO != null) {
+        if (costSAmountVO != null) {
             costAmountVO.setYsAmount(costSAmountVO.getYsAmount());
             costAmountVO.setYsCurrency(costSAmountVO.getYsCurrency());
             costAmountVO.setWsAmount(costSAmountVO.getWsAmount());
             costAmountVO.setWsCurrency(costSAmountVO.getWsCurrency());
         }
-        if(costFAmountVO != null) {
+        if (costFAmountVO != null) {
             costAmountVO.setYfAmount(costFAmountVO.getYfAmount());
             costAmountVO.setYfCurrency(costFAmountVO.getYfCurrency());
             costAmountVO.setDfAmount(costFAmountVO.getDfAmount());

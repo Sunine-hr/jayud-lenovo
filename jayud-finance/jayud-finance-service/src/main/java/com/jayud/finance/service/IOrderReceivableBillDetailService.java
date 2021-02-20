@@ -1,13 +1,16 @@
 package com.jayud.finance.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.CommonResult;
 import com.jayud.finance.bo.*;
+import com.jayud.finance.po.OrderReceivableBill;
 import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.vo.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -87,7 +90,7 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      * 对账单详情表头
      * @return
      */
-    List<SheetHeadVO> findSSheetHead(String billNo);
+    List<SheetHeadVO> findSSheetHead(String billNo,Map<String,Object> callbackArg);
 
     /**
      * 对账单详情的全局数据部分
@@ -141,9 +144,10 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
     /**
      *编辑保存确定
      * @param costIds
+     * @param form
      * @return
      */
-    Boolean editSSaveConfirm(List<Long> costIds);
+    Boolean editSSaveConfirm(List<Long> costIds, EditSBillForm form);
 
     /**
      * 编辑删除
@@ -184,4 +188,20 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      */
     List<OrderReceivableBillDetail> getNowSOrderExist(String legalName, String unitAccount, String subType,String orderNo);
 
+    /**
+     * 获取编辑账单数
+     * @param billNo
+     */
+    int getEditBillNum(String billNo);
+
+    /**
+     * 根据账单编号查询应收账单详情
+     */
+    public List<OrderReceivableBillDetail> getByBillNo(String billNo);
+
+
+    /**
+     * 根据条件查询账单详情信息
+     */
+    public List<OrderReceivableBillDetail> getByCondition(OrderReceivableBillDetail orderReceivableBillDetail);
 }

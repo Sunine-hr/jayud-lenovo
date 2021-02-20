@@ -1,15 +1,21 @@
 package com.jayud.finance.bo;
 
 
+import com.jayud.common.exception.JayudBizException;
+import com.jayud.common.utils.StringUtils;
+import com.jayud.finance.vo.InitComboxStrVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.collections4.CollectionUtils;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
- *暂存/提交对账单
+ * 暂存/提交对账单
  */
 @Data
 public class CreateReceiveBillForm {
@@ -18,7 +24,7 @@ public class CreateReceiveBillForm {
     private OrderReceiveBillForm receiveBillForm;
 
     @Valid
-    @ApiModelProperty(value = "应收出账单详情界面部分",required = true)
+    @ApiModelProperty(value = "应收出账单详情界面部分", required = true)
     private List<OrderReceiveBillDetailForm> receiveBillDetailForms;
 
     @ApiModelProperty(value = "账单编号,生成账单时必传")
@@ -33,11 +39,32 @@ public class CreateReceiveBillForm {
     @ApiModelProperty(value = "账单类别,生成账单时必传，只允许填写main or zgys or bg or ky")
     private String subType;
 
-    @ApiModelProperty(value = "操作指令 cmd=pre_create主订单出账暂存 or create主订单生成账单",required = true)
+    @ApiModelProperty(value = "操作指令 cmd=pre_create主订单出账暂存 or create主订单生成账单", required = true)
     @Pattern(regexp = "(pre_create|create)", message = "只允许填写pre_create or create")
     private String cmd;
 
-    @ApiModelProperty(value = "登录用户",required = true)
+    @ApiModelProperty(value = "登录用户", required = true)
     private String loginUserName;
 
+    @ApiModelProperty(value = "是否自定义汇率", required = true)
+    private Boolean isCustomExchangeRate = false;
+
+    @ApiModelProperty(value = "自定义汇率")
+    private List<InitComboxStrVO> customExchangeRate;
+
+    /**
+     * 校验出账单参数
+     */
+    public void checkCreateReceiveBill() {
+
+        //校验自定义汇率
+        if (isCustomExchangeRate) {
+            if (CollectionUtils.isEmpty(customExchangeRate)) {
+                throw new JayudBizException(400, "请配置自定义汇率");
+            }
+            if (customExchangeRate.stream().anyMatch(e -> StringUtils.isEmpty(e.getNote()))) {
+                throw new JayudBizException(400, "请配置汇率");
+            }
+        }
+    }
 }

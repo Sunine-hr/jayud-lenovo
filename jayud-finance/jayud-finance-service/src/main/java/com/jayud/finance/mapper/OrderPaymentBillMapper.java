@@ -116,9 +116,11 @@ public interface OrderPaymentBillMapper extends BaseMapper<OrderPaymentBill> {
      *
      * @param costIds
      * @param cmd
+     * @param dynamicSqlParam
      * @return
      */
-    ViewBillVO getViewBillByCostIds(@Param("costIds") List<Long> costIds, @Param("cmd") String cmd);
+    ViewBillVO getViewBillByCostIds(@Param("costIds") List<Long> costIds, @Param("cmd") String cmd,
+                                    @Param("dynamicSqlParam") Map<String, Object> dynamicSqlParam);
 
     /**
      * 从删除的costIds里面挑出那种保存确定的数据

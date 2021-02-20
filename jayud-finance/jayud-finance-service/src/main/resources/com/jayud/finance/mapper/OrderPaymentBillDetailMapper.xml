@@ -172,9 +172,10 @@
         left join order_customs oc on oc.order_no = opc.order_no
         left join air_order ao on ao.order_no = opc.order_no
         WHERE
-        (opbd1.bill_no = #{form.billNo} and opbd1.audit_status !='edit_del' )
+        (opbd1.bill_no = #{form.billNo} )
         or
-        (opc.is_bill = 'save_confirm' and
+        (opc.is_bill = 'save_confirm' and opc.tmp_bill_no = #{form.billNo}
+        and
         <if test="form.cmd == 'main'">
             oi.legal_name
         </if>
@@ -260,6 +261,7 @@
         SELECT distinct
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         oi.order_no orderNo,
+        opbd.bill_no billNo,
 		(select opc.order_no from order_payment_cost opc where opc.id = opbd.cost_id) subOrderNo,
         opb.supplier_ch_name supplierChName,
         ( SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota LEFT JOIN order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' group by ot.order_no) goodsDesc,
@@ -271,7 +273,9 @@
         (select sum(ota.piece_amount) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1') pieceNum,
         (select sum(ota.weight) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1') weight,
         (select GROUP_CONCAT(ota.goods_desc) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' group by ota.order_no) goodsDesc,
-        (select oc.yun_customs_no from order_customs oc where oc.main_order_no = oi.order_no limit 1) yunCustomsNo
+        (select oc.yun_customs_no from order_customs oc where oc.main_order_no = oi.order_no limit 1) yunCustomsNo,
+        opbd.settlement_currency settlementCurrencyCode,
+        (select currency_name from currency_info ci where ci.currency_code=opbd.settlement_currency) settlementCurrency
         FROM
         order_info oi
 		LEFT JOIN order_payment_bill_detail opbd on opbd.order_no = oi.order_no
@@ -455,11 +459,15 @@
         ifnull(opbd.tax_rate,(select cg.tax_rate from cost_genre cg where cg.id = opc.cost_genre_id)) taxRate,
         opbd.remarks,
         opbd.created_time createTimeStr,
-        opbd.bill_no
+        opbd.bill_no,
+        (select ci.currency_name from currency_info ci where ci.currency_code = opbd.settlement_currency) settlementCurrency,
+        orbct.money settlementAmount,orbct.exchange_rate exchangeRate
         FROM
         order_payment_bill_detail opbd left join order_payment_bill opb on opbd.bill_id = opb.id
         left join order_info oi on oi.order_no = opbd.order_no
         left join order_payment_cost opc on opc.id = opbd.cost_id
+        left join order_bill_cost_total orbct on orbct.bill_no = opbd.bill_no
+        and orbct.cost_id = opbd.cost_id and money_type='1'
         where opbd.bill_no = #{form.billNo}
         ) temp
         <if test="form.orderNo != null and form.orderNo != ''">
@@ -511,7 +519,7 @@
     </select>
     <select id="getPayableHeaderForm" parameterType="java.lang.String"
             resultType="com.jayud.finance.bo.PayableHeaderForm">
-        SELECT distinct
+        SELECT
             opb.supplier_ch_name supplierName,
             opb.legal_name settleOrgName,
             opbd.settlement_currency currency,
@@ -519,15 +527,19 @@
             opbd.order_no businessNo,
             opbd.bill_no billNo,
             opbd.account_term businessDate,
-            (select d.`name` from department d where d.id = oi.biz_belong_depart) purchaseDeptName
+            (select d.`name` from department d where d.id = oi.biz_belong_depart) purchaseDeptName,
+            orbct.exchange_rate
         FROM
             order_payment_cost opc
             left join order_info oi on oi.order_no = opc.main_order_no
             left join order_payment_bill_detail opbd on opbd.cost_id = opc.id
 			left join order_payment_bill opb on opb.id = opbd.bill_id
+			left join order_bill_cost_total orbct on orbct.bill_no = opbd.bill_no
+			and orbct.cost_id = opbd.cost_id and money_type='1'
             left join department d on d.id = oi.biz_belong_depart
             left join supplier_info si on si.supplier_code = opc.customer_code
         where opbd.bill_no = #{billNo}
+        group by opbd.bill_no
     </select>
     <select id="findPayableHeaderDetail" parameterType="java.lang.String"
             resultType="com.jayud.finance.bo.APARDetailForm">
@@ -542,6 +554,7 @@
         FROM
             order_payment_bill_detail opbd
 			left join order_bill_cost_total obct on obct.cost_id = opbd.cost_id
+			and obct.bill_no=opbd.bill_no
             LEFT JOIN order_payment_cost opc ON opbd.cost_id = opc.id
         WHERE
             opbd.bill_no = #{billNo} and opbd.order_no = #{orderNo}
@@ -598,41 +611,67 @@
         desc limit 1) heXiaoUser,
         (select c.real_receive_time from cancel_after_verification c where c.bill_no = opbd.bill_no order by
         c.created_time desc limit 1) heXiaoTimeStr,
-        opbd.push_kingdee_count
+        opbd.push_kingdee_count,
+        opbd.push_kingdee_count pushKingdeeCount
         FROM
         order_payment_bill_detail opbd
         left join
         (select t.bill_no,max(t.make_time) make_time from order_payment_bill_detail t group by t.bill_no) tt on
         opbd.bill_no = tt.bill_no
         LEFT JOIN order_payment_bill opb ON opbd.bill_id = opb.id
-        where opbd.make_time = tt.make_time
-        <if test="form.cmd == 'main_statement'">
-            and opb.is_main = 1
-        </if>
-        <if test="form.cmd == 'statement_audit'">
-            and opb.is_main = 1 and opbd.audit_status in ('B_1','B_2')
-        </if>
-        <if test="form.cmd == 'cw_statement'">
-            and (opbd.audit_status in ('B_3','B_4','B_5','B_5_1','B_6') or opbd.apply_status='4')
-        </if>
-        <if test="form.cmd == 'zgys_statement'">
-            and opb.is_main = 0 and opb.sub_type = 'zgys'
-        </if>
-        <if test="form.cmd == 'zgys_statement_audit'">
-            and opb.is_main = 0 and opb.sub_type = 'zgys' and opbd.audit_status IN ('B_1','B_2')
-        </if>
-        <if test="form.cmd == 'bg_statement'">
-            and opb.is_main = 0 and opb.sub_type = 'bg'
-        </if>
-        <if test="form.cmd == 'bg_statement_audit'">
-            and opb.is_main = 0 and opb.sub_type = 'bg' and opbd.audit_status IN ('B_1','B_2')
-        </if>
-        <if test="form.cmd == 'ky_statement'">
-            and opb.is_main = 0 and opb.sub_type = 'ky'
-        </if>
-        <if test="form.cmd == 'ky_statement_audit'">
-            and opb.is_main = 0 and opb.sub_type = 'ky' and opbd.audit_status IN ('B_1','B_2')
-        </if>
+        where opbd.make_time = tt.make_time and opbd.audit_status != 'edit_del'
+<!--        <if test="form.cmd == 'main_statement'">-->
+<!--            and opb.is_main = 1-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'statement_audit'">-->
+<!--            and opb.is_main = 1 and opbd.audit_status in ('B_1','B_2')-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'cw_statement'">-->
+<!--            and (opbd.audit_status in ('B_3','B_4','B_5','B_5_1','B_6') or opbd.apply_status='4')-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'zgys_statement'">-->
+<!--            and opb.is_main = 0 and opb.sub_type = 'zgys'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'zgys_statement_audit'">-->
+<!--            and opb.is_main = 0 and opb.sub_type = 'zgys' and opbd.audit_status IN ('B_1','B_2')-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'bg_statement'">-->
+<!--            and opb.is_main = 0 and opb.sub_type = 'bg'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'bg_statement_audit'">-->
+<!--            and opb.is_main = 0 and opb.sub_type = 'bg' and opbd.audit_status IN ('B_1','B_2')-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'ky_statement'">-->
+<!--            and opb.is_main = 0 and opb.sub_type = 'ky'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'ky_statement_audit'">-->
+<!--            and opb.is_main = 0 and opb.sub_type = 'ky' and opbd.audit_status IN ('B_1','B_2')-->
+<!--        </if>-->
+
+        <choose>
+            <when test="form.cmd == 'main_statement'">
+                and opb.is_main = 1
+            </when>
+            <when test="form.cmd == 'statement_audit'">
+                and opb.is_main = 1 and opbd.audit_status in ('B_1','B_2')
+            </when>
+            <when test="form.cmd == 'cw_statement'">
+                and (opbd.audit_status in ('B_3','B_4','B_5','B_5_1','B_6') or opbd.apply_status='4')
+            </when>
+            <otherwise>
+                <choose>
+                    <when test="form.cmd != null and form.cmd != '' and form.cmd.contains('statement_audit')">
+                        and opb.is_main = 0 and opb.sub_type = #{form.subType} and opbd.audit_status IN ('B_1','B_2')
+                    </when>
+                    <when test="form.cmd !=null and form.cmd !=''">
+                        and opb.is_main = 0 and opb.sub_type =  #{form.subType}
+                    </when>
+                </choose>
+            </otherwise>
+        </choose>
+
+
+
         <if test="form.supplierChName != null and form.supplierChName != ''">
             and opb.supplier_ch_name like concat('%',#{form.supplierChName},'%')
         </if>
@@ -661,5 +700,6 @@
                 #{legalName}
             </foreach>
         </if>
+        group by opbd.bill_no
     </select>
 </mapper>

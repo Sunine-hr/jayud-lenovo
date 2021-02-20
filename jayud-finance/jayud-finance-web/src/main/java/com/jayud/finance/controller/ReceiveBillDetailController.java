@@ -21,6 +21,7 @@ import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.po.OrderReceivableBillDetail;
+import com.jayud.finance.service.IOrderBillCostTotalService;
 import com.jayud.finance.service.IOrderReceivableBillDetailService;
 import com.jayud.finance.util.StringUtils;
 import com.jayud.finance.vo.*;
@@ -48,6 +49,8 @@ public class ReceiveBillDetailController {
     IOrderReceivableBillDetailService billDetailService;
     @Autowired
     private OauthClient oauthClient;
+    @Autowired
+    private IOrderBillCostTotalService orderBillCostTotalService;
 
     @ApiOperation(value = "应收对账单列表,应收对账单审核列表,财务应收对账单列表")
     @PostMapping("/findReceiveBillDetailByPage")
@@ -173,7 +176,7 @@ public class ReceiveBillDetailController {
         for (OrderReceiveBillDetailForm formObject : receiveBillDetailForms) {
             costIds.add(formObject.getCostId());
         }
-        Boolean result = billDetailService.editSSaveConfirm(costIds);
+        Boolean result = billDetailService.editSSaveConfirm(costIds, form);
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
@@ -188,6 +191,16 @@ public class ReceiveBillDetailController {
         if (delCosts == null || delCosts.size() == 0) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
+        //查询账单详情id查询账单信息
+        Long billDetailId = delCosts.get(0).getBillDetailId();
+        if (billDetailId != null) {
+            OrderReceivableBillDetail orderReceivableBillDetail = this.billDetailService.getById(billDetailId);
+            //查询编辑账单数量
+            if (this.billDetailService.getEditBillNum(orderReceivableBillDetail.getBillNo()) <= 1) {
+                return CommonResult.error(400, "需要保留一条已出的账单费用");
+            }
+        }
+
         List<Long> costIds = new ArrayList<>();
         for (OrderReceiveBillDetailForm formObject : delCosts) {
             costIds.add(formObject.getCostId());
@@ -207,6 +220,7 @@ public class ReceiveBillDetailController {
                 || StringUtil.isNullOrEmpty(form.getLoginUserName())) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
+        form.checkEditSBill();
         return billDetailService.editSBill(form);
     }
 
@@ -216,7 +230,7 @@ public class ReceiveBillDetailController {
         Map<String, Object> resultMap = new HashMap<>();
         List<ViewBilToOrderVO> list = billDetailService.viewSBillDetail(form.getBillNo());
         resultMap.put(CommonConstant.LIST, list);//分页数据
-        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHead(form.getBillNo());
+        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHead(form.getBillNo(), new HashMap<>());
         resultMap.put(CommonConstant.SHEET_HEAD, sheetHeadVOS);//表头
         ViewBillVO viewBillVO = billDetailService.getViewSBill(form.getBillNo());
         resultMap.put(CommonConstant.WHOLE_DATA, viewBillVO);//全局数据
@@ -240,26 +254,26 @@ public class ReceiveBillDetailController {
             }
         });
 
-
-
         TypeUtils.compatibleWithJavaBean = true;
-
         JSONArray datas = JSONArray.parseArray(JSON.toJSONString(list));
-
         ViewBillVO viewBillVO = billDetailService.getViewSBill(billNo);
 
+        Map<String, Object> callbackArg = new HashMap<>();
         //头部数据重组
-        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHead(billNo);
+        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHead(billNo, callbackArg);
+        int index = Integer.parseInt(callbackArg.get("fixHeadIndex").toString()) - 1;
         LinkedHashMap<String, String> headMap = new LinkedHashMap<>();
         LinkedHashMap<String, String> dynamicHead = new LinkedHashMap<>();
-        for (
-                int i = 0; i < sheetHeadVOS.size(); i++) {
+        for (int i = 0; i < sheetHeadVOS.size(); i++) {
             SheetHeadVO sheetHeadVO = sheetHeadVOS.get(i);
             headMap.put(sheetHeadVO.getName(), sheetHeadVO.getViewName());
-            if (i > 11) {
+            if (i > index) {
                 dynamicHead.put(sheetHeadVO.getName(), sheetHeadVO.getViewName());
             }
         }
+
+        //计算结算币种
+        this.orderBillCostTotalService.exportSettlementCurrency(headMap, dynamicHead, datas, "2");
 
         //查询人主体信息
         cn.hutool.json.JSONArray tmp = new cn.hutool.json.JSONArray(this.oauthClient
@@ -274,31 +288,15 @@ public class ReceiveBillDetailController {
         titles.add(viewBillVO.getLegalName());
         titles.add("客户应收款对帐单");
         StringBuilder sb = new StringBuilder();
-        titles.add(sb.append("对账日期:")
-                .
-
-                        append(viewBillVO.getAccountTermStr()).
-
-                        toString());
+        titles.add(sb.append("对账日期:").append(viewBillVO.getAccountTermStr()).toString());
         entity.setTitle(titles);
         //组装台头
         List<String> stageHeads = new ArrayList<>();
         stageHeads.add("TO:" + viewBillVO.getCustomerName());
-        sb = new
-
-                StringBuilder();
-        stageHeads.add(sb.append("FR:").
-
-                append(viewBillVO.getLegalName()).
-
-                append(EasyExcelUtils.SPLIT_SYMBOL)
-                .
-
-                        append("账单编号:").
-
-                        append(viewBillVO.getBillNo()).
-
-                        toString());
+        sb = new StringBuilder();
+        stageHeads.add(sb.append("FR:").append(viewBillVO.getLegalName())
+                .append(EasyExcelUtils.SPLIT_SYMBOL)
+                .append("账单编号:").append(viewBillVO.getBillNo()).toString());
         entity.setStageHead(stageHeads);
         //组装表头信息
         entity.setTableHead(headMap);
@@ -307,8 +305,7 @@ public class ReceiveBillDetailController {
         //合计
         LinkedHashMap<String, BigDecimal> costTotal = new LinkedHashMap<>();
 
-        for (
-                int i = 0; i < datas.size(); i++) {
+        for (int i = 0; i < datas.size(); i++) {
             JSONObject jsonObject = datas.getJSONObject(i);
             dynamicHead.forEach((k, v) -> {
                 BigDecimal cost = jsonObject.getBigDecimal(k);
@@ -321,112 +318,52 @@ public class ReceiveBillDetailController {
 
         }
         entity.setTotalData(costTotal);
-        entity.setTotalIndex(11);
+        entity.setTotalIndex(index);
 
         //尾部
         List<String> bottomData = new ArrayList<>();
+        bottomData.add(new StringBuilder()
+                .append("公司名称:")
+                .append(legalEntityJson.getStr("legalName", ""))
+                .append(EasyExcelUtils.SPLIT_SYMBOL)
+                .append("制 单 人:")
+                .append(viewBillVO.getMakeUser())
+                .toString());
         bottomData.add(new
-
                 StringBuilder()
-                .
-
-                        append("公司名称:").
-
-                        append(legalEntityJson.getStr("legalName", ""))
-                .
-
-                        append(EasyExcelUtils.SPLIT_SYMBOL)
-                .
-
-                        append("制 单 人:").
-
-                        append(viewBillVO.getMakeUser()).
-
-                        toString());
+                .append("开户银行:")
+                .append(legalEntityJson.getStr("bank", ""))
+                .append(EasyExcelUtils.SPLIT_SYMBOL)
+                .append("制单时间:")
+                .append(viewBillVO.getMakeTimeStr())
+                .toString());
+        bottomData.add(new StringBuilder()
+                .append("开户账号:")
+                .append(legalEntityJson.getStr("accountOpen", ""))
+                .append(EasyExcelUtils.SPLIT_SYMBOL)
+                .append("审 单 人:")
+                .append(viewBillVO.getMakeUser())
+                .toString());
+        bottomData.add(new StringBuilder()
+                .append("纳税人识别号:")
+                .append(legalEntityJson.getStr("taxIdentificationNum", ""))
+                .append(EasyExcelUtils.SPLIT_SYMBOL)
+                .append("审单时间:")
+                .append(viewBillVO.getMakeTimeStr())
+                .toString());
         bottomData.add(new
-
                 StringBuilder()
-                .
-
-                        append("开户银行:").
-
-                        append(legalEntityJson.getStr("bank", ""))
-                .
-
-                        append(EasyExcelUtils.SPLIT_SYMBOL)
-                .
-
-                        append("制单时间:").
-
-                        append(viewBillVO.getMakeTimeStr()).
-
-                        toString());
-        bottomData.add(new
-
-                StringBuilder()
-                .
-
-                        append("开户账号:").
-
-                        append(legalEntityJson.getStr("accountOpen", ""))
-                .
-
-                        append(EasyExcelUtils.SPLIT_SYMBOL)
-                .
-
-                        append("审 单 人:").
-
-                        append(viewBillVO.getMakeUser()).
-
-                        toString());
-        bottomData.add(new
-
-                StringBuilder()
-                .
-
-                        append("纳税人识别号:").
-
-                        append(legalEntityJson.getStr("taxIdentificationNum", ""))
-                .
-
-                        append(EasyExcelUtils.SPLIT_SYMBOL)
-                .
-
-                        append("审单时间:").
-
-                        append(viewBillVO.getMakeTimeStr()).
-
-                        toString());
-        bottomData.add(new
-
-                StringBuilder()
-                .
-
-                        append("公司地址:").
-
-                        append(legalEntityJson.getStr("rigisAddress", ""))
-                .
-
-                        append(EasyExcelUtils.SPLIT_SYMBOL).
-
-                        toString());
-        bottomData.add(new
-
-                StringBuilder()
-                .
-
-                        append("联系电话:").
-
-                        append(legalEntityJson.getStr("phone", ""))
-                .
-
-                        append(EasyExcelUtils.SPLIT_SYMBOL).
-
-                        toString());
+                .append("公司地址:")
+                .append(legalEntityJson.getStr("rigisAddress", ""))
+                .append(EasyExcelUtils.SPLIT_SYMBOL)
+                .toString());
+        bottomData.add(new StringBuilder()
+                .append("联系电话:")
+                .append(legalEntityJson.getStr("phone", ""))
+                .append(EasyExcelUtils.SPLIT_SYMBOL)
+                .toString());
         entity.setBottomData(bottomData);
-
         Workbook workbook = EasyExcelUtils.autoGeneration("", entity);
-
 
         ServletOutputStream out = response.getOutputStream();
         String name = StringUtils.toUtf8String("客户应收对账单");
@@ -514,5 +451,16 @@ public class ReceiveBillDetailController {
         }
         return billDetailService.contrarySAudit(form);
     }
+
+    @ApiOperation(value = "获取修改应收对账单信息,billNo=账单编号")
+    @PostMapping("/getUpdateBillDetail")
+    public CommonResult getUpdateBillDetail(@RequestBody Map<String, Object> map) {
+        String billNo = MapUtil.getStr(map, "billNo");
+        if (com.jayud.common.utils.StringUtils.isEmpty(billNo)) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        return CommonResult.success(orderBillCostTotalService.getEditBillByBillNo(billNo, 0));
+    }
+
 
 }

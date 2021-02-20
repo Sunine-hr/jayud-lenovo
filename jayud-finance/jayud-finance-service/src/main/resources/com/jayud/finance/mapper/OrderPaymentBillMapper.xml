@@ -281,6 +281,7 @@
         opb.legal_name = #{legalName}
         AND opb.supplier_ch_name = #{supplierChName}
         AND opb.sub_type = #{subType}
+        AND opbd.audit_status!='edit_del'
     </select>
     <select id="getBillNum" resultType="java.lang.Integer">
       SELECT
@@ -410,29 +411,35 @@
         <if test="cmd == 'main'">
             oi.legal_name legalName,
         </if>
-        <if test="cmd == 'bg'">
-            oc.legal_name legalName,
+        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+            sub.legal_name legalName,
         </if>
-        <if test="cmd == 'zgys'">
-            ot.legal_name legalName,
-        </if>
-        <if test="cmd == 'ky'">
-            ao.legal_name legalName,
-        </if>
+<!--        <if test="cmd == 'bg'">-->
+<!--            oc.legal_name legalName,-->
+<!--        </if>-->
+<!--        <if test="cmd == 'zgys'">-->
+<!--            ot.legal_name legalName,-->
+<!--        </if>-->
+<!--        <if test="cmd == 'ky'">-->
+<!--            ao.legal_name legalName,-->
+<!--        </if>-->
         si.supplier_ch_name customerName
         FROM
         <if test="cmd == 'main'">
             order_info oi LEFT JOIN order_payment_cost opc ON oi.order_no = opc.main_order_no
         </if>
-        <if test="cmd == 'bg'">
-            order_customs oc LEFT JOIN order_payment_cost opc on oc.order_no = opc.order_no
+        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+            ${dynamicSqlParam.table} sub LEFT JOIN order_payment_cost opc on sub.order_no = opc.order_no
         </if>
-        <if test="cmd == 'zgys'">
-            order_transport ot LEFT JOIN order_payment_cost opc on ot.order_no = opc.order_no
-        </if>
-        <if test="cmd == 'ky'">
-            air_order ao LEFT JOIN order_payment_cost opc on ao.order_no = opc.order_no
-        </if>
+<!--        <if test="cmd == 'bg'">-->
+<!--            order_customs oc LEFT JOIN order_payment_cost opc on oc.order_no = opc.order_no-->
+<!--        </if>-->
+<!--        <if test="cmd == 'zgys'">-->
+<!--            order_transport ot LEFT JOIN order_payment_cost opc on ot.order_no = opc.order_no-->
+<!--        </if>-->
+<!--        <if test="cmd == 'ky'">-->
+<!--            air_order ao LEFT JOIN order_payment_cost opc on ao.order_no = opc.order_no-->
+<!--        </if>-->
         left join supplier_info si on si.supplier_code = opc.customer_code
         WHERE
         opc.id IN
@@ -463,10 +470,10 @@
         ifnull( opb.already_paid_amount, 0 ) alreadyPaidAmount,
         ifnull( opb.bill_order_num, 0 ) billOrderNum,
         ifnull( opb.bill_num, 0 ) billNum,
-        (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_sum_to_main
+        (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_bill != 'save_confirm' AND t1.is_sum_to_main
         = '1' and t1.status = '3' and t1.customer_code = opc.customer_code and t1.main_order_no in (select o1.order_no
         from order_info o1 where o1.legal_entity_id = oi.legal_entity_id)) notPaidAmount,
-        (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where t1.is_bill != '2' AND
+        (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_bill != 'save_confirm' AND
         t1.is_sum_to_main = '1' and t1.status = '3' and t1.customer_code = opc.customer_code and t1.main_order_no in
         (select o1.order_no from order_info o1 where o1.legal_entity_id = oi.legal_entity_id)) notPaidOrderNum
         FROM

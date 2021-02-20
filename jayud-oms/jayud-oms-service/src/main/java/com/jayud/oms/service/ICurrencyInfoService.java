@@ -5,6 +5,7 @@ import com.jayud.oms.model.po.CurrencyInfo;
 import com.jayud.oms.model.vo.CurrencyInfoVO;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -18,8 +19,14 @@ public interface ICurrencyInfoService extends IService<CurrencyInfo> {
 
     /**
      * 获取币种信息
+     *
      * @param createdTimeStr
      * @return
      */
     List<CurrencyInfoVO> findCurrencyInfo(String createdTimeStr);
+
+    /**
+     * 根据币种code获取币种信息
+     */
+    List<CurrencyInfo> getByCodes(Set<String> currencyCodes);
 }

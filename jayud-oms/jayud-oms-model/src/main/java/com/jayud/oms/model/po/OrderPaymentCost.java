@@ -117,6 +117,8 @@ public class OrderPaymentCost extends Model<OrderPaymentCost> {
     @ApiModelProperty(value = "录用费用类型(zgys=中港运输)")
     private String subType;
 
+    @ApiModelProperty(value = "暂存绑定账单号")
+    private String tmpBillNo;
 
     @Override
     protected Serializable pkVal() {

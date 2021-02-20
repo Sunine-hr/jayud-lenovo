@@ -12,6 +12,9 @@ public class OrderBillCostTotalVO {
     @ApiModelProperty(value = "订单编号")
     private String orderNo;
 
+    @ApiModelProperty(value = "主订单编号")
+    private String mainOrderNo;
+
     @ApiModelProperty(value = "币种")
     private String currencyCode;
 

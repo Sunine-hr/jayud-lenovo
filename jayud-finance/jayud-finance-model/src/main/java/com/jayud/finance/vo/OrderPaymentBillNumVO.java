@@ -1,11 +1,15 @@
 package com.jayud.finance.vo;
 
 import com.jayud.finance.enums.BillEnum;
+import com.jayud.finance.po.OrderBillCostTotal;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 账单数列表(应付应收一致)
@@ -52,12 +56,38 @@ public class OrderPaymentBillNumVO {
     @ApiModelProperty(value = "制单时间")
     private String makeTimeStr;
 
+    @ApiModelProperty(value = "结算汇率")
+    private String settlementRate;
+
+
     public String getBillStatusDesc() {
-        if(!StringUtil.isNullOrEmpty(this.billStatus)){
+        if (!StringUtil.isNullOrEmpty(this.billStatus)) {
             return BillEnum.getDesc(this.billStatus);
         }
         return "";
     }
 
+
+    public void assembleSettlementRate(List<OrderBillCostTotal> costTotals,
+                                       Map<String, String> currencyMap) {
+
+        Iterator<OrderBillCostTotal> iterator = costTotals.iterator();
+        StringBuilder sb = new StringBuilder();
+        while (iterator.hasNext()) {
+            OrderBillCostTotal next = iterator.next();
+            if (this.billNo.equals(next.getBillNo())) {
+                String currentCurrency = currencyMap.get(next.getCurrentCurrencyCode());
+                String outOfCurrency = currencyMap.get(next.getCurrencyCode());
+                sb.append(currentCurrency == null ? "" : currentCurrency)
+                        .append("-")
+                        .append(outOfCurrency == null ? "" : outOfCurrency)
+                        .append(" 汇率").append(next.getExchangeRate())
+                        .append("\n");
+                iterator.remove();
+            }
+        }
+
+        this.settlementRate = sb.toString();
+    }
 
 }

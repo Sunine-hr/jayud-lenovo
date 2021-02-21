@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/shippingarea")
-@Api(tags = "S031-后台-集货仓表接口")
-@ApiSort(value = 31)
+@Api(tags = "A030-后台-集货仓表接口")
+@ApiSort(value = 30)
 public class ShippingAreaController {
 
     @Autowired

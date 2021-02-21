@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/fabwarehouse")
-@Api(tags = "S029-后台-应收FBA仓库接口")
-@ApiSort(value = 29)
+@Api(tags = "A028-admin-应收FBA仓库接口")
+@ApiSort(value = 28)
 public class FabWarehouseController {
 
     @Autowired

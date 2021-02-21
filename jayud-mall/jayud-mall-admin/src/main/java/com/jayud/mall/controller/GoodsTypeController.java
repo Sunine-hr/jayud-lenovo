@@ -19,8 +19,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/goodstype")
-@Api(tags = "S030-后台-货物类型表接口")
-@ApiSort(value = 30)
+@Api(tags = "A029-admin-货物类型表接口")
+@ApiSort(value = 29)
 public class GoodsTypeController {
 
     @Autowired
@@ -34,7 +34,7 @@ public class GoodsTypeController {
         return CommonResult.success(list);
     }
 
-    @ApiOperation(value = "货物类型下拉选择")
+    @ApiOperation(value = "货物类型下拉选择,给前端用")
     @PostMapping("/findGoodsTypeBy")
     @ApiOperationSupport(order = 2)
     public CommonResult<GoodsTypeReturnVO> findGoodsTypeBy(){

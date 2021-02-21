@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/quotationtype")
-@Api(tags = "S032-后台-报价类型表接口")
-@ApiSort(value = 32)
+@Api(tags = "A031-admin-报价类型表接口")
+@ApiSort(value = 31)
 public class QuotationTypeController {
 
     @Autowired
     IQuotationTypeService quotationTypeService;
 
-    @ApiOperation(value = "报价类型下拉选择")
+    @ApiOperation(value = "报价类型下拉选择，给前端用")
     @PostMapping("/findQuotationTypeBy")
     @ApiOperationSupport(order = 1)
     public CommonResult<QuotationTypeReturnVO> findQuotationTypeBy(){

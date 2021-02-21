@@ -18,8 +18,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/harbourinfo")
-@Api(tags = "S028-后台-机场港口信息接口")
-@ApiSort(value = 28)
+@Api(tags = "A027-admin-机场港口信息接口")
+@ApiSort(value = 27)
 public class HarbourInfoController {
 
     @Autowired

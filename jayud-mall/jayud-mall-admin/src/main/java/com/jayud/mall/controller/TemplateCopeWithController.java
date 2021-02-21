@@ -18,14 +18,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/templatecopewith")
-@Api(tags = "S036-后台-报价对应应付费用明细接口")
-@ApiSort(value = 36)
+@Api(tags = "A034-admin-报价模板对应应付费用明细接口")
+@ApiSort(value = 34)
 public class TemplateCopeWithController {
 
     @Autowired
     ITemplateCopeWithService templateCopeWithService;
 
-    @ApiOperation(value = "查询报价对应应付费用明细List")
+    @ApiOperation(value = "查询报价模板对应应付费用明细List")
     @PostMapping("/findTemplateCopeWith")
     @ApiOperationSupport(order = 1)
     public CommonResult<List<TemplateCopeWith>> findTemplateCopeWith(@RequestBody TemplateCopeWithForm form) {

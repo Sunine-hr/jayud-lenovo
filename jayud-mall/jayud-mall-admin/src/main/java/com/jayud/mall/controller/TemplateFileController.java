@@ -18,14 +18,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/templatefile")
-@Api(tags = "S038-后台-模板对应模块信息接口")
-@ApiSort(value = 38)
+@Api(tags = "A036-admin-报价模板关联的文件接口")
+@ApiSort(value = 36)
 public class TemplateFileController {
 
     @Autowired
     ITemplateFileService templateFileService;
 
-    @ApiOperation(value = "查询模板对应模块信息List")
+    @ApiOperation(value = "查询报价模板关联的文件信息List")
     @PostMapping("/findTemplateFile")
     @ApiOperationSupport(order = 1)
     public CommonResult<List<TemplateFile>> findTemplateFile(@RequestBody TemplateFileForm form) {

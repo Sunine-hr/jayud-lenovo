@@ -19,14 +19,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/quotedfile")
-@Api(tags = "S037-后台-报价对应的文件表接口")
-@ApiSort(value = 37)
+@Api(tags = "A035-admin-报价模板的模板文件接口")
+@ApiSort(value = 35)
 public class QuotedFileController {
 
     @Autowired
     IQuotedFileService quotedFileService;
 
-    @ApiOperation(value = "查询报价对应的文件表List")
+    @ApiOperation(value = "查询报价模板的模板文件List")
     @PostMapping("/findQuotedFile")
     @ApiOperationSupport(order = 1)
     public CommonResult<List<QuotedFile>> findQuotedFile(@RequestBody QuotedFileForm form) {
@@ -34,7 +34,7 @@ public class QuotedFileController {
         return CommonResult.success(list);
     }
 
-    @ApiOperation(value = "报价模板使用模板文件")
+    @ApiOperation(value = "查询报价模板的模板文件list,给前端用")
     @PostMapping("/findQuotedFileBy")
     @ApiOperationSupport(order = 2)
     public CommonResult<List<QuotedFileReturnVO>> findQuotedFileBy(@RequestBody QuotedFileForm form){

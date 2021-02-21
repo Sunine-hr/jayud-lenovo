@@ -18,14 +18,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/templatecopereceivable")
-@Api(tags = "S035-后台-报价对应应收费用明细接口")
-@ApiSort(value = 35)
+@Api(tags = "A033-admin-报价模板对应应收费用明细接口")
+@ApiSort(value = 33)
 public class TemplateCopeReceivableController {
 
     @Autowired
     ITemplateCopeReceivableService templateCopeReceivableService;
 
-    @ApiOperation(value = "查询报价对应应收费用明细List")
+    @ApiOperation(value = "查询报价模板对应应收费用明细List")
     @PostMapping("/findTemplateCopeReceivable")
     @ApiOperationSupport(order = 1)
     public CommonResult<List<TemplateCopeReceivable>> findTemplateCopeReceivable(@RequestBody TemplateCopeReceivableForm form) {

@@ -18,8 +18,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/oceancounteryaybillrelation")
-@Api(tags = "S042-后台-货柜对应运单(订单)关联接口")
-@ApiSort(value = 42)
+@Api(tags = "A040-admin-货柜对应运单(订单)关联接口")
+@ApiSort(value = 40)
 public class OceanCounterWaybillRelationController {
 
     @Autowired

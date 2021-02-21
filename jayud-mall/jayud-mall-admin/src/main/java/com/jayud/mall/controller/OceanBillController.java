@@ -22,8 +22,8 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/oceanbill")
-@Api(tags = "S040-后台-提单接口")
-@ApiSort(value = 40)
+@Api(tags = "A038-admin-提单接口")
+@ApiSort(value = 38)
 public class OceanBillController {
 
     @Autowired
@@ -41,7 +41,7 @@ public class OceanBillController {
     @ApiOperation(value = "保存提单信息")
     @PostMapping("/saveOceanBill")
     @ApiOperationSupport(order = 2)
-    public CommonResult<OceanBillVO> saveOceanBill(@RequestBody OceanBillForm form){
+    public CommonResult<OceanBillVO> saveOceanBill(@Valid @RequestBody OceanBillForm form){
         return oceanBillService.saveOceanBill(form);
     }
 

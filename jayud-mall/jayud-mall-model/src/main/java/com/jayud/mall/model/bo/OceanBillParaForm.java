@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 public class OceanBillParaForm {
 
     @ApiModelProperty(value = "自增id", required = true, position = 1)
-    @NotNull(message = "id is required")
+    @NotNull(message = "id不能为空")
     private Long id;
 
 }

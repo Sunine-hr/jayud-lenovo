@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -64,8 +65,9 @@ public class OceanBillForm {
     private Integer operationTeamId;
 
     //1提单对应1货柜，(PS:之前是1提单对应N货柜，现在还是用list，不改了，限制list的大小为1)
-    @ApiModelProperty(value = "提单对应货柜信息list", position = 13)
+    @ApiModelProperty(value = "提单对应货柜信息list(PS:之前是1提单对应N货柜，现在还是用list，不改了，限制list的大小为1)", position = 13, required = true)
     @JSONField(ordinal = 12)
+    @NotEmpty(message = "提单对应货柜信息list必填")
     private List<OceanCounterForm> oceanCounterForms;
 
 }

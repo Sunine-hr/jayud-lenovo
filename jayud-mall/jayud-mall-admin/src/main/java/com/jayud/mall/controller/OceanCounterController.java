@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/oceancounter")
-@Api(tags = "S041-后台-提单对应货柜信息接口")
-@ApiSort(value = 41)
+@Api(tags = "A039-admin-提单对应货柜信息接口")
+@ApiSort(value = 39)
 public class OceanCounterController {
 
     @Autowired
@@ -24,6 +24,7 @@ public class OceanCounterController {
 
     @ApiOperation(value = "保存-提单对应货柜信息,没有用了")
     @PostMapping("/saveOceanCounter")
+    @Deprecated
     @ApiOperationSupport(order = 1)
     public CommonResult saveOceanCounter(@RequestBody OceanCounterForm form){
         return oceanCounterService.saveOceanCounter(form);

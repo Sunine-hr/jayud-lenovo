@@ -18,8 +18,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/cabinettype")
-@Api(tags = "S046-后台-柜型基本信息接口")
-@ApiSort(value = 46)
+@Api(tags = "A041-admin-柜型基本信息接口")
+@ApiSort(value = 41)
 public class CabinetTypeController {
 
     @Autowired

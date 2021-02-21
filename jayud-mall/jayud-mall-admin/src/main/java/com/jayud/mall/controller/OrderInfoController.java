@@ -19,8 +19,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/orderinfo")
-@Api(tags = "S044-后台-订单接口")
-@ApiSort(value = 44)
+@Api(tags = "A043-admin-订单接口")
+@ApiSort(value = 43)
 public class OrderInfoController {
 
     @Autowired
@@ -95,7 +95,7 @@ public class OrderInfoController {
     }
 
     //订单管理-查看配载信息
-    @ApiOperation(value = "订单管理-查看配载信息")
+    @ApiOperation(value = "订单管理-查看配载信息(待完成)")
     @PostMapping("/lookOrderInfoConf")
     @ApiOperationSupport(order = 9)
     public CommonResult<OrderInfoVO> lookOrderInfoConf(@RequestBody OrderInfoForm form){

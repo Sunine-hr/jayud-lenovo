@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/ordercase")
-@Api(tags = "S045-后台-订单对应箱号信息接口")
-@ApiSort(value = 45)
+@Api(tags = "A044-admin-订单对应箱号信息接口")
+@ApiSort(value = 44)
 public class OrderCaseController {
 
     @Autowired

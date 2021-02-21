@@ -7,8 +7,8 @@ import com.jayud.mall.model.bo.OrderConfForm;
 import com.jayud.mall.model.bo.OrderConfParaForm;
 import com.jayud.mall.model.bo.QueryOrderConfForm;
 import com.jayud.mall.model.vo.OrderConfVO;
-import com.jayud.mall.service.INumberGeneratedService;
 import com.jayud.mall.service.IOrderConfService;
+import com.jayud.mall.utils.NumberGeneratedUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiOperationSupport;
@@ -21,14 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/orderconf")
-@Api(tags = "S043-后台-配载单接口")
-@ApiSort(value = 43)
+@Api(tags = "A042-admin-配载单接口")
+@ApiSort(value = 42)
 public class OrderConfController {
 
     @Autowired
     IOrderConfService orderConfService;
-    @Autowired
-    INumberGeneratedService numberGeneratedService;
 
     @ApiOperation(value = "分页查询配载单")
     @PostMapping("/findOrderConfByPage")
@@ -56,11 +54,12 @@ public class OrderConfController {
     }
 
     //获取配载单号
-    @ApiOperation(value = "获取配载单号")
+    @ApiOperation(value = "获取配载单号(自动递增)")
     @PostMapping(value = "getOrderConfNo")
     @ApiOperationSupport(order = 4)
     public CommonResult<String> getOrderConfNo(){
-        String orderNo = numberGeneratedService.getOrderNoByCode("order_conf_code");
+        //String orderNo = numberGeneratedService.getOrderNoByCode("order_conf_code");
+        String orderNo = NumberGeneratedUtils.getOrderNoByCode2("order_conf_code");
         return CommonResult.success(orderNo);
     }
 

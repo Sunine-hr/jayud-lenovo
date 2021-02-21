@@ -19,7 +19,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/quotationtemplate")
-@Api(tags = "S024-后台-报价模板接口")
+@Api(tags = "A024-admin-报价模板接口")
 @ApiSort(value = 24)
 public class QuotationTemplateController {
 

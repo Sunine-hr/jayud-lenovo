@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/servicegroup")
-@Api(tags = "S025-后台-报价服务组接口")
+@Api(tags = "A025-admin-报价服务组接口")
 @ApiSort(value = 25)
 public class ServiceGroupController {
 

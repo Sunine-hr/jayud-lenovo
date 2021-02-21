@@ -18,8 +18,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/transportway")
-@Api(tags = "S027-后台-运输方式接口")
-@ApiSort(value = 27)
+@Api(tags = "A026-admin-运输方式接口")
+@ApiSort(value = 26)
 public class TransportWayController {
 
     @Autowired

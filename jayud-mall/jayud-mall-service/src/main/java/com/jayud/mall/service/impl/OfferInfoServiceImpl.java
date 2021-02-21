@@ -119,6 +119,9 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
     @Override
     public CommonResult<OfferInfoVO> lookOfferInfo(Long id) {
         OfferInfoVO offerInfoVO = offerInfoMapper.selectOfferInfoVO(id);
+        if(offerInfoVO == null){
+            return CommonResult.error(-1, "报价不存在");
+        }
         Integer qie = offerInfoVO.getQie();//报价模板id
 
         //图片picUrl

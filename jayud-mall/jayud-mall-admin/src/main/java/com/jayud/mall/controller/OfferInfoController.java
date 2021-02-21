@@ -22,8 +22,8 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/offerinfo")
-@Api(tags = "S039-后台-报价接口")
-@ApiSort(value = 39)
+@Api(tags = "A037-admin-报价接口")
+@ApiSort(value = 37)
 public class OfferInfoController {
 
     @Autowired

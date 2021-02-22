@@ -8,7 +8,6 @@ import com.jayud.mall.model.bo.CreateOrderCaseForm;
 import com.jayud.mall.model.bo.QueryOrderCaseForm;
 import com.jayud.mall.model.po.OrderCase;
 import com.jayud.mall.model.vo.OrderCaseVO;
-import com.jayud.mall.service.INumberGeneratedService;
 import com.jayud.mall.service.IOrderCaseService;
 import com.jayud.mall.utils.NumberGeneratedUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +31,8 @@ public class OrderCaseServiceImpl extends ServiceImpl<OrderCaseMapper, OrderCase
     @Autowired
     OrderCaseMapper orderCaseMapper;
 
-    @Autowired
-    INumberGeneratedService numberGeneratedService;
+//    @Autowired
+//    INumberGeneratedService numberGeneratedService;
 
     @Override
     public IPage<OrderCaseVO> findOrderCaseByPage(QueryOrderCaseForm form) {

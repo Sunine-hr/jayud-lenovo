@@ -235,7 +235,7 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
     //@ApiModelProperty(value = "提单文件名称(多个逗号隔开)")
     private String fileName;
 
-    @ApiModelProperty(value = "附件")
+    //@ApiModelProperty(value = "附件")
     private List<FileView> fileViewList = new ArrayList<>();
 
     //@ApiModelProperty(value = "结算部门")

@@ -28,7 +28,7 @@ public class InputSeaOrderForm {
 
     @ApiModelProperty(value = "海运订单主键")
     @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    private Long orderId;
 
     @ApiModelProperty(value = "主订单编号")
     private String mainOrderNo;
@@ -128,10 +128,38 @@ public class InputSeaOrderForm {
         }
         // 发货/收货地址是必填项
         if (CollectionUtils.isEmpty(this.deliveryAddress)) {
+            for (AddOrderAddressForm address : deliveryAddress) {
+                if(StringUtils.isEmpty(address.getPhone())){
+                    log.warn("电话号码不能为空");
+                    return false;
+                }
+                if(StringUtils.isEmpty(address.getAddress())){
+                    log.warn("发货地址不能为空");
+                    return false;
+                }
+                if(StringUtils.isEmpty(address.getContacts())){
+                    log.warn("联系人不能为空");
+                    return false;
+                }
+            }
             log.warn("发货地址信息不能为空");
             return false;
         }
         if (CollectionUtils.isEmpty(this.shippingAddress)) {
+            for (AddOrderAddressForm address : deliveryAddress) {
+                if(StringUtils.isEmpty(address.getPhone())){
+                    log.warn("电话号码不能为空");
+                    return false;
+                }
+                if(StringUtils.isEmpty(address.getAddress())){
+                    log.warn("发货地址不能为空");
+                    return false;
+                }
+                if(StringUtils.isEmpty(address.getContacts())){
+                    log.warn("联系人不能为空");
+                    return false;
+                }
+            }
             log.warn("收货地址信息不能为空");
             return false;
         }

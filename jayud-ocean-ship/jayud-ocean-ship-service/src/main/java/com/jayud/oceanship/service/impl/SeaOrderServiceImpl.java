@@ -77,6 +77,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
     public void createOrder(AddSeaOrderForm addSeaOrderForm) {
         LocalDateTime now = LocalDateTime.now();
         SeaOrder seaOrder = ConvertUtil.convert(addSeaOrderForm, SeaOrder.class);
+        System.out.println("orderId===================================="+addSeaOrderForm.getOrderId());
         //创建海运单
         if (addSeaOrderForm.getOrderId() == null) {
             //生成订单号

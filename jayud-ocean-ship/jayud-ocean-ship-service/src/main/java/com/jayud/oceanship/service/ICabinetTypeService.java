@@ -1,8 +1,8 @@
 package com.jayud.oceanship.service;
 
-import com.jayud.common.entity.InitComboxVO;
-import com.jayud.oceanship.vo.CabinetType;
+import com.jayud.oceanship.po.CabinetType;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.oceanship.vo.CabinetTypeVO;
 
 import java.util.List;
 
@@ -16,5 +16,5 @@ import java.util.List;
  */
 public interface ICabinetTypeService extends IService<CabinetType> {
 
-    List<InitComboxVO> initCabinetType();
+    List<CabinetTypeVO> initCabinetType();
 }

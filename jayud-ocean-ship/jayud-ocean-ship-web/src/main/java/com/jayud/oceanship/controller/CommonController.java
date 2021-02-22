@@ -3,12 +3,13 @@ package com.jayud.oceanship.controller;
 import com.jayud.common.CommonResult;
 import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.InitComboxVO;
-import com.jayud.common.enums.ResultEnum;
 import com.jayud.oceanship.feign.OmsClient;
 import com.jayud.oceanship.service.ICabinetSizeService;
 import com.jayud.oceanship.service.ICabinetTypeService;
 import com.jayud.oceanship.service.ISeaPortService;
 import com.jayud.oceanship.service.ITermsService;
+import com.jayud.oceanship.po.CabinetType;
+import com.jayud.oceanship.vo.CabinetTypeVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -58,15 +59,14 @@ public class CommonController {
     public CommonResult<Map<String, Object>> initAir() {
         List<InitComboxStrVO> initComboxStrVOS = this.seaPortService.initSeaPort();
         List<InitComboxVO> initComboxVO = this.terms.initTerms();
-        List<InitComboxVO> list1 = cabinetSizeService.initCabinetSize();
-        List<InitComboxVO> list = cabinetTypeService.initCabinetType();
+        List<CabinetTypeVO> list = cabinetTypeService.initCabinetType();
+
         Map<String, Object> response = new HashMap<>();
         //空运港口下拉选项
         response.put("seaPorts", initComboxStrVOS);
         //贸易类型下拉选项
         response.put("seaTerms", initComboxVO);
 
-        response.put("cabinetSize",list1);
         response.put("cabinetType",list);
         return CommonResult.success(response);
     }

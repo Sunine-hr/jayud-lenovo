@@ -402,7 +402,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("class_code", form.getClassCode());
         queryWrapper.eq("status", "1");
+        queryWrapper.ne("sorts",0);
         List<OrderStatus> allProcess = orderStatusService.list(queryWrapper);//所有流程
+
         allProcess.sort((h1, h2) -> {//排序
             if (h1.getFId().equals(h2.getFId())) {
                 return Integer.compare(h1.getSorts(), h2.getSorts());
@@ -410,6 +412,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             return Integer.compare(h1.getFId(), h2.getFId());
 
         });
+
         allProcess.forEach(x -> {
             OrderStatusVO orderStatus = new OrderStatusVO();
             orderStatus.setId(x.getId());
@@ -423,9 +426,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             } else {
                 orderStatusVOS.forEach(v -> {
                     if (v.getId() == x.getFId()) {
-                        if(v.getSorts()!=0){
-                            v.addChildren(orderStatus);
-                        }
+                        v.addChildren(orderStatus);
                     }
                 });
             }
@@ -548,6 +549,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("class_code", form.getClassCode());
         queryWrapper.eq("status", "1");
+        queryWrapper.ne("sorts",0);
         List<OrderStatus> allProcess = orderStatusService.list(queryWrapper);//所有流程
         allProcess.sort((h1, h2) -> {//排序
             if (h1.getFId().equals(h2.getFId())) {
@@ -569,9 +571,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             } else {
                 orderStatusVOS.forEach(v -> {
                     if (v.getId() == x.getFId()) {
-                        if(v.getSorts()!=0){
-                            v.addChildren(orderStatus);
-                        }
+                        v.addChildren(orderStatus);
                     }
                 });
             }

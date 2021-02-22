@@ -215,7 +215,7 @@ public class SeaOrderController {
     //操作指令,cmd = S_0待接单,S_1海运接单,S_2订船,S_3订单入仓, S_4提交补料,S_5草稿提单,S_6放单确认,S_7确认离港,S_8确认到港,S_9海外代理S_10确认签收
     @ApiOperation(value = "执行海运流程操作")
     @PostMapping(value = "/doSeaProcessOpt")
-    public CommonResult doAirProcessOpt(@RequestBody SeaProcessOptForm form) {
+    public CommonResult doSeaProcessOpt(@RequestBody SeaProcessOptForm form) {
         if (form.getMainOrderId() == null || form.getOrderId() == null) {
             log.warn("海运订单编号/海运订单id必填");
             return CommonResult.error(ResultEnum.VALIDATE_FAILED);
@@ -227,6 +227,9 @@ public class SeaOrderController {
         }
         if (!ProcessStatusEnum.PROCESSING.getCode().equals(seaOrder.getProcessStatus())) {
             return CommonResult.error(400, "当前订单无法操作");
+        }
+        if(!seaOrder.getStatus().equals(form.getStatus())){
+            return CommonResult.error(400, "当前订单正在操作");
         }
 //        OrderStatusEnum statusEnum = OrderStatusEnum.getSeaOrderNextStatus(seaOrder.getStatus());
         QueryWrapper queryWrapper = new QueryWrapper();
@@ -249,7 +252,7 @@ public class SeaOrderController {
                 SeaOrder seaOrder1 = new SeaOrder();
                 seaOrder1.setOrderTaker(form.getOperatorUser());
                 seaOrder1.setReceivingOrdersDate(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN));
-                this.seaOrderService.updateProcessStatus(seaOrder , form);
+                this.seaOrderService.updateProcessStatus(seaOrder1 , form);
                 break;
             case SEA_S_2: //订船
                 this.seaOrderService.doSeaBookShipOpt(form);
@@ -363,7 +366,7 @@ public class SeaOrderController {
     @ApiOperation(value = "导出补料单")
     @PostMapping(value = "/uploadExcel")
     public CommonResult uploadExcel(@RequestBody SeaProcessOptForm seaProcessOptForm , HttpServletRequest request, HttpServletResponse response) {
-        ClassPathResource classPathResource = new ClassPathResource("static/海运补料.xls");
+        ClassPathResource classPathResource = new ClassPathResource("static/地址信息.xlsx");
         String filename1 = classPathResource.getFilename();
 
         try {
@@ -381,47 +384,49 @@ public class SeaOrderController {
             templateWorkbook.write(outStream);
             ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
 
-            String fileName = "海运补料.xls";
+            String fileName = "地址信息.xls";
 
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding("utf-8");
             // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
             String filename = URLEncoder.encode(fileName, "utf-8");
             response.setHeader("Content-disposition", "attachment;filename=" + filename);
+
             ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
+
             WriteSheet writeSheet = EasyExcel.writerSheet().build();
             FillConfig fillConfig = FillConfig.builder().direction(WriteDirectionEnum.HORIZONTAL).build();
             //将集合数据填充
             excelWriter.fill(new FillWrapper("delivery",seaProcessOptForm.getDeliveryAddress()),fillConfig,writeSheet);
             excelWriter.fill(new FillWrapper("shipping",seaProcessOptForm.getShippingAddress()),fillConfig,writeSheet);
             excelWriter.fill(new FillWrapper("notification",seaProcessOptForm.getNotificationAddress()),fillConfig,writeSheet);
-            excelWriter.fill(new FillWrapper("goodone",seaProcessOptForm.getGoodsForms()),fillConfig,writeSheet);
-            excelWriter.fill(new FillWrapper("goodtwo",seaProcessOptForm.getGoodsForms()),fillConfig,writeSheet);
+//            excelWriter.fill(new FillWrapper("goodone",seaProcessOptForm.getGoodsForms()),fillConfig,writeSheet);
+//            excelWriter.fill(new FillWrapper("goodtwo",seaProcessOptForm.getGoodsForms()),fillConfig,writeSheet);
 
             //将指定数据填充
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("shipCompany", seaProcessOptForm.getSeaBookShipForm().getShipCompany());
-            map.put("shipNumber", seaProcessOptForm.getSeaBookShipForm().getShipNumber());
-            map.put("portDeparture", seaProcessOptForm.getPortDepartureName());
-            map.put("portDestination", seaProcessOptForm.getPortDestinationName());
-            map.put("cabinetNumber", seaProcessOptForm.getCabinetNumber());
-            map.put("paperStripSeal", seaProcessOptForm.getPaperStripSeal());
-            map.put("cabinetSize", seaProcessOptForm.getCabinetSize());
-            map.put("cabinetType", seaProcessOptForm.getCabinetType());
-
-            List<AddGoodsForm> goodsForms = seaProcessOptForm.getGoodsForms();
-            Integer totalBulkCargoAmount = 0;
-            Double totalWeights = 0.0;
-            Double totalvolume = 0.0;
-            for (AddGoodsForm goodsForm : goodsForms) {
-                totalBulkCargoAmount = totalBulkCargoAmount + goodsForm.getBulkCargoAmount();
-                totalWeights = totalWeights + goodsForm.getTotalWeight();
-                totalvolume = totalvolume + goodsForm.getVolume();
-            }
-            map.put("totalBulkCargoAmount", totalBulkCargoAmount);
-            map.put("totalWeights", totalWeights);
-            map.put("totalvolume", totalvolume);
-            excelWriter.fill(map, writeSheet);
+//            Map<String, Object> map = new HashMap<String, Object>();
+//            map.put("shipCompany", seaProcessOptForm.getSeaBookShipForm().getShipCompany());
+//            map.put("shipNumber", seaProcessOptForm.getSeaBookShipForm().getShipNumber());
+//            map.put("portDeparture", seaProcessOptForm.getPortDepartureName());
+//            map.put("portDestination", seaProcessOptForm.getPortDestinationName());
+//            map.put("cabinetNumber", seaProcessOptForm.getCabinetNumber());
+//            map.put("paperStripSeal", seaProcessOptForm.getPaperStripSeal());
+//            map.put("cabinetSize", seaProcessOptForm.getCabinetSize());
+//            map.put("cabinetType", seaProcessOptForm.getCabinetType());
+//
+//            List<AddGoodsForm> goodsForms = seaProcessOptForm.getGoodsForms();
+//            Integer totalBulkCargoAmount = 0;
+//            Double totalWeights = 0.0;
+//            Double totalvolume = 0.0;
+//            for (AddGoodsForm goodsForm : goodsForms) {
+//                totalBulkCargoAmount = totalBulkCargoAmount + goodsForm.getBulkCargoAmount();
+//                totalWeights = totalWeights + goodsForm.getTotalWeight();
+//                totalvolume = totalvolume + goodsForm.getVolume();
+//            }
+//            map.put("totalBulkCargoAmount", totalBulkCargoAmount);
+//            map.put("totalWeights", totalWeights);
+//            map.put("totalvolume", totalvolume);
+//            excelWriter.fill(map, writeSheet);
 
             excelWriter.finish();
 

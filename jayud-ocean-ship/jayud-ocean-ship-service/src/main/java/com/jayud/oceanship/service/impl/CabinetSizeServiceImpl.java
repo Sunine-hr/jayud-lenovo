@@ -5,7 +5,6 @@ import com.jayud.oceanship.po.CabinetSize;
 import com.jayud.oceanship.mapper.CabinetSizeMapper;
 import com.jayud.oceanship.service.ICabinetSizeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.oceanship.vo.CabinetType;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

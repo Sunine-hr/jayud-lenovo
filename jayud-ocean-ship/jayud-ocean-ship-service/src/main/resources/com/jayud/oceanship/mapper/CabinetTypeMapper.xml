@@ -3,7 +3,7 @@
 <mapper namespace="com.jayud.oceanship.mapper.CabinetTypeMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.jayud.oceanship.vo.CabinetType">
+    <resultMap id="BaseResultMap" type="com.jayud.oceanship.po.CabinetType">
         <id column="id" property="id" />
         <result column="name" property="name" />
         <result column="create_time" property="createTime" />

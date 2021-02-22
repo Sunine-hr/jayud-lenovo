@@ -4,6 +4,7 @@ package com.jayud.oms.controller;
 import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.OrderOprCmdEnum;
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.FileView;
@@ -136,6 +137,13 @@ public class OrderCommonController {
             isMainOrder=true;
             mainOrderNo = MapUtil.getStr(map, "orderNo");
         }
+
+        String classCode = MapUtil.getStr(map, "classCode"); //获取子订单的主订单号
+        Boolean isSea=false;
+        if (OrderStatusEnum.HY.getCode().equals(classCode)) {
+            isSea=true;
+        }
+
 //
         result.put("mainOrderNo", mainOrderNo);
         result.put("subOrderNo", MapUtil.getStr(map, "orderNo"));
@@ -143,6 +151,8 @@ public class OrderCommonController {
         result.put("vehicleSize", MapUtil.getStr(map, "vehicleSize"));
         result.put("customerName",MapUtil.getStr(map,"customerName"));
         result.put("isMainOrder",isMainOrder);
+        result.put("isSea",isSea);
+        result.put("cabinet",MapUtil.getStr(map,"cabinetTypeName")+"/"+MapUtil.getStr(map,"cabinetSizeName"));
         return CommonResult.success(result);
     }
 

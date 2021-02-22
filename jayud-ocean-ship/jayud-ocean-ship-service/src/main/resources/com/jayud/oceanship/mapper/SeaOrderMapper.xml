@@ -232,10 +232,10 @@
                 </foreach>
             </if>
             <if test="form.startTime !=null and form.startTime!=''">
-                and so.create_time <![CDATA[> ]]> #{form.startTime}
+                and so.create_time <![CDATA[>= ]]> #{form.startTime}
             </if>
             <if test="form.endTime !=null and form.endTime!=''">
-                and so.create_time <![CDATA[< ]]> #{form.endTime}
+                and so.create_time <![CDATA[<= ]]> #{form.endTime}
             </if>
             <if test="form.cmd == 'costAudit'">
                 AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = so.order_no AND opc.`status` =

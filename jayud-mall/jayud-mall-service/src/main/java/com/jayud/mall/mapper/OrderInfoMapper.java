@@ -10,6 +10,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * <p>
  * 产品订单表 Mapper 接口
@@ -51,4 +53,11 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      * @return
      */
     IPage<OrderInfoVO> findWebOrderInfoByPage(Page<OrderInfoVO> page, @Param("form") QueryOrderInfoForm form);
+
+    /**
+     * 根据订单id，查询订单配载信息
+     * @param orderId
+     * @return
+     */
+    List<String> findOrderConfInfoByOrderId(@Param("orderId") Long orderId);
 }

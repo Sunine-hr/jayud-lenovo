@@ -107,6 +107,21 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //定义排序规则
         //page.addOrder(OrderItem.desc("oc.id"));
         IPage<OrderInfoVO> pageInfo = orderInfoMapper.findOrderInfoByPage(page, form);
+
+        List<OrderInfoVO> records = pageInfo.getRecords();
+        if(records.size() > 0){
+            records.forEach(ororderInfoVO -> {
+                Long orderId = ororderInfoVO.getId();
+                List<String> confinfos = orderInfoMapper.findOrderConfInfoByOrderId(orderId);
+                if(confinfos.size() > 0){
+                    String confInfo = "";
+                    for (int i=0; i<confinfos.size(); i++){
+                        confInfo += confinfos.get(i);
+                    }
+                    ororderInfoVO.setConfInfo(confInfo);
+                }
+            });
+        }
         return pageInfo;
     }
 

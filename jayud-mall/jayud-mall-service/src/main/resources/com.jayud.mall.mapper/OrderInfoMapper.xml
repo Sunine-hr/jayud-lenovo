@@ -41,12 +41,25 @@
         select
         t.id,t.order_no,t.customer_id,t.store_goods_warehouse_code,t.store_goods_warehouse_name,t.destination_warehouse_code,t.destination_warehouse_name,
         t.is_pick,t.`status`,t.status_name,t.create_time,t.create_user_id,t.create_user_name,t.order_origin,t.bol_no,t.need_declare,t.need_clearance,t.remark,
-        t.charge_weight,t.volume_weight,t.actual_weight,t.actual_volume,t.total_cartons
+        t.charge_weight,t.volume_weight,t.actual_weight,t.actual_volume,t.total_cartons,
+        t1.company,
+        t2.names,t2.sail_time
         from order_info t
+        left join customer t1 on t1.id = t.customer_id
+        left join offer_info t2 on t2.id = t.offer_info_id
         WHERE
         1 = 1
+        <if test="form.customerId != null">
+            AND t.customer_id = #{form.customerId}
+        </if>
         <if test="form.orderNo != null and form.orderNo != ''">
             AND t.order_no LIKE CONCAT('%',#{form.orderNo},'%')
+        </if>
+        <if test="form.destinationWarehouseCode != null and form.destinationWarehouseCode != ''">
+            and t.destination_warehouse_code = #{form.destinationWarehouseCode}
+        </if>
+        <if test="form.status != null">
+            and t.status = #{form.status}
         </if>
     </select>
 
@@ -100,5 +113,24 @@
 
     </select>
 
+
+    <select id="findOrderConfInfoByOrderId" parameterType="java.lang.Long" resultType="java.lang.String">
+        select
+        CONCAT('配载单号:',orderConfNo,CHAR(10),'提单号:',oceanBillNo,CHAR(10),'柜号:',cntr_no,';',CHAR(10)) confinfo
+        from (
+            select
+            distinct
+            t2.cntr_no,
+            t3.order_id oceanBillNo,
+            t5.order_no orderConfNo
+            from order_case t
+            left join counter_case t1 on t1.order_case_id = t.id
+            left join ocean_counter t2 on t2.id = t1.ocean_counter_id
+            left join ocean_bill t3 on t3.id = t2.ob_id
+            left join (select * from ocean_conf_detail where types = 2) t4 on t4.id_code = t3.id
+            left join order_conf t5 on t5.id = t4.order_id
+            where t.order_id=#{orderId}
+        ) t
+    </select>
 
 </mapper>

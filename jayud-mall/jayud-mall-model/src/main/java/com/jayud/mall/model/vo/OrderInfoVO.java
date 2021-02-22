@@ -251,4 +251,15 @@ public class OrderInfoVO {
     @JSONField(ordinal = 51)
     private OrderCostDetailVO orderCostDetailVO;
 
+    //订单客户
+    @ApiModelProperty(value = "客户(简称)", position = 52)
+    @JSONField(ordinal = 52)
+    private String company;
+
+    //展示配载信息 配载单号+提单号+柜号
+    @ApiModelProperty(value = "配载信息 配载单号+提单号+柜号", position = 53)
+    @JSONField(ordinal = 53)
+    private String confInfo;
+
+
 }

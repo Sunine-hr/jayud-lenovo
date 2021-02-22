@@ -38,24 +38,21 @@ public class ExternalApiController {
 
     @Autowired
     ISystemUserService userService;
-
     @Autowired
     ISystemDepartmentService departmentService;
-
     @Autowired
     ILegalEntityService legalEntityService;
-
     @Autowired
     ISystemRoleService roleService;
-
     @Autowired
     ISystemUserRoleRelationService userRoleRelationService;
-
     @Autowired
     private ISystemCompanyService systemCompanyService;
-
     @Autowired
     ISystemUserLegalService systemUserLegalService;
+    @Autowired
+    private ISystemMenuService systemMenuService;
+
 
     @ApiOperation(value = "获取所有部门")
     @RequestMapping(value = "/api/findDepartment")
@@ -343,6 +340,9 @@ public class ExternalApiController {
         List<String> legalName = systemUserLegalService.getLegalName(systemUser.getId());
         return ApiResult.ok(legalName);
     }
+
+
+
 
 }
 

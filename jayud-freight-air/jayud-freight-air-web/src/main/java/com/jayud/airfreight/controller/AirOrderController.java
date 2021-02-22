@@ -22,6 +22,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.InitComboxVO;
 import com.jayud.common.enums.*;
 import com.jayud.common.utils.DateUtils;
@@ -42,7 +43,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static com.jayud.common.enums.OrderStatusEnum.AIR_A_2;
+import static com.jayud.common.enums.OrderStatusEnum.*;
 
 /**
  * <p>
@@ -347,5 +348,23 @@ public class AirOrderController {
         }
         return CommonResult.success(list);
     }
+
+    @ApiOperation(value = "下拉空运订单状态")
+    @PostMapping(value = "/initAirStatus")
+    public CommonResult<List<InitComboxStrVO>> initAirStatus() {
+        OrderStatusEnum[] statusEnums = {AIR_A_0,
+                AIR_A_1, AIR_A_1_1, AIR_A_2, AIR_A_2_1, AIR_A_3, AIR_A_3_1,
+                AIR_A_3_2, AIR_A_4, AIR_A_5, AIR_A_6, AIR_A_7, AIR_A_8};
+        List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
+        for (OrderStatusEnum statusEnum : statusEnums) {
+            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+            initComboxStrVO.setName(statusEnum.getDesc());
+            initComboxStrVO.setCode(statusEnum.getCode());
+            initComboxStrVOS.add(initComboxStrVO);
+        }
+        return CommonResult.success(initComboxStrVOS);
+    }
+
+
 }
 

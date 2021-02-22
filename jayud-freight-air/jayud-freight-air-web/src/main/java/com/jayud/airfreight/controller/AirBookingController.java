@@ -6,6 +6,8 @@ import com.jayud.airfreight.model.po.AirBooking;
 import com.jayud.airfreight.model.vo.AirBookingVO;
 import com.jayud.airfreight.service.IAirBookingService;
 import com.jayud.common.CommonResult;
+import com.jayud.common.entity.InitComboxStrVO;
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import io.swagger.annotations.Api;
@@ -18,7 +20,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+
+import static com.jayud.common.enums.OrderStatusEnum.*;
 
 /**
  * <p>
@@ -47,6 +53,21 @@ public class AirBookingController {
         //订舱附件
         //提单附件不用传
         return CommonResult.success(airBookingVO);
+    }
+
+    @ApiOperation(value = "获取历史交仓仓库信息")
+    @PostMapping(value = "/getHistoryDeliveryAddr")
+    public CommonResult<List<InitComboxStrVO>> getHistoryDeliveryAddr() {
+        List<AirBooking> historyDeliveryAddrs = this.airBookingService.getHistoryDeliveryAddr();
+        List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
+        for (AirBooking historyDeliveryAddr : historyDeliveryAddrs) {
+            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+            initComboxStrVO.setName(historyDeliveryAddr.getDeliveryWarehouse());
+            initComboxStrVO.setCode(historyDeliveryAddr.getDeliveryWarehouse());
+            initComboxStrVO.setNote(historyDeliveryAddr.getDeliveryAddress());
+            initComboxStrVOS.add(initComboxStrVO);
+        }
+        return CommonResult.success(initComboxStrVOS);
     }
 }
 

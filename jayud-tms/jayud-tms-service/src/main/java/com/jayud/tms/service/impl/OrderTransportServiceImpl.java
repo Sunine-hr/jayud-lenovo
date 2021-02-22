@@ -260,14 +260,14 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             return sendCarPdfVO;
         }
         if (takeGoodsInfo2.size() > 1) {//获取中转仓信息
-            if (!orderSendCarsVO.getIsVirtual()){
+            if (!orderSendCarsVO.getIsVirtual()) {
                 sendCarPdfVO.setDeliveryContacts(orderSendCarsVO.getWarehouseContacts());
                 String provinceName = orderSendCarsVO.getProvinceName() == null ? "" : orderSendCarsVO.getProvinceName();
                 String cityName = orderSendCarsVO.getCityName() == null ? "" : orderSendCarsVO.getCityName();
                 String address = orderSendCarsVO.getAddress() == null ? "" : orderSendCarsVO.getAddress();
                 String detailedAddress = provinceName + cityName + address;
                 sendCarPdfVO.setDeliveryAddress(detailedAddress +
-                        " 联系人:" + orderSendCarsVO.getWarehouseContacts() +" "+ orderSendCarsVO.getWarehouseNumber());
+                        " 联系人:" + orderSendCarsVO.getWarehouseContacts() + " " + orderSendCarsVO.getWarehouseNumber());
                 sendCarPdfVO.setDeliveryPhone(orderSendCarsVO.getWarehouseNumber());
             }
         } else if (takeGoodsInfo2.size() == 1) {
@@ -506,6 +506,20 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     @Override
     public List<OrderVO> getOrderTransportByMainOrderNo(List<String> mainOrders) {
         return this.baseMapper.getOrderTransportByMainOrderNo(mainOrders);
+    }
+
+    /**
+     * 查询订单状态数量
+     *
+     * @param status
+     * @param legalIds
+     * @return
+     */
+    @Override
+    public Integer getNumByStatus(String status, List<Long> legalIds) {
+        //获取当前用户所属法人主体
+        Integer num = this.baseMapper.getNumByStatus(status, legalIds);
+        return num == null ? 0 : num;
     }
 
 

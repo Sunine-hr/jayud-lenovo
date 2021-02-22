@@ -21,6 +21,7 @@ public interface ISystemMenuService extends IService<SystemMenu> {
 
     /**
      * 获取该角色下的所有菜单
+     *
      * @param roleIds
      * @return
      */
@@ -28,10 +29,19 @@ public interface ISystemMenuService extends IService<SystemMenu> {
 
     /**
      * 获取所有可显示的菜单
+     *
      * @return
      */
     List<QueryMenuStructureVO> findAllMenuNode();
 
+    /**
+     * 根据父主键查询子菜单
+     */
+    List<SystemMenu> getByParentId(Integer parentId);
 
+    /**
+     * 根据类型查询菜单
+     */
+    public List<SystemMenu> getUserMenusByType(String type);
 
 }

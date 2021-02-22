@@ -114,6 +114,9 @@ public class AirOrder extends Model<AirOrder> {
     @ApiModelProperty(value = "接单日期")
     private LocalDateTime receivingOrdersDate;
 
+    @ApiModelProperty(value = "发票号(多个逗号隔开)")
+    private String invoiceNo;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

@@ -1,12 +1,15 @@
 package com.jayud.tms.controller;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
+import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.tms.feign.OauthClient;
 import com.jayud.tms.model.bo.InputOrderTransportForm;
 import com.jayud.tms.model.bo.OprStatusForm;
 import com.jayud.tms.model.bo.QueryDriverOrderTransportForm;
@@ -22,6 +25,7 @@ import com.jayud.tms.service.ITmsExtensionFieldService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +33,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -39,18 +46,16 @@ public class ExternalApiController {
 
     @Autowired
     IOrderTransportService orderTransportService;
-
     @Autowired
     RedisUtils redisUtils;
-
     @Autowired
     private IOrderSendCarsService orderSendCarsService;
-
     @Autowired
     private IOrderTakeAdrService orderTakeAdrService;
     @Autowired
     private ITmsExtensionFieldService tmsExtensionFieldService;
-
+    @Autowired
+    private OauthClient oauthClient;
 
     @ApiOperation(value = "创建中港子订单")
     @RequestMapping(value = "/api/createOrderTransport")
@@ -226,6 +231,49 @@ public class ExternalApiController {
 //        //根据车辆id查询供应商id
 //        orderSendCars.getVehicleId();
 //    }
+
+    @ApiModelProperty(value = "获取菜单待处理数")
+    @RequestMapping(value = "/api/getMenuPendingNum")
+    public ApiResult getMenuPendingNum(@RequestBody List<Map<String, Object>> menusList) {
+        if (CollectionUtil.isEmpty(menusList)) {
+            return ApiResult.ok();
+        }
+        Map<String, String> tmp = new HashMap<>();
+        tmp.put("运输接单", "T_0");
+        tmp.put("运输派车", "T_1");
+        tmp.put("驳回重新调用", "T_3_1");
+        tmp.put("运输审核", "T_2");
+        tmp.put("确认派车", "T_3");
+        tmp.put("车辆提货", "T_4");
+        tmp.put("车辆过磅", "T_5");
+        tmp.put("通关前审核", "T_6");
+        tmp.put("通关前复核", "T_7");
+        tmp.put("车辆通关", "T_8");
+        tmp.put("香港清关", "HK_C_1");
+        tmp.put("车辆入仓", "T_9");
+        tmp.put("车辆出仓", "T_10");
+        tmp.put("车辆派送", "T_13");
+        tmp.put("确认签收", "T_14");
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+
+        for (Map<String, Object> menus : menusList) {
+
+            Map<String, Object> map = new HashMap<>();
+            Object title = menus.get("title");
+            String status = tmp.get(title);
+            Integer num = 0;
+            if (status != null) {
+                num = this.orderTransportService.getNumByStatus(status, legalIds);
+            }
+            map.put("menusName", title);
+            map.put("num", num);
+            result.add(map);
+        }
+        return ApiResult.ok(result);
+    }
 
 }
 

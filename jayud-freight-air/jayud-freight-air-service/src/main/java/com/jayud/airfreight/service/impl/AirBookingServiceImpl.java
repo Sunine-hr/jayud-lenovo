@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -63,5 +65,16 @@ public class AirBookingServiceImpl extends ServiceImpl<AirBookingMapper, AirBook
         QueryWrapper<AirBooking> condition = new QueryWrapper<>();
         condition.lambda().eq(AirBooking::getAirOrderId, airOrderId);
         return this.baseMapper.update(airBooking, condition) > 0;
+    }
+
+    /**
+     * 获取历史交仓仓库信息
+     */
+    @Override
+    public List<AirBooking> getHistoryDeliveryAddr() {
+        QueryWrapper<AirBooking> condition=new QueryWrapper<>();
+        condition.lambda().orderByDesc(AirBooking::getId);
+        condition.lambda().groupBy(AirBooking::getDeliveryWarehouse);
+        return this.baseMapper.selectList(condition);
     }
 }

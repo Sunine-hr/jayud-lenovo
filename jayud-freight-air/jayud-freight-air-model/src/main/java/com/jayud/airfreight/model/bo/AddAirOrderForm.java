@@ -105,4 +105,7 @@ public class AddAirOrderForm {
     @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo)")
     private Integer createUserType;
 
+    @ApiModelProperty(value = "发票号(多个逗号隔开)")
+    private String invoiceNo;
+
 }

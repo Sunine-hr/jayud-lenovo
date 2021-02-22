@@ -3,16 +3,12 @@ package com.jayud.oauth.controller;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.common.CommonPageResult;
-import com.jayud.common.CommonResult;
-import com.jayud.common.HttpContextUtils;
-import com.jayud.common.RedisUtils;
+import com.jayud.common.*;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
-import com.jayud.common.utils.ConvertUtil;
-import com.jayud.common.utils.HttpRequester;
-import com.jayud.common.utils.HttpUtils;
-import com.jayud.common.utils.MD5;
+import com.jayud.common.enums.SubOrderSignEnum;
+import com.jayud.common.utils.*;
+import com.jayud.oauth.feign.TmsClient;
 import com.jayud.oauth.model.bo.*;
 import com.jayud.oauth.model.enums.SystemUserStatusEnum;
 import com.jayud.oauth.model.enums.UserTypeEnum;
@@ -38,35 +34,28 @@ public class SystemUserController {
 
     @Autowired
     ISystemUserService userService;
-
     @Autowired
     ISystemMenuService menuService;
-
     @Autowired
     ISystemRoleMenuRelationService roleMenuRelationService;
-
     @Autowired
     ISystemUserRoleRelationService userRoleRelationService;
-
     @Autowired
     ISystemRoleService roleService;
-
     @Autowired
     ISystemDepartmentService departmentService;
-
     @Autowired
     ILegalEntityService legalEntityService;
-
     @Autowired
     ISystemWorkService workService;
-
     @Autowired
     ISystemCompanyService companyService;
     @Autowired
     private RedisUtils redisUtils;
-
     @Autowired
     ISystemUserLegalService systemUserLegalService;
+    @Autowired
+    private TmsClient tmsClient;
 
     /**
      * 登录接口
@@ -518,7 +507,7 @@ public class SystemUserController {
     public CommonResult<List<InitComboxVO>> initUserAccountLegalEntity() {
         List<InitComboxVO> initComboxs = new ArrayList<>();
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("audit_status","2");
+        queryWrapper.eq("audit_status", "2");
         List<LegalEntity> legalEntities = legalEntityService.list(queryWrapper);
         for (LegalEntity legalEntity : legalEntities) {
             InitComboxVO initComboxVO = new InitComboxVO();
@@ -581,7 +570,7 @@ public class SystemUserController {
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
         List<Long> legalEntityIds = systemUserLegalService.getLegalId(systemUser.getId());
-        result.put(CommonConstant.LEGAl_IDS,legalEntityIds);
+        result.put(CommonConstant.LEGAl_IDS, legalEntityIds);
         result.put(CommonConstant.WORK, systemUser.getWorkName());
         result.put(CommonConstant.DEPARTMENT_ID, systemUser.getDepartmentId());
         return CommonResult.success(result);
@@ -626,18 +615,35 @@ public class SystemUserController {
 
     @ApiOperation(value = "新增公司/编辑")
     @PostMapping(value = "/addCompany")
-    public CommonResult addCompany(@RequestBody AddCompanyForm form){
+    public CommonResult addCompany(@RequestBody AddCompanyForm form) {
         departmentService.saveOrUpdateCompany(form);
         return CommonResult.success();
     }
 
     @ApiOperation(value = "修改主体简称，回写数据")
     @PostMapping(value = "/updateCompany")
-    public CommonResult updateCompany(@RequestBody Map<String, Object> param){
+    public CommonResult updateCompany(@RequestBody Map<String, Object> param) {
         Long departmentId = Long.valueOf(MapUtil.getStr(param, CommonConstant.ID));
         List<DepartmentVO> department = departmentService.findDepartment(departmentId);
         DepartmentVO departmentVO = department.get(0);
         return CommonResult.success(departmentVO);
+    }
+
+    @ApiOperation(value = "获取菜单待处理数")
+    @RequestMapping(value = "/getMenuPendingNum")
+    public CommonResult getMenuPendingNum(@RequestBody Map<String, Object> map) {
+//        Integer parentId = MapUtil.getInt(map, "parentId");
+        String type = MapUtil.getStr(map, "type");
+        if (StringUtils.isEmpty(type)) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        Map<String, Object> result = new HashMap<>();
+        List<SystemMenu> systemMenus = this.menuService.getUserMenusByType(type);
+        //中港运输
+        if (SubOrderSignEnum.ZGYS.getSignOne().equals(type)) {
+            result.put(SubOrderSignEnum.ZGYS.getSignOne(), this.tmsClient.getMenuPendingNum(systemMenus).getData());
+        }
+        return CommonResult.success(result);
     }
 }
 

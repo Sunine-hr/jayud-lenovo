@@ -86,8 +86,11 @@
                     #{item}
                 </foreach>
             </if>
-            <if test="form.createTime !=null and form.createTime!=''">
-                and a.create_time = #{form.createTime}
+            <if test="form.beginCreatedTime !=null and form.beginCreatedTime!=''"><!-- 开始时间检索 -->
+                and date_format(a.create_time,'%Y-%m-%d') &gt;= date_format(#{form.beginCreatedTime},'%Y-%m-%d')
+            </if>
+            <if test="form.beginCreatedTime !=null and form.beginCreatedTime!=''"><!-- 结束时间检索 -->
+                and date_format(a.create_time,'%Y-%m-%d') &lt;= date_format(#{form.endCreatedTime},'%Y-%m-%d')
             </if>
             <if test="form.cmd == 'costAudit'">
                 AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = a.order_no AND opc.`status` =

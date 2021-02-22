@@ -77,4 +77,12 @@ public interface OrderTransportMapper extends BaseMapper<OrderTransport> {
      * @return
      */
     IPage<OrderTransportVO> findTransportOrderByPage(Page<OrderTransportVO> page, @Param("form")QueryOrderTmsForm form, @Param("legalIds")List<Long> legalIds);
+
+    /**
+     * 查询订单状态数量
+     * @param status
+     * @param legalIds
+     * @return
+     */
+    public Integer getNumByStatus(@Param("status") String status,@Param("legalIds")List<Long> legalIds);
 }

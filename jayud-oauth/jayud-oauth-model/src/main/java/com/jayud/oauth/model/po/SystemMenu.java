@@ -15,7 +15,7 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="SystemMenu对象", description="后台菜单表")
+@ApiModel(value = "SystemMenu对象", description = "后台菜单表")
 public class SystemMenu extends Model<SystemMenu> {
 
     private static final long serialVersionUID = 1L;
@@ -52,6 +52,8 @@ public class SystemMenu extends Model<SystemMenu> {
     @ApiModelProperty(value = "修改人")
     private String updatedUser;
 
+    @ApiModelProperty(value = "菜单类型(zgys,ky,bg,hy)")
+    private String type;
 
     @Override
     protected Serializable pkVal() {

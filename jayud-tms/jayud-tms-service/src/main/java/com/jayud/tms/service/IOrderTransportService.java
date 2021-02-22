@@ -85,6 +85,7 @@ public interface IOrderTransportService extends IService<OrderTransport> {
 
     /**
      * 司机反馈状态
+     *
      * @param form
      */
     void doDriverFeedbackStatus(OprStatusForm form);
@@ -95,7 +96,8 @@ public interface IOrderTransportService extends IService<OrderTransport> {
     void driverCustomsClearanceVehicles(OprStatusForm form);
 
     /**
-     *中港运输各个菜单列表数据量统计
+     * 中港运输各个菜单列表数据量统计
+     *
      * @return
      */
     StatisticsDataNumberVO statisticsDataNumber();
@@ -109,4 +111,14 @@ public interface IOrderTransportService extends IService<OrderTransport> {
      * 根据主订单号集合查询中港详情
      */
     public List<OrderVO> getOrderTransportByMainOrderNo(List<String> mainOrders);
+
+
+    /**
+     * 查询订单状态数量
+     *
+     * @param status
+     * @param legalIds
+     * @return
+     */
+    public Integer getNumByStatus(String status, List<Long> legalIds);
 }

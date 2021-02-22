@@ -3,6 +3,8 @@ package com.jayud.airfreight.service;
 import com.jayud.airfreight.model.po.AirBooking;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * <p>
  * 空运订舱表 服务类
@@ -28,4 +30,9 @@ public interface IAirBookingService extends IService<AirBooking> {
      */
     public boolean updateByAirOrderId(Long airOrderId, AirBooking airBooking);
 
+
+    /**
+     * 获取历史交仓仓库信息
+     */
+    public List<AirBooking> getHistoryDeliveryAddr();
 }

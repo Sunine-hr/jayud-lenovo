@@ -38,6 +38,9 @@ public class SystemMenuNode {
     @ApiModelProperty(value = "前端隐藏")
     private Integer hidden;
 
+    @ApiModelProperty(value = "菜单类型")
+    private String type;
+
     @ApiModelProperty(value = "子节点")
     private List<SystemMenuNode> children;
 }

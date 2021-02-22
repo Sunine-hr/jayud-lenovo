@@ -29,7 +29,8 @@
         system_menu.hidden,
         system_menu.router,
         system_menu.created_user,
-        system_menu.updated_user
+        system_menu.updated_user,
+        type
     </sql>
 
     <select id="selectByUserId" resultMap="BaseResultMap">
@@ -49,7 +50,10 @@
             <if test="hidden != null">
                 and system_menu.hidden = #{hidden}
             </if>
+            <if test="type != null">
+                and system_menu.type = #{type}
+            </if>
         </where>
-        ORDER BY system_menu.sort asc;
+        ORDER BY system_menu.sort,system_menu.created_time asc;
     </select>
 </mapper>

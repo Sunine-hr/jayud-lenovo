@@ -20,9 +20,12 @@ public interface SystemMenuMapper extends BaseMapper<SystemMenu> {
 
     /**
      * 根据用户ID有权限的菜单
+     *
      * @param roleIds 用户ID
-     * @param hidden 是否隐藏
+     * @param hidden  是否隐藏
      * @return
      */
-    List<SystemMenu> selectByUserId(@Param("roleIds") List<Long> roleIds, @Param("hidden") Integer hidden);
+    List<SystemMenu> selectByUserId(@Param("roleIds") List<Long> roleIds,
+                                    @Param("hidden") Integer hidden,
+                                    @Param("type") String type);
 }

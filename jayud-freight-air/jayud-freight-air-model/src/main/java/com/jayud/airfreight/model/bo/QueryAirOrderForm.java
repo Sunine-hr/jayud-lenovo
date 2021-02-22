@@ -53,6 +53,12 @@ public class QueryAirOrderForm extends BasePageForm {
     @ApiModelProperty(value = "当前登录用户,前台传")
     private String loginUserName;
 
+    @ApiModelProperty(value = "开始日期")
+    private String beginCreatedTime;
+
+    @ApiModelProperty(value = "结束日期")
+    private String endCreatedTime;
+
     public void assemblyMainOrderNo(JSONArray mainOrders) {
         mainOrderNos = new ArrayList<>(mainOrders.size());
         for (int i = 0; i < mainOrders.size(); i++) {

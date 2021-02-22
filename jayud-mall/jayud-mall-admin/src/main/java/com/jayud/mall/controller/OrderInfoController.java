@@ -96,7 +96,7 @@ public class OrderInfoController {
     }
 
     //订单管理-查看配载信息
-    @ApiOperation(value = "订单管理-查看配载信息(待完成)")
+    @ApiOperation(value = "订单管理-查看配载信息")
     @PostMapping("/lookOrderInfoConf")
     @ApiOperationSupport(order = 9)
     public CommonResult<OrderInfoVO> lookOrderInfoConf(@RequestBody OrderInfoForm form){

@@ -31,7 +31,7 @@ public class MysqlGenerator {
                 "jayud-mall\\jayud-mall-service"
         };
         for (String model : models) {
-            shell(model,"cabinet_type");
+            shell(model,"counter_case");
 
 
         }
@@ -66,8 +66,8 @@ public class MysqlGenerator {
         dsc.setDbType(DbType.MYSQL);
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
         dsc.setUsername("root");
-        dsc.setPassword("1234");
-        dsc.setUrl("jdbc:mysql://113.100.140.250:6334/jayud_shop?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC");
+        dsc.setPassword("123456");
+        dsc.setUrl("jdbc:mysql://127.0.0.1:3306/jayud_shop?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC");
         mpg.setDataSource(dsc);
 
         // 策略配置

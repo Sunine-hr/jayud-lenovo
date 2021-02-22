@@ -93,7 +93,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     ITemplateFileService templateFileService;
 
     @Autowired
+    ICounterCaseService counterCaseService;
+
+    @Autowired
     BaseService baseService;
+
+
 
     @Override
     public IPage<OrderInfoVO> findOrderInfoByPage(QueryOrderInfoForm form) {
@@ -199,8 +204,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     @Override
-    public CommonResult updateOrderCaseConf(List<OrderCaseForm> list) {
-        return null;
+    @Transactional(rollbackFor = Exception.class)
+    public CommonResult updateOrderCaseConf(SaveCounterCaseForm form) {
+        return counterCaseService.saveCounterCase(form);
     }
 
     @Override

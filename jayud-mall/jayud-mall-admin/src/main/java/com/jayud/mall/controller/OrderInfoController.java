@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -104,12 +105,11 @@ public class OrderInfoController {
     }
 
     //订单管理-修改配载信息
-    @ApiOperation(value = "订单管理-修改配载信息(待完成)")
+    @ApiOperation(value = "订单管理-修改配载信息")
     @PostMapping("/updateOrderCaseConf")
     @ApiOperationSupport(order = 10)
-    public CommonResult updateOrderCaseConf(@RequestBody List<OrderCaseForm> list){
-        orderInfoService.updateOrderCaseConf(list);
-        return CommonResult.success("订单管理-修改配载信息(待完成)");
+    public CommonResult updateOrderCaseConf(@Valid @RequestBody SaveCounterCaseForm form){
+        return orderInfoService.updateOrderCaseConf(form);
     }
 
     //订单管理-查看费用信息

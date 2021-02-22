@@ -2,10 +2,7 @@ package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonResult;
-import com.jayud.mall.model.bo.OrderCaseForm;
-import com.jayud.mall.model.bo.OrderInfoCostForm;
-import com.jayud.mall.model.bo.OrderInfoForm;
-import com.jayud.mall.model.bo.QueryOrderInfoForm;
+import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.OrderInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.vo.OrderClearanceFileVO;
@@ -91,7 +88,7 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @param list
      * @return
      */
-    CommonResult updateOrderCaseConf(List<OrderCaseForm> list);
+    CommonResult updateOrderCaseConf(SaveCounterCaseForm form);
 
     /**
      * 订单管理-查看费用信息

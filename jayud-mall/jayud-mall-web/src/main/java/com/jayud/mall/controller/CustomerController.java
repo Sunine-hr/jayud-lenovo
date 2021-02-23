@@ -59,17 +59,17 @@ public class CustomerController {
         return customerService.findCustomerById(id);
     }
 
-    @ApiOperation(value = "我的账号-客户账号编辑")
+    @ApiOperation(value = "我的账号-账号编辑(保存)")
     @PostMapping("/updateCustomer")
     @ApiOperationSupport(order = 5)
     public CommonResult<CustomerVO> updateCustomer(@Valid @RequestBody CustomerEditForm form){
         return customerService.saveCustomer(form);
     }
 
-    @ApiOperation(value = "我的账号-更换手机-验证身份")
+    @ApiOperation(value = "我的账号-更换手机-验证身份(点击下一步时触发)")
     @PostMapping("/customerUpdatePhoneVerify")
     @ApiOperationSupport(order = 6)
-    public CommonResult<CustomerVO> customerUpdatePhoneVerify(@Valid @RequestBody CustomerVerifyForm form){
+    public CommonResult customerUpdatePhoneVerify(@Valid @RequestBody CustomerVerifyForm form){
         return customerService.customerVerify(form);
     }
 
@@ -82,6 +82,7 @@ public class CustomerController {
 
     @ApiOperation(value = "客户登录")
     @PostMapping("/customerLogin")
+    @Deprecated
     @ApiOperationSupport(order = 8)
     public CommonResult<CustomerVO> customerLogin(@Valid @RequestBody CustomerLoginForm form){
         CustomerVO customerVO = customerService.customerLogin(form);

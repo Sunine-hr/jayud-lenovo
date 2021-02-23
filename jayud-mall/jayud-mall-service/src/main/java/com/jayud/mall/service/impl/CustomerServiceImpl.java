@@ -200,9 +200,20 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CommonResult<CustomerVO> customerUpdatePhone(CustomerPhoneForm form) {
-        Integer id = form.getId();
-        Customer customer = this.getById(id);
-        String phone = form.getPhone();
+        String oldPhone = form.getOldPhone();
+        QueryWrapper<Customer> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("phone",oldPhone);
+        Customer customer = this.getOne(queryWrapper);
+
+        String phone = form.getPhone();//新手机号
+        String verificationCode = form.getVerificationCode();//新手机号验证码
+        String code = redisUtils.get(phone);//新手机号验证码
+        if(code == null){
+            return CommonResult.error(-1, "验证码已过期或不存在");
+        }
+        if(!verificationCode.equals(code)){
+            return CommonResult.error(-1, "验证码不正确");
+        }
         customer.setPhone(phone);
         this.saveOrUpdate(customer);
         CustomerVO customerVO = ConvertUtil.convert(customer, CustomerVO.class);

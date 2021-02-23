@@ -2,6 +2,7 @@ package com.jayud.mall.model.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -56,7 +57,8 @@ public class CustomerVO {
     private Integer auditUserId;
 
     @ApiModelProperty(value = "审核时间", position = 12)
-    @JSONField(ordinal = 12)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 12, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime auditTime;
 
     @ApiModelProperty(value = "启用状态，默认为1，1是0否", position = 13)
@@ -90,7 +92,8 @@ public class CustomerVO {
     private String origin;
 
     @ApiModelProperty(value = "创建日期", position = 20)
-    @JSONField(ordinal = 20)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 20, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createDate;
 
     @ApiModelProperty(value = "支付类型", position = 21)

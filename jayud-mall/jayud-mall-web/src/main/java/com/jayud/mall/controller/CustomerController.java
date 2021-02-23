@@ -80,7 +80,7 @@ public class CustomerController {
         return customerService.customerUpdatePhone(form);
     }
 
-    @ApiOperation(value = "客户登录")
+    @ApiOperation(value = "客户登录(已废弃)")
     @PostMapping("/customerLogin")
     @Deprecated
     @ApiOperationSupport(order = 8)

@@ -449,7 +449,8 @@
         ot.car_weigh_num carWeighNum,
         si.supplier_code defaultSupplierCode,
         os.vehicle_id vehicleId,
-        os.driver_info_id driverInfoId
+        os.driver_info_id driverInfoId,
+        vi.plate_number plateNumber
         FROM
         order_transport ot
         LEFT JOIN order_info oi

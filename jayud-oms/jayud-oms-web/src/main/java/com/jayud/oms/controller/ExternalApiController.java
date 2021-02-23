@@ -1,5 +1,6 @@
 package com.jayud.oms.controller;
 
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
@@ -88,6 +89,8 @@ public class ExternalApiController {
     private IOrderReceivableCostService orderReceivableCostService;
     @Autowired
     private IOrderPaymentCostService orderPaymentCostService;
+    @Autowired
+    private IDictService dictService;
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
@@ -787,11 +790,11 @@ public class ExternalApiController {
      * 获取柜车大小类型
      */
     @RequestMapping(value = "api/getVehicleSizeInfo")
-    ApiResult getCabinetType(){
+    ApiResult getCabinetType() {
         List<VehicleSizeInfoVO> vehicleSizeInfoVOS = vehicleInfoService.findVehicleSize();
         List<VehicleSizeInfoVO> cabinetCars = new ArrayList<>();
         for (VehicleSizeInfoVO obj : vehicleSizeInfoVOS) {
-            if (VehicleTypeEnum.CABINET_CAR.getCode() == obj.getVehicleType()) {
+            if (VehicleTypeEnum.CABINET_CAR.getCode().equals(obj.getVehicleType())) {
                 cabinetCars.add(obj);
             }
         }
@@ -915,10 +918,36 @@ public class ExternalApiController {
      * 获取附件集合
      */
     @RequestMapping(value = "/api/getAttachments")
-    ApiResult getAttachments(Long orderId){
+    ApiResult getAttachments(Long orderId) {
         String prePath = String.valueOf(fileClient.getBaseUrl().getData());
         List<FileView> attachments = this.logisticsTrackService.getAttachments(orderId, BusinessTypeEnum.HY.getCode(), prePath);
         return ApiResult.ok(attachments);
+    }
+
+    /**
+     * 根据字典类型查询字典
+     */
+    @RequestMapping(value = "/api/getDictByDictTypeCode")
+    public ApiResult getDictByDictTypeCode(@RequestParam("dictTypeCode") String dictTypeCode) {
+        List<Dict> list = this.dictService.getByDictTypeCode(dictTypeCode);
+        return ApiResult.ok(list);
+    }
+
+
+    /**
+     * 根据字典类型下拉选项字典
+     */
+    @RequestMapping(value = "/api/initDictByDictTypeCode")
+    public ApiResult<List<InitComboxStrVO>> initDictByDictTypeCode(@RequestParam("dictTypeCode") String dictTypeCode) {
+        List<Dict> list = this.dictService.getByDictTypeCode(dictTypeCode);
+        List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
+        for (Dict dict : list) {
+            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+            initComboxStrVO.setName(dict.getValue());
+            initComboxStrVO.setCode(dict.getCode());
+            initComboxStrVOS.add(initComboxStrVO);
+        }
+        return ApiResult.ok(initComboxStrVOS);
     }
 }
 

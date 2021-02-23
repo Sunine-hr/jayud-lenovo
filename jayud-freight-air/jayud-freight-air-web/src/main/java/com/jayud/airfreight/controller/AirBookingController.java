@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,17 +58,16 @@ public class AirBookingController {
 
     @ApiOperation(value = "获取历史交仓仓库信息")
     @PostMapping(value = "/getHistoryDeliveryAddr")
-    public CommonResult<List<InitComboxStrVO>> getHistoryDeliveryAddr() {
+    public CommonResult<List<Map<String,Object>>> getHistoryDeliveryAddr() {
         List<AirBooking> historyDeliveryAddrs = this.airBookingService.getHistoryDeliveryAddr();
-        List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
+        List<Map<String,Object>> tmps = new ArrayList<>();
         for (AirBooking historyDeliveryAddr : historyDeliveryAddrs) {
-            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
-            initComboxStrVO.setName(historyDeliveryAddr.getDeliveryWarehouse());
-            initComboxStrVO.setCode(historyDeliveryAddr.getDeliveryWarehouse());
-            initComboxStrVO.setNote(historyDeliveryAddr.getDeliveryAddress());
-            initComboxStrVOS.add(initComboxStrVO);
+            Map<String,Object> tmp = new HashMap<>();
+            tmp.put("value",historyDeliveryAddr.getDeliveryWarehouse());
+            tmp.put("note",historyDeliveryAddr.getDeliveryAddress());
+            tmps.add(tmp);
         }
-        return CommonResult.success(initComboxStrVOS);
+        return CommonResult.success(tmps);
     }
 }
 

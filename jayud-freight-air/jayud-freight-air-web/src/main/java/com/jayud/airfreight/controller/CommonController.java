@@ -1,5 +1,7 @@
 package com.jayud.airfreight.controller;
 
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import com.jayud.airfreight.feign.OmsClient;
 import com.jayud.airfreight.model.enums.AirOrderTermsEnum;
 import com.jayud.airfreight.service.IAirOrderService;
@@ -9,6 +11,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.Result;
 import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.InitComboxVO;
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
@@ -24,6 +27,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.jayud.common.enums.OrderStatusEnum.*;
 
 @Api(tags = "空运模块公用接口")
 @RestController
@@ -65,5 +70,13 @@ public class CommonController {
         //贸易类型下拉选项
         response.put("airTerms", terms);
         return CommonResult.success(response);
+    }
+
+
+    @ApiOperation(value = "下拉空运航空公司")
+    @PostMapping(value = "/initAirlineCompany")
+    public CommonResult initAirlineCompany() {
+        Object data = this.omsClient.initDictByDictTypeCode("Airlines").getData();
+        return CommonResult.success(data);
     }
 }

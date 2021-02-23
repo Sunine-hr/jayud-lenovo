@@ -9,6 +9,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.config.FeignRequestInterceptor;
 import com.jayud.common.entity.DelOprStatusForm;
+import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.InitComboxVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -150,8 +151,22 @@ public interface OmsClient {
 
     /**
      * 根据供应商id集合查询供应商信息
+     *
      * @return
      */
     @RequestMapping(value = "/api/getSupplierInfoByIds")
     ApiResult getSupplierInfoByIds(@RequestParam("supplierIds") List<Long> supplierIds);
+
+
+    /**
+     * 根据字典类型查询字典
+     */
+    @RequestMapping(value = "/api/getDictByDictTypeCode")
+    public ApiResult getDictByDictTypeCode(@RequestParam("dictTypeCode") String dictTypeCode);
+
+    /**
+     * 根据字典类型下拉选项字典
+     */
+    @RequestMapping(value = "/api/initDictByDictTypeCode")
+    public ApiResult<List<InitComboxStrVO>> initDictByDictTypeCode(@RequestParam("dictTypeCode") String dictTypeCode);
 }

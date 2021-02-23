@@ -1,6 +1,5 @@
 package com.jayud.tms.model.vo;
 
-import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.FileView;
 import com.jayud.tms.model.po.OrderTakeAdr;
@@ -187,6 +186,9 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "司机id")
     private Long driverInfoId;
 
+    @ApiModelProperty(value = "车牌")
+    private String plateNumber;
+
     public String getEntireAddress1() {
         String stateName1 = this.stateName1;
         String cityName1 = this.cityName1;
@@ -231,7 +233,7 @@ public class OrderTransportVO {
                         .append("/").append(orderTakeAdr.getPlateAmount() == null ? 0 : orderTakeAdr.getPlateAmount()).append("板")
                         .append("/").append(orderTakeAdr.getPieceAmount()).append("件")
                         .append("/").append("重量").append(orderTakeAdr.getWeight()).append("KG")
-                        .append(",");
+                        .append("<br/>");
             }
         }
         this.goodsInfo = sb.substring(0, sb.length() - 1);

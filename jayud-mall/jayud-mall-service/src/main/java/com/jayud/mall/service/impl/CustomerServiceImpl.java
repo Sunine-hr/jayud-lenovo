@@ -15,6 +15,7 @@ import com.jayud.mall.model.vo.domain.AuthUser;
 import com.jayud.mall.service.BaseService;
 import com.jayud.mall.service.ICustomerService;
 import com.jayud.mall.service.INumberGeneratedService;
+import com.jayud.mall.utils.NumberGeneratedUtils;
 import com.jayud.mall.utils.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -139,11 +140,15 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             return CommonResult.error(-1, "验证码不正确");
         }
         //mysql-生成单号，有规则
-        String customerCode = numberGeneratedService.getOrderNoByCode("customer_code");
+        String customerCode = NumberGeneratedUtils.getOrderNoByCode2("customer_code");
         customer.setCode(customerCode);//客户代码
         customer.setAuditStatus(0);//审核状态(0待审核1审核通过2审核不通过，默认为0）
         customer.setStatus(1);//启用状态，默认为1，1是0否
         customer.setCreateDate(LocalDateTime.now());//创建日期
+
+        BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
+        String encodePwd = bcryptPasswordEncoder.encode(passwd);
+        customer.setPasswd(encodePwd);
 
         this.saveOrUpdate(customer);
         CustomerVO customerVO = ConvertUtil.convert(customer, CustomerVO.class);
@@ -161,7 +166,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         if(!verificationCode.equals(code)){
             return CommonResult.error(-1, "验证码不正确");
         }
-        return CommonResult.success("验证成功");
+        return CommonResult.success(phone);
     }
 
     @Override

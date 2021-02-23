@@ -18,14 +18,14 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/customer")
-@Api(tags = "C003-C端-客户接口")
-@ApiSort(value = 3)
+@Api(tags = "C004-client-客户接口")
+@ApiSort(value = 4)
 public class CustomerController {
 
     @Autowired
     ICustomerService customerService;
 
-    @ApiOperation(value = "客户注册")
+    @ApiOperation(value = "客户注册(注册保存)")
     @PostMapping("/customerRegister")
     @ApiOperationSupport(order = 1)
     public CommonResult<CustomerVO> customerRegister(@Valid @RequestBody CustomerRegisterForm form){

@@ -18,14 +18,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/fabwarehouse")
-@Api(tags = "C007-C端-应收FBA仓库接口")
-@ApiSort(value = 7)
+@Api(tags = "C010-client-应收FBA仓库接口(目的仓库)")
+@ApiSort(value = 10)
 public class FabWarehouseController {
 
     @Autowired
     IFabWarehouseService fabWarehouseService;
 
-    @ApiOperation(value = "查询应收FBA仓库list")
+    @ApiOperation(value = "查询应收FBA仓库list(目的仓库)")
     @PostMapping("/findfabWarehouse")
     @ApiOperationSupport(order = 1)
     public CommonResult<List<FabWarehouseVO>> findfabWarehouse(@RequestBody FabWarehouseArgsForm form) {

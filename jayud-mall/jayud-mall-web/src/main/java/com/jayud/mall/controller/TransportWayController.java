@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/transportway")
-@Api(tags = "C009-C端-运输方式接口")
+@Api(tags = "C009-client-运输方式接口")
 @ApiSort(value = 9)
 public class TransportWayController {
 

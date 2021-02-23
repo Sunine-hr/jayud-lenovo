@@ -19,8 +19,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/offerinfo")
-@Api(tags = "C010-C端-报价(运价)接口")
-@ApiSort(value = 10)
+@Api(tags = "C007-client-报价(运价)接口")
+@ApiSort(value = 7)
 public class OfferInfoController {
 
     @Autowired

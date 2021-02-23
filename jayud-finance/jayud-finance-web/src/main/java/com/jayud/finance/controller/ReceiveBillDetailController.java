@@ -216,10 +216,6 @@ public class ReceiveBillDetailController {
     @PostMapping("/editSBill")
     public CommonResult editSBill(@RequestBody EditSBillForm form) {
         //参数校验
-        if (StringUtil.isNullOrEmpty(form.getBillNo()) || StringUtil.isNullOrEmpty(form.getCmd())
-                || StringUtil.isNullOrEmpty(form.getLoginUserName())) {
-            return CommonResult.error(ResultEnum.PARAM_ERROR);
-        }
         form.checkEditSBill();
         return billDetailService.editSBill(form);
     }

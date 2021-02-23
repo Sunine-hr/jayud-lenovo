@@ -317,9 +317,9 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                     OrderPaymentBillDetail paymentBillDetail = paymentBillDetails.get(i);
                     paymentBillDetail.setId(paymentBillDetailForms.get(i).getBillDetailId());
                     if (paymentBillDetail.getId() == null) {
-                        paymentBillDetail.setMakeUser(UserOperator.getToken());
+                        paymentBillDetail.setMakeUser(form.getLoginUserName());
                         paymentBillDetail.setMakeTime(LocalDateTime.now());
-                        paymentBillDetail.setCreatedUser(UserOperator.getToken());
+                        paymentBillDetail.setCreatedUser(form.getLoginUserName());
                     }
                     paymentBillDetail.setStatus("1");
                     paymentBillDetail.setBillNo(form.getBillNo());

@@ -309,9 +309,9 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                     OrderReceivableBillDetail orderReceivableBillDetail = receiveBillDetails.get(i);
                     orderReceivableBillDetail.setId(addReceiveBillDetailForms.get(i).getBillDetailId());
                     if (orderReceivableBillDetail.getId() == null) {
-                        orderReceivableBillDetail.setMakeUser(UserOperator.getToken());
+                        orderReceivableBillDetail.setMakeUser(form.getLoginUserName());
                         orderReceivableBillDetail.setMakeTime(LocalDateTime.now());
-                        orderReceivableBillDetail.setCreatedUser(UserOperator.getToken());
+                        orderReceivableBillDetail.setCreatedUser(form.getLoginUserName());
                     }
 
                     orderReceivableBillDetail.setStatus("1");

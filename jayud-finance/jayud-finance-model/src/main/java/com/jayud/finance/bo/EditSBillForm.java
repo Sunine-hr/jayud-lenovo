@@ -76,5 +76,9 @@ public class EditSBillForm {
                 || StringUtil.isNullOrEmpty(this.getLoginUserName())) {
             throw new JayudBizException(ResultEnum.PARAM_ERROR);
         }
+        if ("submit".equals(cmd)) {
+            this.checkCreateReceiveBill();
+        }
+
     }
 }

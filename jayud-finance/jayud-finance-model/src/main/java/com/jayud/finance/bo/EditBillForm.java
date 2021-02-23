@@ -1,9 +1,12 @@
 package com.jayud.finance.bo;
 
 
+import com.jayud.common.CommonResult;
+import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.finance.vo.InitComboxStrVO;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
@@ -26,15 +29,15 @@ public class EditBillForm {
     @NotNull(message = "delCosts is required")
     private List<OrderPaymentBillDetailForm> delCosts = new ArrayList<>();
 
-    @ApiModelProperty(value = "新增的费用集合",required = true)
+    @ApiModelProperty(value = "新增的费用集合", required = true)
     @NotEmpty(message = "paymentBillDetailForms is required")
     private List<OrderPaymentBillDetailForm> paymentBillDetailForms = new ArrayList<>();
 
-    @ApiModelProperty(value = "操作指令 cmd=save保存 submit提交 cw_save财务暂存",required = true)
+    @ApiModelProperty(value = "操作指令 cmd=save保存 submit提交 cw_save财务暂存", required = true)
     @Pattern(regexp = "(save|submit|cw_save)", message = "只允许填写save or submit or cw_save")
     private String cmd;
 
-    @ApiModelProperty(value = "当前登录用户",required = true)
+    @ApiModelProperty(value = "当前登录用户", required = true)
     private String loginUserName;
 
     @ApiModelProperty(value = "核算期,生成账单时必传")
@@ -68,9 +71,14 @@ public class EditBillForm {
      * 校验编辑对账单
      */
     public void checkEditSBill() {
-        switch (this.cmd){
-            case "save":
-                break;
+        //参数校验
+        if (StringUtil.isNullOrEmpty(this.getBillNo()) || StringUtil.isNullOrEmpty(this.getCmd())
+                || StringUtil.isNullOrEmpty(this.getLoginUserName())) {
+            throw new JayudBizException(ResultEnum.PARAM_ERROR);
         }
+        if ("submit".equals(cmd)) {
+            this.checkCreateReceiveBill();
+        }
+
     }
 }

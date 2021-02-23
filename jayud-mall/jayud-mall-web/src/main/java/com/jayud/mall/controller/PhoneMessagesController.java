@@ -17,14 +17,14 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/phonemessages")
-@Api(tags = "C005-C端-手机短信接口")
-@ApiSort(value = 5)
+@Api(tags = "C003-client-手机短信接口")
+@ApiSort(value = 3)
 public class PhoneMessagesController {
 
     @Autowired
     IPhoneMessagesService phoneMessagesService;
 
-    @ApiOperation(value = "发送消息")
+    @ApiOperation(value = "发送消息(短信验证码)")
     @PostMapping("/sendMessage")
     @ApiOperationSupport(order = 1)
     public CommonResult sendMessage(@Valid @RequestBody PhoneForm form){

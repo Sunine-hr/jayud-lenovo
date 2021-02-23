@@ -213,13 +213,15 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
         IPage<OfferInfoVO> pageInfo = offerInfoMapper.findOfferInfoFareByPage(page, form);
 
         List<OfferInfoVO> records = pageInfo.getRecords();
-        records.forEach(offerInfoVO -> {
-            Integer qie = offerInfoVO.getQie();
-            /*查询运价的规格：报价对应应收费用明细，海运费，尺寸*/
-            List<TemplateCopeReceivableVO> oceanFeeList =
-                    templateCopeReceivableMapper.findTemplateCopeReceivableOceanFeeByQie(qie);
-            offerInfoVO.setOceanFeeList(oceanFeeList);
-        });
+        if(records.size() > 0){
+            records.forEach(offerInfoVO -> {
+                Integer qie = offerInfoVO.getQie();
+                /*查询运价的规格：报价对应应收费用明细，海运费，尺寸*/
+                List<TemplateCopeReceivableVO> oceanFeeList =
+                        templateCopeReceivableMapper.findTemplateCopeReceivableOceanFeeByQie(qie);
+                offerInfoVO.setOceanFeeList(oceanFeeList);
+            });
+        }
         return pageInfo;
     }
 

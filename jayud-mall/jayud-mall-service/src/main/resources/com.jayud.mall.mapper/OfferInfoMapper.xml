@@ -115,6 +115,17 @@
         CONCAT(t3.code_name,'---->',t4.code_name) shipRoute,
         DATEDIFF(t.estimated_time,t.sail_time) voyage_day
         from offer_info t
+        JOIN (
+            select id from (
+            select
+            distinct
+            t1.id,substring_index( substring_index(t1.visible_uid,',',t2.id + 1), ',' ,-1 ) as visible_uid
+            from (select id,visible_uid from quotation_template) t1 join help_index t2 on t2.id <![CDATA[ < ]]>  (length(t1.visible_uid) - length(REPLACE(t1.visible_uid,',','')) + 1 )
+            ) t
+            where t.visible_uid = #{form.customerId}
+            UNION
+            select id from quotation_template where visible_customer=0
+        ) qt on qt.id = t.qie
         LEFT JOIN quotation_template t1 on t1.id = t.qie
         LEFT JOIN service_group t2 on t2.id = t1.sid
         LEFT JOIN harbour_info t3 on t3.id_code = t1.start_shipment

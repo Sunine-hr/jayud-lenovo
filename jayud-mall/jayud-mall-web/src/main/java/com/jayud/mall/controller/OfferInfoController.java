@@ -7,6 +7,8 @@ import com.jayud.mall.model.bo.OfferInfoForm;
 import com.jayud.mall.model.bo.QueryOfferInfoFareForm;
 import com.jayud.mall.model.vo.FabWarehouseVO;
 import com.jayud.mall.model.vo.OfferInfoVO;
+import com.jayud.mall.model.vo.domain.CustomerUser;
+import com.jayud.mall.service.BaseService;
 import com.jayud.mall.service.IOfferInfoService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +27,16 @@ public class OfferInfoController {
 
     @Autowired
     IOfferInfoService offerInfoService;
+    @Autowired
+    BaseService baseService;
 
     @ApiOperation(value = "分页查询报价(运价)")
     @PostMapping("/findOfferInfoFareByPage")
     @ApiOperationSupport(order = 1)
     public CommonResult<CommonPageResult<OfferInfoVO>> findOfferInfoFareByPage(@RequestBody QueryOfferInfoFareForm form) {
+        CustomerUser customerUser = baseService.getCustomerUser();
+        Integer customerId = customerUser.getId();
+        form.setCustomerId(customerId);
         IPage<OfferInfoVO> pageList = offerInfoService.findOfferInfoFareByPage(form);
         CommonPageResult<OfferInfoVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);

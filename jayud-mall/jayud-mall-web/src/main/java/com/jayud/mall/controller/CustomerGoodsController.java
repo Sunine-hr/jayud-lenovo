@@ -29,8 +29,8 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/customergoods")
-@Api(tags = "C004-C端-客户商品表接口")
-@ApiSort(value = 4)
+@Api(tags = "C005-client-客户商品表接口")
+@ApiSort(value = 5)
 public class CustomerGoodsController {
 
     @Autowired

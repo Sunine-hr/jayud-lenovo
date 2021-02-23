@@ -163,7 +163,8 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/signout/success",
                         "/phonemessages/sendMessage",
                         "/customer/customerRegister",
-                        "/customer/customerVerify").permitAll() // 登录跳转 URL 无需认证
+                        "/customer/customerVerify",
+                        "/customer/customerUpdatePwd").permitAll() // 登录跳转 URL 无需认证
                 //Security,放行swagger2资源,和swagger-bootstrap-ui增强功能
                 .antMatchers("/doc.html").permitAll() //增强功能
                 .antMatchers("/swagger-ui.html").permitAll()

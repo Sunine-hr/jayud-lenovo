@@ -147,7 +147,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         customer.setCreateDate(LocalDateTime.now());//创建日期
 
         BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
-        String encodePwd = bcryptPasswordEncoder.encode(passwd);
+        String encodePwd = bcryptPasswordEncoder.encode(passwd.trim());
         customer.setPasswd(encodePwd);
 
         this.saveOrUpdate(customer);

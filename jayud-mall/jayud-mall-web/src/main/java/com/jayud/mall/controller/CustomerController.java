@@ -3,6 +3,8 @@ package com.jayud.mall.controller;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.vo.CustomerVO;
+import com.jayud.mall.model.vo.domain.CustomerUser;
+import com.jayud.mall.service.BaseService;
 import com.jayud.mall.service.ICustomerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,6 +26,8 @@ public class CustomerController {
 
     @Autowired
     ICustomerService customerService;
+    @Autowired
+    BaseService baseService;
 
     @ApiOperation(value = "客户注册(注册保存)")
     @PostMapping("/customerRegister")
@@ -32,25 +36,26 @@ public class CustomerController {
         return customerService.customerRegister(form);
     }
 
-    @ApiOperation(value = "忘记密码-客户验证")
+    @ApiOperation(value = "忘记密码-客户验证(确认)")
     @PostMapping("/customerVerify")
     @ApiOperationSupport(order = 2)
     public CommonResult customerVerify(@Valid @RequestBody CustomerVerifyForm form){
         return customerService.customerVerify(form);
     }
 
-    @ApiOperation(value = "修改密码-客户确认密码")
+    @ApiOperation(value = "修改密码-客户新密码(确认)")
     @PostMapping("/customerUpdatePwd")
     @ApiOperationSupport(order = 3)
     public CommonResult customerUpdatePwd(@Valid @RequestBody CustomerPwdForm form){
         return customerService.customerUpdatePwd(form);
     }
 
-    @ApiOperation(value = "我的账号-根据id获取客户详细")
-    @PostMapping("/findCustomerById")
+    @ApiOperation(value = "个人中心-我的账号")
+    @PostMapping("/findMyAccount")
     @ApiOperationSupport(order = 4)
-    public CommonResult<CustomerVO> findCustomerById(@Valid @RequestBody CustomerParaForm form){
-        Integer id = form.getId();
+    public CommonResult<CustomerVO> findMyAccount(){
+        CustomerUser customerUser = baseService.getCustomerUser();
+        Integer id = customerUser.getId();
         return customerService.findCustomerById(id);
     }
 

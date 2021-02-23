@@ -35,6 +35,7 @@
         FROM delivery_address t
         WHERE
         1=1
+        and t.customer_id = #{form.customerId}
         <if test="form.types != null ">
             AND t.types = #{form.types}
         </if>

@@ -37,6 +37,9 @@ public class QuerySeaOrderForm extends BasePageForm {
     @ApiModelProperty(value = "目的地港口")
     private String portDestination;
 
+    @ApiModelProperty(value = "创建时间")
+    private String[] createTime;
+
     @ApiModelProperty(value = "开始时间")
     private String startTime;
 
@@ -61,6 +64,14 @@ public class QuerySeaOrderForm extends BasePageForm {
         for (int i = 0; i < mainOrders.size(); i++) {
             JSONObject tmp = mainOrders.getJSONObject(i);
             mainOrderNos.add(tmp.getStr("orderNo"));
+        }
+    }
+
+    public void setStartTime(){
+        String[] time = this.createTime;
+        if(time != null && time.length>0){
+            this.startTime = time[0];
+            this.endTime = time[1];
         }
     }
 }

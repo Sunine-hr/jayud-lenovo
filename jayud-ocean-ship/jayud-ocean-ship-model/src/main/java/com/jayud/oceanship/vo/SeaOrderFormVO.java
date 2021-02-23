@@ -163,10 +163,6 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
     //@ApiModelProperty(value = "订单类别")
     private String classCode;
 
-    //结算单位code
-    //@ApiModelProperty(value = "结算单位")
-    private String subUnitCode;
-
     //@ApiModelProperty(value = "法人主体id")
     private Long legalEntityId;
 
@@ -359,9 +355,9 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
         this.processStatusDesc = ProcessStatusEnum.getDesc(processStatus);
     }
 
-    public void setSubUnitCode(String subUnitCode) {
-        this.subUnitCode = subUnitCode;
-        this.defaultUnitCode = subUnitCode;
+    public void setUnitCode(String unitCode) {
+        this.unitCode = unitCode;
+        this.defaultUnitCode = unitCode;
     }
 
 }

@@ -17,6 +17,7 @@ import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oceanship.bo.*;
 import com.jayud.oceanship.enums.SeaBookShipStatusEnum;
@@ -407,6 +408,9 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
             address.getFile(prePath);
             seaOrder.processingAddress(address);
         }
+
+        List<FileView> attachments = (List<FileView>)this.omsClient.getAttachments(seaOrder.getOrderId()).getData();
+        seaOrder.setAllPics(attachments);
 
         //查询订舱信息
         SeaBookship seaBookship = this.seaBookshipService.getEnableBySeaOrderId(seaOrderId);

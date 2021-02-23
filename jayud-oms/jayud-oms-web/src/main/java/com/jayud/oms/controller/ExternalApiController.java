@@ -8,10 +8,9 @@ import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
-import com.jayud.common.utils.BeanUtils;
-import com.jayud.common.utils.ConvertUtil;
-import com.jayud.common.utils.DateUtils;
-import com.jayud.common.utils.StringUtils;
+import com.jayud.common.enums.BusinessTypeEnum;
+import com.jayud.common.utils.*;
+import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.enums.VehicleTypeEnum;
@@ -41,6 +40,9 @@ public class ExternalApiController {
 
     @Autowired
     IOrderInfoService orderInfoService;
+
+    @Autowired
+    FileClient fileClient;
 
     @Autowired
     ILogisticsTrackService logisticsTrackService;
@@ -907,6 +909,16 @@ public class ExternalApiController {
         }
         return ApiResult.error("找不到对应费用");
 
+    }
+
+    /**
+     * 获取附件集合
+     */
+    @RequestMapping(value = "/api/getAttachments")
+    ApiResult getAttachments(Long orderId){
+        String prePath = String.valueOf(fileClient.getBaseUrl().getData());
+        List<FileView> attachments = this.logisticsTrackService.getAttachments(orderId, BusinessTypeEnum.HY.getCode(), prePath);
+        return ApiResult.ok(attachments);
     }
 }
 

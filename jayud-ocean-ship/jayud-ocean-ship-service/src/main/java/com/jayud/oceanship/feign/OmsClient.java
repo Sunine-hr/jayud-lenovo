@@ -6,6 +6,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.config.FeignRequestInterceptor;
 import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.common.entity.InitComboxVO;
+import com.jayud.common.utils.FileView;
 import com.jayud.oceanship.bo.AddGoodsForm;
 import com.jayud.oceanship.bo.AddOrderAddressForm;
 import com.jayud.oceanship.bo.AuditInfoForm;
@@ -163,4 +164,10 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/getVehicleSizeInfo")
     ApiResult getVehicleSizeInfo();
+
+    /**
+     * 获取附件集合
+     */
+    @RequestMapping(value = "/api/getAttachments")
+    ApiResult getAttachments(Long orderId);
 }

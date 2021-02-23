@@ -5,11 +5,13 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.TradeTypeEnum;
+import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -164,6 +166,9 @@ public class SeaOrderVO {
 
     @ApiModelProperty(value = "供应商名称")
     private String supplierName;
+
+    @ApiModelProperty(value = "所有附件信息")
+    private List<FileView> allPics = new ArrayList<>();
 
     public void processingAddress(OrderAddressVO addressVO) {
         switch (addressVO.getType()) {

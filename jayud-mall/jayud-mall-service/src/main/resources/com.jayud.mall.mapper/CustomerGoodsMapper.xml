@@ -50,9 +50,7 @@
         left join customer t1 on t1.id = t.customer_id
         WHERE
         1 = 1
-        <if test="form.customerId != null">
-            AND t.customer_id = #{form.customerId}
-        </if>
+        AND t.customer_id = #{form.customerId}
         <if test="form.sku != null and form.sku != ''">
             AND t.sku LIKE CONCAT('%',#{form.sku},'%')
         </if>

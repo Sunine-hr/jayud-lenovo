@@ -5,7 +5,6 @@ import com.jayud.mall.mapper.OrderPickMapper;
 import com.jayud.mall.model.po.OrderPick;
 import com.jayud.mall.model.vo.DeliveryAddressVO;
 import com.jayud.mall.model.vo.OrderPickVO;
-import com.jayud.mall.service.INumberGeneratedService;
 import com.jayud.mall.service.IOrderPickService;
 import com.jayud.mall.utils.NumberGeneratedUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +27,8 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
     @Autowired
     OrderPickMapper orderPickMapper;
 
-    @Autowired
-    INumberGeneratedService numberGeneratedService;
+//    @Autowired
+//    INumberGeneratedService numberGeneratedService;
 
     @Override
     public List<OrderPickVO> createOrderPickList(List<DeliveryAddressVO> form) {

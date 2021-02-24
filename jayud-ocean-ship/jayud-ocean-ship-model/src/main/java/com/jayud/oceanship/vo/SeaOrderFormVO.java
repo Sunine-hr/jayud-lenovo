@@ -74,8 +74,11 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
     private String processStatusDesc;
 
 //    @ApiModelProperty(value = "结算单位code")
-    @ApiModelProperty(value = "结算单位")
+    //@ApiModelProperty(value = "结算单位")
     private String unitCode;
+
+    @ApiModelProperty(value = "结算单位")
+    private String unitCodeName;
 
     //进出口类型(1：进口，2：出口)
     //@ApiModelProperty(value = "进出口类型")
@@ -315,6 +318,28 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
             }
         }
     }
+
+    /**
+     * 组装结算单位数据
+     */
+    public void assemblyUnitCodeInfo(ApiResult unitCodeInfo) {
+        if (unitCodeInfo == null) {
+            return;
+        }
+        if (unitCodeInfo.getCode() != HttpStatus.SC_OK) {
+            log.warn("请求结算单位信息失败");
+            return;
+        }
+        JSONArray legalEntitys = new JSONArray(unitCodeInfo.getData());
+        for (int i = 0; i < legalEntitys.size(); i++) {
+            JSONObject json = legalEntitys.getJSONObject(i);
+            if (this.unitCode.equals(json.getStr("idCode"))) { //法人主体配对
+                this.unitCodeName = json.getStr("name");
+                break;
+            }
+        }
+    }
+
 
     /**
      * 组装法人主体

@@ -11,7 +11,7 @@
  Target Server Version : 50731
  File Encoding         : 65001
 
- Date: 18/02/2021 18:42:10
+ Date: 23/02/2021 09:57:01
 */
 
 SET NAMES utf8mb4;
@@ -27,13 +27,8 @@ CREATE TABLE `cabinet_type`  (
   `create_time` datetime(0) NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   `create_user` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '创建人',
   `status` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '状态',
+  `cabinet_size_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '柜型大小id',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '柜型表' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of cabinet_type
--- ----------------------------
-INSERT INTO `cabinet_type` VALUES (1, 'FCL', '2021-02-05 14:32:09', 'admin', '1');
-INSERT INTO `cabinet_type` VALUES (2, 'LCL', '2021-02-05 14:33:25', 'admin', '1');
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '柜型表' ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;

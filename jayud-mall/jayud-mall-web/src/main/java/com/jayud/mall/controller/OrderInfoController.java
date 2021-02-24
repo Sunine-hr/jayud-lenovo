@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/orderinfo")
-@Api(tags = "C013-C端-产品订单表接口")
+@Api(tags = "C013-client-产品订单表接口")
 @ApiSort(value = 13)
 public class OrderInfoController {
 

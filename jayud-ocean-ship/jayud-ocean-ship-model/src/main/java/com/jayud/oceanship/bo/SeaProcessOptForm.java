@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,12 +24,14 @@ import java.util.List;
 @Slf4j
 public class SeaProcessOptForm {
 
+    @NotNull(message = "主订单id不能为空")
     @ApiModelProperty(value = "主订单id", required = true)
     private Long mainOrderId;
 
     @ApiModelProperty(value = "海运订单号", required = true)
     private String orderNo;
 
+    @NotNull(message = "海运订单id不能为空")
     @ApiModelProperty(value = "海运订单id", required = true)
     private Long orderId;
 
@@ -89,10 +93,10 @@ public class SeaProcessOptForm {
     @ApiModelProperty(value = "目的港代码")
     private String portDestinationName;
 
-    @ApiModelProperty(value = "柜型大小")
+    @ApiModelProperty(value = "柜型大小id")
     private Integer cabinetSize;
 
-    @ApiModelProperty(value = "柜型类型")
+    @ApiModelProperty(value = "柜型类型id")
     private Integer cabinetType;
 
     @ApiModelProperty(value = "柜型大小")

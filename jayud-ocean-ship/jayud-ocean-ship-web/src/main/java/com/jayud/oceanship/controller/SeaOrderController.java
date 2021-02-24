@@ -47,10 +47,13 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -228,9 +231,16 @@ public class SeaOrderController {
     //操作指令,cmd = S_0待接单,S_1海运接单,S_2订船,S_3订单入仓, S_4提交补料,S_5草稿提单,S_6放单确认,S_7确认离港,S_8确认到港,S_9海外代理S_10确认签收
     @ApiOperation(value = "执行海运流程操作")
     @PostMapping(value = "/doSeaProcessOpt")
-    public CommonResult doSeaProcessOpt(@RequestBody SeaProcessOptForm form) {
+    public CommonResult doSeaProcessOpt(@RequestBody @Valid SeaProcessOptForm form , BindingResult result) {
+
+        if(result.hasErrors()){
+            for (ObjectError error : result.getAllErrors()) {
+                return CommonResult.error(444,error.getDefaultMessage());
+            }
+        }
+
         if (form.getMainOrderId() == null || form.getOrderId() == null) {
-            log.warn("海运订单编号/海运订单id必填");
+            log.warn("主订单id/海运订单id必填");
             return CommonResult.error(ResultEnum.VALIDATE_FAILED);
         }
         //海运订单信息
@@ -412,14 +422,14 @@ public class SeaOrderController {
             ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
 
             WriteSheet writeSheet = EasyExcel.writerSheet().build();
-//            FillConfig fillConfig = FillConfig.builder().direction(WriteDirectionEnum.HORIZONTAL).build();
+            FillConfig fillConfig = FillConfig.builder().direction(WriteDirectionEnum.HORIZONTAL).build();
             //将集合数据填充
-            excelWriter.fill(new FillWrapper("delivery",seaOrderDetails.getDeliveryAddress()),writeSheet);
-            excelWriter.fill(new FillWrapper("shipping",seaOrderDetails.getShippingAddress()),writeSheet);
+            excelWriter.fill(new FillWrapper("delivery",seaOrderDetails.getDeliveryAddress()),fillConfig,writeSheet);
+            excelWriter.fill(new FillWrapper("shipping",seaOrderDetails.getShippingAddress()),fillConfig,writeSheet);
             if(seaOrderDetails.getNotificationAddress()!=null && seaOrderDetails.getNotificationAddress().size()>0){
-                excelWriter.fill(new FillWrapper("notification",seaOrderDetails.getNotificationAddress()),writeSheet);
+                excelWriter.fill(new FillWrapper("notification",seaOrderDetails.getNotificationAddress()),fillConfig,writeSheet);
             }
-            excelWriter.fill(new FillWrapper("goodone",seaOrderDetails.getGoodsForms()),writeSheet);
+            excelWriter.fill(new FillWrapper("goodone",seaOrderDetails.getGoodsForms()),fillConfig,writeSheet);
             excelWriter.fill(new FillWrapper("goodtwo",seaOrderDetails.getGoodsForms()),writeSheet);
 
             //将指定数据填充

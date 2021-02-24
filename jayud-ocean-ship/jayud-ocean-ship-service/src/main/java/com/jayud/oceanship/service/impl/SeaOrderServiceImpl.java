@@ -284,7 +284,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         auditInfoForm.setExtId(form.getOrderId());
         auditInfoForm.setExtDesc(SqlConstant.SEA_ORDER);
         auditInfoForm.setAuditComment(form.getDescription());
-        auditInfoForm.setAuditUser(form.getOperatorUser());
+        auditInfoForm.setAuditUser(UserOperator.getToken());
         auditInfoForm.setFileViews(form.getFileViewList());
         auditInfoForm.setAuditStatus(form.getStatus());
         auditInfoForm.setAuditTypeDesc(form.getStatusName());

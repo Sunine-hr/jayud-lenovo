@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/orderpick")
-@Api(tags = "C012-C端-订单对应提货信息表接口")
+@Api(tags = "C012-client-订单对应提货信息表接口")
 @ApiSort(value = 12)
 public class OrderPickController {
 

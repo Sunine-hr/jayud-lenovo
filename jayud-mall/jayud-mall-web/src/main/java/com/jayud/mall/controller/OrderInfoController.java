@@ -5,7 +5,9 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.OrderInfoForm;
 import com.jayud.mall.model.bo.QueryOrderInfoForm;
+import com.jayud.mall.model.vo.OrderCaseVO;
 import com.jayud.mall.model.vo.OrderInfoVO;
+import com.jayud.mall.model.vo.OrderShopVO;
 import com.jayud.mall.model.vo.domain.CustomerUser;
 import com.jayud.mall.service.BaseService;
 import com.jayud.mall.service.IOrderInfoService;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/orderinfo")
@@ -35,6 +39,10 @@ public class OrderInfoController {
     @PostMapping("/temporaryStorageOrderInfo")
     @ApiOperationSupport(order = 1)
     public CommonResult<OrderInfoVO> temporaryStorageOrderInfo(@RequestBody OrderInfoForm form){
+        //订单对应箱号信息:order_case
+        List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
+        //订单对应商品：order_shop
+        List<OrderShopVO> orderShopVOList = form.getOrderShopVOList();
         return orderInfoService.temporaryStorageOrderInfo(form);
     }
 

@@ -7,7 +7,6 @@
         <id column="id" property="id" />
         <result column="order_id" property="orderId" />
         <result column="cost_name" property="costName" />
-        <result column="supplier_code" property="supplierCode" />
         <result column="amount" property="amount" />
         <result column="cid" property="cid" />
         <result column="remarks" property="remarks" />
@@ -21,8 +20,8 @@
     <select id="findOrderCopeWithByOrderId" parameterType="java.lang.Long"
             resultType="com.jayud.mall.model.vo.OrderCopeWithVO">
         select
-        t.id,t.order_id,t.cost_name,t.supplier_code,t.amount,t.cid,t.remarks,
-        t1.supplier_ch_name,
+        t.id,t.order_id,t.cost_code,t.cost_name,t.supplier_id,t.amount,t.cid,t.remarks,
+        t1.company_name supplierName,
         t2.currency_code,t2.currency_name
         from order_cope_with t
         LEFT JOIN supplier_info t1 on t1.supplier_code = t.supplier_code

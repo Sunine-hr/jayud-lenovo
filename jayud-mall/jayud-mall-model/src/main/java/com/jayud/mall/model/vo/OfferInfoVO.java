@@ -219,15 +219,19 @@ public class OfferInfoVO {
     @JSONField(ordinal = 45)
     private String route;
 
-    //海运费：订柜尺寸(应收费用明细)
+    //rec应收费用信息
+    //rec1.海运费：订柜尺寸(应收费用明细)
     @ApiModelProperty(value = "海运费：订柜尺寸(应收费用明细)", position = 46)
     @JSONField(ordinal = 46)
     private List<TemplateCopeReceivableVO> oceanFeeList;
 
-    //内陆费：集货仓库(应收费用明细)
+    //rec2.内陆费：集货仓库(应收费用明细)
     @ApiModelProperty(value = "内陆费：集货仓库(应收费用明细)", position = 47)
     @JSONField(ordinal = 47)
     private List<TemplateCopeReceivableVO> inlandFeeList;
+
+    //rec3.其他应收费用
+    //TODO
 
     //图片
     @ApiModelProperty(value = "图片", position = 48)

@@ -276,15 +276,20 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
     public OfferInfoVO purchaseOrders(Long id) {
         OfferInfoVO offerInfoVO = offerInfoMapper.lookOfferInfoFare(id);
         Integer qie = offerInfoVO.getQie();//报价模板id
+
+        //rec应收费用信息
+        //rec1.海运费：订柜尺寸(应收费用明细)
         /*订柜尺寸：海运费规格*/
         List<TemplateCopeReceivableVO> oceanFeeList =
                 templateCopeReceivableMapper.findTemplateCopeReceivableOceanFeeByQie(qie);
         offerInfoVO.setOceanFeeList(oceanFeeList);
-
+        //rec2.内陆费：集货仓库(应收费用明细)
         /*集货仓库：陆运费规格*/
         List<TemplateCopeReceivableVO> inlandFeeList =
                 templateCopeReceivableMapper.findTemplateCopeReceivableInlandFeeListByQie(qie);
         offerInfoVO.setInlandFeeList(inlandFeeList);
+        //rec3.其他应收费用
+        //TODO
 
         /*目的地仓库：可达仓库*/
         String arriveWarehouse = offerInfoVO.getArriveWarehouse();
@@ -295,6 +300,23 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
             List<FabWarehouseVO> fabWarehouseVOList = ConvertUtil.convertList(fabWarehouses, FabWarehouseVO.class);
             offerInfoVO.setFabWarehouseVOList(fabWarehouseVOList);
         }
+
+        //TODO 订单下单时，根据运价，计算费用  1.应收费用  2.应付费用
+        //报价对应应收费用明细list
+        QueryWrapper<TemplateCopeReceivable> query1 = new QueryWrapper<>();
+        query1.eq("qie", qie);
+        List<TemplateCopeReceivable> templateCopeReceivables = templateCopeReceivableMapper.selectList(query1);
+        List<TemplateCopeReceivableVO> templateCopeReceivableVOList =
+                ConvertUtil.convertList(templateCopeReceivables, TemplateCopeReceivableVO.class);
+        offerInfoVO.setTemplateCopeReceivableVOList(templateCopeReceivableVOList);
+        //报价对应应付费用明细list
+        QueryWrapper<TemplateCopeWith> query2 = new QueryWrapper<>();
+        query2.eq("qie", qie);
+        List<TemplateCopeWith> templateCopeWiths = templateCopeWithMapper.selectList(query2);
+        List<TemplateCopeWithVO> templateCopeWithVOList =
+                ConvertUtil.convertList(templateCopeWiths, TemplateCopeWithVO.class);
+        offerInfoVO.setTemplateCopeWithVOList(templateCopeWithVOList);
+
 
         return offerInfoVO;
     }

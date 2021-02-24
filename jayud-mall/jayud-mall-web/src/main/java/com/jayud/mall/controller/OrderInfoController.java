@@ -7,6 +7,7 @@ import com.jayud.mall.model.bo.OrderInfoForm;
 import com.jayud.mall.model.bo.QueryOrderInfoForm;
 import com.jayud.mall.model.vo.OrderCaseVO;
 import com.jayud.mall.model.vo.OrderInfoVO;
+import com.jayud.mall.model.vo.OrderPickVO;
 import com.jayud.mall.model.vo.OrderShopVO;
 import com.jayud.mall.model.vo.domain.CustomerUser;
 import com.jayud.mall.service.BaseService;
@@ -41,8 +42,22 @@ public class OrderInfoController {
     public CommonResult<OrderInfoVO> temporaryStorageOrderInfo(@RequestBody OrderInfoForm form){
         //订单对应箱号信息:order_case
         List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
+        if(orderCaseVOList == null || orderCaseVOList.size() == 0){
+            return CommonResult.error(-1, "订单箱号不能为空");
+        }
         //订单对应商品：order_shop
         List<OrderShopVO> orderShopVOList = form.getOrderShopVOList();
+        if(orderShopVOList == null || orderShopVOList.size() == 0){
+            return CommonResult.error(-1, "订单商品不能为空");
+        }
+        Integer isPick = form.getIsPick();//是否上门提货(0否 1是,order_pick) is_pick=1
+        if(isPick == 1){
+            //订单对应提货信息表：order_pick
+            List<OrderPickVO> orderPickVOList = form.getOrderPickVOList();
+            if(orderPickVOList == null || orderPickVOList.size() == 0){
+                return CommonResult.error(-1, "订单提货信息不能为空");
+            }
+        }
         return orderInfoService.temporaryStorageOrderInfo(form);
     }
 
@@ -51,6 +66,24 @@ public class OrderInfoController {
     @PostMapping("/submitOrderInfo")
     @ApiOperationSupport(order = 2)
     public CommonResult<OrderInfoVO> submitOrderInfo(@RequestBody OrderInfoForm form){
+        //订单对应箱号信息:order_case
+        List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
+        if(orderCaseVOList == null || orderCaseVOList.size() == 0){
+            return CommonResult.error(-1, "订单箱号不能为空");
+        }
+        //订单对应商品：order_shop
+        List<OrderShopVO> orderShopVOList = form.getOrderShopVOList();
+        if(orderShopVOList == null || orderShopVOList.size() == 0){
+            return CommonResult.error(-1, "订单商品不能为空");
+        }
+        Integer isPick = form.getIsPick();//是否上门提货(0否 1是,order_pick) is_pick=1
+        if(isPick == 1){
+            //订单对应提货信息表：order_pick
+            List<OrderPickVO> orderPickVOList = form.getOrderPickVOList();
+            if(orderPickVOList == null || orderPickVOList.size() == 0){
+                return CommonResult.error(-1, "订单提货信息不能为空");
+            }
+        }
         return orderInfoService.submitOrderInfo(form);
     }
 

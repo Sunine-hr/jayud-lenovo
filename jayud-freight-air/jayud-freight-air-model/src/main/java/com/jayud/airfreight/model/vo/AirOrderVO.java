@@ -122,6 +122,9 @@ public class AirOrderVO {
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private String receivingOrdersDate;
 
+    @ApiModelProperty(value = "发票号(多个逗号隔开)")
+    private String invoiceNo;
+
     public void processingAddress(OrderAddressVO addressVO) {
         switch (addressVO.getType()) {
             case 0:

@@ -120,7 +120,7 @@ public class InputAirOrderForm {
             return false;
         }
 
-        if (this.invoiceNo != null && Pattern.matches("^[A-Za-z0-9,]+$", this.invoiceNo)) {
+        if (this.invoiceNo != null && !Pattern.matches("^[A-Za-z0-9,]+$", this.invoiceNo)) {
             throw new JayudBizException(400, "发票号只能输入英文、数字包括,");
         }
 

@@ -118,4 +118,7 @@ public class InputAirOrderVO {
 
     @ApiModelProperty(value = "海外代理供应商")
     private String overseasSuppliers;
+
+    @ApiModelProperty(value = "发票号(多个逗号隔开)")
+    private String invoiceNo;
 }

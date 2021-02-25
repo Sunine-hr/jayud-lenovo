@@ -27,17 +27,25 @@ public class OrderBillCostTotalVO {
     @ApiModelProperty(value = "录入费用时刻的本币金额")
     private BigDecimal oldLocalMoney;
 
-    @ApiModelProperty(value = "出账后的本币金额")
-    private BigDecimal localMoney;
+    @ApiModelProperty(value = "出账本币汇率")
+    private BigDecimal localMoneyRate;
 
     @ApiModelProperty(value = "录入费用时的金额")
     private BigDecimal money;
+
+    @ApiModelProperty(value = "出账后的本币金额")
+    private BigDecimal localMoney;
 
     @ApiModelProperty(value = "对账编号")
     private String billNo;
 
     @ApiModelProperty(value = "汇率")
     private BigDecimal exchangeRate;
+
+    public void setLocalMoneyRate(BigDecimal localMoneyRate) {
+        this.localMoneyRate = localMoneyRate;
+        this.localMoney = this.money.subtract(localMoneyRate);
+    }
 
 
 }

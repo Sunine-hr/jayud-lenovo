@@ -6,3 +6,8 @@ ADD COLUMN `exchange_rate` decimal(10, 4) NULL COMMENT '结算汇率' AFTER `cur
 -- 2021-2-19 出账订单维度的费用统计记录表,增加是否自定汇率
 ALTER TABLE `order_bill_cost_total`
 ADD COLUMN `is_custom_exchange_rate` tinyint(1) NULL COMMENT '是否自定汇率' AFTER `exchange_rate`;
+
+-- 2021-2-24 出账订单维度的费用统计记录表,增加人民币汇率
+ALTER TABLE `order_bill_cost_total`
+ADD COLUMN `local_money_rate` decimal(10, 4) NULL COMMENT '本币汇率' AFTER `local_money`;
+

@@ -120,6 +120,9 @@ public class OrderPaymentCost extends Model<OrderPaymentCost> {
     @ApiModelProperty(value = "暂存绑定账单号")
     private String tmpBillNo;
 
+    @ApiModelProperty(value = "卸货地址")
+    private String unloadingAddress;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

@@ -37,8 +37,8 @@ public class QueryAirOrderForm extends BasePageForm {
     @ApiModelProperty(value = "目的地机场")
     private String portDestination;
 
-    @ApiModelProperty(value = "创建时间")
-    private String createTime;
+//    @ApiModelProperty(value = "创建时间")
+//    private String createTime;
 
     @ApiModelProperty(value = "主订单号")
     @JsonIgnore

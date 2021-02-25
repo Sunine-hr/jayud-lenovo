@@ -131,4 +131,9 @@ public interface TmsClient {
      */
     @RequestMapping(value = "/api/getTmsOrderByMainOrderNos")
     public ApiResult getTmsOrderByMainOrderNos(@RequestParam("mainOrderNos") List<String> mainOrderNos);
+
+
+    @ApiModelProperty(value = "根据订单号获取送货地址信息(下拉选择)")
+    @RequestMapping(value = "/api/initTakeAdrBySubOrderNo")
+    public ApiResult initTakeAdrBySubOrderNo(@RequestParam("subOrderNo") String subOrderNo);
 }

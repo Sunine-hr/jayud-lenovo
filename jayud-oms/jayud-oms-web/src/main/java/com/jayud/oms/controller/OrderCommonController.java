@@ -6,10 +6,12 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.enums.OrderOprCmdEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.FileClient;
+import com.jayud.oms.feign.TmsClient;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.enums.VehicleTypeEnum;
 import com.jayud.oms.model.po.LogisticsTrack;
@@ -45,18 +47,16 @@ public class OrderCommonController {
 
     @Autowired
     private IOrderInfoService orderInfoService;
-
     @Autowired
     private ILogisticsTrackService logisticsTrackService;
-
     @Autowired
     private IProductClassifyService productClassifyService;
-
     @Autowired
     private FileClient fileClient;
-
     @Autowired
     private IVehicleInfoService vehicleInfoService;
+    @Autowired
+    private TmsClient tmsClient;
 
     @ApiOperation(value = "录入费用")
     @PostMapping(value = "/saveOrUpdateCost")
@@ -132,16 +132,16 @@ public class OrderCommonController {
     public CommonResult<Map<String, Object>> subOrderFeeDetails(@RequestBody Map<String, Object> map) {
         Map<String, Object> result = new HashMap<>();
         String mainOrderNo = MapUtil.getStr(map, "mainOrderNo"); //获取子订单的主订单号
-        Boolean isMainOrder=false;
+        Boolean isMainOrder = false;
         if (mainOrderNo == null) {
-            isMainOrder=true;
+            isMainOrder = true;
             mainOrderNo = MapUtil.getStr(map, "orderNo");
         }
 
         String classCode = MapUtil.getStr(map, "classCode"); //获取子订单的主订单号
-        Boolean isSea=false;
+        Boolean isSea = false;
         if (OrderStatusEnum.HY.getCode().equals(classCode)) {
-            isSea=true;
+            isSea = true;
         }
 
 //
@@ -149,10 +149,10 @@ public class OrderCommonController {
         result.put("subOrderNo", MapUtil.getStr(map, "orderNo"));
         result.put("goodsInfo", MapUtil.getStr(map, "goodsInfo"));
         result.put("vehicleSize", MapUtil.getStr(map, "vehicleSize"));
-        result.put("customerName",MapUtil.getStr(map,"customerName"));
-        result.put("isMainOrder",isMainOrder);
-        result.put("isSea",isSea);
-        result.put("cabinet",MapUtil.getStr(map,"cabinetTypeName")+"/"+MapUtil.getStr(map,"cabinetSizeName"));
+        result.put("customerName", MapUtil.getStr(map, "customerName"));
+        result.put("isMainOrder", isMainOrder);
+        result.put("isSea", isSea);
+        result.put("cabinet", MapUtil.getStr(map, "cabinetTypeName") + "/" + MapUtil.getStr(map, "cabinetSizeName"));
         return CommonResult.success(result);
     }
 
@@ -301,6 +301,21 @@ public class OrderCommonController {
         return CommonResult.success(initVehicleSizeInfoVO);
     }
 
+    @ApiOperation(value = "下拉选择卸货地址")
+    @PostMapping(value = "/initTakeAdrBySubOrderNo")
+    public CommonResult initTakeAdrBySubOrderNo(@RequestBody Map<String, Object> map) {
+
+        String subOrderNo = MapUtil.getStr(map, "subOrderNo");
+        String orderType = MapUtil.getStr(map, "orderType");
+        if (StringUtils.isEmpty(subOrderNo) || StringUtils.isEmpty(orderType)) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        Object data = null;
+        if (SubOrderSignEnum.ZGYS.getSignOne().equals(orderType)) {
+            data = this.tmsClient.initTakeAdrBySubOrderNo(subOrderNo).getData();
+        }
+        return CommonResult.success(data);
+    }
 
 }
 

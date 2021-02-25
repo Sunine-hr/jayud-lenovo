@@ -61,5 +61,8 @@ public class InputPaymentCostForm {
     @ApiModelProperty(value = "状态")
     private String status;
 
+    @ApiModelProperty(value = "卸货地址")
+    private String unloadingAddress;
+
 
 }

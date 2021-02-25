@@ -59,7 +59,8 @@
         opc.`change_amount` changeAmount,
         opc.`exchange_rate` exchangeRate,
         opc.`remarks`,
-        opc.`status`
+        opc.`status`,
+        opc.unloading_address unloadingAddress
         FROM
         order_payment_cost opc
         where opc.`main_order_no` = #{form.mainOrderNo}

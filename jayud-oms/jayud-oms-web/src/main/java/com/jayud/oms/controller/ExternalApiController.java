@@ -539,8 +539,8 @@ public class ExternalApiController {
                 }
                 OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
                 orderReceivableCost.setId(orderCost.getCostId());
-                orderReceivableCost.setExchangeRate(sCost.getExchangeRate());//汇率
-                orderReceivableCost.setChangeAmount(sCost.getChangeAmount());//本币金额
+                orderReceivableCost.setExchangeRate(orderCost.getLocalMoneyRate());//汇率
+                orderReceivableCost.setChangeAmount(orderCost.getLocalMoney());//本币金额
                 orderReceivableCost.setOptName(orderCost.getLoginUserName());
                 orderReceivableCost.setOptTime(LocalDateTime.now());
                 receivableCostService.updateById(orderReceivableCost);
@@ -555,8 +555,8 @@ public class ExternalApiController {
                 }
                 OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
                 orderPaymentCost.setId(orderCost.getCostId());
-                orderPaymentCost.setExchangeRate(fCost.getExchangeRate());//汇率
-                orderPaymentCost.setChangeAmount(fCost.getChangeAmount());//本币金额
+                orderPaymentCost.setExchangeRate(orderCost.getLocalMoneyRate());//汇率
+                orderPaymentCost.setChangeAmount(orderCost.getLocalMoney());//本币金额
                 orderPaymentCost.setOptName(orderCost.getLoginUserName());
                 orderPaymentCost.setOptTime(LocalDateTime.now());
                 paymentCostService.updateById(orderPaymentCost);

@@ -50,6 +50,9 @@ public class OrderBillCostTotal extends Model<OrderBillCostTotal> {
     @ApiModelProperty(value = "金额,根据结算币种计算的金额，以费用项为维度")
     private BigDecimal money;
 
+    @ApiModelProperty(value = "出账本币汇率")
+    private BigDecimal localMoneyRate;
+
     @ApiModelProperty(value = "本币金额")
     private BigDecimal localMoney;
 

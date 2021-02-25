@@ -90,24 +90,24 @@
         <!--            and (orbd.audit_status in ('B_3','B_4','B_5','B_5_1','B_6') or orbd.apply_status='4')-->
         <!--        </if>-->
 
-<!--        <if test="form.cmd == 'zgys_statement'">-->
-<!--            and orb.is_main = 0 and orb.sub_type = 'zgys'-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'zgys_statement_audit'">-->
-<!--            and orb.is_main = 0 and orb.sub_type = 'zgys' and orbd.audit_status in ('B_1','B_2')-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'bg_statement'">-->
-<!--            and orb.is_main = 0 and orb.sub_type = 'bg'-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'bg_statement_audit'">-->
-<!--            and orb.is_main = 0 and orb.sub_type = 'bg' and orbd.audit_status in ('B_1','B_2')-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'ky_statement'">-->
-<!--            and orb.is_main = 0 and orb.sub_type = 'ky'-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'ky_statement_audit'">-->
-<!--            and orb.is_main = 0 and orb.sub_type = 'ky' and orbd.audit_status in ('B_1','B_2')-->
-<!--        </if>-->
+        <!--        <if test="form.cmd == 'zgys_statement'">-->
+        <!--            and orb.is_main = 0 and orb.sub_type = 'zgys'-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'zgys_statement_audit'">-->
+        <!--            and orb.is_main = 0 and orb.sub_type = 'zgys' and orbd.audit_status in ('B_1','B_2')-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'bg_statement'">-->
+        <!--            and orb.is_main = 0 and orb.sub_type = 'bg'-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'bg_statement_audit'">-->
+        <!--            and orb.is_main = 0 and orb.sub_type = 'bg' and orbd.audit_status in ('B_1','B_2')-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'ky_statement'">-->
+        <!--            and orb.is_main = 0 and orb.sub_type = 'ky'-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'ky_statement_audit'">-->
+        <!--            and orb.is_main = 0 and orb.sub_type = 'ky' and orbd.audit_status in ('B_1','B_2')-->
+        <!--        </if>-->
 
         <choose>
             <when test="form.cmd == 'main_statement'">
@@ -429,7 +429,8 @@
         </if>
     </select>
     <select id="findSCostList" parameterType="java.lang.String" resultType="com.jayud.finance.vo.FCostVO">
-        select temp.customerName,temp.costGenreName,temp.costName,temp.unitPrice,temp.number,temp.currencyName,temp.amount,temp.exchangeRate,ifnull(temp.exchangeRate,0)*temp.amount changeAmount,temp.remarks from (
+        select temp.customerName,temp.costGenreName,temp.costName,temp.unitPrice,temp.number,temp.currencyName,temp.amount,temp.exchangeRate, changeAmount,temp.remarks
+        from (
         SELECT
             orc.customer_name customerName,
             (select cg.`name` from cost_genre cg where cg.id = orc.cost_genre_id) costGenreName,
@@ -438,11 +439,15 @@
             orc.number,
             (select ci.currency_name from currency_info ci where ci.currency_code = orc.currency_code) currencyName,
             orc.amount,
-            (select cr.exchange_rate from currency_rate cr where cr.dcid = (select ci.id from currency_info ci where ci.currency_code = 'CNY') and cr.ocid = (select ci.id from currency_info ci where ci.currency_code = orc.currency_code)  and cr.`month` = orbd.account_term) exchangeRate,
+--             (select cr.exchange_rate from currency_rate cr where cr.dcid = (select ci.id from currency_info ci where ci.currency_code = 'CNY') and cr.ocid = (select ci.id from currency_info ci where ci.currency_code = orc.currency_code)  and cr.`month` = orbd.account_term) exchangeRate,
+            orbct.local_money_rate exchangeRate,
+            orbct.local_money changeAmount,
             orc.remarks
         FROM
             order_receivable_cost orc
-        LEFT JOIN order_receivable_bill_detail orbd ON orc.id = orbd.cost_id  WHERE
+            LEFT JOIN order_receivable_bill_detail orbd ON orc.id = orbd.cost_id
+            LEFT JOIN order_bill_cost_total orbct ON orbct.bill_no = orbd.bill_no and orbct.cost_id=orbd.cost_id
+            WHERE
             orbd.bill_no = #{billNo}
             ) temp
     </select>

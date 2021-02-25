@@ -103,6 +103,9 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         //查询结算汇率
         List<String> billNos = resultList.stream().map(OrderPaymentBillNumVO::getBillNo).collect(Collectors.toList());
         List<OrderBillCostTotal> costTotals = this.costTotalService.getByBillNo(billNos, OrderBillCostTotalTypeEnum.PAYMENT.getCode());
+        costTotals = costTotals.stream().collect(Collectors.collectingAndThen(
+                Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(e->e.getCurrencyCode() + ";" +e.getCurrentCurrencyCode()))), ArrayList::new));
+
         //查询币种名称
         List<InitComboxStrVO> data = omsClient.initCurrencyInfo().getData();
         Map<String, String> currencyMap = data.stream().collect(Collectors.toMap(InitComboxStrVO::getCode, InitComboxStrVO::getName));
@@ -162,34 +165,46 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
                 Map<String, BigDecimal> customExchangeRate = new HashMap<>();
                 form.getCustomExchangeRate().forEach(e -> customExchangeRate.put(e.getCode(), e.getNote() == null ? new BigDecimal(0) : new BigDecimal(e.getNote())));
                 orderBillCostTotalVOS.forEach(e -> {
-                    e.setExchangeRate(customExchangeRate.get(e.getCurrencyCode()));
+                    BigDecimal rate = customExchangeRate.get(e.getCurrencyCode());
+                    e.setExchangeRate(rate);
+                    //结算币种是CNY
+                    if ("CNY".equals(settlementCurrency)) {
+                        e.setLocalMoneyRate(rate);
+                        e.setLocalMoney(e.getMoney().multiply(rate));
+                    }
                 });
             }
+            Set<String> msg = new HashSet<>();
             for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
                 BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();//如果费率为0，则抛异常回滚数据
                 if ((exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0) && !orderBillCostTotalVO.getCurrencyCode().equals(settlementCurrency)) {
                     //根据币种查询币种描述
                     String oCurrency = currencyRateService.getNameByCode(orderBillCostTotalVO.getCurrencyCode());
                     String dCurrency = currencyRateService.getNameByCode(settlementCurrency);
-                    sb.append("原始币种:" + oCurrency + ",兑换币种:" + dCurrency + ";");
+//                    sb.append("原始币种:" + oCurrency + ",兑换币种:" + dCurrency + ";");
+                    msg.add("原始币种:" + oCurrency + ",兑换币种:" + dCurrency + ";");
                     flag = false;
                 }
                 if (orderBillCostTotalVO.getCurrencyCode().equals("CNY")) {
                     orderBillCostTotalVO.setLocalMoney(orderBillCostTotalVO.getOldLocalMoney());
                 }
             }
-            //出账时要以结算期为汇率记录本币金额，需要校验是否配置汇率
-            List<OrderBillCostTotalVO> tempOrderBillCostTotalVOS = costTotalService.findOrderFBillCostTotal(costIds, "CNY", form.getAccountTermStr());
-            for (OrderBillCostTotalVO orderBillCostTotalVO : tempOrderBillCostTotalVOS) {
-                BigDecimal localMoney = orderBillCostTotalVO.getLocalMoney();//如果本币金额为0，说明汇率为空没配置
-                if ((localMoney == null || localMoney.compareTo(new BigDecimal("0")) == 0) && !orderBillCostTotalVO.getCurrencyCode().equals("CNY")) {
-                    //根据币种查询币种描述
-                    String oCurrency = currencyRateService.getNameByCode(orderBillCostTotalVO.getCurrencyCode());
-                    sb.append("原始币种:" + oCurrency + ",兑换币种:人民币;");
-                    flag = false;
+            if (!form.getIsCustomExchangeRate() && !"CNY".equals(settlementCurrency)) {
+                //出账时要以结算期为汇率记录本币金额，需要校验是否配置汇率
+                List<OrderBillCostTotalVO> tempOrderBillCostTotalVOS = costTotalService.findOrderFBillCostTotal(costIds, "CNY", form.getAccountTermStr());
+                for (OrderBillCostTotalVO orderBillCostTotalVO : tempOrderBillCostTotalVOS) {
+                    BigDecimal localMoney = orderBillCostTotalVO.getLocalMoney();//如果本币金额为0，说明汇率为空没配置
+                    if ((localMoney == null || localMoney.compareTo(new BigDecimal("0")) == 0) && !orderBillCostTotalVO.getCurrencyCode().equals("CNY")) {
+                        //根据币种查询币种描述
+                        String oCurrency = currencyRateService.getNameByCode(orderBillCostTotalVO.getCurrencyCode());
+//                        sb.append("原始币种:" + oCurrency + ",兑换币种:人民币;");
+                        msg.add("原始币种:" + oCurrency + ",兑换币种:人民币;");
+                        flag = false;
+                    }
                 }
             }
             if (!flag) {
+                msg.forEach(sb::append);
                 sb.append("]的汇率");
                 return CommonResult.error(10001, sb.toString());
             }
@@ -207,7 +222,8 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             //先保存对账单信息，在保存对账单详情信息
             OrderPaymentBill orderPaymentBill = ConvertUtil.convert(paymentBillForm, OrderPaymentBill.class);
             //1.统计已出账金额alreadyPaidAmount
-            BigDecimal nowBillAmount = paymentBillDetailForms.stream().map(OrderPaymentBillDetailForm::getLocalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal nowBillAmount = orderBillCostTotalVOS.stream().map(OrderBillCostTotalVO::getLocalMoney).reduce(BigDecimal.ZERO, BigDecimal::add);
+//            BigDecimal nowBillAmount = paymentBillDetailForms.stream().map(OrderPaymentBillDetailForm::getLocalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
             BigDecimal alreadyPaidAmount = getAlreadyPaidAmount(paymentBillForm.getLegalName(), paymentBillForm.getSupplierChName(), form.getSubType());
             orderPaymentBill.setAlreadyPaidAmount(alreadyPaidAmount.add(nowBillAmount));
             //2.统计已出账订单数billOrderNum
@@ -262,17 +278,21 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             }
             //开始保存对账单详情数据
             List<OrderPaymentBillDetail> paymentBillDetails = ConvertUtil.convertList(paymentBillDetailForms, OrderPaymentBillDetail.class);
+            //录用费用明细
+            Map<Long, OrderBillCostTotalVO> map = orderBillCostTotalVOS.stream().collect(Collectors.toMap(e -> e.getCostId(), e -> e));
             for (int i = 0; i < paymentBillDetails.size(); i++) {
-                paymentBillDetails.get(i).setStatus("1");
-                paymentBillDetails.get(i).setBillNo(form.getBillNo());
-                paymentBillDetails.get(i).setAccountTerm(form.getAccountTermStr());
-                paymentBillDetails.get(i).setSettlementCurrency(form.getSettlementCurrency());
-                paymentBillDetails.get(i).setAuditStatus(BillEnum.B_1.getCode());
-                paymentBillDetails.get(i).setCreatedOrderTime(DateUtils.convert2Date(paymentBillDetailForms.get(i).getCreatedTimeStr(), DateUtils.DATE_PATTERN));
-                paymentBillDetails.get(i).setMakeUser(form.getLoginUserName());
-                paymentBillDetails.get(i).setMakeTime(LocalDateTime.now());
-                paymentBillDetails.get(i).setCreatedUser(form.getLoginUserName());
-                paymentBillDetails.get(i).setBillId(orderPaymentBill.getId());
+                OrderPaymentBillDetail paymentBillDetail = paymentBillDetails.get(i);
+                paymentBillDetail.setStatus("1");
+                paymentBillDetail.setBillNo(form.getBillNo());
+                paymentBillDetail.setAccountTerm(form.getAccountTermStr());
+                paymentBillDetail.setSettlementCurrency(form.getSettlementCurrency());
+                paymentBillDetail.setAuditStatus(BillEnum.B_1.getCode());
+                paymentBillDetail.setCreatedOrderTime(DateUtils.convert2Date(paymentBillDetailForms.get(i).getCreatedTimeStr(), DateUtils.DATE_PATTERN));
+                paymentBillDetail.setMakeUser(form.getLoginUserName());
+                paymentBillDetail.setMakeTime(LocalDateTime.now());
+                paymentBillDetail.setCreatedUser(form.getLoginUserName());
+                paymentBillDetail.setBillId(orderPaymentBill.getId());
+                paymentBillDetail.setLocalAmount(map.get(paymentBillDetail.getCostId()).getLocalMoney());
             }
             result = paymentBillDetailService.saveBatch(paymentBillDetails);
             if (!result) {

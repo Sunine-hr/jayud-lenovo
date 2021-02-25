@@ -233,7 +233,7 @@ public class OrderTransportVO {
                         .append("/").append(orderTakeAdr.getPlateAmount() == null ? 0 : orderTakeAdr.getPlateAmount()).append("板")
                         .append("/").append(orderTakeAdr.getPieceAmount()).append("件")
                         .append("/").append("重量").append(orderTakeAdr.getWeight()).append("KG")
-                        .append("<br/>");
+                        .append(",");
             }
         }
         this.goodsInfo = sb.substring(0, sb.length() - 1);

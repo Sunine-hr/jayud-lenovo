@@ -503,7 +503,7 @@
         </if>
     </select>
     <select id="findFCostList" parameterType="java.lang.String" resultType="com.jayud.finance.vo.FCostVO">
-        select temp.customerName,temp.costGenreName,temp.costName,temp.unitPrice,temp.number,temp.currencyName,temp.amount,temp.exchangeRate,ifnull(temp.exchangeRate,0)*temp.amount changeAmount,temp.remarks from (
+        select temp.customerName,temp.costGenreName,temp.costName,temp.unitPrice,temp.number,temp.currencyName,temp.amount,temp.exchangeRate,changeAmount,temp.remarks from (
         SELECT
             opc.customer_name customerName,
             (select cg.`name` from cost_genre cg where cg.id = opc.cost_genre_id) costGenreName,
@@ -512,11 +512,14 @@
             opc.number,
             (select ci.currency_name from currency_info ci where ci.currency_code = opc.currency_code) currencyName,
             opc.amount,
-            (select cr.exchange_rate from currency_rate cr where cr.dcid = (select ci.id from currency_info ci where ci.currency_code = 'CNY') and cr.ocid = (select ci.id from currency_info ci where ci.currency_code = opc.currency_code)  and cr.`month` = opbd.account_term) exchangeRate,
+--             (select cr.exchange_rate from currency_rate cr where cr.dcid = (select ci.id from currency_info ci where ci.currency_code = 'CNY') and cr.ocid = (select ci.id from currency_info ci where ci.currency_code = opc.currency_code)  and cr.`month` = opbd.account_term) exchangeRate,
+            orbct.local_money_rate exchangeRate,
+            orbct.local_money changeAmount,
             opc.remarks
         FROM
             order_payment_cost opc
             LEFT JOIN order_payment_bill_detail opbd ON opc.id = opbd.cost_id
+            LEFT JOIN order_bill_cost_total orbct ON orbct.bill_no = opbd.bill_no and orbct.cost_id=opbd.cost_id
         WHERE
             opbd.bill_no = #{billNo}
 		) temp

@@ -21,10 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -161,12 +159,18 @@ public class OrderBillCostTotalServiceImpl extends ServiceImpl<OrderBillCostTota
             }
             InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
             initComboxStrVO.setCode(orderBillCostTotal.getCurrentCurrencyCode());
-            initComboxStrVO.setNote(orderBillCostTotal.getExchangeRate() == null ? "0" : orderBillCostTotal.getExchangeRate().toPlainString());
+            initComboxStrVO.setNote(orderBillCostTotal.getExchangeRate() == null ? null : orderBillCostTotal.getExchangeRate().toPlainString());
             customExchangeRate.add(initComboxStrVO);
         }
+
+        customExchangeRate = customExchangeRate.stream().collect(
+                Collectors.collectingAndThen(
+                        Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(InitComboxStrVO::getCode))), ArrayList::new)
+        );
         editBillDateilVO.setIsCustomExchangeRate(isCustomExchangeRate);
         editBillDateilVO.setCustomExchangeRate(customExchangeRate);
         editBillDateilVO.assembleCurrencyName(data);
+
         return editBillDateilVO;
     }
 }

@@ -7,6 +7,7 @@ import com.jayud.oms.model.po.Dict;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.oms.model.vo.DictVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -21,5 +22,5 @@ public interface DictMapper extends BaseMapper<Dict> {
 
 
 
-    IPage<DictVO> findByPage(Page<Dict> page, QueryDictForm form);
+    IPage<DictVO> findByPage(Page<Dict> page, @Param("form") QueryDictForm form);
 }

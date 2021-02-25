@@ -28,10 +28,10 @@
         ci.`name` costInfoName,
         opc.change_amount oldLocalMoney,
         opc.amount money,
-        opc.amount * ifnull((
+        ifnull((
         SELECT cr.exchange_rate FROM currency_rate cr
         WHERE cr.dcid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = 'CNY' )
-        AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = opc.currency_code ) and cr.month = #{accountTermStr}),0) localMoney,
+        AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = opc.currency_code ) and cr.month = #{accountTermStr}),0) localMoneyRate,
         ifnull((SELECT cr.exchange_rate FROM currency_rate cr
         WHERE cr.dcid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = #{settlementCurrency} )
         AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = opc.currency_code ) and cr.month = #{accountTermStr}),0) exchangeRate
@@ -53,9 +53,9 @@
         ci.`name` costInfoName,
         orc.change_amount oldLocalMoney,
         orc.amount money,
-        orc.amount * ifnull((SELECT cr.exchange_rate FROM currency_rate cr WHERE
+        ifnull((SELECT cr.exchange_rate FROM currency_rate cr WHERE
         cr.dcid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = 'CNY' )
-        AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = orc.currency_code ) and cr.`month`=#{accountTermStr} ORDER BY cr.created_time desc limit 1),0) localMoney,
+        AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = orc.currency_code ) and cr.`month`=#{accountTermStr} ORDER BY cr.created_time desc limit 1),0) localMoneyRate,
         ifnull((SELECT cr.exchange_rate FROM currency_rate cr WHERE
         cr.dcid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = #{settlementCurrency} )
         AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = orc.currency_code ) and cr.`month`=#{accountTermStr} ORDER BY cr.created_time desc limit 1),0) exchangeRate

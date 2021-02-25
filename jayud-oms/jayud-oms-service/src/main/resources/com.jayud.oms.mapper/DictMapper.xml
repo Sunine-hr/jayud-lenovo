@@ -30,10 +30,10 @@
         left join dict_type dt on d.dict_type_code=dt.code
         <where>
             <if test="form.value !=null and form.value !=''">
-                and d.value =#{from.value}
+                and d.value =#{form.value}
             </if>
             <if test="form.dictTypeCode !=null and form.dictTypeCode !=''">
-                and dt.code = #{from.dictTypeCode}
+                and dt.code = #{form.dictTypeCode}
             </if>
         </where>
     </select>

@@ -9,11 +9,13 @@ import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.tms.feign.OauthClient;
 import com.jayud.tms.model.bo.InputOrderTransportForm;
 import com.jayud.tms.model.bo.OprStatusForm;
 import com.jayud.tms.model.bo.QueryDriverOrderTransportForm;
 import com.jayud.tms.model.bo.TmsChangeStatusForm;
+import com.jayud.tms.model.enums.OrderTakeAdrTypeEnum;
 import com.jayud.tms.model.po.OrderSendCars;
 import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.po.TmsExtensionField;
@@ -33,10 +35,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -275,6 +274,20 @@ public class ExternalApiController {
         return ApiResult.ok(result);
     }
 
+    @ApiModelProperty(value = "根据订单号获取送货地址信息(下拉选择)")
+    @RequestMapping(value = "/api/initTakeAdrBySubOrderNo")
+    public ApiResult initTakeAdrBySubOrderNo(@RequestParam("subOrderNo") String subOrderNo) {
+        List<DriverOrderTakeAdrVO> orderTakeAdrs = this.orderTakeAdrService.getDriverOrderTakeAdr(Arrays.asList(subOrderNo),
+                OrderTakeAdrTypeEnum.TWO.getCode());
+        Set<InitComboxVO> initComboxStrVOS = new HashSet<>();
+        for (DriverOrderTakeAdrVO orderTakeAdr : orderTakeAdrs) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setName(orderTakeAdr.getAddress());
+            initComboxVO.setId(orderTakeAdr.getId());
+            initComboxStrVOS.add(initComboxVO);
+        }
+        return ApiResult.ok(initComboxStrVOS);
+    }
 }
 
 

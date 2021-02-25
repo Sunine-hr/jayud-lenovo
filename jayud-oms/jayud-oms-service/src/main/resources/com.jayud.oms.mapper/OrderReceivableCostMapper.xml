@@ -55,7 +55,8 @@
         orc.`change_amount` changeAmount,
         orc.`exchange_rate` exchangeRate,
         orc.`remarks`,
-        orc.`status`
+        orc.`status`,
+        orc.unloading_address unloadingAddress
         FROM
         order_receivable_cost orc
         left join customer_info ci on orc.customer_code = ci.id_code

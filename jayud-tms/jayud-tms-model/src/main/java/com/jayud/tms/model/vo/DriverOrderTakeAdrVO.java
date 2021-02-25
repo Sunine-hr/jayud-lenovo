@@ -62,8 +62,10 @@ public class DriverOrderTakeAdrVO {
     private String address;
 
     public void setAddress(String address) {
-        this.address = this.province + this.city
-                + (StringUtils.isEmpty(this.area) ? "" : this.area)
-                + address;
+        this.address =
+                (StringUtils.isEmpty(this.province) ? "" : this.province)
+                        + (StringUtils.isEmpty(this.city) ? "" : this.city)
+                        + (StringUtils.isEmpty(this.area) ? "" : this.area)
+                        + address;
     }
 }

@@ -30,7 +30,7 @@ public class MysqlGenerator {
                 "jayud-oms\\jayud-oms-service",
                 "jayud-oms\\jayud-oms-web"};
         for (String model : models) {
-            shell(model,"order_attachment");
+            shell(model,"dict");
 
         }
     }
@@ -101,7 +101,7 @@ public class MysqlGenerator {
             focList.add(new FileOutConfig("/templates/mapper.xml.vm") {
                 @Override
                 public String outputFile(TableInfo tableInfo) {
-                    return path + "/src/main/resources/com/jayud/airfreight/mapper"
+                    return path + "/src/main/resources/com/jayud/oms/mapper"
                             + "/" + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
                 }
             });

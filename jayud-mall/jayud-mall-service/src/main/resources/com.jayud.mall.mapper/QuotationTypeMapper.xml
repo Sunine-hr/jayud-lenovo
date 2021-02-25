@@ -21,4 +21,11 @@
         id, name, fid, sort, create_by, create_time, update_by, update_time, status, types
     </sql>
 
+    <select id="findQuotationTypeByCode" parameterType="java.lang.String" resultType="com.jayud.mall.model.po.QuotationType">
+        select
+               t.id,t.code,t.name,t.fid,t.sort,t.create_by,t.create_time,t.update_by,t.update_time,t.status,t.types
+        from quotation_type t
+        where t.code=#{code}
+    </select>
+
 </mapper>

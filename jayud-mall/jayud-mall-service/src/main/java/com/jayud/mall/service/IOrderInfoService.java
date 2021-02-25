@@ -133,7 +133,16 @@ public interface IOrderInfoService extends IService<OrderInfo> {
     CommonResult<OrderInfoVO> draftCancelOrderInfo(OrderInfoForm form);
 
     /**
-     * 订单列表-查看订单详情<br/>
+     * 订单列表-查看订单详情(编辑用的)<br/>
+     * 草稿-提交-查看订单<br/>
+     * 草稿-查看订单详情<br/>
+     * @param form
+     * @return
+     */
+    CommonResult<OrderInfoVO> lookEditOrderInfo(OrderInfoForm form);
+
+    /**
+     * 订单列表-查看订单详情(查看)<br/>
      * 草稿-提交-查看订单<br/>
      * 草稿-查看订单详情<br/>
      * @param form

@@ -107,13 +107,27 @@ public class OrderInfoController {
         return orderInfoService.draftCancelOrderInfo(form);
     }
 
+    //订单-草稿-提交-进入编辑订单详情(从草稿进去，可以编辑，暂存和提交)
+    @ApiOperation(value = "订单-草稿-提交-进入编辑订单详情(从草稿进去，可以编辑，暂存和提交)")
+    @PostMapping("/lookEditOrderInfo")
+    @ApiOperationSupport(order = 5)
+    public CommonResult<OrderInfoVO> lookEditOrderInfo(@RequestBody OrderInfoForm form){
+        return orderInfoService.lookEditOrderInfo(form);
+    }
+
     //订单列表-查看订单详情
-    @ApiOperation(value = "订单列表-查看订单详情")
+    @ApiOperation(value = "订单列表-查看订单详情(查看)")
     @PostMapping("/lookOrderInfo")
     @ApiOperationSupport(order = 5)
     public CommonResult<OrderInfoVO> lookOrderInfo(@RequestBody OrderInfoForm form){
         return orderInfoService.lookOrderInfo(form);
     }
+
+    //订单详情-计柜重信息-确认 TODO 待具体实现 预留
+
+    //订单详情-打印唛头（打印订单箱号）
+    //printOrderMark
+
 
     //订单列表-账单确认 TODO 待开发，以及业务确认
 

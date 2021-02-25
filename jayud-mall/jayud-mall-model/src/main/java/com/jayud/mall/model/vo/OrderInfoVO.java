@@ -261,5 +261,17 @@ public class OrderInfoVO {
     @JSONField(ordinal = 53)
     private String confInfo;
 
+    //订柜尺寸名称
+    @ApiModelProperty(value = "订柜尺寸名称[海运费](template_cope_receivable specification_name -> quotation_type name)", position = 54)
+    @JSONField(ordinal = 54)
+    private String reserveSizeName;
+
+    //计泡系数
+    @ApiModelProperty(value = "计泡系数(默认6000)", position = 55)
+    @JSONField(ordinal = 55)
+    private BigDecimal bubbleCoefficient;
+
+
+
 
 }

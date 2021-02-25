@@ -100,5 +100,25 @@
         where t2.id = #{orderId}
     </select>
 
+    <!--根据报价查询配载id，配载查询提单id，提单查询柜号id，最终获取柜号信息-->
+    <select id="findOceanCounterByOfferInfoId" parameterType="java.lang.Integer"
+            resultType="com.jayud.mall.model.po.OceanCounter">
+        select
+        t4.id,t4.cntr_no,t4.cabinet_code,t4.volume,t4.cost,t4.cid,t4.status,t4.ob_id,t4.create_time
+        from order_conf t
+        join (
+        select order_id pzId from ocean_conf_detail where types=1 and id_code=#{offerInfoId}
+        ) t1 on t1.pzId = t.id
+        left join (
+        select order_id pzId,id_code tdId from ocean_conf_detail where types=2
+        ) t2 on t2.pzId = t.id
+        left join (
+        select id tdId from ocean_bill
+        ) t3 on t3.tdId = t2.tdId
+        left join (
+        select id, cntr_no, cabinet_code, volume, cost, cid, status, ob_id, create_time from ocean_counter
+        ) t4 on t4.ob_id = t3.tdId
+    </select>
+
 
 </mapper>

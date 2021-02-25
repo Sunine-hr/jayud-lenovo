@@ -2,6 +2,7 @@ package com.jayud.oms.model.bo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.jayud.common.exception.JayudBizException;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,8 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * <p>
@@ -116,6 +119,11 @@ public class InputAirOrderForm {
                 || this.goodTime == null) {
             return false;
         }
+
+        if (this.invoiceNo != null && Pattern.matches("^[A-Za-z0-9,]+$", this.invoiceNo)) {
+            throw new JayudBizException(400, "发票号只能输入英文、数字包括,");
+        }
+
         // 发货/收货地址是必填项
         if (CollectionUtils.isEmpty(this.deliveryAddress)) {
             log.warn("发货地址信息不能为空");
@@ -151,5 +159,13 @@ public class InputAirOrderForm {
                 && StringUtils.isNotEmpty(this.notificationAddress.get(0).getAddress())) {
             this.orderAddressForms.addAll(this.notificationAddress);
         }
+    }
+
+    public static void main(String[] args) {
+        String reg = "\\\\w*|\\\\d*|_*";
+        if (Pattern.matches(reg, "12323xxx")) {
+            System.out.println("通过");
+        }
+
     }
 }

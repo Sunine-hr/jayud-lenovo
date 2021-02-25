@@ -35,10 +35,22 @@ public class OrderInfoController {
     @Autowired
     BaseService baseService;
 
+    //分页查询订单列表
+    @ApiOperation(value = "web端分页查询订单列表")
+    @PostMapping("/findWebOrderInfoByPage")
+    @ApiOperationSupport(order = 1)
+    public CommonResult<CommonPageResult<OrderInfoVO>> findWebOrderInfoByPage(@RequestBody QueryOrderInfoForm form) {
+        CustomerUser customerUser = baseService.getCustomerUser();
+        form.setCustomerId(customerUser.getId());//当前登录客户
+        IPage<OrderInfoVO> pageList = orderInfoService.findWebOrderInfoByPage(form);
+        CommonPageResult<OrderInfoVO> pageVO = new CommonPageResult(pageList);
+        return CommonResult.success(pageVO);
+    }
+
     //订单下单-暂存订单
     @ApiOperation(value = "订单下单-暂存订单")
     @PostMapping("/temporaryStorageOrderInfo")
-    @ApiOperationSupport(order = 1)
+    @ApiOperationSupport(order = 2)
     public CommonResult<OrderInfoVO> temporaryStorageOrderInfo(@RequestBody OrderInfoForm form){
         //订单对应箱号信息:order_case
         List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
@@ -64,7 +76,7 @@ public class OrderInfoController {
     //订单下单-提交订单
     @ApiOperation(value = "订单下单-提交订单")
     @PostMapping("/submitOrderInfo")
-    @ApiOperationSupport(order = 2)
+    @ApiOperationSupport(order = 3)
     public CommonResult<OrderInfoVO> submitOrderInfo(@RequestBody OrderInfoForm form){
         //订单对应箱号信息:order_case
         List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
@@ -90,7 +102,7 @@ public class OrderInfoController {
     //订单列表-草稿-取消
     @ApiOperation(value = "订单列表-草稿-取消")
     @PostMapping("/draftCancelOrderInfo")
-    @ApiOperationSupport(order = 3)
+    @ApiOperationSupport(order = 4)
     public CommonResult<OrderInfoVO> draftCancelOrderInfo(@RequestBody OrderInfoForm form){
         return orderInfoService.draftCancelOrderInfo(form);
     }
@@ -98,24 +110,14 @@ public class OrderInfoController {
     //订单列表-查看订单详情
     @ApiOperation(value = "订单列表-查看订单详情")
     @PostMapping("/lookOrderInfo")
-    @ApiOperationSupport(order = 4)
+    @ApiOperationSupport(order = 5)
     public CommonResult<OrderInfoVO> lookOrderInfo(@RequestBody OrderInfoForm form){
         return orderInfoService.lookOrderInfo(form);
     }
 
-    //订单列表-账单确认
+    //订单列表-账单确认 TODO 待开发，以及业务确认
 
-    //分页查询订单列表
-    @ApiOperation(value = "web端分页查询订单列表")
-    @PostMapping("/findWebOrderInfoByPage")
-    @ApiOperationSupport(order = 1)
-    public CommonResult<CommonPageResult<OrderInfoVO>> findWebOrderInfoByPage(@RequestBody QueryOrderInfoForm form) {
-        CustomerUser customerUser = baseService.getCustomerUser();
-        form.setCustomerId(customerUser.getId());//当前登录客户
-        IPage<OrderInfoVO> pageList = orderInfoService.findWebOrderInfoByPage(form);
-        CommonPageResult<OrderInfoVO> pageVO = new CommonPageResult(pageList);
-        return CommonResult.success(pageVO);
-    }
+
 
 
 

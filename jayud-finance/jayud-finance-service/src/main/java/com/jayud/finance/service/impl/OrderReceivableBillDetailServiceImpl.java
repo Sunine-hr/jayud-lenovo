@@ -33,6 +33,7 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -209,6 +210,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 sb.append("请配置[");
                 Boolean flag = true;
                 orderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, settlementCurrency, form.getAccountTermStr());
+                AtomicBoolean isCheck = new AtomicBoolean(true);
                 //是否自定义汇率
                 if (form.getIsCustomExchangeRate()) {
                     //组装数据
@@ -219,6 +221,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                         e.setExchangeRate(rate);
                         //结算币种是CNY
                         if ("CNY".equals(settlementCurrency)) {
+                            isCheck.set(false);
                             e.setLocalMoneyRate(rate);
                             e.setLocalMoney(e.getMoney().multiply(rate));
                         }
@@ -239,7 +242,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                         orderBillCostTotalVO.setLocalMoney(orderBillCostTotalVO.getOldLocalMoney());
                     }
                 }
-                if (!form.getIsCustomExchangeRate() && !"CNY".equals(settlementCurrency)) {
+                if (isCheck.get()) {
                     List<OrderBillCostTotalVO> tempOrderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, "CNY", form.getAccountTermStr());
                     for (OrderBillCostTotalVO orderBillCostTotalVO : tempOrderBillCostTotalVOS) {
                         BigDecimal localMoney = orderBillCostTotalVO.getLocalMoney();//如果本币金额为0，说明汇率为空没配置

@@ -532,11 +532,11 @@ public class ExternalApiController {
         if ("receivable".equals(cmd)) {
             for (OrderCostForm orderCost : forms) {
                 //获取该条费用以出账时结算币种的汇率和本币金额
-                InputReceivableCostVO sCost = receivableCostService.getWriteBackSCostData(orderCost.getCostId());
-                //汇率校验
-                if (sCost.getExchangeRate() == null || sCost.getExchangeRate().compareTo(new BigDecimal("0")) == 0) {
-                    return ApiResult.error(10001, "请配置原始币种:" + sCost.getOCurrencyName() + ",兑换币种:人民币的汇率");
-                }
+//                InputReceivableCostVO sCost = receivableCostService.getWriteBackSCostData(orderCost.getCostId());
+//                //汇率校验
+//                if (sCost.getExchangeRate() == null || sCost.getExchangeRate().compareTo(new BigDecimal("0")) == 0) {
+//                    return ApiResult.error(10001, "请配置原始币种:" + sCost.getOCurrencyName() + ",兑换币种:人民币的汇率");
+//                }
                 OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
                 orderReceivableCost.setId(orderCost.getCostId());
                 orderReceivableCost.setExchangeRate(orderCost.getLocalMoneyRate());//汇率
@@ -548,11 +548,11 @@ public class ExternalApiController {
         } else if ("payment".equals(cmd)) {
             for (OrderCostForm orderCost : forms) {
                 //获取该条费用以出账时结算币种的汇率和本币金额
-                InputPaymentCostVO fCost = paymentCostService.getWriteBackFCostData(orderCost.getCostId());
-                //汇率校验
-                if (fCost.getExchangeRate() == null || fCost.getExchangeRate().compareTo(new BigDecimal("0")) == 0) {
-                    return ApiResult.error(10001, "请配置原始币种:" + fCost.getOCurrencyName() + ",兑换币种:人民币的汇率");
-                }
+//                InputPaymentCostVO fCost = paymentCostService.getWriteBackFCostData(orderCost.getCostId());
+//                //汇率校验
+//                if (fCost.getExchangeRate() == null || fCost.getExchangeRate().compareTo(new BigDecimal("0")) == 0) {
+//                    return ApiResult.error(10001, "请配置原始币种:" + fCost.getOCurrencyName() + ",兑换币种:人民币的汇率");
+//                }
                 OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
                 orderPaymentCost.setId(orderCost.getCostId());
                 orderPaymentCost.setExchangeRate(orderCost.getLocalMoneyRate());//汇率

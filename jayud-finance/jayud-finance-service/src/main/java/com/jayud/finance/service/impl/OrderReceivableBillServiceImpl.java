@@ -36,6 +36,7 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
@@ -92,7 +93,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         List<String> billNos = resultList.stream().map(OrderPaymentBillNumVO::getBillNo).collect(Collectors.toList());
         List<OrderBillCostTotal> costTotals = this.costTotalService.getByBillNo(billNos, OrderBillCostTotalTypeEnum.RECEIVABLE.getCode());
         costTotals = costTotals.stream().collect(Collectors.collectingAndThen(
-                Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(e->e.getCurrencyCode() + ";" +e.getCurrentCurrencyCode()))), ArrayList::new));
+                Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(e -> e.getCurrencyCode() + ";" + e.getCurrentCurrencyCode()))), ArrayList::new));
         //查询币种名称
         List<InitComboxStrVO> data = omsClient.initCurrencyInfo().getData();
         Map<String, String> currencyMap = data.stream().collect(Collectors.toMap(InitComboxStrVO::getCode, InitComboxStrVO::getName));
@@ -154,6 +155,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             sb.append("请配置[");
             Boolean flag = true;
             orderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, settlementCurrency, form.getAccountTermStr());
+            AtomicBoolean isCheck = new AtomicBoolean(true);
             //是否自定义汇率
             if (form.getIsCustomExchangeRate()) {
                 //组装数据
@@ -164,6 +166,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
                     e.setExchangeRate(rate);
                     //结算币种是CNY
                     if ("CNY".equals(settlementCurrency)) {
+                        isCheck.set(false);
                         e.setLocalMoneyRate(rate);
                         e.setLocalMoney(e.getMoney().multiply(rate));
                     }
@@ -185,11 +188,11 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
                     orderBillCostTotalVO.setLocalMoney(orderBillCostTotalVO.getOldLocalMoney());
                 }
             }
-            if (!form.getIsCustomExchangeRate() && !"CNY".equals(settlementCurrency)) {
+            if (isCheck.get()) {
                 List<OrderBillCostTotalVO> tempOrderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, "CNY", form.getAccountTermStr());
                 for (OrderBillCostTotalVO orderBillCostTotalVO : tempOrderBillCostTotalVOS) {
-                    BigDecimal localMoney = orderBillCostTotalVO.getLocalMoney();//如果本币金额为0，说明汇率为空没配置
-                    if ((localMoney == null || localMoney.compareTo(new BigDecimal(0)) == 0) && !orderBillCostTotalVO.getCurrencyCode().equals("CNY")) {
+                    BigDecimal localMoneyRate = orderBillCostTotalVO.getLocalMoneyRate();//如果本币金额为0，说明汇率为空没配置
+                    if ((localMoneyRate == null || localMoneyRate.compareTo(new BigDecimal(0)) == 0) && !orderBillCostTotalVO.getCurrencyCode().equals("CNY")) {
                         //根据币种查询币种描述
                         String oCurrency = currencyRateService.getNameByCode(orderBillCostTotalVO.getCurrencyCode());
                         // sb.append("原始币种:" + oCurrency + ",兑换币种:人民币;");

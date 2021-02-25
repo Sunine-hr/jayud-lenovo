@@ -44,7 +44,7 @@ public class OrderBillCostTotalVO {
 
     public void setLocalMoneyRate(BigDecimal localMoneyRate) {
         this.localMoneyRate = localMoneyRate;
-        this.localMoney = this.money.subtract(localMoneyRate);
+        this.localMoney = this.money.multiply(localMoneyRate);
     }
 
 

@@ -82,6 +82,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     LogisticsTrackMapper logisticsTrackMapper;
 
     @Autowired
+    ShippingAreaMapper shippingAreaMapper;
+
+    @Autowired
     IOrderCustomsFileService orderCustomsFileService;
 
     @Autowired
@@ -925,6 +928,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if(orderInfoVO == null){
             return CommonResult.error(-1, "订单不存在");
         }
+        Long orderId = orderInfoVO.getId();//订单id
         //订柜尺寸
         String reserveSize = orderInfoVO.getReserveSize();//订柜尺寸
         QuotationType quotationType = quotationTypeMapper.findQuotationTypeByCode(reserveSize);
@@ -933,6 +937,48 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //物流轨迹 TODO 待实现，先给测试数据
         List<LogisticsTrackVO> logisticsTrackVOS = logisticsTrackMapper.findLogisticsTrackByOrderId(orderInfoVO.getId().toString());
         orderInfoVO.setLogisticsTrackVOS(logisticsTrackVOS);
+
+        //关联的订单箱号
+        /*订单对应箱号信息:order_case*/
+        List<OrderCaseVO> orderCaseVOList = orderCaseMapper.findOrderShopByOrderId(orderInfoId);
+        orderInfoVO.setOrderCaseVOList(orderCaseVOList);
+
+        //关联的订单商品
+        /*订单对应商品：order_shop*/
+        List<OrderShopVO> orderShopVOList = orderShopMapper.findOrderShopByOrderId(orderInfoId);
+        orderInfoVO.setOrderShopVOList(orderShopVOList);
+
+        //订单报关文件
+        //订单对应报关文件list
+        QueryWrapper<OrderCustomsFile> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("order_id", orderId);
+        List<OrderCustomsFile> orderCustomsFiles = orderCustomsFileMapper.selectList(queryWrapper1);
+        List<OrderCustomsFileVO> orderCustomsFileVOList =
+                ConvertUtil.convertList(orderCustomsFiles, OrderCustomsFileVO.class);
+        orderInfoVO.setOrderCustomsFileVOList(orderCustomsFileVOList);
+
+        //订单清关文件
+        //订单对应清关文件list
+        QueryWrapper<OrderClearanceFile> queryWrapper2 = new QueryWrapper<>();
+        queryWrapper2.eq("order_id", orderId);
+        List<OrderClearanceFile> orderClearanceFiles = orderClearanceFileMapper.selectList(queryWrapper2);
+        List<OrderClearanceFileVO> orderClearanceFileVOList =
+                ConvertUtil.convertList(orderClearanceFiles, OrderClearanceFileVO.class);
+        orderInfoVO.setOrderClearanceFileVOList(orderClearanceFileVOList);
+
+        //集货仓库
+        String storeGoodsWarehouseCode = orderInfoVO.getStoreGoodsWarehouseCode();
+        ShippingAreaVO shippingAreaVO = shippingAreaMapper.findShippingAreaByWarehouseCode(storeGoodsWarehouseCode);
+        orderInfoVO.setShippingAreaVO(shippingAreaVO);
+
+        //目的仓库
+        String destinationWarehouseCode = orderInfoVO.getDestinationWarehouseCode();
+        FabWarehouseVO fabWarehouseVO = fabWarehouseMapper.findFabWarehouseByWarehouseCode(destinationWarehouseCode);
+        orderInfoVO.setFabWarehouseVO(fabWarehouseVO);
+
+        //费用明细(订单应收费用)
+        OrderCostDetailVO orderCostDetailVO = getOrderCostDetailVO(orderInfoVO);
+        orderInfoVO.setOrderCostDetailVO(orderCostDetailVO);//订单费用明细
 
         return CommonResult.success(orderInfoVO);
     }

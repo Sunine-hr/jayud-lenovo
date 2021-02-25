@@ -247,7 +247,7 @@ public class OrderInfoVO {
     private List<FabWarehouseVO> fabWarehouseVOList;
 
     //订单费用明细
-    @ApiModelProperty(value = "订单费用明细", position = 51)
+    @ApiModelProperty(value = "订单费用明细(目前仅显示应收费用)", position = 51)
     @JSONField(ordinal = 51)
     private OrderCostDetailVO orderCostDetailVO;
 
@@ -275,6 +275,16 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "计泡系数(默认6000)", position = 56)
     @JSONField(ordinal = 56)
     private List<LogisticsTrackVO> logisticsTrackVOS;
+
+    //集货仓库
+    @ApiModelProperty(value = "计泡系数(默认6000)", position = 57)
+    @JSONField(ordinal = 57)
+    private ShippingAreaVO shippingAreaVO;
+
+    //目的仓库
+    @ApiModelProperty(value = "计泡系数(默认6000)", position = 58)
+    @JSONField(ordinal = 58)
+    private FabWarehouseVO fabWarehouseVO;
 
 
 

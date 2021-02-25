@@ -38,4 +38,11 @@ public interface FabWarehouseMapper extends BaseMapper<FabWarehouse> {
      * @return
      */
     List<FabWarehouseVO> findFabWarehouseByqie(@Param("qie") Integer qie);
+
+    /**
+     * 根据仓库代码，获取目的地仓库（应收FBA仓库）
+     * @param warehouseCode
+     * @return
+     */
+    FabWarehouseVO findFabWarehouseByWarehouseCode(@Param("warehouseCode") String warehouseCode);
 }

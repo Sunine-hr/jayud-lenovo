@@ -84,4 +84,32 @@
     </select>
 
 
+    <select id="findFabWarehouseByWarehouseCode" parameterType="java.lang.String" resultType="com.jayud.mall.model.vo.FabWarehouseVO">
+        select t.id,
+               t.warehouse_code,
+               t.warehouse_name,
+               t.state_code,
+               t.contacts,
+               t.company_name,
+               t.contact_number,
+               t.contact_phone,
+               t.address_first,
+               t.address_second,
+               t.address_thirdly,
+               t.pid,
+               t.pname,
+               t.cid,
+               t.cname,
+               t.zip_code,
+               t.status,
+               t.user_id,
+               t.user_name,
+               t.create_time
+        from fab_warehouse t
+        where t.warehouse_code = #{warehouseCode}
+    </select>
+
+
+
+
 </mapper>

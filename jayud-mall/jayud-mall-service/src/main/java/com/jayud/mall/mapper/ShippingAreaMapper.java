@@ -29,4 +29,11 @@ public interface ShippingAreaMapper extends BaseMapper<ShippingArea> {
      * @return
      */
     IPage<ShippingAreaVO> findShippingAreaByPage(Page<ShippingAreaVO> page, @Param("form") QueryShippingAreaForm form);
+
+    /**
+     * 根据仓库代码，查询集货仓库
+     * @param warehouseCode
+     * @return
+     */
+    ShippingAreaVO findShippingAreaByWarehouseCode(@Param("warehouseCode") String warehouseCode);
 }

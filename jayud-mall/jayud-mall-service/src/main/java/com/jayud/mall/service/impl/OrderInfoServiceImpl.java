@@ -842,9 +842,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     public CommonResult<OrderInfoVO> draftCancelOrderInfo(OrderInfoForm form) {
         Long id = form.getId();
         OrderInfo orderInfo = this.getById(id);
-        orderInfo.setStatus(OrderEnum.CANCELED.getCode());
-        orderInfo.setStatusName(OrderEnum.CANCELED.getName());
-        this.saveOrUpdate(orderInfo);
+        if(orderInfo.getStatus().equals(OrderEnum.DRAFT)){
+            orderInfo.setStatus(OrderEnum.CANCELED.getCode());
+            orderInfo.setStatusName(OrderEnum.CANCELED.getName());
+            this.saveOrUpdate(orderInfo);
+        }else{
+            return CommonResult.error(-1, "订单状态不正确，不能取消");
+        }
         OrderInfoVO orderInfoVO = ConvertUtil.convert(orderInfo, OrderInfoVO.class);
         return CommonResult.success(orderInfoVO);
     }

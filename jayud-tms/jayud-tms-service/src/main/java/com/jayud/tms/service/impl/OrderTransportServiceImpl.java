@@ -260,7 +260,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             return sendCarPdfVO;
         }
         if (takeGoodsInfo2.size() > 1) {//获取中转仓信息
-            if (!orderSendCarsVO.getIsVirtual()) {
+            if (orderSendCarsVO.getIsVirtual() == null || !orderSendCarsVO.getIsVirtual()) {
                 sendCarPdfVO.setDeliveryContacts(orderSendCarsVO.getWarehouseContacts());
                 String provinceName = orderSendCarsVO.getProvinceName() == null ? "" : orderSendCarsVO.getProvinceName();
                 String cityName = orderSendCarsVO.getCityName() == null ? "" : orderSendCarsVO.getCityName();

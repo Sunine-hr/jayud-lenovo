@@ -271,6 +271,10 @@ public class OrderInfoVO {
     @JSONField(ordinal = 55)
     private BigDecimal bubbleCoefficient;
 
+    //物流轨迹list
+    @ApiModelProperty(value = "计泡系数(默认6000)", position = 56)
+    @JSONField(ordinal = 56)
+    private List<LogisticsTrackVO> logisticsTrackVOS;
 
 
 

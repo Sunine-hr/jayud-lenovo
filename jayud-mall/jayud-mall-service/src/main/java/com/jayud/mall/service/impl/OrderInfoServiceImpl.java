@@ -79,6 +79,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     QuotationTypeMapper quotationTypeMapper;
 
     @Autowired
+    LogisticsTrackMapper logisticsTrackMapper;
+
+    @Autowired
     IOrderCustomsFileService orderCustomsFileService;
 
     @Autowired
@@ -928,9 +931,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderInfoVO.setReserveSizeName(quotationType.getName());
 
         //物流轨迹 TODO 待实现，先给测试数据
-
-
-
+        List<LogisticsTrackVO> logisticsTrackVOS = logisticsTrackMapper.findLogisticsTrackByOrderId(orderInfoVO.getId().toString());
+        orderInfoVO.setLogisticsTrackVOS(logisticsTrackVOS);
 
         return CommonResult.success(orderInfoVO);
     }

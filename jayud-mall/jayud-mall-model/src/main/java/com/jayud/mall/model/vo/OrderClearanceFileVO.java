@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class OrderClearanceFileVO {
 
@@ -45,5 +47,10 @@ public class OrderClearanceFileVO {
     @ApiModelProperty(value = "审核状态(0审核不通过  1审核通过)", position = 9)
     @JSONField(ordinal = 9)
     private Integer auditStatus;
+
+    //模板urlVO
+    @ApiModelProperty(value = "模版文件地址list", position = 7)
+    @JSONField(ordinal = 7)
+    private List<TemplateUrlVO> templateUrlVOS;
 
 }

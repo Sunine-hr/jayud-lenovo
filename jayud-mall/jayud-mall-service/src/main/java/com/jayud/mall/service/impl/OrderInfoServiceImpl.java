@@ -1,5 +1,8 @@
 package com.jayud.mall.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -953,8 +956,23 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         QueryWrapper<OrderCustomsFile> queryWrapper1 = new QueryWrapper<>();
         queryWrapper1.eq("order_id", orderId);
         List<OrderCustomsFile> orderCustomsFiles = orderCustomsFileMapper.selectList(queryWrapper1);
-        List<OrderCustomsFileVO> orderCustomsFileVOList =
-                ConvertUtil.convertList(orderCustomsFiles, OrderCustomsFileVO.class);
+        List<OrderCustomsFileVO> orderCustomsFileVOList = ConvertUtil.convertList(orderCustomsFiles, OrderCustomsFileVO.class);
+        if (orderCustomsFileVOList.size() > 0) {
+            orderCustomsFileVOList.forEach(orderCustomsFileVO -> {
+                String templateUrl = orderCustomsFileVO.getTemplateUrl();
+                if(templateUrl != null && templateUrl.length() > 0){
+                    String json = templateUrl;
+                    try {
+                        List<TemplateUrlVO> templateUrlVOS = JSON.parseObject(json, new TypeReference<List<TemplateUrlVO>>() {
+                        });
+                        orderCustomsFileVO.setTemplateUrlVOS(templateUrlVOS);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        System.out.println("json格式错误");
+                    }
+                }
+            });
+        }
         orderInfoVO.setOrderCustomsFileVOList(orderCustomsFileVOList);
 
         //订单清关文件
@@ -962,8 +980,23 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         QueryWrapper<OrderClearanceFile> queryWrapper2 = new QueryWrapper<>();
         queryWrapper2.eq("order_id", orderId);
         List<OrderClearanceFile> orderClearanceFiles = orderClearanceFileMapper.selectList(queryWrapper2);
-        List<OrderClearanceFileVO> orderClearanceFileVOList =
-                ConvertUtil.convertList(orderClearanceFiles, OrderClearanceFileVO.class);
+        List<OrderClearanceFileVO> orderClearanceFileVOList = ConvertUtil.convertList(orderClearanceFiles, OrderClearanceFileVO.class);
+        if(orderClearanceFileVOList.size() > 0){
+            orderClearanceFileVOList.forEach(orderClearanceFileVO -> {
+                String templateUrl = orderClearanceFileVO.getTemplateUrl();
+                if(templateUrl != null && templateUrl.length() > 0){
+                    String json = templateUrl;
+                    try {
+                        List<TemplateUrlVO> templateUrlVOS = JSON.parseObject(json, new TypeReference<List<TemplateUrlVO>>() {
+                        });
+                        orderClearanceFileVO.setTemplateUrlVOS(templateUrlVOS);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        System.out.println("json格式错误");
+                    }
+                }
+            });
+        }
         orderInfoVO.setOrderClearanceFileVOList(orderClearanceFileVOList);
 
         //集货仓库

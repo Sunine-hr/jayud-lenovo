@@ -38,7 +38,7 @@ public interface OrderCaseMapper extends BaseMapper<OrderCase> {
      * @param orderId
      * @return
      */
-    List<OrderCaseVO> findOrderShopByOrderId(@Param("orderId") Long orderId);
+    List<OrderCaseVO> findOrderCaseByOrderId(@Param("orderId") Long orderId);
 
     /**
      * 根据订单id，查询订单箱号，以及订单箱号的配载信息（运单号->柜号->提单号->配载单号）

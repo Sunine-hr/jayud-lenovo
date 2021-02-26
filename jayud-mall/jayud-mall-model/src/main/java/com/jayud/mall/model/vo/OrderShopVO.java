@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -43,5 +44,15 @@ public class OrderShopVO {
     @ApiModelProperty(value = "中文名", position = 8)
     @JSONField(ordinal = 8)
     private String nameCn;
+
+    @ApiModelProperty(value = "申报价值", position = 9)
+    @JSONField(ordinal = 9)
+    private BigDecimal declaredValue;
+
+    @ApiModelProperty(value = "申报价值的货币单位(currency_info currency_code)", position = 10)
+    @JSONField(ordinal = 10)
+    private String declaredCurrency;
+
+
 
 }

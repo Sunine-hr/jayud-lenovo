@@ -82,7 +82,7 @@
     </select>
 
     <!--根据订单id，查询订单箱号-->
-    <select id="findOrderShopByOrderId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OrderCaseVO">
+    <select id="findOrderCaseByOrderId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OrderCaseVO">
         select
         t.id,t.order_id,t.carton_no,t.fab_no,
         t.asn_length,t.asn_width,t.asn_height,t.asn_weight,t.asn_volume,t.asn_weigh_date,

@@ -213,7 +213,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderInfoVO.setOrderShopVOList(orderShopVOList);
 
         /*订单对应箱号信息:order_case*/
-        List<OrderCaseVO> orderCaseVOList = orderCaseMapper.findOrderShopByOrderId(orderId);
+        List<OrderCaseVO> orderCaseVOList = orderCaseMapper.findOrderCaseByOrderId(orderId);
         orderInfoVO.setOrderCaseVOList(orderCaseVOList);
 
         return CommonResult.success(orderInfoVO);
@@ -291,7 +291,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderInfoVO.setOrderShopVOList(orderShopVOList);
 
         /*订单对应箱号信息:order_case*/
-        List<OrderCaseVO> orderCaseVOList = orderCaseMapper.findOrderShopByOrderId(orderId);
+        List<OrderCaseVO> orderCaseVOList = orderCaseMapper.findOrderCaseByOrderId(orderId);
         orderInfoVO.setOrderCaseVOList(orderCaseVOList);
 
         /**提货信息**/
@@ -895,7 +895,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         //关联的订单箱号
         /*订单对应箱号信息:order_case*/
-        List<OrderCaseVO> orderCaseVOList = orderCaseMapper.findOrderShopByOrderId(orderInfoId);
+        List<OrderCaseVO> orderCaseVOList = orderCaseMapper.findOrderCaseByOrderId(orderInfoId);
         orderInfoVO.setOrderCaseVOList(orderCaseVOList);
 
         //关联的订单商品
@@ -940,7 +940,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         //关联的订单箱号
         /*订单对应箱号信息:order_case*/
-        List<OrderCaseVO> orderCaseVOList = orderCaseMapper.findOrderShopByOrderId(orderInfoId);
+        List<OrderCaseVO> orderCaseVOList = orderCaseMapper.findOrderCaseByOrderId(orderInfoId);
         orderInfoVO.setOrderCaseVOList(orderCaseVOList);
 
         //关联的订单商品
@@ -1001,7 +1001,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             return CommonResult.error(-1, "订单不存在");
         }
         Long orderInfoId = orderInfoVO.getId();
-        List<OrderCaseVO> orderCaseVOList = orderCaseMapper.findOrderShopByOrderId(orderInfoId);
+        List<OrderCaseVO> orderCaseVOList = orderCaseMapper.findOrderCaseByOrderId(orderInfoId);
         List<String> list = new ArrayList<>();
         if(orderCaseVOList.size() > 0){
             orderCaseVOList.forEach(orderCaseVO -> {

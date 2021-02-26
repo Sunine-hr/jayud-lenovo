@@ -21,9 +21,7 @@
         resultType="com.jayud.mall.model.vo.OrderShopVO" >
         select
         t.id,t.order_id,t.good_id,t.quantity,t.create_time,
-        t2.sku,
-        t2.hs_code,
-        t2.name_cn
+        t2.sku,t2.hs_code,t2.name_cn,t2.declared_value,t2.declared_currency
         from order_shop t
         LEFT JOIN order_info t1 on t1.id = t.order_id
         LEFT JOIN customer_goods t2 on t2.id = t.good_id

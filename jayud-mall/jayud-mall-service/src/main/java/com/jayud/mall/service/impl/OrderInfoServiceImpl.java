@@ -1146,6 +1146,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return CommonResult.success(orderInfoVO);
     }
 
+    @Override
+    public CommonResult<List<OceanBillVO>> findOceanBillByOfferInfoId(Integer offerInfoId) {
+        List<OceanBillVO> oceanBillVO = orderInfoMapper.findOceanBillByOfferInfoId(offerInfoId);
+        return CommonResult.success(oceanBillVO);
+    }
+
     /**
      * 获取订单费用明细
      * @param orderInfoVO

@@ -5,6 +5,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.OrderInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.vo.OceanBillVO;
 import com.jayud.mall.model.vo.OrderClearanceFileVO;
 import com.jayud.mall.model.vo.OrderCustomsFileVO;
 import com.jayud.mall.model.vo.OrderInfoVO;
@@ -173,4 +174,11 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     CommonResult<OrderInfoVO> editSaveOrderInfo(OrderInfoForm form);
+
+    /**
+     * 根据订单的运单id，查找配载，在查找配载单关联的提单
+     * @param offerInfoId
+     * @return
+     */
+    CommonResult<List<OceanBillVO>> findOceanBillByOfferInfoId(Integer offerInfoId);
 }

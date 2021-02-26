@@ -91,5 +91,10 @@ public class OceanBillVO {
     @JSONField(ordinal = 19)
     private List<OceanCounterVO> oceanCounterVOList;
 
+    //提单id
+    @ApiModelProperty(value = "提单id", position = 20)
+    @JSONField(ordinal = 20)
+    private Integer tdId;
+
 
 }

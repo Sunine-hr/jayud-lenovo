@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.mall.model.bo.QueryOrderInfoForm;
 import com.jayud.mall.model.po.OrderInfo;
+import com.jayud.mall.model.vo.OceanBillVO;
 import com.jayud.mall.model.vo.OrderInfoVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -60,4 +61,11 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      * @return
      */
     List<String> findOrderConfInfoByOrderId(@Param("orderId") Long orderId);
+
+    /**
+     * 根据订单的运单id，查找配载，在查找配载单关联的提单
+     * @param offerInfoId 报价id
+     * @return
+     */
+    List<OceanBillVO> findOceanBillByOfferInfoId(@Param("offerInfoId") Integer offerInfoId);
 }

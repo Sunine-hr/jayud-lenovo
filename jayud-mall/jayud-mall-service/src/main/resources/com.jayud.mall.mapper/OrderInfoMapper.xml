@@ -65,10 +65,31 @@
 
     <select id="lookOrderInfoById" parameterType="java.lang.Long"
         resultType="com.jayud.mall.model.vo.OrderInfoVO">
-        select
-        t.id,t.order_no,t.customer_id,t.store_goods_warehouse_code,t.store_goods_warehouse_name,t.destination_warehouse_code,t.destination_warehouse_name,
-        t.is_pick,t.`status`,t.status_name,t.create_time,t.create_user_id,t.create_user_name,t.order_origin,t.bol_no,t.need_declare,t.need_clearance,t.remark,
-        t.charge_weight,t.volume_weight,t.actual_weight,t.actual_volume,t.total_cartons
+        select t.id,
+               t.order_no,
+               t.customer_id,
+               t.offer_info_id,
+               t.reserve_size,
+               t.store_goods_warehouse_code,
+               t.store_goods_warehouse_name,
+               t.destination_warehouse_code,
+               t.destination_warehouse_name,
+               t.is_pick,
+               t.status,
+               t.status_name,
+               t.create_time,
+               t.create_user_id,
+               t.create_user_name,
+               t.order_origin,
+               t.bol_no,
+               t.need_declare,
+               t.need_clearance,
+               t.remark,
+               t.charge_weight,
+               t.volume_weight,
+               t.actual_weight,
+               t.actual_volume,
+               t.total_cartons
         from order_info t
         where t.id = #{id}
     </select>
@@ -132,5 +153,22 @@
             where t.order_id=#{orderId}
         ) t
     </select>
+
+
+    <select id="findOceanBillByOfferInfoId" parameterType="java.lang.Integer" resultType="com.jayud.mall.model.vo.OceanBillVO">
+        select
+        t3.tdId,t3.id,t3.tid,t3.supplier_id,t3.order_id,t3.start_code,t3.end_code,t3.sail_time,t3.voyage_day,t3.unit,t3.create_time,t3.task_id,t3.operation_team_id
+        from order_conf t
+        join (
+        select order_id pzId from ocean_conf_detail where types=1 and id_code=#{offerInfoId}
+        ) t1 on t1.pzId = t.id
+        left join (
+        select order_id pzId,id_code tdId from ocean_conf_detail where types=2
+        ) t2 on t2.pzId = t.id
+        left join (
+        select id tdId,id, tid, supplier_id, order_id, start_code, end_code, sail_time, voyage_day, unit, create_time, task_id, operation_team_id from ocean_bill
+        ) t3 on t3.tdId = t2.tdId
+    </select>
+
 
 </mapper>

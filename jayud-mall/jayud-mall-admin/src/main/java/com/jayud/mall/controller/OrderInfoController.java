@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.*;
+import com.jayud.mall.model.vo.OceanBillVO;
 import com.jayud.mall.model.vo.OrderClearanceFileVO;
 import com.jayud.mall.model.vo.OrderCustomsFileVO;
 import com.jayud.mall.model.vo.OrderInfoVO;
@@ -137,6 +138,19 @@ public class OrderInfoController {
         Long id = form.getId();
         return orderInfoService.lookOrderInfoDetails(id);
     }
+
+    //根据订单的运单id，查找配载，在查找配载单关联的提单
+    @ApiOperation(value = "根据订单的运单id，查找配载，在查找配载单关联的提单")
+    @PostMapping("/findOceanBillByOfferInfoId")
+    @ApiOperationSupport(order = 14)
+    public CommonResult<List<OceanBillVO>> findOceanBillByOfferInfoId(@Valid @RequestBody OfferInfoIdForm form){
+        Integer offerInfoId = form.getOfferInfoId();
+        return orderInfoService.findOceanBillByOfferInfoId(offerInfoId);
+    }
+
+
+
+
 
 
 }

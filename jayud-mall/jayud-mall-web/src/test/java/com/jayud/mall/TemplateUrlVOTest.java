@@ -2,6 +2,7 @@ package com.jayud.mall;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.jayud.mall.model.vo.TemplateUrlVO;
 import org.junit.Test;
@@ -30,6 +31,9 @@ public class TemplateUrlVOTest {
         System.out.println(templateUrlVOS);
 
 
+        String s = JSONObject.toJSONString(templateUrlVOS);
+        System.out.println(s);
+
     }
 
 
@@ -45,6 +49,14 @@ public class TemplateUrlVOTest {
         }
 
     }
+
+    @Test
+    public void test3(){
+        String s = JSONObject.toJSONString(null);
+        System.out.println(s);
+
+    }
+
 
 
 }

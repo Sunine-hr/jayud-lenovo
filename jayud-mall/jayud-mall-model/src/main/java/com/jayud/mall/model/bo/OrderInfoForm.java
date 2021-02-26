@@ -2,9 +2,7 @@ package com.jayud.mall.model.bo;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.jayud.mall.model.vo.OrderCaseVO;
-import com.jayud.mall.model.vo.OrderPickVO;
-import com.jayud.mall.model.vo.OrderShopVO;
+import com.jayud.mall.model.vo.*;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -141,5 +139,17 @@ public class OrderInfoForm {
     @ApiModelProperty(value = "订单对应提货信息表list", position = 27)
     @JSONField(ordinal = 27)
     private List<OrderPickVO> orderPickVOList;
+
+
+    /*订单对应报关文件：order_customs_file*/
+    @ApiModelProperty(value = "订单对应报关文件list", position = 28)
+    @JSONField(ordinal = 28)
+    private List<OrderCustomsFileVO> orderCustomsFileVOList;
+
+    /*订单对应清关文件：order_clearance_file*/
+    @ApiModelProperty(value = "订单对应清关文件list", position = 29)
+    @JSONField(ordinal = 29)
+    private List<OrderClearanceFileVO> orderClearanceFileVOList;
+
 
 }

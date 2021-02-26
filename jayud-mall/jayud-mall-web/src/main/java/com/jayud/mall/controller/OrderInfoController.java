@@ -160,10 +160,30 @@ public class OrderInfoController {
         return CommonResult.success("订单详情-账单确认(rec应收账单) TODO 待开发，以及业务确认");
     }
 
-
-
-
-
+    /**
+     * 订单编辑-保存
+     * 1.编辑保存-订单箱号
+     * 2.编辑保存-订单商品
+     * 3.编辑保存-订单文件（报关文件、清关文件）
+     * @param form
+     * @return
+     */
+    @ApiOperation(value = "订单编辑-保存(箱号、商品、文件)")
+    @PostMapping("/editSaveOrderInfo")
+    @ApiOperationSupport(order = 10)
+    public CommonResult<OrderInfoVO> editSaveOrderInfo(@RequestBody OrderInfoForm form){
+        //订单对应箱号信息:order_case
+        List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
+        if(orderCaseVOList == null || orderCaseVOList.size() == 0){
+            return CommonResult.error(-1, "订单箱号不能为空");
+        }
+        //订单对应商品：order_shop
+        List<OrderShopVO> orderShopVOList = form.getOrderShopVOList();
+        if(orderShopVOList == null || orderShopVOList.size() == 0){
+            return CommonResult.error(-1, "订单商品不能为空");
+        }
+        return orderInfoService.editSaveOrderInfo(form);
+    }
 
 
 }

@@ -163,4 +163,14 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     CommonResult<List<String>> printOrderMark(Long orderId);
+
+    /**
+     * 订单编辑-保存
+     * 1.编辑保存-订单箱号
+     * 2.编辑保存-订单商品
+     * 3.编辑保存-订单文件（报关文件、清关文件）
+     * @param form
+     * @return
+     */
+    CommonResult<OrderInfoVO> editSaveOrderInfo(OrderInfoForm form);
 }

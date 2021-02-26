@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.CustomerGoodsForm;
+import com.jayud.mall.model.bo.CustomerGoodsParaForm;
 import com.jayud.mall.model.bo.QueryCustomerGoodsForm;
 import com.jayud.mall.model.vo.CustomerGoodsVO;
 import com.jayud.mall.model.vo.domain.CustomerUser;
@@ -115,6 +116,15 @@ public class CustomerGoodsController {
     public CommonResult batchSaveCustomerGoods(@Valid @RequestBody List<CustomerGoodsVO> list){
         customerGoodsService.batchSaveCustomerGoods(list);
         return CommonResult.success("批量保存-客户商品，成功！");
+    }
+
+    //订单详情-查看商品详情(根据商品id查询)
+    @ApiOperation(value = "订单详情-查看商品详情(根据商品id查询)")
+    @PostMapping(value = "/findCustomerGoodsById")
+    @ApiOperationSupport(order = 6)
+    public CommonResult<CustomerGoodsVO> findCustomerGoodsById(@Valid @RequestBody CustomerGoodsParaForm form){
+        Integer goodId = form.getGoodId();
+        return customerGoodsService.findCustomerGoodsById(goodId);
     }
 
 

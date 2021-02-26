@@ -99,4 +99,10 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
         List<CustomerGoods> customerGoods = ConvertUtil.convertList(list, CustomerGoods.class);
         this.saveOrUpdateBatch(customerGoods);
     }
+
+    @Override
+    public CommonResult<CustomerGoodsVO> findCustomerGoodsById(Integer id) {
+        CustomerGoodsVO customerGoodsVO = customerGoodsMapper.findCustomerGoodsById(id);
+        return CommonResult.success(customerGoodsVO);
+    }
 }

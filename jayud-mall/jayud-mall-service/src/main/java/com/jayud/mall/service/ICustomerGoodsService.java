@@ -47,4 +47,11 @@ public interface ICustomerGoodsService extends IService<CustomerGoods> {
      * @param list
      */
     void batchSaveCustomerGoods(List<CustomerGoodsVO> list);
+
+    /**
+     * 订单详情-查看商品详情(根据商品id查询)
+     * @param id
+     * @return
+     */
+    CommonResult<CustomerGoodsVO> findCustomerGoodsById(Integer id);
 }

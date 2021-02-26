@@ -29,4 +29,11 @@ public interface CustomerGoodsMapper extends BaseMapper<CustomerGoods> {
      * @return
      */
     IPage<CustomerGoodsVO> findCustomerGoodsByPage(Page<CustomerGoodsVO> page,@Param("form") QueryCustomerGoodsForm form);
+
+    /**
+     * 订单详情-查看商品详情(根据商品id查询)
+     * @param id
+     * @return
+     */
+    CustomerGoodsVO findCustomerGoodsById(@Param("id") Integer id);
 }

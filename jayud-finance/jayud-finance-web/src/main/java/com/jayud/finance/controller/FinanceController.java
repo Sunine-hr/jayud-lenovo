@@ -291,7 +291,7 @@ public class FinanceController {
         headMap.put("billNo", "账单编号");
         headMap.put("bizCodeDesc", "业务类型");
         headMap.put("createdTimeStr", "日期");
-        headMap.put("customerName", "客户");
+        headMap.put("unitAccount", "结算单位");
         headMap.put("goodsDesc", "货物信息");
         headMap.put("startAddress", "起运地");
         headMap.put("endAddress", "目的地");

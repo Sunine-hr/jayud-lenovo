@@ -143,12 +143,22 @@ public class OrderInfoController {
 
 
     //订单详情-账单确认(rec应收账单) TODO 待开发，以及业务确认
-    //billConfirmedRec
-
+    @ApiOperation(value = "订单详情-账单确认(rec应收账单) TODO 待开发，以及业务确认")
+    @PostMapping("/billConfirmedRec")
+    @ApiOperationSupport(order = 8)
+    public CommonResult billConfirmedRec(@RequestBody OrderInfoForm form){
+        Long id = form.getId();
+        return CommonResult.success("订单详情-账单确认(rec应收账单) TODO 待开发，以及业务确认");
+    }
 
     //订单详情-账单确认(pay应付账单) TODO 待开发，以及业务确认
-    //billConfirmedPay
-
+    @ApiOperation(value = "订单详情-账单确认(rec应收账单) TODO 待开发，以及业务确认")
+    @PostMapping("/billConfirmedPay")
+    @ApiOperationSupport(order = 9)
+    public CommonResult billConfirmedPay(@RequestBody OrderInfoForm form){
+        Long id = form.getId();
+        return CommonResult.success("订单详情-账单确认(rec应收账单) TODO 待开发，以及业务确认");
+    }
 
 
 

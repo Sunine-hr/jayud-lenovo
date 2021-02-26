@@ -116,7 +116,7 @@ public class OrderInfoController {
     }
 
     //订单列表-查看订单详情
-    @ApiOperation(value = "订单列表-查看订单详情(查看)")
+    @ApiOperation(value = "订单列表-查看订单详情(查看、编辑)")
     @PostMapping("/lookOrderInfo")
     @ApiOperationSupport(order = 5)
     public CommonResult<OrderInfoVO> lookOrderInfo(@RequestBody OrderInfoForm form){

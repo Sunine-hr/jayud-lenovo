@@ -13,7 +13,6 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
-import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.SubOrderCloseOpt;
 import com.jayud.common.enums.*;
 import com.jayud.common.exception.JayudBizException;
@@ -98,7 +97,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private IAuditInfoService auditInfoService;
 
     private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(),
-            SubOrderSignEnum.KY.getSignOne(),SubOrderSignEnum.HY.getSignOne(), SubOrderSignEnum.BG.getSignOne()};
+            SubOrderSignEnum.KY.getSignOne(), SubOrderSignEnum.HY.getSignOne(), SubOrderSignEnum.BG.getSignOne()};
 
     @Autowired
     private IServiceOrderService serviceOrderService;
@@ -112,7 +111,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private OceanShipClient oceanShipClient;
 
     @Override
-    public String oprMainOrder(InputMainOrderForm form) {
+    public String oprMainOrder(InputMainOrderForm form, String loginUserName) {
         OrderInfo orderInfo = ConvertUtil.convert(form, OrderInfo.class);
         if (form != null && form.getOrderId() != null) {//修改
             //修改时也要返回主订单号
@@ -120,7 +119,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderInfo.setId(form.getOrderId());
             orderInfo.setOrderNo(oldOrder.getOrderNo());
             orderInfo.setUpTime(LocalDateTime.now());
-            orderInfo.setUpUser(UserOperator.getToken());
+            orderInfo.setUpUser(UserOperator.getToken() == null ? loginUserName : UserOperator.getToken());
         } else {//新增
             //生成主订单号
             String orderNo = StringUtils.loadNum(CommonConstant.M, 12);
@@ -133,7 +132,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
             orderInfo.setOrderNo(orderNo);
             orderInfo.setCreateTime(LocalDateTime.now());
-            orderInfo.setCreatedUser(UserOperator.getToken());
+            orderInfo.setCreatedUser(UserOperator.getToken() == null ? loginUserName : UserOperator.getToken());
         }
         if (CommonConstant.PRE_SUBMIT.equals(form.getCmd())) {
             orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_2.getCode()));
@@ -402,7 +401,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("class_code", form.getClassCode());
         queryWrapper.eq("status", "1");
-        queryWrapper.ne("sorts",0);
+        queryWrapper.ne("sorts", 0);
         List<OrderStatus> allProcess = orderStatusService.list(queryWrapper);//所有流程
 
         allProcess.sort((h1, h2) -> {//排序
@@ -549,7 +548,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("class_code", form.getClassCode());
         queryWrapper.eq("status", "1");
-        queryWrapper.ne("sorts",0);
+        queryWrapper.ne("sorts", 0);
         List<OrderStatus> allProcess = orderStatusService.list(queryWrapper);//所有流程
         allProcess.sort((h1, h2) -> {//排序
             if (h1.getFId().equals(h2.getFId())) {
@@ -626,7 +625,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     @Override
-    public InputOrderVO  getOrderDetail(GetOrderDetailForm form) {
+    public InputOrderVO getOrderDetail(GetOrderDetailForm form) {
         String prePath = String.valueOf(fileClient.getBaseUrl().getData());
 
         InputOrderVO inputOrderVO = new InputOrderVO();
@@ -732,7 +731,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
         }
         //获取海运信息
-        if(OrderStatusEnum.HY.getCode().equals(form.getClassCode())||inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.HYDD.getCode())){
+        if (OrderStatusEnum.HY.getCode().equals(form.getClassCode()) || inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.HYDD.getCode())) {
             InputSeaOrderVO seaOrderVO = this.oceanShipClient.getSeaOrderDetails(inputMainOrderVO.getOrderNo()).getData();
             if (seaOrderVO != null) {
                 //查询供应商
@@ -758,7 +757,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //保存主订单
         InputMainOrderForm inputMainOrderForm = form.getOrderForm();
         inputMainOrderForm.setCmd(form.getCmd());
-        String mainOrderNo = oprMainOrder(inputMainOrderForm);
+        String mainOrderNo = oprMainOrder(inputMainOrderForm, form.getLoginUserName());
         if (StringUtil.isNullOrEmpty(mainOrderNo)) {
             return false;
         }
@@ -782,7 +781,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     } else {
                         orderCustomsForm.setClassCode(OrderStatusEnum.CKBG.getCode());
                     }
-                    orderCustomsForm.setLoginUser(UserOperator.getToken());
+                    orderCustomsForm.setLoginUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
                     Boolean result = customsClient.createOrderCustoms(orderCustomsForm).getData();
                     if (!result) {//调用失败
                         return false;
@@ -805,7 +804,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     orderTransportForm.setIsHkClear(null);
                 }
                 orderTransportForm.setMainOrderNo(mainOrderNo);
-                orderTransportForm.setLoginUser(UserOperator.getToken());
+                orderTransportForm.setLoginUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
 
                 //根据主订单获取提货地址送货地址得客户ID
                 QueryWrapper queryWrapper = new QueryWrapper();
@@ -839,7 +838,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 //拼装地址信息
                 airOrderForm.assemblyAddress();
                 airOrderForm.setMainOrderNo(mainOrderNo);
-                airOrderForm.setCreateUser(UserOperator.getToken());
+                airOrderForm.setCreateUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
                 Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
                         : ProcessStatusEnum.DRAFT.getCode();
                 airOrderForm.setProcessStatus(processStatus);
@@ -851,7 +850,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             //创建服务单订单信息
             InputOrderServiceForm orderServiceForm = form.getOrderServiceForm();
             orderServiceForm.setMainOrderNo(mainOrderNo);
-            orderServiceForm.setLoginUser(UserOperator.getToken());
+            orderServiceForm.setLoginUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
             boolean result = serviceOrderService.createOrder(orderServiceForm);
             if (!result) {
                 return false;
@@ -866,7 +865,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 //拼装地址信息
                 seaOrderForm.assemblyAddress();
                 seaOrderForm.setMainOrderNo(mainOrderNo);
-                seaOrderForm.setCreateUser(UserOperator.getToken());
+                seaOrderForm.setCreateUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
                 Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
                         : ProcessStatusEnum.DRAFT.getCode();
                 seaOrderForm.setProcessStatus(processStatus);
@@ -1320,7 +1319,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         List<Map<String, Object>> maps = (List<Map<String, Object>>) value;
                         for (Map<String, Object> map : maps) {
                             AuditInfo auditInfo = this.auditInfoService.getLatestByRejectionStatus(Long.valueOf(map.get("id").toString()),
-                                    tableDesc+"表", rejectionStatus);
+                                    tableDesc + "表", rejectionStatus);
                             if (!StringUtils.isEmpty(auditInfo.getAuditComment())) {
                                 sb.append(map.get("orderNo")).append("-")
                                         .append(auditInfo.getAuditComment()).append(",");

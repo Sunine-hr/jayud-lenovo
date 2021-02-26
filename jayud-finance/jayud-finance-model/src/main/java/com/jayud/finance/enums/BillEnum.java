@@ -31,7 +31,7 @@ public enum BillEnum {
 
     EDIT_DEL("edit_del","审核对账单不通过"),//账单编辑-费用处于删除状态,账单详情表的audit_status
     SAVE_CONFIRM("save_confirm","费用状态-暂存提交"),
-    edit_no_commit("edit_no_commit","审核对账单不通过"),//账单编辑-添加费用暂存,账单详情表audit_status
+    EDIT_NO_COMMIT("edit_no_commit","审核对账单不通过"),//账单编辑-添加费用暂存,账单详情表audit_status
 
     //付款/开票申请状态
     F_0("0","未申请"),

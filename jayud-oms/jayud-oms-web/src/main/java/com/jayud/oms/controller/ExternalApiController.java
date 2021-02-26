@@ -1,6 +1,5 @@
 package com.jayud.oms.controller;
 
-import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
@@ -29,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -95,7 +93,7 @@ public class ExternalApiController {
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
     public ApiResult oprMainOrder(@RequestBody InputMainOrderForm form) {
-        String result = orderInfoService.oprMainOrder(form);
+        String result = orderInfoService.oprMainOrder(form, null);
         if (result != null) {
             return ApiResult.ok(result);
         }
@@ -952,14 +950,15 @@ public class ExternalApiController {
 
     /**
      * 根据客户code集合查询客户信息
+     *
      * @return
      */
     @RequestMapping(value = "/api/getCustomerByUnitCode")
-    ApiResult getCustomerByUnitCode(@RequestBody List<String> unitCodes){
+    ApiResult getCustomerByUnitCode(@RequestBody List<String> unitCodes) {
         List<CustomerInfo> customerInfos = new ArrayList<>();
         for (String unitCode : unitCodes) {
             QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.eq("id_code",unitCode);
+            queryWrapper.eq("id_code", unitCode);
             CustomerInfo one = customerInfoService.getOne(queryWrapper);
             customerInfos.add(one);
         }

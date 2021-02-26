@@ -626,7 +626,7 @@
         (select t.bill_no,max(t.make_time) make_time from order_payment_bill_detail t group by t.bill_no) tt on
         opbd.bill_no = tt.bill_no
         LEFT JOIN order_payment_bill opb ON opbd.bill_id = opb.id
-        where opbd.make_time = tt.make_time and opbd.audit_status != 'edit_del'
+        where opbd.make_time = tt.make_time
 <!--        <if test="form.cmd == 'main_statement'">-->
 <!--            and opb.is_main = 1-->
 <!--        </if>-->

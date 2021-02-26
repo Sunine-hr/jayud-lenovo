@@ -1,5 +1,7 @@
 package com.jayud.oceanship.po;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import java.time.LocalDateTime;
 import java.io.Serializable;
@@ -24,7 +26,8 @@ public class OrderFlowSheet extends Model<OrderFlowSheet> {
     private static final long serialVersionUID=1L;
 
     @ApiModelProperty(value = "主键id")
-      private Long id;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
 
     @ApiModelProperty(value = "订单号")
     private String orderNo;

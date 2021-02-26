@@ -993,6 +993,25 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return pageInfo;
     }
 
+    @Override
+    public CommonResult<List<String>> printOrderMark(Long orderId) {
+        //订单信息
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfo(orderId);
+        if(orderInfoVO == null){
+            return CommonResult.error(-1, "订单不存在");
+        }
+        Long orderInfoId = orderInfoVO.getId();
+        List<OrderCaseVO> orderCaseVOList = orderCaseMapper.findOrderShopByOrderId(orderInfoId);
+        List<String> list = new ArrayList<>();
+        if(orderCaseVOList.size() > 0){
+            orderCaseVOList.forEach(orderCaseVO -> {
+                String cartonNo = orderCaseVO.getCartonNo();
+                list.add(cartonNo);
+            });
+        }
+        return CommonResult.success(list);
+    }
+
     /**
      * 获取订单费用明细
      * @param orderInfoVO

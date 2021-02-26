@@ -156,4 +156,11 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     IPage<OrderInfoVO> findWebOrderInfoByPage(QueryOrderInfoForm form);
+
+    /**
+     * 订单详情-打印唛头（打印订单箱号）
+     * @param orderId
+     * @return
+     */
+    CommonResult<List<String>> printOrderMark(Long orderId);
 }

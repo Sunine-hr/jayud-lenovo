@@ -124,13 +124,30 @@ public class OrderInfoController {
     }
 
     //订单详情-计柜重信息-确认 TODO 待具体实现 预留
+    @ApiOperation(value = "订单详情-计柜重信息-确认(待具体实现 预留)")
+    @PostMapping("/affirmCounterWeightInfo")
+    @ApiOperationSupport(order = 6)
+    public CommonResult affirmCounterWeightInfo(@RequestBody OrderInfoForm form){
+        Long id = form.getId();
+        return CommonResult.success("订单详情-计柜重信息-确认 TODO 待具体实现 预留");
+    }
 
     //订单详情-打印唛头（打印订单箱号）
-    //printOrderMark
+    @ApiOperation(value = "订单详情-打印唛头（打印订单箱号）")
+    @PostMapping("/printOrderMark")
+    @ApiOperationSupport(order = 7)
+    public CommonResult<List<String>> printOrderMark(@RequestBody OrderInfoForm form){
+        Long orderId = form.getId();
+        return orderInfoService.printOrderMark(orderId);
+    }
 
 
-    //订单列表-账单确认 TODO 待开发，以及业务确认
+    //订单详情-账单确认(rec应收账单) TODO 待开发，以及业务确认
+    //billConfirmedRec
 
+
+    //订单详情-账单确认(pay应付账单) TODO 待开发，以及业务确认
+    //billConfirmedPay
 
 
 

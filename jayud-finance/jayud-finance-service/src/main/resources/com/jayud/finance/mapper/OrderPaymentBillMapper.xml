@@ -209,6 +209,7 @@
         LEFT JOIN cost_info ci ON opc.cost_code = ci.id_code
         left join order_customs oc on oc.order_no = opc.order_no
         left join air_order ao on ao.order_no = opc.order_no
+        left join sea_order so on so.order_no = opc.order_no
         WHERE
         opc.id NOT IN ( SELECT opbd.cost_id FROM order_payment_bill_detail opbd )
         and (opc.is_bill != '2' and opc.is_bill != 'save_confirm')
@@ -230,6 +231,10 @@
             -- TODO 空运
             and ao.legal_name = #{form.legalName}
             and opc.is_sum_to_main = 0 and opc.sub_type = 'ky'
+        </if>
+        <if test="form.cmd == 'hy'">
+            and so.legal_name = #{form.legalName}
+            and opc.is_sum_to_main = 0 and opc.sub_type = 'hy'
         </if>
         ) temp where 1 = 1
         <if test="form.startAddress != null and form.startAddress != ''">
@@ -540,7 +545,7 @@
             left join order_payment_bill opb on opb.legal_entity_id =sub.legal_entity_id
             and opb.supplier_code = opc.customer_code
             and opb.sub_type = #{form.cmd}
-            where opc.is_sum_to_main = 0 and opc.sub_type = #{form.cmd} and opc.status = '3'
+
             <if test="form.supplierChName != null and form.supplierChName != ''">
                 and si.supplier_ch_name like concat('%',#{form.supplierChName},'%')
             </if>

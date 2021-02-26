@@ -232,6 +232,7 @@
         left join order_customs oc on oc.order_no = orc.order_no
         left join vehicle_info vi on vi.id = osc.vehicle_id
         left join air_order ao on ao.order_no = orc.order_no
+        left join sea_order so on so.order_no = orc.order_no
         WHERE
         orc.id NOT IN ( SELECT orbd.cost_id FROM order_receivable_bill_detail orbd where orbd.audit_status!='edit_del')
         and (orc.is_bill != '2' and orc.is_bill!='save_confirm')
@@ -252,6 +253,10 @@
         <if test="form.cmd == 'ky'">
             and ao.legal_name = #{form.legalName}
             and orc.is_sum_to_main = 0 and orc.sub_type = 'ky'
+        </if>
+        <if test="form.cmd == 'hy'">
+            and so.legal_name = #{form.legalName}
+            and orc.is_sum_to_main = 0 and orc.sub_type = 'hy'
         </if>
         ) temp where 1 = 1
         <if test="form.startAddress != null and form.startAddress != ''">

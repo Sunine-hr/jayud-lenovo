@@ -391,6 +391,8 @@ public class SeaOrderController {
     public void uploadExcel(@RequestParam("orderId") Long orderId, HttpServletResponse response) {
 //        Long orderId = MapUtil.getLong(map1, "OrderId");
         SeaOrderVO seaOrderDetails = seaOrderService.getSeaOrderDetails(orderId);
+
+
         ClassPathResource classPathResource = new ClassPathResource("/static/海运.xlsx");
         String filename1 = classPathResource.getFilename();
 
@@ -422,6 +424,7 @@ public class SeaOrderController {
             ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
 
             WriteSheet writeSheet = EasyExcel.writerSheet().build();
+
             FillConfig fillConfig = FillConfig.builder().direction(WriteDirectionEnum.HORIZONTAL).build();
             //将集合数据填充
             excelWriter.fill(new FillWrapper("delivery",seaOrderDetails.getDeliveryAddress()),fillConfig,writeSheet);
@@ -442,6 +445,11 @@ public class SeaOrderController {
             map.put("paperStripSeal", seaOrderDetails.getPaperStripSeal());
             map.put("cabinetSize", seaOrderDetails.getCabinetSizeName());
             map.put("cabinetType", seaOrderDetails.getCabinetTypeName());
+            if(seaOrderDetails.getCabinetType().equals("FCL")){
+                map.put("whether","√");
+            }else{
+                map.put("whether","√");
+            }
 
             List<GoodsVO> goodsForms = seaOrderDetails.getGoodsForms();
             Integer totalBulkCargoAmount = 0;
@@ -469,5 +477,7 @@ public class SeaOrderController {
         }
 
     }
+
+
 }
 

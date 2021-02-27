@@ -81,6 +81,14 @@ public class OceanBill extends Model<OceanBill> {
     @JSONField(ordinal = 12)
     private Integer operationTeamId;
 
+    @ApiModelProperty(value = "创建用户id(system_user id)", position = 13)
+    @JSONField(ordinal = 13)
+    private Integer userId;
+
+    @ApiModelProperty(value = "创建用户名(system_user name)", position = 14)
+    @JSONField(ordinal = 14)
+    private String userName;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

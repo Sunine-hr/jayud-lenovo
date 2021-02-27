@@ -29,4 +29,8 @@ public class QueryOceanBillForm extends BasePageForm{
     @JSONField(ordinal = 4)
     private String destinationCountryCode;
 
+    @ApiModelProperty(value = "运输方式(transport_way id)", position = 5)
+    @JSONField(ordinal = 5)
+    private Integer tid;
+
 }

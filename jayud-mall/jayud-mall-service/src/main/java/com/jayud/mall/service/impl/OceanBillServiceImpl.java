@@ -2,6 +2,7 @@ package com.jayud.mall.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
@@ -54,7 +55,7 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         //定义分页参数
         Page<OceanBillVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
-        //page.addOrder(OrderItem.desc("oc.id"));
+        page.addOrder(OrderItem.desc("t.id"));
         IPage<OceanBillVO> pageInfo = oceanBillMapper.findOceanBillByPage(page, form);
 
         //设置柜号list

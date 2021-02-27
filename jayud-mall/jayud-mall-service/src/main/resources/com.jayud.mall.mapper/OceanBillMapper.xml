@@ -24,13 +24,14 @@
     <select id="findOceanBillByPage" parameterType="com.jayud.mall.model.bo.QueryOceanBillForm"
             resultType="com.jayud.mall.model.vo.OceanBillVO" >
         select
-        t.id,t.tid,t.supplier_id,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time,t.task_id,t.operation_team_id,
+        t.id,t.tid,t.supplier_id,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time,t.task_id,t.operation_team_id,t.user_id,t.user_name,
         t1.code_name tname,
         t2.company_name supplierName,
         t3.code_name startName,
         t4.code_name endName,
         t5.code_name taskName,
-        t6.group_name operationTeamName
+        t6.group_name operationTeamName,
+        CONCAT(t3.code_name,'/',t4.code_name) startEndName
         from
         ocean_bill t
         left join transport_way t1 on t1.id = t.tid
@@ -56,8 +57,10 @@
         <if test="form.destinationCountryCode != null and form.destinationCountryCode != ''">
             and t4.state_code = #{form.destinationCountryCode}
         </if>
-        GROUP BY
-        t.`id`
+        /*运输方式*/
+        <if test="form.tid != null">
+            and t.tid = #{form.tid}
+        </if>
     </select>
 
 

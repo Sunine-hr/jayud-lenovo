@@ -96,5 +96,19 @@ public class OceanBillVO {
     @JSONField(ordinal = 20)
     private Integer tdId;
 
+    //起运港/目的港
+    @ApiModelProperty(value = "起运港/目的港", position = 21)
+    @JSONField(ordinal = 21)
+    private String startEndName;
+
+    @ApiModelProperty(value = "创建用户id(system_user id)", position = 22)
+    @JSONField(ordinal = 22)
+    private Integer userId;
+
+    @ApiModelProperty(value = "创建用户名(system_user name)", position = 23)
+    @JSONField(ordinal = 23)
+    private String userName;
+
+
 
 }

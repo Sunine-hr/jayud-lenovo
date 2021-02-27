@@ -14,6 +14,7 @@ import com.jayud.mall.model.bo.OceanCounterForm;
 import com.jayud.mall.model.bo.QueryOceanBillForm;
 import com.jayud.mall.model.po.OceanBill;
 import com.jayud.mall.model.po.OceanCounter;
+import com.jayud.mall.model.vo.BillOrderCostInfoVO;
 import com.jayud.mall.model.vo.BillTaskRelevanceVO;
 import com.jayud.mall.model.vo.OceanBillVO;
 import com.jayud.mall.model.vo.OceanCounterVO;
@@ -161,6 +162,8 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         //提单费用信息 TODO
 
         //提单对应的订单 以及 费用信息 TODO
+        List<BillOrderCostInfoVO> billOrderCostInfoVOS = oceanBillMapper.findBillOrderCostInfo(id);
+        oceanBillVO.setBillOrderCostInfoVOS(billOrderCostInfoVOS);
 
         return CommonResult.success(oceanBillVO);
     }

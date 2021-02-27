@@ -91,6 +91,23 @@
 
     </select>
 
+    <!--根据提单id，查找提单关联的订单-->
+    <!--提单关联的柜号，柜号关联的订单箱号，订单箱号关联的订单-->
+    <select id="findBillOrderCostInfo" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.BillOrderCostInfoVO">
+        select
+        t.id,t.order_no,t.actual_weight,t.actual_volume,t.charge_weight,t2.supplier_id,t2.quantity,t3.company_name supplierName
+        from order_info t
+        join (
+            select t.supplier_id,t3.order_id,count(t3.order_id) quantity
+            from (select id,supplier_id from ocean_bill where id = #{id}) t
+            join ocean_counter t1 on t1.ob_id = t.id
+            join counter_case t2 on t2.ocean_counter_id = t1.id
+            join order_case t3 on t3.id = t2.order_case_id
+            group by t3.order_id
+        ) t2 on t2.order_id = t.id
+        left join supplier_info t3 on t3.id = t2.supplier_id
+    </select>
+
 
 
 </mapper>

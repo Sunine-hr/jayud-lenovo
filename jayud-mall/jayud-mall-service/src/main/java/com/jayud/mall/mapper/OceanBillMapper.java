@@ -5,10 +5,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.mall.model.bo.QueryOceanBillForm;
 import com.jayud.mall.model.po.OceanBill;
+import com.jayud.mall.model.vo.BillOrderCostInfoVO;
 import com.jayud.mall.model.vo.OceanBillVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * <p>
@@ -36,4 +39,11 @@ public interface OceanBillMapper extends BaseMapper<OceanBill> {
      * @return
      */
     OceanBillVO billLadingCost(@Param("id") Long id);
+
+    /**
+     * 提单对应的订单 以及 费用信息
+     * @param id
+     * @return
+     */
+    List<BillOrderCostInfoVO> findBillOrderCostInfo(@Param("id") Long id);
 }

@@ -448,7 +448,7 @@ public class SeaOrderController {
             map.put("paperStripSeal", seaOrderDetails.getPaperStripSeal());
             map.put("cabinetSize", seaOrderDetails.getCabinetSizeName());
             map.put("cabinetType", seaOrderDetails.getCabinetTypeName());
-            if(seaOrderDetails.getCabinetType().equals("FCL")){
+            if(seaOrderDetails.getCabinetTypeName().equals("FCL")){
                 map.put("whether","√");
             }else{
                 map.put("whether2","√");

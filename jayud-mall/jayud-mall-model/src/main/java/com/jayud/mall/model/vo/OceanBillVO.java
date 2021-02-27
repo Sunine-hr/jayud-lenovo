@@ -109,6 +109,9 @@ public class OceanBillVO {
     @JSONField(ordinal = 23)
     private String userName;
 
-
+    //航程（带单位格式化）
+    @ApiModelProperty(value = "航程（带单位格式化）", position = 24)
+    @JSONField(ordinal = 24)
+    private String crudingRrange;
 
 }

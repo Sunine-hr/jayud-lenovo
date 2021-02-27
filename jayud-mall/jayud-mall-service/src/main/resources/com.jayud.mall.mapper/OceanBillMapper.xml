@@ -64,7 +64,30 @@
     </select>
 
     <select id="billLadingCost" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OceanBillVO">
-
+        select
+            t.id,t.tid,t.supplier_id,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time,t.task_id,t.operation_team_id,t.user_id,t.user_name,
+            t1.code_name tname,
+            t2.company_name supplierName,
+            t3.code_name startName,
+            t4.code_name endName,
+            t5.code_name taskName,
+            t6.group_name operationTeamName,
+            CONCAT(t3.code_name,'/',t4.code_name) startEndName,
+            CONCAT(t3.code_name,'--',t4.code_name) shipRoute,
+            (case t.unit
+                 when '1' then concat(t.voyage_day,' 小时')
+                 when '2' then concat(t.voyage_day,' 天')
+                 when '3' then concat(t.voyage_day,' 月')
+                 else null end) as crudingRrange
+        from
+            ocean_bill t
+                left join transport_way t1 on t1.id = t.tid
+                left join  supplier_info t2 on t2.id = t.supplier_id
+                left join harbour_info t3 on t3.id_code = t.start_code
+                left join harbour_info t4 on t4.id_code = t.end_code
+                left join task_group t5 on t5.id = t.task_id
+                left join operation_team t6 on t6.id = t.operation_team_id
+        where t.id=#{id}
 
     </select>
 

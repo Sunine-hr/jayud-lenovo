@@ -970,7 +970,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     } catch (JSONException e) {
                         e.printStackTrace();
                         System.out.println("json格式错误");
+                        orderCustomsFileVO.setTemplateUrlVOS(new ArrayList<>());
                     }
+                }else{
+                    orderCustomsFileVO.setTemplateUrlVOS(new ArrayList<>());
                 }
             });
         }
@@ -994,7 +997,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     } catch (JSONException e) {
                         e.printStackTrace();
                         System.out.println("json格式错误");
+                        orderClearanceFileVO.setTemplateUrlVOS(new ArrayList<>());
                     }
+                }else{
+                    orderClearanceFileVO.setTemplateUrlVOS(new ArrayList<>());
                 }
             });
         }

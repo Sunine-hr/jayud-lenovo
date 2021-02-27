@@ -11,10 +11,7 @@ import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.common.entity.InitComboxVO;
-import com.jayud.common.enums.BusinessTypeEnum;
-import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.enums.ProcessStatusEnum;
-import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.enums.*;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.FileView;
@@ -29,6 +26,7 @@ import com.jayud.oceanship.mapper.SeaOrderMapper;
 import com.jayud.oceanship.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.oceanship.vo.*;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -82,7 +81,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         //创建海运单
         if (addSeaOrderForm.getOrderId() == null) {
             //生成订单号
-            String orderNo = generationOrderNo();
+            String orderNo = generationOrderNo(addSeaOrderForm.getLegalEntityId(),addSeaOrderForm.getImpAndExpType());
             seaOrder.setOrderNo(orderNo);
             seaOrder.setCreateTime(now);
             seaOrder.setCreateUser(UserOperator.getToken());
@@ -157,16 +156,27 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
      * 生成订单号
      */
     @Override
-    public String generationOrderNo() {
+    public String generationOrderNo(Long legalId , Integer integer) {
         //生成订单号
-        String orderNo = StringUtils.loadNum(CommonConstant.S, 12);
-        while (true) {
-            if (isExistOrder(orderNo)) {//重复
-                orderNo = StringUtils.loadNum(CommonConstant.S, 12);
-            } else {
-                break;
-            }
+//        String orderNo = StringUtils.loadNum(CommonConstant.S, 12);
+//        while (true) {
+//            if (isExistOrder(orderNo)) {//重复
+//                orderNo = StringUtils.loadNum(CommonConstant.S, 12);
+//            } else {
+//                break;
+//            }
+//        }
+        String legalCode = (String)oauthClient.getLegalEntityCodeByLegalId(legalId).getData();
+        String preOrder = null;
+        String classCode = null;
+        if(integer.equals("1")){
+            preOrder = OrderTypeEnum.SI.getCode() + legalCode;
+            classCode = OrderTypeEnum.SI.getCode();
+        }else {
+            preOrder = OrderTypeEnum.SE.getCode() + legalCode;
+            classCode = OrderTypeEnum.SE.getCode();
         }
+        String orderNo = (String)omsClient.getOrderNo(preOrder,classCode).getData();
         return orderNo;
     }
 

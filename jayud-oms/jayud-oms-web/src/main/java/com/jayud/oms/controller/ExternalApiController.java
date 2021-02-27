@@ -91,6 +91,8 @@ public class ExternalApiController {
     private IOrderPaymentCostService orderPaymentCostService;
     @Autowired
     private IDictService dictService;
+    @Autowired
+    private IOrderTypeNumberService orderTypeNumberService;
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
@@ -964,6 +966,16 @@ public class ExternalApiController {
             customerInfos.add(one);
         }
         return ApiResult.ok(customerInfos);
+    }
+
+    /**
+     * 根据客户code集合查询客户信息
+     * @return
+     */
+    @RequestMapping(value = "/api/getOrderNo")
+    ApiResult getOrderNo(@RequestParam("preOrder") String preOrder , @RequestParam("classCode") String classCode){
+        String orderNo = orderTypeNumberService.getOrderNo(preOrder, classCode);
+        return ApiResult.ok(orderNo);
     }
 }
 

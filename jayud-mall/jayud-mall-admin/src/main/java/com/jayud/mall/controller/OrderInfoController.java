@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.*;
-import com.jayud.mall.model.vo.OceanBillVO;
-import com.jayud.mall.model.vo.OrderClearanceFileVO;
-import com.jayud.mall.model.vo.OrderCustomsFileVO;
-import com.jayud.mall.model.vo.OrderInfoVO;
+import com.jayud.mall.model.vo.*;
 import com.jayud.mall.service.IOrderInfoService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -146,6 +143,15 @@ public class OrderInfoController {
     public CommonResult<List<OceanBillVO>> findOceanBillByOfferInfoId(@Valid @RequestBody OfferInfoIdForm form){
         Integer offerInfoId = form.getOfferInfoId();
         return orderInfoService.findOceanBillByOfferInfoId(offerInfoId);
+    }
+
+    //根据提单id，查找提单关联的柜号id list(其实是1对1的)
+    @ApiOperation(value = "根据提单id，查找提单关联的柜号id list(其实是1对1的)")
+    @PostMapping("/findOceanCounterByTdId")
+    @ApiOperationSupport(order = 15)
+    public CommonResult<List<OceanCounterVO>> findOceanCounterByTdId(@Valid @RequestBody TdIdForm form){
+        Long tdId = form.getTdId();
+        return orderInfoService.findOceanCounterByTdId(tdId);
     }
 
 

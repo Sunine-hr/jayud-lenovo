@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.mall.model.bo.QueryOrderInfoForm;
 import com.jayud.mall.model.po.OrderInfo;
 import com.jayud.mall.model.vo.OceanBillVO;
+import com.jayud.mall.model.vo.OceanCounterVO;
 import com.jayud.mall.model.vo.OrderInfoVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -68,4 +69,11 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      * @return
      */
     List<OceanBillVO> findOceanBillByOfferInfoId(@Param("offerInfoId") Integer offerInfoId);
+
+    /**
+     * 根据提单id，查找提单关联的柜号id list(其实是1对1的)
+     * @param tdId
+     * @return
+     */
+    List<OceanCounterVO> findOceanCounterByTdId(@Param("tdId") Long tdId);
 }

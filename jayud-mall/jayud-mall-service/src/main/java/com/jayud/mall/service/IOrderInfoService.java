@@ -5,10 +5,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.OrderInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.mall.model.vo.OceanBillVO;
-import com.jayud.mall.model.vo.OrderClearanceFileVO;
-import com.jayud.mall.model.vo.OrderCustomsFileVO;
-import com.jayud.mall.model.vo.OrderInfoVO;
+import com.jayud.mall.model.vo.*;
 
 import java.util.List;
 
@@ -181,4 +178,11 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     CommonResult<List<OceanBillVO>> findOceanBillByOfferInfoId(Integer offerInfoId);
+
+    /**
+     * 根据提单id，查找提单关联的柜号id list(其实是1对1的)
+     * @param tdId
+     * @return
+     */
+    CommonResult<List<OceanCounterVO>> findOceanCounterByTdId(Long tdId);
 }

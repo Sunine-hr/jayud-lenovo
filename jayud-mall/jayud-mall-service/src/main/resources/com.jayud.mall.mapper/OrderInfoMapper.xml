@@ -170,5 +170,19 @@
         ) t3 on t3.tdId = t2.tdId
     </select>
 
+    <select id="findOceanCounterByTdId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OceanCounterVO">
+        select id,
+               cntr_no,
+               cabinet_code,
+               volume,
+               cost,
+               cid,
+               status,
+               ob_id,
+               create_time
+        from ocean_counter
+        where ob_id = #{tdId}
+    </select>
+
 
 </mapper>

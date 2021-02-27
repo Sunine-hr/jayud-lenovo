@@ -7,17 +7,15 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.mall.mapper.BillCopePayMapper;
 import com.jayud.mall.mapper.OceanBillMapper;
 import com.jayud.mall.mapper.OceanCounterMapper;
-import com.jayud.mall.model.bo.OceanBillForm;
-import com.jayud.mall.model.bo.OceanCounterForm;
-import com.jayud.mall.model.bo.QueryOceanBillForm;
+import com.jayud.mall.model.bo.*;
+import com.jayud.mall.model.po.BillCopePay;
 import com.jayud.mall.model.po.OceanBill;
 import com.jayud.mall.model.po.OceanCounter;
-import com.jayud.mall.model.vo.BillOrderCostInfoVO;
-import com.jayud.mall.model.vo.BillTaskRelevanceVO;
-import com.jayud.mall.model.vo.OceanBillVO;
-import com.jayud.mall.model.vo.OceanCounterVO;
+import com.jayud.mall.model.vo.*;
+import com.jayud.mall.service.IBillCopePayService;
 import com.jayud.mall.service.IBillTaskRelevanceService;
 import com.jayud.mall.service.IOceanBillService;
 import com.jayud.mall.service.IOceanCounterService;
@@ -25,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,10 +45,16 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     OceanCounterMapper oceanCounterMapper;
 
     @Autowired
+    BillCopePayMapper billCopePayMapper;
+
+    @Autowired
     IOceanCounterService oceanCounterService;
 
     @Autowired
     IBillTaskRelevanceService billTaskRelevanceService;
+
+    @Autowired
+    IBillCopePayService billCopePayService;
 
     @Override
     public IPage<OceanBillVO> findOceanBillByPage(QueryOceanBillForm form) {
@@ -159,12 +164,59 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         if(oceanBillVO == null){
             return CommonResult.error(-1, "提单不存在");
         }
-        //提单费用信息 TODO
+        Long billId = oceanBillVO.getId();
+        //提单费用信息
+        //根据提单id，查询提单费用（提单应收费用）
+        List<BillCopePayVO> billCopePayVOS = billCopePayMapper.findBillCopePayByBillId(billId);
+
+        BillCostInfoVO billCostInfoVO = new BillCostInfoVO();
+        billCostInfoVO.setId(oceanBillVO.getId());
+        billCostInfoVO.setSupplierId(oceanBillVO.getSupplierId());
+        if(billCopePayVOS != null && billCopePayVOS.size() > 0){
+            BigDecimal amountTotal = new BigDecimal("0");
+            for (int i=0; i<billCopePayVOS.size(); i++){
+                BillCopePayVO billCopePayVO = billCopePayVOS.get(i);
+                BigDecimal amount = billCopePayVO.getAmount();
+                amountTotal = amountTotal.add(amount);
+            }
+            String currencyName = billCopePayVOS.get(0).getCurrencyName();
+            String billCopePayTotal = amountTotal.toString()+" "+currencyName;
+            billCostInfoVO.setBillCopePayForms(billCopePayVOS);
+            billCostInfoVO.setBillCopePayTotal(billCopePayTotal);
+        }
+        oceanBillVO.setBillCostInfoVO(billCostInfoVO);
 
         //提单对应的订单 以及 费用信息 TODO
         List<BillOrderCostInfoVO> billOrderCostInfoVOS = oceanBillMapper.findBillOrderCostInfo(id);
         oceanBillVO.setBillOrderCostInfoVOS(billOrderCostInfoVOS);
 
         return CommonResult.success(oceanBillVO);
+    }
+
+    @Override
+    public CommonResult<BillCostInfoVO> saveBillCostInfo(BillCostInfoForm form) {
+        Long billId = form.getId();//提单id
+        OceanBillVO oceanBillVO = oceanBillMapper.billLadingCost(billId);
+        if(oceanBillVO == null){
+            return CommonResult.error(-1, "提单不存在");
+        }
+        Integer supplierId = form.getSupplierId();//供应商id
+        List<BillCopePayForm> billCopePayForms = form.getBillCopePayForms();
+
+        List<BillCopePay> billCopePays = new ArrayList<>();
+        billCopePayForms.forEach(billCopePayForm -> {
+            BillCopePay billCopePay = ConvertUtil.convert(billCopePayForm, BillCopePay.class);
+            billCopePay.setBillId(billId);
+            billCopePay.setSupplierId(supplierId);
+            billCopePays.add(billCopePay);
+        });
+        //批量保存-提单费用
+        billCopePayService.saveOrUpdateBatch(billCopePays);
+
+        BillCostInfoVO billCostInfoVO = ConvertUtil.convert(form, BillCostInfoVO.class);
+        List<BillCopePayVO> billCopePayVOS = ConvertUtil.convertList(billCopePays, BillCopePayVO.class);
+        billCostInfoVO.setBillCopePayForms(billCopePayVOS);
+
+        return CommonResult.success(billCostInfoVO);
     }
 }

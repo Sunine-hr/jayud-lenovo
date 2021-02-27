@@ -3,9 +3,11 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.BillCostInfoForm;
 import com.jayud.mall.model.bo.OceanBillForm;
 import com.jayud.mall.model.bo.OceanBillParaForm;
 import com.jayud.mall.model.bo.QueryOceanBillForm;
+import com.jayud.mall.model.vo.BillCostInfoVO;
 import com.jayud.mall.model.vo.OceanBillVO;
 import com.jayud.mall.service.IOceanBillService;
 import io.swagger.annotations.Api;
@@ -62,7 +64,16 @@ public class OceanBillController {
         return oceanBillService.billLadingCost(id);
     }
 
+    //保存提单费用信息(录入提单费用保存)
+    @ApiOperation(value = "保存提单费用信息(录入提单费用保存)")
+    @PostMapping(value = "saveBillCostInfo")
+    @ApiOperationSupport(order = 4)
+    public CommonResult<BillCostInfoVO> saveBillCostInfo(@Valid @RequestBody BillCostInfoForm form){
+        return oceanBillService.saveBillCostInfo(form);
+    }
 
+    //根据计费重,一键均摊 TODO 待实现
+    //public CommonResult
 
 
 

@@ -131,7 +131,9 @@
         left join harbour_info t4 on t4.id_code = t2.destination_port
         left join (select t5.order_id,count(t5.order_id) quantity from order_case t5 group by t5.order_id) t5 on t5.order_id = t.id
         where 1=1
-
+        <if test="form.status != null">
+            and t.status = #{form.status}
+        </if>
     </select>
 
 

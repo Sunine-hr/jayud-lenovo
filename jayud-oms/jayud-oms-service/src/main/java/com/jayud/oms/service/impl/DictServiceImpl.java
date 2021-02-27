@@ -90,7 +90,8 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements ID
     @Override
     public List<Dict> getByDictTypeCode(String dictTypeCode) {
         QueryWrapper<Dict> condition = new QueryWrapper<>();
-        condition.lambda().eq(Dict::getDictTypeCode, dictTypeCode);
+        condition.lambda().eq(Dict::getDictTypeCode, dictTypeCode)
+                .eq(Dict::getStatus, StatusEnum.ENABLE.getCode());
         return this.baseMapper.selectList(condition);
     }
 }

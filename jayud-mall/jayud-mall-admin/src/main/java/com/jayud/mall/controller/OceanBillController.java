@@ -53,5 +53,17 @@ public class OceanBillController {
         return oceanBillService.lookOceanBill(id);
     }
 
+    //提单-录入费用(根据 提单id 查询)
+    @ApiOperation(value = "提单-录入费用(根据 提单id 查询)")
+    @PostMapping(value = "billLadingCost")
+    @ApiOperationSupport(order = 4)
+    public CommonResult<OceanBillVO> billLadingCost(@Valid @RequestBody OceanBillParaForm form){
+        Long id = form.getId();
+        return oceanBillService.billLadingCost(id);
+    }
+
+
+
+
 
 }

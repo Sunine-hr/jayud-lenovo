@@ -1127,7 +1127,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
         });
         List<OrderCustomsFile> orderCustomsFiles = ConvertUtil.convertList(orderCustomsFileVOList, OrderCustomsFile.class);
-        orderCustomsFileService.saveOrUpdateBatch(orderCustomsFiles);
+        if(orderCustomsFiles != null && orderCustomsFiles.size() > 0){
+            orderCustomsFileService.saveOrUpdateBatch(orderCustomsFiles);
+        }else{
+            return CommonResult.error(-1, "报关文件不能为空");
+        }
 
         //清关文件
         List<OrderClearanceFileVO> orderClearanceFileVOList = form.getOrderClearanceFileVOList();
@@ -1141,7 +1145,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
         });
         List<OrderClearanceFile> orderClearanceFiles = ConvertUtil.convertList(orderClearanceFileVOList, OrderClearanceFile.class);
-        orderClearanceFileService.saveOrUpdateBatch(orderClearanceFiles);
+        if(orderClearanceFiles != null && orderClearanceFiles.size() > 0){
+            orderClearanceFileService.saveOrUpdateBatch(orderClearanceFiles);
+        }else{
+            return CommonResult.error(-1, "清关文件不能为空");
+        }
+
         OrderInfoVO orderInfoVO = ConvertUtil.convert(orderInfo, OrderInfoVO.class);
         return CommonResult.success(orderInfoVO);
     }

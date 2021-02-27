@@ -37,4 +37,14 @@ public interface IOceanBillService extends IService<OceanBill> {
      * @return
      */
     CommonResult<OceanBillVO> lookOceanBill(Long id);
+
+    /**
+     * 提单-录入费用(根据 提单id 查询)
+     * 1.查询提单详情
+     * 2.查询提单费用明细
+     * 3.查询提单对应的订单
+     * @param id
+     * @return
+     */
+    CommonResult<OceanBillVO> billLadingCost(Long id);
 }

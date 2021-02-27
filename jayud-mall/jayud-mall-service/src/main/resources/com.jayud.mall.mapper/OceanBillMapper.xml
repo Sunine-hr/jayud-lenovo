@@ -63,5 +63,11 @@
         </if>
     </select>
 
+    <select id="billLadingCost" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OceanBillVO">
+
+
+    </select>
+
+
 
 </mapper>

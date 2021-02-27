@@ -29,4 +29,11 @@ public interface OceanBillMapper extends BaseMapper<OceanBill> {
      * @return
      */
     IPage<OceanBillVO> findOceanBillByPage(Page<OceanBillVO> page, @Param("form") QueryOceanBillForm form);
+
+    /**
+     * 提单-录入费用(根据 提单id 查询)
+     * @param id
+     * @return
+     */
+    OceanBillVO billLadingCost(@Param("id") Long id);
 }

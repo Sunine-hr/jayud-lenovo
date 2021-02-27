@@ -74,7 +74,7 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     /**
      * <p>保存提单信息</p>
      * <p>1个提单对应1个柜子</p>
-     * <p>1个柜子对应N个运单(订单)</p>
+     * <p>1个柜子对应N个运单箱号(订单)</p>
      * <p>1个运单对应N个箱号</p>
      * @param form
      */
@@ -150,5 +150,13 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
 //        });
         oceanBillVO.setOceanCounterVOList(oceanCounterVOList);
         return CommonResult.success(oceanBillVO);
+    }
+
+    @Override
+    public CommonResult<OceanBillVO> billLadingCost(Long id) {
+
+        OceanBillVO oceanBillVO = oceanBillMapper.billLadingCost(id);
+
+        return null;
     }
 }

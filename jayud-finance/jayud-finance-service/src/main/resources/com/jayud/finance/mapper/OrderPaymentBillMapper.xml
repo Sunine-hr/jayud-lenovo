@@ -545,7 +545,7 @@
             left join order_payment_bill opb on opb.legal_entity_id =sub.legal_entity_id
             and opb.supplier_code = opc.customer_code
             and opb.sub_type = #{form.cmd}
-
+            where opc.is_sum_to_main = 0 and opc.sub_type = #{form.cmd} and opc.status = '3'
             <if test="form.supplierChName != null and form.supplierChName != ''">
                 and si.supplier_ch_name like concat('%',#{form.supplierChName},'%')
             </if>
@@ -561,24 +561,24 @@
         </if>
 
 
-        <!--        <if test="form.cmd == 'zgys'">-->
-        <!--            left join order_transport ot on ot.order_no = opc.order_no-->
-        <!--            left join order_payment_bill opb on opb.legal_name = ot.legal_name-->
-        <!--            and opb.supplier_ch_name = opc.customer_name-->
-        <!--            where opc.is_sum_to_main = 0 and opc.sub_type = 'zgys' and opc.status = '3'-->
-        <!--            <if test="form.supplierChName != null and form.supplierChName != ''">-->
-        <!--                and si.supplier_ch_name like concat('%',#{form.supplierChName},'%')-->
-        <!--            </if>-->
-        <!--            <if test="form.legalName != null and form.legalName != ''">-->
-        <!--                and ot.legal_name like concat('%',#{form.legalName},'%')-->
-        <!--            </if>-->
-        <!--            <if test="legalIds != null">-->
-        <!--                and ot.`legal_entity_id` in-->
-        <!--                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
-        <!--                    #{legalId}-->
-        <!--                </foreach>-->
-        <!--            </if>-->
-        <!--        </if>-->
+<!--                <if test="form.cmd == 'zgys'">-->
+<!--                    left join order_transport ot on ot.order_no = opc.order_no-->
+<!--                    left join order_payment_bill opb on opb.legal_name = ot.legal_name-->
+<!--                    and opb.supplier_ch_name = opc.customer_name-->
+<!--                    where opc.is_sum_to_main = 0 and opc.sub_type = 'zgys' and opc.status = '3'-->
+<!--                    <if test="form.supplierChName != null and form.supplierChName != ''">-->
+<!--                        and si.supplier_ch_name like concat('%',#{form.supplierChName},'%')-->
+<!--                    </if>-->
+<!--                    <if test="form.legalName != null and form.legalName != ''">-->
+<!--                        and ot.legal_name like concat('%',#{form.legalName},'%')-->
+<!--                    </if>-->
+<!--                    <if test="legalIds != null">-->
+<!--                        and ot.`legal_entity_id` in-->
+<!--                        <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
+<!--                            #{legalId}-->
+<!--                        </foreach>-->
+<!--                    </if>-->
+<!--                </if>-->
         <!--        <if test="form.cmd == 'bg'">-->
         <!--            left join order_customs oc on oc.order_no = opc.order_no-->
         <!--            left join order_payment_bill opb on opb.legal_name = oc.legal_name-->

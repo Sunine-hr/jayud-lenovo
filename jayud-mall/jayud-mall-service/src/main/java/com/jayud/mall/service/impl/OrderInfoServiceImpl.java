@@ -1184,15 +1184,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<OrderCopeReceivableVO> orderCopeReceivableVOS = orderCopeReceivableMapper.findOrderCopeReceivableByOrderId(orderId);
         orderCostDetailVO.setOrderCopeReceivableVOS(orderCopeReceivableVOS);//订单应收费用
         BigDecimal orderCopeReceivableAmountTotal = new BigDecimal("0");//汇总金额
-        for (int i = 0; i<orderCopeReceivableVOS.size(); i++){
-            OrderCopeReceivableVO orderCopeReceivableVO = orderCopeReceivableVOS.get(i);
-            BigDecimal amount = orderCopeReceivableVO.getAmount() != null ? orderCopeReceivableVO.getAmount() : new BigDecimal("0");
-            orderCopeReceivableAmountTotal = orderCopeReceivableAmountTotal.add(amount);
-
+        if(orderCopeReceivableVOS != null && orderCopeReceivableVOS.size() > 0){
+            for (int i = 0; i<orderCopeReceivableVOS.size(); i++){
+                OrderCopeReceivableVO orderCopeReceivableVO = orderCopeReceivableVOS.get(i);
+                BigDecimal amount = orderCopeReceivableVO.getAmount() != null ? orderCopeReceivableVO.getAmount() : new BigDecimal("0");
+                orderCopeReceivableAmountTotal = orderCopeReceivableAmountTotal.add(amount);
+            }
+            String currencyCode = orderCopeReceivableVOS.get(0).getCurrencyCode();//金额的币种，默认取第一个
+            String orderCopeReceivableAmountTotalFormat = orderCopeReceivableAmountTotal.toString() + " " + currencyCode;
+            orderCostDetailVO.setOrderCopeReceivableAmountTotal(orderCopeReceivableAmountTotalFormat);
         }
-        String currencyCode = orderCopeReceivableVOS.get(0).getCurrencyCode();//金额的币种，默认取第一个
-        String orderCopeReceivableAmountTotalFormat = orderCopeReceivableAmountTotal.toString() + " " + currencyCode;
-        orderCostDetailVO.setOrderCopeReceivableAmountTotal(orderCopeReceivableAmountTotalFormat);
         return orderCostDetailVO;
     }
 

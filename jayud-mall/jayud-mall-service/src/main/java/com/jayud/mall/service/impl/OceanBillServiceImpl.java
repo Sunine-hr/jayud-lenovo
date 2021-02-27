@@ -154,9 +154,14 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
 
     @Override
     public CommonResult<OceanBillVO> billLadingCost(Long id) {
-
         OceanBillVO oceanBillVO = oceanBillMapper.billLadingCost(id);
+        if(oceanBillVO == null){
+            return CommonResult.error(-1, "提单不存在");
+        }
+        //提单费用信息 TODO
 
-        return null;
+        //提单对应的订单 以及 费用信息 TODO
+
+        return CommonResult.success(oceanBillVO);
     }
 }

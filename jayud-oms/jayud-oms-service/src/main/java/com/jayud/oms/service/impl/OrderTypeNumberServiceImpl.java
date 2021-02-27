@@ -37,7 +37,7 @@ public class OrderTypeNumberServiceImpl extends ServiceImpl<OrderTypeNumberMappe
            OrderTypeNumber orderTypeNumber = baseMapper.getMaxNumberData(classCode);
             OrderTypeNumber typeNumber = new OrderTypeNumber();
            if(orderTypeNumber != null){
-               orderNo = preOrderNO + orderTypeNumber.getDate() + String.format("%04d",orderTypeNumber.getNumber());
+               orderNo = preOrderNO + orderTypeNumber.getDate() + String.format("%04d",orderTypeNumber.getNumber()+1);
                typeNumber.setNumber(orderTypeNumber.getNumber()+1);
                typeNumber.setDate(orderTypeNumber.getDate());
                typeNumber.setClassCode(classCode);

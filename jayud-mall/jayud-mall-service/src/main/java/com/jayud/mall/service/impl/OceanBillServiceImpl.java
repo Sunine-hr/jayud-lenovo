@@ -11,14 +11,9 @@ import com.jayud.mall.mapper.BillCopePayMapper;
 import com.jayud.mall.mapper.OceanBillMapper;
 import com.jayud.mall.mapper.OceanCounterMapper;
 import com.jayud.mall.model.bo.*;
-import com.jayud.mall.model.po.BillCopePay;
-import com.jayud.mall.model.po.OceanBill;
-import com.jayud.mall.model.po.OceanCounter;
+import com.jayud.mall.model.po.*;
 import com.jayud.mall.model.vo.*;
-import com.jayud.mall.service.IBillCopePayService;
-import com.jayud.mall.service.IBillTaskRelevanceService;
-import com.jayud.mall.service.IOceanBillService;
-import com.jayud.mall.service.IOceanCounterService;
+import com.jayud.mall.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,6 +50,12 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
 
     @Autowired
     IBillCopePayService billCopePayService;
+
+    @Autowired
+    IOrderCopeReceivableService orderCopeReceivableService;
+
+    @Autowired
+    IOrderCopeWithService orderCopeWithService;
 
     @Override
     public IPage<OceanBillVO> findOceanBillByPage(QueryOceanBillForm form) {
@@ -194,6 +195,7 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult<BillCostInfoVO> saveBillCostInfo(BillCostInfoForm form) {
         Long billId = form.getId();//提单id
         OceanBillVO oceanBillVO = oceanBillMapper.billLadingCost(billId);
@@ -221,18 +223,23 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult<OceanBillVO> shareEqually(BillCostInfoForm form) {
         Long billId = form.getId();//提单id
+        //提单信息
+        OceanBillVO oceanBillVO = oceanBillMapper.billLadingCost(billId);
+        if(oceanBillVO == null){
+            return CommonResult.error(-1, "提单不存在");
+        }
         //提单费用信息
         //根据提单id，查询提单费用（提单应收费用）
         List<BillCopePayVO> billCopePayVOS = billCopePayMapper.findBillCopePayByBillId(billId);
-        if(billCopePayVOS == null || billCopePayVOS.size()==0){
+        if(billCopePayVOS == null || billCopePayVOS.size() == 0){
             return CommonResult.error(-1, "提单费用不存在，请先保存提单费用，在一键均摊");
         }
-
         //提单对应的订单 以及 费用信息 TODO
         List<BillOrderCostInfoVO> billOrderCostInfoVOS = oceanBillMapper.findBillOrderCostInfo(billId);
-        //分摊基数 base
+        //分摊基数 base 等于 订单计费重的累加
         BigDecimal base = new BigDecimal("0");
         BigDecimal zero = new BigDecimal("0");
         for(int i=0; i<billOrderCostInfoVOS.size(); i++){
@@ -245,10 +252,76 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
             }
             base = base.add(chargeWeight);
         }
+        //订单
+        for (int i = 0; i<billOrderCostInfoVOS.size(); i++) {
+            BillOrderCostInfoVO billOrderCostInfoVO = billOrderCostInfoVOS.get(i);
+            Long orderId = billOrderCostInfoVO.getId();//订单id
+            BigDecimal chargeWeight = billOrderCostInfoVO.getChargeWeight();//计费重
+            //构造 订单对应应收费用明细
+            List<OrderCopeReceivable> orderCopeReceivables = new ArrayList<>();
+            //构造 订单对应应付费用明细
+            List<OrderCopeWith> orderCopeWiths = new ArrayList<>();
+            //提单费用
+            for (int j=0; j<billCopePayVOS.size(); j++){
+                BillCopePayVO billCopePayVO = billCopePayVOS.get(j);
+                String costName = billCopePayVO.getCostName();//费用名称(cost_item cost_name)
+                //金额  提单费用初始金额
+                BigDecimal initAmount = billCopePayVO.getAmount() == null ? new BigDecimal("0") : billCopePayVO.getAmount();
+                if (initAmount.compareTo(zero) != 1) {
+                    // chargeWeight > zero ,返回1
+                    return CommonResult.error(-1, "提单费用[" + costName + "],金额不能小于或等于0");
+                }
+                //订单费用明细金额 = 计费重 / 分摊基数 * 提单费用初始金额
+                //amount = chargeWeight / base * initAmount
+                BigDecimal amount = chargeWeight.divide(base).multiply(initAmount);
 
+                //订单对应应收费用明细 OrderCopeReceivable
+                OrderCopeReceivable orderCopeReceivable = ConvertUtil.convert(billCopePayVO, OrderCopeReceivable.class);
+                orderCopeReceivable.setId(null);
+                orderCopeReceivable.setOrderId(orderId);
+                orderCopeReceivable.setAmount(amount);
+                orderCopeReceivables.add(orderCopeReceivable);
 
+                //订单对应应付费用明细 OrderCopeWith
+                OrderCopeWith orderCopeWith = ConvertUtil.convert(billCopePayVO, OrderCopeWith.class);
+                orderCopeWith.setId(null);
+                orderCopeWith.setOrderId(orderId);
+                orderCopeWith.setAmount(amount);
+                orderCopeWiths.add(orderCopeWith);
+            }
+            QueryWrapper<OrderCopeReceivable> orderCopeReceivableQueryWrapper = new QueryWrapper<>();
+            orderCopeReceivableQueryWrapper.eq("order_id", orderId);
+            orderCopeReceivableQueryWrapper.eq("bill_id", billId);
+            orderCopeReceivableService.remove(orderCopeReceivableQueryWrapper);
+            orderCopeReceivableService.saveOrUpdateBatch(orderCopeReceivables);
+            QueryWrapper<OrderCopeWith> orderCopeWithQueryWrapper = new QueryWrapper<>();
+            orderCopeWithQueryWrapper.eq("order_id", orderId);
+            orderCopeWithQueryWrapper.eq("bill_id", billId);
+            orderCopeWithService.remove(orderCopeWithQueryWrapper);
+            orderCopeWithService.saveOrUpdateBatch(orderCopeWiths);
+        }
 
+        //提单费用信息
+        BillCostInfoVO billCostInfoVO = new BillCostInfoVO();
+        billCostInfoVO.setId(oceanBillVO.getId());
+        billCostInfoVO.setSupplierId(oceanBillVO.getSupplierId());
+        if(billCopePayVOS != null && billCopePayVOS.size() > 0){
+            BigDecimal amountTotal = new BigDecimal("0");
+            for (int i=0; i<billCopePayVOS.size(); i++){
+                BillCopePayVO billCopePayVO = billCopePayVOS.get(i);
+                BigDecimal amount = billCopePayVO.getAmount();
+                amountTotal = amountTotal.add(amount);
+            }
+            String currencyName = billCopePayVOS.get(0).getCurrencyName();
+            String billCopePayTotal = amountTotal.toString()+" "+currencyName;
+            billCostInfoVO.setBillCopePayForms(billCopePayVOS);
+            billCostInfoVO.setBillCopePayTotal(billCopePayTotal);
+        }
+        oceanBillVO.setBillCostInfoVO(billCostInfoVO);
 
-        return null;
+        //提单对应的订单 以及 费用信息 TODO
+        oceanBillVO.setBillOrderCostInfoVOS(billOrderCostInfoVOS);
+
+        return CommonResult.success(oceanBillVO);
     }
 }

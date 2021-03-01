@@ -7,9 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.mall.mapper.BillCopePayMapper;
-import com.jayud.mall.mapper.OceanBillMapper;
-import com.jayud.mall.mapper.OceanCounterMapper;
+import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.*;
 import com.jayud.mall.model.vo.*;
@@ -41,6 +39,12 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
 
     @Autowired
     BillCopePayMapper billCopePayMapper;
+
+    @Autowired
+    OrderCopeReceivableMapper orderCopeReceivableMapper;
+
+    @Autowired
+    OrderCopeWithMapper orderCopeWithMapper;
 
     @Autowired
     IOceanCounterService oceanCounterService;
@@ -189,6 +193,15 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
 
         //提单对应的订单 以及 费用信息 TODO
         List<BillOrderCostInfoVO> billOrderCostInfoVOS = oceanBillMapper.findBillOrderCostInfo(id);
+        billOrderCostInfoVOS.forEach(billOrderCostInfoVO -> {
+            Long orderId = billOrderCostInfoVO.getId();
+            //应收
+            List<OrderCopeReceivableVO> orderCopeReceivableVOS = orderCopeReceivableMapper.findOrderCopeReceivableByOrderIdAndBillId(orderId, billId);
+            billOrderCostInfoVO.setOrderCopeReceivableVOS(orderCopeReceivableVOS);
+            //应付
+            List<OrderCopeWithVO> orderCopeWithVOS = orderCopeWithMapper.findOrderCopeWithByOrderIdAndBillId(orderId, billId);
+            billOrderCostInfoVO.setOrderCopeWithVOS(orderCopeWithVOS);
+        });
         oceanBillVO.setBillOrderCostInfoVOS(billOrderCostInfoVOS);
 
         return CommonResult.success(oceanBillVO);
@@ -320,6 +333,15 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         oceanBillVO.setBillCostInfoVO(billCostInfoVO);
 
         //提单对应的订单 以及 费用信息 TODO
+        billOrderCostInfoVOS.forEach(billOrderCostInfoVO -> {
+            Long orderId = billOrderCostInfoVO.getId();
+            //应收
+            List<OrderCopeReceivableVO> orderCopeReceivableVOS = orderCopeReceivableMapper.findOrderCopeReceivableByOrderIdAndBillId(orderId, billId);
+            billOrderCostInfoVO.setOrderCopeReceivableVOS(orderCopeReceivableVOS);
+            //应付
+            List<OrderCopeWithVO> orderCopeWithVOS = orderCopeWithMapper.findOrderCopeWithByOrderIdAndBillId(orderId, billId);
+            billOrderCostInfoVO.setOrderCopeWithVOS(orderCopeWithVOS);
+        });
         oceanBillVO.setBillOrderCostInfoVOS(billOrderCostInfoVOS);
 
         return CommonResult.success(oceanBillVO);

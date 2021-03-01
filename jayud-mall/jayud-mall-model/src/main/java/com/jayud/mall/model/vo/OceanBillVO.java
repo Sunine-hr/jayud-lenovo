@@ -115,7 +115,7 @@ public class OceanBillVO {
     private String crudingRrange;
 
     //提单费用信息
-    @ApiModelProperty(value = "提单对应的订单以及费用信息", position = 25)
+    @ApiModelProperty(value = "提单费用信息", position = 25)
     @JSONField(ordinal = 25)
     private BillCostInfoVO billCostInfoVO;
 

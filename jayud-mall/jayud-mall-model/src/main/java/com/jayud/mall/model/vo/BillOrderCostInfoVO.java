@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @ApiModel(value = "BillOrderCostInfoVO", description = "提单对应订单费用信息")
 @Data
@@ -45,9 +46,16 @@ public class BillOrderCostInfoVO {
     @JSONField(ordinal = 8)
     private String supplierName;
 
-    //订单对应的提单费用
-    //TODO 待实现...,需要修改订单应收应付费用的表结构
-    //应付应收都要有
+    //提单的费用 分摊 订单
+
+    //提单费用产生的订单应收
+    @ApiModelProperty(value = "提单费用产生的订单应收", position = 9)
+    @JSONField(ordinal = 9)
+    private List<OrderCopeReceivableVO> orderCopeReceivableVOS;
+    //提单费用产生的订单应付
+    @ApiModelProperty(value = "提单费用产生的订单应付", position = 10)
+    @JSONField(ordinal = 10)
+    private List<OrderCopeWithVO> orderCopeWithVOS;
 
 
 

@@ -27,4 +27,16 @@ public interface OrderCopeWithMapper extends BaseMapper<OrderCopeWith> {
      * @return
      */
     List<OrderCopeWithVO> findOrderCopeWithByOrderId(@Param("orderId") Long orderId);
+
+
+    /**
+     * 根据订单id，提单id，查询订单应付费用信息
+     * @param orderId 订单id
+     * @param billId 提单id
+     * @return
+     */
+    List<OrderCopeWithVO> findOrderCopeWithByOrderIdAndBillId(@Param("orderId") Long orderId, @Param("billId") Long billId);
+
+
+
 }

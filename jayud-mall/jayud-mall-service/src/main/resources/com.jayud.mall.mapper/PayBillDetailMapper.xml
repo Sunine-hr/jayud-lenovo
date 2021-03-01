@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.PayBillDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.PayBillDetail">
+        <id column="id" property="id" />
+        <result column="bill_master_id" property="billMasterId" />
+        <result column="order_receivable_id" property="orderReceivableId" />
+        <result column="cost_code" property="costCode" />
+        <result column="cost_name" property="costName" />
+        <result column="amount" property="amount" />
+        <result column="cid" property="cid" />
+        <result column="remarks" property="remarks" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, bill_master_id, order_receivable_id, cost_code, cost_name, amount, cid, remarks
+    </sql>
+
+</mapper>

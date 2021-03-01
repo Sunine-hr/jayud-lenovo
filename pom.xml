@@ -28,6 +28,8 @@
         <module>jayud-mall</module>
         <module>jayud-tools</module>
         <module>jayud-ocean-ship</module>
+        <module>jayud-Inland-transport</module>
+
 
     </modules>
     <parent>

@@ -33,7 +33,7 @@ public class BillOrderCostInfoVO {
     private BigDecimal chargeWeight;
 
     //提单
-    @ApiModelProperty(value = "【计费重】收费重(KG)", position = 6)
+    @ApiModelProperty(value = "供应商id(supplier_info id)", position = 6)
     @JSONField(ordinal = 6)
     private Integer supplierId;
 

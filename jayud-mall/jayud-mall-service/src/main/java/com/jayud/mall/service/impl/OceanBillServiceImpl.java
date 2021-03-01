@@ -219,4 +219,36 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
 
         return CommonResult.success(billCostInfoVO);
     }
+
+    @Override
+    public CommonResult<OceanBillVO> shareEqually(BillCostInfoForm form) {
+        Long billId = form.getId();//提单id
+        //提单费用信息
+        //根据提单id，查询提单费用（提单应收费用）
+        List<BillCopePayVO> billCopePayVOS = billCopePayMapper.findBillCopePayByBillId(billId);
+        if(billCopePayVOS == null || billCopePayVOS.size()==0){
+            return CommonResult.error(-1, "提单费用不存在，请先保存提单费用，在一键均摊");
+        }
+
+        //提单对应的订单 以及 费用信息 TODO
+        List<BillOrderCostInfoVO> billOrderCostInfoVOS = oceanBillMapper.findBillOrderCostInfo(billId);
+        //分摊基数 base
+        BigDecimal base = new BigDecimal("0");
+        BigDecimal zero = new BigDecimal("0");
+        for(int i=0; i<billOrderCostInfoVOS.size(); i++){
+            BillOrderCostInfoVO billOrderCostInfoVO = billOrderCostInfoVOS.get(i);
+            BigDecimal chargeWeight = billOrderCostInfoVO.getChargeWeight() == null ? new BigDecimal("0") : billOrderCostInfoVO.getChargeWeight();
+            if (chargeWeight.compareTo(zero) != 1){
+                // chargeWeight > zero ,返回1
+                String orderNo = billOrderCostInfoVO.getOrderNo();
+                return CommonResult.error(-1, "订单号["+orderNo+"],计费重不能小于或等于0");
+            }
+            base = base.add(chargeWeight);
+        }
+
+
+
+
+        return null;
+    }
 }

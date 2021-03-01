@@ -56,4 +56,11 @@ public interface IOceanBillService extends IService<OceanBill> {
      * @return
      */
     CommonResult<BillCostInfoVO> saveBillCostInfo(BillCostInfoForm form);
+
+    /**
+     * 一键均摊提单费用到订单(根据订单计费重,均摊)
+     * @param form
+     * @return
+     */
+    CommonResult<OceanBillVO> shareEqually(BillCostInfoForm form);
 }

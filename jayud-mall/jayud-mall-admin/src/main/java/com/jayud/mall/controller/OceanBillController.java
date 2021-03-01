@@ -72,15 +72,13 @@ public class OceanBillController {
         return oceanBillService.saveBillCostInfo(form);
     }
 
-    //根据计费重,一键均摊 TODO 待实现
+    //根据计费重,一键均摊
     @ApiOperation(value = "一键均摊提单费用到订单(根据订单计费重,均摊)")
     @PostMapping(value = "shareEqually")
     @ApiOperationSupport(order = 5)
     public CommonResult<OceanBillVO> shareEqually(@Valid @RequestBody BillCostInfoForm form){
         return oceanBillService.shareEqually(form);
     }
-
-
 
 
 }

@@ -154,9 +154,14 @@ public class OrderInfoController {
         return orderInfoService.findOceanCounterByTdId(tdId);
     }
 
-
-
-
+    //订单待生成账单-生成账单(根据 订单id 查询)
+    @ApiOperation(value = "订单待生成账单-生成账单(根据 订单id 查询)")
+    @PostMapping("/findOrderBill")
+    @ApiOperationSupport(order = 16)
+    public CommonResult<OrderBillVO> findOrderBill(@Valid @RequestBody OrderInfoParaForm form){
+        Long orderId = form.getId();
+        return orderInfoService.findOrderBill(orderId);
+    }
 
 
 }

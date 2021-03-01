@@ -21,9 +21,13 @@
             resultType="com.jayud.mall.model.vo.OrderCopeReceivableVO">
         select
         t.id,t.order_id,t.cost_code,t.cost_name,t.amount,t.cid,t.remarks,t.bill_id,
-        t1.currency_code,t1.currency_name
+        t1.currency_code,t1.currency_name,
+        t2.customer_id,
+        t3.company customerName
         from order_cope_receivable t
         LEFT JOIN currency_info t1 on t1.id = t.cid
+        left join order_info t2 on t2.id = t.order_id
+        left join customer t3 on t3.id = t2.customer_id
         where t.order_id = #{orderId}
     </select>
 

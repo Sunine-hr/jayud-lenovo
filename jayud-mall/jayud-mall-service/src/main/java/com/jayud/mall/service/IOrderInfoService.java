@@ -185,4 +185,11 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     CommonResult<List<OceanCounterVO>> findOceanCounterByTdId(Long tdId);
+
+    /**
+     * 订单待生成账单-生成账单(根据 订单id 查询)
+     * @param orderId
+     * @return
+     */
+    CommonResult<OrderBillVO> findOrderBill(Long orderId);
 }

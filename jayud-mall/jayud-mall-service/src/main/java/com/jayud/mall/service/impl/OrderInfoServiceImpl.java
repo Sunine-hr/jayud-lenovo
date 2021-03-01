@@ -1173,6 +1173,33 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return CommonResult.success(oceanCounterVOList);
     }
 
+    @Override
+    public CommonResult<OrderBillVO> findOrderBill(Long orderId) {
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(orderId);
+        if(orderInfoVO == null){
+            return CommonResult.error(-1, "订单不存在");
+        }
+        OrderBillVO orderBillVO = ConvertUtil.convert(orderInfoVO, OrderBillVO.class);
+        //订单配载信息
+        List<String> confinfos = orderInfoMapper.findOrderConfInfoByOrderId(orderId);
+        if(confinfos.size() > 0){
+            String confInfo = "";
+            for (int i=0; i<confinfos.size(); i++){
+                confInfo += confinfos.get(i);
+            }
+            orderBillVO.setConfInfo(confInfo);
+        }
+
+        //订单应收费用
+        List<OrderCopeReceivableVO> orderCopeReceivableVOS = orderCopeReceivableMapper.findOrderCopeReceivableByOrderId(orderId);
+        orderBillVO.setOrderCopeReceivableVOS(orderCopeReceivableVOS);
+        //订单应付费用
+        List<OrderCopeWithVO> orderCopeWithVOS = orderCopeWithMapper.findOrderCopeWithByOrderId(orderId);
+        orderBillVO.setOrderCopeWithVOS(orderCopeWithVOS);
+
+        return CommonResult.success(orderBillVO);
+    }
+
     /**
      * 获取订单费用明细
      * @param orderInfoVO

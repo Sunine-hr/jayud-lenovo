@@ -51,4 +51,14 @@ public class OrderCopeReceivableVO {
     @JSONField(ordinal = 10)
     private Long billId;
 
+    //客户id
+    @ApiModelProperty(value = "客户ID(customer id)", position = 11)
+    @JSONField(ordinal = 11)
+    private Integer customerId;
+
+    //客户名称 company
+    @ApiModelProperty(value = "客户名称(customer company)", position = 12)
+    @JSONField(ordinal = 12)
+    private String customerName;
+
 }

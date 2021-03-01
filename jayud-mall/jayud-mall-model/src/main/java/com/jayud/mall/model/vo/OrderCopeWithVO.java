@@ -55,6 +55,11 @@ public class OrderCopeWithVO {
     @JSONField(ordinal = 11)
     private String currencyName;
 
+    //提单
+    @ApiModelProperty(value = "提单id(ocean_bill id)", position = 12)
+    @JSONField(ordinal = 12)
+    private Long billId;
+
 
 
 }

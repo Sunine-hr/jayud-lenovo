@@ -62,6 +62,10 @@ public class OrderCopeWith extends Model<OrderCopeWith> {
     @JSONField(ordinal = 8)
     private String remarks;
 
+    @ApiModelProperty(value = "提单id(ocean_bill id)", position = 9)
+    @JSONField(ordinal = 9)
+    private Long billId;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

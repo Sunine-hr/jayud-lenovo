@@ -41,5 +41,8 @@ public class OrderCopeWithForm {
     @JSONField(ordinal = 8)
     private String remarks;
 
+    @ApiModelProperty(value = "提单id(ocean_bill id)", position = 9)
+    @JSONField(ordinal = 9)
+    private Long billId;
 
 }

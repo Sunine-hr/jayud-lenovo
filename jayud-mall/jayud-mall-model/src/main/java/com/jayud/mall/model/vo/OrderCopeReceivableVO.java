@@ -46,4 +46,9 @@ public class OrderCopeReceivableVO {
     @JSONField(ordinal = 9)
     private String currencyName;
 
+    //提单id
+    @ApiModelProperty(value = "提单id(ocean_bill id)", position = 10)
+    @JSONField(ordinal = 10)
+    private Long billId;
+
 }

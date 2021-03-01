@@ -36,4 +36,8 @@ public class OrderCopeReceivableForm {
     @ApiModelProperty(value = "描述", position = 7)
     @JSONField(ordinal = 7)
     private String remarks;
+
+    @ApiModelProperty(value = "提单id(ocean_bill id)", position = 8)
+    @JSONField(ordinal = 8)
+    private Long billId;
 }

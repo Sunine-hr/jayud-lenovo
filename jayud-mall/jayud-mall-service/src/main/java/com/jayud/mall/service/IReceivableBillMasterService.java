@@ -1,7 +1,10 @@
 package com.jayud.mall.service;
 
+import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.ReceivableBillForm;
 import com.jayud.mall.model.po.ReceivableBillMaster;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.vo.ReceivableBillMasterVO;
 
 /**
  * <p>
@@ -13,4 +16,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IReceivableBillMasterService extends IService<ReceivableBillMaster> {
 
+    /**
+     * 生成应收账单
+     * @param form
+     * @return
+     */
+    CommonResult<ReceivableBillMasterVO> createReceivableBill(ReceivableBillForm form);
 }

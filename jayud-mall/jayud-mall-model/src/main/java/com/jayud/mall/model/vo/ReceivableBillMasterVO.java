@@ -50,10 +50,16 @@ public class ReceivableBillMasterVO {
     @JSONField(ordinal = 9)
     private Integer status;
 
-    //明细
-    @ApiModelProperty(value = "应收账单明细list", position = 10)
+    @ApiModelProperty(value = "客户名称(customer company)", position = 10)
     @JSONField(ordinal = 10)
+    private String customerName;
+
+    //明细
+    @ApiModelProperty(value = "应收账单明细list", position = 11)
+    @JSONField(ordinal = 11)
     private List<ReceivableBillDetailVO> receivableBillDetailVOS;
+
+
 
 
 

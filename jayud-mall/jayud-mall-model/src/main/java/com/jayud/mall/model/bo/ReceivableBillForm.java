@@ -5,11 +5,12 @@ import com.jayud.mall.model.vo.OrderCopeReceivableVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
-public class OrderBillForm {
+public class ReceivableBillForm {
 
     @ApiModelProperty(value = "订单id", position = 1)
     @JSONField(ordinal = 1)
@@ -23,12 +24,7 @@ public class OrderBillForm {
 
     @ApiModelProperty(value = "订单应收费用", position = 4)
     @JSONField(ordinal = 4)
+    @NotEmpty(message = "订单应收费用不能为空")
     private List<OrderCopeReceivableVO> orderCopeReceivableVOS;
-
-//    @ApiModelProperty(value = "订单应付费用", position = 5)
-//    @JSONField(ordinal = 5)
-//    private List<OrderCopeWithVO> orderCopeWithVOS;
-
-
 
 }

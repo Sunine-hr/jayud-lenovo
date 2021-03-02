@@ -95,6 +95,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private ISupplierInfoService supplierInfoService;
     @Autowired
     private IAuditInfoService auditInfoService;
+    @Autowired
+    private InlandTpClient inlandTpClient;
 
     private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(),
             SubOrderSignEnum.KY.getSignOne(), SubOrderSignEnum.HY.getSignOne(), SubOrderSignEnum.BG.getSignOne()};
@@ -824,12 +826,21 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
             }
         }
-        //内陆运输和深圳中转仓
-        if (selectedServer.contains(OrderStatusEnum.SZZZC.getCode())) {
-            //创建深圳中转仓信息 TODO
+        //内陆运输
+        if (OrderStatusEnum.NLYS.getCode().equals(classCode)
+                || selectedServer.contains(OrderStatusEnum.NLDD.getCode())) {
+            InputOrderInlandTransportForm orderInlandTransportForm = form.getOrderInlandTransportForm();
+            if (this.queryEditOrderCondition(orderInlandTransportForm.getStatus(),
+                    inputMainOrderForm.getStatus(), SubOrderSignEnum.NL.getSignOne(), form)) {
+                Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
+                        : ProcessStatusEnum.DRAFT.getCode();
+                orderInlandTransportForm.setMainOrderNo(mainOrderNo);
+                orderInlandTransportForm.setCreateUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
+                orderInlandTransportForm.setProcessStatus(processStatus);
+                this.inlandTpClient.createOrder(orderInlandTransportForm);
+            }
         }
 
-        //TODO 先做纯空运
         //空运
         if (OrderStatusEnum.KY.getCode().equals(classCode)) {
             InputAirOrderForm airOrderForm = form.getAirOrderForm();

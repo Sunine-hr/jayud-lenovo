@@ -227,6 +227,8 @@ public class OrderInfoController {
                     return CommonResult.error(ResultEnum.PARAM_ERROR);
                 }
             }
+            //校验参数
+            form.checkCreateParam();
         }
 
         boolean result = orderInfoService.createOrder(form);

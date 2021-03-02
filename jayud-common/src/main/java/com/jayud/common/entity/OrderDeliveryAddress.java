@@ -83,7 +83,7 @@ public class OrderDeliveryAddress {
     @ApiModelProperty(value = "附件集合")
     private List<FileView> fileViewList = new ArrayList<>();
 
-    public boolean checkCreateOrder() {
+    public void checkCreateOrder() {
         String msg = "不能为空";
         if (StringUtils.isEmpty(this.name)) {
             throw new JayudBizException("联系人" + msg);
@@ -97,7 +97,6 @@ public class OrderDeliveryAddress {
         if (this.deliveryDate == null) {
             throw new JayudBizException("提货/送货日期" + msg);
         }
-        return true;
     }
 
 }

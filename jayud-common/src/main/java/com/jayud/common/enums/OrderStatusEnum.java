@@ -21,11 +21,11 @@ public enum OrderStatusEnum {
     XGQG("XGQG", "香港清关"),
     KYDD("KYDD", "空运订单"),
     ZGYSDD("ZGYSDD", "中港运输订单"),
-    NLYSDD("NLYSDD", "内陆运输订单"),
     FWD("FWD", "服务单"),
     FWDDD("FWDDD", "服务单订单"),
     HY("HY","海运"),
     HYDD("HYDD", "海运订单"),
+    NLDD("NLDD", "内陆运输订单"),
 
     //主订单状态
     MAIN_1("1", "正常"),
@@ -357,7 +357,8 @@ public enum OrderStatusEnum {
                     TMS_T_1_1.getCode(), TMS_T_2_1.getCode(), TMS_T_3_1.getCode(),
                     TMS_T_3_2.getCode(), TMS_T_4_1.getCode(), TMS_T_5_1.getCode(),
                     AIR_A_1_1.getCode(), AIR_A_2_1.getCode(), AIR_A_3_1.getCode(),
-                    AIR_A_3_2.getCode(),SEA_S_1_1.getCode(),SEA_S_2_1.getCode(),SEA_S_3_1.getCode(),SEA_S_3_2.getCode()};
+                    AIR_A_3_2.getCode(),SEA_S_1_1.getCode(),SEA_S_2_1.getCode(),
+                    SEA_S_3_1.getCode(),SEA_S_3_2.getCode()};
         }
         for (String subOrderSign : subOrderSigns) {
             //todo 有需要再补

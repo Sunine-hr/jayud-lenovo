@@ -24,7 +24,6 @@ public class AddOrderInlandTransportForm extends Model<AddOrderInlandTransportFo
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "内陆订单主键")
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     @ApiModelProperty(value = "主订单编号")

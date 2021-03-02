@@ -1,5 +1,6 @@
 package com.jayud.oms.model.bo;
 
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.exception.JayudBizException;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -27,7 +28,7 @@ public class InputOrderForm {
     private InputSeaOrderForm seaOrderForm;
 
     @ApiModelProperty(value = "内陆")
-    private AddOrderInlandTransportForm addOrderInlandTransportForm;
+    private InputOrderInlandTransportForm orderInlandTransportForm;
 
 
     @ApiModelProperty(value = "登录人")
@@ -59,4 +60,18 @@ public class InputOrderForm {
 //            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
 //        }
     }
+
+    /**
+     * 报关单号校验
+     */
+    public void checkCreateParam() {
+        InputMainOrderForm orderForm = this.orderForm;
+
+        //内陆
+        if (OrderStatusEnum.NLYS.getCode().equals(orderForm.getClassCode())
+                || orderForm.getSelectedServer().contains(OrderStatusEnum.NLDD.getCode())) {
+            this.orderInlandTransportForm.checkCreateOrder();
+        }
+    }
+
 }

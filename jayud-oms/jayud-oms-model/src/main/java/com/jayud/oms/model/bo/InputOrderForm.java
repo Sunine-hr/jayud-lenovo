@@ -29,6 +29,9 @@ public class InputOrderForm {
     @ApiModelProperty(value = "拖车")
     private  InputTrailerOrderFrom trailerOrderFrom;
 
+    @ApiModelProperty(value = "登录人")
+    private String loginUserName;
+
     @ApiModelProperty(value = "操作指令:cmd=preSubmit or submit", required = true)
     private String cmd;
 

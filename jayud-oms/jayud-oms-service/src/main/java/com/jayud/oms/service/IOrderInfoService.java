@@ -23,9 +23,10 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * 操作主订单
      *
      * @param form
+     * @param loginUserName
      * @return
      */
-    public String oprMainOrder(InputMainOrderForm form);
+    public String oprMainOrder(InputMainOrderForm form, String loginUserName);
 
     /**
      * 订单是否存在

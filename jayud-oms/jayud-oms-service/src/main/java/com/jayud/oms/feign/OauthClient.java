@@ -134,4 +134,10 @@ public interface OauthClient {
      */
     @RequestMapping(value = "/api/getLegalIdBySystemName")
     public ApiResult getLegalIdBySystemName(@RequestParam("loginName") String loginName) ;
+
+    /**
+     * 根据用户名获取用户所属法人主体
+     */
+    @RequestMapping(value = "/api/getLegalEntityCodeByLegalId")
+    ApiResult getLegalEntityCodeByLegalId(@RequestParam("legalId") Long legalId);
 }

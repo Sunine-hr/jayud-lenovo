@@ -220,7 +220,7 @@ public class InputOrderTransportVO {
 
     public void assembleModelAndCntrNo() {
         String vehicleSize = this.vehicleSize;
-        if (this.vehicleType == 2) {
+        if (this.vehicleType != null && this.vehicleType == 2) {
             String cntrNo = StringUtils.isEmpty(this.cntrNo) ? "" : this.cntrNo;
             vehicleSize = vehicleSize + "/" + cntrNo;
         }

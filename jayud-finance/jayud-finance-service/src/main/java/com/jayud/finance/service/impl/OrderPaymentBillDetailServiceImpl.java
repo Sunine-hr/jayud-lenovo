@@ -883,7 +883,8 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     @Override
     public int getEditBillNum(String billNo) {
         QueryWrapper<OrderPaymentBillDetail> condition = new QueryWrapper<>();
-        condition.lambda().ne(OrderPaymentBillDetail::getAuditStatus, BillEnum.EDIT_DEL.getCode())
+        condition.lambda().notIn(OrderPaymentBillDetail::getAuditStatus,
+                BillEnum.EDIT_DEL.getCode(),BillEnum.EDIT_NO_COMMIT.getCode())
                 .eq(OrderPaymentBillDetail::getBillNo, billNo);
         return this.count(condition);
     }

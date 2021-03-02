@@ -147,7 +147,10 @@ public class SeaOrderController {
             mainOrder.add(record.getMainOrderNo());
             entityIds.add(record.getLegalEntityId());
             unitCodes.add(record.getUnitCode());
-            supplierIds.add(record.getSeaBookShipForm().getAgentSupplierId());
+            if(record.getSeaBookShipForm().getAgentSupplierId()!=null){
+                supplierIds.add(record.getSeaBookShipForm().getAgentSupplierId());
+            }
+
             record.getSeaBookShipForm().getFile(prePath);
         }
 
@@ -161,7 +164,7 @@ public class SeaOrderController {
         }
         //查询供应商信息
         JSONArray supplierInfo = null;
-        if (CollectionUtils.isNotEmpty(supplierIds)) {
+        if (CollectionUtils.isNotEmpty(supplierIds) && supplierIds.size()>0) {
             supplierInfo = new JSONArray(this.omsClient.getSupplierInfoByIds(supplierIds).getData());
         }
 
@@ -444,10 +447,10 @@ public class SeaOrderController {
             map.put("paperStripSeal", seaOrderDetails.getPaperStripSeal());
             map.put("cabinetSize", seaOrderDetails.getCabinetSizeName());
             map.put("cabinetType", seaOrderDetails.getCabinetTypeName());
-            if(seaOrderDetails.getCabinetType().equals("FCL")){
+            if(seaOrderDetails.getCabinetTypeName().equals("FCL")){
                 map.put("whether","√");
             }else{
-                map.put("whether","√");
+                map.put("whether2","√");
             }
 
             List<GoodsVO> goodsForms = seaOrderDetails.getGoodsForms();

@@ -546,6 +546,19 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         return this.baseMapper.selectList(condition);
     }
 
+
+    /**
+     * 根据订单状态查询订单数
+     */
+    @Override
+    public Integer getNumByStatus(String status, List<Long> legalIds) {
+        Integer num = this.baseMapper.getNumByStatus(status, legalIds);
+        return num == null ? 0 : num;
+    }
+
+
+
+
     private void pushExceptionFeedbackInfo(AddAirExceptionFeedbackForm form, AirExceptionFeedback airExceptionFeedback) {
         AirOrder airOrder = this.getById(airExceptionFeedback.getOrderId());
         if (CreateUserTypeEnum.VIVO.getCode().equals(airOrder.getCreateUserType())) {
@@ -561,6 +574,8 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
 
         }
     }
+
+
 
 //    /**
 //     * 接单驳回

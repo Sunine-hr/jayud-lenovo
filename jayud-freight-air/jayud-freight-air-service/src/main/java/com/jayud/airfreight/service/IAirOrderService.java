@@ -130,4 +130,8 @@ public interface IAirOrderService extends IService<AirOrder> {
      */
     public List<AirOrder> getAirOrderByMainOrderNos(List<String> mainOrderNos);
 
+    /**
+     * 根据订单状态查询订单数
+     */
+    Integer getNumByStatus(String status, List<Long> legalIds);
 }

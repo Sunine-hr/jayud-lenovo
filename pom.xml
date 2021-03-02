@@ -28,6 +28,7 @@
         <module>jayud-mall</module>
         <module>jayud-tools</module>
         <module>jayud-ocean-ship</module>
+        <module>jayud-trailer</module>
 
     </modules>
     <parent>

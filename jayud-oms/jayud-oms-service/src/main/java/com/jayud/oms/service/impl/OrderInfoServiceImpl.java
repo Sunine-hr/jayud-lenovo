@@ -111,6 +111,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Autowired
     private OceanShipClient oceanShipClient;
 
+    @Autowired
+    private TrailerClient trailerClient;
+
     @Override
     public String oprMainOrder(InputMainOrderForm form) {
         OrderInfo orderInfo = ConvertUtil.convert(form, OrderInfo.class);
@@ -749,6 +752,24 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
         }
 
+        //获取拖车信息
+        if(OrderStatusEnum.TC.getCode().equals(form.getClassCode())||inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.TCDD.getCode())){
+            InputTrailerOrderVO trailerOrderVO = this.trailerClient.getTrailerOrderDetails(inputMainOrderVO.getOrderNo()).getData();
+            if (trailerOrderVO != null) {
+                //查询供应商
+                TrailerDispatchVO trailerDispatchVO = trailerOrderVO.getTrailerDispatchVO();
+                if (trailerDispatchVO != null && trailerDispatchVO.getSupplierId() != null) {
+                    SupplierInfo supplierInfo = this.supplierInfoService.getById(trailerDispatchVO.getSupplierId());
+                    trailerDispatchVO.setSupplierName(supplierInfo.getSupplierChName());
+                }
+                //添加附件
+                List<FileView> attachments = this.logisticsTrackService.getAttachments(trailerOrderVO.getId()
+                        , BusinessTypeEnum.TC.getCode(), prePath);
+                trailerOrderVO.setAllPics(attachments);
+                inputOrderVO.setTrailerOrderForm(trailerOrderVO);
+            }
+        }
+
         return inputOrderVO;
     }
 
@@ -858,7 +879,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
         }
         //海运
-        System.out.println(OrderStatusEnum.HY.getCode().equals(classCode));
         if (OrderStatusEnum.HY.getCode().equals(classCode)) {
             InputSeaOrderForm seaOrderForm = form.getSeaOrderForm();
             if (this.queryEditOrderCondition(seaOrderForm.getStatus(),
@@ -871,6 +891,20 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         : ProcessStatusEnum.DRAFT.getCode();
                 seaOrderForm.setProcessStatus(processStatus);
                 this.oceanShipClient.createOrder(seaOrderForm);
+            }
+        }
+        //拖车
+        if (OrderStatusEnum.TC.getCode().equals(classCode)) {
+            InputTrailerOrderFrom trailerOrderFrom = form.getTrailerOrderFrom();
+            if (this.queryEditOrderCondition(trailerOrderFrom.getStatus(),
+                    inputMainOrderForm.getStatus(), SubOrderSignEnum.TC.getSignOne(), form)) {
+                //拼装地址信息
+                trailerOrderFrom.setMainOrderNo(mainOrderNo);
+                trailerOrderFrom.setCreateUser(UserOperator.getToken());
+                Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
+                        : ProcessStatusEnum.DRAFT.getCode();
+                trailerOrderFrom.setProcessStatus(processStatus);
+                this.trailerClient.createOrder(trailerOrderFrom);
             }
         }
 

@@ -74,7 +74,7 @@ public class AddOrderAddressForm {
     private LocalDateTime createTime;
 
 
-    public boolean checkCreateAirOrder() {
+    public boolean checkCreateTrailerOrder() {
         if (this.type == null || StringUtils.isEmpty(this.address)
                 || StringUtils.isEmpty(this.phone)) {
             return false;

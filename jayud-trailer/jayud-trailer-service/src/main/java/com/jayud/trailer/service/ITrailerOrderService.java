@@ -1,0 +1,56 @@
+package com.jayud.trailer.service;
+
+import com.jayud.trailer.bo.AddTrailerOrderFrom;
+import com.jayud.trailer.po.TrailerOrder;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.trailer.vo.TrailerOrderVO;
+
+import java.util.List;
+
+/**
+ * <p>
+ * 拖车订单表 服务类
+ * </p>
+ *
+ * @author LLJ
+ * @since 2021-03-01
+ */
+public interface ITrailerOrderService extends IService<TrailerOrder> {
+
+    /**
+     * 创建拖车单
+     * @param addTrailerOrderFrom
+     */
+    void createOrder(AddTrailerOrderFrom addTrailerOrderFrom);
+
+    /**
+     * 获取拖车订单号
+     * @param legalId
+     * @param integer
+     * @return
+     */
+    String generationOrderNo(Long legalId, Integer integer);
+
+    boolean isExistOrder(String orderNo);
+
+    /**
+     * 根据主订单号获取订单信息
+     * @param orderNo
+     * @return
+     */
+    TrailerOrder getByMainOrderNO(String orderNo);
+
+    /**
+     * 根据id获取订单信息
+     * @param id
+     * @return
+     */
+    TrailerOrderVO getTrailerOrderByOrderNO(Long id);
+
+    /**
+     * 根据主订单号集合获取订单信息
+     * @param mainOrderNoList
+     * @return
+     */
+    List<TrailerOrder> getTrailerOrderByOrderNOs(List<String> mainOrderNoList);
+}

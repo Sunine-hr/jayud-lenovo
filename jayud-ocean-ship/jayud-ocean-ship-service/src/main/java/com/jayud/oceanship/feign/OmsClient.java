@@ -64,20 +64,20 @@ public interface OmsClient {
     @RequestMapping(value = "/api/initSupplierInfo")
     CommonResult<List<InitComboxVO>> initSupplierInfo();
 
-//
-//    /**
-//     * 根据客户id查询客户信息
-//     */
-//    @RequestMapping(value = "/api/getCustomerInfoById")
-//    ApiResult getCustomerInfoById(@RequestParam("id") Long id);
-//
-//
+
+    /**
+     * 根据客户id查询客户信息
+     */
+    @RequestMapping(value = "/api/getCustomerInfoById")
+    ApiResult getCustomerInfoById(@RequestParam("id") Long id);
+
+
 //    /**
 //     * 暂存订单
 //     */
 //    @RequestMapping(value = "/api/holdOrder")
 //    ApiResult holdOrder(@RequestBody InputOrderForm form);
-//
+
     /**
      * 删除特定单的操作流程
      *
@@ -94,17 +94,11 @@ public interface OmsClient {
     @RequestMapping(value = "/api/getLogisticsTrackNode")
     ApiResult getLogisticsTrackNode(@RequestBody String condition);
 
-//    /**
-//     * 根据主订单号修改主订单
-//     */
-//    @RequestMapping(value = "/api/updateByMainOrderNo")
-//    public ApiResult updateByMainOrderNo(@RequestBody String value);
-//
-//    /**
-//     * 根据编码获取港口名称
-//     */
-//    @RequestMapping(value = "/api/getPortCodeByName")
-//    public ApiResult getPortCodeByName(@RequestBody String name);
+    /**
+     * 根据主订单号修改主订单
+     */
+    @RequestMapping(value = "/api/updateByMainOrderNo")
+    public ApiResult updateByMainOrderNo(@RequestBody String value);
 
     /**
      * 根据orderId和类型删除物流轨迹跟踪表
@@ -138,20 +132,6 @@ public interface OmsClient {
     public ApiResult<List<GoodsVO>> getGoodsByBusIds(@RequestParam("orderId") List<Long> orderId,
                                                      @RequestParam("businessType") Integer businessType);
 
-//    /**
-//     * 获取主订单ID
-//     */
-//    @RequestMapping(value = "/api/getIdByOrderNo")
-//    ApiResult getIdByOrderNo(@RequestParam(value = "orderNo") String orderNo);
-//
-//    /**
-//     * 获取所有的车型尺寸
-//     *
-//     * @return
-//     */
-//    @RequestMapping(value = "/api/findVehicleSize")
-//    ApiResult<List<VehicleSizeInfoVO>> findVehicleSize();
-
     /**
      * 根据供应商id集合查询供应商信息
      * @return
@@ -179,7 +159,7 @@ public interface OmsClient {
     ApiResult getCustomerByUnitCode(@RequestBody List<String> unitCodes);
 
     /**
-     * 根据客户code集合查询客户信息
+     * 获取订单号
      * @return
      */
     @RequestMapping(value = "/api/getOrderNo")

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.trailer.mapper.TrailerOrderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.trailer.po.TrailerOrder">
+        <id column="id" property="id" />
+        <result column="order_no" property="orderNo" />
+        <result column="main_order_no" property="mainOrderNo" />
+        <result column="status" property="status" />
+        <result column="process_status" property="processStatus" />
+        <result column="legal_entity_id" property="legalEntityId" />
+        <result column="legal_name" property="legalName" />
+        <result column="imp_and_exp_type" property="impAndExpType" />
+        <result column="unit_code" property="unitCode" />
+        <result column="unit_code_name" property="unitCodeName" />
+        <result column="port_departure_code" property="portDepartureCode" />
+        <result column="port_destination_code" property="portDestinationCode" />
+        <result column="cabinet_size" property="cabinetSize" />
+        <result column="bill_of_lading" property="billOfLading" />
+        <result column="bol_file_path" property="bolFilePath" />
+        <result column="bol_file_name" property="bolFileName" />
+        <result column="paper_strip_seal" property="paperStripSeal" />
+        <result column="pss_file_path" property="pssFilePath" />
+        <result column="pss_file_name" property="pssFileName" />
+        <result column="cabinet_number" property="cabinetNumber" />
+        <result column="cn_file_path" property="cnFilePath" />
+        <result column="cn_file_name" property="cnFileName" />
+        <result column="so" property="so" />
+        <result column="so_file_path" property="soFilePath" />
+        <result column="so_file_name" property="soFileName" />
+        <result column="arrival_time" property="arrivalTime" />
+        <result column="closing_warehouse_time" property="closingWarehouseTime" />
+        <result column="time_counter_rent" property="timeCounterRent" />
+        <result column="open_time" property="openTime" />
+        <result column="cutting_replenishing_time" property="cuttingReplenishingTime" />
+        <result column="
+closing_time" property="
+closingTime" />
+        <result column="
+release_time" property="
+releaseTime" />
+        <result column="is_weighed" property="isWeighed" />
+        <result column="is_make_up" property="isMakeUp" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="need_input_cost" property="needInputCost" />
+        <result column="order_taker" property="orderTaker" />
+        <result column="receiving_orders_date" property="receivingOrdersDate" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_no, main_order_no, status, process_status, legal_entity_id, legal_name, imp_and_exp_type, unit_code, unit_code_name, port_departure_code, port_destination_code, cabinet_size, bill_of_lading, bol_file_path, bol_file_name, paper_strip_seal, pss_file_path, pss_file_name, cabinet_number, cn_file_path, cn_file_name, so, so_file_path, so_file_name, arrival_time, closing_warehouse_time, time_counter_rent, open_time, cutting_replenishing_time, 
+closing_time, 
+release_time, is_weighed, is_make_up, create_user, create_time, update_user, update_time, need_input_cost, order_taker, receiving_orders_date
+    </sql>
+
+</mapper>

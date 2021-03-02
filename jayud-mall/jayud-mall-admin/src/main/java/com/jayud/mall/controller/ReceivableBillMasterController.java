@@ -2,6 +2,7 @@ package com.jayud.mall.controller;
 
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.ReceivableBillForm;
+import com.jayud.mall.model.bo.ReceivableBillMasterForm;
 import com.jayud.mall.model.vo.ReceivableBillMasterVO;
 import com.jayud.mall.service.IReceivableBillMasterService;
 import io.swagger.annotations.Api;
@@ -33,6 +34,17 @@ public class ReceivableBillMasterController {
     public CommonResult<ReceivableBillMasterVO> createReceivableBill(@Valid @RequestBody ReceivableBillForm form){
         return receivableBillMasterService.createReceivableBill(form);
     }
+
+    //生成应收账单-确认
+    //affirm
+    @ApiOperation(value = "生成应收账单-确认")
+    @PostMapping("/affirmReceivableBill")
+    @ApiOperationSupport(order = 2)
+    public CommonResult<ReceivableBillMasterVO> affirmReceivableBill(@Valid @RequestBody ReceivableBillMasterForm form){
+        return receivableBillMasterService.affirmReceivableBill(form);
+    }
+
+    //生成应收账单-取消
 
 
 }

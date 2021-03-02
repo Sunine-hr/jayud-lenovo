@@ -19,4 +19,14 @@
         id, bill_master_id, order_receivable_id, cost_code, cost_name, amount, cid, remarks
     </sql>
 
+
+    <select id="findReceivableBillDetailByBillMasterId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.ReceivableBillDetailVO">
+        select
+        t.id,t.bill_master_id,t.order_receivable_id,t.cost_code,t.cost_name,t.amount,t.cid,t.remarks
+        from receivable_bill_detail t
+        where 1=1
+        and t.bill_master_id = #{billMasterId}
+    </select>
+
+
 </mapper>

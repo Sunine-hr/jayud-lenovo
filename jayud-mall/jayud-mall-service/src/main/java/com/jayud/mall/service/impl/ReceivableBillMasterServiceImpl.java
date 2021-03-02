@@ -1,16 +1,23 @@
 package com.jayud.mall.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.OrderInfoMapper;
+import com.jayud.mall.mapper.ReceivableBillDetailMapper;
 import com.jayud.mall.mapper.ReceivableBillMasterMapper;
 import com.jayud.mall.model.bo.ReceivableBillForm;
+import com.jayud.mall.model.bo.ReceivableBillMasterForm;
+import com.jayud.mall.model.po.OrderCopeReceivable;
+import com.jayud.mall.model.po.ReceivableBillDetail;
 import com.jayud.mall.model.po.ReceivableBillMaster;
 import com.jayud.mall.model.vo.OrderCopeReceivableVO;
 import com.jayud.mall.model.vo.OrderInfoVO;
 import com.jayud.mall.model.vo.ReceivableBillDetailVO;
 import com.jayud.mall.model.vo.ReceivableBillMasterVO;
+import com.jayud.mall.service.IOrderCopeReceivableService;
+import com.jayud.mall.service.IReceivableBillDetailService;
 import com.jayud.mall.service.IReceivableBillMasterService;
 import com.jayud.mall.utils.NumberGeneratedUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +41,14 @@ public class ReceivableBillMasterServiceImpl extends ServiceImpl<ReceivableBillM
     @Autowired
     ReceivableBillMasterMapper receivableBillMasterMapper;
     @Autowired
+    ReceivableBillDetailMapper receivableBillDetailMapper;
+    @Autowired
     OrderInfoMapper orderInfoMapper;
+
+    @Autowired
+    IReceivableBillDetailService receivableBillDetailService;
+    @Autowired
+    IOrderCopeReceivableService orderCopeReceivableService;
 
     @Override
     public CommonResult<ReceivableBillMasterVO> createReceivableBill(ReceivableBillForm form) {
@@ -76,7 +90,43 @@ public class ReceivableBillMasterServiceImpl extends ServiceImpl<ReceivableBillM
         return CommonResult.success(receivableBillMasterVO);
     }
 
+    @Override
+    public CommonResult<ReceivableBillMasterVO> affirmReceivableBill(ReceivableBillMasterForm form) {
+        //1.保存应收账单主单
+        ReceivableBillMaster receivableBillMaster = ConvertUtil.convert(form, ReceivableBillMaster.class);
+        this.saveOrUpdate(receivableBillMaster);
 
+        Long billMasterId = receivableBillMaster.getId();
+
+        List<ReceivableBillDetailVO> receivableBillDetailVOS = form.getReceivableBillDetailVOS();
+        List<ReceivableBillDetail> receivableBillDetails = ConvertUtil.convertList(receivableBillDetailVOS, ReceivableBillDetail.class);
+        List<Long> orderReceivableIds = new ArrayList<>();
+        receivableBillDetails.forEach(receivableBillDetail -> {
+            receivableBillDetail.setBillMasterId(billMasterId);
+            Long orderReceivableId = receivableBillDetail.getOrderReceivableId();
+            orderReceivableIds.add(orderReceivableId);
+        });
+        //2.保存应收账单明细
+        QueryWrapper<ReceivableBillDetail> receivableBillDetailQueryWrapper = new QueryWrapper<>();
+        receivableBillDetailQueryWrapper.eq("bill_master_id", billMasterId);
+        receivableBillDetailQueryWrapper.in("order_receivable_id", orderReceivableIds);
+        receivableBillDetailService.remove(receivableBillDetailQueryWrapper);
+        receivableBillDetailService.saveOrUpdateBatch(receivableBillDetails);
+        //3.修改反写订单应收明细状态
+        QueryWrapper<OrderCopeReceivable> orderCopeReceivableQueryWrapper = new QueryWrapper<>();
+        orderCopeReceivableQueryWrapper.in("id", orderReceivableIds);
+        List<OrderCopeReceivable> orderCopeReceivables = orderCopeReceivableService.list(orderCopeReceivableQueryWrapper);
+        orderCopeReceivables.forEach(orderCopeReceivable -> {
+            orderCopeReceivable.setStatus(1);//状态(0未生成账单 1已生成账单)
+        });
+        orderCopeReceivableService.saveOrUpdateBatch(orderCopeReceivables);
+
+        ReceivableBillMasterVO receivableBillMasterVO = ConvertUtil.convert(receivableBillMaster, ReceivableBillMasterVO.class);
+        List<ReceivableBillDetailVO> receivableBillDetailVOList = receivableBillDetailMapper.findReceivableBillDetailByBillMasterId(billMasterId);
+        receivableBillMasterVO.setReceivableBillDetailVOS(receivableBillDetailVOList);
+
+        return CommonResult.success(receivableBillMasterVO);
+    }
 
 
 }

@@ -2,6 +2,7 @@ package com.jayud.mall.controller;
 
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.PayBillForm;
+import com.jayud.mall.model.bo.PayBillMasterForm;
 import com.jayud.mall.model.vo.PayBillMasterVO;
 import com.jayud.mall.service.IPayBillMasterService;
 import io.swagger.annotations.Api;
@@ -32,6 +33,19 @@ public class PayBillMasterController {
     public CommonResult<PayBillMasterVO> createPayBill(@Valid @RequestBody PayBillForm form){
         return payBillMasterService.createPayBill(form);
     }
+
+
+    //生成应付账单-确认
+    //affirm
+    @ApiOperation(value = "生成应付账单-确认")
+    @PostMapping("/affirmPayBill")
+    @ApiOperationSupport(order = 2)
+    public CommonResult<PayBillMasterVO> affirmPayBill(@Valid @RequestBody PayBillMasterForm form){
+        return payBillMasterService.affirmPayBill(form);
+    }
+
+
+    //生成应付账单-取消
 
 
 }

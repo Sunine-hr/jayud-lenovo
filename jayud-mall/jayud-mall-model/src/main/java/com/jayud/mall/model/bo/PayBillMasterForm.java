@@ -1,41 +1,25 @@
-package com.jayud.mall.model.po;
+package com.jayud.mall.model.bo;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
-import io.swagger.annotations.ApiModel;
+import com.jayud.mall.model.vo.PayBillDetailVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
-import java.io.Serializable;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.List;
 
-/**
- * <p>
- * 应付账单主单
- * </p>
- *
- * @author fachang.mao
- * @since 2021-03-01
- */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value="PayBillMaster对象", description="应付账单主单")
-public class PayBillMaster extends Model<PayBillMaster> {
-
-    private static final long serialVersionUID = 1L;
+public class PayBillMasterForm {
 
     @ApiModelProperty(value = "自增id", position = 1)
-    @TableId(value = "id", type = IdType.AUTO)
     @JSONField(ordinal = 1)
     private Long id;
 
     @ApiModelProperty(value = "账单编号(编码)", position = 2)
     @JSONField(ordinal = 2)
+    @NotNull(message = "账单编号(编码)不能为空")
     private String billCode;
 
     @ApiModelProperty(value = "订单ID(order_info id)", position = 3)
@@ -44,6 +28,7 @@ public class PayBillMaster extends Model<PayBillMaster> {
 
     @ApiModelProperty(value = "法人id(legal_person id)", position = 4)
     @JSONField(ordinal = 4)
+    @NotNull(message = "法人不能为空")
     private Long legalPersonId;
 
     @ApiModelProperty(value = "供应商id(supplier_info id)", position = 5)
@@ -52,6 +37,7 @@ public class PayBillMaster extends Model<PayBillMaster> {
 
     @ApiModelProperty(value = "金额", position = 6)
     @JSONField(ordinal = 6)
+    @NotNull(message = "金额不能为空")
     private BigDecimal amount;
 
     @ApiModelProperty(value = "币种(currency_info id)", position = 7)
@@ -66,10 +52,17 @@ public class PayBillMaster extends Model<PayBillMaster> {
     @JSONField(ordinal = 9)
     private Integer status;
 
+    @ApiModelProperty(value = "供应商名称(supplier_info company_name)", position = 10)
+    @JSONField(ordinal = 10)
+    private String supplierName;
 
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
+    @ApiModelProperty(value = "账单金额(格式化)", position = 11)
+    @JSONField(ordinal = 11)
+    private String amountFormat;
+
+    @ApiModelProperty(value = "应付账单明细list", position = 12)
+    @JSONField(ordinal = 12)
+    @NotEmpty(message = "应付账单明细不能为空")
+    private List<PayBillDetailVO> payBillDetailVOS;
 
 }

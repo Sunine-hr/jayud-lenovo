@@ -6,7 +6,7 @@
     <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.PayBillDetail">
         <id column="id" property="id" />
         <result column="bill_master_id" property="billMasterId" />
-        <result column="order_receivable_id" property="orderReceivableId" />
+        <result column="order_pay_id" property="orderPayId" />
         <result column="cost_code" property="costCode" />
         <result column="cost_name" property="costName" />
         <result column="amount" property="amount" />
@@ -18,5 +18,16 @@
     <sql id="Base_Column_List">
         id, bill_master_id, order_receivable_id, cost_code, cost_name, amount, cid, remarks
     </sql>
+
+    <select id="findPayBillDetailByBillMasterId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.PayBillDetailVO">
+        select
+        t.id,t.bill_master_id,t.order_pay_id,t.cost_code,t.cost_name,t.amount,t.cid,t.remarks
+        from
+        pay_bill_detail t
+        where 1=1
+        and t.bill_master_id = #{billMasterId}
+    </select>
+
+
 
 </mapper>

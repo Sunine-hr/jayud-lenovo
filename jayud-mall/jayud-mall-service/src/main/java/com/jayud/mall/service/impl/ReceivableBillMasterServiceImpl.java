@@ -22,6 +22,7 @@ import com.jayud.mall.service.IReceivableBillMasterService;
 import com.jayud.mall.utils.NumberGeneratedUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -91,6 +92,7 @@ public class ReceivableBillMasterServiceImpl extends ServiceImpl<ReceivableBillM
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult<ReceivableBillMasterVO> affirmReceivableBill(ReceivableBillMasterForm form) {
         //1.保存应收账单主单
         ReceivableBillMaster receivableBillMaster = ConvertUtil.convert(form, ReceivableBillMaster.class);

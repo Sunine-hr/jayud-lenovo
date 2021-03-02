@@ -1,9 +1,10 @@
 package com.jayud.mall.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.PayBillForm;
+import com.jayud.mall.model.bo.PayBillMasterForm;
 import com.jayud.mall.model.po.PayBillMaster;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.vo.PayBillMasterVO;
 
 /**
@@ -22,4 +23,11 @@ public interface IPayBillMasterService extends IService<PayBillMaster> {
      * @return
      */
     CommonResult<PayBillMasterVO> createPayBill(PayBillForm form);
+
+    /**
+     * 生成应付账单-确认
+     * @param form
+     * @return
+     */
+    CommonResult<PayBillMasterVO> affirmPayBill(PayBillMasterForm form);
 }

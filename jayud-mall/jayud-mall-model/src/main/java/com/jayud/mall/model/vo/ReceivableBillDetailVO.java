@@ -1,33 +1,15 @@
-package com.jayud.mall.model.po;
+package com.jayud.mall.model.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
-/**
- * <p>
- * 应收账单明细
- * </p>
- *
- * @author fachang.mao
- * @since 2021-03-01
- */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value="ReceivableBillDetail对象", description="应收账单明细")
-public class ReceivableBillDetail extends Model<ReceivableBillDetail> {
-
-    private static final long serialVersionUID = 1L;
+public class ReceivableBillDetailVO {
 
     @ApiModelProperty(value = "自增id", position = 1)
     @TableId(value = "id", type = IdType.AUTO)
@@ -62,10 +44,5 @@ public class ReceivableBillDetail extends Model<ReceivableBillDetail> {
     @JSONField(ordinal = 8)
     private String remarks;
 
-
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
 
 }

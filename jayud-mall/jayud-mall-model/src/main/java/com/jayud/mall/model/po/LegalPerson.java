@@ -1,5 +1,6 @@
 package com.jayud.mall.model.po;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
@@ -27,11 +28,13 @@ public class LegalPerson extends Model<LegalPerson> {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "自增id")
+    @ApiModelProperty(value = "自增id", position = 1)
     @TableId(value = "id", type = IdType.AUTO)
+    @JSONField(ordinal = 1)
     private Long id;
 
-    @ApiModelProperty(value = "法人主体")
+    @ApiModelProperty(value = "法人主体", position = 2)
+    @JSONField(ordinal = 2)
     private String legalEntity;
 
 

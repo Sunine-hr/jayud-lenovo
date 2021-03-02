@@ -1,34 +1,18 @@
-package com.jayud.mall.model.po;
+package com.jayud.mall.model.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
-/**
- * <p>
- * 应收账单主单
- * </p>
- *
- * @author fachang.mao
- * @since 2021-03-01
- */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value="ReceivableBillMaster对象", description="应收账单主单")
-public class ReceivableBillMaster extends Model<ReceivableBillMaster> {
+public class ReceivableBillMasterVO {
 
-    private static final long serialVersionUID = 1L;
-
+    //主单
     @ApiModelProperty(value = "自增id", position = 1)
     @TableId(value = "id", type = IdType.AUTO)
     @JSONField(ordinal = 1)
@@ -66,10 +50,12 @@ public class ReceivableBillMaster extends Model<ReceivableBillMaster> {
     @JSONField(ordinal = 9)
     private Integer status;
 
+    //明细
+    @ApiModelProperty(value = "应收账单明细list", position = 10)
+    @JSONField(ordinal = 10)
+    private List<ReceivableBillDetailVO> receivableBillDetailVOS;
 
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
+
+
 
 }

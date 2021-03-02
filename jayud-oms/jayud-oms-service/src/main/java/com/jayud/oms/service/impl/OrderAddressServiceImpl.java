@@ -2,6 +2,7 @@ package com.jayud.oms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.entity.OrderDeliveryAddress;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.po.Goods;
 import com.jayud.oms.model.po.OrderAddress;
@@ -58,7 +59,7 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
             Goods goods = new Goods().setId(deliveryAddress.getGoodsId())
                     .setBusinessId(deliveryAddress.getBusinessId())
                     .setBusinessType(deliveryAddress.getBusinessType())
-                    .setName(deliveryAddress.getName())
+                    .setName(deliveryAddress.getGoodsName())
                     .setPlateAmount(deliveryAddress.getPlateAmount())
                     .setPlateUnit(deliveryAddress.getPlateUnit())
                     .setBulkCargoAmount(deliveryAddress.getBulkCargoAmount())
@@ -76,9 +77,11 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
             orderAddress.setContacts(deliveryAddress.getContacts());
             orderAddress.setPhone(deliveryAddress.getPhone());
             orderAddress.setAddress(deliveryAddress.getAddress());
-            orderAddress.setDeliveryDate(deliveryAddress.getDeliveryDate());
+            orderAddress.setDeliveryDate(DateUtils.str2LocalDateTime(deliveryAddress.getDeliveryDate(), null));
             orderAddress.setEnterWarehouseNo(deliveryAddress.getEnterWarehouseNo());
             orderAddress.setBindGoodsId(goods.getId());
+            orderAddress.setBusinessId(deliveryAddress.getBusinessId());
+            orderAddress.setBusinessType(deliveryAddress.getBusinessType());
             orderAddress.setFileName(StringUtils.getFileNameStr(deliveryAddress.getFileViewList()));
             orderAddress.setFilePath(StringUtils.getFileNameStr(deliveryAddress.getFileViewList()));
             if (orderAddress.getId() == null) {

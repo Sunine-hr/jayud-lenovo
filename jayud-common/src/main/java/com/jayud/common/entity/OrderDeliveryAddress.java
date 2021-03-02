@@ -1,7 +1,6 @@
 package com.jayud.common.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
@@ -41,7 +40,7 @@ public class OrderDeliveryAddress {
     private String address;
 
     @ApiModelProperty(value = "交货日期(提货日期/送货日期)")
-    private LocalDateTime deliveryDate;
+    private String deliveryDate;
 
     @ApiModelProperty(value = "入仓号,送货有")
     private String enterWarehouseNo;
@@ -50,7 +49,7 @@ public class OrderDeliveryAddress {
     private Integer addressType;
 
     @ApiModelProperty(value = "货品描述")
-    private String name;
+    private String goodsName;
 
     @ApiModelProperty(value = "板数")
     private Integer plateAmount;
@@ -73,19 +72,21 @@ public class OrderDeliveryAddress {
     @ApiModelProperty(value = "体积")
     private Double volume;
 
-    @ApiModelProperty(value = "业务类型(业务类型(0:空运,1:纯报关,2:中港运输...)参考BusinessTypeEnum)")
+    @ApiModelProperty(value = "业务类型 前端不用管 ")
     private Integer businessType;
 
-    @ApiModelProperty(value = "业务主键(根据类型选择对应表的主键) 前端不用管")
+    @ApiModelProperty(value = "业务主键 前端不用管")
     private Long businessId;
 
+    @ApiModelProperty(value = "备注")
+    private String remarks;
 
     @ApiModelProperty(value = "附件集合")
     private List<FileView> fileViewList = new ArrayList<>();
 
     public void checkCreateOrder() {
         String msg = "不能为空";
-        if (StringUtils.isEmpty(this.name)) {
+        if (StringUtils.isEmpty(this.goodsName)) {
             throw new JayudBizException("联系人" + msg);
         }
         if (StringUtils.isEmpty(this.phone)) {

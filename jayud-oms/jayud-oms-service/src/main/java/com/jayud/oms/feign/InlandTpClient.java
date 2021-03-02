@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 /**
  * 内陆模块
  */
-@FeignClient(value = "jayud-Inland-transport", configuration = FeignRequestInterceptor.class)
+@FeignClient(value = "jayud-Inland-transport-web", configuration = FeignRequestInterceptor.class)
 public interface InlandTpClient {
 
     /**

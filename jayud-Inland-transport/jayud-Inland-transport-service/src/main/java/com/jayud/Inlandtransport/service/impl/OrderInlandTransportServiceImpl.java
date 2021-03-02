@@ -1,10 +1,13 @@
 package com.jayud.Inlandtransport.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.Inlandtransport.feign.OmsClient;
 import com.jayud.Inlandtransport.mapper.OrderInlandTransportMapper;
 import com.jayud.Inlandtransport.model.bo.AddOrderInlandTransportForm;
+import com.jayud.Inlandtransport.model.bo.QueryOrderForm;
 import com.jayud.Inlandtransport.model.po.OrderInlandTransport;
+import com.jayud.Inlandtransport.model.vo.OrderInlandTransportFormVO;
 import com.jayud.Inlandtransport.service.IOrderInlandTransportService;
 import com.jayud.common.entity.OrderDeliveryAddress;
 import com.jayud.common.enums.BusinessTypeEnum;
@@ -64,5 +67,10 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
             orderDeliveryAddress.setBusinessType(BusinessTypeEnum.NL.getCode());
         }
         this.omsClient.addDeliveryAddress(addressList);
+    }
+
+    @Override
+    public IPage<OrderInlandTransportFormVO> findByPage(QueryOrderForm form) {
+        return null;
     }
 }

@@ -279,12 +279,15 @@ public class DateUtils {
         if (StringUtils.isBlank(dateStr) || StringUtils.isBlank(pattern)) {
             return null;
         }
+        if (StringUtils.isEmpty(pattern)) {
+            pattern = DATE_TIME_PATTERN;
+        }
         DateTimeFormatter df = DateTimeFormatter.ofPattern(pattern);
         return LocalDateTime.parse(dateStr, df);
     }
 
 
-    public static LocalDateTime str2LocalDateTime(String date,String oldSymbol,String replaceSymbol) {
+    public static LocalDateTime str2LocalDateTime(String date, String oldSymbol, String replaceSymbol) {
         date = date.replace(replaceSymbol, oldSymbol);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtils.DATE_TIME_PATTERN);
         try {
@@ -315,12 +318,13 @@ public class DateUtils {
 
     /**
      * LocalDaetTime 转换 String
+     *
      * @param localDateTime
      * @param pattern
      * @return
      */
-    public static String LocalDateTime2Str(LocalDateTime localDateTime,String pattern){
-        if(localDateTime == null || StringUtils.isBlank(pattern)){
+    public static String LocalDateTime2Str(LocalDateTime localDateTime, String pattern) {
+        if (localDateTime == null || StringUtils.isBlank(pattern)) {
             return null;
         }
         DateTimeFormatter df = DateTimeFormatter.ofPattern(pattern);
@@ -329,19 +333,21 @@ public class DateUtils {
 
     /**
      * Timestamp：获取当前时间
+     *
      * @return
      */
-    public static Timestamp getNowTime(){
+    public static Timestamp getNowTime() {
         return new Timestamp(System.currentTimeMillis());
     }
 
     /**
      * 格式化日期
+     *
      * @param localDateTime
      * @return
      */
-    public static String getLocalToStr(LocalDateTime localDateTime){
-        if(localDateTime == null){
+    public static String getLocalToStr(LocalDateTime localDateTime) {
+        if (localDateTime == null) {
             return "";
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -351,13 +357,13 @@ public class DateUtils {
     /**
      * 根据年、月获取某月的最后一天
      */
-    public static String getLastDayOfMonth(int year,int month){
+    public static String getLastDayOfMonth(int year, int month) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         Calendar cal = Calendar.getInstance();
         //设置年份
-        cal.set(Calendar.YEAR,year);
+        cal.set(Calendar.YEAR, year);
         //设置月份
-        cal.set(Calendar.MONTH, month-1);
+        cal.set(Calendar.MONTH, month - 1);
         //获取某月最大天数
         int lastDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
         //设置日历中月份的最大天数

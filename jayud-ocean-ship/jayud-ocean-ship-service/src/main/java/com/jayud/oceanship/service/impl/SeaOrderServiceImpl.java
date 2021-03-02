@@ -77,12 +77,12 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
     public void createOrder(AddSeaOrderForm addSeaOrderForm) {
         LocalDateTime now = LocalDateTime.now();
         SeaOrder seaOrder = ConvertUtil.convert(addSeaOrderForm, SeaOrder.class);
-        System.out.println("orderId===================================="+addSeaOrderForm.getOrderId());
+        //System.out.println("orderId===================================="+addSeaOrderForm.getOrderId());
         //创建海运单
         if (addSeaOrderForm.getOrderId() == null) {
             //生成订单号
-            String orderNo = generationOrderNo(addSeaOrderForm.getLegalEntityId(),addSeaOrderForm.getImpAndExpType());
-            seaOrder.setOrderNo(orderNo);
+//            String orderNo = generationOrderNo(addSeaOrderForm.getLegalEntityId(),addSeaOrderForm.getImpAndExpType());
+//            seaOrder.setOrderNo(orderNo);
             seaOrder.setCreateTime(now);
             seaOrder.setCreateUser(UserOperator.getToken());
             seaOrder.setStatus(OrderStatusEnum.SEA_S_0.getCode());
@@ -123,7 +123,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         }
         //获取用户地址
         List<AddOrderAddressForm> orderAddressForms = addSeaOrderForm.getOrderAddressForms();
-        System.out.println("orderAddressForms=================================="+orderAddressForms);
+        //System.out.println("orderAddressForms=================================="+orderAddressForms);
         for (AddOrderAddressForm orderAddressForm : orderAddressForms) {
             orderAddressForm.setOrderNo(seaOrder.getOrderNo());
             orderAddressForm.setBusinessType(BusinessTypeEnum.HY.getCode());

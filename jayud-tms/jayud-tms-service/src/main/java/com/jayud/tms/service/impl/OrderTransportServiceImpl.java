@@ -103,15 +103,15 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             orderTransport.setUpdatedUser(form.getLoginUser());
         } else {//新增
             //生成订单号
-            String orderNo = StringUtils.loadNum(CommonConstant.T, 12);
-            while (true) {
-                if (!isExistOrder(orderNo)) {//重复
-                    orderNo = StringUtils.loadNum(CommonConstant.T, 12);
-                } else {
-                    break;
-                }
-            }
-            orderTransport.setOrderNo(orderNo);
+//            String orderNo = StringUtils.loadNum(CommonConstant.T, 12);
+//            while (true) {
+//                if (!isExistOrder(orderNo)) {//重复
+//                    orderNo = StringUtils.loadNum(CommonConstant.T, 12);
+//                } else {
+//                    break;
+//                }
+//            }
+//            orderTransport.setOrderNo(orderNo);
             orderTransport.setCreatedUser(form.getLoginUser());
         }
         for (InputOrderTakeAdrForm inputOrderTakeAdrForm : orderTakeAdrForms) {

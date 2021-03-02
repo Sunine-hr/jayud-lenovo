@@ -19,6 +19,7 @@ import com.jayud.oms.model.po.OrderPaymentCost;
 import com.jayud.oms.model.po.OrderReceivableCost;
 import com.jayud.oms.model.po.ProductClassify;
 import com.jayud.oms.model.vo.*;
+import com.jayud.oms.model.vo.cost.CostOrderDetailsVO;
 import com.jayud.oms.service.ILogisticsTrackService;
 import com.jayud.oms.service.IOrderInfoService;
 import com.jayud.oms.service.IProductClassifyService;
@@ -303,7 +304,7 @@ public class OrderCommonController {
 
     @ApiOperation(value = "下拉选择卸货地址")
     @PostMapping(value = "/initTakeAdrBySubOrderNo")
-    public CommonResult initTakeAdrBySubOrderNo(@RequestBody Map<String, Object> map) {
+    public CommonResult getCostOrderDetails(@RequestBody Map<String, Object> map) {
 
         String subOrderNo = MapUtil.getStr(map, "subOrderNo");
         String orderType = MapUtil.getStr(map, "orderType");
@@ -315,6 +316,16 @@ public class OrderCommonController {
             data = this.tmsClient.initTakeAdrBySubOrderNo(subOrderNo).getData();
         }
         return CommonResult.success(data);
+    }
+
+
+    @ApiOperation(value = "录用费用页面(查询子订单详情)")
+    @PostMapping("/getCostOrderDetail")
+    public CommonResult<CostOrderDetailsVO> getCostOrderDetail(@RequestBody @Valid GetOrderDetailForm form) {
+        InputOrderVO inputOrderVO = orderInfoService.getOrderDetail(form);
+        CostOrderDetailsVO costOrderDetailsVO = new CostOrderDetailsVO();
+        costOrderDetailsVO.assemblyData(inputOrderVO);
+        return CommonResult.success(costOrderDetailsVO);
     }
 
 }

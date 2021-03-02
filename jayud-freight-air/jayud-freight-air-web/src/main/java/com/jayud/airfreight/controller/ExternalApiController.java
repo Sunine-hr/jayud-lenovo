@@ -1,8 +1,10 @@
 package com.jayud.airfreight.controller;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.airfreight.feign.OauthClient;
 import com.jayud.airfreight.model.bo.AddAirOrderForm;
 import com.jayud.airfreight.model.bo.vivo.BookingSpaceForm;
 import com.jayud.airfreight.model.enums.VivoRejectionStatusEnum;
@@ -14,6 +16,7 @@ import com.jayud.airfreight.service.IAirOrderService;
 import com.jayud.airfreight.service.IAirPortService;
 import com.jayud.airfreight.service.VivoService;
 import com.jayud.common.ApiResult;
+import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.InitChangeStatusVO;
@@ -31,6 +34,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -54,6 +58,8 @@ public class ExternalApiController {
     private IAirPortService airPortService;
     @Autowired
     private VivoService vivoService;
+    @Autowired
+    private OauthClient oauthClient;
 
     @RequestMapping(value = "/api/airfreight/bookingSpace")
     public Boolean doBookingSpace(@RequestParam(name = "json") String json) {
@@ -193,6 +199,45 @@ public class ExternalApiController {
 //    public ApiResult<AirPort> closeVivoAirWaybill() {
 //
 //    }
+
+
+    @ApiModelProperty(value = "获取菜单待处理数")
+    @RequestMapping(value = "/api/getMenuPendingNum")
+    public ApiResult getMenuPendingNum(@RequestBody List<Map<String, Object>> menusList) {
+        if (CollectionUtil.isEmpty(menusList)) {
+            return ApiResult.ok();
+        }
+        Map<String, String> tmp = new HashMap<>();
+        tmp.put("空运接单", "A_0");
+        tmp.put("空运订舱", "A_1");
+        tmp.put("空运入舱", "A_2");
+        tmp.put("订舱驳回", "A_3_2");
+        tmp.put("空运提单", "A_3");
+        tmp.put("空运离港", "A_4");
+        tmp.put("空运到港", "A_5");
+        tmp.put("海外代理", "A_6");
+        tmp.put("确认签收", "T_7");
+
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+
+        for (Map<String, Object> menus : menusList) {
+
+            Map<String, Object> map = new HashMap<>();
+            Object title = menus.get("title");
+            String status = tmp.get(title);
+            Integer num = 0;
+            if (status != null) {
+                num = this.airOrderService.getNumByStatus(status, legalIds);
+            }
+            map.put("menusName", title);
+            map.put("num", num);
+            result.add(map);
+        }
+        return ApiResult.ok(result);
+    }
 
 
     private <T> T getForm(String json, Class<T> clz) {

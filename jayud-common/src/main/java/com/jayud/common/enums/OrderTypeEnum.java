@@ -14,7 +14,8 @@ public enum OrderTypeEnum {
     TI("TI", "运输进口"),
     TE("TE", "运输出口"),
     TL("TL", "内陆运输"),
-    TT("TT", "拖车运输"),
+    TTI("TT", "拖车进口"),
+    TTE("TT", "拖车出口"),
     AI("AI", "空运进口"),
     AE("AE", "空运出口"),
     SI("SI", "海运进口"),
@@ -23,7 +24,8 @@ public enum OrderTypeEnum {
     EC("EC", "电商订单"),
     BG("BG", "报关订单"),
     P("P", "派车单号"),
-    ZD("ZD", "对账单号");
+    ZD("ZD", "对账单号"),
+    FW("FW", "服务单号");
 
     private String code;
     private String desc;

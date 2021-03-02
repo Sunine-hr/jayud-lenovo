@@ -81,8 +81,8 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         //创建海运单
         if (addSeaOrderForm.getOrderId() == null) {
             //生成订单号
-            String orderNo = generationOrderNo(addSeaOrderForm.getLegalEntityId(),addSeaOrderForm.getImpAndExpType());
-            seaOrder.setOrderNo(orderNo);
+//            String orderNo = generationOrderNo(addSeaOrderForm.getLegalEntityId(),addSeaOrderForm.getImpAndExpType());
+//            seaOrder.setOrderNo(orderNo);
             seaOrder.setCreateTime(now);
             seaOrder.setCreateUser(UserOperator.getToken());
             seaOrder.setStatus(OrderStatusEnum.SEA_S_0.getCode());

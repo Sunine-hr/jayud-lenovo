@@ -84,8 +84,8 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         //创建空运单
         if (addAirOrderForm.getId() == null) {
             //生成订单号
-            String orderNo = generationOrderNo();
-            airOrder.setOrderNo(orderNo).setCreateTime(now)
+            //String orderNo = generationOrderNo();
+            airOrder.setCreateTime(now)
                     .setCreateUser(UserOperator.getToken())
                     .setStatus(OrderStatusEnum.AIR_A_0.getCode());
             this.save(airOrder);

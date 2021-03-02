@@ -110,6 +110,64 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Autowired
     private OceanShipClient oceanShipClient;
 
+    @Autowired
+    private IOrderTypeNumberService orderTypeNumberService;
+
+    public String generationOrderNo(Long legalId , Integer integer,String classStatus) {
+        //生成订单号
+        String legalCode = (String)oauthClient.getLegalEntityCodeByLegalId(legalId).getData();
+        String preOrder = null;
+        String classCode = null;
+        if(classStatus.equals("main")){
+            preOrder = OrderTypeEnum.JYD.getCode() + legalCode;
+            classCode = OrderTypeEnum.JYD.getCode();
+        }
+        if(classStatus.equals(OrderStatusEnum.FWD.getCode())){
+            preOrder = OrderTypeEnum.FW.getCode() + legalCode;
+            classCode = OrderTypeEnum.FW.getCode();
+        }
+        if(classStatus.equals(OrderStatusEnum.CBG.getCode())){
+            preOrder = OrderTypeEnum.BG.getCode() + legalCode;
+            classCode = OrderTypeEnum.BG.getCode();
+        }
+        if(classStatus.equals(OrderStatusEnum.HY.getCode())){
+            if(integer.equals(1)){
+                preOrder = OrderTypeEnum.SI.getCode() + legalCode;
+                classCode = OrderTypeEnum.SI.getCode();
+            }else {
+                preOrder = OrderTypeEnum.SE.getCode() + legalCode;
+                classCode = OrderTypeEnum.SE.getCode();
+            }
+        }
+        if(classStatus.equals(OrderStatusEnum.ZGYS.getCode())){
+            if(integer.equals(1)){
+                preOrder = OrderTypeEnum.TI.getCode() + legalCode;
+                classCode = OrderTypeEnum.TI.getCode();
+            }else {
+                preOrder = OrderTypeEnum.TE.getCode() + legalCode;
+                classCode = OrderTypeEnum.TE.getCode();
+            }
+        }
+        if(classStatus.equals(OrderStatusEnum.NLYS.getCode())){
+            preOrder = OrderTypeEnum.TL.getCode() + legalCode;
+            classCode = OrderTypeEnum.TL.getCode();
+        }
+        if(classStatus.equals(OrderStatusEnum.KY.getCode())){
+            if(integer.equals(1)){
+                preOrder = OrderTypeEnum.AI.getCode() + legalCode;
+                classCode = OrderTypeEnum.AI.getCode();
+            }else {
+                preOrder = OrderTypeEnum.AE.getCode() + legalCode;
+                classCode = OrderTypeEnum.AE.getCode();
+            }
+        }else{
+            return "参数不正确";
+        }
+
+        String orderNo = orderTypeNumberService.getOrderNo(preOrder,classCode);
+        return orderNo;
+    }
+
     @Override
     public String oprMainOrder(InputMainOrderForm form, String loginUserName) {
         OrderInfo orderInfo = ConvertUtil.convert(form, OrderInfo.class);
@@ -122,14 +180,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderInfo.setUpUser(UserOperator.getToken() == null ? loginUserName : UserOperator.getToken());
         } else {//新增
             //生成主订单号
-            String orderNo = StringUtils.loadNum(CommonConstant.M, 12);
-            while (true) {
-                if (!isExistOrder(orderNo)) {//重复
-                    orderNo = StringUtils.loadNum(CommonConstant.M, 12);
-                } else {
-                    break;
-                }
-            }
+//            String orderNo = StringUtils.loadNum(CommonConstant.M, 12);
+//            while (true) {
+//                if (!isExistOrder(orderNo)) {//重复
+//                    orderNo = StringUtils.loadNum(CommonConstant.M, 12);
+//                } else {
+//                    break;
+//                }
+//            }
+            String orderNo = generationOrderNo(form.getLegalEntityId(),0,"main");
             orderInfo.setOrderNo(orderNo);
             orderInfo.setCreateTime(LocalDateTime.now());
             orderInfo.setCreatedUser(UserOperator.getToken() == null ? loginUserName : UserOperator.getToken());
@@ -768,6 +827,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 selectedServer.contains(OrderStatusEnum.CKBG.getCode())) {
             InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
 
+//            for (InputSubOrderCustomsForm subOrder : orderCustomsForm.getSubOrders()) {
+//                //生成报关订单号
+//                String orderNo = generationOrderNo(orderCustomsForm.getLegalEntityId(),0,OrderStatusEnum.CBG.getCode());
+//                subOrder.setOrderNo(orderNo);
+//            }
+
             //查询编辑条件
             //主订单草稿状态,可以对所有订单进行编辑
             //创建订单如果没有选择资料齐全,提交订单报关状态待是补全状态,可以进行编辑,报关状态待接单或者没有创建状态
@@ -795,6 +860,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 selectedServer.contains(OrderStatusEnum.ZGYSDD.getCode())) {
             //创建中港订单信息
             InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
+
+            //生成中港订单号
+            String orderNo = generationOrderNo(orderTransportForm.getLegalEntityId(),orderTransportForm.getGoodsType(),OrderStatusEnum.ZGYS.getCode());
+            orderTransportForm.setOrderNo(orderNo);
+
             if (this.queryEditOrderCondition(orderTransportForm.getSubTmsStatus(),
                     inputMainOrderForm.getStatus(), SubOrderSignEnum.ZGYS.getSignOne(), form)) {
                 if (!selectedServer.contains(OrderStatusEnum.XGQG.getCode())) {
@@ -833,6 +903,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //空运
         if (OrderStatusEnum.KY.getCode().equals(classCode)) {
             InputAirOrderForm airOrderForm = form.getAirOrderForm();
+
+            //生成空运订单号
+            String orderNo = generationOrderNo(airOrderForm.getLegalEntityId(),airOrderForm.getImpAndExpType(),OrderStatusEnum.KY.getCode());
+            airOrderForm.setOrderNo(orderNo);
+
             if (this.queryEditOrderCondition(airOrderForm.getStatus(),
                     inputMainOrderForm.getStatus(), SubOrderSignEnum.KY.getSignOne(), form)) {
                 //拼装地址信息
@@ -849,6 +924,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if (OrderStatusEnum.FWD.getCode().equals(classCode)) {
             //创建服务单订单信息
             InputOrderServiceForm orderServiceForm = form.getOrderServiceForm();
+
+            //生成服务订单号
+//            String orderNo = generationOrderNo(orderServiceForm.getLegalEntityId(),seaOrderForm.getImpAndExpType(),OrderStatusEnum.HY.getCode());
+//            seaOrderForm.setOrderNo(orderNo);
             orderServiceForm.setMainOrderNo(mainOrderNo);
             orderServiceForm.setLoginUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
             boolean result = serviceOrderService.createOrder(orderServiceForm);
@@ -857,9 +936,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
         }
         //海运
-        System.out.println(OrderStatusEnum.HY.getCode().equals(classCode));
+        //System.out.println(OrderStatusEnum.HY.getCode().equals(classCode));
         if (OrderStatusEnum.HY.getCode().equals(classCode)) {
             InputSeaOrderForm seaOrderForm = form.getSeaOrderForm();
+
+            //生成海运订单号
+            String orderNo = generationOrderNo(seaOrderForm.getLegalEntityId(),seaOrderForm.getImpAndExpType(),OrderStatusEnum.HY.getCode());
+            seaOrderForm.setOrderNo(orderNo);
+
             if (this.queryEditOrderCondition(seaOrderForm.getStatus(),
                     inputMainOrderForm.getStatus(), SubOrderSignEnum.HY.getSignOne(), form)) {
                 //拼装地址信息

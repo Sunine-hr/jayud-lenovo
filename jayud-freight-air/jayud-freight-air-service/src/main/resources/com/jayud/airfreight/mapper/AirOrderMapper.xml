@@ -147,7 +147,7 @@
     <select id="getNumByStatus" resultType="java.lang.Integer">
         select count(*) from air_order
         <where>
-            and status=#{status} and (process_status=0 or process_status =1)
+            and status=#{status} and (process_status=0)
             <if test="legalIds != null and legalIds.size>0">
                 and `legal_entity_id` in
                 <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">

@@ -45,4 +45,8 @@ public class OrderCopeWithForm {
     @JSONField(ordinal = 9)
     private Long billId;
 
+    @ApiModelProperty(value = "状态(0未生成账单 1已生成账单)", position = 10)
+    @JSONField(ordinal = 10)
+    private Integer status;
+
 }

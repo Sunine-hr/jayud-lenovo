@@ -40,4 +40,9 @@ public class OrderCopeReceivableForm {
     @ApiModelProperty(value = "提单id(ocean_bill id)", position = 8)
     @JSONField(ordinal = 8)
     private Long billId;
+
+    @ApiModelProperty(value = "状态(0未生成账单 1已生成账单)", position = 9)
+    @JSONField(ordinal = 9)
+    private Integer status;
+
 }

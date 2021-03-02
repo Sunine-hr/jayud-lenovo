@@ -61,4 +61,8 @@ public class OrderCopeReceivableVO {
     @JSONField(ordinal = 12)
     private String customerName;
 
+    @ApiModelProperty(value = "状态(0未生成账单 1已生成账单)", position = 13)
+    @JSONField(ordinal = 13)
+    private Integer status;
+
 }

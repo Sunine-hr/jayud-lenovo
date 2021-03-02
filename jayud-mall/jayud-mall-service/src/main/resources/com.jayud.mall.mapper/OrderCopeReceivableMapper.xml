@@ -20,7 +20,7 @@
     <select id="findOrderCopeReceivableByOrderId" parameterType="java.lang.Long"
             resultType="com.jayud.mall.model.vo.OrderCopeReceivableVO">
         select
-        t.id,t.order_id,t.cost_code,t.cost_name,t.amount,t.cid,t.remarks,t.bill_id,
+        t.id,t.order_id,t.cost_code,t.cost_name,t.amount,t.cid,t.remarks,t.bill_id,t.status,
         t1.currency_code,t1.currency_name,
         t2.customer_id,
         t3.company customerName

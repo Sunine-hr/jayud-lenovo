@@ -62,6 +62,10 @@ public class OrderCopeReceivable extends Model<OrderCopeReceivable> {
     @JSONField(ordinal = 8)
     private Long billId;
 
+    @ApiModelProperty(value = "状态(0未生成账单 1已生成账单)", position = 9)
+    @JSONField(ordinal = 9)
+    private Integer status;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

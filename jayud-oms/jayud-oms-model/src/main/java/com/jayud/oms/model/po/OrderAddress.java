@@ -81,6 +81,9 @@ public class OrderAddress extends Model<OrderAddress> {
     @ApiModelProperty(value = "交货日期(提货日期/送货日期)")
     private LocalDateTime deliveryDate;
 
+    @ApiModelProperty(value = "入仓号,送货有")
+    private String enterWarehouseNo;
+
 
     @Override
     protected Serializable pkVal() {

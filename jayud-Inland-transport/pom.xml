@@ -11,6 +11,7 @@
 
     <artifactId>jayud-Inland-transport</artifactId>
     <packaging>pom</packaging>
+
     <modules>
         <module>jayud-Inland-transport-model</module>
         <module>jayud-Inland-transport-service</module>

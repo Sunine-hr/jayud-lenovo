@@ -121,6 +121,22 @@ public enum OrderStatusEnum {
     SEA_S_9("S_9","海外代理"),
     SEA_S_10("S_10","订单签收"),
 
+    //内陆运输
+    INLANDTP_NL_0("NL_0", "待接单"),
+    INLANDTP_NL_1("NL_1", "内陆接单"),
+    INLANDTP_NL_1_1("NL_1_1", "内陆接单驳回"),
+    INLANDTP_NL_2("NL_2", "内陆派车"),
+    INLANDTP_NL_2_1("NL_2_1", "内陆派车驳回"),
+    INLANDTP_NL_3("NL_3", "派车审核"),
+    INLANDTP_NL_3_1("NL_3_1", "派车审核不通过"),
+    INLANDTP_NL_3_2("NL_3_2", "派车审核驳回"),
+    INLANDTP_NL_4("NL_4", "确认派车"),
+    INLANDTP_NL_5("NL_4_1", "确认派车驳回"),
+    INLANDTP_NL_6("NL_5", "车辆提货"),
+    INLANDTP_NL_7("NL_5_1", "车辆提货驳回"),
+    INLANDTP_NL_8("NL_6", "货物签收"),
+
+
 
 
     //外部报关放行
@@ -129,7 +145,7 @@ public enum OrderStatusEnum {
     //香港清关
     HK_CLEAR_1("HK_C_1", "香港清关"),
 
-    //内陆运输 TODO
+
 
     //费用状态
     COST_0("0", "审核驳回"),

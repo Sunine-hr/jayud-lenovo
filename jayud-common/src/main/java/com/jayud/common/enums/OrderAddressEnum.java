@@ -5,14 +5,18 @@ import lombok.Getter;
 
 import java.util.Objects;
 
+/**
+ * 订单地址
+ */
 @Getter
 @AllArgsConstructor
 public enum OrderAddressEnum {
     //地址类型
     DELIVER_GOODS(0, "发货"),
     RECEIVING_GOODS(1, "收货"),
-    NOTICE(2, "通知");
-
+    NOTICE(2, "通知"),
+    PICK_UP(3, "提货"),
+    DELIVERY(4, "送货");
     private Integer code;
     private String desc;
 

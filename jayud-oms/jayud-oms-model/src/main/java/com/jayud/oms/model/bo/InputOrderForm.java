@@ -26,6 +26,10 @@ public class InputOrderForm {
     @ApiModelProperty(value = "海运")
     private InputSeaOrderForm seaOrderForm;
 
+    @ApiModelProperty(value = "内陆")
+    private AddOrderInlandTransportForm addOrderInlandTransportForm;
+
+
     @ApiModelProperty(value = "登录人")
     private String loginUserName;
 

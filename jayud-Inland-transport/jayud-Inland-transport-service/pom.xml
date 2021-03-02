@@ -7,9 +7,12 @@
         <groupId>com.jayud</groupId>
         <version>1.0</version>
     </parent>
+
     <modelVersion>4.0.0</modelVersion>
 
+    <groupId>com.jayud</groupId>
     <artifactId>jayud-Inland-transport-service</artifactId>
+    <version>1.0</version>
 
     <dependencies>
         <dependency>
@@ -18,5 +21,4 @@
             <version>${model.version}</version>
         </dependency>
     </dependencies>
-
 </project>

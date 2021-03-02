@@ -8,13 +8,14 @@ import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.entity.OrderDeliveryAddress;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.utils.*;
 import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.*;
-import com.jayud.oms.model.enums.VehicleTypeEnum;
 import com.jayud.oms.model.enums.StatusEnum;
+import com.jayud.oms.model.enums.VehicleTypeEnum;
 import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
@@ -963,6 +964,18 @@ public class ExternalApiController {
             customerInfos.add(one);
         }
         return ApiResult.ok(customerInfos);
+    }
+
+
+    /**
+     * 订单地址(保存提货/送货地址)
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/addDeliveryAddress")
+    public ApiResult addDeliveryAddress(@RequestBody List<OrderDeliveryAddress> deliveryAddressList) {
+        this.orderAddressService.addDeliveryAddress(deliveryAddressList);
+        return ApiResult.ok();
     }
 }
 

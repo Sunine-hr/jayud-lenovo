@@ -1,15 +1,17 @@
 package com.jayud.mall.model.bo;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.jayud.mall.model.vo.OrderCopeReceivableVO;
+import com.jayud.mall.model.vo.OrderCopeWithVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
-public class OrderBillForm {
+public class PayBillForm {
+
 
     @ApiModelProperty(value = "订单id", position = 1)
     @JSONField(ordinal = 1)
@@ -21,14 +23,10 @@ public class OrderBillForm {
     @NotNull(message = "订单号不能为空")
     private String orderNo;
 
-    @ApiModelProperty(value = "订单应收费用", position = 4)
-    @JSONField(ordinal = 4)
-    private List<OrderCopeReceivableVO> orderCopeReceivableVOS;
-
-//    @ApiModelProperty(value = "订单应付费用", position = 5)
-//    @JSONField(ordinal = 5)
-//    private List<OrderCopeWithVO> orderCopeWithVOS;
-
+    @ApiModelProperty(value = "订单应付费用list", position = 5)
+    @JSONField(ordinal = 5)
+    @NotEmpty(message = "订单应付费用不能为空")
+    private List<OrderCopeWithVO> orderCopeWithVOS;
 
 
 }

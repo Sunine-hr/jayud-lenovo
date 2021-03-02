@@ -68,6 +68,10 @@ public class ReceivableBillMasterServiceImpl extends ServiceImpl<ReceivableBillM
         Integer cid = orderCopeReceivableVOS.get(0).getCid();
         receivableBillMasterVO.setCid(cid);//币种(currency_info id)
 
+        String currencyName = orderCopeReceivableVOS.get(0).getCurrencyName();//币种名称
+        String amountFormat = amount+" "+currencyName;
+        receivableBillMasterVO.setAmountFormat(amountFormat);//账单金额(格式化)
+
         receivableBillMasterVO.setReceivableBillDetailVOS(receivableBillDetailVOS);//应收账单明细list
         return CommonResult.success(receivableBillMasterVO);
     }

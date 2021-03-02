@@ -1,31 +1,14 @@
-package com.jayud.mall.model.po;
+package com.jayud.mall.model.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
-/**
- * <p>
- * 应付账单主单
- * </p>
- *
- * @author fachang.mao
- * @since 2021-03-01
- */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value="PayBillMaster对象", description="应付账单主单")
-public class PayBillMaster extends Model<PayBillMaster> {
-
-    private static final long serialVersionUID = 1L;
+public class PayBillMasterVO {
 
     @ApiModelProperty(value = "自增id", position = 1)
     @JSONField(ordinal = 1)
@@ -63,10 +46,19 @@ public class PayBillMaster extends Model<PayBillMaster> {
     @JSONField(ordinal = 9)
     private Integer status;
 
+    @ApiModelProperty(value = "供应商名称(supplier_info company_name)", position = 10)
+    @JSONField(ordinal = 10)
+    private String supplierName;
 
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
+    @ApiModelProperty(value = "账单金额(格式化)", position = 11)
+    @JSONField(ordinal = 11)
+    private String amountFormat;
+
+    @ApiModelProperty(value = "应付账单明细list", position = 12)
+    @JSONField(ordinal = 12)
+    private List<PayBillDetailVO> payBillDetailVOS;
+
+
+
 
 }

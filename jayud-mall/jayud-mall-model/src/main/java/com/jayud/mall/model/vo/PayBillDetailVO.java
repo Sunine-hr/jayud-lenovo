@@ -1,33 +1,15 @@
-package com.jayud.mall.model.po;
+package com.jayud.mall.model.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
-/**
- * <p>
- * 应付账单明细
- * </p>
- *
- * @author fachang.mao
- * @since 2021-03-01
- */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value="PayBillDetail对象", description="应付账单明细")
-public class PayBillDetail extends Model<PayBillDetail> {
-
-    private static final long serialVersionUID = 1L;
+public class PayBillDetailVO {
 
     @ApiModelProperty(value = "自增id", position = 1)
     @TableId(value = "id", type = IdType.AUTO)
@@ -61,11 +43,5 @@ public class PayBillDetail extends Model<PayBillDetail> {
     @ApiModelProperty(value = "描述", position = 8)
     @JSONField(ordinal = 8)
     private String remarks;
-
-
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
 
 }

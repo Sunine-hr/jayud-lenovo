@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.mapper.OrderTypeNumberMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.OrderTypeNumber">
+        <id column="id" property="id" />
+        <result column="class_code" property="classCode" />
+        <result column="date" property="date" />
+        <result column="number" property="number" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, class_code, date, number
+    </sql>
+
+    <select id="getMaxNumberData" resultType="com.jayud.oms.model.po.OrderTypeNumber">
+        select * from order_type_number where class_code = #{classCode} and number = (select max(number) from order_type_number where class_code = #{classCode})
+    </select>
+
+</mapper>

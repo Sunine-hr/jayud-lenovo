@@ -263,7 +263,6 @@ public class SeaOrderController {
         queryWrapper.eq("order_no",seaOrder.getOrderNo());
         OrderFlowSheet orderFlowSheet = orderFlowSheetService.getOne(queryWrapper);
         OrderStatusEnum statusEnum = OrderStatusEnum.getSeaOrderNextStatus(orderFlowSheet.getStatus());
-        System.out.println("statusEnum========================"+statusEnum);
         if (statusEnum == null) {
             log.error("执行海运流程操作失败,超出流程之外 data={}", seaOrder.toString());
             return CommonResult.error(ResultEnum.OPR_FAIL);

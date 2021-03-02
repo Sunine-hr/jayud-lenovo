@@ -177,4 +177,11 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/getCustomerByUnitCode")
     ApiResult getCustomerByUnitCode(@RequestBody List<String> unitCodes);
+
+    /**
+     * 根据客户code集合查询客户信息
+     * @return
+     */
+    @RequestMapping(value = "/api/getOrderNo")
+    ApiResult getOrderNo(@RequestParam("preOrder") String preOrder , @RequestParam("classCode") String classCode);
 }

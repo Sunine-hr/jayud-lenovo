@@ -341,7 +341,14 @@ public class ExternalApiController {
         return ApiResult.ok(legalName);
     }
 
-
+    /**
+     * 根据用户名获取用户所属法人主体
+     */
+    @RequestMapping(value = "/api/getLegalEntityCodeByLegalId")
+    ApiResult getLegalEntityCodeByLegalId(Long legalId){
+        LegalEntity legalEntity = this.legalEntityService.getById(legalId);
+        return ApiResult.ok(legalEntity.getLegalCode());
+    }
 
 
 }

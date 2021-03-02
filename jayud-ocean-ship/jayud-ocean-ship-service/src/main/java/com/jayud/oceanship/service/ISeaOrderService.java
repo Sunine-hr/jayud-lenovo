@@ -29,7 +29,7 @@ public interface ISeaOrderService extends IService<SeaOrder> {
      * 生成订单号
      * @return
      */
-    String generationOrderNo();
+    String generationOrderNo(Long leaglId , Integer integer);
 
     /**
      * 订单是否存在

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -12,6 +13,7 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -65,6 +67,11 @@ public class PayBillMaster extends Model<PayBillMaster> {
     @ApiModelProperty(value = "账单状态(0未付款 1已付款)", position = 9)
     @JSONField(ordinal = 9)
     private Integer status;
+
+    @ApiModelProperty(value = "账单日期", position = 10)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 10, format="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
 
 
     @Override

@@ -1,10 +1,12 @@
 package com.jayud.mall.model.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -58,7 +60,10 @@ public class PayBillMasterVO {
     @JSONField(ordinal = 12)
     private List<PayBillDetailVO> payBillDetailVOS;
 
-
+    @ApiModelProperty(value = "账单日期", position = 13)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 13, format="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
 
 
 }

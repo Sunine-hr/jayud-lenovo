@@ -45,7 +45,9 @@ public class PayBillMasterController {
     }
 
 
-    //生成应付账单-取消
+    //生成应付账单-取消（前端取消）
+
+    //应付账单分页查询
 
 
 }

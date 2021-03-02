@@ -1,12 +1,15 @@
 package com.jayud.mall.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.OrderInfoMapper;
 import com.jayud.mall.mapper.ReceivableBillDetailMapper;
 import com.jayud.mall.mapper.ReceivableBillMasterMapper;
+import com.jayud.mall.model.bo.QueryReceivableBillMasterForm;
 import com.jayud.mall.model.bo.ReceivableBillForm;
 import com.jayud.mall.model.bo.ReceivableBillMasterForm;
 import com.jayud.mall.model.po.OrderCopeReceivable;
@@ -128,6 +131,17 @@ public class ReceivableBillMasterServiceImpl extends ServiceImpl<ReceivableBillM
         receivableBillMasterVO.setReceivableBillDetailVOS(receivableBillDetailVOList);
 
         return CommonResult.success(receivableBillMasterVO);
+    }
+
+    @Override
+    public IPage<ReceivableBillMasterVO> findReceivableBillMasterByPage(QueryReceivableBillMasterForm form) {
+
+        //定义分页参数
+        Page<ReceivableBillMasterVO> page = new Page(form.getPageNum(),form.getPageSize());
+        //定义排序规则
+        //page.addOrder(OrderItem.desc("t.id"));
+        IPage<ReceivableBillMasterVO> pageInfo = receivableBillMasterMapper.findReceivableBillMasterByPage(page, form);
+        return pageInfo;
     }
 
 

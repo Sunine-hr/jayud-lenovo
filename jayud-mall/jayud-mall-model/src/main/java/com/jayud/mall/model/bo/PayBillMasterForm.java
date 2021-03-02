@@ -1,6 +1,7 @@
 package com.jayud.mall.model.bo;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.mall.model.vo.PayBillDetailVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -8,6 +9,7 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -64,5 +66,10 @@ public class PayBillMasterForm {
     @JSONField(ordinal = 12)
     @NotEmpty(message = "应付账单明细不能为空")
     private List<PayBillDetailVO> payBillDetailVOS;
+
+    @ApiModelProperty(value = "账单日期", position = 13)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 13, format="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
 
 }

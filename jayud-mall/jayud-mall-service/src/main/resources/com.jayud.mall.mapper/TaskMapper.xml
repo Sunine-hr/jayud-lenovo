@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.TaskMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.Task">
+        <id column="id" property="id" />
+        <result column="task_code" property="taskCode" />
+        <result column="task_name" property="taskName" />
+        <result column="remarks" property="remarks" />
+        <result column="status" property="status" />
+        <result column="user_id" property="userId" />
+        <result column="user_name" property="userName" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, task_code, task_name, remarks, status, user_id, user_name, create_time
+    </sql>
+
+    <select id="findTaskByPage" parameterType="com.jayud.mall.model.bo.QueryTaskForm"
+            resultType="com.jayud.mall.model.vo.TaskVO">
+        select
+        t.id,t.task_code,t.task_name,t.remarks,t.status,t.user_id,t.user_name,t.create_time
+        from task t
+        where 1=1
+        <if test="form.taskName != null and form.taskName != ''">
+            and t.task_name=#{form.taskName}
+        </if>
+
+    </select>
+
+    <select id="findTaskById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.TaskVO">
+        select
+        t.id,t.task_code,t.task_name,t.remarks,t.status,t.user_id,t.user_name,t.create_time
+        from task t
+        where 1=1
+        and t.id = #{id}
+    </select>
+
+
+
+</mapper>

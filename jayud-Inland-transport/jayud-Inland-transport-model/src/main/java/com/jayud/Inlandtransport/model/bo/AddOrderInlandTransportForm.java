@@ -32,8 +32,8 @@ public class AddOrderInlandTransportForm extends Model<AddOrderInlandTransportFo
     @ApiModelProperty(value = "子订单编号")
     private String orderNo;
 
-//    @ApiModelProperty(value = "流程状态(0:进行中,1:完成,2:草稿,3.关闭)")
-//    private Integer processStatus;
+    @ApiModelProperty(value = "流程状态(0:进行中,1:完成,2:草稿,3.关闭)")
+    private Integer processStatus;
 
 //    @ApiModelProperty(value = "状态(NL_0待接单,NL_1内陆接单,NL_1_1内陆接单驳回,NL_2内陆派车,NL_2_1内陆派车驳回,NL_3派车审核, NL_3_1派车审核不通过,NL_3_2派车审核驳回,L_4确认派车,NL_4_1确认派车驳回,NL_5车辆提货,NL_5_1车辆提货驳回,NL_6货物签收)")
 //    private String status;

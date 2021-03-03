@@ -7,6 +7,7 @@ import com.jayud.Inlandtransport.feign.OauthClient;
 import com.jayud.Inlandtransport.feign.OmsClient;
 import com.jayud.Inlandtransport.model.bo.QueryOrderForm;
 import com.jayud.Inlandtransport.model.vo.GoodsVO;
+import com.jayud.Inlandtransport.model.vo.OrderAddressVO;
 import com.jayud.Inlandtransport.model.vo.OrderInlandTransportFormVO;
 import com.jayud.Inlandtransport.service.IOrderInlandTransportService;
 import com.jayud.common.ApiResult;
@@ -60,48 +61,52 @@ public class OrderInlandTransportController {
             }
         }
 
-        //获取下个节点状态
-//        OrderStatusEnum statusEnum = OrderStatusEnum.getAirOrderPreStatus(form.getStatus());
-
-//        form.setStatus(statusEnum == null ? null : statusEnum.getCode());
-
         IPage<OrderInlandTransportFormVO> page = this.orderInlandTransportService.findByPage(form);
         if (page.getRecords().size() == 0) {
             return CommonResult.success(new CommonPageResult<>(page));
         }
 
         List<OrderInlandTransportFormVO> records = page.getRecords();
-        List<Long> airOrderIds = new ArrayList<>();
+        List<Long> orderIds = new ArrayList<>();
         List<String> mainOrder = new ArrayList<>();
         List<Long> entityIds = new ArrayList<>();
         List<Long> supplierIds = new ArrayList<>();
         for (OrderInlandTransportFormVO record : records) {
-            airOrderIds.add(record.getId());
+            orderIds.add(record.getId());
             mainOrder.add(record.getMainOrderNo());
             entityIds.add(record.getLegalEntityId());
-            supplierIds.add(record.getSupplierId());
+            if (record.getSupplierId() != null) {
+                supplierIds.add(record.getSupplierId());
+            }
+
         }
         //查询商品信息
-        List<GoodsVO> goods = this.omsClient.getGoodsByBusIds(airOrderIds, BusinessTypeEnum.NL.getCode()).getData();
+        List<GoodsVO> goods = this.omsClient.getGoodsByBusIds(orderIds, BusinessTypeEnum.NL.getCode()).getData();
+        //查询订单地址
+        List<OrderAddressVO> orderAddressList = this.omsClient.getOrderAddressByBusIds(orderIds, BusinessTypeEnum.NL.getCode()).getData();
         //查询法人主体
-        ApiResult legalEntityResult = null;
-        if (CollectionUtils.isNotEmpty(entityIds)) {
-            legalEntityResult = this.oauthClient.getLegalEntityByLegalIds(entityIds);
-        }
+//        ApiResult legalEntityResult = null;
+//        if (CollectionUtils.isNotEmpty(entityIds)) {
+//            legalEntityResult = this.oauthClient.getLegalEntityByLegalIds(entityIds);
+//        }
         //查询供应商信息
         JSONArray supplierInfo = null;
         if (CollectionUtils.isNotEmpty(supplierIds)) {
             supplierInfo = new JSONArray(this.omsClient.getSupplierInfoByIds(supplierIds).getData());
         }
+
+
         //查询主订单信息
         ApiResult result = omsClient.getMainOrderByOrderNos(mainOrder);
         for (OrderInlandTransportFormVO record : records) {
             //组装商品信息
             record.assemblyGoodsInfo(goods);
+            //拼装地址信息
+            record.assemblyAddressInfo(orderAddressList);
             //拼装主订单信息
             record.assemblyMainOrderData(result.getData());
             //组装法人名称
-            record.assemblyLegalEntity(legalEntityResult);
+//            record.assemblyLegalEntity(legalEntityResult);
             //拼装供应商
             record.assemblySupplierInfo(supplierInfo);
         }

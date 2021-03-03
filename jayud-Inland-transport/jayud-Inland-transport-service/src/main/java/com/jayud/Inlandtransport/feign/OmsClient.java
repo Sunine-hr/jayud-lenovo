@@ -2,6 +2,7 @@ package com.jayud.Inlandtransport.feign;
 
 
 import com.jayud.Inlandtransport.model.vo.GoodsVO;
+import com.jayud.Inlandtransport.model.vo.OrderAddressVO;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.config.FeignRequestInterceptor;
@@ -97,9 +98,9 @@ public interface OmsClient {
     /**
      * 根据业务id集合查询订单地址
      */
-//    @RequestMapping(value = "/api/getOrderAddressByBusIds")
-//    public ApiResult<List<OrderAddressVO>> getOrderAddressByBusIds(@RequestParam("orderId") List<Long> orderId,
-//                                                                   @RequestParam("businessType") Integer businessType);
+    @RequestMapping(value = "/api/getOrderAddressByBusIds")
+    public ApiResult<List<OrderAddressVO>> getOrderAddressByBusIds(@RequestParam("orderId") List<Long> orderId,
+                                                                   @RequestParam("businessType") Integer businessType);
 
     /**
      * 根据订单id集合查询商品信息

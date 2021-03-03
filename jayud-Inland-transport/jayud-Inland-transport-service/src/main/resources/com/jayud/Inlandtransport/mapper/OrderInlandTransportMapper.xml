@@ -30,20 +30,19 @@
 
 
     <select id="findByPage" resultType="com.jayud.Inlandtransport.model.vo.OrderInlandTransportFormVO">
-        a.id,
+       select
+        i.id,
         i.main_order_no mainOrderNo,
         i.order_no orderNo,i.status,
         i.process_status processStatus,
         i.create_user createUser, i.create_time createdTimeStr,
-        ab.airline_company airlineCompany,
-        ab.flight,ab.etd,ab.eta,
-        ab.warehousing_no warehousingNo,
         i.unit_code subUnitCode,
         i.legal_entity_id,
+        i.legal_name legalName,
         ic.supplier_id supplierId,
         ic.vehicle_size vehicleSize,
-        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = a.`order_no`) +
-        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = a.`order_no`)>0 THEN TRUE
+        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = i.`order_no`) +
+        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = i.`order_no`)>0 THEN TRUE
         ELSE FALSE
         END) cost
         FROM
@@ -54,25 +53,25 @@
                 and i.order_no like concat('%',#{form.orderNo},'%')
             </if>
             <if test="form.mainOrderNos !=null and form.mainOrderNos.size > 0">
-                and a.main_order_no IN
+                and i.main_order_no IN
                 <foreach collection="form.mainOrderNos" index="index" item="item" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
             <if test="form.status !=null and form.status!=''">
-                and a.status = #{form.status}
+                and i.status = #{form.status}
             </if>
             <if test="form.processStatusList!=null">
-                and a.process_status IN
+                and i.process_status IN
                 <foreach collection="form.processStatusList" index="index" item="item" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
             <if test="form.beginCreatedTime !=null and form.beginCreatedTime!=''"><!-- 开始时间检索 -->
-                and date_format(a.create_time,'%Y-%m-%d') &gt;= date_format(#{form.beginCreatedTime},'%Y-%m-%d')
+                and date_format(i.create_time,'%Y-%m-%d') &gt;= date_format(#{form.beginCreatedTime},'%Y-%m-%d')
             </if>
             <if test="form.beginCreatedTime !=null and form.beginCreatedTime!=''"><!-- 结束时间检索 -->
-                and date_format(a.create_time,'%Y-%m-%d') &lt;= date_format(#{form.endCreatedTime},'%Y-%m-%d')
+                and date_format(i.create_time,'%Y-%m-%d') &lt;= date_format(#{form.endCreatedTime},'%Y-%m-%d')
             </if>
             <if test="form.cmd == 'costAudit'">
                 AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = i.order_no AND opc.`status` =
@@ -82,14 +81,14 @@
             </if>
 
             <if test="legalIds != null and legalIds.size>0">
-                and a.`legal_entity_id` in
+                and i.`legal_entity_id` in
                 <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
                     #{legalId}
                 </foreach>
             </if>
 
         </where>
-        order by a.id desc
+        order by i.id desc
     </select>
 
 </mapper>

@@ -65,7 +65,8 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
                     .setBulkCargoAmount(deliveryAddress.getBulkCargoAmount())
                     .setBulkCargoUnit(deliveryAddress.getBulkCargoUnit())
                     .setTotalWeight(deliveryAddress.getTotalWeight())
-                    .setSize(deliveryAddress.getSize());
+                    .setSize(deliveryAddress.getSize())
+                    .setOrderNo(deliveryAddress.getOrderNo());
             if (deliveryAddress.getGoodsId() == null) {
                 goods.setCreateTime(LocalDateTime.now());
             }
@@ -84,6 +85,8 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
             orderAddress.setBusinessType(deliveryAddress.getBusinessType());
             orderAddress.setFileName(StringUtils.getFileNameStr(deliveryAddress.getFileViewList()));
             orderAddress.setFilePath(StringUtils.getFileNameStr(deliveryAddress.getFileViewList()));
+            orderAddress.setType(deliveryAddress.getAddressType());
+            orderAddress.setOrderNo(deliveryAddress.getOrderNo());
             if (orderAddress.getId() == null) {
                 orderAddress.setCreateTime(LocalDateTime.now());
             }

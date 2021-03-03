@@ -1,13 +1,13 @@
 package com.jayud.common.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang.StringUtils;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +20,8 @@ import java.util.List;
  * @since 2020-11-30
  */
 @Data
-public class OrderDeliveryAddress {
+@Accessors(chain = true)
+public class OrderDeliveryAddress extends Model<OrderDeliveryAddress> {
 
     private static final long serialVersionUID = 1L;
 
@@ -29,6 +30,9 @@ public class OrderDeliveryAddress {
 
     @ApiModelProperty(value = "商品主键")
     private Long goodsId;
+
+    @ApiModelProperty(value = "订单编号 前端不用传")
+    private String orderNo;
 
     @ApiModelProperty(value = "联系人")
     private String contacts;

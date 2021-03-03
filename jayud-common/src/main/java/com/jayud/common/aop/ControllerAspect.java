@@ -39,9 +39,8 @@ public class ControllerAspect {
             Object data = resultVO.getData();
             if (resultVO.getData() instanceof CommonPageResult) {
                 List list = ((CommonPageResult) data).getList();
-                data = list.size() == 0 ? null : list;
+                data = list.size() == 0 ? null : list.get(0);
             }
-            data = data;
 
             MethodSignature signature = (MethodSignature) joinPoint.getSignature();
             Method method = signature.getMethod();
@@ -67,10 +66,13 @@ public class ControllerAspect {
                 if (field.isAnnotationPresent(ApiModelProperty.class)) {
                     Map<String, Object> head = new HashMap<>();
                     ApiModelProperty annotation = field.getAnnotation(ApiModelProperty.class);
-                    head.put("name", field.getName());
-                    head.put("viewName", annotation.value());
-                    head.put("default", annotation.required());
-                    heads.add(head);
+                    if (annotation.example().length() > 0 ||
+                            annotation.required()) {
+                        head.put("name", field.getName());
+                        head.put("viewName", annotation.value());
+                        head.put("default", annotation.required());
+                        heads.add(head);
+                    }
                 }
             }
 

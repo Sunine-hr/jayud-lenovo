@@ -76,8 +76,9 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
             addressList.addAll(form.getOrderDeliveryAddressList());
         }
         for (OrderDeliveryAddress orderDeliveryAddress : addressList) {
-            orderDeliveryAddress.setBusinessId(inlandOrder.getId());
-            orderDeliveryAddress.setBusinessType(BusinessTypeEnum.NL.getCode());
+            orderDeliveryAddress.setBusinessId(inlandOrder.getId())
+                    .setOrderNo(inlandOrder.getOrderNo())
+                    .setBusinessType(BusinessTypeEnum.NL.getCode());
         }
         this.omsClient.addDeliveryAddress(addressList);
     }
@@ -96,6 +97,6 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
         List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
 
         Page<OrderInlandTransport> page = new Page<>(form.getPageNum(), form.getPageSize());
-        return this.baseMapper.findByPage(page, form,legalIds);
+        return this.baseMapper.findByPage(page, form, legalIds);
     }
 }

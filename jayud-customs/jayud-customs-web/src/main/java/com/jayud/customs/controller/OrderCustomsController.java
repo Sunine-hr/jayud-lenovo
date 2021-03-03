@@ -14,6 +14,7 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.customs.feign.OauthClient;
 import com.jayud.customs.feign.OmsClient;
 import com.jayud.customs.model.bo.*;
 import com.jayud.customs.model.po.OrderCustoms;
@@ -46,6 +47,9 @@ public class OrderCustomsController {
 
     @Autowired
     OmsClient omsClient;
+
+    @Autowired
+    OauthClient oauthClient;
 
     @ApiOperation(value = "确认:生成报关子订单号,num=生成报关单数")
     @PostMapping(value = "/createOrderNo")

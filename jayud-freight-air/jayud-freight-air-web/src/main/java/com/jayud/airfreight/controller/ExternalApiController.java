@@ -216,7 +216,7 @@ public class ExternalApiController {
         tmp.put("空运离港", "A_4");
         tmp.put("空运到港", "A_5");
         tmp.put("海外代理", "A_6");
-        tmp.put("确认签收", "T_7");
+        tmp.put("确认签收", "A_7");
 
         List<Map<String, Object>> result = new ArrayList<>();
 

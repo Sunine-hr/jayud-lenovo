@@ -969,7 +969,7 @@ public class ExternalApiController {
     }
 
     /**
-     * 根据客户code集合查询客户信息
+     * 获取订单号
      * @return
      */
     @RequestMapping(value = "/api/getOrderNo")

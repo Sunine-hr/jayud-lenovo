@@ -22,7 +22,8 @@ public enum OrderTypeEnum {
     SE("SE", "海运出口"),
     WH("WH", "仓储订单"),
     EC("EC", "电商订单"),
-    BG("BG", "报关订单"),
+    BI("BI", "报关进口"),
+    BE("BE", "报关出口"),
     P("P", "派车单号"),
     ZD("ZD", "对账单号"),
     FW("FW", "服务单号");

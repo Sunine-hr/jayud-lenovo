@@ -179,7 +179,7 @@ public interface OmsClient {
     ApiResult getCustomerByUnitCode(@RequestBody List<String> unitCodes);
 
     /**
-     * 根据客户code集合查询客户信息
+     * 获取订单号
      * @return
      */
     @RequestMapping(value = "/api/getOrderNo")

@@ -8,6 +8,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.enums.UnitEnum;
 import com.jayud.common.utils.BeanUtils;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
@@ -450,6 +451,20 @@ public class OrderComboxController {
     @PostMapping(value = "/initApprovedCustomer")
     public CommonResult<List<InitComboxStrVO>> initApprovedCustomer() {
         return CommonResult.success(this.customerInfoService.initApprovedCustomer());
+    }
+
+
+    @ApiOperation(value = "录用费用页面-下拉选单位")
+    @PostMapping(value = "/initCostUnit")
+    public CommonResult<List<InitComboxStrVO>> initCostUnit() {
+        List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
+        for (UnitEnum unitEnum : UnitEnum.values()) {
+            InitComboxStrVO comboxStrVO = new InitComboxStrVO();
+            comboxStrVO.setCode(unitEnum.getCode());
+            comboxStrVO.setName(unitEnum.getDesc());
+            comboxStrVOS.add(comboxStrVO);
+        }
+        return CommonResult.success(comboxStrVOS);
     }
 }
 

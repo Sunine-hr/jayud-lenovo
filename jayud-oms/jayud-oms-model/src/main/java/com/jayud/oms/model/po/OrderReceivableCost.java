@@ -64,7 +64,7 @@ public class OrderReceivableCost extends Model<OrderReceivableCost> {
     private BigDecimal unitPrice;
 
     @ApiModelProperty(value = "数量")
-    private Integer number;
+    private BigDecimal number;
 
     @ApiModelProperty(value = "币种代码")
     private String currencyCode;

@@ -2,6 +2,8 @@ package com.jayud.common.utils;
 
 import org.apache.commons.lang.StringUtils;
 
+import java.math.BigDecimal;
+
 /**
  * @author larry
  * @date 2019/10/15
@@ -198,7 +200,10 @@ public class NumberUtils {
 
     }
 
-    public static void main(String[] args) {
-
+    /**
+     * 判断是否整数
+     */
+    public static boolean isIntegerValue(BigDecimal decimalVal) {
+        return decimalVal.scale() <= 0 || decimalVal.stripTrailingZeros().scale() <= 0;
     }
 }

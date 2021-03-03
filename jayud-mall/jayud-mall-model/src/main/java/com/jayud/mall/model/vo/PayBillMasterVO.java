@@ -52,34 +52,33 @@ public class PayBillMasterVO {
     @JSONField(ordinal = 10)
     private String supplierName;
 
-    @ApiModelProperty(value = "账单金额(格式化)", position = 11)
+    @ApiModelProperty(value = "账单金额(格式化)-明细合计", position = 11)
     @JSONField(ordinal = 11)
     private String amountFormat;
 
-    @ApiModelProperty(value = "应付账单明细list", position = 12)
-    @JSONField(ordinal = 12)
-    private List<PayBillDetailVO> payBillDetailVOS;
-
-    @ApiModelProperty(value = "账单日期", position = 13)
+    @ApiModelProperty(value = "账单日期", position = 12)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
-    @JSONField(ordinal = 13, format="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 12, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
-    @ApiModelProperty(value = "订单编码", position = 14)
-    @JSONField(ordinal = 14)
+    @ApiModelProperty(value = "订单编码", position = 13)
+    @JSONField(ordinal = 13)
     private String orderNo;
 
-    @ApiModelProperty(value = "法人主体", position = 15)
-    @JSONField(ordinal = 15)
+    @ApiModelProperty(value = "法人主体", position = 14)
+    @JSONField(ordinal = 14)
     private String legalEntity;
 
-    @ApiModelProperty(value = "币种代码", position = 16)
-    @JSONField(ordinal = 16)
+    @ApiModelProperty(value = "币种代码", position = 15)
+    @JSONField(ordinal = 15)
     private String currencyCode;
 
-    @ApiModelProperty(value = "币种名称", position = 17)
-    @JSONField(ordinal = 17)
+    @ApiModelProperty(value = "币种名称", position = 16)
+    @JSONField(ordinal = 16)
     private String currencyName;
 
+    @ApiModelProperty(value = "应付账单明细list", position = 17)
+    @JSONField(ordinal = 17)
+    private List<PayBillDetailVO> payBillDetailVOS;
 
 }

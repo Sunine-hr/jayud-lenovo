@@ -162,4 +162,15 @@ public class PayBillMasterServiceImpl extends ServiceImpl<PayBillMasterMapper, P
         return pageInfo;
     }
 
+    @Override
+    public CommonResult<PayBillMasterVO> lookDetail(Long id) {
+        PayBillMasterVO payBillMasterVO = payBillMasterMapper.findPayBillMasterById(id);
+        if(payBillMasterVO == null){
+            return CommonResult.error(-1, "没有找到应付账单");
+        }
+        List<PayBillDetailVO> payBillDetailVOList = payBillDetailMapper.findPayBillDetailByBillMasterId(id);
+        payBillMasterVO.setPayBillDetailVOS(payBillDetailVOList);
+        return CommonResult.success(payBillMasterVO);
+    }
+
 }

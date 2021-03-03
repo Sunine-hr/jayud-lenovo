@@ -39,4 +39,11 @@ public interface IPayBillMasterService extends IService<PayBillMaster> {
      * @return
      */
     IPage<PayBillMasterVO> findPayBillMasterByPage(QueryPayBillMasterForm form);
+
+    /**
+     * 应付账单-查看明细
+     * @param id
+     * @return
+     */
+    CommonResult<PayBillMasterVO> lookDetail(Long id);
 }

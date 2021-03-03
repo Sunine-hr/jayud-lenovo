@@ -44,4 +44,13 @@ public class PayBillDetailVO {
     @JSONField(ordinal = 8)
     private String remarks;
 
+    @ApiModelProperty(value = "币种代码", position = 9)
+    @JSONField(ordinal = 9)
+    private String currencyCode;
+
+    @ApiModelProperty(value = "币种名称", position = 10)
+    @JSONField(ordinal = 10)
+    private String currencyName;
+
+
 }

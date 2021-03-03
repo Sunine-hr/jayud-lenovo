@@ -19,11 +19,14 @@
         id, bill_master_id, order_receivable_id, cost_code, cost_name, amount, cid, remarks
     </sql>
 
-    <select id="findPayBillDetailByBillMasterId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.PayBillDetailVO">
+    <select id="findPayBillDetailByBillMasterId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.PayBillDetailVO">
         select
-        t.id,t.bill_master_id,t.order_pay_id,t.cost_code,t.cost_name,t.amount,t.cid,t.remarks
+        t.id,t.bill_master_id,t.order_pay_id,t.cost_code,t.cost_name,t.amount,t.cid,t.remarks,
+        t1.currency_code,t1.currency_name
         from
         pay_bill_detail t
+        left join currency_info t1 on t1.id = t.cid
         where 1=1
         and t.bill_master_id = #{billMasterId}
     </select>

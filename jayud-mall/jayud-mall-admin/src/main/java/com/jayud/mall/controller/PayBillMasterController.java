@@ -3,6 +3,7 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.BillMasterForm;
 import com.jayud.mall.model.bo.PayBillForm;
 import com.jayud.mall.model.bo.PayBillMasterForm;
 import com.jayud.mall.model.bo.QueryPayBillMasterForm;
@@ -53,7 +54,7 @@ public class PayBillMasterController {
     //应付账单分页查询
     @ApiOperation(value = "应付账单分页查询")
     @PostMapping("/findPayBillMasterByPage")
-    @ApiOperationSupport(order = 1)
+    @ApiOperationSupport(order = 3)
     public CommonResult<CommonPageResult<PayBillMasterVO>> findPayBillMasterByPage(
             @RequestBody QueryPayBillMasterForm form) {
         IPage<PayBillMasterVO> pageList = payBillMasterService.findPayBillMasterByPage(form);
@@ -63,6 +64,14 @@ public class PayBillMasterController {
 
     //应付账单-查看明细
     //lookDetail
+    @ApiOperation(value = "应付账单-查看明细")
+    @PostMapping("/lookDetail")
+    @ApiOperationSupport(order = 4)
+    public CommonResult<PayBillMasterVO> lookDetail(@Valid @RequestBody BillMasterForm form){
+        Long id = form.getId();
+        return payBillMasterService.lookDetail(id);
+    }
+
 
 
 

@@ -29,4 +29,13 @@ public interface PayBillMasterMapper extends BaseMapper<PayBillMaster> {
      * @return
      */
     IPage<PayBillMasterVO> findPayBillMasterByPage(Page<PayBillMasterVO> page, @Param("form") QueryPayBillMasterForm form);
+
+    /**
+     * 根据主单id，查询应付费用明细
+     * @param id
+     * @return
+     */
+    PayBillMasterVO findPayBillMasterById(@Param("id") Long id);
+
+
 }

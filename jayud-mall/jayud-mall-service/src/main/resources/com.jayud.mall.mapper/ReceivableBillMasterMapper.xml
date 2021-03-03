@@ -28,7 +28,8 @@
         t1.order_no,
         t2.legal_entity,
         t3.company customerName,
-        t4.currency_code,t4.currency_name
+        t4.currency_code,t4.currency_name,
+        CONCAT(t.amount, ' ', t4.currency_name) amountFormat
         from receivable_bill_master t
         left join order_info t1 on t1.id = t.order_id
         left join legal_person t2 on t2.id = t.legal_person_id

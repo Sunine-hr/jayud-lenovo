@@ -67,4 +67,11 @@ public interface OmsClient {
     @RequestMapping(value = "/api/delSpecOprStatus")
     ApiResult delSpecOprStatus(@RequestBody DelOprStatusForm form);
 
+    /**
+     * 获取订单号
+     * @return
+     */
+    @RequestMapping(value = "/api/getOrderNo")
+    ApiResult getOrderNo(@RequestParam("preOrder") String preOrder , @RequestParam("classCode") String classCode);
+
 }

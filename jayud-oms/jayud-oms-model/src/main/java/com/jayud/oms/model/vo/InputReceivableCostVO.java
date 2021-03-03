@@ -43,7 +43,7 @@ public class InputReceivableCostVO {
     private BigDecimal unitPrice;
 
     @ApiModelProperty(value = "数量")
-    private Integer number;
+    private BigDecimal number;
 
     @ApiModelProperty(value = "币种CODE")
     private String currencyCode;

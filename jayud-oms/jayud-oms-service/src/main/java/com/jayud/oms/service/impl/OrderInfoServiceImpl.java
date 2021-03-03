@@ -162,11 +162,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 preOrder = OrderTypeEnum.AE.getCode() + legalCode;
                 classCode = OrderTypeEnum.AE.getCode();
             }
-        } else {
-            return "参数不正确";
         }
-
-        String orderNo = orderTypeNumberService.getOrderNo(preOrder, classCode);
+        String orderNo = orderTypeNumberService.getOrderNo(preOrder,classCode);
         return orderNo;
     }
 

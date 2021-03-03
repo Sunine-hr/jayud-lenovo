@@ -1,8 +1,13 @@
 package com.jayud.mall.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.mall.model.bo.QueryPayBillMasterForm;
 import com.jayud.mall.model.po.PayBillMaster;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.mall.model.vo.PayBillMasterVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 /**
@@ -17,4 +22,11 @@ import org.springframework.stereotype.Component;
 @Component
 public interface PayBillMasterMapper extends BaseMapper<PayBillMaster> {
 
+    /**
+     * 应付账单分页查询
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<PayBillMasterVO> findPayBillMasterByPage(Page<PayBillMasterVO> page, @Param("form") QueryPayBillMasterForm form);
 }

@@ -65,5 +65,21 @@ public class PayBillMasterVO {
     @JSONField(ordinal = 13, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "订单编码", position = 14)
+    @JSONField(ordinal = 14)
+    private String orderNo;
+
+    @ApiModelProperty(value = "法人主体", position = 15)
+    @JSONField(ordinal = 15)
+    private String legalEntity;
+
+    @ApiModelProperty(value = "币种代码", position = 16)
+    @JSONField(ordinal = 16)
+    private String currencyCode;
+
+    @ApiModelProperty(value = "币种名称", position = 17)
+    @JSONField(ordinal = 17)
+    private String currencyName;
+
 
 }

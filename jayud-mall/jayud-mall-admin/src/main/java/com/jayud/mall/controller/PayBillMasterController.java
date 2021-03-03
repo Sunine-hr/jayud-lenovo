@@ -1,8 +1,11 @@
 package com.jayud.mall.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.PayBillForm;
 import com.jayud.mall.model.bo.PayBillMasterForm;
+import com.jayud.mall.model.bo.QueryPayBillMasterForm;
 import com.jayud.mall.model.vo.PayBillMasterVO;
 import com.jayud.mall.service.IPayBillMasterService;
 import io.swagger.annotations.Api;
@@ -48,6 +51,15 @@ public class PayBillMasterController {
     //生成应付账单-取消（前端取消）
 
     //应付账单分页查询
+    @ApiOperation(value = "应付账单分页查询")
+    @PostMapping("/findPayBillMasterByPage")
+    @ApiOperationSupport(order = 1)
+    public CommonResult<CommonPageResult<PayBillMasterVO>> findPayBillMasterByPage(
+            @RequestBody QueryPayBillMasterForm form) {
+        IPage<PayBillMasterVO> pageList = payBillMasterService.findPayBillMasterByPage(form);
+        CommonPageResult<PayBillMasterVO> pageVO = new CommonPageResult(pageList);
+        return CommonResult.success(pageVO);
+    }
 
 
 }

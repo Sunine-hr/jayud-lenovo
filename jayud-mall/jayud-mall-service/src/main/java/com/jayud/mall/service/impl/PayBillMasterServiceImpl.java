@@ -1,6 +1,9 @@
 package com.jayud.mall.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
@@ -9,6 +12,7 @@ import com.jayud.mall.mapper.PayBillDetailMapper;
 import com.jayud.mall.mapper.PayBillMasterMapper;
 import com.jayud.mall.model.bo.PayBillForm;
 import com.jayud.mall.model.bo.PayBillMasterForm;
+import com.jayud.mall.model.bo.QueryPayBillMasterForm;
 import com.jayud.mall.model.po.OrderCopeWith;
 import com.jayud.mall.model.po.PayBillDetail;
 import com.jayud.mall.model.po.PayBillMaster;
@@ -146,6 +150,16 @@ public class PayBillMasterServiceImpl extends ServiceImpl<PayBillMasterMapper, P
         payBillMasterVO.setPayBillDetailVOS(payBillDetailVOList);
 
         return CommonResult.success(payBillMasterVO);
+    }
+
+    @Override
+    public IPage<PayBillMasterVO> findPayBillMasterByPage(QueryPayBillMasterForm form) {
+        //定义分页参数
+        Page<PayBillMasterVO> page = new Page(form.getPageNum(),form.getPageSize());
+        //定义排序规则
+        page.addOrder(OrderItem.desc("t.id"));
+        IPage<PayBillMasterVO> pageInfo = payBillMasterMapper.findPayBillMasterByPage(page, form);
+        return pageInfo;
     }
 
 }

@@ -25,6 +25,7 @@ CREATE TABLE `order_inland_send_cars` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增id',
   `transport_no` varchar(100) NOT NULL COMMENT '运输订单号',
   `order_no` varchar(255) NOT NULL COMMENT '子订单编号',
+  `order_id` bigint(20) NOT NULL COMMENT '订单id',
   `vehicle_type` int(10) NOT NULL COMMENT '车型(1吨车 2柜车)',
   `vehicle_size` varchar(5) NOT NULL COMMENT '车型(例如:3T)',
   `driver_name` bigint(20) NOT NULL COMMENT '司机名称',
@@ -40,4 +41,4 @@ CREATE TABLE `order_inland_send_cars` (
   `update_user` varchar(50) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='内陆派车信息';
+) COMMENT='内陆派车信息';

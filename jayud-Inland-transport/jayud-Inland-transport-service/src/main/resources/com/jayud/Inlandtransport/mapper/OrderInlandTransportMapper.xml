@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.Inlandtransport.mapper.OrderInlandTransportMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.Inlandtransport.model.po.OrderInlandTransport">
+        <id column="id" property="id" />
+        <result column="main_order_no" property="mainOrderNo" />
+        <result column="order_no" property="orderNo" />
+        <result column="process_status" property="processStatus" />
+        <result column="status" property="status" />
+        <result column="vehicle_type" property="vehicleType" />
+        <result column="vehicle_size" property="vehicleSize" />
+        <result column="unit_code" property="unitCode" />
+        <result column="legal_name" property="legalName" />
+        <result column="legal_entity_id" property="legalEntityId" />
+        <result column="need_input_cost" property="needInputCost" />
+        <result column="order_taker" property="orderTaker" />
+        <result column="receiving_orders_date" property="receivingOrdersDate" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, main_order_no, order_no, process_status, status, vehicle_type, vehicle_size, unit_code, legal_name, legal_entity_id, need_input_cost, order_taker, receiving_orders_date, create_user, create_time, update_user, update_time
+    </sql>
+
+
+    <select id="findByPage" resultType="com.jayud.Inlandtransport.model.vo.OrderInlandTransportFormVO">
+        a.id,
+        i.main_order_no mainOrderNo,
+        i.order_no orderNo,i.status,
+        i.process_status processStatus,
+        i.create_user createUser, i.create_time createdTimeStr,
+        ab.airline_company airlineCompany,
+        ab.flight,ab.etd,ab.eta,
+        ab.warehousing_no warehousingNo,
+        i.unit_code subUnitCode,
+        i.legal_entity_id,
+        ic.supplier_id supplierId,
+        ic.vehicle_size vehicleSize,
+        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = a.`order_no`) +
+        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = a.`order_no`)>0 THEN TRUE
+        ELSE FALSE
+        END) cost
+        FROM
+        order_inland_transport i
+        left join order_inland_send_cars ic on i.order_no=ic.order_no
+        <where>
+            <if test="form.orderNo !=null and form.orderNo!=''">
+                and i.order_no like concat('%',#{form.orderNo},'%')
+            </if>
+            <if test="form.mainOrderNos !=null and form.mainOrderNos.size > 0">
+                and a.main_order_no IN
+                <foreach collection="form.mainOrderNos" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="form.status !=null and form.status!=''">
+                and a.status = #{form.status}
+            </if>
+            <if test="form.processStatusList!=null">
+                and a.process_status IN
+                <foreach collection="form.processStatusList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="form.beginCreatedTime !=null and form.beginCreatedTime!=''"><!-- 开始时间检索 -->
+                and date_format(a.create_time,'%Y-%m-%d') &gt;= date_format(#{form.beginCreatedTime},'%Y-%m-%d')
+            </if>
+            <if test="form.beginCreatedTime !=null and form.beginCreatedTime!=''"><!-- 结束时间检索 -->
+                and date_format(a.create_time,'%Y-%m-%d') &lt;= date_format(#{form.endCreatedTime},'%Y-%m-%d')
+            </if>
+            <if test="form.cmd == 'costAudit'">
+                AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = i.order_no AND opc.`status` =
+                '2' and opc.sub_type = 'nl')
+                OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = i.order_no AND orc.`status` =
+                '2' and orc.sub_type = 'nl'))
+            </if>
+
+            <if test="legalIds != null and legalIds.size>0">
+                and a.`legal_entity_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
+            </if>
+
+        </where>
+        order by a.id desc
+    </select>
+
+</mapper>

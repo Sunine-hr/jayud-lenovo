@@ -42,11 +42,12 @@ public class QueryOrderForm extends BasePageForm {
     @JsonIgnore
     private List<String> mainOrderNos;
 
-    @ApiModelProperty(value = "流程状态")
+    @ApiModelProperty(value = "流程状态 前端不用管")
+    @JsonIgnore
     private List<Integer> processStatusList;
 
-    @ApiModelProperty(value = "操作指令,cmd = costAudit 费用审核")
-    private String cmd;
+//    @ApiModelProperty(value = "操作指令,cmd = costAudit 费用审核")
+//    private String cmd;
 
     @ApiModelProperty(value = "当前登录用户,前台传")
     private String loginUserName;

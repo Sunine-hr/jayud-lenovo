@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.jayud.common.ApiResult;
+import com.jayud.common.entity.OrderDeliveryAddress;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
@@ -61,7 +62,7 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
     @ApiModelProperty(value = "状态(NL_0待接单,NL_1内陆接单,NL_1_1内陆接单驳回,NL_2内陆派车,NL_2_1内陆派车驳回,NL_3派车审核, NL_3_1派车审核不通过,NL_3_2派车审核驳回,L_4确认派车,NL_4_1确认派车驳回,NL_5车辆提货,NL_5_1车辆提货驳回,NL_6货物签收)")
     private String status;
 
-    @ApiModelProperty(value = "状态(NL_0待接单,NL_1内陆接单,NL_1_1内陆接单驳回,NL_2内陆派车,NL_2_1内陆派车驳回,NL_3派车审核, NL_3_1派车审核不通过,NL_3_2派车审核驳回,L_4确认派车,NL_4_1确认派车驳回,NL_5车辆提货,NL_5_1车辆提货驳回,NL_6货物签收)")
+    @ApiModelProperty(value = "订单状态状态描述")
     private String inlandStatusDesc;
 
 //    @ApiModelProperty(value = "车型(1吨车 2柜车)")
@@ -126,6 +127,12 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
 
     @ApiModelProperty(value = "结算单位code")
     private String subUnitCode;
+
+    @ApiModelProperty("提货地址")
+    private String pickUpAddress;
+
+    @ApiModelProperty("送货地址")
+    private String orderDeliveryAddress;
 
     @Override
     protected Serializable pkVal() {

@@ -128,8 +128,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             preOrder = OrderTypeEnum.FW.getCode() + legalCode;
             classCode = OrderTypeEnum.FW.getCode();
         }
-        if(classStatus.equals(OrderStatusEnum.HY.getCode())){
-            if(integer.equals(1)){
+        if (classStatus.equals(OrderStatusEnum.HY.getCode())) {
+            if (integer.equals(1)) {
                 preOrder = OrderTypeEnum.SI.getCode() + legalCode;
                 classCode = OrderTypeEnum.SI.getCode();
             } else {
@@ -159,7 +159,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 classCode = OrderTypeEnum.AE.getCode();
             }
         }
-        String orderNo = orderTypeNumberService.getOrderNo(preOrder,classCode);
+        String orderNo = orderTypeNumberService.getOrderNo(preOrder, classCode);
         return orderNo;
     }
 
@@ -851,8 +851,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
 
             //生成中港订单号
-            if(orderTransportForm.getId() == null){
-                String orderNo = generationOrderNo(orderTransportForm.getLegalEntityId(),orderTransportForm.getGoodsType(),OrderStatusEnum.ZGYS.getCode());
+            if (orderTransportForm.getId() == null) {
+                String orderNo = generationOrderNo(orderTransportForm.getLegalEntityId(), orderTransportForm.getGoodsType(), OrderStatusEnum.ZGYS.getCode());
                 orderTransportForm.setOrderNo(orderNo);
             }
 
@@ -894,7 +894,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     inputMainOrderForm.getStatus(), SubOrderSignEnum.NL.getSignOne(), form)) {
                 Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
                         : ProcessStatusEnum.DRAFT.getCode();
-                String orderNo = generationOrderNo(orderInlandTransportForm.getLegalEntityId(), 0, OrderStatusEnum.NLYS.getCode());
+                String orderNo = null;
+                if (orderInlandTransportForm.getId() == null) {
+                    orderNo = generationOrderNo(orderInlandTransportForm.getLegalEntityId(), 0, OrderStatusEnum.NLYS.getCode());
+                }
+
                 orderInlandTransportForm.setMainOrderNo(mainOrderNo);
                 orderInlandTransportForm.setOrderNo(orderNo);
                 orderInlandTransportForm.setCreateUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
@@ -908,8 +912,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             InputAirOrderForm airOrderForm = form.getAirOrderForm();
 
             //生成空运订单号
-            if(airOrderForm.getId() == null){
-                String orderNo = generationOrderNo(airOrderForm.getLegalEntityId(),airOrderForm.getImpAndExpType(),OrderStatusEnum.KY.getCode());
+            if (airOrderForm.getId() == null) {
+                String orderNo = generationOrderNo(airOrderForm.getLegalEntityId(), airOrderForm.getImpAndExpType(), OrderStatusEnum.KY.getCode());
                 airOrderForm.setOrderNo(orderNo);
             }
 
@@ -946,8 +950,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             InputSeaOrderForm seaOrderForm = form.getSeaOrderForm();
 
             //生成海运订单号
-            if(seaOrderForm.getOrderId() == null){
-                String orderNo = generationOrderNo(seaOrderForm.getLegalEntityId(),seaOrderForm.getImpAndExpType(),OrderStatusEnum.HY.getCode());
+            if (seaOrderForm.getOrderId() == null) {
+                String orderNo = generationOrderNo(seaOrderForm.getLegalEntityId(), seaOrderForm.getImpAndExpType(), OrderStatusEnum.HY.getCode());
                 seaOrderForm.setOrderNo(orderNo);
             }
 

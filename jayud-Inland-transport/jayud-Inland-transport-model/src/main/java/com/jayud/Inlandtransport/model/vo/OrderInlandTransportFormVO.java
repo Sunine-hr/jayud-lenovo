@@ -5,6 +5,7 @@ import cn.hutool.json.JSONObject;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.jayud.common.enums.OrderAddressEnum;
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.ApiModelProperty;
@@ -233,12 +234,12 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
 //    }
     public void setStatus(String status) {
         this.status = status;
+        this.statusDesc = OrderStatusEnum.getDesc(status);
     }
 
 
     public void setProcessStatus(Integer processStatus) {
         this.processStatus = processStatus;
-        this.statusDesc = ProcessStatusEnum.getDesc(processStatus);
         this.processStatusDesc = ProcessStatusEnum.getDesc(processStatus);
     }
 

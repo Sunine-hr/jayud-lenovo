@@ -39,4 +39,11 @@ public interface IReceivableBillMasterService extends IService<ReceivableBillMas
      * @return
      */
     IPage<ReceivableBillMasterVO> findReceivableBillMasterByPage(QueryReceivableBillMasterForm form);
+
+    /**
+     * 应收账单-查看明细
+     * @param id
+     * @return
+     */
+    CommonResult<ReceivableBillMasterVO> lookDetail(Long id);
 }

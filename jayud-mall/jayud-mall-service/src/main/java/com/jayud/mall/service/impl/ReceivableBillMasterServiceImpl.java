@@ -144,5 +144,16 @@ public class ReceivableBillMasterServiceImpl extends ServiceImpl<ReceivableBillM
         return pageInfo;
     }
 
+    @Override
+    public CommonResult<ReceivableBillMasterVO> lookDetail(Long id) {
+        ReceivableBillMasterVO receivableBillMasterVO = receivableBillMasterMapper.findReceivableBillById(id);
+        if(receivableBillMasterVO == null){
+            return CommonResult.error(-1, "账单不存在");
+        }
+        List<ReceivableBillDetailVO> receivableBillDetailVOList = receivableBillDetailMapper.findReceivableBillDetailByBillMasterId(id);
+        receivableBillMasterVO.setReceivableBillDetailVOS(receivableBillDetailVOList);
+        return CommonResult.success(receivableBillMasterVO);
+    }
+
 
 }

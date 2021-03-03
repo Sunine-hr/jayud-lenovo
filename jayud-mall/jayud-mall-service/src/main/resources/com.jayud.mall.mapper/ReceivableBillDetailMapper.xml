@@ -20,10 +20,13 @@
     </sql>
 
 
-    <select id="findReceivableBillDetailByBillMasterId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.ReceivableBillDetailVO">
+    <select id="findReceivableBillDetailByBillMasterId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.ReceivableBillDetailVO">
         select
-        t.id,t.bill_master_id,t.order_receivable_id,t.cost_code,t.cost_name,t.amount,t.cid,t.remarks
+        t.id,t.bill_master_id,t.order_receivable_id,t.cost_code,t.cost_name,t.amount,t.cid,t.remarks,
+        t1.currency_code,t1.currency_name
         from receivable_bill_detail t
+        left join currency_info t1 on t1.id = t.cid
         where 1=1
         and t.bill_master_id = #{billMasterId}
     </select>

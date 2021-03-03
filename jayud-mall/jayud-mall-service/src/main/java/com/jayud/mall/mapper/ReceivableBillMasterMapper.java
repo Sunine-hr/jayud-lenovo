@@ -29,4 +29,11 @@ public interface ReceivableBillMasterMapper extends BaseMapper<ReceivableBillMas
      * @return
      */
     IPage<ReceivableBillMasterVO> findReceivableBillMasterByPage(Page<ReceivableBillMasterVO> page, @Param("form") QueryReceivableBillMasterForm form);
+
+    /**
+     * 根据id，查询应收账单主单
+     * @param id
+     * @return
+     */
+    ReceivableBillMasterVO findReceivableBillById(@Param("id") Long id);
 }

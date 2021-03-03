@@ -3,6 +3,7 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.BillMasterForm;
 import com.jayud.mall.model.bo.QueryReceivableBillMasterForm;
 import com.jayud.mall.model.bo.ReceivableBillForm;
 import com.jayud.mall.model.bo.ReceivableBillMasterForm;
@@ -52,12 +53,22 @@ public class ReceivableBillMasterController {
     //应收账单分页查询
     @ApiOperation(value = "应收账单分页查询")
     @PostMapping("/findReceivableBillMasterByPage")
-    @ApiOperationSupport(order = 1)
+    @ApiOperationSupport(order = 3)
     public CommonResult<CommonPageResult<ReceivableBillMasterVO>> findReceivableBillMasterByPage(
             @RequestBody QueryReceivableBillMasterForm form) {
         IPage<ReceivableBillMasterVO> pageList = receivableBillMasterService.findReceivableBillMasterByPage(form);
         CommonPageResult<ReceivableBillMasterVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
+    }
+
+    //应收账单-查看明细
+    //lookDetail
+    @ApiOperation(value = "应收账单-查看明细")
+    @PostMapping("/lookDetail")
+    @ApiOperationSupport(order = 4)
+    public CommonResult<ReceivableBillMasterVO> lookDetail(@Valid @RequestBody BillMasterForm form){
+        Long id = form.getId();
+        return receivableBillMasterService.lookDetail(id);
     }
 
 

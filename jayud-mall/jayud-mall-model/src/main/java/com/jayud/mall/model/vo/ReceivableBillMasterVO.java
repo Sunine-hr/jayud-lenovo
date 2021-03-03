@@ -56,7 +56,7 @@ public class ReceivableBillMasterVO {
     @JSONField(ordinal = 10)
     private String customerName;
 
-    @ApiModelProperty(value = "账单金额(格式化)", position = 11)
+    @ApiModelProperty(value = "账单金额(格式化)-明细合计", position = 11)
     @JSONField(ordinal = 11)
     private String amountFormat;
 
@@ -65,26 +65,26 @@ public class ReceivableBillMasterVO {
     @JSONField(ordinal = 12, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
-    //明细
-    @ApiModelProperty(value = "应收账单明细list", position = 13)
+    @ApiModelProperty(value = "订单编号", position = 13)
     @JSONField(ordinal = 13)
-    private List<ReceivableBillDetailVO> receivableBillDetailVOS;
-
-    @ApiModelProperty(value = "订单编号", position = 14)
-    @JSONField(ordinal = 14)
     private String orderNo;
 
-    @ApiModelProperty(value = "法人主体", position = 15)
-    @JSONField(ordinal = 15)
+    @ApiModelProperty(value = "法人主体", position = 14)
+    @JSONField(ordinal = 14)
     private String legalEntity;
 
-    @ApiModelProperty(value = "币种代码", position = 16)
-    @JSONField(ordinal = 16)
+    @ApiModelProperty(value = "币种代码", position = 15)
+    @JSONField(ordinal = 15)
     private String currencyCode;
 
-    @ApiModelProperty(value = "币种名称", position = 17)
+    @ApiModelProperty(value = "币种名称", position = 16)
     @JSONField(ordinal = 17)
     private String currencyName;
+
+    //明细
+    @ApiModelProperty(value = "应收账单明细list", position = 18)
+    @JSONField(ordinal = 18)
+    private List<ReceivableBillDetailVO> receivableBillDetailVOS;
 
 
 }

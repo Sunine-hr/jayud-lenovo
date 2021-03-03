@@ -61,5 +61,9 @@ public class PayBillMasterController {
         return CommonResult.success(pageVO);
     }
 
+    //应付账单-查看明细
+    //lookDetail
+
+
 
 }

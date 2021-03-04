@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="OperationTeam对象", description="运营(服务)小组")
+@ApiModel(value="OperationTeam", description="运营(服务)小组")
 public class OperationTeam extends Model<OperationTeam> {
 
     private static final long serialVersionUID = 1L;

@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="TaskMemberRelation对象", description="任务成员关系表")
+@ApiModel(value="TaskMemberRelation", description="任务成员关系表")
 public class TaskMemberRelation extends Model<TaskMemberRelation> {
 
     private static final long serialVersionUID = 1L;

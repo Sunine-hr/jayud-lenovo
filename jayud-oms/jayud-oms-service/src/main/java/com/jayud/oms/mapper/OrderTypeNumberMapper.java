@@ -16,5 +16,5 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface OrderTypeNumberMapper extends BaseMapper<OrderTypeNumber> {
 
-    OrderTypeNumber getMaxNumberData(@Param("classCode")String classCode);
+    OrderTypeNumber getMaxNumberData(@Param("classCode") String classCode,@Param("dateData") String dateData);
 }

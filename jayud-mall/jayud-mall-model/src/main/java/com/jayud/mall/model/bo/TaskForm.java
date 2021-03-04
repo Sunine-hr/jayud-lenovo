@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
@@ -23,6 +24,7 @@ public class TaskForm {
 
     @ApiModelProperty(value = "任务名称", position = 3)
     @JSONField(ordinal = 3)
+    @NotNull(message = "任务名称不能为空")
     private String taskName;
 
     @ApiModelProperty(value = "描述", position = 4)

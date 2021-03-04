@@ -4,13 +4,15 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
+@ApiModel(value = "TaskItemVO", description = "任务项目，即：BillTask 提单任务列表 和 WaybillTask 运单(订单)任务列表")
 @Data
-public class BillTaskVO {
+public class TaskItemVO {
 
     @ApiModelProperty(value = "自增id", position = 1)
     @TableId(value = "id", type = IdType.AUTO)
@@ -73,30 +75,5 @@ public class BillTaskVO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     @JSONField(ordinal = 15, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
-
-    /*任务分组:task_group*/
-    @ApiModelProperty(value = "分组名称", position = 16)
-    @JSONField(ordinal = 16)
-    private String groupName;
-
-    /*提单表:ocean_bill*/
-    //...
-
-    /*运营(服务)小组:operation_team*/
-    @ApiModelProperty(value = "运营(服务)小组id", position = 17)
-    @JSONField(ordinal = 17)
-    private Long operationTeamId;
-
-    /*任务对应运营小组成员*/
-    @ApiModelProperty(value = "成员id", position = 18)
-    @JSONField(ordinal = 18)
-    private Long memberUserId;
-
-    @ApiModelProperty(value = "成员名称", position = 19)
-    @JSONField(ordinal = 19)
-    private String memberUserName;
-
-
-
 
 }

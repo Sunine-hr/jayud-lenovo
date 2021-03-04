@@ -23,8 +23,8 @@ public class TaskGroupTest {
     public void test1(){
         TaskGroupForm form = new TaskGroupForm();
         form.setId(1L);
-        form.setIdCode("A");
-        form.setCodeName("拣货A");
+//        form.setIdCode("A");
+//        form.setCodeName("拣货A");
         form.setStatus("1");
         form.setTypes(1);
         ObjectMapperPrint(form);

@@ -1,8 +1,11 @@
 package com.jayud.trailer.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.trailer.bo.AddTrailerOrderFrom;
+import com.jayud.trailer.bo.QueryTrailerOrderForm;
 import com.jayud.trailer.po.TrailerOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.trailer.vo.TrailerOrderFormVO;
 import com.jayud.trailer.vo.TrailerOrderVO;
 
 import java.util.List;
@@ -53,4 +56,11 @@ public interface ITrailerOrderService extends IService<TrailerOrder> {
      * @return
      */
     List<TrailerOrder> getTrailerOrderByOrderNOs(List<String> mainOrderNoList);
+
+    /**
+     * 分页查询订单信息
+     * @param form
+     * @return
+     */
+    IPage<TrailerOrderFormVO> findByPage(QueryTrailerOrderForm form);
 }

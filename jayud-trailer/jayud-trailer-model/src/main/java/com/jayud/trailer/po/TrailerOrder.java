@@ -58,11 +58,8 @@ public class TrailerOrder extends Model<TrailerOrder> {
     @ApiModelProperty(value = "结算单位姓名")
     private String unitCodeName;
 
-    @ApiModelProperty(value = "起运港代码")
-    private String portDepartureCode;
-
-    @ApiModelProperty(value = "目的港代码")
-    private String portDestinationCode;
+    @ApiModelProperty(value = "起运港/目的港代码")
+    private String portCode;
 
     @ApiModelProperty(value = "车型尺寸id")
     private Long cabinetSize;

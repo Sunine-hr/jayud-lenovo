@@ -56,6 +56,9 @@ public class TrailerDispatch extends Model<TrailerDispatch> {
     @ApiModelProperty(value = "状态")
     private Integer status;
 
+    @ApiModelProperty(value = "过磅重量")
+    private Double weighing;
+
     @ApiModelProperty(value = "备注")
     private String remark;
 

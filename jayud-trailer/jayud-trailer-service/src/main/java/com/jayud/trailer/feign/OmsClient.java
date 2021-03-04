@@ -5,10 +5,12 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.config.FeignRequestInterceptor;
 import com.jayud.common.entity.DelOprStatusForm;
+import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.InitComboxVO;
 import com.jayud.trailer.bo.AddGoodsForm;
 import com.jayud.trailer.bo.AddOrderAddressForm;
 import com.jayud.trailer.bo.AuditInfoForm;
+import com.jayud.trailer.po.OrderFlowSheet;
 import com.jayud.trailer.vo.GoodsVO;
 import com.jayud.trailer.vo.OrderAddressVO;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -156,4 +158,28 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/getOrderNo")
     ApiResult getOrderNo(@RequestParam("preOrder") String preOrder , @RequestParam("classCode") String classCode);
+
+    /**
+     * 批量新增/修改订单流程
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/batchAddOrUpdateProcess")
+    public ApiResult batchAddOrUpdateProcess(@RequestBody List<OrderFlowSheet> orderFlowSheets);
+
+    /**
+     * 获取订单节点
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getOrderProcessNode")
+    public ApiResult<String> getOrderProcessNode(@RequestParam("mainOrderNo") String mainOrderNo,
+                                                 @RequestParam("orderNo") String orderNo,
+                                                 @RequestParam("currentNodeStatus") String currentNodeStatus);
+
+    /**
+     * 根据字典类型下拉选项字典
+     */
+    @RequestMapping(value = "/api/initDictByDictTypeCode")
+    public ApiResult<List<InitComboxStrVO>> initDictByDictTypeCode(@RequestParam("dictTypeCode") String dictTypeCode);
 }

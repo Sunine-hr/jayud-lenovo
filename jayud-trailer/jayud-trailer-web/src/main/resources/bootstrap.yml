@@ -9,7 +9,7 @@ spring:
         server-addr: ${jayud.nacos.server-addr}
         # 配置文件后缀名为yaml
         file-extension: yaml
-        namespace: ${jayud.nacos.com.jayud.trailer.config.namespace}
+        namespace: ${jayud.nacos.config.namespace}
       discovery:
         server-addr: ${jayud.nacos.server-addr}
-        namespace: ${jayud.nacos.com.jayud.trailer.config.namespace}
+        namespace: ${jayud.nacos.config.namespace}

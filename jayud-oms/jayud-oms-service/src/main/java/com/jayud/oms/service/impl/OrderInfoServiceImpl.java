@@ -147,6 +147,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 classCode = OrderTypeEnum.TE.getCode();
             }
         }
+        if(classStatus.equals(OrderStatusEnum.TC.getCode())){
+            if(integer.equals(1)){
+                preOrder = OrderTypeEnum.TTI.getCode() + legalCode;
+                classCode = OrderTypeEnum.TTI.getCode();
+            }else {
+                preOrder = OrderTypeEnum.TTE.getCode() + legalCode;
+                classCode = OrderTypeEnum.TTE.getCode();
+            }
+        }
         if(classStatus.equals(OrderStatusEnum.NLYS.getCode())){
             preOrder = OrderTypeEnum.TL.getCode() + legalCode;
             classCode = OrderTypeEnum.TL.getCode();
@@ -974,6 +983,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //拖车
         if (OrderStatusEnum.TC.getCode().equals(classCode)) {
             InputTrailerOrderFrom trailerOrderFrom = form.getTrailerOrderFrom();
+
+            //生成拖车订单号
+            if(trailerOrderFrom.getId() == null){
+                String orderNo = generationOrderNo(trailerOrderFrom.getLegalEntityId(),trailerOrderFrom.getImpAndExpType(),OrderStatusEnum.TC.getCode());
+                trailerOrderFrom.setOrderNo(orderNo);
+            }
+
             if (this.queryEditOrderCondition(trailerOrderFrom.getStatus(),
                     inputMainOrderForm.getStatus(), SubOrderSignEnum.TC.getSignOne(), form)) {
                 //拼装地址信息

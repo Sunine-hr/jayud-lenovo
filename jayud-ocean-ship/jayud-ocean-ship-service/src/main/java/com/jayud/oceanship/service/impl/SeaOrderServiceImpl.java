@@ -260,7 +260,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         seaOrder.setStatus(form.getStatus());
 
         //更改流程节点完成状态
-        this.updateProcessStatusComplte(form);
+        //this.updateProcessStatusComplte(form);
 
         //更新状态节点状态
         this.baseMapper.updateById(seaOrder);
@@ -275,15 +275,15 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
      * 修改流程节点状态
      * @param from
      */
-    public void updateProcessStatusComplte(SeaProcessOptForm from){
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("order_no",from.getOrderNo());
-        queryWrapper.eq("status",from.getStatus());
-        OrderFlowSheet one = orderFlowSheetService.getOne(queryWrapper);
-        one.setComplete("1");
-        boolean b = orderFlowSheetService.saveOrUpdate(one);
-
-    }
+//    public void updateProcessStatusComplte(SeaProcessOptForm from){
+//        QueryWrapper queryWrapper = new QueryWrapper();
+//        queryWrapper.eq("order_no",from.getOrderNo());
+//        queryWrapper.eq("status",from.getStatus());
+//        OrderFlowSheet one = orderFlowSheetService.getOne(queryWrapper);
+//        one.setComplete("1");
+//        boolean b = orderFlowSheetService.saveOrUpdate(one);
+//
+//    }
 
     /**
      * 海运流程操作记录
@@ -360,7 +360,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
 
         seaBookshipService.saveOrUpdateBookShip(seaBookship);
         //更改流程节点完成状态
-        this.updateProcessStatusComplte(form);
+        //this.updateProcessStatusComplte(form);
         updateProcessStatus(new SeaOrder(), form);
     }
 
@@ -379,7 +379,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         seaOrder.setPaperStripSeal(form.getPaperStripSeal());
 
         //更改流程节点完成状态
-        this.updateProcessStatusComplte(form);
+        //this.updateProcessStatusComplte(form);
 
         //更新状态节点状态
         this.baseMapper.updateById(seaOrder);

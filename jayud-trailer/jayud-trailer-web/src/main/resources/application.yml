@@ -1,5 +1,5 @@
 server:
-  port: 8214
+  port: 8215
   servlet:
     context-path: ${trailer.content.path}
 spring:
@@ -48,7 +48,7 @@ spring:
 swagger:
   enable: true
 logging:
-  path: /data/log/oms
+  path: /data/log/tralier
 feign:
   httpclient:
     connection-timeout: 5000

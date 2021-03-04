@@ -56,11 +56,8 @@ public class AddTrailerOrderFrom {
     @ApiModelProperty(value = "结算单位姓名")
     private String unitCodeName;
 
-    @ApiModelProperty(value = "起运港代码")
-    private String portDepartureCode;
-
-    @ApiModelProperty(value = "目的港代码")
-    private String portDestinationCode;
+    @ApiModelProperty(value = "起运港/目的港代码")
+    private String portCode;
 
     @ApiModelProperty(value = "车型尺寸id")
     private Long cabinetSize;
@@ -168,14 +165,13 @@ public class AddTrailerOrderFrom {
     private List<AddGoodsForm> goodsForms;
 
     /**
-     * 校验创建海运子订单参数
+     * 校验创建空运子订单参数
      */
     public boolean checkCreateOrder() {
         //海运
         if (this.legalEntityId == null || StringUtils.isEmpty(this.unitCode)
                 || this.impAndExpType == null || this.cabinetSize == null
-                || StringUtils.isEmpty(this.portDepartureCode)
-                || StringUtils.isEmpty(this.portDestinationCode)) {
+                || StringUtils.isEmpty(this.portCode)) {
             return false;
         }
         // 发货/收货地址是必填项

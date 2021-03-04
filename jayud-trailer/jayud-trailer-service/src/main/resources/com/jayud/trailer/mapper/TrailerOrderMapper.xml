@@ -58,4 +58,119 @@ closing_time,
 release_time, is_weighed, is_make_up, create_user, create_time, update_user, update_time, need_input_cost, order_taker, receiving_orders_date
     </sql>
 
+    <select id="getTrailerOrder" resultType="com.jayud.trailer.vo.TrailerOrderVO">
+        select id,order_no orderNo,main_order_no mainOrderNo,status, process_status processStatus,
+        legal_entity_id legalEntityId,legal_name legalName,imp_and_exp_type impAndExpType,
+        unit_code unitName,unit_code_name unitCodeName,port_departure_code portDepartureCode,
+        port_destination_code portDestinationCode,
+        cabinet_size cabinetSize,
+        bill_of_lading billOfLading,bol_file_path bolFilePath,bol_file_name bolFileName,
+        paper_strip_seal paperStripSeal,
+        pss_file_path pssFilePath,
+        pss_file_name pssFileName,
+        cabinet_number cabinetNumber,
+        cn_file_path cnFilePath,
+        cn_file_name cnFileName,
+        so,so_file_path soFilePath,so_file_name soFileName,
+        arrival_time arrivalTime,closing_warehouse_time closingWarehouseTime,
+        time_counter_rent timeCounterRent,open_time openTime,cutting_replenishing_time cuttingReplenishingTime,
+        closing_time closingTime,release_time releaseTime,
+        is_weighed isWeighed,is_make_up isMakeUp,create_user createUser,create_time createTime,update_user updateUser,
+        update_time updateTime,need_input_cost needInputCost,order_taker orderTaker,
+        receiving_orders_date receivingOrdersDate
+        from trailer_order
+    </select>
+
+    <select id="findByPage" resultType="com.jayud.trailer.vo.TrailerOrderFormVO">
+        select id,order_no orderNo,main_order_no mainOrderNo,status, process_status processStatus,
+        legal_entity_id legalEntityId,legal_name legalName,imp_and_exp_type impAndExpType,
+        unit_code unitName,unit_code_name unitCodeName,port_departure_code portDepartureCode,
+        port_destination_code portDestinationCode,
+        cabinet_size cabinetSize,
+        bill_of_lading billOfLading,bol_file_path bolFilePath,bol_file_name bolFileName,
+        paper_strip_seal paperStripSeal,
+        pss_file_path pssFilePath,
+        pss_file_name pssFileName,
+        cabinet_number cabinetNumber,
+        cn_file_path cnFilePath,
+        cn_file_name cnFileName,
+        so,so_file_path soFilePath,so_file_name soFileName,
+        arrival_time arrivalTime,closing_warehouse_time closingWarehouseTime,
+        time_counter_rent timeCounterRent,open_time openTime,cutting_replenishing_time cuttingReplenishingTime,
+        closing_time closingTime,release_time releaseTime,
+        is_weighed isWeighed,is_make_up isMakeUp,create_user createUser,create_time createTime,update_user updateUser,
+        update_time updateTime,need_input_cost needInputCost,order_taker orderTaker,
+        receiving_orders_date receivingOrdersDate,
+        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = a.`order_no`) +
+        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = a.`order_no`)>0 THEN TRUE
+        ELSE FALSE
+        END) cost
+        from trailer_order tor
+        <where>
+            <if test="form.orderNo !=null and form.orderNo!=''">
+                and tor.order_no like concat('%',#{form.orderNo},'%')
+            </if>
+            <if test="form.impAndExpType !=null and form.impAndExpType!=''">
+                and tor.imp_and_exp_type like concat('%',#{form.impAndExpType},'%')
+            </if>
+            <if test="form.so !=null and form.so!=''">
+                and tor.so like concat('%',#{form.so},'%')
+            </if>
+            <if test="form.cabinetNumber !=null and form.cabinetNumber!=''">
+                and tor.cabinet_number like concat('%',#{form.cabinetNumber},'%')
+            </if>
+            <if test="form.billOfLading !=null and form.billOfLading!=''">
+                and tor.bill_of_lading like concat('%',#{form.billOfLading},'%')
+            </if>
+            <if test="form.paperStripSeal !=null and form.paperStripSeal!=''">
+                and tor.paper_strip_seal like concat('%',#{form.paperStripSeal},'%')
+            </if>
+            <if test="form.createUser !=null and form.createUser!=''">
+                and tor.create_user like concat('%',#{form.createUser},'%')
+            </if>
+            <if test="form.portCode !=null and form.portCode!=''">
+                and tor.port_code like concat('%',#{form.portCode},'%')
+            </if>
+            <if test="form.cabinetSize !=null and form.cabinetSize!=''">
+                and tor.cabinet_size like concat('%',#{form.cabinetSize},'%')
+            </if>
+            <if test="form.mainOrderNos !=null and form.mainOrderNos.size > 0">
+                and tor.main_order_no IN
+                <foreach collection="form.mainOrderNos" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="form.status !=null and form.status!=''">
+                and tor.status = #{form.status}
+            </if>
+            <if test="form.processStatusList!=null and form.processStatusList.size>0">
+                and tor.process_status IN
+                <foreach collection="form.processStatusList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="form.startTime !=null and form.startTime!=''">
+                and tor.create_time <![CDATA[>= ]]> #{form.startTime}
+            </if>
+            <if test="form.endTime !=null and form.endTime!=''">
+                and tor.create_time <![CDATA[<= ]]> #{form.endTime}
+            </if>
+            <if test="form.cmd == 'costAudit'">
+                AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = so.order_no AND opc.`status` =
+                '2' and opc.sub_type = 'tc')
+                OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = so.order_no AND orc.`status` =
+                '2' and orc.sub_type = 'tc'))
+            </if>
+
+            <if test="legalIds != null and legalIds.size>0">
+                and tor.`legal_entity_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
+            </if>
+
+        </where>
+        order by tor.id desc
+    </select>
+
 </mapper>

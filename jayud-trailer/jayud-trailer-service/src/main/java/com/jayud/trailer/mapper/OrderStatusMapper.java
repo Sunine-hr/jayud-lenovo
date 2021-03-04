@@ -2,6 +2,7 @@ package com.jayud.trailer.mapper;
 
 import com.jayud.trailer.po.OrderStatus;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
@@ -11,6 +12,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author LLJ
  * @since 2021-03-01
  */
+@Mapper
 public interface OrderStatusMapper extends BaseMapper<OrderStatus> {
 
 }

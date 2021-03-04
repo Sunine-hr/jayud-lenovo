@@ -2,16 +2,20 @@ package com.jayud.trailer.service.impl;
 
 import cn.hutool.json.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.OrderTypeEnum;
+import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.trailer.bo.AddGoodsForm;
 import com.jayud.trailer.bo.AddOrderAddressForm;
 import com.jayud.trailer.bo.AddTrailerOrderFrom;
+import com.jayud.trailer.bo.QueryTrailerOrderForm;
 import com.jayud.trailer.feign.FileClient;
 import com.jayud.trailer.feign.OauthClient;
 import com.jayud.trailer.feign.OmsClient;
@@ -25,16 +29,15 @@ import com.jayud.trailer.service.IOrderStatusService;
 import com.jayud.trailer.service.ITrailerDispatchService;
 import com.jayud.trailer.service.ITrailerOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.trailer.vo.GoodsVO;
-import com.jayud.trailer.vo.OrderAddressVO;
-import com.jayud.trailer.vo.TrailerDispatchVO;
-import com.jayud.trailer.vo.TrailerOrderVO;
+import com.jayud.trailer.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -62,8 +65,8 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
     @Autowired
     private IOrderStatusService orderStatusService;
 
-    @Autowired
-    private IOrderFlowSheetService orderFlowSheetService;
+//    @Autowired
+//    private IOrderFlowSheetService orderFlowSheetService;
 
     @Autowired
     private ITrailerDispatchService trailerDispatchService;
@@ -76,8 +79,8 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
         //创建拖车单
         if (addTrailerOrderFrom.getId() == null) {
             //生成订单号
-            String orderNo = generationOrderNo(addTrailerOrderFrom.getLegalEntityId(),addTrailerOrderFrom.getImpAndExpType());
-            trailerOrder.setOrderNo(orderNo);
+//            String orderNo = generationOrderNo(addTrailerOrderFrom.getLegalEntityId(),addTrailerOrderFrom.getImpAndExpType());
+//            trailerOrder.setOrderNo(orderNo);
             trailerOrder.setCreateTime(now);
             trailerOrder.setCreateUser(UserOperator.getToken());
             trailerOrder.setStatus(OrderStatusEnum.TT_0.getCode());
@@ -95,6 +98,7 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
                 }
             }
             List<OrderStatus> statuses = orderStatusService.list(queryWrapper);
+            List<OrderFlowSheet> list = new ArrayList<>();
             for (int i = 0; i < statuses.size(); i++) {
                 OrderFlowSheet orderFlowSheet = new OrderFlowSheet();
                 orderFlowSheet.setMainOrderNo(trailerOrder.getMainOrderNo());
@@ -113,11 +117,14 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
                 orderFlowSheet.setIsPass("1");
                 orderFlowSheet.setCreateTime(now);
                 orderFlowSheet.setCreateUser(trailerOrder.getCreateUser());
-                orderFlowSheetService.saveOrUpdate(orderFlowSheet);
-
+                list.add(orderFlowSheet);
+            }
+            ApiResult apiResult = omsClient.batchAddOrUpdateProcess(list);
+            if (apiResult.getCode() != HttpStatus.SC_OK) {
+                log.warn("批量保存/修改订单地址信息失败,订单地址信息={}", new JSONArray(list));
             }
         } else {
-            //修改海运单
+            //修改拖车单
             trailerOrder.setId(addTrailerOrderFrom.getId());
             trailerOrder.setStatus(OrderStatusEnum.TT_0.getCode());
             trailerOrder.setUpdateTime(now);
@@ -230,6 +237,23 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
         QueryWrapper<TrailerOrder> condition = new QueryWrapper<>();
         condition.lambda().in(TrailerOrder::getMainOrderNo, mainOrderNoList);
         return this.baseMapper.selectList(condition);
+    }
+
+    @Override
+    public IPage<TrailerOrderFormVO> findByPage(QueryTrailerOrderForm form) {
+        if (StringUtils.isEmpty(form.getStatus())) { //订单列表
+            form.setProcessStatusList(Arrays.asList(ProcessStatusEnum.PROCESSING.getCode()
+                    , ProcessStatusEnum.COMPLETE.getCode(), ProcessStatusEnum.CLOSE.getCode()));
+        } else {
+            form.setProcessStatusList(Collections.singletonList(ProcessStatusEnum.PROCESSING.getCode()));
+        }
+
+        //获取当前用户所属法人主体
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
+        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+
+        Page<TrailerOrderFormVO> page = new Page<>(form.getPageNum(), form.getPageSize());
+        return this.baseMapper.findByPage(page, form,legalIds);
     }
 
 }

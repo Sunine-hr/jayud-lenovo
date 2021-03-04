@@ -62,7 +62,7 @@ public class OprStatusForm {
     @ApiModelProperty(value = "外部报关放行的六联单号")
     private String encode;
 
-    @ApiModelProperty(value = "业务类型(0:空运),(1,纯报关),ZGYS(2,中港运输)")
+    @ApiModelProperty(value = "业务类型(0:空运),(1,纯报关),ZGYS(2,中港运输) BusinessTypeEnum")
     private Integer businessType;
 
     @ApiModelProperty(value = "外部报关六联单号附件")

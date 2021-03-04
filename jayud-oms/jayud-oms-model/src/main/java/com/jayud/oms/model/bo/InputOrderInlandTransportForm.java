@@ -5,12 +5,17 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.jayud.common.entity.OrderDeliveryAddress;
+import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.oms.model.po.OrderFlowSheet;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -108,4 +113,32 @@ public class InputOrderInlandTransportForm extends Model<InputOrderInlandTranspo
 
     }
 
+    /**
+     * 组合订单流程节点
+     *
+     * @param inlandTPProcess
+     * @return
+     */
+    public List<OrderFlowSheet> assemblyProcess(List<OrderStatusEnum> inlandTPProcess) {
+
+        String preStatus = null;
+        List<OrderFlowSheet> list = new ArrayList<>();
+        for (OrderStatusEnum tpProcess : inlandTPProcess) {
+            OrderFlowSheet orderFlowSheet = new OrderFlowSheet();
+
+            orderFlowSheet.setMainOrderNo(this.mainOrderNo)
+                    .setOrderNo(this.orderNo)
+                    .setCreateTime(LocalDateTime.now())
+                    .setCreateUser(this.createUser)
+                    .setProductClassifyId(OrderStatusEnum.NLDD.getCode())
+                    .setProductClassifyName("内陆运输")
+                    .setStatus(tpProcess.getCode())
+                    .setStatusName(tpProcess.getDesc())
+                    .setFStatus(preStatus)
+                    .setIsPass("1");
+            preStatus=tpProcess.getCode();
+            list.add(orderFlowSheet);
+        }
+        return list;
+    }
 }

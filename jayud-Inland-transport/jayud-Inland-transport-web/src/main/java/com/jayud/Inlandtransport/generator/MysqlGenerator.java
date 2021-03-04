@@ -26,7 +26,7 @@ import java.util.Map;
 public class MysqlGenerator {
     static String model="jayud-Inland-transport";
     static String pack="com.jayud.Inlandtransport";
-    static String table="order_inland_transport";
+    static String table="order_inland_send_cars";
     static String mapperPath=pack.split("\\.")[2];
     public static void main(String[] args) {
 

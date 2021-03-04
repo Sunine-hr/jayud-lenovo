@@ -131,11 +131,10 @@ public enum OrderStatusEnum {
     INLANDTP_NL_3_1("NL_3_1", "派车审核不通过"),
     INLANDTP_NL_3_2("NL_3_2", "派车审核驳回"),
     INLANDTP_NL_4("NL_4", "确认派车"),
-    INLANDTP_NL_5("NL_4_1", "确认派车驳回"),
-    INLANDTP_NL_6("NL_5", "车辆提货"),
-    INLANDTP_NL_7("NL_5_1", "车辆提货驳回"),
-    INLANDTP_NL_8("NL_6", "货物签收"),
-
+    INLANDTP_NL_4_1("NL_4_1", "确认派车驳回"),
+    INLANDTP_NL_5("NL_5", "车辆提货"),
+    INLANDTP_NL_5_1("NL_5_1", "车辆提货驳回"),
+    INLANDTP_NL_6("NL_6", "货物签收"),
 
 
 
@@ -200,6 +199,21 @@ public enum OrderStatusEnum {
         statusEnums.add(CUSTOMS_C_6);
         return statusEnums;
     }
+
+
+    public static List<OrderStatusEnum> getInlandTPProcess() {
+        List<OrderStatusEnum> statusEnums = new ArrayList<>();
+        statusEnums.add(INLANDTP_NL_0);
+        statusEnums.add(INLANDTP_NL_1);
+        statusEnums.add(INLANDTP_NL_2);
+        statusEnums.add(INLANDTP_NL_3);
+        statusEnums.add(INLANDTP_NL_4);
+        statusEnums.add(INLANDTP_NL_5);
+        statusEnums.add(INLANDTP_NL_6);
+        return statusEnums;
+    }
+
+
 
     /**
      * 获取空运上个节点

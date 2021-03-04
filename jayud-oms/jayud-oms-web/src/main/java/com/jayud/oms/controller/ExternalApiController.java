@@ -92,6 +92,8 @@ public class ExternalApiController {
     private IDictService dictService;
     @Autowired
     private IOrderTypeNumberService orderTypeNumberService;
+    @Autowired
+    private IOrderFlowSheetService orderFlowSheetService;
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
@@ -970,10 +972,11 @@ public class ExternalApiController {
 
     /**
      * 获取订单号
+     *
      * @return
      */
     @RequestMapping(value = "/api/getOrderNo")
-    ApiResult getOrderNo(@RequestParam("preOrder") String preOrder , @RequestParam("classCode") String classCode){
+    ApiResult getOrderNo(@RequestParam("preOrder") String preOrder, @RequestParam("classCode") String classCode) {
         String orderNo = orderTypeNumberService.getOrderNo(preOrder, classCode);
         return ApiResult.ok(orderNo);
     }
@@ -988,6 +991,31 @@ public class ExternalApiController {
     public ApiResult addDeliveryAddress(@RequestBody List<OrderDeliveryAddress> deliveryAddressList) {
         this.orderAddressService.addDeliveryAddress(deliveryAddressList);
         return ApiResult.ok();
+    }
+
+    /**
+     * 批量新增/修改订单流程
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/batchAddOrUpdateProcess")
+    public ApiResult batchAddOrUpdateProcess(@RequestBody List<OrderFlowSheet> orderFlowSheets) {
+        this.orderFlowSheetService.saveOrUpdateBatch(orderFlowSheets);
+        return ApiResult.ok();
+    }
+
+    /**
+     * 获取订单节点
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getOrderProcessNode")
+    public ApiResult<String> getOrderProcessNode(@RequestParam("mainOrderNo") String mainOrderNo,
+                                         @RequestParam("orderNo") String orderNo,
+                                         @RequestParam("currentNodeStatus") String currentNodeStatus) {
+        List<OrderFlowSheet> orderFlowSheets = orderFlowSheetService.getByCondition(new OrderFlowSheet().setMainOrderNo(mainOrderNo)
+                .setOrderNo(orderNo).setFStatus(currentNodeStatus));
+        return ApiResult.ok(orderFlowSheets.get(0).getStatus());
     }
 }
 

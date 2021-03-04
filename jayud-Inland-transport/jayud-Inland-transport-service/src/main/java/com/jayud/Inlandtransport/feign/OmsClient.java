@@ -1,6 +1,7 @@
 package com.jayud.Inlandtransport.feign;
 
 
+import com.jayud.Inlandtransport.model.bo.OprStatusForm;
 import com.jayud.Inlandtransport.model.vo.GoodsVO;
 import com.jayud.Inlandtransport.model.vo.OrderAddressVO;
 import com.jayud.common.ApiResult;
@@ -34,12 +35,12 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/mainOrder/getByOrderNos")
     ApiResult getMainOrderByOrderNos(@RequestParam("orderNos") List<String> orderNos);
-//
-//    /**
-//     * 只记录成功操作流程状态
-//     */
-//    @RequestMapping(value = "/api/saveOprStatus")
-//    ApiResult saveOprStatus(@RequestBody AirProcessOptForm form);
+
+    /**
+     * 只记录成功操作流程状态
+     */
+    @RequestMapping(value = "/api/saveOprStatus")
+    ApiResult saveOprStatus(@RequestBody OprStatusForm form);
 
     /**
      * 记录审核信息
@@ -151,4 +152,15 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/addDeliveryAddress")
     public ApiResult addDeliveryAddress(@RequestBody List<OrderDeliveryAddress> deliveryAddressList);
+
+    /**
+     * 获取订单节点
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getOrderProcessNode")
+    public ApiResult<String> getOrderProcessNode(@RequestParam("mainOrderNo") String mainOrderNo,
+                                         @RequestParam("orderNo") String orderNo,
+                                         @RequestParam("currentNodeStatus") String currentNodeStatus);
+
 }

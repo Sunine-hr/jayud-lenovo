@@ -22,6 +22,6 @@ public interface InlandTpClient {
      * @return
      */
     @RequestMapping(value = "/api/createOrder")
-    public ApiResult createOrder(@RequestBody InputOrderInlandTransportForm form);
+    public ApiResult<String> createOrder(@RequestBody InputOrderInlandTransportForm form);
 
 }

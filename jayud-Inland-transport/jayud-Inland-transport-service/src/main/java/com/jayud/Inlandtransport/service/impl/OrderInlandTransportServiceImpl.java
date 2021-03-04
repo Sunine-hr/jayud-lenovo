@@ -7,11 +7,16 @@ import com.jayud.Inlandtransport.feign.OauthClient;
 import com.jayud.Inlandtransport.feign.OmsClient;
 import com.jayud.Inlandtransport.mapper.OrderInlandTransportMapper;
 import com.jayud.Inlandtransport.model.bo.AddOrderInlandTransportForm;
+import com.jayud.Inlandtransport.model.bo.OprStatusForm;
+import com.jayud.Inlandtransport.model.bo.ProcessOptForm;
 import com.jayud.Inlandtransport.model.bo.QueryOrderForm;
 import com.jayud.Inlandtransport.model.po.OrderInlandTransport;
 import com.jayud.Inlandtransport.model.vo.OrderInlandTransportFormVO;
 import com.jayud.Inlandtransport.service.IOrderInlandTransportService;
 import com.jayud.common.ApiResult;
+import com.jayud.common.UserOperator;
+import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.entity.AuditInfoForm;
 import com.jayud.common.entity.OrderDeliveryAddress;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderAddressEnum;
@@ -20,6 +25,7 @@ import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +55,7 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
     //创建订单
     @Override
     @Transactional
-    public void createOrder(AddOrderInlandTransportForm form) {
+    public String createOrder(AddOrderInlandTransportForm form) {
         LocalDateTime now = LocalDateTime.now();
         OrderInlandTransport inlandOrder = ConvertUtil.convert(form, OrderInlandTransport.class);
         inlandOrder.setVehicleType(1);//吨车
@@ -81,6 +87,7 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
                     .setBusinessType(BusinessTypeEnum.NL.getCode());
         }
         this.omsClient.addDeliveryAddress(addressList);
+        return inlandOrder.getOrderNo();
     }
 
     @Override
@@ -99,4 +106,75 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
         Page<OrderInlandTransport> page = new Page<>(form.getPageNum(), form.getPageSize());
         return this.baseMapper.findByPage(page, form, legalIds);
     }
+
+    /**
+     * 修改节点流程
+     * @param orderInlandTransport
+     * @param form
+     */
+    @Override
+    public void updateProcessStatus(OrderInlandTransport orderInlandTransport, ProcessOptForm form) {
+        orderInlandTransport.setId(form.getOrderId());
+        orderInlandTransport.setUpdateTime(LocalDateTime.now());
+        orderInlandTransport.setUpdateUser(UserOperator.getToken());
+        orderInlandTransport.setStatus(form.getStatus());
+
+        //更新状态节点状态
+        this.baseMapper.updateById(orderInlandTransport);
+        //节点操作记录
+        this.processOptRecord(form);
+        //完成订单状态
+        finishOrderOpt(orderInlandTransport);
+    }
+
+    /**
+     * 节点操作记录
+     * @param form
+     */
+    @Override
+    public void processOptRecord(ProcessOptForm form) {
+        AuditInfoForm auditInfoForm = new AuditInfoForm();
+        auditInfoForm.setExtId(form.getOrderId());
+        auditInfoForm.setExtDesc(SqlConstant.AIR_ORDER);
+        auditInfoForm.setAuditComment(form.getDescription());
+        auditInfoForm.setAuditUser(form.getOperatorUser());
+        auditInfoForm.setFileViews(form.getFileViewList());
+        auditInfoForm.setAuditStatus(form.getStatus());
+        auditInfoForm.setAuditTypeDesc(form.getStatusName());
+
+        //轨迹
+        OprStatusForm oprStatusForm=new OprStatusForm();
+        oprStatusForm.setMainOrderId(form.getMainOrderId());
+        oprStatusForm.setOrderId(form.getOrderId());
+        oprStatusForm.setStatus(form.getStatus());
+        oprStatusForm.setStatusName(form.getStatusName());
+        oprStatusForm.setOperatorUser(form.getOperatorUser());
+        oprStatusForm.setOperatorTime(form.getOperatorTime());
+        oprStatusForm.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
+        oprStatusForm.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
+        oprStatusForm.setBusinessType(form.getBusinessType());
+        oprStatusForm.setDescription(form.getDescription());
+        oprStatusForm.setBusinessType(BusinessTypeEnum.NL.getCode());
+
+        if (omsClient.saveOprStatus(oprStatusForm).getCode() != HttpStatus.SC_OK) {
+            log.error("远程调用物流轨迹失败");
+        }
+        if (omsClient.saveAuditInfo(auditInfoForm).getCode() != HttpStatus.SC_OK) {
+            log.error("远程调用审核记录失败");
+        }
+    }
+
+    @Override
+    public void doDispatchOpt(ProcessOptForm form) {
+
+    }
+
+
+    private void finishOrderOpt(OrderInlandTransport order) {
+        if (OrderStatusEnum.INLANDTP_NL_6.getCode().equals(order.getStatus())) {
+            this.updateById(new OrderInlandTransport().setId(order.getId())
+                    .setProcessStatus(ProcessStatusEnum.COMPLETE.getCode()));
+        }
+    }
+
 }

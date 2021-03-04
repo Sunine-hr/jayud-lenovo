@@ -97,6 +97,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private IAuditInfoService auditInfoService;
     @Autowired
     private InlandTpClient inlandTpClient;
+    @Autowired
+    private IOrderFlowSheetService orderFlowSheetService;
 
     private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(),
             SubOrderSignEnum.KY.getSignOne(), SubOrderSignEnum.HY.getSignOne(), SubOrderSignEnum.BG.getSignOne()};
@@ -903,7 +905,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 orderInlandTransportForm.setOrderNo(orderNo);
                 orderInlandTransportForm.setCreateUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
                 orderInlandTransportForm.setProcessStatus(processStatus);
-                this.inlandTpClient.createOrder(orderInlandTransportForm);
+                String subOrderNo = this.inlandTpClient.createOrder(orderInlandTransportForm).getData();
+                orderInlandTransportForm.setOrderNo(subOrderNo);
+                if (orderInlandTransportForm.getId() == null) {
+                    //流程节点重组
+                    List<OrderFlowSheet> orderFlowSheets = orderInlandTransportForm.assemblyProcess(OrderStatusEnum.getInlandTPProcess());
+                    this.orderFlowSheetService.saveOrUpdateBatch(orderFlowSheets);
+                }
+
             }
         }
 

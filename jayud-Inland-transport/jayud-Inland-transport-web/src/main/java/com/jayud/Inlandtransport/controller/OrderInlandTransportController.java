@@ -5,7 +5,9 @@ import cn.hutool.json.JSONArray;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.Inlandtransport.feign.OauthClient;
 import com.jayud.Inlandtransport.feign.OmsClient;
+import com.jayud.Inlandtransport.model.bo.ProcessOptForm;
 import com.jayud.Inlandtransport.model.bo.QueryOrderForm;
+import com.jayud.Inlandtransport.model.po.OrderInlandTransport;
 import com.jayud.Inlandtransport.model.vo.GoodsVO;
 import com.jayud.Inlandtransport.model.vo.OrderAddressVO;
 import com.jayud.Inlandtransport.model.vo.OrderInlandTransportFormVO;
@@ -15,8 +17,13 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.aop.annotations.DynamicHead;
 import com.jayud.common.enums.BusinessTypeEnum;
+import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.ProcessStatusEnum;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +42,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/orderInlandTransport")
+@Slf4j
 public class OrderInlandTransportController {
 
     @Autowired
@@ -111,6 +119,55 @@ public class OrderInlandTransportController {
             record.assemblySupplierInfo(supplierInfo);
         }
         return CommonResult.success(new CommonPageResult(page));
+    }
+
+
+    @ApiOperation(value = "执行程操作")
+    @PostMapping(value = "/doAirProcessOpt")
+    public CommonResult doAirProcessOpt(@RequestBody ProcessOptForm form) {
+        if (form.getMainOrderId() == null || form.getOrderId() == null) {
+            log.warn("空运订单编号/空运订单id必填");
+            return CommonResult.error(ResultEnum.VALIDATE_FAILED);
+        }
+        //空运订单信息
+        OrderInlandTransport order = this.orderInlandTransportService.getById(form.getOrderId());
+        if (ProcessStatusEnum.COMPLETE.getCode().equals(order.getProcessStatus())) {
+            return CommonResult.error(400, "该订单已经完成");
+        }
+        if (!ProcessStatusEnum.PROCESSING.getCode().equals(order.getProcessStatus())) {
+            return CommonResult.error(400, "当前订单无法操作");
+        }
+        //查询下一步节点
+        String nextStatus = omsClient.getOrderProcessNode(order.getMainOrderNo()
+                , order.getOrderNo(), order.getStatus()).getData();
+        if (nextStatus == null) {
+            log.error("执行订单流程操作失败,超出流程之外 data={}", order.toString());
+            return CommonResult.error(ResultEnum.OPR_FAIL);
+        }
+        //校验参数
+        OrderStatusEnum statusEnum = OrderStatusEnum.valueOf(nextStatus);
+        form.checkProcessOpt(statusEnum);
+        form.setStatus(nextStatus);
+
+        //指令操作
+        switch (statusEnum) {
+            case INLANDTP_NL_1: //接单
+                this.orderInlandTransportService.updateProcessStatus(new OrderInlandTransport()
+                                .setOrderTaker(form.getOperatorUser())
+                                .setReceivingOrdersDate(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN))
+                        , form);
+                break;
+            case INLANDTP_NL_2: //派车
+                this.orderInlandTransportService.doDispatchOpt(form);
+                break;
+            case INLANDTP_NL_3: //派车审核
+            case INLANDTP_NL_4: //确认派车
+            case INLANDTP_NL_5: //车辆提货
+            case INLANDTP_NL_6: //货物签收
+                this.orderInlandTransportService.updateProcessStatus(new OrderInlandTransport(), form);
+                break;
+        }
+        return CommonResult.success();
     }
 }
 

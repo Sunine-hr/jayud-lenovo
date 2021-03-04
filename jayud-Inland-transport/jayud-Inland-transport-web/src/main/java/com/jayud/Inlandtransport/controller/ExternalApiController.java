@@ -19,8 +19,8 @@ public class ExternalApiController {
 
 
     @RequestMapping(value = "/api/createOrder")
-    public ApiResult createOrder(@RequestBody AddOrderInlandTransportForm form) {
-        orderInlandTransportService.createOrder(form);
-        return ApiResult.ok();
+    public ApiResult<String> createOrder(@RequestBody AddOrderInlandTransportForm form) {
+        String orderNo=orderInlandTransportService.createOrder(form);
+        return ApiResult.ok(orderNo);
     }
 }

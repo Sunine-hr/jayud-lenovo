@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.mapper.OrderFlowSheetMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.OrderFlowSheet">
+        <id column="id" property="id" />
+        <result column="order_no" property="orderNo" />
+        <result column="main_order_no" property="mainOrderNo" />
+        <result column="product_classify_id" property="productClassifyId" />
+        <result column="product_classify_name" property="productClassifyName" />
+        <result column="status" property="status" />
+        <result column="status_name" property="statusName" />
+        <result column="complete" property="complete" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user" property="createUser" />
+        <result column="f_status" property="fStatus" />
+        <result column="is_pass" property="isPass" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_no, main_order_no, product_classify_id, product_classify_name, status, status_name, complete, create_time, create_user, f_status, is_pass
+    </sql>
+
+</mapper>

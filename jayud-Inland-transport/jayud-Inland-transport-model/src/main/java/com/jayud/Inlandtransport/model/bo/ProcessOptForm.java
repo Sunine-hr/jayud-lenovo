@@ -42,9 +42,8 @@ public class ProcessOptForm {
     @ApiModelProperty(value = "备注")
     private String description;
 
-//    @ApiModelProperty(value = "派车信息")
-//    private AddAirBookingForm airBooking = new AddAirBookingForm();
-
+    @ApiModelProperty(value = "派车信息")
+    private SendCarForm sendCarForm ;
 
     @ApiModelProperty(value = "业务类型 前端不用管")
     private Integer businessType;
@@ -73,7 +72,7 @@ public class ProcessOptForm {
             case INLANDTP_NL_2: //派车
                 //设置操作时间
                 this.operatorTime = DateUtils.LocalDateTime2Str(LocalDateTime.now(), DateUtils.DATE_TIME_PATTERN);
-//                pass = this.airBooking.checkBookingSpaceOptParam();
+                this.sendCarForm.checkSendCarOptParam();
                 break;
             case INLANDTP_NL_1: //接单
             case INLANDTP_NL_4: //确认派车

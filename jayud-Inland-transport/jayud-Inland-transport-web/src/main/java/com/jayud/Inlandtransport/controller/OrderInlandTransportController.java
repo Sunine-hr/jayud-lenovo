@@ -102,8 +102,6 @@ public class OrderInlandTransportController {
         if (CollectionUtils.isNotEmpty(supplierIds)) {
             supplierInfo = new JSONArray(this.omsClient.getSupplierInfoByIds(supplierIds).getData());
         }
-
-
         //查询主订单信息
         ApiResult result = omsClient.getMainOrderByOrderNos(mainOrder);
         for (OrderInlandTransportFormVO record : records) {

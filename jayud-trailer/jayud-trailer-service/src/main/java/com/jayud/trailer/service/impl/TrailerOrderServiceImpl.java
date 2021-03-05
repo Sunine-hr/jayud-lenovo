@@ -22,7 +22,6 @@ import com.jayud.trailer.po.OrderStatus;
 import com.jayud.trailer.po.TrailerDispatch;
 import com.jayud.trailer.po.TrailerOrder;
 import com.jayud.trailer.mapper.TrailerOrderMapper;
-import com.jayud.trailer.service.IOrderFlowSheetService;
 import com.jayud.trailer.service.IOrderStatusService;
 import com.jayud.trailer.service.ITrailerDispatchService;
 import com.jayud.trailer.service.ITrailerOrderService;
@@ -334,7 +333,6 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
 
         trailerDispatchService.saveOrUpdateTrailerDispatch(trailerDispatch);
         //更改流程节点完成状态
-        //this.updateProcessStatusComplte(form);
         updateProcessStatus(new TrailerOrder(), form);
     }
 

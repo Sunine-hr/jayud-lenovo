@@ -237,6 +237,8 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     //@ApiModelProperty(value = "主订单id")
     private String mainOrderId;
 
+    @ApiModelProperty(value = "货物重量")
+    private Double totalWeight;
 
 
 
@@ -255,6 +257,7 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
                         .append(",").append("重量:").append(goods.getTotalWeight()).append("KG")
                         .append(";");
             }
+            this.totalWeight = this.totalWeight + goods.getTotalWeight();
         }
 
         this.goodsInfo = sb.toString();

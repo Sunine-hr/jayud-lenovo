@@ -3,26 +3,14 @@ package com.jayud.trailer.controller;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
-import cn.hutool.json.JSONUtil;
-import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.ExcelWriter;
-import com.alibaba.excel.enums.WriteDirectionEnum;
-import com.alibaba.excel.write.metadata.WriteSheet;
-import com.alibaba.excel.write.metadata.fill.FillConfig;
-import com.alibaba.excel.write.metadata.fill.FillWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
-import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.InitComboxVO;
-import com.jayud.common.enums.BusinessTypeEnum;
-import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.enums.ProcessStatusEnum;
-import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.enums.*;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
@@ -41,26 +29,15 @@ import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.net.URLEncoder;
 import java.util.*;
 
-import static com.jayud.common.enums.OrderStatusEnum.SEA_S_2;
 
 /**
  * <p>
@@ -306,39 +283,38 @@ public class TrailerOrderController {
                 trailerOrder1.setReceivingOrdersDate(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN));
                 this.trailerOrderService.updateProcessStatus(trailerOrder1 , form);
                 break;
-            case SEA_S_2: //派车
+            case TT_2: //派车
+            case TT_3: //派车审核
                 this.trailerOrderService.doTrailerDispatchOpt(form);
                 break;
-            case SEA_S_3: //确认订单入仓
+            case TT_4: //拖车提柜
+            case TT_5: //拖车到仓
+            case TT_6: //拖车离仓
+            case TT_8: //确认还柜
                 this.trailerOrderService.updateProcessStatus(new TrailerOrder(), form);
                 break;
-            case SEA_S_5: //确认草稿提单
-            case SEA_S_6: //确认装船
-            case SEA_S_7: //确认放单
-            case SEA_S_8: //确认到港
+            case TT_7: //拖车过磅
                 this.trailerOrderService.doTrailerDispatchOpt(form);
                 break;
-//            case SEA_S_9: //海外代理
-//                StringBuilder sb = new StringBuilder();
-//                form.getProxyServiceType().forEach(e -> sb.append(e).append(","));
-//                String proxyServiceType = sb.length() == 0 ? null : sb.substring(0, sb.length() - 1);
-//                SeaOrder seaOrder2 = new SeaOrder();
-//                seaOrder2.setOverseasSuppliersId(form.getAgentSupplierId());
-//                seaOrder2.setProxyServiceType(proxyServiceType);
-//                this.seaOrderService.updateProcessStatus(seaOrder2, form);
-//                break;
-//            case SEA_S_10: //确认签收
-//                this.seaOrderService.updateProcessStatus(new SeaOrder(), form);
-//                break;
         }
 
         return CommonResult.success();
     }
 
+    @ApiOperation(value = "获取派车单号")
+    @PostMapping(value = "/getDispatchNO")
+    public CommonResult<String> getDispatchNO(@RequestBody Map<String, Object> map){
+        String trailerOrderNo = MapUtil.getStr(map, "orderNo");
+        String substring = trailerOrderNo.substring(0, trailerOrderNo.length() - 8);
+        String preOrderNo = OrderTypeEnum.P.getCode()+substring;
+        String classCode = OrderTypeEnum.P.getCode();
+        String orderNo = (String)omsClient.getOrderNo(preOrderNo,classCode).getData();
+        return CommonResult.success(orderNo);
+    }
 
     @ApiOperation(value = "查询订单详情 trailerOrderId=海运订单id")
     @PostMapping(value = "/getTrailerOrderDetails")
-    public CommonResult<TrailerOrderVO> getAirOrderDetails(@RequestBody Map<String, Object> map) {
+    public CommonResult<TrailerOrderVO> getTrailerOrderDetails(@RequestBody Map<String, Object> map) {
         Long trailerOrderId = MapUtil.getLong(map, "id");
         if (trailerOrderId == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);

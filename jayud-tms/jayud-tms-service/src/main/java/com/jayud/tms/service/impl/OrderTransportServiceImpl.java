@@ -286,21 +286,28 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         Integer totalPieceAmount = 0;//总件数
         Double totalWeight = 0.0;//总重量
         Double totalVolume = 0.0;//总体积
+        Integer totalPlateAmount = 0;//总板数
         for (TakeGoodsInfoVO takeGoodsInfoVO : takeGoodsInfo1) {
             totalPieceAmount = totalPieceAmount + takeGoodsInfoVO.getPieceAmount();
             Double weight = 0.0;
             Double volume = 0.0;
+            Integer plateAmount = 0;
             if (takeGoodsInfoVO.getWeight() != null) {
                 weight = takeGoodsInfoVO.getWeight();
             }
             if (takeGoodsInfoVO.getVolume() != null) {
                 volume = takeGoodsInfoVO.getVolume();
             }
+            if (takeGoodsInfoVO.getPlateAmount() != null) {
+                plateAmount = takeGoodsInfoVO.getPlateAmount();
+            }
             totalWeight = totalWeight + weight;
             totalVolume = totalVolume + volume;
+            totalPlateAmount += plateAmount;
             GoodsInfoVO goodsInfoVO = new GoodsInfoVO();
             goodsInfoVO.setGoodsDesc(takeGoodsInfoVO.getGoodsDesc());
             goodsInfoVO.setPieceAmount(takeGoodsInfoVO.getPieceAmount());
+            goodsInfoVO.setPlateAmount(takeGoodsInfoVO.getPlateAmount());
             goodsInfoVO.setWeight(takeGoodsInfoVO.getWeight());
             goodsInfoVO.setVolume(takeGoodsInfoVO.getVolume());
             goodsInfoVOS.add(goodsInfoVO);
@@ -310,6 +317,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         sendCarPdfVO.setTotalPieceAmount(totalPieceAmount);
         sendCarPdfVO.setTotalWeight(totalWeight);
         sendCarPdfVO.setTotalVolume(totalVolume);
+        sendCarPdfVO.setTotalPlateAmount(totalPlateAmount);
         return sendCarPdfVO;
     }
 

@@ -16,7 +16,7 @@
     </sql>
 
     <select id="getMaxNumberData" resultType="com.jayud.oms.model.po.OrderTypeNumber">
-        select * from order_type_number where class_code = #{classCode} and number = (select max(number) from order_type_number where class_code = #{classCode})
+        select * from order_type_number where class_code = #{classCode} and date = #{dateData} and number = (select max(number) from order_type_number where class_code = #{classCode} and date = #{dateData})
     </select>
 
 </mapper>

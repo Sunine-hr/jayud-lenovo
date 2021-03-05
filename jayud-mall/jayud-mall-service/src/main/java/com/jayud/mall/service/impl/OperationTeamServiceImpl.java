@@ -22,6 +22,7 @@ import com.jayud.mall.service.IOperationTeamService;
 import com.jayud.mall.utils.NumberGeneratedUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -80,6 +81,7 @@ public class OperationTeamServiceImpl extends ServiceImpl<OperationTeamMapper, O
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult<OperationTeamVO> saveOperationTeam(OperationTeamForm form) {
         OperationTeam operationTeam = ConvertUtil.convert(form, OperationTeam.class);
         AuthUser user = baseService.getUser();

@@ -25,6 +25,7 @@ import com.jayud.mall.service.IWaybillTaskService;
 import com.jayud.mall.utils.NumberGeneratedUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -101,6 +102,7 @@ public class TaskGroupServiceImpl extends ServiceImpl<TaskGroupMapper, TaskGroup
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult<TaskGroupVO> saveTaskGroup(TaskGroupForm form) {
         TaskGroup taskGroup = ConvertUtil.convert(form, TaskGroup.class);
         AuthUser user = baseService.getUser();

@@ -21,6 +21,7 @@ import com.jayud.mall.service.ITaskService;
 import com.jayud.mall.utils.NumberGeneratedUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -68,6 +69,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task> implements IT
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult<TaskVO> saveTask(TaskForm form) {
         Task task = ConvertUtil.convert(form, Task.class);
         Long id = task.getId();

@@ -1,5 +1,6 @@
 package com.jayud.Inlandtransport.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -10,6 +11,8 @@ import com.jayud.Inlandtransport.mapper.OrderInlandTransportMapper;
 import com.jayud.Inlandtransport.model.bo.*;
 import com.jayud.Inlandtransport.model.po.OrderInlandSendCars;
 import com.jayud.Inlandtransport.model.po.OrderInlandTransport;
+import com.jayud.Inlandtransport.model.vo.OrderInlandSendCarsVO;
+import com.jayud.Inlandtransport.model.vo.OrderInlandTransportDetails;
 import com.jayud.Inlandtransport.model.vo.OrderInlandTransportFormVO;
 import com.jayud.Inlandtransport.service.IOrderInlandSendCarsService;
 import com.jayud.Inlandtransport.service.IOrderInlandTransportService;
@@ -186,6 +189,33 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
     public List<OrderInlandTransport> getByCondition(OrderInlandTransport orderInlandTransport) {
         QueryWrapper<OrderInlandTransport> condition = new QueryWrapper<>();
         return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 获取订单详情
+     *
+     * @param subOrderId
+     * @return
+     */
+    @Override
+    public OrderInlandTransportDetails getOrderDetails(Long subOrderId) {
+
+        //查询订单信息
+        OrderInlandTransport orderInlandTransport = this.getById(subOrderId);
+        OrderInlandTransportDetails details = ConvertUtil.convert(orderInlandTransport, OrderInlandTransportDetails.class);
+
+        //查询派车信息
+        List<OrderInlandSendCars> sendCars = this.orderInlandSendCarsService.getByCondition(new OrderInlandSendCars().setOrderId(subOrderId));
+        if (CollectionUtil.isNotEmpty(sendCars)) {
+            details.setOrderInlandSendCarsVO(ConvertUtil.convert(sendCars, OrderInlandSendCarsVO.class));
+        }
+
+        //查询提货/送货地址
+        List<OrderDeliveryAddress> deliveryAddresses = this.omsClient.getDeliveryAddress(Collections.singletonList(subOrderId),
+                BusinessTypeEnum.NL.getCode()).getData();
+        details.assembleDeliveryAddress(deliveryAddresses);
+
+        return null;
     }
 
 

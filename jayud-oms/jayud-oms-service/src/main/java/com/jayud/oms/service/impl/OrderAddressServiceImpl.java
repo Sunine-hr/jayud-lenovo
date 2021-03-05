@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.entity.OrderDeliveryAddress;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.model.po.Goods;
 import com.jayud.oms.model.po.OrderAddress;
 import com.jayud.oms.mapper.OrderAddressMapper;
@@ -17,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -31,6 +34,8 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
 
     @Autowired
     private IGoodsService goodsService;
+    @Autowired
+    private FileClient fileClient;
 
     /**
      * 查询地址
@@ -93,5 +98,47 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
             list.add(orderAddress);
         }
         this.saveOrUpdateBatch(list);
+    }
+
+    /**
+     * 获取订单提货/送货地址
+     *
+     * @param orderId
+     * @param businessType
+     * @return
+     */
+    @Override
+    public List<OrderDeliveryAddress> getDeliveryAddress(List<Long> orderId,
+                                                         Integer businessType) {
+
+        List<OrderAddress> addressList = this.getOrderAddressByBusIds(orderId, businessType);
+        List<Goods> goodsList = this.goodsService.getGoodsByBusIds(orderId, businessType);
+        Map<Long, Goods> tmp = goodsList.stream().collect(Collectors.toMap(Goods::getId, e -> e));
+        String prePath = fileClient.getBaseUrl().getData().toString();
+
+        List<OrderDeliveryAddress> list=new ArrayList<>();
+        addressList.forEach(e -> {
+            Goods goods = tmp.get(e.getBindGoodsId());
+            OrderDeliveryAddress orderDeliveryAddress = new OrderDeliveryAddress();
+            orderDeliveryAddress.setOrderNo(e.getOrderNo())
+                    .setContacts(e.getContacts())
+                    .setPhone(e.getPhone())
+                    .setAddress(e.getAddress())
+                    .setDeliveryDate(DateUtils.LocalDateTime2Str(e.getDeliveryDate(), DateUtils.DATE_TIME_PATTERN))
+                    .setEnterWarehouseNo(e.getEnterWarehouseNo())
+                    .setAddressType(e.getType())
+                    .setGoodsName(goods.getName())
+                    .setPlateAmount(goods.getPlateAmount())
+                    .setPlateUnit(goods.getPlateUnit())
+                    .setBulkCargoAmount(goods.getBulkCargoAmount())
+                    .setBulkCargoUnit(goods.getBulkCargoUnit())
+                    .setSize(goods.getSize())
+                    .setTotalWeight(goods.getTotalWeight())
+                    .setVolume(goods.getVolume())
+                    .setRemarks(e.getRemarks())
+                    .setFileViewList(StringUtils.getFileViews(e.getFilePath(), e.getFileName(), prePath));
+
+        });
+        return list;
     }
 }

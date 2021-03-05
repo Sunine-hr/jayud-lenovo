@@ -26,4 +26,12 @@ public interface IOrderAddressService extends IService<OrderAddress> {
      * @param deliveryAddressList
      */
     void addDeliveryAddress(List<OrderDeliveryAddress> deliveryAddressList);
+
+    /**
+     * 获取订单提货/送货地址
+     * @param orderId
+     * @param businessType
+     * @return
+     */
+    List<OrderDeliveryAddress> getDeliveryAddress(List<Long> orderId, Integer businessType);
 }

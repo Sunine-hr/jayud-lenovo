@@ -3,6 +3,7 @@ package com.jayud.Inlandtransport.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
+import com.jayud.Inlandtransport.model.po.OrderInlandSendCars;
 import com.jayud.Inlandtransport.model.po.OrderInlandTransport;
 import com.jayud.Inlandtransport.model.vo.SendCarPdfVO;
 import com.jayud.Inlandtransport.service.IOrderInlandSendCarsService;
@@ -60,6 +61,18 @@ public class OrderInlandSendCarsController {
         }
         SendCarPdfVO sendCarPdfVO = orderInlandSendCarsService.initPdfData(subOrder, CommonConstant.NLYS_DESC);
         return CommonResult.success(sendCarPdfVO);
+    }
+
+
+    @ApiOperation(value = "查询派车信息 subOrderId=子订单id")
+    @PostMapping(value = "/getInlandSendCars")
+    public CommonResult<OrderInlandSendCars> getInlandSendCars(@RequestBody Map<String, Object> param) {
+        Long subOrderId = MapUtil.getLong(param, "subOrderId");
+        if (subOrderId == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        List<OrderInlandSendCars> list = this.orderInlandSendCarsService.getByCondition(new OrderInlandSendCars().setOrderId(subOrderId));
+        return CommonResult.success(list.get(0));
     }
 }
 

@@ -27,23 +27,22 @@ public class OrderAddressVO extends Model<OrderAddressVO> {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "主键")
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "业务主键(根据类型选择对应表的主键)")
-    private Long businessId;
+//    @ApiModelProperty(value = "业务主键(根据类型选择对应表的主键)")
+//    private Long businessId;
 
     @ApiModelProperty(value = "类型(0:发货,1:收货,2:通知)")
     private Integer type;
 
-    @ApiModelProperty(value = "绑定商品id")
-    private Long bindGoodsId;
+//    @ApiModelProperty(value = "绑定商品id")
+//    private Long bindGoodsId;
 
     @ApiModelProperty(value = "订单号")
     private String orderNo;
 
-    @ApiModelProperty(value = "业务类型(参考BusinessTypeEnum)")
-    private Integer businessType;
+//    @ApiModelProperty(value = "业务类型(参考BusinessTypeEnum)")
+//    private Integer businessType;
 
     @ApiModelProperty(value = "公司名称")
     private String company;

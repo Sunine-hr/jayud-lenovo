@@ -1016,6 +1016,17 @@ public class ExternalApiController {
                 .setOrderNo(orderNo).setFStatus(currentNodeStatus));
         return ApiResult.ok(orderFlowSheets.get(0).getStatus());
     }
+
+    /**
+     * 获取提货/送货地址信息
+     * @return
+     */
+    @RequestMapping(value = "/api/getDeliveryAddress")
+    public ApiResult<List<OrderDeliveryAddress>> getDeliveryAddress(@RequestParam("orderId") List<Long> orderId,
+                                                @RequestParam("businessType") Integer businessType) {
+        List<OrderDeliveryAddress> list=this.orderAddressService.getDeliveryAddress(orderId,businessType);
+        return ApiResult.ok(list);
+    }
 }
 
 

@@ -1,20 +1,19 @@
 package com.jayud.Inlandtransport.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.Inlandtransport.feign.OmsClient;
-import com.jayud.Inlandtransport.model.po.OrderInlandSendCars;
 import com.jayud.Inlandtransport.mapper.OrderInlandSendCarsMapper;
+import com.jayud.Inlandtransport.model.po.OrderInlandSendCars;
 import com.jayud.Inlandtransport.model.po.OrderInlandTransport;
-import com.jayud.Inlandtransport.model.vo.GoodsInfoVO;
 import com.jayud.Inlandtransport.model.vo.GoodsVO;
 import com.jayud.Inlandtransport.model.vo.OrderAddressVO;
 import com.jayud.Inlandtransport.model.vo.SendCarPdfVO;
 import com.jayud.Inlandtransport.service.IOrderInlandSendCarsService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.enums.BusinessTypeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -41,9 +40,9 @@ public class OrderInlandSendCarsServiceImpl extends ServiceImpl<OrderInlandSendC
         sendCarPdfVO.setLegalName(order.getLegalName());
 
         //查询派送单信息
-        OrderInlandSendCars sendCar = this.getById(order.getId());
+        List<OrderInlandSendCars> sendCar = this.getByCondition(new OrderInlandSendCars().setOrderId(order.getId()));
 
-        sendCarPdfVO.assembleCar(sendCar);
+        sendCarPdfVO.assembleCar(sendCar.get(0));
 
         //查询订单地址
         List<OrderAddressVO> orderAddressList = this.omsClient.getOrderAddressByBusIds(Collections.singletonList(order.getId()),
@@ -57,5 +56,11 @@ public class OrderInlandSendCarsServiceImpl extends ServiceImpl<OrderInlandSendC
         sendCarPdfVO.assembleGoods(goodsInfoList);
 
         return sendCarPdfVO;
+    }
+
+    @Override
+    public List<OrderInlandSendCars> getByCondition(OrderInlandSendCars orderInlandSendCars) {
+        QueryWrapper<OrderInlandSendCars> condition = new QueryWrapper<>(orderInlandSendCars);
+        return this.baseMapper.selectList(condition);
     }
 }

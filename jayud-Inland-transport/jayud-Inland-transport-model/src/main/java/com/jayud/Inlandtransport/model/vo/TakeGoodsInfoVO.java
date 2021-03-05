@@ -3,6 +3,10 @@ package com.jayud.Inlandtransport.model.vo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+/**
+ * 提货/收货地址
+ */
+
 @Data
 public class TakeGoodsInfoVO {
 

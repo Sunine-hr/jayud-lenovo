@@ -160,7 +160,14 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/getOrderProcessNode")
     public ApiResult<String> getOrderProcessNode(@RequestParam("mainOrderNo") String mainOrderNo,
-                                         @RequestParam("orderNo") String orderNo,
-                                         @RequestParam("currentNodeStatus") String currentNodeStatus);
+                                                 @RequestParam("orderNo") String orderNo,
+                                                 @RequestParam("currentNodeStatus") String currentNodeStatus);
 
+    /**
+     * 获取提货/送货地址信息
+     * @return
+     */
+    @RequestMapping(value = "/api/getDeliveryAddress")
+    public ApiResult<List<OrderDeliveryAddress>> getDeliveryAddress(@RequestParam("orderId") List<Long> orderId,
+                                                                    @RequestParam("businessType") Integer businessType);
 }

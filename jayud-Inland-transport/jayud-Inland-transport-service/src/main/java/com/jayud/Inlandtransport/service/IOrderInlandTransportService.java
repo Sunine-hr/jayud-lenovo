@@ -6,6 +6,7 @@ import com.jayud.Inlandtransport.model.bo.ProcessOptForm;
 import com.jayud.Inlandtransport.model.bo.QueryOrderForm;
 import com.jayud.Inlandtransport.model.po.OrderInlandTransport;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.Inlandtransport.model.vo.OrderInlandTransportDetails;
 import com.jayud.Inlandtransport.model.vo.OrderInlandTransportFormVO;
 
 import java.util.List;
@@ -41,4 +42,11 @@ public interface IOrderInlandTransportService extends IService<OrderInlandTransp
     void doDispatchOpt(ProcessOptForm form);
 
     List<OrderInlandTransport> getByCondition(OrderInlandTransport orderInlandTransport);
+
+    /**
+     * 查询订单详情
+     * @param subOrderId
+     * @return
+     */
+    OrderInlandTransportDetails getOrderDetails(Long subOrderId);
 }

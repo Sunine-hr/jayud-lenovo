@@ -10,10 +10,7 @@ import com.jayud.Inlandtransport.feign.OmsClient;
 import com.jayud.Inlandtransport.model.bo.ProcessOptForm;
 import com.jayud.Inlandtransport.model.bo.QueryOrderForm;
 import com.jayud.Inlandtransport.model.po.OrderInlandTransport;
-import com.jayud.Inlandtransport.model.vo.GoodsVO;
-import com.jayud.Inlandtransport.model.vo.OrderAddressVO;
-import com.jayud.Inlandtransport.model.vo.OrderInlandTransportFormVO;
-import com.jayud.Inlandtransport.model.vo.SendCarPdfVO;
+import com.jayud.Inlandtransport.model.vo.*;
 import com.jayud.Inlandtransport.service.IOrderInlandSendCarsService;
 import com.jayud.Inlandtransport.service.IOrderInlandTransportService;
 import com.jayud.common.ApiResult;
@@ -180,29 +177,17 @@ public class OrderInlandTransportController {
         return CommonResult.success();
     }
 
-
-    @ApiOperation(value = "渲染数据,确认派车 orderNo=订单号(主/子),entranceType=入口类型(1主订单,2子订单)")
-    @PostMapping(value = "/initPdfData")
-    public CommonResult<SendCarPdfVO> initPdfData(@RequestBody Map<String, Object> param) {
-        String orderNo = MapUtil.getStr(param, CommonConstant.ORDER_NO);
-        Integer entranceType = MapUtil.getInt(param, "entranceType");
-        if (StringUtil.isNullOrEmpty(orderNo) && entranceType == null) {
+    @ApiOperation(value = "查询订单详情 subOrderId=子订单id")
+    @PostMapping(value = "/getOrderDetails")
+    public CommonResult<OrderInlandTransportDetails> getOrderDetails(@RequestBody Map<String, Object> map) {
+        Long subOrderId = MapUtil.getLong(map, "subOrderId");
+        if (subOrderId == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        OrderInlandTransport subOrder = null;
-        if (entranceType == 1) {
-            List<OrderInlandTransport> subOrders = this.orderInlandTransportService.getByCondition(
-                    new OrderInlandTransport().setMainOrderNo(orderNo));
-            if (CollectionUtil.isEmpty(subOrders)) {
-                return CommonResult.error(400, "不存在该订单信息");
-            } else {
-                subOrder = subOrders.get(0);
-            }
-        } else {
-            subOrder = this.orderInlandTransportService.getByCondition(new OrderInlandTransport().setOrderNo(orderNo)).get(0);
-        }
-        SendCarPdfVO sendCarPdfVO = orderInlandSendCarsService.initPdfData(subOrder, CommonConstant.NLYS_DESC);
-        return CommonResult.success(sendCarPdfVO);
+        OrderInlandTransportDetails orderDetails = this.orderInlandTransportService.getOrderDetails(subOrderId);
+        return CommonResult.success(orderDetails);
     }
+
+
 }
 

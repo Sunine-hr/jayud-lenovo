@@ -73,6 +73,10 @@
             <if test="form.beginCreatedTime !=null and form.beginCreatedTime!=''"><!-- 结束时间检索 -->
                 and date_format(i.create_time,'%Y-%m-%d') &lt;= date_format(#{form.endCreatedTime},'%Y-%m-%d')
             </if>
+            <if test="form.vehicleSize !=null and form.vehicleSize!=''">
+                and i.vehicle_size = #{form.vehicleSize}
+            </if>
+
             <if test="form.cmd == 'costAudit'">
                 AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = i.order_no AND opc.`status` =
                 '2' and opc.sub_type = 'nl')

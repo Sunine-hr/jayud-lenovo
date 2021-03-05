@@ -58,6 +58,9 @@ public class QueryOrderForm extends BasePageForm {
     @ApiModelProperty(value = "结束日期")
     private String endCreatedTime;
 
+    @ApiModelProperty(value = "车型", required = true)
+    private String vehicleSize;
+
     public void assemblyMainOrderNo(JSONArray mainOrders) {
         mainOrderNos = new ArrayList<>(mainOrders.size());
         for (int i = 0; i < mainOrders.size(); i++) {

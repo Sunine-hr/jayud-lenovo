@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class OperationTeamVO {
@@ -34,5 +35,18 @@ public class OperationTeamVO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     @JSONField(ordinal = 6, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime creationTime;
+
+    @ApiModelProperty(value = "创建人名称", position = 7)
+    @JSONField(ordinal = 7)
+    private String creatorName;
+
+    //人员
+    @ApiModelProperty(value = "运营小组人员（前端：人员）", position = 8)
+    @JSONField(ordinal = 8)
+    private String memberUserNames;
+
+    @ApiModelProperty(value = "运营小组人员list", position = 9)
+    @JSONField(ordinal = 9)
+    private List<OperationTeamMemberVO> operationTeamMemberVOS;
 
 }

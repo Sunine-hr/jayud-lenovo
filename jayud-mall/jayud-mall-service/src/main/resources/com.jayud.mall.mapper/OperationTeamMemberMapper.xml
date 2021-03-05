@@ -43,4 +43,19 @@
         </if>
     </select>
 
+    
+    <select id="findOperationTeamMemberByOperationTeamId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OperationTeamMemberVO">
+        select
+            t.id,t.operation_team_id,t.member_user_id,t.`status`,t.creator,t.creation_time,
+            t1.group_name operationTeamName,
+            t2.`name` memberUserName
+        from
+            operation_team_member t
+                LEFT JOIN operation_team t1 on t1.id = t.operation_team_id
+                LEFT JOIN system_user t2 on t2.id = t.member_user_id
+        WHERE 1=1
+        and t.operation_team_id = #{operationTeamId}
+    </select>
+    
+    
 </mapper>

@@ -28,4 +28,11 @@ public interface OperationTeamMemberMapper extends BaseMapper<OperationTeamMembe
      * @return
      */
     List<OperationTeamMemberVO> findOperationTeamMember(@Param(value = "form") OperationTeamMemberForm form);
+
+    /**
+     * 根据运营小组id，查询运营小组成员list
+     * @param operationTeamId
+     * @return
+     */
+    List<OperationTeamMemberVO> findOperationTeamMemberByOperationTeamId(@Param("operationTeamId") Long operationTeamId);
 }

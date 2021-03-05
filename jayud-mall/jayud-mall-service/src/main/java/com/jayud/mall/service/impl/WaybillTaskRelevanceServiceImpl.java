@@ -1,5 +1,6 @@
 package com.jayud.mall.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.WaybillTaskRelevanceMapper;
@@ -55,45 +56,20 @@ public class WaybillTaskRelevanceServiceImpl extends ServiceImpl<WaybillTaskRele
         //# 同一个运营小组，人员设置任务，一个人可以同时有多个任务，但是一个任务不能有多个人
         List<WaybillTaskVO> list = waybillTaskRelevanceMapper.findWaybillTaskByOrderInfoId(orderInfoId);
 
-        List<WaybillTaskRelevance> waybillTaskRelevanceForms = ConvertUtil.convertList(list, WaybillTaskRelevance.class);
+        List<WaybillTaskRelevance> waybillTaskRelevances = ConvertUtil.convertList(list, WaybillTaskRelevance.class);
+        waybillTaskRelevances.forEach(waybillTaskRelevance -> {
+            waybillTaskRelevance.setOrderInfoId(orderInfoId);
+            waybillTaskRelevance.setStatus("0");//状态(0未激活 1已激活 2异常 3已完成)
+        });
+        //先删除
+        QueryWrapper<WaybillTaskRelevance> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("order_info_id", orderInfoId);
+        this.remove(queryWrapper);
+        //再保存
+        this.saveOrUpdateBatch(waybillTaskRelevances);
+        List<WaybillTaskRelevanceVO> waybillTaskRelevanceVOS = ConvertUtil.convertList(waybillTaskRelevances, WaybillTaskRelevanceVO.class);
 
-//        List<WaybillTaskRelevanceForm> waybillTaskRelevanceForms = new ArrayList<>();
-//        list.forEach(waybillTaskVO -> {
-//            WaybillTaskRelevanceForm form = new WaybillTaskRelevanceForm();
-//            form.setOrderInfoId(orderInfoId);
-//            form.setTaskCode(waybillTaskVO.getTaskCode());
-//            form.setTaskName(waybillTaskVO.getTaskName());
-//            form.setSort(waybillTaskVO.getSort());
-//            form.setDays(waybillTaskVO.getDays());
-//            form.setDayFlag(waybillTaskVO.getDayFlag());
-//            form.setOperators(waybillTaskVO.getMemberUserName());
-//            form.setMinutes(waybillTaskVO.getMinutes());
-//            form.setScore(waybillTaskVO.getScore());
-//            form.setRemarks(waybillTaskVO.getRemarks());
-//            form.setStatus("1");
-//            form.setReason(null);
-//            form.setUpTime(null);
-//            form.setUserId(waybillTaskVO.getMemberUserId().intValue());
-//            form.setUserName(waybillTaskVO.getMemberUserName());
-//            form.setCreateTime(LocalDateTime.now());
-//            waybillTaskRelevanceForms.add(form);
-//        });
-
-//        //先删除
-//        QueryWrapper<WaybillTaskRelevance> queryWrapper = new QueryWrapper<>();
-//        queryWrapper.eq("order_info_id", orderInfoId);
-//        this.remove(queryWrapper);
-//
-//        //再保存
-//        List<WaybillTaskRelevance> waybillTaskRelevances =
-//                ConvertUtil.convertList(waybillTaskRelevanceForms, WaybillTaskRelevance.class);
-//        this.saveOrUpdateBatch(waybillTaskRelevances);
-//
-//        List<WaybillTaskRelevanceVO> waybillTaskRelevanceVOS =
-//                ConvertUtil.convertList(waybillTaskRelevances, WaybillTaskRelevanceVO.class);
-
-//        return waybillTaskRelevanceVOS;
-        return null;
+        return waybillTaskRelevanceVOS;
     }
 
 }

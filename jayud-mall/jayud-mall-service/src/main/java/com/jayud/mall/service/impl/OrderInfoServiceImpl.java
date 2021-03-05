@@ -843,11 +843,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderCopeWithService.remove(orderCopeWithQueryWrapper);//先删除
         orderCopeWithService.saveOrUpdateBatch(orderCopeWiths);//在保存  订单应付费用
 
-
         //TODO 提交订单时，创建订单任务
-        List<WaybillTaskRelevanceVO> waybillTaskRelevanceVOS =
-                waybillTaskRelevanceService.saveWaybillTaskRelevance(orderInfo);
-
+        List<WaybillTaskRelevanceVO> waybillTaskRelevanceVOS = waybillTaskRelevanceService.saveWaybillTaskRelevance(orderInfo);
 
         return CommonResult.success(ConvertUtil.convert(orderInfo, OrderInfoVO.class));
 

@@ -49,7 +49,7 @@ public class OperationTeamController {
     }
 
     //保存运营服务小组以及关联的小组人员 member_user_id
-    @ApiOperation(value = "保存运营服务小组以及关联的小组人员")
+    @ApiOperation(value = "保存运营服务小组以及关联的小组人员，以及人员关联任务项")
     @PostMapping("/saveOperationTeam")
     @ApiOperationSupport(order = 3)
     public CommonResult<OperationTeamVO> saveOperationTeam(@Valid @RequestBody OperationTeamForm form){

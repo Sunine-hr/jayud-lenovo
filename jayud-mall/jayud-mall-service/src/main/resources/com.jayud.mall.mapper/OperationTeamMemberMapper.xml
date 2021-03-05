@@ -21,13 +21,15 @@
     <select id="findOperationTeamMember" parameterType="com.jayud.mall.model.bo.OperationTeamMemberForm"
             resultType="com.jayud.mall.model.vo.OperationTeamMemberVO">
         select
-        t.id,t.operation_team_id,t.member_user_id,t.`status`,t.creator,t.creation_time,
+        t.id,t.operation_team_id,t.member_user_id,t.task_id,t.`status`,t.creator,t.creation_time,
         t1.group_name operationTeamName,
-        t2.`name` memberUserName
+        t2.`name` memberUserName,
+        t3.task_code,t3.task_name
         from
         operation_team_member t
         LEFT JOIN operation_team t1 on t1.id = t.operation_team_id
         LEFT JOIN system_user t2 on t2.id = t.member_user_id
+        left join task t3 on t3.id = t.task_id
         WHERE 1=1
         <if test="form.id != null">
             AND t.id = #{form.id}
@@ -44,15 +46,18 @@
     </select>
 
     
-    <select id="findOperationTeamMemberByOperationTeamId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OperationTeamMemberVO">
+    <select id="findOperationTeamMemberByOperationTeamId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.OperationTeamMemberVO">
         select
-            t.id,t.operation_team_id,t.member_user_id,t.`status`,t.creator,t.creation_time,
-            t1.group_name operationTeamName,
-            t2.`name` memberUserName
+        t.id,t.operation_team_id,t.member_user_id,t.task_id,t.`status`,t.creator,t.creation_time,
+        t1.group_name operationTeamName,
+        t2.`name` memberUserName,
+        t3.task_code,t3.task_name
         from
-            operation_team_member t
-                LEFT JOIN operation_team t1 on t1.id = t.operation_team_id
-                LEFT JOIN system_user t2 on t2.id = t.member_user_id
+        operation_team_member t
+        LEFT JOIN operation_team t1 on t1.id = t.operation_team_id
+        LEFT JOIN system_user t2 on t2.id = t.member_user_id
+        left join task t3 on t3.id = t.task_id
         WHERE 1=1
         and t.operation_team_id = #{operationTeamId}
     </select>

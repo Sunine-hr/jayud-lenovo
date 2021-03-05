@@ -28,9 +28,9 @@ CREATE TABLE `order_inland_send_cars` (
   `order_id` bigint(20) NOT NULL COMMENT '订单id',
   `vehicle_type` int(10) NOT NULL COMMENT '车型(1吨车 2柜车)',
   `vehicle_size` varchar(5) NOT NULL COMMENT '车型(例如:3T)',
-  `driver_name` bigint(20) NOT NULL COMMENT '司机名称',
+  `driver_name` varchar(20) NOT NULL COMMENT '司机名称',
   `driver_phone` varchar(50) NOT NULL COMMENT '司机电话',
-  `license_plate` bigint(20) NOT NULL COMMENT '车牌号',
+  `license_plate` varchar(20) NOT NULL COMMENT '车牌号',
   `supplier_name` varchar(255) NOT NULL COMMENT '供应商名称',
   `supplier_id` bigint(100) NOT NULL COMMENT '供应商id',
   `remarks` varchar(255) DEFAULT NULL COMMENT '备注',
@@ -41,4 +41,4 @@ CREATE TABLE `order_inland_send_cars` (
   `update_user` varchar(50) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) COMMENT='内陆派车信息';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='内陆派车信息';

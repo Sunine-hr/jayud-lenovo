@@ -156,6 +156,9 @@ public abstract class CommonConstant {
     public static final String KY = "KY";
     public static final String KY_DESC = "空运订单";
 
+    public static final String NLYS = "NLYS";
+    public static final String NLYS_DESC = "内陆运输";
+
     public static final String PAGE_LIST = "pageList";
 
     public static final String PRE_SUBMIT_COUNT = "preSubmitCount";

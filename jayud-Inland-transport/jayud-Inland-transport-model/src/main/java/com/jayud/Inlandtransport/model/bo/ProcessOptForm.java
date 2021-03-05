@@ -43,7 +43,7 @@ public class ProcessOptForm {
     private String description;
 
     @ApiModelProperty(value = "派车信息")
-    private SendCarForm sendCarForm ;
+    private SendCarForm sendCarForm;
 
     @ApiModelProperty(value = "业务类型 前端不用管")
     private Integer businessType;
@@ -67,12 +67,15 @@ public class ProcessOptForm {
 
     public void checkProcessOpt(OrderStatusEnum nextStatus) {
         boolean pass = true;
+        if (nextStatus == null) {
+            throw new JayudBizException("不存在该状态的操作");
+        }
 
         switch (nextStatus) {
             case INLANDTP_NL_2: //派车
                 //设置操作时间
-                this.operatorTime = DateUtils.LocalDateTime2Str(LocalDateTime.now(), DateUtils.DATE_TIME_PATTERN);
                 this.sendCarForm.checkSendCarOptParam();
+                this.operatorTime = DateUtils.LocalDateTime2Str(LocalDateTime.now(), DateUtils.DATE_TIME_PATTERN);
                 break;
             case INLANDTP_NL_1: //接单
             case INLANDTP_NL_4: //确认派车
@@ -84,8 +87,6 @@ public class ProcessOptForm {
                 //设置操作时间
                 this.operatorTime = DateUtils.LocalDateTime2Str(LocalDateTime.now(), DateUtils.DATE_TIME_PATTERN);
                 break;
-            default:
-                throw new JayudBizException("不存在该状态的操作");
         }
         if (!pass) throw new JayudBizException(ResultEnum.VALIDATE_FAILED);
     }

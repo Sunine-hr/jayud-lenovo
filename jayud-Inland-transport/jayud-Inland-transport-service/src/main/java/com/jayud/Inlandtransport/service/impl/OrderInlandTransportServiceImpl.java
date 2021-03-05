@@ -1,17 +1,17 @@
 package com.jayud.Inlandtransport.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.Inlandtransport.feign.OauthClient;
 import com.jayud.Inlandtransport.feign.OmsClient;
 import com.jayud.Inlandtransport.mapper.OrderInlandTransportMapper;
-import com.jayud.Inlandtransport.model.bo.AddOrderInlandTransportForm;
-import com.jayud.Inlandtransport.model.bo.OprStatusForm;
-import com.jayud.Inlandtransport.model.bo.ProcessOptForm;
-import com.jayud.Inlandtransport.model.bo.QueryOrderForm;
+import com.jayud.Inlandtransport.model.bo.*;
+import com.jayud.Inlandtransport.model.po.OrderInlandSendCars;
 import com.jayud.Inlandtransport.model.po.OrderInlandTransport;
 import com.jayud.Inlandtransport.model.vo.OrderInlandTransportFormVO;
+import com.jayud.Inlandtransport.service.IOrderInlandSendCarsService;
 import com.jayud.Inlandtransport.service.IOrderInlandTransportService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
@@ -51,6 +51,8 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
     private OmsClient omsClient;
     @Autowired
     private OauthClient oauthClient;
+    @Autowired
+    private IOrderInlandSendCarsService orderInlandSendCarsService;
 
     //创建订单
     @Override
@@ -109,6 +111,7 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
 
     /**
      * 修改节点流程
+     *
      * @param orderInlandTransport
      * @param form
      */
@@ -129,21 +132,22 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
 
     /**
      * 节点操作记录
+     *
      * @param form
      */
     @Override
     public void processOptRecord(ProcessOptForm form) {
         AuditInfoForm auditInfoForm = new AuditInfoForm();
         auditInfoForm.setExtId(form.getOrderId());
-        auditInfoForm.setExtDesc(SqlConstant.AIR_ORDER);
+        auditInfoForm.setExtDesc(SqlConstant.INLAND_ORDER);
         auditInfoForm.setAuditComment(form.getDescription());
         auditInfoForm.setAuditUser(form.getOperatorUser());
         auditInfoForm.setFileViews(form.getFileViewList());
         auditInfoForm.setAuditStatus(form.getStatus());
         auditInfoForm.setAuditTypeDesc(form.getStatusName());
-
+        auditInfoForm.setAuditUser(form.getOperatorUser());
         //轨迹
-        OprStatusForm oprStatusForm=new OprStatusForm();
+        OprStatusForm oprStatusForm = new OprStatusForm();
         oprStatusForm.setMainOrderId(form.getMainOrderId());
         oprStatusForm.setOrderId(form.getOrderId());
         oprStatusForm.setStatus(form.getStatus());
@@ -165,8 +169,23 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
     }
 
     @Override
+    @Transactional
     public void doDispatchOpt(ProcessOptForm form) {
+        //保存派车信息
+        SendCarForm sendCarForm = form.getSendCarForm();
+        OrderInlandSendCars orderInlandSendCars = ConvertUtil.convert(sendCarForm, OrderInlandSendCars.class);
+        orderInlandSendCars.setCreateUser(UserOperator.getToken());
+        orderInlandSendCars.setCreateTime(LocalDateTime.now());
+        this.orderInlandSendCarsService.save(orderInlandSendCars);
 
+        this.updateProcessStatus(new OrderInlandTransport(), form);
+    }
+
+
+    @Override
+    public List<OrderInlandTransport> getByCondition(OrderInlandTransport orderInlandTransport) {
+        QueryWrapper<OrderInlandTransport> condition = new QueryWrapper<>();
+        return this.baseMapper.selectList(condition);
     }
 
 

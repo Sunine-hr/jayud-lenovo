@@ -47,13 +47,13 @@ public class OrderInlandSendCars extends Model<OrderInlandSendCars> {
     private String vehicleSize;
 
     @ApiModelProperty(value = "司机名称")
-    private Long driverName;
+    private String driverName;
 
     @ApiModelProperty(value = "司机电话")
     private String driverPhone;
 
     @ApiModelProperty(value = "车牌号")
-    private Long licensePlate;
+    private String licensePlate;
 
     @ApiModelProperty(value = "供应商名称")
     private String supplierName;
@@ -66,9 +66,6 @@ public class OrderInlandSendCars extends Model<OrderInlandSendCars> {
 
     @ApiModelProperty(value = "审核意见")
     private String describes;
-
-    @ApiModelProperty(value = "状态")
-    private String status;
 
     @ApiModelProperty(value = "创建人(登录用户)")
     private String createUser;

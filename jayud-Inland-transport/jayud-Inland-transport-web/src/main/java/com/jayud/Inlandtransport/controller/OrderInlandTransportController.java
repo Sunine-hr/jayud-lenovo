@@ -1,6 +1,8 @@
 package com.jayud.Inlandtransport.controller;
 
 
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.Inlandtransport.feign.OauthClient;
@@ -11,17 +13,22 @@ import com.jayud.Inlandtransport.model.po.OrderInlandTransport;
 import com.jayud.Inlandtransport.model.vo.GoodsVO;
 import com.jayud.Inlandtransport.model.vo.OrderAddressVO;
 import com.jayud.Inlandtransport.model.vo.OrderInlandTransportFormVO;
+import com.jayud.Inlandtransport.model.vo.SendCarPdfVO;
+import com.jayud.Inlandtransport.service.IOrderInlandSendCarsService;
 import com.jayud.Inlandtransport.service.IOrderInlandTransportService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.aop.annotations.DynamicHead;
+import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
+import io.netty.util.internal.StringUtil;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -31,6 +38,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -43,6 +51,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/orderInlandTransport")
 @Slf4j
+@Api(tags = "内陆运输订单模块")
 public class OrderInlandTransportController {
 
     @Autowired
@@ -51,8 +60,10 @@ public class OrderInlandTransportController {
     private IOrderInlandTransportService orderInlandTransportService;
     @Autowired
     private OauthClient oauthClient;
+    @Autowired
+    private IOrderInlandSendCarsService orderInlandSendCarsService;
 
-    @ApiOperation(value = "分页查询空运订单")
+    @ApiOperation(value = "分页查询订单")
     @PostMapping(value = "/findByPage")
     @DynamicHead
     public CommonResult<CommonPageResult<OrderInlandTransportFormVO>> findByPage(@RequestBody QueryOrderForm form) {
@@ -121,8 +132,8 @@ public class OrderInlandTransportController {
 
 
     @ApiOperation(value = "执行程操作")
-    @PostMapping(value = "/doAirProcessOpt")
-    public CommonResult doAirProcessOpt(@RequestBody ProcessOptForm form) {
+    @PostMapping(value = "/doProcessOpt")
+    public CommonResult doProcessOpt(@RequestBody ProcessOptForm form) {
         if (form.getMainOrderId() == null || form.getOrderId() == null) {
             log.warn("空运订单编号/空运订单id必填");
             return CommonResult.error(ResultEnum.VALIDATE_FAILED);
@@ -143,7 +154,7 @@ public class OrderInlandTransportController {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
         //校验参数
-        OrderStatusEnum statusEnum = OrderStatusEnum.valueOf(nextStatus);
+        OrderStatusEnum statusEnum = OrderStatusEnum.getEnums(nextStatus);
         form.checkProcessOpt(statusEnum);
         form.setStatus(nextStatus);
 
@@ -156,6 +167,7 @@ public class OrderInlandTransportController {
                         , form);
                 break;
             case INLANDTP_NL_2: //派车
+                form.getSendCarForm().setOrderNo(order.getOrderNo()).setOrderId(order.getId());
                 this.orderInlandTransportService.doDispatchOpt(form);
                 break;
             case INLANDTP_NL_3: //派车审核
@@ -166,6 +178,31 @@ public class OrderInlandTransportController {
                 break;
         }
         return CommonResult.success();
+    }
+
+
+    @ApiOperation(value = "渲染数据,确认派车 orderNo=订单号(主/子),entranceType=入口类型(1主订单,2子订单)")
+    @PostMapping(value = "/initPdfData")
+    public CommonResult<SendCarPdfVO> initPdfData(@RequestBody Map<String, Object> param) {
+        String orderNo = MapUtil.getStr(param, CommonConstant.ORDER_NO);
+        Integer entranceType = MapUtil.getInt(param, "entranceType");
+        if (StringUtil.isNullOrEmpty(orderNo) && entranceType == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        OrderInlandTransport subOrder = null;
+        if (entranceType == 1) {
+            List<OrderInlandTransport> subOrders = this.orderInlandTransportService.getByCondition(
+                    new OrderInlandTransport().setMainOrderNo(orderNo));
+            if (CollectionUtil.isEmpty(subOrders)) {
+                return CommonResult.error(400, "不存在该订单信息");
+            } else {
+                subOrder = subOrders.get(0);
+            }
+        } else {
+            subOrder = this.orderInlandTransportService.getByCondition(new OrderInlandTransport().setOrderNo(orderNo)).get(0);
+        }
+        SendCarPdfVO sendCarPdfVO = orderInlandSendCarsService.initPdfData(subOrder, CommonConstant.NLYS_DESC);
+        return CommonResult.success(sendCarPdfVO);
     }
 }
 

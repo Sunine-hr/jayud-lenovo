@@ -23,7 +23,7 @@ public enum OrderStatusEnum {
     ZGYSDD("ZGYSDD", "中港运输订单"),
     FWD("FWD", "服务单"),
     FWDDD("FWDDD", "服务单订单"),
-    HY("HY","海运"),
+    HY("HY", "海运"),
     HYDD("HYDD", "海运订单"),
     NLDD("NLDD", "内陆运输订单"),
 
@@ -105,21 +105,21 @@ public enum OrderStatusEnum {
     AIR_A_8("A_8", "确认签收"),
 
     //海运订单状态流程节点
-    SEA_S_0("S_0","待接单"),
-    SEA_S_1("S_1","海运接单"),
-    SEA_S_1_1("S_1_1","海运接单驳回"),
-    SEA_S_2("S_2","海运订船"),
-    SEA_S_2_1("S_2_1","订船驳回"),
-    SEA_S_3("S_3","确认入仓"),
-    SEA_S_3_1("S_3_1","订单入仓驳回"),
-    SEA_S_3_2("S_3_2","订船驳回编辑"),
-    SEA_S_4("S_4","提交补料"),
-    SEA_S_5("S_5","提单草稿确认"),
-    SEA_S_6("S_6","确认装船"),
-    SEA_S_7("S_7","放单确认"),
-    SEA_S_8("S_8","确认到港"),
-    SEA_S_9("S_9","海外代理"),
-    SEA_S_10("S_10","订单签收"),
+    SEA_S_0("S_0", "待接单"),
+    SEA_S_1("S_1", "海运接单"),
+    SEA_S_1_1("S_1_1", "海运接单驳回"),
+    SEA_S_2("S_2", "海运订船"),
+    SEA_S_2_1("S_2_1", "订船驳回"),
+    SEA_S_3("S_3", "确认入仓"),
+    SEA_S_3_1("S_3_1", "订单入仓驳回"),
+    SEA_S_3_2("S_3_2", "订船驳回编辑"),
+    SEA_S_4("S_4", "提交补料"),
+    SEA_S_5("S_5", "提单草稿确认"),
+    SEA_S_6("S_6", "确认装船"),
+    SEA_S_7("S_7", "放单确认"),
+    SEA_S_8("S_8", "确认到港"),
+    SEA_S_9("S_9", "海外代理"),
+    SEA_S_10("S_10", "订单签收"),
 
     //内陆运输
     INLANDTP_NL_0("NL_0", "待接单"),
@@ -137,13 +137,11 @@ public enum OrderStatusEnum {
     INLANDTP_NL_6("NL_6", "货物签收"),
 
 
-
     //外部报关放行
     EXT_CUSTOMS_RELEASE("E_C_0", "外部报关放行"),
 
     //香港清关
     HK_CLEAR_1("HK_C_1", "香港清关"),
-
 
 
     //费用状态
@@ -164,6 +162,15 @@ public enum OrderStatusEnum {
         return "";
     }
 
+    public static OrderStatusEnum getEnums(String code) {
+        for (OrderStatusEnum value : values()) {
+            if (Objects.equals(code, value.getCode())) {
+                return value;
+            }
+        }
+        return null;
+    }
+
     public static String getCode(String desc) {
         for (OrderStatusEnum value : values()) {
             if (Objects.equals(desc, value.getDesc())) {
@@ -172,6 +179,7 @@ public enum OrderStatusEnum {
         }
         return "";
     }
+
     public static List<OrderStatusEnum> getAirOrderProcess() {
         List<OrderStatusEnum> statusEnums = new ArrayList<>();
         statusEnums.add(AIR_A_0);
@@ -212,7 +220,6 @@ public enum OrderStatusEnum {
         statusEnums.add(INLANDTP_NL_6);
         return statusEnums;
     }
-
 
 
     /**
@@ -309,7 +316,7 @@ public enum OrderStatusEnum {
         }
         List<OrderStatusEnum> statusEnums = getSeaOrderProcess();
         for (OrderStatusEnum statusEnum : statusEnums) {
-            if(statusEnum.getCode().equals(currentStatus)){
+            if (statusEnum.getCode().equals(currentStatus)) {
                 return statusEnum;
             }
         }
@@ -371,8 +378,8 @@ public enum OrderStatusEnum {
                     TMS_T_1_1.getCode(), TMS_T_2_1.getCode(), TMS_T_3_1.getCode(),
                     TMS_T_3_2.getCode(), TMS_T_4_1.getCode(), TMS_T_5_1.getCode(),
                     AIR_A_1_1.getCode(), AIR_A_2_1.getCode(), AIR_A_3_1.getCode(),
-                    AIR_A_3_2.getCode(),SEA_S_1_1.getCode(),SEA_S_2_1.getCode(),
-                    SEA_S_3_1.getCode(),SEA_S_3_2.getCode()};
+                    AIR_A_3_2.getCode(), SEA_S_1_1.getCode(), SEA_S_2_1.getCode(),
+                    SEA_S_3_1.getCode(), SEA_S_3_2.getCode()};
         }
         for (String subOrderSign : subOrderSigns) {
             //todo 有需要再补
@@ -389,9 +396,9 @@ public enum OrderStatusEnum {
             if (SubOrderSignEnum.BG.getSignOne().equals(subOrderSign)) {
                 return new String[]{CUSTOMS_C_1_1.getCode()};
             }
-            if(SubOrderSignEnum.HY.getSignOne().equals(subOrderSign)){
+            if (SubOrderSignEnum.HY.getSignOne().equals(subOrderSign)) {
                 return new String[]{
-                        SEA_S_1_1.getCode(),SEA_S_2_1.getCode(),SEA_S_3_1.getCode(),SEA_S_3_2.getCode()
+                        SEA_S_1_1.getCode(), SEA_S_2_1.getCode(), SEA_S_3_1.getCode(), SEA_S_3_2.getCode()
                 };
             }
         }

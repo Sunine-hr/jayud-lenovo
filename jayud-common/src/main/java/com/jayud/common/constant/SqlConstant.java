@@ -32,6 +32,8 @@ public abstract class SqlConstant {
 
     public static final String AIR_ORDER = "air_order表";
 
+    public static final String INLAND_ORDER = "order_inland_transport表";
+
     public static final String AIR_BOOKING = "air_booking表";
 
     public static final String SEA_ORDER = "sea_order表";

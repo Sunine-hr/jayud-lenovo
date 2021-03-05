@@ -849,8 +849,20 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
 
             //生成中港订单号
-            if(orderTransportForm.getId() == null){
+            if(form.getCmd().equals("submit") && orderTransportForm.getSubTmsStatus().equals("T_0")){
                 String orderNo = generationOrderNo(orderTransportForm.getLegalEntityId(),orderTransportForm.getGoodsType(),OrderStatusEnum.ZGYS.getCode());
+                orderTransportForm.setOrderNo(orderNo);
+            }
+            if(form.getCmd().equals("preSubmit") && orderTransportForm.getId() == null){
+                //生成主订单号
+                String orderNo = StringUtils.loadNum(CommonConstant.T, 12);
+                while (true) {
+                    if (!isExistOrder(orderNo)) {//重复
+                        orderNo = StringUtils.loadNum(CommonConstant.T, 12);
+                    } else {
+                        break;
+                    }
+                }
                 orderTransportForm.setOrderNo(orderNo);
             }
 
@@ -894,8 +906,20 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             InputAirOrderForm airOrderForm = form.getAirOrderForm();
 
             //生成空运订单号
-            if(airOrderForm.getId() == null){
+            if(form.getCmd().equals("submit")&& airOrderForm.getStatus().equals("A_0")){
                 String orderNo = generationOrderNo(airOrderForm.getLegalEntityId(),airOrderForm.getImpAndExpType(),OrderStatusEnum.KY.getCode());
+                airOrderForm.setOrderNo(orderNo);
+            }
+            if(form.getCmd().equals("preSubmit") && airOrderForm.getId() == null){
+                //生成主订单号
+                String orderNo = StringUtils.loadNum(CommonConstant.A, 12);
+                while (true) {
+                    if (!isExistOrder(orderNo)) {//重复
+                        orderNo = StringUtils.loadNum(CommonConstant.A, 12);
+                    } else {
+                        break;
+                    }
+                }
                 airOrderForm.setOrderNo(orderNo);
             }
 
@@ -932,10 +956,23 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             InputSeaOrderForm seaOrderForm = form.getSeaOrderForm();
 
             //生成海运订单号
-            if(seaOrderForm.getOrderId() == null){
+            if(form.getCmd().equals("submit") && seaOrderForm.getStatus().equals("S_0")){
                 String orderNo = generationOrderNo(seaOrderForm.getLegalEntityId(),seaOrderForm.getImpAndExpType(),OrderStatusEnum.HY.getCode());
                 seaOrderForm.setOrderNo(orderNo);
             }
+            if(form.getCmd().equals("preSubmit") && seaOrderForm.getOrderId() == null){
+                //生成主订单号
+                String orderNo = StringUtils.loadNum(CommonConstant.S, 12);
+                while (true) {
+                    if (!isExistOrder(orderNo)) {//重复
+                        orderNo = StringUtils.loadNum(CommonConstant.S, 12);
+                    } else {
+                        break;
+                    }
+                }
+                seaOrderForm.setOrderNo(orderNo);
+            }
+
 
 
             if (this.queryEditOrderCondition(seaOrderForm.getStatus(),

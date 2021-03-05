@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 public class WaybillTaskVO {
 
-
+    //t1.userName operators, t1.member_user_id userId, t1.userName userName
     @ApiModelProperty(value = "自增id", position = 1)
     @JSONField(ordinal = 1)
     private Long id;

@@ -2,8 +2,12 @@ package com.jayud.mall.mapper;
 
 import com.jayud.mall.model.po.WaybillTaskRelevance;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.mall.model.vo.WaybillTaskVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +21,10 @@ import org.springframework.stereotype.Component;
 @Component
 public interface WaybillTaskRelevanceMapper extends BaseMapper<WaybillTaskRelevance> {
 
+    /**
+     * 根据订单id，找运营组和任务
+     * @param orderId
+     * @return
+     */
+    List<WaybillTaskVO> findWaybillTaskByOrderInfoId(@Param("orderId") Long orderId);
 }

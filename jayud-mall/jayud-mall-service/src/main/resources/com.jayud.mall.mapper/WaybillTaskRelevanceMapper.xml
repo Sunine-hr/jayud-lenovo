@@ -28,4 +28,43 @@
         id, order_info_id, task_code, task_name, sort, days, day_flag, operators, minutes, score, remarks, status, reason, up_time, user_id, user_name, create_time
     </sql>
 
+
+    <select id="findWaybillTaskByOrderInfoId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.WaybillTaskVO">
+        select
+            t.task_code, t.task_name, t.sort, t.days, t.day_flag, t.minutes, t.score, t.remarks, t.status,
+            t1.userName operators, t1.member_user_id userId, t1.userName userName
+        from (
+                 select
+                     t.id orderId,t.offer_info_id,
+                     t1.qie,
+                     t2.task_id,
+                     t3.group_code,t3.group_name,
+                     t4.task_code,t4.task_name,t4.sort,t4.days,t4.day_flag,t4.minutes,t4.score,t4.remarks,t4.status
+                 from (select id,offer_info_id from order_info where id=#{orderId}) t
+                          left join offer_info t1 on t1.id = t.offer_info_id
+                          left join quotation_template t2 on t2.id = t1.qie
+                          left join task_group t3 on t3.id = t2.task_id
+                          left join waybill_task t4 on t4.group_code = t3.group_code
+             ) t
+                 left join (
+            select
+                t.id orderId,t.customer_id,
+                t1.operation_team_id,
+                t2.group_code,t2.group_name,
+                t3.member_user_id,t3.task_id,
+                t4.name userName,
+                t5.task_code,t5.task_name
+            from (select id,customer_id from order_info where id=#{orderId}) t
+                     left join customer t1 on t1.id = t.customer_id
+                     left join operation_team t2 on t2.id = t1.operation_team_id
+                     left join operation_team_member t3 on t3.operation_team_id = t2.id
+                     left join system_user t4 on t4.id = t3.member_user_id
+                     left join task t5 on t5.id = t3.task_id
+
+        ) t1 on t1.task_code = t.task_code and t1.task_name = t.task_name
+
+    </select>
+
+
 </mapper>

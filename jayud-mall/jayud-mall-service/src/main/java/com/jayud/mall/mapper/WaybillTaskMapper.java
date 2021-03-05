@@ -34,5 +34,6 @@ public interface WaybillTaskMapper extends BaseMapper<WaybillTask> {
      * @param orderInfoId
      * @return
      */
+    @Deprecated
     List<WaybillTaskVO> findWaybillTaskByOrderInfoId(@Param("orderInfoId") Long orderInfoId);
 }

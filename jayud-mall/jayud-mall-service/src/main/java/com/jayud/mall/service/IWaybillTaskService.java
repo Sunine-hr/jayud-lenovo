@@ -29,5 +29,6 @@ public interface IWaybillTaskService extends IService<WaybillTask> {
      * @param orderInfoId
      * @return
      */
+    @Deprecated
     List<WaybillTaskVO> findWaybillTaskByOrderInfoId(Long orderInfoId);
 }

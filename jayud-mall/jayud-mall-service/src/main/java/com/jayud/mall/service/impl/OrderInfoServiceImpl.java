@@ -738,10 +738,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderClearanceFileService.remove(orderClearanceFileQueryWrapper);
         orderClearanceFileService.saveOrUpdateBatch(orderClearanceFileList);
 
-        //TODO 提交订单时，创建订单任务
-        List<WaybillTaskRelevanceVO> waybillTaskRelevanceVOS =
-                waybillTaskRelevanceService.saveWaybillTaskRelevance(orderInfo);
-
         //根据运价(报价)，找报价模板，报价模板对应应收应付费用信息
         OfferInfo offerInfo = offerInfoMapper.selectById(offerInfoId);
         Integer qie = offerInfo.getQie();//报价模板id(quotation_template id)
@@ -846,6 +842,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderCopeWithQueryWrapper.eq("order_id", orderInfo.getId());
         orderCopeWithService.remove(orderCopeWithQueryWrapper);//先删除
         orderCopeWithService.saveOrUpdateBatch(orderCopeWiths);//在保存  订单应付费用
+
+
+        //TODO 提交订单时，创建订单任务
+        List<WaybillTaskRelevanceVO> waybillTaskRelevanceVOS =
+                waybillTaskRelevanceService.saveWaybillTaskRelevance(orderInfo);
+
 
         return CommonResult.success(ConvertUtil.convert(orderInfo, OrderInfoVO.class));
 

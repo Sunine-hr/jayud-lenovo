@@ -3,6 +3,7 @@ package com.jayud.trailer.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.trailer.bo.AddTrailerOrderFrom;
 import com.jayud.trailer.bo.QueryTrailerOrderForm;
+import com.jayud.trailer.bo.TrailerProcessOptForm;
 import com.jayud.trailer.po.TrailerOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.trailer.vo.TrailerOrderFormVO;
@@ -63,4 +64,22 @@ public interface ITrailerOrderService extends IService<TrailerOrder> {
      * @return
      */
     IPage<TrailerOrderFormVO> findByPage(QueryTrailerOrderForm form);
+
+    /**
+     * 修改流程状态
+     * @param trailerOrder1
+     * @param form
+     */
+    void updateProcessStatus(TrailerOrder trailerOrder1, TrailerProcessOptForm form);
+
+    /**
+     * 拖车流程操作记录
+     */
+    void trailerProcessOptRecord(TrailerProcessOptForm form);
+
+    /**
+     * 派车操作
+     * @param form
+     */
+    void doTrailerDispatchOpt(TrailerProcessOptForm form);
 }

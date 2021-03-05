@@ -3,6 +3,7 @@ package com.jayud.trailer.controller;
 import com.jayud.common.CommonResult;
 import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.InitComboxVO;
+import com.jayud.trailer.feign.OmsClient;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -21,48 +22,34 @@ import java.util.Map;
 @RequestMapping("/common")
 public class CommonController {
 
-//    @Autowired
-//    private OmsClient omsClient;
-//
-//    @Autowired
-//    private ISeaPortService seaPortService;
-//
-//    @Autowired
-//    private ITermsService terms;
-//
-//    @Autowired
-//    private ICabinetTypeService cabinetTypeService;
-//
-//    @Autowired
-//    private ICabinetSizeService cabinetSizeService;
-//
-//    @ApiOperation(value = "下拉框(审核通过的供应商)")
-//    @PostMapping(value = "/initSupplierInfo")
-//    public CommonResult initSupplierInfo() {
-//        CommonResult<List<InitComboxVO>> result = omsClient.initSupplierInfo();
-////        if (result.getMsg().equals("成功")) {
-////            log.warn("远程调用审核通过的供应商失败 msg={}", result.getMsg());
-////            return CommonResult.error(ResultEnum.OPR_FAIL);
-////        }
-//        return CommonResult.success(result.getData());
-//    }
-//
-//    @ApiOperation(value = "主订单下拉选项-船舶港口，贸易类型")
-//    @PostMapping(value = "/mainOrder/initSea")
-//    public CommonResult<Map<String, Object>> initAir() {
-//        List<InitComboxStrVO> initComboxStrVOS = this.seaPortService.initSeaPort();
-//        List<InitComboxVO> initComboxVO = this.terms.initTerms();
-//        List<CabinetTypeVO> list = cabinetTypeService.initCabinetType();
-//
-//        Map<String, Object> response = new HashMap<>();
-//        //空运港口下拉选项
-//        response.put("seaPorts", initComboxStrVOS);
-//        //贸易类型下拉选项
-//        response.put("seaTerms", initComboxVO);
-//
-//        response.put("cabinetType",list);
-//        return CommonResult.success(response);
-//    }
+    @Autowired
+    private OmsClient omsClient;
+
+    @ApiOperation(value = "下拉框(审核通过的供应商)")
+    @PostMapping(value = "/initSupplierInfo")
+    public CommonResult initSupplierInfo() {
+        CommonResult<List<InitComboxVO>> result = omsClient.initSupplierInfo();
+//        if (result.getMsg().equals("成功")) {
+//            log.warn("远程调用审核通过的供应商失败 msg={}", result.getMsg());
+//            return CommonResult.error(ResultEnum.OPR_FAIL);
+//        }
+        return CommonResult.success(result.getData());
+    }
+
+    @ApiOperation(value = "订单列表-起运港、目的港，车型")
+    @PostMapping(value = "/mainOrder/initSea")
+    public CommonResult<Map<String, Object>> initTrailer() {
+
+        //获取港口信息
+        List<InitComboxStrVO> portCodeInfo = (List<InitComboxStrVO>)this.omsClient.initDictByDictTypeCode("Port").getData();
+
+        //获取车型信息
+        List<InitComboxVO> cabinetSizeInfo = (List<InitComboxVO>)this.omsClient.getVehicleSizeInfo().getData();
+        Map map = new HashMap();
+        map.put("portCodeInfo",portCodeInfo);
+        map.put("cabinetSizeInfo",cabinetSizeInfo);
+        return CommonResult.success(map);
+    }
 
 
 }

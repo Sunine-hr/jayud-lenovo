@@ -12,7 +12,6 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.TradeTypeEnum;
 import com.jayud.common.utils.FileView;
-import com.jayud.trailer.enums.IsEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +30,7 @@ import java.util.List;
  */
 @Data
 @Slf4j
-public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
+public class TrailerOrderImportVO extends Model<TrailerOrderImportVO> {
 
     private static final long serialVersionUID=1L;
 
@@ -123,10 +122,10 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     //@ApiModelProperty(value = "柜号附件名称")
     private String cnFileName;
 
-    @ApiModelProperty(value = "SO")
+    //@ApiModelProperty(value = "SO")
     private String so;
 
-    @ApiModelProperty(value = "SO上传附件地址数组集合")
+    //@ApiModelProperty(value = "SO上传附件地址数组集合")
     private List<FileView> soPics = new ArrayList<>();
 
     //@ApiModelProperty(value = "SO附件路径")
@@ -144,31 +143,25 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     @ApiModelProperty(value = "截柜租时间")
     private String timeCounterRent;
 
-    @ApiModelProperty(value = "开仓时间")
+    //@ApiModelProperty(value = "开仓时间")
     private String openTime;
 
-    @ApiModelProperty(value = "截补料时间")
+    //@ApiModelProperty(value = "截补料时间")
     private String cuttingReplenishingTime;
 
-    @ApiModelProperty(value = "截关时间")
+    //@ApiModelProperty(value = "截关时间")
     private String closingTime;
 
-    @ApiModelProperty(value = "放行时间")
+    //@ApiModelProperty(value = "放行时间")
     private String releaseTime;
 
     //@ApiModelProperty(value = "是否过磅(1代表true,0代表false)")
     private Boolean isWeighed;
 
-    @ApiModelProperty(value = "是否过磅")
-    private String isWeighedName;
-
     //@ApiModelProperty(value = "是否做补料(1代表true,0代表false)")
     private Boolean isMakeUp;
 
-    @ApiModelProperty(value = "是否做补料")
-    private String isMakeUpName;
-
-    @ApiModelProperty(value = "创建人")
+    @ApiModelProperty(value = "创建人(登录用户)")
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
@@ -183,7 +176,7 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     @ApiModelProperty(value = "是否需要录入费用(0:false,1:true)")
     private Boolean needInputCost;
 
-    @ApiModelProperty(value = "接单人")
+    @ApiModelProperty(value = "接单人(登录用户名)")
     private String orderTaker;
 
     @ApiModelProperty(value = "接单日期")
@@ -364,16 +357,6 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     public void setUnitCode(String unitCode) {
         this.unitCode = unitCode;
         this.defaultUnitCode = unitCode;
-    }
-
-    public void setIsWeighed(Boolean isWeighed) {
-        this.isWeighed = isWeighed;
-        this.isWeighedName = IsEnum.getDesc(isWeighed);
-    }
-
-    public void setIsMakeUp(Boolean isMakeUp) {
-        this.isMakeUp = isMakeUp;
-        this.isMakeUpName = IsEnum.getDesc(isMakeUp);
     }
 
 }

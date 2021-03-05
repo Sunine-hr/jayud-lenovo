@@ -11,7 +11,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * @Date
  * @Time
  */
-@SpringBootApplication(scanBasePackages = "com.jayud",exclude= {DataSourceAutoConfiguration.class})
+@SpringBootApplication(scanBasePackages = "com.jayud")
 @EnableDiscoveryClient
 @EnableFeignClients
 public class JayudTrailerApplication {

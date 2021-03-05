@@ -31,11 +31,11 @@ import java.util.List;
  */
 @Data
 @Slf4j
-public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
+public class TrailerOrderExportVO extends Model<TrailerOrderExportVO> {
 
     private static final long serialVersionUID=1L;
 
-//    @ApiModelProperty(value = "主键id")
+    @ApiModelProperty(value = "主键id")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
@@ -87,10 +87,10 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     @ApiModelProperty(value = "车型尺寸")
     private String cabinetSizeName;
 
-    @ApiModelProperty(value = "提运单")
+    //@ApiModelProperty(value = "提运单")
     private String billOfLading;
 
-    @ApiModelProperty(value = "提运单上传附件地址数组集合")
+    //@ApiModelProperty(value = "提运单上传附件地址数组集合")
     private List<FileView> billPics = new ArrayList<>();
 
     //@ApiModelProperty(value = "提运单附件路径，前台忽略")
@@ -105,7 +105,7 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     //@ApiModelProperty(value = "封条附件路径")
     private String pssFilePath;
 
-    @ApiModelProperty(value = "封条上传附件地址数组集合")
+    //@ApiModelProperty(value = "封条上传附件地址数组集合")
     private List<FileView> pssPics = new ArrayList<>();
 
     //@ApiModelProperty(value = "封条附件名称")
@@ -114,7 +114,7 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     @ApiModelProperty(value = "柜号")
     private String cabinetNumber;
 
-    @ApiModelProperty(value = "柜号上传附件地址数组集合")
+    //@ApiModelProperty(value = "柜号上传附件地址数组集合")
     private List<FileView> cnPics = new ArrayList<>();
 
     //@ApiModelProperty(value = "柜号附件路径")
@@ -135,13 +135,13 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     //@ApiModelProperty(value = "SO附件名称")
     private String soFileName;
 
-    @ApiModelProperty(value = "到港时间")
+    //@ApiModelProperty(value = "到港时间")
     private String arrivalTime;
 
-    @ApiModelProperty(value = "截仓期时间")
+    //@ApiModelProperty(value = "截仓期时间")
     private String closingWarehouseTime;
 
-    @ApiModelProperty(value = "截柜租时间")
+    //@ApiModelProperty(value = "截柜租时间")
     private String timeCounterRent;
 
     @ApiModelProperty(value = "开仓时间")
@@ -156,13 +156,13 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     @ApiModelProperty(value = "放行时间")
     private String releaseTime;
 
-    //@ApiModelProperty(value = "是否过磅(1代表true,0代表false)")
+    @ApiModelProperty(value = "是否过磅(1代表true,0代表false)")
     private Boolean isWeighed;
 
     @ApiModelProperty(value = "是否过磅")
     private String isWeighedName;
 
-    //@ApiModelProperty(value = "是否做补料(1代表true,0代表false)")
+    @ApiModelProperty(value = "是否做补料(1代表true,0代表false)")
     private Boolean isMakeUp;
 
     @ApiModelProperty(value = "是否做补料")
@@ -183,7 +183,7 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     @ApiModelProperty(value = "是否需要录入费用(0:false,1:true)")
     private Boolean needInputCost;
 
-    @ApiModelProperty(value = "接单人")
+    @ApiModelProperty(value = "接单人(登录用户名)")
     private String orderTaker;
 
     @ApiModelProperty(value = "接单日期")

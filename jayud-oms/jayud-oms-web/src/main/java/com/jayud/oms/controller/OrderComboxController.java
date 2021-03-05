@@ -18,6 +18,7 @@ import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.enums.LegalEntityAuditStatusEnum;
 import com.jayud.oms.model.enums.RoleKeyEnum;
 import com.jayud.oms.model.enums.StatusEnum;
+import com.jayud.oms.model.enums.VehicleTypeEnum;
 import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
@@ -86,6 +87,12 @@ public class OrderComboxController {
 
     @Autowired
     private IServiceTypeService serviceTypeService;
+
+    @Autowired
+    private IDictService dictService;
+
+    @Autowired
+    private IVehicleInfoService vehicleInfoService;
 
     @ApiOperation(value = "创建订单-客户,业务员,合同,业务所属部门,通关口岸")
     @PostMapping(value = "/initCombox1")
@@ -466,5 +473,51 @@ public class OrderComboxController {
         }
         return CommonResult.success(comboxStrVOS);
     }
+
+    @ApiOperation(value = "拖车订单-下拉框")
+    @PostMapping(value = "/initTrailerUnit")
+    public CommonResult initTrailerUnit() {
+        //获取下拉港口
+        List<Dict> port = dictService.getByDictTypeCode("Port");
+        List<InitComboxStrVO> ports = new ArrayList<>();
+        for (Dict dict : port) {
+            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+            initComboxStrVO.setName(dict.getValue());
+            initComboxStrVO.setCode(dict.getCode());
+            ports.add(initComboxStrVO);
+        }
+        //获取下拉车型
+        List<VehicleSizeInfoVO> vehicleSizeInfoVOS = vehicleInfoService.findVehicleSize();
+        List<InitComboxVO> cabinetSizes = new ArrayList<>();
+        for (VehicleSizeInfoVO obj : vehicleSizeInfoVOS) {
+            if (VehicleTypeEnum.CABINET_CAR.getCode().equals(obj.getVehicleType())) {
+                InitComboxVO initComboxVO = new InitComboxVO();
+                initComboxVO.setId(obj.getId());
+                initComboxVO.setName(obj.getVehicleSize());
+                cabinetSizes.add(initComboxVO);
+            }
+        }
+        //获取操作主体下拉列表
+        List<InitComboxVO> legals = oauthClient.findLegalEntity().getData();
+
+        //获取结算单位下拉框
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status","1");
+        List<CustomerInfo> customerInfos = customerInfoService.list();
+        List<InitComboxVO> initComboxVOS = new ArrayList<>();
+        for (CustomerInfo customerInfo : customerInfos) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(customerInfo.getId());
+            initComboxVO.setName(customerInfo.getName());
+            initComboxVOS.add(initComboxVO);
+        }
+        Map map = new HashMap();
+        map.put("ports",ports);
+        map.put("cabinetSizes",cabinetSizes);
+        map.put("legalEntitys",legals);
+        map.put("customerInfos",initComboxVOS);
+        return CommonResult.success(map);
+    }
+
 }
 

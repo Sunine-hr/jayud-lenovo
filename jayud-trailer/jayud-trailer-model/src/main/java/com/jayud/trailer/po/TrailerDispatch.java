@@ -47,6 +47,9 @@ public class TrailerDispatch extends Model<TrailerDispatch> {
     @ApiModelProperty(value = "司机电话")
     private String phone;
 
+    @ApiModelProperty(value = "司机姓名")
+    private String name;
+
     @ApiModelProperty(value = "供应商id(supplier_info id)")
     private Long supplierId;
 
@@ -73,7 +76,6 @@ public class TrailerDispatch extends Model<TrailerDispatch> {
 
     @ApiModelProperty(value = "更新时间")
     private LocalDateTime updateTime;
-
 
     @Override
     protected Serializable pkVal() {

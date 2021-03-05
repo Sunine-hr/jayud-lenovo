@@ -6,16 +6,14 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
+import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.OrderTypeEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
-import com.jayud.trailer.bo.AddGoodsForm;
-import com.jayud.trailer.bo.AddOrderAddressForm;
-import com.jayud.trailer.bo.AddTrailerOrderFrom;
-import com.jayud.trailer.bo.QueryTrailerOrderForm;
+import com.jayud.trailer.bo.*;
 import com.jayud.trailer.feign.FileClient;
 import com.jayud.trailer.feign.OauthClient;
 import com.jayud.trailer.feign.OmsClient;
@@ -34,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -254,6 +253,89 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
 
         Page<TrailerOrderFormVO> page = new Page<>(form.getPageNum(), form.getPageSize());
         return this.baseMapper.findByPage(page, form,legalIds);
+    }
+
+    /**
+     * 更新流程状态
+     */
+    @Transactional
+    @Override
+    public void updateProcessStatus(TrailerOrder trailerOrder, TrailerProcessOptForm form) {
+        trailerOrder.setId(form.getId());
+        trailerOrder.setUpdateTime(LocalDateTime.now());
+        trailerOrder.setUpdateUser(UserOperator.getToken());
+        trailerOrder.setStatus(form.getStatus());
+
+        //更新状态节点状态
+        this.baseMapper.updateById(trailerOrder);
+        //节点操作记录
+        this.trailerProcessOptRecord(form);
+
+        //完成订单状态
+        finishTrailerOrderOpt(trailerOrder);
+    }
+
+
+    /**
+     * 拖车流程操作记录
+     */
+    @Override
+    public void trailerProcessOptRecord(TrailerProcessOptForm form) {
+        AuditInfoForm auditInfoForm = new AuditInfoForm();
+        auditInfoForm.setExtId(form.getId());
+        auditInfoForm.setExtDesc(SqlConstant.SEA_ORDER);
+        auditInfoForm.setAuditComment(form.getDescription());
+        auditInfoForm.setAuditUser(UserOperator.getToken());
+        auditInfoForm.setFileViews(form.getFileViewList());
+        auditInfoForm.setAuditStatus(form.getStatus());
+        auditInfoForm.setAuditTypeDesc(form.getStatusName());
+
+        //文件拼接
+        form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
+        form.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
+        form.setBusinessType(BusinessTypeEnum.TC.getCode());
+
+        if (omsClient.saveOprStatus(form).getCode() != HttpStatus.SC_OK) {
+            log.error("远程调用物流轨迹失败");
+        }
+        if (omsClient.saveAuditInfo(auditInfoForm).getCode() != HttpStatus.SC_OK) {
+            log.error("远程调用审核记录失败");
+        }
+
+    }
+
+    //判断订单完成状态
+    private void finishTrailerOrderOpt(TrailerOrder trailerOrder) {
+        if (OrderStatusEnum.TT_8.getCode().equals(trailerOrder.getStatus())) {
+            //查询海运订单信息
+            TrailerOrder trailerOrder1 = new TrailerOrder();
+            trailerOrder1.setId(trailerOrder.getId());
+            trailerOrder1.setProcessStatus(1);
+            this.updateById(trailerOrder1);
+        }
+
+    }
+
+    /**
+     * 派车操作
+     */
+    @Override
+    @Transactional
+    public void doTrailerDispatchOpt(TrailerProcessOptForm form) {
+        AddTrailerDispatchFrom addTrailerDispatchFrom = form.getTrailerDispatch();
+        //查询派车是否存在,存在做更新操作
+        TrailerDispatch oldTrailerDispatch = this.trailerDispatchService.getEnableByTrailerOrderId(form.getId());
+        addTrailerDispatchFrom.setId(oldTrailerDispatch != null ? oldTrailerDispatch.getId() : null);
+
+        TrailerDispatch trailerDispatch = ConvertUtil.convert(addTrailerDispatchFrom, TrailerDispatch.class);
+
+        //设置派车状态
+        trailerDispatch.setStatus(0);
+
+        trailerDispatchService.saveOrUpdateTrailerDispatch(trailerDispatch);
+        //更改流程节点完成状态
+        //this.updateProcessStatusComplte(form);
+        updateProcessStatus(new TrailerOrder(), form);
     }
 
 }

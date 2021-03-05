@@ -133,6 +133,7 @@ public enum OrderStatusEnum {
     TT_3_1("TT_3_1","派车审核驳回"),
     TT_3_2("TT_3_2","派车驳回调度"),
     TT_4("TT_4","拖车提柜"),
+    TT_4_1("TT_4_1","拖车提柜驳回"),
     TT_5("TT_5","拖车到仓"),
     TT_6("TT_6","拖车离仓"),
     TT_7("TT_7","拖车过磅"),
@@ -334,6 +335,57 @@ public enum OrderStatusEnum {
         }
         return null;
     }
+
+
+    /**
+     * 获取拖车下个节点
+     * 如果是驳回状态就是当前状态
+     */
+    public static OrderStatusEnum getTrailerOrderNextStatus(String currentStatus) {
+
+        if (TT_3_2.getCode().equals(currentStatus)) {
+            return OrderStatusEnum.TT_3_2;
+        }
+        List<OrderStatusEnum> statusEnums = getTrailerOrderProcess();
+        for (OrderStatusEnum statusEnum : statusEnums) {
+            if(statusEnum.getCode().equals(currentStatus)){
+                return statusEnum;
+            }
+        }
+
+        return null;
+    }
+
+    public static List<OrderStatusEnum> getTrailerOrderProcess() {
+        List<OrderStatusEnum> statusEnums = new ArrayList<>();
+        statusEnums.add(TT_0);
+        statusEnums.add(TT_1);
+        statusEnums.add(TT_2);
+        statusEnums.add(TT_3);
+        statusEnums.add(TT_4);
+        statusEnums.add(TT_5);
+        statusEnums.add(TT_6);
+        statusEnums.add(TT_7);
+        statusEnums.add(TT_8);
+        return statusEnums;
+    }
+
+    public static OrderStatusEnum getTrailerOrderRejection(String status) {
+        if (OrderStatusEnum.TT_0.getCode().equals(status)) {//接单页面驳回
+            return TT_1_1;
+        }
+        if (OrderStatusEnum.TT_1.getCode().equals(status)) {//派车页面驳回
+            return TT_2_1;
+        }
+        if (OrderStatusEnum.TT_3.getCode().equals(status)) {//派车审核页面驳回
+            return TT_3_1;
+        }
+        if (OrderStatusEnum.TT_4.getCode().equals(status)) {//派车审核页面驳回
+            return TT_4_1;
+        }
+        return null;
+    }
+
 
     /**
      * 获取驳回枚举

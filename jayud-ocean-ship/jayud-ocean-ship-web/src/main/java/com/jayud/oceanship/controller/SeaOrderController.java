@@ -319,9 +319,9 @@ public class SeaOrderController {
         if (seaOrderId == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        SeaOrderVO airOrderDetails = this.seaOrderService.getSeaOrderDetails(seaOrderId);
+        SeaOrderVO seaOrderDetails = this.seaOrderService.getSeaOrderDetails(seaOrderId);
 
-        return CommonResult.success(airOrderDetails);
+        return CommonResult.success(seaOrderDetails);
     }
 
 

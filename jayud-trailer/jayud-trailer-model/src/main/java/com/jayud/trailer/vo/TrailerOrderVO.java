@@ -66,8 +66,14 @@ public class TrailerOrderVO {
     @ApiModelProperty(value = "起运港/目的港代码")
     private String portCode;
 
+    @ApiModelProperty(value = "起运港/目的港")
+    private String portCodeName;
+
     @ApiModelProperty(value = "车型尺寸id")
     private Long cabinetSize;
+
+    @ApiModelProperty(value = "车型尺寸")
+    private Long cabinetSizeName;
 
     @ApiModelProperty(value = "提运单")
     private String billOfLading;

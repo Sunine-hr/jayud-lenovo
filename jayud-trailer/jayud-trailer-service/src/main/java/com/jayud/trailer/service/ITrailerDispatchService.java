@@ -19,4 +19,10 @@ public interface ITrailerDispatchService extends IService<TrailerDispatch> {
      * @return
      */
     TrailerDispatch getEnableByTrailerOrderId(Long id);
+
+    /**
+     * 保存或修改派车信息
+     * @param trailerDispatch
+     */
+    void saveOrUpdateTrailerDispatch(TrailerDispatch trailerDispatch);
 }

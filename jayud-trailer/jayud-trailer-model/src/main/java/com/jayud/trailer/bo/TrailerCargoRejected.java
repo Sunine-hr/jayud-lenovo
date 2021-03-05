@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
  * 空运订单驳回操作
  */
 @Data
-public class SeaCargoRejected {
+public class TrailerCargoRejected {
 
     @ApiModelProperty(value = "海运订单id")
     @NotNull(message = "海运订单id不能为空")

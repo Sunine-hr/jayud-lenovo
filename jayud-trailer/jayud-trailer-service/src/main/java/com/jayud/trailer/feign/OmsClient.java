@@ -10,6 +10,7 @@ import com.jayud.common.entity.InitComboxVO;
 import com.jayud.trailer.bo.AddGoodsForm;
 import com.jayud.trailer.bo.AddOrderAddressForm;
 import com.jayud.trailer.bo.AuditInfoForm;
+import com.jayud.trailer.bo.TrailerProcessOptForm;
 import com.jayud.trailer.po.OrderFlowSheet;
 import com.jayud.trailer.vo.GoodsVO;
 import com.jayud.trailer.vo.OrderAddressVO;
@@ -41,11 +42,11 @@ public interface OmsClient {
     @RequestMapping(value = "/api/mainOrder/getByOrderNos")
     ApiResult getMainOrderByOrderNos(@RequestParam("orderNos") List<String> orderNos);
 
-//    /**
-//     * 只记录成功操作流程状态
-//     */
-//    @RequestMapping(value = "/api/saveOprStatus")
-//    ApiResultiResult saveOprStatus(@RequestBody SeaProcessOptForm form);
+    /**
+     * 只记录成功操作流程状态
+     */
+    @RequestMapping(value = "/api/saveOprStatus")
+    ApiResult saveOprStatus(@RequestBody TrailerProcessOptForm form);
 
     /**
      * 记录审核信息

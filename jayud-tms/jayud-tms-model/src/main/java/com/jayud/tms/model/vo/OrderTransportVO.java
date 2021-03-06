@@ -1,7 +1,9 @@
 package com.jayud.tms.model.vo;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.FileView;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
@@ -267,5 +269,21 @@ public class OrderTransportVO {
     public void setSubTmsStatus(String subTmsStatus) {
         this.subTmsStatus = subTmsStatus;
         this.subTmsStatusDesc = OrderStatusEnum.getDesc(subTmsStatus);
+    }
+
+    public void assemblyTakeFiles(List<OrderTakeAdr> takeAdrsList, String prePath) {
+        if (CollectionUtil.isEmpty(takeAdrsList)) {
+            return;
+        }
+        for (OrderTakeAdr orderTakeAdr : takeAdrsList) {
+            if (this.orderNo.equals(orderTakeAdr.getOrderNo())) {
+                if (1 == orderTakeAdr.getOprType()) {
+                    takeFiles1 = StringUtils.getFileViews(orderTakeAdr.getFile(), orderTakeAdr.getFileName(), prePath);
+                }
+                if (2 == orderTakeAdr.getOprType()) {
+                    takeFiles2 = StringUtils.getFileViews(orderTakeAdr.getFile(), orderTakeAdr.getFileName(), prePath);
+                }
+            }
+        }
     }
 }

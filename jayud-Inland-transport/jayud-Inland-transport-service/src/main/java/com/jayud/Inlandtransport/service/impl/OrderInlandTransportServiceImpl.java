@@ -142,7 +142,6 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
 
     /**
      * 节点操作记录
-     *
      * @param form
      */
     @Override
@@ -222,7 +221,7 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
                 BusinessTypeEnum.NL.getCode()).getData();
         details.assembleDeliveryAddress(deliveryAddresses);
 
-        return null;
+        return details;
     }
 
 

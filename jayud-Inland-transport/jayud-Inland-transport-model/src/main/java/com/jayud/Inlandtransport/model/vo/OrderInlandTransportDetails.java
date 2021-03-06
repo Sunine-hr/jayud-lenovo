@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.jayud.common.entity.OrderDeliveryAddress;
 import com.jayud.common.enums.OrderAddressEnum;
+import com.jayud.common.utils.FileView;
+import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -84,6 +86,11 @@ public class OrderInlandTransportDetails extends Model<OrderInlandTransportDetai
     @ApiModelProperty("送货地址")
     private List<OrderDeliveryAddress> orderDeliveryAddressList;
 
+    @ApiModelProperty("提货文件")
+    private List<FileView> pickUpFile;
+
+    @ApiModelProperty("送货文件")
+    private List<FileView> deliveryFile;
 
     @Override
     protected Serializable pkVal() {
@@ -91,12 +98,14 @@ public class OrderInlandTransportDetails extends Model<OrderInlandTransportDetai
     }
 
     public void assembleDeliveryAddress(List<OrderDeliveryAddress> deliveryAddresses) {
-        deliveryAddresses.forEach(e->{
-            if (OrderAddressEnum.PICK_UP.getCode().equals(e.getAddressType())){
+        deliveryAddresses.forEach(e -> {
+            if (OrderAddressEnum.PICK_UP.getCode().equals(e.getAddressType())) {
                 pickUpAddressList.add(e);
+                pickUpFile.addAll(e.getFileViewList());
             }
-            if (OrderAddressEnum.DELIVERY.getCode().equals(e.getAddressType())){
+            if (OrderAddressEnum.DELIVERY.getCode().equals(e.getAddressType())) {
                 orderDeliveryAddressList.add(e);
+                deliveryFile.addAll(e.getFileViewList());
             }
         });
     }

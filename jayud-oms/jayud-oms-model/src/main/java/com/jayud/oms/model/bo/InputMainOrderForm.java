@@ -11,6 +11,9 @@ public class InputMainOrderForm {
     @ApiModelProperty(value = "主订单ID,编辑时必传")
     private Long orderId;
 
+    @ApiModelProperty(value = "客户code")
+    private String orderNo;
+
     @ApiModelProperty(value = "客户code",required = true)
     private String customerCode;
 

@@ -244,7 +244,7 @@
                 送货地址：
             </div>
             <div class="dizhi">
-                {{obj.deliveryAddress}}
+                {{obj.orderDeliveryAddress}}
             </div>
         </div>
         <div class="tihuo">

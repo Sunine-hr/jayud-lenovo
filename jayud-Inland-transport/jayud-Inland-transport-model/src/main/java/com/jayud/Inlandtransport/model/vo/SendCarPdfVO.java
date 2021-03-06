@@ -9,6 +9,8 @@ import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Data
 public class SendCarPdfVO {
@@ -94,6 +96,9 @@ public class SendCarPdfVO {
     @ApiModelProperty(value = "总体积")
     private Double totalVolume = 0.0;
 
+    @ApiModelProperty(value = "总体积")
+    private Integer totalPlateAmount = 0;
+
     public String getVehicleTypeDesc() {
         if (this.vehicleType != null) {
             if (this.vehicleType == 1) {
@@ -127,6 +132,7 @@ public class SendCarPdfVO {
                 takeGoodsInfoVO.setAddress(orderAddressVO.getAddress());
                 takeGoodsInfoVO.setContacts(orderAddressVO.getContacts());
                 takeGoodsInfoVO.setTakeTimeStr(orderAddressVO.getDeliveryDate());
+                takeGoodsInfoVO.setId(orderAddressVO.getId());
                 takeGoodsInfoVO.setVehicleTypeDesc(this.vehicleTypeDesc);
                 takeInfo1.add(takeGoodsInfoVO);
             }
@@ -140,30 +146,38 @@ public class SendCarPdfVO {
         this.deliveryAddress = sb.toString();
     }
 
-    public void assembleCar(OrderInlandSendCars sendCar) {
-        if (sendCar == null) {
+    public void assembleCar(List<OrderInlandSendCars> sendCars) {
+        if (CollectionUtil.isEmpty(sendCars)) {
             return;
         }
+        OrderInlandSendCars sendCar = sendCars.get(0);
         this.licensePlate = sendCar.getLicensePlate();
         this.driverPhone = sendCar.getDriverPhone();
         this.remarks = sendCar.getRemarks();
 
     }
 
-    public void assembleGoods(List<GoodsVO> goodsList) {
+    public void assembleGoods(List<GoodsVO> goodsList, List<OrderAddressVO> orderAddressList) {
         if (CollectionUtil.isEmpty(goodsList)) {
             return;
         }
+        Map<Long, OrderAddressVO> takeInfo = orderAddressList.stream().collect(Collectors.toMap(OrderAddressVO::getBindGoodsId, e -> e));
         for (GoodsVO goodsVO : goodsList) {
-            this.totalPieceAmount += goodsVO.getPlateAmount();
-            this.totalVolume += goodsVO.getPlateAmount();
-            this.totalWeight += goodsVO.getPlateAmount();
-            GoodsInfoVO goodsInfoVO = new GoodsInfoVO();
-            goodsInfoVO.setGoodsDesc(goodsVO.getName());
-            goodsInfoVO.setPieceAmount(goodsVO.getPlateAmount());
-            goodsInfoVO.setVolume(goodsVO.getVolume());
-            goodsInfoVO.setWeight(goodsInfoVO.getWeight());
-            goddsInfos.add(goodsInfoVO);
+            OrderAddressVO orderAddressVO = takeInfo.get(goodsVO.getId());
+            if (orderAddressVO != null && OrderAddressEnum.PICK_UP.getCode().equals(orderAddressVO.getType())) {
+                this.totalPieceAmount += goodsVO.getPlateAmount();
+                this.totalVolume += goodsVO.getPlateAmount();
+                this.totalWeight += goodsVO.getPlateAmount();
+                this.totalPlateAmount += goodsVO.getPlateAmount();
+                GoodsInfoVO goodsInfoVO = new GoodsInfoVO();
+                goodsInfoVO.setGoodsDesc(goodsVO.getName());
+                goodsInfoVO.setPieceAmount(goodsVO.getBulkCargoAmount());
+                goodsInfoVO.setVolume(goodsVO.getVolume());
+                goodsInfoVO.setWeight(goodsVO.getTotalWeight());
+                goodsInfoVO.setPlateAmount(goodsVO.getPlateAmount());
+                goddsInfos.add(goodsInfoVO);
+            }
         }
+
     }
 }

@@ -10,6 +10,9 @@ import lombok.Data;
 @Data
 public class TakeGoodsInfoVO {
 
+    @ApiModelProperty(value = "主键")
+    private Long id;
+
     @ApiModelProperty(value = "详细地址")
     private String address;
 

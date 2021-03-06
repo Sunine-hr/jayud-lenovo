@@ -35,8 +35,8 @@ public class OrderAddressVO extends Model<OrderAddressVO> {
     @ApiModelProperty(value = "类型(0:发货,1:收货,2:通知)")
     private Integer type;
 
-//    @ApiModelProperty(value = "绑定商品id")
-//    private Long bindGoodsId;
+    @ApiModelProperty(value = "绑定商品id")
+    private Long bindGoodsId;
 
     @ApiModelProperty(value = "订单号")
     private String orderNo;

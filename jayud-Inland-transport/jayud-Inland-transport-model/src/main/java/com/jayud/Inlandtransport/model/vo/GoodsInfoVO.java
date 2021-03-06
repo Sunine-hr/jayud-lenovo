@@ -18,6 +18,8 @@ public class GoodsInfoVO {
     @ApiModelProperty(value = "体积")
     private Double volume;
 
+    @ApiModelProperty(value = "板数")
+    private Integer plateAmount;
 
 
 }

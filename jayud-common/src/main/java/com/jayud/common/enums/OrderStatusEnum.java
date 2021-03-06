@@ -404,4 +404,21 @@ public enum OrderStatusEnum {
         }
         return null;
     }
+
+    public static List<OrderStatusEnum> getAllInlandTPStatus() {
+        List<OrderStatusEnum> statusEnums = new ArrayList<>();
+        statusEnums.add(INLANDTP_NL_0);
+        statusEnums.add(INLANDTP_NL_1);
+        statusEnums.add(INLANDTP_NL_1_1);
+        statusEnums.add(INLANDTP_NL_2);
+        statusEnums.add(INLANDTP_NL_2_1);
+        statusEnums.add(INLANDTP_NL_3);
+        statusEnums.add(INLANDTP_NL_3_1);
+        statusEnums.add(INLANDTP_NL_3_2);
+        statusEnums.add(INLANDTP_NL_4);
+        statusEnums.add(INLANDTP_NL_5);
+        statusEnums.add(INLANDTP_NL_5_1);
+        statusEnums.add(INLANDTP_NL_6);
+        return statusEnums;
+    }
 }

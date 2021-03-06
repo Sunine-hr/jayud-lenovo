@@ -17,9 +17,11 @@ import com.jayud.Inlandtransport.model.vo.OrderInlandTransportFormVO;
 import com.jayud.Inlandtransport.service.IOrderInlandSendCarsService;
 import com.jayud.Inlandtransport.service.IOrderInlandTransportService;
 import com.jayud.common.ApiResult;
+import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.AuditInfoForm;
+import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.OrderDeliveryAddress;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderAddressEnum;
@@ -27,16 +29,21 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static com.jayud.common.enums.OrderStatusEnum.*;
 
 /**
  * <p>
@@ -187,7 +194,7 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
 
     @Override
     public List<OrderInlandTransport> getByCondition(OrderInlandTransport orderInlandTransport) {
-        QueryWrapper<OrderInlandTransport> condition = new QueryWrapper<>();
+        QueryWrapper<OrderInlandTransport> condition = new QueryWrapper<>(orderInlandTransport);
         return this.baseMapper.selectList(condition);
     }
 
@@ -224,6 +231,18 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
             this.updateById(new OrderInlandTransport().setId(order.getId())
                     .setProcessStatus(ProcessStatusEnum.COMPLETE.getCode()));
         }
+    }
+
+    public List<InitComboxStrVO> initStatus() {
+        List<OrderStatusEnum> enums = getAllInlandTPStatus();
+        List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
+        for (OrderStatusEnum statusEnum : enums) {
+            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+            initComboxStrVO.setName(statusEnum.getDesc());
+            initComboxStrVO.setCode(statusEnum.getCode());
+            initComboxStrVOS.add(initComboxStrVO);
+        }
+        return initComboxStrVOS;
     }
 
 }

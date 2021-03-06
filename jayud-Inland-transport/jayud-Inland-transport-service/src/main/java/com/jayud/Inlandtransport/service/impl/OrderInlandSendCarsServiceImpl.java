@@ -42,7 +42,7 @@ public class OrderInlandSendCarsServiceImpl extends ServiceImpl<OrderInlandSendC
         //查询派送单信息
         List<OrderInlandSendCars> sendCar = this.getByCondition(new OrderInlandSendCars().setOrderId(order.getId()));
 
-        sendCarPdfVO.assembleCar(sendCar.get(0));
+        sendCarPdfVO.assembleCar(sendCar);
 
         //查询订单地址
         List<OrderAddressVO> orderAddressList = this.omsClient.getOrderAddressByBusIds(Collections.singletonList(order.getId()),
@@ -53,7 +53,7 @@ public class OrderInlandSendCarsServiceImpl extends ServiceImpl<OrderInlandSendC
         //组装地址
         sendCarPdfVO.assembleAddress(orderAddressList);
         //组装货品
-        sendCarPdfVO.assembleGoods(goodsInfoList);
+        sendCarPdfVO.assembleGoods(goodsInfoList,orderAddressList);
 
         return sendCarPdfVO;
     }

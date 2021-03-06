@@ -1,7 +1,6 @@
 package com.jayud.Inlandtransport.controller;
 
 
-import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -10,32 +9,39 @@ import com.jayud.Inlandtransport.feign.OmsClient;
 import com.jayud.Inlandtransport.model.bo.ProcessOptForm;
 import com.jayud.Inlandtransport.model.bo.QueryOrderForm;
 import com.jayud.Inlandtransport.model.po.OrderInlandTransport;
-import com.jayud.Inlandtransport.model.vo.*;
+import com.jayud.Inlandtransport.model.vo.GoodsVO;
+import com.jayud.Inlandtransport.model.vo.OrderAddressVO;
+import com.jayud.Inlandtransport.model.vo.OrderInlandTransportDetails;
+import com.jayud.Inlandtransport.model.vo.OrderInlandTransportFormVO;
 import com.jayud.Inlandtransport.service.IOrderInlandSendCarsService;
 import com.jayud.Inlandtransport.service.IOrderInlandTransportService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.aop.annotations.DynamicHead;
-import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
-import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static com.jayud.common.enums.OrderStatusEnum.getAllInlandTPStatus;
 
 /**
  * <p>
@@ -186,6 +192,22 @@ public class OrderInlandTransportController {
         }
         OrderInlandTransportDetails orderDetails = this.orderInlandTransportService.getOrderDetails(subOrderId);
         return CommonResult.success(orderDetails);
+    }
+
+
+
+    @ApiOperation(value = "查询内陆状态")
+    @PostMapping(value = "/initStatus")
+    public List<InitComboxStrVO> initStatus() {
+        List<OrderStatusEnum> enums = getAllInlandTPStatus();
+        List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
+        for (OrderStatusEnum statusEnum : enums) {
+            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+            initComboxStrVO.setName(statusEnum.getDesc());
+            initComboxStrVO.setCode(statusEnum.getCode());
+            initComboxStrVOS.add(initComboxStrVO);
+        }
+        return initComboxStrVOS;
     }
 
 

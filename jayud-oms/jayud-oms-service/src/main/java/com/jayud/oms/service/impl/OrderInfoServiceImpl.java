@@ -167,11 +167,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         //生成主订单号
         if (form.getCmd().equals("submit")) {
-            if (orderInfo.getId() == null) {
+            if (form.getOrderId() == null) {
                 String orderNo = generationOrderNo(form.getLegalEntityId(), 0, "main");
                 orderInfo.setOrderNo(orderNo);
             }
-            if (orderInfo.getStatus() != null && orderInfo.getStatus().equals(2)) {
+            if (form.getStatus() != null && form.getStatus().equals(2)) {
                 String orderNo = generationOrderNo(form.getLegalEntityId(), 0, "main");
                 orderInfo.setOrderNo(orderNo);
             }

@@ -869,9 +869,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     String orderNo = generationOrderNo(orderTransportForm.getLegalEntityId(), orderTransportForm.getGoodsType(), OrderStatusEnum.ZGYS.getCode());
                     orderTransportForm.setOrderNo(orderNo);
                 }
-                if (orderTransportForm.getSubTmsStatus() != null && orderTransportForm.getSubTmsStatus().equals("T_0")) {
-                    String orderNo = generationOrderNo(orderTransportForm.getLegalEntityId(), orderTransportForm.getGoodsType(), OrderStatusEnum.ZGYS.getCode());
-                    orderTransportForm.setOrderNo(orderNo);
+                System.out.println("================================="+orderTransportForm.getOrderNo().substring(0,2));
+                if(orderTransportForm.getOrderNo()!=null&&orderTransportForm.getOrderNo().substring(0,2).equals("TI")&&orderTransportForm.getOrderNo().substring(0,2).equals("TE")){
+                    if (orderTransportForm.getSubTmsStatus() != null && orderTransportForm.getSubTmsStatus().equals("T_0")) {
+                        String orderNo = generationOrderNo(orderTransportForm.getLegalEntityId(), orderTransportForm.getGoodsType(), OrderStatusEnum.ZGYS.getCode());
+                        orderTransportForm.setOrderNo(orderNo);
+                    }
                 }
             }
             if (form.getCmd().equals("preSubmit") && orderTransportForm.getId() == null) {

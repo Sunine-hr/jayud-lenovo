@@ -1,5 +1,6 @@
 package com.jayud.common.aop;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.TypeUtil;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
@@ -37,8 +38,10 @@ public class ControllerAspect {
         if (keys instanceof CommonResult) {
             CommonResult resultVO = (CommonResult) keys;
             Object data = resultVO.getData();
+            List response = null;
             if (resultVO.getData() instanceof CommonPageResult) {
                 List list = ((CommonPageResult) data).getList();
+                response = list;
                 data = list.size() == 0 ? null : list.get(0);
             }
 
@@ -79,7 +82,7 @@ public class ControllerAspect {
 
             Map<String, Object> result = new HashMap<>();
             result.put(dynamicHead.headKey(), heads);
-            result.put(dynamicHead.dataKey(), data);
+            result.put(dynamicHead.dataKey(), CollectionUtil.isEmpty(response) ? data : response);
             resultVO.setData(result);
         }
     }

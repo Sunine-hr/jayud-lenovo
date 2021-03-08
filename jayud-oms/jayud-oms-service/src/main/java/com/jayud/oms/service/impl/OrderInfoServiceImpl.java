@@ -925,7 +925,33 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //内陆运输
         if (OrderStatusEnum.NLYS.getCode().equals(classCode)
                 || selectedServer.contains(OrderStatusEnum.NLDD.getCode())) {
+
             InputOrderInlandTransportForm orderInlandTransportForm = form.getOrderInlandTransportForm();
+
+            //生成内陆订单号
+            if (form.getCmd().equals("submit")) {
+                if (orderInlandTransportForm.getId() == null) {
+                    String orderNo = generationOrderNo(orderInlandTransportForm.getLegalEntityId(), null, OrderStatusEnum.NLYS.getCode());
+                    orderInlandTransportForm.setOrderNo(orderNo);
+                }
+                if (orderInlandTransportForm.getStatus() != null && orderInlandTransportForm.getStatus().equals("NL_0")) {
+                    String orderNo = generationOrderNo(orderInlandTransportForm.getLegalEntityId(), null, OrderStatusEnum.NLYS.getCode());
+                    orderInlandTransportForm.setOrderNo(orderNo);
+                }
+            }
+            if (form.getCmd().equals("preSubmit") && orderInlandTransportForm.getId() == null) {
+                //生成空运订单号
+                String orderNo = StringUtils.loadNum(CommonConstant.NL, 12);
+                while (true) {
+                    if (!isExistOrder(orderNo)) {//重复
+                        orderNo = StringUtils.loadNum(CommonConstant.NL, 12);
+                    } else {
+                        break;
+                    }
+                }
+                orderInlandTransportForm.setOrderNo(orderNo);
+            }
+
 
             if (this.queryEditOrderCondition(orderInlandTransportForm.getStatus(),
                     inputMainOrderForm.getStatus(), SubOrderSignEnum.NL.getSignOne(), form)) {

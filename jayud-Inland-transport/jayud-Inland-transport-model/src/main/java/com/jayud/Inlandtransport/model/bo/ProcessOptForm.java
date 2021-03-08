@@ -82,12 +82,12 @@ public class ProcessOptForm {
                 this.operatorTime = DateUtils.LocalDateTime2Str(LocalDateTime.now(), DateUtils.DATE_TIME_PATTERN);
                 break;
             case INLANDTP_NL_1: //接单
-            case INLANDTP_NL_4: //确认派车
             case INLANDTP_NL_5: //车辆提货
             case INLANDTP_NL_6:
                 pass = checkOptInfo();
                 break;
             case INLANDTP_NL_3: //派车审核
+            case INLANDTP_NL_4: //确认派车
                 //设置操作时间
                 this.operatorTime = DateUtils.LocalDateTime2Str(LocalDateTime.now(), DateUtils.DATE_TIME_PATTERN);
                 break;

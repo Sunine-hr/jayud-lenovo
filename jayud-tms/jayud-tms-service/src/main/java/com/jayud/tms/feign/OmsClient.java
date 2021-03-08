@@ -102,7 +102,7 @@ public interface OmsClient {
      * 初始化车辆下拉框
      */
     @RequestMapping(value = "api/initVehicle")
-    ApiResult<List<InitComboxVO>> initVehicle();
+    ApiResult<List<InitComboxVO>> initVehicle(@RequestParam("type") Integer type);
 
 //    /**
 //     * 司机下拉框联动车辆供应商，大陆车牌，香港车牌，司机电话

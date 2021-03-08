@@ -3,8 +3,13 @@ package com.jayud.oms.model.po;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.time.LocalDateTime;
 import java.io.Serializable;
+
+import com.jayud.common.exception.JayudBizException;
+import com.jayud.common.utils.StringUtils;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -22,7 +27,7 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="VehicleInfo对象", description="供应商对应车辆信息")
+@ApiModel(value = "VehicleInfo对象", description = "供应商对应车辆信息")
 public class VehicleInfo extends Model<VehicleInfo> {
 
     private static final long serialVersionUID = 1L;
@@ -99,6 +104,10 @@ public class VehicleInfo extends Model<VehicleInfo> {
 
     @ApiModelProperty(value = "主司机id")
     private Long mainDriverId;
+
+    @ApiModelProperty(value = "车辆类型(0:中港车,1:内陆车)")
+    private Integer type;
+
 
 
     @Override

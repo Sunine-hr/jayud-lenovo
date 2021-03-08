@@ -95,7 +95,8 @@ public class VehicleInfoController {
 
     @ApiOperation(value = "新增编辑车辆信息")
     @PostMapping(value = "/saveOrUpdateVehicleInfo")
-    public CommonResult saveOrUpdateVehicleInfo(@Valid @RequestBody AddVehicleInfoForm form) {
+    public CommonResult saveOrUpdateVehicleInfo(@RequestBody AddVehicleInfoForm form) {
+        form.checkCreateOrUpdate();
         VehicleInfo info = new VehicleInfo().setPlateNumber(form.getPlateNumber()).setId(form.getId());
         if (this.vehicleInfoService.checkUnique(info)) {
             return CommonResult.error(400, "大陆车牌已存在");
@@ -152,19 +153,19 @@ public class VehicleInfoController {
     }
 
 
-    @ApiOperation(value = "车辆管理-下拉框-大陆车牌号")
-    @PostMapping(value = "/initInlandPlateNumber")
-    public CommonResult<List<InitComboxVO>> initInlandPlateNumber() {
-        List<VehicleInfo> vehicleInfos = vehicleInfoService.getVehicleInfoByStatus(StatusEnum.ENABLE.getCode());
-        List<InitComboxVO> initComboxVOS = new ArrayList<>();
-        for (VehicleInfo vehicleInfo : vehicleInfos) {
-            InitComboxVO initComboxVO = new InitComboxVO();
-            initComboxVO.setId(vehicleInfo.getId());
-            initComboxVO.setName(vehicleInfo.getPlateNumber());
-            initComboxVOS.add(initComboxVO);
-        }
-        return CommonResult.success(initComboxVOS);
-    }
+//    @ApiOperation(value = "车辆管理-下拉框-大陆车牌号")
+//    @PostMapping(value = "/initInlandPlateNumber")
+//    public CommonResult<List<InitComboxVO>> initInlandPlateNumber() {
+//        List<VehicleInfo> vehicleInfos = vehicleInfoService.getVehicleInfoByStatus(StatusEnum.ENABLE.getCode());
+//        List<InitComboxVO> initComboxVOS = new ArrayList<>();
+//        for (VehicleInfo vehicleInfo : vehicleInfos) {
+//            InitComboxVO initComboxVO = new InitComboxVO();
+//            initComboxVO.setId(vehicleInfo.getId());
+//            initComboxVO.setName(vehicleInfo.getPlateNumber());
+//            initComboxVOS.add(initComboxVO);
+//        }
+//        return CommonResult.success(initComboxVOS);
+//    }
 
     @ApiOperation(value = "更改启用/禁用车辆状态,id是车辆信息主键")
     @PostMapping(value = "/enableOrDisableVehicle")

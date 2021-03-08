@@ -1,10 +1,13 @@
 package com.jayud.oms.model.bo;
 
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.FileView;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.po.DriverInfo;
 import com.jayud.oms.model.vo.DriverInfoVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.collections.CollectionUtils;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -73,7 +76,7 @@ public class AddVehicleInfoForm {
     @ApiModelProperty(value = "企业代码")
     private String enterpriseCode;
 
-    @ApiModelProperty(value = "车辆吨位")
+    @ApiModelProperty(value = "车型尺寸")
     private String vehicleTonnage;
 
     @ApiModelProperty(value = "司机对象")
@@ -83,5 +86,37 @@ public class AddVehicleInfoForm {
     @ApiModelProperty(value = "主司机id")
     @NotNull(message = "请选择主司机")
     private Long mainDriverId;
+
+    @ApiModelProperty(value = "车辆类型(0:中港车,1:内陆车)")
+    private Integer type;
+
+    public void checkCreateOrUpdate() {
+        String msg = "必填";
+        switch (type) {
+            case 0:
+                if (this.carType==null) {
+                    throw new JayudBizException("请选择车辆类型");
+                }
+            case 1:
+                if (StringUtils.isEmpty(this.plateNumber)) {
+                    throw new JayudBizException("大陆车牌" + msg);
+                }
+                if (this.supplierId == null) {
+                    throw new JayudBizException("运输供应商" + msg);
+                }
+                if (StringUtils.isEmpty(this.vehicleTonnage)) {
+                    throw new JayudBizException("请选择车型尺寸");
+                }
+                if (CollectionUtils.isEmpty(this.driverInfos)) {
+                    throw new JayudBizException("请关联司机");
+                }
+                if (this.mainDriverId==null){
+                    throw new JayudBizException("请选择司机");
+                }
+                break;
+            default:
+                throw new JayudBizException("不存在该车辆类型");
+        }
+    }
 
 }

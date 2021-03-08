@@ -81,4 +81,11 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      * @return
      */
     List<WaybillTaskRelevanceVO> findWaybillTaskRelevanceByOrderInfoId(@Param("orderId") Long orderId);
+
+    /**
+     * 查询订单，任务操作日志
+     * @param id
+     * @return
+     */
+    List<WaybillTaskRelevanceVO> lookOperateLog(@Param("id") Long id);
 }

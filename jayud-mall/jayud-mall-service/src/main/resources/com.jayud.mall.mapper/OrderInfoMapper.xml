@@ -189,4 +189,27 @@
     </select>
 
 
+    <select id="lookOperateLog" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.WaybillTaskRelevanceVO">
+        select
+        t.up_time,t.operators,
+        CONCAT('点击【',t.task_name, '】任务,',statusDescribes) operateDescribes
+        from (
+            select up_time,operators,task_name,
+            (case status
+            when '0' then '未激活'
+            when '1' then '已激活'
+            when '2' then '异常'
+            when '3' then '已完成'
+            else null end) as statusDescribes
+            from
+            waybill_task_relevance
+            where 1=1
+            and up_time is not null
+            and order_info_id=#{id}
+        ) t
+        order by t.up_time desc
+
+    </select>
+
+
 </mapper>

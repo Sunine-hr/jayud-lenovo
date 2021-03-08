@@ -83,4 +83,9 @@ public class WaybillTaskRelevanceVO {
     @JSONField(ordinal = 17, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    //操作说明
+    @ApiModelProperty(value = "操作说明", position = 16)
+    @JSONField(ordinal = 18)
+    private String operateDescribes;
+
 }

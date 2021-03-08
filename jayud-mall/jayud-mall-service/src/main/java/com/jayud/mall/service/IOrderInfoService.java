@@ -201,9 +201,16 @@ public interface IOrderInfoService extends IService<OrderInfo> {
     CommonResult<OrderInfoVO> lookOrderInfoTask(Long orderId);
 
     /**
-     *
+     * 运单任务-反馈状态(点击已完成)
      * @param id
      * @return
      */
     CommonResult<WaybillTaskRelevanceVO> confirmCompleted(Long id);
+
+    /**
+     * 订单操作日志（根据订单id查看）
+     * @param id
+     * @return
+     */
+    CommonResult<List<WaybillTaskRelevanceVO>> lookOperateLog(Long id);
 }

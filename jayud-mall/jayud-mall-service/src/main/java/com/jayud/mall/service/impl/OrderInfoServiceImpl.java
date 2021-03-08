@@ -1239,9 +1239,20 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             return CommonResult.error(-1, "只有本人才能点击完成");
         }
         waybillTaskRelevance.setStatus("3");//状态(0未激活 1已激活 2异常 3已完成)
+        waybillTaskRelevance.setUpTime(LocalDateTime.now());
         waybillTaskRelevanceService.saveOrUpdate(waybillTaskRelevance);
         WaybillTaskRelevanceVO waybillTaskRelevanceVO = ConvertUtil.convert(waybillTaskRelevance, WaybillTaskRelevanceVO.class);
         return CommonResult.success(waybillTaskRelevanceVO);
+    }
+
+    @Override
+    public CommonResult<List<WaybillTaskRelevanceVO>> lookOperateLog(Long id) {
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfo(id);
+        if(ObjectUtil.isEmpty(orderInfoVO)){
+            return CommonResult.error(-1, "订单不存在");
+        }
+        List<WaybillTaskRelevanceVO> waybillTaskRelevanceVOS = orderInfoMapper.lookOperateLog(id);
+        return CommonResult.success(waybillTaskRelevanceVOS);
     }
 
     /**

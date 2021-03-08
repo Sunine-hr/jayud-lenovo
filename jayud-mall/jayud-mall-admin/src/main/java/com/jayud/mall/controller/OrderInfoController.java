@@ -181,7 +181,15 @@ public class OrderInfoController {
         return orderInfoService.confirmCompleted(id);
     }
 
-    //订单操作日志
+    //订单操作日志（根据订单id查看）
+    @ApiOperation(value = "运单任务-订单操作日志（根据订单id查看）")
+    @PostMapping("/lookOperateLog")
+    @ApiOperationSupport(order = 19)
+    public CommonResult<List<WaybillTaskRelevanceVO>> lookOperateLog(@Valid @RequestBody OrderInfoParaForm form){
+        Long id = form.getId();
+        return orderInfoService.lookOperateLog(id);
+    }
+
 
 
 

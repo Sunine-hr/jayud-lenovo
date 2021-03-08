@@ -117,9 +117,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Autowired
     private IOrderTypeNumberService orderTypeNumberService;
 
-    public String generationOrderNo(Long legalId, Integer integer, String classStatus) {
+    public String generationOrderNo(Long legalId , Integer integer,String classStatus) {
         //生成订单号
-        String legalCode = (String) oauthClient.getLegalEntityCodeByLegalId(legalId).getData();
+        String legalCode = (String)oauthClient.getLegalEntityCodeByLegalId(legalId).getData();
         String preOrder = null;
         String classCode = null;
         if (classStatus.equals("main")) {
@@ -168,25 +168,40 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public String oprMainOrder(InputMainOrderForm form, String loginUserName) {
         OrderInfo orderInfo = ConvertUtil.convert(form, OrderInfo.class);
+
+        //生成主订单号
+        if (form.getCmd().equals("submit")) {
+            if (form.getOrderId() == null) {
+                String orderNo = generationOrderNo(form.getLegalEntityId(), 0, "main");
+                orderInfo.setOrderNo(orderNo);
+            }
+            if (form.getStatus() != null && form.getStatus().equals(2)) {
+                String orderNo = generationOrderNo(form.getLegalEntityId(), 0, "main");
+                orderInfo.setOrderNo(orderNo);
+            }
+
+        }
+        if (form.getCmd().equals("preSubmit") && form.getOrderId() == null) {
+            //生成主订单号
+            String orderNo = StringUtils.loadNum(CommonConstant.M, 12);
+            while (true) {
+                if (!isExistOrder(orderNo)) {//重复
+                    orderNo = StringUtils.loadNum(CommonConstant.M, 12);
+                } else {
+                    break;
+                }
+            }
+            orderInfo.setOrderNo(orderNo);
+        }
+
         if (form != null && form.getOrderId() != null) {//修改
             //修改时也要返回主订单号
             OrderInfo oldOrder = baseMapper.selectById(form.getOrderId());
             orderInfo.setId(form.getOrderId());
-            orderInfo.setOrderNo(oldOrder.getOrderNo());
             orderInfo.setUpTime(LocalDateTime.now());
             orderInfo.setUpUser(UserOperator.getToken() == null ? loginUserName : UserOperator.getToken());
         } else {//新增
-            //生成主订单号
-//            String orderNo = StringUtils.loadNum(CommonConstant.M, 12);
-//            while (true) {
-//                if (!isExistOrder(orderNo)) {//重复
-//                    orderNo = StringUtils.loadNum(CommonConstant.M, 12);
-//                } else {
-//                    break;
-//                }
-//            }
-            String orderNo = generationOrderNo(form.getLegalEntityId(), 0, "main");
-            orderInfo.setOrderNo(orderNo);
+
             orderInfo.setCreateTime(LocalDateTime.now());
             orderInfo.setCreatedUser(UserOperator.getToken() == null ? loginUserName : UserOperator.getToken());
         }
@@ -853,12 +868,20 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
 
             //生成中港订单号
-            if(form.getCmd().equals("submit") && orderTransportForm.getSubTmsStatus().equals("T_0")){
-                String orderNo = generationOrderNo(orderTransportForm.getLegalEntityId(),orderTransportForm.getGoodsType(),OrderStatusEnum.ZGYS.getCode());
-                orderTransportForm.setOrderNo(orderNo);
+            if (form.getCmd().equals("submit")) {
+                if (orderTransportForm.getId() == null) {
+                    String orderNo = generationOrderNo(orderTransportForm.getLegalEntityId(), orderTransportForm.getGoodsType(), OrderStatusEnum.ZGYS.getCode());
+                    orderTransportForm.setOrderNo(orderNo);
+                }
+                if (orderTransportForm.getOrderNo() != null && !orderTransportForm.getOrderNo().substring(0, 2).equals("TI") && !orderTransportForm.getOrderNo().substring(0, 2).equals("TE")) {
+                    if (orderTransportForm.getSubTmsStatus() != null && orderTransportForm.getSubTmsStatus().equals("T_0")) {
+                        String orderNo = generationOrderNo(orderTransportForm.getLegalEntityId(), orderTransportForm.getGoodsType(), OrderStatusEnum.ZGYS.getCode());
+                        orderTransportForm.setOrderNo(orderNo);
+                    }
+                }
             }
-            if(form.getCmd().equals("preSubmit") && orderTransportForm.getId() == null){
-                //生成主订单号
+            if (form.getCmd().equals("preSubmit") && orderTransportForm.getId() == null) {
+                //生成中港订单号
                 String orderNo = StringUtils.loadNum(CommonConstant.T, 12);
                 while (true) {
                     if (!isExistOrder(orderNo)) {//重复
@@ -933,12 +956,19 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             InputAirOrderForm airOrderForm = form.getAirOrderForm();
 
             //生成空运订单号
-            if(form.getCmd().equals("submit")&& airOrderForm.getStatus().equals("A_0")){
-                String orderNo = generationOrderNo(airOrderForm.getLegalEntityId(),airOrderForm.getImpAndExpType(),OrderStatusEnum.KY.getCode());
-                airOrderForm.setOrderNo(orderNo);
+            if (form.getCmd().equals("submit")) {
+                if (airOrderForm.getId() == null) {
+                    String orderNo = generationOrderNo(airOrderForm.getLegalEntityId(), airOrderForm.getImpAndExpType(), OrderStatusEnum.KY.getCode());
+                    airOrderForm.setOrderNo(orderNo);
+                }
+                if (airOrderForm.getStatus() != null && airOrderForm.getStatus().equals("A_0")) {
+                    String orderNo = generationOrderNo(airOrderForm.getLegalEntityId(), airOrderForm.getImpAndExpType(), OrderStatusEnum.KY.getCode());
+                    airOrderForm.setOrderNo(orderNo);
+                }
+
             }
-            if(form.getCmd().equals("preSubmit") && airOrderForm.getId() == null){
-                //生成主订单号
+            if (form.getCmd().equals("preSubmit") && airOrderForm.getId() == null) {
+                //生成空运订单号
                 String orderNo = StringUtils.loadNum(CommonConstant.A, 12);
                 while (true) {
                     if (!isExistOrder(orderNo)) {//重复
@@ -983,12 +1013,19 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             InputSeaOrderForm seaOrderForm = form.getSeaOrderForm();
 
             //生成海运订单号
-            if(form.getCmd().equals("submit") && seaOrderForm.getStatus().equals("S_0")){
-                String orderNo = generationOrderNo(seaOrderForm.getLegalEntityId(),seaOrderForm.getImpAndExpType(),OrderStatusEnum.HY.getCode());
-                seaOrderForm.setOrderNo(orderNo);
+            if (form.getCmd().equals("submit")) {
+                if (seaOrderForm.getOrderId() == null) {
+                    String orderNo = generationOrderNo(seaOrderForm.getLegalEntityId(), seaOrderForm.getImpAndExpType(), OrderStatusEnum.HY.getCode());
+                    seaOrderForm.setOrderNo(orderNo);
+                }
+                if (seaOrderForm.getStatus() != null && seaOrderForm.getStatus().equals("S_0")) {
+                    String orderNo = generationOrderNo(seaOrderForm.getLegalEntityId(), seaOrderForm.getImpAndExpType(), OrderStatusEnum.HY.getCode());
+                    seaOrderForm.setOrderNo(orderNo);
+                }
+
             }
-            if(form.getCmd().equals("preSubmit") && seaOrderForm.getOrderId() == null){
-                //生成主订单号
+            if (form.getCmd().equals("preSubmit") && seaOrderForm.getOrderId() == null) {
+                //生成海运订单号
                 String orderNo = StringUtils.loadNum(CommonConstant.S, 12);
                 while (true) {
                     if (!isExistOrder(orderNo)) {//重复
@@ -999,7 +1036,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
                 seaOrderForm.setOrderNo(orderNo);
             }
-
 
 
             if (this.queryEditOrderCondition(seaOrderForm.getStatus(),

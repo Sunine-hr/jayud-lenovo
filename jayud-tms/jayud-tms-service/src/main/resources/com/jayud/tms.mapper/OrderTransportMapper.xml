@@ -433,18 +433,18 @@
         (SELECT GROUP_CONCAT(ota.take_time) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` =
         da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' group by ot.order_no
         ) takeTimeStr,
-        (SELECT GROUP_CONCAT(ota.file) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` =
-        da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' group by ot.order_no
-        ) file1,
-        (SELECT GROUP_CONCAT(ota.file_name) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` =
-        da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' group by ot.order_no
-        ) fileName1,
-        (SELECT GROUP_CONCAT(ota.file) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` =
-        da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '2' group by ot.order_no
-        ) file2,
-        (SELECT GROUP_CONCAT(ota.file_name) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` =
-        da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '2' group by ot.order_no
-        ) fileName2,
+--         (SELECT GROUP_CONCAT(ota.file) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` =
+--         da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' group by ot.order_no order by ota.id
+--         ) file1,
+--         (SELECT GROUP_CONCAT(ota.file_name) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` =
+--         da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' group by ot.order_no order by ota.id
+--         ) fileName1,
+--         (SELECT GROUP_CONCAT(ota.file) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` =
+--         da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '2' group by ot.order_no order by ota.id
+--         ) file2,
+--         (SELECT GROUP_CONCAT(ota.file_name) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` =
+--         da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '2' group by ot.order_no order by ota.id
+--         ) fileName2,
         oi.selected_server selectedServer,
         ot.car_weigh_num carWeighNum,
         si.supplier_code defaultSupplierCode,

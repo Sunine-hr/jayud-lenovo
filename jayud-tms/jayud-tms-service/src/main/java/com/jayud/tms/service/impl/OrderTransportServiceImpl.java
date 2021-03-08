@@ -35,10 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -222,12 +219,18 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         List<OrderTakeAdr> orderTakeAdrs = this.orderTakeAdrService.getOrderTakeAdrByOrderNos(subOrderNos, OrderTakeAdrTypeEnum.ONE.getCode());
         //是否录用费用
 
+
+
         List<OrderTransportVO> pageList = pageInfo.getRecords();
+        List<String> orderNo = pageList.stream().map(OrderTransportVO::getOrderNo).collect(Collectors.toList());
+        List<OrderTakeAdr> takeAdrsList = this.orderTakeAdrService.getOrderTakeAdrByOrderNos(orderNo, null);
         for (OrderTransportVO orderTransportVO : pageList) {
             orderTransportVO.assemblyGoodsInfo(orderTakeAdrs);
-            orderTransportVO.setTakeFiles1(StringUtils.getFileViews(orderTransportVO.getFile1(), orderTransportVO.getFileName1(), prePath));
-            orderTransportVO.setTakeFiles2(StringUtils.getFileViews(orderTransportVO.getFile2(), orderTransportVO.getFileName2(), prePath));
+            orderTransportVO.assemblyTakeFiles(takeAdrsList,prePath);
+//            orderTransportVO.setTakeFiles1(StringUtils.getFileViews(orderTransportVO.getFile1(), orderTransportVO.getFileName1(), prePath));
+//            orderTransportVO.setTakeFiles2(StringUtils.getFileViews(orderTransportVO.getFile2(), orderTransportVO.getFileName2(), prePath));
         }
+
         return pageInfo;
     }
 

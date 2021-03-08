@@ -76,7 +76,7 @@ public class InputReceivableCostForm {
         if (UnitEnum.CTNS.name().equals(this.unit)
                 || UnitEnum.PCS.name().equalsIgnoreCase(this.unit)
                 || UnitEnum.BILL.name().equals(this.unit)) {
-            if (!NumberUtils.isIntegerValue(this.number)) {
+            if (this.number != null && !NumberUtils.isIntegerValue(this.number)) {
                 throw new JayudBizException("数量请输入整数（单位:CTNS/PCS/BILL)");
             }
         }

@@ -12,6 +12,7 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.TradeTypeEnum;
 import com.jayud.common.utils.FileView;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.trailer.enums.IsEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -190,10 +191,10 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     private String receivingOrdersDate;
 
     @ApiModelProperty(value = "拖车订单地址信息")
-    private List<OrderAddressVO> orderAddressForms;
+    private List<TrailerOrderAddressVO> orderAddressForms;
 
-    @ApiModelProperty(value = "货品信息")
-    private List<GoodsVO> goodsForms;
+//    @ApiModelProperty(value = "货品信息")
+//    private List<GoodsVO> goodsForms;
 
     @ApiModelProperty(value = "派车信息")
     private TrailerDispatchVO trailerDispatchVO;
@@ -240,7 +241,8 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     @ApiModelProperty(value = "货物重量")
     private Double totalWeight;
 
-
+    @ApiModelProperty(value = "车牌号")
+    private String plateNumber;
 
     /**
      * 组装商品信息
@@ -379,4 +381,10 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
         this.isMakeUpName = IsEnum.getDesc(isMakeUp);
     }
 
+    public void getFile(String path){
+        this.soPics = StringUtils.getFileViews(this.getSoFilePath(),this.getSoFileName(),path);
+        this.billPics = StringUtils.getFileViews(this.getBolFilePath(),this.getBolFileName(),path);
+        this.cnPics = StringUtils.getFileViews(this.getCnFilePath(),this.getCnFileName(),path);
+        this.pssPics = StringUtils.getFileViews(this.getPssFilePath(),this.getPssFileName(),path);
+    }
 }

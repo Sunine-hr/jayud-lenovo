@@ -43,4 +43,11 @@ public class TrailerDispatchServiceImpl extends ServiceImpl<TrailerDispatchMappe
             this.updateById(trailerDispatch);
         }
     }
+
+    @Override
+    public boolean updateByTrailerOrderId(Long id, TrailerDispatch trailerDispatch) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("order_id", id);
+        return this.update(trailerDispatch,queryWrapper);
+    }
 }

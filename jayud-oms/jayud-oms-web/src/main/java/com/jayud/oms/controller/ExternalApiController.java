@@ -1022,6 +1022,24 @@ public class ExternalApiController {
                 .setOrderNo(orderNo).setFStatus(currentNodeStatus));
         return ApiResult.ok(orderFlowSheets.get(0).getStatus());
     }
+
+    @ApiOperation(value = "单个存储商品信息")
+    @RequestMapping(value = "api/saveOrUpdateGood")
+    ApiResult saveOrUpdateGood(@RequestBody AddGoodsForm goodsForm){
+        LocalDateTime now = LocalDateTime.now();
+        Goods goods = ConvertUtil.convert(goodsForm, Goods.class);
+        goods.setCreateTime(goods.getId() == null ? now : null);
+        this.goodsService.save(goods);
+        return ApiResult.ok(goods.getId());
+    }
+
+    @ApiOperation(value = "根据id获取商品信息")
+    @RequestMapping(value = "api/getGoodById")
+    ApiResult getGoodById(@RequestParam("id") Long id){
+        Goods goods = this.goodsService.getById(id);
+        InputGoodsVO convert = ConvertUtil.convert(goods, InputGoodsVO.class);
+        return ApiResult.ok(convert);
+    }
 }
 
 

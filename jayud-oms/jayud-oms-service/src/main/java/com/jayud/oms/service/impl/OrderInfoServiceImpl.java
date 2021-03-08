@@ -147,27 +147,28 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 classCode = OrderTypeEnum.TE.getCode();
             }
         }
-        if(classStatus.equals(OrderStatusEnum.TC.getCode())){
-            if(integer.equals(1)){
+        if (classStatus.equals(OrderStatusEnum.TC.getCode())) {
+            if (integer.equals(1)) {
                 preOrder = OrderTypeEnum.TTI.getCode() + legalCode;
                 classCode = OrderTypeEnum.TTI.getCode();
-            }else {
+            } else {
                 preOrder = OrderTypeEnum.TTE.getCode() + legalCode;
                 classCode = OrderTypeEnum.TTE.getCode();
             }
         }
-        if(classStatus.equals(OrderStatusEnum.NLYS.getCode())){
         if (classStatus.equals(OrderStatusEnum.NLYS.getCode())) {
-            preOrder = OrderTypeEnum.TL.getCode() + legalCode;
-            classCode = OrderTypeEnum.TL.getCode();
-        }
-        if (classStatus.equals(OrderStatusEnum.KY.getCode())) {
-            if (integer.equals(1)) {
-                preOrder = OrderTypeEnum.AI.getCode() + legalCode;
-                classCode = OrderTypeEnum.AI.getCode();
-            } else {
-                preOrder = OrderTypeEnum.AE.getCode() + legalCode;
-                classCode = OrderTypeEnum.AE.getCode();
+            if (classStatus.equals(OrderStatusEnum.NLYS.getCode())) {
+                preOrder = OrderTypeEnum.TL.getCode() + legalCode;
+                classCode = OrderTypeEnum.TL.getCode();
+            }
+            if (classStatus.equals(OrderStatusEnum.KY.getCode())) {
+                if (integer.equals(1)) {
+                    preOrder = OrderTypeEnum.AI.getCode() + legalCode;
+                    classCode = OrderTypeEnum.AI.getCode();
+                } else {
+                    preOrder = OrderTypeEnum.AE.getCode() + legalCode;
+                    classCode = OrderTypeEnum.AE.getCode();
+                }
             }
         }
         String orderNo = orderTypeNumberService.getOrderNo(preOrder, classCode);
@@ -481,7 +482,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("class_code", form.getClassCode());
         queryWrapper.eq("status", "1");
-        queryWrapper.ne("sorts",0);
+        queryWrapper.ne("sorts", 0);
         List<OrderStatus> allProcess = orderStatusService.list(queryWrapper);//所有流程
 
         allProcess.sort((h1, h2) -> {//排序
@@ -628,7 +629,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("class_code", form.getClassCode());
         queryWrapper.eq("status", "1");
-        queryWrapper.ne("sorts",0);
+        queryWrapper.ne("sorts", 0);
         List<OrderStatus> allProcess = orderStatusService.list(queryWrapper);//所有流程
         allProcess.sort((h1, h2) -> {//排序
             if (h1.getFId().equals(h2.getFId())) {
@@ -829,7 +830,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
 
         //获取拖车信息
-        if(OrderStatusEnum.TC.getCode().equals(form.getClassCode())||inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.TCDD.getCode())){
+        if (OrderStatusEnum.TC.getCode().equals(form.getClassCode()) || inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.TCDD.getCode())) {
             InputTrailerOrderVO trailerOrderVO = this.trailerClient.getTrailerOrderDetails(inputMainOrderVO.getOrderNo()).getData();
             if (trailerOrderVO != null) {
                 //查询供应商
@@ -1059,8 +1060,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             InputTrailerOrderFrom trailerOrderFrom = form.getTrailerOrderFrom();
 
             //生成拖车订单号
-            if(trailerOrderFrom.getId() == null){
-                String orderNo = generationOrderNo(trailerOrderFrom.getLegalEntityId(),trailerOrderFrom.getImpAndExpType(),OrderStatusEnum.TC.getCode());
+            if (trailerOrderFrom.getId() == null) {
+                String orderNo = generationOrderNo(trailerOrderFrom.getLegalEntityId(), trailerOrderFrom.getImpAndExpType(), OrderStatusEnum.TC.getCode());
                 trailerOrderFrom.setOrderNo(orderNo);
             }
 
@@ -1510,7 +1511,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      *
      * @return
      */
-    private void getSubOrderRejectionMsg(List<OrderInfoVO> orderInfoVOs, Map<String, Map<String, Object>> subOrderMap) {
+    private void getSubOrderRejectionMsg
+    (List<OrderInfoVO> orderInfoVOs, Map<String, Map<String, Object>> subOrderMap) {
         for (OrderInfoVO orderInfoVO : orderInfoVOs) {
             Map<String, Object> subOrderInfos = subOrderMap.get(orderInfoVO.getOrderNo());
             String[] rejectionStatus = OrderStatusEnum.getRejectionStatus(null);
@@ -1603,5 +1605,4 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
         return subOrderStatus.toString();
     }
-
 }

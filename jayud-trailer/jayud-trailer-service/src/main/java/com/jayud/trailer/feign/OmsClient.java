@@ -14,6 +14,8 @@ import com.jayud.trailer.bo.TrailerProcessOptForm;
 import com.jayud.trailer.po.OrderFlowSheet;
 import com.jayud.trailer.vo.GoodsVO;
 import com.jayud.trailer.vo.OrderAddressVO;
+import com.jayud.trailer.vo.VehicleInfoLinkVO;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -183,4 +185,20 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/initDictByDictTypeCode")
     public ApiResult<List<InitComboxStrVO>> initDictByDictTypeCode(@RequestParam("dictTypeCode") String dictTypeCode);
+
+    @ApiOperation(value = "初始化车辆下拉框")
+    @RequestMapping(value = "api/initVehicle")
+    public ApiResult initVehicle();
+
+    @ApiOperation(value = "初始化车辆下拉框 (确认派车)")
+    @RequestMapping(value = "api/initVehicleInfo")
+    public ApiResult<VehicleInfoLinkVO> initVehicleInfo(@RequestParam("vehicleId") Long vehicleId);
+
+    @ApiOperation(value = "单个存储商品信息")
+    @RequestMapping(value = "api/saveOrUpdateGood")
+    ApiResult saveOrUpdateGood(@RequestBody AddGoodsForm goodsForm);
+
+    @ApiOperation(value = "单个存储商品信息")
+    @RequestMapping(value = "api/getGoodById")
+    ApiResult getGoodById(@RequestParam("id") Long id);
 }

@@ -3,19 +3,26 @@ package com.jayud.trailer.controller;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONUtil;
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelWriter;
+import com.alibaba.excel.enums.WriteDirectionEnum;
+import com.alibaba.excel.write.metadata.WriteSheet;
+import com.alibaba.excel.write.metadata.fill.FillConfig;
+import com.alibaba.excel.write.metadata.fill.FillWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.InitComboxVO;
 import com.jayud.common.enums.*;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
-import com.jayud.trailer.bo.QueryTrailerOrderForm;
-import com.jayud.trailer.bo.TrailerProcessOptForm;
+import com.jayud.trailer.bo.*;
 import com.jayud.trailer.feign.FileClient;
 import com.jayud.trailer.feign.OauthClient;
 import com.jayud.trailer.feign.OmsClient;
@@ -29,14 +36,24 @@ import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.*;
 import java.lang.reflect.Field;
+import java.net.URLEncoder;
 import java.util.*;
+
+import static com.jayud.common.enums.OrderStatusEnum.TT_3;
 
 
 /**
@@ -192,14 +209,14 @@ public class TrailerOrderController {
         ApiResult result = omsClient.getMainOrderByOrderNos(mainOrder);
         for (TrailerOrderFormVO record : records) {
             //组装商品信息
-            List<GoodsVO> goodsVOS = new ArrayList<>();
-            for (GoodsVO goodsVO : goods) {
-                if (record.getId().equals(goodsVO.getBusinessId())
-                        && BusinessTypeEnum.TC.getCode().equals(goodsVO.getBusinessType())) {
-                    goodsVOS.add(goodsVO);
-                }
-            }
-            record.setGoodsForms(goodsVOS);
+//            List<GoodsVO> goodsVOS = new ArrayList<>();
+//            for (GoodsVO goodsVO : goods) {
+//                if (record.getId().equals(goodsVO.getBusinessId())
+//                        && BusinessTypeEnum.TC.getCode().equals(goodsVO.getBusinessType())) {
+//                    goodsVOS.add(goodsVO);
+//                }
+//            }
+//            record.setGoodsForms(goodsVOS);
             record.assemblyGoodsInfo(goods);
             //拼装主订单信息
             record.assemblyMainOrderData(result.getData());
@@ -212,9 +229,20 @@ public class TrailerOrderController {
             record.assemblyUnitCodeInfo(unitCodeInfo);
 
             //处理地址信息
+            List<TrailerOrderAddressVO> trailerOrderAddressVOS = new ArrayList<>();
             for (OrderAddressVO address : resultOne.getData()) {
                 address.getFile(prePath);
+                TrailerOrderAddressVO convert = ConvertUtil.convert(address, TrailerOrderAddressVO.class);
+                GoodsVO goodById = (GoodsVO)omsClient.getGoodById(address.getBindGoodsId()).getData();
+                convert.setName(goodById.getName());
+                convert.setBulkCargoAmount(goodById.getBulkCargoAmount());
+                convert.setBulkCargoUnit(goodById.getBulkCargoUnit());
+                convert.setSize(goodById.getSize());
+                convert.setTotalWeight(goodById.getTotalWeight());
+                convert.setVolume(goodById.getVolume());
+                trailerOrderAddressVOS.add(convert);
             }
+            record.setOrderAddressForms(trailerOrderAddressVOS);
             //获取港口信息
             for (InitComboxStrVO initComboxStrVO : portCodeInfo) {
                 if(initComboxStrVO.getCode().equals(record.getPortCode())){
@@ -231,13 +259,16 @@ public class TrailerOrderController {
             TrailerDispatch enableByTrailerOrderId = trailerDispatchService.getEnableByTrailerOrderId(record.getId());
             TrailerDispatchVO trailerDispatchVO = ConvertUtil.convert(enableByTrailerOrderId,TrailerDispatchVO.class);
             record.setTrailerDispatchVO(trailerDispatchVO);
+            if(trailerDispatchVO.getPlateNumber()!=null){
+                record.setPlateNumber(trailerDispatchVO.getPlateNumber());
+            }
         }
 
         map1.put("pageInfo",new CommonPageResult(page));
         return CommonResult.success(map1);
     }
 
-    //操作指令,cmd = S_0待接单,S_1海运接单,S_2订船,S_3订单入仓, S_4提交补料,S_5草稿提单,S_6放单确认,S_7确认离港,S_8确认到港,S_9海外代理S_10确认签收
+    //操作指令,cmd = 状态(TT_0待接单,TT_1拖车接单,TT_2拖车派车,TT_3派车审核,TT_4拖车提柜,TT_5拖车到仓,TT_6拖车离仓,TT_7拖车过磅,TT_8确认还柜)
     @ApiOperation(value = "执行拖车流程操作")
     @PostMapping(value = "/doTrailerProcessOpt")
     public CommonResult doTrailerProcessOpt(@RequestBody @Valid TrailerProcessOptForm form , BindingResult result) {
@@ -312,7 +343,7 @@ public class TrailerOrderController {
         return CommonResult.success(orderNo);
     }
 
-    @ApiOperation(value = "查询订单详情 trailerOrderId=海运订单id")
+    @ApiOperation(value = "查询订单详情 trailerOrderId=拖车订单id")
     @PostMapping(value = "/getTrailerOrderDetails")
     public CommonResult<TrailerOrderVO> getTrailerOrderDetails(@RequestBody Map<String, Object> map) {
         Long trailerOrderId = MapUtil.getLong(map, "id");
@@ -324,66 +355,139 @@ public class TrailerOrderController {
         return CommonResult.success(trailerOrderDetails);
     }
 
-//
-//    @ApiOperation(value = "订船驳回编辑 id=海运订单id")
-//    @PostMapping(value = "/bookShipRejectionEdit")
-//    public CommonResult bookingRejectionEdit(@RequestBody SeaProcessOptForm form) {
-//        if (form.getMainOrderId() == null
-//                || form.getOrderId() == null
-//                || form.getSeaBookShipForm().getId() == null) {
-//            log.warn("海运订单编号/海运订单id必填/海运订船id必填 data={}", JSONUtil.toJsonStr(form));
-//            return CommonResult.error(ResultEnum.VALIDATE_FAILED);
-//        }
-//
-//        SeaOrder seaOrder = this.seaOrderService.getById(form.getOrderId());
-//        if (!OrderStatusEnum.SEA_S_3_2.getCode().equals(seaOrder.getStatus())) {
-//            log.warn("当前订单状态无法进行操作 status={}", OrderStatusEnum.getDesc(seaOrder.getStatus()));
-//            return CommonResult.error(400, "当前订单状态无法进行操作");
-//        }
-//        form.setStatus(SEA_S_2.getCode());
-//        //校验参数
-//        form.checkProcessOpt(SEA_S_2);
-//        //执行订船驳回编辑
-//        this.seaOrderService.doSeaBookShipOpt(form);
-//        return CommonResult.success();
-//    }
-//
-//
-//
-//    @ApiOperation(value = "海运订单驳回")
-//    @PostMapping(value = "/rejectOrder")
-//    public CommonResult rejectOrder(@RequestBody SeaCargoRejected seaCargoRejected) {
-//        //查询空运订单
-//        SeaOrder tmp = this.seaOrderService.getById(seaCargoRejected.getSeaOrderId());
-//        //获取相应驳回操作
-//        OrderStatusEnum orderStatusEnum = OrderStatusEnum.getSeaOrderRejection(tmp.getStatus());
-//        if (orderStatusEnum == null) {
-//            return CommonResult.error(400, "驳回操作失败,没有相对应的操作");
-//        }
-//        //记录审核信息
-//        AuditInfoForm auditInfoForm = new AuditInfoForm();
-//        auditInfoForm.setExtId(seaCargoRejected.getSeaOrderId());
-//        auditInfoForm.setExtDesc(SqlConstant.SEA_ORDER);
-//        auditInfoForm.setAuditStatus(orderStatusEnum.getCode());
-//        auditInfoForm.setAuditTypeDesc(orderStatusEnum.getDesc());
-//
-//        auditInfoForm.setAuditComment(seaCargoRejected.getCause());
-//
-//        Integer rejectOptions = seaCargoRejected.getRejectOptions() == null ? 1 : seaCargoRejected.getRejectOptions();
-//        seaCargoRejected.setRejectOptions(rejectOptions);
-//        switch (orderStatusEnum) {
-//            case SEA_S_1_1:
-//                //订单驳回
-//                this.seaOrderService.orderReceiving(tmp, auditInfoForm, seaCargoRejected);
-//                break;
-//            case SEA_S_2_1:
-//            case SEA_S_3_1:
-//                this.seaOrderService.rejectedOpt(tmp, auditInfoForm, seaCargoRejected);
-//                break;
-//        }
-//
-//        return CommonResult.success();
-//    }
+
+    @ApiOperation(value = "订船驳回编辑 id=海运订单id")
+    @PostMapping(value = "/DispatchRejectionEdit")
+    public CommonResult DispatchRejectionEdit(@RequestBody TrailerProcessOptForm form) {
+        if (form.getMainOrderId() == null
+                || form.getId() == null
+                || form.getTrailerDispatch().getId() == null) {
+            log.warn("拖车订单编号/拖车订单id必填/拖车派车id必填 data={}", JSONUtil.toJsonStr(form));
+            return CommonResult.error(ResultEnum.VALIDATE_FAILED);
+        }
+
+        TrailerOrder trailerOrder = this.trailerOrderService.getById(form.getId());
+        if (!OrderStatusEnum.TT_3_2.getCode().equals(trailerOrder.getStatus())) {
+            log.warn("当前订单状态无法进行操作 status={}", OrderStatusEnum.getDesc(trailerOrder.getStatus()));
+            return CommonResult.error(400, "当前订单状态无法进行操作");
+        }
+        form.setStatus(TT_3.getCode());
+        //校验参数
+        form.checkProcessOpt(TT_3);
+        //执行拖车驳回编辑
+        this.trailerOrderService.doTrailerDispatchOpt(form);
+        return CommonResult.success();
+    }
+
+
+
+    @ApiOperation(value = "拖车订单驳回")
+    @PostMapping(value = "/rejectOrder")
+    public CommonResult rejectOrder(@RequestBody TrailerCargoRejected trailerCargoRejected) {
+        //查询拖车订单
+        TrailerOrder tmp = this.trailerOrderService.getById(trailerCargoRejected.getTrailerOrderId());
+        //获取相应驳回操作
+        OrderStatusEnum orderStatusEnum = OrderStatusEnum.getTrailerOrderRejection(tmp.getStatus());
+        if (orderStatusEnum == null) {
+            return CommonResult.error(400, "驳回操作失败,没有相对应的操作");
+        }
+        //记录审核信息
+        AuditInfoForm auditInfoForm = new AuditInfoForm();
+        auditInfoForm.setExtId(trailerCargoRejected.getTrailerOrderId());
+        auditInfoForm.setExtDesc(SqlConstant.TRAILER_ORDER);
+        auditInfoForm.setAuditStatus(orderStatusEnum.getCode());
+        auditInfoForm.setAuditTypeDesc(orderStatusEnum.getDesc());
+
+        auditInfoForm.setAuditComment(trailerCargoRejected.getCause());
+
+        Integer rejectOptions = trailerCargoRejected.getRejectOptions() == null ? 1 : trailerCargoRejected.getRejectOptions();
+        trailerCargoRejected.setRejectOptions(rejectOptions);
+        switch (orderStatusEnum) {
+            case TT_1_1:
+                //订单驳回
+                this.trailerOrderService.orderReceiving(tmp, auditInfoForm, trailerCargoRejected);
+                break;
+            case TT_2_1:
+            case TT_3_1:
+            case TT_4_1:
+                this.trailerOrderService.rejectedOpt(tmp, auditInfoForm, trailerCargoRejected);
+                break;
+        }
+
+        return CommonResult.success();
+    }
+
+    /**
+     * 导出补料单
+     */
+    @ApiOperation(value = "导出补料单")
+    @GetMapping(value = "/uploadExcel")
+    public void uploadExcel(@RequestParam("id") Long id, HttpServletResponse response) {
+
+        TrailerOrderVO trailerOrderDetails = trailerOrderService.getTrailerOrderByOrderNO(id);
+
+
+        ClassPathResource classPathResource = new ClassPathResource("/static/派车单.xls");
+        String filename1 = classPathResource.getFilename();
+
+        try {
+            InputStream inputStream = classPathResource.getInputStream();
+            Workbook templateWorkbook = null;
+            String fileType = filename1.substring(filename1.lastIndexOf("."));
+            if (".xls".equals(fileType)) {
+                templateWorkbook = new HSSFWorkbook(inputStream); // 2003-
+            } else if (".xlsx".equals(fileType)) {
+                templateWorkbook = new XSSFWorkbook(inputStream); // 2007+
+            }else{
+
+            }
+            //HSSFWorkbook templateWorkbook = new HSSFWorkbook(inputStream);
+
+            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+            templateWorkbook.write(outStream);
+            ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
+
+            String fileName = "派车单";
+
+            response.setContentType("application/vnd.ms-excel");
+            response.setCharacterEncoding("utf-8");
+            // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
+            String filename = URLEncoder.encode(fileName, "utf-8");
+            response.setHeader("Content-disposition", "attachment;filename=" + filename+".xlsx");
+
+            ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
+
+            WriteSheet writeSheet = EasyExcel.writerSheet().build();
+
+            FillConfig fillConfig = FillConfig.builder().direction(WriteDirectionEnum.HORIZONTAL).build();
+            //将集合数据填充
+            excelWriter.fill(new FillWrapper("orderAddress",trailerOrderDetails.getOrderAddressForms()),fillConfig,writeSheet);
+//            excelWriter.fill(new FillWrapper("good",trailerOrderDetails.getGoodsForms()),fillConfig,writeSheet);
+
+            //将指定数据填充
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("orderNo", trailerOrderDetails.getOrderNo());
+            map.put("cabinetNumber", trailerOrderDetails.getCabinetNumber());
+            map.put("paperStripSeal", trailerOrderDetails.getPaperStripSeal());
+            map.put("plateNumber", trailerOrderDetails.getTrailerDispatchVO().getPlateNumber());
+            map.put("phone", trailerOrderDetails.getTrailerDispatchVO().getPhone());
+            map.put("cabinetSizeName", trailerOrderDetails.getCabinetSizeName());
+            map.put("cuttingReplenishingTime", trailerOrderDetails.getCuttingReplenishingTime());
+            map.put("portCodeName", trailerOrderDetails.getPortCodeName());
+            map.put("closingTime", trailerOrderDetails.getClosingTime());
+            map.put("remark", trailerOrderDetails.getTrailerDispatchVO().getRemark());
+
+            excelWriter.fill(map, writeSheet);
+
+            excelWriter.finish();
+            outStream.close();
+            inputStream.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 }
 

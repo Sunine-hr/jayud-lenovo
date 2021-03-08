@@ -1,17 +1,12 @@
-package com.jayud.oms.model.bo;
+package com.jayud.trailer.bo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.jayud.common.utils.FileView;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 import org.apache.commons.lang.StringUtils;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +20,7 @@ import java.util.List;
  * @since 2020-11-30
  */
 @Data
-public class AddOrderAddressForm {
+public class AddTrailerOrderAddressForm {
 
     private static final long serialVersionUID = 1L;
 
@@ -81,10 +76,42 @@ public class AddOrderAddressForm {
     @ApiModelProperty(value = "交货日期(提货日期/送货日期)")
     private String deliveryDate;
 
+    @ApiModelProperty(value = "创建时间")
+    private LocalDateTime createTime;
 
-    public boolean checkCreateAirOrder() {
+
+    public boolean checkCreateTrailerOrder() {
         if (this.type == null || StringUtils.isEmpty(this.address)
                 || StringUtils.isEmpty(this.company)) {
+            return false;
+        }
+        return true;
+    }
+
+
+    @ApiModelProperty(value = "货品名称")
+    private String name;
+
+    @ApiModelProperty(value = "散货件数")
+    private Integer bulkCargoAmount;
+
+    @ApiModelProperty(value = "散货单位")
+    private String bulkCargoUnit;
+
+    @ApiModelProperty(value = "尺寸(长宽高)")
+    private String size;
+
+    @ApiModelProperty(value = "总重量")
+    private Double totalWeight;
+
+    @ApiModelProperty(value = "体积")
+    private Double volume;
+
+
+    public boolean checkCreateGood() {
+        if (StringUtils.isEmpty(this.name)
+                || this.bulkCargoAmount == null || StringUtils.isEmpty(this.bulkCargoUnit)
+                || this.totalWeight == null) {
             return false;
         }
         return true;

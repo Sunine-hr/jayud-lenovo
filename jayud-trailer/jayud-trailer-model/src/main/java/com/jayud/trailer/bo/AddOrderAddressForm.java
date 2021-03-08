@@ -34,6 +34,9 @@ public class AddOrderAddressForm {
     @ApiModelProperty(value = "类型(0:发货,1:收货,2:通知)")
     private Integer type;
 
+    @ApiModelProperty(value = "绑定商品id 前端不用管")
+    private Long bindGoodsId;
+
     @ApiModelProperty(value = "业务类型(0:空运)")
     private Integer businessType;
 
@@ -57,6 +60,9 @@ public class AddOrderAddressForm {
 
     @ApiModelProperty(value = "邮箱")
     private String mailbox;
+
+    @ApiModelProperty(value = "提货时间/送货日期")
+    private String deliveryDate;
 
     @ApiModelProperty(value = "备注")
     private String remarks;

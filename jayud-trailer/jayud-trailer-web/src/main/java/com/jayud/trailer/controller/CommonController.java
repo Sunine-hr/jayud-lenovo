@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -41,15 +42,26 @@ public class CommonController {
     public CommonResult<Map<String, Object>> initTrailer() {
 
         //获取港口信息
-        List<InitComboxStrVO> portCodeInfo = (List<InitComboxStrVO>)this.omsClient.initDictByDictTypeCode("Port").getData();
+        List<InitComboxStrVO> portCodeInfo = (List<InitComboxStrVO>) this.omsClient.initDictByDictTypeCode("Port").getData();
 
         //获取车型信息
-        List<InitComboxVO> cabinetSizeInfo = (List<InitComboxVO>)this.omsClient.getVehicleSizeInfo().getData();
+        List<InitComboxVO> cabinetSizeInfo = (List<InitComboxVO>) this.omsClient.getVehicleSizeInfo().getData();
         Map map = new HashMap();
-        map.put("portCodeInfo",portCodeInfo);
-        map.put("cabinetSizeInfo",cabinetSizeInfo);
+        map.put("portCodeInfo", portCodeInfo);
+        map.put("cabinetSizeInfo", cabinetSizeInfo);
         return CommonResult.success(map);
     }
 
+    @ApiOperation(value = "车辆下拉框")
+    @PostMapping(value = "/mainOrder/initVehicleInfo")
+    public CommonResult initVehicleInfo() {
+        return CommonResult.success(omsClient.initVehicle().getData());
+    }
+
+    @ApiOperation(value = "车辆下拉框")
+    @PostMapping(value = "/mainOrder/initDriverInfo")
+    public CommonResult initDriverInfo(@RequestParam("vehicleId") Long vehicleId) {
+        return CommonResult.success(omsClient.initVehicleInfo(vehicleId).getData());
+    }
 
 }

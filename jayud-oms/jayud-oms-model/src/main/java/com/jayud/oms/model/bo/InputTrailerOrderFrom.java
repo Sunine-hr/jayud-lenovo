@@ -159,32 +159,30 @@ public class InputTrailerOrderFrom {
     private String receivingOrdersDate;
 
     @ApiModelProperty(value = "拖车订单地址信息")
-    private List<AddOrderAddressForm> orderAddressForms;
+    private List<AddTrailerOrderAddressForm> orderAddressForms;
 
-    @ApiModelProperty(value = "货品信息")
-    private List<AddGoodsForm> goodsForms;
 
     /**
-     * 校验创建海运子订单参数
+     * 校验创建拖车子订单参数
      */
     public boolean checkCreateOrder() {
-        //海运
+        //拖车
         if (this.legalEntityId == null || StringUtils.isEmpty(this.unitCode)
                 || this.impAndExpType == null || this.cabinetSize == null
                 || StringUtils.isEmpty(this.portCode)) {
             return false;
         }
         // 发货/收货地址是必填项
-        if (CollectionUtils.isEmpty(this.orderAddressForms)) {
-            log.warn("发货地址信息不能为空");
-            return false;
-        }
+//        if (CollectionUtils.isEmpty(this.orderAddressForms)) {
+//            log.warn("发货地址信息不能为空");
+//            return false;
+//        }
         //货品信息
-        for (AddGoodsForm goodsForm : goodsForms) {
-            if (!goodsForm.checkCreateAirOrder()) {
-                return false;
-            }
-        }
+//        for (AddGoodsForm goodsForm : goodsForms) {
+//            if (!goodsForm.checkCreateAirOrder()) {
+//                return false;
+//            }
+//        }
 
         return true;
     }

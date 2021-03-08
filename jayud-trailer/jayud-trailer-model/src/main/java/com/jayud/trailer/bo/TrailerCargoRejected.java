@@ -13,7 +13,7 @@ public class TrailerCargoRejected {
 
     @ApiModelProperty(value = "海运订单id")
     @NotNull(message = "海运订单id不能为空")
-    private Long seaOrderId;
+    private Long trailerOrderId;
 
     @ApiModelProperty(value = "驳回原因")
     private String cause;

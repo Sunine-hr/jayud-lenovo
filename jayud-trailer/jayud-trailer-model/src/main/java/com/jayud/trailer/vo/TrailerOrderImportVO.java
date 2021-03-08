@@ -183,10 +183,10 @@ public class TrailerOrderImportVO extends Model<TrailerOrderImportVO> {
     private String receivingOrdersDate;
 
     @ApiModelProperty(value = "拖车订单地址信息")
-    private List<OrderAddressVO> orderAddressForms;
+    private List<TrailerOrderAddressVO> orderAddressForms;
 
-    @ApiModelProperty(value = "货品信息")
-    private List<GoodsVO> goodsForms;
+//    @ApiModelProperty(value = "货品信息")
+//    private List<GoodsVO> goodsForms;
 
     @ApiModelProperty(value = "派车信息")
     private TrailerDispatchVO trailerDispatchVO;
@@ -230,6 +230,8 @@ public class TrailerOrderImportVO extends Model<TrailerOrderImportVO> {
     //@ApiModelProperty(value = "主订单id")
     private String mainOrderId;
 
+    @ApiModelProperty(value = "车牌号")
+    private String plateNumber;
 
 
 

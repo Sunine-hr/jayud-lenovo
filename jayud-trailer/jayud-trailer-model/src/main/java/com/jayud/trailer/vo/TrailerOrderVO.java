@@ -73,7 +73,7 @@ public class TrailerOrderVO {
     private Long cabinetSize;
 
     @ApiModelProperty(value = "车型尺寸")
-    private Long cabinetSizeName;
+    private String cabinetSizeName;
 
     @ApiModelProperty(value = "提运单")
     private String billOfLading;
@@ -172,10 +172,10 @@ public class TrailerOrderVO {
     private String receivingOrdersDate;
 
     @ApiModelProperty(value = "海运订单地址信息")
-    private List<OrderAddressVO> orderAddressForms;
+    private List<TrailerOrderAddressVO> orderAddressForms;
 
-    @ApiModelProperty(value = "货品信息")
-    private List<GoodsVO> goodsForms;
+//    @ApiModelProperty(value = "货品信息")
+//    private List<GoodsVO> goodsForms;
 
     @ApiModelProperty(value = "派车信息")
     private TrailerDispatchVO trailerDispatchVO;

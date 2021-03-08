@@ -54,11 +54,17 @@ public class OrderAddressVO {
     @ApiModelProperty(value = "备注")
     private String remarks;
 
+    @ApiModelProperty(value = "提货时间/送货日期")
+    private String deliveryDate;
+
     @ApiModelProperty(value = "附件路径(多个逗号隔开)")
     private String filePath;
 
     @ApiModelProperty(value = "附件名称(多个逗号隔开)")
     private String fileName;
+
+    @ApiModelProperty(value = "绑定商品id 前端不用管")
+    private Long bindGoodsId;
 
     @ApiModelProperty(value = "附件")
     private List<FileView> takeFiles = new ArrayList<>();

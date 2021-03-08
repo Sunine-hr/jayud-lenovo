@@ -7,13 +7,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.SqlConstant;
-import com.jayud.common.enums.BusinessTypeEnum;
-import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.enums.OrderTypeEnum;
-import com.jayud.common.enums.ProcessStatusEnum;
+import com.jayud.common.entity.DelOprStatusForm;
+import com.jayud.common.enums.*;
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.trailer.bo.*;
+import com.jayud.trailer.enums.TrailerOrderStatusEnum;
 import com.jayud.trailer.feign.FileClient;
 import com.jayud.trailer.feign.OauthClient;
 import com.jayud.trailer.feign.OmsClient;
@@ -129,34 +129,50 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
             trailerOrder.setUpdateUser(UserOperator.getToken());
             this.updateById(trailerOrder);
         }
-        //获取用户地址
-        List<AddOrderAddressForm> orderAddressForms = addTrailerOrderFrom.getOrderAddressForms();
-        //System.out.println("orderAddressForms=================================="+orderAddressForms);
-        for (AddOrderAddressForm orderAddressForm : orderAddressForms) {
-            orderAddressForm.setOrderNo(trailerOrder.getOrderNo());
-            orderAddressForm.setBusinessType(BusinessTypeEnum.TC.getCode());
-            orderAddressForm.setBusinessId(trailerOrder.getId());
-            orderAddressForm.setCreateTime(LocalDateTime.now());
-            orderAddressForm.setFileName(StringUtils.getFileNameStr(orderAddressForm.getTakeFiles()));
-            orderAddressForm.setFilePath(StringUtils.getFileStr(orderAddressForm.getTakeFiles()));
-        }
-        //批量保存用户地址
-        ApiResult result = this.omsClient.saveOrUpdateOrderAddressBatch(orderAddressForms);
-        if (result.getCode() != HttpStatus.SC_OK) {
-            log.warn("批量保存/修改订单地址信息失败,订单地址信息={}", new JSONArray(orderAddressForms));
+        if(addTrailerOrderFrom.getOrderAddressForms()!=null&&addTrailerOrderFrom.getOrderAddressForms().size()>0){
+            //获取用户地址
+            List<AddTrailerOrderAddressForm> orderAddressForms = addTrailerOrderFrom.getOrderAddressForms();
+            List<AddOrderAddressForm> orderAddressForms1 = new ArrayList<>();
+            List<AddGoodsForm> goodsForms = new ArrayList<>();
+            //System.out.println("orderAddressForms=================================="+orderAddressForms);
+            for (AddTrailerOrderAddressForm addTrailerOrderAddressForm : orderAddressForms) {
+
+                AddGoodsForm goodsForm = new AddGoodsForm();
+                goodsForm.setOrderNo(trailerOrder.getOrderNo());
+                goodsForm.setBusinessId(trailerOrder.getId());
+                goodsForm.setBusinessType(BusinessTypeEnum.TC.getCode());
+                goodsForm.setName(addTrailerOrderAddressForm.getName());
+                goodsForm.setSize(addTrailerOrderAddressForm.getSize());
+                goodsForm.setBulkCargoAmount(addTrailerOrderAddressForm.getBulkCargoAmount());
+                goodsForm.setBulkCargoUnit(addTrailerOrderAddressForm.getBulkCargoUnit());
+                goodsForm.setTotalWeight(addTrailerOrderAddressForm.getTotalWeight());
+                goodsForm.setVolume(addTrailerOrderAddressForm.getVolume());
+                //批量保存货物信息
+                ApiResult result = this.omsClient.saveOrUpdateGood(goodsForm);
+                if (result.getCode() != HttpStatus.SC_OK) {
+                    log.warn("批量保存/修改商品信息失败,商品信息={}", new JSONArray(goodsForm));
+                }
+
+                AddOrderAddressForm orderAddressForm = ConvertUtil.convert(addTrailerOrderAddressForm, AddOrderAddressForm.class);
+                orderAddressForm.setOrderNo(trailerOrder.getOrderNo());
+                orderAddressForm.setBusinessType(BusinessTypeEnum.TC.getCode());
+                orderAddressForm.setBusinessId(trailerOrder.getId());
+                orderAddressForm.setCreateTime(LocalDateTime.now());
+                orderAddressForm.setFileName(StringUtils.getFileNameStr(orderAddressForm.getTakeFiles()));
+                orderAddressForm.setFilePath(StringUtils.getFileStr(orderAddressForm.getTakeFiles()));
+
+                orderAddressForm.setBindGoodsId((Long)result.getData());
+
+                orderAddressForms1.add(orderAddressForm);
+            }
+            //批量保存用户地址
+            ApiResult result = this.omsClient.saveOrUpdateOrderAddressBatch(orderAddressForms1);
+            if (result.getCode() != HttpStatus.SC_OK) {
+                log.warn("批量保存/修改订单地址信息失败,订单地址信息={}", new JSONArray(orderAddressForms));
+            }
+
         }
 
-        List<AddGoodsForm> goodsForms = addTrailerOrderFrom.getGoodsForms();
-        for (AddGoodsForm goodsForm : goodsForms) {
-            goodsForm.setOrderNo(trailerOrder.getOrderNo());
-            goodsForm.setBusinessId(trailerOrder.getId());
-            goodsForm.setBusinessType(BusinessTypeEnum.TC.getCode());
-        }
-        //批量保存货物信息
-        result = this.omsClient.saveOrUpdateGoodsBatch(goodsForms);
-        if (result.getCode() != HttpStatus.SC_OK) {
-            log.warn("批量保存/修改商品信息失败,商品信息={}", new JSONArray(goodsForms));
-        }
 
     }
 
@@ -206,23 +222,34 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
     public TrailerOrderVO getTrailerOrderByOrderNO(Long id) {
         String prePath = String.valueOf(fileClient.getBaseUrl().getData());
         Integer businessType = BusinessTypeEnum.TC.getCode();
-        //海运订单信息
+        //拖车订单信息
         TrailerOrderVO trailerOrderVO = this.baseMapper.getTrailerOrder(id);
         //查询商品信息
-        ApiResult<List<GoodsVO>> result = this.omsClient.getGoodsByBusIds(Collections.singletonList(id), businessType);
-        if (result.getCode() != HttpStatus.SC_OK) {
-            log.warn("查询商品信息失败 airOrderId={}");
-        }
-        trailerOrderVO.setGoodsForms(result.getData());
+//        ApiResult<List<GoodsVO>> result = this.omsClient.getGoodsByBusIds(Collections.singletonList(id), businessType);
+//        if (result.getCode() != HttpStatus.SC_OK) {
+//            log.warn("查询商品信息失败 airOrderId={}");
+//        }
+//        trailerOrderVO.setGoodsForms(result.getData());
         //查询地址信息
         ApiResult<List<OrderAddressVO>> resultOne = this.omsClient.getOrderAddressByBusIds(Collections.singletonList(id), businessType);
         if (resultOne.getCode() != HttpStatus.SC_OK) {
             log.warn("查询订单地址信息失败 airOrderId={}");
         }
         //处理地址信息
+        List<TrailerOrderAddressVO> trailerOrderAddressVOS = new ArrayList<>();
         for (OrderAddressVO address : resultOne.getData()) {
             address.getFile(prePath);
+            TrailerOrderAddressVO convert = ConvertUtil.convert(address, TrailerOrderAddressVO.class);
+            GoodsVO goodById = (GoodsVO)omsClient.getGoodById(address.getBindGoodsId()).getData();
+            convert.setName(goodById.getName());
+            convert.setBulkCargoAmount(goodById.getBulkCargoAmount());
+            convert.setBulkCargoUnit(goodById.getBulkCargoUnit());
+            convert.setSize(goodById.getSize());
+            convert.setTotalWeight(goodById.getTotalWeight());
+            convert.setVolume(goodById.getVolume());
+            trailerOrderAddressVOS.add(convert);
         }
+        trailerOrderVO.setOrderAddressForms(trailerOrderAddressVOS);
         //查询订船信息
         TrailerDispatch trailerDispatch = this.trailerDispatchService.getEnableByTrailerOrderId(id);
         TrailerDispatchVO trailerDispatchVO = ConvertUtil.convert(trailerDispatch,TrailerDispatchVO.class);
@@ -336,4 +363,56 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
         updateProcessStatus(new TrailerOrder(), form);
     }
 
+    @Override
+    public void orderReceiving(TrailerOrder trailerOrder, AuditInfoForm auditInfoForm, TrailerCargoRejected trailerCargoRejected) {
+        TrailerOrder tmp = new TrailerOrder();
+        tmp.setId(trailerOrder.getId());
+        tmp.setUpdateTime(LocalDateTime.now());
+        tmp.setUpdateUser(UserOperator.getToken());
+        tmp.setStatus(auditInfoForm.getAuditStatus());
+
+        omsClient.saveAuditInfo(auditInfoForm);
+        this.updateById(tmp);
+    }
+
+    @Override
+    public void rejectedOpt(TrailerOrder trailerOrder, AuditInfoForm auditInfoForm, TrailerCargoRejected trailerCargoRejected) {
+
+        TrailerOrder tmp = new TrailerOrder();
+        tmp.setId(trailerOrder.getId());
+        tmp.setUpdateTime(LocalDateTime.now());
+        tmp.setUpdateUser(UserOperator.getToken());
+        tmp.setStatus(auditInfoForm.getAuditStatus());
+        //根据选择是否派车驳回
+        ApiResult result = new ApiResult();
+        //删除物流轨迹表订舱数据
+        switch (trailerCargoRejected.getRejectOptions()) {
+            case 1://订单驳回
+                result = omsClient.deleteLogisticsTrackByType(trailerOrder.getId(), BusinessTypeEnum.TC.getCode());
+                //删除订船数据
+                TrailerDispatch trailerDispatch = new TrailerDispatch();
+                trailerDispatch.setStatus(TrailerOrderStatusEnum.DELETE.getCode());
+                this.trailerDispatchService.updateByTrailerOrderId(trailerOrder.getId(), trailerDispatch);
+                break;
+            case 2://派车驳回
+                DelOprStatusForm form = new DelOprStatusForm();
+                form.setOrderId(trailerOrder.getId());
+                form.setStatus(Collections.singletonList(OrderStatusEnum.TT_3.getCode()));
+                result = this.omsClient.delSpecOprStatus(form);
+                tmp.setStatus(OrderStatusEnum.TT_3_2.getCode());
+        }
+
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.error("远程调用删除订舱轨迹失败");
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+
+        if (omsClient.saveAuditInfo(auditInfoForm).getCode() != HttpStatus.SC_OK) {
+            log.error("远程调用审核记录失败");
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+
+        //更改为驳回状态
+        this.updateById(tmp);
+    }
 }

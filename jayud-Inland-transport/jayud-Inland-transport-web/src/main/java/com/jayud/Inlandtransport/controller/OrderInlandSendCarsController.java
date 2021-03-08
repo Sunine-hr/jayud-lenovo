@@ -10,8 +10,10 @@ import com.jayud.Inlandtransport.service.IOrderInlandSendCarsService;
 import com.jayud.Inlandtransport.service.IOrderInlandTransportService;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.enums.OrderTypeEnum;
 import com.jayud.common.enums.ResultEnum;
 import io.netty.util.internal.StringUtil;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,6 +34,7 @@ import java.util.Map;
  * @since 2021-03-04
  */
 @RestController
+@Api(tags = "内陆派车信息")
 @RequestMapping("/orderInlandSendCars")
 public class OrderInlandSendCarsController {
     @Autowired
@@ -74,5 +77,16 @@ public class OrderInlandSendCarsController {
         List<OrderInlandSendCars> list = this.orderInlandSendCarsService.getByCondition(new OrderInlandSendCars().setOrderId(subOrderId));
         return CommonResult.success(list.get(0));
     }
+
+//    @ApiOperation(value = "获取派车单号")
+//    @PostMapping(value = "/getDispatchNO")
+//    public CommonResult<String> getDispatchNO(@RequestBody Map<String, Object> map){
+//        String trailerOrderNo = MapUtil.getStr(map, "orderNo");
+//        String substring = trailerOrderNo.substring(0, trailerOrderNo.length() - 8);
+//        String preOrderNo = OrderTypeEnum.P.getCode()+substring;
+//        String classCode = OrderTypeEnum.P.getCode();
+//        String orderNo = (String)omsClient.getOrderNo(preOrderNo,classCode).getData();
+//        return CommonResult.success(orderNo);
+//    }
 }
 

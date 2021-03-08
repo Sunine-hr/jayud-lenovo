@@ -21,4 +21,9 @@ public interface IOrderInlandSendCarsService extends IService<OrderInlandSendCar
     SendCarPdfVO initPdfData(OrderInlandTransport order, String type);
 
     public List<OrderInlandSendCars> getByCondition(OrderInlandSendCars orderInlandSendCars);
+
+    /**
+     * 生成派车单号
+     */
+    public String createTransportNo(String orderNo);
 }

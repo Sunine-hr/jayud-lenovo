@@ -166,6 +166,7 @@ public interface OmsClient {
 
     /**
      * 获取提货/送货地址信息
+     *
      * @return
      */
     @RequestMapping(value = "/api/getDeliveryAddress")
@@ -178,10 +179,21 @@ public interface OmsClient {
     @RequestMapping(value = "api/initVehicle")
     ApiResult<List<InitComboxVO>> initVehicle(@RequestParam("type") Integer type);
 
-    @ApiOperation(value = "初始化车辆下拉框")
     /**
      * 陆车牌下拉框联动车辆供应商，大陆车牌，香港车牌，司机电话
      */
     @RequestMapping(value = "api/initVehicleInfo")
     public ApiResult initVehicleInfo(@RequestParam("vehicleId") Long vehicleId);
+
+    /**
+     * 根据车辆id查询车辆信息
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getVehicleInfoByIds")
+    public ApiResult getVehicleInfoByIds(@RequestParam("orderIds") List<Long> orderIds);
+
+
+    @RequestMapping(value = "/api/getOrderNo")
+    ApiResult getOrderNo(@RequestParam("preOrder") String preOrder, @RequestParam("classCode") String classCode);
 }

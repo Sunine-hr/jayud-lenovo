@@ -36,6 +36,9 @@ public class SendCarForm extends Model<SendCarForm> {
     @ApiModelProperty(value = "车牌号", required = true)
     private String licensePlate;
 
+    @ApiModelProperty(value = "车型id", required = true)
+    private Long vehicleId;
+
     @ApiModelProperty(value = "司机姓名", required = true)
     private String driverName;
 
@@ -59,8 +62,8 @@ public class SendCarForm extends Model<SendCarForm> {
         if (StringUtils.isEmpty(this.vehicleSize)) {
             throw new JayudBizException("车型尺寸" + msg);
         }
-        if (StringUtils.isEmpty(this.licensePlate)) {
-            throw new JayudBizException("车牌号" + msg);
+        if (this.vehicleId == null) {
+            throw new JayudBizException("请选择车牌");
         }
         if (StringUtils.isEmpty(this.driverName)) {
             throw new JayudBizException("司机姓名" + msg);

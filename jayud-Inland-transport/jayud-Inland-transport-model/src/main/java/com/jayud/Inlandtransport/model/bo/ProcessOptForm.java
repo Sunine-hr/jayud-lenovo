@@ -42,6 +42,9 @@ public class ProcessOptForm {
     @ApiModelProperty(value = "备注")
     private String description;
 
+    @ApiModelProperty(value = "审核意见")
+    private String describes;
+
     @ApiModelProperty(value = "派车信息")
     private SendCarForm sendCarForm;
 

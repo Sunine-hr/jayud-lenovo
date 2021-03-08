@@ -103,7 +103,7 @@ public class OrderInlandTransportDetails extends Model<OrderInlandTransportDetai
 
     public void assembleDeliveryAddress(List<OrderDeliveryAddress> deliveryAddresses) {
         deliveryAddresses.forEach(e -> {
-            if (OrderAddressEnum.PICK_UP.getCode().equals(e.getAddressType())) {
+             if (OrderAddressEnum.PICK_UP.getCode().equals(e.getAddressType())) {
                 pickUpAddressList.add(e);
                 pickUpFile=new ArrayList<>();
                 pickUpFile.addAll(e.getFileViewList());

@@ -158,13 +158,13 @@ public class VehicleInfoServiceImpl extends ServiceImpl<VehicleInfoMapper, Vehic
         return this.baseMapper.getVehicleDetailsById(vehicleId);
     }
 
-    @Override
-    public List<VehicleInfo> getByCondition(VehicleInfo vehicleInfo) {
-        QueryWrapper<VehicleInfo> condition = new QueryWrapper<>();
-        return this.baseMapper.selectList(condition);
-    }
-
     /**
      * 根据条件获取车辆信息
      */
+    @Override
+    public List<VehicleInfo> getByCondition(VehicleInfo vehicleInfo) {
+        QueryWrapper<VehicleInfo> condition = new QueryWrapper<>(vehicleInfo);
+        return this.baseMapper.selectList(condition);
+    }
+
 }

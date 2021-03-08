@@ -123,12 +123,15 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
      * @param form
      */
     @Override
+    @Transactional
     public void updateProcessStatus(OrderInlandTransport orderInlandTransport, ProcessOptForm form) {
         orderInlandTransport.setId(form.getOrderId());
         orderInlandTransport.setUpdateTime(LocalDateTime.now());
         orderInlandTransport.setUpdateUser(UserOperator.getToken());
         orderInlandTransport.setStatus(form.getStatus());
 
+        //修改派车信息
+        updateSendCars(form);
         //更新状态节点状态
         this.baseMapper.updateById(orderInlandTransport);
         //节点操作记录
@@ -137,8 +140,10 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
         finishOrderOpt(orderInlandTransport);
     }
 
+
     /**
      * 节点操作记录
+     *
      * @param form
      */
     @Override
@@ -182,8 +187,8 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
         OrderInlandSendCars orderInlandSendCars = ConvertUtil.convert(sendCarForm, OrderInlandSendCars.class);
         orderInlandSendCars.setCreateUser(UserOperator.getToken());
         orderInlandSendCars.setCreateTime(LocalDateTime.now());
+        orderInlandSendCars.setTransportNo(this.orderInlandSendCarsService.createTransportNo(sendCarForm.getOrderNo()));
         this.orderInlandSendCarsService.save(orderInlandSendCars);
-
         this.updateProcessStatus(new OrderInlandTransport(), form);
     }
 
@@ -239,6 +244,16 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
             initComboxStrVOS.add(initComboxStrVO);
         }
         return initComboxStrVOS;
+    }
+
+    private void updateSendCars(ProcessOptForm form) {
+        if (OrderStatusEnum.INLANDTP_NL_3.getCode().equals(form.getStatus())) {
+            List<OrderInlandSendCars> sendCarsList = this.orderInlandSendCarsService.getByCondition(new OrderInlandSendCars().setOrderId(form.getOrderId()));
+            OrderInlandSendCars sendCars = sendCarsList.get(0);
+            this.orderInlandSendCarsService.updateById(new OrderInlandSendCars().setId(sendCars.getId())
+                    .setDescribes(form.getDescribes()));
+            form.setDescription(form.getDescribes());
+        }
     }
 
 }

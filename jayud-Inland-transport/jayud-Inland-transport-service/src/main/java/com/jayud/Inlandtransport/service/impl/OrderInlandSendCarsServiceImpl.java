@@ -10,9 +10,16 @@ import com.jayud.Inlandtransport.model.vo.GoodsVO;
 import com.jayud.Inlandtransport.model.vo.OrderAddressVO;
 import com.jayud.Inlandtransport.model.vo.SendCarPdfVO;
 import com.jayud.Inlandtransport.service.IOrderInlandSendCarsService;
+import com.jayud.common.CommonResult;
+import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.BusinessTypeEnum;
+import com.jayud.common.enums.OrderTypeEnum;
+import com.jayud.common.utils.StringUtils;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.Collections;
 import java.util.List;
@@ -53,7 +60,7 @@ public class OrderInlandSendCarsServiceImpl extends ServiceImpl<OrderInlandSendC
         //组装地址
         sendCarPdfVO.assembleAddress(orderAddressList);
         //组装货品
-        sendCarPdfVO.assembleGoods(goodsInfoList,orderAddressList);
+        sendCarPdfVO.assembleGoods(goodsInfoList, orderAddressList);
 
         return sendCarPdfVO;
     }
@@ -62,5 +69,33 @@ public class OrderInlandSendCarsServiceImpl extends ServiceImpl<OrderInlandSendC
     public List<OrderInlandSendCars> getByCondition(OrderInlandSendCars orderInlandSendCars) {
         QueryWrapper<OrderInlandSendCars> condition = new QueryWrapper<>(orderInlandSendCars);
         return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 生成派车单号
+     */
+    @Override
+    public String createTransportNo(String trailerOrderNo) {
+        String substring = trailerOrderNo.substring(0, trailerOrderNo.length() - 8);
+        String preOrderNo = OrderTypeEnum.P.getCode()+substring;
+        String classCode = OrderTypeEnum.P.getCode();
+        return (String)omsClient.getOrderNo(preOrderNo,classCode).getData();
+    }
+
+
+    /**
+     * 派车单号是否存在
+     *
+     * @param transportNo
+     * @return
+     */
+    private boolean isExistTransportNo(String transportNo) {
+        QueryWrapper<OrderInlandSendCars> queryWrapper = new QueryWrapper();
+        queryWrapper.lambda().eq(OrderInlandSendCars::getTransportNo, transportNo);
+        int count = this.count(queryWrapper);
+        if (count == 0) {
+            return true;
+        }
+        return false;
     }
 }

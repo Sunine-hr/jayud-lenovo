@@ -442,4 +442,24 @@ public enum OrderStatusEnum {
         }
         return null;
     }
+
+    public static OrderStatusEnum getInlandTPOrderRejection(String status) {
+        if (OrderStatusEnum.INLANDTP_NL_0.getCode().equals(status)) {//接单页面驳回
+            return INLANDTP_NL_1_1;
+        }
+        if (OrderStatusEnum.INLANDTP_NL_1.getCode().equals(status)) {//派车页面驳回
+            return INLANDTP_NL_2_1;
+        }
+        if (OrderStatusEnum.INLANDTP_NL_2.getCode().equals(status)) {//入仓页面驳回
+            return INLANDTP_NL_3_1;
+        }
+        if (OrderStatusEnum.INLANDTP_NL_3.getCode().equals(status)) {//入仓页面驳回
+            return INLANDTP_NL_4_1;
+        }
+        if (OrderStatusEnum.INLANDTP_NL_4.getCode().equals(status)) {//入仓页面驳回
+            return INLANDTP_NL_5_1;
+        }
+        return null;
+    }
+
 }

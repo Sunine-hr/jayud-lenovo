@@ -1009,12 +1009,13 @@ public class ExternalApiController {
 
     /**
      * 获取订单节点
+     *
      * @return
      */
     @RequestMapping(value = "/api/getOrderProcessNode")
     public ApiResult<String> getOrderProcessNode(@RequestParam("mainOrderNo") String mainOrderNo,
-                                         @RequestParam("orderNo") String orderNo,
-                                         @RequestParam("currentNodeStatus") String currentNodeStatus) {
+                                                 @RequestParam("orderNo") String orderNo,
+                                                 @RequestParam("currentNodeStatus") String currentNodeStatus) {
         List<OrderFlowSheet> orderFlowSheets = orderFlowSheetService.getByCondition(new OrderFlowSheet().setMainOrderNo(mainOrderNo)
                 .setOrderNo(orderNo).setFStatus(currentNodeStatus));
         return ApiResult.ok(orderFlowSheets.get(0).getStatus());
@@ -1022,13 +1023,24 @@ public class ExternalApiController {
 
     /**
      * 获取提货/送货地址信息
+     *
      * @return
      */
     @RequestMapping(value = "/api/getDeliveryAddress")
     public ApiResult<List<OrderDeliveryAddress>> getDeliveryAddress(@RequestParam("orderId") List<Long> orderId,
-                                                @RequestParam("businessType") Integer businessType) {
-        List<OrderDeliveryAddress> list=this.orderAddressService.getDeliveryAddress(orderId,businessType);
+                                                                    @RequestParam("businessType") Integer businessType) {
+        List<OrderDeliveryAddress> list = this.orderAddressService.getDeliveryAddress(orderId, businessType);
         return ApiResult.ok(list);
+    }
+
+    /**
+     * 根据车辆id查询车辆信息
+     * @return
+     */
+    @RequestMapping(value = "/api/getVehicleInfoByIds")
+    public ApiResult<List<VehicleInfo>> getVehicleInfoByIds(@RequestParam("orderIds") List<Long> orderIds) {
+        Collection<VehicleInfo> vehicleInfos = this.vehicleInfoService.listByIds(orderIds);
+        return ApiResult.ok(new ArrayList<>(vehicleInfos));
     }
 }
 

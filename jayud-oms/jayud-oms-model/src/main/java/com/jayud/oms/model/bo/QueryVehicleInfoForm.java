@@ -26,4 +26,7 @@ public class QueryVehicleInfoForm extends BasePageForm {
     @ApiModelProperty("状态 0 禁用 1启用")
     private String status;
 
+    @ApiModelProperty(value = "车辆类型(0:中港车,1:内陆车)")
+    private Integer type;
+
 }

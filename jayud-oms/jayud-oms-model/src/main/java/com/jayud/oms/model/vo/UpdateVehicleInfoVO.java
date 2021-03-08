@@ -90,6 +90,8 @@ public class UpdateVehicleInfoVO {
     @ApiModelProperty(value = "主司机id")
     private Long mainDriverId;
 
+    @ApiModelProperty(value = "车辆类型(0:中港车,1:内陆车)")
+    private Integer type;
 
     public void setDriverInfoIds(String driverInfoIds) {
         this.driverInfoIds = driverInfoIds;

@@ -57,7 +57,7 @@
         <association property="supplierInfoVO" javaType="com.jayud.oms.model.vo.SupplierInfoVO">
             <id column="id" property="id"/>
             <result column="supplier_code" property="supplierCode"/>
-<!--            <result column="product_classify_id" property="productClassifyIds"/>-->
+            <!--            <result column="product_classify_id" property="productClassifyIds"/>-->
             <result column="supplier_ch_name" property="supplierChName"/>
             <result column="contacts" property="contacts"/>
             <result column="contact_number" property="contactNumber"/>
@@ -93,7 +93,8 @@
         stepping_code steppingCode, enterprise_code enterpriseCode,
         vehicle_tonnage vehicleTonnage,
         files,
-        file_name fileName
+        file_name fileName,
+        `type`
         from
         vehicle_info w left join supplier_info s on w.supplier_id=s.id
         <where>
@@ -108,6 +109,9 @@
             </if>
             <if test="form.supplierName!=null and form.supplierName!=''">
                 and s.supplier_ch_name like concat('%',#{form.supplierName},'%')
+            </if>
+            <if test="form.type!=null">
+                and w.type= #{form.type}
             </if>
         </where>
         order by id desc

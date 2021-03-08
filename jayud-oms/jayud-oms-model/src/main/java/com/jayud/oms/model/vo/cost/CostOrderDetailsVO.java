@@ -31,7 +31,7 @@ public class CostOrderDetailsVO {
                 CostOrderTransportVO orderTransport = new CostOrderTransportVO();
                 orderTransport.setOrderNo(orderTransportForm.getOrderNo());
                 orderTransport.setVehicleSize(orderTransportForm.getVehicleSize());
-                orderTransport.assemblyTakeAdr(orderTransportForm.getOrderTakeAdrForms2());
+                orderTransport.assemblyTakeAdr(orderTransportForm.getOrderTakeAdrForms1());
                 orderTransportList.add(orderTransport);
             }
         }

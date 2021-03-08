@@ -199,4 +199,11 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     CommonResult<OrderInfoVO> lookOrderInfoTask(Long orderId);
+
+    /**
+     *
+     * @param id
+     * @return
+     */
+    CommonResult<WaybillTaskRelevanceVO> confirmCompleted(Long id);
 }

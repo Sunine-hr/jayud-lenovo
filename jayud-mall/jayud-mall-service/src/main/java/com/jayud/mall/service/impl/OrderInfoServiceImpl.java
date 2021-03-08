@@ -18,6 +18,7 @@ import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.*;
 import com.jayud.mall.model.vo.*;
+import com.jayud.mall.model.vo.domain.AuthUser;
 import com.jayud.mall.model.vo.domain.CustomerUser;
 import com.jayud.mall.service.*;
 import com.jayud.mall.utils.SnowflakeUtils;
@@ -94,6 +95,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     WaybillTaskRelevanceMapper waybillTaskRelevanceMapper;
 
     @Autowired
+    WaybillTaskMapper waybillTaskMapper;
+
+    @Autowired
     IOrderCustomsFileService orderCustomsFileService;
 
     @Autowired
@@ -122,6 +126,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Autowired
     ICounterCaseService counterCaseService;
+
+    @Autowired
+    IWaybillTaskService waybillTaskService;
 
     @Autowired
     BaseService baseService;
@@ -1214,9 +1221,27 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             return CommonResult.error(-1, "订单不存在");
         }
         //根据订单id，查询订单关联的任务，查看完成情况
-        List<WaybillTaskVO> waybillTaskVOS = orderInfoMapper.findWaybillTaskByOrderInfoId(orderId);
-        orderInfoVO.setWaybillTaskVOS(waybillTaskVOS);
+        List<WaybillTaskRelevanceVO> waybillTaskRelevanceVOS = orderInfoMapper.findWaybillTaskRelevanceByOrderInfoId(orderId);
+        orderInfoVO.setWaybillTaskRelevanceVOS(waybillTaskRelevanceVOS);
         return CommonResult.success(orderInfoVO);
+    }
+
+    @Override
+    public CommonResult<WaybillTaskRelevanceVO> confirmCompleted(Long id) {
+        AuthUser user = baseService.getUser();
+        WaybillTaskRelevance waybillTaskRelevance = waybillTaskRelevanceMapper.selectById(id);
+        if(ObjectUtil.isEmpty(waybillTaskRelevance)){
+            return CommonResult.error(-1, "没有找到此任务");
+        }
+        Integer loginUserId = user.getId().intValue();
+        Integer taskUserId = waybillTaskRelevance.getUserId();
+        if(!loginUserId.equals(taskUserId)){
+            return CommonResult.error(-1, "只有本人才能点击完成");
+        }
+        waybillTaskRelevance.setStatus("3");//状态(0未激活 1已激活 2异常 3已完成)
+        waybillTaskRelevanceService.saveOrUpdate(waybillTaskRelevance);
+        WaybillTaskRelevanceVO waybillTaskRelevanceVO = ConvertUtil.convert(waybillTaskRelevance, WaybillTaskRelevanceVO.class);
+        return CommonResult.success(waybillTaskRelevanceVO);
     }
 
     /**

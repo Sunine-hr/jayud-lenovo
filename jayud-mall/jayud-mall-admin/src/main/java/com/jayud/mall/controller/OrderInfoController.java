@@ -172,6 +172,15 @@ public class OrderInfoController {
         return orderInfoService.lookOrderInfoTask(orderId);
     }
 
+    //运单任务-反馈状态(点击已完成)
+    @ApiOperation(value = "运单任务-反馈状态(点击已完成)")
+    @PostMapping("/confirmCompleted")
+    @ApiOperationSupport(order = 18)
+    public CommonResult<WaybillTaskRelevanceVO> confirmCompleted(@Valid @RequestBody WaybillTaskRelevanceParaForm form){
+        Long id = form.getId();
+        return orderInfoService.confirmCompleted(id);
+    }
+
     //订单操作日志
 
 

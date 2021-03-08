@@ -179,11 +179,13 @@
     </select>
 
 
-    <select id="findWaybillTaskByOrderInfoId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.WaybillTaskVO">
+    <select id="findWaybillTaskRelevanceByOrderInfoId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.WaybillTaskRelevanceVO">
         select
             t.id,t.order_info_id,t.task_code,t.task_name,t.sort,t.days,t.day_flag,t.operators,t.minutes,t.score,t.remarks,t.status,t.reason,t.up_time,t.user_id,t.user_name,t.create_time
         from waybill_task_relevance t
         where t.order_info_id = #{orderId}
+        order by t.sort asc
     </select>
 
 

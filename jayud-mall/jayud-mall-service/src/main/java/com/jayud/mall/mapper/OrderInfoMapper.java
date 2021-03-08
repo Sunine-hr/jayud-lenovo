@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.mall.model.bo.QueryOrderInfoForm;
 import com.jayud.mall.model.po.OrderInfo;
-import com.jayud.mall.model.vo.OceanBillVO;
-import com.jayud.mall.model.vo.OceanCounterVO;
-import com.jayud.mall.model.vo.OrderInfoVO;
-import com.jayud.mall.model.vo.WaybillTaskVO;
+import com.jayud.mall.model.vo.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -83,5 +80,5 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      * @param orderId
      * @return
      */
-    List<WaybillTaskVO> findWaybillTaskByOrderInfoId(@Param("orderId") Long orderId);
+    List<WaybillTaskRelevanceVO> findWaybillTaskRelevanceByOrderInfoId(@Param("orderId") Long orderId);
 }

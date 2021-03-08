@@ -52,6 +52,9 @@ public class OrderInlandTransport extends Model<OrderInlandTransport> {
     @ApiModelProperty(value = "结算单位CODE")
     private String unitCode;
 
+    @ApiModelProperty(value = "结算单位名称")
+    private String unitName;
+
     @ApiModelProperty(value = "接单法人")
     private String legalName;
 

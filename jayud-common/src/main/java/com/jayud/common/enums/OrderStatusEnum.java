@@ -405,20 +405,41 @@ public enum OrderStatusEnum {
         return null;
     }
 
-    public static List<OrderStatusEnum> getAllInlandTPStatus() {
+    public static List<OrderStatusEnum> getInlandTPStatus(boolean isAll) {
         List<OrderStatusEnum> statusEnums = new ArrayList<>();
         statusEnums.add(INLANDTP_NL_0);
         statusEnums.add(INLANDTP_NL_1);
-        statusEnums.add(INLANDTP_NL_1_1);
+        if (isAll) statusEnums.add(INLANDTP_NL_1_1);
         statusEnums.add(INLANDTP_NL_2);
-        statusEnums.add(INLANDTP_NL_2_1);
+        if (isAll) statusEnums.add(INLANDTP_NL_2_1);
         statusEnums.add(INLANDTP_NL_3);
-        statusEnums.add(INLANDTP_NL_3_1);
-        statusEnums.add(INLANDTP_NL_3_2);
+        if (isAll) statusEnums.add(INLANDTP_NL_3_1);
+        if (isAll) statusEnums.add(INLANDTP_NL_3_2);
         statusEnums.add(INLANDTP_NL_4);
         statusEnums.add(INLANDTP_NL_5);
-        statusEnums.add(INLANDTP_NL_5_1);
+        if (isAll) statusEnums.add(INLANDTP_NL_5_1);
         statusEnums.add(INLANDTP_NL_6);
         return statusEnums;
+    }
+
+    /**
+     * 获取内陆运输上个节点
+     * 如果是驳回状态就是当前状态
+     */
+    public static OrderStatusEnum getInlandTPOrderPreStatus(String currentStatus) {
+        if (INLANDTP_NL_3_1.getCode().equals(currentStatus)) {
+            return OrderStatusEnum.INLANDTP_NL_3_1;
+        }
+        List<OrderStatusEnum> statusEnums = getInlandTPStatus(false);
+        for (int i = 0; i < statusEnums.size(); i++) {
+            OrderStatusEnum orderStatusEnum = statusEnums.get(i);
+            if (orderStatusEnum.getCode().equals(currentStatus)) {
+                if (i == 0) {
+                    return INLANDTP_NL_0;
+                }
+                return statusEnums.get(i - 1);
+            }
+        }
+        return null;
     }
 }

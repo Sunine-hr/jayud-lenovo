@@ -7,6 +7,7 @@ CREATE TABLE `order_inland_transport` (
   `vehicle_type` int(10) DEFAULT NULL COMMENT '车型(1吨车 2柜车)',
   `vehicle_size` varchar(5) DEFAULT NULL COMMENT '车型(3T 5t 8T 10T 12T 20GP 40GP 45GP..)',
   `unit_code` varchar(50) DEFAULT NULL COMMENT '结算单位CODE',
+  `unit_name` varchar(255) DEFAULT NULL COMMENT '结算单位名称',
   `legal_name` varchar(50) DEFAULT NULL COMMENT '接单法人',
   `legal_entity_id` bigint(20) DEFAULT NULL COMMENT '法人主体ID',
   `need_input_cost` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否需要录入费用',
@@ -17,7 +18,7 @@ CREATE TABLE `order_inland_transport` (
   `update_user` varchar(50) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='内陆订单';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COMMENT='内陆订单';
 
 
 

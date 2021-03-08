@@ -143,4 +143,10 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
      */
     public boolean exitName(Long customerId, String name);
 
+
+    /**
+     * 根据code查询客户信息
+     */
+    public CustomerInfo getByCode(String code);
+
 }

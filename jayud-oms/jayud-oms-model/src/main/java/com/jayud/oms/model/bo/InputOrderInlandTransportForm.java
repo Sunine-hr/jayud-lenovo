@@ -56,6 +56,9 @@ public class InputOrderInlandTransportForm extends Model<InputOrderInlandTranspo
     @ApiModelProperty(value = "结算单位CODE")
     private String unitCode;
 
+    @ApiModelProperty(value = "结算单位名称")
+    private String unitName;
+
     @ApiModelProperty(value = "接单法人")
     private String legalName;
 
@@ -136,7 +139,7 @@ public class InputOrderInlandTransportForm extends Model<InputOrderInlandTranspo
                     .setStatusName(tpProcess.getDesc())
                     .setFStatus(preStatus)
                     .setIsPass("1");
-            preStatus=tpProcess.getCode();
+            preStatus = tpProcess.getCode();
             list.add(orderFlowSheet);
         }
         return list;

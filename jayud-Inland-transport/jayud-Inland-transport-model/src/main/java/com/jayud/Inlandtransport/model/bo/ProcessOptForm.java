@@ -27,7 +27,7 @@ public class ProcessOptForm {
     @ApiModelProperty(value = "主订单id", required = true)
     private Long mainOrderId;
 
-    @ApiModelProperty(value = "空运订单id", required = true)
+    @ApiModelProperty(value = "子订单id", required = true)
     private Long orderId;
 
     @ApiModelProperty(value = "操作人")
@@ -73,6 +73,7 @@ public class ProcessOptForm {
 
         switch (nextStatus) {
             case INLANDTP_NL_2: //派车
+                if (this.sendCarForm == null) throw new JayudBizException("请填写派车信息");
                 //设置操作时间
                 this.sendCarForm.checkSendCarOptParam();
                 this.operatorTime = DateUtils.LocalDateTime2Str(LocalDateTime.now(), DateUtils.DATE_TIME_PATTERN);

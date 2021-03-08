@@ -116,7 +116,7 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
         Map<Long, Goods> tmp = goodsList.stream().collect(Collectors.toMap(Goods::getId, e -> e));
         String prePath = fileClient.getBaseUrl().getData().toString();
 
-        List<OrderDeliveryAddress> list=new ArrayList<>();
+        List<OrderDeliveryAddress> list = new ArrayList<>();
         addressList.forEach(e -> {
             Goods goods = tmp.get(e.getBindGoodsId());
             OrderDeliveryAddress orderDeliveryAddress = new OrderDeliveryAddress();
@@ -137,7 +137,7 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
                     .setVolume(goods.getVolume())
                     .setRemarks(e.getRemarks())
                     .setFileViewList(StringUtils.getFileViews(e.getFilePath(), e.getFileName(), prePath));
-
+            list.add(orderDeliveryAddress);
         });
         return list;
     }

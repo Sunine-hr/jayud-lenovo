@@ -8,6 +8,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.config.FeignRequestInterceptor;
 import com.jayud.common.entity.*;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -170,4 +171,17 @@ public interface OmsClient {
     @RequestMapping(value = "/api/getDeliveryAddress")
     public ApiResult<List<OrderDeliveryAddress>> getDeliveryAddress(@RequestParam("orderId") List<Long> orderId,
                                                                     @RequestParam("businessType") Integer businessType);
+
+    /**
+     * 初始化车辆下拉框
+     */
+    @RequestMapping(value = "api/initVehicle")
+    ApiResult<List<InitComboxVO>> initVehicle(@RequestParam("type") Integer type);
+
+    @ApiOperation(value = "初始化车辆下拉框")
+    /**
+     * 陆车牌下拉框联动车辆供应商，大陆车牌，香港车牌，司机电话
+     */
+    @RequestMapping(value = "api/initVehicleInfo")
+    public ApiResult initVehicleInfo(@RequestParam("vehicleId") Long vehicleId);
 }

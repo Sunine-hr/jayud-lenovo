@@ -66,9 +66,9 @@ public class OrderTransComboxController {
 
     @ApiOperation(value = "运输派车-大陆车牌联动车辆供应商，大陆车牌，香港车牌，司机电话 id = 车辆id")
     @PostMapping(value = "/initVehicleInfo")
-    public CommonResult initDriverInfo(@RequestBody Map<String, Object> param) {
-        Long driverId = Long.valueOf(MapUtil.getStr(param, "id"));
-        return CommonResult.success(omsClient.initVehicleInfo(driverId).getData());
+    public CommonResult initVehicleInfo(@RequestBody Map<String, Object> param) {
+        Long vehicleId = Long.valueOf(MapUtil.getStr(param, "id"));
+        return CommonResult.success(omsClient.initVehicleInfo(vehicleId).getData());
     }
 
 }

@@ -15,6 +15,7 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -56,6 +57,9 @@ public class OrderInlandTransportDetails extends Model<OrderInlandTransportDetai
     @ApiModelProperty(value = "结算单位CODE")
     private String unitCode;
 
+    @ApiModelProperty(value = "结算单位名称")
+    private String unitName;
+
     @ApiModelProperty(value = "接单法人")
     private String legalName;
 
@@ -81,10 +85,10 @@ public class OrderInlandTransportDetails extends Model<OrderInlandTransportDetai
     private OrderInlandSendCarsVO orderInlandSendCarsVO;
 
     @ApiModelProperty("提货地址")
-    private List<OrderDeliveryAddress> pickUpAddressList;
+    private List<OrderDeliveryAddress> pickUpAddressList=new ArrayList<>();
 
     @ApiModelProperty("送货地址")
-    private List<OrderDeliveryAddress> orderDeliveryAddressList;
+    private List<OrderDeliveryAddress> orderDeliveryAddressList=new ArrayList<>();
 
     @ApiModelProperty("提货文件")
     private List<FileView> pickUpFile;
@@ -101,10 +105,12 @@ public class OrderInlandTransportDetails extends Model<OrderInlandTransportDetai
         deliveryAddresses.forEach(e -> {
             if (OrderAddressEnum.PICK_UP.getCode().equals(e.getAddressType())) {
                 pickUpAddressList.add(e);
+                pickUpFile=new ArrayList<>();
                 pickUpFile.addAll(e.getFileViewList());
             }
             if (OrderAddressEnum.DELIVERY.getCode().equals(e.getAddressType())) {
                 orderDeliveryAddressList.add(e);
+                deliveryFile=new ArrayList<>();
                 deliveryFile.addAll(e.getFileViewList());
             }
         });

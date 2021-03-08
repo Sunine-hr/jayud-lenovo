@@ -41,7 +41,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static com.jayud.common.enums.OrderStatusEnum.getAllInlandTPStatus;
+import static com.jayud.common.enums.OrderStatusEnum.getInlandTPStatus;
 
 /**
  * <p>
@@ -82,7 +82,8 @@ public class OrderInlandTransportController {
                 form.setMainOrderNos(Collections.singletonList("-1"));
             }
         }
-
+        OrderStatusEnum statusEnum = OrderStatusEnum.getInlandTPOrderPreStatus(form.getStatus());
+        form.setStatus(statusEnum.getCode());
         IPage<OrderInlandTransportFormVO> page = this.orderInlandTransportService.findByPage(form);
         if (page.getRecords().size() == 0) {
             return CommonResult.success(new CommonPageResult<>(page));
@@ -138,7 +139,7 @@ public class OrderInlandTransportController {
     @PostMapping(value = "/doProcessOpt")
     public CommonResult doProcessOpt(@RequestBody ProcessOptForm form) {
         if (form.getMainOrderId() == null || form.getOrderId() == null) {
-            log.warn("空运订单编号/空运订单id必填");
+            log.warn("主/子订单id必填");
             return CommonResult.error(ResultEnum.VALIDATE_FAILED);
         }
         //空运订单信息
@@ -186,7 +187,7 @@ public class OrderInlandTransportController {
     @ApiOperation(value = "查询订单详情 subOrderId=子订单id")
     @PostMapping(value = "/getOrderDetails")
     public CommonResult<OrderInlandTransportDetails> getOrderDetails(@RequestBody Map<String, Object> map) {
-        Long subOrderId = MapUtil.getLong(map, "subOrderId");
+        Long subOrderId = MapUtil.getLong(map, "id");
         if (subOrderId == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
@@ -199,7 +200,7 @@ public class OrderInlandTransportController {
     @ApiOperation(value = "查询内陆状态")
     @PostMapping(value = "/initStatus")
     public List<InitComboxStrVO> initStatus() {
-        List<OrderStatusEnum> enums = getAllInlandTPStatus();
+        List<OrderStatusEnum> enums = getInlandTPStatus(true);
         List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
         for (OrderStatusEnum statusEnum : enums) {
             InitComboxStrVO initComboxStrVO = new InitComboxStrVO();

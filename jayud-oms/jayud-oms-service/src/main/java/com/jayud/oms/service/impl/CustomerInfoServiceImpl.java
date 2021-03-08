@@ -424,4 +424,14 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         return this.count(condition) > 0;
     }
 
+    /**
+     * 根据code查询客户信息
+     */
+    @Override
+    public CustomerInfo getByCode(String code) {
+        QueryWrapper<CustomerInfo> condition = new QueryWrapper<>();
+        condition.lambda().eq(CustomerInfo::getIdCode, code);
+        return this.baseMapper.selectOne(condition);
+    }
+
 }

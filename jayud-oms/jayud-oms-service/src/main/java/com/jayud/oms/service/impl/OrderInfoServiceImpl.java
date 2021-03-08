@@ -117,9 +117,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Autowired
     private IOrderTypeNumberService orderTypeNumberService;
 
-    public String generationOrderNo(Long legalId , Integer integer,String classStatus) {
+    public String generationOrderNo(Long legalId, Integer integer, String classStatus) {
         //生成订单号
-        String legalCode = (String)oauthClient.getLegalEntityCodeByLegalId(legalId).getData();
+        String legalCode = (String) oauthClient.getLegalEntityCodeByLegalId(legalId).getData();
         String preOrder = null;
         String classCode = null;
         if (classStatus.equals("main")) {
@@ -769,10 +769,17 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 inputOrderVO.setOrderTransportForm(inputOrderTransportVO);
             }
         }
-        //获取内陆运输和深圳中转仓信息
+        //获取内陆运输
         if (OrderStatusEnum.NLYS.getCode().equals(form.getClassCode()) ||
-                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.SZZZC.getCode())) {
-
+                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.NLDD.getCode())) {
+            InputOrderInlandTPVO inlandTPVO = this.inlandTpClient.getOrderDetails(inputMainOrderVO.getOrderNo()).getData();
+            if (inlandTPVO != null) {
+                //添加附件
+                List<FileView> attachments = this.logisticsTrackService.getAttachments(inlandTPVO.getId()
+                        , BusinessTypeEnum.NL.getCode(), prePath);
+                inlandTPVO.setAllPics(attachments);
+                inputOrderVO.setOrderInlandTPForm(inlandTPVO);
+            }
         }
 
         //TODO 空运可能需要中港运输详情,但是物流节点还没定下来,暂时不写
@@ -834,7 +841,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
         String classCode = inputMainOrderForm.getClassCode();//订单类型
         String selectedServer = inputMainOrderForm.getSelectedServer();//所选服务
+
         //纯报关和出口报关并且订单状态为驳回(C_1_1)或为空或为暂存待补全的待接单
+
         if (OrderStatusEnum.CBG.getCode().equals(classCode) ||
                 selectedServer.contains(OrderStatusEnum.CKBG.getCode())) {
             InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
@@ -961,11 +970,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 if (orderInlandTransportForm.getId() == null) {
                     orderNo = generationOrderNo(orderInlandTransportForm.getLegalEntityId(), 0, OrderStatusEnum.NLYS.getCode());
                 }
-
+                //查询结算单位
+                CustomerInfo unitName = this.customerInfoService.getByCode(orderInlandTransportForm.getUnitCode());
                 orderInlandTransportForm.setMainOrderNo(mainOrderNo);
                 orderInlandTransportForm.setOrderNo(orderNo);
                 orderInlandTransportForm.setCreateUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
                 orderInlandTransportForm.setProcessStatus(processStatus);
+                orderInlandTransportForm.setUnitName(unitName.getName());
                 String subOrderNo = this.inlandTpClient.createOrder(orderInlandTransportForm).getData();
                 orderInlandTransportForm.setOrderNo(subOrderNo);
                 if (orderInlandTransportForm.getId() == null) {

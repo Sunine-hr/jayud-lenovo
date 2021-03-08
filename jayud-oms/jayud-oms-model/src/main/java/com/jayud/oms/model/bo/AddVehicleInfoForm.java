@@ -94,7 +94,7 @@ public class AddVehicleInfoForm {
         String msg = "必填";
         switch (type) {
             case 0:
-                if (this.carType==null) {
+                if (this.carType == null) {
                     throw new JayudBizException("请选择车辆类型");
                 }
             case 1:
@@ -110,9 +110,11 @@ public class AddVehicleInfoForm {
                 if (CollectionUtils.isEmpty(this.driverInfos)) {
                     throw new JayudBizException("请关联司机");
                 }
-                if (this.mainDriverId==null){
+                if (this.mainDriverId == null) {
                     throw new JayudBizException("请选择司机");
                 }
+                //默认吨车
+                this.carType = 1;
                 break;
             default:
                 throw new JayudBizException("不存在该车辆类型");

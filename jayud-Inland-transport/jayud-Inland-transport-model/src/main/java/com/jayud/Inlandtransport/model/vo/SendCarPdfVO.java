@@ -165,10 +165,10 @@ public class SendCarPdfVO {
         for (GoodsVO goodsVO : goodsList) {
             OrderAddressVO orderAddressVO = takeInfo.get(goodsVO.getId());
             if (orderAddressVO != null && OrderAddressEnum.PICK_UP.getCode().equals(orderAddressVO.getType())) {
-                this.totalPieceAmount += goodsVO.getPlateAmount();
-                this.totalVolume += goodsVO.getPlateAmount();
-                this.totalWeight += goodsVO.getPlateAmount();
-                this.totalPlateAmount += goodsVO.getPlateAmount();
+                this.totalPieceAmount += goodsVO.getBulkCargoAmount();
+                this.totalVolume += (goodsVO.getVolume() == null ? 0 : goodsVO.getVolume());
+                this.totalWeight += (goodsVO.getTotalWeight() == null ? 0 : goodsVO.getTotalWeight());
+                this.totalPlateAmount += (goodsVO.getPlateAmount() == null ? 0 : goodsVO.getPlateAmount());
                 GoodsInfoVO goodsInfoVO = new GoodsInfoVO();
                 goodsInfoVO.setGoodsDesc(goodsVO.getName());
                 goodsInfoVO.setPieceAmount(goodsVO.getBulkCargoAmount());

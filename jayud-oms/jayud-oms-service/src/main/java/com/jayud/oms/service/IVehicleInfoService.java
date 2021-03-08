@@ -27,6 +27,7 @@ public interface IVehicleInfoService extends IService<VehicleInfo> {
 
     /**
      * 新增编辑车辆信息
+     *
      * @param vehicleInfo
      * @return
      */
@@ -39,6 +40,7 @@ public interface IVehicleInfoService extends IService<VehicleInfo> {
 
     /**
      * 根据状态获取车辆信息
+     *
      * @param status
      * @return
      */
@@ -53,6 +55,7 @@ public interface IVehicleInfoService extends IService<VehicleInfo> {
 
     /**
      * 获取所有的车型尺寸
+     *
      * @return
      */
     List<VehicleSizeInfoVO> findVehicleSize();
@@ -67,4 +70,10 @@ public interface IVehicleInfoService extends IService<VehicleInfo> {
      * 根据车辆id获取车辆和供应商信息
      */
     VehicleDetailsVO getVehicleAndSupplierInfo(Long vehicleId);
+
+
+    /**
+     * 根据条件获取车辆信息
+     */
+    List<VehicleInfo> getByCondition(VehicleInfo vehicleInfo);
 }

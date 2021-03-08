@@ -273,9 +273,11 @@ public class ExternalApiController {
 
     @ApiOperation(value = "初始化车辆下拉框")
     @RequestMapping(value = "api/initVehicle")
-    public ApiResult<List<VehicleInfo>> initVehicle() {
+    public ApiResult<List<VehicleInfo>> initVehicle(@RequestParam("type") Integer type) {
         List<VehicleInfo> vehicleInfos = vehicleInfoService
-                .getVehicleInfoByStatus(StatusEnum.ENABLE.getCode());
+                .getByCondition(new VehicleInfo().setStatus(StatusEnum.ENABLE.getCode())
+                        .setType(type));
+
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (VehicleInfo vehicleInfo : vehicleInfos) {
             InitComboxVO initComboxVO = new InitComboxVO();
@@ -295,6 +297,7 @@ public class ExternalApiController {
         tmp.setDriverInfos(vehicleDetailsVO.getDriverInfoVOS());
         tmp.setHkNumber(vehicleDetailsVO.getHkNumber());
         tmp.setSupplierName(vehicleDetailsVO.getSupplierInfoVO().getSupplierChName());
+        tmp.setSupplierId(vehicleDetailsVO.getSupplierId());
         tmp.setMainDriverId(vehicleDetailsVO.getMainDriverId());
 
         return ApiResult.ok(tmp);
@@ -969,10 +972,11 @@ public class ExternalApiController {
 
     /**
      * 获取订单号
+     *
      * @return
      */
     @RequestMapping(value = "/api/getOrderNo")
-    ApiResult getOrderNo(@RequestParam("preOrder") String preOrder , @RequestParam("classCode") String classCode){
+    ApiResult getOrderNo(@RequestParam("preOrder") String preOrder, @RequestParam("classCode") String classCode) {
         String orderNo = orderTypeNumberService.getOrderNo(preOrder, classCode);
         return ApiResult.ok(orderNo);
     }

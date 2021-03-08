@@ -4,6 +4,7 @@ package com.jayud.tms.controller;
 import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.enums.CarTypeEnum;
 import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.model.vo.DriverInfoLinkVO;
 import com.jayud.tms.model.vo.InitComboxVO;
@@ -59,7 +60,7 @@ public class OrderTransComboxController {
     @ApiOperation(value = "运输派车页面-下拉车辆信息")
     @PostMapping(value = "/initVehicle")
     public CommonResult<List<InitComboxVO>> initVehicle() {
-        List<InitComboxVO> initComboxVOS = omsClient.initVehicle().getData();
+        List<InitComboxVO> initComboxVOS = omsClient.initVehicle(CarTypeEnum.ZERO.getCode()).getData();
         return CommonResult.success(initComboxVOS);
     }
 

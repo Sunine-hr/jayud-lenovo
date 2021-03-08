@@ -43,10 +43,23 @@
         t.is_pick,t.`status`,t.status_name,t.create_time,t.create_user_id,t.create_user_name,t.order_origin,t.bol_no,t.need_declare,t.need_clearance,t.remark,
         t.charge_weight,t.volume_weight,t.actual_weight,t.actual_volume,t.total_cartons,
         t1.company,
-        t2.names,t2.sail_time,t2.cut_off_time
+        t2.names,t2.sail_time,t2.cut_off_time,
+        t3.taskItems taskTodo,
+        t4.group_name
         from order_info t
         left join customer t1 on t1.id = t.customer_id
         left join offer_info t2 on t2.id = t.offer_info_id
+        left join (
+            SELECT
+            t.order_info_id,
+            GROUP_CONCAT(t.task_name order by sort asc) AS taskItems
+            FROM
+            waybill_task_relevance t
+            where t.status != 3
+            GROUP BY
+            t.order_info_id
+        ) t3 on t3.order_info_id = t.id
+        left join operation_team t4 on t4.id = t1.operation_team_id
         WHERE
         1 = 1
         <if test="form.customerId != null">
@@ -163,6 +176,14 @@
                create_time
         from ocean_counter
         where ob_id = #{tdId}
+    </select>
+
+
+    <select id="findWaybillTaskByOrderInfoId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.WaybillTaskVO">
+        select
+            t.id,t.order_info_id,t.task_code,t.task_name,t.sort,t.days,t.day_flag,t.operators,t.minutes,t.score,t.remarks,t.status,t.reason,t.up_time,t.user_id,t.user_name,t.create_time
+        from waybill_task_relevance t
+        where t.order_info_id = #{orderId}
     </select>
 
 

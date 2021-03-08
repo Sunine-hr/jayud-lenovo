@@ -8,6 +8,7 @@ import com.jayud.mall.model.po.OrderInfo;
 import com.jayud.mall.model.vo.OceanBillVO;
 import com.jayud.mall.model.vo.OceanCounterVO;
 import com.jayud.mall.model.vo.OrderInfoVO;
+import com.jayud.mall.model.vo.WaybillTaskVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -76,4 +77,11 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      * @return
      */
     List<OceanCounterVO> findOceanCounterByTdId(@Param("tdId") Long tdId);
+
+    /**
+     * 根据订单id，查询订单关联的任务，查看完成情况
+     * @param orderId
+     * @return
+     */
+    List<WaybillTaskVO> findWaybillTaskByOrderInfoId(@Param("orderId") Long orderId);
 }

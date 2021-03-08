@@ -286,6 +286,20 @@ public class OrderInfoVO {
     @JSONField(ordinal = 58)
     private FabWarehouseVO fabWarehouseVO;
 
+    //订单任务代办事项
+    @ApiModelProperty(value = "订单任务代办事项", position = 59)
+    @JSONField(ordinal = 59)
+    private String taskTodo;
+
+    //运营组
+    @ApiModelProperty(value = "运营组", position = 60)
+    @JSONField(ordinal = 60)
+    private String groupName;
+
+    //订单绑定运营组、任务组、任务
+    @ApiModelProperty(value = "订单绑定运营组、任务组、任务", position = 61)
+    @JSONField(ordinal = 61)
+    private List<WaybillTaskVO> waybillTaskVOS;
 
 
 }

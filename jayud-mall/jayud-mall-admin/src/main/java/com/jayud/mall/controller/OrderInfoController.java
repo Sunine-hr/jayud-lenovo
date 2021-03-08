@@ -163,5 +163,17 @@ public class OrderInfoController {
         return orderInfoService.findOrderBill(orderId);
     }
 
+    //查看订单任务反馈状态
+    @ApiOperation(value = "运单任务-反馈状态(根据 订单id 查询)")
+    @PostMapping("/lookOrderInfoTask")
+    @ApiOperationSupport(order = 17)
+    public CommonResult<OrderInfoVO> lookOrderInfoTask(@Valid @RequestBody OrderInfoParaForm form){
+        Long orderId = form.getId();
+        return orderInfoService.lookOrderInfoTask(orderId);
+    }
+
+    //订单操作日志
+
+
 
 }

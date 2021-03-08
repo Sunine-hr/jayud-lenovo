@@ -192,4 +192,11 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     CommonResult<OrderBillVO> findOrderBill(Long orderId);
+
+    /**
+     * 运单任务-反馈状态(根据 订单id 查询)
+     * @param orderId
+     * @return
+     */
+    CommonResult<OrderInfoVO> lookOrderInfoTask(Long orderId);
 }

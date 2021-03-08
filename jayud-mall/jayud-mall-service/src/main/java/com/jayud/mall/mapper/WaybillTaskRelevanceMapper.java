@@ -22,7 +22,7 @@ import java.util.List;
 public interface WaybillTaskRelevanceMapper extends BaseMapper<WaybillTaskRelevance> {
 
     /**
-     * 根据订单id，找运营组和任务
+     * 根据订单id，找运营组和任务(组装数据)
      * @param orderId
      * @return
      */

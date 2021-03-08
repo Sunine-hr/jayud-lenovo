@@ -1,5 +1,7 @@
 package com.jayud.mall.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
@@ -89,6 +91,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     ShippingAreaMapper shippingAreaMapper;
 
     @Autowired
+    WaybillTaskRelevanceMapper waybillTaskRelevanceMapper;
+
+    @Autowired
     IOrderCustomsFileService orderCustomsFileService;
 
     @Autowired
@@ -136,10 +141,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             records.forEach(ororderInfoVO -> {
                 Long orderId = ororderInfoVO.getId();
                 List<String> confinfos = orderInfoMapper.findOrderConfInfoByOrderId(orderId);
-                if(confinfos.size() > 0){
+
+                if(CollUtil.isNotEmpty(confinfos)){
                     String confInfo = "";
                     for (int i=0; i<confinfos.size(); i++){
-                        confInfo += confinfos.get(i);
+                        if(ObjectUtil.isNotEmpty(confinfos.get(i))){
+                            confInfo += confinfos.get(i);
+                        }
                     }
                     ororderInfoVO.setConfInfo(confInfo);
                 }
@@ -1199,6 +1207,18 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return CommonResult.success(orderBillVO);
     }
 
+    @Override
+    public CommonResult<OrderInfoVO> lookOrderInfoTask(Long orderId) {
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfo(orderId);
+        if(ObjectUtil.isEmpty(orderInfoVO)){
+            return CommonResult.error(-1, "订单不存在");
+        }
+        //根据订单id，查询订单关联的任务，查看完成情况
+        List<WaybillTaskVO> waybillTaskVOS = orderInfoMapper.findWaybillTaskByOrderInfoId(orderId);
+        orderInfoVO.setWaybillTaskVOS(waybillTaskVOS);
+        return CommonResult.success(orderInfoVO);
+    }
+
     /**
      * 获取订单费用明细
      * @param orderInfoVO
@@ -1222,6 +1242,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
         return orderCostDetailVO;
     }
+
 
 
 

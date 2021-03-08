@@ -29,7 +29,7 @@
         t2.company_name supplierName,
         t3.code_name startName,
         t4.code_name endName,
-        t5.code_name taskName,
+        t5.group_name taskName,
         t6.group_name operationTeamName,
         CONCAT(t3.code_name,'/',t4.code_name) startEndName
         from
@@ -106,6 +106,59 @@
             group by t3.order_id
         ) t2 on t2.order_id = t.id
         left join supplier_info t3 on t3.id = t2.supplier_id
+    </select>
+
+    <select id="findOceanBillById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OceanBillVO">
+        select
+        t.id,t.tid,t.supplier_id,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time,t.task_id,t.operation_team_id,t.user_id,t.user_name,
+        t1.code_name tname,
+        t2.company_name supplierName,
+        t3.code_name startName,
+        t4.code_name endName,
+        t5.group_name taskName,
+        t6.group_name operationTeamName,
+        CONCAT(t3.code_name,'/',t4.code_name) startEndName
+        from
+        ocean_bill t
+        left join transport_way t1 on t1.id = t.tid
+        left join  supplier_info t2 on t2.id = t.supplier_id
+        left join harbour_info t3 on t3.id_code = t.start_code
+        left join harbour_info t4 on t4.id_code = t.end_code
+        left join task_group t5 on t5.id = t.task_id
+        left join operation_team t6 on t6.id = t.operation_team_id
+        where 1=1
+        and t.id = #{obId}
+    </select>
+
+
+    <select id="findBillTaskRelevanceByObId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.BillTaskRelevanceVO">
+        select
+            t.id,t.ocean_bill_id,t.task_code,t.task_name,t.sort,t.days,t.day_flag,t.operators,t.minutes,t.score,t.remarks,t.status,t.reason,t.up_time,t.user_id,t.user_name,t.create_time
+        from
+            bill_task_relevance t
+        where t.ocean_bill_id = #{obId}
+    </select>
+
+    <select id="lookOperateLog" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.BillTaskRelevanceVO">
+        select
+        t.up_time,t.operators,
+        CONCAT('点击【',t.task_name, '】任务,',statusDescribes) operateDescribes
+        from (
+            select up_time,operators,task_name,
+            (case status
+            when '0' then '未激活'
+            when '1' then '已激活'
+            when '2' then '异常'
+            when '3' then '已完成'
+            else null end) as statusDescribes
+            from
+            bill_task_relevance
+            where 1=1
+            and up_time is not null
+            and ocean_bill_id=#{id}
+        ) t
+        order by t.up_time desc
+
     </select>
 
 

@@ -7,11 +7,11 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class OceanBillParaForm {
+public class BillTaskRelevanceParaForm {
 
     @ApiModelProperty(value = "自增id", required = true, position = 1)
     @JSONField(ordinal = 1)
-    @NotNull(message = "提单id不能为空")
+    @NotNull(message = "id不能为空")
     private Long id;
 
 }

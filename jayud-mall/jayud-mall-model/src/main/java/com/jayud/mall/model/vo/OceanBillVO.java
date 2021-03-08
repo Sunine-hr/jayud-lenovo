@@ -124,6 +124,11 @@ public class OceanBillVO {
     @JSONField(ordinal = 26)
     private List<BillOrderCostInfoVO> billOrderCostInfoVOS;
 
+    //提单对应的运营组、任务组、任务
+    @ApiModelProperty(value = "提单对应的运营组、任务组、任务", position = 27)
+    @JSONField(ordinal = 27)
+    private List<BillTaskRelevanceVO> billTaskRelevanceVOS;
+
 
 
 }

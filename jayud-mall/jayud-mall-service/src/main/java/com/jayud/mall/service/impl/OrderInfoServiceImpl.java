@@ -1227,6 +1227,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult<WaybillTaskRelevanceVO> confirmCompleted(Long id) {
         AuthUser user = baseService.getUser();
         WaybillTaskRelevance waybillTaskRelevance = waybillTaskRelevanceMapper.selectById(id);

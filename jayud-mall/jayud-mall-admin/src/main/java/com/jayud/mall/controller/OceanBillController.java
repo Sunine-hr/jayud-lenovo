@@ -3,11 +3,9 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
-import com.jayud.mall.model.bo.BillCostInfoForm;
-import com.jayud.mall.model.bo.OceanBillForm;
-import com.jayud.mall.model.bo.OceanBillParaForm;
-import com.jayud.mall.model.bo.QueryOceanBillForm;
+import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.vo.BillCostInfoVO;
+import com.jayud.mall.model.vo.BillTaskRelevanceVO;
 import com.jayud.mall.model.vo.OceanBillVO;
 import com.jayud.mall.service.IOceanBillService;
 import io.swagger.annotations.Api;
@@ -21,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/oceanbill")
@@ -67,7 +66,7 @@ public class OceanBillController {
     //保存提单费用信息(录入提单费用保存)
     @ApiOperation(value = "保存提单费用信息(录入提单费用保存)")
     @PostMapping(value = "saveBillCostInfo")
-    @ApiOperationSupport(order = 4)
+    @ApiOperationSupport(order = 5)
     public CommonResult<BillCostInfoVO> saveBillCostInfo(@Valid @RequestBody BillCostInfoForm form){
         return oceanBillService.saveBillCostInfo(form);
     }
@@ -75,9 +74,37 @@ public class OceanBillController {
     //根据计费重,一键均摊
     @ApiOperation(value = "一键均摊提单费用到订单(根据订单计费重,均摊)")
     @PostMapping(value = "shareEqually")
-    @ApiOperationSupport(order = 5)
+    @ApiOperationSupport(order = 6)
     public CommonResult<OceanBillVO> shareEqually(@Valid @RequestBody BillCostInfoForm form){
         return oceanBillService.shareEqually(form);
+    }
+
+
+    //提单任务-反馈状态(根据 提单id 查询)
+    @ApiOperation(value = "提单任务-反馈状态(根据 提单id 查询)")
+    @PostMapping("/lookOceanBillTask")
+    @ApiOperationSupport(order = 7)
+    public CommonResult<OceanBillVO> lookOceanBillTask(@Valid @RequestBody OceanBillParaForm form){
+        Long obId = form.getId();
+        return oceanBillService.lookOceanBillTask(obId);
+    }
+
+    //提单任务-反馈状态(点击已完成)
+    @ApiOperation(value = "提单任务-反馈状态(点击已完成)")
+    @PostMapping("/confirmCompleted")
+    @ApiOperationSupport(order = 8)
+    public CommonResult<BillTaskRelevanceVO> confirmCompleted(@Valid @RequestBody BillTaskRelevanceParaForm form){
+        Long id = form.getId();
+        return oceanBillService.confirmCompleted(id);
+    }
+
+    //提单任务-订单操作日志（根据订单id查看）
+    @ApiOperation(value = "运单任务-订单操作日志（根据订单id查看）")
+    @PostMapping("/lookOperateLog")
+    @ApiOperationSupport(order = 9)
+    public CommonResult<List<BillTaskRelevanceVO>> lookOperateLog(@Valid @RequestBody OrderInfoParaForm form){
+        Long id = form.getId();
+        return oceanBillService.lookOperateLog(id);
     }
 
 

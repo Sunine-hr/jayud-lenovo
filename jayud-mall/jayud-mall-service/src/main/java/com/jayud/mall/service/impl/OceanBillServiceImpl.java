@@ -50,6 +50,9 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     OrderCopeWithMapper orderCopeWithMapper;
 
     @Autowired
+    BillTaskRelevanceMapper billTaskRelevanceMapper;
+
+    @Autowired
     IOceanCounterService oceanCounterService;
 
     @Autowired
@@ -358,5 +361,48 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         oceanBillVO.setBillOrderCostInfoVOS(billOrderCostInfoVOS);
 
         return CommonResult.success(oceanBillVO);
+    }
+
+    @Override
+    public CommonResult<OceanBillVO> lookOceanBillTask(Long obId) {
+        OceanBillVO oceanBillVO = oceanBillMapper.findOceanBillById(obId);
+        if(ObjectUtil.isEmpty(oceanBillVO)){
+            return CommonResult.error(-1, "没有找到提单");
+        }
+
+        //根据提单id，查询提单关联的任务，查看完成情况
+        List<BillTaskRelevanceVO> billTaskRelevanceVOS = oceanBillMapper.findBillTaskRelevanceByObId(obId);
+        oceanBillVO.setBillTaskRelevanceVOS(billTaskRelevanceVOS);
+        return CommonResult.success(oceanBillVO);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CommonResult<BillTaskRelevanceVO> confirmCompleted(Long id) {
+        AuthUser user = baseService.getUser();
+        BillTaskRelevance billTaskRelevance = billTaskRelevanceMapper.selectById(id);
+        if(ObjectUtil.isEmpty(billTaskRelevance)){
+            return CommonResult.error(-1, "没有找到此任务");
+        }
+        Integer loginUserId = user.getId().intValue();
+        Integer taskUserId = billTaskRelevance.getUserId();
+        if(!loginUserId.equals(taskUserId)){
+            return CommonResult.error(-1, "只有本人才能点击完成");
+        }
+        billTaskRelevance.setStatus("3");//状态(0未激活 1已激活 2异常 3已完成)
+        billTaskRelevance.setUpTime(LocalDateTime.now());
+        billTaskRelevanceService.saveOrUpdate(billTaskRelevance);
+        BillTaskRelevanceVO billTaskRelevanceVO = ConvertUtil.convert(billTaskRelevance, BillTaskRelevanceVO.class);
+        return CommonResult.success(billTaskRelevanceVO);
+    }
+
+    @Override
+    public CommonResult<List<BillTaskRelevanceVO>> lookOperateLog(Long id) {
+        OceanBillVO oceanBillVO = oceanBillMapper.findOceanBillById(id);
+        if(ObjectUtil.isEmpty(oceanBillVO)){
+            return CommonResult.error(-1, "订单不存在");
+        }
+        List<BillTaskRelevanceVO> billTaskRelevanceVOS = oceanBillMapper.lookOperateLog(id);
+        return CommonResult.success(billTaskRelevanceVOS);
     }
 }

@@ -8,7 +8,10 @@ import com.jayud.mall.model.bo.OceanBillForm;
 import com.jayud.mall.model.bo.QueryOceanBillForm;
 import com.jayud.mall.model.po.OceanBill;
 import com.jayud.mall.model.vo.BillCostInfoVO;
+import com.jayud.mall.model.vo.BillTaskRelevanceVO;
 import com.jayud.mall.model.vo.OceanBillVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -63,4 +66,25 @@ public interface IOceanBillService extends IService<OceanBill> {
      * @return
      */
     CommonResult<OceanBillVO> shareEqually(BillCostInfoForm form);
+
+    /**
+     * 提单任务-反馈状态(根据 提单id 查询)
+     * @param obId 提单id
+     * @return
+     */
+    CommonResult<OceanBillVO> lookOceanBillTask(Long obId);
+
+    /**
+     * 提单任务-反馈状态(点击已完成)
+     * @param id
+     * @return
+     */
+    CommonResult<BillTaskRelevanceVO> confirmCompleted(Long id);
+
+    /**
+     * 运单任务-订单操作日志（根据订单id查看）
+     * @param id
+     * @return
+     */
+    CommonResult<List<BillTaskRelevanceVO>> lookOperateLog(Long id);
 }

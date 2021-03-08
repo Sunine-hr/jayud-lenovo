@@ -21,5 +21,6 @@ public interface IBillTaskService extends IService<BillTask> {
      * @param obId 提单id
      * @return
      */
+    @Deprecated
     List<BillTaskVO> findbillTaskByObId(Long obId);
 }

@@ -1,5 +1,6 @@
 package com.jayud.mall.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -11,12 +12,14 @@ import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.*;
 import com.jayud.mall.model.vo.*;
+import com.jayud.mall.model.vo.domain.AuthUser;
 import com.jayud.mall.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,6 +64,9 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     @Autowired
     IOrderCopeWithService orderCopeWithService;
 
+    @Autowired
+    BaseService baseService;
+
     @Override
     public IPage<OceanBillVO> findOceanBillByPage(QueryOceanBillForm form) {
         //定义分页参数
@@ -94,6 +100,14 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     public CommonResult<OceanBillVO> saveOceanBill(OceanBillForm form) {
         //1.保存提单
         OceanBill oceanBill = ConvertUtil.convert(form, OceanBill.class);
+        Long id = oceanBill.getId();
+        if (ObjectUtil.isEmpty(id)){
+            AuthUser user = baseService.getUser();
+            oceanBill.setUserId(user.getId().intValue());
+            oceanBill.setUserName(user.getName());
+            oceanBill.setCreateTime(LocalDateTime.now());
+        }
+
         this.saveOrUpdate(oceanBill);
         Long obId = oceanBill.getId();//提单id
         List<OceanCounterForm> oceanCounterForms = form.getOceanCounterForms();
@@ -103,11 +117,10 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
             oceanCounter.setObId(obId);
             oceanCounterList.add(oceanCounter);
         });
-        //先删除
+        //2.保存提单对应的柜子
         QueryWrapper<OceanCounter> oceanCounterQueryWrapper = new QueryWrapper<>();
         oceanCounterQueryWrapper.eq("ob_id", obId);
         oceanCounterService.remove(oceanCounterQueryWrapper);
-        //2.保存提单对应的柜子
         oceanCounterService.saveOrUpdateBatch(oceanCounterList);
         OceanBillVO oceanBillVO = ConvertUtil.convert(oceanBill, OceanBillVO.class);
 

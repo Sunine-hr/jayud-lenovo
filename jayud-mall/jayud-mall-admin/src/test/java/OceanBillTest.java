@@ -26,7 +26,7 @@ public class OceanBillTest {
         OceanBillForm form = new OceanBillForm();
         form.setId(id);
         form.setTid(1);
-        form.setSupplierCode("HEUNG-A");
+//        form.setSupplierCode("HEUNG-A");
         form.setOrderId("AB123");
         form.setStartCode("SH");
         form.setEndCode("NY");
@@ -106,7 +106,7 @@ public class OceanBillTest {
         OceanBillForm form = new OceanBillForm();
         form.setId(1L);
         form.setTid(1);
-        form.setSupplierCode("G001");
+//        form.setSupplierCode("G001");
         form.setOrderId("DL200228H011");
         form.setStartCode("SH");
         form.setEndCode("NY");
@@ -201,7 +201,7 @@ public class OceanBillTest {
         OceanBillForm form = new OceanBillForm();
         form.setId(1L);
         form.setTid(1);
-        form.setSupplierCode("G001");
+//        form.setSupplierCode("G001");
         form.setOrderId("DL200228H011");
         form.setStartCode("SH");
         form.setEndCode("NY");
@@ -219,7 +219,7 @@ public class OceanBillTest {
         OceanBillForm form = new OceanBillForm();
         form.setId(1L);
         form.setTid(1);
-        form.setSupplierCode("G001");
+//        form.setSupplierCode("G001");
         form.setOrderId("DL200228H011");
         form.setStartCode("SH");
         form.setEndCode("NY");

@@ -1,6 +1,8 @@
 package com.jayud.mall.model.po;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
@@ -29,6 +31,7 @@ public class BillTaskRelevance extends Model<BillTaskRelevance> {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "自增id", position = 1)
+    @TableId(value = "id", type = IdType.AUTO)
     @JSONField(ordinal = 1)
     private Long id;
 

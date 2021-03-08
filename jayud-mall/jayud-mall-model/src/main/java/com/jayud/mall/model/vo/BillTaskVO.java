@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 public class BillTaskVO {
 
     @ApiModelProperty(value = "自增id", position = 1)
-    @TableId(value = "id", type = IdType.AUTO)
     @JSONField(ordinal = 1)
     private Long id;
 

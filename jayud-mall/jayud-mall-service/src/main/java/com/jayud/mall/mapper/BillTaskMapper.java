@@ -26,5 +26,6 @@ public interface BillTaskMapper extends BaseMapper<BillTask> {
      * @param obId
      * @return
      */
+    @Deprecated
     List<BillTaskVO> findbillTaskByObId(@Param("obId") Long obId);
 }

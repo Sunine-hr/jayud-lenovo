@@ -26,7 +26,7 @@ public class OceanBillForm {
     @JSONField(ordinal = 3)
     private String supplierCode;
 
-    @ApiModelProperty(value = "提单号(供应商提供)", position = 4)
+    @ApiModelProperty(value = "提单号(供应商提供,供应商是船运公司)", position = 4)
     @JSONField(ordinal = 4)
     private String orderId;
 

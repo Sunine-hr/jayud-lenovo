@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class QueryCustomerGoodsForm extends BasePageForm {
 
-    @ApiModelProperty(value = "客户ID,默认登录时后台就有", position = 1)
+    @ApiModelProperty(value = "客户ID,默认登录时后台就有（C端）", position = 1)
     @JSONField(ordinal = 1)
     private Integer customerId;
 

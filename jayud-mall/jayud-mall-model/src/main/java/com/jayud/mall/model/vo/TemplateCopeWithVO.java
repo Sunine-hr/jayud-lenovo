@@ -71,4 +71,14 @@ public class TemplateCopeWithVO {
     @JSONField(ordinal = 14)
     private String supplierName;
 
+    @ApiModelProperty(value = "币种代码", position = 15)
+    @JSONField(ordinal = 15)
+    private String currencyCode;
+
+    @ApiModelProperty(value = "币种名称", position = 16)
+    @JSONField(ordinal = 16)
+    private String currencyName;
+
+
+
 }

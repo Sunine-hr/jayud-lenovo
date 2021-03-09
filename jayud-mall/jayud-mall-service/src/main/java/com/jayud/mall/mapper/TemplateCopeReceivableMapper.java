@@ -41,4 +41,11 @@ public interface TemplateCopeReceivableMapper extends BaseMapper<TemplateCopeRec
      * @return
      */
     List<TemplateCopeReceivableVO> findTemplateCopeReceivableOtherFeeListByQie(@Param("qie") Integer qie);
+
+    /**
+     * 根据报价模板id，查询应收费用明细
+     * @param qie
+     * @return
+     */
+    List<TemplateCopeReceivableVO> findTemplateCopeReceivableByQie(@Param("qie") Integer qie);
 }

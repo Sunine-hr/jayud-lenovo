@@ -184,19 +184,26 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
             offerInfoVO.setQidarr(qList);
         }
         //报价对应应收费用明细list
-        QueryWrapper<TemplateCopeReceivable> query1 = new QueryWrapper<>();
-        query1.eq("qie", qie);
-        List<TemplateCopeReceivable> templateCopeReceivables = templateCopeReceivableMapper.selectList(query1);
-        List<TemplateCopeReceivableVO> templateCopeReceivableVOList =
-                ConvertUtil.convertList(templateCopeReceivables, TemplateCopeReceivableVO.class);
-        offerInfoVO.setTemplateCopeReceivableVOList(templateCopeReceivableVOList);
+//        QueryWrapper<TemplateCopeReceivable> query1 = new QueryWrapper<>();
+//        query1.eq("qie", qie);
+//        List<TemplateCopeReceivable> templateCopeReceivables = templateCopeReceivableMapper.selectList(query1);
+//        List<TemplateCopeReceivableVO> templateCopeReceivableVOList =
+//                ConvertUtil.convertList(templateCopeReceivables, TemplateCopeReceivableVO.class);
+//        offerInfoVO.setTemplateCopeReceivableVOList(templateCopeReceivableVOList);
+        List<TemplateCopeReceivableVO> templateCopeReceivableVOS = templateCopeReceivableMapper.findTemplateCopeReceivableByQie(qie);
+        offerInfoVO.setTemplateCopeReceivableVOList(templateCopeReceivableVOS);
+
         //报价对应应付费用明细list
-        QueryWrapper<TemplateCopeWith> query2 = new QueryWrapper<>();
-        query2.eq("qie", qie);
-        List<TemplateCopeWith> templateCopeWiths = templateCopeWithMapper.selectList(query2);
-        List<TemplateCopeWithVO> templateCopeWithVOList =
-                ConvertUtil.convertList(templateCopeWiths, TemplateCopeWithVO.class);
-        offerInfoVO.setTemplateCopeWithVOList(templateCopeWithVOList);
+//        QueryWrapper<TemplateCopeWith> query2 = new QueryWrapper<>();
+//        query2.eq("qie", qie);
+//        List<TemplateCopeWith> templateCopeWiths = templateCopeWithMapper.selectList(query2);
+//        List<TemplateCopeWithVO> templateCopeWithVOList =
+//                ConvertUtil.convertList(templateCopeWiths, TemplateCopeWithVO.class);
+//        offerInfoVO.setTemplateCopeWithVOList(templateCopeWithVOList);
+
+        List<TemplateCopeWithVO> templateCopeWithVOS = templateCopeWithMapper.findTemplateCopeWithByQie(qie);
+        offerInfoVO.setTemplateCopeWithVOList(templateCopeWithVOS);
+
 
         //模板对应模块信息list，文件信息
         List<TemplateFileVO> templateFileVOList = templateFileMapper.findTemplateFileByQie(Long.valueOf(qie));

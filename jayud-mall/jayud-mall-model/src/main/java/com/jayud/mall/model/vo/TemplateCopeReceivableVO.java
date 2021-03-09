@@ -70,9 +70,13 @@ public class TemplateCopeReceivableVO {
     @JSONField(ordinal = 13)
     private String currencyCode;
 
-    /*amountFormat*/
-    @ApiModelProperty(value = "金额格式化", position = 14)
+    @ApiModelProperty(value = "币种名称", position = 14)
     @JSONField(ordinal = 14)
+    private String currencyName;
+
+    /*amountFormat*/
+    @ApiModelProperty(value = "金额格式化", position = 15)
+    @JSONField(ordinal = 15)
     private String amountFormat;
 
 

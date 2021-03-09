@@ -27,4 +27,11 @@ public interface TemplateCopeWithMapper extends BaseMapper<TemplateCopeWith> {
      * @return
      */
     List<TemplateCopeWithVO> selectListByQie(@Param("qie") Long qie);
+
+    /**
+     * 根据报价模板id（qie），查询应付费用信息
+     * @param qie
+     * @return
+     */
+    List<TemplateCopeWithVO> findTemplateCopeWithByQie(@Param("qie") Integer qie);
 }

@@ -3,7 +3,6 @@ package com.jayud.Inlandtransport.controller;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
-import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.Inlandtransport.feign.OauthClient;
 import com.jayud.Inlandtransport.feign.OmsClient;
@@ -17,14 +16,17 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.aop.annotations.DynamicHead;
-import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.AuditInfoForm;
 import com.jayud.common.entity.InitComboxStrVO;
-import com.jayud.common.enums.*;
+import com.jayud.common.enums.BusinessTypeEnum;
+import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.ProcessStatusEnum;
+import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -77,8 +79,12 @@ public class OrderInlandTransportController {
                 form.setMainOrderNos(Collections.singletonList("-1"));
             }
         }
-        OrderStatusEnum statusEnum = OrderStatusEnum.getInlandTPOrderPreStatus(form.getStatus());
-        form.setStatus(statusEnum.getCode());
+        if (!StringUtils.isEmpty(form.getStatus())) {
+            OrderStatusEnum statusEnum = OrderStatusEnum.getInlandTPOrderPreStatus(form.getStatus());
+            form.setStatus(statusEnum.getCode());
+        }
+
+
         IPage<OrderInlandTransportFormVO> page = this.orderInlandTransportService.findByPage(form);
         if (page.getRecords().size() == 0) {
             return CommonResult.success(new CommonPageResult<>(page));
@@ -211,10 +217,10 @@ public class OrderInlandTransportController {
     @ApiOperation(value = "订单驳回")
     @PostMapping(value = "/rejectOrder")
     public CommonResult rejectOrder(@RequestBody OrderRejectedOpt rejectedOpt) {
-        //查询空运订单
-        OrderInlandTransport orderInlandTransport = this.orderInlandTransportService.getById(rejectedOpt.getOrderId());
+        //查询订单
+        OrderInlandTransport tmp = this.orderInlandTransportService.getById(rejectedOpt.getOrderId());
         //获取相应驳回操作
-        OrderStatusEnum orderStatusEnum = OrderStatusEnum.getInlandTPOrderRejection(orderInlandTransport.getStatus());
+        OrderStatusEnum orderStatusEnum = OrderStatusEnum.getInlandTPOrderRejection(tmp.getStatus());
         if (orderStatusEnum == null) {
             return CommonResult.error(400, "驳回操作失败,没有相对应的操作");
         }
@@ -229,23 +235,55 @@ public class OrderInlandTransportController {
 
         Integer rejectOptions = rejectedOpt.getRejectOptions() == null ? 1 : rejectedOpt.getRejectOptions();
         rejectedOpt.setRejectOptions(rejectOptions);
-//        switch (orderStatusEnum) {
-//            case INLANDTP_NL_1_1:
-//                //订单驳回
-//                this.airOrderService.orderReceiving(tmp, auditInfoForm, rejectedOpt);
-//                break;
-//            case INLANDTP_NL_2_1:
-//            case INLANDTP_NL_3_1:
-//                this.airOrderService.rejectedOpt(tmp, auditInfoForm, rejectedOpt);
-//                break;
-//        }
+        switch (orderStatusEnum) {
+            case INLANDTP_NL_1_1:
+                //接单驳回
+                this.orderInlandTransportService.orderReceiving(tmp, auditInfoForm, rejectedOpt);
+                break;
+            case INLANDTP_NL_2_1:
+            case INLANDTP_NL_3_2:
+            case INLANDTP_NL_4_1:
+            case INLANDTP_NL_5_1:
+                this.orderInlandTransportService.rejectedOpt(tmp, auditInfoForm, rejectedOpt);
+                break;
+        }
 
         return CommonResult.success();
     }
 
 
-//    派车审核不通过
+    @ApiOperation(value = "派车审核不通过 orderId=子订单id,describes=审核意见")
+    @PostMapping(value = "/dispatchReviewFailed")
+    public CommonResult dispatchReviewFailed(@RequestBody Map<String, Object> map) {
+        Long orderId = MapUtil.getLong(map, "orderId");
+        String describes = MapUtil.getStr(map, "describes");
+        if (orderId == null) {
+            return CommonResult.error(400, "该订单不存在");
+        }
+        if (StringUtils.isEmpty(describes)) {
+            return CommonResult.error(400, "请填写审核意见");
+        }
+        //查询订单
+        OrderInlandTransport tmp = this.orderInlandTransportService.getById(orderId);
 
+        //记录审核信息
+        AuditInfoForm auditInfoForm = new AuditInfoForm();
+        auditInfoForm.setExtId(orderId);
+        auditInfoForm.setExtDesc(SqlConstant.INLAND_ORDER);
+        auditInfoForm.setAuditStatus(OrderStatusEnum.INLANDTP_NL_3_2.getCode());
+        auditInfoForm.setAuditTypeDesc(OrderStatusEnum.INLANDTP_NL_3_2.getCode());
+
+        auditInfoForm.setAuditComment(describes);
+
+        OrderRejectedOpt rejectedOpt=new OrderRejectedOpt();
+        rejectedOpt.setCause(describes);
+        rejectedOpt.setDeleteStatusList(Collections.singletonList(OrderStatusEnum.INLANDTP_NL_2.getCode()));
+        rejectedOpt.setOrderId(orderId);
+        rejectedOpt.setRejectOptions(2);
+        this.orderInlandTransportService.rejectedOpt(tmp, auditInfoForm, rejectedOpt);
+
+        return CommonResult.success();
+    }
 
 }
 

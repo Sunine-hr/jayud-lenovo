@@ -4,6 +4,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.enums.OrderAddressEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
@@ -45,8 +46,11 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
     @ApiModelProperty(value = "客户名称", required = true)
     private String customerName;
 
-    @ApiModelProperty(value = "操作主体", required = true)
-    private String legalName;
+//    @ApiModelProperty(value = "操作主体", required = true)
+//    private String legalName;
+
+    @ApiModelProperty(value = "操作主体",required = true)
+    private String subLegalName;
 
     @ApiModelProperty(value = "车型", required = true)
     private String vehicleSize;
@@ -124,12 +128,24 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
     @ApiModelProperty(value = "结算单位code")
     private String subUnitCode;
 
+    @ApiModelProperty(value = "是否录用费用")
+    private Boolean cost;
+
+    @ApiModelProperty(value = "创建时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdTimeStr;
+
 
     @Override
     protected Serializable pkVal() {
         return this.id;
     }
 
+
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
+        this.createdTimeStr = createTime;
+    }
 
     /**
      * 组装商品信息

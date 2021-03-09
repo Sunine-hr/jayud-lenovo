@@ -38,7 +38,7 @@
         i.create_user createUser, i.create_time createdTimeStr,
         i.unit_code subUnitCode,
         i.legal_entity_id,
-        i.legal_name legalName,
+        i.legal_name subLegalName,
         ic.supplier_id supplierId,
         ic.vehicle_size vehicleSize,
         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = i.`order_no`) +

@@ -77,9 +77,22 @@ public class OrderInlandSendCarsServiceImpl extends ServiceImpl<OrderInlandSendC
     @Override
     public String createTransportNo(String trailerOrderNo) {
         String substring = trailerOrderNo.substring(0, trailerOrderNo.length() - 8);
-        String preOrderNo = OrderTypeEnum.P.getCode()+substring;
+        String preOrderNo = OrderTypeEnum.P.getCode() + substring;
         String classCode = OrderTypeEnum.P.getCode();
-        return (String)omsClient.getOrderNo(preOrderNo,classCode).getData();
+        return (String) omsClient.getOrderNo(preOrderNo, classCode).getData();
+    }
+
+    /**
+     * 根据订单号
+     *
+     * @param orderNo
+     * @return
+     */
+    @Override
+    public boolean deleteByOrderNo(String orderNo) {
+        QueryWrapper<OrderInlandSendCars> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderInlandSendCars::getOrderNo, orderNo);
+        return this.baseMapper.delete(condition) > 0;
     }
 
 

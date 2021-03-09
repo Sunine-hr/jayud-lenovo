@@ -26,4 +26,9 @@ public interface IOrderInlandSendCarsService extends IService<OrderInlandSendCar
      * 生成派车单号
      */
     public String createTransportNo(String orderNo);
+
+    /**
+     * 删除派车信息
+     */
+    public boolean deleteByOrderNo(String orderNo);
 }

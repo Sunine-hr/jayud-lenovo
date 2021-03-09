@@ -99,7 +99,7 @@ public class OrderDeliveryAddress extends Model<OrderDeliveryAddress> {
         if (StringUtils.isEmpty(this.address)) {
             throw new JayudBizException("提货/送货地址" + msg);
         }
-        if (this.deliveryDate == null) {
+        if (StringUtils.isEmpty(this.deliveryDate)) {
             throw new JayudBizException("提货/送货日期" + msg);
         }
     }

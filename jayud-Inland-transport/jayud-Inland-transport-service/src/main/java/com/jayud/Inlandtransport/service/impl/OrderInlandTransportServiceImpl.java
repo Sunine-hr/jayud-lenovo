@@ -14,18 +14,18 @@ import com.jayud.Inlandtransport.model.po.OrderInlandTransport;
 import com.jayud.Inlandtransport.model.vo.OrderInlandSendCarsVO;
 import com.jayud.Inlandtransport.model.vo.OrderInlandTransportDetails;
 import com.jayud.Inlandtransport.model.vo.OrderInlandTransportFormVO;
+import com.jayud.Inlandtransport.model.vo.OrderRejectedOpt;
 import com.jayud.Inlandtransport.service.IOrderInlandSendCarsService;
 import com.jayud.Inlandtransport.service.IOrderInlandTransportService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.AuditInfoForm;
+import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.OrderDeliveryAddress;
-import com.jayud.common.enums.BusinessTypeEnum;
-import com.jayud.common.enums.OrderAddressEnum;
-import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.enums.ProcessStatusEnum;
+import com.jayud.common.enums.*;
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -246,6 +246,64 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
         return initComboxStrVOS;
     }
 
+
+    /**
+     * 接单驳回
+     */
+    @Override
+    public void orderReceiving(OrderInlandTransport orderInlandTransport, AuditInfoForm auditInfoForm, OrderRejectedOpt orderRejectedOpt) {
+        OrderInlandTransport tmp = new OrderInlandTransport();
+        tmp.setId(orderInlandTransport.getId());
+        tmp.setUpdateTime(LocalDateTime.now());
+        tmp.setUpdateUser(UserOperator.getToken());
+        tmp.setStatus(auditInfoForm.getAuditStatus());
+
+        omsClient.saveAuditInfo(auditInfoForm);
+        this.updateById(tmp);
+    }
+
+    /**
+     * 订单驳回
+     */
+    @Override
+    @Transactional
+    public void rejectedOpt(OrderInlandTransport orderInlandTransport, AuditInfoForm auditInfoForm,
+                            OrderRejectedOpt orderRejectedOpt) {
+
+        OrderInlandTransport tmp = new OrderInlandTransport();
+        tmp.setId(orderInlandTransport.getId());
+        tmp.setUpdateTime(LocalDateTime.now());
+        tmp.setUpdateUser(UserOperator.getToken());
+        tmp.setStatus(auditInfoForm.getAuditStatus());
+        //根据选择是否订舱驳回
+        ApiResult result = new ApiResult();
+        //删除物流轨迹表订舱数据
+        switch (orderRejectedOpt.getRejectOptions()) {
+            case 1://订单驳回
+                result = omsClient.deleteLogisticsTrackByType(orderInlandTransport.getId(), BusinessTypeEnum.NL.getCode());
+                //删除派车数据
+                this.orderInlandSendCarsService.deleteByOrderNo(orderInlandTransport.getOrderNo());
+                break;
+            case 2://派车驳回
+                DelOprStatusForm form = new DelOprStatusForm();
+                form.setOrderId(orderInlandTransport.getId());
+                form.setStatus(orderRejectedOpt.getDeleteStatusList());
+                result = this.omsClient.delSpecOprStatus(form);
+        }
+
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.error("远程调用删除订舱轨迹失败");
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+
+        if (omsClient.saveAuditInfo(auditInfoForm).getCode() != HttpStatus.SC_OK) {
+            log.error("远程调用审核记录失败");
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+        //更改为驳回状态
+        this.updateById(tmp);
+    }
+
     private void updateSendCars(ProcessOptForm form) {
         if (OrderStatusEnum.INLANDTP_NL_3.getCode().equals(form.getStatus())) {
             List<OrderInlandSendCars> sendCarsList = this.orderInlandSendCarsService.getByCondition(new OrderInlandSendCars().setOrderId(form.getOrderId()));
@@ -255,5 +313,6 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
             form.setDescription(form.getDescribes());
         }
     }
+
 
 }

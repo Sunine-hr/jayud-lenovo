@@ -8,6 +8,8 @@ import com.jayud.Inlandtransport.model.po.OrderInlandTransport;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.Inlandtransport.model.vo.OrderInlandTransportDetails;
 import com.jayud.Inlandtransport.model.vo.OrderInlandTransportFormVO;
+import com.jayud.Inlandtransport.model.vo.OrderRejectedOpt;
+import com.jayud.common.entity.AuditInfoForm;
 
 import java.util.List;
 
@@ -31,12 +33,14 @@ public interface IOrderInlandTransportService extends IService<OrderInlandTransp
 
     /**
      * 节点操作记录
+     *
      * @param form
      */
     public void processOptRecord(ProcessOptForm form);
 
     /**
      * 执行派车
+     *
      * @param form
      */
     void doDispatchOpt(ProcessOptForm form);
@@ -45,8 +49,26 @@ public interface IOrderInlandTransportService extends IService<OrderInlandTransp
 
     /**
      * 查询订单详情
+     *
      * @param subOrderId
      * @return
      */
     OrderInlandTransportDetails getOrderDetails(Long subOrderId);
+
+    /**
+     * 接单驳回
+     * @param tmp
+     * @param auditInfoForm
+     * @param rejectedOpt
+     */
+    void orderReceiving(OrderInlandTransport tmp, AuditInfoForm auditInfoForm, OrderRejectedOpt rejectedOpt);
+
+
+    /**
+     * 订单驳回操作
+     * @param tmp
+     * @param auditInfoForm
+     * @param rejectedOpt
+     */
+    void rejectedOpt(OrderInlandTransport tmp, AuditInfoForm auditInfoForm, OrderRejectedOpt rejectedOpt);
 }

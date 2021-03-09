@@ -55,6 +55,9 @@ public class OrderInlandSendCars extends Model<OrderInlandSendCars> {
     @ApiModelProperty(value = "车牌号")
     private String licensePlate;
 
+    @ApiModelProperty(value = "车型id")
+    private Long vehicleId;
+
     @ApiModelProperty(value = "供应商名称")
     private String supplierName;
 
@@ -78,6 +81,8 @@ public class OrderInlandSendCars extends Model<OrderInlandSendCars> {
 
     @ApiModelProperty(value = "更新时间")
     private LocalDateTime updateTime;
+
+
 
 
     @Override

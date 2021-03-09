@@ -71,4 +71,13 @@ public interface IOrderInlandTransportService extends IService<OrderInlandTransp
      * @param rejectedOpt
      */
     void rejectedOpt(OrderInlandTransport tmp, AuditInfoForm auditInfoForm, OrderRejectedOpt rejectedOpt);
+
+    List<OrderInlandTransport> getInlandOrderByMainOrderNos(List<String> mainOrderNos);
+
+    /**
+     * 根据子订单号集合查询内陆运输
+     * @param orderNos
+     * @return
+     */
+    List<OrderInlandTransport> getOrdersByOrderNos(List<String> orderNos);
 }

@@ -188,7 +188,7 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
         orderInlandSendCars.setCreateUser(UserOperator.getToken());
         orderInlandSendCars.setCreateTime(LocalDateTime.now());
         orderInlandSendCars.setTransportNo(this.orderInlandSendCarsService.createTransportNo(sendCarForm.getOrderNo()));
-        this.orderInlandSendCarsService.save(orderInlandSendCars);
+        this.orderInlandSendCarsService.saveOrUpdate(orderInlandSendCars);
         this.updateProcessStatus(new OrderInlandTransport(), form);
     }
 
@@ -302,6 +302,32 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
         }
         //更改为驳回状态
         this.updateById(tmp);
+    }
+
+    /**
+     * 根据主单号集合查询子订单信息
+     *
+     * @param mainOrderNos
+     * @return
+     */
+    @Override
+    public List<OrderInlandTransport> getInlandOrderByMainOrderNos(List<String> mainOrderNos) {
+        QueryWrapper<OrderInlandTransport> condition = new QueryWrapper<>();
+        condition.lambda().in(OrderInlandTransport::getMainOrderNo, mainOrderNos);
+        return this.baseMapper.selectList(condition);
+    }
+
+
+    /**
+     * 根据子订单号集合查询子订单
+     * @param orderNos
+     * @return
+     */
+    @Override
+    public List<OrderInlandTransport> getOrdersByOrderNos(List<String> orderNos) {
+        QueryWrapper<OrderInlandTransport> condition = new QueryWrapper<>();
+        condition.lambda().in(OrderInlandTransport::getOrderNo, orderNos);
+        return this.baseMapper.selectList(condition);
     }
 
     private void updateSendCars(ProcessOptForm form) {

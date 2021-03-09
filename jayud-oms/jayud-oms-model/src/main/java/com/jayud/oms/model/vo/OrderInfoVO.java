@@ -86,7 +86,7 @@ public class OrderInfoVO {
 
 
     @ApiModelProperty(value = "内陆状态,用于标识驳回可编辑")
-    private String inlandStatus;
+    private String subInlandStatus;
 
 //    @ApiModelProperty(value = "空运状态描述,用于标识驳回可编辑")
 //    private String subAirDesc;

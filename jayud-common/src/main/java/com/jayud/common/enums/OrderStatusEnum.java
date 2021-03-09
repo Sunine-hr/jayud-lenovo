@@ -379,7 +379,10 @@ public enum OrderStatusEnum {
                     TMS_T_3_2.getCode(), TMS_T_4_1.getCode(), TMS_T_5_1.getCode(),
                     AIR_A_1_1.getCode(), AIR_A_2_1.getCode(), AIR_A_3_1.getCode(),
                     AIR_A_3_2.getCode(), SEA_S_1_1.getCode(), SEA_S_2_1.getCode(),
-                    SEA_S_3_1.getCode(), SEA_S_3_2.getCode()};
+                    SEA_S_3_1.getCode(), SEA_S_3_2.getCode(),
+                    INLANDTP_NL_1_1.getCode(),INLANDTP_NL_2_1.getCode(),
+                    INLANDTP_NL_3_1.getCode(), INLANDTP_NL_3_2.getCode(),
+                    INLANDTP_NL_4_1.getCode(), INLANDTP_NL_5_1.getCode(),};
         }
         for (String subOrderSign : subOrderSigns) {
             //todo 有需要再补

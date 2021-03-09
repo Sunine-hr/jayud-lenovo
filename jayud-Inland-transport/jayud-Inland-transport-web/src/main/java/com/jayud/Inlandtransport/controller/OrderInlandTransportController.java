@@ -23,10 +23,10 @@ import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -36,7 +36,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static com.jayud.common.enums.OrderStatusEnum.getInlandTPStatus;
 
@@ -151,13 +154,8 @@ public class OrderInlandTransportController {
         if (!ProcessStatusEnum.PROCESSING.getCode().equals(order.getProcessStatus())) {
             return CommonResult.error(400, "当前订单无法操作");
         }
-        //查询下一步节点
-        String nextStatus = omsClient.getOrderProcessNode(order.getMainOrderNo()
-                , order.getOrderNo(), order.getStatus()).getData();
-        if (nextStatus == null) {
-            log.error("执行订单流程操作失败,超出流程之外 data={}", order.toString());
-            return CommonResult.error(ResultEnum.OPR_FAIL);
-        }
+        //节点处理
+        String nextStatus = nodeProcessing(order);
         //校验参数
         OrderStatusEnum statusEnum = OrderStatusEnum.getEnums(nextStatus);
         form.checkProcessOpt(statusEnum);
@@ -270,12 +268,12 @@ public class OrderInlandTransportController {
         AuditInfoForm auditInfoForm = new AuditInfoForm();
         auditInfoForm.setExtId(orderId);
         auditInfoForm.setExtDesc(SqlConstant.INLAND_ORDER);
-        auditInfoForm.setAuditStatus(OrderStatusEnum.INLANDTP_NL_3_2.getCode());
-        auditInfoForm.setAuditTypeDesc(OrderStatusEnum.INLANDTP_NL_3_2.getCode());
+        auditInfoForm.setAuditStatus(OrderStatusEnum.INLANDTP_NL_3_1.getCode());
+        auditInfoForm.setAuditTypeDesc(OrderStatusEnum.INLANDTP_NL_3_1.getCode());
 
         auditInfoForm.setAuditComment(describes);
 
-        OrderRejectedOpt rejectedOpt=new OrderRejectedOpt();
+        OrderRejectedOpt rejectedOpt = new OrderRejectedOpt();
         rejectedOpt.setCause(describes);
         rejectedOpt.setDeleteStatusList(Collections.singletonList(OrderStatusEnum.INLANDTP_NL_2.getCode()));
         rejectedOpt.setOrderId(orderId);
@@ -283,6 +281,21 @@ public class OrderInlandTransportController {
         this.orderInlandTransportService.rejectedOpt(tmp, auditInfoForm, rejectedOpt);
 
         return CommonResult.success();
+    }
+
+
+    private String nodeProcessing(OrderInlandTransport order) {
+        if (OrderStatusEnum.INLANDTP_NL_3_1.getCode().equals(order.getStatus())) {
+            return OrderStatusEnum.INLANDTP_NL_2.getCode();
+        }
+        //查询下一步节点
+        String nextStatus = omsClient.getOrderProcessNode(order.getMainOrderNo()
+                , order.getOrderNo(), order.getStatus()).getData();
+        if (nextStatus == null) {
+            log.error("执行订单流程操作失败,超出流程之外 data={}", order.toString());
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+        return nextStatus;
     }
 
 }

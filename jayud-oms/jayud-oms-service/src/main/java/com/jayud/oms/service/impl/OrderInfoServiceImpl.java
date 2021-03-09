@@ -101,7 +101,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private IOrderFlowSheetService orderFlowSheetService;
 
     private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(),
-            SubOrderSignEnum.KY.getSignOne(), SubOrderSignEnum.HY.getSignOne(), SubOrderSignEnum.BG.getSignOne()};
+            SubOrderSignEnum.KY.getSignOne(), SubOrderSignEnum.HY.getSignOne(),
+            SubOrderSignEnum.BG.getSignOne(),SubOrderSignEnum.NL.getSignOne()};
 
     @Autowired
     private IServiceOrderService serviceOrderService;
@@ -1108,10 +1109,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             InitChangeStatusVO initChangeStatusVO = tmsClient.getTransportOrderNo(inputMainOrderVO.getOrderNo()).getData();
             changeStatusVOS.add(initChangeStatusVO);
         }
-        //获取内陆运输或深圳中转仓数据
+        //获取内陆运输
         if (OrderStatusEnum.NLYS.getCode().equals(form.getClassCode()) ||
-                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.SZZZC.getCode())) {
-            //TODO
+                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.NLDD.getCode())) {
+            InitChangeStatusVO initChangeStatusVO = this.inlandTpClient.getOrderNo(inputMainOrderVO.getOrderNo()).getData();
+            changeStatusVOS.add(initChangeStatusVO);
         }
         //空运
         if (OrderStatusEnum.KY.getCode().equals(form.getClassCode()) ||
@@ -1128,6 +1130,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<CustomsChangeStatusForm> bgs = new ArrayList<>();
         List<TmsChangeStatusForm> zgys = new ArrayList<>();
         List<SubOrderCloseOpt> airs = new ArrayList<>();
+        List<SubOrderCloseOpt> inlands = new ArrayList<>();
         //全勾修改主订单状态
         if (form.getCheckAll()) {
             //循环处理,判断主订单是否需要录入费用
@@ -1169,6 +1172,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 //                air.setStatus(form.getStatus());
                 air.setLoginUser(UserOperator.getToken());
                 airs.add(air);
+            } else if (CommonConstant.NLYS.equals(confirmChangeStatusForm.getOrderType())) {
+                SubOrderCloseOpt closeOpt = new SubOrderCloseOpt();
+                closeOpt.setNeedInputCost(confirmChangeStatusForm.getNeedInputCost());
+                closeOpt.setOrderNo(confirmChangeStatusForm.getOrderNo());
+//                air.setStatus(form.getStatus());
+                closeOpt.setLoginUser(UserOperator.getToken());
+                inlands.add(closeOpt);
             }
 
         }
@@ -1181,6 +1191,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
         if (airs.size() > 0) {
             freightAirClient.closeAirOrder(airs).getData();
+        }
+        if (inlands.size() > 0) {
+            inlandTpClient.closeOrder(inlands).getData();
         }
         return true;
     }
@@ -1299,6 +1312,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         result = this.oceanShipClient.getSeaOrderByMainOrderNos(mainOrderNoList);
         Map<String, List<Map<String, Object>>> seaOrderMap = this.object2Map(result.getData());
 
+
+        //内陆运输
+        result = this.inlandTpClient.getInlandOrderByMainOrderNos(mainOrderNoList);
+        Map<String, List<Map<String, Object>>> inlandOrderMap = this.object2Map(result.getData());
+
         Map<String, Map<String, Object>> map = new HashMap<>();
         for (String mainOrderNo : mainOrderNoList) {
             Map<String, Object> subOrder = new HashMap<>();
@@ -1306,6 +1324,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             subOrder.put(KEY_SUBORDER[1], airOrderMap.get(mainOrderNo));
             subOrder.put(KEY_SUBORDER[2], seaOrderMap.get(mainOrderNo));
             subOrder.put(KEY_SUBORDER[3], customsOrderMap.get(mainOrderNo));
+            subOrder.put(KEY_SUBORDER[4], inlandOrderMap.get(mainOrderNo));
             map.put(mainOrderNo, subOrder);
         }
         return map;
@@ -1558,7 +1577,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private void assemblyMasterOrderData(List<OrderInfoVO> orderInfoVOs,
                                          Map<String, Map<String, Object>> subOrderMap) {
         for (OrderInfoVO orderInfoVO : orderInfoVOs) {
-            //商品值
+            //子订单信息
             Map<String, Object> subOrderInfos = subOrderMap.get(orderInfoVO.getOrderNo());
             //订单状态
             orderInfoVO.setSubOrderStatusDesc(assemblySubOrderStatus(subOrderInfos));

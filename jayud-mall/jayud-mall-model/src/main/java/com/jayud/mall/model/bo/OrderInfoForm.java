@@ -6,6 +6,7 @@ import com.jayud.mall.model.vo.*;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,6 +28,7 @@ public class OrderInfoForm {
 
     @ApiModelProperty(value = "报价id(offer_info id)", position = 4)
     @JSONField(ordinal = 4)
+    @NotNull(message = "报价id不能为空")
     private Integer offerInfoId;
 
     @ApiModelProperty(value = "订柜尺寸[海运费](template_cope_receivable specification_code -> quotation_type code)", position = 4)

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -51,7 +52,7 @@ public class OrderInfoController {
     @ApiOperation(value = "订单下单-暂存订单")
     @PostMapping("/temporaryStorageOrderInfo")
     @ApiOperationSupport(order = 2)
-    public CommonResult<OrderInfoVO> temporaryStorageOrderInfo(@RequestBody OrderInfoForm form){
+    public CommonResult<OrderInfoVO> temporaryStorageOrderInfo(@Valid @RequestBody OrderInfoForm form){
         //订单对应箱号信息:order_case
         List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
         if(orderCaseVOList == null || orderCaseVOList.size() == 0){
@@ -77,7 +78,7 @@ public class OrderInfoController {
     @ApiOperation(value = "订单下单-提交订单")
     @PostMapping("/submitOrderInfo")
     @ApiOperationSupport(order = 3)
-    public CommonResult<OrderInfoVO> submitOrderInfo(@RequestBody OrderInfoForm form){
+    public CommonResult<OrderInfoVO> submitOrderInfo(@Valid @RequestBody OrderInfoForm form){
         //订单对应箱号信息:order_case
         List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
         if(orderCaseVOList == null || orderCaseVOList.size() == 0){

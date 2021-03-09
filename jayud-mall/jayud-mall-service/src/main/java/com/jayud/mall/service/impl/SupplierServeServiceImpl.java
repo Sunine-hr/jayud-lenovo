@@ -101,6 +101,7 @@ public class SupplierServeServiceImpl extends ServiceImpl<SupplierServeMapper, S
         supplierCostVOList.forEach(supplierCostVO -> {
             supplierCostVO.setSupplierInfoId(supplierInfoId);
             supplierCostVO.setServiceId(serviceId);
+            supplierCostVO.setStatus("1");//状态(0无效 1有效)
             supplierCostVO.setUserId(user.getId().intValue());
             supplierCostVO.setUserName(user.getUserName());
             supplierCostVO.setCreateTime(LocalDateTime.now());

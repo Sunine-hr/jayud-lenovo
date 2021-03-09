@@ -778,7 +778,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 List<FileView> attachments = this.logisticsTrackService.getAttachments(inlandTPVO.getId()
                         , BusinessTypeEnum.NL.getCode(), prePath);
                 inlandTPVO.setAllPics(attachments);
-                inputOrderVO.setOrderInlandTPForm(inlandTPVO);
+                inputOrderVO.setOrderInlandTransportForm(inlandTPVO);
             }
         }
 

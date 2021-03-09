@@ -89,7 +89,7 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
             orderAddress.setBusinessId(deliveryAddress.getBusinessId());
             orderAddress.setBusinessType(deliveryAddress.getBusinessType());
             orderAddress.setFileName(StringUtils.getFileNameStr(deliveryAddress.getFileViewList()));
-            orderAddress.setFilePath(StringUtils.getFileNameStr(deliveryAddress.getFileViewList()));
+            orderAddress.setFilePath(StringUtils.getFileStr(deliveryAddress.getFileViewList()));
             orderAddress.setType(deliveryAddress.getAddressType());
             orderAddress.setOrderNo(deliveryAddress.getOrderNo());
             if (orderAddress.getId() == null) {

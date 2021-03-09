@@ -40,10 +40,33 @@
     <!--查询并分页-->
     <select id="findCustomsClearanceByPage" parameterType="com.jayud.mall.model.bo.QueryCustomsClearanceForm"
             resultType="com.jayud.mall.model.vo.CustomsClearanceVO" >
-        select
-        t.id,t.id_code,t.customs_code,t.hs_code,t.ch_name,t.en_name,t.texture,t.uses,t.declare_price,t.suggest_price,t.cid,t.suttle,t.suttle_unit,
-        t.gross_weight,t.gross_unit,t.tariff_tax,t.raise_hscode,t.raise_tax,t.weight_tax,t.weight_tariff_unit,t.weight_unit,t.pic_url,
-        t.`status`,t.user_id,t.user_name,t.create_time
+        select t.id,
+        t.id_code,
+        t.customs_code,
+        t.hs_code,
+        t.ch_name,
+        t.en_name,
+        t.texture,
+        t.uses,
+        t.declare_elements,
+        t.declare_price,
+        t.suggest_price,
+        t.cid,
+        t.suttle,
+        t.suttle_unit,
+        t.gross_weight,
+        t.gross_unit,
+        t.tariff_tax,
+        t.raise_hscode,
+        t.raise_tax,
+        t.weight_tax,
+        t.weight_tariff_unit,
+        t.weight_unit,
+        t.pic_url,
+        t.status,
+        t.user_id,
+        t.user_name,
+        t.create_time
         from customs_clearance t
         WHERE
         1 = 1

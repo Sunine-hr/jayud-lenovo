@@ -93,7 +93,7 @@
         t3.code_name tName,
         t4.code_name startShipmentName,
         t5.code_name destinationPortName,
-        t6.code_name taskName
+        t6.group_name taskName
         from offer_info t
         LEFT JOIN quotation_template t1 on t1.id = t.qie
         LEFT JOIN service_group t2 on t2.id = t1.sid
@@ -166,7 +166,7 @@
         t3.code_name tname,
         t4.code_name startShipmentName,
         t5.code_name destinationPortName,
-        t6.code_name taskName
+        t6.group_name taskName
         from offer_info t
         LEFT JOIN quotation_template t1 on t1.id = t.qie
         LEFT JOIN service_group t2 on t2.id = t1.sid

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -56,16 +57,27 @@ public class SupplierInfoController {
     @ApiOperation(value = "查询供应商详细")
     @PostMapping("/findSupplierInfoById")
     @ApiOperationSupport(order = 4)
-    public CommonResult<SupplierInfoVO> findSupplierInfoById(@RequestBody SupplierInfoParaForm form){
+    public CommonResult<SupplierInfoVO> findSupplierInfoById(@Valid @RequestBody SupplierInfoParaForm form){
         Long id = form.getId();
         return supplierInfoService.findSupplierInfoById(id);
     }
 
 
-    //启用供应商信息 TODO
+    @ApiOperation(value = "启用供应商信息")
+    @PostMapping("/enableSupplierInfo")
+    @ApiOperationSupport(order = 5)
+    public CommonResult<SupplierInfoVO> enableSupplierInfo(@Valid @RequestBody SupplierInfoParaForm form){
+        Long id = form.getId();
+        return supplierInfoService.enableSupplierInfo(id);
+    }
 
-
-    //禁用供应商信息 TODO
+    @ApiOperation(value = "禁用供应商信息")
+    @PostMapping("/disableSupplierInfo")
+    @ApiOperationSupport(order = 6)
+    public CommonResult<SupplierInfoVO> disableSupplierInfo(@Valid @RequestBody SupplierInfoParaForm form){
+        Long id = form.getId();
+        return supplierInfoService.disableSupplierInfo(id);
+    }
 
 
 

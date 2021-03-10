@@ -47,4 +47,18 @@ public interface ISupplierInfoService extends IService<SupplierInfo> {
      * @return
      */
     CommonResult<SupplierInfoVO> findSupplierInfoById(Long id);
+
+    /**
+     * 启用供应商信息
+     * @param id
+     * @return
+     */
+    CommonResult<SupplierInfoVO> enableSupplierInfo(Long id);
+
+    /**
+     * 禁用供应商信息
+     * @param id
+     * @return
+     */
+    CommonResult<SupplierInfoVO> disableSupplierInfo(Long id);
 }

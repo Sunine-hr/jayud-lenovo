@@ -726,7 +726,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         //保存-订单对应提货信息表：order_pick
         List<OrderPickVO> orderPickVOList = form.getOrderPickVOList();
-        if(orderPickVOList.size() > 0){
+        if(CollUtil.isNotEmpty(orderPickVOList)){
             List<OrderPick> orderPickList = ConvertUtil.convertList(orderPickVOList, OrderPick.class);
             orderPickList.forEach(orderPick -> {
                 orderPick.setOrderId(orderInfo.getId());

@@ -1,5 +1,6 @@
 package com.jayud.mall.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -125,6 +126,34 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         });
         SupplierInfoVO supplierInfoVO = ConvertUtil.convert(supplierInfo, SupplierInfoVO.class);
         supplierInfoVO.setServiceTypeIds(serviceTypeIds);
+        return CommonResult.success(supplierInfoVO);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CommonResult<SupplierInfoVO> enableSupplierInfo(Long id) {
+        SupplierInfo supplierInfo = this.getById(id);
+        if(ObjectUtil.isEmpty(supplierInfo)){
+            return CommonResult.error(-1, "没有找到供应商");
+        }
+        //  `status` char(1) DEFAULT NULL COMMENT '状态(0无效 1有效)',
+        supplierInfo.setStatus("1");
+        this.saveOrUpdate(supplierInfo);
+        SupplierInfoVO supplierInfoVO = ConvertUtil.convert(supplierInfo, SupplierInfoVO.class);
+        return CommonResult.success(supplierInfoVO);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CommonResult<SupplierInfoVO> disableSupplierInfo(Long id) {
+        SupplierInfo supplierInfo = this.getById(id);
+        if(ObjectUtil.isEmpty(supplierInfo)){
+            return CommonResult.error(-1, "没有找到供应商");
+        }
+        //  `status` char(1) DEFAULT NULL COMMENT '状态(0无效 1有效)',
+        supplierInfo.setStatus("0");
+        this.saveOrUpdate(supplierInfo);
+        SupplierInfoVO supplierInfoVO = ConvertUtil.convert(supplierInfo, SupplierInfoVO.class);
         return CommonResult.success(supplierInfoVO);
     }
 }

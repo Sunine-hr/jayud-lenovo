@@ -12,6 +12,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public enum SubOrderSignEnum {
 
+    MAIN("main", "order_info", "主订单"),
     KY("ky", "air_order", "空运"),
     BG("bg", "order_customs", "报关"),
     ZGYS("zgys", "order_transport", "中港运输"),

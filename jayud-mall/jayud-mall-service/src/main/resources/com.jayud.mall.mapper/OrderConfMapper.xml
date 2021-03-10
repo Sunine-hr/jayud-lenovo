@@ -85,7 +85,7 @@
         t4.company_name supplierName,
         t5.code_name    startName,
         t6.code_name    endName,
-        t7.code_name    taskName,
+        t7.group_name    taskName,
         t8.group_name   operationTeamName
         from
         ocean_bill t

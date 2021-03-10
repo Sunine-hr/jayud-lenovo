@@ -53,7 +53,7 @@ public class OrderFlowSheet extends Model<OrderFlowSheet> {
     private String complete;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
+    private String createTime;
 
     @ApiModelProperty(value = "创建人")
     private String createUser;

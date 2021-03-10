@@ -12,7 +12,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public enum BusinessTypeEnum {
 
-    KY(0, "空运"),CBG(1,"纯报关"),ZGYS(2,"中港运输"),BG(3,"报关"),HY(4,"海运"),TC(5,"拖车");
+    KY(0, "空运"),CBG(1,"纯报关"),ZGYS(2,"中港运输"),BG(3,"报关"),HY(4,"海运"),TC(6,"拖车");
     private Integer code;
     private String desc;
 

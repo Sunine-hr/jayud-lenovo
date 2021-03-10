@@ -40,13 +40,38 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "拖车订单编号")
+    @ApiModelProperty(value = "子订单编号")
     private String orderNo;
 
     @ApiModelProperty(value = "主订单编号")
     private String mainOrderNo;
 
-    @ApiModelProperty(value = "状态(TT_0待接单,TT_1拖车接单,TT_2拖车派车,TT_3派车审核,TT_4拖车提柜,TT_5拖车到仓,TT_6拖车离仓,TT_7拖车过磅,TT_8确认还柜)")
+    @ApiModelProperty(value = "客户名称")
+    private String customerName;
+
+    //进出口类型(1：进口，2：出口)
+    //@ApiModelProperty(value = "进出口类型")
+    private Integer impAndExpType;
+
+    @ApiModelProperty(value = "进出口类型")
+    private String impAndExpTypeDesc;
+
+    //@ApiModelProperty(value = "起运港/目的港代码")
+    private String portCode;
+
+    @ApiModelProperty(value = "起运港/目的港")
+    private String portCodeName;
+
+    //@ApiModelProperty(value = "车型尺寸id")
+    private Long cabinetSize;
+
+    @ApiModelProperty(value = "车型尺寸")
+    private String cabinetSizeName;
+
+    @ApiModelProperty(value = "车牌号")
+    private String plateNumber;
+
+    //@ApiModelProperty(value = "状态(TT_0待接单,TT_1拖车接单,TT_2拖车派车,TT_3派车审核,TT_4拖车提柜,TT_5拖车到仓,TT_6拖车离仓,TT_7拖车过磅,TT_8确认还柜)")
     private String status;
 
     //流程状态(0:进行中,1:完成,2:草稿,3.关闭)
@@ -68,25 +93,6 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
 
     @ApiModelProperty(value = "结算单位")
     private String unitCodeName;
-
-    //进出口类型(1：进口，2：出口)
-    //@ApiModelProperty(value = "进出口类型")
-    private Integer impAndExpType;
-
-    @ApiModelProperty(value = "进出口类型")
-    private String impAndExpTypeDesc;
-
-    //@ApiModelProperty(value = "起运港/目的港代码")
-    private String portCode;
-
-    @ApiModelProperty(value = "起运港/目的港")
-    private String portCodeName;
-
-    //@ApiModelProperty(value = "车型尺寸id")
-    private Long cabinetSize;
-
-    @ApiModelProperty(value = "车型尺寸")
-    private String cabinetSizeName;
 
     @ApiModelProperty(value = "提运单")
     private String billOfLading;
@@ -197,16 +203,13 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
 //    private List<GoodsVO> goodsForms;
 
     @ApiModelProperty(value = "派车信息")
-    private TrailerDispatchVO trailerDispatchVO;
+    private TrailerDispatchVO trailerDispatchVO = new TrailerDispatchVO();
 
     @ApiModelProperty(value = "附件信息集合")
     private List<FileView> allPics = new ArrayList<>();
 
     @ApiModelProperty(value = "订单流程状态")
     private String statusDesc;
-
-    @ApiModelProperty(value = "客户名称")
-    private String customerName;
 
     //@ApiModelProperty(value = "客户代码")
     private String customerCode;
@@ -239,10 +242,7 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     private String mainOrderId;
 
     @ApiModelProperty(value = "货物重量")
-    private Double totalWeight;
-
-    @ApiModelProperty(value = "车牌号")
-    private String plateNumber;
+    private Double totalWeight = 0.0;
 
     /**
      * 组装商品信息
@@ -316,11 +316,29 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
             log.warn("请求结算单位信息失败");
             return;
         }
-        JSONArray legalEntitys = new JSONArray(unitCodeInfo.getData());
-        for (int i = 0; i < legalEntitys.size(); i++) {
-            JSONObject json = legalEntitys.getJSONObject(i);
-            if (this.unitCode.equals(json.getStr("idCode"))) { //法人主体配对
+        JSONArray unitCodes = new JSONArray(unitCodeInfo.getData());
+        for (int i = 0; i < unitCodes.size(); i++) {
+            JSONObject json = unitCodes.getJSONObject(i);
+            if (this.unitCode.equals(json.getStr("idCode"))) { //结算单位配对
                 this.unitCodeName = json.getStr("name");
+                break;
+            }
+        }
+    }
+
+    public void assemblyCabinetSize(ApiResult cabinetSizeInfo) {
+        if (cabinetSizeInfo == null) {
+            return;
+        }
+        if (cabinetSizeInfo.getCode() != HttpStatus.SC_OK) {
+            log.warn("请求结算单位信息失败");
+            return;
+        }
+        JSONArray cabinetSizeInfos = new JSONArray(cabinetSizeInfo.getData());
+        for (int i = 0; i < cabinetSizeInfos.size(); i++) {
+            JSONObject json = cabinetSizeInfos.getJSONObject(i);
+            if (this.cabinetSize.equals(json.getLong("id"))) { //结算单位配对
+                this.cabinetSizeName = json.getStr("name");
                 break;
             }
         }

@@ -504,10 +504,10 @@ public class OrderComboxController {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("status","1");
         List<CustomerInfo> customerInfos = customerInfoService.list();
-        List<InitComboxVO> initComboxVOS = new ArrayList<>();
+        List<InitComboxStrVO> initComboxVOS = new ArrayList<>();
         for (CustomerInfo customerInfo : customerInfos) {
-            InitComboxVO initComboxVO = new InitComboxVO();
-            initComboxVO.setId(customerInfo.getId());
+            InitComboxStrVO initComboxVO = new InitComboxStrVO();
+            initComboxVO.setCode(customerInfo.getIdCode());
             initComboxVO.setName(customerInfo.getName());
             initComboxVOS.add(initComboxVO);
         }

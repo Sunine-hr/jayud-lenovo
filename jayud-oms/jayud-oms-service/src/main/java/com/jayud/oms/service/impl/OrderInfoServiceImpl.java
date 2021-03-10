@@ -97,7 +97,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private IAuditInfoService auditInfoService;
 
     private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(),
-            SubOrderSignEnum.KY.getSignOne(), SubOrderSignEnum.HY.getSignOne(), SubOrderSignEnum.BG.getSignOne()};
+            SubOrderSignEnum.KY.getSignOne(), SubOrderSignEnum.HY.getSignOne(), SubOrderSignEnum.BG.getSignOne(),SubOrderSignEnum.TC.getSignOne()};
 
     @Autowired
     private IServiceOrderService serviceOrderService;
@@ -1060,8 +1060,27 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             InputTrailerOrderFrom trailerOrderFrom = form.getTrailerOrderFrom();
 
             //生成拖车订单号
-            if (trailerOrderFrom.getId() == null) {
-                String orderNo = generationOrderNo(trailerOrderFrom.getLegalEntityId(), trailerOrderFrom.getImpAndExpType(), OrderStatusEnum.TC.getCode());
+            if (form.getCmd().equals("submit")) {
+                if (trailerOrderFrom.getId() == null) {
+                    String orderNo = generationOrderNo(trailerOrderFrom.getLegalEntityId(), trailerOrderFrom.getImpAndExpType(), OrderStatusEnum.TC.getCode());
+                    trailerOrderFrom.setOrderNo(orderNo);
+                }
+                if (trailerOrderFrom.getStatus() != null && trailerOrderFrom.getStatus().equals("TT_0")) {
+                    String orderNo = generationOrderNo(trailerOrderFrom.getLegalEntityId(), trailerOrderFrom.getImpAndExpType(), OrderStatusEnum.TC.getCode());
+                    trailerOrderFrom.setOrderNo(orderNo);
+                }
+
+            }
+            if (form.getCmd().equals("preSubmit") && trailerOrderFrom.getId() == null) {
+                //生成海运订单号
+                String orderNo = StringUtils.loadNum(CommonConstant.TC, 12);
+                while (true) {
+                    if (!isExistOrder(orderNo)) {//重复
+                        orderNo = StringUtils.loadNum(CommonConstant.TC, 12);
+                    } else {
+                        break;
+                    }
+                }
                 trailerOrderFrom.setOrderNo(orderNo);
             }
 
@@ -1288,6 +1307,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         result = this.oceanShipClient.getSeaOrderByMainOrderNos(mainOrderNoList);
         Map<String, List<Map<String, Object>>> seaOrderMap = this.object2Map(result.getData());
 
+        //拖车
+        result = this.trailerClient.getTrailerOrderByMainOrderNos(mainOrderNoList);
+        Map<String, List<Map<String, Object>>> trailerOrderMap = this.object2Map(result.getData());
+
         Map<String, Map<String, Object>> map = new HashMap<>();
         for (String mainOrderNo : mainOrderNoList) {
             Map<String, Object> subOrder = new HashMap<>();
@@ -1295,6 +1318,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             subOrder.put(KEY_SUBORDER[1], airOrderMap.get(mainOrderNo));
             subOrder.put(KEY_SUBORDER[2], seaOrderMap.get(mainOrderNo));
             subOrder.put(KEY_SUBORDER[3], customsOrderMap.get(mainOrderNo));
+            subOrder.put(KEY_SUBORDER[4], trailerOrderMap.get(mainOrderNo));
             map.put(mainOrderNo, subOrder);
         }
         return map;

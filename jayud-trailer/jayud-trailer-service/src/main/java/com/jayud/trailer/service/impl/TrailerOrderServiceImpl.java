@@ -1,6 +1,7 @@
 package com.jayud.trailer.service.impl;
 
 import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -72,6 +73,7 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
     @Override
     public void createOrder(AddTrailerOrderFrom addTrailerOrderFrom) {
         LocalDateTime now = LocalDateTime.now();
+        addTrailerOrderFrom.getPathAndName();
         TrailerOrder trailerOrder = ConvertUtil.convert(addTrailerOrderFrom, TrailerOrder.class);
         //System.out.println("orderId===================================="+addSeaOrderForm.getOrderId());
         //创建拖车单
@@ -87,7 +89,7 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
             queryWrapper.eq("class_code","TC");
             queryWrapper.isNotNull("sub_sorts");
             queryWrapper.orderByAsc("sub_sorts");
-            if(addTrailerOrderFrom.getImpAndExpType().equals("1")){
+            if(addTrailerOrderFrom.getImpAndExpType().equals(1)){
                 queryWrapper.ne("contain_state","TT7");
             }else{
                 queryWrapper.ne("contain_state","TT4");
@@ -119,7 +121,7 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
             }
             ApiResult apiResult = omsClient.batchAddOrUpdateProcess(list);
             if (apiResult.getCode() != HttpStatus.SC_OK) {
-                log.warn("批量保存/修改订单地址信息失败,订单地址信息={}", new JSONArray(list));
+                log.warn("批量保存订单流程报错={}", new JSONArray(list));
             }
         } else {
             //修改拖车单
@@ -129,12 +131,13 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
             trailerOrder.setUpdateUser(UserOperator.getToken());
             this.updateById(trailerOrder);
         }
+        System.out.println("addTrailerOrderFrom.getOrderAddressForms()================================="+addTrailerOrderFrom.getOrderAddressForms());
         if(addTrailerOrderFrom.getOrderAddressForms()!=null&&addTrailerOrderFrom.getOrderAddressForms().size()>0){
             //获取用户地址
             List<AddTrailerOrderAddressForm> orderAddressForms = addTrailerOrderFrom.getOrderAddressForms();
             List<AddOrderAddressForm> orderAddressForms1 = new ArrayList<>();
             List<AddGoodsForm> goodsForms = new ArrayList<>();
-            //System.out.println("orderAddressForms=================================="+orderAddressForms);
+            System.out.println("orderAddressForms=================================="+orderAddressForms);
             for (AddTrailerOrderAddressForm addTrailerOrderAddressForm : orderAddressForms) {
 
                 AddGoodsForm goodsForm = new AddGoodsForm();
@@ -161,14 +164,14 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
                 orderAddressForm.setFileName(StringUtils.getFileNameStr(orderAddressForm.getTakeFiles()));
                 orderAddressForm.setFilePath(StringUtils.getFileStr(orderAddressForm.getTakeFiles()));
 
-                orderAddressForm.setBindGoodsId((Long)result.getData());
+                orderAddressForm.setBindGoodsId(Long.parseLong(result.getData().toString()));
 
                 orderAddressForms1.add(orderAddressForm);
             }
             //批量保存用户地址
             ApiResult result = this.omsClient.saveOrUpdateOrderAddressBatch(orderAddressForms1);
             if (result.getCode() != HttpStatus.SC_OK) {
-                log.warn("批量保存/修改订单地址信息失败,订单地址信息={}", new JSONArray(orderAddressForms));
+                log.warn("批量保存/修改订单地址信息失败,订单地址信息={}", new JSONArray(orderAddressForms1));
             }
 
         }
@@ -240,17 +243,19 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
         for (OrderAddressVO address : resultOne.getData()) {
             address.getFile(prePath);
             TrailerOrderAddressVO convert = ConvertUtil.convert(address, TrailerOrderAddressVO.class);
-            GoodsVO goodById = (GoodsVO)omsClient.getGoodById(address.getBindGoodsId()).getData();
-            convert.setName(goodById.getName());
-            convert.setBulkCargoAmount(goodById.getBulkCargoAmount());
-            convert.setBulkCargoUnit(goodById.getBulkCargoUnit());
-            convert.setSize(goodById.getSize());
-            convert.setTotalWeight(goodById.getTotalWeight());
-            convert.setVolume(goodById.getVolume());
+            ApiResult goodResult = omsClient.getGoodById(address.getBindGoodsId());
+            JSONObject goodById = new JSONObject(goodResult.getData());
+            GoodsVO convert1 = ConvertUtil.convert(goodById, GoodsVO.class);
+            convert.setName(convert1.getName());
+            convert.setBulkCargoAmount(convert1.getBulkCargoAmount());
+            convert.setBulkCargoUnit(convert1.getBulkCargoUnit());
+            convert.setSize(convert1.getSize());
+            convert.setTotalWeight(convert1.getTotalWeight());
+            convert.setVolume(convert1.getVolume());
             trailerOrderAddressVOS.add(convert);
         }
         trailerOrderVO.setOrderAddressForms(trailerOrderAddressVOS);
-        //查询订船信息
+        //查询派车信息
         TrailerDispatch trailerDispatch = this.trailerDispatchService.getEnableByTrailerOrderId(id);
         TrailerDispatchVO trailerDispatchVO = ConvertUtil.convert(trailerDispatch,TrailerDispatchVO.class);
         trailerOrderVO.setTrailerDispatchVO(trailerDispatchVO);

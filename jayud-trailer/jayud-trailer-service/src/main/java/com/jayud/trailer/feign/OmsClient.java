@@ -188,7 +188,7 @@ public interface OmsClient {
 
     @ApiOperation(value = "初始化车辆下拉框")
     @RequestMapping(value = "api/initVehicle")
-    public ApiResult initVehicle();
+    public ApiResult initVehicle(@RequestParam("type") Integer type);
 
     @ApiOperation(value = "初始化车辆下拉框 (确认派车)")
     @RequestMapping(value = "api/initVehicleInfo")

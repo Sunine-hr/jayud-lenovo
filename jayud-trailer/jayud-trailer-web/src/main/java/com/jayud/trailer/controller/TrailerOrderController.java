@@ -3,6 +3,7 @@ package com.jayud.trailer.controller;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
@@ -17,7 +18,6 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.InitComboxStrVO;
-import com.jayud.common.entity.InitComboxVO;
 import com.jayud.common.enums.*;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
@@ -41,7 +41,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
@@ -172,9 +171,6 @@ public class TrailerOrderController {
             }
         }
 
-        //查询商品信息
-        List<GoodsVO> goods = this.omsClient.getGoodsByBusIds(trailerOrderIds, BusinessTypeEnum.HY.getCode()).getData();
-
         //查询法人主体
         ApiResult legalEntityResult = null;
         if (CollectionUtils.isNotEmpty(entityIds)) {
@@ -195,15 +191,14 @@ public class TrailerOrderController {
         //获取发货人信息
         ApiResult<List<OrderAddressVO>> resultOne = this.omsClient.getOrderAddressByBusIds(trailerOrderIds, BusinessTypeEnum.TC.getCode() );
         if (resultOne.getCode() != HttpStatus.SC_OK) {
-            log.warn("查询订单地址信息失败 airOrderId={}", trailerOrderIds);
+            log.warn("查询订单地址信息失败 trailerOrderId={}", trailerOrderIds);
         }
 
         //获取港口信息
         List<InitComboxStrVO> portCodeInfo = (List<InitComboxStrVO>)this.omsClient.initDictByDictTypeCode("Port").getData();
 
         //获取车型信息
-        List<InitComboxVO> cabinetSizeInfo = (List<InitComboxVO>)this.omsClient.getVehicleSizeInfo().getData();
-
+        ApiResult cabinetSizeInfo = this.omsClient.getVehicleSizeInfo();
 
         //查询主订单信息
         ApiResult result = omsClient.getMainOrderByOrderNos(mainOrder);
@@ -217,44 +212,55 @@ public class TrailerOrderController {
 //                }
 //            }
 //            record.setGoodsForms(goodsVOS);
-            record.assemblyGoodsInfo(goods);
+
             //拼装主订单信息
             record.assemblyMainOrderData(result.getData());
             //组装法人名称
             record.assemblyLegalEntity(legalEntityResult);
             //拼装供应商
             record.assemblySupplierInfo(supplierInfo);
+            //拼接附件信息
+            record.getFile(prePath);
 
             //拼装结算单位
             record.assemblyUnitCodeInfo(unitCodeInfo);
 
+            //获取车型大小
+            record.assemblyCabinetSize(cabinetSizeInfo);
+
             //处理地址信息
-            List<TrailerOrderAddressVO> trailerOrderAddressVOS = new ArrayList<>();
-            for (OrderAddressVO address : resultOne.getData()) {
-                address.getFile(prePath);
-                TrailerOrderAddressVO convert = ConvertUtil.convert(address, TrailerOrderAddressVO.class);
-                GoodsVO goodById = (GoodsVO)omsClient.getGoodById(address.getBindGoodsId()).getData();
-                convert.setName(goodById.getName());
-                convert.setBulkCargoAmount(goodById.getBulkCargoAmount());
-                convert.setBulkCargoUnit(goodById.getBulkCargoUnit());
-                convert.setSize(goodById.getSize());
-                convert.setTotalWeight(goodById.getTotalWeight());
-                convert.setVolume(goodById.getVolume());
-                trailerOrderAddressVOS.add(convert);
+            if(resultOne.getData()!=null && resultOne.getData().size()>0){
+                List<TrailerOrderAddressVO> trailerOrderAddressVOS = new ArrayList<>();
+                List<GoodsVO> goodsVOS = new ArrayList<>();
+                for (OrderAddressVO address : resultOne.getData()) {
+                    address.getFile(prePath);
+                    if(address.getOrderNo().equals(record.getOrderNo())){
+                        TrailerOrderAddressVO convert = ConvertUtil.convert(address, TrailerOrderAddressVO.class);
+                        ApiResult goodResult = omsClient.getGoodById(address.getBindGoodsId());
+                        JSONObject goodById = new JSONObject(goodResult.getData());
+                        GoodsVO convert1 = ConvertUtil.convert(goodById, GoodsVO.class);
+                        goodsVOS.add(convert1);
+                        convert.setName(convert1.getName());
+                        convert.setBulkCargoAmount(convert1.getBulkCargoAmount());
+                        convert.setBulkCargoUnit(convert1.getBulkCargoUnit());
+                        convert.setSize(convert1.getSize());
+                        convert.setTotalWeight(convert1.getTotalWeight());
+                        convert.setVolume(convert1.getVolume());
+                        trailerOrderAddressVOS.add(convert);
+                    }
+
+                }
+                record.assemblyGoodsInfo(goodsVOS);
+                record.setOrderAddressForms(trailerOrderAddressVOS);
             }
-            record.setOrderAddressForms(trailerOrderAddressVOS);
+
             //获取港口信息
             for (InitComboxStrVO initComboxStrVO : portCodeInfo) {
                 if(initComboxStrVO.getCode().equals(record.getPortCode())){
                     record.setPortCodeName(initComboxStrVO.getName());
                 }
             }
-            //获取车型大小
-            for (InitComboxVO comboxVO : cabinetSizeInfo) {
-                if(comboxVO.getId().equals(record.getCabinetSize())){
-                    record.setCabinetSizeName(comboxVO.getName());
-                }
-            }
+
             //获取派车信息
             TrailerDispatch enableByTrailerOrderId = trailerDispatchService.getEnableByTrailerOrderId(record.getId());
             TrailerDispatchVO trailerDispatchVO = ConvertUtil.convert(enableByTrailerOrderId,TrailerDispatchVO.class);
@@ -420,20 +426,25 @@ public class TrailerOrderController {
     /**
      * 导出补料单
      */
-    @ApiOperation(value = "导出补料单")
+    @Value("${address.trailerAddr}")
+    private String filePath;
+    @ApiOperation(value = "下载派车单")
     @GetMapping(value = "/uploadExcel")
     public void uploadExcel(@RequestParam("id") Long id, HttpServletResponse response) {
 
         TrailerOrderVO trailerOrderDetails = trailerOrderService.getTrailerOrderByOrderNO(id);
 
+//        ClassPathResource classPathResource = new ClassPathResource("/static/派车单.xls");
+//        String filename1 = classPathResource.getFilename();
 
-        ClassPathResource classPathResource = new ClassPathResource("/static/派车单.xls");
-        String filename1 = classPathResource.getFilename();
+//        File file = new File("D:\\CodeRepository1\\jayud-platform\\jayud-trailer\\jayud-trailer-web\\src\\main\\resources\\static\\trailer.xls");
+        File file = new File(filePath);
+        String name = file.getName();
 
         try {
-            InputStream inputStream = classPathResource.getInputStream();
+            InputStream inputStream = new FileInputStream(file);
             Workbook templateWorkbook = null;
-            String fileType = filename1.substring(filename1.lastIndexOf("."));
+            String fileType = name.substring(name.lastIndexOf("."));
             if (".xls".equals(fileType)) {
                 templateWorkbook = new HSSFWorkbook(inputStream); // 2003-
             } else if (".xlsx".equals(fileType)) {
@@ -466,7 +477,7 @@ public class TrailerOrderController {
 
             //将指定数据填充
             Map<String, Object> map = new HashMap<String, Object>();
-            map.put("orderNo", trailerOrderDetails.getOrderNo());
+            map.put("orderNo", trailerOrderDetails.getTrailerDispatchVO().getOrderNo());
             map.put("cabinetNumber", trailerOrderDetails.getCabinetNumber());
             map.put("paperStripSeal", trailerOrderDetails.getPaperStripSeal());
             map.put("plateNumber", trailerOrderDetails.getTrailerDispatchVO().getPlateNumber());
@@ -476,7 +487,8 @@ public class TrailerOrderController {
             map.put("portCodeName", trailerOrderDetails.getPortCodeName());
             map.put("closingTime", trailerOrderDetails.getClosingTime());
             map.put("remark", trailerOrderDetails.getTrailerDispatchVO().getRemark());
-
+            map.put("createTime", trailerOrderDetails.getCreateTime().toString().substring(0,10));
+            map.put("so", trailerOrderDetails.getSo());
             excelWriter.fill(map, writeSheet);
 
             excelWriter.finish();

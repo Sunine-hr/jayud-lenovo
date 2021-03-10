@@ -64,5 +64,7 @@ hystrix:
 ribbon:
   ReadTimeout: 30000
   ConnectTimeout: 30000
+address:
+  trailerAddr: ${address.trailerAddress}
 
 

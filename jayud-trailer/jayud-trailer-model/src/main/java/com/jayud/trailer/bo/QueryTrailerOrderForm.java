@@ -26,7 +26,7 @@ public class QueryTrailerOrderForm extends BasePageForm {
     @ApiModelProperty(value = "拖车订单编号")
     private String orderNo;
 
-    @ApiModelProperty(value = "进出口类型")
+    @ApiModelProperty(value = "进出口类型",required = true)
     private Integer impAndExpType;
 
     @ApiModelProperty(value = "车型大小")

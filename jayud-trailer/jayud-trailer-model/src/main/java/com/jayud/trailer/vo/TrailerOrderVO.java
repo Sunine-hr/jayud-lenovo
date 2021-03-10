@@ -171,7 +171,7 @@ public class TrailerOrderVO {
     @ApiModelProperty(value = "接单日期")
     private String receivingOrdersDate;
 
-    @ApiModelProperty(value = "海运订单地址信息")
+    @ApiModelProperty(value = "拖车订单地址信息")
     private List<TrailerOrderAddressVO> orderAddressForms;
 
 //    @ApiModelProperty(value = "货品信息")

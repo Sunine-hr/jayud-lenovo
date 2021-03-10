@@ -6,7 +6,6 @@ import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
@@ -196,5 +195,14 @@ public class AddTrailerOrderFrom {
     }
 
     //获取附件地址以及附件名称
-
+    public void getPathAndName(){
+        this.soFilePath = com.jayud.common.utils.StringUtils.getFileStr(soPics);
+        this.soFileName = com.jayud.common.utils.StringUtils.getFileNameStr(soPics);
+        this.bolFilePath = com.jayud.common.utils.StringUtils.getFileStr(billPics);
+        this.bolFileName = com.jayud.common.utils.StringUtils.getFileNameStr(billPics);
+        this.pssFilePath = com.jayud.common.utils.StringUtils.getFileStr(pssPics);
+        this.pssFileName = com.jayud.common.utils.StringUtils.getFileNameStr(pssPics);
+        this.cnFilePath = com.jayud.common.utils.StringUtils.getFileStr(cnPics);
+        this.cnFileName = com.jayud.common.utils.StringUtils.getFileNameStr(cnPics);
+    }
 }

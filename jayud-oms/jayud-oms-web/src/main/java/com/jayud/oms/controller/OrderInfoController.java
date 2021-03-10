@@ -335,5 +335,22 @@ public class OrderInfoController {
 
         return CommonResult.success();
     }
+
+
+    @ApiOperation(value = "修改主订单描述 mainOrderId=主订单id,remarks=描述")
+    @PostMapping("/updateRemarks")
+    public CommonResult updateRemarks(@RequestBody @Valid Map<String, Object> map) {
+        Long mainOrderId = MapUtil.getLong(map, "mainOrderId");
+        if (mainOrderId == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        String remarks = MapUtil.getStr(map, "remarks");
+        if (StringUtils.isEmpty(remarks)) {
+            return CommonResult.success();
+        }
+        this.orderInfoService.updateById(new OrderInfo().setId(mainOrderId).setRemarks(remarks));
+
+        return CommonResult.success();
+    }
 }
 

@@ -111,6 +111,10 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "子订单状态描述增加换行")
     private String subOrderStatusDescOne;
 
+    @ApiModelProperty(value = "主订单备注")
+    private String remarks;
+
+
 //    @ApiModelProperty(value = "中港订单号")
 //    private String tmsOrderNo;
 //

@@ -65,5 +65,8 @@ public class InputMainOrderForm {
     @ApiModelProperty(value = "审核状态")
     private Integer status;
 
+    @ApiModelProperty(value = "主订单备注")
+    private String remarks;
+
 
 }

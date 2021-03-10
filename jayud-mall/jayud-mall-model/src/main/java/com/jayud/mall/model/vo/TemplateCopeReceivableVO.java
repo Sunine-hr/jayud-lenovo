@@ -41,7 +41,7 @@ public class TemplateCopeReceivableVO {
     @JSONField(ordinal = 6)
     private Integer count;
 
-    @ApiModelProperty(value = "数量单位(1KG 2票 3个 4柜 5方)", position = 7)
+    @ApiModelProperty(value = "数量单位(1公斤 2方 3票 4柜)", position = 7)
     @JSONField(ordinal = 7)
     private Integer unit;
 

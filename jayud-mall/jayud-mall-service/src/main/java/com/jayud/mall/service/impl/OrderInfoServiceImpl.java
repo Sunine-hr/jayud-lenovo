@@ -527,10 +527,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderCopeReceivables.add(orderCopeReceivable);
         }
 
-        QueryWrapper<OrderCopeReceivable> OrderCopeReceivableQueryWrapper = new QueryWrapper<>();
-        OrderCopeReceivableQueryWrapper.eq("order_id", orderInfo.getId());
-        orderCopeReceivableService.remove(OrderCopeReceivableQueryWrapper);//先删除
-        orderCopeReceivableService.saveOrUpdateBatch(orderCopeReceivables);//在保存  订单应收费用
+        if(CollUtil.isNotEmpty(orderCopeReceivables)){
+            QueryWrapper<OrderCopeReceivable> OrderCopeReceivableQueryWrapper = new QueryWrapper<>();
+            OrderCopeReceivableQueryWrapper.eq("order_id", orderInfo.getId());
+            orderCopeReceivableService.remove(OrderCopeReceivableQueryWrapper);//先删除
+            orderCopeReceivableService.saveOrUpdateBatch(orderCopeReceivables);//在保存  订单应收费用
+        }
 
         //订单 应付 费用
         List<OrderCopeWith> orderCopeWiths = new ArrayList<>();
@@ -555,11 +557,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderCopeWiths.add(orderCopeWith);
         }
 
-        QueryWrapper<OrderCopeWith> orderCopeWithQueryWrapper = new QueryWrapper<>();
-        orderCopeWithQueryWrapper.eq("order_id", orderInfo.getId());
-        orderCopeWithService.remove(orderCopeWithQueryWrapper);//先删除
-        orderCopeWithService.saveOrUpdateBatch(orderCopeWiths);//在保存  订单应付费用
-
+        if(CollUtil.isNotEmpty(orderCopeWiths)){
+            QueryWrapper<OrderCopeWith> orderCopeWithQueryWrapper = new QueryWrapper<>();
+            orderCopeWithQueryWrapper.eq("order_id", orderInfo.getId());
+            orderCopeWithService.remove(orderCopeWithQueryWrapper);//先删除
+            orderCopeWithService.saveOrUpdateBatch(orderCopeWiths);//在保存  订单应付费用
+        }
 
         return CommonResult.success(ConvertUtil.convert(orderInfo, OrderInfoVO.class));
     }

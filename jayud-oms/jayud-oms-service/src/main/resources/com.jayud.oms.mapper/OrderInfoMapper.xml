@@ -44,6 +44,7 @@
         SELECT * FROM (
         SELECT DISTINCT
         oi.id,
+        oi.remarks,
         oi.`order_no` orderNo,
         oi.`biz_code` bizCode,
         oi.`legal_entity_id` legal_entity_id,
@@ -85,6 +86,7 @@
         UNION ALL
         SELECT DISTINCT
         oi.id,
+        oi.remarks,
         oi.`order_no` orderNo,
         oi.`biz_code` bizCode,
         oi.`legal_entity_id` legal_entity_id,
@@ -135,6 +137,7 @@
         UNION ALL
         SELECT DISTINCT
         oi.id,
+        oi.remarks,
         oi.`order_no` orderNo,
         oi.`biz_code` bizCode,
         oi.`legal_entity_id` legal_entity_id,
@@ -178,6 +181,7 @@
         UNION ALL
         SELECT DISTINCT
         oi.id,
+        oi.remarks,
         oi.`order_no` orderNo,
         oi.`biz_code` bizCode,
         oi.`legal_entity_id` legal_entity_id,
@@ -222,6 +226,7 @@
         UNION ALL
         SELECT DISTINCT
         oi.id,
+        oi.remarks,
         oi.`order_no` orderNo,
         oi.`biz_code` bizCode,
         oi.`legal_entity_id` legal_entity_id,
@@ -336,6 +341,7 @@
             resultType="com.jayud.oms.model.vo.OrderInfoVO">
         SELECT DISTINCT
         oi.id,
+        oi.`remarks`,
         oi.`order_no` orderNo,
         ot.`goods_type` goodsType,
         ot.`port_code` portCode,
@@ -414,6 +420,7 @@
     <select id="getMainOrderById" parameterType="java.lang.Long" resultType="com.jayud.oms.model.vo.InputMainOrderVO">
         SELECT
         oi.`id` orderId,
+        oi.remarks,
         oi.`order_no` orderNo,
         oi.`customer_code` customerCode,
         oi.`customer_name` customerName,

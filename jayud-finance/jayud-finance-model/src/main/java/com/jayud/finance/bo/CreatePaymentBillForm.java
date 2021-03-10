@@ -33,7 +33,7 @@ public class CreatePaymentBillForm {
     @ApiModelProperty(value = "结算币种,生成账单时必传")
     private String settlementCurrency;
 
-    @ApiModelProperty(value = "账单类别,生成账单时必传,只允许填写main or zgys or bg or ky")
+    @ApiModelProperty(value = "账单类别,生成账单时必传,只允许填写main or zgys or bg or ky or nl")
     private String subType;
 
     @ApiModelProperty(value = "操作指令 cmd=pre_create主订单出账暂存 or create主订单生成账单", required = true)

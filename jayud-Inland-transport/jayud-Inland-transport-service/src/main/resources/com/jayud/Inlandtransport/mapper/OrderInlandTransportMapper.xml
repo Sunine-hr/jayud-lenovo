@@ -35,7 +35,7 @@
         i.main_order_no mainOrderNo,
         i.order_no orderNo,i.status,
         i.process_status processStatus,
-        i.create_user createUser, i.create_time createdTimeStr,
+        i.create_user createUser, i.create_time createTime,
         i.unit_code subUnitCode,
         i.legal_entity_id,
         i.legal_name subLegalName,

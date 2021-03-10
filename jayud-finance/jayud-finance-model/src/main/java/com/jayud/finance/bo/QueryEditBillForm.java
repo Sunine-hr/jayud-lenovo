@@ -16,7 +16,7 @@ public class QueryEditBillForm extends BasePageForm{
     @NotEmpty(message = "billNo is required")
     private String billNo;
 
-    @ApiModelProperty(value = "操作指令,cmd=main or bg or zgys or ky , hy",required = true)
+    @ApiModelProperty(value = "操作指令,cmd=main or bg or zgys or ky , hy or nl",required = true)
     @NotEmpty(message = "cmd is required")
     private String cmd;
 

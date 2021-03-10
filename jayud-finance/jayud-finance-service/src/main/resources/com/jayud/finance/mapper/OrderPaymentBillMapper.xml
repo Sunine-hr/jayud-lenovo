@@ -210,6 +210,7 @@
         left join order_customs oc on oc.order_no = opc.order_no
         left join air_order ao on ao.order_no = opc.order_no
         left join sea_order so on so.order_no = opc.order_no
+        left join order_inland_transport oit on oit.order_no = opc.order_no
         WHERE
         opc.id NOT IN ( SELECT opbd.cost_id FROM order_payment_bill_detail opbd )
         and (opc.is_bill != '2' and opc.is_bill != 'save_confirm')
@@ -235,6 +236,10 @@
         <if test="form.cmd == 'hy'">
             and so.legal_name = #{form.legalName}
             and opc.is_sum_to_main = 0 and opc.sub_type = 'hy'
+        </if>
+        <if test="form.cmd == 'nl'">
+            and oit.legal_name = #{form.legalName}
+            and opc.is_sum_to_main = 0 and opc.sub_type = 'nl'
         </if>
         ) temp where 1 = 1
         <if test="form.startAddress != null and form.startAddress != ''">

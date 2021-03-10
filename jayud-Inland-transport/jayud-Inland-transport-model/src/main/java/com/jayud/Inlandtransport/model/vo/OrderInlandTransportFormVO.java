@@ -264,4 +264,6 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
         this.defaultUnitCode = subUnitCode;
     }
 
+
+
 }

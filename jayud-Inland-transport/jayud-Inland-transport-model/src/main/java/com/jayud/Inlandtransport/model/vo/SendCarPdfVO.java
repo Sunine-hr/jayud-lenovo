@@ -131,6 +131,7 @@ public class SendCarPdfVO {
                 TakeGoodsInfoVO takeGoodsInfoVO = new TakeGoodsInfoVO();
                 takeGoodsInfoVO.setAddress(orderAddressVO.getAddress());
                 takeGoodsInfoVO.setContacts(orderAddressVO.getContacts());
+                takeGoodsInfoVO.setPhone(orderAddressVO.getPhone());
                 takeGoodsInfoVO.setTakeTimeStr(orderAddressVO.getDeliveryDate());
                 takeGoodsInfoVO.setId(orderAddressVO.getId());
                 takeGoodsInfoVO.setVehicleTypeDesc(this.vehicleTypeDesc);

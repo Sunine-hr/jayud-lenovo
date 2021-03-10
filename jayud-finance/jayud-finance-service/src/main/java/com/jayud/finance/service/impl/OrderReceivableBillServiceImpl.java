@@ -121,6 +121,8 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         page.addOrder(OrderItem.desc("temp.costId"));
         IPage<ReceiveNotPaidBillVO> pageInfo = baseMapper.findNotPaidBillByPage(page, form);
         List<ReceiveNotPaidBillVO> pageList = pageInfo.getRecords();
+
+        //
         for (ReceiveNotPaidBillVO receiveNotPaidBillVO : pageList) {
             //处理目的地:当有两条或两条以上时,则获取中转仓地址
             if (!StringUtil.isNullOrEmpty(receiveNotPaidBillVO.getEndAddress())) {

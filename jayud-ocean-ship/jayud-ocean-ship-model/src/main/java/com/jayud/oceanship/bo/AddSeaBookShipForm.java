@@ -3,6 +3,7 @@ package com.jayud.oceanship.bo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -69,6 +70,9 @@ public class AddSeaBookShipForm extends Model<AddSeaBookShipForm> {
     @ApiModelProperty(value = "实际到港时间")
     private String ata;
 
+    @ApiModelProperty(value = "截关时间")
+    private String closingTime;
+
     @ApiModelProperty(value = "交仓码头")
     private String deliveryWharf;
 
@@ -101,8 +105,45 @@ public class AddSeaBookShipForm extends Model<AddSeaBookShipForm> {
         return this.id;
     }
 
-    public boolean checkBookShipOptParam() {
+    public boolean checkBookShipParam() {
         String title = "订船操作";
+        if (StringUtils.isEmpty(this.seaOrderNo)) {
+            log.warn(title + " 海运订单编号必填");
+            return false;
+        }
+        if (this.seaOrderId == null) {
+            log.warn(title + " 海运订单id必填");
+            return false;
+        }
+        if (this.agentSupplierId == null) {
+            log.warn(title + " 供应商id必填");
+            return false;
+        }
+        if (this.closingTime == null) {
+            log.warn(title + " 截关时间必填");
+            return false;
+        }
+//        if (StringUtils.isEmpty(this.shipCompany)) {
+//            log.warn(title + " 船公司必填");
+//            return false;
+//        }
+//        if (StringUtils.isEmpty(this.shipName)) {
+//            log.warn(title + " 船名必填");
+//            return false;
+//        }
+//        if (StringUtils.isEmpty(this.shipNumber)) {
+//            log.warn(title + " 船次必填");
+//            return false;
+//        }
+        if (StringUtils.isEmpty(this.deliveryWharf)) {
+            log.warn(title + " 交仓码头必填");
+            return false;
+        }
+        return true;
+    }
+
+    public boolean checkBookShipOptParam() {
+        String title = "确认装船操作";
         if (StringUtils.isEmpty(this.seaOrderNo)) {
             log.warn(title + " 海运订单编号必填");
             return false;

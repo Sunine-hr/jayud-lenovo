@@ -106,6 +106,12 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
     @ApiModelProperty(value = "目的港")
     private String portDestinationName;
 
+    //@ApiModelProperty(value = "中转港代码")
+    private String transitPortCode;
+
+    @ApiModelProperty(value = "中转港")
+    private String transitPort;
+
 //    @ApiModelProperty(value = "船公司")
 //    private String shipCompany;
 //

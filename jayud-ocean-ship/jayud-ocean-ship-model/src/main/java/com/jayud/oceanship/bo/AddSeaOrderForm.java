@@ -60,6 +60,9 @@ public class AddSeaOrderForm {
     @ApiModelProperty(value = "起运港代码")
     private String portDepartureCode;
 
+    @ApiModelProperty(value = "中转港代码")
+    private String transitPortCode;
+
     @ApiModelProperty(value = "目的港代码")
     private String portDestinationCode;
 

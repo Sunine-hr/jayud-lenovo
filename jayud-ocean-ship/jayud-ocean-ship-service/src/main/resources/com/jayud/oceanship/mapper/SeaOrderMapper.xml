@@ -52,6 +52,8 @@
         sp.name portDeparture,
         so.port_destination_code portDestinationCode,
         sp1.name portDestination,
+        so.transit_port_code transitPortCode,
+        sp2.name transitPort,
         so.good_time goodTime,
         so.is_freight_collect isFreightCollect,
         so.is_other_expenses_paid isOtherExpensesPaid,
@@ -80,6 +82,7 @@
         from sea_order so
         left join sea_port sp on so.port_departure_code = sp.code
         left join sea_port sp1 on so.port_destination_code = sp1.code
+        left join sea_port sp2 on so.transit_port_code = sp1.code
         left join order_info oi on so.main_order_no = oi.order_no
         left join terms on terms.id = so.terms
         where so.id = #{id}

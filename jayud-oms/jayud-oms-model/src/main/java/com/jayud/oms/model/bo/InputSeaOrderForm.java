@@ -63,6 +63,9 @@ public class InputSeaOrderForm {
     @ApiModelProperty(value = "目的港代码")
     private String portDestinationCode;
 
+    @ApiModelProperty(value = "中转港代码")
+    private String transitPortCode;
+
     @ApiModelProperty(value = "柜型大小")
     private Integer cabinetSize;
 
@@ -129,10 +132,6 @@ public class InputSeaOrderForm {
         // 发货/收货地址是必填项
         if (CollectionUtils.isEmpty(this.deliveryAddress)) {
             for (AddOrderAddressForm address : deliveryAddress) {
-                if(StringUtils.isEmpty(address.getPhone())){
-                    log.warn("电话号码不能为空");
-                    return false;
-                }
                 if(StringUtils.isEmpty(address.getAddress())){
                     log.warn("发货地址不能为空");
                     return false;

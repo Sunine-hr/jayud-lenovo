@@ -46,6 +46,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -54,10 +55,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.net.URLEncoder;
 import java.util.*;
@@ -224,6 +222,9 @@ public class SeaOrderController {
                 if(seaPort.getCode().equals(seaOrderFormVO.getPortDestinationCode())){
                     seaOrderFormVO.setPortDestinationName(seaPort.getName());
                 }
+                if(seaPort.getCode().equals(seaOrderFormVO.getTransitPortCode())){
+                    seaOrderFormVO.setTransitPort(seaPort.getName());
+                }
             }
         }
         page.setRecords(records1);
@@ -388,6 +389,9 @@ public class SeaOrderController {
     /**
      * 导出补料单
      */
+    @Value("${address.seaAddr}")
+    private String filePath;
+
     @ApiOperation(value = "导出补料单")
     @GetMapping(value = "/uploadExcel")
     public void uploadExcel(@RequestParam("orderId") Long orderId, HttpServletResponse response) {
@@ -395,11 +399,15 @@ public class SeaOrderController {
         SeaOrderVO seaOrderDetails = seaOrderService.getSeaOrderDetails(orderId);
 
 
-        ClassPathResource classPathResource = new ClassPathResource("/static/海运.xlsx");
-        String filename1 = classPathResource.getFilename();
+//        ClassPathResource classPathResource = new ClassPathResource("/static/海运.xlsx");
+//        String filename1 = classPathResource.getFilename();
+
+        File file = new File(filePath);
+        String filename1 = file.getName();
 
         try {
-            InputStream inputStream = classPathResource.getInputStream();
+//            InputStream inputStream = classPathResource.getInputStream();
+            InputStream inputStream = new FileInputStream(file);
             Workbook templateWorkbook = null;
             String fileType = filename1.substring(filename1.lastIndexOf("."));
             if (".xls".equals(fileType)) {

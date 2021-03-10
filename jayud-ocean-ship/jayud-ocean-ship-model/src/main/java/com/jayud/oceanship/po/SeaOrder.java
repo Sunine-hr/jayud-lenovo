@@ -64,6 +64,9 @@ public class SeaOrder extends Model<SeaOrder> {
     @ApiModelProperty(value = "目的港代码")
     private String portDestinationCode;
 
+    @ApiModelProperty(value = "中转港代码")
+    private String transitPortCode;
+
     @ApiModelProperty(value = "柜型大小")
     private Integer cabinetSize;
 

@@ -77,6 +77,10 @@ public class InputSeaBookshipVO {
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime ata;
 
+    @ApiModelProperty(value = "截关时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime closingTime;
+
     @ApiModelProperty(value = "交仓码头")
     private String deliveryWharf;
 

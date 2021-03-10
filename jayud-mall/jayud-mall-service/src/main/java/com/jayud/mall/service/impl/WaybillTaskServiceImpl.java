@@ -1,14 +1,11 @@
 package com.jayud.mall.service.impl;
 
-import com.jayud.mall.model.po.WaybillTask;
-import com.jayud.mall.mapper.WaybillTaskMapper;
-import com.jayud.mall.model.vo.WaybillTaskVO;
-import com.jayud.mall.service.IWaybillTaskService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.mall.mapper.WaybillTaskMapper;
+import com.jayud.mall.model.po.WaybillTask;
+import com.jayud.mall.service.IWaybillTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * <p>
@@ -24,15 +21,4 @@ public class WaybillTaskServiceImpl extends ServiceImpl<WaybillTaskMapper, Waybi
     @Autowired
     WaybillTaskMapper waybillTaskMapper;
 
-    @Override
-    public List<WaybillTaskVO> findWaybillTaskByOfferInfoId(Integer OfferInfoId) {
-        List<WaybillTaskVO> list = waybillTaskMapper.findWaybillTaskByOfferInfoId(OfferInfoId);
-        return list;
-    }
-
-    @Override
-    public List<WaybillTaskVO> findWaybillTaskByOrderInfoId(Long orderInfoId) {
-        List<WaybillTaskVO> list = waybillTaskMapper.findWaybillTaskByOrderInfoId(orderInfoId);
-        return list;
-    }
 }

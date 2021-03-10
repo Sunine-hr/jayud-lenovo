@@ -26,34 +26,5 @@
         id, group_code, task_code, task_name, sort, days, day_flag, operators, minutes, score, remarks, status, user_id, user_name, create_time
     </sql>
 
-    <select id="findbillTaskByObId" parameterType="java.lang.Long"
-            resultType="com.jayud.mall.model.vo.BillTaskVO">
-        select
-        t.id,t.group_code,t.task_code,t.task_name,t.sort,t.days,t.day_flag,t.operators,t.minutes,t.score,t.remarks,t.`status`,t.user_id,t.user_name,t.create_time,
-        t1.id_code,t1.code_name,
-        t3.id operationTeamId,
-        t4.member_user_id memberUserId,t4.memberUserName
-        from bill_task t
-        LEFT JOIN task_group t1 on t1.id_code = t.group_code AND t1.types=1
-        LEFT JOIN ocean_bill t2 on t2.task_id = t1.id
-        LEFT JOIN operation_team t3 ON t3.id = t2.operation_team_id
-        LEFT JOIN (
-        select
-        t.id,t.task_type,t.task_id,t.operation_team_id,t.member_user_id,t.`status`,t.creator,t.creation_time,
-        t1.task_code billTaskCode,t1.task_name billTaskName,
-        t2.task_code waybillTaskCode,t2.task_name waybillTaskName,
-        t3.group_code operationGroupCode,t3.group_name operationGroupName,
-        t4.`name` memberUserName
-        from
-        task_member_relation t
-        LEFT JOIN bill_task t1 on t1.id = t.task_id AND t.task_type = 1
-        LEFT JOIN waybill_task t2 on t2.id = t.task_id AND t.task_type = 2
-        LEFT JOIN operation_team t3 on t3.id = t.operation_team_id
-        LEFT JOIN system_user t4 on t4.id = t.member_user_id
-        ) t4 ON t4.task_id = t.id AND t4.billTaskCode = t.task_code AND t4.billTaskName = t.task_name AND t4.operation_team_id = t2.operation_team_id
-        WHERE t2.id = #{obId}
-        ORDER BY t.sort ASC
-
-    </select>
 
 </mapper>

@@ -68,15 +68,19 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
         LocalDateTime now = LocalDateTime.now();
         OrderInlandTransport inlandOrder = ConvertUtil.convert(form, OrderInlandTransport.class);
         inlandOrder.setVehicleType(1);//吨车
+        //生成订单号
+        String orderNo = null;
         //创建内陆运输订单
         if (form.getId() == null) {
             //生成订单号
-            String orderNo = form.getOrderNo();
+            orderNo = form.getOrderNo();
             inlandOrder.setOrderNo(orderNo).setCreateTime(now)
                     .setCreateUser(form.getCreateUser())
                     .setStatus(OrderStatusEnum.INLANDTP_NL_0.getCode());
             this.save(inlandOrder);
         } else {
+            OrderInlandTransport tmp = this.getById(form.getId());
+            orderNo = tmp.getOrderNo();
             //修改内陆运输订单
             inlandOrder.setStatus(OrderStatusEnum.INLANDTP_NL_0.getCode())
                     .setUpdateTime(now).setUpdateUser(form.getCreateUser());
@@ -92,7 +96,7 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
         }
         for (OrderDeliveryAddress orderDeliveryAddress : addressList) {
             orderDeliveryAddress.setBusinessId(inlandOrder.getId())
-                    .setOrderNo(inlandOrder.getOrderNo())
+                    .setOrderNo(orderNo)
                     .setBusinessType(BusinessTypeEnum.NL.getCode());
         }
         this.omsClient.addDeliveryAddress(addressList);
@@ -320,6 +324,7 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
 
     /**
      * 根据子订单号集合查询子订单
+     *
      * @param orderNos
      * @return
      */

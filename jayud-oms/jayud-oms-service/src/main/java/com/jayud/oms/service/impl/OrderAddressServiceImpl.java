@@ -59,9 +59,13 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
         //循环地址
         List<OrderAddress> list = new ArrayList<>();
 
+        OrderDeliveryAddress orderDeliveryAddress = deliveryAddressList.get(0);
+        //先清除久的数据
+        this.goodsService.removeByOrderNo(orderDeliveryAddress.getOrderNo(), orderDeliveryAddress.getBusinessType());
+        this.removeByOrderNo(orderDeliveryAddress.getOrderNo(), orderDeliveryAddress.getBusinessType());
         for (OrderDeliveryAddress deliveryAddress : deliveryAddressList) {
             //绑定商品信息
-            Goods goods = new Goods().setId(deliveryAddress.getGoodsId())
+            Goods goods = new Goods()
                     .setBusinessId(deliveryAddress.getBusinessId())
                     .setBusinessType(deliveryAddress.getBusinessType())
                     .setName(deliveryAddress.getGoodsName())
@@ -79,7 +83,6 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
 
             //订单地址
             OrderAddress orderAddress = new OrderAddress();
-            orderAddress.setId(deliveryAddress.getOrderAddressId());
             orderAddress.setContacts(deliveryAddress.getContacts());
             orderAddress.setPhone(deliveryAddress.getPhone());
             orderAddress.setAddress(deliveryAddress.getAddress());
@@ -119,26 +122,40 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
         List<OrderDeliveryAddress> list = new ArrayList<>();
         addressList.forEach(e -> {
             Goods goods = tmp.get(e.getBindGoodsId());
-            OrderDeliveryAddress orderDeliveryAddress = new OrderDeliveryAddress();
-            orderDeliveryAddress.setOrderNo(e.getOrderNo())
-                    .setContacts(e.getContacts())
-                    .setPhone(e.getPhone())
-                    .setAddress(e.getAddress())
-                    .setDeliveryDate(DateUtils.LocalDateTime2Str(e.getDeliveryDate(), DateUtils.DATE_TIME_PATTERN))
-                    .setEnterWarehouseNo(e.getEnterWarehouseNo())
-                    .setAddressType(e.getType())
-                    .setGoodsName(goods.getName())
-                    .setPlateAmount(goods.getPlateAmount())
-                    .setPlateUnit(goods.getPlateUnit())
-                    .setBulkCargoAmount(goods.getBulkCargoAmount())
-                    .setBulkCargoUnit(goods.getBulkCargoUnit())
-                    .setSize(goods.getSize())
-                    .setTotalWeight(goods.getTotalWeight())
-                    .setVolume(goods.getVolume())
-                    .setRemarks(e.getRemarks())
-                    .setFileViewList(StringUtils.getFileViews(e.getFilePath(), e.getFileName(), prePath));
-            list.add(orderDeliveryAddress);
+            if (goods != null) {
+                OrderDeliveryAddress orderDeliveryAddress = new OrderDeliveryAddress();
+                orderDeliveryAddress.setOrderNo(e.getOrderNo())
+                        .setGoodsId(goods.getId())
+                        .setOrderAddressId(e.getId())
+                        .setContacts(e.getContacts())
+                        .setPhone(e.getPhone())
+                        .setAddress(e.getAddress())
+                        .setDeliveryDate(DateUtils.LocalDateTime2Str(e.getDeliveryDate(), DateUtils.DATE_TIME_PATTERN))
+                        .setEnterWarehouseNo(e.getEnterWarehouseNo())
+                        .setAddressType(e.getType())
+                        .setGoodsName(goods.getName())
+                        .setPlateAmount(goods.getPlateAmount())
+                        .setPlateUnit(goods.getPlateUnit())
+                        .setBulkCargoAmount(goods.getBulkCargoAmount())
+                        .setBulkCargoUnit(goods.getBulkCargoUnit())
+                        .setSize(goods.getSize())
+                        .setTotalWeight(goods.getTotalWeight())
+                        .setVolume(goods.getVolume())
+                        .setRemarks(e.getRemarks())
+                        .setFileViewList(StringUtils.getFileViews(e.getFilePath(), e.getFileName(), prePath));
+                list.add(orderDeliveryAddress);
+            }
         });
         return list;
+    }
+
+    @Override
+    public void removeByOrderNo(String orderNo, Integer businessType) {
+        QueryWrapper<OrderAddress> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderAddress::getOrderNo, orderNo);
+        if (businessType != null) {
+            condition.lambda().eq(OrderAddress::getBusinessType, businessType);
+        }
+        this.baseMapper.delete(condition);
     }
 }

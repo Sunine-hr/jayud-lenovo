@@ -102,7 +102,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(),
             SubOrderSignEnum.KY.getSignOne(), SubOrderSignEnum.HY.getSignOne(),
-            SubOrderSignEnum.BG.getSignOne(),SubOrderSignEnum.NL.getSignOne()};
+            SubOrderSignEnum.BG.getSignOne(), SubOrderSignEnum.NL.getSignOne()};
 
     @Autowired
     private IServiceOrderService serviceOrderService;
@@ -1525,6 +1525,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         } else {
             //其他情况下,货物编辑==null和false情况下,子订单驳回才能编辑
             InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
+            orderTransportForm = orderTransportForm == null ? new InputOrderTransportForm() : orderTransportForm;
             if (OrderStatusEnum.getRejectionStatus(orderStatus, orderType) != null
                     && (orderTransportForm.getIsGoodsEdit() == null
                     || !orderTransportForm.getIsGoodsEdit())) {

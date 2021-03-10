@@ -23,15 +23,19 @@ public interface IOrderAddressService extends IService<OrderAddress> {
 
     /**
      * 添加/修改订单提货地址
+     *
      * @param deliveryAddressList
      */
     void addDeliveryAddress(List<OrderDeliveryAddress> deliveryAddressList);
 
     /**
      * 获取订单提货/送货地址
+     *
      * @param orderId
      * @param businessType
      * @return
      */
     List<OrderDeliveryAddress> getDeliveryAddress(List<Long> orderId, Integer businessType);
+
+    void removeByOrderNo(String orderNo, Integer businessType);
 }

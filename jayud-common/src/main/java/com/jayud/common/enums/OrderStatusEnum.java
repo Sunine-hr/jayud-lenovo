@@ -380,7 +380,7 @@ public enum OrderStatusEnum {
                     AIR_A_1_1.getCode(), AIR_A_2_1.getCode(), AIR_A_3_1.getCode(),
                     AIR_A_3_2.getCode(), SEA_S_1_1.getCode(), SEA_S_2_1.getCode(),
                     SEA_S_3_1.getCode(), SEA_S_3_2.getCode(),
-                    INLANDTP_NL_1_1.getCode(),INLANDTP_NL_2_1.getCode(),
+                    INLANDTP_NL_1_1.getCode(), INLANDTP_NL_2_1.getCode(),
                     INLANDTP_NL_3_1.getCode(), INLANDTP_NL_3_2.getCode(),
                     INLANDTP_NL_4_1.getCode(), INLANDTP_NL_5_1.getCode(),};
         }
@@ -402,6 +402,12 @@ public enum OrderStatusEnum {
             if (SubOrderSignEnum.HY.getSignOne().equals(subOrderSign)) {
                 return new String[]{
                         SEA_S_1_1.getCode(), SEA_S_2_1.getCode(), SEA_S_3_1.getCode(), SEA_S_3_2.getCode()
+                };
+            }
+            if (SubOrderSignEnum.NL.getSignOne().equals(subOrderSign)) {
+                return new String[]{
+                        INLANDTP_NL_1_1.getCode(), INLANDTP_NL_2_1.getCode(), INLANDTP_NL_3_1.getCode(),
+                        INLANDTP_NL_3_2.getCode(), INLANDTP_NL_4_1.getCode(), INLANDTP_NL_5_1.getCode()
                 };
             }
         }

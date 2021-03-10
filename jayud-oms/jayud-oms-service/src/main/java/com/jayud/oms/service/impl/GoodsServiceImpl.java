@@ -1,6 +1,7 @@
 package com.jayud.oms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.po.Goods;
 import com.jayud.oms.mapper.GoodsMapper;
 import com.jayud.oms.service.IGoodsService;
@@ -29,6 +30,16 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         condition.lambda().in(Goods::getBusinessId, busIds);
         condition.lambda().eq(Goods::getBusinessType, busType);
         return this.baseMapper.selectList(condition);
+    }
+
+    @Override
+    public void removeByOrderNo(String orderNo, Integer businessType) {
+        QueryWrapper<Goods> condition = new QueryWrapper<>();
+        condition.lambda().eq(Goods::getOrderNo, orderNo);
+        if (businessType != null) {
+            condition.lambda().eq(Goods::getBusinessType, businessType);
+        }
+        this.baseMapper.delete(condition);
     }
 
 }

@@ -276,7 +276,7 @@ public class DateUtils {
      * @return
      */
     public static LocalDateTime str2LocalDateTime(String dateStr, String pattern) {
-        if (StringUtils.isBlank(dateStr) || StringUtils.isBlank(pattern)) {
+        if (StringUtils.isBlank(dateStr)) {
             return null;
         }
         if (StringUtils.isEmpty(pattern)) {

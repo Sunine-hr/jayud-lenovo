@@ -85,10 +85,10 @@ public class OrderInlandTransportDetails extends Model<OrderInlandTransportDetai
     private OrderInlandSendCarsVO orderInlandSendCarsVO;
 
     @ApiModelProperty("提货地址")
-    private List<OrderDeliveryAddress> pickUpAddressList=new ArrayList<>();
+    private List<OrderDeliveryAddress> pickUpAddressList = new ArrayList<>();
 
     @ApiModelProperty("送货地址")
-    private List<OrderDeliveryAddress> orderDeliveryAddressList=new ArrayList<>();
+    private List<OrderDeliveryAddress> orderDeliveryAddressList = new ArrayList<>();
 
     @ApiModelProperty("提货文件")
     private List<FileView> pickUpFile;
@@ -102,15 +102,18 @@ public class OrderInlandTransportDetails extends Model<OrderInlandTransportDetai
     }
 
     public void assembleDeliveryAddress(List<OrderDeliveryAddress> deliveryAddresses) {
+        if (deliveryAddresses == null) {
+            return;
+        }
         deliveryAddresses.forEach(e -> {
-             if (OrderAddressEnum.PICK_UP.getCode().equals(e.getAddressType())) {
+            if (OrderAddressEnum.PICK_UP.getCode().equals(e.getAddressType())) {
                 pickUpAddressList.add(e);
-                pickUpFile=new ArrayList<>();
+                pickUpFile = new ArrayList<>();
                 pickUpFile.addAll(e.getFileViewList());
             }
             if (OrderAddressEnum.DELIVERY.getCode().equals(e.getAddressType())) {
                 orderDeliveryAddressList.add(e);
-                deliveryFile=new ArrayList<>();
+                deliveryFile = new ArrayList<>();
                 deliveryFile.addAll(e.getFileViewList());
             }
         });

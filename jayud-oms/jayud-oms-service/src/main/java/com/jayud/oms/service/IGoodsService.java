@@ -19,4 +19,6 @@ public interface IGoodsService extends IService<Goods> {
      * 查询商品信息
      */
     public List<Goods> getGoodsByBusIds(List<Long> busIds, Integer busType);
+
+    void removeByOrderNo(String orderNo, Integer businessType);
 }

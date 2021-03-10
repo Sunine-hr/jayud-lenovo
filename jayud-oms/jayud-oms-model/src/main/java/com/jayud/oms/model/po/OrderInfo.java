@@ -104,6 +104,9 @@ public class OrderInfo extends Model<OrderInfo> {
     @ApiModelProperty(value = "外部报关放行的六联单号")
     private String encode;
 
+    @ApiModelProperty(value = "主订单备注")
+    private String remarks;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

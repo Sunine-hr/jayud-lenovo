@@ -1331,6 +1331,28 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     /**
+     * 获取法人主体下的待外部报关数
+     *
+     * @param legalIds
+     * @return
+     */
+    @Override
+    public int pendingExternalCustomsDeclarationNum(List<Long> legalIds) {
+        return this.baseMapper.pendingExternalCustomsDeclarationNum(legalIds);
+    }
+
+    /**
+     * 获取法人主体下的待通关前审核
+     *
+     * @param legalIds
+     * @return
+     */
+    @Override
+    public int pendingGoCustomsAuditNum(List<Long> legalIds) {
+        return this.baseMapper.pendingGoCustomsAuditNum(legalIds);
+    }
+
+    /**
      * 子订单使用
      * JSONArray转Map
      */

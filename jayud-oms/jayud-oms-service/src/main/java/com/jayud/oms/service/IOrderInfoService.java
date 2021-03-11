@@ -136,8 +136,8 @@ public interface IOrderInfoService extends IService<OrderInfo> {
     /**
      * 统计订单数据
      *
-     * @return
      * @param loginUserName
+     * @return
      */
     OrderDataCountVO countOrderData(QueryOrderInfoForm loginUserName);
 
@@ -170,5 +170,19 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @param mainOrderNoList
      * @return
      */
-    Map<String, Map<String, Object>>  getSubOrderByMainOrderNos(List<String> mainOrderNoList);
+    Map<String, Map<String, Object>> getSubOrderByMainOrderNos(List<String> mainOrderNoList);
+
+    /**
+     * 获取法人主体下的待外部报关数
+     * @return
+     * @param legalIds
+     */
+    int pendingExternalCustomsDeclarationNum(List<Long> legalIds);
+
+    /**
+     * 获取法人主体下的待通关前审核
+     * @return
+     * @param legalIds
+     */
+    int pendingGoCustomsAuditNum(List<Long> legalIds);
 }

@@ -227,10 +227,12 @@ public class SeaProcessOptForm {
             case SEA_S_1: //海运接单
             case SEA_S_3: //确认订单入仓
             case SEA_S_5: //提单草稿确认
-            case SEA_S_6: //确认装船
                 pass = checkOptInfo();
                 break;
             case SEA_S_2: //订船
+                pass = this.seaBookShipForm.checkBookShipParam();
+                break;
+            case SEA_S_6: //确认装船
                 pass = this.seaBookShipForm.checkBookShipOptParam();
                 break;
             case SEA_S_7://放单确认

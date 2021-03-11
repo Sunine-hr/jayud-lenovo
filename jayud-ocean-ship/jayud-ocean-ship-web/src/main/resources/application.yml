@@ -64,6 +64,6 @@ ribbon:
   ReadTimeout: 30000
   ConnectTimeout: 30000
 address:
-  seaAddress: ${address.seaAddress}
+  seaAddr: ${address.seaAddress}
 
 

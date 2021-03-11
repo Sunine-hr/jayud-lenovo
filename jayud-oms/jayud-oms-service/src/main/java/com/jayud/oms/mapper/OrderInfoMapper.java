@@ -28,6 +28,7 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
 
     /**
      * 分页查询订单
+     *
      * @param page
      * @param form
      * @return
@@ -36,6 +37,7 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
 
     /**
      * 分页查询通关前审核
+     *
      * @param page
      * @param form
      * @return
@@ -44,6 +46,7 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
 
     /**
      * 获取主订单信息
+     *
      * @param idValue
      * @return
      */
@@ -51,13 +54,15 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
 
     /**
      * 统计订单数据
-     * @return
+     *
      * @param legalIds
+     * @return
      */
-    OrderDataCountVO countOrderData(@Param("form")QueryOrderInfoForm form,@Param("legalIds") List<Long> legalIds);
+    OrderDataCountVO countOrderData(@Param("form") QueryOrderInfoForm form, @Param("legalIds") List<Long> legalIds);
 
     /**
      * 二期优化1：通关前审核，通关前复核
+     *
      * @param form
      * @return
      */
@@ -65,6 +70,7 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
 
     /**
      * 二期优化1：通关前审核，通关前复核
+     *
      * @param form
      * @return
      */
@@ -72,17 +78,25 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
 
     /**
      * 分页查询订单
+     *
      * @param page
      * @param form
      * @return
      */
-    IPage<OrderInfoVO> findOrderInfoByPage(Page<OrderInfoVO> page, @Param("form")QueryOrderInfoForm form, @Param("legalIds")List<Long> legalIds);
+    IPage<OrderInfoVO> findOrderInfoByPage(Page<OrderInfoVO> page, @Param("form") QueryOrderInfoForm form, @Param("legalIds") List<Long> legalIds);
 
     /**
      * 分页查询通关前审核
+     *
      * @param page
      * @param form
      * @return
      */
-    IPage<OrderInfoVO> findGoCustomsAuditByPage(Page<OrderInfoVO> page, @Param("form")QueryOrderInfoForm form,@Param("legalIds") List<Long> legalIds);
+    IPage<OrderInfoVO> findGoCustomsAuditByPage(Page<OrderInfoVO> page, @Param("form") QueryOrderInfoForm form, @Param("legalIds") List<Long> legalIds);
+
+
+    Integer pendingExternalCustomsDeclarationNum(@Param("legalIds") List<Long> legalIds);
+
+    Integer pendingGoCustomsAuditNum(@Param("legalIds") List<Long> legalIds);
+
 }

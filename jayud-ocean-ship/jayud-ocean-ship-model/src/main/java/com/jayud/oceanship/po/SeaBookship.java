@@ -74,6 +74,9 @@ public class SeaBookship extends Model<SeaBookship> {
     @ApiModelProperty(value = "交仓码头")
     private String deliveryWharf;
 
+    @ApiModelProperty(value = "截关时间")
+    private String closingTime;
+
     @ApiModelProperty(value = "提单文件路径(多个逗号隔开)")
     private String filePath;
 

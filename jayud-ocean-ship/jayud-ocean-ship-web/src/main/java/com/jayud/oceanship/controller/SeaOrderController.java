@@ -211,20 +211,26 @@ public class SeaOrderController {
         }
 
         //获取目的港名称
-        List<SeaPort> seaPorts = seaPortService.list();
-        List<SeaOrderFormVO> records1 = page.getRecords();
-        for (SeaOrderFormVO seaOrderFormVO : records1) {
-            //查询贸易方式
-            for (SeaPort seaPort : seaPorts) {
-                if (seaPort.getCode().equals(seaOrderFormVO.getPortDepartureCode())){
-                    seaOrderFormVO.setPortDepartureName(seaPort.getName());
-                }
-                if(seaPort.getCode().equals(seaOrderFormVO.getPortDestinationCode())){
-                    seaOrderFormVO.setPortDestinationName(seaPort.getName());
-                }
-            }
-        }
-        page.setRecords(records1);
+//        List<SeaPort> seaPorts = seaPortService.list();
+//        List<SeaOrderFormVO> records1 = page.getRecords();
+//        for (SeaOrderFormVO seaOrderFormVO : records1) {
+//            //查询贸易方式
+//            for (SeaPort seaPort : seaPorts) {
+//                if (seaPort.getCode().equals(seaOrderFormVO.getPortDepartureCode())){
+//                    seaOrderFormVO.setPortDepartureName(seaPort.getName());
+//                }
+//                if(seaPort.getCode().equals(seaOrderFormVO.getPortDestinationCode())){
+//                    seaOrderFormVO.setPortDestinationName(seaPort.getName());
+//                }
+//                if(seaOrderFormVO.getTransitPortCode()!=null){
+//                    if(seaPort.getCode().equals(seaOrderFormVO.getTransitPortCode())){
+//                        seaOrderFormVO.setTransitPort(seaPort.getName());
+//                    }
+//                }
+//
+//            }
+//        }
+//        page.setRecords(records1);
         map1.put("pageInfo",new CommonPageResult(page));
         return CommonResult.success(map1);
     }
@@ -386,8 +392,9 @@ public class SeaOrderController {
     /**
      * 导出补料单
      */
-    @Value("${address.seaAddress}")
+    @Value("${address.seaAddr}")
     private String filePath;
+
     @ApiOperation(value = "导出补料单")
     @GetMapping(value = "/uploadExcel")
     public void uploadExcel(@RequestParam("orderId") Long orderId, HttpServletResponse response) {
@@ -398,14 +405,14 @@ public class SeaOrderController {
 //        ClassPathResource classPathResource = new ClassPathResource("/static/海运.xlsx");
 //        String filename1 = classPathResource.getFilename();
 
-        File file = new File("D:\\CodeRepository1\\jayud-platform\\jayud-ocean-ship\\jayud-ocean-ship-web\\src\\main\\resources\\static\\海运.xlsx");
-//        File file = new File(filePath);
-        String name = file.getName();
+        File file = new File(filePath);
+        String filename1 = file.getName();
 
         try {
+//            InputStream inputStream = classPathResource.getInputStream();
             InputStream inputStream = new FileInputStream(file);
             Workbook templateWorkbook = null;
-            String fileType = name.substring(name.lastIndexOf("."));
+            String fileType = filename1.substring(filename1.lastIndexOf("."));
             if (".xls".equals(fileType)) {
                 templateWorkbook = new HSSFWorkbook(inputStream); // 2003-
             } else if (".xlsx".equals(fileType)) {

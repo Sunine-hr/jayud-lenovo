@@ -428,7 +428,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         convert.getFile(prePath);
         seaOrder.setSeaBookshipVO(convert);
 
-        System.out.println("status========================"+seaOrder.getStatus());
+//        System.out.println("status========================"+seaOrder.getStatus());
         if(seaOrder.getStatus() != OrderStatusEnum.SEA_S_0.getCode() || seaOrder.getStatus() != OrderStatusEnum.SEA_S_1.getCode()){
             CommonResult<List<InitComboxVO>> initSupplierInfo = omsClient.initSupplierInfo();
             List<InitComboxVO> data = initSupplierInfo.getData();

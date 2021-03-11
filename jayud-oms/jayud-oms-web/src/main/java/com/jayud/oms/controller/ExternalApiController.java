@@ -19,6 +19,7 @@ import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
@@ -1040,6 +1041,44 @@ public class ExternalApiController {
         InputGoodsVO convert = ConvertUtil.convert(goods, InputGoodsVO.class);
         return ApiResult.ok(convert);
     }
+
+
+    @ApiModelProperty(value = "获取菜单待处理数")
+    @RequestMapping(value = "/api/getMenuPendingNum")
+    public ApiResult getMenuPendingNum(@RequestBody List<Map<String, Object>> menusList) {
+        Map<String, String> tmp = new HashMap<>();
+        tmp.put("外部报关放行", "outPortPass");
+        tmp.put("通关前审核", "portPassCheck");
+
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+
+        for (Map<String, Object> menus : menusList) {
+
+            Map<String, Object> map = new HashMap<>();
+            Object title = menus.get("title");
+            String cmd = tmp.get(title);
+            Integer num = 0;
+            if (cmd != null) {
+                switch (cmd) {
+                    case "outPortPass":
+                        num = this.orderInfoService.pendingExternalCustomsDeclarationNum(legalIds);
+                        break;
+                    case "portPassCheck":
+                        num = this.orderInfoService.pendingGoCustomsAuditNum(legalIds);
+                        break;
+                }
+
+            }
+            map.put("menusName", title);
+            map.put("num", num);
+            result.add(map);
+        }
+        return ApiResult.ok(result);
+    }
+
 }
 
 

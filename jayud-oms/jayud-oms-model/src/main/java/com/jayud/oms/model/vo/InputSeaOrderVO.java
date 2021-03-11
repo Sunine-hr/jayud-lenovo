@@ -88,6 +88,12 @@ public class InputSeaOrderVO {
     @ApiModelProperty(value = "目的港")
     private String portDestination;
 
+    @ApiModelProperty(value = "中转港代码")
+    private String transitPortCode;
+
+    @ApiModelProperty(value = "中转港")
+    private String transitPort;
+
     @ApiModelProperty(value = "操作人")
     private String orderTaker;
 

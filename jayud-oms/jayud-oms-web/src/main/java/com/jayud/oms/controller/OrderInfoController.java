@@ -345,7 +345,7 @@ public class OrderInfoController {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         String remarks = MapUtil.getStr(map, "remarks");
-        if (StringUtils.isEmpty(remarks)) {
+        if (remarks == null) {
             return CommonResult.success();
         }
         this.orderInfoService.updateById(new OrderInfo().setId(mainOrderId).setRemarks(remarks));

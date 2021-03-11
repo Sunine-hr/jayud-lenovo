@@ -1,5 +1,7 @@
 package com.jayud.mall.controller;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageDraftResult;
 import com.jayud.common.CommonPageResult;
@@ -73,20 +75,33 @@ public class OrderInfoController {
     public CommonResult<OrderInfoVO> temporaryStorageOrderInfo(@Valid @RequestBody OrderInfoForm form){
         //订单对应箱号信息:order_case
         List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
-        if(orderCaseVOList == null || orderCaseVOList.size() == 0){
+        if(CollUtil.isEmpty(orderCaseVOList)){
             return CommonResult.error(-1, "订单箱号不能为空");
         }
         //订单对应商品：order_shop
         List<OrderShopVO> orderShopVOList = form.getOrderShopVOList();
-        if(orderShopVOList == null || orderShopVOList.size() == 0){
+        if(CollUtil.isEmpty(orderShopVOList)){
             return CommonResult.error(-1, "订单商品不能为空");
         }
         Integer isPick = form.getIsPick();//是否上门提货(0否 1是,order_pick) is_pick=1
         if(isPick == 1){
             //订单对应提货信息表：order_pick
             List<OrderPickVO> orderPickVOList = form.getOrderPickVOList();
-            if(orderPickVOList == null || orderPickVOList.size() == 0){
+            if(CollUtil.isEmpty(orderPickVOList)){
                 return CommonResult.error(-1, "订单提货信息不能为空");
+            }
+            Integer totalCartonSum = 0;
+            for (int i=0; i<orderPickVOList.size(); i++){
+                OrderPickVO orderPickVO = orderPickVOList.get(i);
+                Integer totalCarton = orderPickVO.getTotalCarton();
+                if(ObjectUtil.isEmpty(totalCarton) || totalCarton <= 0){
+                    return CommonResult.error(-1, "提货地址的箱数，不能为空或者小于等于0");
+                }
+                totalCartonSum += totalCarton;
+            }
+            int size = orderCaseVOList.size();
+            if(!totalCartonSum.equals(size)){
+                return CommonResult.error(-1, "提货箱数不等于订单箱数");
             }
         }
         return orderInfoService.temporaryStorageOrderInfo(form);
@@ -99,20 +114,33 @@ public class OrderInfoController {
     public CommonResult<OrderInfoVO> submitOrderInfo(@Valid @RequestBody OrderInfoForm form){
         //订单对应箱号信息:order_case
         List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
-        if(orderCaseVOList == null || orderCaseVOList.size() == 0){
+        if(CollUtil.isEmpty(orderCaseVOList)){
             return CommonResult.error(-1, "订单箱号不能为空");
         }
         //订单对应商品：order_shop
         List<OrderShopVO> orderShopVOList = form.getOrderShopVOList();
-        if(orderShopVOList == null || orderShopVOList.size() == 0){
+        if(CollUtil.isEmpty(orderShopVOList)){
             return CommonResult.error(-1, "订单商品不能为空");
         }
         Integer isPick = form.getIsPick();//是否上门提货(0否 1是,order_pick) is_pick=1
         if(isPick == 1){
             //订单对应提货信息表：order_pick
             List<OrderPickVO> orderPickVOList = form.getOrderPickVOList();
-            if(orderPickVOList == null || orderPickVOList.size() == 0){
+            if(CollUtil.isEmpty(orderPickVOList)){
                 return CommonResult.error(-1, "订单提货信息不能为空");
+            }
+            Integer totalCartonSum = 0;
+            for (int i=0; i<orderPickVOList.size(); i++){
+                OrderPickVO orderPickVO = orderPickVOList.get(i);
+                Integer totalCarton = orderPickVO.getTotalCarton();
+                if(ObjectUtil.isEmpty(totalCarton) || totalCarton <= 0){
+                    return CommonResult.error(-1, "提货地址的箱数，不能为空或者小于等于0");
+                }
+                totalCartonSum += totalCarton;
+            }
+            int size = orderCaseVOList.size();
+            if(!totalCartonSum.equals(size)){
+                return CommonResult.error(-1, "提货箱数不等于订单箱数");
             }
         }
         return orderInfoService.submitOrderInfo(form);

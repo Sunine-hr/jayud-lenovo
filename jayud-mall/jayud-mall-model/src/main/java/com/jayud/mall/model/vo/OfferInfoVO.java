@@ -243,4 +243,8 @@ public class OfferInfoVO {
     @JSONField(ordinal = 49)
     private String destinationCountryName;
 
+    @ApiModelProperty(value = "操作说明list", position = 50)
+    @JSONField(ordinal = 50)
+    private List<String> remarksList;
+
 }

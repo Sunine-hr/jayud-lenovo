@@ -309,6 +309,15 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
             List<FabWarehouseVO> fabWarehouseVOList = ConvertUtil.convertList(fabWarehouses, FabWarehouseVO.class);
             offerInfoVO.setFabWarehouseVOList(fabWarehouseVOList);
         }
+
+        //操作说明 字符串切割换行
+        String remarks = offerInfoVO.getRemarks();
+        if(ObjectUtil.isNotEmpty(remarks)){
+            String[] split = remarks.split("\n");
+            List<String> list = Arrays.asList(split);
+            offerInfoVO.setRemarksList(list);
+        }
+
         return offerInfoVO;
     }
 
@@ -356,6 +365,7 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
         List<TemplateCopeWithVO> templateCopeWithVOList =
                 ConvertUtil.convertList(templateCopeWiths, TemplateCopeWithVO.class);
         offerInfoVO.setTemplateCopeWithVOList(templateCopeWithVOList);
+
 
 
         return offerInfoVO;

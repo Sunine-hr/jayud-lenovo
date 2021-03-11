@@ -45,7 +45,7 @@ public interface IOfferInfoService extends IService<OfferInfo> {
      * 保存报价
      * @param form
      */
-    void saveOfferInfo(OfferInfoForm form);
+    CommonResult saveOfferInfo(OfferInfoForm form);
 
     /**
      * 查看报价信息

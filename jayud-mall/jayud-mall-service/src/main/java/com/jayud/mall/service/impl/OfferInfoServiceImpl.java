@@ -1,5 +1,7 @@
 package com.jayud.mall.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -104,16 +106,35 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
     }
 
     @Override
-    public void saveOfferInfo(OfferInfoForm form) {
+    public CommonResult saveOfferInfo(OfferInfoForm form) {
         OfferInfo offerInfo = ConvertUtil.convert(form, OfferInfo.class);
-        if(form.getId() == null){
+        Long id = form.getId();
+        String names = form.getNames();
+        if(ObjectUtil.isEmpty(id)){
+            //id 为空 ，代表新增
+            QueryWrapper<OfferInfo> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("names", names);
+            List<OfferInfo> list = this.list(queryWrapper);
+            if(CollUtil.isNotEmpty(list)){
+                return CommonResult.error(-1, "["+names+"],名称已存在");
+            }
             AuthUser user = baseService.getUser();
             offerInfo.setStatus("1");//状态(0无效 1有效)
             offerInfo.setUserId(user.getId().intValue());
             offerInfo.setUserName(user.getName());
             offerInfo.setCreateTime(LocalDateTime.now());
+        }else{
+            //id 不为空 ，代表新增
+            QueryWrapper<OfferInfo> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("names", names);
+            queryWrapper.ne("id", id);
+            List<OfferInfo> list = this.list(queryWrapper);
+            if(CollUtil.isNotEmpty(list)){
+                return CommonResult.error(-1, "["+names+"],名称已存在");
+            }
         }
         this.saveOrUpdate(offerInfo);
+        return CommonResult.success("保存报价，成功！");
     }
 
     @Override

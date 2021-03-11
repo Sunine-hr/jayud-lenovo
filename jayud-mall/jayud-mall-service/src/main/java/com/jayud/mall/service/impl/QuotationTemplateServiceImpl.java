@@ -13,15 +13,14 @@ import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.*;
 import com.jayud.mall.model.vo.*;
-import com.jayud.mall.service.IQuotationTemplateService;
-import com.jayud.mall.service.ITemplateCopeReceivableService;
-import com.jayud.mall.service.ITemplateCopeWithService;
-import com.jayud.mall.service.ITemplateFileService;
+import com.jayud.mall.model.vo.domain.AuthUser;
+import com.jayud.mall.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -73,6 +72,9 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
     @Autowired
     ITemplateFileService templateFileService;
 
+    @Autowired
+    BaseService baseService;
+
     @Override
     public IPage<QuotationTemplateVO> findQuotationTemplateByPage(QueryQuotationTemplateForm form) {
         //定义分页参数
@@ -113,6 +115,13 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
             if(CollUtil.isNotEmpty(list)){
                 return CommonResult.error(-1, "["+names+"]"+",名称已存在");
             }
+
+            AuthUser user = baseService.getUser();
+            quotationTemplate.setUserId(user.getId().intValue());
+            quotationTemplate.setUserName(user.getName());
+            quotationTemplate.setCreateTime(LocalDateTime.now());
+            quotationTemplate.setUpdateTime(LocalDateTime.now());
+
         }else{
             //id1 为空
             QueryWrapper<QuotationTemplate> queryWrapper = new QueryWrapper<>();
@@ -121,6 +130,7 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
             if(CollUtil.isNotEmpty(list)){
                 return CommonResult.error(-1, "["+names+"]"+",名称已存在");
             }
+            quotationTemplate.setUpdateTime(LocalDateTime.now());
         }
 
         //模板类型

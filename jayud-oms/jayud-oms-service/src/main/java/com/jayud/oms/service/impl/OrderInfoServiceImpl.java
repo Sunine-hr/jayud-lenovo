@@ -980,7 +980,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 orderInlandTransportForm.setUnitName(unitName.getName());
                 String subOrderNo = this.inlandTpClient.createOrder(orderInlandTransportForm).getData();
                 orderInlandTransportForm.setOrderNo(subOrderNo);
-                if (orderInlandTransportForm.getId() == null) {
+                if (orderInlandTransportForm.getId() == null && form.getCmd().equals("submit")) {
                     //流程节点重组
                     List<OrderFlowSheet> orderFlowSheets = orderInlandTransportForm.assemblyProcess(OrderStatusEnum.getInlandTPProcess());
                     this.orderFlowSheetService.saveOrUpdateBatch(orderFlowSheets);

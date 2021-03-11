@@ -12,6 +12,7 @@ import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -49,7 +50,7 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
 //    @ApiModelProperty(value = "操作主体", required = true)
 //    private String legalName;
 
-    @ApiModelProperty(value = "操作主体",required = true)
+    @ApiModelProperty(value = "操作主体", required = true)
     private String subLegalName;
 
     @ApiModelProperty(value = "车型", required = true)
@@ -66,6 +67,9 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
 
     @ApiModelProperty(value = "货物信息", required = true)
     private String goodsInfo;
+
+    @ApiModelProperty(value = "货物描述")
+    private String goodsDesc;
 
     @ApiModelProperty("提货地址")
     private String pickUpAddress;
@@ -151,6 +155,9 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
      * 组装商品信息
      */
     public void assemblyGoodsInfo(List<GoodsVO> goodsList) {
+        if (CollectionUtils.isEmpty(goodsList)) {
+            return;
+        }
         StringBuilder sb = new StringBuilder();
 
         for (GoodsVO goods : goodsList) {
@@ -163,8 +170,10 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
                         .append("/").append("重量").append(goods.getTotalWeight()).append("KG")
                         .append(",");
             }
+
         }
         this.goodsInfo = sb.substring(0, sb.length() - 1);
+        this.goodsDesc = sb.toString().replaceAll(",", "<br/>");
     }
 
     /**
@@ -263,7 +272,6 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
         this.subUnitCode = subUnitCode;
         this.defaultUnitCode = subUnitCode;
     }
-
 
 
 }

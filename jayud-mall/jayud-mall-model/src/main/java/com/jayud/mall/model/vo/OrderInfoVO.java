@@ -301,5 +301,9 @@ public class OrderInfoVO {
     @JSONField(ordinal = 61)
     private List<WaybillTaskRelevanceVO> waybillTaskRelevanceVOS;
 
+    @ApiModelProperty(value = "起运港-城市(harbour_info cname)", position = 62)
+    @JSONField(ordinal = 62)
+    private String startShipmentCityName;
+
 
 }

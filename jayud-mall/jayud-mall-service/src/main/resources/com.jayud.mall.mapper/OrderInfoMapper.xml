@@ -112,7 +112,7 @@
         t.bol_no,t.need_declare,t.need_clearance,t.remark,t.charge_weight,t.volume_weight,t.actual_weight,t.actual_volume,t.total_cartons,
         t1.names,t1.types,t1.sail_time,t1.cut_off_time,t1.jc_time,t1.jkc_time,t1.estimated_time,DATEDIFF(t1.estimated_time,t1.sail_time) voyage_day,t1.remarks,
         t2.start_shipment,t2.destination_port,
-        t3.code_name startShipmentName,
+        t3.code_name startShipmentName,t3.cname startShipmentCityName,
         t4.code_name destinationPortName,
         t1.qie,
         t5.quantity quantityShipped

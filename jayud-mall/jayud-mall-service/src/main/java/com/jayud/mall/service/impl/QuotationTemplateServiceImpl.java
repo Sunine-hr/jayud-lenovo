@@ -1,5 +1,7 @@
 package com.jayud.mall.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -98,8 +100,29 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveQuotationTemplate(QuotationTemplateForm form) {
+    public CommonResult saveQuotationTemplate(QuotationTemplateForm form) {
         QuotationTemplate quotationTemplate = ConvertUtil.convert(form, QuotationTemplate.class);
+        Long id1 = quotationTemplate.getId();
+        String names = quotationTemplate.getNames();//报价模板名称
+        if(ObjectUtil.isNotEmpty(id1)){
+            //id1 不为空
+            QueryWrapper<QuotationTemplate> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("names", names);
+            queryWrapper.ne("id", id1);
+            List<QuotationTemplate> list = this.list(queryWrapper);
+            if(CollUtil.isNotEmpty(list)){
+                return CommonResult.error(-1, "["+names+"]"+",名称已存在");
+            }
+        }else{
+            //id1 为空
+            QueryWrapper<QuotationTemplate> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("names", names);
+            List<QuotationTemplate> list = this.list(queryWrapper);
+            if(CollUtil.isNotEmpty(list)){
+                return CommonResult.error(-1, "["+names+"]"+",名称已存在");
+            }
+        }
+
         //模板类型
         quotationTemplate.setTypes(form.getQidtype());
         //报价图片
@@ -246,6 +269,7 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
             //保存
             templateFileService.saveOrUpdateBatch(list);
         }
+        return CommonResult.success("保存报价模板成功");
     }
 
     @Override

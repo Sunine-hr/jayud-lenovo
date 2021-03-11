@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @ApiModel(value = "查询报价模板参数")
 public class QueryQuotationTemplateForm extends BasePageForm{
 
-    @ApiModelProperty(value = "报价名称", position = 1)
+    @ApiModelProperty(value = "报价模板名", position = 1)
     @JSONField(ordinal = 1)
     private String names;
 

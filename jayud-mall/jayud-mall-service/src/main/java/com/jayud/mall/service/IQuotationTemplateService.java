@@ -41,7 +41,7 @@ public interface IQuotationTemplateService extends IService<QuotationTemplate> {
      * 保存报价模板
      * @param form
      */
-    void saveQuotationTemplate(QuotationTemplateForm form);
+    CommonResult saveQuotationTemplate(QuotationTemplateForm form);
 
     /**
      * 查看报价模板

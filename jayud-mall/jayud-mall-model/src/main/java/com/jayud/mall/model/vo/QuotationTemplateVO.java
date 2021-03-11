@@ -30,7 +30,7 @@ public class QuotationTemplateVO {
     @JSONField(ordinal = 3)
     private Integer sid;
 
-    @ApiModelProperty(value = "报价名", position = 4)
+    @ApiModelProperty(value = "报价模板名", position = 4)
     @JSONField(ordinal = 4)
     private String names;
 

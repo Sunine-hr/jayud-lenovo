@@ -273,6 +273,7 @@
         UNION ALL
         SELECT DISTINCT
         oi.id,
+        oi.remarks,
         oi.`order_no` orderNo,
         oi.`biz_code` bizCode,
         oi.`legal_entity_id` legal_entity_id,

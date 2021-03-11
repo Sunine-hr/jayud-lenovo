@@ -89,19 +89,25 @@ public class OrderDeliveryAddress extends Model<OrderDeliveryAddress> {
     private List<FileView> fileViewList = new ArrayList<>();
 
     public void checkCreateOrder() {
-        String msg = "不能为空";
         if (StringUtils.isEmpty(this.goodsName)) {
-            throw new JayudBizException("联系人" + msg);
+            throw new JayudBizException("请输入联系人");
         }
         if (StringUtils.isEmpty(this.phone)) {
-            throw new JayudBizException("联系电话" + msg);
+            throw new JayudBizException("请输入联系电话");
         }
         if (StringUtils.isEmpty(this.address)) {
-            throw new JayudBizException("提货/送货地址" + msg);
+            throw new JayudBizException("请输入提货/送货地址");
         }
         if (StringUtils.isEmpty(this.deliveryDate)) {
-            throw new JayudBizException("提货/送货日期" + msg);
+            throw new JayudBizException("请输入提货/送货日期");
         }
+        if (this.bulkCargoAmount==null) {
+            throw new JayudBizException("请输入件数");
+        }
+        if (this.totalWeight==null) {
+            throw new JayudBizException("请输入重量");
+        }
+
     }
 
 }

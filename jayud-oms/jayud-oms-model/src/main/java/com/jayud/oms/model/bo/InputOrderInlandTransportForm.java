@@ -104,15 +104,15 @@ public class InputOrderInlandTransportForm extends Model<InputOrderInlandTranspo
         if (this.legalEntityId == null) {
             throw new JayudBizException("操作主体id" + msg);
         }
-        if (CollectionUtil.isEmpty(pickUpAddressList)) {
+        if (CollectionUtil.isEmpty(pickUpAddressList)||CollectionUtil.isEmpty(orderDeliveryAddressList)) {
             throw new JayudBizException("请输入提货地址");
         } else {
             pickUpAddressList.forEach(OrderDeliveryAddress::checkCreateOrder);
-
-        }
-        if (CollectionUtil.isNotEmpty(orderDeliveryAddressList)) {
             orderDeliveryAddressList.forEach(OrderDeliveryAddress::checkCreateOrder);
         }
+//        if (CollectionUtil.isNotEmpty(orderDeliveryAddressList)) {
+//            orderDeliveryAddressList.forEach(OrderDeliveryAddress::checkCreateOrder);
+//        }
 
     }
 

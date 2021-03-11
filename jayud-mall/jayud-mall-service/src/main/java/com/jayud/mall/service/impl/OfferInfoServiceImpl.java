@@ -86,7 +86,7 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
         //定义分页参数
         Page<OfferInfoVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
-        //page.addOrder(OrderItem.desc("oc.id"));
+        page.addOrder(OrderItem.desc("t.id"));
         IPage<OfferInfoVO> pageInfo = offerInfoMapper.findOfferInfoByPage(page, form);
         return pageInfo;
     }

@@ -78,7 +78,7 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
         //定义分页参数
         Page<QuotationTemplateVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
-        page.addOrder(OrderItem.asc("t.id"));
+        page.addOrder(OrderItem.desc("t.id"));
         IPage<QuotationTemplateVO> quotationTemplateByPage = quotationTemplateMapper.findQuotationTemplateByPage(page, form);
         IPage<QuotationTemplateVO> pageInfo = quotationTemplateByPage;
         return pageInfo;

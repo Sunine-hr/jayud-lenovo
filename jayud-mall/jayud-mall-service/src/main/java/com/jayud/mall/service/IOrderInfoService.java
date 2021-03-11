@@ -156,6 +156,13 @@ public interface IOrderInfoService extends IService<OrderInfo> {
     IPage<OrderInfoVO> findWebOrderInfoByPage(QueryOrderInfoForm form);
 
     /**
+     * web端分页查询订单列表(统计草稿)
+     * @param form
+     * @return
+     */
+    Long findOrderInfoDraftCount(QueryOrderInfoForm form);
+
+    /**
      * 订单详情-打印唛头（打印订单箱号）
      * @param orderId
      * @return

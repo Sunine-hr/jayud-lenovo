@@ -59,7 +59,7 @@ public class OrderInfoController {
         IPage<OrderInfoVO> pageList = orderInfoService.findWebOrderInfoByPage(form);
         //CommonPageResult<OrderInfoVO> pageVO = new CommonPageResult(pageList);
 
-        Long draftNum = 14L;//统计草稿
+        Long draftNum = orderInfoService.findOrderInfoDraftCount(form);
         CommonPageDraftResult<OrderInfoVO> draftResult = new CommonPageDraftResult(pageList, draftNum);
 
         return CommonResult.success(draftResult);

@@ -1042,6 +1042,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Override
     public IPage<OrderInfoVO> findWebOrderInfoByPage(QueryOrderInfoForm form) {
+        CustomerUser customerUser = baseService.getCustomerUser();
+        form.setCustomerId(customerUser.getId().intValue());
         //定义分页参数
         Page<OrderInfoVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
@@ -1049,6 +1051,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         IPage<OrderInfoVO> pageInfo = orderInfoMapper.findWebOrderInfoByPage(page, form);
         return pageInfo;
     }
+
+    @Override
+    public Long findOrderInfoDraftCount(QueryOrderInfoForm form) {
+        CustomerUser customerUser = baseService.getCustomerUser();
+        form.setCustomerId(customerUser.getId().intValue());
+        Long draftNum = orderInfoMapper.findOrderInfoDraftCount(form);
+        return draftNum;
+    }
+
 
     @Override
     public CommonResult<List<String>> printOrderMark(Long orderId) {

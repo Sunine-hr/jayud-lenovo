@@ -55,6 +55,13 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
     IPage<OrderInfoVO> findWebOrderInfoByPage(Page<OrderInfoVO> page, @Param("form") QueryOrderInfoForm form);
 
     /**
+     * web端分页查询订单列表(统计草稿)
+     * @param form
+     * @return
+     */
+    Long findOrderInfoDraftCount(@Param("form") QueryOrderInfoForm form);
+
+    /**
      * 根据订单id，查询订单配载信息
      * @param orderId
      * @return
@@ -88,4 +95,5 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      * @return
      */
     List<WaybillTaskRelevanceVO> lookOperateLog(@Param("id") Long id);
+
 }

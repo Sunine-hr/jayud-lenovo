@@ -123,6 +123,9 @@
         left join harbour_info t4 on t4.id_code = t2.destination_port
         left join (select t5.order_id,count(t5.order_id) quantity from order_case t5 group by t5.order_id) t5 on t5.order_id = t.id
         where 1=1
+        <if test="form.customerId != null">
+            and t.customer_id = #{form.customerId}
+        </if>
         <if test="form.status != null">
             and t.status = #{form.status}
         </if>
@@ -130,7 +133,15 @@
             and t.order_no = #{form.orderNo}
         </if>
     </select>
-
+    
+    <select id="findOrderInfoDraftCount" parameterType="com.jayud.mall.model.bo.QueryOrderInfoForm" resultType="java.lang.Long">
+        select count(t.id) draftNum from order_info t
+        where 1=1
+        <if test="form.customerId != null">
+            and t.customer_id = #{form.customerId}
+        </if>
+        and t.status = 0
+    </select>
 
     <select id="findOrderConfInfoByOrderId" parameterType="java.lang.Long" resultType="java.lang.String">
         select

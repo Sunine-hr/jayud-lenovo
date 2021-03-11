@@ -46,6 +46,7 @@ public class ExternalApiController {
         List<OrderInlandTransport> list = this.orderInlandTransportService.getByCondition(new OrderInlandTransport().setMainOrderNo(mainOrderNo));
         OrderInlandTransportDetails orderDetails = this.orderInlandTransportService.getOrderDetails(list.get(0).getId());
         InputOrderInlandTPVO tmp = ConvertUtil.convert(orderDetails, InputOrderInlandTPVO.class);
+        tmp.assembleOrderInlandSendCarsVO(orderDetails.getOrderInlandSendCarsVO());
         return ApiResult.ok(tmp);
     }
 

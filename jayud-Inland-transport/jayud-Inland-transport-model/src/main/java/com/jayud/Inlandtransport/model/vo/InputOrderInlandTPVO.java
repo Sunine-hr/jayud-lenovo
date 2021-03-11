@@ -132,6 +132,14 @@ public class InputOrderInlandTPVO extends Model<InputOrderInlandTPVO> {
         this.totalWeight = totalWeight + "KG";
     }
 
+    public void assembleOrderInlandSendCarsVO(OrderInlandSendCarsVO sendCarsVO) {
+        this.driverName=sendCarsVO.getDriverName();
+        this.driverPhone=sendCarsVO.getDriverPhone();
+        this.licensePlate=sendCarsVO.getLicensePlate();
+        this.supplierName=sendCarsVO.getSupplierName();
+    }
+
+
 //    public void assembleDeliveryAddress(List<OrderDeliveryAddress> deliveryAddresses) {
 //        AtomicReference<Double> totalWeight = new AtomicReference<>(0.0);
 //        AtomicReference<Integer> bulkCargoAmount = new AtomicReference<>(0);

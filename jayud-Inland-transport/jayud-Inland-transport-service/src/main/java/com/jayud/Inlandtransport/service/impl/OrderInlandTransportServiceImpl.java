@@ -40,7 +40,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static com.jayud.common.enums.OrderStatusEnum.*;
+import static com.jayud.common.enums.OrderStatusEnum.getInlandTPStatus;
 
 /**
  * <p>
@@ -219,7 +219,7 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
         //查询派车信息
         List<OrderInlandSendCars> sendCars = this.orderInlandSendCarsService.getByCondition(new OrderInlandSendCars().setOrderId(subOrderId));
         if (CollectionUtil.isNotEmpty(sendCars)) {
-            details.setOrderInlandSendCarsVO(ConvertUtil.convert(sendCars, OrderInlandSendCarsVO.class));
+            details.setOrderInlandSendCarsVO(ConvertUtil.convert(sendCars.get(0), OrderInlandSendCarsVO.class));
         }
 
         //查询提货/送货地址

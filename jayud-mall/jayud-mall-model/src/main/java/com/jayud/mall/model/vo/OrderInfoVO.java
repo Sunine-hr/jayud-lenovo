@@ -272,17 +272,17 @@ public class OrderInfoVO {
     private BigDecimal bubbleCoefficient;
 
     //物流轨迹list
-    @ApiModelProperty(value = "计泡系数(默认6000)", position = 56)
+    @ApiModelProperty(value = "物流轨迹list", position = 56)
     @JSONField(ordinal = 56)
     private List<LogisticsTrackVO> logisticsTrackVOS;
 
     //集货仓库
-    @ApiModelProperty(value = "计泡系数(默认6000)", position = 57)
+    @ApiModelProperty(value = "集货仓库", position = 57)
     @JSONField(ordinal = 57)
     private ShippingAreaVO shippingAreaVO;
 
     //目的仓库
-    @ApiModelProperty(value = "计泡系数(默认6000)", position = 58)
+    @ApiModelProperty(value = "目的仓库", position = 58)
     @JSONField(ordinal = 58)
     private FabWarehouseVO fabWarehouseVO;
 

@@ -59,7 +59,7 @@ public class OfferInfoController {
     @ApiOperation(value = "添加报价")
     @PostMapping(value = "saveOfferInfo")
     @ApiOperationSupport(order = 4)
-    public CommonResult saveOfferInfo(@RequestBody OfferInfoForm form){
+    public CommonResult saveOfferInfo(@Valid @RequestBody OfferInfoForm form){
         return offerInfoService.saveOfferInfo(form);
     }
 

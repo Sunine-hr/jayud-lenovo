@@ -110,6 +110,18 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
         OfferInfo offerInfo = ConvertUtil.convert(form, OfferInfo.class);
         Long id = form.getId();
         String names = form.getNames();
+        //验证 预计到达时间>=开船日期>=（截单日期、截仓日期、截亏仓日期）
+        LocalDateTime sailTime = form.getSailTime();
+        LocalDateTime cutOffTime = form.getCutOffTime();
+        LocalDateTime jcTime = form.getJcTime();
+        LocalDateTime jkcTime = form.getJkcTime();
+        LocalDateTime estimatedTime = form.getEstimatedTime();
+        if(estimatedTime.compareTo(sailTime) < 0
+                || sailTime.compareTo(cutOffTime) < 0
+                || sailTime.compareTo(jcTime) < 0
+                || sailTime.compareTo(jkcTime) < 0){
+            return CommonResult.error(-1, "日期验证不通过，验证规则：预计到达时间>=开船日期>=（截单日期、截仓日期、截亏仓日期）");
+        }
         if(ObjectUtil.isEmpty(id)){
             //id 为空 ，代表新增
             QueryWrapper<OfferInfo> queryWrapper = new QueryWrapper<>();

@@ -56,7 +56,7 @@ public class QuotationTemplateController {
     @ApiOperation(value = "保存报价模板")
     @PostMapping(value = "saveQuotationTemplate")
     @ApiOperationSupport(order = 4)
-    public CommonResult saveQuotationTemplate(@RequestBody QuotationTemplateForm form){
+    public CommonResult saveQuotationTemplate(@Valid @RequestBody QuotationTemplateForm form){
         return quotationTemplateService.saveQuotationTemplate(form);
     }
 

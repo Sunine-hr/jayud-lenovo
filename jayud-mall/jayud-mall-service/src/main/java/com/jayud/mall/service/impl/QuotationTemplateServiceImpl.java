@@ -115,102 +115,115 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
             if(CollUtil.isNotEmpty(list)){
                 return CommonResult.error(-1, "["+names+"]"+",名称已存在");
             }
-
-            AuthUser user = baseService.getUser();
-            quotationTemplate.setUserId(user.getId().intValue());
-            quotationTemplate.setUserName(user.getName());
-            quotationTemplate.setCreateTime(LocalDateTime.now());
             quotationTemplate.setUpdateTime(LocalDateTime.now());
-
         }else{
-            //id1 为空
+            //id1 为空 新增
             QueryWrapper<QuotationTemplate> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("names", names);
             List<QuotationTemplate> list = this.list(queryWrapper);
             if(CollUtil.isNotEmpty(list)){
                 return CommonResult.error(-1, "["+names+"]"+",名称已存在");
             }
+            AuthUser user = baseService.getUser();
+            quotationTemplate.setUserId(user.getId().intValue());
+            quotationTemplate.setUserName(user.getName());
+            quotationTemplate.setCreateTime(LocalDateTime.now());
             quotationTemplate.setUpdateTime(LocalDateTime.now());
+
+            //状态(0无效 1有效)
+            quotationTemplate.setStatus("1");
+
         }
 
         //模板类型
         quotationTemplate.setTypes(form.getQidtype());
         //报价图片
         List<PicUrlArrForm> picUrlarr = form.getPicUrlarr();
-        StringBuffer picUrl = new StringBuffer();
-        for(int i=0; i<picUrlarr.size(); i++) {
-            PicUrlArrForm picUrlArrForm = picUrlarr.get(i);
-            if(i==0){
-                picUrl.append(picUrlArrForm.getFilePath());
-            }else{
-                picUrl.append(",").append(picUrlArrForm.getFilePath());
+        if(CollUtil.isNotEmpty(picUrlarr)){
+            StringBuffer picUrl = new StringBuffer();
+            for(int i=0; i<picUrlarr.size(); i++) {
+                PicUrlArrForm picUrlArrForm = picUrlarr.get(i);
+                if(i==0){
+                    picUrl.append(picUrlArrForm.getFilePath());
+                }else{
+                    picUrl.append(",").append(picUrlArrForm.getFilePath());
+                }
             }
+            quotationTemplate.setPicUrl(picUrl.toString());
         }
-        quotationTemplate.setPicUrl(picUrl.toString());
+
         //可达仓库
         List<FabWarehouseForm> arriveWarehousearr = form.getArriveWarehousearr();
-        StringBuffer arriveWarehouse = new StringBuffer();
-        for(int i=0; i<arriveWarehousearr.size(); i++){
-            FabWarehouseForm fabWarehouseForm = arriveWarehousearr.get(i);
-            if(i == 0){
-                arriveWarehouse.append(fabWarehouseForm.getId());
-            }else{
-                arriveWarehouse.append(",").append(fabWarehouseForm.getId());
+        if(CollUtil.isNotEmpty(arriveWarehousearr)){
+            StringBuffer arriveWarehouse = new StringBuffer();
+            for(int i=0; i<arriveWarehousearr.size(); i++){
+                FabWarehouseForm fabWarehouseForm = arriveWarehousearr.get(i);
+                if(i == 0){
+                    arriveWarehouse.append(fabWarehouseForm.getId());
+                }else{
+                    arriveWarehouse.append(",").append(fabWarehouseForm.getId());
+                }
             }
+            quotationTemplate.setArriveWarehouse(arriveWarehouse.toString());
         }
-        quotationTemplate.setArriveWarehouse(arriveWarehouse.toString());
+
         //可见客户
         List<CustomerForm> visibleUidarr = form.getVisibleUidarr();
-        StringBuffer visibleUid = new StringBuffer();
-        for(int i=0; i<visibleUidarr.size(); i++){
-            CustomerForm customerForm = visibleUidarr.get(i);
-            if(i == 0){
-                visibleUid.append(customerForm.getId());
-            }else{
-                visibleUid.append(",").append(customerForm.getId());
+        if(CollUtil.isNotEmpty(visibleUidarr)){
+            StringBuffer visibleUid = new StringBuffer();
+            for(int i=0; i<visibleUidarr.size(); i++){
+                CustomerForm customerForm = visibleUidarr.get(i);
+                if(i == 0){
+                    visibleUid.append(customerForm.getId());
+                }else{
+                    visibleUid.append(",").append(customerForm.getId());
+                }
             }
+            quotationTemplate.setVisibleUid(visibleUid.toString());
         }
-        quotationTemplate.setVisibleUid(visibleUid.toString());
+
         //货物类型
         List<GoodsTypeForm> gidarr = form.getGidarr();
-        StringBuffer gid = new StringBuffer();
-        for(int i=0; i<gidarr.size(); i++){
-            GoodsTypeForm goodsTypeForm = gidarr.get(i);
-            if(i == 0){
-                gid.append(goodsTypeForm.getId());
-            }else{
-                gid.append(",").append(goodsTypeForm.getId());
+        if(CollUtil.isNotEmpty(gidarr)){
+            StringBuffer gid = new StringBuffer();
+            for(int i=0; i<gidarr.size(); i++){
+                GoodsTypeForm goodsTypeForm = gidarr.get(i);
+                if(i == 0){
+                    gid.append(goodsTypeForm.getId());
+                }else{
+                    gid.append(",").append(goodsTypeForm.getId());
+                }
             }
+            quotationTemplate.setGid(gid.toString());
         }
-        quotationTemplate.setGid(gid.toString());
+
         //集货仓库
         List<ShippingAreaForm> areaIdarr = form.getAreaIdarr();
-        StringBuffer areaId = new StringBuffer();
-        for(int i=0; i<areaIdarr.size(); i++){
-            ShippingAreaForm shippingAreaForm = areaIdarr.get(i);
-            if(i == 0){
-                areaId.append(shippingAreaForm.getId());
-            }else{
-                areaId.append(",").append(shippingAreaForm.getId());
+        if(CollUtil.isNotEmpty(areaIdarr)){
+            StringBuffer areaId = new StringBuffer();
+            for(int i=0; i<areaIdarr.size(); i++){
+                ShippingAreaForm shippingAreaForm = areaIdarr.get(i);
+                if(i == 0){
+                    areaId.append(shippingAreaForm.getId());
+                }else{
+                    areaId.append(",").append(shippingAreaForm.getId());
+                }
             }
+            quotationTemplate.setAreaId(areaId.toString());
         }
-        quotationTemplate.setAreaId(areaId.toString());
         //报价类型
         List<QuotationTypeForm> qidarr = form.getQidarr();
-        StringBuffer qid = new StringBuffer();
-        for(int i=0; i<qidarr.size(); i++){
-            QuotationTypeForm quotationTypeForm = qidarr.get(i);
-            if(i == 0){
-                qid.append(quotationTypeForm.getId());
-            }else{
-                qid.append(",").append(quotationTypeForm.getId());
+        if(CollUtil.isNotEmpty(qidarr)){
+            StringBuffer qid = new StringBuffer();
+            for(int i=0; i<qidarr.size(); i++){
+                QuotationTypeForm quotationTypeForm = qidarr.get(i);
+                if(i == 0){
+                    qid.append(quotationTypeForm.getId());
+                }else{
+                    qid.append(",").append(quotationTypeForm.getId());
+                }
             }
-        }
-        quotationTemplate.setQid(qid.toString());
-
-        if(quotationTemplate.getId() == null){
-            //状态(0无效 1有效)
-            quotationTemplate.setStatus("1");
+            quotationTemplate.setQid(qid.toString());
         }
 
         this.saveOrUpdate(quotationTemplate);
@@ -223,7 +236,8 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
         QueryWrapper<TemplateCopeReceivable> queryWrapperTemplateCopeReceivable = new QueryWrapper<>();
         queryWrapperTemplateCopeReceivable.eq("qie", id);
         templateCopeReceivableService.remove(queryWrapperTemplateCopeReceivable);
-        if(templateCopeReceivableFormList.size() > 0){
+
+        if(CollUtil.isNotEmpty(templateCopeReceivableFormList)){
             List<TemplateCopeReceivable> list = new ArrayList<>();
             templateCopeReceivableFormList.forEach(templateCopeReceivableForm -> {
                 TemplateCopeReceivable templateCopeReceivable = ConvertUtil.convert(templateCopeReceivableForm, TemplateCopeReceivable.class);
@@ -246,7 +260,7 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
         QueryWrapper<TemplateCopeWith> queryWrapperTemplateCopeWith = new QueryWrapper<>();
         queryWrapperTemplateCopeWith.eq("qie", id);
         templateCopeWithService.remove(queryWrapperTemplateCopeWith);
-        if(templateCopeWithFormList.size() > 0){
+        if(CollUtil.isNotEmpty(templateCopeWithFormList)){
             List<TemplateCopeWith> list = new ArrayList<>();
             templateCopeWithFormList.forEach(templateCopeWithForm -> {
                 TemplateCopeWith templateCopeWith = ConvertUtil.convert(templateCopeWithForm, TemplateCopeWith.class);
@@ -269,7 +283,7 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
         QueryWrapper<TemplateFile> queryWrapperTemplateFile = new QueryWrapper<>();
         queryWrapperTemplateFile.eq("qie", id);
         templateFileService.remove(queryWrapperTemplateFile);
-        if(templateFileFormList.size() > 0){
+        if(CollUtil.isNotEmpty(templateFileFormList)){
             List<TemplateFile> list = new ArrayList<>();
             templateFileFormList.forEach(templateFileForm -> {
                 TemplateFile templateFile = ConvertUtil.convert(templateFileForm, TemplateFile.class);

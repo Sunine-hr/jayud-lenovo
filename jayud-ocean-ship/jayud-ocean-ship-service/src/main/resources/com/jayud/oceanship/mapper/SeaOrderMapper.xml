@@ -82,7 +82,7 @@
         from sea_order so
         left join sea_port sp on so.port_departure_code = sp.code
         left join sea_port sp1 on so.port_destination_code = sp1.code
-        left join sea_port sp2 on so.transit_port_code = sp1.code
+        left join sea_port sp2 on so.transit_port_code = sp2.code
         left join order_info oi on so.main_order_no = oi.order_no
         left join terms on terms.id = so.terms
         where so.id = #{id}
@@ -104,6 +104,8 @@
         <result column="portDepartureName" property="portDepartureName"></result>
         <result column="portDestinationCode" property="portDestinationCode"></result>
         <result column="portDestinationName" property="portDestinationName"></result>
+        <result column="transitPortCode" property="transitPortCode"></result>
+        <result column="transitPort" property="transitPort"></result>
         <result column="goodTime" property="goodTime"></result>
         <result column="createUser" property="createUser"></result>
         <result column="create_time" property="createdTimeStr"></result>
@@ -139,6 +141,7 @@
             <result column="etd" property="etd"></result>
             <result column="atd" property="atd"></result>
             <result column="ata" property="ata"></result>
+            <result column="closingTime" property="closingTime"></result>
             <result column="main_no" property="mainNo"></result>
             <result column="sub_no" property="subNo"></result>
             <result column="warehousingNo" property="warehousingNo"></result>
@@ -165,6 +168,8 @@
         sp.name portDepartureName,
         so.port_destination_code portDestinationCode,
         sp1.name portDestinationName,
+        so.transit_port_code transitPortCode,
+        sp2.name transitPort,
         so.good_time goodTime,
         sb.id sid,
         sb.sea_order_no,
@@ -181,6 +186,7 @@
         sb.agent_supplier_id supplierId,
         sb.file_path,
         sb.file_name,
+        sb.closing_time closingTime,
         so.create_user createUser,
         so.create_time,
         so.update_user,
@@ -207,6 +213,7 @@
         from sea_order so
         left join sea_port sp on so.port_departure_code = sp.code
         left join sea_port sp1 on so.port_destination_code = sp1.code
+        left join sea_port sp2 on so.transit_port_code = sp2.code
         left join sea_bookship sb on sb.sea_order_id = so.id and (sb.`status` != 2 OR sb.`status` IS NULL)
         left join terms on so.terms = terms.id
         <where>

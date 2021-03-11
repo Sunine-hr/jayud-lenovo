@@ -211,23 +211,26 @@ public class SeaOrderController {
         }
 
         //获取目的港名称
-        List<SeaPort> seaPorts = seaPortService.list();
-        List<SeaOrderFormVO> records1 = page.getRecords();
-        for (SeaOrderFormVO seaOrderFormVO : records1) {
-            //查询贸易方式
-            for (SeaPort seaPort : seaPorts) {
-                if (seaPort.getCode().equals(seaOrderFormVO.getPortDepartureCode())){
-                    seaOrderFormVO.setPortDepartureName(seaPort.getName());
-                }
-                if(seaPort.getCode().equals(seaOrderFormVO.getPortDestinationCode())){
-                    seaOrderFormVO.setPortDestinationName(seaPort.getName());
-                }
-                if(seaPort.getCode().equals(seaOrderFormVO.getTransitPortCode())){
-                    seaOrderFormVO.setTransitPort(seaPort.getName());
-                }
-            }
-        }
-        page.setRecords(records1);
+//        List<SeaPort> seaPorts = seaPortService.list();
+//        List<SeaOrderFormVO> records1 = page.getRecords();
+//        for (SeaOrderFormVO seaOrderFormVO : records1) {
+//            //查询贸易方式
+//            for (SeaPort seaPort : seaPorts) {
+//                if (seaPort.getCode().equals(seaOrderFormVO.getPortDepartureCode())){
+//                    seaOrderFormVO.setPortDepartureName(seaPort.getName());
+//                }
+//                if(seaPort.getCode().equals(seaOrderFormVO.getPortDestinationCode())){
+//                    seaOrderFormVO.setPortDestinationName(seaPort.getName());
+//                }
+//                if(seaOrderFormVO.getTransitPortCode()!=null){
+//                    if(seaPort.getCode().equals(seaOrderFormVO.getTransitPortCode())){
+//                        seaOrderFormVO.setTransitPort(seaPort.getName());
+//                    }
+//                }
+//
+//            }
+//        }
+//        page.setRecords(records1);
         map1.put("pageInfo",new CommonPageResult(page));
         return CommonResult.success(map1);
     }

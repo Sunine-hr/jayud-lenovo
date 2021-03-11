@@ -140,7 +140,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //定义分页参数
         Page<OrderInfoVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
-        //page.addOrder(OrderItem.desc("oc.id"));
+        page.addOrder(OrderItem.desc("t.id"));
         IPage<OrderInfoVO> pageInfo = orderInfoMapper.findOrderInfoByPage(page, form);
 
         List<OrderInfoVO> records = pageInfo.getRecords();

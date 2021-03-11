@@ -434,13 +434,15 @@ public class FinanceController {
                 logger.info("推送金蝶传参:" + reqForm);
                 result = service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), tempReqForm);
             }
-            if (result.getCode() == HttpStatus.HTTP_OK) {
+            if (result.getCode() == 0) {
                 OrderReceivableBillDetail tempObject = new OrderReceivableBillDetail();
                 Integer num = receivableBillDetail.getPushKingdeeCount() == null ? 0 : receivableBillDetail.getPushKingdeeCount();
                 tempObject.setPushKingdeeCount(num + 1);
                 QueryWrapper updateWrapper = new QueryWrapper();
                 updateWrapper.eq("bill_no", receivableBillDetail.getBillNo());
                 receivableBillDetailService.update(tempObject, updateWrapper);
+            } else {
+                return CommonResult.error(400, result.getMsg());
             }
         }
         return CommonResult.success();
@@ -488,12 +490,14 @@ public class FinanceController {
                 logger.info("推送金蝶传参:" + reqForm);
                 result = service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), tempReqForm);
             }
-            if (result.getCode() == HttpStatus.HTTP_OK) {
+            if (result.getCode() == 0) {
                 OrderPaymentBillDetail tempObject = new OrderPaymentBillDetail();
                 tempObject.setPushKingdeeCount(paymentBillDetail.getPushKingdeeCount() + 1);
                 QueryWrapper updateWrapper = new QueryWrapper();
                 updateWrapper.eq("bill_no", paymentBillDetail.getBillNo());
                 paymentBillDetailService.update(tempObject, updateWrapper);
+            } else {
+                return CommonResult.error(400, result.getMsg());
             }
         }
         return CommonResult.success();

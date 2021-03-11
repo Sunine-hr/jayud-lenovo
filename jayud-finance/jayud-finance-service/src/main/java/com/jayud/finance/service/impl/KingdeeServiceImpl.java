@@ -139,7 +139,7 @@ public class KingdeeServiceImpl implements KingdeeService {
             return CommonResult.success(map.get("Number"));
         } else {
             List<Map<String, Object>> errors = (List<Map<String, Object>>) responseStatus.get("Errors");
-            return CommonResult.error(-1, "errors");
+            return CommonResult.error(-1, errors.get(0).get("Message").toString());
         }
 
     }
@@ -177,7 +177,7 @@ public class KingdeeServiceImpl implements KingdeeService {
                 return CommonResult.success(map.get("Number"));
             } else {
                 List<Map<String, Object>> errors = (List<Map<String, Object>>) responseStatus.get("Errors");
-                return CommonResult.error(-1, "errors");
+                return CommonResult.error(-1, errors.get(0).get("Message").toString());
             }
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -274,7 +274,6 @@ public class KingdeeServiceImpl implements KingdeeService {
         List<T> list = JSONUtil.toList(format(result, fieldKeys), clz);
         return CommonResult.success(list);
     }
-
 
 
     @Override
@@ -524,7 +523,7 @@ public class KingdeeServiceImpl implements KingdeeService {
      */
     private <T> T getObject(Map<String, Object> targetMap, Class<T> clz, String key) {
         Object o = targetMap.get(key);
-        if (Objects.isNull(o)&&key.equals("ResponseStatus")) {
+        if (Objects.isNull(o) && key.equals("ResponseStatus")) {
             log.error("不存在" + key + "这个节点，请检查");
             return null;
         }
@@ -621,7 +620,7 @@ public class KingdeeServiceImpl implements KingdeeService {
 
         //业务日期默认为当前时间（必填项）
         if (StringUtils.isEmpty(reqForm.getBusinessDate())) {
-            model.put("FDATE", DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
+            model.put("FDATE", DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
         } else {
             model.put("FDATE", reqForm.getBusinessDate());
         }
@@ -630,7 +629,7 @@ public class KingdeeServiceImpl implements KingdeeService {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(Calendar.MONTH, 3);
-        model.put("FENDDATE_H", DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
+        model.put("FENDDATE_H", DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
 
         //FDOCUMENTSTATUS 单据状态（必填项）默认用模板自带的"Z"
 
@@ -695,7 +694,7 @@ public class KingdeeServiceImpl implements KingdeeService {
         //TODO 要对应增删和修改相应的重复字段
         Map<String, Object> subHeadFinc = (Map<String, Object>) model.get("FsubHeadFinc");
         //到期日期计算日期（必填项）
-        subHeadFinc.put("FACCNTTIMEJUDGETIME", DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
+        subHeadFinc.put("FACCNTTIMEJUDGETIME", DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
         //本位币，默认人民币PRE001(必填项)
         putPackedProperty(subHeadFinc, "FMAINBOOKSTDCURRID", reqForm.getBaseCurrency());
         //汇率类型（必填项）
@@ -761,7 +760,7 @@ public class KingdeeServiceImpl implements KingdeeService {
 
         //业务日期默认为当前时间（必填项）
         if (StringUtils.isEmpty(reqForm.getBusinessDate())) {
-            model.put("FDATE", DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
+            model.put("FDATE", DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
         } else {
             model.put("FDATE", reqForm.getBusinessDate());
         }
@@ -769,7 +768,7 @@ public class KingdeeServiceImpl implements KingdeeService {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(Calendar.MONTH, 3);
-        model.put("FENDDATE_H", DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
+        model.put("FENDDATE_H", DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
 
         //客户代码（必填项） TODO 可能要想办法根据名称获取代码
         putPackedProperty(model, "FCUSTOMERID", reqForm.getCustomerName());
@@ -832,7 +831,7 @@ public class KingdeeServiceImpl implements KingdeeService {
         //TODO 要对应增删和修改相应的重复字段
         Map<String, Object> subHeadFinc = (Map<String, Object>) model.get("FsubHeadFinc");
         //到期日期计算日期（必填项）
-        subHeadFinc.put("FACCNTTIMEJUDGETIME", DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
+        subHeadFinc.put("FACCNTTIMEJUDGETIME", DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
         //本位币，默认人民币PRE001(必填项)
         putPackedProperty(subHeadFinc, "FMAINBOOKSTDCURRID", reqForm.getBaseCurrency());
         //汇率类型（必填项）
@@ -884,16 +883,17 @@ public class KingdeeServiceImpl implements KingdeeService {
     //TODO 获取相关代码
     private Map<String, Object> putPayableEntityDetail(JSONObject detailBasic, APARDetailForm detailForm, BigDecimal noTaxTotalPrice, BigDecimal taxTotal) {
         //计价单位默认Pcs
-        String priceUnitIdPacked = "Pcs";
+        String priceUnitIdPacked = StringUtils.isEmpty(detailForm.getCostUnit()) ? "Pcs" : detailForm.getCostUnit();
+
         Map<String, Object> detail = detailBasic.getInnerMap();
 
         //TODO 数量和金额，正负项要一致,金蝶就是要求，金额是负数时，数量也要是负数   @财务-闫兴丽
         //TODO 如果是传所有字段过去，数量是负数，单价等是正数，金额负数            @金蝶-袁工
-        BigDecimal zero = new BigDecimal ("0");
+        BigDecimal zero = new BigDecimal("0");
         //"FTaxPrice 含税单价" 大于等于 "0"
-        if(detailForm.getTaxPrice().compareTo(zero) > -1){
+        if (detailForm.getTaxPrice().compareTo(zero) > -1) {
             detailForm.setPriceQty(detailForm.getPriceQty());//保持不变，默认为正数1
-        }else{
+        } else {
             //计价数量 设置为 负数
             detailForm.setPriceQty(detailForm.getPriceQty().negate());//negate 取反
             //含税单价 设置为 正数
@@ -974,17 +974,17 @@ public class KingdeeServiceImpl implements KingdeeService {
      */
     private Map<String, Object> putReceivableEntityDetail(JSONObject detailBasic, APARDetailForm detailForm, BigDecimal noTaxTotalPrice, BigDecimal taxTotal) {
         //计价单位默认Pcs
-        String priceUnitIdPacked = "Pcs";
+        String priceUnitIdPacked = StringUtils.isEmpty(detailForm.getCostUnit()) ? "Pcs" : detailForm.getCostUnit();
 
         Map<String, Object> detail = detailBasic.getInnerMap();
 
         //TODO 数量和金额，正负项要一致,金蝶就是要求，金额是负数时，数量也要是负数   @财务-闫兴丽
         //TODO 如果是传所有字段过去，数量是负数，单价等是正数，金额负数            @金蝶-袁工
-        BigDecimal zero = new BigDecimal ("0");
+        BigDecimal zero = new BigDecimal("0");
         //"FTaxPrice 含税单价" 大于等于 "0"
-        if(detailForm.getTaxPrice().compareTo(zero) > -1){
+        if (detailForm.getTaxPrice().compareTo(zero) > -1) {
             detailForm.setPriceQty(detailForm.getPriceQty());//保持不变，默认为正数1
-        }else{
+        } else {
             //计价数量 设置为 负数
             detailForm.setPriceQty(detailForm.getPriceQty().negate());//negate 取反
             //含税单价 设置为 正数

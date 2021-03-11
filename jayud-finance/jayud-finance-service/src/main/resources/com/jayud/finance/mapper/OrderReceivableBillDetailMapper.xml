@@ -487,7 +487,8 @@
             orc.number,
 			ifnull(obct.money,0)/orc.number taxPrice,
             ifnull(orbd.tax_rate,0) taxRate,
-            ifnull(orc.number,0) priceQty
+            ifnull(orc.number,0) priceQty,
+            orc.unit costUnit
         FROM
             order_receivable_bill_detail orbd
 			left join order_bill_cost_total obct on obct.cost_id = orbd.cost_id

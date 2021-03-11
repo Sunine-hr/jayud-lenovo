@@ -1,6 +1,7 @@
 package com.jayud.mall.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.CommonPageDraftResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.OrderInfoForm;
@@ -48,10 +49,27 @@ public class OrderInfoController {
         return CommonResult.success(pageVO);
     }
 
+    //分页查询订单列表
+    @ApiOperation(value = "web端分页查询订单列表(统计草稿)")
+    @PostMapping("/findWebOrderInfoByPageDraft")
+    @ApiOperationSupport(order = 2)
+    public CommonResult<CommonPageDraftResult<OrderInfoVO>> findWebOrderInfoByPageDraft(@RequestBody QueryOrderInfoForm form) {
+        CustomerUser customerUser = baseService.getCustomerUser();
+        form.setCustomerId(customerUser.getId());//当前登录客户
+        IPage<OrderInfoVO> pageList = orderInfoService.findWebOrderInfoByPage(form);
+        //CommonPageResult<OrderInfoVO> pageVO = new CommonPageResult(pageList);
+
+        Long draftNum = 14L;//统计草稿
+        CommonPageDraftResult<OrderInfoVO> draftResult = new CommonPageDraftResult(pageList, draftNum);
+
+        return CommonResult.success(draftResult);
+    }
+
+
     //订单下单-暂存订单
     @ApiOperation(value = "订单下单-暂存订单")
     @PostMapping("/temporaryStorageOrderInfo")
-    @ApiOperationSupport(order = 2)
+    @ApiOperationSupport(order = 3)
     public CommonResult<OrderInfoVO> temporaryStorageOrderInfo(@Valid @RequestBody OrderInfoForm form){
         //订单对应箱号信息:order_case
         List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
@@ -77,7 +95,7 @@ public class OrderInfoController {
     //订单下单-提交订单
     @ApiOperation(value = "订单下单-提交订单")
     @PostMapping("/submitOrderInfo")
-    @ApiOperationSupport(order = 3)
+    @ApiOperationSupport(order = 4)
     public CommonResult<OrderInfoVO> submitOrderInfo(@Valid @RequestBody OrderInfoForm form){
         //订单对应箱号信息:order_case
         List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
@@ -103,7 +121,7 @@ public class OrderInfoController {
     //订单列表-草稿-取消
     @ApiOperation(value = "订单列表-草稿-取消")
     @PostMapping("/draftCancelOrderInfo")
-    @ApiOperationSupport(order = 4)
+    @ApiOperationSupport(order = 5)
     public CommonResult<OrderInfoVO> draftCancelOrderInfo(@RequestBody OrderInfoForm form){
         return orderInfoService.draftCancelOrderInfo(form);
     }
@@ -111,7 +129,7 @@ public class OrderInfoController {
     //订单-草稿-提交-进入编辑订单详情(从草稿进去，可以编辑，暂存和提交)
     @ApiOperation(value = "订单-草稿-提交-进入编辑订单详情(从草稿进去，可以编辑，暂存和提交)")
     @PostMapping("/lookEditOrderInfo")
-    @ApiOperationSupport(order = 5)
+    @ApiOperationSupport(order = 6)
     public CommonResult<OrderInfoVO> lookEditOrderInfo(@RequestBody OrderInfoForm form){
         return orderInfoService.lookEditOrderInfo(form);
     }
@@ -119,7 +137,7 @@ public class OrderInfoController {
     //订单列表-查看订单详情
     @ApiOperation(value = "订单列表-查看订单详情(查看、编辑)")
     @PostMapping("/lookOrderInfo")
-    @ApiOperationSupport(order = 6)
+    @ApiOperationSupport(order = 7)
     public CommonResult<OrderInfoVO> lookOrderInfo(@RequestBody OrderInfoForm form){
         return orderInfoService.lookOrderInfo(form);
     }
@@ -127,7 +145,7 @@ public class OrderInfoController {
     //订单详情-计柜重信息-确认 TODO 待具体实现 预留
     @ApiOperation(value = "订单详情-计柜重信息-确认(待具体实现 预留)")
     @PostMapping("/affirmCounterWeightInfo")
-    @ApiOperationSupport(order = 7)
+    @ApiOperationSupport(order = 8)
     public CommonResult affirmCounterWeightInfo(@RequestBody OrderInfoForm form){
         Long id = form.getId();
         return CommonResult.success("订单详情-计柜重信息-确认 TODO 待具体实现 预留");
@@ -136,7 +154,7 @@ public class OrderInfoController {
     //订单详情-打印唛头（打印订单箱号）
     @ApiOperation(value = "订单详情-打印唛头（打印订单箱号）")
     @PostMapping("/printOrderMark")
-    @ApiOperationSupport(order = 8)
+    @ApiOperationSupport(order = 9)
     public CommonResult<List<String>> printOrderMark(@RequestBody OrderInfoForm form){
         Long orderId = form.getId();
         return orderInfoService.printOrderMark(orderId);
@@ -146,7 +164,7 @@ public class OrderInfoController {
     //订单详情-账单确认(rec应收账单) TODO 待开发，以及业务确认
     @ApiOperation(value = "订单详情-账单确认(rec应收账单) TODO 待开发，以及业务确认")
     @PostMapping("/billConfirmedRec")
-    @ApiOperationSupport(order = 9)
+    @ApiOperationSupport(order = 10)
     public CommonResult billConfirmedRec(@RequestBody OrderInfoForm form){
         Long id = form.getId();
         return CommonResult.success("订单详情-账单确认(rec应收账单) TODO 待开发，以及业务确认");
@@ -155,7 +173,7 @@ public class OrderInfoController {
     //订单详情-账单确认(pay应付账单) TODO 待开发，以及业务确认
     @ApiOperation(value = "订单详情-账单确认(rec应收账单) TODO 待开发，以及业务确认")
     @PostMapping("/billConfirmedPay")
-    @ApiOperationSupport(order = 10)
+    @ApiOperationSupport(order = 11)
     public CommonResult billConfirmedPay(@RequestBody OrderInfoForm form){
         Long id = form.getId();
         return CommonResult.success("订单详情-账单确认(rec应收账单) TODO 待开发，以及业务确认");
@@ -171,7 +189,7 @@ public class OrderInfoController {
      */
     @ApiOperation(value = "订单编辑-保存(箱号、商品、文件)")
     @PostMapping("/editSaveOrderInfo")
-    @ApiOperationSupport(order = 11)
+    @ApiOperationSupport(order = 12)
     public CommonResult<OrderInfoVO> editSaveOrderInfo(@RequestBody OrderInfoForm form){
         //订单对应箱号信息:order_case
         List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();

@@ -419,6 +419,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<OrderShop> orderShopList = ConvertUtil.convertList(orderShopVOList, OrderShop.class);
         orderShopList.forEach(orderShop -> {
             orderShop.setOrderId(orderInfo.getId().intValue());
+            orderShop.setCreateTime(LocalDateTime.now());
         });
         QueryWrapper<OrderShop> orderShopQueryWrapper = new QueryWrapper<>();
         orderShopQueryWrapper.eq("order_id", orderInfo.getId());
@@ -721,6 +722,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<OrderShop> orderShopList = ConvertUtil.convertList(orderShopVOList, OrderShop.class);
         orderShopList.forEach(orderShop -> {
             orderShop.setOrderId(orderInfo.getId().intValue());
+            orderShop.setCreateTime(LocalDateTime.now());
         });
         QueryWrapper<OrderShop> orderShopQueryWrapper = new QueryWrapper<>();
         orderShopQueryWrapper.eq("order_id", orderInfo.getId());
@@ -1142,6 +1144,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<OrderShop> orderShopList = ConvertUtil.convertList(orderShopVOList, OrderShop.class);
         orderShopList.forEach(orderShop -> {
             orderShop.setOrderId(orderInfo.getId().intValue());
+            orderShop.setCreateTime(LocalDateTime.now());
         });
         QueryWrapper<OrderShop> orderShopQueryWrapper = new QueryWrapper<>();
         orderShopQueryWrapper.eq("order_id", orderInfo.getId());

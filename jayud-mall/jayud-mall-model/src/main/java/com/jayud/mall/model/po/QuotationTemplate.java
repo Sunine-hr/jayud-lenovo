@@ -96,58 +96,63 @@ public class QuotationTemplate extends Model<QuotationTemplate> {
     @JSONField(ordinal = 15, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime jkcTime;
 
-    @ApiModelProperty(value = "货物类型(1普货 2特货)", position = 16)
-    @JSONField(ordinal = 16)
+    @ApiModelProperty(value = "预计到达时间", position = 16)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 16, format="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime estimatedTime;
+
+    @ApiModelProperty(value = "货物类型(1普货 2特货)", position = 17)
+    @JSONField(ordinal = 17)
     private Integer gidtype;
 
-    @ApiModelProperty(value = "货物类型(goods_type id),多个用逗号分隔", position = 17)
-    @JSONField(ordinal = 17)
+    @ApiModelProperty(value = "货物类型(goods_type id),多个用逗号分隔", position = 18)
+    @JSONField(ordinal = 18)
     private String gid;
 
-    @ApiModelProperty(value = "集货仓库(shipping_area id),多个都号分隔", position = 18)
-    @JSONField(ordinal = 18)
+    @ApiModelProperty(value = "集货仓库(shipping_area id),多个都号分隔", position = 19)
+    @JSONField(ordinal = 19)
     private String areaId;
 
-    @ApiModelProperty(value = "报价类型(1整柜 2散柜)", position = 19)
-    @JSONField(ordinal = 19)
+    @ApiModelProperty(value = "报价类型(1整柜 2散柜)", position = 20)
+    @JSONField(ordinal = 20)
     private Integer qidtype;
 
-    @ApiModelProperty(value = "报价类型(quotation_type id),多个用逗号分隔", position = 20)
-    @JSONField(ordinal = 20)
+    @ApiModelProperty(value = "报价类型(quotation_type id),多个用逗号分隔", position = 21)
+    @JSONField(ordinal = 21)
     private String qid;
 
-    @ApiModelProperty(value = "任务分组id(运单任务task_group id)", position = 21)
-    @JSONField(ordinal = 21)
+    @ApiModelProperty(value = "任务分组id(运单任务task_group id)", position = 22)
+    @JSONField(ordinal = 22)
     private Integer taskId;
 
-    @ApiModelProperty(value = "计泡系数(默认6000)", position = 22)
-    @JSONField(ordinal = 22)
+    @ApiModelProperty(value = "计泡系数(默认6000)", position = 23)
+    @JSONField(ordinal = 23)
     private BigDecimal bubbleCoefficient;
 
-    @ApiModelProperty(value = "操作信息", position = 23)
-    @JSONField(ordinal = 23)
+    @ApiModelProperty(value = "操作信息", position = 24)
+    @JSONField(ordinal = 24)
     private String remarks;
 
-    @ApiModelProperty(value = "状态(0无效 1有效)", position = 24)
-    @JSONField(ordinal = 24)
+    @ApiModelProperty(value = "状态(0无效 1有效)", position = 25)
+    @JSONField(ordinal = 25)
     private String status;
 
-    @ApiModelProperty(value = "创建人id(system_user id)", position = 25)
-    @JSONField(ordinal = 25)
+    @ApiModelProperty(value = "创建人id(system_user id)", position = 26)
+    @JSONField(ordinal = 26)
     private Integer userId;
 
-    @ApiModelProperty(value = "创建人姓名(system_user name)", position = 26)
-    @JSONField(ordinal = 26)
+    @ApiModelProperty(value = "创建人姓名(system_user name)", position = 27)
+    @JSONField(ordinal = 27)
     private String userName;
 
-    @ApiModelProperty(value = "创建时间", position = 27)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
-    @JSONField(ordinal = 27, format="yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createTime;
-
-    @ApiModelProperty(value = "更新时间", position = 28)
+    @ApiModelProperty(value = "创建时间", position = 28)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     @JSONField(ordinal = 28, format="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
+
+    @ApiModelProperty(value = "更新时间", position = 29)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 29, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
 

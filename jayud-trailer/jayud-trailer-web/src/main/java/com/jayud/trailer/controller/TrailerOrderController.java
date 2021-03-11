@@ -185,7 +185,7 @@ public class TrailerOrderController {
         //获取结算单位信息
         ApiResult unitCodeInfo = null;
         if (CollectionUtils.isNotEmpty(unitCodes)) {
-            unitCodeInfo = this.omsClient.getCustomerByUnitCode(unitCodes);
+             unitCodeInfo = this.omsClient.getCustomerByUnitCode(unitCodes);
         }
 
         //获取发货人信息
@@ -367,7 +367,7 @@ public class TrailerOrderController {
     public CommonResult DispatchRejectionEdit(@RequestBody TrailerProcessOptForm form) {
         if (form.getMainOrderId() == null
                 || form.getId() == null
-                || form.getTrailerDispatch().getId() == null) {
+                || form.getTrailerDispatchVO().getId() == null) {
             log.warn("拖车订单编号/拖车订单id必填/拖车派车id必填 data={}", JSONUtil.toJsonStr(form));
             return CommonResult.error(ResultEnum.VALIDATE_FAILED);
         }

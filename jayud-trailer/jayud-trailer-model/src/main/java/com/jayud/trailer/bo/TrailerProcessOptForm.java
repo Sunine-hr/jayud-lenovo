@@ -54,7 +54,7 @@ public class TrailerProcessOptForm {
     private String description;
 
     @ApiModelProperty(value = "派车信息")
-    private AddTrailerDispatchFrom trailerDispatch = new AddTrailerDispatchFrom();
+    private AddTrailerDispatchFrom trailerDispatchVO = new AddTrailerDispatchFrom();
 
     @ApiModelProperty(value = "业务类型(0:空运),(1,纯报关),(2,中港运输) 前端不用管")
     private Integer businessType;
@@ -91,10 +91,10 @@ public class TrailerProcessOptForm {
                 if (StringUtils.isNotEmpty(this.paperStripSeal)) throw new JayudBizException("封条必填", 400);
                 if (StringUtils.isNotEmpty(this.cabinetNumber)) throw new JayudBizException("柜号必填", 400);
                 if (!checkOptInfo()) throw new JayudBizException(ResultEnum.VALIDATE_FAILED);
-                pass = this.trailerDispatch.checkDispatchOptParam();
+                pass = this.trailerDispatchVO.checkDispatchOptParam();
                 break;
             case TT_7: //拖车过磅
-                pass = this.trailerDispatch.checkWeightOptParam();
+                pass = this.trailerDispatchVO.checkWeightOptParam();
                 if (!checkOptInfo()) throw new JayudBizException(ResultEnum.VALIDATE_FAILED);
                 break;
         }

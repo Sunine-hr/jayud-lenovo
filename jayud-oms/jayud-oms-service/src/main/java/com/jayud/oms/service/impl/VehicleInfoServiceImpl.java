@@ -160,7 +160,7 @@ public class VehicleInfoServiceImpl extends ServiceImpl<VehicleInfoMapper, Vehic
 
     @Override
     public List<VehicleInfo> getByCondition(VehicleInfo vehicleInfo) {
-        QueryWrapper<VehicleInfo> condition = new QueryWrapper<>();
+        QueryWrapper<VehicleInfo> condition = new QueryWrapper<>(vehicleInfo);
         return this.baseMapper.selectList(condition);
     }
 

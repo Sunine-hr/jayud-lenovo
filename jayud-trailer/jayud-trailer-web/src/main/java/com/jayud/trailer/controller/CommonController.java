@@ -55,7 +55,7 @@ public class CommonController {
     @ApiOperation(value = "车辆下拉框")
     @PostMapping(value = "/mainOrder/initVehicleInfo")
     public CommonResult initVehicleInfo() {
-        return CommonResult.success(omsClient.initVehicle(2).getData());
+        return CommonResult.success(omsClient.initVehicle(1).getData());
     }
 
     @ApiOperation(value = "车辆下拉框")

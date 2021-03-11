@@ -70,7 +70,7 @@
             t2.company_name supplierName,
             t3.code_name startName,
             t4.code_name endName,
-            t5.code_name taskName,
+            t5.group_name taskName,
             t6.group_name operationTeamName,
             CONCAT(t3.code_name,'/',t4.code_name) startEndName,
             CONCAT(t3.code_name,'--',t4.code_name) shipRoute,

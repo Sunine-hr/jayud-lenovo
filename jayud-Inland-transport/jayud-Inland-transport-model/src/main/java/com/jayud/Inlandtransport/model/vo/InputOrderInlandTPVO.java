@@ -124,8 +124,9 @@ public class InputOrderInlandTPVO extends Model<InputOrderInlandTPVO> {
         Integer bulkCargoAmount = 0;
         Integer plateAmount = 0;
         for (OrderDeliveryAddress orderDeliveryAddress : pickUpAddressList) {
-            totalWeight += orderDeliveryAddress.getTotalWeight()== null ? 0 : orderDeliveryAddress.getTotalWeight();
-            bulkCargoAmount += orderDeliveryAddress.getBulkCargoAmount()== null ? 0 : orderDeliveryAddress.getBulkCargoAmount();;
+            totalWeight += orderDeliveryAddress.getTotalWeight() == null ? 0 : orderDeliveryAddress.getTotalWeight();
+            bulkCargoAmount += orderDeliveryAddress.getBulkCargoAmount() == null ? 0 : orderDeliveryAddress.getBulkCargoAmount();
+            ;
             plateAmount += (orderDeliveryAddress.getPlateAmount() == null ? 0 : orderDeliveryAddress.getPlateAmount());
         }
         this.totalNum = plateAmount + "板数" + bulkCargoAmount + "件";
@@ -133,10 +134,13 @@ public class InputOrderInlandTPVO extends Model<InputOrderInlandTPVO> {
     }
 
     public void assembleOrderInlandSendCarsVO(OrderInlandSendCarsVO sendCarsVO) {
-        this.driverName=sendCarsVO.getDriverName();
-        this.driverPhone=sendCarsVO.getDriverPhone();
-        this.licensePlate=sendCarsVO.getLicensePlate();
-        this.supplierName=sendCarsVO.getSupplierName();
+        if (sendCarsVO == null) {
+            return;
+        }
+        this.driverName = sendCarsVO.getDriverName();
+        this.driverPhone = sendCarsVO.getDriverPhone();
+        this.licensePlate = sendCarsVO.getLicensePlate();
+        this.supplierName = sendCarsVO.getSupplierName();
     }
 
 

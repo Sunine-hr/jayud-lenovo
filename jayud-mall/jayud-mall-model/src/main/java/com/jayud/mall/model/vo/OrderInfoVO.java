@@ -305,5 +305,8 @@ public class OrderInfoVO {
     @JSONField(ordinal = 62)
     private String startShipmentCityName;
 
+    @ApiModelProperty(value = "操作信息(操作说明)List", position = 63)
+    @JSONField(ordinal = 63)
+    private List<String> remarksList;
 
 }

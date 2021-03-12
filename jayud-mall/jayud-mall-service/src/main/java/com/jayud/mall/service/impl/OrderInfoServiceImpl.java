@@ -941,6 +941,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         orderInfoVO.setOrderCostDetailVO(orderCostDetailVO);//订单费用明细
 
+        String remarks = orderInfoVO.getRemarks();//操作说明
+        if(ObjectUtil.isNotEmpty(remarks)){
+            String[] split = remarks.split("\n");
+            List<String> list = Arrays.asList(split);
+            orderInfoVO.setRemarksList(list);
+        }
+
         return CommonResult.success(orderInfoVO);
     }
 
@@ -1040,6 +1047,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         OrderCostDetailVO orderCostDetailVO = getOrderCostDetailVO(orderInfoVO);
         orderInfoVO.setOrderCostDetailVO(orderCostDetailVO);//订单费用明细
 
+        String remarks = orderInfoVO.getRemarks();//操作说明
+        if(ObjectUtil.isNotEmpty(remarks)){
+            String[] split = remarks.split("\n");
+            List<String> list = Arrays.asList(split);
+            orderInfoVO.setRemarksList(list);
+        }
         return CommonResult.success(orderInfoVO);
     }
 

@@ -87,7 +87,7 @@ public class OceanBillForm {
     private String userName;
 
     //1提单对应1货柜，(PS:之前是1提单对应N货柜，现在还是用list，不改了，限制list的大小为1)
-    @ApiModelProperty(value = "提单对应货柜信息list(PS:之前是1提单对应N货柜，现在还是用list，不改了，限制list的大小为1)", position = 13, required = true)
+    @ApiModelProperty(value = "提单对应货柜信息list(PS:之前是1提单对应N货柜，现在还是用list，不改了，限制list的大小为1)", position = 15, required = true)
     @JSONField(ordinal = 15)
     @NotEmpty(message = "提单对应货柜信息list必填")
     private List<OceanCounterForm> oceanCounterForms;

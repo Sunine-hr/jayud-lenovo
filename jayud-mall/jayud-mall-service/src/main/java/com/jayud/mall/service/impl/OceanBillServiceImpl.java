@@ -53,6 +53,9 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     BillTaskRelevanceMapper billTaskRelevanceMapper;
 
     @Autowired
+    CounterCaseMapper counterCaseMapper;
+
+    @Autowired
     IOceanCounterService oceanCounterService;
 
     @Autowired
@@ -118,6 +121,8 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         oceanCounterForms.forEach(oceanCounterForm -> {
             OceanCounter oceanCounter = ConvertUtil.convert(oceanCounterForm, OceanCounter.class);
             oceanCounter.setObId(obId);
+            oceanCounter.setStatus("1");//状态(0无效 1有效)
+            oceanCounter.setCreateTime(LocalDateTime.now());
             oceanCounterList.add(oceanCounter);
         });
         //2.保存提单对应的柜子
@@ -137,45 +142,31 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     /**
      * <p>查看提单</p>
      * <p>1个提单对应1(N)个柜子</p>
-     * <p>1个柜子对应N个运单</p>
-     * <p>1个运单对应N个箱号</p>
+     * <p>1个柜子对应N个运单箱号</p>
      * @param id 提单id
      * @return
      */
     @Override
     public CommonResult<OceanBillVO> lookOceanBill(Long id) {
         //提单信息
-        OceanBill oceanBill = oceanBillMapper.selectById(id);
-        OceanBillVO oceanBillVO = ConvertUtil.convert(oceanBill, OceanBillVO.class);
+        OceanBillVO oceanBillVO = oceanBillMapper.findOceanBillById(id);
+        if(ObjectUtil.isEmpty(oceanBillVO)){
+            return CommonResult.error(-1, "没有找到提单信息");
+        }
 
-        //1个提单对应1(N)个柜子
         Long obId = oceanBillVO.getId();
-        QueryWrapper<OceanCounter> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("id","cntr_no","cabinet_code","volume","cost","cid","`status`","ob_id","create_time");
-        queryWrapper.eq("ob_id", obId);
-        List<OceanCounter> oceanCounterList = oceanCounterMapper.selectList(queryWrapper);
-        List<OceanCounterVO> oceanCounterVOList = ConvertUtil.convertList(oceanCounterList, OceanCounterVO.class);
+        //1个提单对应1(N)个柜子
+        List<OceanCounterVO> oceanCounterVOS = oceanCounterMapper.findOceanCounterVOByObId(obId);
+        oceanBillVO.setOceanCounterVOList(oceanCounterVOS);
 
-//        oceanCounterVOList.forEach( oceanCounterVO -> {
-//            //1个柜子对应N个运单
-//            Long oceanCounterId = oceanCounterVO.getId();
-//            QueryWrapper<OceanWaybill> queryWrapperOceanWaybill = new QueryWrapper<>();
-//            queryWrapperOceanWaybill.eq("ocean_counter_id", oceanCounterId);
-//            List<OceanWaybill> oceanWaybillList = oceanWaybillMapper.selectList(queryWrapperOceanWaybill);
-//            List<OceanWaybillVO> oceanWaybillVOList = ConvertUtil.convertList(oceanWaybillList, OceanWaybillVO.class);
-//
-//
-//            oceanWaybillVOList.forEach(oceanWaybillVO -> {
-//                //1个运单对应N个箱号
-//                Long oceanWaybillId = oceanWaybillVO.getId();
-//                QueryWrapper<OceanWaybillCaseRelation> queryWrapperOceanWaybillCaseRelation = new QueryWrapper<>();
-//                List<OceanWaybillCaseRelationVO> xhxxList =
-//                        oceanWaybillCaseRelationMapper.findXhxxByOceanWaybillId(oceanWaybillId);//根据运单id，查询箱号信息list
-//                oceanWaybillVO.setOceanWaybillCaseRelationVOList(xhxxList);
-//            });
-//            oceanCounterVO.setOceanWaybillVOList(oceanWaybillVOList);
-//        });
-        oceanBillVO.setOceanCounterVOList(oceanCounterVOList);
+        //提单的装柜信息
+        OceanCounterCaseVO oceanCounterCaseVO = new OceanCounterCaseVO();
+        List<CounterCaseVO> counterCaseVOS = counterCaseMapper.findCounterCaseByObId(obId);
+        oceanCounterCaseVO.setCounterCaseVOS(counterCaseVOS);
+        BigDecimal counterCaseVolumeTotal = counterCaseMapper.findCounterCaseVolumeTotalByObId(obId);
+        oceanCounterCaseVO.setCounterCaseVolumeTotal(counterCaseVolumeTotal);
+        oceanBillVO.setOceanCounterCaseVO(oceanCounterCaseVO);
+
         return CommonResult.success(oceanBillVO);
     }
 

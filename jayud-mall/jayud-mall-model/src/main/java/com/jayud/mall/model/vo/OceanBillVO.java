@@ -67,68 +67,71 @@ public class OceanBillVO {
     @JSONField(ordinal = 12)
     private Integer operationTeamId;
 
+    @ApiModelProperty(value = "创建用户id(system_user id)", position = 13)
+    @JSONField(ordinal = 13)
+    private Integer userId;
+
+    @ApiModelProperty(value = "创建用户名(system_user name)", position = 14)
+    @JSONField(ordinal = 14)
+    private String userName;
+
     /*关联信息*/
-    @ApiModelProperty(value = "运输方式名称", position = 13)
+    @ApiModelProperty(value = "运输方式名称", position = 15)
     private String tname;
 
-    @ApiModelProperty(value = "供应商名称", position = 14)
+    @ApiModelProperty(value = "供应商名称", position = 16)
     private String supplierName;
 
-    @ApiModelProperty(value = "起运港口名称", position = 15)
+    @ApiModelProperty(value = "起运港口名称", position = 17)
     private String startName;
 
-    @ApiModelProperty(value = "目的港口名称", position = 16)
+    @ApiModelProperty(value = "目的港口名称", position = 18)
     private String endName;
 
-    @ApiModelProperty(value = "任务分组名称", position = 17)
+    @ApiModelProperty(value = "任务分组名称", position = 19)
     private String taskName;
 
-    @ApiModelProperty(value = "运营(服务)小组名称", position = 18)
+    @ApiModelProperty(value = "运营(服务)小组名称", position = 20)
     private String operationTeamName;
 
     /*提单关联柜号信息*/
-    @ApiModelProperty(value = "提单关联柜号list", position = 19)
+    @ApiModelProperty(value = "提单关联柜号list", position = 21)
     @JSONField(ordinal = 19)
     private List<OceanCounterVO> oceanCounterVOList;
 
+    /*提单关联装柜信息  提单  货柜  运单箱号*/
+    @ApiModelProperty(value = "提单关联装柜信息(提单、货柜、运单箱号)", position = 22)
+    @JSONField(ordinal = 22)
+    private OceanCounterCaseVO oceanCounterCaseVO;
+
     //提单id
-    @ApiModelProperty(value = "提单id", position = 20)
-    @JSONField(ordinal = 20)
+    @ApiModelProperty(value = "提单id", position = 23)
+    @JSONField(ordinal = 23)
     private Integer tdId;
 
     //起运港/目的港
-    @ApiModelProperty(value = "起运港/目的港", position = 21)
-    @JSONField(ordinal = 21)
+    @ApiModelProperty(value = "起运港/目的港", position = 24)
+    @JSONField(ordinal = 24)
     private String startEndName;
 
-    @ApiModelProperty(value = "创建用户id(system_user id)", position = 22)
-    @JSONField(ordinal = 22)
-    private Integer userId;
-
-    @ApiModelProperty(value = "创建用户名(system_user name)", position = 23)
-    @JSONField(ordinal = 23)
-    private String userName;
-
     //航程（带单位格式化）
-    @ApiModelProperty(value = "航程（带单位格式化）", position = 24)
-    @JSONField(ordinal = 24)
+    @ApiModelProperty(value = "航程（带单位格式化）", position = 25)
+    @JSONField(ordinal = 25)
     private String crudingRrange;
 
     //提单费用信息
-    @ApiModelProperty(value = "提单费用信息", position = 25)
-    @JSONField(ordinal = 25)
+    @ApiModelProperty(value = "提单费用信息", position = 26)
+    @JSONField(ordinal = 26)
     private BillCostInfoVO billCostInfoVO;
 
     //提单对应的订单 以及 费用信息
-    @ApiModelProperty(value = "提单对应的订单以及费用信息", position = 26)
-    @JSONField(ordinal = 26)
+    @ApiModelProperty(value = "提单对应的订单以及费用信息", position = 27)
+    @JSONField(ordinal = 27)
     private List<BillOrderCostInfoVO> billOrderCostInfoVOS;
 
     //提单对应的运营组、任务组、任务
-    @ApiModelProperty(value = "提单对应的运营组、任务组、任务", position = 27)
-    @JSONField(ordinal = 27)
+    @ApiModelProperty(value = "提单对应的运营组、任务组、任务", position = 28)
+    @JSONField(ordinal = 29)
     private List<BillTaskRelevanceVO> billTaskRelevanceVOS;
-
-
 
 }

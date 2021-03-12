@@ -392,7 +392,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //查询柜号信息-->根据报价查询配载id，配载查询提单id，提单查询柜号id，最终获取柜号信息
         List<OceanCounter> oceanCounterList = orderConfMapper.findOceanCounterByOfferInfoId(offerInfoId);
         //默认取第一个柜子
-        if(oceanCounterList.size() > 0){
+
+        if(CollUtil.isNotEmpty(oceanCounterList)){
             OceanCounter oceanCounter = oceanCounterList.get(0);
             Long hgId = oceanCounter.getId();//货柜id
             //货柜对应运单箱号信息
@@ -428,7 +429,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         //保存-订单对应提货信息表：order_pick
         List<OrderPickVO> orderPickVOList = form.getOrderPickVOList();
-        if(orderPickVOList.size() > 0){
+        if(CollUtil.isNotEmpty(orderPickVOList)){
             List<OrderPick> orderPickList = ConvertUtil.convertList(orderPickVOList, OrderPick.class);
             orderPickList.forEach(orderPick -> {
                 orderPick.setOrderId(orderInfo.getId());
@@ -694,7 +695,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //查询柜号信息-->根据报价查询配载id，配载查询提单id，提单查询柜号id，最终获取柜号信息
         List<OceanCounter> oceanCounterList = orderConfMapper.findOceanCounterByOfferInfoId(offerInfoId);
         //默认取第一个柜子
-        if(oceanCounterList.size() > 0){
+        if(CollUtil.isNotEmpty(oceanCounterList)){
             OceanCounter oceanCounter = oceanCounterList.get(0);
             Long hgId = oceanCounter.getId();//货柜id
             //货柜对应运单箱号信息

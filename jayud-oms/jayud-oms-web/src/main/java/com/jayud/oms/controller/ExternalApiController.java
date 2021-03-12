@@ -23,6 +23,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -1036,6 +1038,7 @@ public class ExternalApiController {
 
     /**
      * 根据车辆id查询车辆信息
+     *
      * @return
      */
     @RequestMapping(value = "/api/getVehicleInfoByIds")
@@ -1079,6 +1082,29 @@ public class ExternalApiController {
             result.add(map);
         }
         return ApiResult.ok(result);
+    }
+
+    @ApiOperation(value = "查询联系人信息")
+    @RequestMapping(value = "/getContactInfoByPhone")
+    public CommonResult<List<Map<String, Object>>> getContactInfoByPhone(@RequestParam("businessType") Integer businessType) {
+        List<OrderAddress> deliveryAddresses = this.orderAddressService.getLastContactInfoByBusinessType(businessType);
+        List<Map<String, Object>> list = new ArrayList<>();
+
+        if (CollectionUtils.isNotEmpty(deliveryAddresses)) {
+            //去重
+            deliveryAddresses = deliveryAddresses.stream().collect(Collectors
+                    .collectingAndThen(Collectors.toCollection(
+                            () -> new TreeSet<>(Comparator.comparing(OrderAddress::getPhone))), ArrayList::new));
+            for (OrderAddress deliveryAddress : deliveryAddresses) {
+                Map<String, Object> response = new HashMap<>();
+                response.put(BeanUtils.convertToFieldName(DeliveryAddress::getContacts), deliveryAddress.getContacts());
+                response.put("value", deliveryAddress.getPhone());
+                response.put(BeanUtils.convertToFieldName(DeliveryAddress::getAddress), deliveryAddress.getAddress());
+                list.add(response);
+            }
+            return CommonResult.success(list);
+        }
+        return CommonResult.success(list);
     }
 
 }

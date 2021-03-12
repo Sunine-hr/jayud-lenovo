@@ -53,7 +53,7 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
     @ApiModelProperty(value = "操作主体", required = true)
     private String subLegalName;
 
-    @ApiModelProperty(value = "车型", required = true)
+    @ApiModelProperty(value = "车型尺寸", required = true)
     private String vehicleSize;
 
     @ApiModelProperty(value = "流程状态", required = true)

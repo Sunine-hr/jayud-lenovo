@@ -5,6 +5,7 @@ import cn.hutool.core.map.MapUtil;
 import com.jayud.Inlandtransport.feign.OmsClient;
 import com.jayud.common.CommonResult;
 import com.jayud.common.entity.InitComboxVO;
+import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.CarTypeEnum;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -50,6 +51,12 @@ public class OrderInlandTPComboxController {
     public CommonResult initVehicleInfo(@RequestBody Map<String, Object> param) {
         Long vehicleId = Long.valueOf(MapUtil.getStr(param, "id"));
         return CommonResult.success(omsClient.initVehicleInfo(vehicleId).getData());
+    }
+
+    @ApiOperation(value = "根据手机号获取联系人信息下拉选项")
+    @PostMapping(value = "/getContactInfoByPhone")
+    public CommonResult getContactInfoByPhone() {
+        return CommonResult.success(omsClient.getContactInfoByPhone(BusinessTypeEnum.NL.getCode()).getData());
     }
 
 }

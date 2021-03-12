@@ -980,11 +980,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 orderInlandTransportForm.setUnitName(unitName.getName());
                 String subOrderNo = this.inlandTpClient.createOrder(orderInlandTransportForm).getData();
                 orderInlandTransportForm.setOrderNo(subOrderNo);
-                if (orderInlandTransportForm.getId() == null && form.getCmd().equals("submit")) {
-                    //流程节点重组
-                    List<OrderFlowSheet> orderFlowSheets = orderInlandTransportForm.assemblyProcess(OrderStatusEnum.getInlandTPProcess());
-                    this.orderFlowSheetService.saveOrUpdateBatch(orderFlowSheets);
-                }
+
+                this.initProcessNode(mainOrderNo, orderNo, OrderStatusEnum.NLYS,
+                        form, orderInlandTransportForm.getId(), OrderStatusEnum.getInlandTPProcess());
+
 
             }
         }
@@ -1091,6 +1090,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         return true;
     }
+
 
     @Override
     public List<InitChangeStatusVO> findSubOrderNo(GetOrderDetailForm form) {
@@ -1657,5 +1657,50 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
         return subOrderStatus.toString();
     }
+
+
+    private List<OrderFlowSheet> assemblyProcess(String mainOrderNo, String orderNo,
+                                                 String classifyId, String classifyName,
+                                                 List<OrderStatusEnum> process) {
+
+        String preStatus = null;
+        List<OrderFlowSheet> list = new ArrayList<>();
+        for (OrderStatusEnum tpProcess : process) {
+            OrderFlowSheet orderFlowSheet = new OrderFlowSheet();
+
+            orderFlowSheet.setMainOrderNo(mainOrderNo)
+                    .setOrderNo(orderNo)
+                    .setCreateTime(LocalDateTime.now())
+                    .setCreateUser(UserOperator.getToken())
+                    .setProductClassifyId(classifyId)
+                    .setProductClassifyName(classifyName)
+                    .setStatus(tpProcess.getCode())
+                    .setStatusName(tpProcess.getDesc())
+                    .setFStatus(preStatus)
+                    .setIsPass("1");
+            preStatus = tpProcess.getCode();
+            list.add(orderFlowSheet);
+        }
+        return list;
+    }
+
+    private void initProcessNode(String mainOrderNo, String orderNo,
+                                 OrderStatusEnum statusEnum, InputOrderForm form,
+                                 Long id, List<OrderStatusEnum> process) {
+        if ("submit".equals(form.getCmd())) {
+            List<OrderFlowSheet> tmp = null;
+            if (id != null) {
+                tmp = this.orderFlowSheetService.getByCondition(new OrderFlowSheet().setOrderNo(orderNo));
+
+            }
+            if (tmp == null) {
+                //流程节点重组
+                List<OrderFlowSheet> orderFlowSheets = this.assemblyProcess(mainOrderNo, orderNo, statusEnum.getCode(), statusEnum.getDesc(), process);
+                this.orderFlowSheetService.saveOrUpdateBatch(orderFlowSheets);
+            }
+
+        }
+    }
+
 
 }

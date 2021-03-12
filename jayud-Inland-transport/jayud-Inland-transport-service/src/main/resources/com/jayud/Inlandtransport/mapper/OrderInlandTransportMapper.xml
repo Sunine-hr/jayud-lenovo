@@ -40,7 +40,7 @@
         i.legal_entity_id,
         i.legal_name subLegalName,
         ic.supplier_id supplierId,
-        ic.vehicle_size vehicleSize,
+        i.vehicle_size vehicleSize,
         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = i.`order_no`) +
         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = i.`order_no`)>0 THEN TRUE
         ELSE FALSE

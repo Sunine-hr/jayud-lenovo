@@ -1,5 +1,6 @@
 package com.jayud.oms.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.entity.OrderDeliveryAddress;
 import com.jayud.oms.model.po.OrderAddress;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -38,4 +39,9 @@ public interface IOrderAddressService extends IService<OrderAddress> {
     List<OrderDeliveryAddress> getDeliveryAddress(List<Long> orderId, Integer businessType);
 
     void removeByOrderNo(String orderNo, Integer businessType);
+
+    /**
+     * 获取最新的联系人信息
+     */
+    public List<OrderAddress> getLastContactInfoByBusinessType(Integer businessType);
 }

@@ -158,4 +158,15 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
         }
         this.baseMapper.delete(condition);
     }
+
+    /**
+     * 获取最新的联系人信息
+     */
+    @Override
+    public List<OrderAddress> getLastContactInfoByBusinessType(Integer businessType) {
+        QueryWrapper<OrderAddress> condition=new QueryWrapper<>();
+        condition.lambda().eq(OrderAddress::getBusinessType,businessType);
+        condition.lambda().orderByDesc(OrderAddress::getId);
+        return this.baseMapper.selectList(condition);
+    }
 }

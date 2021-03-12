@@ -301,6 +301,43 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CommonResult updateOrderCaseConf2(SaveCounterCase2Form form) {
+        //提单柜号id(ocean_counter id)
+        Long oceanCounterId = form.getOceanCounterId();
+        //运单箱号id(order_case id) list
+        List<OrderCaseConfVO> orderCaseConfVOList = form.getOrderCaseConfVOList();
+
+        if(CollUtil.isEmpty(orderCaseConfVOList)){
+            return CommonResult.error(-1, "运单箱号不存在，无法修改");
+        }
+        //先查询，在做批量修改
+        List<Long> orderCaseIds = new ArrayList<>();
+        orderCaseConfVOList.forEach(orderCaseConfVO->{
+            Long orderCaseId = orderCaseConfVO.getId();
+            orderCaseIds.add(orderCaseId);
+        });
+
+        AuthUser user = baseService.getUser();
+
+        //查询关联表的运单箱号，
+        QueryWrapper<CounterCase> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("order_case_id", orderCaseIds);
+        List<CounterCase> list = counterCaseService.list(queryWrapper);
+        list.forEach(counterCase->{
+            counterCase.setOceanCounterId(oceanCounterId);//运单箱号关联新的提单柜号id
+            counterCase.setUserId(user.getId().intValue());
+            counterCase.setUserName(user.getName());
+        });
+
+        //批量修改运单箱号的对应的提单柜号
+        counterCaseService.saveOrUpdateBatch(list);
+
+        return CommonResult.success("订单修改配载信息成功");
+    }
+
+
+    @Override
     public CommonResult<OrderInfoVO> lookOrderInfoCost(Long id) {
         OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(id);
         Long orderId = orderInfoVO.getId();//订单Id

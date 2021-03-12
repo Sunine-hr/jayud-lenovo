@@ -103,17 +103,26 @@ public class OrderInfoController {
     }
 
     //订单管理-修改配载信息
-    @ApiOperation(value = "订单管理-修改配载信息")
+    @ApiOperation(value = "订单管理-修改配载信息(废弃)")
     @PostMapping("/updateOrderCaseConf")
     @ApiOperationSupport(order = 10)
+    @Deprecated
     public CommonResult updateOrderCaseConf(@Valid @RequestBody SaveCounterCaseForm form){
         return orderInfoService.updateOrderCaseConf(form);
+    }
+
+    //订单管理-修改配载信息2
+    @ApiOperation(value = "订单管理-修改配载信息2")
+    @PostMapping("/updateOrderCaseConf2")
+    @ApiOperationSupport(order = 11)
+    public CommonResult updateOrderCaseConf2(@Valid @RequestBody SaveCounterCase2Form form){
+        return orderInfoService.updateOrderCaseConf2(form);
     }
 
     //订单管理-查看费用信息
     @ApiOperation(value = "订单管理-查看费用信息")
     @PostMapping("/lookOrderInfoCost")
-    @ApiOperationSupport(order = 11)
+    @ApiOperationSupport(order = 12)
     public CommonResult<OrderInfoVO> lookOrderInfoCost(@RequestBody OrderInfoForm form){
         Long id = form.getId();
         return orderInfoService.lookOrderInfoCost(id);
@@ -122,7 +131,7 @@ public class OrderInfoController {
     //订单管理-修改费用信息
     @ApiOperation(value = "订单管理-修改费用信息")
     @PostMapping("/updateOrderInfoCost")
-    @ApiOperationSupport(order = 12)
+    @ApiOperationSupport(order = 13)
     public CommonResult updateOrderInfoCost(@RequestBody OrderInfoCostForm form){
         return orderInfoService.updateOrderInfoCost(form);
     }
@@ -130,7 +139,7 @@ public class OrderInfoController {
     //订单管理-查看订单详细
     @ApiOperation(value = "订单管理-查看订单详细")
     @PostMapping("/lookOrderInfoDetails")
-    @ApiOperationSupport(order = 13)
+    @ApiOperationSupport(order = 14)
     public CommonResult<OrderInfoVO> lookOrderInfoDetails(@RequestBody OrderInfoForm form){
         Long id = form.getId();
         return orderInfoService.lookOrderInfoDetails(id);
@@ -139,7 +148,7 @@ public class OrderInfoController {
     //根据订单的运单id，查找配载，在查找配载单关联的提单
     @ApiOperation(value = "根据订单的运单id，查找配载，在查找配载单关联的提单")
     @PostMapping("/findOceanBillByOfferInfoId")
-    @ApiOperationSupport(order = 14)
+    @ApiOperationSupport(order = 15)
     public CommonResult<List<OceanBillVO>> findOceanBillByOfferInfoId(@Valid @RequestBody OfferInfoIdForm form){
         Integer offerInfoId = form.getOfferInfoId();
         return orderInfoService.findOceanBillByOfferInfoId(offerInfoId);
@@ -148,7 +157,7 @@ public class OrderInfoController {
     //根据提单id，查找提单关联的柜号id list(其实是1对1的)
     @ApiOperation(value = "根据提单id，查找提单关联的柜号id list(其实是1对1的)")
     @PostMapping("/findOceanCounterByTdId")
-    @ApiOperationSupport(order = 15)
+    @ApiOperationSupport(order = 16)
     public CommonResult<List<OceanCounterVO>> findOceanCounterByTdId(@Valid @RequestBody TdIdForm form){
         Long tdId = form.getTdId();
         return orderInfoService.findOceanCounterByTdId(tdId);
@@ -157,7 +166,7 @@ public class OrderInfoController {
     //订单待生成账单-生成账单(根据 订单id 查询)
     @ApiOperation(value = "订单待生成账单-生成账单(根据 订单id 查询)")
     @PostMapping("/findOrderBill")
-    @ApiOperationSupport(order = 16)
+    @ApiOperationSupport(order = 17)
     public CommonResult<OrderBillVO> findOrderBill(@Valid @RequestBody OrderInfoParaForm form){
         Long orderId = form.getId();
         return orderInfoService.findOrderBill(orderId);
@@ -166,7 +175,7 @@ public class OrderInfoController {
     //查看订单任务反馈状态
     @ApiOperation(value = "运单任务-反馈状态(根据 订单id 查询)")
     @PostMapping("/lookOrderInfoTask")
-    @ApiOperationSupport(order = 17)
+    @ApiOperationSupport(order = 18)
     public CommonResult<OrderInfoVO> lookOrderInfoTask(@Valid @RequestBody OrderInfoParaForm form){
         Long orderId = form.getId();
         return orderInfoService.lookOrderInfoTask(orderId);
@@ -175,7 +184,7 @@ public class OrderInfoController {
     //运单任务-反馈状态(点击已完成)
     @ApiOperation(value = "运单任务-反馈状态(点击已完成)")
     @PostMapping("/confirmCompleted")
-    @ApiOperationSupport(order = 18)
+    @ApiOperationSupport(order = 19)
     public CommonResult<WaybillTaskRelevanceVO> confirmCompleted(@Valid @RequestBody WaybillTaskRelevanceParaForm form){
         Long id = form.getId();
         return orderInfoService.confirmCompleted(id);
@@ -184,7 +193,7 @@ public class OrderInfoController {
     //订单操作日志（根据订单id查看）
     @ApiOperation(value = "运单任务-订单操作日志（根据订单id查看）")
     @PostMapping("/lookOperateLog")
-    @ApiOperationSupport(order = 19)
+    @ApiOperationSupport(order = 20)
     public CommonResult<List<WaybillTaskRelevanceVO>> lookOperateLog(@Valid @RequestBody OrderInfoParaForm form){
         Long id = form.getId();
         return orderInfoService.lookOperateLog(id);

@@ -83,10 +83,17 @@ public interface IOrderInfoService extends IService<OrderInfo> {
 
     /**
      * 订单管理-修改配载信息
-     * @param list
+     * @param form
      * @return
      */
     CommonResult updateOrderCaseConf(SaveCounterCaseForm form);
+
+    /**
+     * 订单管理-修改配载信息2
+     * @param form
+     * @return
+     */
+    CommonResult updateOrderCaseConf2(SaveCounterCase2Form form);
 
     /**
      * 订单管理-查看费用信息
@@ -220,4 +227,6 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     CommonResult<List<WaybillTaskRelevanceVO>> lookOperateLog(Long id);
+
+
 }

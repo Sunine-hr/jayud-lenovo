@@ -57,6 +57,9 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     CounterCaseMapper counterCaseMapper;
 
     @Autowired
+    CostItemMapper costItemMapper;
+
+    @Autowired
     IOceanCounterService oceanCounterService;
 
     @Autowired
@@ -231,6 +234,10 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         List<BillCopePay> billCopePays = new ArrayList<>();
         billCopePayForms.forEach(billCopePayForm -> {
             BillCopePay billCopePay = ConvertUtil.convert(billCopePayForm, BillCopePay.class);
+            String costCode = billCopePay.getCostCode();
+            CostItemVO costItemVO = costItemMapper.findCostItemByCostCode(costCode);
+            String costName = costItemVO.getCostName();
+            billCopePay.setCostName(costName);
             billCopePay.setBillId(billId);
             billCopePay.setSupplierId(supplierId);
             billCopePays.add(billCopePay);

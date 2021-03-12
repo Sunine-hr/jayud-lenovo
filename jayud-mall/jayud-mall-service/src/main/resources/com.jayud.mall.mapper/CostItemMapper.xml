@@ -31,4 +31,14 @@
 
     </select>
 
+
+    <select id="findCostItemByCostCode" parameterType="java.lang.String" resultType="com.jayud.mall.model.vo.CostItemVO">
+        select
+            t.id,t.identifying,t.cost_code,t.cost_name,t.status,t.user_id,t.user_name,t.create_time
+        from cost_item t
+        where t.cost_code = #{costCode}
+    </select>
+
+
+
 </mapper>

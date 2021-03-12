@@ -28,4 +28,11 @@ public interface CostItemMapper extends BaseMapper<CostItem> {
      * @return
      */
     List<CostItemVO> findCostItemBySupId(@Param("form") CostItemSupForm form);
+
+    /**
+     * 根据费用代码，查询费用
+     * @param costCode
+     * @return
+     */
+    CostItemVO findCostItemByCostCode(@Param("costCode") String costCode);
 }

@@ -43,6 +43,7 @@ public class OrderInlandSendCarsServiceImpl extends ServiceImpl<OrderInlandSendC
         SendCarPdfVO sendCarPdfVO = new SendCarPdfVO();
 
         sendCarPdfVO.setVehicleType(order.getVehicleType());
+        sendCarPdfVO.setVehicleSize(order.getVehicleSize());
         sendCarPdfVO.setOrderNo(order.getOrderNo());
         sendCarPdfVO.setLegalName(order.getLegalName());
 

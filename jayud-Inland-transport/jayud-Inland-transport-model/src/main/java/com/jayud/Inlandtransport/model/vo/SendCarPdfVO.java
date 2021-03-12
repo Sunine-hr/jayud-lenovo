@@ -99,18 +99,16 @@ public class SendCarPdfVO {
     @ApiModelProperty(value = "总体积")
     private Integer totalPlateAmount = 0;
 
-    public String getVehicleTypeDesc() {
-        if (this.vehicleType != null) {
-            if (this.vehicleType == 1) {
-                return "吨车";
-            } else if (this.vehicleType == 2) {
-                return "柜车";
-            }
+    public void setVehicleType(Integer vehicleType) {
+        this.vehicleType = vehicleType;
+        if (this.vehicleType == 1) {
+            this.vehicleTypeDesc = "吨车";
+        } else if (this.vehicleType == 2) {
+            this.vehicleTypeDesc = "吨车";
         }
-        return "";
     }
 
-    public String getGoodsType() {
+    public String setGoodsType() {
         if (!StringUtil.isNullOrEmpty(this.goodsType)) {
             if ("1".equals(this.goodsType)) {
                 return "进口";
@@ -134,6 +132,8 @@ public class SendCarPdfVO {
                 takeGoodsInfoVO.setPhone(orderAddressVO.getPhone());
                 takeGoodsInfoVO.setTakeTimeStr(orderAddressVO.getDeliveryDate());
                 takeGoodsInfoVO.setId(orderAddressVO.getId());
+                takeGoodsInfoVO.setVehicleType(this.vehicleType);
+                takeGoodsInfoVO.setVehicleSize(this.vehicleSize);
                 takeGoodsInfoVO.setVehicleTypeDesc(this.vehicleTypeDesc);
                 takeInfo1.add(takeGoodsInfoVO);
             }
@@ -141,7 +141,8 @@ public class SendCarPdfVO {
                 //送货处理,多个地址拼装成字符串返回(格式:送货地址 联系人:xxx 手机号码)
                 sb.append(orderAddressVO.getAddress()).append(" ")
                         .append("联系人:").append(orderAddressVO.getContacts())
-                        .append(" ").append(orderAddressVO.getPhone());
+                        .append(" ").append(orderAddressVO.getPhone())
+                        .append("<br/>");
             }
         }
         this.deliveryAddress = sb.toString();

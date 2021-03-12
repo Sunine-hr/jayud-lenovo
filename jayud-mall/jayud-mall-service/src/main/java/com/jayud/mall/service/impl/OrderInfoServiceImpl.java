@@ -362,6 +362,17 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         OrderInfo orderInfo = ConvertUtil.convert(form, OrderInfo.class);
         Integer offerInfoId = orderInfo.getOfferInfoId();//报价id，运价id
 
+        //集货仓库代码 -> 集货仓库名称
+        String storeGoodsWarehouseCode1 = orderInfo.getStoreGoodsWarehouseCode();
+        ShippingAreaVO shippingAreaVO = shippingAreaMapper.findShippingAreaByWarehouseCode(storeGoodsWarehouseCode1);
+        String storeGoodsWarehouseName = shippingAreaVO.getWarehouseName();
+        orderInfo.setStoreGoodsWarehouseName(storeGoodsWarehouseName);
+        //目的仓库代码 -> 目的仓库名称
+        String destinationWarehouseCode = orderInfo.getDestinationWarehouseCode();
+        FabWarehouseVO fabWarehouseVO = fabWarehouseMapper.findFabWarehouseByWarehouseCode(destinationWarehouseCode);
+        String destinationWarehouseName = fabWarehouseVO.getWarehouseName();
+        orderInfo.setDestinationWarehouseName(destinationWarehouseName);
+
         //判断订单号是否存在，不存在则新增
         String orderNo = form.getOrderNo();
         if(orderNo == null || orderNo == ""){
@@ -663,6 +674,17 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //保存-产品订单表：order_info
         OrderInfo orderInfo = ConvertUtil.convert(form, OrderInfo.class);
         Integer offerInfoId = orderInfo.getOfferInfoId();//报价id，运价id
+
+        //集货仓库代码 -> 集货仓库名称
+        String storeGoodsWarehouseCode1 = orderInfo.getStoreGoodsWarehouseCode();
+        ShippingAreaVO shippingAreaVO = shippingAreaMapper.findShippingAreaByWarehouseCode(storeGoodsWarehouseCode1);
+        String storeGoodsWarehouseName = shippingAreaVO.getWarehouseName();
+        orderInfo.setStoreGoodsWarehouseName(storeGoodsWarehouseName);
+        //目的仓库代码 -> 目的仓库名称
+        String destinationWarehouseCode = orderInfo.getDestinationWarehouseCode();
+        FabWarehouseVO fabWarehouseVO = fabWarehouseMapper.findFabWarehouseByWarehouseCode(destinationWarehouseCode);
+        String destinationWarehouseName = fabWarehouseVO.getWarehouseName();
+        orderInfo.setDestinationWarehouseName(destinationWarehouseName);
 
         //判断订单号是否存在，不存在则新增
         String orderNo = form.getOrderNo();

@@ -1,8 +1,6 @@
 package com.jayud.mall.model.bo;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,7 +13,6 @@ public class OrderCaseForm {
 
 
     @ApiModelProperty(value = "自增id", position = 1)
-    @TableId(value = "id", type = IdType.AUTO)
     @JSONField(ordinal = 1)
     private Long id;
 
@@ -81,7 +78,7 @@ public class OrderCaseForm {
     @JSONField(ordinal = 15, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime wmsWeighDate;
 
-    @ApiModelProperty(value = "最终确认重量，单位kg", position = 16)
+    @ApiModelProperty(value = "最终确认长度，单位cm", position = 16)
     @JSONField(ordinal = 16)
     private BigDecimal confirmLength;
 
@@ -93,7 +90,7 @@ public class OrderCaseForm {
     @JSONField(ordinal = 18)
     private BigDecimal confirmWidth;
 
-    @ApiModelProperty(value = "最终确认重量，单位cm", position = 19)
+    @ApiModelProperty(value = "最终确认重量，单位kg", position = 19)
     @JSONField(ordinal = 19)
     private BigDecimal confirmWeight;
 

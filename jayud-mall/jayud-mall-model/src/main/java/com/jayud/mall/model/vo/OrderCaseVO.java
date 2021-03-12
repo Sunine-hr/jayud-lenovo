@@ -17,7 +17,6 @@ public class OrderCaseVO {
 
     @ApiModelProperty(value = "自增id", position = 1)
     @TableId(value = "id", type = IdType.AUTO)
-    @JSONField(ordinal = 1)
     private Long id;
 
     @ApiModelProperty(value = "订单id(order_info id)", position = 2)
@@ -82,7 +81,7 @@ public class OrderCaseVO {
     @JSONField(ordinal = 15, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime wmsWeighDate;
 
-    @ApiModelProperty(value = "最终确认重量，单位kg", position = 16)
+    @ApiModelProperty(value = "最终确认长度，单位cm", position = 16)
     @JSONField(ordinal = 16)
     private BigDecimal confirmLength;
 
@@ -94,7 +93,7 @@ public class OrderCaseVO {
     @JSONField(ordinal = 18)
     private BigDecimal confirmWidth;
 
-    @ApiModelProperty(value = "最终确认重量，单位cm", position = 19)
+    @ApiModelProperty(value = "最终确认重量，单位kg", position = 19)
     @JSONField(ordinal = 19)
     private BigDecimal confirmWeight;
 

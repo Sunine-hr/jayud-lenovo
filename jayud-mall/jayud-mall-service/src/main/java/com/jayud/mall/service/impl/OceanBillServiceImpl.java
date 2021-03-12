@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -295,7 +296,7 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
                 }
                 //订单费用明细金额 = 计费重 / 分摊基数 * 提单费用初始金额
                 //amount = chargeWeight / base * initAmount
-                BigDecimal amount = chargeWeight.divide(base).multiply(initAmount);
+                BigDecimal amount = chargeWeight.divide(base,4, RoundingMode.HALF_UP).multiply(initAmount);
 
                 //订单对应应收费用明细 OrderCopeReceivable
                 OrderCopeReceivable orderCopeReceivable = ConvertUtil.convert(billCopePayVO, OrderCopeReceivable.class);

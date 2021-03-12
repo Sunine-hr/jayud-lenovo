@@ -168,10 +168,10 @@ public class OrderInfoVO {
     private List<OrderPickVO> orderPickVOList;
 
     /*订单关联运价(报价offer_info，报价模板quotation_template)*/
-    @ApiModelProperty(value = "报价名称(商品名称)", position = 33)
+    @ApiModelProperty(value = "报价名称(商品名称)(服务名称)(运价名称)", position = 33)
     private String names;
 
-    @ApiModelProperty(value = "类型1整柜 2散柜(货物类型)", position = 34)
+    @ApiModelProperty(value = "类型1整柜 2散柜(货物类型)(柜型)", position = 34)
     private Integer types;
 
     @ApiModelProperty(value = "开船日期", position = 35)
@@ -308,5 +308,21 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "操作信息(操作说明)List", position = 63)
     @JSONField(ordinal = 63)
     private List<String> remarksList;
+
+    @ApiModelProperty(value = "运输方式(transport_way id)", position = 64)
+    @JSONField(ordinal = 64)
+    private Integer tid;
+
+    @ApiModelProperty(value = "货物类型(1普货 2特货)", position = 65)
+    @JSONField(ordinal = 65)
+    private Integer gidtype;
+
+    @ApiModelProperty(value = "运输方式(transport_way code_name)", position = 66)
+    @JSONField(ordinal = 66)
+    private String tname;
+
+    @ApiModelProperty(value = "航线(起运港->目的港)", position = 67)
+    @JSONField(ordinal = 67)
+    private String shipRoute;
 
 }

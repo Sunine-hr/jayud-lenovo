@@ -325,4 +325,8 @@ public class OrderInfoVO {
     @JSONField(ordinal = 67)
     private String shipRoute;
 
+    @ApiModelProperty(value = "目的国家代码(前端，国家)", position = 68)
+    @JSONField(ordinal = 68)
+    private String destinationCountryCode;
+
 }

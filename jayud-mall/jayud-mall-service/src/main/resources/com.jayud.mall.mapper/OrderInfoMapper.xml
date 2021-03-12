@@ -45,21 +45,25 @@
         t1.company,
         t2.names,t2.sail_time,t2.cut_off_time,
         t3.taskItems taskTodo,
-        t4.group_name
+        t4.group_name,
+        t5.destination_port,
+        t6.state_code destinationCountryCode
         from order_info t
         left join customer t1 on t1.id = t.customer_id
         left join offer_info t2 on t2.id = t.offer_info_id
         left join (
-            SELECT
-            t.order_info_id,
-            GROUP_CONCAT(t.task_name order by sort asc) AS taskItems
-            FROM
-            waybill_task_relevance t
-            where t.status != 3
-            GROUP BY
-            t.order_info_id
+        SELECT
+        t.order_info_id,
+        GROUP_CONCAT(t.task_name order by sort asc) AS taskItems
+        FROM
+        waybill_task_relevance t
+        where t.status != 3
+        GROUP BY
+        t.order_info_id
         ) t3 on t3.order_info_id = t.id
         left join operation_team t4 on t4.id = t1.operation_team_id
+        left join quotation_template t5 on t5.id = t2.id
+        left join harbour_info t6 on t6.id_code = t5.destination_port
         WHERE
         1 = 1
         <if test="form.customerId != null">

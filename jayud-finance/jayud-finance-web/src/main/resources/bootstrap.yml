@@ -13,3 +13,15 @@ spring:
       discovery:
         server-addr: ${jayud.nacos.server-addr}
         namespace: ${jayud.nacos.config.namespace}
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          thread:
+            timeoutInMilliseconds: 30000
+ribbon:
+  ReadTimeout: 30000
+  ConnectTimeout: 30000

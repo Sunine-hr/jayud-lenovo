@@ -152,4 +152,12 @@ public interface OrderPaymentBillMapper extends BaseMapper<OrderPaymentBill> {
      */
     IPage<OrderPaymentBillVO> findPaymentSubBillByPage(Page<OrderPaymentBillVO> page, @Param("form") QueryPaymentBillForm form, @Param("dynamicSqlParam") Map<String, Object> dynamicSqlParam, @Param("legalIds") List<Long> legalIds);
 
+
+    /**
+     * 应付未出账单列表分页查询
+     *
+     * @param form
+     * @return
+     */
+    IPage<PaymentNotPaidBillVO> findBaseNotPaidBillByPage(Page<PaymentNotPaidBillVO> page,@Param("form")  QueryNotPaidBillForm form,  @Param("dynamicSqlParam")Map<String, Object> dynamicSqlParam);
 }

@@ -1,9 +1,13 @@
 package com.jayud.finance.vo;
 
+import com.jayud.finance.vo.InlandTP.OrderInlandSendCarsVO;
+import com.jayud.finance.vo.InlandTP.OrderInlandTransportDetails;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 未出账订单数列表
@@ -88,6 +92,22 @@ public class ReceiveNotPaidBillVO {
 
     @ApiModelProperty(value = "货物描述")
     private String goodsDesc;
+
+    public void assembleInlandTPData(List<OrderInlandTransportDetails> dataList) {
+        if (CollectionUtils.isEmpty(dataList)) {
+            return;
+        }
+        for (OrderInlandTransportDetails data : dataList) {
+            if (this.subOrderNo.equals(data.getOrderNo())) {
+                //派车数据
+                OrderInlandSendCarsVO sendCarsVO = data.getOrderInlandSendCarsVO();
+                if (sendCarsVO != null) {
+                    this.licensePlate = sendCarsVO.getLicensePlate();
+                }
+
+            }
+        }
+    }
 
 
 }

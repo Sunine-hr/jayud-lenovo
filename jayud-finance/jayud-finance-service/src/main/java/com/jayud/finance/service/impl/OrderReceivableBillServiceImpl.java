@@ -16,6 +16,7 @@ import com.jayud.common.utils.DateUtils;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.enums.OrderBillCostTotalTypeEnum;
+import com.jayud.finance.feign.InlandTpClient;
 import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.mapper.OrderReceivableBillMapper;
@@ -28,7 +29,9 @@ import com.jayud.finance.service.IOrderReceivableBillDetailService;
 import com.jayud.finance.service.IOrderReceivableBillService;
 import com.jayud.finance.util.ReflectUtil;
 import com.jayud.finance.vo.*;
+import com.jayud.finance.vo.InlandTP.OrderInlandTransportDetails;
 import io.netty.util.internal.StringUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,15 +57,14 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
 
     @Autowired
     IOrderReceivableBillDetailService receivableBillDetailService;
-
     @Autowired
     IOrderBillCostTotalService costTotalService;
-
     @Autowired
     ICurrencyRateService currencyRateService;
-
     @Autowired
     OauthClient oauthClient;
+    @Autowired
+    private InlandTpClient inlandTpClient;
 
     @Override
     public IPage<OrderReceiveBillVO> findReceiveBillByPage(QueryReceiveBillForm form) {
@@ -116,22 +118,47 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
     @Override
     public IPage<ReceiveNotPaidBillVO> findNotPaidBillByPage(QueryNotPaidBillForm form) {
         //定义分页参数
-        Page<PaymentNotPaidBillVO> page = new Page(form.getPageNum(), form.getPageSize());
+        Page<ReceiveNotPaidBillVO> page = new Page(form.getPageNum(), form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.desc("temp.costId"));
-        IPage<ReceiveNotPaidBillVO> pageInfo = baseMapper.findNotPaidBillByPage(page, form);
-        List<ReceiveNotPaidBillVO> pageList = pageInfo.getRecords();
+        IPage<ReceiveNotPaidBillVO> pageInfo = null;
 
-        //
-        for (ReceiveNotPaidBillVO receiveNotPaidBillVO : pageList) {
-            //处理目的地:当有两条或两条以上时,则获取中转仓地址
-            if (!StringUtil.isNullOrEmpty(receiveNotPaidBillVO.getEndAddress())) {
-                String[] strs = receiveNotPaidBillVO.getEndAddress().split(",");
-                if (strs.length > 1) {
-                    receiveNotPaidBillVO.setEndAddress(getWarehouseAddress(receiveNotPaidBillVO.getOrderNo()));
+        if (SubOrderSignEnum.NL.getSignOne().equals(form.getCmd())) {
+            Map<String, Object> param = new HashMap<>();
+            param.put("cmd", form.getCmd());
+            form.setIsQueryOrderAddress(true);
+            Map<String, Object> dynamicSqlParam = this.dynamicSQLFindReceiveBillByPageParam(param);
+            pageInfo = this.baseMapper.findBaseNotPaidBillByPage(page, form, dynamicSqlParam);
+        } else {
+            pageInfo = baseMapper.findNotPaidBillByPage(page, form);
+
+        }
+
+        List<ReceiveNotPaidBillVO> pageList = pageInfo.getRecords();
+        if (CollectionUtils.isEmpty(pageList)) {
+            return pageInfo;
+        }
+
+        //内陆处理
+        if (SubOrderSignEnum.NL.getSignOne().equals(form.getCmd())) {
+            List<String> mainOrderNos = pageList.stream().map(ReceiveNotPaidBillVO::getOrderNo).collect(Collectors.toList());
+            List<OrderInlandTransportDetails> data = this.inlandTpClient.getInlandOrderInfoByMainOrderNos(mainOrderNos).getData();
+            pageList.forEach(e -> e.assembleInlandTPData(data));
+        }
+
+        //中港处理
+        if (SubOrderSignEnum.ZGYS.getSignOne().equals(form.getCmd())) {
+            for (ReceiveNotPaidBillVO receiveNotPaidBillVO : pageList) {
+                //处理目的地:当有两条或两条以上时,则获取中转仓地址
+                if (!StringUtil.isNullOrEmpty(receiveNotPaidBillVO.getEndAddress())) {
+                    String[] strs = receiveNotPaidBillVO.getEndAddress().split(",");
+                    if (strs.length > 1) {
+                        receiveNotPaidBillVO.setEndAddress(getWarehouseAddress(receiveNotPaidBillVO.getOrderNo()));
+                    }
                 }
             }
         }
+
         return pageInfo;
     }
 

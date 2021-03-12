@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.Inlandtransport.model.bo.QueryOrderForm;
 import com.jayud.Inlandtransport.model.po.OrderInlandTransport;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.Inlandtransport.model.vo.OrderInlandTransportDetails;
 import com.jayud.Inlandtransport.model.vo.OrderInlandTransportFormVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -25,4 +26,6 @@ public interface OrderInlandTransportMapper extends BaseMapper<OrderInlandTransp
     IPage<OrderInlandTransportFormVO> findByPage(Page<OrderInlandTransport> page,
                                                  @Param("form") QueryOrderForm form,
                                                  @Param("legalIds") List<Long> legalIds);
+
+    List<OrderInlandTransportDetails> getOrderInfoByMainOrderNos(@Param("mainOrderNos") List<String> mainOrderNos);
 }

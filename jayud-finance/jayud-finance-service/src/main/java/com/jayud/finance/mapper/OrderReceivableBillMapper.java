@@ -112,7 +112,7 @@ public interface OrderReceivableBillMapper extends BaseMapper<OrderReceivableBil
      * @return
      */
     ViewBillVO getViewBillByCostIds(@Param("costIds") List<Long> costIds, @Param("cmd") String cmd,
-                                    @Param("dynamicSqlParam")Map<String, Object> dynamicSqlParam);
+                                    @Param("dynamicSqlParam") Map<String, Object> dynamicSqlParam);
 
     /**
      * 查询账单明细
@@ -156,4 +156,15 @@ public interface OrderReceivableBillMapper extends BaseMapper<OrderReceivableBil
      * @return
      */
     IPage<OrderReceiveBillVO> findReceiveSubBillByPage(Page<OrderReceiveBillVO> page, @Param("form") QueryReceiveBillForm form, @Param("dynamicSqlParam") Map<String, Object> dynamicSqlParam, @Param("legalIds") List<Long> legalIds);
+
+
+    /**
+     * 应收未出账单基础列表分页查询
+     *
+     * @param form
+     * @return
+     */
+    IPage<ReceiveNotPaidBillVO> findBaseNotPaidBillByPage(Page page, @Param("form") QueryNotPaidBillForm form, @Param("dynamicSqlParam") Map<String, Object> dynamicSqlParam);
+
+
 }

@@ -1,8 +1,11 @@
 package com.jayud.finance.vo;
 
 import com.jayud.finance.enums.BillEnum;
+import com.jayud.finance.vo.InlandTP.OrderInlandSendCarsVO;
+import com.jayud.finance.vo.InlandTP.OrderInlandTransportDetails;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -126,5 +129,21 @@ public class PaymentNotPaidBillVO {
     public void setAuditStatus(String auditStatus) {
         this.auditStatus = auditStatus;
         this.isDelete = auditStatus.equals(BillEnum.EDIT_DEL.getCode());
+    }
+
+    public void assembleInlandTPData(List<OrderInlandTransportDetails> dataList) {
+        if (CollectionUtils.isEmpty(dataList)) {
+            return;
+        }
+        for (OrderInlandTransportDetails data : dataList) {
+            if (this.subOrderNo.equals(data.getOrderNo())) {
+                //派车数据
+                OrderInlandSendCarsVO sendCarsVO = data.getOrderInlandSendCarsVO();
+                if (sendCarsVO != null) {
+                    this.licensePlate = sendCarsVO.getLicensePlate();
+                }
+
+            }
+        }
     }
 }

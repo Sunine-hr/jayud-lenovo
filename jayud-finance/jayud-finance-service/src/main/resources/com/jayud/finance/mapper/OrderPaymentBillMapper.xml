@@ -18,6 +18,25 @@
         <result column="updated_time" property="updatedTime"/>
     </resultMap>
 
+
+    <sql id="TmsInfo">
+            (SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota WHERE ota.order_no = sub.order_no AND ota.opr_type = '1' GROUP BY sub.order_no) goodsDesc,
+            (SELECT GROUP_CONCAT(concat( ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id
+            WHERE ota.order_no = sub.order_no AND ota.opr_type = '1' GROUP BY sub.order_no) startAddress,
+            (SELECT GROUP_CONCAT(concat( ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN order_take_adr ota ON da.id = ota.delivery_id
+            WHERE ota.order_no = sub.order_no AND ota.opr_type = '2' GROUP BY sub.order_no) endAddress,
+            sub.vehicle_size vehicleSize,
+            (select sum(ota.plate_amount) from order_take_adr ota where ota.order_no = sub.order_no) pieceNum,
+            (select sum(ota.weight) from order_take_adr ota where ota.order_no = sub.order_no)	weight,
+            concat( vi.plate_number,',', vi.hk_number ) licensePlate,
+        </sql>
+
+    <sql id="GoodsAndOrderAddress">
+    	    (SELECT GROUP_CONCAT(g.name SEPARATOR ',') FROM goods g WHERE g.business_id = sub.id AND g.order_no = sub.order_no GROUP BY g.business_id,g.business_type) goodsDesc,
+            (SELECT GROUP_CONCAT(addr.address SEPARATOR ',') FROM order_address addr WHERE addr.business_id = sub.id AND addr.order_no = sub.order_no and (addr.type=0 or addr.type=3) GROUP BY addr.business_id,addr.business_type) startAddress,
+            (SELECT GROUP_CONCAT(addr.address SEPARATOR ',') FROM order_address addr WHERE addr.business_id = sub.id AND addr.order_no = sub.order_no and (addr.type=1 or addr.type=4) GROUP BY addr.business_id,addr.business_type) endAddress,
+        </sql>
+
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, bill_no, begin_account_term, end_account_term, settlement_currency, legal_name, customer_name, audit_status, make_user, make_time, audit_user, audit_time, apply_status, payment_amount,
@@ -270,6 +289,104 @@
             and temp.createdTimeStr <![CDATA[>=]]> #{form.beginCreatedTimeStr}
         </if>
     </select>
+
+    <select id="findBaseNotPaidBillByPage" parameterType="com.jayud.finance.bo.QueryNotPaidBillForm"
+            resultType="com.jayud.finance.vo.PaymentNotPaidBillVO">
+        select * from (
+        SELECT DISTINCT
+        opc.main_order_no orderNo,
+        opc.order_no subOrderNo,
+        pb.`name` bizCodeDesc,
+        DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
+        si.supplier_ch_name supplierChName,
+        <choose>
+            <when test="form.cmd == 'zgys'">
+                <include refid="TmsInfo"/>
+            </when>
+            <when test="form.isQueryOrderAddress">
+                <include refid="GoodsAndOrderAddress"/>
+            </when>
+        </choose>
+
+        ( SELECT GROUP_CONCAT( oc.yun_customs_no SEPARATOR ',' ) FROM order_customs oc WHERE oc.main_order_no =
+        oi.order_no ) yunCustomsNo,
+        cg.`name` costGenreName,
+        ct.code_name costTypeName,
+        ci.`name` costName,
+        (SELECT sum(rmb.amount) FROM order_payment_cost rmb WHERE rmb.id = opc.id AND rmb.currency_code = 'CNY' GROUP BY
+        rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) rmb,
+        (SELECT sum(rmb.amount) FROM order_payment_cost rmb WHERE rmb.id = opc.id AND rmb.currency_code = 'USD' GROUP BY
+        rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) dollar,
+        (SELECT sum(rmb.amount) FROM order_payment_cost rmb WHERE rmb.id = opc.id AND rmb.currency_code = 'EUR' GROUP BY
+        rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) euro,
+        (SELECT sum(rmb.amount) FROM order_payment_cost rmb WHERE rmb.id = opc.id AND rmb.currency_code = 'HKD' GROUP BY
+        rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) hKDollar,
+        (SELECT sum(rmb.change_amount) FROM order_payment_cost rmb WHERE rmb.id = opc.id GROUP BY
+        rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) localAmount,
+        opc.id costId,
+        opc.is_bill isBill
+        FROM
+        order_payment_cost opc
+        left join supplier_info si on si.supplier_code = opc.customer_code
+        LEFT JOIN order_info oi ON opc.main_order_no = oi.order_no
+        LEFT JOIN product_biz pb ON oi.biz_code = pb.id_code
+        LEFT JOIN cost_genre cg ON opc.cost_genre_id = cg.id
+        LEFT JOIN cost_type ct ON opc.cost_type_id = ct.id
+        LEFT JOIN cost_info ci ON opc.cost_code = ci.id_code
+        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+            left join ${dynamicSqlParam.table} sub on sub.order_no = opc.order_no
+            <!--            <if test="form.cmd == 'zgys'">-->
+            <!--                &#45;&#45; TODO 扩展连接-->
+
+            <!--            </if>-->
+        </if>
+        WHERE
+        opc.id NOT IN ( SELECT opbd.cost_id FROM order_payment_bill_detail opbd )
+        and (opc.is_bill != '2' and opc.is_bill != 'save_confirm')
+        and opc.`status` = '3'
+        and si.supplier_ch_name = #{form.supplierChName}
+
+        <choose>
+            <when test="form.cmd == 'main'">
+                and oi.legal_name = #{form.legalName}
+                and opc.is_sum_to_main = 1
+            </when>
+            <when test="form !=null and form.cmd !=''">
+                and sub.legal_name = #{form.legalName}
+                and opc.is_sum_to_main = 0 and opc.sub_type = #{form.cmd}
+            </when>
+        </choose>
+        ) temp where 1 = 1
+        <if test="form.startAddress != null and form.startAddress != ''">
+            and temp.startAddress like concat('%',#{form.startAddress},'%')
+        </if>
+        <if test="form.endAddress != null and form.endAddress != ''">
+            and temp.endAddress like concat('%',#{form.endAddress},'%')
+        </if>
+        <if test="form.costName != null and form.costName != ''">
+            and temp.costName like concat('%',#{form.costName},'%')
+        </if>
+        <if test="form.currencyCode == 'CNY'">
+            and temp.rmb is not null
+        </if>
+        <if test="form.currencyCode == 'USD'">
+            and temp.dollar is not null
+        </if>
+        <if test="form.currencyCode == 'HKD'">
+            and temp.hKDollar is not null
+        </if>
+        <if test="form.currencyCode == 'EUR'">
+            and temp.euro is not null
+        </if>
+        <if test="form.endCreatedTimeStr != null and form.endCreatedTimeStr !=''">
+            and temp.createdTimeStr <![CDATA[<=]]> #{form.endCreatedTimeStr}
+        </if>
+        <if test="form.beginCreatedTimeStr != null and form.beginCreatedTimeStr !=''">
+            and temp.createdTimeStr <![CDATA[>=]]> #{form.beginCreatedTimeStr}
+        </if>
+    </select>
+
+
     <select id="getBillOrderNum" resultType="java.lang.Integer">
       SELECT
 	    count( DISTINCT opbd.order_no ) billOrderNum
@@ -424,15 +541,15 @@
         <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
             sub.legal_name legalName,
         </if>
-<!--        <if test="cmd == 'bg'">-->
-<!--            oc.legal_name legalName,-->
-<!--        </if>-->
-<!--        <if test="cmd == 'zgys'">-->
-<!--            ot.legal_name legalName,-->
-<!--        </if>-->
-<!--        <if test="cmd == 'ky'">-->
-<!--            ao.legal_name legalName,-->
-<!--        </if>-->
+        <!--        <if test="cmd == 'bg'">-->
+        <!--            oc.legal_name legalName,-->
+        <!--        </if>-->
+        <!--        <if test="cmd == 'zgys'">-->
+        <!--            ot.legal_name legalName,-->
+        <!--        </if>-->
+        <!--        <if test="cmd == 'ky'">-->
+        <!--            ao.legal_name legalName,-->
+        <!--        </if>-->
         si.supplier_ch_name customerName
         FROM
         <if test="cmd == 'main'">
@@ -441,15 +558,15 @@
         <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
             ${dynamicSqlParam.table} sub LEFT JOIN order_payment_cost opc on sub.order_no = opc.order_no
         </if>
-<!--        <if test="cmd == 'bg'">-->
-<!--            order_customs oc LEFT JOIN order_payment_cost opc on oc.order_no = opc.order_no-->
-<!--        </if>-->
-<!--        <if test="cmd == 'zgys'">-->
-<!--            order_transport ot LEFT JOIN order_payment_cost opc on ot.order_no = opc.order_no-->
-<!--        </if>-->
-<!--        <if test="cmd == 'ky'">-->
-<!--            air_order ao LEFT JOIN order_payment_cost opc on ao.order_no = opc.order_no-->
-<!--        </if>-->
+        <!--        <if test="cmd == 'bg'">-->
+        <!--            order_customs oc LEFT JOIN order_payment_cost opc on oc.order_no = opc.order_no-->
+        <!--        </if>-->
+        <!--        <if test="cmd == 'zgys'">-->
+        <!--            order_transport ot LEFT JOIN order_payment_cost opc on ot.order_no = opc.order_no-->
+        <!--        </if>-->
+        <!--        <if test="cmd == 'ky'">-->
+        <!--            air_order ao LEFT JOIN order_payment_cost opc on ao.order_no = opc.order_no-->
+        <!--        </if>-->
         left join supplier_info si on si.supplier_code = opc.customer_code
         WHERE
         opc.id IN
@@ -480,10 +597,12 @@
         ifnull( opb.already_paid_amount, 0 ) alreadyPaidAmount,
         ifnull( opb.bill_order_num, 0 ) billOrderNum,
         ifnull( opb.bill_num, 0 ) billNum,
-        (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_bill != 'save_confirm' AND t1.is_sum_to_main
+        (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_bill !=
+        'save_confirm' AND t1.is_sum_to_main
         = '1' and t1.status = '3' and t1.customer_code = opc.customer_code and t1.main_order_no in (select o1.order_no
         from order_info o1 where o1.legal_entity_id = oi.legal_entity_id)) notPaidAmount,
-        (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_bill != 'save_confirm' AND
+        (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where t1.is_bill != '2' AND t1.is_bill !=
+        'save_confirm' AND
         t1.is_sum_to_main = '1' and t1.status = '3' and t1.customer_code = opc.customer_code and t1.main_order_no in
         (select o1.order_no from order_info o1 where o1.legal_entity_id = oi.legal_entity_id)) notPaidOrderNum
         FROM
@@ -566,24 +685,24 @@
         </if>
 
 
-<!--                <if test="form.cmd == 'zgys'">-->
-<!--                    left join order_transport ot on ot.order_no = opc.order_no-->
-<!--                    left join order_payment_bill opb on opb.legal_name = ot.legal_name-->
-<!--                    and opb.supplier_ch_name = opc.customer_name-->
-<!--                    where opc.is_sum_to_main = 0 and opc.sub_type = 'zgys' and opc.status = '3'-->
-<!--                    <if test="form.supplierChName != null and form.supplierChName != ''">-->
-<!--                        and si.supplier_ch_name like concat('%',#{form.supplierChName},'%')-->
-<!--                    </if>-->
-<!--                    <if test="form.legalName != null and form.legalName != ''">-->
-<!--                        and ot.legal_name like concat('%',#{form.legalName},'%')-->
-<!--                    </if>-->
-<!--                    <if test="legalIds != null">-->
-<!--                        and ot.`legal_entity_id` in-->
-<!--                        <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
-<!--                            #{legalId}-->
-<!--                        </foreach>-->
-<!--                    </if>-->
-<!--                </if>-->
+        <!--                <if test="form.cmd == 'zgys'">-->
+        <!--                    left join order_transport ot on ot.order_no = opc.order_no-->
+        <!--                    left join order_payment_bill opb on opb.legal_name = ot.legal_name-->
+        <!--                    and opb.supplier_ch_name = opc.customer_name-->
+        <!--                    where opc.is_sum_to_main = 0 and opc.sub_type = 'zgys' and opc.status = '3'-->
+        <!--                    <if test="form.supplierChName != null and form.supplierChName != ''">-->
+        <!--                        and si.supplier_ch_name like concat('%',#{form.supplierChName},'%')-->
+        <!--                    </if>-->
+        <!--                    <if test="form.legalName != null and form.legalName != ''">-->
+        <!--                        and ot.legal_name like concat('%',#{form.legalName},'%')-->
+        <!--                    </if>-->
+        <!--                    <if test="legalIds != null">-->
+        <!--                        and ot.`legal_entity_id` in-->
+        <!--                        <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
+        <!--                            #{legalId}-->
+        <!--                        </foreach>-->
+        <!--                    </if>-->
+        <!--                </if>-->
         <!--        <if test="form.cmd == 'bg'">-->
         <!--            left join order_customs oc on oc.order_no = opc.order_no-->
         <!--            left join order_payment_bill opb on opb.legal_name = oc.legal_name-->

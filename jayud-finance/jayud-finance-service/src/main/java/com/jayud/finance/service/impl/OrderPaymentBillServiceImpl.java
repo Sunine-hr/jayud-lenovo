@@ -18,6 +18,7 @@ import com.jayud.common.utils.DateUtils;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.enums.OrderBillCostTotalTypeEnum;
+import com.jayud.finance.feign.InlandTpClient;
 import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.mapper.OrderPaymentBillMapper;
@@ -28,6 +29,7 @@ import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.service.*;
 import com.jayud.finance.util.ReflectUtil;
 import com.jayud.finance.vo.*;
+import com.jayud.finance.vo.InlandTP.OrderInlandTransportDetails;
 import io.netty.util.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,18 +60,16 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
 
     @Autowired
     IOrderReceivableBillDetailService receivableBillDetailService;
-
     @Autowired
     IOrderReceivableBillService receivableBillService;
-
     @Autowired
     IOrderBillCostTotalService costTotalService;
-
     @Autowired
     ICurrencyRateService currencyRateService;
-
     @Autowired
     OauthClient oauthClient;
+    @Autowired
+    private InlandTpClient inlandTpClient;
 
     @Override
     public IPage<OrderPaymentBillVO> findPaymentBillByPage(QueryPaymentBillForm form) {
@@ -105,7 +105,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         List<String> billNos = resultList.stream().map(OrderPaymentBillNumVO::getBillNo).collect(Collectors.toList());
         List<OrderBillCostTotal> costTotals = this.costTotalService.getByBillNo(billNos, OrderBillCostTotalTypeEnum.PAYMENT.getCode());
         costTotals = costTotals.stream().collect(Collectors.collectingAndThen(
-                Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(e->e.getCurrencyCode() + ";" +e.getCurrentCurrencyCode()))), ArrayList::new));
+                Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(e -> e.getCurrencyCode() + ";" + e.getCurrentCurrencyCode()))), ArrayList::new));
 
         //查询币种名称
         List<InitComboxStrVO> data = omsClient.initCurrencyInfo().getData();
@@ -125,14 +125,36 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         Page<PaymentNotPaidBillVO> page = new Page(form.getPageNum(), form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.desc("temp.costId"));
-        IPage<PaymentNotPaidBillVO> pageInfo = baseMapper.findNotPaidBillByPage(page, form);
+
+        IPage<PaymentNotPaidBillVO> pageInfo = null;
+        if (SubOrderSignEnum.NL.getSignOne().equals(form.getCmd())) {
+            Map<String, Object> param = new HashMap<>();
+            param.put("cmd", form.getCmd());
+            form.setIsQueryOrderAddress(true);
+            Map<String, Object> dynamicSqlParam = this.dynamicSQLFindReceiveBillByPageParam(param);
+            pageInfo = this.baseMapper.findBaseNotPaidBillByPage(page, form, dynamicSqlParam);
+        } else {
+            pageInfo = baseMapper.findNotPaidBillByPage(page, form);
+        }
+
         List<PaymentNotPaidBillVO> pageList = pageInfo.getRecords();
-        for (PaymentNotPaidBillVO paymentNotPaidBillVO : pageList) {
-            //处理目的地:当有两条或两条以上时,则获取中转仓地址
-            if (!StringUtil.isNullOrEmpty(paymentNotPaidBillVO.getEndAddress())) {
-                String[] strs = paymentNotPaidBillVO.getEndAddress().split(",");
-                if (strs.length > 1) {
-                    paymentNotPaidBillVO.setEndAddress(receivableBillService.getWarehouseAddress(paymentNotPaidBillVO.getOrderNo()));
+
+        //内陆处理
+        if (SubOrderSignEnum.NL.getSignOne().equals(form.getCmd())) {
+            List<String> mainOrderNos = pageList.stream().map(PaymentNotPaidBillVO::getOrderNo).collect(Collectors.toList());
+            List<OrderInlandTransportDetails> data = this.inlandTpClient.getInlandOrderInfoByMainOrderNos(mainOrderNos).getData();
+            pageList.forEach(e -> e.assembleInlandTPData(data));
+        }
+
+        //中港处理
+        if (SubOrderSignEnum.ZGYS.getSignOne().equals(form.getCmd())) {
+            for (PaymentNotPaidBillVO paymentNotPaidBillVO : pageList) {
+                //处理目的地:当有两条或两条以上时,则获取中转仓地址
+                if (!StringUtil.isNullOrEmpty(paymentNotPaidBillVO.getEndAddress())) {
+                    String[] strs = paymentNotPaidBillVO.getEndAddress().split(",");
+                    if (strs.length > 1) {
+                        paymentNotPaidBillVO.setEndAddress(receivableBillService.getWarehouseAddress(paymentNotPaidBillVO.getOrderNo()));
+                    }
                 }
             }
         }

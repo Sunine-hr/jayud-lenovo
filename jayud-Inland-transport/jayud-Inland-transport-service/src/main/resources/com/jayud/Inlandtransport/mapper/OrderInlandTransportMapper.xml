@@ -4,23 +4,59 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.Inlandtransport.model.po.OrderInlandTransport">
-        <id column="id" property="id" />
-        <result column="main_order_no" property="mainOrderNo" />
-        <result column="order_no" property="orderNo" />
-        <result column="process_status" property="processStatus" />
-        <result column="status" property="status" />
-        <result column="vehicle_type" property="vehicleType" />
-        <result column="vehicle_size" property="vehicleSize" />
-        <result column="unit_code" property="unitCode" />
-        <result column="legal_name" property="legalName" />
-        <result column="legal_entity_id" property="legalEntityId" />
-        <result column="need_input_cost" property="needInputCost" />
-        <result column="order_taker" property="orderTaker" />
-        <result column="receiving_orders_date" property="receivingOrdersDate" />
-        <result column="create_user" property="createUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_user" property="updateUser" />
-        <result column="update_time" property="updateTime" />
+        <id column="id" property="id"/>
+        <result column="main_order_no" property="mainOrderNo"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="process_status" property="processStatus"/>
+        <result column="status" property="status"/>
+        <result column="vehicle_type" property="vehicleType"/>
+        <result column="vehicle_size" property="vehicleSize"/>
+        <result column="unit_code" property="unitCode"/>
+        <result column="legal_name" property="legalName"/>
+        <result column="legal_entity_id" property="legalEntityId"/>
+        <result column="need_input_cost" property="needInputCost"/>
+        <result column="order_taker" property="orderTaker"/>
+        <result column="receiving_orders_date" property="receivingOrdersDate"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+
+    <resultMap id="OrderInfoMap" type="com.jayud.Inlandtransport.model.vo.OrderInlandTransportDetails">
+        <id column="id" property="id"/>
+        <result column="main_order_no" property="mainOrderNo"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="process_status" property="processStatus"/>
+        <result column="status" property="status"/>
+        <result column="vehicle_type" property="vehicleType"/>
+        <result column="vehicle_size" property="vehicleSize"/>
+        <result column="unit_code" property="unitCode"/>
+        <result column="legal_name" property="legalName"/>
+        <result column="legal_entity_id" property="legalEntityId"/>
+        <result column="need_input_cost" property="needInputCost"/>
+        <result column="order_taker" property="orderTaker"/>
+        <result column="receiving_orders_date" property="receivingOrdersDate"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+
+        <association property="orderInlandSendCarsVO"
+                     javaType="com.jayud.Inlandtransport.model.vo.OrderInlandSendCarsVO">
+            <id column="carId" property="id"/>
+            <result column="transport_no" property="transportNo"/>
+            <result column="order_no" property="orderNo"/>
+            <result column="order_id" property="orderId"/>
+            <result column="vehicle_type" property="vehicleType"/>
+            <result column="vehicle_size" property="vehicleSize"/>
+            <result column="driver_name" property="driverName"/>
+            <result column="driver_phone" property="driverPhone"/>
+            <result column="license_plate" property="licensePlate"/>
+            <result column="supplier_name" property="supplierName"/>
+            <result column="supplier_id" property="supplierId"/>
+            <result column="remarks" property="remarks"/>
+            <result column="describes" property="describes"/>
+        </association>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -30,7 +66,7 @@
 
 
     <select id="findByPage" resultType="com.jayud.Inlandtransport.model.vo.OrderInlandTransportFormVO">
-       select
+        select
         i.id,
         i.main_order_no mainOrderNo,
         i.order_no orderNo,i.status,
@@ -95,4 +131,29 @@
         order by i.id desc
     </select>
 
+
+    <select id="getOrderInfoByMainOrderNos" resultMap="OrderInfoMap">
+        select
+        i.id,
+        i.main_order_no,
+        i.order_no,i.status,
+        i.process_status,
+        i.create_user, i.create_time,
+        i.unit_code,
+        i.legal_entity_id,
+        i.legal_name,
+        i.vehicle_size,
+        ic.transport_no,ic.vehicle_type,ic.vehicle_size,ic.driver_name,
+        ic.driver_phone,ic.license_plate,ic.supplier_name,
+        ic.supplier_id supplierId,ic.remarks,ic.describes
+        FROM
+        order_inland_transport i
+        left join order_inland_send_cars ic on i.order_no=ic.order_no
+        <if test="mainOrderNos !=null and mainOrderNos.size > 0">
+            and i.main_order_no IN
+            <foreach collection="mainOrderNos" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
 </mapper>

@@ -80,4 +80,12 @@ public interface IOrderInlandTransportService extends IService<OrderInlandTransp
      * @return
      */
     List<OrderInlandTransport> getOrdersByOrderNos(List<String> orderNos);
+
+
+    /**
+     * 根据主订单号集合查询内陆订单详情
+     * @param mainOrderNos
+     * @return
+     */
+    List<OrderInlandTransportDetails> getInlandOrderInfoByMainOrderNos(List<String> mainOrderNos);
 }

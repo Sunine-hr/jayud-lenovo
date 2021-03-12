@@ -32,8 +32,8 @@
 
     <sql id="GoodsAndOrderAddress">
     	    (SELECT GROUP_CONCAT(g.name SEPARATOR ',') FROM goods g WHERE g.business_id = sub.id AND g.order_no = sub.order_no GROUP BY g.business_id,g.business_type) goodsDesc,
-            (SELECT GROUP_CONCAT(addr.address SEPARATOR ',') FROM order_address addr WHERE addr.business_id = sub.id AND g.order_no = sub.order_no and (addr.type=0 or addr.type=3) GROUP BY addr.business_id,addr.business_type) startAddress,
-            (SELECT GROUP_CONCAT(addr.address SEPARATOR ',') FROM order_address addr WHERE addr.business_id = sub.id AND g.order_no = sub.order_no and (addr.type=1 or addr.type=4) GROUP BY addr.business_id,addr.business_type) endAddress,
+            (SELECT GROUP_CONCAT(addr.address SEPARATOR ',') FROM order_address addr WHERE addr.business_id = sub.id AND addr.order_no = sub.order_no and (addr.type=0 or addr.type=3) GROUP BY addr.business_id,addr.business_type) startAddress,
+            (SELECT GROUP_CONCAT(addr.address SEPARATOR ',') FROM order_address addr WHERE addr.business_id = sub.id AND addr.order_no = sub.order_no and (addr.type=1 or addr.type=4) GROUP BY addr.business_id,addr.business_type) endAddress,
         </sql>
 
     <!-- 通用查询结果列 -->
@@ -227,20 +227,10 @@
             <when test="form.cmd == 'zgys'">
                 <include refid="TmsInfo"/>
             </when>
-            <when test="form.cmd='nl'"></when>
-            <otherwise>
+            <when test="form.isQueryOrderAddress">
                 <include refid="GoodsAndOrderAddress"/>
-            </otherwise>
+            </when>
         </choose>
-        -- (SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota WHERE ota.order_no = ot.order_no AND
-        ota.opr_type =
-        -- '1' GROUP BY ot.order_no) goodsDesc,
-        -- (SELECT GROUP_CONCAT(concat( ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN
-        -- order_take_adr ota ON da.id = ota.delivery_id
-        -- WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' GROUP BY ot.order_no) startAddress,
-        -- (SELECT GROUP_CONCAT(concat( ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN
-        -- order_take_adr ota ON da.id = ota.delivery_id
-        -- WHERE ota.order_no = ot.order_no AND ota.opr_type = '2' GROUP BY ot.order_no) endAddress,
         ( SELECT GROUP_CONCAT( oc.yun_customs_no SEPARATOR ',' ) FROM order_customs oc WHERE oc.main_order_no =
         oi.order_no ) yunCustomsNo,
         cg.`name` costGenreName,
@@ -261,8 +251,7 @@
         (SELECT sum(rmb.change_amount) FROM order_receivable_cost rmb WHERE rmb.id = orc.id GROUP BY
         rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) localAmount,
         orc.id costId,
-        orc.is_bill isBill,
-        concat(vi.plate_number,' ',vi.hk_number) licensePlate
+        orc.is_bill isBill
         FROM
         order_receivable_cost orc
         LEFT JOIN order_info oi ON orc.main_order_no = oi.order_no
@@ -273,19 +262,18 @@
         LEFT JOIN cost_info ci ON orc.cost_code = ci.id_code
         <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
             left join ${dynamicSqlParam.table} sub on sub.order_no = orc.order_no
-            <if test="form.cmd == 'zgys'">
-                --                 TODO 扩展连接
+            <!--            <if test="form.cmd == 'zgys'">-->
+            <!--                &#45;&#45; TODO 扩展连接-->
 
-            </if>
+            <!--            </if>-->
         </if>
 
 
-        LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
-        LEFT JOIN order_send_cars osc ON ot.order_no = osc.order_no
-        left join order_customs oc on oc.order_no = orc.order_no
-        left join vehicle_info vi on vi.id = osc.vehicle_id
-        left join air_order ao on ao.order_no = orc.order_no
-        left join sea_order so on so.order_no = orc.order_no
+        -- LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
+        -- LEFT JOIN order_send_cars osc ON ot.order_no = osc.order_no
+        -- left join order_customs oc on oc.order_no = orc.order_no
+        -- left join air_order ao on ao.order_no = orc.order_no
+        -- left join sea_order so on so.order_no = orc.order_no
         WHERE
         orc.id NOT IN ( SELECT orbd.cost_id FROM order_receivable_bill_detail orbd where orbd.audit_status!='edit_del')
         and (orc.is_bill != '2' and orc.is_bill!='save_confirm')
@@ -299,28 +287,26 @@
             </when>
             <when test="form !=null and form.cmd !=''">
                 and sub.legal_name = #{form.legalName}
-                and orc.is_sum_to_main = 0 and orc.sub_type = 'zgys'
+                and orc.is_sum_to_main = 0 and orc.sub_type = #{form.cmd}
             </when>
         </choose>
 
-
-
-        <if test="form.cmd == 'zgys'">
-            and ot.legal_name = #{form.legalName}
-            and orc.is_sum_to_main = 0 and orc.sub_type = 'zgys'
-        </if>
-        <if test="form.cmd == 'bg'">
-            and oc.legal_name = #{form.legalName}
-            and orc.is_sum_to_main = 0 and orc.sub_type = 'bg'
-        </if>
-        <if test="form.cmd == 'ky'">
-            and ao.legal_name = #{form.legalName}
-            and orc.is_sum_to_main = 0 and orc.sub_type = 'ky'
-        </if>
-        <if test="form.cmd == 'hy'">
-            and so.legal_name = #{form.legalName}
-            and orc.is_sum_to_main = 0 and orc.sub_type = 'hy'
-        </if>
+<!--        <if test="form.cmd == 'zgys'">-->
+<!--            and ot.legal_name = #{form.legalName}-->
+<!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'zgys'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'bg'">-->
+<!--            and oc.legal_name = #{form.legalName}-->
+<!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'bg'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'ky'">-->
+<!--            and ao.legal_name = #{form.legalName}-->
+<!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'ky'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'hy'">-->
+<!--            and so.legal_name = #{form.legalName}-->
+<!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'hy'-->
+<!--        </if>-->
         ) temp where 1 = 1
         <if test="form.startAddress != null and form.startAddress != ''">
             and temp.startAddress like concat('%',#{form.startAddress},'%')

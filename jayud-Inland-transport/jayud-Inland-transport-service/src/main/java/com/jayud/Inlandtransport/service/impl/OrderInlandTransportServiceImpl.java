@@ -29,6 +29,7 @@ import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.jayud.common.enums.OrderStatusEnum.getInlandTPStatus;
 
@@ -333,6 +335,23 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
         QueryWrapper<OrderInlandTransport> condition = new QueryWrapper<>();
         condition.lambda().in(OrderInlandTransport::getOrderNo, orderNos);
         return this.baseMapper.selectList(condition);
+    }
+
+
+    @Override
+    public List<OrderInlandTransportDetails> getInlandOrderInfoByMainOrderNos(List<String> mainOrderNos) {
+        //查询订单信息
+        List<OrderInlandTransportDetails> details = this.baseMapper.getOrderInfoByMainOrderNos(mainOrderNos);
+        if (CollectionUtils.isEmpty(details)) {
+            return new ArrayList<>();
+        }
+        List<Long> subOrderIds = details.stream().map(OrderInlandTransportDetails::getId).collect(Collectors.toList());
+
+        //查询提货/送货地址
+        List<OrderDeliveryAddress> deliveryAddresses = this.omsClient.getDeliveryAddress(subOrderIds,
+                BusinessTypeEnum.NL.getCode()).getData();
+        details.forEach(e -> e.assembleDeliveryAddress(deliveryAddresses));
+        return details;
     }
 
     private void updateSendCars(ProcessOptForm form) {

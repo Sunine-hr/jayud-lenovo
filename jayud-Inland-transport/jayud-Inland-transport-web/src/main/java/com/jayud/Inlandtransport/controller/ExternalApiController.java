@@ -98,4 +98,13 @@ public class ExternalApiController {
         List<OrderInlandTransport> list = this.orderInlandTransportService.getInlandOrderByMainOrderNos(mainOrderNos);
         return ApiResult.ok(list);
     }
+
+
+
+    @ApiOperation(value = "根据主订单号集合查询内陆订单详情")
+    @PostMapping(value = "/api/getInlandOrderInfoByMainOrderNos")
+    public ApiResult<List<OrderInlandTransportDetails>> getInlandOrderInfoByMainOrderNos(@RequestParam("mainOrderNos") List<String> mainOrderNos) {
+        List<OrderInlandTransportDetails> list = this.orderInlandTransportService.getInlandOrderInfoByMainOrderNos(mainOrderNos);
+        return ApiResult.ok(list);
+    }
 }

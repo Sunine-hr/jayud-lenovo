@@ -10,16 +10,10 @@ import com.jayud.Inlandtransport.model.vo.GoodsVO;
 import com.jayud.Inlandtransport.model.vo.OrderAddressVO;
 import com.jayud.Inlandtransport.model.vo.SendCarPdfVO;
 import com.jayud.Inlandtransport.service.IOrderInlandSendCarsService;
-import com.jayud.common.CommonResult;
-import com.jayud.common.constant.CommonConstant;
-import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderTypeEnum;
-import com.jayud.common.utils.StringUtils;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.Collections;
 import java.util.List;

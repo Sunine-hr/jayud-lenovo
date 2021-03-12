@@ -195,6 +195,8 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
             String billCopePayTotal = amountTotal.toString()+" "+currencyName;
             billCostInfoVO.setBillCopePayForms(billCopePayVOS);
             billCostInfoVO.setBillCopePayTotal(billCopePayTotal);
+        }else{
+            billCostInfoVO.setBillCopePayForms(billCopePayVOS);
         }
         oceanBillVO.setBillCostInfoVO(billCostInfoVO);
 

@@ -174,6 +174,25 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<OrderCustomsFile> orderCustomsFiles = orderCustomsFileMapper.selectList(queryWrapper1);
         List<OrderCustomsFileVO> orderCustomsFileVOList =
                 ConvertUtil.convertList(orderCustomsFiles, OrderCustomsFileVO.class);
+        if (orderCustomsFileVOList.size() > 0) {
+            orderCustomsFileVOList.forEach(orderCustomsFileVO -> {
+                String templateUrl = orderCustomsFileVO.getTemplateUrl();
+                if(templateUrl != null && templateUrl.length() > 0){
+                    String json = templateUrl;
+                    try {
+                        List<TemplateUrlVO> templateUrlVOS = JSON.parseObject(json, new TypeReference<List<TemplateUrlVO>>() {
+                        });
+                        orderCustomsFileVO.setTemplateUrlVOS(templateUrlVOS);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        System.out.println("json格式错误");
+                        orderCustomsFileVO.setTemplateUrlVOS(new ArrayList<>());
+                    }
+                }else{
+                    orderCustomsFileVO.setTemplateUrlVOS(new ArrayList<>());
+                }
+            });
+        }
         orderInfoVO.setOrderCustomsFileVOList(orderCustomsFileVOList);
 
         //订单对应清关文件list
@@ -182,6 +201,25 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<OrderClearanceFile> orderClearanceFiles = orderClearanceFileMapper.selectList(queryWrapper2);
         List<OrderClearanceFileVO> orderClearanceFileVOList =
                 ConvertUtil.convertList(orderClearanceFiles, OrderClearanceFileVO.class);
+        if(orderClearanceFileVOList.size() > 0){
+            orderClearanceFileVOList.forEach(orderClearanceFileVO -> {
+                String templateUrl = orderClearanceFileVO.getTemplateUrl();
+                if(templateUrl != null && templateUrl.length() > 0){
+                    String json = templateUrl;
+                    try {
+                        List<TemplateUrlVO> templateUrlVOS = JSON.parseObject(json, new TypeReference<List<TemplateUrlVO>>() {
+                        });
+                        orderClearanceFileVO.setTemplateUrlVOS(templateUrlVOS);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        System.out.println("json格式错误");
+                        orderClearanceFileVO.setTemplateUrlVOS(new ArrayList<>());
+                    }
+                }else{
+                    orderClearanceFileVO.setTemplateUrlVOS(new ArrayList<>());
+                }
+            });
+        }
         orderInfoVO.setOrderClearanceFileVOList(orderClearanceFileVOList);
         return CommonResult.success(orderInfoVO);
     }

@@ -120,7 +120,7 @@ public class OrderInfoController {
     }
 
     //订单管理-修改费用信息
-    @ApiModelProperty(value = "订单管理-修改费用信息")
+    @ApiOperation(value = "订单管理-修改费用信息")
     @PostMapping("/updateOrderInfoCost")
     @ApiOperationSupport(order = 12)
     public CommonResult updateOrderInfoCost(@RequestBody OrderInfoCostForm form){

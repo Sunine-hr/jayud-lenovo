@@ -60,7 +60,7 @@ public class OfferInfo extends Model<OfferInfo> {
     @JSONField(ordinal = 7, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime jkcTime;
 
-    @ApiModelProperty(value = "类型1整柜 2散柜", position = 8)
+    @ApiModelProperty(value = "类型1整柜 2拼箱", position = 8)
     @JSONField(ordinal = 8)
     private Integer types;
 

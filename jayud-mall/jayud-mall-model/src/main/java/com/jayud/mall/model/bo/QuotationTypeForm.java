@@ -52,7 +52,7 @@ public class QuotationTypeForm {
     @JSONField(ordinal = 9)
     private String status;
 
-    @ApiModelProperty(value = "类型1整柜 2散柜", position = 10)
+    @ApiModelProperty(value = "类型1整柜 2拼箱", position = 10)
     @JSONField(ordinal = 10)
     private String types;
 

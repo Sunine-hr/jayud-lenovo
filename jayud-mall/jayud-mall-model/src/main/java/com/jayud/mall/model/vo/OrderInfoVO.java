@@ -171,7 +171,7 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "报价名称(商品名称)(服务名称)(运价名称)", position = 33)
     private String names;
 
-    @ApiModelProperty(value = "类型1整柜 2散柜(货物类型)(柜型)", position = 34)
+    @ApiModelProperty(value = "类型(1整柜 2拼箱)(货物类型)(柜型)", position = 34)
     private Integer types;
 
     @ApiModelProperty(value = "开船日期", position = 35)

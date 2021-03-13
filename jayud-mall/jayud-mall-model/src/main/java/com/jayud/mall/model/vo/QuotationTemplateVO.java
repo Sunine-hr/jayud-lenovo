@@ -22,7 +22,7 @@ public class QuotationTemplateVO {
     @JSONField(ordinal = 1)
     private Long id;
 
-    @ApiModelProperty(value = "模板类型(1整柜 2散柜)", position = 2)
+    @ApiModelProperty(value = "模板类型(1整柜 2拼箱)", position = 2)
     @JSONField(ordinal = 2)
     private Integer types;
 
@@ -99,7 +99,7 @@ public class QuotationTemplateVO {
     @JSONField(ordinal = 19)
     private String areaId;
 
-    @ApiModelProperty(value = "报价类型(1整柜 2散柜)", position = 20)
+    @ApiModelProperty(value = "报价类型(1整柜 2拼箱)", position = 20)
     @JSONField(ordinal = 20)
     private Integer qidtype;
 

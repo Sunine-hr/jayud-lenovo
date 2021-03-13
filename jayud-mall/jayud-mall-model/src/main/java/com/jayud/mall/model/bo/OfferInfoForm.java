@@ -51,7 +51,7 @@ public class OfferInfoForm {
     @NotNull(message = "截亏仓日期不能为空")
     private LocalDateTime jkcTime;
 
-    @ApiModelProperty(value = "类型1整柜 2散柜", position = 8)
+    @ApiModelProperty(value = "类型(1整柜 2拼箱)", position = 8)
     @JSONField(ordinal = 8)
     private Integer types;
 

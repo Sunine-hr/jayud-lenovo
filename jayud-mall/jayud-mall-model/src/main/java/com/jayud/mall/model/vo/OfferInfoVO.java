@@ -47,7 +47,7 @@ public class OfferInfoVO {
     @JSONField(ordinal = 7)
     private LocalDateTime jkcTime;
 
-    @ApiModelProperty(value = "报价-类型1整柜 2散柜", position = 8)
+    @ApiModelProperty(value = "报价-类型(1整柜 2拼箱)", position = 8)
     @JSONField(ordinal = 8)
     private Integer types;
 
@@ -133,7 +133,7 @@ public class OfferInfoVO {
     @JSONField(ordinal = 27)
     private String areaId;
 
-    @ApiModelProperty(value = "报价类型(1整柜 2散柜)", position = 28)
+    @ApiModelProperty(value = "报价类型(1整柜 2拼箱)", position = 28)
     @JSONField(ordinal = 28)
     private Integer qidtype;
 

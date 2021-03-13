@@ -19,7 +19,7 @@ public class QuotationTemplateForm {
     @JSONField(ordinal = 1)
     private Long id;
 
-    @ApiModelProperty(value = "模板类型(1整柜 2散柜)", position = 2)
+    @ApiModelProperty(value = "模板类型(1整柜 2拼箱)", position = 2)
     @JSONField(ordinal = 2)
     private Integer types;
 
@@ -120,7 +120,7 @@ public class QuotationTemplateForm {
     @NotNull(message = "集货仓库不能为空")
     private List<ShippingAreaForm> areaIdarr;
 
-    @ApiModelProperty(value = "报价类型(1整柜 2散柜)", position = 20)
+    @ApiModelProperty(value = "报价类型(1整柜 2拼箱)", position = 20)
     @JSONField(ordinal = 20)
     @NotNull(message = "报价类型不能为空")
     private Integer qidtype;

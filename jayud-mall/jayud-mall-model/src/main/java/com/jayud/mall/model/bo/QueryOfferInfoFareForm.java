@@ -17,7 +17,7 @@ public class QueryOfferInfoFareForm extends BasePageForm{
     @JSONField(ordinal = 2)
     private Integer tid;
 
-    @ApiModelProperty(value = "柜型(1整柜 2散柜)", position = 3)
+    @ApiModelProperty(value = "柜型(1整柜 2拼箱)", position = 3)
     @JSONField(ordinal = 3)
     private Integer types;
 

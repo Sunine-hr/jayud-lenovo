@@ -36,4 +36,11 @@ public interface TaskMapper extends BaseMapper<Task> {
      * @return
      */
     TaskVO findTaskById(@Param("id") Long id);
+
+    /**
+     * 根据任务代码，查询任务
+     * @param taskCode
+     * @return
+     */
+    TaskVO findTaskByTaskCode(@Param("taskCode") String taskCode);
 }

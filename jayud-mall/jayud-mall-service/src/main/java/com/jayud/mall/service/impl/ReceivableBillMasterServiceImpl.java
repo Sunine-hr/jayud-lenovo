@@ -2,6 +2,7 @@ package com.jayud.mall.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
@@ -139,7 +140,7 @@ public class ReceivableBillMasterServiceImpl extends ServiceImpl<ReceivableBillM
         //定义分页参数
         Page<ReceivableBillMasterVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
-        //page.addOrder(OrderItem.desc("t.id"));
+        page.addOrder(OrderItem.desc("t.id"));
         IPage<ReceivableBillMasterVO> pageInfo = receivableBillMasterMapper.findReceivableBillMasterByPage(page, form);
         return pageInfo;
     }

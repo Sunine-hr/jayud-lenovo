@@ -22,7 +22,7 @@ public interface TrailerClient {
      * 创建拖车单
      */
     @RequestMapping(value = "/api/trailer/createOrder")
-    ApiResult createOrder(@RequestBody InputTrailerOrderFrom inputTrailerOrderFrom);
+    ApiResult<String> createOrder(@RequestBody InputTrailerOrderFrom inputTrailerOrderFrom);
 
     /**
      * 根据主订单号获取拖车单信息

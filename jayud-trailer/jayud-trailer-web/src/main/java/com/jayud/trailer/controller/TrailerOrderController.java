@@ -322,9 +322,9 @@ public class TrailerOrderController {
         if (!ProcessStatusEnum.PROCESSING.getCode().equals(trailerOrder.getProcessStatus())) {
             return CommonResult.error(400, "当前订单无法操作");
         }
-        if(!trailerOrder.getStatus().equals(form.getStatus())){
-            return CommonResult.error(400, "当前订单正在操作");
-        }
+//        if(!trailerOrder.getStatus().equals(form.getStatus())){
+//            return CommonResult.error(400, "当前订单正在操作");
+//        }
 //
         String orderProcessNode = (String)omsClient.getOrderProcessNode(trailerOrder.getMainOrderNo(),trailerOrder.getOrderNo(),trailerOrder.getStatus()).getData();
 

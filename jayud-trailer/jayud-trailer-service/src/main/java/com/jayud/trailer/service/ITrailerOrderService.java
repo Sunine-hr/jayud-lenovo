@@ -23,7 +23,7 @@ public interface ITrailerOrderService extends IService<TrailerOrder> {
      * 创建拖车单
      * @param addTrailerOrderFrom
      */
-    void createOrder(AddTrailerOrderFrom addTrailerOrderFrom);
+    String createOrder(AddTrailerOrderFrom addTrailerOrderFrom);
 
     boolean isExistOrder(String orderNo);
 

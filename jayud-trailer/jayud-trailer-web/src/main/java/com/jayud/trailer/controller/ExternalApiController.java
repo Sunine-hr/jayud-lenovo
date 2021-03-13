@@ -36,9 +36,9 @@ public class ExternalApiController {
      * @return
      */
     @RequestMapping(value = "/api/trailer/createOrder")
-    public ApiResult createOrder(@RequestBody AddTrailerOrderFrom addTrailerOrderFrom) {
-        trailerOrderService.createOrder(addTrailerOrderFrom);
-        return ApiResult.ok();
+    public ApiResult<String> createOrder(@RequestBody AddTrailerOrderFrom addTrailerOrderFrom) {
+        String order = trailerOrderService.createOrder(addTrailerOrderFrom);
+        return ApiResult.ok(order);
     }
 
     /**

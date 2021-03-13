@@ -65,11 +65,8 @@ public class TrailerOrderImportVO extends Model<TrailerOrderImportVO> {
     @ApiModelProperty(value = "车型尺寸")
     private String cabinetSizeName;
 
-    //@ApiModelProperty(value = "车牌号")
-    private String plateNumber;
-
     @ApiModelProperty(value = "车牌号")
-    private String plateNumberName;
+    private String plateNumber;
 
     //@ApiModelProperty(value = "状态(TT_0待接单,TT_1拖车接单,TT_2拖车派车,TT_3派车审核,TT_4拖车提柜,TT_5拖车到仓,TT_6拖车离仓,TT_7拖车过磅,TT_8确认还柜)")
     private String status;
@@ -196,7 +193,7 @@ public class TrailerOrderImportVO extends Model<TrailerOrderImportVO> {
 //    @ApiModelProperty(value = "货品信息")
 //    private List<GoodsVO> goodsForms;
 
-    @ApiModelProperty(value = "派车信息")
+    //@ApiModelProperty(value = "派车信息")
     private TrailerDispatchVO trailerDispatchVO;
 
     @ApiModelProperty(value = "附件信息集合")

@@ -72,7 +72,7 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
     private ITrailerDispatchService trailerDispatchService;
 
     @Override
-    public void createOrder(AddTrailerOrderFrom addTrailerOrderFrom) {
+    public String createOrder(AddTrailerOrderFrom addTrailerOrderFrom) {
         LocalDateTime now = LocalDateTime.now();
         addTrailerOrderFrom.getPathAndName();
         TrailerOrder trailerOrder = ConvertUtil.convert(addTrailerOrderFrom, TrailerOrder.class);
@@ -137,7 +137,6 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
             //获取用户地址
             List<AddTrailerOrderAddressForm> orderAddressForms = addTrailerOrderFrom.getOrderAddressForms();
             List<AddOrderAddressForm> orderAddressForms1 = new ArrayList<>();
-            List<AddGoodsForm> goodsForms = new ArrayList<>();
             for (AddTrailerOrderAddressForm addTrailerOrderAddressForm : orderAddressForms) {
 
                 AddGoodsForm goodsForm = new AddGoodsForm();
@@ -175,7 +174,7 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
             }
 
         }
-
+        return trailerOrder.getOrderNo();
     }
 
     /**

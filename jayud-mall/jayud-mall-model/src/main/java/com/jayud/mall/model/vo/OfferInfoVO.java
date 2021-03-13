@@ -247,4 +247,8 @@ public class OfferInfoVO {
     @JSONField(ordinal = 50)
     private List<String> remarksList;
 
+    @ApiModelProperty(value = "运价对应目的仓库代码(s)", position = 51)
+    @JSONField(ordinal = 51)
+    private String arriveWarehouseCodes;
+
 }

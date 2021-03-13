@@ -24,4 +24,8 @@ public class QueryOfferInfoFareForm extends BasePageForm{
     @ApiModelProperty(value = "客户id(当前登录客户id)", position = 4)
     @JSONField(ordinal = 4)
     private Integer customerId;
+
+    @ApiModelProperty(value = "目的仓库id(fab_warehouse id)", position = 5)
+    @JSONField(ordinal = 5)
+    private Integer arriveWarehouseId;
 }

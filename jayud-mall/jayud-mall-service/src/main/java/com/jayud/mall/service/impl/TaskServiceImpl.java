@@ -2,7 +2,6 @@ package com.jayud.mall.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -54,17 +53,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task> implements IT
 
     @Override
     public List<TaskVO> findTask(TaskQueryForm form) {
-        QueryWrapper<Task> queryWrapper = new QueryWrapper<>();
-        String taskCode = form.getTaskCode();
-        String taskName = form.getTaskName();
-        if(!StrUtil.hasEmpty(taskCode)){
-            queryWrapper.like("task_code", taskCode);
-        }
-        if(!StrUtil.hasEmpty(taskName)){
-            queryWrapper.like("task_name", taskName);
-        }
-        List<Task> list = this.list(queryWrapper);
-        List<TaskVO> taskVOS = ConvertUtil.convertList(list, TaskVO.class);
+        List<TaskVO> taskVOS = taskMapper.findTask(form);
         return taskVOS;
     }
 

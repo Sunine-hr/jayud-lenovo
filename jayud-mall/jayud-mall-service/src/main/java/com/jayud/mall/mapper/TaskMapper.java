@@ -3,12 +3,15 @@ package com.jayud.mall.mapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.mall.model.bo.QueryTaskForm;
+import com.jayud.mall.model.bo.TaskQueryForm;
 import com.jayud.mall.model.po.Task;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.vo.TaskVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * <p>
@@ -43,4 +46,11 @@ public interface TaskMapper extends BaseMapper<Task> {
      * @return
      */
     TaskVO findTaskByTaskCode(@Param("taskCode") String taskCode);
+
+    /**
+     * 查询任务list
+     * @param form
+     * @return
+     */
+    List<TaskVO> findTask(@Param("form") TaskQueryForm form);
 }

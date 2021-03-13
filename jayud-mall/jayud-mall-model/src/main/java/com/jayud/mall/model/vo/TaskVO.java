@@ -46,4 +46,8 @@ public class TaskVO {
     @JSONField(ordinal = 10, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "任务描述(任务名称+任务备注)", position = 11)
+    @JSONField(ordinal = 11)
+    private String taskDescribe;
+
 }

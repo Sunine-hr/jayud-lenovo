@@ -25,14 +25,6 @@ public interface ITrailerOrderService extends IService<TrailerOrder> {
      */
     void createOrder(AddTrailerOrderFrom addTrailerOrderFrom);
 
-    /**
-     * 获取拖车订单号
-     * @param legalId
-     * @param integer
-     * @return
-     */
-    String generationOrderNo(Long legalId, Integer integer);
-
     boolean isExistOrder(String orderNo);
 
     /**

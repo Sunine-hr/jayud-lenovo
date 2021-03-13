@@ -65,8 +65,14 @@ public class InputTrailerOrderVO {
     @ApiModelProperty(value = "起运港/目的港代码")
     private String portCode;
 
+    @ApiModelProperty(value = "起运港/目的港")
+    private String portCodeName;
+
     @ApiModelProperty(value = "车型尺寸id")
     private Long cabinetSize;
+
+    @ApiModelProperty(value = "车型尺寸")
+    private String cabinetSizeName;
 
     @ApiModelProperty(value = "提运单")
     private String billOfLading;
@@ -165,7 +171,7 @@ public class InputTrailerOrderVO {
     private String receivingOrdersDate;
 
     @ApiModelProperty(value = "海运订单地址信息")
-    private List<InputOrderAddressVO> orderAddressForms;
+    private List<TrailerOrderAddressVO> orderAddressForms;
 
     @ApiModelProperty(value = "货品信息")
     private List<InputGoodsVO> goodsForms;
@@ -175,5 +181,14 @@ public class InputTrailerOrderVO {
 
     @ApiModelProperty(value = "附件信息集合")
     private List<FileView> allPics;
+
+    @ApiModelProperty(value = "总重量")
+    private String totalWeightName;
+
+    @ApiModelProperty(value = "总件数")
+    private String totalAmountName;
+
+    @ApiModelProperty(value = "总箱数")
+    private String totalXAmountName;
 
 }

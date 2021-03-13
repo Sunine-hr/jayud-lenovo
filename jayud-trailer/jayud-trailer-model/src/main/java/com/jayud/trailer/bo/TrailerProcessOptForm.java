@@ -38,6 +38,9 @@ public class TrailerProcessOptForm {
     @ApiModelProperty(value = "封条")
     private String paperStripSeal;
 
+    @ApiModelProperty(value = "审核意见")
+    private String reviewComments;
+
     @ApiModelProperty(value = "柜号")
     private String cabinetNumber;
 
@@ -88,9 +91,8 @@ public class TrailerProcessOptForm {
                 break;
             case TT_2: //拖车派车
             case TT_3: //派车审核
-                if (StringUtils.isNotEmpty(this.paperStripSeal)) throw new JayudBizException("封条必填", 400);
-                if (StringUtils.isNotEmpty(this.cabinetNumber)) throw new JayudBizException("柜号必填", 400);
-                if (!checkOptInfo()) throw new JayudBizException(ResultEnum.VALIDATE_FAILED);
+                if (StringUtils.isEmpty(this.paperStripSeal)) throw new JayudBizException("封条必填", 400);
+                if (StringUtils.isEmpty(this.cabinetNumber)) throw new JayudBizException("柜号必填", 400);
                 pass = this.trailerDispatchVO.checkDispatchOptParam();
                 break;
             case TT_7: //拖车过磅

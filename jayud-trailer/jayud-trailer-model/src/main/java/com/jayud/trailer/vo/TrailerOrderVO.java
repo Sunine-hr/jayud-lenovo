@@ -1,13 +1,18 @@
 package com.jayud.trailer.vo;
 
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.jayud.common.ApiResult;
+import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.TradeTypeEnum;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.httpclient.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -174,11 +179,32 @@ public class TrailerOrderVO {
     @ApiModelProperty(value = "拖车订单地址信息")
     private List<TrailerOrderAddressVO> orderAddressForms;
 
-//    @ApiModelProperty(value = "货品信息")
-//    private List<GoodsVO> goodsForms;
+    @ApiModelProperty(value = "流程描述")
+    private String processDescription;
+
+    @ApiModelProperty(value = "货品信息")
+    private String goodsInfo;
 
     @ApiModelProperty(value = "派车信息")
     private TrailerDispatchVO trailerDispatchVO;
+
+    @ApiModelProperty(value = "总重量")
+    private Double totalWeight = 0.0;
+
+    @ApiModelProperty(value = "总件数")
+    private Integer totalAmount = 0;
+
+    @ApiModelProperty(value = "总箱数")
+    private Integer totalXAmount = 0;
+
+    @ApiModelProperty(value = "总重量")
+    private String totalWeightName = "";
+
+    @ApiModelProperty(value = "总件数")
+    private String totalAmountName = "";
+
+    @ApiModelProperty(value = "总箱数")
+    private String totalXAmountName = "";
 
     @ApiModelProperty(value = "附件信息集合")
     private List<FileView> allPics = new ArrayList<>();
@@ -191,5 +217,53 @@ public class TrailerOrderVO {
     public void setProcessStatus(Integer processStatus) {
         this.processStatus = processStatus;
         this.processStatusDesc = ProcessStatusEnum.getDesc(processStatus);
+    }
+
+    public void assemblyCabinetSize(ApiResult cabinetSizeInfo) {
+        if (cabinetSizeInfo == null) {
+            return;
+        }
+        if (cabinetSizeInfo.getCode() != HttpStatus.SC_OK) {
+            log.warn("请求结算单位信息失败");
+            return;
+        }
+        JSONArray cabinetSizeInfos = new JSONArray(cabinetSizeInfo.getData());
+        for (int i = 0; i < cabinetSizeInfos.size(); i++) {
+            JSONObject json = cabinetSizeInfos.getJSONObject(i);
+            if (this.cabinetSize.equals(json.getLong("id"))) { //结算单位配对
+                this.cabinetSizeName = json.getStr("name");
+                break;
+            }
+        }
+    }
+
+    /**
+     * 组装商品信息
+     */
+    public void assemblyGoodsInfo(List<GoodsVO> goodsList) {
+        StringBuilder sb = new StringBuilder();
+
+        for (GoodsVO goods : goodsList) {
+            if (this.id.equals(goods.getBusinessId())
+                    && BusinessTypeEnum.TC.getCode().equals(goods.getBusinessType())) {
+                sb.append(goods.getName())
+                        .append(" ").append(goods.getPlateAmount() == null ? 0 : goods.getPlateAmount()).append(goods.getPlateUnit())
+                        .append(",").append(goods.getBulkCargoAmount()).append(goods.getBulkCargoUnit())
+                        .append(",").append("重量:").append(goods.getTotalWeight()).append("KG")
+                        .append(";");
+            }
+            if(goods.getTotalWeight()!=null){
+                this.totalWeight = this.totalWeight + goods.getTotalWeight();
+                if(goods.getBulkCargoUnit().equals("件")){
+                    this.totalAmount = this.totalAmount + goods.getBulkCargoAmount();
+                }else{
+                    this.totalXAmount = this.totalXAmount + goods.getBulkCargoAmount();
+                }
+            }
+        }
+        this.totalWeightName = this.totalWeight.toString() + "KG";
+        this.totalAmountName = this.totalAmount.toString() + "件";
+        this.totalXAmountName = this.totalXAmount.toString() + "箱";
+        this.goodsInfo = sb.toString();
     }
 }

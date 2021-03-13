@@ -145,6 +145,9 @@ public class TrailerOrder extends Model<TrailerOrder> {
     @ApiModelProperty(value = "接单人(登录用户名)")
     private String orderTaker;
 
+    @ApiModelProperty(value = "流程描述")
+    private String processDescription;
+
     @ApiModelProperty(value = "接单日期")
     private LocalDateTime receivingOrdersDate;
 

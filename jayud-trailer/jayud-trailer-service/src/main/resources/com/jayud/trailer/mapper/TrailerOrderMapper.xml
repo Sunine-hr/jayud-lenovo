@@ -41,6 +41,7 @@ closingTime" />
 release_time" property="
 releaseTime" />
         <result column="is_weighed" property="isWeighed" />
+        <result column="process_description" property="processDescription" />
         <result column="is_make_up" property="isMakeUp" />
         <result column="create_user" property="createUser" />
         <result column="create_time" property="createTime" />
@@ -54,14 +55,14 @@ releaseTime" />
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, order_no, main_order_no, status, process_status, legal_entity_id, legal_name, imp_and_exp_type, unit_code, unit_code_name, port_departure_code, port_destination_code, cabinet_size, bill_of_lading, bol_file_path, bol_file_name, paper_strip_seal, pss_file_path, pss_file_name, cabinet_number, cn_file_path, cn_file_name, so, so_file_path, so_file_name, arrival_time, closing_warehouse_time, time_counter_rent, open_time, cutting_replenishing_time, 
-closing_time, 
+closing_time, process_description,
 release_time, is_weighed, is_make_up, create_user, create_time, update_user, update_time, need_input_cost, order_taker, receiving_orders_date
     </sql>
 
     <select id="getTrailerOrder" parameterType="long" resultType="com.jayud.trailer.vo.TrailerOrderVO">
         select id,order_no orderNo,main_order_no mainOrderNo,status, process_status processStatus,
         legal_entity_id legalEntityId,legal_name legalName,imp_and_exp_type impAndExpType,
-        unit_code unitName,unit_code_name unitCodeName,port_code portCode,
+        unit_code unitCode,unit_code_name unitCodeName,port_code portCode,
         cabinet_size cabinetSize,
         bill_of_lading billOfLading,bol_file_path bolFilePath,bol_file_name bolFileName,
         paper_strip_seal paperStripSeal,
@@ -69,7 +70,7 @@ release_time, is_weighed, is_make_up, create_user, create_time, update_user, upd
         pss_file_name pssFileName,
         cabinet_number cabinetNumber,
         cn_file_path cnFilePath,
-        cn_file_name cnFileName,
+        cn_file_name cnFileName,process_description processDescription,
         so,so_file_path soFilePath,so_file_name soFileName,
         arrival_time arrivalTime,closing_warehouse_time closingWarehouseTime,
         time_counter_rent timeCounterRent,open_time openTime,cutting_replenishing_time cuttingReplenishingTime,
@@ -82,7 +83,7 @@ release_time, is_weighed, is_make_up, create_user, create_time, update_user, upd
 
     <select id="findByPage" resultType="com.jayud.trailer.vo.TrailerOrderFormVO">
         select tor.id,tor.order_no orderNo,main_order_no mainOrderNo,status, process_status processStatus,
-        legal_entity_id legalEntityId,legal_name legalName,imp_and_exp_type impAndExpType,
+        legal_entity_id legalEntityId,legal_name subLegalName,imp_and_exp_type impAndExpType,
         unit_code unitCode,unit_code_name unitCodeName,port_code portCode,
         cabinet_size cabinetSize,
         bill_of_lading billOfLading,bol_file_path bolFilePath,bol_file_name bolFileName,
@@ -100,8 +101,9 @@ release_time, is_weighed, is_make_up, create_user, create_time, update_user, upd
         release_time releaseTime,
         is_weighed isWeighed,
         is_make_up isMakeUp,
+        process_description processDescription,
         create_user createUser,
-        create_time createTime,
+        create_time createTime,create_time createdTimeStr,
         update_user updateUser,
         update_time updateTime,need_input_cost needInputCost,order_taker orderTaker,
         receiving_orders_date receivingOrdersDate,
@@ -160,9 +162,9 @@ release_time, is_weighed, is_make_up, create_user, create_time, update_user, upd
                 and tor.create_time <![CDATA[<= ]]> #{form.endTime}
             </if>
             <if test="form.cmd == 'costAudit'">
-                AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = so.order_no AND opc.`status` =
+                AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = tor.order_no AND opc.`status` =
                 '2' and opc.sub_type = 'tc')
-                OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = so.order_no AND orc.`status` =
+                OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = tor.order_no AND orc.`status` =
                 '2' and orc.sub_type = 'tc'))
             </if>
 

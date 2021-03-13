@@ -6,13 +6,13 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 /**
- * 空运订单驳回操作
+ * 拖车订单驳回操作
  */
 @Data
 public class TrailerCargoRejected {
 
-    @ApiModelProperty(value = "海运订单id")
-    @NotNull(message = "海运订单id不能为空")
+    @ApiModelProperty(value = "拖车订单id")
+    @NotNull(message = "拖车订单id不能为空")
     private Long trailerOrderId;
 
     @ApiModelProperty(value = "驳回原因")

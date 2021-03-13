@@ -20,7 +20,7 @@ public class QueryPaymentBillNumForm{
     private String supplierChName;
 
     @ApiModelProperty(value = "操作指令 cmd=main主订单操作 or zgys子订单操作 or bg子订单操作 or ky空运",required = true)
-    @Pattern(regexp = "(main|zgys|bg|ky|hy)", message = "只允许填写main or zgys or bg or ky ")
+    @Pattern(regexp = "(main|zgys|bg|ky|hy|tc)", message = "只允许填写main or zgys or bg or ky ")
     private String cmd;
 
     @ApiModelProperty(value = "当前登录用户名",required = true)

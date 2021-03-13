@@ -213,16 +213,16 @@
         oi.`customs_release` customsRelease,
         '' rejectComment,
         oi.unit_code unitCode
-        -- '' customsOrderNo,
-        -- '' tmsOrderNo,
-        -- '' airOrderNo
+--         '' customsOrderNo,
+--         '' tmsOrderNo,
+--         '' airOrderNo
         FROM
         order_info oi LEFT JOIN service_order so ON
         oi.`order_no` = so.`main_order_no`
         LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`
         WHERE oi.`class_code` = 'FWD'
 
-        --海运单
+        -- 海运单
         UNION ALL
         SELECT DISTINCT
         oi.id,
@@ -258,15 +258,19 @@
         oi.`customs_release` customsRelease,
         '' rejectComment,
         oi.unit_code unitCode
+        --         '' customsOrderNo,
+        --         '' tmsOrderNo,
+        --         '' airOrderNo
         FROM
         order_info oi LEFT JOIN sea_order so ON
         oi.`order_no` = so.`main_order_no`
         LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`
         WHERE oi.`class_code` = 'HY'
-        --拖车单
+        -- 拖车单
         UNION ALL
         SELECT DISTINCT
         oi.id,
+        oi.remarks,
         oi.`order_no` orderNo,
         oi.`biz_code` bizCode,
         oi.`legal_entity_id` legal_entity_id,

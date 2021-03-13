@@ -136,7 +136,7 @@ public class AddSeaOrderForm {
         // 发货/收货地址是必填项
         if (CollectionUtils.isEmpty(this.deliveryAddress)) {
             for (AddOrderAddressForm orderAddressForm : deliveryAddress) {
-                boolean b = orderAddressForm.checkCreateTrailerOrder();
+                boolean b = orderAddressForm.checkCreateSeaOrder();
                 if(!b){
                     return false;
                 }
@@ -147,7 +147,7 @@ public class AddSeaOrderForm {
         if (CollectionUtils.isEmpty(this.shippingAddress)) {
             log.warn("收货地址信息不能为空");
             for (AddOrderAddressForm orderAddressForm : shippingAddress) {
-                boolean b = orderAddressForm.checkCreateTrailerOrder();
+                boolean b = orderAddressForm.checkCreateSeaOrder();
                 if(!b){
                     return false;
                 }

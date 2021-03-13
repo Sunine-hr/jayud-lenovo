@@ -173,10 +173,14 @@ public class InputTrailerOrderFrom {
             return false;
         }
         // 发货/收货地址是必填项
-//        if (CollectionUtils.isEmpty(this.orderAddressForms)) {
-//            log.warn("发货地址信息不能为空");
-//            return false;
-//        }
+        if (CollectionUtils.isEmpty(this.orderAddressForms)) {
+            log.warn("提货地址信息不能为空");
+            return false;
+        }
+        for (AddTrailerOrderAddressForm orderAddressForm : this.orderAddressForms) {
+            orderAddressForm.checkCreateTrailerOrder();
+            orderAddressForm.checkCreateGood();
+        }
         //货品信息
 //        for (AddGoodsForm goodsForm : goodsForms) {
 //            if (!goodsForm.checkCreateAirOrder()) {

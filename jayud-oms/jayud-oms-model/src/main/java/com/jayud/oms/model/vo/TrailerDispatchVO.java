@@ -36,13 +36,19 @@ public class TrailerDispatchVO {
     private String orderNo;
 
     @ApiModelProperty(value = "大陆车牌")
-    private String plateNumber;
+    private Long plateNumber;
 
     @ApiModelProperty(value = "司机电话")
     private String phone;
 
     @ApiModelProperty(value = "司机姓名")
-    private String name;
+    private Long name;
+
+    @ApiModelProperty(value = "司机姓名")
+    private String driverName;
+
+    @ApiModelProperty(value = "大陆车牌")
+    private String plateNumberName;
 
     @ApiModelProperty(value = "供应商id(supplier_info id)")
     private Long supplierId;
@@ -63,13 +69,13 @@ public class TrailerDispatchVO {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
+    private String createTime;
 
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
     @ApiModelProperty(value = "更新时间")
-    private LocalDateTime updateTime;
+    private String updateTime;
 
 
 }

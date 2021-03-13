@@ -12,6 +12,9 @@ public class VehicleInfoLinkVO {
     @ApiModelProperty(value = "香港车牌")
     private String hkNumber;
 
+    @ApiModelProperty(value = "大陆车牌")
+    private String plateNumber;
+
     @ApiModelProperty(value = "供应商名字")
     private String supplierName;
 

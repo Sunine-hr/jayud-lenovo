@@ -41,16 +41,19 @@ public class TrailerDispatchVO {
     private String orderNo;
 
     @ApiModelProperty(value = "大陆车牌")
-    private String plateNumber;
+    private Long plateNumber;
+
+    @ApiModelProperty(value = "大陆车牌")
+    private String plateNumberName;
 
     @ApiModelProperty(value = "司机电话")
     private String phone;
 
     @ApiModelProperty(value = "司机姓名")
-    private String name;
+    private Long name;
 
-    @ApiModelProperty(value = "供应商id(supplier_info id)")
-    private Long supplierId;
+    @ApiModelProperty(value = "司机姓名")
+    private String driverName;
 
     @ApiModelProperty(value = "供应商名字(supplier_info name)")
     private String supplierName;
@@ -63,6 +66,9 @@ public class TrailerDispatchVO {
 
     @ApiModelProperty(value = "备注")
     private String remark;
+
+    @ApiModelProperty(value = "审核意见")
+    private String reviewComments;
 
     @ApiModelProperty(value = "创建人(登录用户)")
     private String createUser;

@@ -34,38 +34,17 @@ public class TrailerOrderImportVO extends Model<TrailerOrderImportVO> {
 
     private static final long serialVersionUID=1L;
 
-//    @ApiModelProperty(value = "主键id")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "拖车订单编号")
+    @ApiModelProperty(value = "子订单编号")
     private String orderNo;
 
     @ApiModelProperty(value = "主订单编号")
     private String mainOrderNo;
 
-    @ApiModelProperty(value = "状态(TT_0待接单,TT_1拖车接单,TT_2拖车派车,TT_3派车审核,TT_4拖车提柜,TT_5拖车到仓,TT_6拖车离仓,TT_7拖车过磅,TT_8确认还柜)")
-    private String status;
-
-    //流程状态(0:进行中,1:完成,2:草稿,3.关闭)
-    //@ApiModelProperty(value = "流程状态")
-    private Integer processStatus;
-
-    @ApiModelProperty(value = "状态")
-    private String processStatusDesc;
-
-    @ApiModelProperty(value = "接单法人id")
-    private Long legalEntityId;
-
-    @ApiModelProperty(value = "接单法人名称")
-    private String legalName;
-
-    //@ApiModelProperty(value = "结算单位code")
-    //@ApiModelProperty(value = "结算单位")
-    private String unitCode;
-
-    @ApiModelProperty(value = "结算单位")
-    private String unitCodeName;
+    @ApiModelProperty(value = "客户名称")
+    private String customerName;
 
     //进出口类型(1：进口，2：出口)
     //@ApiModelProperty(value = "进出口类型")
@@ -85,6 +64,35 @@ public class TrailerOrderImportVO extends Model<TrailerOrderImportVO> {
 
     @ApiModelProperty(value = "车型尺寸")
     private String cabinetSizeName;
+
+    //@ApiModelProperty(value = "车牌号")
+    private String plateNumber;
+
+    @ApiModelProperty(value = "车牌号")
+    private String plateNumberName;
+
+    //@ApiModelProperty(value = "状态(TT_0待接单,TT_1拖车接单,TT_2拖车派车,TT_3派车审核,TT_4拖车提柜,TT_5拖车到仓,TT_6拖车离仓,TT_7拖车过磅,TT_8确认还柜)")
+    private String status;
+
+    //流程状态(0:进行中,1:完成,2:草稿,3.关闭)
+    //@ApiModelProperty(value = "流程状态")
+    private Integer processStatus;
+
+    @ApiModelProperty(value = "状态")
+    private String processStatusDesc;
+
+    //@ApiModelProperty(value = "接单法人id")
+    private Long legalEntityId;
+
+    @ApiModelProperty(value = "接单法人名称")
+    private String subLegalName;
+
+    //@ApiModelProperty(value = "结算单位code")
+    //@ApiModelProperty(value = "结算单位")
+    private String unitCode;
+
+    @ApiModelProperty(value = "结算单位")
+    private String unitCodeName;
 
     @ApiModelProperty(value = "提运单")
     private String billOfLading;
@@ -197,9 +205,6 @@ public class TrailerOrderImportVO extends Model<TrailerOrderImportVO> {
     @ApiModelProperty(value = "订单流程状态")
     private String statusDesc;
 
-    @ApiModelProperty(value = "客户名称")
-    private String customerName;
-
     //@ApiModelProperty(value = "客户代码")
     private String customerCode;
 
@@ -229,9 +234,6 @@ public class TrailerOrderImportVO extends Model<TrailerOrderImportVO> {
 
     //@ApiModelProperty(value = "主订单id")
     private String mainOrderId;
-
-    @ApiModelProperty(value = "车牌号")
-    private String plateNumber;
 
 
 
@@ -282,18 +284,18 @@ public class TrailerOrderImportVO extends Model<TrailerOrderImportVO> {
     /**
      * 组装供应商数据
      */
-    public void assemblySupplierInfo(JSONArray supplierInfo) {
-        if (supplierInfo == null) {
-            return;
-        }
-        for (int i = 0; i < supplierInfo.size(); i++) {
-            JSONObject json = supplierInfo.getJSONObject(i);
-            if (this.trailerDispatchVO.getSupplierId() != null && this.trailerDispatchVO.getSupplierId().equals(json.getLong("id"))) { //供应商配对
-                this.defaultSupplierCode = json.getStr("supplierCode");
-                break;
-            }
-        }
-    }
+//    public void assemblySupplierInfo(JSONArray supplierInfo) {
+//        if (supplierInfo == null) {
+//            return;
+//        }
+//        for (int i = 0; i < supplierInfo.size(); i++) {
+//            JSONObject json = supplierInfo.getJSONObject(i);
+//            if (this.trailerDispatchVO.getSupplierId() != null && this.trailerDispatchVO.getSupplierId().equals(json.getLong("id"))) { //供应商配对
+//                this.defaultSupplierCode = json.getStr("supplierCode");
+//                break;
+//            }
+//        }
+//    }
 
     /**
      * 组装结算单位数据
@@ -334,7 +336,7 @@ public class TrailerOrderImportVO extends Model<TrailerOrderImportVO> {
         for (int i = 0; i < legalEntitys.size(); i++) {
             JSONObject json = legalEntitys.getJSONObject(i);
             if (this.legalEntityId.equals(json.getLong("id"))) { //法人主体配对
-                this.legalName = json.getStr("legalName");
+                this.subLegalName = json.getStr("legalName");
                 break;
             }
         }

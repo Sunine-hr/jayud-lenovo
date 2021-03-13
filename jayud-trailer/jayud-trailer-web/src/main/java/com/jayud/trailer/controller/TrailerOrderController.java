@@ -159,16 +159,16 @@ public class TrailerOrderController {
         List<Long> trailerOrderIds = new ArrayList<>();
         List<String> mainOrder = new ArrayList<>();
         List<Long> entityIds = new ArrayList<>();
-        List<Long> supplierIds = new ArrayList<>();
+//        List<Long> supplierIds = new ArrayList<>();
         List<String> unitCodes = new ArrayList<>();
         for (TrailerOrderFormVO record : records) {
             trailerOrderIds.add(record.getId());
             mainOrder.add(record.getMainOrderNo());
             entityIds.add(record.getLegalEntityId());
             unitCodes.add(record.getUnitCode());
-            if(record.getTrailerDispatchVO().getSupplierId()!=null){
-                supplierIds.add(record.getTrailerDispatchVO().getSupplierId());
-            }
+//            if(record.getTrailerDispatchVO().getSupplierId()!=null){
+//                supplierIds.add(record.getTrailerDispatchVO().getSupplierId());
+//            }
         }
 
         //查询法人主体
@@ -177,10 +177,10 @@ public class TrailerOrderController {
             legalEntityResult = this.oauthClient.getLegalEntityByLegalIds(entityIds);
         }
         //查询供应商信息
-        JSONArray supplierInfo = null;
-        if (CollectionUtils.isNotEmpty(supplierIds) && supplierIds.size()>0) {
-            supplierInfo = new JSONArray(this.omsClient.getSupplierInfoByIds(supplierIds).getData());
-        }
+//        JSONArray supplierInfo = null;
+//        if (CollectionUtils.isNotEmpty(supplierIds) && supplierIds.size()>0) {
+//            supplierInfo = new JSONArray(this.omsClient.getSupplierInfoByIds(supplierIds).getData());
+//        }
 
         //获取结算单位信息
         ApiResult unitCodeInfo = null;
@@ -218,7 +218,7 @@ public class TrailerOrderController {
             //组装法人名称
             record.assemblyLegalEntity(legalEntityResult);
             //拼装供应商
-            record.assemblySupplierInfo(supplierInfo);
+            //record.assemblySupplierInfo(supplierInfo);
             //拼接附件信息
             record.getFile(prePath);
 
@@ -250,7 +250,9 @@ public class TrailerOrderController {
                     }
 
                 }
-                record.assemblyGoodsInfo(goodsVOS);
+                if(goodsVOS.size()>0){
+                    record.assemblyGoodsInfo(goodsVOS);
+                }
                 record.setOrderAddressForms(trailerOrderAddressVOS);
             }
 
@@ -264,9 +266,32 @@ public class TrailerOrderController {
             //获取派车信息
             TrailerDispatch enableByTrailerOrderId = trailerDispatchService.getEnableByTrailerOrderId(record.getId());
             TrailerDispatchVO trailerDispatchVO = ConvertUtil.convert(enableByTrailerOrderId,TrailerDispatchVO.class);
+//            System.out.println("trailerDispatchVO=================================="+trailerDispatchVO);
             record.setTrailerDispatchVO(trailerDispatchVO);
             if(trailerDispatchVO.getPlateNumber()!=null){
-                record.setPlateNumber(trailerDispatchVO.getPlateNumber());
+                VehicleInfoLinkVO data = omsClient.initVehicleInfo(trailerDispatchVO.getPlateNumber()).getData();
+                trailerDispatchVO.setPlateNumberName(data.getPlateNumber());
+                for (DriverInfoVO driverInfo : data.getDriverInfos()) {
+                    if(trailerDispatchVO.getName().equals(driverInfo.getId())){
+                        trailerDispatchVO.setDriverName(driverInfo.getName());
+                    }
+                }
+                record.setPlateNumber(trailerDispatchVO.getPlateNumberName());
+            }
+            if(record.getImpAndExpType().equals(2)&&record.getStatus().equals(OrderStatusEnum.TT_4.getCode())){
+                if(record.getProcessDescription()!=null){
+                    record.setStatus(record.getProcessStatusDesc());
+                }
+            }
+            if(record.getImpAndExpType().equals(1)&&record.getStatus().equals(OrderStatusEnum.TT_7.getCode())){
+                if(record.getProcessDescription()!=null){
+                    record.setStatus(record.getProcessStatusDesc());
+                }
+            }
+            if(record.getImpAndExpType().equals(2)&&record.getStatus().equals(OrderStatusEnum.TT_7.getCode())&&record.getIsWeighed()){
+                if(record.getProcessDescription()!=null){
+                    record.setStatus(record.getProcessStatusDesc());
+                }
             }
         }
 
@@ -305,9 +330,10 @@ public class TrailerOrderController {
 
         OrderStatusEnum statusEnum = OrderStatusEnum.getTrailerOrderNextStatus(orderProcessNode);
         if (statusEnum == null) {
-            log.error("执行拖车流程操作失败,超出流程之外 data={}", trailerOrder.toString());
+            log.error("执行拖车流程操作失败,超出流程之外 data={}", trailerOrder);
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
+
         //校验参数
         form.checkProcessOpt(statusEnum);
         form.setStatus(statusEnum.getCode());
@@ -362,7 +388,7 @@ public class TrailerOrderController {
     }
 
 
-    @ApiOperation(value = "订船驳回编辑 id=海运订单id")
+    @ApiOperation(value = "拖车驳回编辑 id=拖车订单id")
     @PostMapping(value = "/DispatchRejectionEdit")
     public CommonResult DispatchRejectionEdit(@RequestBody TrailerProcessOptForm form) {
         if (form.getMainOrderId() == null
@@ -408,6 +434,11 @@ public class TrailerOrderController {
 
         Integer rejectOptions = trailerCargoRejected.getRejectOptions() == null ? 1 : trailerCargoRejected.getRejectOptions();
         trailerCargoRejected.setRejectOptions(rejectOptions);
+        if(trailerCargoRejected.getRejectOptions().equals(2)){
+            if(trailerCargoRejected.getCause()==null){
+                return CommonResult.error(400, "参数错误，审核意见需要填写");
+            }
+        }
         switch (orderStatusEnum) {
             case TT_1_1:
                 //订单驳回

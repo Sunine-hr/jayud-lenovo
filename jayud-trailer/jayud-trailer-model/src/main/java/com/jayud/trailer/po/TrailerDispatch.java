@@ -42,16 +42,13 @@ public class TrailerDispatch extends Model<TrailerDispatch> {
     private String orderNo;
 
     @ApiModelProperty(value = "大陆车牌")
-    private String plateNumber;
+    private Long plateNumber;
 
     @ApiModelProperty(value = "司机电话")
     private String phone;
 
     @ApiModelProperty(value = "司机姓名")
-    private String name;
-
-    @ApiModelProperty(value = "供应商id(supplier_info id)")
-    private Long supplierId;
+    private Long name;
 
     @ApiModelProperty(value = "供应商名字(supplier_info name)")
     private String supplierName;
@@ -61,6 +58,9 @@ public class TrailerDispatch extends Model<TrailerDispatch> {
 
     @ApiModelProperty(value = "过磅重量")
     private Double weighing;
+
+    @ApiModelProperty(value = "审核意见")
+    private String reviewComments;
 
     @ApiModelProperty(value = "备注")
     private String remark;

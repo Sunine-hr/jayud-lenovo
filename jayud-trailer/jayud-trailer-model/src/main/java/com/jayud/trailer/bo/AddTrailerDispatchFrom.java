@@ -42,16 +42,13 @@ public class AddTrailerDispatchFrom {
     private String orderNo;
 
     @ApiModelProperty(value = "大陆车牌")
-    private String plateNumber;
+    private Long plateNumber;
 
     @ApiModelProperty(value = "司机电话")
     private String phone;
 
     @ApiModelProperty(value = "司机姓名")
-    private String name;
-
-    @ApiModelProperty(value = "供应商id(supplier_info id)")
-    private Long supplierId;
+    private Long name;
 
     @ApiModelProperty(value = "供应商名字(supplier_info name)")
     private String supplierName;
@@ -69,16 +66,16 @@ public class AddTrailerDispatchFrom {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
+    private String createTime;
 
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
     @ApiModelProperty(value = "更新时间")
-    private LocalDateTime updateTime;
+    private String updateTime;
 
     public boolean checkDispatchOptParam() {
-        String title = "派车";
+        String title = "派车及派车审核";
         if (this.orderNo == null) {
             log.warn(title + " 派车单号必填");
             return false;
@@ -87,7 +84,7 @@ public class AddTrailerDispatchFrom {
             log.warn(title + " 大陆车牌必填");
             return false;
         }
-        if (this.supplierId == null) {
+        if (this.supplierName == null) {
             log.warn(title + " 车辆供应商必填");
             return false;
         }

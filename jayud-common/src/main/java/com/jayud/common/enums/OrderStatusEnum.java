@@ -377,10 +377,10 @@ public enum OrderStatusEnum {
         if (OrderStatusEnum.TT_1.getCode().equals(status)) {//派车页面驳回
             return TT_2_1;
         }
-        if (OrderStatusEnum.TT_3.getCode().equals(status)) {//派车审核页面驳回
+        if (OrderStatusEnum.TT_2.getCode().equals(status)) {//派车审核页面驳回
             return TT_3_1;
         }
-        if (OrderStatusEnum.TT_4.getCode().equals(status)) {//派车审核页面驳回
+        if (OrderStatusEnum.TT_3.getCode().equals(status)) {//派车审核页面驳回
             return TT_4_1;
         }
         return null;

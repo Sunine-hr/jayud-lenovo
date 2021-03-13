@@ -298,6 +298,7 @@ public class ExternalApiController {
         //组装数据
         VehicleInfoLinkVO tmp = new VehicleInfoLinkVO();
         tmp.setDriverInfos(vehicleDetailsVO.getDriverInfoVOS());
+        tmp.setPlateNumber(vehicleDetailsVO.getPlateNumber());
         tmp.setHkNumber(vehicleDetailsVO.getHkNumber());
         tmp.setSupplierName(vehicleDetailsVO.getSupplierInfoVO().getSupplierChName());
         tmp.setSupplierId(vehicleDetailsVO.getSupplierId());

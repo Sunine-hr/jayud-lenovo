@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.ApiResult;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
@@ -19,6 +20,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,8 +70,11 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     @ApiModelProperty(value = "车型尺寸")
     private String cabinetSizeName;
 
-    @ApiModelProperty(value = "车牌号")
+    //@ApiModelProperty(value = "车牌号")
     private String plateNumber;
+
+    @ApiModelProperty(value = "车牌号")
+    private String plateNumberName;
 
     //@ApiModelProperty(value = "状态(TT_0待接单,TT_1拖车接单,TT_2拖车派车,TT_3派车审核,TT_4拖车提柜,TT_5拖车到仓,TT_6拖车离仓,TT_7拖车过磅,TT_8确认还柜)")
     private String status;
@@ -81,11 +86,11 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     @ApiModelProperty(value = "状态")
     private String processStatusDesc;
 
-    @ApiModelProperty(value = "接单法人id")
+    //@ApiModelProperty(value = "接单法人id")
     private Long legalEntityId;
 
     @ApiModelProperty(value = "接单法人名称")
-    private String legalName;
+    private String subLegalName;
 
     //@ApiModelProperty(value = "结算单位code")
     //@ApiModelProperty(value = "结算单位")
@@ -181,6 +186,10 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     @ApiModelProperty(value = "创建时间")
     private String createTime;
 
+    @ApiModelProperty(value = "创建时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdTimeStr;
+
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
@@ -244,6 +253,9 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     @ApiModelProperty(value = "货物重量")
     private Double totalWeight = 0.0;
 
+    @ApiModelProperty(value = "流程描述")
+    private String processDescription;
+
     /**
      * 组装商品信息
      */
@@ -259,7 +271,9 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
                         .append(",").append("重量:").append(goods.getTotalWeight()).append("KG")
                         .append(";");
             }
-            this.totalWeight = this.totalWeight + goods.getTotalWeight();
+            if(goods.getTotalWeight()!=null){
+                this.totalWeight = this.totalWeight + goods.getTotalWeight();
+            }
         }
 
         this.goodsInfo = sb.toString();
@@ -292,18 +306,18 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     /**
      * 组装供应商数据
      */
-    public void assemblySupplierInfo(JSONArray supplierInfo) {
-        if (supplierInfo == null) {
-            return;
-        }
-        for (int i = 0; i < supplierInfo.size(); i++) {
-            JSONObject json = supplierInfo.getJSONObject(i);
-            if (this.trailerDispatchVO.getSupplierId() != null && this.trailerDispatchVO.getSupplierId().equals(json.getLong("id"))) { //供应商配对
-                this.defaultSupplierCode = json.getStr("supplierCode");
-                break;
-            }
-        }
-    }
+//    public void assemblySupplierInfo(JSONArray supplierInfo) {
+//        if (supplierInfo == null) {
+//            return;
+//        }
+//        for (int i = 0; i < supplierInfo.size(); i++) {
+//            JSONObject json = supplierInfo.getJSONObject(i);
+//            if (this.trailerDispatchVO.getSupplierId() != null && this.trailerDispatchVO.getSupplierId().equals(json.getLong("id"))) { //供应商配对
+//                this.defaultSupplierCode = json.getStr("supplierCode");
+//                break;
+//            }
+//        }
+//    }
 
     /**
      * 组装结算单位数据
@@ -362,7 +376,7 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
         for (int i = 0; i < legalEntitys.size(); i++) {
             JSONObject json = legalEntitys.getJSONObject(i);
             if (this.legalEntityId.equals(json.getLong("id"))) { //法人主体配对
-                this.legalName = json.getStr("legalName");
+                this.subLegalName = json.getStr("legalName");
                 break;
             }
         }

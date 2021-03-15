@@ -1,7 +1,10 @@
 package com.jayud.mall.controller;
 
 import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.TradingRecordCZForm;
 import com.jayud.mall.model.bo.TradingRecordForm;
+import com.jayud.mall.model.bo.TradingRecordQueryForm;
+import com.jayud.mall.model.vo.TradingRecordVO;
 import com.jayud.mall.model.vo.domain.CustomerUser;
 import com.jayud.mall.service.BaseService;
 import com.jayud.mall.service.ITradingRecordService;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/tradingrecord")
@@ -40,8 +44,26 @@ public class TradingRecordController {
     }
 
     //账户余额-充值记录（充值）
+    @ApiOperation(value = "账户余额-充值记录（查询充值记录）")
+    @PostMapping("/findTradingRecordByCz")
+    @ApiOperationSupport(order = 2)
+    public CommonResult<List<TradingRecordVO>> findTradingRecordByCz(@RequestBody TradingRecordCZForm form){
+        CustomerUser customerUser = baseService.getCustomerUser();
+        form.setCustomerId(Long.valueOf(customerUser.getId()));//当前登录客户
+        List<TradingRecordVO> tradingRecordVOS = tradingRecordService.findTradingRecordByCz(form);
+        return CommonResult.success(tradingRecordVOS);
+    }
 
     //账户余额-交易记录（充值、支付）
+    @ApiOperation(value = "账户余额-交易记录（查询充值、支付记录）")
+    @PostMapping("/findTradingRecord")
+    @ApiOperationSupport(order = 3)
+    public CommonResult<List<TradingRecordVO>> findTradingRecord(@RequestBody TradingRecordQueryForm form){
+        CustomerUser customerUser = baseService.getCustomerUser();
+        form.setCustomerId(Long.valueOf(customerUser.getId()));//当前登录客户
+        List<TradingRecordVO> tradingRecordVOS = tradingRecordService.findTradingRecord(form);
+        return CommonResult.success(tradingRecordVOS);
+    }
 
 
 }

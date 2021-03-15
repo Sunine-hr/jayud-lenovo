@@ -24,4 +24,61 @@
         id, customer_id, trading_no, trading_type, amount, cid, serialNumber, voucher_url, status, creator, create_time, auditor, audit_time
     </sql>
 
+    <select id="findTradingRecordByCz" parameterType="com.jayud.mall.model.bo.TradingRecordCZForm"
+            resultType="com.jayud.mall.model.vo.TradingRecordVO">
+        select
+        t.id,t.customer_id,t.trading_no,t.trading_type,t.amount,t.cid,t.serialNumber,t.voucher_url,t.status,t.remark,t.creator,t.create_time,t.auditor,t.audit_time,
+        t1.company customerName,
+        t2.currency_code,t2.currency_name,
+        t3.user_name creatorName,
+        t4.name auditorName
+        from trading_record t
+        left join customer t1 on t1.id = t.customer_id
+        left join currency_info t2 on t2.id = t.cid
+        left join customer t3 on t3.id = t.creator
+        left join system_user t4 on t4.id = t.auditor
+        where 1=1
+        and t.trading_type = 1
+        <if test="form.customerId != null">
+            and t.customer_id = #{form.customerId}
+        </if>
+        <if test="form.serialNumber != null and form.serialNumber != ''">
+            and t.serialNumber LIKE concat('%',#{form.serialNumber},'%')
+        </if>
+        <if test="form.status != null and form.status != ''">
+            and t.status = #{form.status}
+        </if>
+        <if test="form.cid != null">
+            and t.cid = #{form.cid}
+        </if>
+    </select>
+
+    <select id="findTradingRecord" parameterType="com.jayud.mall.model.bo.TradingRecordQueryForm"
+            resultType="com.jayud.mall.model.vo.TradingRecordVO">
+        select
+        t.id,t.customer_id,t.trading_no,t.trading_type,t.amount,t.cid,t.serialNumber,t.voucher_url,t.status,t.remark,t.creator,t.create_time,t.auditor,t.audit_time,
+        t1.company customerName,
+        t2.currency_code,t2.currency_name,
+        t3.user_name creatorName,
+        t4.name auditorName
+        from trading_record t
+        left join customer t1 on t1.id = t.customer_id
+        left join currency_info t2 on t2.id = t.cid
+        left join customer t3 on t3.id = t.creator
+        left join system_user t4 on t4.id = t.auditor
+        where 1=1
+        <if test="form.customerId != null">
+            and t.customer_id = #{form.customerId}
+        </if>
+        <if test="form.tradingNo != null and form.tradingNo != ''">
+            and t.trading_no LIKE concat('%',#{form.tradingNo},'%')
+        </if>
+        <if test="form.tradingType != null">
+            and t.trading_type = #{form.tradingType}
+        </if>
+        <if test="form.cid != null">
+            and t.cid = #{form.cid}
+        </if>
+    </select>
+
 </mapper>

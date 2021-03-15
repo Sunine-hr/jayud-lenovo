@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.TradingRecordMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.TradingRecord">
+        <id column="id" property="id" />
+        <result column="customer_id" property="customerId" />
+        <result column="trading_no" property="tradingNo" />
+        <result column="trading_type" property="tradingType" />
+        <result column="amount" property="amount" />
+        <result column="cid" property="cid" />
+        <result column="serialNumber" property="serialNumber" />
+        <result column="voucher_url" property="voucherUrl" />
+        <result column="status" property="status" />
+        <result column="creator" property="creator" />
+        <result column="create_time" property="createTime" />
+        <result column="auditor" property="auditor" />
+        <result column="audit_time" property="auditTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_id, trading_no, trading_type, amount, cid, serialNumber, voucher_url, status, creator, create_time, auditor, audit_time
+    </sql>
+
+</mapper>

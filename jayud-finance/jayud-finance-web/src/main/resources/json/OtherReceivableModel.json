@@ -27,7 +27,7 @@
       "FNumber": "PRE001"
     },
     "FDEPARTMENTID": {
-      "FNumber": "BM101"
+      "FNumber": "BM013"
     },
     "FSETTLEORGID": {
       "FNumber": "802"
@@ -55,7 +55,7 @@
           "FNumber": "F0039"
         },
         "FCOSTDEPARTMENTID": {
-          "FNumber": "BM101"
+          "FNumber": "BM013"
         },
         "FTAXAMOUNTFOR": 1304.46,
         "FAMOUNTFOR_D": 1304.46,
@@ -74,7 +74,7 @@
           "FNumber": "F0037"
         },
         "FCOSTDEPARTMENTID": {
-          "FNumber": "BM101"
+          "FNumber": "BM013"
         },
         "FTAXAMOUNTFOR": 743.28,
         "FAMOUNTFOR_D": 743.28,

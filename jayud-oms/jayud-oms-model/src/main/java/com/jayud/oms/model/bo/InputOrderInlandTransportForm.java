@@ -105,7 +105,7 @@ public class InputOrderInlandTransportForm extends Model<InputOrderInlandTranspo
             throw new JayudBizException("操作主体id" + msg);
         }
         if (CollectionUtil.isEmpty(pickUpAddressList)||CollectionUtil.isEmpty(orderDeliveryAddressList)) {
-            throw new JayudBizException("请输入提货地址");
+            throw new JayudBizException("请输入提货/送货地址");
         } else {
             pickUpAddressList.forEach(OrderDeliveryAddress::checkCreateOrder);
             orderDeliveryAddressList.forEach(OrderDeliveryAddress::checkCreateOrder);

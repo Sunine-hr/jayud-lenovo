@@ -28,6 +28,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -1063,17 +1064,19 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             InputTrailerOrderFrom trailerOrderFrom = form.getTrailerOrderFrom();
 
             //生成拖车订单号
-            if (form.getCmd().equals("submit")) {
+            if (form.getCmd().equals("submit")) {//提交
                 if (trailerOrderFrom.getId() == null) {
                     String orderNo = generationOrderNo(trailerOrderFrom.getLegalEntityId(), trailerOrderFrom.getImpAndExpType(), OrderStatusEnum.TC.getCode());
                     trailerOrderFrom.setOrderNo(orderNo);
                 }
+                //草稿编辑提交
                 if (trailerOrderFrom.getStatus() != null && trailerOrderFrom.getStatus().equals("TT_0")) {
                     String orderNo = generationOrderNo(trailerOrderFrom.getLegalEntityId(), trailerOrderFrom.getImpAndExpType(), OrderStatusEnum.TC.getCode());
                     trailerOrderFrom.setOrderNo(orderNo);
                 }
 
             }
+            //暂存，随机生成订单号
             if (form.getCmd().equals("preSubmit") && trailerOrderFrom.getId() == null) {
                 //生成拖车订单号
                 String orderNo = StringUtils.loadNum(CommonConstant.TC, 12);
@@ -1089,10 +1092,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
             if (this.queryEditOrderCondition(trailerOrderFrom.getStatus(),
                     inputMainOrderForm.getStatus(), SubOrderSignEnum.TC.getSignOne(), form)) {
-                String orderNo = null;
-                if(trailerOrderFrom.getId()==null){
-
-                }
                 trailerOrderFrom.setMainOrderNo(mainOrderNo);
                 trailerOrderFrom.setCreateUser(UserOperator.getToken());
                 Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
@@ -1100,6 +1099,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 trailerOrderFrom.setProcessStatus(processStatus);
                 String subOrderNo = this.trailerClient.createOrder(trailerOrderFrom).getData();
                 trailerOrderFrom.setOrderNo(subOrderNo);
+
+                this.initProcessNode(mainOrderNo, subOrderNo, OrderStatusEnum.TC,
+                        form, trailerOrderFrom.getId(), OrderStatusEnum.getTrailerOrderProcess());
             }
         }
 
@@ -1693,7 +1695,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 tmp = this.orderFlowSheetService.getByCondition(new OrderFlowSheet().setOrderNo(orderNo));
 
             }
-            if (tmp == null) {
+            if (CollectionUtils.isEmpty(tmp)) {
                 //流程节点重组
                 List<OrderFlowSheet> orderFlowSheets = this.assemblyProcess(mainOrderNo, orderNo, statusEnum.getCode(), statusEnum.getDesc(), process);
                 this.orderFlowSheetService.saveOrUpdateBatch(orderFlowSheets);

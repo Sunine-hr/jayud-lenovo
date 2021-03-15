@@ -24,7 +24,6 @@ import com.jayud.trailer.po.OrderStatus;
 import com.jayud.trailer.po.TrailerDispatch;
 import com.jayud.trailer.po.TrailerOrder;
 import com.jayud.trailer.mapper.TrailerOrderMapper;
-import com.jayud.trailer.service.IOrderStatusService;
 import com.jayud.trailer.service.ITrailerDispatchService;
 import com.jayud.trailer.service.ITrailerOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -62,11 +61,6 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
     @Autowired
     private FileClient fileClient;
 
-    @Autowired
-    private IOrderStatusService orderStatusService;
-
-//    @Autowired
-//    private IOrderFlowSheetService orderFlowSheetService;
 
     @Autowired
     private ITrailerDispatchService trailerDispatchService;
@@ -76,7 +70,7 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
         LocalDateTime now = LocalDateTime.now();
         addTrailerOrderFrom.getPathAndName();
         TrailerOrder trailerOrder = ConvertUtil.convert(addTrailerOrderFrom, TrailerOrder.class);
-        //System.out.println("orderId===================================="+addSeaOrderForm.getOrderId());
+//        System.out.println("trailerOrder===================================="+trailerOrder);
         //创建拖车单
         if (addTrailerOrderFrom.getId() == null) {
             //生成订单号
@@ -86,44 +80,44 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
             trailerOrder.setCreateUser(UserOperator.getToken());
             trailerOrder.setStatus(OrderStatusEnum.TT_0.getCode());
             this.save(trailerOrder);
-            QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.eq("class_code","TC");
-            queryWrapper.isNotNull("sub_sorts");
-            queryWrapper.orderByAsc("sub_sorts");
-            if(addTrailerOrderFrom.getImpAndExpType().equals(1)){
-                queryWrapper.ne("contain_state","TT7");
-            }else{
-                queryWrapper.ne("contain_state","TT4");
-                if(!addTrailerOrderFrom.getIsWeighed()){
-                    queryWrapper.ne("contain_state","TT7");
-                }
-            }
-            List<OrderStatus> statuses = orderStatusService.list(queryWrapper);
-            List<OrderFlowSheet> list = new ArrayList<>();
-            for (int i = 0; i < statuses.size(); i++) {
-                OrderFlowSheet orderFlowSheet = new OrderFlowSheet();
-                orderFlowSheet.setMainOrderNo(trailerOrder.getMainOrderNo());
-                orderFlowSheet.setOrderNo(trailerOrder.getOrderNo());
-                orderFlowSheet.setProductClassifyId(statuses.get(i).getClassCode());
-                orderFlowSheet.setProductClassifyName(statuses.get(i).getClassName());
-                orderFlowSheet.setStatus(statuses.get(i).getContainState());
-                orderFlowSheet.setStatusName(statuses.get(i).getName());
-                if(i==0){
-                    orderFlowSheet.setComplete("1");
-                    orderFlowSheet.setFStatus(null);
-                }else{
-                    orderFlowSheet.setComplete("0");
-                    orderFlowSheet.setFStatus(statuses.get(i-1).getContainState());
-                }
-                orderFlowSheet.setIsPass("1");
-                orderFlowSheet.setCreateTime(now);
-                orderFlowSheet.setCreateUser(trailerOrder.getCreateUser());
-                list.add(orderFlowSheet);
-            }
-            ApiResult apiResult = omsClient.batchAddOrUpdateProcess(list);
-            if (apiResult.getCode() != HttpStatus.SC_OK) {
-                log.warn("批量保存订单流程报错={}", new JSONArray(list));
-            }
+//            QueryWrapper queryWrapper = new QueryWrapper();
+//            queryWrapper.eq("class_code","TC");
+//            queryWrapper.isNotNull("sub_sorts");
+//            queryWrapper.orderByAsc("sub_sorts");
+//            if(addTrailerOrderFrom.getImpAndExpType().equals(1)){
+//                queryWrapper.ne("contain_state","TT7");
+//            }else{
+//                queryWrapper.ne("contain_state","TT4");
+//                if(!addTrailerOrderFrom.getIsWeighed()){
+//                    queryWrapper.ne("contain_state","TT7");
+//                }
+//            }
+//            List<OrderStatus> statuses = orderStatusService.list(queryWrapper);
+//            List<OrderFlowSheet> list = new ArrayList<>();
+//            for (int i = 0; i < statuses.size(); i++) {
+//                OrderFlowSheet orderFlowSheet = new OrderFlowSheet();
+//                orderFlowSheet.setMainOrderNo(trailerOrder.getMainOrderNo());
+//                orderFlowSheet.setOrderNo(trailerOrder.getOrderNo());
+//                orderFlowSheet.setProductClassifyId(statuses.get(i).getClassCode());
+//                orderFlowSheet.setProductClassifyName(statuses.get(i).getClassName());
+//                orderFlowSheet.setStatus(statuses.get(i).getContainState());
+//                orderFlowSheet.setStatusName(statuses.get(i).getName());
+//                if(i==0){
+//                    orderFlowSheet.setComplete("1");
+//                    orderFlowSheet.setFStatus(null);
+//                }else{
+//                    orderFlowSheet.setComplete("0");
+//                    orderFlowSheet.setFStatus(statuses.get(i-1).getContainState());
+//                }
+//                orderFlowSheet.setIsPass("1");
+//                orderFlowSheet.setCreateTime(now);
+//                orderFlowSheet.setCreateUser(trailerOrder.getCreateUser());
+//                list.add(orderFlowSheet);
+//            }
+//            ApiResult apiResult = omsClient.batchAddOrUpdateProcess(list);
+//            if (apiResult.getCode() != HttpStatus.SC_OK) {
+//                log.warn("批量保存订单流程报错={}", new JSONArray(list));
+//            }
 
         } else {
             //修改拖车单
@@ -205,6 +199,7 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
         Integer businessType = BusinessTypeEnum.TC.getCode();
         //拖车订单信息
         TrailerOrderVO trailerOrderVO = this.baseMapper.getTrailerOrder(id);
+        trailerOrderVO.getFile(prePath);
 
         //获取港口信息
         List<InitComboxStrVO> portCodeInfo = (List<InitComboxStrVO>)this.omsClient.initDictByDictTypeCode("Port").getData();

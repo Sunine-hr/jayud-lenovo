@@ -11,6 +11,7 @@ import com.alibaba.excel.enums.WriteDirectionEnum;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.metadata.fill.FillConfig;
 import com.alibaba.excel.write.metadata.fill.FillWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.ApiResult;
@@ -21,6 +22,7 @@ import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.enums.*;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.Query;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.trailer.bo.*;
 import com.jayud.trailer.feign.FileClient;
@@ -280,17 +282,17 @@ public class TrailerOrderController {
             }
             if(record.getImpAndExpType().equals(2)&&record.getStatus().equals(OrderStatusEnum.TT_4.getCode())){
                 if(record.getProcessDescription()!=null){
-                    record.setStatus(record.getProcessStatusDesc());
+                    record.setStatus(record.getProcessDescription());
                 }
             }
             if(record.getImpAndExpType().equals(1)&&record.getStatus().equals(OrderStatusEnum.TT_7.getCode())){
                 if(record.getProcessDescription()!=null){
-                    record.setStatus(record.getProcessStatusDesc());
+                    record.setStatus(record.getProcessDescription());
                 }
             }
             if(record.getImpAndExpType().equals(2)&&record.getStatus().equals(OrderStatusEnum.TT_7.getCode())&&record.getIsWeighed()){
                 if(record.getProcessDescription()!=null){
-                    record.setStatus(record.getProcessStatusDesc());
+                    record.setStatus(record.getProcessDescription());
                 }
             }
         }
@@ -368,10 +370,21 @@ public class TrailerOrderController {
     @PostMapping(value = "/getDispatchNO")
     public CommonResult<String> getDispatchNO(@RequestBody Map<String, Object> map){
         String trailerOrderNo = MapUtil.getStr(map, "orderNo");
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("trailer_order_no",trailerOrderNo);
+        TrailerDispatch one = trailerDispatchService.getOne(queryWrapper);
+        if(one!=null){
+            return CommonResult.success(one.getOrderNo());
+        }else{
+            one = new TrailerDispatch();
+        }
         String substring = trailerOrderNo.substring(0, trailerOrderNo.length() - 8);
         String preOrderNo = OrderTypeEnum.P.getCode()+substring;
         String classCode = OrderTypeEnum.P.getCode();
         String orderNo = (String)omsClient.getOrderNo(preOrderNo,classCode).getData();
+        one.setOrderNo(orderNo);
+        one.setTrailerOrderNo(trailerOrderNo);
+        trailerDispatchService.saveOrUpdateTrailerDispatch(one);
         return CommonResult.success(orderNo);
     }
 

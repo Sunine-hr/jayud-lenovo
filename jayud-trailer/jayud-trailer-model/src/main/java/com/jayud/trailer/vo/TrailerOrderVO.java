@@ -9,6 +9,7 @@ import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.TradeTypeEnum;
 import com.jayud.common.utils.FileView;
+import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -265,5 +266,12 @@ public class TrailerOrderVO {
         this.totalAmountName = this.totalAmount.toString() + "件";
         this.totalXAmountName = this.totalXAmount.toString() + "箱";
         this.goodsInfo = sb.toString();
+    }
+
+    public void getFile(String path){
+        this.soPics = StringUtils.getFileViews(this.getSoFilePath(),this.getSoFileName(),path);
+        this.billPics = StringUtils.getFileViews(this.getBolFilePath(),this.getBolFileName(),path);
+        this.cnPics = StringUtils.getFileViews(this.getCnFilePath(),this.getCnFileName(),path);
+        this.pssPics = StringUtils.getFileViews(this.getPssFilePath(),this.getPssFileName(),path);
     }
 }

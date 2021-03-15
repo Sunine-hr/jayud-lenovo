@@ -178,8 +178,13 @@ public class InputTrailerOrderFrom {
             return false;
         }
         for (AddTrailerOrderAddressForm orderAddressForm : this.orderAddressForms) {
-            orderAddressForm.checkCreateTrailerOrder();
-            orderAddressForm.checkCreateGood();
+            if(!orderAddressForm.checkCreateTrailerOrder()){
+                return false;
+            }
+            if(!orderAddressForm.checkCreateGood()){
+                return false;
+            }
+
         }
         //货品信息
 //        for (AddGoodsForm goodsForm : goodsForms) {

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import java.util.List;
  * @since 2020-11-30
  */
 @Data
+@Slf4j
 public class AddTrailerOrderAddressForm {
 
     private static final long serialVersionUID = 1L;
@@ -78,7 +80,8 @@ public class AddTrailerOrderAddressForm {
 
     public boolean checkCreateTrailerOrder() {
         if (this.type == null || StringUtils.isEmpty(this.address)
-                || StringUtils.isEmpty(this.company)) {
+                || StringUtils.isEmpty(this.contacts)|| StringUtils.isEmpty(this.phone)|| StringUtils.isEmpty(this.deliveryDate)) {
+            log.warn("地址信息不全");
             return false;
         }
         return true;
@@ -108,6 +111,7 @@ public class AddTrailerOrderAddressForm {
         if (StringUtils.isEmpty(this.name)
                 || this.bulkCargoAmount == null || StringUtils.isEmpty(this.bulkCargoUnit)
                 || this.totalWeight == null) {
+            log.warn("货品信息不全");
             return false;
         }
         return true;

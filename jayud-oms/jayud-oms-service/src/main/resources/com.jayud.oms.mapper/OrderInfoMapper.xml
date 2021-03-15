@@ -285,9 +285,9 @@
         oi.`customer_code` customerCode,
         oi.`legal_name` legalName,
         '' goodsInfo,
-        (SELECT address FROM order_address oa where oa.`business_id` = tor.id AND oa.`type` = 0 ORDER BY oa.`id` LIMIT 1)
+        (SELECT address FROM order_address oa where oa.`business_id` = tor.id AND oa.`type` = 4 ORDER BY oa.`id` LIMIT 1)
         takeAddress,
-        (SELECT address FROM order_address oa where oa.`business_id` = tor.id AND oa.`type` = 1 ORDER BY oa.`id` LIMIT 1)
+        (SELECT address FROM order_address oa where oa.`business_id` = tor.id AND oa.`type` = 3 ORDER BY oa.`id` LIMIT 1)
         giveAddress,
         (SELECT oc.`status` FROM order_customs oc WHERE oc.`main_order_no`= oi.`order_no` LIMIT 1) subCustomsStatus,
         (SELECT ot.`status` FROM order_transport ot WHERE ot.`main_order_no`= oi.`order_no` LIMIT 1) subTmsStatus,

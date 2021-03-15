@@ -250,7 +250,7 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     @ApiModelProperty(value = "货物重量")
     private Double totalWeight = 0.0;
 
-    @ApiModelProperty(value = "流程描述")
+    //@ApiModelProperty(value = "流程描述")
     private String processDescription;
 
     /**

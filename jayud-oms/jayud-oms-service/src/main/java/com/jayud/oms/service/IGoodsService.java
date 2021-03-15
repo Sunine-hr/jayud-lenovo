@@ -21,4 +21,6 @@ public interface IGoodsService extends IService<Goods> {
     public List<Goods> getGoodsByBusIds(List<Long> busIds, Integer busType);
 
     void removeByOrderNo(String orderNo, Integer businessType);
+
+    void removeByBusinessId(Long businessId, Integer businessType);
 }

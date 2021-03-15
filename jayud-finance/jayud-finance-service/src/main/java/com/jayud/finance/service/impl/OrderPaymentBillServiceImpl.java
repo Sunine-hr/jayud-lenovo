@@ -1,6 +1,7 @@
 package com.jayud.finance.service.impl;
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -27,10 +28,10 @@ import com.jayud.finance.po.OrderPaymentBill;
 import com.jayud.finance.po.OrderPaymentBillDetail;
 import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.service.*;
-import com.jayud.finance.util.ReflectUtil;
 import com.jayud.finance.vo.*;
 import com.jayud.finance.vo.InlandTP.OrderInlandTransportDetails;
 import io.netty.util.internal.StringUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -354,18 +355,22 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
     }
 
     @Override
-    public List<ViewFBilToOrderVO> viewPaymentBill(List<Long> costIds) {
+    public JSONArray viewPaymentBill(ViewFBillForm form, List<Long> costIds) {
         List<ViewFBilToOrderVO> orderList = baseMapper.viewPaymentBill(costIds);
+
+        JSONArray array = new JSONArray(orderList);
+
+        List<String> mainOrderNos = new ArrayList<>();
         List<ViewFBilToOrderVO> newOrderList = new ArrayList<>();
         List<ViewBillToCostClassVO> findCostClass = baseMapper.findCostClass(costIds);
-        for (ViewFBilToOrderVO viewBillToOrder : orderList) {
-            //处理目的地:当有两条或两条以上时,则获取中转仓地址
-            if (!StringUtil.isNullOrEmpty(viewBillToOrder.getEndAddress())) {
-                String[] strs = viewBillToOrder.getEndAddress().split(",");
-                if (strs.length > 1) {
-                    viewBillToOrder.setEndAddress(receivableBillService.getWarehouseAddress(viewBillToOrder.getOrderNo()));
-                }
-            }
+
+        for (int i = 0; i < orderList.size(); i++) {
+            ViewFBilToOrderVO viewBillToOrder = orderList.get(i);
+            JSONObject jsonObject = array.getJSONObject(i);
+
+            //中港运输特殊处理
+            this.tmsSpecialDataProcessing(form, viewBillToOrder);
+
             for (ViewBillToCostClassVO viewBillToCostClass : findCostClass) {
                 if ((StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo()) && StringUtil.isNullOrEmpty(viewBillToCostClass.getSubOrderNo())
                         && viewBillToOrder.getOrderNo().equals(viewBillToCostClass.getOrderNo()))
@@ -376,8 +381,8 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
                         Map<String, Object> propertiesMap = new HashMap<String, Object>();
                         Class cls = viewBillToCostClass.getClass();
                         Field[] fields = cls.getDeclaredFields();
-                        for (int i = 0; i < fields.length; i++) {
-                            Field f = fields[i];
+                        for (int j = 0; j < fields.length; j++) {
+                            Field f = fields[j];
                             f.setAccessible(true);
                             if ("name".equals(f.getName())) {
                                 addProperties = String.valueOf(f.get(viewBillToCostClass)).toLowerCase();//待新增得属性
@@ -387,16 +392,22 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
                             }
                             propertiesMap.put(addProperties, addValue);
                         }
-                        viewBillToOrder = (ViewFBilToOrderVO) ReflectUtil.getObject(viewBillToOrder, propertiesMap);
+                        jsonObject.putAll(propertiesMap);
+//                        viewBillToOrder = (ViewFBilToOrderVO) ReflectUtil.getObject(viewBillToOrder, propertiesMap);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             }
+            mainOrderNos.add(viewBillToOrder.getOrderNo());
             newOrderList.add(viewBillToOrder);
         }
-        return newOrderList;
+
+        //内陆数据处理
+        array = this.inlandTPDataProcessing(form, array, mainOrderNos);
+        return array;
     }
+
 
     @Override
     public List<SheetHeadVO> findSheetHead(List<Long> costIds) {
@@ -481,5 +492,37 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         Map<String, Object> sqlParam = new HashMap<>();
         sqlParam.put("table", SubOrderSignEnum.getSignOne2SignTwo(cmd));
         return sqlParam;
+    }
+
+
+    private void tmsSpecialDataProcessing(ViewFBillForm form, ViewFBilToOrderVO viewBillToOrder) {
+        //处理目的地:当有两条或两条以上时,则获取中转仓地址
+        if (SubOrderSignEnum.ZGYS.getSignOne().equals(form.getCmd())) {
+            if (!StringUtil.isNullOrEmpty(viewBillToOrder.getEndAddress())) {
+                String[] strs = viewBillToOrder.getEndAddress().split(",");
+                if (strs.length > 1) {
+                    viewBillToOrder.setEndAddress(receivableBillService.getWarehouseAddress(viewBillToOrder.getOrderNo()));
+                }
+            }
+        }
+    }
+
+
+    private JSONArray inlandTPDataProcessing(ViewFBillForm form, JSONArray array, List<String> mainOrderNos) {
+        if (SubOrderSignEnum.NL.getSignOne().equals(form.getCmd())) {
+            if (CollectionUtils.isEmpty(array)) {
+                return array;
+            }
+            List<OrderInlandTransportDetails> details = this.inlandTpClient.getInlandOrderInfoByMainOrderNos(mainOrderNos).getData();
+            JSONArray jsonArray = new JSONArray();
+            for (int i = 0; i < array.size(); i++) {
+                JSONObject jsonObject = array.getJSONObject(i);
+                ViewBilToInlandTPOrderVO viewBilToInlandTPOrderVO = new ViewBilToInlandTPOrderVO();
+                JSONObject result = viewBilToInlandTPOrderVO.assembleData(jsonObject, details);
+                jsonArray.add(result);
+            }
+            return jsonArray;
+        }
+        return array;
     }
 }

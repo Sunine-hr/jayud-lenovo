@@ -40,6 +40,8 @@ public interface IOrderAddressService extends IService<OrderAddress> {
 
     void removeByOrderNo(String orderNo, Integer businessType);
 
+    public void removeByBusinessId(Long businessId, Integer businessType);
+
     /**
      * 获取最新的联系人信息
      */

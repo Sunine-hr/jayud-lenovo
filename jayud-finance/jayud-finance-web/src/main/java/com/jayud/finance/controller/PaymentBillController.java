@@ -96,7 +96,7 @@ public class PaymentBillController {
             costIds.add(billDetailForm.getCostId());
         }
         Map<String, Object> resultMap = new HashMap<>();
-        List<ViewFBilToOrderVO> list = billService.viewPaymentBill(costIds);
+        JSONArray list = billService.viewPaymentBill(form, costIds);
         resultMap.put(CommonConstant.LIST, list);//分页数据
         List<SheetHeadVO> sheetHeadVOS = billService.findSheetHead(costIds);
         resultMap.put(CommonConstant.SHEET_HEAD, sheetHeadVOS);//表头

@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 应收账单列表预览
@@ -60,15 +61,16 @@ public class ViewBilToOrderVO {
     @ApiModelProperty(value = "结算币种")
     private String settlementCurrency;
 
+
     public void interceptAddress(String startAddress, String endAddress) {
         if (startAddress != null && startAddress.length() > 6) {
-            startAddress=startAddress.substring(0,6);
+            startAddress = startAddress.substring(0, 6);
         }
         if (endAddress != null && endAddress.length() > 6) {
-            endAddress=endAddress.substring(0,6);
+            endAddress = endAddress.substring(0, 6);
         }
-        this.startAddress=startAddress;
-        this.endAddress=endAddress;
+        this.startAddress = startAddress;
+        this.endAddress = endAddress;
     }
 
 }

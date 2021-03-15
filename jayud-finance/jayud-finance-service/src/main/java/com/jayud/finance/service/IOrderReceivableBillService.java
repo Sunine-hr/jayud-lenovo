@@ -1,14 +1,11 @@
 package com.jayud.finance.service;
 
+import cn.hutool.json.JSONArray;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.CommonResult;
-import com.jayud.finance.bo.CreateReceiveBillForm;
-import com.jayud.finance.bo.QueryNotPaidBillForm;
-import com.jayud.finance.bo.QueryReceiveBillForm;
-import com.jayud.finance.bo.QueryReceiveBillNumForm;
+import com.jayud.finance.bo.*;
 import com.jayud.finance.po.OrderReceivableBill;
-import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.vo.*;
 
 import java.math.BigDecimal;
@@ -60,10 +57,11 @@ public interface IOrderReceivableBillService extends IService<OrderReceivableBil
     /**
      * 预览账单
      *
+     * @param form
      * @param costIds
      * @return
      */
-    List<ViewBilToOrderVO> viewReceiveBill(List<Long> costIds);
+    JSONArray viewReceiveBill(ViewSBillForm form, List<Long> costIds);
 
     /**
      * 预览账单表头

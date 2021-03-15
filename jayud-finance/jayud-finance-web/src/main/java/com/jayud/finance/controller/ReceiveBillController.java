@@ -77,7 +77,7 @@ public class ReceiveBillController {
                     StringUtil.isNullOrEmpty(form.getSubType()) ||
                     (!("main".equals(form.getSubType()) || "zgys".equals(form.getSubType()) || "bg".equals(form.getSubType()) || "hy".equals(form.getSubType())
                             || "ky".equals(form.getSubType()) || "nl".equals(form.getSubType())))
-                   ) {
+            ) {
                 return CommonResult.error(ResultEnum.PARAM_ERROR);
             }
         }
@@ -94,7 +94,7 @@ public class ReceiveBillController {
             costIds.add(billDetailForm.getCostId());
         }
         Map<String, Object> resultMap = new HashMap<>();
-        List<ViewBilToOrderVO> list = billService.viewReceiveBill(costIds);
+        JSONArray list = billService.viewReceiveBill(form, costIds);
         resultMap.put(CommonConstant.LIST, list);//分页数据
         List<SheetHeadVO> sheetHeadVOS = billService.findSheetHead(costIds);
         resultMap.put(CommonConstant.SHEET_HEAD, sheetHeadVOS);//表头

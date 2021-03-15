@@ -90,7 +90,7 @@ public class OrderDeliveryAddress extends Model<OrderDeliveryAddress> {
 
     public void checkCreateOrder() {
         if (StringUtils.isEmpty(this.goodsName)) {
-            throw new JayudBizException("请输入联系人");
+            throw new JayudBizException("请输入货物描述");
         }
         if (StringUtils.isEmpty(this.phone)) {
             throw new JayudBizException("请输入联系电话");

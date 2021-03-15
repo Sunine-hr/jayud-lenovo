@@ -60,9 +60,9 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
         List<OrderAddress> list = new ArrayList<>();
 
         OrderDeliveryAddress orderDeliveryAddress = deliveryAddressList.get(0);
-        //先清除久的数据
-        this.goodsService.removeByOrderNo(orderDeliveryAddress.getOrderNo(), orderDeliveryAddress.getBusinessType());
-        this.removeByOrderNo(orderDeliveryAddress.getOrderNo(), orderDeliveryAddress.getBusinessType());
+        //先清除旧的数据
+        this.goodsService.removeByBusinessId(orderDeliveryAddress.getBusinessId(), orderDeliveryAddress.getBusinessType());
+        this.removeByBusinessId(orderDeliveryAddress.getBusinessId(), orderDeliveryAddress.getBusinessType());
         for (OrderDeliveryAddress deliveryAddress : deliveryAddressList) {
             //绑定商品信息
             Goods goods = new Goods()
@@ -150,6 +150,16 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
     }
 
     @Override
+    public void removeByBusinessId(Long businessId, Integer businessType) {
+        QueryWrapper<OrderAddress> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderAddress::getBusinessId, businessId);
+        if (businessType != null) {
+            condition.lambda().eq(OrderAddress::getBusinessType, businessType);
+        }
+        this.baseMapper.delete(condition);
+    }
+
+    @Override
     public void removeByOrderNo(String orderNo, Integer businessType) {
         QueryWrapper<OrderAddress> condition = new QueryWrapper<>();
         condition.lambda().eq(OrderAddress::getOrderNo, orderNo);
@@ -164,8 +174,8 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
      */
     @Override
     public List<OrderAddress> getLastContactInfoByBusinessType(Integer businessType) {
-        QueryWrapper<OrderAddress> condition=new QueryWrapper<>();
-        condition.lambda().eq(OrderAddress::getBusinessType,businessType);
+        QueryWrapper<OrderAddress> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderAddress::getBusinessType, businessType);
         condition.lambda().orderByDesc(OrderAddress::getId);
         return this.baseMapper.selectList(condition);
     }

@@ -42,4 +42,14 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         this.baseMapper.delete(condition);
     }
 
+    @Override
+    public void removeByBusinessId(Long businessId, Integer businessType) {
+        QueryWrapper<Goods> condition = new QueryWrapper<>();
+        condition.lambda().eq(Goods::getBusinessId, businessId);
+        if (businessType != null) {
+            condition.lambda().eq(Goods::getBusinessType, businessType);
+        }
+        this.baseMapper.delete(condition);
+    }
+
 }

@@ -1,6 +1,10 @@
 package com.jayud.finance.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -358,18 +362,19 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
     }
 
     @Override
-    public List<ViewBilToOrderVO> viewReceiveBill(List<Long> costIds) {
+    public JSONArray viewReceiveBill(ViewSBillForm form, List<Long> costIds) {
         List<ViewBilToOrderVO> orderList = baseMapper.viewReceiveBill(costIds);
+        JSONArray array = new JSONArray(orderList);
+
         List<ViewBilToOrderVO> newOrderList = new ArrayList<>();
+        List<String> mainOrderNos = new ArrayList<>();
         List<ViewBillToCostClassVO> findCostClass = baseMapper.findCostClass(costIds);
-        for (ViewBilToOrderVO viewBillToOrder : orderList) {
-            //处理目的地:当有两条或两条以上时,则获取中转仓地址
-            if (!StringUtil.isNullOrEmpty(viewBillToOrder.getEndAddress())) {
-                String[] strs = viewBillToOrder.getEndAddress().split(",");
-                if (strs.length > 1) {
-                    viewBillToOrder.setEndAddress(getWarehouseAddress(viewBillToOrder.getOrderNo()));
-                }
-            }
+
+        for (int i = 0; i < orderList.size(); i++) {
+            ViewBilToOrderVO viewBillToOrder = orderList.get(i);
+            JSONObject jsonObject = array.getJSONObject(i);
+            this.tmsSpecialDataProcessing(form, viewBillToOrder);
+
             for (ViewBillToCostClassVO viewBillToCostClass : findCostClass) {
                 if ((StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo()) && StringUtil.isNullOrEmpty(viewBillToCostClass.getSubOrderNo()) &&
                         viewBillToCostClass.getOrderNo().equals(viewBillToOrder.getOrderNo()))
@@ -380,8 +385,8 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
                         Map<String, Object> propertiesMap = new HashMap<String, Object>();
                         Class cls = viewBillToCostClass.getClass();
                         Field[] fields = cls.getDeclaredFields();
-                        for (int i = 0; i < fields.length; i++) {
-                            Field f = fields[i];
+                        for (int j = 0; j < fields.length; j++) {
+                            Field f = fields[j];
                             f.setAccessible(true);
                             if ("name".equals(f.getName())) {
                                 addProperties = String.valueOf(f.get(viewBillToCostClass)).toLowerCase();//待新增得属性
@@ -391,16 +396,24 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
                             }
                             propertiesMap.put(addProperties, addValue);
                         }
-                        viewBillToOrder = (ViewBilToOrderVO) ReflectUtil.getObject(viewBillToOrder, propertiesMap);
+                        jsonObject.putAll(propertiesMap);
+//                        viewBillToOrder = (ViewBilToOrderVO) ReflectUtil.getObject(viewBillToOrder, propertiesMap);
+//                        viewBillToOrder.setDynamicMap(propertiesMap);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             }
             newOrderList.add(viewBillToOrder);
+            mainOrderNos.add(viewBillToOrder.getOrderNo());
+//            list.add(viewBillToOrder);
         }
-        return newOrderList;
+        //内陆数据处理
+        array = this.inlandTPDataProcessing(form, array, mainOrderNos);
+
+        return array;
     }
+
 
     @Override
     public List<SheetHeadVO> findSheetHead(List<Long> costIds) {
@@ -474,4 +487,33 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
     }
 
 
+    private JSONArray inlandTPDataProcessing(ViewSBillForm form, JSONArray array, List<String> mainOrderNos) {
+        if (SubOrderSignEnum.NL.getSignOne().equals(form.getCmd())) {
+            if (CollectionUtils.isEmpty(array)) {
+                return array;
+            }
+            List<OrderInlandTransportDetails> details = this.inlandTpClient.getInlandOrderInfoByMainOrderNos(mainOrderNos).getData();
+            JSONArray jsonArray = new JSONArray();
+            for (int i = 0; i < array.size(); i++) {
+                JSONObject jsonObject = array.getJSONObject(i);
+                ViewBilToInlandTPOrderVO viewBilToInlandTPOrderVO = new ViewBilToInlandTPOrderVO();
+                JSONObject result = viewBilToInlandTPOrderVO.assembleData(jsonObject, details);
+                jsonArray.add(result);
+            }
+            return jsonArray;
+        }
+        return array;
+    }
+
+    private void tmsSpecialDataProcessing(ViewSBillForm form, ViewBilToOrderVO viewBillToOrder) {
+        //中港运输 处理目的地:当有两条或两条以上时,则获取中转仓地址
+        if (SubOrderSignEnum.ZGYS.getSignOne().equals(form.getCmd())) {
+            if (!StringUtil.isNullOrEmpty(viewBillToOrder.getEndAddress())) {
+                String[] strs = viewBillToOrder.getEndAddress().split(",");
+                if (strs.length > 1) {
+                    viewBillToOrder.setEndAddress(getWarehouseAddress(viewBillToOrder.getOrderNo()));
+                }
+            }
+        }
+    }
 }

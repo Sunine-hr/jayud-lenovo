@@ -17,7 +17,7 @@ public class ViewSBillForm {
     @ApiModelProperty(value = "应收出账单界面部分")
     private List<OrderReceiveBillDetailForm> billDetailForms = new ArrayList<>();
 
-    @ApiModelProperty(value = "操作指令，cmd = main or bg or zgys",required = true)
+    @ApiModelProperty(value = "操作指令，cmd = main or bg or zgys or ky or nl or hy",required = true)
     @NotEmpty(message = "cmd is required")
     private String cmd;
 }

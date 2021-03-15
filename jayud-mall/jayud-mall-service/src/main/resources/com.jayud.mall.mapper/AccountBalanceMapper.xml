@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.AccountBalanceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.AccountBalance">
+        <id column="id" property="id" />
+        <result column="customer_id" property="customerId" />
+        <result column="cid" property="cid" />
+        <result column="amount" property="amount" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_id, cid, amount
+    </sql>
+
+    
+    <select id="findCurrAccountBalance" parameterType="com.jayud.mall.model.bo.AccountBalanceForm"
+            resultType="com.jayud.mall.model.vo.AccountBalanceVO">
+        select
+        t.company customerName,
+        t1.id,t1.customer_id,t1.cid,t1.amount,
+        t2.currency_code,t2.currency_name,
+        CONCAT(t1.amount, ' ', t2.currency_name) amountFormat
+        from customer t
+        left join account_balance t1 on t1.customer_id = t.id
+        left join currency_info t2 on t2.id = t1.cid
+        where 1=1
+        <if test="form.customerId != null">
+            and t.id = #{form.customerId}
+        </if>
+        <if test="form.cid != null">
+            and t1.cid = #{form.cid}
+        </if>
+
+    </select>
+    
+</mapper>

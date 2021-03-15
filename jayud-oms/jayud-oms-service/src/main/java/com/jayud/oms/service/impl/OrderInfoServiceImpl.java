@@ -1600,7 +1600,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             //子订单信息
             Map<String, Object> subOrderInfos = subOrderMap.get(orderInfoVO.getOrderNo());
             //订单状态
-            orderInfoVO.setSubOrderStatusDesc(assemblySubOrderStatus(subOrderInfos));
+            orderInfoVO.setSubOrderStatusDesc(assemblySubOrderStatus(subOrderInfos, orderInfoVO));
             //增加中港信息字段
             //增加空运信息字段
             //商品信息组合
@@ -1639,17 +1639,23 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      * 组装订单状态
      *
      * @param subOrderInfos
+     * @param orderInfoVO
      * @return
      */
-    private String assemblySubOrderStatus(Map<String, Object> subOrderInfos) {
+    private String assemblySubOrderStatus(Map<String, Object> subOrderInfos, OrderInfoVO orderInfoVO) {
         StringBuffer subOrderStatus = new StringBuffer();
         for (String subOrderType : KEY_SUBORDER) {
             Object subOrder = subOrderInfos.get(subOrderType);
+
             JSONArray array = new JSONArray(subOrder);
             for (int i = 0; i < array.size(); i++) {
                 JSONObject jsonObject = array.getJSONObject(i);
                 subOrderStatus.append(jsonObject.getStr("orderNo"))
                         .append("-").append(OrderStatusEnum.getDesc(jsonObject.getStr("status"))).append(",");
+
+                if (SubOrderSignEnum.NL.getSignOne().equals(subOrderType)) {
+                    orderInfoVO.setSubInlandStatus(jsonObject.getStr("status"));
+                }
             }
         }
         return subOrderStatus.toString();

@@ -82,7 +82,7 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
             this.save(inlandOrder);
         } else {
             OrderInlandTransport tmp = this.getById(form.getId());
-            orderNo = tmp.getOrderNo();
+            orderNo = StringUtils.isEmpty(form.getOrderNo()) ? tmp.getOrderNo() : form.getOrderNo();
             //修改内陆运输订单
             inlandOrder.setStatus(OrderStatusEnum.INLANDTP_NL_0.getCode())
                     .setUpdateTime(now).setUpdateUser(form.getCreateUser());

@@ -950,7 +950,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
             }
             if (form.getCmd().equals("preSubmit") && orderInlandTransportForm.getId() == null) {
-                //生成空运订单号
+                //生成订单号
                 String orderNo = StringUtils.loadNum(CommonConstant.NL, 12);
                 while (true) {
                     if (!isExistOrder(orderNo)) {//重复
@@ -967,11 +967,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     inputMainOrderForm.getStatus(), SubOrderSignEnum.NL.getSignOne(), form)) {
                 Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
                         : ProcessStatusEnum.DRAFT.getCode();
-                String orderNo = null;
-                if (orderInlandTransportForm.getId() == null) {
-                    orderNo = generationOrderNo(orderInlandTransportForm.getLegalEntityId(), 0, OrderStatusEnum.NLYS.getCode());
-                }
                 //查询结算单位
+                String orderNo = orderInlandTransportForm.getOrderNo();
                 CustomerInfo unitName = this.customerInfoService.getByCode(orderInlandTransportForm.getUnitCode());
                 orderInlandTransportForm.setMainOrderNo(mainOrderNo);
                 orderInlandTransportForm.setOrderNo(orderNo);
@@ -1693,7 +1690,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 tmp = this.orderFlowSheetService.getByCondition(new OrderFlowSheet().setOrderNo(orderNo));
 
             }
-            if (tmp == null) {
+            if (CollectionUtil.isEmpty(tmp)) {
                 //流程节点重组
                 List<OrderFlowSheet> orderFlowSheets = this.assemblyProcess(mainOrderNo, orderNo, statusEnum.getCode(), statusEnum.getDesc(), process);
                 this.orderFlowSheetService.saveOrUpdateBatch(orderFlowSheets);

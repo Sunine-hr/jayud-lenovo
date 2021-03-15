@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.entity.OrderDeliveryAddress;
 import com.jayud.common.enums.OrderAddressEnum;
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -45,6 +46,9 @@ public class InputOrderInlandTPVO extends Model<InputOrderInlandTPVO> {
 
     @ApiModelProperty(value = "运输状态")
     private String status;
+
+    @ApiModelProperty(value = "运输状态描述")
+    private String statusDesc;
 
 //    @ApiModelProperty(value = "车型(1吨车 2柜车)")
 //    private Integer vehicleType;
@@ -111,5 +115,8 @@ public class InputOrderInlandTPVO extends Model<InputOrderInlandTPVO> {
     }
 
 
-
+    public void setStatus(String status) {
+        this.status = status;
+        this.statusDesc = OrderStatusEnum.getDesc(status);
+    }
 }

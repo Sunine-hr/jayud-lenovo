@@ -268,13 +268,13 @@ public enum OrderStatusEnum {
     }
 
     /**
-     * 获取空运下个节点
+     * 获取报关下个节点
      * 如果是驳回状态就是当前状态
      */
     public static OrderStatusEnum getCustomsOrderNextStatus(String currentStatus) {
-//        if (AIR_A_2_1.getCode().equals(currentStatus)) {
-//            return OrderStatusEnum.AIR_A_2_1;
-//        }
+        if (CUSTOMS_C_5_1.getCode().equals(currentStatus)) {
+            return OrderStatusEnum.CUSTOMS_C_5_1;
+        }
         List<OrderStatusEnum> statusEnums = getCustomsProcess();
         boolean next = true;
         for (int i = 0; i < statusEnums.size(); i++) {

@@ -28,7 +28,6 @@ public class ReceivableBillMasterController {
     @Autowired
     IReceivableBillMasterService receivableBillMasterService;
 
-
     //应收账单分页查询
     @ApiOperation(value = "应收账单分页查询")
     @PostMapping("/findReceivableBillMasterByPage")

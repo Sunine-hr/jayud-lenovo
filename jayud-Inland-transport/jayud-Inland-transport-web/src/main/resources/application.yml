@@ -50,7 +50,7 @@ spring:
 swagger:
   enable: true
 logging:
-  path: /data/log/oms
+  path: /data/log/Inland
 feign:
   httpclient:
     connection-timeout: 5000

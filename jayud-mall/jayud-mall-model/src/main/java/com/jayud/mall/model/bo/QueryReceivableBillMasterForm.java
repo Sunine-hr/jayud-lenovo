@@ -24,4 +24,6 @@ public class QueryReceivableBillMasterForm extends BasePageForm {
     private Integer status;
 
 
+
+
 }

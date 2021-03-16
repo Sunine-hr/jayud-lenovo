@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/currencyinfo")
-@Api(tags = "C016-admin-币种接口")
+@Api(tags = "C016-client-币种接口")
 @ApiSort(value = 16)
 public class CurrencyInfoController {
 

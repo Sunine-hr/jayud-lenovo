@@ -22,7 +22,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/tradingrecord")
-@Api(tags = "A049-client-交易记录接口")
+@Api(tags = "A049-admin-交易记录接口")
 @ApiSort(value = 49)
 public class TradingRecordController {
 

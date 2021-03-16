@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -138,6 +139,27 @@ public class AirOrderController {
     }
 
 
+    @ApiOperation(value = "批量执行程操作")
+    @PostMapping(value = "/doBatchProcessOpt")
+    public CommonResult doBatchProcessOpt(@RequestBody Map<String, Object> map) {
+        JSONArray processOpts = MapUtil.get(map, "processOpts", JSONArray.class);
+        if (processOpts == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        List<AirOrderFormVO> tmp = JSONUtil.toList(processOpts, AirOrderFormVO.class);
+        List<AirProcessOptForm> list = new ArrayList<>();
+        tmp.forEach(e -> {
+            AirProcessOptForm form = new AirProcessOptForm();
+            form.setOrderId(e.getId());
+            form.setMainOrderId(e.getMainOrderId());
+            form.setOperatorTime(DateUtils.LocalDateTime2Str(LocalDateTime.now(), DateUtils.DATE_TIME_PATTERN));
+            list.add(form);
+        });
+        list.forEach(this::doAirProcessOpt);
+        return CommonResult.success();
+    }
+
+
     //操作指令,cmd = 1-空运接单,2-空运订舱,3-订单入仓," +
     //            "4-确认提单,5-确认离港，6-确认到港,7-海外代理,8-确认签收
     @ApiOperation(value = "执行空运流程操作")
@@ -150,10 +172,10 @@ public class AirOrderController {
         //空运订单信息
         AirOrder airOrder = this.airOrderService.getById(form.getOrderId());
         if (ProcessStatusEnum.COMPLETE.getCode().equals(airOrder.getProcessStatus())) {
-            return CommonResult.error(400, "该订单已经完成");
+            return CommonResult.error(400, "订单号为" + airOrder.getOrderNo() + "已经完成操作");
         }
         if (!ProcessStatusEnum.PROCESSING.getCode().equals(airOrder.getProcessStatus())) {
-            return CommonResult.error(400, "当前订单无法操作");
+            return CommonResult.error(400, "订单号为" + airOrder.getOrderNo() + "无法操作");
         }
         OrderStatusEnum statusEnum = OrderStatusEnum.getAirOrderNextStatus(airOrder.getStatus());
         if (statusEnum == null) {
@@ -364,10 +386,6 @@ public class AirOrderController {
         }
         return CommonResult.success(initComboxStrVOS);
     }
-
-
-
-
 
 
 }

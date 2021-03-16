@@ -139,6 +139,13 @@ public class OrderInlandTransportController {
     }
 
 
+//    @ApiOperation(value = "批量执行程操作")
+//    @PostMapping(value = "/doProcessOpt")
+//    public CommonResult doBatchProcessOpt(@RequestBody List<ProcessOptForm> form) {
+//        form.forEach(this::doProcessOpt);
+//        return CommonResult.success();
+//    }
+
     @ApiOperation(value = "执行程操作")
     @PostMapping(value = "/doProcessOpt")
     public CommonResult doProcessOpt(@RequestBody ProcessOptForm form) {
@@ -149,10 +156,10 @@ public class OrderInlandTransportController {
         //空运订单信息
         OrderInlandTransport order = this.orderInlandTransportService.getById(form.getOrderId());
         if (ProcessStatusEnum.COMPLETE.getCode().equals(order.getProcessStatus())) {
-            return CommonResult.error(400, "该订单已经完成");
+            return CommonResult.error(400, "订单号为"+order.getOrderNo() + "已经完成操作");
         }
         if (!ProcessStatusEnum.PROCESSING.getCode().equals(order.getProcessStatus())) {
-            return CommonResult.error(400, "当前订单无法操作");
+            return CommonResult.error(400, "订单号为"+order.getOrderNo() + "无法操作");
         }
         //节点处理
         String nextStatus = nodeProcessing(order);

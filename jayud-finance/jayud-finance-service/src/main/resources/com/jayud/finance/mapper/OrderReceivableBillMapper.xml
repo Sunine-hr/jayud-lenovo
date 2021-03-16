@@ -206,10 +206,10 @@
             and temp.euro is not null
         </if>
         <if test="form.endCreatedTimeStr != null and form.endCreatedTimeStr !=''">
-            and temp.createdTimeStr <![CDATA[<=]]> #{form.endCreatedTimeStr}
+            and date_format(temp.createdTimeStr,'%Y-%m-%d') &lt;= date_format(#{form.endCreatedTimeStr},'%Y-%m-%d')
         </if>
         <if test="form.beginCreatedTimeStr != null and form.beginCreatedTimeStr !=''">
-            and temp.createdTimeStr <![CDATA[>=]]> #{form.beginCreatedTimeStr}
+            and date_format(temp.createdTimeStr,'%Y-%m-%d') >= date_format(#{form.beginCreatedTimeStr},'%Y-%m-%d')
         </if>
     </select>
 
@@ -330,10 +330,10 @@
             and temp.euro is not null
         </if>
         <if test="form.endCreatedTimeStr != null and form.endCreatedTimeStr !=''">
-            and temp.createdTimeStr <![CDATA[<=]]> #{form.endCreatedTimeStr}
+            and date_format(temp.createdTimeStr,'%Y-%m-%d') &lt;= date_format(#{form.endCreatedTimeStr},'%Y-%m-%d')
         </if>
         <if test="form.beginCreatedTimeStr != null and form.beginCreatedTimeStr !=''">
-            and temp.createdTimeStr <![CDATA[>=]]> #{form.beginCreatedTimeStr}
+            and date_format(temp.createdTimeStr,'%Y-%m-%d') >= date_format(#{form.beginCreatedTimeStr},'%Y-%m-%d')
         </if>
     </select>
 

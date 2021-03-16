@@ -40,7 +40,7 @@ public class AirOrderFormVO {
     private String mainOrderNo;
 
     @ApiModelProperty(value = "主订单id")
-    private String mainOrderId;
+    private Long mainOrderId;
 
     @ApiModelProperty(value = "空运订单编号")
     private String orderNo;
@@ -178,7 +178,7 @@ public class AirOrderFormVO {
             if (this.mainOrderNo.equals(json.getStr("orderNo"))) { //主订单配对
                 this.customerName = json.getStr("customerName");
                 this.customerCode = json.getStr("customerCode");
-                this.mainOrderId = json.getStr("id");
+                this.mainOrderId = json.getLong("id");
                 this.bizUname = json.getStr("bizUname");
                 this.bizCode = json.getStr("bizCode");
                 this.classCode = json.getStr("classCode");
@@ -245,7 +245,7 @@ public class AirOrderFormVO {
     public void setProcessStatus(Integer processStatus) {
         this.processStatus = processStatus;
         this.statusDesc = ProcessStatusEnum.getDesc(processStatus);
-        this.processStatusDesc=ProcessStatusEnum.getDesc(processStatus);
+        this.processStatusDesc = ProcessStatusEnum.getDesc(processStatus);
     }
 
     public void setSubUnitCode(String subUnitCode) {

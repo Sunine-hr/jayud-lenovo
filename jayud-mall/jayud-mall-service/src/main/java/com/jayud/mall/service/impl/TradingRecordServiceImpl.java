@@ -6,15 +6,19 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.TradingRecordMapper;
-import com.jayud.mall.model.bo.TradingRecordCZForm;
-import com.jayud.mall.model.bo.TradingRecordForm;
-import com.jayud.mall.model.bo.TradingRecordQueryForm;
+import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.TradingRecord;
 import com.jayud.mall.model.vo.TemplateUrlVO;
 import com.jayud.mall.model.vo.TradingRecordVO;
+import com.jayud.mall.model.vo.domain.AuthUser;
+import com.jayud.mall.service.BaseService;
 import com.jayud.mall.service.ITradingRecordService;
 import com.jayud.mall.utils.NumberGeneratedUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +42,8 @@ public class TradingRecordServiceImpl extends ServiceImpl<TradingRecordMapper, T
 
     @Autowired
     TradingRecordMapper tradingRecordMapper;
+    @Autowired
+    BaseService baseService;
 
     //客户充值
     @Override
@@ -106,5 +112,72 @@ public class TradingRecordServiceImpl extends ServiceImpl<TradingRecordMapper, T
             }
         });
         return tradingRecordVOS;
+    }
+
+    @Override
+    public IPage<TradingRecordVO> findTradingRecordCZByPage(QueryTradingRecordCZForm form) {
+        //定义分页参数
+        Page<TradingRecordVO> page = new Page(form.getPageNum(),form.getPageSize());
+        //定义排序规则
+        page.addOrder(OrderItem.desc("t.id"));
+        IPage<TradingRecordVO> pageInfo = tradingRecordMapper.findTradingRecordCZByPage(page, form);
+        List<TradingRecordVO> records = pageInfo.getRecords();
+        if(CollUtil.isNotEmpty(records)){
+            records.forEach(tradingRecordVO -> {
+                String voucherUrl = tradingRecordVO.getVoucherUrl();
+                if(ObjectUtil.isNotEmpty(voucherUrl)){
+                    String json = voucherUrl;
+                    try {
+                        List<TemplateUrlVO> templateUrlVOS = JSON.parseObject(json, new TypeReference<List<TemplateUrlVO>>() {
+                        });
+                        tradingRecordVO.setVoucherUrls(templateUrlVOS);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        System.out.println("json格式错误");
+                        tradingRecordVO.setVoucherUrls(new ArrayList<>());
+                    }
+                }else{
+                    tradingRecordVO.setVoucherUrls(new ArrayList<>());
+                }
+            });
+        }
+        return pageInfo;
+    }
+
+    @Override
+    public CommonResult<TradingRecordVO> auditTradingRecordCZ(AuditTradingRecordCZForm form) {
+        Long id = form.getId();
+        TradingRecordVO tradingRecordVO = tradingRecordMapper.findTradingRecordById(id);
+        if(ObjectUtil.isEmpty(tradingRecordVO)){
+            return CommonResult.error(-1, "充值记录未找到");
+        }
+        String serialNumber = tradingRecordVO.getSerialNumber();
+        String serialNumberFront = form.getSerialNumber();
+        String status = form.getStatus();//状态(0待审核 1审核通过 2审核不通过)
+        String remark = form.getRemark();
+        //选择审核通过时，需要判断交易流水号是否一致
+        if(status.equals("1") && !serialNumber.equals(serialNumberFront)){
+            return CommonResult.error(-1, "交易流水号不一致，请核对数据");
+        }
+        //选择审核不通过时，金额流水号非必填，备注必填
+        if(status.equals("2") && ObjectUtil.isEmpty(remark)){
+            return CommonResult.error(-1, "审核不通过，备注信息必填");
+        }
+        if(!status.equals("1") && !status.equals("2")){
+            return CommonResult.error(-1, "审核状态错误");
+        }
+
+        AuthUser user = baseService.getUser();
+
+        tradingRecordVO.setStatus(status);//状态
+        tradingRecordVO.setRemark(remark);//备注
+        tradingRecordVO.setAuditor(user.getId().intValue());//审核人
+        tradingRecordVO.setAuditTime(LocalDateTime.now());//审核时间
+
+        TradingRecord tradingRecord = ConvertUtil.convert(tradingRecordVO, TradingRecord.class);
+        this.saveOrUpdate(tradingRecord);
+
+        TradingRecordVO convert = ConvertUtil.convert(tradingRecord, TradingRecordVO.class);
+        return CommonResult.success(convert);
     }
 }

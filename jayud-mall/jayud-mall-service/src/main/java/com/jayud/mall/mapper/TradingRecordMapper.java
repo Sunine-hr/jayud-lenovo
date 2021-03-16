@@ -1,5 +1,8 @@
 package com.jayud.mall.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.mall.model.bo.QueryTradingRecordCZForm;
 import com.jayud.mall.model.bo.TradingRecordCZForm;
 import com.jayud.mall.model.bo.TradingRecordQueryForm;
 import com.jayud.mall.model.po.TradingRecord;
@@ -36,4 +39,19 @@ public interface TradingRecordMapper extends BaseMapper<TradingRecord> {
      * @return
      */
     List<TradingRecordVO> findTradingRecord(@Param("form") TradingRecordQueryForm form);
+
+    /**
+     * 财务管理-充值审核-分页查询
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<TradingRecordVO> findTradingRecordCZByPage(Page<TradingRecordVO> page, @Param("form") QueryTradingRecordCZForm form);
+
+    /**
+     * 根据id，查询交易记录
+     * @param id
+     * @return
+     */
+    TradingRecordVO findTradingRecordById(@Param("id") Long id);
 }

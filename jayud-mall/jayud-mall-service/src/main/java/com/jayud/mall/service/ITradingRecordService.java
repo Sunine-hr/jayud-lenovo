@@ -1,8 +1,8 @@
 package com.jayud.mall.service;
 
-import com.jayud.mall.model.bo.TradingRecordCZForm;
-import com.jayud.mall.model.bo.TradingRecordForm;
-import com.jayud.mall.model.bo.TradingRecordQueryForm;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.TradingRecord;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.vo.TradingRecordVO;
@@ -38,4 +38,18 @@ public interface ITradingRecordService extends IService<TradingRecord> {
      * @return
      */
     List<TradingRecordVO> findTradingRecord(TradingRecordQueryForm form);
+
+    /**
+     * 财务管理-充值审核-分页查询
+     * @param form
+     * @return
+     */
+    IPage<TradingRecordVO> findTradingRecordCZByPage(QueryTradingRecordCZForm form);
+
+    /**
+     * 财务管理-充值审核-审核
+     * @param form
+     * @return
+     */
+    CommonResult<TradingRecordVO> auditTradingRecordCZ(AuditTradingRecordCZForm form);
 }

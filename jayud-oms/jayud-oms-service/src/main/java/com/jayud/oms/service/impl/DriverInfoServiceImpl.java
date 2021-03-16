@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.UserOperator;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.mapper.DriverInfoMapper;
 import com.jayud.oms.model.bo.QueryDriverInfoForm;
 import com.jayud.oms.model.enums.StatusEnum;
@@ -127,9 +128,6 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
     }
 
 
-
-
-
     /**
      * 根据司机大陆手机查询用户
      *
@@ -147,9 +145,12 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
      * 查询启用的司机
      */
     @Override
-    public List<DriverInfo> getEnableDriverInfo() {
+    public List<DriverInfo> getEnableDriverInfo(String driverName) {
         QueryWrapper<DriverInfo> condition = new QueryWrapper<>();
         condition.lambda().eq(DriverInfo::getStatus, StatusEnum.ENABLE.getCode());
+        if (!StringUtils.isEmpty(driverName)) {
+            condition.lambda().like(DriverInfo::getName, driverName);
+        }
         return this.baseMapper.selectList(condition);
     }
 

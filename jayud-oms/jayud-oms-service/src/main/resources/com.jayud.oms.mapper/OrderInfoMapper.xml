@@ -361,6 +361,9 @@
             and temp.createdTimeStr <![CDATA[>=]]> #{form.beginCreateTimeStr}
         </if>
 
+        <if test="form.createdUser != null and form.createdUser !=''">
+            and temp.createdUser like concat('%',#{form.createdUser},'%')
+        </if>
         <choose>
             <when test="form.entrance == 'myOrder'">
                 and temp.createdUser = #{form.loginUserName}

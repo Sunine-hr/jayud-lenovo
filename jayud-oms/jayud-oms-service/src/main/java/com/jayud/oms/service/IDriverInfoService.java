@@ -59,7 +59,7 @@ public interface IDriverInfoService extends IService<DriverInfo> {
     /**
      * 查询启用的司机
      */
-    List<DriverInfo> getEnableDriverInfo();
+    List<DriverInfo> getEnableDriverInfo(String driverName);
 
     /**
      * 根据司机id集合拼装司机名称

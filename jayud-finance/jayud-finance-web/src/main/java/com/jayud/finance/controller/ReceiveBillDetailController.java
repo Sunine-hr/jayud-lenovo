@@ -196,7 +196,7 @@ public class ReceiveBillDetailController {
         if (billDetailId != null) {
             OrderReceivableBillDetail orderReceivableBillDetail = this.billDetailService.getById(billDetailId);
             //查询编辑账单数量
-            if (!BillEnum.EDIT_NO_COMMIT.getCode().equals(orderReceivableBillDetail.getAuditStatus())&&this.billDetailService.getEditBillNum(orderReceivableBillDetail.getBillNo()) <= 1) {
+            if (!BillEnum.EDIT_NO_COMMIT.getCode().equals(orderReceivableBillDetail.getAuditStatus()) && this.billDetailService.getEditBillNum(orderReceivableBillDetail.getBillNo()) <= 1) {
                 return CommonResult.error(400, "需要保留一条已出的账单费用");
             }
         }
@@ -234,10 +234,11 @@ public class ReceiveBillDetailController {
     }
 
 
-    @ApiOperation(value = "导出对账单详情")
+    @ApiOperation(value = "导出对账单详情 cmd=ky,zgys,nl ..等指令和录用费用类型对应")
     @RequestMapping(value = "/exportSBillDetail", method = RequestMethod.GET)
     @ResponseBody
     public void exportSBillDetail(@RequestParam(value = "billNo", required = true) String billNo,
+                                  @RequestParam(value = "cmd", required = true) String cmd,
                                   HttpServletResponse response) throws IOException {
         List<ViewBilToOrderVO> list = billDetailService.viewSBillDetail(billNo);
         //地址只展示6个字符

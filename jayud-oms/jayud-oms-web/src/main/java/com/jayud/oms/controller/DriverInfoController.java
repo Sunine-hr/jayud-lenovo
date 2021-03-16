@@ -1,6 +1,7 @@
 package com.jayud.oms.controller;
 
 
+import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
@@ -121,8 +122,9 @@ public class DriverInfoController {
 
     @ApiOperation(value = "车辆管理关联司机:查询审核通过的司机")
     @PostMapping(value = "/getEnableDriverInfo")
-    public CommonResult<List<DriverInfo>> getEnableDriverInfo() {
-        return CommonResult.success(this.driverInfoService.getEnableDriverInfo());
+    public CommonResult<List<DriverInfo>> getEnableDriverInfo(@RequestBody Map<String, Object> map) {
+        String driverName = MapUtil.getStr(map, "driverName");
+        return CommonResult.success(this.driverInfoService.getEnableDriverInfo(driverName));
     }
 }
 

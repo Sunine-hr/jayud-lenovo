@@ -40,4 +40,7 @@ public class QueryOrderInfoForm extends BasePageForm{
 
     @ApiModelProperty(value = "菜单入口 我的订单myOrder")
     private String entrance;
+
+    @ApiModelProperty(value = "创建用户")
+    private String createdUser;
 }

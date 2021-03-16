@@ -6,6 +6,8 @@ import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.BillMasterForm;
 import com.jayud.mall.model.bo.QueryReceivableBillMasterForm;
 import com.jayud.mall.model.vo.ReceivableBillMasterVO;
+import com.jayud.mall.model.vo.domain.CustomerUser;
+import com.jayud.mall.service.BaseService;
 import com.jayud.mall.service.IReceivableBillMasterService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -27,6 +29,8 @@ public class ReceivableBillMasterController {
 
     @Autowired
     IReceivableBillMasterService receivableBillMasterService;
+    @Autowired
+    BaseService baseService;
 
     //应收账单分页查询
     @ApiOperation(value = "应收账单分页查询")
@@ -34,6 +38,8 @@ public class ReceivableBillMasterController {
     @ApiOperationSupport(order = 1)
     public CommonResult<CommonPageResult<ReceivableBillMasterVO>> findReceivableBillMasterByPage(
             @RequestBody QueryReceivableBillMasterForm form) {
+        CustomerUser customerUser = baseService.getCustomerUser();
+        form.setCustomerId(customerUser.getId());
         IPage<ReceivableBillMasterVO> pageList = receivableBillMasterService.findReceivableBillMasterByPage(form);
         CommonPageResult<ReceivableBillMasterVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);

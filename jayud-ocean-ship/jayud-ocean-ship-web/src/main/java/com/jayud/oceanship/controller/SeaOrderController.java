@@ -10,7 +10,6 @@ import com.alibaba.excel.enums.WriteDirectionEnum;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.metadata.fill.FillConfig;
 import com.alibaba.excel.write.metadata.fill.FillWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.ApiResult;
@@ -27,10 +26,7 @@ import com.jayud.oceanship.bo.*;
 import com.jayud.oceanship.feign.FileClient;
 import com.jayud.oceanship.feign.OauthClient;
 import com.jayud.oceanship.feign.OmsClient;
-import com.jayud.oceanship.po.OrderFlowSheet;
 import com.jayud.oceanship.po.SeaOrder;
-import com.jayud.oceanship.po.SeaPort;
-import com.jayud.oceanship.service.IOrderFlowSheetService;
 import com.jayud.oceanship.service.ISeaOrderService;
 import com.jayud.oceanship.service.ISeaPortService;
 import com.jayud.oceanship.vo.GoodsVO;
@@ -47,12 +43,10 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.*;
@@ -84,9 +78,6 @@ public class SeaOrderController {
 
     @Autowired
     private OauthClient oauthClient;
-
-    @Autowired
-    private IOrderFlowSheetService orderFlowSheetService;
 
     @Autowired
     private FileClient fileClient;
@@ -262,11 +253,12 @@ public class SeaOrderController {
             return CommonResult.error(400, "当前订单正在操作");
         }
 //        OrderStatusEnum statusEnum = OrderStatusEnum.getSeaOrderNextStatus(seaOrder.getStatus());
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("f_status",seaOrder.getStatus());
-        queryWrapper.eq("order_no",seaOrder.getOrderNo());
-        OrderFlowSheet orderFlowSheet = orderFlowSheetService.getOne(queryWrapper);
-        OrderStatusEnum statusEnum = OrderStatusEnum.getSeaOrderNextStatus(orderFlowSheet.getStatus());
+//        QueryWrapper queryWrapper = new QueryWrapper();
+//        queryWrapper.eq("f_status",seaOrder.getStatus());
+//        queryWrapper.eq("order_no",seaOrder.getOrderNo());
+//        OrderFlowSheet orderFlowSheet = orderFlowSheetService.getOne(queryWrapper);
+        String orderProcessNode = (String)omsClient.getOrderProcessNode(seaOrder.getMainOrderNo(),seaOrder.getOrderNo(),seaOrder.getStatus()).getData();
+        OrderStatusEnum statusEnum = OrderStatusEnum.getSeaOrderNextStatus(orderProcessNode);
         if (statusEnum == null) {
             log.error("执行海运流程操作失败,超出流程之外 data={}", seaOrder.toString());
             return CommonResult.error(ResultEnum.OPR_FAIL);

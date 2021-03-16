@@ -20,7 +20,7 @@ public interface OceanShipClient {
      * 创建海运单
      */
     @RequestMapping(value = "/api/oceanship/createOrder")
-    ApiResult createOrder(@RequestBody InputSeaOrderForm inputSeaOrderForm);
+    ApiResult<String> createOrder(@RequestBody InputSeaOrderForm inputSeaOrderForm);
 
     /**
      * 根据主订单号获取海运单信息

@@ -11,6 +11,7 @@ import com.jayud.oceanship.bo.AddGoodsForm;
 import com.jayud.oceanship.bo.AddOrderAddressForm;
 import com.jayud.oceanship.bo.AuditInfoForm;
 import com.jayud.oceanship.bo.SeaProcessOptForm;
+import com.jayud.oceanship.po.OrderFlowSheet;
 import com.jayud.oceanship.vo.GoodsVO;
 import com.jayud.oceanship.vo.OrderAddressVO;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -184,4 +185,22 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/getOrderNo")
     ApiResult getOrderNo(@RequestParam("preOrder") String preOrder , @RequestParam("classCode") String classCode);
+
+    /**
+     * 批量新增/修改订单流程
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/batchAddOrUpdateProcess")
+    public ApiResult batchAddOrUpdateProcess(@RequestBody List<OrderFlowSheet> orderFlowSheets);
+
+    /**
+     * 获取订单节点
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getOrderProcessNode")
+    public ApiResult<String> getOrderProcessNode(@RequestParam("mainOrderNo") String mainOrderNo,
+                                                 @RequestParam("orderNo") String orderNo,
+                                                 @RequestParam("currentNodeStatus") String currentNodeStatus);
 }

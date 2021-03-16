@@ -23,7 +23,7 @@ public interface ISeaOrderService extends IService<SeaOrder> {
      * 生成海运单
      * @param addSeaOrderForm
      */
-    void createOrder(AddSeaOrderForm addSeaOrderForm);
+    String createOrder(AddSeaOrderForm addSeaOrderForm);
 
     /**
      * 生成订单号

@@ -55,12 +55,6 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
     private OmsClient omsClient;
 
     @Autowired
-    private IOrderFlowSheetService orderFlowSheetService;
-
-    @Autowired
-    private IOrderStatusService orderStatusService;
-
-    @Autowired
     private ISeaBookshipService seaBookshipService;
 
     @Autowired
@@ -74,7 +68,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
 
     @Override
     @Transactional
-    public void createOrder(AddSeaOrderForm addSeaOrderForm) {
+    public String createOrder(AddSeaOrderForm addSeaOrderForm) {
         LocalDateTime now = LocalDateTime.now();
         SeaOrder seaOrder = ConvertUtil.convert(addSeaOrderForm, SeaOrder.class);
         //System.out.println("orderId===================================="+addSeaOrderForm.getOrderId());
@@ -87,32 +81,32 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
             seaOrder.setCreateUser(UserOperator.getToken());
             seaOrder.setStatus(OrderStatusEnum.SEA_S_0.getCode());
             this.save(seaOrder);
-            QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.eq("class_code","HY");
-            queryWrapper.isNotNull("sub_sorts");
-            queryWrapper.orderByAsc("sub_sorts");
-            List<OrderStatus> statuses = orderStatusService.list(queryWrapper);
-            for (int i = 0; i < statuses.size(); i++) {
-                OrderFlowSheet orderFlowSheet = new OrderFlowSheet();
-                orderFlowSheet.setMainOrderNo(seaOrder.getMainOrderNo());
-                orderFlowSheet.setOrderNo(seaOrder.getOrderNo());
-                orderFlowSheet.setProductClassifyId(statuses.get(i).getClassCode());
-                orderFlowSheet.setProductClassifyName(statuses.get(i).getClassName());
-                orderFlowSheet.setStatus(statuses.get(i).getContainState());
-                orderFlowSheet.setStatusName(statuses.get(i).getName());
-                if(i==0){
-                    orderFlowSheet.setComplete("1");
-                    orderFlowSheet.setFStatus(null);
-                }else{
-                    orderFlowSheet.setComplete("0");
-                    orderFlowSheet.setFStatus(statuses.get(i-1).getContainState());
-                }
-
-                orderFlowSheet.setIsPass("1");
-                orderFlowSheet.setCreateTime(now);
-                orderFlowSheet.setCreateUser(seaOrder.getCreateUser());
-                orderFlowSheetService.saveOrUpdate(orderFlowSheet);
-            }
+//            QueryWrapper queryWrapper = new QueryWrapper();
+//            queryWrapper.eq("class_code","HY");
+//            queryWrapper.isNotNull("sub_sorts");
+//            queryWrapper.orderByAsc("sub_sorts");
+//            List<OrderStatus> statuses = orderStatusService.list(queryWrapper);
+//            for (int i = 0; i < statuses.size(); i++) {
+//                OrderFlowSheet orderFlowSheet = new OrderFlowSheet();
+//                orderFlowSheet.setMainOrderNo(seaOrder.getMainOrderNo());
+//                orderFlowSheet.setOrderNo(seaOrder.getOrderNo());
+//                orderFlowSheet.setProductClassifyId(statuses.get(i).getClassCode());
+//                orderFlowSheet.setProductClassifyName(statuses.get(i).getClassName());
+//                orderFlowSheet.setStatus(statuses.get(i).getContainState());
+//                orderFlowSheet.setStatusName(statuses.get(i).getName());
+//                if(i==0){
+//                    orderFlowSheet.setComplete("1");
+//                    orderFlowSheet.setFStatus(null);
+//                }else{
+//                    orderFlowSheet.setComplete("0");
+//                    orderFlowSheet.setFStatus(statuses.get(i-1).getContainState());
+//                }
+//
+//                orderFlowSheet.setIsPass("1");
+//                orderFlowSheet.setCreateTime(now);
+//                orderFlowSheet.setCreateUser(seaOrder.getCreateUser());
+//                orderFlowSheetService.saveOrUpdate(orderFlowSheet);
+//            }
         } else {
             //修改海运单
             seaOrder.setId(addSeaOrderForm.getOrderId());
@@ -149,7 +143,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         if (result.getCode() != HttpStatus.SC_OK) {
             log.warn("批量保存/修改商品信息失败,商品信息={}", new JSONArray(goodsForms));
         }
-
+        return seaOrder.getOrderNo();
     }
 
     /**
@@ -260,7 +254,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         seaOrder.setStatus(form.getStatus());
 
         //更改流程节点完成状态
-        this.updateProcessStatusComplte(form);
+//        this.updateProcessStatusComplte(form);
 
         //更新状态节点状态
         this.baseMapper.updateById(seaOrder);
@@ -275,15 +269,15 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
      * 修改流程节点状态
      * @param from
      */
-    public void updateProcessStatusComplte(SeaProcessOptForm from){
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("order_no",from.getOrderNo());
-        queryWrapper.eq("status",from.getStatus());
-        OrderFlowSheet one = orderFlowSheetService.getOne(queryWrapper);
-        one.setComplete("1");
-        boolean b = orderFlowSheetService.saveOrUpdate(one);
-
-    }
+//    public void updateProcessStatusComplte(SeaProcessOptForm from){
+//        QueryWrapper queryWrapper = new QueryWrapper();
+//        queryWrapper.eq("order_no",from.getOrderNo());
+//        queryWrapper.eq("status",from.getStatus());
+//        OrderFlowSheet one = orderFlowSheetService.getOne(queryWrapper);
+//        one.setComplete("1");
+//        boolean b = orderFlowSheetService.saveOrUpdate(one);
+//
+//    }
 
     /**
      * 海运流程操作记录
@@ -360,7 +354,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
 
         seaBookshipService.saveOrUpdateBookShip(seaBookship);
         //更改流程节点完成状态
-        this.updateProcessStatusComplte(form);
+//        this.updateProcessStatusComplte(form);
         updateProcessStatus(new SeaOrder(), form);
     }
 
@@ -379,7 +373,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         seaOrder.setPaperStripSeal(form.getPaperStripSeal());
 
         //更改流程节点完成状态
-        this.updateProcessStatusComplte(form);
+//        this.updateProcessStatusComplte(form);
 
         //更新状态节点状态
         this.baseMapper.updateById(seaOrder);

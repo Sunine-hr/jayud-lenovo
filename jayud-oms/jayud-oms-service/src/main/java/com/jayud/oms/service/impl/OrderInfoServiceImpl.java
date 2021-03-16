@@ -1081,7 +1081,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
                         : ProcessStatusEnum.DRAFT.getCode();
                 seaOrderForm.setProcessStatus(processStatus);
-                this.oceanShipClient.createOrder(seaOrderForm);
+                String subOrderNo = this.oceanShipClient.createOrder(seaOrderForm).getData();
+                seaOrderForm.setOrderNo(subOrderNo);
+                this.initProcessNode(mainOrderNo, subOrderNo, OrderStatusEnum.HY,
+                        form, seaOrderForm.getOrderId(), OrderStatusEnum.getSeaOrderProcess());
             }
         }
 

@@ -1,5 +1,7 @@
 package com.jayud.tms.model.vo;
 
+import cn.hutool.core.collection.CollectionUtil;
+import com.jayud.common.enums.OrderAddressEnum;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -95,10 +97,10 @@ public class SendCarPdfVO {
     private Integer totalPlateAmount;
 
     public String getVehicleTypeDesc() {
-        if(this.vehicleType != null){
-            if(this.vehicleType == 1){
+        if (this.vehicleType != null) {
+            if (this.vehicleType == 1) {
                 return "吨车";
-            }else if(this.vehicleType == 2){
+            } else if (this.vehicleType == 2) {
                 return "柜车";
             }
         }
@@ -106,14 +108,29 @@ public class SendCarPdfVO {
     }
 
     public String getGoodsType() {
-        if(!StringUtil.isNullOrEmpty(this.goodsType)){
-            if("1".equals(this.goodsType)){
+        if (!StringUtil.isNullOrEmpty(this.goodsType)) {
+            if ("1".equals(this.goodsType)) {
                 return "进口";
-            }else if("2".equals(this.goodsType)){
+            } else if ("2".equals(this.goodsType)) {
                 return "出口";
             }
         }
         return "";
+    }
+
+    public void assembleTakeGoodsInfos2(List<TakeGoodsInfoVO> takeGoodsInfos) {
+        if (CollectionUtil.isEmpty(takeGoodsInfos)) {
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (TakeGoodsInfoVO takeGoodsInfo : takeGoodsInfos) {
+            //送货处理,多个地址拼装成字符串返回(格式:送货地址 联系人:xxx 手机号码)
+            sb.append(takeGoodsInfo.getAddress()).append(" ")
+                    .append("联系人:").append(takeGoodsInfo.getContacts())
+                    .append(" ").append(takeGoodsInfo.getPhone())
+                    .append("<br/>");
+        }
+        this.deliveryAddress = sb.toString();
     }
 
 }

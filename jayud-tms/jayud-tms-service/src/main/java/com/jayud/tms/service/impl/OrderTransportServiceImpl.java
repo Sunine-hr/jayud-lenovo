@@ -220,13 +220,12 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         //是否录用费用
 
 
-
         List<OrderTransportVO> pageList = pageInfo.getRecords();
         List<String> orderNo = pageList.stream().map(OrderTransportVO::getOrderNo).collect(Collectors.toList());
         List<OrderTakeAdr> takeAdrsList = this.orderTakeAdrService.getOrderTakeAdrByOrderNos(orderNo, null);
         for (OrderTransportVO orderTransportVO : pageList) {
             orderTransportVO.assemblyGoodsInfo(orderTakeAdrs);
-            orderTransportVO.assemblyTakeFiles(takeAdrsList,prePath);
+            orderTransportVO.assemblyTakeFiles(takeAdrsList, prePath);
 //            orderTransportVO.setTakeFiles1(StringUtils.getFileViews(orderTransportVO.getFile1(), orderTransportVO.getFileName1(), prePath));
 //            orderTransportVO.setTakeFiles2(StringUtils.getFileViews(orderTransportVO.getFile2(), orderTransportVO.getFileName2(), prePath));
         }
@@ -272,6 +271,9 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
                 sendCarPdfVO.setDeliveryAddress(detailedAddress +
                         " 联系人:" + orderSendCarsVO.getWarehouseContacts() + " " + orderSendCarsVO.getWarehouseNumber());
                 sendCarPdfVO.setDeliveryPhone(orderSendCarsVO.getWarehouseNumber());
+            } else {
+                //虚拟仓展示多个地址
+                sendCarPdfVO.assembleTakeGoodsInfos2(takeGoodsInfo2);
             }
         } else if (takeGoodsInfo2.size() == 1) {
             TakeGoodsInfoVO takeGoodsInfoVO = takeGoodsInfo2.get(0);

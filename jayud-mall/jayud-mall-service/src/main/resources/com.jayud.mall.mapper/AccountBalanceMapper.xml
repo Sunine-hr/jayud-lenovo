@@ -35,5 +35,12 @@
         </if>
 
     </select>
+
+    <select id="findAccountBalanceByCustomerIdAndCid" resultType="com.jayud.mall.model.vo.AccountBalanceVO">
+        select id, customer_id, cid, amount
+        from account_balance t
+        where customer_id = #{customerId,jdbcType=BIGINT}
+        and cid = #{cid,jdbcType=BIGINT}
+    </select>
     
 </mapper>

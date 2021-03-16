@@ -28,4 +28,12 @@ public interface AccountBalanceMapper extends BaseMapper<AccountBalance> {
      * @return
      */
     List<AccountBalanceVO> findCurrAccountBalance(@Param("form") AccountBalanceForm form);
+
+    /**
+     * 根据客户id，币种id，查询账户余额表
+     * @param customerId    客户id
+     * @param cid           币种id
+     * @return
+     */
+    AccountBalanceVO findAccountBalanceByCustomerIdAndCid(@Param("customerId") Long customerId, @Param("cid") Long cid);
 }

@@ -1,7 +1,11 @@
 package com.jayud.mall.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.QueryAccountReceivableForm;
 import com.jayud.mall.model.po.AccountReceivable;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.vo.AccountReceivableVO;
 
 /**
  * <p>
@@ -13,4 +17,17 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IAccountReceivableService extends IService<AccountReceivable> {
 
+    /**
+     * 应收对账单分页查询
+     * @param form
+     * @return
+     */
+    IPage<AccountReceivableVO> findAccountReceivableByPage(QueryAccountReceivableForm form);
+
+    /**
+     * 应收账单-查看明细
+     * @param id
+     * @return
+     */
+    CommonResult<AccountReceivableVO> lookDetail(Long id);
 }

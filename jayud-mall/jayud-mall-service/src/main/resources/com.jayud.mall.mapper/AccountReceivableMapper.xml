@@ -19,4 +19,43 @@
         id, dzd_no, legal_person_id, customer_id, payment_days_start, payment_days_end, status, create_time
     </sql>
 
+    <select id="findAccountReceivableByPage" parameterType="com.jayud.mall.model.bo.QueryAccountReceivableForm"
+            resultType="com.jayud.mall.model.vo.AccountReceivableVO">
+        select
+        t.id,t.dzd_no,t.legal_person_id,t.customer_id,t.payment_days_start,t.payment_days_end,t.status,t.create_time,
+        t1.legal_entity,
+        t2.company customerName,
+        concat(DATE_FORMAT(t.payment_days_start,'%Y-%m-%d'),'~',DATE_FORMAT(t.payment_days_end,'%Y-%m-%d')) paymentDays
+        from account_receivable t
+        left join legal_person t1 on t1.id = t.legal_person_id
+        left join customer t2 on t2.id = t.customer_id
+        where 1=1
+        <if test="form.dzdNo != null and form.dzdNo != ''">
+            and t.dzd_no like concat('%',#{form.dzdNo},'%')
+        </if>
+        <if test="form.legalPersonId != null">
+            and t.legal_person_id = #{form.legalPersonId}
+        </if>
+        <if test="form.customerId != null">
+            and t.customer_id = #{form.customerId}
+        </if>
+        <if test="form.status != null">
+            and t.status = #{form.status}
+        </if>
+    </select>
+    
+    <select id="findAccountReceivableById" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.AccountReceivableVO">
+        select
+            t.id,t.dzd_no,t.legal_person_id,t.customer_id,t.payment_days_start,t.payment_days_end,t.status,t.create_time,
+            t1.legal_entity,
+            t2.company customerName,
+            concat(DATE_FORMAT(t.payment_days_start,'%Y-%m-%d'),'~',DATE_FORMAT(t.payment_days_end,'%Y-%m-%d')) paymentDays
+        from account_receivable t
+                 left join legal_person t1 on t1.id = t.legal_person_id
+                 left join customer t2 on t2.id = t.customer_id
+        where t.id = #{id}
+    </select>
+
+
 </mapper>

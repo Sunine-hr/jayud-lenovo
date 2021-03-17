@@ -10,6 +10,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * <p>
  * 应收账单主单 Mapper 接口
@@ -36,4 +38,11 @@ public interface ReceivableBillMasterMapper extends BaseMapper<ReceivableBillMas
      * @return
      */
     ReceivableBillMasterVO findReceivableBillById(@Param("id") Long id);
+
+    /**
+     * 根据应收对账单id，查询应收账单
+     * @param accountReceivableId 应收对账单id
+     * @return
+     */
+    List<ReceivableBillMasterVO> findReceivableBillMasterByAccountReceivableId(@Param("accountReceivableId") Long accountReceivableId);
 }

@@ -5,6 +5,7 @@ import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.customs.feign.FileClient;
 import com.jayud.customs.model.bo.InputOrderCustomsForm;
+import com.jayud.customs.model.po.OrderCustoms;
 import com.jayud.customs.service.IOrderCustomsService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ public class YunBaoGuanApiController {
         statuses.add(OrderStatusEnum.CUSTOMS_C_4.getCode());
         statuses.add(OrderStatusEnum.CUSTOMS_C_5.getCode());
         statuses.add(OrderStatusEnum.CUSTOMS_C_6.getCode());
-
+        List<OrderCustoms> orderCustoms = orderCustomsService.getOrderCustomsByStatus(statuses);
 
     }
 

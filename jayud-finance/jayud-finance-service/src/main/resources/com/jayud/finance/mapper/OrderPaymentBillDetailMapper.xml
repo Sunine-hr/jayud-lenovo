@@ -468,7 +468,8 @@
         opbd.remarks,
         opbd.created_time createTimeStr,
         opbd.bill_no,
-        (select ci.currency_name from currency_info ci where ci.currency_code = opbd.settlement_currency) settlementCurrency,
+        (select ci.currency_name from currency_info ci where ci.currency_code = opbd.settlement_currency)
+        settlementCurrency,
         orbct.money settlementAmount,orbct.exchange_rate exchangeRate
         FROM
         order_payment_bill_detail opbd left join order_payment_bill opb on opbd.bill_id = opb.id
@@ -507,7 +508,8 @@
         </if>
     </select>
     <select id="findFCostList" parameterType="java.lang.String" resultType="com.jayud.finance.vo.FCostVO">
-        select temp.customerName,temp.costGenreName,temp.costName,temp.unitPrice,temp.number,temp.currencyName,temp.amount,temp.exchangeRate,changeAmount,temp.remarks from (
+        select temp.customerName,temp.costGenreName,temp.costName,temp.unitPrice,temp.number,temp.currencyName,temp.amount,temp.exchangeRate,changeAmount,temp.remarks
+         from (
         SELECT
             opc.customer_name customerName,
             (select cg.`name` from cost_genre cg where cg.id = opc.cost_genre_id) costGenreName,
@@ -523,9 +525,13 @@
         FROM
             order_payment_cost opc
             LEFT JOIN order_payment_bill_detail opbd ON opc.id = opbd.cost_id
-            LEFT JOIN order_bill_cost_total orbct ON orbct.bill_no = opbd.bill_no and orbct.cost_id=opbd.cost_id
+            LEFT JOIN order_bill_cost_total orbct ON orbct.bill_no = opbd.bill_no
+            and orbct.cost_id=opbd.cost_id
+            LEFT JOIN cost_type ct ON ct.id = opc.cost_type_id
         WHERE
             opbd.bill_no = #{billNo}
+            and
+            ct.is_pay_collection =0
 		) temp
     </select>
     <select id="getPayableHeaderForm" parameterType="java.lang.String"
@@ -632,33 +638,33 @@
         opbd.bill_no = tt.bill_no
         LEFT JOIN order_payment_bill opb ON opbd.bill_id = opb.id
         where opbd.make_time = tt.make_time
-<!--        <if test="form.cmd == 'main_statement'">-->
-<!--            and opb.is_main = 1-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'statement_audit'">-->
-<!--            and opb.is_main = 1 and opbd.audit_status in ('B_1','B_2')-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'cw_statement'">-->
-<!--            and (opbd.audit_status in ('B_3','B_4','B_5','B_5_1','B_6') or opbd.apply_status='4')-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'zgys_statement'">-->
-<!--            and opb.is_main = 0 and opb.sub_type = 'zgys'-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'zgys_statement_audit'">-->
-<!--            and opb.is_main = 0 and opb.sub_type = 'zgys' and opbd.audit_status IN ('B_1','B_2')-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'bg_statement'">-->
-<!--            and opb.is_main = 0 and opb.sub_type = 'bg'-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'bg_statement_audit'">-->
-<!--            and opb.is_main = 0 and opb.sub_type = 'bg' and opbd.audit_status IN ('B_1','B_2')-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'ky_statement'">-->
-<!--            and opb.is_main = 0 and opb.sub_type = 'ky'-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'ky_statement_audit'">-->
-<!--            and opb.is_main = 0 and opb.sub_type = 'ky' and opbd.audit_status IN ('B_1','B_2')-->
-<!--        </if>-->
+        <!--        <if test="form.cmd == 'main_statement'">-->
+        <!--            and opb.is_main = 1-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'statement_audit'">-->
+        <!--            and opb.is_main = 1 and opbd.audit_status in ('B_1','B_2')-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'cw_statement'">-->
+        <!--            and (opbd.audit_status in ('B_3','B_4','B_5','B_5_1','B_6') or opbd.apply_status='4')-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'zgys_statement'">-->
+        <!--            and opb.is_main = 0 and opb.sub_type = 'zgys'-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'zgys_statement_audit'">-->
+        <!--            and opb.is_main = 0 and opb.sub_type = 'zgys' and opbd.audit_status IN ('B_1','B_2')-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'bg_statement'">-->
+        <!--            and opb.is_main = 0 and opb.sub_type = 'bg'-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'bg_statement_audit'">-->
+        <!--            and opb.is_main = 0 and opb.sub_type = 'bg' and opbd.audit_status IN ('B_1','B_2')-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'ky_statement'">-->
+        <!--            and opb.is_main = 0 and opb.sub_type = 'ky'-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'ky_statement_audit'">-->
+        <!--            and opb.is_main = 0 and opb.sub_type = 'ky' and opbd.audit_status IN ('B_1','B_2')-->
+        <!--        </if>-->
 
         <choose>
             <when test="form.cmd == 'main_statement'">
@@ -676,12 +682,11 @@
                         and opb.is_main = 0 and opb.sub_type = #{form.subType} and opbd.audit_status IN ('B_1','B_2')
                     </when>
                     <when test="form.cmd !=null and form.cmd !=''">
-                        and opb.is_main = 0 and opb.sub_type =  #{form.subType}
+                        and opb.is_main = 0 and opb.sub_type = #{form.subType}
                     </when>
                 </choose>
             </otherwise>
         </choose>
-
 
 
         <if test="form.supplierChName != null and form.supplierChName != ''">

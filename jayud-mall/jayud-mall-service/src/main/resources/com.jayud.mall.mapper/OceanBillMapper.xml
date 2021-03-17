@@ -47,7 +47,7 @@
         </if>
         /*开船日期*/
         <if test="form.sailTime != null">
-            and t.sail_time <![CDATA[ >= ]]> concat(date_format(#{form.sailTime}, '%Y-%m-%d'), ' 00:00:00') AND t.sail_time <![CDATA[ <= ]]> concat(date_format(#{form.sailTime}, '%Y-%m-%d'), ' 23:23:59')
+            and t.sail_time <![CDATA[ >= ]]> concat(date_format(#{form.sailTime}, '%Y-%m-%d'), ' 00:00:00') AND t.sail_time <![CDATA[ <= ]]> concat(date_format(#{form.sailTime}, '%Y-%m-%d'), ' 23:59:59')
         </if>
         /*供应商*/
         <if test="form.supplierId != null">

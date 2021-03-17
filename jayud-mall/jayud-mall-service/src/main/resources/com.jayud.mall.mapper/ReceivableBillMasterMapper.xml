@@ -88,5 +88,26 @@
     </select>
 
 
+    <select id="verifyReceivableBillMasterByCreateTime" resultType="com.jayud.mall.model.po.ReceivableBillMaster">
+        select
+        t.id,t.bill_code,t.order_id,t.legal_person_id,t.customer_id,t.amount,t.cid,t.remarks,t.status,t.create_time,t.verification_user_id,t.verification_time,t.account_receivable_id
+        from receivable_bill_master t
+        where 1=1
+        and t.account_receivable_id is not null
+        and t.create_time <![CDATA[ >= ]]> #{firstday, jdbcType=TIMESTAMP}
+        AND t.create_time <![CDATA[ <= ]]> #{lastDay, jdbcType=TIMESTAMP}
+    </select>
+
+
+    <select id="findReceivableBillMasterByCreateTime" resultType="com.jayud.mall.model.po.ReceivableBillMaster">
+        select
+        t.id,t.bill_code,t.order_id,t.legal_person_id,t.customer_id,t.amount,t.cid,t.remarks,t.status,t.create_time,t.verification_user_id,t.verification_time,t.account_receivable_id
+        from receivable_bill_master t
+        where 1=1
+        and t.create_time <![CDATA[ >= ]]> #{firstday, jdbcType=TIMESTAMP}
+        AND t.create_time <![CDATA[ <= ]]> #{lastDay, jdbcType=TIMESTAMP}
+    </select>
+
+
 
 </mapper>

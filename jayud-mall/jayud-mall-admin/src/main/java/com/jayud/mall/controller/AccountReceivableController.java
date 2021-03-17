@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.AccountParaForm;
+import com.jayud.mall.model.bo.MonthlyStatementForm;
 import com.jayud.mall.model.bo.QueryAccountReceivableForm;
 import com.jayud.mall.model.vo.AccountReceivableVO;
 import com.jayud.mall.service.IAccountReceivableService;
@@ -47,6 +48,20 @@ public class AccountReceivableController {
     public CommonResult<AccountReceivableVO> lookDetail(@Valid @RequestBody AccountParaForm form){
         Long id = form.getId();
         return accountReceivableService.lookDetail(id);
+    }
+
+    //TODO 定时任务 调用创建应收对账单
+    /**
+     * 生成月结账单(创建应收对账单)
+     * 1.月结，整个系统的月份的应收、应付账单
+     * 2.根据 法人主体、客户名称、账单日期(月份) 分组查询，创建应收对账单
+     * 3.创建月结账单 monthlyStatement
+     */
+    @ApiOperation(value = "生成应收月结账单(创建应收对账单)")
+    @PostMapping("/createRecMonthlyStatement")
+    @ApiOperationSupport(order = 3)
+    public CommonResult createRecMonthlyStatement(@Valid @RequestBody MonthlyStatementForm form){
+        return accountReceivableService.createRecMonthlyStatement(form);
     }
 
 

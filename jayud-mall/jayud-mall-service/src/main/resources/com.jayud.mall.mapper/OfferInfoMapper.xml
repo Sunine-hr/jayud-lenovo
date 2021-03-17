@@ -58,10 +58,10 @@
             AND t.`names` LIKE concat('%',#{form.names},'%')
         </if>
         <if test="form.sailTime != null">
-            and t.sail_time <![CDATA[ >= ]]> concat(date_format(#{form.sailTime}, '%Y-%m-%d'), ' 00:00:00') AND t.sail_time <![CDATA[ <= ]]> concat(date_format(#{form.sailTime}, '%Y-%m-%d'), ' 23:23:59')
+            and t.sail_time <![CDATA[ >= ]]> concat(date_format(#{form.sailTime}, '%Y-%m-%d'), ' 00:00:00') AND t.sail_time <![CDATA[ <= ]]> concat(date_format(#{form.sailTime}, '%Y-%m-%d'), ' 23:59:59')
         </if>
         <if test="form.cutOffTime != null">
-            and t.cut_off_time <![CDATA[ >= ]]> concat(date_format(#{form.cutOffTime}, '%Y-%m-%d'), ' 00:00:00') AND t.cut_off_time <![CDATA[ <= ]]> concat(date_format(#{form.cutOffTime}, '%Y-%m-%d'), ' 23:23:59')
+            and t.cut_off_time <![CDATA[ >= ]]> concat(date_format(#{form.cutOffTime}, '%Y-%m-%d'), ' 00:00:00') AND t.cut_off_time <![CDATA[ <= ]]> concat(date_format(#{form.cutOffTime}, '%Y-%m-%d'), ' 23:59:59')
         </if>
         <if test="form.countryCode != null and form.countryCode != ''">
             and t4.code = #{form.countryCode}

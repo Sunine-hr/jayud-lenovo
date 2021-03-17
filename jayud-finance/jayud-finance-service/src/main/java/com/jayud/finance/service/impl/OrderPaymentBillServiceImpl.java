@@ -490,7 +490,8 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
     private Map<String, Object> dynamicSQLFindReceiveBillByPageParam(Map<String, Object> param) {
         String cmd = MapUtil.getStr(param, "cmd");
         Map<String, Object> sqlParam = new HashMap<>();
-        sqlParam.put("table", SubOrderSignEnum.getSignOne2SignTwo(cmd));
+        String subOrderSign = SubOrderSignEnum.getSignOne2SignTwo(cmd);
+        sqlParam.put("table", SubOrderSignEnum.MAIN.getSignOne().equals(subOrderSign) ? "" : subOrderSign);
         return sqlParam;
     }
 

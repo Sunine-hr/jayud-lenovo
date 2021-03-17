@@ -573,7 +573,7 @@
     </select>
     <select id="getFCostAmountView" parameterType="java.lang.String" resultType="com.jayud.finance.vo.CostAmountVO">
         SELECT DISTINCT
-            (select ifnull(sum(obct.money),0) from order_bill_cost_total obct where obct.bill_no = opbd.bill_no ) yfAmount,
+            (select ifnull(sum(obct.money),0) from order_bill_cost_total obct where obct.bill_no = opbd.bill_no and 0 = (select ct.is_pay_collection from cost_type ct where ct.id = opc.cost_type_id)) yfAmount,
             (select ci.currency_name from currency_info ci where ci.currency_code = opbd.settlement_currency limit 1) yfCurrency,
             ifnull((select sum(obct.money) from order_bill_cost_total obct where obct.bill_no = opbd.bill_no),0)-ifnull((select sum(cav.discount_money) from cancel_after_verification cav where cav.bill_no = opbd.bill_no),0) dfAmount,
             (select ci.currency_name from currency_info ci where ci.currency_code = opbd.settlement_currency limit 1) dfCurrency

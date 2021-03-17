@@ -26,6 +26,7 @@ import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -295,14 +296,18 @@ public class OrderInfoController {
         Map<String, List<FileView>> attachment = form.assemblyAttachment();
         List<OrderAttachment> list = new ArrayList<>();
         attachment.forEach((k, v) -> {
-            OrderAttachment orderAttachment = new OrderAttachment().setFileName(StringUtils.getFileNameStr(v))
-                    .setFilePath(StringUtils.getFileStr(v))
-                    .setMainOrderNo(tmp.getOrderNo()).setStatus(StatusEnum.ENABLE.getCode())
-                    .setUploadTime(LocalDateTime.now())
-                    .setRemarks(k);
-            list.add(orderAttachment);
+            if (CollectionUtils.isNotEmpty(v)) {
+                OrderAttachment orderAttachment = new OrderAttachment().setFileName(StringUtils.getFileNameStr(v))
+                        .setFilePath(StringUtils.getFileStr(v))
+                        .setMainOrderNo(tmp.getOrderNo()).setStatus(StatusEnum.ENABLE.getCode())
+                        .setUploadTime(LocalDateTime.now())
+                        .setRemarks(k);
+                list.add(orderAttachment);
+            }
         });
-        this.orderAttachmentService.saveBatch(list);
+        if (CollectionUtils.isNotEmpty(list)) {
+            this.orderAttachmentService.saveBatch(list);
+        }
 
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());

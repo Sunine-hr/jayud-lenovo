@@ -462,7 +462,7 @@
         </if>
 
         <if test="form.createdUser != null and form.createdUser !=''">
-            and temp.createdUser like concat('%',#{form.createdUser},'%')
+            and oi.created_user like concat('%',#{form.createdUser},'%')
         </if>
 
         <if test="legalIds != null and legalIds.size>0">

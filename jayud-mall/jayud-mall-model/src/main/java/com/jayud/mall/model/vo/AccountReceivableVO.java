@@ -66,25 +66,24 @@ public class AccountReceivableVO {
     @JSONField(ordinal = 12)
     private BigDecimal uncalledAmount;
 
-    //对账单关联的账单
-    @ApiModelProperty(value = "对账单关联的账单(应付账单list)", position = 13)
-    @JSONField(ordinal = 13)
-    private List<ReceivableBillMasterVO>  receivableBillMasterVOS;
-
-
     //法人主体名称
-    @ApiModelProperty(value = "法人主体名称", position = 14)
-    @JSONField(ordinal = 14)
+    @ApiModelProperty(value = "法人主体名称", position = 13)
+    @JSONField(ordinal = 13)
     private String legalEntity;
 
     //客户名称
-    @ApiModelProperty(value = "客户名称", position = 15)
-    @JSONField(ordinal = 15)
+    @ApiModelProperty(value = "客户名称", position = 14)
+    @JSONField(ordinal = 14)
     private String customerName;
 
     //账期
-    @ApiModelProperty(value = "账期", position = 16)
-    @JSONField(ordinal = 16)
+    @ApiModelProperty(value = "账期", position = 15)
+    @JSONField(ordinal = 15)
     private String paymentDays;
+
+    //对账单关联的账单
+    @ApiModelProperty(value = "对账单关联的账单(应收账单list)", position = 16)
+    @JSONField(ordinal = 16)
+    private List<ReceivableBillMasterVO> receivableBillMasterVOS;
 
 }

@@ -10,6 +10,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * <p>
  * 应付账单主单 Mapper 接口
@@ -37,5 +39,10 @@ public interface PayBillMasterMapper extends BaseMapper<PayBillMaster> {
      */
     PayBillMasterVO findPayBillMasterById(@Param("id") Long id);
 
-
+    /**
+     * 根据应收对账单，查询应付账单
+     * @param accountPayableId 应付对账单id
+     * @return
+     */
+    List<PayBillMasterVO> findPayBillMasterByAccountPayableId(@Param("accountPayableId") Long accountPayableId);
 }

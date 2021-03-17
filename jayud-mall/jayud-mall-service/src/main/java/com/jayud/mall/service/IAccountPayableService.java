@@ -1,7 +1,11 @@
 package com.jayud.mall.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.QueryAccountPayableForm;
 import com.jayud.mall.model.po.AccountPayable;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.vo.AccountPayableVO;
 
 /**
  * <p>
@@ -13,4 +17,17 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IAccountPayableService extends IService<AccountPayable> {
 
+    /**
+     * 应付对账单分页查询
+     * @param form
+     * @return
+     */
+    IPage<AccountPayableVO> findAccountPayableByPage(QueryAccountPayableForm form);
+
+    /**
+     * 应付对账单-查看明细
+     * @param id
+     * @return
+     */
+    CommonResult<AccountPayableVO> lookDetail(Long id);
 }

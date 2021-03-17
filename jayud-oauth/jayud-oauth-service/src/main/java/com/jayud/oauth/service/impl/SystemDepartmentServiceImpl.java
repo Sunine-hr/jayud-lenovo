@@ -55,6 +55,10 @@ public class SystemDepartmentServiceImpl extends ServiceImpl<SystemDepartmentMap
         if(form.getId() != null) {
             department.setUpdatedUser(loginUser);
             department.setId(form.getId());
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("id",form.getId());
+            Department department2 = baseMapper.selectOne(queryWrapper);
+            form.setFId(department2.getFId());
         }else {
             department.setCreatedUser(loginUser);
             if(form.getFId() != null && !"".equals(form.getFId())){

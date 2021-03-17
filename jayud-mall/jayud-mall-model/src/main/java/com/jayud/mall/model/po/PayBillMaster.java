@@ -73,6 +73,24 @@ public class PayBillMaster extends Model<PayBillMaster> {
     @JSONField(ordinal = 10, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    //新增字段
+    @ApiModelProperty(value = "付款人(system_user id)", position = 10)
+    @JSONField(ordinal = 10)
+    private Long payerId;
+
+    @ApiModelProperty(value = "付款日期", position = 11)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 11, format="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime paymentTime;
+
+    @ApiModelProperty(value = "交易凭证(url)", position = 12)
+    @JSONField(ordinal = 12)
+    private String voucherUrl;
+
+    @ApiModelProperty(value = "应付对账单id", position = 13)
+    @JSONField(ordinal = 13)
+    private Long accountPayableId;
+
 
     @Override
     protected Serializable pkVal() {

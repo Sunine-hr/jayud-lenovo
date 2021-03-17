@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.AccountReceivableMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.AccountReceivable">
+        <id column="id" property="id" />
+        <result column="dzd_no" property="dzdNo" />
+        <result column="legal_person_id" property="legalPersonId" />
+        <result column="customer_id" property="customerId" />
+        <result column="payment_days_start" property="paymentDaysStart" />
+        <result column="payment_days_end" property="paymentDaysEnd" />
+        <result column="status" property="status" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, dzd_no, legal_person_id, customer_id, payment_days_start, payment_days_end, status, create_time
+    </sql>
+
+</mapper>

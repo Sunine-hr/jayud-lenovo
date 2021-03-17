@@ -86,5 +86,19 @@ public class ReceivableBillMasterVO {
     @JSONField(ordinal = 18)
     private List<ReceivableBillDetailVO> receivableBillDetailVOS;
 
+    //新增字段
+    @ApiModelProperty(value = "核销人(system_user id)", position = 19)
+    @JSONField(ordinal = 19)
+    private Long verificationUserId;
+
+    @ApiModelProperty(value = "核销日期", position = 20)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 20, format="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime verificationTime;
+
+    @ApiModelProperty(value = "应收对账单id(account_receivable id)", position = 21)
+    @JSONField(ordinal = 21)
+    private Long accountReceivableId;
+
 
 }

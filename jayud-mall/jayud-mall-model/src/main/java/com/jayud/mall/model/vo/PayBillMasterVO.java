@@ -81,4 +81,23 @@ public class PayBillMasterVO {
     @JSONField(ordinal = 17)
     private List<PayBillDetailVO> payBillDetailVOS;
 
+    //新增字段
+    @ApiModelProperty(value = "付款人(system_user id)", position = 18)
+    @JSONField(ordinal = 18)
+    private Long payerId;
+
+    @ApiModelProperty(value = "付款日期", position = 19)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 19, format="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime paymentTime;
+
+    @ApiModelProperty(value = "交易凭证(url)", position = 20)
+    @JSONField(ordinal = 20)
+    private String voucherUrl;
+
+    @ApiModelProperty(value = "应付对账单id", position = 21)
+    @JSONField(ordinal = 21)
+    private Long accountPayableId;
+
+
 }

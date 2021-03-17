@@ -73,6 +73,20 @@ public class ReceivableBillMaster extends Model<ReceivableBillMaster> {
     @JSONField(ordinal = 10, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    //新增字段
+    @ApiModelProperty(value = "核销人(system_user id)", position = 11)
+    @JSONField(ordinal = 11)
+    private Long verificationUserId;
+
+    @ApiModelProperty(value = "核销日期", position = 12)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 12, format="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime verificationTime;
+
+    @ApiModelProperty(value = "应收对账单id(account_receivable id)", position = 13)
+    @JSONField(ordinal = 13)
+    private Long accountReceivableId;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

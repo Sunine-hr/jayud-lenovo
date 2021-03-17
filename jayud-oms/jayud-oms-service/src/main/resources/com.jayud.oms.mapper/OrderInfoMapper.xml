@@ -461,6 +461,10 @@
             and DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') <![CDATA[>=]]> #{form.beginCreateTimeStr}
         </if>
 
+        <if test="form.createdUser != null and form.createdUser !=''">
+            and temp.createdUser like concat('%',#{form.createdUser},'%')
+        </if>
+
         <if test="legalIds != null and legalIds.size>0">
             and oi.`legal_entity_id` in
             <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">

@@ -25,7 +25,7 @@ public class PaymentBillForm {
     @ApiModelProperty(value = "币种(currency_info id)", position = 6)
     @JSONField(ordinal = 6)
     @NotNull(message = "币种不能为空")
-    private Long cid;
+    private Integer cid;
 
     @ApiModelProperty(value = "交易凭证(url)文件上传", position = 15)
     @JSONField(ordinal = 15)

@@ -2,11 +2,13 @@ package com.jayud.mall.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.AccountPayableMapper;
 import com.jayud.mall.mapper.CurrencyRateMapper;
 import com.jayud.mall.mapper.PayBillDetailMapper;
@@ -16,10 +18,7 @@ import com.jayud.mall.model.bo.PaymentBillForm;
 import com.jayud.mall.model.bo.QueryAccountPayableForm;
 import com.jayud.mall.model.po.AccountPayable;
 import com.jayud.mall.model.po.PayBillMaster;
-import com.jayud.mall.model.vo.AccountPayableVO;
-import com.jayud.mall.model.vo.CurrencyRateVO;
-import com.jayud.mall.model.vo.PayBillDetailVO;
-import com.jayud.mall.model.vo.PayBillMasterVO;
+import com.jayud.mall.model.vo.*;
 import com.jayud.mall.model.vo.domain.AuthUser;
 import com.jayud.mall.service.BaseService;
 import com.jayud.mall.service.IAccountPayableService;
@@ -220,7 +219,79 @@ public class AccountPayableServiceImpl extends ServiceImpl<AccountPayableMapper,
             return CommonResult.error(-1, "账单状态不正确，无法付款");
         }
 
+        Long billMasterId = payBillMasterVO.getId();
+        List<PayBillDetailVO> payBillDetailVOS = payBillDetailMapper.findPayBillDetailByBillMasterId(billMasterId);
+        Map<String, List<PayBillDetailVO>> stringListMap = groupListByCid(payBillDetailVOS);
 
+        List<BigDecimal> balanceAmountCNY = new ArrayList<>();
+        for (Map.Entry<String, List<PayBillDetailVO>> entry : stringListMap.entrySet()) {
+            String cid = entry.getKey();//币种id
+            List<PayBillDetailVO> payBillDetailVOList = entry.getValue();
+            BigDecimal amountSum = new BigDecimal("0");
+            for (int i=0; i<payBillDetailVOList.size(); i++){
+                PayBillDetailVO payBillDetailVO = payBillDetailVOList.get(i);
+                BigDecimal amount = payBillDetailVO.getAmount();
+                amountSum = amountSum.add(amount);
+            }
+            //结算金额，统一转换为人民币结算 cid=1 代表为 人民币
+            if(cid.equals("1")){
+                balanceAmountCNY.add(amountSum);
+            }else{
+                Integer dcid = Integer.valueOf(cid);//本币(currency_info id)
+                Integer ocid = 1;//他币(currency_info id)
+                CurrencyRateVO currencyRateVO = currencyRateMapper.findCurrencyRateByDcidAndOcid(dcid, ocid);
+                BigDecimal exchangeRate = currencyRateVO.getExchangeRate();
+                //转换为人民币
+                BigDecimal amountCNY = amountSum.multiply(exchangeRate).setScale(2, BigDecimal.ROUND_HALF_UP);
+                balanceAmountCNY.add(amountCNY);
+            }
+        }
+
+        BigDecimal balanceAmountSum = new BigDecimal("0");
+        for (int i=0; i<balanceAmountCNY.size(); i++){
+            BigDecimal bigDecimal = balanceAmountCNY.get(i);
+            balanceAmountSum = balanceAmountSum.add(bigDecimal);
+        }
+
+        payBillMasterVO.setBalanceAmountCNY(balanceAmountSum);//结算金额(数值)
+        payBillMasterVO.setBalanceAmountCid(1);//结算金额(币种id) 默认为1 代表人民币
+
+
+        BigDecimal amountFront = form.getAmount();//前端输入的金额
+        Integer cidFront = form.getCid();//前端选择的币种id
+
+        BigDecimal balanceAmount = payBillMasterVO.getBalanceAmountCNY();//后台（结算金额）
+        Integer cid = payBillMasterVO.getBalanceAmountCid();
+        if(balanceAmount.compareTo(amountFront) != 0){
+            return CommonResult.error(-1, "输入的付款金额与后台计算的结算金额不一致");
+        }
+        if(cidFront != cid){
+            return CommonResult.error(-1, "选择的币种与结算币种不一致");
+        }
+
+        //1.修改保存 应付账单主单 改状态
+        PayBillMaster payBillMaster = ConvertUtil.convert(payBillMasterVO, PayBillMaster.class);
+        payBillMaster.setStatus(1);//账单状态(0未付款 1已付款)
+        payBillMaster.setPayerId(user.getId());//付款人(system_user id)
+        payBillMaster.setPaymentTime(LocalDateTime.now());//付款日期
+
+        List<TemplateUrlVO> voucherUrls = form.getVoucherUrls();
+        if(CollUtil.isNotEmpty(voucherUrls)){
+            String s = JSONObject.toJSONString(voucherUrls);
+            payBillMaster.setVoucherUrl(s);//交易凭证(url)
+        }
+        payBillMasterService.saveOrUpdate(payBillMaster);
+
+        //2.判断 应付对账单下 应付账单 是否全部已付款，是，修改应付对账单状态
+        Long accountPayableId = payBillMasterVO.getAccountPayableId();
+        List<PayBillMasterVO> payBillMasterVOS = payBillMasterMapper.verifyPayBillMasterByAccountPayableId(accountPayableId);
+        if(CollUtil.isEmpty(payBillMasterVOS)){
+            //payBillMasterVOS 为空，代表不存在未付款的 应付对账单
+            AccountPayableVO accountPayableVO = accountPayableMapper.findAccountPayableById(accountPayableId);
+            AccountPayable accountPayable = ConvertUtil.convert(accountPayableVO, AccountPayable.class);
+            accountPayable.setStatus(1);//状态(0未付款 1已付款)
+            this.saveOrUpdate(accountPayable);
+        }
         return CommonResult.success("账单(应付账单)，付款成功");
     }
 

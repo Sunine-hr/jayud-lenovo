@@ -105,9 +105,20 @@ public class PayBillMasterVO {
     private List<String> billAmount;
 
     //结算金额
-    @ApiModelProperty(value = "结算金额", position = 23)
+    @ApiModelProperty(value = "结算金额(数值 + 单位)", position = 23)
     @JSONField(ordinal = 23)
     private List<String> balanceAmount;
 
+    @ApiModelProperty(value = "结算金额(数值)", position = 24)
+    @JSONField(ordinal = 24)
+    private BigDecimal balanceAmountCNY;
+
+    @ApiModelProperty(value = "结算金额(币种id)", position = 25)
+    @JSONField(ordinal = 25)
+    private Integer balanceAmountCid;
+
+    @ApiModelProperty(value = "交易凭证(url)文件上传", position = 26)
+    @JSONField(ordinal = 26)
+    private List<TemplateUrlVO> voucherUrls;
 
 }

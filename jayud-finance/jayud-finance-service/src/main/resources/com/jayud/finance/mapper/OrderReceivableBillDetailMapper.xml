@@ -451,7 +451,7 @@
             order_receivable_cost orc
             LEFT JOIN order_receivable_bill_detail orbd ON orc.id = orbd.cost_id
             LEFT JOIN order_bill_cost_total orbct ON orbct.bill_no = orbd.bill_no and orbct.cost_id=orbd.cost_id
-            LEFT JOIN cost_type ct ON ct.id = opc.cost_type_id
+            LEFT JOIN cost_type ct ON ct.id = orc.cost_type_id
             WHERE
             orbd.bill_no = #{billNo}
             and

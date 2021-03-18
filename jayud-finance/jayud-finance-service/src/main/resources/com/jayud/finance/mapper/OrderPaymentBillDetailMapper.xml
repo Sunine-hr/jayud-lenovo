@@ -499,8 +499,9 @@
                 and temp.costName like concat('%',#{form.costName},'%')
             </if>
             <if test="form.costGenreId != null">
-                and temp.costGenreId = #{form.costGenreId}
+                and temp.cost_genre_id = #{form.costGenreId}
             </if>
+
             <if test="form.endCreateTimeStr != null and form.endCreateTimeStr !=''">
                 and temp.createdTimeStr <![CDATA[<=]]> #{form.endCreateTimeStr}
             </if>

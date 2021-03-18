@@ -42,12 +42,12 @@ public class OrderTransComboxController {
     }
 
     //TODO 从司机绑定多辆车到一部车绑多个司机
-//    @ApiOperation(value = "运输派车-司机姓名")
-//    @PostMapping(value = "/initDriver")
-//    public CommonResult<List<InitComboxVO>> initDriver() {
-//        List<InitComboxVO> driverInfo = omsClient.initDriver().getData();
-//        return CommonResult.success(driverInfo);
-//    }
+    @ApiOperation(value = "运输派车-司机姓名")
+    @PostMapping(value = "/initDriver")
+    public CommonResult<List<InitComboxVO>> initDriver() {
+        List<InitComboxVO> driverInfo = omsClient.initDriver().getData();
+        return CommonResult.success(driverInfo);
+    }
 
 //    @ApiOperation(value = "运输派车-司机姓名联动车辆供应商，大陆车牌，香港车牌，司机电话 id = 司机隐藏值")
 //    @PostMapping(value = "/initDriverInfo")

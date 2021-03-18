@@ -479,33 +479,35 @@
         and orbct.cost_id = opbd.cost_id and money_type='1'
         where opbd.bill_no = #{form.billNo}
         ) temp
-        <if test="form.orderNo != null and form.orderNo != ''">
-            and temp.orderNo = #{form.orderNo}
-        </if>
-        <if test="form.bizCode != null and form.bizCode != ''">
-            and temp.bizCode = #{form.bizCode}
-        </if>
-        <if test="form.startAddress != null and form.startAddress != ''">
-            and temp.startAddress like concat('%',#{form.startAddress},'%')
-        </if>
-        <if test="form.endAddress != null and form.endAddress != ''">
-            and temp.endAddress like concat('%',#{form.endAddress},'%')
-        </if>
-        <if test="form.costTypeName != null and form.costTypeName != ''">
-            and temp.costTypeName like concat('%',#{form.costTypeName},'%')
-        </if>
-        <if test="form.costName != null and form.costName != ''">
-            and temp.costName like concat('%',#{form.costName},'%')
-        </if>
-        <if test="form.costGenreId != null">
-            and temp.costGenreId = #{form.costGenreId}
-        </if>
-        <if test="form.endCreateTimeStr != null and form.endCreateTimeStr !=''">
-            and temp.createdTimeStr <![CDATA[<=]]> #{form.endCreateTimeStr}
-        </if>
-        <if test="form.beginCreateTimeStr != null and form.beginCreateTimeStr !=''">
-            and temp.createdTimeStr <![CDATA[<=]]> #{form.beginCreateTimeStr}
-        </if>
+        <where>
+            <if test="form.orderNo != null and form.orderNo != ''">
+                and temp.orderNo = #{form.orderNo}
+            </if>
+            <if test="form.bizCode != null and form.bizCode != ''">
+                and temp.bizCode = #{form.bizCode}
+            </if>
+            <if test="form.startAddress != null and form.startAddress != ''">
+                and temp.startAddress like concat('%',#{form.startAddress},'%')
+            </if>
+            <if test="form.endAddress != null and form.endAddress != ''">
+                and temp.endAddress like concat('%',#{form.endAddress},'%')
+            </if>
+            <if test="form.costTypeName != null and form.costTypeName != ''">
+                and temp.costTypeName like concat('%',#{form.costTypeName},'%')
+            </if>
+            <if test="form.costName != null and form.costName != ''">
+                and temp.costName like concat('%',#{form.costName},'%')
+            </if>
+            <if test="form.costGenreId != null">
+                and temp.costGenreId = #{form.costGenreId}
+            </if>
+            <if test="form.endCreateTimeStr != null and form.endCreateTimeStr !=''">
+                and temp.createdTimeStr <![CDATA[<=]]> #{form.endCreateTimeStr}
+            </if>
+            <if test="form.beginCreateTimeStr != null and form.beginCreateTimeStr !=''">
+                and temp.createdTimeStr <![CDATA[<=]]> #{form.beginCreateTimeStr}
+            </if>
+        </where>
     </select>
     <select id="findFCostList" parameterType="java.lang.String" resultType="com.jayud.finance.vo.FCostVO">
         select temp.customerName,temp.costGenreName,temp.costName,temp.unitPrice,temp.number,temp.currencyName,temp.amount,temp.exchangeRate,changeAmount,temp.remarks
@@ -579,7 +581,7 @@
     </select>
     <select id="getFCostAmountView" parameterType="java.lang.String" resultType="com.jayud.finance.vo.CostAmountVO">
         SELECT DISTINCT
-            (select ifnull(sum(obct.money),0) from order_bill_cost_total obct where obct.bill_no = opbd.bill_no and 0 = (select ct.is_pay_collection from cost_type ct where ct.id = opc.cost_type_id)) yfAmount,
+            (select ifnull(sum(obct.money),0) from order_bill_cost_total obct where obct.bill_no = opbd.bill_no and 0 = (select ct.is_pay_collection from cost_type ct where ct.id = opc.cost_type_id  AND obct.cost_id = opbd.cost_id )) yfAmount,
             (select ci.currency_name from currency_info ci where ci.currency_code = opbd.settlement_currency limit 1) yfCurrency,
             ifnull((select sum(obct.money) from order_bill_cost_total obct where obct.bill_no = opbd.bill_no),0)-ifnull((select sum(cav.discount_money) from cancel_after_verification cav where cav.bill_no = opbd.bill_no),0) dfAmount,
             (select ci.currency_name from currency_info ci where ci.currency_code = opbd.settlement_currency limit 1) dfCurrency

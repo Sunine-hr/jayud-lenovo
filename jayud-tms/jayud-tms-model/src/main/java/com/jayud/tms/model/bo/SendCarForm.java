@@ -64,4 +64,7 @@ public class SendCarForm {
     @ApiModelProperty(value = "操作指令，区分派车sendCar/审核auditCar/驳回editCar",required = true)
     private String cmd;
 
+    @ApiModelProperty(value = "骑师id")
+    private Long jockeyId;
+
 }

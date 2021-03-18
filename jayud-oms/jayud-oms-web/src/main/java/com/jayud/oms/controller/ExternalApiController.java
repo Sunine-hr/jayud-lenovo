@@ -1107,6 +1107,12 @@ public class ExternalApiController {
         return CommonResult.success(list);
     }
 
+
+    @ApiOperation(value = "根据司机id查询司机信息")
+    @RequestMapping(value = "/api/getDriverById")
+    public ApiResult<DriverInfo> getDriverById(@RequestParam("driverId") Long driverId) {
+        return ApiResult.ok(this.driverInfoService.getById(driverId));
+    }
 }
 
 

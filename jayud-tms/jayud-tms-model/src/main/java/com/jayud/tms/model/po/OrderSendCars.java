@@ -80,6 +80,12 @@ public class OrderSendCars extends Model<OrderSendCars> {
     @ApiModelProperty(value = "修改时间")
     private LocalDateTime updatedTime;
 
+    @ApiModelProperty(value = "骑师id")
+    private Long jockeyId;
+
+    @ApiModelProperty(value = "骑师姓名")
+    private String jockey;
+
 
     @Override
     protected Serializable pkVal() {

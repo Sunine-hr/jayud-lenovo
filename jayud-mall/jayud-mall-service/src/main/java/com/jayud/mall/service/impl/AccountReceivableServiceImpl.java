@@ -7,12 +7,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.mapper.AccountReceivableMapper;
+import com.jayud.mall.mapper.ReceivableBillDetailMapper;
 import com.jayud.mall.mapper.ReceivableBillMasterMapper;
 import com.jayud.mall.model.bo.MonthlyStatementForm;
 import com.jayud.mall.model.bo.QueryAccountReceivableForm;
 import com.jayud.mall.model.po.AccountReceivable;
 import com.jayud.mall.model.po.ReceivableBillMaster;
 import com.jayud.mall.model.vo.AccountReceivableVO;
+import com.jayud.mall.model.vo.ReceivableBillDetailVO;
 import com.jayud.mall.model.vo.ReceivableBillMasterVO;
 import com.jayud.mall.service.IAccountReceivableService;
 import com.jayud.mall.service.IReceivableBillMasterService;
@@ -45,6 +47,8 @@ public class AccountReceivableServiceImpl extends ServiceImpl<AccountReceivableM
     @Autowired
     ReceivableBillMasterMapper receivableBillMasterMapper;
     @Autowired
+    ReceivableBillDetailMapper receivableBillDetailMapper;
+    @Autowired
     IReceivableBillMasterService receivableBillMasterService;
 
     @Override
@@ -64,6 +68,23 @@ public class AccountReceivableServiceImpl extends ServiceImpl<AccountReceivableM
             return CommonResult.error(-1, "对账单不存在");
         }
         List<ReceivableBillMasterVO>  receivableBillMasterVOS = receivableBillMasterMapper.findReceivableBillMasterByAccountReceivableId(id);
+
+        if(CollUtil.isNotEmpty(receivableBillMasterVOS)){
+            receivableBillMasterVOS.forEach(receivableBillMasterVO -> {
+                Long billMasterId = receivableBillMasterVO.getId();
+                List<ReceivableBillDetailVO> receivableBillDetailVOS = receivableBillDetailMapper.findReceivableBillDetailByBillMasterId(billMasterId);
+                List<String> billAmountList = new ArrayList<>();
+                List<String> balanceAmountList = new ArrayList<>();
+                receivableBillDetailVOS.forEach(receivableBillDetailVO -> {
+                    String billAmount = receivableBillDetailVO.getBillAmount();//账单金额
+                    String balanceAmount = receivableBillDetailVO.getBalanceAmount();//结算金额
+                    billAmountList.add(billAmount);
+                    balanceAmountList.add(balanceAmount);
+                });
+                receivableBillMasterVO.setBillAmountList(billAmountList);
+                receivableBillMasterVO.setBalanceAmountList(balanceAmountList);
+            });
+        }
         accountReceivableVO.setReceivableBillMasterVOS(receivableBillMasterVOS);
         return CommonResult.success(accountReceivableVO);
     }

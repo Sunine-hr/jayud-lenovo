@@ -52,6 +52,13 @@ public class ReceivableBillDetailVO {
     @JSONField(ordinal = 10)
     private String currencyName;
 
+    @ApiModelProperty(value = "账单金额", position = 11)
+    @JSONField(ordinal = 11)
+    private String billAmount;
+
+    @ApiModelProperty(value = "结算金额", position = 12)
+    @JSONField(ordinal = 12)
+    private String balanceAmount;
 
 
 }

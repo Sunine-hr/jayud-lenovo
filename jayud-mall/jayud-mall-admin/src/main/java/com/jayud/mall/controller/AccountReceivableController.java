@@ -64,5 +64,9 @@ public class AccountReceivableController {
         return accountReceivableService.createRecMonthlyStatement(form);
     }
 
+    //TODO 应收对账单下应收账单核销
+
+
+
 
 }

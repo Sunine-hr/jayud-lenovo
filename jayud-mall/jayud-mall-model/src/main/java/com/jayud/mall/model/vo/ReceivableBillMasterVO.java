@@ -100,5 +100,19 @@ public class ReceivableBillMasterVO {
     @JSONField(ordinal = 21)
     private Long accountReceivableId;
 
+    @ApiModelProperty(value = "核销人姓名(system_user name)", position = 22)
+    @JSONField(ordinal = 22)
+    private String verificationUserName;
+
+    //应收账单核销(虚拟字段)
+    @ApiModelProperty(value = "账单金额(bill_amount)", position = 23)
+    @JSONField(ordinal = 23)
+    private List<String> billAmountList;
+
+    @ApiModelProperty(value = "结算金额(balance_amount)", position = 24)
+    @JSONField(ordinal = 24)
+    private List<String> balanceAmountList;
+
+
 
 }

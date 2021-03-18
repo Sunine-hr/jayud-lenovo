@@ -8,13 +8,20 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.mapper.AccountPayableMapper;
+import com.jayud.mall.mapper.CurrencyRateMapper;
+import com.jayud.mall.mapper.PayBillDetailMapper;
 import com.jayud.mall.mapper.PayBillMasterMapper;
 import com.jayud.mall.model.bo.MonthlyStatementForm;
+import com.jayud.mall.model.bo.PaymentBillForm;
 import com.jayud.mall.model.bo.QueryAccountPayableForm;
 import com.jayud.mall.model.po.AccountPayable;
 import com.jayud.mall.model.po.PayBillMaster;
 import com.jayud.mall.model.vo.AccountPayableVO;
+import com.jayud.mall.model.vo.CurrencyRateVO;
+import com.jayud.mall.model.vo.PayBillDetailVO;
 import com.jayud.mall.model.vo.PayBillMasterVO;
+import com.jayud.mall.model.vo.domain.AuthUser;
+import com.jayud.mall.service.BaseService;
 import com.jayud.mall.service.IAccountPayableService;
 import com.jayud.mall.service.IPayBillMasterService;
 import com.jayud.mall.utils.NumberGeneratedUtils;
@@ -22,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
@@ -46,7 +54,13 @@ public class AccountPayableServiceImpl extends ServiceImpl<AccountPayableMapper,
     @Autowired
     PayBillMasterMapper payBillMasterMapper;
     @Autowired
+    PayBillDetailMapper payBillDetailMapper;
+    @Autowired
+    CurrencyRateMapper currencyRateMapper;
+    @Autowired
     IPayBillMasterService payBillMasterService;
+    @Autowired
+    BaseService baseService;
 
     @Override
     public IPage<AccountPayableVO> findAccountPayableByPage(QueryAccountPayableForm form) {
@@ -65,8 +79,80 @@ public class AccountPayableServiceImpl extends ServiceImpl<AccountPayableMapper,
             return CommonResult.error(-1, "对账单不存在");
         }
         List<PayBillMasterVO> payBillMasterVOS = payBillMasterMapper.findPayBillMasterByAccountPayableId(id);
+
+        payBillMasterVOS.forEach(payBillMasterVO -> {
+            Long billMasterId = payBillMasterVO.getId();
+            List<PayBillDetailVO> payBillDetailVOS = payBillDetailMapper.findPayBillDetailByBillMasterId(billMasterId);
+
+            List<String> billAmount = new ArrayList<>();//账单金额
+            List<BigDecimal> balanceAmountCNY = new ArrayList<>();
+            List<String> balanceAmount = new ArrayList<>();//结算金额
+            //根据 币种id，分组
+            Map<String, List<PayBillDetailVO>> stringListMap = groupListByCid(payBillDetailVOS);
+            // entrySet遍历，在键和值都需要时使用（最常用）
+            for (Map.Entry<String, List<PayBillDetailVO>> entry : stringListMap.entrySet()) {
+                String cid = entry.getKey();//币种id
+                List<PayBillDetailVO> payBillDetailVOList = entry.getValue();
+                BigDecimal amountSum = new BigDecimal("0");
+                for (int i=0; i<payBillDetailVOList.size(); i++){
+                    PayBillDetailVO payBillDetailVO = payBillDetailVOList.get(i);
+                    BigDecimal amount = payBillDetailVO.getAmount();
+                    amountSum = amountSum.add(amount);
+                }
+                PayBillDetailVO payBillDetailVO = payBillDetailVOList.get(0);
+                String currencyName = payBillDetailVO.getCurrencyName();
+                //账单金额，不需要进行汇率换算
+                String billAmountTemp =  amountSum.toString()+" "+currencyName;
+                billAmount.add(billAmountTemp);
+                //结算金额，统一转换为人民币结算 cid=1 代表为 人民币
+                if(cid.equals("1")){
+                    balanceAmountCNY.add(amountSum);
+                }else{
+                    Integer dcid = Integer.valueOf(cid);//本币(currency_info id)
+                    Integer ocid = 1;//他币(currency_info id)
+                    CurrencyRateVO currencyRateVO = currencyRateMapper.findCurrencyRateByDcidAndOcid(dcid, ocid);
+                    BigDecimal exchangeRate = currencyRateVO.getExchangeRate();
+                    //转换为人民币
+                    BigDecimal amountCNY = amountSum.multiply(exchangeRate).setScale(2, BigDecimal.ROUND_HALF_UP);
+                    balanceAmountCNY.add(amountCNY);
+                }
+            }
+
+            BigDecimal balanceAmountSum = new BigDecimal("0");
+            for (int i=0; i<balanceAmountCNY.size(); i++){
+                BigDecimal bigDecimal = balanceAmountCNY.get(i);
+                balanceAmountSum = balanceAmountSum.add(bigDecimal);
+            }
+            String balanceAmountTemp = balanceAmountSum.toString()+" "+"人民币";
+            balanceAmount.add(balanceAmountTemp);
+
+            payBillMasterVO.setBillAmount(billAmount);
+            payBillMasterVO.setBalanceAmount(balanceAmount);
+
+        });
         accountPayableVO.setPayBillMasterVOS(payBillMasterVOS);
         return CommonResult.success(accountPayableVO);
+    }
+
+    /**
+     * 根据币种id，分组
+     * @param payBillDetailVOS 应付费用明细
+     * @return
+     */
+    private Map<String, List<PayBillDetailVO>> groupListByCid(List<PayBillDetailVO> payBillDetailVOS) {
+        Map<String, List<PayBillDetailVO>> map = new HashMap<>();
+        for (PayBillDetailVO payBillDetailVO : payBillDetailVOS) {
+            String key = payBillDetailVO.getCid().toString();//币种id
+            List<PayBillDetailVO> tmpList = map.get(key);
+            if (CollUtil.isEmpty(tmpList)) {
+                tmpList = new ArrayList<>();
+                tmpList.add(payBillDetailVO);
+                map.put(key, tmpList);
+            } else {
+                tmpList.add(payBillDetailVO);
+            }
+        }
+        return map;
     }
 
     @Override
@@ -115,6 +201,27 @@ public class AccountPayableServiceImpl extends ServiceImpl<AccountPayableMapper,
             payBillMasterService.saveOrUpdateBatch(payBillMasters);
         }
         return CommonResult.success("生成应付月结账单(创建应付对账单)，成功");
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CommonResult paymentBill(PaymentBillForm form) {
+        AuthUser user = baseService.getUser();
+        Long id = form.getId();//ids， 应付账单主单 pay_bill_master id
+        //根据ids，查询 应付账单主单 pay_bill_master id
+        PayBillMasterVO payBillMasterVO = payBillMasterMapper.findPayBillMasterById(id);
+        if(ObjectUtil.isEmpty(payBillMasterVO)){
+            return CommonResult.error(-1, "账单不存在");
+        }
+        //验证，状态是否为0未付款  账单状态(0未付款 1已付款)
+        Integer status = payBillMasterVO.getStatus();//账单状态(0未付款 1已付款)
+        if(status != 0){
+            //payBillMasterVOList 不为空，代表存在状态不为0未付款 的账单，验证不通过
+            return CommonResult.error(-1, "账单状态不正确，无法付款");
+        }
+
+
+        return CommonResult.success("账单(应付账单)，付款成功");
     }
 
     /**

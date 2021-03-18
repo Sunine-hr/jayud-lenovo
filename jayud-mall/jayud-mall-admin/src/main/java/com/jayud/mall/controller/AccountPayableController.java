@@ -5,6 +5,7 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.AccountParaForm;
 import com.jayud.mall.model.bo.MonthlyStatementForm;
+import com.jayud.mall.model.bo.PaymentBillForm;
 import com.jayud.mall.model.bo.QueryAccountPayableForm;
 import com.jayud.mall.model.vo.AccountPayableVO;
 import com.jayud.mall.service.IAccountPayableService;
@@ -61,6 +62,14 @@ public class AccountPayableController {
         return accountPayableService.createPayMonthlyStatement(form);
     }
 
+
+    //TODO 应付对账单下应付账单付款
+    @ApiOperation(value = "付款账单(应付账单)-付款")
+    @PostMapping("/paymentBill")
+    @ApiOperationSupport(order = 4)
+    public CommonResult paymentBill(@Valid @RequestBody PaymentBillForm form){
+        return accountPayableService.paymentBill(form);
+    }
 
 
 

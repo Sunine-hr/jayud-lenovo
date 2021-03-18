@@ -28,4 +28,12 @@ public interface CurrencyRateMapper extends BaseMapper<CurrencyRate> {
      * @return
      */
     List<CurrencyRateVO> findCurrencyRate(@Param("form") QueryCurrencyRateForm form);
+
+    /**
+     * 根据 本币id，他币id，查询对应的转换汇率
+     * @param dcid  本币(currency_info id)
+     * @param ocid  他币(currency_info id)
+     * @return
+     */
+    CurrencyRateVO findCurrencyRateByDcidAndOcid(@Param("dcid") Integer dcid, @Param("ocid") Integer ocid);
 }

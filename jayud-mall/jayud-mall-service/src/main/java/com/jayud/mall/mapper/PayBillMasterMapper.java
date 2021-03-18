@@ -62,4 +62,6 @@ public interface PayBillMasterMapper extends BaseMapper<PayBillMaster> {
      * @return
      */
     List<PayBillMaster> findPayBillMasterByCreateTime(@Param("firstday") LocalDateTime firstday, @Param("lastDay") LocalDateTime lastDay);
+
+
 }

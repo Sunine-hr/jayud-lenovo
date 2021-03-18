@@ -99,5 +99,15 @@ public class PayBillMasterVO {
     @JSONField(ordinal = 21)
     private Long accountPayableId;
 
+    //账单金额
+    @ApiModelProperty(value = "账单金额", position = 22)
+    @JSONField(ordinal = 22)
+    private List<String> billAmount;
+
+    //结算金额
+    @ApiModelProperty(value = "结算金额", position = 23)
+    @JSONField(ordinal = 23)
+    private List<String> balanceAmount;
+
 
 }

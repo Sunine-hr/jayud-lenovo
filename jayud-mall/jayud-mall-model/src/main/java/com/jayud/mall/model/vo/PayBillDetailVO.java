@@ -52,5 +52,15 @@ public class PayBillDetailVO {
     @JSONField(ordinal = 10)
     private String currencyName;
 
+    //账单金额 bill_amount
+    @ApiModelProperty(value = "账单金额 bill_amount", position = 11)
+    @JSONField(ordinal = 11)
+    private String billAmount;
+
+    //结算金额 balance_amount
+    @ApiModelProperty(value = "结算金额 balance_amount", position = 12)
+    @JSONField(ordinal = 12)
+    private String balanceAmount;
+
 
 }

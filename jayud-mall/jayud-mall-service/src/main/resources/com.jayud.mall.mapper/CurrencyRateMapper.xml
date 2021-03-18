@@ -45,5 +45,14 @@
         t.`id`
     </select>
 
+    <select id="findCurrencyRateByDcidAndOcid" resultType="com.jayud.mall.model.vo.CurrencyRateVO">
+        select
+        t.id,t.dcid,t.ocid,t.exchange_rate,t.status,t.user_id,t.user_name,t.create_time
+        from currency_rate t
+        where 1=1
+        and t.dcid = #{dcid, jdbcType=INTEGER}
+        and t.ocid = #{ocid, jdbcType=INTEGER}
+    </select>
+
 
 </mapper>

@@ -62,4 +62,12 @@ public interface ReceivableBillMasterMapper extends BaseMapper<ReceivableBillMas
      * @return
      */
     List<ReceivableBillMaster> findReceivableBillMasterByCreateTime(@Param("firstday") LocalDateTime firstday, @Param("lastDay") LocalDateTime lastDay);
+
+    /**
+     * 验证 应收对账单下的应收账单，是否全部核销
+     * 查询应收账单，所有未付款的记录，存在未付款的记录
+     * @param accountReceivableId 应收对账单id
+     * @return
+     */
+    List<ReceivableBillMasterVO> verifyReceivableBillMasterByAccountReceivableId(@Param("accountReceivableId") Long accountReceivableId);
 }

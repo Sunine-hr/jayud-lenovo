@@ -38,4 +38,11 @@ public interface IAccountReceivableService extends IService<AccountReceivable> {
      * @return
      */
     CommonResult createRecMonthlyStatement(MonthlyStatementForm form);
+
+    /**
+     * 核销账单(应收账单)
+     * @param id    应收账单主单 receivable_bill_master id
+     * @return
+     */
+    CommonResult verificationBill(Long id);
 }

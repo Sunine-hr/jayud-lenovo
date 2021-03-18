@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.AccountParaForm;
+import com.jayud.mall.model.bo.BillMasterForm;
 import com.jayud.mall.model.bo.MonthlyStatementForm;
 import com.jayud.mall.model.bo.QueryAccountReceivableForm;
 import com.jayud.mall.model.vo.AccountReceivableVO;
@@ -65,6 +66,13 @@ public class AccountReceivableController {
     }
 
     //TODO 应收对账单下应收账单核销
+    @ApiOperation(value = "核销账单(应收账单)")
+    @PostMapping("/verificationBill")
+    @ApiOperationSupport(order = 4)
+    public CommonResult verificationBill(@Valid @RequestBody BillMasterForm form){
+        Long id = form.getId();//应收账单主单 receivable_bill_master id
+        return accountReceivableService.verificationBill(id);
+    }
 
 
 

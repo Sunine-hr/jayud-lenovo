@@ -783,7 +783,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
         }
 
-        //TODO 空运可能需要中港运输详情,但是物流节点还没定下来,暂时不写
         if (OrderStatusEnum.KY.getCode().equals(form.getClassCode()) ||
                 inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.KYDD.getCode())) {
             InputAirOrderVO airOrderVO = this.freightAirClient.getAirOrderDetails(inputMainOrderVO.getOrderNo()).getData();

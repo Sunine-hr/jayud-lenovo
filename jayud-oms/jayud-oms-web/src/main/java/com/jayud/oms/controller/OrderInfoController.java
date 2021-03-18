@@ -363,10 +363,13 @@ public class OrderInfoController {
 
 
     //订单详情接口
-    @ApiOperation(value = "获取子订单")
+    @ApiOperation(value = "获取主订单页面子订单信息")
     @PostMapping("/getSubOrderDetail")
     public CommonResult<InputOrderVO> getSubOrderDetail(@RequestBody @Valid GetOrderDetailForm form) {
         InputOrderVO inputOrderVO = orderInfoService.getOrderDetail(form);
+
+
+
         return CommonResult.success(inputOrderVO);
     }
 }

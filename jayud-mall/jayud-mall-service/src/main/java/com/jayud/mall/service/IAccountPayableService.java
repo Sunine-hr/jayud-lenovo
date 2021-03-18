@@ -2,6 +2,7 @@ package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.MonthlyStatementForm;
 import com.jayud.mall.model.bo.QueryAccountPayableForm;
 import com.jayud.mall.model.po.AccountPayable;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -30,4 +31,11 @@ public interface IAccountPayableService extends IService<AccountPayable> {
      * @return
      */
     CommonResult<AccountPayableVO> lookDetail(Long id);
+
+    /**
+     * 生成应付月结账单(创建应付对账单)
+     * @param form
+     * @return
+     */
+    CommonResult createPayMonthlyStatement(MonthlyStatementForm form);
 }

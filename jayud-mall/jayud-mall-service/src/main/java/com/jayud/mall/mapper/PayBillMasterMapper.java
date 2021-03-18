@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -45,4 +46,20 @@ public interface PayBillMasterMapper extends BaseMapper<PayBillMaster> {
      * @return
      */
     List<PayBillMasterVO> findPayBillMasterByAccountPayableId(@Param("accountPayableId") Long accountPayableId);
+
+    /**
+     * 验证，账单期间的应付单据是否月结过
+     * @param firstday
+     * @param lastDay
+     * @return
+     */
+    List<PayBillMaster> verifyPayBillMasterByCreateTime(@Param("firstday") LocalDateTime firstday, @Param("lastDay") LocalDateTime lastDay);
+
+    /**
+     * 查询，账单期间的应付账单，准备生成应付对账单
+     * @param firstday
+     * @param lastDay
+     * @return
+     */
+    List<PayBillMaster> findPayBillMasterByCreateTime(@Param("firstday") LocalDateTime firstday, @Param("lastDay") LocalDateTime lastDay);
 }

@@ -85,9 +85,30 @@
         left join supplier_info t3 on t3.id = t.supplier_id
         left join currency_info t4 on t4.id = t.cid
         where t.account_payable_id = #{accountPayableId}
-
     </select>
 
+
+    <select id="verifyPayBillMasterByCreateTime" resultType="com.jayud.mall.model.po.PayBillMaster">
+        select
+        t.id,t.bill_code,t.order_id,t.legal_person_id,t.supplier_id,t.amount,t.cid,t.remarks,t.status,t.create_time,t.payer_id,t.payment_time,t.voucher_url,t.account_payable_id
+        from pay_bill_master t
+        where 1=1
+        and t.account_payable_id is not null
+        and t.create_time <![CDATA[ >= ]]> #{firstday, jdbcType=TIMESTAMP}
+        and t.create_time <![CDATA[ <= ]]> #{lastDay, jdbcType=TIMESTAMP}
+    </select>
+
+    <select id="findPayBillMasterByCreateTime" resultType="com.jayud.mall.model.po.PayBillMaster">
+        select
+        t.id,t.bill_code,t.order_id,t.legal_person_id,t.supplier_id,t.amount,t.cid,t.remarks,t.status,t.create_time,t.payer_id,t.payment_time,t.voucher_url,t.account_payable_id
+        from pay_bill_master t
+        where 1=1
+        and t.create_time <![CDATA[ >= ]]> #{firstday, jdbcType=TIMESTAMP}
+        and t.create_time <![CDATA[ <= ]]> #{lastDay, jdbcType=TIMESTAMP}
+    </select>
+
+
+    
 
 
 </mapper>

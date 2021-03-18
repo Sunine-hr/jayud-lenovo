@@ -96,7 +96,7 @@ public class AccountReceivableServiceImpl extends ServiceImpl<AccountReceivableM
             //对账单编号(应收)
             String dzdNo = NumberGeneratedUtils.getOrderNoByCode2("dzd_no_rec");//对账单编号
 
-            //1.创建并保存应收对账单
+            //1.保存应收对账单
             AccountReceivable accountReceivable = new AccountReceivable();
             accountReceivable.setDzdNo(dzdNo);//对账单编号
             accountReceivable.setLegalPersonId(Long.valueOf(legalPersonId));//法人id(legal_person id)
@@ -108,7 +108,7 @@ public class AccountReceivableServiceImpl extends ServiceImpl<AccountReceivableM
             this.saveOrUpdate(accountReceivable);
 
             Long accountReceivableId = accountReceivable.getId();//应收对账单id(account_receivable id)
-            //2.修改对应的应收账单，设置应收对账单id （PS:应收账单 和 应收对账单 不一样）
+
             List<ReceivableBillMaster> receivableBillMasters = entry.getValue();
             receivableBillMasters.forEach(receivableBillMaster -> {
                 receivableBillMaster.setAccountReceivableId(accountReceivableId);

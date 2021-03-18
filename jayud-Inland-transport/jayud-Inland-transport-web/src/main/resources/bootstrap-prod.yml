@@ -4,7 +4,7 @@ jayud:
     config:
       namespace:
 mybatis-plus:
-  mapper-locations: classpath:com.jayud.airfreight.mapper/*.xml
+  mapper-locations: classpath:com.jayud.Inlandtransport.mapper/*.xml
   typeAliasesPackage: com.jayud.model
   configuration:
     map-underscore-to-camel-case: true

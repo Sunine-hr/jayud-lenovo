@@ -42,5 +42,18 @@
         where customer_id = #{customerId,jdbcType=BIGINT}
         and cid = #{cid,jdbcType=BIGINT}
     </select>
+
+    <select id="findAccountBalanceByCustomerId" parameterType="java.lang.Integer" resultType="com.jayud.mall.model.vo.AccountBalanceVO">
+        select
+        t.id,t.customer_id,t.cid,t.amount,
+        t1.company customerName,
+        t2.currency_code,t2.currency_name,
+        CONCAT(t.amount, ' ', t2.currency_name) amountFormat
+        from account_balance  t
+        left join customer t1 on t1.id = t.customer_id
+        left join currency_info t2 on t2.id = t.cid
+        where 1=1
+        and t.customer_id = #{customerId}
+    </select>
     
 </mapper>

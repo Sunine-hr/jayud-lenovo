@@ -81,9 +81,13 @@ public class AccountReceivableVO {
     @JSONField(ordinal = 15)
     private String paymentDays;
 
-    //对账单关联的账单
-    @ApiModelProperty(value = "对账单关联的账单(应收账单list)", position = 16)
+    @ApiModelProperty(value = "客户账户余额（多币种）", position = 16)
     @JSONField(ordinal = 16)
+    private List<String> accountBalanceList;
+
+    //对账单关联的账单
+    @ApiModelProperty(value = "对账单关联的账单(应收账单list)", position = 17)
+    @JSONField(ordinal = 17)
     private List<ReceivableBillMasterVO> receivableBillMasterVOS;
 
 }

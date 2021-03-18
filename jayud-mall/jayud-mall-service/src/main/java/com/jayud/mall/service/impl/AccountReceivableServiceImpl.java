@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
+import com.jayud.mall.mapper.AccountBalanceMapper;
 import com.jayud.mall.mapper.AccountReceivableMapper;
 import com.jayud.mall.mapper.ReceivableBillDetailMapper;
 import com.jayud.mall.mapper.ReceivableBillMasterMapper;
@@ -13,6 +14,7 @@ import com.jayud.mall.model.bo.MonthlyStatementForm;
 import com.jayud.mall.model.bo.QueryAccountReceivableForm;
 import com.jayud.mall.model.po.AccountReceivable;
 import com.jayud.mall.model.po.ReceivableBillMaster;
+import com.jayud.mall.model.vo.AccountBalanceVO;
 import com.jayud.mall.model.vo.AccountReceivableVO;
 import com.jayud.mall.model.vo.ReceivableBillDetailVO;
 import com.jayud.mall.model.vo.ReceivableBillMasterVO;
@@ -49,6 +51,8 @@ public class AccountReceivableServiceImpl extends ServiceImpl<AccountReceivableM
     @Autowired
     ReceivableBillDetailMapper receivableBillDetailMapper;
     @Autowired
+    AccountBalanceMapper accountBalanceMapper;
+    @Autowired
     IReceivableBillMasterService receivableBillMasterService;
 
     @Override
@@ -67,8 +71,18 @@ public class AccountReceivableServiceImpl extends ServiceImpl<AccountReceivableM
         if(accountReceivableVO == null){
             return CommonResult.error(-1, "对账单不存在");
         }
-        List<ReceivableBillMasterVO>  receivableBillMasterVOS = receivableBillMasterMapper.findReceivableBillMasterByAccountReceivableId(id);
+        Integer customerId = accountReceivableVO.getCustomerId();
+        //客户的账户余额
+        List<AccountBalanceVO> accountBalanceVOS = accountBalanceMapper.findAccountBalanceByCustomerId(customerId);
+        List<String> accountBalanceList = new ArrayList<>();//客户账户余额
+        accountBalanceVOS.forEach(accountBalanceVO -> {
+            String amountFormat = accountBalanceVO.getAmountFormat();
+            accountBalanceList.add(amountFormat);
+        });
+        accountReceivableVO.setAccountBalanceList(accountBalanceList);
 
+        //账单明细
+        List<ReceivableBillMasterVO>  receivableBillMasterVOS = receivableBillMasterMapper.findReceivableBillMasterByAccountReceivableId(id);
         if(CollUtil.isNotEmpty(receivableBillMasterVOS)){
             receivableBillMasterVOS.forEach(receivableBillMasterVO -> {
                 Long billMasterId = receivableBillMasterVO.getId();

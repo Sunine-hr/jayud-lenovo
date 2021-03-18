@@ -36,4 +36,11 @@ public interface AccountBalanceMapper extends BaseMapper<AccountBalance> {
      * @return
      */
     AccountBalanceVO findAccountBalanceByCustomerIdAndCid(@Param("customerId") Long customerId, @Param("cid") Long cid);
+
+    /**
+     * 根据客户id，查询账户余额
+     * @param customerId
+     * @return
+     */
+    List<AccountBalanceVO> findAccountBalanceByCustomerId(@Param("customerId") Integer customerId);
 }

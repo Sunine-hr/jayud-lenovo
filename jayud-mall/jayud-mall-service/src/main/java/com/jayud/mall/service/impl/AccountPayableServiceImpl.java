@@ -9,10 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.mall.mapper.AccountPayableMapper;
-import com.jayud.mall.mapper.CurrencyRateMapper;
-import com.jayud.mall.mapper.PayBillDetailMapper;
-import com.jayud.mall.mapper.PayBillMasterMapper;
+import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.MonthlyStatementForm;
 import com.jayud.mall.model.bo.PaymentBillForm;
 import com.jayud.mall.model.bo.QueryAccountPayableForm;
@@ -36,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -55,6 +53,8 @@ public class AccountPayableServiceImpl extends ServiceImpl<AccountPayableMapper,
     @Autowired
     PayBillDetailMapper payBillDetailMapper;
     @Autowired
+    CurrencyInfoMapper currencyInfoMapper;
+    @Autowired
     CurrencyRateMapper currencyRateMapper;
     @Autowired
     IPayBillMasterService payBillMasterService;
@@ -68,6 +68,199 @@ public class AccountPayableServiceImpl extends ServiceImpl<AccountPayableMapper,
         //定义排序规则
         page.addOrder(OrderItem.desc("t.id"));
         IPage<AccountPayableVO> pageInfo = accountPayableMapper.findAccountPayableByPage(page, form);
+
+        List<CurrencyInfoVO> currencyInfoVOList = currencyInfoMapper.allCurrencyInfo();
+        //将币种信息转换为map，城市cid为键，币种信息为值
+        Map<Long, CurrencyInfoVO> cidMap = currencyInfoVOList.stream().collect(Collectors.toMap(CurrencyInfoVO::getId, c -> c));
+
+        List<AccountPayableVO> records = pageInfo.getRecords();
+        if(CollUtil.isNotEmpty(records)){
+            records.forEach(accountPayableVO -> {
+                /*
+                应付金额        payable_amount
+                结算金额        balance_amount
+                已付金额        paid_amount
+                未付金额        unpaid_amount
+                 */
+                List<String> payableAmount = new ArrayList<>();//应付金额
+                List<String> balanceAmount = new ArrayList<>();//结算金额
+                List<String> paidAmount = new ArrayList<>();//已付金额
+                List<String> unpaidAmount = new ArrayList<>();//未付金额
+
+                //查询对账单下的账单
+                Long accountPayableId = accountPayableVO.getId();//应付对账单id(account_payable id)
+                List<PayBillMasterVO> payBillMasterVOS = payBillMasterMapper.findPayBillMasterByAccountPayableId(accountPayableId);
+
+                //查询账单下的所有的明细费用,根据币种汇总金额
+                payBillMasterVOS.forEach(payBillMasterVO -> {
+                    Long billMasterId = payBillMasterVO.getId();
+                    List<PayBillDetailVO> payBillDetailVOS = payBillDetailMapper.findPayBillDetailByBillMasterId(billMasterId);
+                    Map<String, List<PayBillDetailVO>> stringListMap = groupListByCid(payBillDetailVOS);
+                    List<AmountVO> amountVOS = new ArrayList<>();//账单下的费用,根据币种分组，汇总金额
+                    for (Map.Entry<String, List<PayBillDetailVO>> entry : stringListMap.entrySet()) {
+                        String cid = entry.getKey();
+                        List<PayBillDetailVO> payBillDetailVOList = entry.getValue();
+                        BigDecimal amountSum = new BigDecimal("0");
+                        for (int i=0; i<payBillDetailVOList.size(); i++){
+                            PayBillDetailVO payBillDetailVO = payBillDetailVOList.get(i);
+                            BigDecimal amount = payBillDetailVO.getAmount();
+                            amountSum = amountSum.add(amount);
+                        }
+                        AmountVO amountVO = new AmountVO();
+                        amountVO.setAmount(amountSum);//金额
+                        amountVO.setCid(Integer.valueOf(cid));
+                        amountVOS.add(amountVO);
+                    }
+                    payBillMasterVO.setAmountVOS(amountVOS);
+                });
+
+                //汇总所有账单的费用，显示到对账单 应付金额、结算金额、已付金额、未付金额
+                Map<Integer, BigDecimal> payableAmountMap = new HashMap<>();//应付金额
+                Map<Integer, BigDecimal> balanceAmountMap = new HashMap<>();//结算金额
+                Map<Integer, BigDecimal> paidAmountMap = new HashMap<>();//已付金额
+                Map<Integer, BigDecimal> unpaidAmountMap = new HashMap<>();//未付金额
+                for (int i=0; i<payBillMasterVOS.size(); i++){
+                    PayBillMasterVO payBillMasterVO = payBillMasterVOS.get(i);
+                    Integer status = payBillMasterVO.getStatus();//账单状态(0未付款 1已付款)
+                    List<AmountVO> amountVOS = payBillMasterVO.getAmountVOS();//账单下的费用,根据币种分组，汇总金额
+                    amountVOS.forEach(amountVO -> {
+                        Integer cid = amountVO.getCid();
+                        BigDecimal amount = amountVO.getAmount();
+                        //应付金额
+                        BigDecimal bigDecimal = payableAmountMap.get(cid);
+                        if(ObjectUtil.isEmpty(bigDecimal)){
+                            payableAmountMap.put(cid, amount);
+                        }else{
+                            BigDecimal amountSum = bigDecimal.add(amount);
+                            payableAmountMap.put(cid, amountSum);
+                        }
+                        //结算金额
+                        BigDecimal bigDecimal1 = balanceAmountMap.get(cid);
+                        if(ObjectUtil.isEmpty(bigDecimal1)){
+                            balanceAmountMap.put(cid, amount);
+                        }else{
+                            BigDecimal amountSum = bigDecimal1.add(amount);
+                            balanceAmountMap.put(cid, amountSum);
+                        }
+                    });
+                    if(status == 1) {
+                        //1已付款 已付金额
+                        amountVOS.forEach(amountVO -> {
+                            Integer cid = amountVO.getCid();
+                            BigDecimal amount = amountVO.getAmount();
+                            //已付金额
+                            BigDecimal bigDecimal = paidAmountMap.get(cid);
+                            if(ObjectUtil.isEmpty(bigDecimal)){
+                                paidAmountMap.put(cid, amount);
+                            }else{
+                                BigDecimal amountSum = bigDecimal.add(amount);
+                                paidAmountMap.put(cid, amountSum);
+                            }
+                        });
+                    }else if(status == 0){
+                        //0未付款 未付金额
+                        amountVOS.forEach(amountVO -> {
+                            Integer cid = amountVO.getCid();
+                            BigDecimal amount = amountVO.getAmount();
+                            BigDecimal bigDecimal = unpaidAmountMap.get(cid);
+                            if(ObjectUtil.isEmpty(bigDecimal)){
+                                unpaidAmountMap.put(cid, amount);
+                            }else{
+                                BigDecimal amountSum = bigDecimal.add(amount);
+                                unpaidAmountMap.put(cid, amountSum);
+                            }
+                        });
+                    }
+                }
+
+                //应付金额
+                for (Map.Entry<Integer, BigDecimal> entry : payableAmountMap.entrySet()) {
+                    Integer cid = entry.getKey();
+                    BigDecimal amount = entry.getValue();
+                    String amountFormat = amount.toString()+" "+cidMap.get(Long.valueOf(cid)).getCurrencyName();
+                    payableAmount.add(amountFormat);
+                }
+                //结算金额
+                List<BigDecimal> balanceAmountCNY = new ArrayList<>();//统一装换为人民币
+                for (Map.Entry<Integer, BigDecimal> entry : balanceAmountMap.entrySet()) {
+                    Integer cid = entry.getKey();
+                    BigDecimal amount = entry.getValue();
+                    if(cid == 1){
+                        balanceAmountCNY.add(amount);
+                    }else{
+                        Integer dcid = Integer.valueOf(cid);//本币(currency_info id)
+                        Integer ocid = 1;//他币(currency_info id) 代表 人民币
+                        CurrencyRateVO currencyRateVO = currencyRateMapper.findCurrencyRateByDcidAndOcid(dcid, ocid);
+                        BigDecimal exchangeRate = currencyRateVO.getExchangeRate();
+                        //转换为人民币
+                        BigDecimal amountCNY = amount.multiply(exchangeRate).setScale(2, BigDecimal.ROUND_HALF_UP);
+                        balanceAmountCNY.add(amountCNY);
+                    }
+                }
+                BigDecimal balanceAmountSum = new BigDecimal("0");
+                for (int i=0; i<balanceAmountCNY.size(); i++){
+                    BigDecimal bigDecimal = balanceAmountCNY.get(i);
+                    balanceAmountSum = balanceAmountSum.add(bigDecimal);
+                }
+                String balanceAmountTemp = balanceAmountSum.toString()+" "+"人民币";
+                balanceAmount.add(balanceAmountTemp);
+
+                //已付金额
+                List<BigDecimal> paidAmountCNY = new ArrayList<>();
+                for (Map.Entry<Integer, BigDecimal> entry : paidAmountMap.entrySet()) {
+                    Integer cid = entry.getKey();
+                    BigDecimal amount = entry.getValue();
+                    if(cid == 1){
+                        paidAmountCNY.add(amount);
+                    }else{
+                        Integer dcid = Integer.valueOf(cid);//本币(currency_info id)
+                        Integer ocid = 1;//他币(currency_info id) 代表 人民币
+                        CurrencyRateVO currencyRateVO = currencyRateMapper.findCurrencyRateByDcidAndOcid(dcid, ocid);
+                        BigDecimal exchangeRate = currencyRateVO.getExchangeRate();
+                        //转换为人民币
+                        BigDecimal amountCNY = amount.multiply(exchangeRate).setScale(2, BigDecimal.ROUND_HALF_UP);
+                        paidAmountCNY.add(amountCNY);
+                    }
+                }
+                BigDecimal paidAmountSum = new BigDecimal("0");
+                for (int i=0; i<paidAmountCNY.size(); i++){
+                    BigDecimal bigDecimal = paidAmountCNY.get(i);
+                    paidAmountSum = paidAmountSum.add(bigDecimal);
+                }
+                String paidAmountTemp = paidAmountSum.toString()+" "+"人民币";
+                paidAmount.add(paidAmountTemp);
+
+                //未付金额
+                List<BigDecimal> unpaidAmountCNY = new ArrayList<>();
+                for (Map.Entry<Integer, BigDecimal> entry : unpaidAmountMap.entrySet()) {
+                    Integer cid = entry.getKey();
+                    BigDecimal amount = entry.getValue();
+                    if(cid == 1){
+                        unpaidAmountCNY.add(amount);
+                    }else{
+                        Integer dcid = Integer.valueOf(cid);//本币(currency_info id)
+                        Integer ocid = 1;//他币(currency_info id) 代表 人民币
+                        CurrencyRateVO currencyRateVO = currencyRateMapper.findCurrencyRateByDcidAndOcid(dcid, ocid);
+                        BigDecimal exchangeRate = currencyRateVO.getExchangeRate();
+                        //转换为人民币
+                        BigDecimal amountCNY = amount.multiply(exchangeRate).setScale(2, BigDecimal.ROUND_HALF_UP);
+                        unpaidAmountCNY.add(amountCNY);
+                    }
+                }
+                BigDecimal unpaidAmountSum = new BigDecimal("0");
+                for (int i=0; i<unpaidAmountCNY.size(); i++){
+                    BigDecimal bigDecimal = unpaidAmountCNY.get(i);
+                    unpaidAmountSum = unpaidAmountSum.add(bigDecimal);
+                }
+                String unpaidAmountTemp = unpaidAmountSum.toString()+" "+"人民币";
+                unpaidAmount.add(unpaidAmountTemp);
+
+                accountPayableVO.setPayableAmount(payableAmount);//应付金额
+                accountPayableVO.setBalanceAmount(balanceAmount);//结算金额
+                accountPayableVO.setPaidAmount(paidAmount);//已付金额
+                accountPayableVO.setUnpaidAmount(unpaidAmount);//未付金额
+            });
+        }
         return pageInfo;
     }
 

@@ -426,7 +426,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
                 //完成订单状态
                 finishSeaOrderOpt(seaOrder);
                 //获取用户地址
-                List<AddOrderAddressForm> orderAddressForms = seaOrderForm.getOrderAddressForms();
+                List<AddOrderAddressForm> orderAddressForms = seaReplenishments.get(0).getOrderAddressForms();
                 //System.out.println("orderAddressForms=================================="+orderAddressForms);
                 for (AddOrderAddressForm orderAddressForm : orderAddressForms) {
                     orderAddressForm.setOrderNo(replenishment.getOrderNo());
@@ -442,7 +442,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
                     log.warn("批量保存/修改订单地址信息失败,订单地址信息={}", new JSONArray(orderAddressForms));
                 }
 
-                List<AddGoodsForm> goodsForms = seaOrderForm.getGoodsForms();
+                List<AddGoodsForm> goodsForms = seaReplenishments.get(0).getGoodsForms();
                 for (AddGoodsForm goodsForm : goodsForms) {
                     goodsForm.setOrderNo(replenishment.getOrderNo());
                     goodsForm.setBusinessId(replenishment.getId());

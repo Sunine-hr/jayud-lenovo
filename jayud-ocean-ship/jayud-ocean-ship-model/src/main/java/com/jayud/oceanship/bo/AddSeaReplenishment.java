@@ -108,19 +108,19 @@ public class AddSeaReplenishment extends Model<AddSeaReplenishment> {
     private String cabinetTypeName;
 
     @ApiModelProperty(value = "发货地址集合")
-    private List<OrderAddressVO> deliveryAddress;
+    private List<AddOrderAddressForm> deliveryAddress;
 
     @ApiModelProperty(value = "收货地址集合")
-    private List<OrderAddressVO> shippingAddress;
+    private List<AddOrderAddressForm> shippingAddress;
 
     @ApiModelProperty(value = "通知地址集合")
-    private List<OrderAddressVO> notificationAddress;
+    private List<AddOrderAddressForm> notificationAddress;
 
     @ApiModelProperty(value = "海运订单地址信息")
-    private List<OrderAddressVO> orderAddressForms;
+    private List<AddOrderAddressForm> orderAddressForms;
 
     @ApiModelProperty(value = "货品信息")
-    private List<GoodsVO> goodsForms;
+    private List<AddGoodsForm> goodsForms;
 
     /**
      * 拼装地址

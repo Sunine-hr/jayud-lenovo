@@ -15,8 +15,8 @@ import java.util.Map;
 @Accessors(chain = true)
 public class Template<T> {
 
-    @ApiModelProperty
-    private List<T> data;
+    @ApiModelProperty("数据")
+    private List<T> list;
 
     @ApiModelProperty(value = "头部")
     private List<Map<String, Object>> head;
@@ -26,5 +26,11 @@ public class Template<T> {
         ParameterizedType pt = (ParameterizedType) clazz.getGenericSuperclass();
         clazz = (Class) pt.getActualTypeArguments()[0];
         this.head = Utilities.assembleEntityHead(clazz);
+    }
+
+    public static void main(String[] args) {
+        Template<TmsOrderTemplate> tmp = new Template<TmsOrderTemplate>() {
+        };
+
     }
 }

@@ -735,8 +735,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     List<FileView> attachments = this.logisticsTrackService.getAttachments(subOrder.getSubOrderId()
                             , BusinessTypeEnum.BG.getCode(), prePath);//节点附件
                     allPics.addAll(attachments);
+                    subOrder.setFileViews(attachments);
+                    //结算单位名称
+                    CustomerInfo customerInfo = customerInfoService.getByCode(inputMainOrderVO.getUnitCode());
+                    subOrder.setUnitName(customerInfo.getName());
                 }
                 inputOrderCustomsVO.setAllPics(allPics);
+
 
                 //循环处理接单人和接单时间
                 List<InputSubOrderCustomsVO> inputSubOrderCustomsVOS = inputOrderCustomsVO.getSubOrders();
@@ -762,7 +767,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             if (inputOrderTransportVO != null) {
                 //组装车型/柜号
                 inputOrderTransportVO.assembleModelAndCntrNo();
-
+                //结算单位名称
+                CustomerInfo customerInfo = customerInfoService.getByCode(inputMainOrderVO.getUnitCode());
+                inputOrderTransportVO.setUnitName(customerInfo.getName());
                 //附件信息
                 List<FileView> allPics = new ArrayList<>(StringUtils.getFileViews(inputOrderTransportVO.getCntrPic(), inputOrderTransportVO.getCntrPicName(), prePath));
                 //获取反馈操作人时上传的附件
@@ -811,6 +818,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 List<FileView> attachments = this.logisticsTrackService.getAttachments(airOrderVO.getId()
                         , BusinessTypeEnum.KY.getCode(), prePath);
                 airOrderVO.setAllPics(attachments);
+                //结算单位名称
+                CustomerInfo customerInfo = customerInfoService.getByCode(inputMainOrderVO.getUnitCode());
+                airOrderVO.setUnitName(customerInfo.getName());
                 inputOrderVO.setAirOrderForm(airOrderVO);
             }
         }

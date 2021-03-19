@@ -20,9 +20,7 @@ import com.jayud.oms.model.po.AuditInfo;
 import com.jayud.oms.model.po.OrderAttachment;
 import com.jayud.oms.model.po.OrderInfo;
 import com.jayud.oms.model.vo.*;
-import com.jayud.oms.model.vo.template.order.OrderInfoTemplate;
-import com.jayud.oms.model.vo.template.order.Template;
-import com.jayud.oms.model.vo.template.order.TmsOrderTemplate;
+import com.jayud.oms.model.vo.template.order.*;
 import com.jayud.oms.service.IAuditInfoService;
 import com.jayud.oms.service.IOrderAttachmentService;
 import com.jayud.oms.service.IOrderInfoService;
@@ -382,10 +380,44 @@ public class OrderInfoController {
         OrderInfoTemplate orderInfoTemplate = new OrderInfoTemplate();
         if (orderTransportForm != null) {
             TmsOrderTemplate tmsOrderTemplate = ConvertUtil.convert(orderTransportForm, TmsOrderTemplate.class);
-            Template<TmsOrderTemplate> template = new Template<TmsOrderTemplate>().setData(Collections.singletonList(tmsOrderTemplate));
+            Template<TmsOrderTemplate> template = new Template<TmsOrderTemplate>() {
+            }.setList(Collections.singletonList(tmsOrderTemplate));
             orderInfoTemplate.setTmsOrderTemplates(template);
         }
+        //内陆模板
+        InputOrderInlandTPVO inlandTransportForm = inputOrderVO.getOrderInlandTransportForm();
+        if (inlandTransportForm != null) {
+            InlandTPTemplate inlandTPTemplate = ConvertUtil.convert(inlandTransportForm, InlandTPTemplate.class);
+            Template<InlandTPTemplate> template = new Template<InlandTPTemplate>() {
+            }.setList(Collections.singletonList(inlandTPTemplate));
+            orderInfoTemplate.setInlandTPTemplates(template);
+        }
 
+        //报关模板
+        InputOrderCustomsVO orderCustomsForm = inputOrderVO.getOrderCustomsForm();
+        if (orderCustomsForm != null) {
+            if (CollectionUtils.isNotEmpty(orderCustomsForm.getSubOrders())) {
+                List<OrderCustomsTemplate> list = new ArrayList<>();
+                for (InputSubOrderCustomsVO subOrder : orderCustomsForm.getSubOrders()) {
+                    OrderCustomsTemplate customsTemplate = ConvertUtil.convert(subOrder, OrderCustomsTemplate.class);
+                    customsTemplate.assemblyData(orderCustomsForm);
+                    customsTemplate.setId(subOrder.getSubOrderId());
+                    list.add(customsTemplate);
+                }
+                Template<OrderCustomsTemplate> template = new Template<OrderCustomsTemplate>() {
+                }.setList(list);
+                orderInfoTemplate.setOrderCustomsTemplates(template);
+            }
+        }
+
+        //内陆模板
+        InputAirOrderVO airOrderForm = inputOrderVO.getAirOrderForm();
+        if (inlandTransportForm != null) {
+            AirOrderTemplate airOrderTemplate = ConvertUtil.convert(airOrderForm, AirOrderTemplate.class);
+            Template<AirOrderTemplate> template = new Template<AirOrderTemplate>() {
+            }.setList(Collections.singletonList(airOrderTemplate));
+            orderInfoTemplate.setAirOrderTemplateTemplates(template);
+        }
 
         return CommonResult.success(orderInfoTemplate);
     }

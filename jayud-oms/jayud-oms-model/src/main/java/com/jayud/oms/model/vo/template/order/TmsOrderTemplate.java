@@ -3,25 +3,24 @@ package com.jayud.oms.model.vo.template.order;
 import cn.hutool.core.collection.CollectionUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.utils.Utilities;
 import com.jayud.oms.model.vo.InputOrderTakeAdrVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-//@Accessors(chain = true)
-public class TmsOrderTemplate extends Template<TmsOrderTemplate> {
+@Accessors(chain = true)
+public class TmsOrderTemplate {
 
     @ApiModelProperty(value = "中港订单ID")
     private Long id;
 
-    @ApiModelProperty(value = "中港订单号", required = true)
+    @ApiModelProperty(value = "订单编号", required = true)
     private String orderNo;
 
     @ApiModelProperty(value = "提货时间", required = true)

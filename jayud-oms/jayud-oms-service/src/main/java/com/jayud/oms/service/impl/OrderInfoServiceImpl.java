@@ -103,7 +103,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(),
             SubOrderSignEnum.KY.getSignOne(), SubOrderSignEnum.HY.getSignOne(),
-            SubOrderSignEnum.BG.getSignOne(), SubOrderSignEnum.NL.getSignOne()};
+            SubOrderSignEnum.BG.getSignOne(), SubOrderSignEnum.NL.getSignOne(),
             SubOrderSignEnum.TC.getSignOne()};
 
     @Autowired
@@ -122,9 +122,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Autowired
     private IOrderTypeNumberService orderTypeNumberService;
-
-    @Autowired
-    private IOrderFlowSheetService orderFlowSheetService;
 
     public String generationOrderNo(Long legalId, Integer integer, String classStatus) {
         //生成订单号

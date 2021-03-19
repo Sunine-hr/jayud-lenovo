@@ -453,7 +453,7 @@ public enum OrderStatusEnum {
                     SEA_S_3_1.getCode(), SEA_S_3_2.getCode(),
                     INLANDTP_NL_1_1.getCode(), INLANDTP_NL_2_1.getCode(),
                     INLANDTP_NL_3_1.getCode(), INLANDTP_NL_3_2.getCode(),
-                    INLANDTP_NL_4_1.getCode(), INLANDTP_NL_5_1.getCode(),};
+                    INLANDTP_NL_4_1.getCode(), INLANDTP_NL_5_1.getCode(),
                     TT_1_1.getCode(),TT_2_1.getCode(),TT_3_1.getCode(),TT_3_2.getCode(),TT_4_1.getCode()};
         }
         for (String subOrderSign : subOrderSigns) {
@@ -480,6 +480,11 @@ public enum OrderStatusEnum {
                 return new String[]{
                         INLANDTP_NL_1_1.getCode(), INLANDTP_NL_2_1.getCode(), INLANDTP_NL_3_1.getCode(),
                         INLANDTP_NL_3_2.getCode(), INLANDTP_NL_4_1.getCode(), INLANDTP_NL_5_1.getCode()
+                };
+            }
+            if(SubOrderSignEnum.TC.getSignOne().equals(subOrderSign)){
+                return new String[]{
+                        TT_1_1.getCode(),TT_2_1.getCode(),TT_3_1.getCode(),TT_3_2.getCode(),TT_4_1.getCode()
                 };
             }
         }
@@ -539,11 +544,7 @@ public enum OrderStatusEnum {
         }
         if (OrderStatusEnum.INLANDTP_NL_4.getCode().equals(status)) {//车辆提货页面驳回
             return INLANDTP_NL_5_1;
-            if(SubOrderSignEnum.TC.getSignOne().equals(subOrderSign)){
-                return new String[]{
-                        TT_1_1.getCode(),TT_2_1.getCode(),TT_3_1.getCode(),TT_3_2.getCode(),TT_4_1.getCode()
-                };
-            }
+
         }
         return null;
     }

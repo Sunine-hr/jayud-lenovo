@@ -38,6 +38,8 @@ public abstract class SqlConstant {
 
     public static final String SEA_ORDER = "sea_order表";
 
+    public static final String TRAILER_ORDER = "trailer_order表";
+
     public static final String SEA_BOOKSHIP = "sea_bookship表";
 
     public static final String F_ID = "f_id";

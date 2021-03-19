@@ -73,7 +73,6 @@ public class AddOrderAddressForm {
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
-
     public boolean checkCreateSeaOrder() {
         if (this.type == null || StringUtils.isEmpty(this.address)
                 || StringUtils.isEmpty(this.phone)) {

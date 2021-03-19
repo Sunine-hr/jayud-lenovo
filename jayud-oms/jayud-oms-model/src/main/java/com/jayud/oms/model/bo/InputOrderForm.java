@@ -31,6 +31,9 @@ public class InputOrderForm {
     private InputOrderInlandTransportForm orderInlandTransportForm;
 
 
+    @ApiModelProperty(value = "拖车")
+    private  InputTrailerOrderFrom trailerOrderFrom;
+
     @ApiModelProperty(value = "登录人")
     private String loginUserName;
 

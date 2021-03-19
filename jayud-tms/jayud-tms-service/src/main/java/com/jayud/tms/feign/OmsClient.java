@@ -154,4 +154,9 @@ public interface OmsClient {
      */
     @RequestMapping(value = "api/getVehicleAndSupplierInfo")
     public ApiResult getVehicleAndSupplierInfo(@RequestParam("vehicleId") Long vehicleId);
+
+
+    @ApiOperation(value = "根据司机id查询司机信息")
+    @RequestMapping(value = "/api/getDriverById")
+    public ApiResult getDriverById(@RequestParam("driverId") Long driverId) ;
 }

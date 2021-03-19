@@ -17,7 +17,8 @@ public enum SubOrderSignEnum {
     BG("bg", "order_customs", "报关"),
     ZGYS("zgys", "order_transport", "中港运输"),
     HY("hy","sea_order","海运"),
-    NL("nl","order_inland_transport","内陆运输");
+    NL("nl","order_inland_transport","内陆运输"),
+    TC("tc","trailer_order","拖车");
     //    private Integer code;
     private String signOne;
     private String signTwo;

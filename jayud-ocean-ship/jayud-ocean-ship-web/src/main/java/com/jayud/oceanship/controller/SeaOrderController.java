@@ -323,9 +323,9 @@ public class SeaOrderController {
         if (seaOrderId == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        SeaOrderVO airOrderDetails = this.seaOrderService.getSeaOrderDetails(seaOrderId);
+        SeaOrderVO seaOrderDetails = this.seaOrderService.getSeaOrderDetails(seaOrderId);
 
-        return CommonResult.success(airOrderDetails);
+        return CommonResult.success(seaOrderDetails);
     }
 
 
@@ -357,7 +357,7 @@ public class SeaOrderController {
     @ApiOperation(value = "海运订单驳回")
     @PostMapping(value = "/rejectOrder")
     public CommonResult rejectOrder(@RequestBody SeaCargoRejected seaCargoRejected) {
-        //查询空运订单
+        //查询海运订单
         SeaOrder tmp = this.seaOrderService.getById(seaCargoRejected.getSeaOrderId());
         //获取相应驳回操作
         OrderStatusEnum orderStatusEnum = OrderStatusEnum.getSeaOrderRejection(tmp.getStatus());

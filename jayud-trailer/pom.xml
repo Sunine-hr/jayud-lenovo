@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>jayud-platform</artifactId>
+        <groupId>com.jayud</groupId>
+        <version>1.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>jayud-trailer</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+    <name>jayud-trailer</name>
+    <description>拖车管理系统</description>
+
+    <modules>
+        <module>jayud-trailer-model</module>
+        <module>jayud-trailer-service</module>
+        <module>jayud-trailer-web</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.jayud</groupId>
+            <artifactId>jayud-common</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>1.1.21</version>
+        </dependency>
+
+        <!--        <dependency>-->
+        <!--            <groupId>org.hibernate</groupId>-->
+        <!--            <artifactId>hibernate-validator</artifactId>-->
+        <!--            <version>4.3.1.Final</version>-->
+        <!--        </dependency>-->
+
+        <!--        &lt;!&ndash; mybatis-plus集成依赖包 &ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.baomidou</groupId>-->
+        <!--            <artifactId>mybatis-plus-boot-starter</artifactId>-->
+        <!--            <version>3.4.0</version>-->
+        <!--        </dependency>-->
+        <!--        &lt;!&ndash; mybatis-plus分页插件 &ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.baomidou</groupId>-->
+        <!--            <artifactId>mybatis-plus</artifactId>-->
+        <!--            <version>3.4.0</version>-->
+        <!--        </dependency>-->
+        <!--        &lt;!&ndash; 默认模板引擎 &ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.apache.velocity</groupId>-->
+        <!--            <artifactId>velocity-engine-core</artifactId>-->
+        <!--            <version>2.0</version>-->
+        <!--        </dependency>-->
+    </dependencies>
+
+</project>

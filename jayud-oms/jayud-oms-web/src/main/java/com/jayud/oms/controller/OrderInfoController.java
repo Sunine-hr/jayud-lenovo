@@ -12,6 +12,7 @@ import com.jayud.common.enums.OrderAttachmentTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.enums.StatusEnum;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.*;
@@ -19,6 +20,9 @@ import com.jayud.oms.model.po.AuditInfo;
 import com.jayud.oms.model.po.OrderAttachment;
 import com.jayud.oms.model.po.OrderInfo;
 import com.jayud.oms.model.vo.*;
+import com.jayud.oms.model.vo.template.order.OrderInfoTemplate;
+import com.jayud.oms.model.vo.template.order.Template;
+import com.jayud.oms.model.vo.template.order.TmsOrderTemplate;
 import com.jayud.oms.service.IAuditInfoService;
 import com.jayud.oms.service.IOrderAttachmentService;
 import com.jayud.oms.service.IOrderInfoService;
@@ -228,6 +232,13 @@ public class OrderInfoController {
                     return CommonResult.error(ResultEnum.PARAM_ERROR);
                 }
             }
+            //拖车校验参数
+            if (OrderStatusEnum.TC.getCode().equals(inputMainOrderForm.getClassCode())) {
+                InputTrailerOrderFrom trailerOrderFrom = form.getTrailerOrderFrom();
+                if (!trailerOrderFrom.checkCreateOrder()) {
+                    return CommonResult.error(ResultEnum.PARAM_ERROR);
+                }
+            }
             //校验参数
             form.checkCreateParam();
         }
@@ -358,6 +369,25 @@ public class OrderInfoController {
         this.orderInfoService.updateById(new OrderInfo().setId(mainOrderId).setRemarks(remarks));
 
         return CommonResult.success();
+    }
+
+
+    @ApiOperation(value = "获取主订单页面子订单信息")
+    @PostMapping("/getSubOrderDetail")
+    public CommonResult<OrderInfoTemplate> getSubOrderDetail(@RequestBody @Valid GetOrderDetailForm form) {
+        InputOrderVO inputOrderVO = orderInfoService.getOrderDetail(form);
+
+        //中港模板
+        InputOrderTransportVO orderTransportForm = inputOrderVO.getOrderTransportForm();
+        OrderInfoTemplate orderInfoTemplate = new OrderInfoTemplate();
+        if (orderTransportForm != null) {
+            TmsOrderTemplate tmsOrderTemplate = ConvertUtil.convert(orderTransportForm, TmsOrderTemplate.class);
+            Template<TmsOrderTemplate> template = new Template<TmsOrderTemplate>().setData(Collections.singletonList(tmsOrderTemplate));
+            orderInfoTemplate.setTmsOrderTemplates(template);
+        }
+
+
+        return CommonResult.success(orderInfoTemplate);
     }
 }
 

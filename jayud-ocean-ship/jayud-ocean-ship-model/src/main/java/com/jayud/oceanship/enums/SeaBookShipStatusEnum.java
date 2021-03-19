@@ -6,14 +6,14 @@ import lombok.Getter;
 import java.util.Objects;
 
 /**
- * 贸易方式
+ * 订船状态
  */
 @Getter
 @AllArgsConstructor
 public enum SeaBookShipStatusEnum {
     CONFIRM(0, "确认"),
     PENDING_CONFIRMED(1, "待确认"),
-    DELETE(2, "删除"),;
+    DELETE(2, "删除");
 
     private Integer code;
     private String desc;

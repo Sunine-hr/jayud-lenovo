@@ -26,6 +26,8 @@ public enum OrderStatusEnum {
     HY("HY", "海运"),
     HYDD("HYDD", "海运订单"),
     NLDD("NLDD", "内陆运输订单"),
+    TC("TC","拖车"),
+    TCDD("TCDD","拖车订单"),
 
     //主订单状态
     MAIN_1("1", "正常"),
@@ -135,6 +137,24 @@ public enum OrderStatusEnum {
     INLANDTP_NL_5("NL_5", "车辆提货"),
     INLANDTP_NL_5_1("NL_5_1", "车辆提货驳回"),
     INLANDTP_NL_6("NL_6", "货物签收"),
+    //拖车订单状态流程节点
+    TT_0("TT_0","待接单"),
+    TT_1("TT_1","拖车接单"),
+    TT_1_1("TT_1_1","拖车接单驳回"),
+    TT_2("TT_2","拖车派车"),
+    TT_2_1("TT_2_1","拖车派车驳回"),
+    TT_3("TT_3","派车审核"),
+    TT_3_1("TT_3_1","派车审核驳回"),
+    TT_3_2("TT_3_2","派车驳回调度"),
+    TT_4("TT_4","拖车提柜"),
+    TT_4_1("TT_4_1","拖车提柜驳回"),
+    TT_5("TT_5","拖车到仓"),
+    TT_6("TT_6","拖车离仓"),
+    TT_7("TT_7","拖车过磅"),
+    TT_8("TT_8","确认还柜"),
+
+
+
 
 
     //外部报关放行
@@ -353,6 +373,57 @@ public enum OrderStatusEnum {
         return null;
     }
 
+
+    /**
+     * 获取拖车下个节点
+     * 如果是驳回状态就是当前状态
+     */
+    public static OrderStatusEnum getTrailerOrderNextStatus(String currentStatus) {
+
+        if (TT_3_2.getCode().equals(currentStatus)) {
+            return OrderStatusEnum.TT_3_2;
+        }
+        List<OrderStatusEnum> statusEnums = getTrailerOrderProcess();
+        for (OrderStatusEnum statusEnum : statusEnums) {
+            if(statusEnum.getCode().equals(currentStatus)){
+                return statusEnum;
+            }
+        }
+
+        return null;
+    }
+
+    public static List<OrderStatusEnum> getTrailerOrderProcess() {
+        List<OrderStatusEnum> statusEnums = new ArrayList<>();
+        statusEnums.add(TT_0);
+        statusEnums.add(TT_1);
+        statusEnums.add(TT_2);
+        statusEnums.add(TT_3);
+        statusEnums.add(TT_4);
+        statusEnums.add(TT_5);
+        statusEnums.add(TT_6);
+        statusEnums.add(TT_7);
+        statusEnums.add(TT_8);
+        return statusEnums;
+    }
+
+    public static OrderStatusEnum getTrailerOrderRejection(String status) {
+        if (OrderStatusEnum.TT_0.getCode().equals(status)) {//接单页面驳回
+            return TT_1_1;
+        }
+        if (OrderStatusEnum.TT_1.getCode().equals(status)) {//派车页面驳回
+            return TT_2_1;
+        }
+        if (OrderStatusEnum.TT_2.getCode().equals(status)) {//派车审核页面驳回
+            return TT_3_1;
+        }
+        if (OrderStatusEnum.TT_3.getCode().equals(status)) {//派车审核页面驳回
+            return TT_4_1;
+        }
+        return null;
+    }
+
+
     /**
      * 获取驳回枚举
      */
@@ -382,7 +453,8 @@ public enum OrderStatusEnum {
                     SEA_S_3_1.getCode(), SEA_S_3_2.getCode(),
                     INLANDTP_NL_1_1.getCode(), INLANDTP_NL_2_1.getCode(),
                     INLANDTP_NL_3_1.getCode(), INLANDTP_NL_3_2.getCode(),
-                    INLANDTP_NL_4_1.getCode(), INLANDTP_NL_5_1.getCode(),};
+                    INLANDTP_NL_4_1.getCode(), INLANDTP_NL_5_1.getCode(),
+                    TT_1_1.getCode(),TT_2_1.getCode(),TT_3_1.getCode(),TT_3_2.getCode(),TT_4_1.getCode()};
         }
         for (String subOrderSign : subOrderSigns) {
             //todo 有需要再补
@@ -408,6 +480,11 @@ public enum OrderStatusEnum {
                 return new String[]{
                         INLANDTP_NL_1_1.getCode(), INLANDTP_NL_2_1.getCode(), INLANDTP_NL_3_1.getCode(),
                         INLANDTP_NL_3_2.getCode(), INLANDTP_NL_4_1.getCode(), INLANDTP_NL_5_1.getCode()
+                };
+            }
+            if(SubOrderSignEnum.TC.getSignOne().equals(subOrderSign)){
+                return new String[]{
+                        TT_1_1.getCode(),TT_2_1.getCode(),TT_3_1.getCode(),TT_3_2.getCode(),TT_4_1.getCode()
                 };
             }
         }
@@ -467,6 +544,7 @@ public enum OrderStatusEnum {
         }
         if (OrderStatusEnum.INLANDTP_NL_4.getCode().equals(status)) {//车辆提货页面驳回
             return INLANDTP_NL_5_1;
+
         }
         return null;
     }

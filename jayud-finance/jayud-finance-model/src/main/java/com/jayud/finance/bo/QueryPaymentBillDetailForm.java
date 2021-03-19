@@ -43,7 +43,7 @@ public class QueryPaymentBillDetailForm extends BasePageForm {
             " cw_statement财务对账单", required = true)
     @Pattern(regexp = "(main_statement|zgys_statement|bg_statement|ky_statement" +
             "|statement_audit|zgys_statement_audit|bg_statement_audit|ky_statement_audit" +
-            "|cw_statement|hy_statement|hy_statement_audit|nl_statement|nl_statement_audit)", message = "只允许填写特定值")
+            "|cw_statement|hy_statement|hy_statement_audit|nl_statement|nl_statement_audit|tc_statement|tc_statement_audit)", message = "只允许填写特定值")
     private String cmd;
 
     @ApiModelProperty(value = "子订单类型")

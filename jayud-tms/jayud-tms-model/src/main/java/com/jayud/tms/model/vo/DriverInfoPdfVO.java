@@ -75,4 +75,16 @@ public class DriverInfoPdfVO {
     @ApiModelProperty(value = "口岸")
     private String portCodeDesc;
 
+    @ApiModelProperty(value = "骑师id")
+    private Long jockeyId;
+
+    @ApiModelProperty(value = "骑师姓名")
+    private String jockey;
+
+    @ApiModelProperty(value = "骑师电话")
+    private String jockeyPhone;
+
+    @ApiModelProperty(value = "骑师身份证")
+    private String jockeyIDCard;
+
 }

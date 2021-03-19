@@ -79,7 +79,7 @@ public class AddOrderAddressForm {
     private List<FileView> takeFiles = new ArrayList<>();
 
     @ApiModelProperty(value = "交货日期(提货日期/送货日期)")
-    private LocalDateTime deliveryDate;
+    private String deliveryDate;
 
 
     public boolean checkCreateAirOrder() {

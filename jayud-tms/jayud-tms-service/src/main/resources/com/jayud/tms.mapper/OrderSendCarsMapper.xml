@@ -48,6 +48,7 @@
             osc.`status`,
             osc.`order_no` orderNo,
             osc.`remarks`,
+            osc.`jockey_id`,
             wi.id warehouseInfoId,
             wi.`warehouse_name` warehouseName,
             wi.`contacts` warehouseContacts,
@@ -73,6 +74,7 @@
             vi.pt_company ptCompany,vi.customs_code customsCode,vi.plate_number plateNumber,vi.hk_number hkNumber,'' qs,
 			vi.vehicle_tonnage vehicleTonnage,vi.pt_phone ptPhone,vi.pt_fax ptFax,vi.stepping_code steppingCode,'' loadList,
 			vi.enterprise_code enterpriseCode,vi.weight,
+			osc.jockey_id jockeyId,osc.jockey,
 			(select name from port_info pi where pi.id_code = ot.port_code) portCodeDesc
         FROM
             order_transport ot

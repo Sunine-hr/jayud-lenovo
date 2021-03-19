@@ -2,12 +2,10 @@ package com.jayud.tms.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.common.CommonPageResult;
-import com.jayud.common.CommonResult;
-import com.jayud.common.RedisUtils;
-import com.jayud.common.UserOperator;
+import com.jayud.common.*;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.DelOprStatusForm;
@@ -403,10 +401,12 @@ public class OrderInTransportController {
         if (form.getVehicleType() != null && form.getVehicleType() == 1) {//吨车
             orderSendCars.setCntrNo("");
         }
+
         OrderTransport orderTransport = new OrderTransport();
         orderTransport.setId(form.getOrderId());
         orderTransport.setUpdatedTime(LocalDateTime.now());
         orderTransport.setUpdatedUser(UserOperator.getToken());
+
 
         OprStatusForm oprStatusForm = new OprStatusForm();
         oprStatusForm.setMainOrderId(form.getMainOrderId());
@@ -430,6 +430,17 @@ public class OrderInTransportController {
                 removeWrapper.eq("order_no", form.getOrderNo());
                 orderSendCarsService.remove(removeWrapper);
             }
+
+            //查询骑师司机信息
+            if (form.getJockeyId() != null) {
+                ApiResult response = omsClient.getDriverById(form.getJockeyId());
+                if (response.getData() == null) {
+                    return CommonResult.error(400, "不存在该骑师司机信息");
+                }
+                orderSendCars.setJockey(new JSONObject(response.getData()).getStr("name"));
+
+            }
+
             //保存派车信息
             orderSendCars.setCntrPic(StringUtils.getFileStr(form.getCntrPics()));
             orderSendCars.setCntrPicName(StringUtils.getFileNameStr(form.getCntrPics()));

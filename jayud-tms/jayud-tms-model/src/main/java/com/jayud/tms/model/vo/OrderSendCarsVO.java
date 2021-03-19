@@ -90,4 +90,8 @@ public class OrderSendCarsVO {
     @ApiModelProperty(value = "是否虚拟仓")
     public Boolean isVirtual;
 
+    @ApiModelProperty(value = "骑师id")
+    public Long jockeyId;
+
+
 }

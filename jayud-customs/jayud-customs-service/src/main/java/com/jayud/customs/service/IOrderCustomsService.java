@@ -71,4 +71,5 @@ public interface IOrderCustomsService extends IService<OrderCustoms> {
      */
     List<OrderCustoms> getCustomsOrderByMainOrderNos(@RequestParam("mainOrderNos") List<String> mainOrderNos);
 
+    List<OrderCustoms> getOrderCustomsByStatus(List<String> statuses);
 }

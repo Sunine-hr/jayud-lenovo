@@ -79,7 +79,6 @@ public class ControllerAspect {
                 }
             }
 
-
             Map<String, Object> result = new HashMap<>();
             result.put(dynamicHead.headKey(), heads);
             result.put(dynamicHead.dataKey(), response == null ? data : response);

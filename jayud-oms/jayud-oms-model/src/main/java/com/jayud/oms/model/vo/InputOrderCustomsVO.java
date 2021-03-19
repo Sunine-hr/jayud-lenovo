@@ -71,5 +71,12 @@ public class InputOrderCustomsVO {
     @ApiModelProperty(value = "审核状态")
     private String subCustomsStatus;
 
+    @ApiModelProperty(value = "审核状态")
+    private String status;
 
+
+    public void setSubCustomsStatus(String subCustomsStatus) {
+        this.subCustomsStatus = subCustomsStatus;
+        this.status = subCustomsStatus;
+    }
 }

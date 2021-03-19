@@ -16,7 +16,7 @@ import java.util.Map;
 @Data
 @EqualsAndHashCode(callSuper = false)
 //@Accessors(chain = true)
-public class TmsOrderTemplate {
+public class TmsOrderTemplate extends Template<TmsOrderTemplate> {
 
     @ApiModelProperty(value = "中港订单ID")
     private Long id;
@@ -59,9 +59,6 @@ public class TmsOrderTemplate {
 
     @ApiModelProperty(value = "费用状态", required = true)
     private String cost;
-
-    @ApiModelProperty(value = "头部")
-    private List<Map<String, Object>> head;
 
 
     @ApiModelProperty("通关口岸CODE")
@@ -229,9 +226,6 @@ public class TmsOrderTemplate {
 
     }
 
-    public TmsOrderTemplate() {
-        this.head = Utilities.assembleEntityHead(this.getClass());
-    }
 
     public void setStatus(String status) {
         this.status = status;

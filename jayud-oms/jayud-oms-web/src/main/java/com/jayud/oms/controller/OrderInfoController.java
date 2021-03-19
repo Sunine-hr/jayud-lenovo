@@ -21,6 +21,7 @@ import com.jayud.oms.model.po.OrderAttachment;
 import com.jayud.oms.model.po.OrderInfo;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.model.vo.template.order.OrderInfoTemplate;
+import com.jayud.oms.model.vo.template.order.Template;
 import com.jayud.oms.model.vo.template.order.TmsOrderTemplate;
 import com.jayud.oms.service.IAuditInfoService;
 import com.jayud.oms.service.IOrderAttachmentService;
@@ -381,8 +382,8 @@ public class OrderInfoController {
         OrderInfoTemplate orderInfoTemplate = new OrderInfoTemplate();
         if (orderTransportForm != null) {
             TmsOrderTemplate tmsOrderTemplate = ConvertUtil.convert(orderTransportForm, TmsOrderTemplate.class);
-
-            orderInfoTemplate.setTmsOrderTemplates(Collections.singletonList(tmsOrderTemplate));
+            Template<TmsOrderTemplate> template = new Template<TmsOrderTemplate>().setData(Collections.singletonList(tmsOrderTemplate));
+            orderInfoTemplate.setTmsOrderTemplates(template);
         }
 
 

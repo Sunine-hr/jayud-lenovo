@@ -113,6 +113,10 @@ public class ReceivableBillMasterVO {
     @JSONField(ordinal = 24)
     private List<String> balanceAmountList;
 
+    //账单下的费用,根据币种分组，汇总金额
+    @ApiModelProperty(value = "账单下的费用,根据币种分组，汇总金额", position = 25)
+    @JSONField(ordinal = 25)
+    private List<AmountVO> amountVOS;
 
 
 }

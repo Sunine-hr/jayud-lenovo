@@ -19,4 +19,11 @@
         id, currency_code, currency_name, country_code, status, user_id, user_name, create_time
     </sql>
 
+    <select id="allCurrencyInfo" resultType="com.jayud.mall.model.vo.CurrencyInfoVO">
+        select
+        t.id,t.currency_code,t.currency_name,t.country_code,t.status,t.user_id,t.user_name,t.create_time
+        from currency_info t
+    </select>
+
+
 </mapper>

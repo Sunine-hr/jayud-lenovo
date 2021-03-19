@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -52,19 +51,19 @@ public class AccountReceivableVO {
     //金额(虚拟字段)
     @ApiModelProperty(value = "应收金额(前端：对账单金额)", position = 9)
     @JSONField(ordinal = 9)
-    private BigDecimal receivableAmount;
+    private List<String> receivableAmount;
 
     @ApiModelProperty(value = "结算金额", position = 10)
     @JSONField(ordinal = 10)
-    private BigDecimal balanceAmount;
+    private List<String> balanceAmount;
 
     @ApiModelProperty(value = "已收金额(前端：已付款金额)", position = 11)
     @JSONField(ordinal = 11)
-    private BigDecimal receivedAmount;
+    private List<String> receivedAmount;
 
     @ApiModelProperty(value = "未收金额(前端：待付款金额)", position = 12)
     @JSONField(ordinal = 12)
-    private BigDecimal uncalledAmount;
+    private List<String> uncalledAmount;
 
     //法人主体名称
     @ApiModelProperty(value = "法人主体名称", position = 13)

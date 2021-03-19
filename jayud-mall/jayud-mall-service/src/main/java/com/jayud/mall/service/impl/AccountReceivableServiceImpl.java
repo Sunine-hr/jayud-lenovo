@@ -8,20 +8,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.mall.mapper.AccountBalanceMapper;
-import com.jayud.mall.mapper.AccountReceivableMapper;
-import com.jayud.mall.mapper.ReceivableBillDetailMapper;
-import com.jayud.mall.mapper.ReceivableBillMasterMapper;
+import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.MonthlyStatementForm;
 import com.jayud.mall.model.bo.QueryAccountReceivableForm;
 import com.jayud.mall.model.po.AccountBalance;
 import com.jayud.mall.model.po.AccountReceivable;
 import com.jayud.mall.model.po.ReceivableBillMaster;
 import com.jayud.mall.model.po.TradingRecord;
-import com.jayud.mall.model.vo.AccountBalanceVO;
-import com.jayud.mall.model.vo.AccountReceivableVO;
-import com.jayud.mall.model.vo.ReceivableBillDetailVO;
-import com.jayud.mall.model.vo.ReceivableBillMasterVO;
+import com.jayud.mall.model.vo.*;
 import com.jayud.mall.model.vo.domain.AuthUser;
 import com.jayud.mall.service.*;
 import com.jayud.mall.utils.NumberGeneratedUtils;
@@ -37,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -58,6 +53,8 @@ public class AccountReceivableServiceImpl extends ServiceImpl<AccountReceivableM
     @Autowired
     AccountBalanceMapper accountBalanceMapper;
     @Autowired
+    CurrencyInfoMapper currencyInfoMapper;
+    @Autowired
     BaseService baseService;
     @Autowired
     IReceivableBillMasterService receivableBillMasterService;
@@ -73,6 +70,149 @@ public class AccountReceivableServiceImpl extends ServiceImpl<AccountReceivableM
         //定义排序规则
         page.addOrder(OrderItem.desc("t.id"));
         IPage<AccountReceivableVO> pageInfo = accountReceivableMapper.findAccountReceivableByPage(page, form);
+
+        List<CurrencyInfoVO> currencyInfoVOList = currencyInfoMapper.allCurrencyInfo();
+        //将城市信息转换为map，城市code为键，城市名称为值
+        Map<Long, CurrencyInfoVO> cidMap = currencyInfoVOList.stream().collect(Collectors.toMap(CurrencyInfoVO::getId, c -> c));
+
+        List<AccountReceivableVO> records = pageInfo.getRecords();
+        if(CollUtil.isNotEmpty(records)){
+            records.forEach(accountReceivableVO -> {
+                /*
+                应收金额(前端：对账单金额)
+                结算金额
+                已收金额(前端：已付款金额)
+                未收金额(前端：待付款金额)
+                */
+                List<String> receivableAmount = new ArrayList<>();//应收金额(前端：对账单金额)
+                List<String> balanceAmount = new ArrayList<>();//结算金额
+                List<String> receivedAmount = new ArrayList<>();//已收金额(前端：已付款金额)
+                List<String> uncalledAmount = new ArrayList<>();//未收金额(前端：待付款金额)
+
+                //查询对账单下的账单
+                Long accountReceivableId = accountReceivableVO.getId();//应收对账单id(account_receivable id)
+                List<ReceivableBillMasterVO> receivableBillMasterVOS = receivableBillMasterMapper.findReceivableBillMasterByAccountReceivableId(accountReceivableId);
+
+                //查询账单下的所有的明细费用,根据币种汇总金额
+                receivableBillMasterVOS.forEach(receivableBillMasterVO -> {
+                    Long billMasterId = receivableBillMasterVO.getId();
+                    List<ReceivableBillDetailVO> receivableBillDetailVOS = receivableBillDetailMapper.findReceivableBillDetailByBillMasterId(billMasterId);
+                    Map<String, List<ReceivableBillDetailVO>> stringListMap = groupListByCid(receivableBillDetailVOS);
+                    List<AmountVO> amountVOS = new ArrayList<>();//账单下的费用,根据币种分组，汇总金额
+                    for (Map.Entry<String, List<ReceivableBillDetailVO>> entry : stringListMap.entrySet()) {
+                        String cid = entry.getKey();
+                        List<ReceivableBillDetailVO> receivableBillDetailVOList = entry.getValue();
+                        BigDecimal amountSum = new BigDecimal("0");
+                        for (int i=0; i<receivableBillDetailVOList.size(); i++){
+                            ReceivableBillDetailVO receivableBillDetailVO = receivableBillDetailVOList.get(i);
+                            BigDecimal amount = receivableBillDetailVO.getAmount();
+                            amountSum = amountSum.add(amount);
+                        }
+                        AmountVO amountVO = new AmountVO();
+                        amountVO.setAmount(amountSum);//金额
+                        amountVO.setCid(Integer.valueOf(cid));
+                        amountVOS.add(amountVO);
+                    }
+                    receivableBillMasterVO.setAmountVOS(amountVOS);
+
+                });
+
+
+                //汇总所有账单的费用，显示到对账单 应收金额、结算金额、已收金额、未收金额
+                Map<Integer, BigDecimal> receivableAmountMap = new HashMap<>();//应收金额(前端：对账单金额)
+                Map<Integer, BigDecimal> balanceAmountMap = new HashMap<>();//结算金额
+                Map<Integer, BigDecimal> receivedAmountMap = new HashMap<>();//已收金额(前端：已付款金额)
+                Map<Integer, BigDecimal> uncalledAmountMap = new HashMap<>();//未收金额(前端：待付款金额)
+                for (int i=0; i<receivableBillMasterVOS.size(); i++){
+                    ReceivableBillMasterVO receivableBillMasterVO = receivableBillMasterVOS.get(i);
+                    Integer status = receivableBillMasterVO.getStatus();//账单状态(0未付款 1已付款)
+                    List<AmountVO> amountVOS = receivableBillMasterVO.getAmountVOS();//账单下的费用,根据币种分组，汇总金额
+                    amountVOS.forEach(amountVO -> {
+                        Integer cid = amountVO.getCid();
+                        BigDecimal amount = amountVO.getAmount();
+                        //应收金额(前端：对账单金额)
+                        BigDecimal bigDecimal = receivableAmountMap.get(cid);
+                        if(ObjectUtil.isEmpty(bigDecimal)){
+                            receivableAmountMap.put(cid, amount);
+                        }else{
+                            BigDecimal amountSum = bigDecimal.add(amount);
+                            receivableAmountMap.put(cid, amountSum);
+                        }
+                        //结算金额
+                        BigDecimal bigDecimal1 = balanceAmountMap.get(cid);
+                        if(ObjectUtil.isEmpty(bigDecimal1)){
+                            balanceAmountMap.put(cid, amount);
+                        }else{
+                            BigDecimal amountSum = bigDecimal1.add(amount);
+                            balanceAmountMap.put(cid, amountSum);
+                        }
+                    });
+                    if(status == 1){
+                        //1已付款 已收金额
+                        amountVOS.forEach(amountVO -> {
+                            Integer cid = amountVO.getCid();
+                            BigDecimal amount = amountVO.getAmount();
+                            //已收金额(前端：已付款金额)
+                            BigDecimal bigDecimal = receivedAmountMap.get(cid);
+                            if(ObjectUtil.isEmpty(bigDecimal)){
+                                receivedAmountMap.put(cid, amount);
+                            }else{
+                                BigDecimal amountSum = bigDecimal.add(amount);
+                                receivedAmountMap.put(cid, amountSum);
+                            }
+                        });
+                    }else if(status == 0){
+                        //0未付款 未收金额
+                        amountVOS.forEach(amountVO -> {
+                            Integer cid = amountVO.getCid();
+                            BigDecimal amount = amountVO.getAmount();
+                            //未收金额(前端：待付款金额)
+                            BigDecimal bigDecimal = uncalledAmountMap.get(cid);
+                            if(ObjectUtil.isEmpty(bigDecimal)){
+                                uncalledAmountMap.put(cid, amount);
+                            }else{
+                                BigDecimal amountSum = bigDecimal.add(amount);
+                                uncalledAmountMap.put(cid, amountSum);
+                            }
+                        });
+                    }
+                }
+
+                //应收金额(前端：对账单金额)
+                for (Map.Entry<Integer, BigDecimal> entry : receivableAmountMap.entrySet()) {
+                    Integer cid = entry.getKey();
+                    BigDecimal amount = entry.getValue();
+                    String amountFormat = amount.toString()+" "+cidMap.get(Long.valueOf(cid)).getCurrencyName();
+                    receivableAmount.add(amountFormat);
+                }
+                //结算金额
+                for (Map.Entry<Integer, BigDecimal> entry : balanceAmountMap.entrySet()) {
+                    Integer cid = entry.getKey();
+                    BigDecimal amount = entry.getValue();
+                    String amountFormat = amount.toString()+" "+cidMap.get(Long.valueOf(cid)).getCurrencyName();
+                    balanceAmount.add(amountFormat);
+                }
+                //已收金额(前端：已付款金额)
+                for (Map.Entry<Integer, BigDecimal> entry : receivedAmountMap.entrySet()) {
+                    Integer cid = entry.getKey();
+                    BigDecimal amount = entry.getValue();
+                    String amountFormat = amount.toString()+" "+cidMap.get(Long.valueOf(cid)).getCurrencyName();
+                    receivedAmount.add(amountFormat);
+                }
+                //未收金额(前端：待付款金额)
+                for (Map.Entry<Integer, BigDecimal> entry : uncalledAmountMap.entrySet()) {
+                    Integer cid = entry.getKey();
+                    BigDecimal amount = entry.getValue();
+                    String amountFormat = amount.toString()+" "+cidMap.get(Long.valueOf(cid)).getCurrencyName();
+                    uncalledAmount.add(amountFormat);
+                }
+                accountReceivableVO.setReceivableAmount(receivableAmount);//应收金额(前端：对账单金额)
+                accountReceivableVO.setBalanceAmount(balanceAmount);//结算金额
+                accountReceivableVO.setReceivedAmount(receivedAmount);//已收金额(前端：已付款金额)
+                accountReceivableVO.setUncalledAmount(uncalledAmount);//未收金额(前端：待付款金额)
+
+            });
+        }
         return pageInfo;
     }
 
@@ -291,7 +431,6 @@ public class AccountReceivableServiceImpl extends ServiceImpl<AccountReceivableM
             }
         }
         return map;
-
     }
 
     /**

@@ -49,7 +49,7 @@ public class AccountReceivableVO {
     private LocalDateTime createTime;
 
     //金额(虚拟字段)
-    @ApiModelProperty(value = "应收金额(前端：对账单金额)", position = 9)
+    @ApiModelProperty(value = "应收金额(前端：对账单金额、对账单总金额)", position = 9)
     @JSONField(ordinal = 9)
     private List<String> receivableAmount;
 

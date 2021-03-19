@@ -118,5 +118,14 @@ public class ReceivableBillMasterVO {
     @JSONField(ordinal = 25)
     private List<AmountVO> amountVOS;
 
+    //应收金额(前端：对账单金额)      receivable_amount
+    @ApiModelProperty(value = "应收金额(前端：账单金额)", position = 26)
+    @JSONField(ordinal = 26)
+    private List<String> receivableAmount;
+    //已收金额(前端：已付款金额)      received_amount
+    @ApiModelProperty(value = "已收金额(前端：已付款金额)", position = 27)
+    @JSONField(ordinal = 27)
+    private List<String> receivedAmount;
+
 
 }

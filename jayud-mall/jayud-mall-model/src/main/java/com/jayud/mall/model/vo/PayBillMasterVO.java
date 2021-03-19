@@ -126,5 +126,8 @@ public class PayBillMasterVO {
     @JSONField(ordinal = 25)
     private List<AmountVO> amountVOS;
 
+    @ApiModelProperty(value = "付款人姓名(system_user name)", position = 26)
+    @JSONField(ordinal = 26)
+    private String payerName;
 
 }

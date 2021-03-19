@@ -12,6 +12,7 @@ import com.jayud.common.enums.OrderAttachmentTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.enums.StatusEnum;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.*;
@@ -19,6 +20,8 @@ import com.jayud.oms.model.po.AuditInfo;
 import com.jayud.oms.model.po.OrderAttachment;
 import com.jayud.oms.model.po.OrderInfo;
 import com.jayud.oms.model.vo.*;
+import com.jayud.oms.model.vo.template.order.OrderInfoTemplate;
+import com.jayud.oms.model.vo.template.order.TmsOrderTemplate;
 import com.jayud.oms.service.IAuditInfoService;
 import com.jayud.oms.service.IOrderAttachmentService;
 import com.jayud.oms.service.IOrderInfoService;
@@ -368,16 +371,22 @@ public class OrderInfoController {
     }
 
 
-
-    //订单详情接口
     @ApiOperation(value = "获取主订单页面子订单信息")
     @PostMapping("/getSubOrderDetail")
-    public CommonResult<InputOrderVO> getSubOrderDetail(@RequestBody @Valid GetOrderDetailForm form) {
+    public CommonResult<OrderInfoTemplate> getSubOrderDetail(@RequestBody @Valid GetOrderDetailForm form) {
         InputOrderVO inputOrderVO = orderInfoService.getOrderDetail(form);
 
+        //中港模板
+        InputOrderTransportVO orderTransportForm = inputOrderVO.getOrderTransportForm();
+        OrderInfoTemplate orderInfoTemplate = new OrderInfoTemplate();
+        if (orderTransportForm != null) {
+            TmsOrderTemplate tmsOrderTemplate = ConvertUtil.convert(orderTransportForm, TmsOrderTemplate.class);
+
+            orderInfoTemplate.setTmsOrderTemplates(Collections.singletonList(tmsOrderTemplate));
+        }
 
 
-        return CommonResult.success(inputOrderVO);
+        return CommonResult.success(orderInfoTemplate);
     }
 }
 

@@ -135,11 +135,23 @@ public class AddSeaOrderForm {
         }
         // 发货/收货地址是必填项
         if (CollectionUtils.isEmpty(this.deliveryAddress)) {
+            for (AddOrderAddressForm orderAddressForm : deliveryAddress) {
+                boolean b = orderAddressForm.checkCreateSeaOrder();
+                if(!b){
+                    return false;
+                }
+            }
             log.warn("发货地址信息不能为空");
             return false;
         }
         if (CollectionUtils.isEmpty(this.shippingAddress)) {
             log.warn("收货地址信息不能为空");
+            for (AddOrderAddressForm orderAddressForm : shippingAddress) {
+                boolean b = orderAddressForm.checkCreateSeaOrder();
+                if(!b){
+                    return false;
+                }
+            }
             return false;
         }
         if (this.notificationAddress.size() == 0 ||

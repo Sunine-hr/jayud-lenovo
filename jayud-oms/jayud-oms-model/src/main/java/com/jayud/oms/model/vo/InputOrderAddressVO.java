@@ -51,6 +51,9 @@ public class InputOrderAddressVO {
     @ApiModelProperty(value = "备注")
     private String remarks;
 
+    @ApiModelProperty(value = "提货时间/送货日期")
+    private String deliveryDate;
+
     @ApiModelProperty(value = "附件路径(多个逗号隔开)")
     private String filePath;
 

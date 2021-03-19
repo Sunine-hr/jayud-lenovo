@@ -53,4 +53,11 @@ public interface OrderCustomsMapper extends BaseMapper<OrderCustoms> {
      * @return
      */
     IPage<CustomsOrderInfoVO> findCustomsOrderByPage(Page<CustomsOrderInfoVO> page,@Param("form") QueryCustomsOrderInfoForm form,@Param("legalIds") List<Long> legalIds);
+
+    /**
+     * 根据状态获取报关订单
+     * @param statuses
+     * @return
+     */
+    List<OrderCustoms> getOrderCustomsByStatus(List<String> statuses);
 }

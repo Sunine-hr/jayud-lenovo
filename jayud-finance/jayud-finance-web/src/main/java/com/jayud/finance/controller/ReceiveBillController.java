@@ -76,7 +76,7 @@ public class ReceiveBillController {
                     StringUtil.isNullOrEmpty(form.getBillNo()) || StringUtil.isNullOrEmpty(form.getAccountTermStr()) || StringUtil.isNullOrEmpty(form.getSettlementCurrency()) ||
                     StringUtil.isNullOrEmpty(form.getSubType()) ||
                     (!("main".equals(form.getSubType()) || "zgys".equals(form.getSubType()) || "bg".equals(form.getSubType()) || "hy".equals(form.getSubType())
-                            || "ky".equals(form.getSubType()) || "nl".equals(form.getSubType())))
+                            || "ky".equals(form.getSubType()) || "nl".equals(form.getSubType())) || "tc".equals(form.getSubType()))))
             ) {
                 return CommonResult.error(ResultEnum.PARAM_ERROR);
             }

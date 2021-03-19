@@ -228,6 +228,13 @@ public class OrderInfoController {
                     return CommonResult.error(ResultEnum.PARAM_ERROR);
                 }
             }
+            //拖车校验参数
+            if (OrderStatusEnum.TC.getCode().equals(inputMainOrderForm.getClassCode())) {
+                InputTrailerOrderFrom trailerOrderFrom = form.getTrailerOrderFrom();
+                if (!trailerOrderFrom.checkCreateOrder()) {
+                    return CommonResult.error(ResultEnum.PARAM_ERROR);
+                }
+            }
             //校验参数
             form.checkCreateParam();
         }

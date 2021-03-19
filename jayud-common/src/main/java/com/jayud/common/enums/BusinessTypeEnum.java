@@ -16,7 +16,7 @@ public enum BusinessTypeEnum {
     CBG(1,"纯报关"),
     ZGYS(2,"中港运输"),
     BG(3,"报关"),HY(4,"海运"),
-    NL(5,"内陆运输");
+    NL(5,"内陆运输"),TC(6,"拖车");
     private Integer code;
     private String desc;
 

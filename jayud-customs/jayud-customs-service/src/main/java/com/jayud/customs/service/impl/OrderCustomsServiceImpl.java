@@ -204,4 +204,14 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
         condition.lambda().in(OrderCustoms::getMainOrderNo, mainOrderNos);
         return this.baseMapper.selectList(condition);
     }
+
+    /**
+     * 获取特定状态下的报关订单
+     * @param statuses
+     * @return
+     */
+    @Override
+    public List<OrderCustoms> getOrderCustomsByStatus(List<String> statuses) {
+        return this.baseMapper.getOrderCustomsByStatus(statuses);
+    }
 }

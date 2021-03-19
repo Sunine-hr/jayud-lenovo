@@ -173,6 +173,7 @@
         left join air_order ao on ao.order_no = opc.order_no
         left join sea_order so on so.order_no = opc.order_no
         left join order_inland_transport oit on oit.order_no = opc.order_no
+        left join trailer_order tor on tor.order_no = opc.order_no
         WHERE
         (opbd1.bill_no = #{form.billNo} )
         or
@@ -192,6 +193,9 @@
         </if>
         <if test="form.cmd == 'hy'">
             so.legal_name
+        </if>
+        <if test="form.cmd == 'tc'">
+            tor.legal_name
         </if>
         <if test="form.cmd == 'nl'">
             oit.legal_name

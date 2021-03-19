@@ -27,4 +27,7 @@ public class InputOrderVO {
 
     @ApiModelProperty(value = "内陆单")
     private InputOrderInlandTPVO orderInlandTransportForm;
+
+    @ApiModelProperty(value = "拖车单")
+    private InputTrailerOrderVO trailerOrderForm;
 }

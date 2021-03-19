@@ -30,6 +30,7 @@
         <module>jayud-ocean-ship</module>
         <module>jayud-Inland-transport</module>
 
+        <module>jayud-trailer</module>
 
     </modules>
     <parent>

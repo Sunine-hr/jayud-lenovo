@@ -294,4 +294,8 @@
             </foreach>
         </if>
     </select>
+
+    <select id="getOrderCustomsByStatus" resultMap="BaseResultMap">
+        select Base_Column_List from order_customs oc
+    </select>
 </mapper>

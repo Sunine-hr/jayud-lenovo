@@ -301,6 +301,7 @@ public class ExternalApiController {
         //组装数据
         VehicleInfoLinkVO tmp = new VehicleInfoLinkVO();
         tmp.setDriverInfos(vehicleDetailsVO.getDriverInfoVOS());
+        tmp.setPlateNumber(vehicleDetailsVO.getPlateNumber());
         tmp.setHkNumber(vehicleDetailsVO.getHkNumber());
         tmp.setSupplierName(vehicleDetailsVO.getSupplierInfoVO().getSupplierChName());
         tmp.setSupplierId(vehicleDetailsVO.getSupplierId());
@@ -801,10 +802,13 @@ public class ExternalApiController {
     @RequestMapping(value = "api/getVehicleSizeInfo")
     ApiResult getCabinetType() {
         List<VehicleSizeInfoVO> vehicleSizeInfoVOS = vehicleInfoService.findVehicleSize();
-        List<VehicleSizeInfoVO> cabinetCars = new ArrayList<>();
+        List<com.jayud.common.entity.InitComboxVO> cabinetCars = new ArrayList<>();
         for (VehicleSizeInfoVO obj : vehicleSizeInfoVOS) {
             if (VehicleTypeEnum.CABINET_CAR.getCode().equals(obj.getVehicleType())) {
-                cabinetCars.add(obj);
+                com.jayud.common.entity.InitComboxVO initComboxVO = new com.jayud.common.entity.InitComboxVO();
+                initComboxVO.setId(obj.getId());
+                initComboxVO.setName(obj.getVehicleSize());
+                cabinetCars.add(initComboxVO);
             }
         }
         return ApiResult.ok(cabinetCars);
@@ -1045,6 +1049,25 @@ public class ExternalApiController {
     public ApiResult<List<VehicleInfo>> getVehicleInfoByIds(@RequestParam("orderIds") List<Long> orderIds) {
         Collection<VehicleInfo> vehicleInfos = this.vehicleInfoService.listByIds(orderIds);
         return ApiResult.ok(new ArrayList<>(vehicleInfos));
+    }
+
+
+    @ApiOperation(value = "单个存储商品信息")
+    @RequestMapping(value = "api/saveOrUpdateGood")
+    ApiResult saveOrUpdateGood(@RequestBody AddGoodsForm goodsForm){
+        LocalDateTime now = LocalDateTime.now();
+        Goods goods = ConvertUtil.convert(goodsForm, Goods.class);
+        goods.setCreateTime(goods.getId() == null ? now : null);
+        this.goodsService.save(goods);
+        return ApiResult.ok(goods.getId());
+    }
+
+    @ApiOperation(value = "根据id获取商品信息")
+    @RequestMapping(value = "api/getGoodById")
+    ApiResult getGoodById(@RequestParam("id") Long id){
+        Goods goods = this.goodsService.getById(id);
+        InputGoodsVO convert = ConvertUtil.convert(goods, InputGoodsVO.class);
+        return ApiResult.ok(convert);
     }
 
 

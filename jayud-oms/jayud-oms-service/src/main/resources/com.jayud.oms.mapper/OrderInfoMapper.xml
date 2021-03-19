@@ -66,6 +66,7 @@
         '' subTmsStatus,
         '' subAirStatus,
         '' subInlandStatus,
+        '' subTrailerStatus,
         oi.`created_user` createdUser,
         DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
@@ -113,6 +114,7 @@
         ot.`status` subTmsStatus,
         '' subAirStatus,
         '' subInlandStatus,
+        '' subTrailerStatus,
         oi.`created_user` createdUser,
         DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
@@ -162,6 +164,7 @@
         (SELECT ot.`status` FROM order_transport ot WHERE ot.`main_order_no`= oi.`order_no` LIMIT 1) subTmsStatus,
         a.`status` subAirStatus,
         '' subInlandStatus,
+        '' subTrailerStatus,
         oi.`created_user` createdUser,
         DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
@@ -207,6 +210,7 @@
         '' subTmsStatus,
         '' subAirStatus,
         '' subInlandStatus,
+        '' subTrailerStatus,
         oi.`created_user` createdUser,
         DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
@@ -249,10 +253,11 @@
         takeAddress,
         (SELECT address FROM order_address oa where oa.`business_id` = so.id AND oa.`type` = 1 ORDER BY oa.`id` LIMIT 1)
         giveAddress,
-        (SELECT oc.`status` FROM order_customs oc WHERE oc.`main_order_no`= oi.`order_no` LIMIT 1) subCustomsStatus,
-        (SELECT ot.`status` FROM order_transport ot WHERE ot.`main_order_no`= oi.`order_no` LIMIT 1) subTmsStatus,
+        '' subCustomsStatus,
+        '' subTmsStatus,
         so.`status` subSeaStatus,
         '' subInlandStatus,
+        '' subTrailerStatus,
         oi.`created_user` createdUser,
         DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
@@ -301,6 +306,7 @@
         (SELECT ot.`status` FROM order_transport ot WHERE ot.`main_order_no`= oi.`order_no` LIMIT 1) subTmsStatus,
         '' subSeaStatus,
         i.status subInlandStatus,
+        '' subTrailerStatus,
         oi.`created_user` createdUser,
         DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
@@ -316,6 +322,7 @@
         oi.`order_no` = i.`main_order_no`
         LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`
         WHERE oi.`class_code` = 'NLYS'
+
         -- 拖车单
         UNION ALL
         SELECT DISTINCT
@@ -339,9 +346,11 @@
         takeAddress,
         (SELECT address FROM order_address oa where oa.`business_id` = tor.id AND oa.`type` = 3 ORDER BY oa.`id` LIMIT 1)
         giveAddress,
-        (SELECT oc.`status` FROM order_customs oc WHERE oc.`main_order_no`= oi.`order_no` LIMIT 1) subCustomsStatus,
-        (SELECT ot.`status` FROM order_transport ot WHERE ot.`main_order_no`= oi.`order_no` LIMIT 1) subTmsStatus,
-        tor.`status` subSeaStatus,
+        '' subCustomsStatus,
+        '' subTmsStatus,
+        '' subSeaStatus,
+        '' subInlandStatus,
+        tor.`status` subTrailerStatus,
         oi.`created_user` createdUser,
         DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +

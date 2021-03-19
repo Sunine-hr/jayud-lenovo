@@ -432,11 +432,14 @@ public class OrderInTransportController {
             }
 
             //查询骑师司机信息
-            ApiResult response = omsClient.getDriverById(form.getJockeyId());
-            if (response.getData() == null) {
-                return CommonResult.error(400, "不存在该骑师司机信息");
+            if (form.getJockeyId() != null) {
+                ApiResult response = omsClient.getDriverById(form.getJockeyId());
+                if (response.getData() == null) {
+                    return CommonResult.error(400, "不存在该骑师司机信息");
+                }
+                orderSendCars.setJockey(new JSONObject(response.getData()).getStr("name"));
+
             }
-            orderSendCars.setJockey(new JSONObject(response.getData()).getStr("name"));
 
             //保存派车信息
             orderSendCars.setCntrPic(StringUtils.getFileStr(form.getCntrPics()));

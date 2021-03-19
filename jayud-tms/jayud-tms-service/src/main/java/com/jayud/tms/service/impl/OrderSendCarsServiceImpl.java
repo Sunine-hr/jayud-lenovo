@@ -80,13 +80,15 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
     @Override
     public DriverInfoPdfVO initDriverInfo(String orderNo) {
         DriverInfoPdfVO driverInfoPdfVO = baseMapper.initDriverInfo(orderNo);
-        Object data = this.omsClient.getDriverById(driverInfoPdfVO.getJockeyId()).getData();
-        if (data == null) {
-            throw new JayudBizException(400, "该骑师信息不存在");
+        if (driverInfoPdfVO != null && driverInfoPdfVO.getJockeyId() != null) {
+            Object data = this.omsClient.getDriverById(driverInfoPdfVO.getJockeyId()).getData();
+            if (data == null) {
+                throw new JayudBizException(400, "该骑师信息不存在");
+            }
+            JSONObject object = new JSONObject(data);
+            driverInfoPdfVO.setJockeyIDCard(object.getStr("idNo"));
+            driverInfoPdfVO.setJockeyPhone(object.getStr("phone"));
         }
-        JSONObject object = new JSONObject(data);
-        driverInfoPdfVO.setJockeyIDCard(object.getStr("idNo"));
-        driverInfoPdfVO.setJockeyPhone(object.getStr("phone"));
         return driverInfoPdfVO;
     }
 

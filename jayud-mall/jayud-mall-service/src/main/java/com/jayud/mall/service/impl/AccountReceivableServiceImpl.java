@@ -219,7 +219,7 @@ public class AccountReceivableServiceImpl extends ServiceImpl<AccountReceivableM
     @Override
     public CommonResult<AccountReceivableVO> lookDetail(Long id) {
         AccountReceivableVO accountReceivableVO = accountReceivableMapper.findAccountReceivableById(id);
-        if(accountReceivableVO == null){
+        if(ObjectUtil.isEmpty(accountReceivableVO)){
             return CommonResult.error(-1, "对账单不存在");
         }
         Integer customerId = accountReceivableVO.getCustomerId();

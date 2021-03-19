@@ -218,6 +218,9 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
     @ApiModelProperty(value = "柜型类型")
     private String cabinetTypeName;
 
+    @ApiModelProperty(value = "柜型数量")
+    private List<CabinetSizeNumberVO> cabinetSizeNumbers;
+
     @ApiModelProperty(value = "截补料时间")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime cutReplenishTime;
@@ -391,4 +394,11 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
         this.defaultUnitCode = unitCode;
     }
 
+    public void assemblyCabinetInfo(List<CabinetSizeNumberVO> cabinetSizeNumberVOS) {
+        StringBuilder sb = new StringBuilder();
+        for (CabinetSizeNumberVO cabinetSizeNumberVO : cabinetSizeNumberVOS) {
+            sb.append(cabinetSizeNumberVO.getCabinetTypeSize()).append("/").append(cabinetSizeNumberVO.getNumber()).append("<br/>");
+        }
+        this.cabinetSizeName = sb.toString();
+    }
 }

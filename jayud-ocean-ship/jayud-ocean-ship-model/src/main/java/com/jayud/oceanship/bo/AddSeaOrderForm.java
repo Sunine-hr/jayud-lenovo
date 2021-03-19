@@ -3,6 +3,7 @@ package com.jayud.oceanship.bo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.jayud.common.utils.FileView;
+import com.jayud.oceanship.po.CabinetSizeNumber;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -77,6 +78,9 @@ public class AddSeaOrderForm {
 
     @ApiModelProperty(value = "柜型类型")
     private String cabinetTypeName;
+
+    @ApiModelProperty(value = "柜型数量")
+    private List<CabinetSizeNumber> cabinetSizeNumbers;
 
     @ApiModelProperty(value = "货好时间")
     private String goodTime;

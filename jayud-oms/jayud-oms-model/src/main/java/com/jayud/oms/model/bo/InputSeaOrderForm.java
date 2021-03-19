@@ -78,6 +78,9 @@ public class InputSeaOrderForm {
     @ApiModelProperty(value = "柜型类型")
     private String cabinetTypeName;
 
+    @ApiModelProperty(value = "柜型数量")
+    private List<AddCabinetSizeNumber> cabinetSizeNumbers;
+
     @ApiModelProperty(value = "货好时间")
     private String goodTime;
 

@@ -5,6 +5,7 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.FileView;
+import com.jayud.oceanship.po.SeaReplenishment;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -150,6 +151,15 @@ public class SeaProcessOptForm {
 
     @ApiModelProperty(value = "封条")
     private String paperStripSeal;
+
+    @ApiModelProperty(value = "合并或者分单(合并为1，分单为2)")
+    private Integer type;
+
+    @ApiModelProperty(value = "需要补料的订单数据")
+    private List<AddSeaOrderForm> seaOrderForms;
+
+    @ApiModelProperty(value = "补料信息集合")
+    private List<AddSeaReplenishment> seaReplenishments;
 
     /**
      * 校验创建海运子订单参数

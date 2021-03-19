@@ -27,12 +27,10 @@ import com.jayud.oceanship.feign.FileClient;
 import com.jayud.oceanship.feign.OauthClient;
 import com.jayud.oceanship.feign.OmsClient;
 import com.jayud.oceanship.po.SeaOrder;
+import com.jayud.oceanship.service.ICabinetSizeNumberService;
 import com.jayud.oceanship.service.ISeaOrderService;
 import com.jayud.oceanship.service.ISeaPortService;
-import com.jayud.oceanship.vo.GoodsVO;
-import com.jayud.oceanship.vo.OrderAddressVO;
-import com.jayud.oceanship.vo.SeaOrderFormVO;
-import com.jayud.oceanship.vo.SeaOrderVO;
+import com.jayud.oceanship.vo.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
@@ -84,6 +82,9 @@ public class SeaOrderController {
 
     @Autowired
     private ISeaPortService seaPortService;
+
+    @Autowired
+    private ICabinetSizeNumberService cabinetSizeNumberService;
 
     @ApiOperation("分页查询海运订单列表")
     @PostMapping("/findByPage")
@@ -198,6 +199,13 @@ public class SeaOrderController {
                 if(address.getOrderNo().equals(record.getOrderNo())){
                     record.processingAddress(address);
                 }
+            }
+
+            //获取柜型数量
+            if(record.getCabinetType().equals("FCL")){
+                List<CabinetSizeNumberVO> cabinetSizeNumberVOS = cabinetSizeNumberService.getList(record.getId());
+                record.setCabinetSizeNumbers(cabinetSizeNumberVOS);
+                record.assemblyCabinetInfo(cabinetSizeNumberVOS);
             }
         }
 

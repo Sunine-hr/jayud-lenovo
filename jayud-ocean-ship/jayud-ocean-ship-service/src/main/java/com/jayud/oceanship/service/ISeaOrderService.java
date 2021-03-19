@@ -77,7 +77,10 @@ public interface ISeaOrderService extends IService<SeaOrder> {
      */
     void doSeaBookShipOpt(SeaProcessOptForm form);
 
-
+    /**
+     * 订单补料
+     * @param form
+     */
     void updateOrSaveProcessStatus(SeaProcessOptForm form);
 
     /**

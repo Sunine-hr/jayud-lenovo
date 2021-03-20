@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author chuanmei
@@ -24,22 +24,25 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
 
     /**
      * 应付对账单分页查询
+     *
      * @param page
      * @param form
      * @param data
      * @return
      */
-    IPage<OrderPaymentBillDetailVO> findPaymentBillDetailByPage(Page page, @Param("form") QueryPaymentBillDetailForm form, @Param("data")List<String> data);
+    IPage<OrderPaymentBillDetailVO> findPaymentBillDetailByPage(Page page, @Param("form") QueryPaymentBillDetailForm form, @Param("data") List<String> data);
 
     /**
      * 导出应付对账单分页查询
+     *
      * @param form
      * @return
      */
-    List<OrderPaymentBillDetailVO> findPaymentBillDetailByPage(@Param("form") QueryPaymentBillDetailForm form);
+    List<OrderPaymentBillDetailVO> findPaymentBillDetailByPage(@Param("form") QueryPaymentBillDetailForm form, @Param("data") List<String> data);
 
     /**
      * 应付对账单分页查询
+     *
      * @param page
      * @param form
      * @return
@@ -48,6 +51,7 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
 
     /**
      * 预览账单表头
+     *
      * @param billNo
      * @return
      */
@@ -55,6 +59,7 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
 
     /**
      * 预览账单分页查询
+     *
      * @param billNo
      * @return
      */
@@ -62,6 +67,7 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
 
     /**
      * 查询账单明细
+     *
      * @param billNo
      * @return
      */
@@ -69,6 +75,7 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
 
     /**
      * 对账单详情的全局数据部分
+     *
      * @param billNo
      * @return
      */
@@ -76,6 +83,7 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
 
     /**
      * 财务核算分页查询
+     *
      * @param page
      * @param form
      * @return
@@ -84,6 +92,7 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
 
     /**
      * 导出财务核算分页查询
+     *
      * @param form
      * @return
      */
@@ -91,14 +100,16 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
 
     /**
      * 应付对账单分页查询
+     *
      * @param page
      * @param form
      * @return
      */
-    IPage<PaymentNotPaidBillVO> findFBillAuditByPage(Page page,@Param("form") QueryFBillAuditForm form);
+    IPage<PaymentNotPaidBillVO> findFBillAuditByPage(Page page, @Param("form") QueryFBillAuditForm form);
 
     /**
      * 导出应付对账单分页查询
+     *
      * @param form
      * @return
      */
@@ -106,6 +117,7 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
 
     /**
      * 付款审核列表
+     *
      * @param billNo
      * @return
      */
@@ -113,6 +125,7 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
 
     /**
      * 获取推送金蝶的应付数据
+     *
      * @param billNo
      * @return
      */
@@ -120,13 +133,15 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
 
     /**
      * 获取推送金蝶的应付详情数据
+     *
      * @param billNo
      * @return
      */
-    List<APARDetailForm> findPayableHeaderDetail(@Param("billNo") String billNo,@Param("orderNo") String orderNo);
+    List<APARDetailForm> findPayableHeaderDetail(@Param("billNo") String billNo, @Param("orderNo") String orderNo);
 
     /**
      * 应付:开票和付款申请/开票和付款核销/核销界面展示的金额
+     *
      * @param billNo
      * @return
      */
@@ -134,6 +149,7 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
 
     /**
      * 当前订单是否已经存在当前法人主体，结算单位，订单类型中,若存在则不做数量统计
+     *
      * @param legalName
      * @param supplierChName
      * @param subType
@@ -141,5 +157,5 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
      * @return
      */
     List<OrderPaymentBillDetail> getNowFOrderExist(@Param("legalName") String legalName, @Param("supplierChName") String supplierChName,
-                                                   @Param("subType") String subType,@Param("orderNo") String orderNo);
+                                                   @Param("subType") String subType, @Param("orderNo") String orderNo);
 }

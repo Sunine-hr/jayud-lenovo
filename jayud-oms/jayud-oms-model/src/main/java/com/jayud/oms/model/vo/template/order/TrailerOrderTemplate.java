@@ -25,7 +25,6 @@ import java.util.List;
 @Slf4j
 public class TrailerOrderTemplate {
 
-    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "主键id")
     private Long id;
@@ -39,27 +38,29 @@ public class TrailerOrderTemplate {
     @ApiModelProperty(value = "车型尺寸", required = true)
     private String cabinetSizeName;
 
-    @ApiModelProperty(value = "状态",required = true)
+    @ApiModelProperty(value = "状态", required = true)
     private String statusDesc;
 
     @ApiModelProperty(value = "操作主体", required = true)
     private String legalName;
 
-    @ApiModelProperty(value = "结算单位",required = true)
+    @ApiModelProperty(value = "结算单位", required = true)
     private String unitCodeName;
 
-    @ApiModelProperty(value = "起运港/目的港",required = true)
+    @ApiModelProperty(value = "起运港/目的港", required = true)
     private String portCodeName;
 
-    @ApiModelProperty(value = "SO",required = true)
+    @ApiModelProperty(value = "SO", required = true)
     private String so;
 
-    @ApiModelProperty(value = "提运单",required = true)
+    @ApiModelProperty(value = "提运单", required = true)
     private String billOfLading;
 
-    @ApiModelProperty(value = "柜号",required = true)
+    @ApiModelProperty(value = "柜号", required = true)
     private String cabinetNumber;
 
+    @ApiModelProperty(value = "封条", required = true)
+    private String paperStripSeal;
 
     @ApiModelProperty(value = "主订单编号")
     private String mainOrderNo;
@@ -76,115 +77,92 @@ public class TrailerOrderTemplate {
     @ApiModelProperty(value = "接单法人id")
     private Long legalEntityId;
 
-    @ApiModelProperty(value = "进出口类型(1：进口，2：出口)")
-    private Integer impAndExpType;
 
     @ApiModelProperty(value = "结算单位code")
     private String unitCode;
 
 
-    @ApiModelProperty(value = "起运港/目的港代码")
-    private String portCode;
+//    @ApiModelProperty(value = "起运港/目的港代码")
+//    private String portCode;
 
 
+//    @ApiModelProperty(value = "提运单上传附件地址数组集合")
+//    private List<FileView> billPics = new ArrayList<>();
 
 
+//    @ApiModelProperty(value = "封条附件路径")
+//    private String pssFilePath;
+//
+//    @ApiModelProperty(value = "封条附件名称")
+//    private String pssFileName;
+
+//    @ApiModelProperty(value = "柜号附件路径")
+//    private String cnFilePath;
+//
+//    @ApiModelProperty(value = "柜号附件名称")
+//    private String cnFileName;
 
 
-    @ApiModelProperty(value = "提运单上传附件地址数组集合")
-    private List<FileView> billPics = new ArrayList<>();
+//    @ApiModelProperty(value = "SO附件路径")
+//    private String soFilePath;
+
+//    @ApiModelProperty(value = "SO附件名称")
+//    private String soFileName;
+
+//    @ApiModelProperty(value = "到港时间")
+//    private String arrivalTime;
+
+//    @ApiModelProperty(value = "截仓期时间")
+//    private String closingWarehouseTime;
+//
+//    @ApiModelProperty(value = "截柜租时间")
+//    private String timeCounterRent;
+//
+//    @ApiModelProperty(value = "开仓时间")
+//    private String openTime;
+//
+//    @ApiModelProperty(value = "截补料时间")
+//    private String cuttingReplenishingTime;
+
+//    @ApiModelProperty(value = "截关时间")
+//    private String closingTime;
+//
+//    @ApiModelProperty(value = "放行时间")
+//    private String releaseTime;
 
 
-    @ApiModelProperty(value = "封条")
-    private String paperStripSeal;
-
-    @ApiModelProperty(value = "封条附件路径")
-    private String pssFilePath;
-
-    @ApiModelProperty(value = "封条附件名称")
-    private String pssFileName;
+//    @ApiModelProperty(value = "创建人(登录用户)")
+//    private String createUser;
+//
+//    @ApiModelProperty(value = "创建时间")
+//    private String createTime;
 
 
+//    @ApiModelProperty(value = "接单人(登录用户名)")
+//    private String orderTaker;
+//
+//    @ApiModelProperty(value = "接单日期")
+//    private String receivingOrdersDate;
 
-    @ApiModelProperty(value = "柜号附件路径")
-    private String cnFilePath;
-
-    @ApiModelProperty(value = "柜号附件名称")
-    private String cnFileName;
-
-
-
-    @ApiModelProperty(value = "SO附件路径")
-    private String soFilePath;
-
-    @ApiModelProperty(value = "SO附件名称")
-    private String soFileName;
-
-    @ApiModelProperty(value = "到港时间")
-    private String arrivalTime;
-
-    @ApiModelProperty(value = "截仓期时间")
-    private String closingWarehouseTime;
-
-    @ApiModelProperty(value = "截柜租时间")
-    private String timeCounterRent;
-
-    @ApiModelProperty(value = "开仓时间")
-    private String openTime;
-
-    @ApiModelProperty(value = "截补料时间")
-    private String cuttingReplenishingTime;
-
-    @ApiModelProperty(value = "截关时间")
-    private String closingTime;
-
-    @ApiModelProperty(value = "放行时间")
-    private String releaseTime;
-
-    @ApiModelProperty(value = "是否过磅(1代表true,0代表false)")
-    private Boolean isWeighed;
-
-    @ApiModelProperty(value = "是否做补料(1代表true,0代表false)")
-    private Boolean isMakeUp;
-
-    @ApiModelProperty(value = "创建人(登录用户)")
-    private String createUser;
-
-    @ApiModelProperty(value = "创建时间")
-    private String createTime;
-
-    @ApiModelProperty(value = "更新人")
-    private String updateUser;
-
-    @ApiModelProperty(value = "更新时间")
-    private String updateTime;
-
-
-    @ApiModelProperty(value = "接单人(登录用户名)")
-    private String orderTaker;
-
-    @ApiModelProperty(value = "接单日期")
-    private String receivingOrdersDate;
-
-    @ApiModelProperty(value = "海运订单地址信息")
-    private List<TrailerOrderAddressVO> orderAddressForms;
-
-    @ApiModelProperty(value = "货品信息")
-    private List<InputGoodsVO> goodsForms;
-
-    @ApiModelProperty(value = "派车信息")
-    private TrailerDispatchVO trailerDispatchVO;
-
-    @ApiModelProperty(value = "附件信息集合")
-    private List<FileView> allPics;
-
-    @ApiModelProperty(value = "总重量")
-    private String totalWeightName;
-
-    @ApiModelProperty(value = "总件数")
-    private String totalAmountName;
-
-    @ApiModelProperty(value = "总箱数")
-    private String totalXAmountName;
+//    @ApiModelProperty(value = "海运订单地址信息")
+//    private List<TrailerOrderAddressVO> orderAddressForms;
+//
+//    @ApiModelProperty(value = "货品信息")
+//    private List<InputGoodsVO> goodsForms;
+//
+//    @ApiModelProperty(value = "派车信息")
+//    private TrailerDispatchVO trailerDispatchVO;
+//
+//    @ApiModelProperty(value = "附件信息集合")
+//    private List<FileView> allPics;
+//
+//    @ApiModelProperty(value = "总重量")
+//    private String totalWeightName;
+//
+//    @ApiModelProperty(value = "总件数")
+//    private String totalAmountName;
+//
+//    @ApiModelProperty(value = "总箱数")
+//    private String totalXAmountName;
 
 }

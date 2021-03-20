@@ -429,6 +429,16 @@ public class OrderInfoController {
             orderInfoTemplate.setSeaOrderTemplates(template);
         }
 
+        //拖车模板
+        InputTrailerOrderVO trailerOrderForm = inputOrderVO.getTrailerOrderForm();
+        if (trailerOrderForm != null) {
+            TrailerOrderTemplate trailerOrderTemplate = ConvertUtil.convert(trailerOrderForm, TrailerOrderTemplate.class);
+            Template<TrailerOrderTemplate> template = new Template<TrailerOrderTemplate>() {
+            }.setList(Collections.singletonList(trailerOrderTemplate));
+            orderInfoTemplate.setTrailerOrderTemplates(template);
+        }
+
+
         return CommonResult.success(orderInfoTemplate);
     }
 }

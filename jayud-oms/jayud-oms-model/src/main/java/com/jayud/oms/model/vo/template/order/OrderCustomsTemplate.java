@@ -105,9 +105,11 @@ public class OrderCustomsTemplate {
 //    @ApiModelProperty(value = "报关单数")
 //    private String number;
 
-
     @ApiModelProperty(value = "订单状态")
     private String status;
+
+    @ApiModelProperty(value = "主订单编号")
+    private String mainOrderNo;
 
 
     public void setGoodsType(Integer goodsType) {

@@ -1,6 +1,8 @@
 package com.jayud.oms.model.vo.template.order;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jayud.common.enums.BusinessTypeEnum;
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.FileView;
 import com.jayud.oms.model.bo.InputAirOrderForm;
 import com.jayud.oms.model.vo.*;
@@ -126,6 +128,12 @@ public class AirOrderTemplate {
     @ApiModelProperty(value = "状态")
     private String status;
 
+    @ApiModelProperty(value = "货品信息")
+    @JsonIgnore
+    private List<InputGoodsVO> goodsForms;
+
+    @ApiModelProperty(value = "主订单编号")
+    private String mainOrderNo;
 
     public void setGoodsForms(List<InputGoodsVO> goodsForms) {
         StringBuilder sb = new StringBuilder();
@@ -153,4 +161,8 @@ public class AirOrderTemplate {
 
     }
 
+    public void setStatus(String status) {
+        this.status = status;
+        this.statusDesc = OrderStatusEnum.getDesc(status);
+    }
 }

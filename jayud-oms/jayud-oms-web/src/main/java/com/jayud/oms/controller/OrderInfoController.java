@@ -410,13 +410,23 @@ public class OrderInfoController {
             }
         }
 
-        //内陆模板
+        //空运模板
         InputAirOrderVO airOrderForm = inputOrderVO.getAirOrderForm();
-        if (inlandTransportForm != null) {
+        if (airOrderForm != null) {
             AirOrderTemplate airOrderTemplate = ConvertUtil.convert(airOrderForm, AirOrderTemplate.class);
             Template<AirOrderTemplate> template = new Template<AirOrderTemplate>() {
             }.setList(Collections.singletonList(airOrderTemplate));
-            orderInfoTemplate.setAirOrderTemplateTemplates(template);
+            airOrderTemplate.assemblyData(airOrderForm);
+            orderInfoTemplate.setAirOrderTemplates(template);
+        }
+
+        //海运模板
+        InputSeaOrderVO seaOrderForm = inputOrderVO.getSeaOrderForm();
+        if (seaOrderForm != null) {
+            SeaOrderTemplate seaOrderTemplate = ConvertUtil.convert(seaOrderForm, SeaOrderTemplate.class);
+            Template<SeaOrderTemplate> template = new Template<SeaOrderTemplate>() {
+            }.setList(Collections.singletonList(seaOrderTemplate));
+            orderInfoTemplate.setSeaOrderTemplates(template);
         }
 
         return CommonResult.success(orderInfoTemplate);

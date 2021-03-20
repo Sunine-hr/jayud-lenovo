@@ -16,5 +16,8 @@ public class OrderInfoTemplate {
     private Template<OrderCustomsTemplate> orderCustomsTemplates;
 
     @ApiModelProperty("空运订单信息")
-    private Template<AirOrderTemplate> airOrderTemplateTemplates;
+    private Template<AirOrderTemplate> airOrderTemplates;
+
+    @ApiModelProperty("海运订单信息")
+    private Template<SeaOrderTemplate> seaOrderTemplates;
 }

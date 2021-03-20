@@ -173,6 +173,9 @@ public class TmsOrderTemplate {
     @JsonIgnore
     private List<InputOrderTakeAdrVO> orderTakeAdrForms2 = new ArrayList<>();
 
+    @ApiModelProperty(value = "主订单编号")
+    private String mainOrderNo;
+
 
     public void setOrderTakeAdrForms1(List<InputOrderTakeAdrVO> orderTakeAdrForms1) {
         this.assemblyPickUpInfo(orderTakeAdrForms1);

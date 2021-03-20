@@ -102,8 +102,11 @@ public class InlandTPTemplate {
     @ApiModelProperty("送货地址")
     private List<OrderDeliveryAddress> orderDeliveryAddressList;
 
-//    @ApiModelProperty(value = "所有附件信息")
+    //    @ApiModelProperty(value = "所有附件信息")
 //    private List<FileView> allPics = new ArrayList<>();
+
+    @ApiModelProperty(value = "主订单编号")
+    private String mainOrderNo;
 
 
     public void setStatus(String status) {

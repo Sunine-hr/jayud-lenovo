@@ -71,6 +71,16 @@ public class OfferInfoController {
         return CommonResult.success(fabWarehouseVOList);
     }
 
+    @ApiOperation(value = "客户首页(最新报价Top4)")
+    @PostMapping("/findOfferInfoFareTop4")
+    @ApiOperationSupport(order = 5)
+    public CommonResult<List<OfferInfoVO>> findOfferInfoFareTop4(@RequestBody QueryOfferInfoFareForm form) {
+        CustomerUser customerUser = baseService.getCustomerUser();
+        Integer customerId = customerUser.getId();
+        form.setCustomerId(customerId);
+        List<OfferInfoVO> pageList = offerInfoService.findOfferInfoFareTop4(form);
+        return CommonResult.success(pageList);
+    }
 
 
 }

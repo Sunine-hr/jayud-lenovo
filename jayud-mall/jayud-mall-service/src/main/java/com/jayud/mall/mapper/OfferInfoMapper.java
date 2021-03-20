@@ -11,6 +11,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * <p>
  * 报价管理 Mapper 接口
@@ -52,4 +54,11 @@ public interface OfferInfoMapper extends BaseMapper<OfferInfo> {
      * @return
      */
     OfferInfoVO lookOfferInfoFare(@Param("id") Long id);
+
+    /**
+     * 客户首页(最新报价Top4)
+     * @param form
+     * @return
+     */
+    List<OfferInfoVO> findOfferInfoFareTop4(@Param("form") QueryOfferInfoFareForm form);
 }

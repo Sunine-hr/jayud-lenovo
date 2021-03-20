@@ -251,4 +251,10 @@ public class OfferInfoVO {
     @JSONField(ordinal = 51)
     private String arriveWarehouseCodes;
 
+    //设置报价的海运费 最小值到最大值
+    @ApiModelProperty(value = "报价的海运费 最小值到最大值", position = 52)
+    @JSONField(ordinal = 52)
+    private String amountRange;
+
+
 }

@@ -22,10 +22,10 @@ import com.jayud.mall.service.IOfferInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -65,6 +65,9 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
 
     @Autowired
     TaskGroupMapper taskGroupMapper;
+
+    @Autowired
+    CurrencyInfoMapper currencyInfoMapper;
 
     @Autowired
     TemplateCopeReceivableMapper templateCopeReceivableMapper;
@@ -385,6 +388,79 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
             fabWarehouseVOList = ConvertUtil.convertList(fabWarehouses, FabWarehouseVO.class);
         }
         return fabWarehouseVOList;
+    }
+
+    @Override
+    public List<OfferInfoVO> findOfferInfoFareTop4(QueryOfferInfoFareForm form) {
+
+        List<CurrencyInfoVO> currencyInfoVOList = currencyInfoMapper.allCurrencyInfo();
+        //将币种信息转换为map，cid为键，币种信息为值
+        Map<Long, CurrencyInfoVO> cidMap = currencyInfoVOList.stream().collect(Collectors.toMap(CurrencyInfoVO::getId, c -> c));
+
+        List<OfferInfoVO> list = offerInfoMapper.findOfferInfoFareTop4(form);
+
+        if(CollUtil.isNotEmpty(list)){
+            list.forEach(offerInfoVO -> {
+                //设置报价展示图片
+                String picUrl = offerInfoVO.getPicUrl();
+                List<PicUrlArrForm> picUrlarr = new ArrayList<>();
+                if(ObjectUtil.isNotEmpty(picUrl)){
+                    String[] picUrlArr = picUrl.split(",");
+                    List<String> picUrlList = Arrays.asList(picUrlArr);
+                    picUrlList.forEach(filePath -> {
+                        PicUrlArrForm picUrlArrForm = new PicUrlArrForm();
+                        picUrlArrForm.setFilePath(filePath);
+                        picUrlarr.add(picUrlArrForm);
+                    });
+                }
+                offerInfoVO.setPicUrlarr(picUrlarr);
+
+                //设置报价的海运费 最小值到最大值
+
+                /*查询运价的规格：报价对应应收费用明细，海运费，尺寸*/
+                Integer qie = offerInfoVO.getQie();
+                List<TemplateCopeReceivableVO> oceanFeeList = templateCopeReceivableMapper.findTemplateCopeReceivableOceanFeeByQie(qie);
+                offerInfoVO.setOceanFeeList(oceanFeeList);
+
+                Map<Integer, BigDecimal> minMap = new HashMap<>();
+                Map<Integer, BigDecimal> maxMap = new HashMap<>();
+                BigDecimal min = oceanFeeList.get(0).getAmount();//最小值
+                BigDecimal max = oceanFeeList.get(0).getAmount();//最大值
+                Integer cid = oceanFeeList.get(0).getCid();
+                for (int i =1; i<oceanFeeList.size(); i++){
+                    BigDecimal amount = oceanFeeList.get(i).getAmount();
+                    Integer cid2 = oceanFeeList.get(i).getCid();
+                    if(cid != cid2){
+                        cid = cid2;
+                    }
+                    if(min.compareTo(amount) == 1){ //min > amount
+                        min = amount;
+                    }
+                    if(max.compareTo(amount) == -1 ){ //max < amount
+                        max = amount;
+                    }
+                    minMap.put(cid, min);
+                    maxMap.put(cid, max);
+                }
+                String minAmountFormat = "";
+                String maxAmountFormat = "";
+                for (Map.Entry<Integer, BigDecimal> entry : minMap.entrySet()) {
+                    Integer key = entry.getKey();
+                    BigDecimal value = entry.getValue();
+                    CurrencyInfoVO currencyInfoVO = cidMap.get(Long.valueOf(key));
+                    minAmountFormat = value+" "+currencyInfoVO.getCurrencyCode();
+                }
+                for (Map.Entry<Integer, BigDecimal> entry : maxMap.entrySet()) {
+                    Integer key = entry.getKey();
+                    BigDecimal value = entry.getValue();
+                    CurrencyInfoVO currencyInfoVO = cidMap.get(Long.valueOf(key));
+                    maxAmountFormat = value+" "+currencyInfoVO.getCurrencyCode();
+                }
+                String amountRange = minAmountFormat+"~"+maxAmountFormat;
+                offerInfoVO.setAmountRange(amountRange);
+            });
+        }
+        return list;
     }
 
 }

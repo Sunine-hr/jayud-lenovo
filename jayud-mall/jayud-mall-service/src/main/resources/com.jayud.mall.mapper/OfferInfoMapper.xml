@@ -201,4 +201,60 @@
         where t.id = #{id}
     </select>
 
+    <select id="findOfferInfoFareTop4" parameterType="com.jayud.mall.model.bo.QueryOfferInfoFareForm"
+            resultType="com.jayud.mall.model.vo.OfferInfoVO">
+
+        select
+        t.id,t.qie,t.`names`,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.status,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,
+        t1.start_shipment,t1.destination_port,t1.pic_url,
+        t3.code_name startShipmentName,
+        t4.code_name destinationPortName,
+        CONCAT(t3.code_name,'---->',t4.code_name) shipRoute,
+        DATEDIFF(t.estimated_time,t.sail_time) voyage_day,
+        arrware1.arriveWarehouseCodes
+        from offer_info t
+        JOIN (
+            select id from (
+            select
+            distinct
+            t1.id,substring_index( substring_index(t1.visible_uid,',',t2.id + 1), ',' ,-1 ) as visible_uid
+            from (select id,visible_uid from quotation_template) t1 join help_index t2 on t2.id <![CDATA[ < ]]>  (length(t1.visible_uid) - length(REPLACE(t1.visible_uid,',','')) + 1 )
+            ) t
+            where t.visible_uid = #{form.customerId}
+            UNION
+            select id from quotation_template where visible_customer=0
+        ) qt on qt.id = t.qie
+        join (
+            select DISTINCT id from (
+            select
+            DISTINCT t1.id,substring_index( substring_index(t1.arrive_warehouse,',',t2.id + 1), ',' ,-1 ) as arrive_warehouse_id
+            from (select id,arrive_warehouse from quotation_template) t1 join help_index t2 on t2.id <![CDATA[ < ]]>  (length(t1.arrive_warehouse) - length(REPLACE(t1.arrive_warehouse,',','')) + 1 )
+            ) t
+            where 1=1
+            <if test="form.arriveWarehouseId != null">
+                and t.arrive_warehouse_id = #{form.arriveWarehouseId}
+            </if>
+        ) arrware on arrware.id = t.qie
+        left join (
+            select x.id,GROUP_CONCAT(x.warehouse_code order by x.arrive_warehouse_id asc) AS arriveWarehouseCodes
+            from (
+            select a.id,a.arrive_warehouse_id,b.warehouse_code,b.warehouse_name from (
+            select
+            DISTINCT t1.id,substring_index( substring_index(t1.arrive_warehouse,',',t2.id + 1), ',' ,-1 ) as arrive_warehouse_id
+            from (select id,arrive_warehouse from quotation_template) t1 join help_index t2 on t2.id <![CDATA[ < ]]>  (length(t1.arrive_warehouse) - length(REPLACE(t1.arrive_warehouse,',','')) + 1 )
+            ) a
+            left join fab_warehouse b on b.id = a.arrive_warehouse_id
+            order by a.id
+            ) x GROUP BY x.id
+        ) arrware1 on arrware1.id = t.qie
+        LEFT JOIN quotation_template t1 on t1.id = t.qie
+        LEFT JOIN service_group t2 on t2.id = t1.sid
+        LEFT JOIN harbour_info t3 on t3.id_code = t1.start_shipment
+        LEFT JOIN harbour_info t4 on t4.id_code = t1.destination_port
+        WHERE
+        1 = 1
+        order by t.create_time desc
+        limit 4
+    </select>
+
 </mapper>

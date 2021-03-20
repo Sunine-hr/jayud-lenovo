@@ -83,4 +83,10 @@ public interface IOfferInfoService extends IService<OfferInfo> {
      */
     List<FabWarehouseVO> findFabWarehouse(Long id);
 
+    /**
+     * 客户首页(最新报价Top4)
+     * @param form
+     * @return
+     */
+    List<OfferInfoVO> findOfferInfoFareTop4(QueryOfferInfoFareForm form);
 }

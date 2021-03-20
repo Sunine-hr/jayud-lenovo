@@ -1,5 +1,6 @@
 package com.jayud.mall.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -7,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.mall.mapper.CurrencyInfoMapper;
 import com.jayud.mall.mapper.OrderInfoMapper;
 import com.jayud.mall.mapper.PayBillDetailMapper;
 import com.jayud.mall.mapper.PayBillMasterMapper;
@@ -16,9 +18,7 @@ import com.jayud.mall.model.bo.QueryPayBillMasterForm;
 import com.jayud.mall.model.po.OrderCopeWith;
 import com.jayud.mall.model.po.PayBillDetail;
 import com.jayud.mall.model.po.PayBillMaster;
-import com.jayud.mall.model.vo.OrderCopeWithVO;
-import com.jayud.mall.model.vo.PayBillDetailVO;
-import com.jayud.mall.model.vo.PayBillMasterVO;
+import com.jayud.mall.model.vo.*;
 import com.jayud.mall.service.IOrderCopeWithService;
 import com.jayud.mall.service.IPayBillDetailService;
 import com.jayud.mall.service.IPayBillMasterService;
@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -47,7 +48,8 @@ public class PayBillMasterServiceImpl extends ServiceImpl<PayBillMasterMapper, P
     PayBillDetailMapper payBillDetailMapper;
     @Autowired
     OrderInfoMapper orderInfoMapper;
-
+    @Autowired
+    CurrencyInfoMapper currencyInfoMapper;
     @Autowired
     IPayBillDetailService payBillDetailService;
     @Autowired
@@ -154,23 +156,114 @@ public class PayBillMasterServiceImpl extends ServiceImpl<PayBillMasterMapper, P
 
     @Override
     public IPage<PayBillMasterVO> findPayBillMasterByPage(QueryPayBillMasterForm form) {
+        List<CurrencyInfoVO> currencyInfoVOList = currencyInfoMapper.allCurrencyInfo();
+        //将币种信息转换为map，城市cid为键，币种信息为值
+        Map<Long, CurrencyInfoVO> cidMap = currencyInfoVOList.stream().collect(Collectors.toMap(CurrencyInfoVO::getId, c -> c));
         //定义分页参数
         Page<PayBillMasterVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.desc("t.id"));
         IPage<PayBillMasterVO> pageInfo = payBillMasterMapper.findPayBillMasterByPage(page, form);
+        List<PayBillMasterVO> records = pageInfo.getRecords();
+        if(CollUtil.isNotEmpty(records)){
+            records.forEach(payBillMasterVO -> {
+                Long billMasterId = payBillMasterVO.getId();
+                List<PayBillDetailVO> payBillDetailVOS = payBillDetailMapper.findPayBillDetailByBillMasterId(billMasterId);
+                List<String> billAmount = new ArrayList<>();//账单金额(bill_amount)
+                List<AmountVO> amountVOS = new ArrayList<>();//账单下的费用,根据币种分组，汇总金额
+                //根据 币种id，分组
+                Map<String, List<PayBillDetailVO>> stringListMap = groupListByCid(payBillDetailVOS);
+                for (Map.Entry<String, List<PayBillDetailVO>> entry : stringListMap.entrySet()) {
+                    String cid = entry.getKey();//币种id
+                    List<PayBillDetailVO> payBillDetailVOList = entry.getValue();
+                    BigDecimal amountSum = new BigDecimal("0");
+                    for (int i=0; i<payBillDetailVOList.size(); i++){
+                        PayBillDetailVO payBillDetailVO = payBillDetailVOList.get(i);
+                        BigDecimal amount = payBillDetailVO.getAmount();
+                        amountSum = amountSum.add(amount);
+                    }
+                    AmountVO amountVO = new AmountVO();
+                    amountVO.setAmount(amountSum);//金额
+                    amountVO.setCid(Integer.valueOf(cid));
+                    amountVOS.add(amountVO);
+                }
+                payBillMasterVO.setAmountVOS(amountVOS);
+
+                amountVOS.forEach(amountVO -> {
+                    Integer cid = amountVO.getCid();
+                    BigDecimal amount = amountVO.getAmount();
+                    String amountFormat = amount.toString() + " " + cidMap.get(Long.valueOf(cid)).getCurrencyName();
+                    billAmount.add(amountFormat);
+                });
+                payBillMasterVO.setBillAmount(billAmount);//账单金额(bill_amount)
+            });
+        }
         return pageInfo;
     }
 
     @Override
     public CommonResult<PayBillMasterVO> lookDetail(Long id) {
+        List<CurrencyInfoVO> currencyInfoVOList = currencyInfoMapper.allCurrencyInfo();
+        //将币种信息转换为map，城市cid为键，币种信息为值
+        Map<Long, CurrencyInfoVO> cidMap = currencyInfoVOList.stream().collect(Collectors.toMap(CurrencyInfoVO::getId, c -> c));
         PayBillMasterVO payBillMasterVO = payBillMasterMapper.findPayBillMasterById(id);
         if(payBillMasterVO == null){
             return CommonResult.error(-1, "没有找到应付账单");
         }
-        List<PayBillDetailVO> payBillDetailVOList = payBillDetailMapper.findPayBillDetailByBillMasterId(id);
-        payBillMasterVO.setPayBillDetailVOS(payBillDetailVOList);
+        //List<PayBillDetailVO> payBillDetailVOList = payBillDetailMapper.findPayBillDetailByBillMasterId(id);
+
+        Long billMasterId = payBillMasterVO.getId();
+        List<PayBillDetailVO> payBillDetailVOS = payBillDetailMapper.findPayBillDetailByBillMasterId(billMasterId);
+        List<String> billAmount = new ArrayList<>();//账单金额(bill_amount)
+        List<AmountVO> amountVOS = new ArrayList<>();//账单下的费用,根据币种分组，汇总金额
+        //根据 币种id，分组
+        Map<String, List<PayBillDetailVO>> stringListMap = groupListByCid(payBillDetailVOS);
+        for (Map.Entry<String, List<PayBillDetailVO>> entry : stringListMap.entrySet()) {
+            String cid = entry.getKey();//币种id
+            List<PayBillDetailVO> payBillDetailVOList = entry.getValue();
+            BigDecimal amountSum = new BigDecimal("0");
+            for (int i=0; i<payBillDetailVOList.size(); i++){
+                PayBillDetailVO payBillDetailVO = payBillDetailVOList.get(i);
+                BigDecimal amount = payBillDetailVO.getAmount();
+                amountSum = amountSum.add(amount);
+            }
+            AmountVO amountVO = new AmountVO();
+            amountVO.setAmount(amountSum);//金额
+            amountVO.setCid(Integer.valueOf(cid));
+            amountVOS.add(amountVO);
+        }
+        payBillMasterVO.setAmountVOS(amountVOS);
+
+        amountVOS.forEach(amountVO -> {
+            Integer cid = amountVO.getCid();
+            BigDecimal amount = amountVO.getAmount();
+            String amountFormat = amount.toString() + " " + cidMap.get(Long.valueOf(cid)).getCurrencyName();
+            billAmount.add(amountFormat);
+        });
+        payBillMasterVO.setBillAmount(billAmount);//账单金额(bill_amount)
+        payBillMasterVO.setPayBillDetailVOS(payBillDetailVOS);
         return CommonResult.success(payBillMasterVO);
+    }
+
+    /**
+     * 根据币种id，分组
+     * @param payBillDetailVOS 应付费用明细
+     * @return
+     */
+    private Map<String, List<PayBillDetailVO>> groupListByCid(List<PayBillDetailVO> payBillDetailVOS) {
+        Map<String, List<PayBillDetailVO>> map = new HashMap<>();
+        for (PayBillDetailVO payBillDetailVO : payBillDetailVOS) {
+            String key = payBillDetailVO.getCid().toString();//币种id
+            List<PayBillDetailVO> tmpList = map.get(key);
+            if (CollUtil.isEmpty(tmpList)) {
+                tmpList = new ArrayList<>();
+                tmpList.add(payBillDetailVO);
+                map.put(key, tmpList);
+            } else {
+                tmpList.add(payBillDetailVO);
+            }
+        }
+        return map;
     }
 
 }

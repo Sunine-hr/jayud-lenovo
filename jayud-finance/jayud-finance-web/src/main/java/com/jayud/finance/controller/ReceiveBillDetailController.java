@@ -238,7 +238,7 @@ public class ReceiveBillDetailController {
     @RequestMapping(value = "/exportSBillDetail", method = RequestMethod.GET)
     @ResponseBody
     public void exportSBillDetail(@RequestParam(value = "billNo", required = true) String billNo,
-                                  @RequestParam(value = "cmd", required = true) String cmd,
+                                  @RequestParam(value = "cmd", required = false) String cmd,
                                   HttpServletResponse response) throws IOException {
         List<ViewBilToOrderVO> list = billDetailService.viewSBillDetail(billNo);
         //地址只展示6个字符

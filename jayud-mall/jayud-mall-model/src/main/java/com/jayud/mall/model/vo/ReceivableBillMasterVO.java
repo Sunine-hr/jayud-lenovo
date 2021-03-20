@@ -105,7 +105,7 @@ public class ReceivableBillMasterVO {
     private String verificationUserName;
 
     //应收账单核销(虚拟字段)
-    @ApiModelProperty(value = "账单金额(bill_amount)", position = 23)
+    @ApiModelProperty(value = "账单金额(bill_amount)(分币种合计)", position = 23)
     @JSONField(ordinal = 23)
     private List<String> billAmountList;
 
@@ -126,6 +126,7 @@ public class ReceivableBillMasterVO {
     @ApiModelProperty(value = "已收金额(前端：已付款金额)", position = 27)
     @JSONField(ordinal = 27)
     private List<String> receivedAmount;
+
 
 
 }

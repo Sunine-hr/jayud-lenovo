@@ -31,7 +31,8 @@ public class AccountReceivableVO {
     private Integer customerId;
 
     @ApiModelProperty(value = "账期开始时间", position = 5)
-    @JSONField(ordinal = 5)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 5, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime paymentDaysStart;
 
     @ApiModelProperty(value = "账期结束时间", position = 6)

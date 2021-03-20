@@ -90,7 +90,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
 
     @Override
     public List<OrderPaymentBillDetailVO> findPaymentBillDetail(QueryPaymentBillDetailForm form) {
-        return baseMapper.findPaymentBillDetailByPage(form);
+        return baseMapper.findPaymentBillDetailByPage(form,null);
     }
 
 

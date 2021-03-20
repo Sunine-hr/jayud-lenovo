@@ -259,19 +259,19 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             pageInfo = baseMapper.findGoCustomsAuditByPage(page, form, legalIds);
         } else {
             //定义排序规则
-            page.addOrder(OrderItem.desc("temp.id"));
+            page.addOrder(OrderItem.desc("id"));
             pageInfo = baseMapper.findOrderInfoByPage(page, form, legalIds);
             //根据主订单查询子订单数据
             List<OrderInfoVO> orderInfoVOs = pageInfo.getRecords();
             if (CollectionUtil.isEmpty(orderInfoVOs)) {
                 return pageInfo;
             }
-            List<String> mainOrderNoList = orderInfoVOs.stream().map(OrderInfoVO::getOrderNo).collect(Collectors.toList());
-            Map<String, Map<String, Object>> subOrderMap = this.getSubOrderByMainOrderNos(mainOrderNoList);
-            //查询子订单驳回原因
-            this.getSubOrderRejectionMsg(orderInfoVOs, subOrderMap);
-            //组装主订单数据
-            assemblyMasterOrderData(orderInfoVOs, subOrderMap);
+//            List<String> mainOrderNoList = orderInfoVOs.stream().map(OrderInfoVO::getOrderNo).collect(Collectors.toList());
+//            Map<String, Map<String, Object>> subOrderMap = this.getSubOrderByMainOrderNos(mainOrderNoList);
+//            //查询子订单驳回原因
+//            this.getSubOrderRejectionMsg(orderInfoVOs, subOrderMap);
+//            //组装主订单数据
+//            assemblyMasterOrderData(orderInfoVOs, subOrderMap);
         }
         return pageInfo;
     }
@@ -1695,7 +1695,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             //子订单信息
             Map<String, Object> subOrderInfos = subOrderMap.get(orderInfoVO.getOrderNo());
             //订单状态
-            orderInfoVO.setSubOrderStatusDesc(assemblySubOrderStatus(subOrderInfos, orderInfoVO));
+//            orderInfoVO.setSubOrderStatusDesc(assemblySubOrderStatus(subOrderInfos, orderInfoVO));
             //增加中港信息字段
             //增加空运信息字段
             //商品信息组合
@@ -1749,7 +1749,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         .append("-").append(OrderStatusEnum.getDesc(jsonObject.getStr("status"))).append(",");
 
                 if (SubOrderSignEnum.NL.getSignOne().equals(subOrderType)) {
-                    orderInfoVO.setSubInlandStatus(jsonObject.getStr("status"));
+//                    orderInfoVO.setSubInlandStatus(jsonObject.getStr("status"));
                 }
             }
         }

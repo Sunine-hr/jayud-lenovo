@@ -3,6 +3,7 @@ import com.jayud.mall.model.po.ActionCombinationItemRelation;
 import com.jayud.mall.utils.TestUtils;
 import org.junit.Test;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,4 +27,14 @@ public class ActionCombinationTest {
 
         TestUtils.JSONObjectPrint(form);
     }
+
+    @Test
+    public void test2(){
+        LocalDateTime startTime =  LocalDateTime.now();
+        LocalDateTime newTime = startTime.minusDays(1);//当前日期，减去一天
+        System.out.println(startTime);
+        System.out.println(newTime);
+
+    }
+
 }

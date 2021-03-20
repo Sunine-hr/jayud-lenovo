@@ -20,11 +20,14 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "业务类型")
     private String bizCode;
 
-    @ApiModelProperty(value = "进出口类型")
-    private String goodsType;
+    @ApiModelProperty(value = "客户名称")
+    private String customerName;
 
-    @ApiModelProperty(value = "进出口类型描述")
-    private String goodsTypeDesc;
+//    @ApiModelProperty(value = "进出口类型")
+//    private String goodsType;
+//
+//    @ApiModelProperty(value = "进出口类型描述")
+//    private String goodsTypeDesc;
 
     @ApiModelProperty(value = "通关口岸")
     private String portName;
@@ -41,8 +44,7 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "作业类型CODE")
     private String classCode;
 
-    @ApiModelProperty(value = "客户名称")
-    private String customerName;
+
 
     @ApiModelProperty(value = "客户名称CODE")
     private String customerCode;
@@ -132,14 +134,14 @@ public class OrderInfoVO {
         return OrderStatusEnum.getDesc(this.status);
     }
 
-    public String getGoodsTypeDesc() {
-        if (CommonConstant.VALUE_1.equals(this.goodsType)) {
-            goodsTypeDesc = CommonConstant.GOODS_TYPE_DESC_1;
-        } else if (CommonConstant.VALUE_2.equals(this.goodsType)) {
-            goodsTypeDesc = CommonConstant.GOODS_TYPE_DESC_2;
-        }
-        return goodsTypeDesc;
-    }
+//    public String getGoodsTypeDesc() {
+//        if (CommonConstant.VALUE_1.equals(this.goodsType)) {
+//            goodsTypeDesc = CommonConstant.GOODS_TYPE_DESC_1;
+//        } else if (CommonConstant.VALUE_2.equals(this.goodsType)) {
+//            goodsTypeDesc = CommonConstant.GOODS_TYPE_DESC_2;
+//        }
+//        return goodsTypeDesc;
+//    }
 
     public String getSubCustomsDesc() {
         if (!StringUtil.isNullOrEmpty(this.subCustomsStatus)) {

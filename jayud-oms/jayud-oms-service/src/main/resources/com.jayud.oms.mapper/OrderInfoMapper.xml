@@ -39,6 +39,410 @@
         biz_belong_depart,selected_server,is_data_all,create_time, created_user, up_time, up_user,need_input_cost,customs_release,encode
     </sql>
 
+<!--    <select id="findOrderInfoByPage" parameterType="com.jayud.oms.model.bo.QueryOrderInfoForm"-->
+<!--            resultType="com.jayud.oms.model.vo.OrderInfoVO">-->
+<!--        SELECT * FROM (-->
+<!--        SELECT DISTINCT-->
+<!--        oi.id,-->
+<!--        oi.remarks,-->
+<!--        oi.`order_no` orderNo,-->
+<!--        oi.`biz_code` bizCode,-->
+<!--        oi.`legal_entity_id` legal_entity_id,-->
+<!--        oc.`goods_type` goodsType,-->
+<!--        oc.`port_code` portCode,-->
+<!--        oc.`port_name` portName,-->
+<!--        oi.`status`,-->
+<!--        oi.`class_code` classCode,-->
+<!--        pc1.name classCodeDesc,-->
+<!--        oi.selected_server selectedServer,-->
+<!--        oi.`customer_name` customerName,-->
+<!--        oi.`customer_code` customerCode,-->
+<!--        oi.`legal_name` legalName,-->
+<!--        '' goodsInfo,-->
+<!--        '' takeAddress,-->
+<!--        '' giveAddress,-->
+<!--        (select GROUP_CONCAT(t.`status`) from order_customs t where t.main_order_no = oi.order_no group by-->
+<!--        t.main_order_no) subCustomsStatus,-->
+<!--        '' subTmsStatus,-->
+<!--        '' subAirStatus,-->
+<!--        '' subInlandStatus,-->
+<!--        '' subTrailerStatus,-->
+<!--        oi.`created_user` createdUser,-->
+<!--        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,-->
+<!--        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +-->
+<!--        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE-->
+<!--        ELSE FALSE-->
+<!--        END) isCost,-->
+<!--        oi.`need_input_cost` needInputCost,-->
+<!--        oi.`customs_release` customsRelease,-->
+<!--        (select ai.audit_comment from audit_info ai where ai.ext_id = oc.id and ai.audit_status = 'C_1_1' order by-->
+<!--        ai.created_time desc limit 1) rejectComment,-->
+<!--        oi.unit_code unitCode-->
+<!--        &#45;&#45; oc.`order_no` customsOrderNo,-->
+<!--        &#45;&#45; '' tmsOrderNo,-->
+<!--        &#45;&#45; '' airOrderNo-->
+<!--        FROM-->
+<!--        order_info oi LEFT JOIN order_customs oc ON oi.`order_no` = oc.`main_order_no`-->
+<!--        LEFT JOIN product_classify pc1 ON pc1.`id_code` = oi.`class_code`-->
+<!--        WHERE oi.`class_code` = 'CBG'-->
+<!--        UNION ALL-->
+<!--        SELECT DISTINCT-->
+<!--        oi.id,-->
+<!--        oi.remarks,-->
+<!--        oi.`order_no` orderNo,-->
+<!--        oi.`biz_code` bizCode,-->
+<!--        oi.`legal_entity_id` legal_entity_id,-->
+<!--        ot.`goods_type` goodsType,-->
+<!--        ot.`port_code` portCode,-->
+<!--        p.`name` portName,-->
+<!--        oi.`status`,-->
+<!--        oi.`class_code` classCode,-->
+<!--        pc2.name classCodeDesc,-->
+<!--        oi.selected_server selectedServer,-->
+<!--        oi.`customer_name` customerName,-->
+<!--        oi.`customer_code` customerCode,-->
+<!--        oi.`legal_name` legalName,-->
+<!--        (SELECT CONCAT(ota.`goods_desc`,'/',ota.`piece_amount`,'件','/','重量',ota.`weight`,'KG') FROM order_take_adr ota-->
+<!--        WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 1 ORDER BY ota.`id` LIMIT 1) goodsInfo,-->
+<!--        (SELECT concat(ifnull(da.state_name,''),ifnull(da.city_name,''),da.address) FROM order_take_adr ota LEFT JOIN-->
+<!--        delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 1-->
+<!--        ORDER BY ota.`id` LIMIT 1) takeAddress,-->
+<!--        (SELECT concat(ifnull(da.state_name,''),ifnull(da.city_name,''),da.address) FROM order_take_adr ota LEFT JOIN-->
+<!--        delivery_address da ON ota.`delivery_id` = da.`id` WHERE ota.`order_no` = ot.order_no AND ota.`opr_type` = 2-->
+<!--        ORDER BY ota.`id` LIMIT 1) giveAddress,-->
+<!--        (SELECT oc.`status` FROM order_customs oc WHERE oc.`main_order_no`= oi.`order_no` LIMIT 1) subCustomsStatus,-->
+<!--        ot.`status` subTmsStatus,-->
+<!--        '' subAirStatus,-->
+<!--        '' subInlandStatus,-->
+<!--        '' subTrailerStatus,-->
+<!--        oi.`created_user` createdUser,-->
+<!--        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,-->
+<!--        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +-->
+<!--        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE-->
+<!--        ELSE FALSE-->
+<!--        END) isCost,-->
+<!--        oi.`need_input_cost` needInputCost,-->
+<!--        oi.`customs_release` customsRelease,-->
+<!--        (select ai.audit_comment from audit_info ai where ai.ext_id in (select oc.id from order_customs oc where-->
+<!--        oc.main_order_no = oi.order_no) and ai.audit_status = 'C_1_1' order by ai.created_time desc limit 1)-->
+<!--        rejectComment,-->
+<!--        oi.unit_code unitCode-->
+<!--        &#45;&#45; '' customsOrderNo,-->
+<!--        &#45;&#45; ot.order_no tmsOrderNo,-->
+<!--        &#45;&#45; '' airOrderNo-->
+<!--        FROM-->
+<!--        order_info oi LEFT JOIN order_transport ot ON-->
+<!--        oi.`order_no` = ot.`main_order_no`-->
+
+<!--        LEFT JOIN port_info p ON ot.port_code = p.id_code-->
+<!--        LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`-->
+<!--        WHERE oi.`class_code` = 'ZGYS'-->
+<!--        &#45;&#45; 空运-->
+<!--        UNION ALL-->
+<!--        SELECT DISTINCT-->
+<!--        oi.id,-->
+<!--        oi.remarks,-->
+<!--        oi.`order_no` orderNo,-->
+<!--        oi.`biz_code` bizCode,-->
+<!--        oi.`legal_entity_id` legal_entity_id,-->
+<!--        a.`imp_and_exp_type` goodsType,-->
+<!--        '' portCode,-->
+<!--        '' portName,-->
+<!--        oi.`status`,-->
+<!--        oi.`class_code` classCode,-->
+<!--        pc2.name classCodeDesc,-->
+<!--        oi.selected_server selectedServer,-->
+<!--        oi.`customer_name` customerName,-->
+<!--        oi.`customer_code` customerCode,-->
+<!--        oi.`legal_name` legalName,-->
+<!--        '' goodsInfo,-->
+<!--        (SELECT address FROM order_address oa where oa.`business_id` = a.id AND oa.`type` = 0 ORDER BY oa.`id` LIMIT 1)-->
+<!--        takeAddress,-->
+<!--        (SELECT address FROM order_address oa where oa.`business_id` = a.id AND oa.`type` = 1 ORDER BY oa.`id` LIMIT 1)-->
+<!--        giveAddress,-->
+<!--        (SELECT oc.`status` FROM order_customs oc WHERE oc.`main_order_no`= oi.`order_no` LIMIT 1) subCustomsStatus,-->
+<!--        (SELECT ot.`status` FROM order_transport ot WHERE ot.`main_order_no`= oi.`order_no` LIMIT 1) subTmsStatus,-->
+<!--        a.`status` subAirStatus,-->
+<!--        '' subInlandStatus,-->
+<!--        '' subTrailerStatus,-->
+<!--        oi.`created_user` createdUser,-->
+<!--        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,-->
+<!--        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +-->
+<!--        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE-->
+<!--        ELSE FALSE-->
+<!--        END) isCost,-->
+<!--        oi.`need_input_cost` needInputCost,-->
+<!--        oi.`customs_release` customsRelease,-->
+<!--        '' rejectComment,-->
+<!--        oi.unit_code unitCode-->
+<!--        &#45;&#45; '' customsOrderNo,-->
+<!--        &#45;&#45; '' tmsOrderNo,-->
+<!--        &#45;&#45; a.order_no airOrderNo-->
+<!--        FROM-->
+<!--        order_info oi LEFT JOIN air_order a ON-->
+<!--        oi.`order_no` = a.`main_order_no`-->
+<!--        LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`-->
+<!--        WHERE oi.`class_code` = 'KY'-->
+<!--        &#45;&#45; 服务单-->
+<!--        UNION ALL-->
+<!--        SELECT DISTINCT-->
+<!--        oi.id,-->
+<!--        oi.remarks,-->
+<!--        oi.`order_no` orderNo,-->
+<!--        oi.`biz_code` bizCode,-->
+<!--        oi.`legal_entity_id` legal_entity_id,-->
+<!--        '' goodsType,-->
+<!--        '' portCode,-->
+<!--        '' portName,-->
+<!--        oi.`status`,-->
+<!--        oi.`class_code` classCode,-->
+<!--        pc2.name classCodeDesc,-->
+<!--        oi.selected_server selectedServer,-->
+<!--        oi.`customer_name` customerName,-->
+<!--        oi.`customer_code` customerCode,-->
+<!--        oi.`legal_name` legalName,-->
+<!--        '' goodsInfo,-->
+<!--        (SELECT da.address FROM order_take_adr ota left join delivery_address da on ota.`delivery_id` = da.id WHERE-->
+<!--        ota.`order_no` = so.order_no AND ota.`opr_type` = 1 ORDER BY ota.`id` LIMIT 1) takeAddress,-->
+<!--        (SELECT da.address FROM order_take_adr ota left join delivery_address da on ota.`delivery_id` = da.id WHERE-->
+<!--        ota.`order_no` = so.order_no AND ota.`opr_type` = 2 ORDER BY ota.`id` LIMIT 1) giveAddress,-->
+<!--        '' subCustomsStatus,-->
+<!--        '' subTmsStatus,-->
+<!--        '' subAirStatus,-->
+<!--        '' subInlandStatus,-->
+<!--        '' subTrailerStatus,-->
+<!--        oi.`created_user` createdUser,-->
+<!--        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,-->
+<!--        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +-->
+<!--        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE-->
+<!--        ELSE FALSE-->
+<!--        END) isCost,-->
+<!--        oi.`need_input_cost` needInputCost,-->
+<!--        oi.`customs_release` customsRelease,-->
+<!--        '' rejectComment,-->
+<!--        oi.unit_code unitCode-->
+<!--&#45;&#45;         '' customsOrderNo,-->
+<!--&#45;&#45;         '' tmsOrderNo,-->
+<!--&#45;&#45;         '' airOrderNo-->
+<!--        FROM-->
+<!--        order_info oi LEFT JOIN service_order so ON-->
+<!--        oi.`order_no` = so.`main_order_no`-->
+<!--        LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`-->
+<!--        WHERE oi.`class_code` = 'FWD'-->
+
+<!--        &#45;&#45; 海运单-->
+<!--        UNION ALL-->
+<!--        SELECT DISTINCT-->
+<!--        oi.id,-->
+<!--        oi.remarks,-->
+<!--        oi.`order_no` orderNo,-->
+<!--        oi.`biz_code` bizCode,-->
+<!--        oi.`legal_entity_id` legal_entity_id,-->
+<!--        so.`imp_and_exp_type` goodsType,-->
+<!--        '' portCode,-->
+<!--        '' portName,-->
+<!--        oi.`status`,-->
+<!--        oi.`class_code` classCode,-->
+<!--        pc2.name classCodeDesc,-->
+<!--        oi.selected_server selectedServer,-->
+<!--        oi.`customer_name` customerName,-->
+<!--        oi.`customer_code` customerCode,-->
+<!--        oi.`legal_name` legalName,-->
+<!--        '' goodsInfo,-->
+<!--        (SELECT address FROM order_address oa where oa.`business_id` = so.id AND oa.`type` = 0 ORDER BY oa.`id` LIMIT 1)-->
+<!--        takeAddress,-->
+<!--        (SELECT address FROM order_address oa where oa.`business_id` = so.id AND oa.`type` = 1 ORDER BY oa.`id` LIMIT 1)-->
+<!--        giveAddress,-->
+<!--        '' subCustomsStatus,-->
+<!--        '' subTmsStatus,-->
+<!--        so.`status` subSeaStatus,-->
+<!--        '' subInlandStatus,-->
+<!--        '' subTrailerStatus,-->
+<!--        oi.`created_user` createdUser,-->
+<!--        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,-->
+<!--        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +-->
+<!--        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE-->
+<!--        ELSE FALSE-->
+<!--        END) isCost,-->
+<!--        oi.`need_input_cost` needInputCost,-->
+<!--        oi.`customs_release` customsRelease,-->
+<!--        '' rejectComment,-->
+<!--        oi.unit_code unitCode-->
+<!--        &#45;&#45;         '' customsOrderNo,-->
+<!--        &#45;&#45;         '' tmsOrderNo,-->
+<!--        &#45;&#45;         '' airOrderNo-->
+<!--        FROM-->
+<!--        order_info oi LEFT JOIN sea_order so ON-->
+<!--        oi.`order_no` = so.`main_order_no`-->
+<!--        LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`-->
+<!--        WHERE oi.`class_code` = 'HY'-->
+
+<!--        &#45;&#45;内陆单-->
+<!--        UNION ALL-->
+<!--        SELECT DISTINCT-->
+<!--        oi.id,-->
+<!--        oi.remarks,-->
+<!--        oi.`order_no` orderNo,-->
+<!--        oi.`biz_code` bizCode,-->
+<!--        oi.`legal_entity_id` legal_entity_id,-->
+<!--        '' goodsType,-->
+<!--        '' portCode,-->
+<!--        '' portName,-->
+<!--        oi.`status`,-->
+<!--        oi.`class_code` classCode,-->
+<!--        pc2.name classCodeDesc,-->
+<!--        oi.selected_server selectedServer,-->
+<!--        oi.`customer_name` customerName,-->
+<!--        oi.`customer_code` customerCode,-->
+<!--        oi.`legal_name` legalName,-->
+<!--        '' goodsInfo,-->
+<!--        (SELECT address FROM order_address oa where oa.`business_id` = i.id AND oa.`type` = 3 and oa.business_type=5-->
+<!--        ORDER BY oa.`id` LIMIT 1)-->
+<!--        takeAddress,-->
+<!--        (SELECT address FROM order_address oa where oa.`business_id` = i.id AND oa.`type` = 4 and oa.business_type=5-->
+<!--        ORDER BY oa.`id` LIMIT 1)-->
+<!--        giveAddress,-->
+<!--        (SELECT oc.`status` FROM order_customs oc WHERE oc.`main_order_no`= oi.`order_no` LIMIT 1) subCustomsStatus,-->
+<!--        (SELECT ot.`status` FROM order_transport ot WHERE ot.`main_order_no`= oi.`order_no` LIMIT 1) subTmsStatus,-->
+<!--        '' subSeaStatus,-->
+<!--        i.status subInlandStatus,-->
+<!--        '' subTrailerStatus,-->
+<!--        oi.`created_user` createdUser,-->
+<!--        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,-->
+<!--        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +-->
+<!--        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE-->
+<!--        ELSE FALSE-->
+<!--        END) isCost,-->
+<!--        oi.`need_input_cost` needInputCost,-->
+<!--        oi.`customs_release` customsRelease,-->
+<!--        '' rejectComment,-->
+<!--        oi.unit_code unitCode-->
+<!--        FROM-->
+<!--        order_info oi LEFT JOIN order_inland_transport i ON-->
+<!--        oi.`order_no` = i.`main_order_no`-->
+<!--        LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`-->
+<!--        WHERE oi.`class_code` = 'NLYS'-->
+
+<!--        &#45;&#45; 拖车单-->
+<!--        UNION ALL-->
+<!--        SELECT DISTINCT-->
+<!--        oi.id,-->
+<!--        oi.remarks,-->
+<!--        oi.`order_no` orderNo,-->
+<!--        oi.`biz_code` bizCode,-->
+<!--        oi.`legal_entity_id` legal_entity_id,-->
+<!--        tor.`imp_and_exp_type` goodsType,-->
+<!--        '' portCode,-->
+<!--        '' portName,-->
+<!--        oi.`status`,-->
+<!--        oi.`class_code` classCode,-->
+<!--        pc2.name classCodeDesc,-->
+<!--        oi.selected_server selectedServer,-->
+<!--        oi.`customer_name` customerName,-->
+<!--        oi.`customer_code` customerCode,-->
+<!--        oi.`legal_name` legalName,-->
+<!--        '' goodsInfo,-->
+<!--        (SELECT address FROM order_address oa where oa.`business_id` = tor.id AND oa.`type` = 4 ORDER BY oa.`id` LIMIT 1)-->
+<!--        takeAddress,-->
+<!--        (SELECT address FROM order_address oa where oa.`business_id` = tor.id AND oa.`type` = 3 ORDER BY oa.`id` LIMIT 1)-->
+<!--        giveAddress,-->
+<!--        '' subCustomsStatus,-->
+<!--        '' subTmsStatus,-->
+<!--        '' subSeaStatus,-->
+<!--        '' subInlandStatus,-->
+<!--        tor.`status` subTrailerStatus,-->
+<!--        oi.`created_user` createdUser,-->
+<!--        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,-->
+<!--        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +-->
+<!--        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE-->
+<!--        ELSE FALSE-->
+<!--        END) isCost,-->
+<!--        oi.`need_input_cost` needInputCost,-->
+<!--        oi.`customs_release` customsRelease,-->
+<!--        '' rejectComment,-->
+<!--        oi.unit_code unitCode-->
+<!--        FROM-->
+<!--        order_info oi LEFT JOIN trailer_order tor ON-->
+<!--        oi.`order_no` = tor.`main_order_no`-->
+<!--        LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`-->
+<!--        WHERE oi.`class_code` = 'TC'-->
+
+<!--        ) temp WHERE 1 = 1-->
+<!--        <if test="form.cmd == 'noSubmit'">-->
+<!--            and temp.`status` = 2-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'costAudit'">-->
+<!--            and temp.`status` IN (1,4)-->
+<!--            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = temp.orderNo AND opc.`status`-->
+<!--            = '2' and opc.sub_type='main')-->
+<!--            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = temp.orderNo AND orc.`status`-->
+<!--            = '2' and orc.sub_type='main'))-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'outCustomsRelease'">-->
+<!--            and (temp.classCode = 'ZGYS' or temp.selectedServer like concat('%','ZGYSDD','%')) and temp.`status` = 1-->
+<!--            and temp.customsRelease = 0-->
+<!--            and not exists (SELECT 1 FROM order_customs oc WHERE oc.`main_order_no` = temp.orderNo)-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'dataNotAll'">-->
+<!--            and temp.`status` = 4-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'cancelled'">-->
+<!--            and temp.`status` = 6-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'rejected'">-->
+<!--            and temp.`status` = 7-->
+<!--        </if>-->
+<!--        <if test="form.orderNo != null and form.orderNo != ''">-->
+<!--            and temp.orderNo = #{form.orderNo}-->
+<!--        </if>-->
+<!--        <if test="form.portCode != null and form.portCode != ''">-->
+<!--            and temp.portCode = #{form.portCode}-->
+<!--        </if>-->
+<!--        <if test="form.classCode != null and form.classCode !=''">-->
+<!--            and temp.classCode = #{form.classCode}-->
+<!--        </if>-->
+<!--        <if test="form.customerName != null and form.customerName !=''">-->
+<!--            and temp.customerName like concat('%',#{form.customerName},'%')-->
+<!--        </if>-->
+<!--        <if test="form.legalName != null and form.legalName !=''">-->
+<!--            and temp.legalName like concat('%',#{form.legalName},'%')-->
+<!--        </if>-->
+<!--        <if test="form.endCreateTimeStr != null and form.endCreateTimeStr !=''">-->
+<!--            and temp.createdTimeStr <![CDATA[<=]]> #{form.endCreateTimeStr}-->
+<!--        </if>-->
+<!--        <if test="form.beginCreateTimeStr != null and form.beginCreateTimeStr !=''">-->
+<!--            and temp.createdTimeStr <![CDATA[>=]]> #{form.beginCreateTimeStr}-->
+<!--        </if>-->
+
+<!--        <if test="form.createdUser != null and form.createdUser !=''">-->
+<!--            and temp.createdUser like concat('%',#{form.createdUser},'%')-->
+<!--        </if>-->
+<!--        <choose>-->
+<!--            <when test="form.entrance == 'myOrder'">-->
+<!--                and temp.createdUser = #{form.loginUserName}-->
+<!--            </when>-->
+<!--            <otherwise>-->
+<!--                <if test="legalIds != null and legalIds.size>0">-->
+<!--                    and temp.`legal_entity_id` in-->
+<!--                    <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
+<!--                        #{legalId}-->
+<!--                    </foreach>-->
+<!--                </if>-->
+<!--            </otherwise>-->
+<!--        </choose>-->
+
+<!--        &lt;!&ndash;        <if test="form.cmd == 'myOrder'">&ndash;&gt;-->
+<!--        &lt;!&ndash;            and temp.createdUser = #{form.loginUserName}&ndash;&gt;-->
+<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+<!--        &lt;!&ndash;        <if test="legalIds != null">&ndash;&gt;-->
+<!--        &lt;!&ndash;            and temp.`legal_entity_id` in&ndash;&gt;-->
+<!--        &lt;!&ndash;            <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">&ndash;&gt;-->
+<!--        &lt;!&ndash;                #{legalId}&ndash;&gt;-->
+<!--        &lt;!&ndash;            </foreach>&ndash;&gt;-->
+<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+<!--    </select>-->
+
+
     <select id="findOrderInfoByPage" parameterType="com.jayud.oms.model.bo.QueryOrderInfoForm"
             resultType="com.jayud.oms.model.vo.OrderInfoVO">
         SELECT * FROM (
@@ -48,52 +452,6 @@
         oi.`order_no` orderNo,
         oi.`biz_code` bizCode,
         oi.`legal_entity_id` legal_entity_id,
-        oc.`goods_type` goodsType,
-        oc.`port_code` portCode,
-        oc.`port_name` portName,
-        oi.`status`,
-        oi.`class_code` classCode,
-        pc1.name classCodeDesc,
-        oi.selected_server selectedServer,
-        oi.`customer_name` customerName,
-        oi.`customer_code` customerCode,
-        oi.`legal_name` legalName,
-        '' goodsInfo,
-        '' takeAddress,
-        '' giveAddress,
-        (select GROUP_CONCAT(t.`status`) from order_customs t where t.main_order_no = oi.order_no group by
-        t.main_order_no) subCustomsStatus,
-        '' subTmsStatus,
-        '' subAirStatus,
-        '' subInlandStatus,
-        '' subTrailerStatus,
-        oi.`created_user` createdUser,
-        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
-        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
-        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
-        ELSE FALSE
-        END) isCost,
-        oi.`need_input_cost` needInputCost,
-        oi.`customs_release` customsRelease,
-        (select ai.audit_comment from audit_info ai where ai.ext_id = oc.id and ai.audit_status = 'C_1_1' order by
-        ai.created_time desc limit 1) rejectComment,
-        oi.unit_code unitCode
-        -- oc.`order_no` customsOrderNo,
-        -- '' tmsOrderNo,
-        -- '' airOrderNo
-        FROM
-        order_info oi LEFT JOIN order_customs oc ON oi.`order_no` = oc.`main_order_no`
-        LEFT JOIN product_classify pc1 ON pc1.`id_code` = oi.`class_code`
-        WHERE oi.`class_code` = 'CBG'
-        UNION ALL
-        SELECT DISTINCT
-        oi.id,
-        oi.remarks,
-        oi.`order_no` orderNo,
-        oi.`biz_code` bizCode,
-        oi.`legal_entity_id` legal_entity_id,
-        ot.`goods_type` goodsType,
-        ot.`port_code` portCode,
         p.`name` portName,
         oi.`status`,
         oi.`class_code` classCode,
@@ -133,240 +491,9 @@
         FROM
         order_info oi LEFT JOIN order_transport ot ON
         oi.`order_no` = ot.`main_order_no`
-
         LEFT JOIN port_info p ON ot.port_code = p.id_code
         LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`
         WHERE oi.`class_code` = 'ZGYS'
-        -- 空运
-        UNION ALL
-        SELECT DISTINCT
-        oi.id,
-        oi.remarks,
-        oi.`order_no` orderNo,
-        oi.`biz_code` bizCode,
-        oi.`legal_entity_id` legal_entity_id,
-        a.`imp_and_exp_type` goodsType,
-        '' portCode,
-        '' portName,
-        oi.`status`,
-        oi.`class_code` classCode,
-        pc2.name classCodeDesc,
-        oi.selected_server selectedServer,
-        oi.`customer_name` customerName,
-        oi.`customer_code` customerCode,
-        oi.`legal_name` legalName,
-        '' goodsInfo,
-        (SELECT address FROM order_address oa where oa.`business_id` = a.id AND oa.`type` = 0 ORDER BY oa.`id` LIMIT 1)
-        takeAddress,
-        (SELECT address FROM order_address oa where oa.`business_id` = a.id AND oa.`type` = 1 ORDER BY oa.`id` LIMIT 1)
-        giveAddress,
-        (SELECT oc.`status` FROM order_customs oc WHERE oc.`main_order_no`= oi.`order_no` LIMIT 1) subCustomsStatus,
-        (SELECT ot.`status` FROM order_transport ot WHERE ot.`main_order_no`= oi.`order_no` LIMIT 1) subTmsStatus,
-        a.`status` subAirStatus,
-        '' subInlandStatus,
-        '' subTrailerStatus,
-        oi.`created_user` createdUser,
-        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
-        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
-        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
-        ELSE FALSE
-        END) isCost,
-        oi.`need_input_cost` needInputCost,
-        oi.`customs_release` customsRelease,
-        '' rejectComment,
-        oi.unit_code unitCode
-        -- '' customsOrderNo,
-        -- '' tmsOrderNo,
-        -- a.order_no airOrderNo
-        FROM
-        order_info oi LEFT JOIN air_order a ON
-        oi.`order_no` = a.`main_order_no`
-        LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`
-        WHERE oi.`class_code` = 'KY'
-        -- 服务单
-        UNION ALL
-        SELECT DISTINCT
-        oi.id,
-        oi.remarks,
-        oi.`order_no` orderNo,
-        oi.`biz_code` bizCode,
-        oi.`legal_entity_id` legal_entity_id,
-        '' goodsType,
-        '' portCode,
-        '' portName,
-        oi.`status`,
-        oi.`class_code` classCode,
-        pc2.name classCodeDesc,
-        oi.selected_server selectedServer,
-        oi.`customer_name` customerName,
-        oi.`customer_code` customerCode,
-        oi.`legal_name` legalName,
-        '' goodsInfo,
-        (SELECT da.address FROM order_take_adr ota left join delivery_address da on ota.`delivery_id` = da.id WHERE
-        ota.`order_no` = so.order_no AND ota.`opr_type` = 1 ORDER BY ota.`id` LIMIT 1) takeAddress,
-        (SELECT da.address FROM order_take_adr ota left join delivery_address da on ota.`delivery_id` = da.id WHERE
-        ota.`order_no` = so.order_no AND ota.`opr_type` = 2 ORDER BY ota.`id` LIMIT 1) giveAddress,
-        '' subCustomsStatus,
-        '' subTmsStatus,
-        '' subAirStatus,
-        '' subInlandStatus,
-        '' subTrailerStatus,
-        oi.`created_user` createdUser,
-        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
-        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
-        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
-        ELSE FALSE
-        END) isCost,
-        oi.`need_input_cost` needInputCost,
-        oi.`customs_release` customsRelease,
-        '' rejectComment,
-        oi.unit_code unitCode
---         '' customsOrderNo,
---         '' tmsOrderNo,
---         '' airOrderNo
-        FROM
-        order_info oi LEFT JOIN service_order so ON
-        oi.`order_no` = so.`main_order_no`
-        LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`
-        WHERE oi.`class_code` = 'FWD'
-
-        -- 海运单
-        UNION ALL
-        SELECT DISTINCT
-        oi.id,
-        oi.remarks,
-        oi.`order_no` orderNo,
-        oi.`biz_code` bizCode,
-        oi.`legal_entity_id` legal_entity_id,
-        so.`imp_and_exp_type` goodsType,
-        '' portCode,
-        '' portName,
-        oi.`status`,
-        oi.`class_code` classCode,
-        pc2.name classCodeDesc,
-        oi.selected_server selectedServer,
-        oi.`customer_name` customerName,
-        oi.`customer_code` customerCode,
-        oi.`legal_name` legalName,
-        '' goodsInfo,
-        (SELECT address FROM order_address oa where oa.`business_id` = so.id AND oa.`type` = 0 ORDER BY oa.`id` LIMIT 1)
-        takeAddress,
-        (SELECT address FROM order_address oa where oa.`business_id` = so.id AND oa.`type` = 1 ORDER BY oa.`id` LIMIT 1)
-        giveAddress,
-        '' subCustomsStatus,
-        '' subTmsStatus,
-        so.`status` subSeaStatus,
-        '' subInlandStatus,
-        '' subTrailerStatus,
-        oi.`created_user` createdUser,
-        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
-        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
-        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
-        ELSE FALSE
-        END) isCost,
-        oi.`need_input_cost` needInputCost,
-        oi.`customs_release` customsRelease,
-        '' rejectComment,
-        oi.unit_code unitCode
-        --         '' customsOrderNo,
-        --         '' tmsOrderNo,
-        --         '' airOrderNo
-        FROM
-        order_info oi LEFT JOIN sea_order so ON
-        oi.`order_no` = so.`main_order_no`
-        LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`
-        WHERE oi.`class_code` = 'HY'
-
-        --内陆单
-        UNION ALL
-        SELECT DISTINCT
-        oi.id,
-        oi.remarks,
-        oi.`order_no` orderNo,
-        oi.`biz_code` bizCode,
-        oi.`legal_entity_id` legal_entity_id,
-        '' goodsType,
-        '' portCode,
-        '' portName,
-        oi.`status`,
-        oi.`class_code` classCode,
-        pc2.name classCodeDesc,
-        oi.selected_server selectedServer,
-        oi.`customer_name` customerName,
-        oi.`customer_code` customerCode,
-        oi.`legal_name` legalName,
-        '' goodsInfo,
-        (SELECT address FROM order_address oa where oa.`business_id` = i.id AND oa.`type` = 3 and oa.business_type=5
-        ORDER BY oa.`id` LIMIT 1)
-        takeAddress,
-        (SELECT address FROM order_address oa where oa.`business_id` = i.id AND oa.`type` = 4 and oa.business_type=5
-        ORDER BY oa.`id` LIMIT 1)
-        giveAddress,
-        (SELECT oc.`status` FROM order_customs oc WHERE oc.`main_order_no`= oi.`order_no` LIMIT 1) subCustomsStatus,
-        (SELECT ot.`status` FROM order_transport ot WHERE ot.`main_order_no`= oi.`order_no` LIMIT 1) subTmsStatus,
-        '' subSeaStatus,
-        i.status subInlandStatus,
-        '' subTrailerStatus,
-        oi.`created_user` createdUser,
-        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
-        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
-        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
-        ELSE FALSE
-        END) isCost,
-        oi.`need_input_cost` needInputCost,
-        oi.`customs_release` customsRelease,
-        '' rejectComment,
-        oi.unit_code unitCode
-        FROM
-        order_info oi LEFT JOIN order_inland_transport i ON
-        oi.`order_no` = i.`main_order_no`
-        LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`
-        WHERE oi.`class_code` = 'NLYS'
-
-        -- 拖车单
-        UNION ALL
-        SELECT DISTINCT
-        oi.id,
-        oi.remarks,
-        oi.`order_no` orderNo,
-        oi.`biz_code` bizCode,
-        oi.`legal_entity_id` legal_entity_id,
-        tor.`imp_and_exp_type` goodsType,
-        '' portCode,
-        '' portName,
-        oi.`status`,
-        oi.`class_code` classCode,
-        pc2.name classCodeDesc,
-        oi.selected_server selectedServer,
-        oi.`customer_name` customerName,
-        oi.`customer_code` customerCode,
-        oi.`legal_name` legalName,
-        '' goodsInfo,
-        (SELECT address FROM order_address oa where oa.`business_id` = tor.id AND oa.`type` = 4 ORDER BY oa.`id` LIMIT 1)
-        takeAddress,
-        (SELECT address FROM order_address oa where oa.`business_id` = tor.id AND oa.`type` = 3 ORDER BY oa.`id` LIMIT 1)
-        giveAddress,
-        '' subCustomsStatus,
-        '' subTmsStatus,
-        '' subSeaStatus,
-        '' subInlandStatus,
-        tor.`status` subTrailerStatus,
-        oi.`created_user` createdUser,
-        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
-        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
-        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
-        ELSE FALSE
-        END) isCost,
-        oi.`need_input_cost` needInputCost,
-        oi.`customs_release` customsRelease,
-        '' rejectComment,
-        oi.unit_code unitCode
-        FROM
-        order_info oi LEFT JOIN trailer_order tor ON
-        oi.`order_no` = tor.`main_order_no`
-        LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`
-        WHERE oi.`class_code` = 'TC'
-
         ) temp WHERE 1 = 1
         <if test="form.cmd == 'noSubmit'">
             and temp.`status` = 2
@@ -431,15 +558,6 @@
             </otherwise>
         </choose>
 
-        <!--        <if test="form.cmd == 'myOrder'">-->
-        <!--            and temp.createdUser = #{form.loginUserName}-->
-        <!--        </if>-->
-        <!--        <if test="legalIds != null">-->
-        <!--            and temp.`legal_entity_id` in-->
-        <!--            <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
-        <!--                #{legalId}-->
-        <!--            </foreach>-->
-        <!--        </if>-->
     </select>
 
     <select id="findGoCustomsAuditByPage" parameterType="com.jayud.oms.model.bo.QueryOrderInfoForm"

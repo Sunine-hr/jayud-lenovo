@@ -503,7 +503,7 @@ public class OrderComboxController {
         //获取结算单位下拉框
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("status","1");
-        List<CustomerInfo> customerInfos = customerInfoService.list();
+        List<CustomerInfo> customerInfos = customerInfoService.list(queryWrapper);
         List<InitComboxStrVO> initComboxVOS = new ArrayList<>();
         for (CustomerInfo customerInfo : customerInfos) {
             InitComboxStrVO initComboxVO = new InitComboxStrVO();

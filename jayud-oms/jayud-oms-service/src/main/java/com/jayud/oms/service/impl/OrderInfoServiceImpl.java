@@ -852,6 +852,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 List<FileView> attachments = this.logisticsTrackService.getAttachments(seaOrderVO.getOrderId()
                         , BusinessTypeEnum.HY.getCode(), prePath);
                 seaOrderVO.setAllPics(attachments);
+                //结算单位名称
+                CustomerInfo customerInfo = customerInfoService.getByCode(inputMainOrderVO.getUnitCode());
+                seaOrderVO.setUnitName(customerInfo.getName());
                 inputOrderVO.setSeaOrderForm(seaOrderVO);
             }
         }
@@ -870,6 +873,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 List<FileView> attachments = this.logisticsTrackService.getAttachments(trailerOrderVO.getId()
                         , BusinessTypeEnum.TC.getCode(), prePath);
                 trailerOrderVO.setAllPics(attachments);
+                //结算单位名称
+                CustomerInfo customerInfo = customerInfoService.getByCode(inputMainOrderVO.getUnitCode());
+                trailerOrderVO.setUnitName(customerInfo.getName());
                 inputOrderVO.setTrailerOrderForm(trailerOrderVO);
             }
         }

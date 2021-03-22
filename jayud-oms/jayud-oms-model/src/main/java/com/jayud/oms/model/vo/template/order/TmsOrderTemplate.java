@@ -178,6 +178,15 @@ public class TmsOrderTemplate {
     @ApiModelProperty(value = "主订单编号")
     private String mainOrderNo;
 
+    @ApiModelProperty(value = "主订单id")
+    private Long mainOrderId;
+
+    @ApiModelProperty(value = "订单类别")
+    private String classCode;
+
+    @ApiModelProperty(value = "主订单状态")
+    private Integer mainOrderStatus;
+
 
     public void setOrderTakeAdrForms1(List<InputOrderTakeAdrVO> orderTakeAdrForms1) {
         this.assemblyPickUpInfo(orderTakeAdrForms1);
@@ -238,10 +247,12 @@ public class TmsOrderTemplate {
 
     public void setCost(Boolean cost) {
         this.cost = cost;
-        if (cost){
-            this.costDesc="是";
-        }else {
-            this.costDesc="否";
+        if (cost) {
+            this.costDesc = "是";
+        } else {
+            this.costDesc = "否";
         }
     }
+
+
 }

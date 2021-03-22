@@ -375,13 +375,15 @@ public class OrderInfoController {
     public CommonResult<OrderInfoTemplate> getSubOrderDetail(@RequestBody @Valid GetOrderDetailForm form) {
         InputOrderVO inputOrderVO = orderInfoService.getOrderDetail(form);
 
+        OrderInfoTemplate orderInfoTemplate = new OrderInfoTemplate();
         //中港模板
         InputOrderTransportVO orderTransportForm = inputOrderVO.getOrderTransportForm();
-
-        OrderInfoTemplate orderInfoTemplate = new OrderInfoTemplate();
         if (orderTransportForm != null) {
             TmsOrderTemplate tmsOrderTemplate = ConvertUtil.convert(orderTransportForm, TmsOrderTemplate.class);
             tmsOrderTemplate.setCost(this.orderInfoService.isCost(tmsOrderTemplate.getOrderNo(), 1));
+            tmsOrderTemplate.setMainOrderId(form.getMainOrderId());
+            tmsOrderTemplate.setClassCode(form.getClassCode());
+            tmsOrderTemplate.setMainOrderStatus(inputOrderVO.getOrderForm().getStatus());
             Template<TmsOrderTemplate> template = new Template<TmsOrderTemplate>() {
             }.setList(Collections.singletonList(tmsOrderTemplate));
             orderInfoTemplate.setTmsOrderTemplates(template);

@@ -77,4 +77,20 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
         condition.lambda().notIn(OrderReceivableCost::getId, excludeIds);
         return this.count(condition);
     }
+
+    /**
+     * 是否录用过费用
+     *
+     * @param orderNo
+     * @param type    0.主订单,1子订单
+     * @return
+     */
+    @Override
+    public boolean isCost(String orderNo, Integer type) {
+        QueryWrapper<OrderReceivableCost> condition = new QueryWrapper<>();
+        if (type == 1) {
+            condition.lambda().eq(OrderReceivableCost::getOrderNo, orderNo);
+        }
+        return this.count(condition)>0;
+    }
 }

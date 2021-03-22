@@ -11,6 +11,7 @@ import com.jayud.common.config.FeignRequestInterceptor;
 import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.InitComboxVO;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -169,4 +170,9 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/initDictByDictTypeCode")
     public ApiResult<List<InitComboxStrVO>> initDictByDictTypeCode(@RequestParam("dictTypeCode") String dictTypeCode);
+
+    @ApiOperation(value = "主订单驳回标识操作")
+    @RequestMapping(value = "/api/doMainOrderRejectionSignOpt")
+    public ApiResult<Boolean> doMainOrderRejectionSignOpt(@RequestParam("mainOrderNo") String mainOrderNo,
+                                                          @RequestParam("rejectionDesc") String rejectionDesc);
 }

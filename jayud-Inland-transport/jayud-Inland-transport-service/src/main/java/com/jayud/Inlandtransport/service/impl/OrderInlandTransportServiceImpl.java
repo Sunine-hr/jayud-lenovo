@@ -265,6 +265,8 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
         tmp.setStatus(auditInfoForm.getAuditStatus());
 
         omsClient.saveAuditInfo(auditInfoForm);
+        omsClient.doMainOrderRejectionSignOpt(orderInlandTransport.getMainOrderNo(),
+                orderInlandTransport.getOrderNo() + "-" + auditInfoForm.getAuditComment() + ",");
         this.updateById(tmp);
     }
 
@@ -289,6 +291,9 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
                 result = omsClient.deleteLogisticsTrackByType(orderInlandTransport.getId(), BusinessTypeEnum.NL.getCode());
                 //删除派车数据
                 this.orderInlandSendCarsService.deleteByOrderNo(orderInlandTransport.getOrderNo());
+                //执行主订单驳回标识
+                omsClient.doMainOrderRejectionSignOpt(orderInlandTransport.getMainOrderNo(),
+                        orderInlandTransport.getOrderNo() + "-" + auditInfoForm.getAuditComment() + ",");
                 break;
             case 2://派车驳回
                 DelOprStatusForm form = new DelOprStatusForm();

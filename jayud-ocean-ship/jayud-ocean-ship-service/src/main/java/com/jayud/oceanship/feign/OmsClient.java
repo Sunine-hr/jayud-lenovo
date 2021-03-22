@@ -14,6 +14,7 @@ import com.jayud.oceanship.bo.SeaProcessOptForm;
 import com.jayud.oceanship.po.OrderFlowSheet;
 import com.jayud.oceanship.vo.GoodsVO;
 import com.jayud.oceanship.vo.OrderAddressVO;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -183,4 +184,9 @@ public interface OmsClient {
     public ApiResult<String> getOrderProcessNode(@RequestParam("mainOrderNo") String mainOrderNo,
                                                  @RequestParam("orderNo") String orderNo,
                                                  @RequestParam("currentNodeStatus") String currentNodeStatus);
+
+    @ApiOperation(value = "主订单驳回标识操作")
+    @RequestMapping(value = "/api/doMainOrderRejectionSignOpt")
+    public ApiResult<Boolean> doMainOrderRejectionSignOpt(@RequestParam("mainOrderNo") String mainOrderNo,
+                                                          @RequestParam("rejectionDesc") String rejectionDesc);
 }

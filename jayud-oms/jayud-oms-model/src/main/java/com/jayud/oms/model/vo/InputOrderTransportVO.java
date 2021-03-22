@@ -38,6 +38,9 @@ public class InputOrderTransportVO {
     @ApiModelProperty("结算单位CODE")
     private String unitCode;
 
+    @ApiModelProperty("结算单位名称")
+    private String unitName;
+
     @ApiModelProperty("接单法人")
     private String legalName;
 

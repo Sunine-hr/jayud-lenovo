@@ -107,6 +107,12 @@ public class OrderInfo extends Model<OrderInfo> {
     @ApiModelProperty(value = "主订单备注")
     private String remarks;
 
+    @ApiModelProperty(value = "是否订单驳回")
+    private Boolean isRejected;
+
+    @ApiModelProperty(value = "驳回描述")
+    private String rejectComment;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

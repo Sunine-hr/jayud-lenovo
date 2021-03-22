@@ -4,6 +4,7 @@ package com.jayud.customs.feign;
 import com.jayud.common.ApiResult;
 import com.jayud.customs.model.bo.*;
 import com.jayud.customs.model.vo.OrderStatusVO;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -74,4 +75,9 @@ public interface OmsClient {
     @RequestMapping(value = "/api/getOrderNo")
     ApiResult getOrderNo(@RequestParam("preOrder") String preOrder , @RequestParam("classCode") String classCode);
 
+
+    @ApiOperation(value = "主订单驳回标识操作")
+    @RequestMapping(value = "/api/doMainOrderRejectionSignOpt")
+    public ApiResult<Boolean> doMainOrderRejectionSignOpt(@RequestParam("mainOrderNo") String mainOrderNo,
+                                                          @RequestParam("rejectionDesc") String rejectionDesc);
 }

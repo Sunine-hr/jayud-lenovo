@@ -1054,7 +1054,7 @@ public class ExternalApiController {
 
     @ApiOperation(value = "单个存储商品信息")
     @RequestMapping(value = "api/saveOrUpdateGood")
-    ApiResult saveOrUpdateGood(@RequestBody AddGoodsForm goodsForm){
+    ApiResult saveOrUpdateGood(@RequestBody AddGoodsForm goodsForm) {
         LocalDateTime now = LocalDateTime.now();
         Goods goods = ConvertUtil.convert(goodsForm, Goods.class);
         goods.setCreateTime(goods.getId() == null ? now : null);
@@ -1064,7 +1064,7 @@ public class ExternalApiController {
 
     @ApiOperation(value = "根据id获取商品信息")
     @RequestMapping(value = "api/getGoodById")
-    ApiResult getGoodById(@RequestParam("id") Long id){
+    ApiResult getGoodById(@RequestParam("id") Long id) {
         Goods goods = this.goodsService.getById(id);
         InputGoodsVO convert = ConvertUtil.convert(goods, InputGoodsVO.class);
         return ApiResult.ok(convert);
@@ -1135,6 +1135,17 @@ public class ExternalApiController {
     @RequestMapping(value = "/api/getDriverById")
     public ApiResult<DriverInfo> getDriverById(@RequestParam("driverId") Long driverId) {
         return ApiResult.ok(this.driverInfoService.getById(driverId));
+    }
+
+
+    @ApiOperation(value = "主订单驳回标识操作")
+    @RequestMapping(value = "/api/doMainOrderRejectionSignOpt")
+    public ApiResult<Boolean> doMainOrderRejectionSignOpt(@RequestParam("mainOrderNo") String mainOrderNo,
+                                                          @RequestParam("rejectionDesc") String rejectionDesc) {
+        List<OrderInfo> mainOrderInfos = orderInfoService.getByOrderNos(Collections.singletonList(mainOrderNo));
+        OrderInfo orderInfo = mainOrderInfos.get(0);
+        return ApiResult.ok(orderInfoService.updateById(new OrderInfo().setId(orderInfo.getId())
+                .setIsRejected(true).setRejectComment(rejectionDesc)));
     }
 }
 

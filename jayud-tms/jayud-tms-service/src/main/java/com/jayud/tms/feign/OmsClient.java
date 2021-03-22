@@ -144,6 +144,7 @@ public interface OmsClient {
 
     /**
      * 通关前审核/中港通关前复核页面详情
+     *
      * @return
      */
     @RequestMapping(value = "/api/initGoCustomsAudit")
@@ -158,5 +159,18 @@ public interface OmsClient {
 
     @ApiOperation(value = "根据司机id查询司机信息")
     @RequestMapping(value = "/api/getDriverById")
-    public ApiResult getDriverById(@RequestParam("driverId") Long driverId) ;
+    public ApiResult getDriverById(@RequestParam("driverId") Long driverId);
+
+    /**
+     * 根据客户code集合查询客户信息
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getCustomerByUnitCode")
+    ApiResult getCustomerByUnitCode(@RequestBody List<String> unitCodes);
+
+    @ApiOperation(value = "主订单驳回标识操作")
+    @RequestMapping(value = "/api/doMainOrderRejectionSignOpt")
+    public ApiResult<Boolean> doMainOrderRejectionSignOpt(@RequestParam("mainOrderNo") String mainOrderNo,
+                                                          @RequestParam("rejectionDesc") String rejectionDesc);
 }

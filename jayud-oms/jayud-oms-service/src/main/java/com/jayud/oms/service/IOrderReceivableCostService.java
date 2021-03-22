@@ -52,4 +52,12 @@ public interface IOrderReceivableCostService extends IService<OrderReceivableCos
      * 获取审核通过费用数目
      */
     public Integer getApprovalFeeCount(String mainOrder, List<Long> excludeIds);
+
+    /**
+     * 是否录用过费用
+     * @param orderNo
+     * @param type    0.主订单,1子订单
+     * @return
+     */
+    boolean isCost(String orderNo, Integer type);
 }

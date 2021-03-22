@@ -100,6 +100,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private InlandTpClient inlandTpClient;
     @Autowired
     private IOrderFlowSheetService orderFlowSheetService;
+    @Autowired
+    private IOrderReceivableCostService orderReceivableCostService;
+    @Autowired
+    private IOrderPaymentCostService orderPaymentCostService;
 
     private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(),
             SubOrderSignEnum.KY.getSignOne(), SubOrderSignEnum.HY.getSignOne(),
@@ -214,6 +218,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             OrderInfo oldOrder = baseMapper.selectById(form.getOrderId());
             orderInfo.setId(form.getOrderId());
             orderInfo.setUpTime(LocalDateTime.now());
+            orderInfo.setIsRejected(false);
+            orderInfo.setRejectComment(" ");
             orderInfo.setUpUser(UserOperator.getToken() == null ? loginUserName : UserOperator.getToken());
         } else {//新增
 
@@ -259,19 +265,19 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             pageInfo = baseMapper.findGoCustomsAuditByPage(page, form, legalIds);
         } else {
             //定义排序规则
-            page.addOrder(OrderItem.desc("temp.id"));
+            page.addOrder(OrderItem.desc("id"));
             pageInfo = baseMapper.findOrderInfoByPage(page, form, legalIds);
             //根据主订单查询子订单数据
             List<OrderInfoVO> orderInfoVOs = pageInfo.getRecords();
             if (CollectionUtil.isEmpty(orderInfoVOs)) {
                 return pageInfo;
             }
-            List<String> mainOrderNoList = orderInfoVOs.stream().map(OrderInfoVO::getOrderNo).collect(Collectors.toList());
-            Map<String, Map<String, Object>> subOrderMap = this.getSubOrderByMainOrderNos(mainOrderNoList);
-            //查询子订单驳回原因
-            this.getSubOrderRejectionMsg(orderInfoVOs, subOrderMap);
-            //组装主订单数据
-            assemblyMasterOrderData(orderInfoVOs, subOrderMap);
+//            List<String> mainOrderNoList = orderInfoVOs.stream().map(OrderInfoVO::getOrderNo).collect(Collectors.toList());
+//            Map<String, Map<String, Object>> subOrderMap = this.getSubOrderByMainOrderNos(mainOrderNoList);
+//            //查询子订单驳回原因
+//            this.getSubOrderRejectionMsg(orderInfoVOs, subOrderMap);
+//            //组装主订单数据
+//            assemblyMasterOrderData(orderInfoVOs, subOrderMap);
         }
         return pageInfo;
     }
@@ -735,8 +741,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     List<FileView> attachments = this.logisticsTrackService.getAttachments(subOrder.getSubOrderId()
                             , BusinessTypeEnum.BG.getCode(), prePath);//节点附件
                     allPics.addAll(attachments);
+                    subOrder.setFileViews(attachments);
+                    //结算单位名称
+                    CustomerInfo customerInfo = customerInfoService.getByCode(inputMainOrderVO.getUnitCode());
+                    subOrder.setUnitName(customerInfo.getName());
                 }
                 inputOrderCustomsVO.setAllPics(allPics);
+
 
                 //循环处理接单人和接单时间
                 List<InputSubOrderCustomsVO> inputSubOrderCustomsVOS = inputOrderCustomsVO.getSubOrders();
@@ -762,7 +773,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             if (inputOrderTransportVO != null) {
                 //组装车型/柜号
                 inputOrderTransportVO.assembleModelAndCntrNo();
-
+                //结算单位名称
+                CustomerInfo customerInfo = customerInfoService.getByCode(inputMainOrderVO.getUnitCode());
+                inputOrderTransportVO.setUnitName(customerInfo.getName());
                 //附件信息
                 List<FileView> allPics = new ArrayList<>(StringUtils.getFileViews(inputOrderTransportVO.getCntrPic(), inputOrderTransportVO.getCntrPicName(), prePath));
                 //获取反馈操作人时上传的附件
@@ -811,6 +824,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 List<FileView> attachments = this.logisticsTrackService.getAttachments(airOrderVO.getId()
                         , BusinessTypeEnum.KY.getCode(), prePath);
                 airOrderVO.setAllPics(attachments);
+                //结算单位名称
+                CustomerInfo customerInfo = customerInfoService.getByCode(inputMainOrderVO.getUnitCode());
+                airOrderVO.setUnitName(customerInfo.getName());
                 inputOrderVO.setAirOrderForm(airOrderVO);
             }
         }
@@ -836,6 +852,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 List<FileView> attachments = this.logisticsTrackService.getAttachments(seaOrderVO.getOrderId()
                         , BusinessTypeEnum.HY.getCode(), prePath);
                 seaOrderVO.setAllPics(attachments);
+                //结算单位名称
+                CustomerInfo customerInfo = customerInfoService.getByCode(inputMainOrderVO.getUnitCode());
+                seaOrderVO.setUnitName(customerInfo.getName());
                 inputOrderVO.setSeaOrderForm(seaOrderVO);
             }
         }
@@ -854,6 +873,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 List<FileView> attachments = this.logisticsTrackService.getAttachments(trailerOrderVO.getId()
                         , BusinessTypeEnum.TC.getCode(), prePath);
                 trailerOrderVO.setAllPics(attachments);
+                //结算单位名称
+                CustomerInfo customerInfo = customerInfoService.getByCode(inputMainOrderVO.getUnitCode());
+                trailerOrderVO.setUnitName(customerInfo.getName());
                 inputOrderVO.setTrailerOrderForm(trailerOrderVO);
             }
         }
@@ -1433,6 +1455,25 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return this.baseMapper.pendingGoCustomsAuditNum(legalIds);
     }
 
+
+    /**
+     * 是否录用过费用
+     *
+     * @param orderNo
+     * @param type    0.主订单,1子订单
+     * @return
+     */
+    @Override
+    public boolean isCost(String orderNo, Integer type) {
+        if (orderReceivableCostService.isCost(orderNo, type)) {
+            return true;
+        }
+        if (orderPaymentCostService.isCost(orderNo, type)) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * 子订单使用
      * JSONArray转Map
@@ -1645,33 +1686,33 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      *
      * @return
      */
-    private void getSubOrderRejectionMsg
-    (List<OrderInfoVO> orderInfoVOs, Map<String, Map<String, Object>> subOrderMap) {
-        for (OrderInfoVO orderInfoVO : orderInfoVOs) {
-            Map<String, Object> subOrderInfos = subOrderMap.get(orderInfoVO.getOrderNo());
-            String[] rejectionStatus = OrderStatusEnum.getRejectionStatus(null);
-            StringBuffer sb = StringUtils.isEmpty(orderInfoVO.getRejectComment()) ? new StringBuffer() : new StringBuffer(orderInfoVO.getRejectComment() + ",");
-            subOrderInfos.forEach((key, value) -> {
-                if (value != null) {
-                    String tableDesc = SubOrderSignEnum.getSignOne2SignTwo(key);
-                    if (value instanceof List) {
-                        List<Map<String, Object>> maps = (List<Map<String, Object>>) value;
-                        for (Map<String, Object> map : maps) {
-                            AuditInfo auditInfo = this.auditInfoService.getLatestByRejectionStatus(Long.valueOf(map.get("id").toString()),
-                                    tableDesc + "表", rejectionStatus);
-                            if (!StringUtils.isEmpty(auditInfo.getAuditComment())) {
-                                sb.append(map.get("orderNo")).append("-")
-                                        .append(auditInfo.getAuditComment()).append(",");
-                            }
-                        }
-                    }
-                }
-            });
-            if (!StringUtils.isEmpty(sb.toString())) {
-                orderInfoVO.setRejectComment(sb.substring(0, sb.length() - 1));
-            }
-        }
-    }
+//    private void getSubOrderRejectionMsg
+//    (List<OrderInfoVO> orderInfoVOs, Map<String, Map<String, Object>> subOrderMap) {
+//        for (OrderInfoVO orderInfoVO : orderInfoVOs) {
+//            Map<String, Object> subOrderInfos = subOrderMap.get(orderInfoVO.getOrderNo());
+//            String[] rejectionStatus = OrderStatusEnum.getRejectionStatus(null);
+//            StringBuffer sb = StringUtils.isEmpty(orderInfoVO.getRejectComment()) ? new StringBuffer() : new StringBuffer(orderInfoVO.getRejectComment() + ",");
+//            subOrderInfos.forEach((key, value) -> {
+//                if (value != null) {
+//                    String tableDesc = SubOrderSignEnum.getSignOne2SignTwo(key);
+//                    if (value instanceof List) {
+//                        List<Map<String, Object>> maps = (List<Map<String, Object>>) value;
+//                        for (Map<String, Object> map : maps) {
+//                            AuditInfo auditInfo = this.auditInfoService.getLatestByRejectionStatus(Long.valueOf(map.get("id").toString()),
+//                                    tableDesc + "表", rejectionStatus);
+//                            if (!StringUtils.isEmpty(auditInfo.getAuditComment())) {
+//                                sb.append(map.get("orderNo")).append("-")
+//                                        .append(auditInfo.getAuditComment()).append(",");
+//                            }
+//                        }
+//                    }
+//                }
+//            });
+//            if (!StringUtils.isEmpty(sb.toString())) {
+//                orderInfoVO.setRejectComment(sb.substring(0, sb.length() - 1));
+//            }
+//        }
+//    }
 
     /**
      * 组装数据
@@ -1685,7 +1726,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             //子订单信息
             Map<String, Object> subOrderInfos = subOrderMap.get(orderInfoVO.getOrderNo());
             //订单状态
-            orderInfoVO.setSubOrderStatusDesc(assemblySubOrderStatus(subOrderInfos, orderInfoVO));
+//            orderInfoVO.setSubOrderStatusDesc(assemblySubOrderStatus(subOrderInfos, orderInfoVO));
             //增加中港信息字段
             //增加空运信息字段
             //商品信息组合
@@ -1739,7 +1780,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         .append("-").append(OrderStatusEnum.getDesc(jsonObject.getStr("status"))).append(",");
 
                 if (SubOrderSignEnum.NL.getSignOne().equals(subOrderType)) {
-                    orderInfoVO.setSubInlandStatus(jsonObject.getStr("status"));
+//                    orderInfoVO.setSubInlandStatus(jsonObject.getStr("status"));
                 }
             }
         }

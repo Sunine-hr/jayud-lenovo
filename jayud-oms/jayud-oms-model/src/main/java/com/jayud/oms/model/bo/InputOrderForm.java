@@ -30,7 +30,6 @@ public class InputOrderForm {
     @ApiModelProperty(value = "内陆")
     private InputOrderInlandTransportForm orderInlandTransportForm;
 
-
     @ApiModelProperty(value = "拖车")
     private  InputTrailerOrderFrom trailerOrderFrom;
 

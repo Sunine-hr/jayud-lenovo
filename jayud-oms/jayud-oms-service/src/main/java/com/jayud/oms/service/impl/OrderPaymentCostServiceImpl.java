@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.oms.mapper.OrderPaymentCostMapper;
 import com.jayud.oms.model.bo.GetCostDetailForm;
 import com.jayud.oms.model.po.OrderPaymentCost;
+import com.jayud.oms.model.po.OrderReceivableCost;
 import com.jayud.oms.model.vo.DriverOrderPaymentCostVO;
 import com.jayud.oms.model.vo.InputPaymentCostVO;
 import com.jayud.oms.service.IOrderPaymentCostService;
@@ -55,13 +56,22 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
     @Override
     public List<OrderPaymentCost> getCostSubmittedByOrderNos(List<String> mainOrders,
                                                              List<String> subOrderNos) {
-        if (CollectionUtils.isNotEmpty(mainOrders)){
+        if (CollectionUtils.isNotEmpty(mainOrders)) {
 
-        }else {
+        } else {
 
         }
 
         return null;
+    }
+
+    @Override
+    public boolean isCost(String orderNo, Integer type) {
+        QueryWrapper<OrderPaymentCost> condition = new QueryWrapper<>();
+        if (type == 1) {
+            condition.lambda().eq(OrderPaymentCost::getOrderNo, orderNo);
+        }
+        return this.count(condition) > 0;
     }
 
 }

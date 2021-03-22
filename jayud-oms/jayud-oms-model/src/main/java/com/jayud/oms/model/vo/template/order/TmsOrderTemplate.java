@@ -3,25 +3,24 @@ package com.jayud.oms.model.vo.template.order;
 import cn.hutool.core.collection.CollectionUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.utils.Utilities;
 import com.jayud.oms.model.vo.InputOrderTakeAdrVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-//@Accessors(chain = true)
-public class TmsOrderTemplate extends Template<TmsOrderTemplate> {
+@Accessors(chain = true)
+public class TmsOrderTemplate {
 
     @ApiModelProperty(value = "中港订单ID")
     private Long id;
 
-    @ApiModelProperty(value = "中港订单号", required = true)
+    @ApiModelProperty(value = "订单编号", required = true)
     private String orderNo;
 
     @ApiModelProperty(value = "提货时间", required = true)
@@ -58,8 +57,7 @@ public class TmsOrderTemplate extends Template<TmsOrderTemplate> {
     private String deliveryAddr;
 
     @ApiModelProperty(value = "费用状态", required = true)
-    private String cost;
-
+    private String costDesc;
 
     @ApiModelProperty("通关口岸CODE")
     private String portCode;
@@ -72,6 +70,9 @@ public class TmsOrderTemplate extends Template<TmsOrderTemplate> {
 
     @ApiModelProperty(value = "状态")
     private String status;
+
+    @ApiModelProperty(value = "费用状态", required = true)
+    private Boolean cost;
 
 
 //    @ApiModelProperty(value = "六联单号")
@@ -174,6 +175,18 @@ public class TmsOrderTemplate extends Template<TmsOrderTemplate> {
     @JsonIgnore
     private List<InputOrderTakeAdrVO> orderTakeAdrForms2 = new ArrayList<>();
 
+    @ApiModelProperty(value = "主订单编号")
+    private String mainOrderNo;
+
+    @ApiModelProperty(value = "主订单id")
+    private Long mainOrderId;
+
+    @ApiModelProperty(value = "订单类别")
+    private String classCode;
+
+    @ApiModelProperty(value = "主订单状态")
+    private Integer mainOrderStatus;
+
 
     public void setOrderTakeAdrForms1(List<InputOrderTakeAdrVO> orderTakeAdrForms1) {
         this.assemblyPickUpInfo(orderTakeAdrForms1);
@@ -231,4 +244,15 @@ public class TmsOrderTemplate extends Template<TmsOrderTemplate> {
         this.status = status;
         this.statusDesc = OrderStatusEnum.getDesc(status);
     }
+
+    public void setCost(Boolean cost) {
+        this.cost = cost;
+        if (cost) {
+            this.costDesc = "是";
+        } else {
+            this.costDesc = "否";
+        }
+    }
+
+
 }

@@ -59,6 +59,9 @@ public class InputTrailerOrderVO {
     @ApiModelProperty(value = "结算单位code")
     private String unitCode;
 
+    @ApiModelProperty(value = "结算单位")
+    private String unitName;
+
     @ApiModelProperty(value = "结算单位姓名")
     private String unitCodeName;
 
@@ -191,4 +194,8 @@ public class InputTrailerOrderVO {
     @ApiModelProperty(value = "总箱数")
     private String totalXAmountName;
 
+
+    public void setUnitName(String unitName) {
+        this.unitName=unitName;
+    }
 }

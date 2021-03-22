@@ -654,6 +654,10 @@ public class OrderInTransportController {
             deleteOpr.setStatus(deleteStatus);
             //删除特定流程
             this.omsClient.delSpecOprStatus(deleteOpr);
+
+            //执行主订单驳回标识
+            omsClient.doMainOrderRejectionSignOpt(orderTransport1.getMainOrderNo(),
+                    orderTransport1.getOrderNo() + "-" + auditInfoForm.getAuditComment() + ",");
         }
 
         boolean result = orderTransportService.updateById(orderTransport);

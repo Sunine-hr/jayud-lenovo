@@ -20,14 +20,39 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "业务类型")
     private String bizCode;
 
-    @ApiModelProperty(value = "进出口类型")
-    private String goodsType;
+    @ApiModelProperty(value = "作业类型")
+    private String classCodeDesc;
 
-    @ApiModelProperty(value = "进出口类型描述")
-    private String goodsTypeDesc;
+    @ApiModelProperty(value = "客户名称")
+    private String customerName;
 
-    @ApiModelProperty(value = "通关口岸")
-    private String portName;
+    @ApiModelProperty(value = "结算单位")
+    private String unitAccount;
+
+    @ApiModelProperty(value = "合同号")
+    private String contractNo;
+
+    @ApiModelProperty(value = "客户参考号")
+    private String referenceNo;
+
+    @ApiModelProperty(value = "业务员")
+    private String bizUname;
+
+    @ApiModelProperty(value = "是否有费用详情")
+    private boolean isCost;
+
+    @ApiModelProperty(value = "主订单备注")
+    private String remarks;
+
+
+//    @ApiModelProperty(value = "进出口类型")
+//    private String goodsType;
+//
+//    @ApiModelProperty(value = "进出口类型描述")
+//    private String goodsTypeDesc;
+
+//    @ApiModelProperty(value = "通关口岸")
+//    private String portName;
 
     @ApiModelProperty(value = "状态")
     private String status;
@@ -35,14 +60,10 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "状态描述")
     private String statusDesc;
 
-    @ApiModelProperty(value = "作业类型")
-    private String classCodeDesc;
+
 
     @ApiModelProperty(value = "作业类型CODE")
     private String classCode;
-
-    @ApiModelProperty(value = "客户名称")
-    private String customerName;
 
     @ApiModelProperty(value = "客户名称CODE")
     private String customerCode;
@@ -65,14 +86,11 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "创建时间")
     private String createdTimeStr;
 
-    @ApiModelProperty(value = "是否有费用详情")
-    private boolean isCost;
-
-    @ApiModelProperty(value = "报关状态,用于标识驳回可编辑")
-    private String subCustomsStatus;
-
-    @ApiModelProperty(value = "中港运输状态,用于标识驳回可编辑")
-    private String subTmsStatus;
+//    @ApiModelProperty(value = "报关状态,用于标识驳回可编辑")
+//    private String subCustomsStatus;
+//
+//    @ApiModelProperty(value = "中港运输状态,用于标识驳回可编辑")
+//    private String subTmsStatus;
 
 //    @ApiModelProperty(value = "报关状态描述,用于标识驳回可编辑")
 //    private String subCustomsDesc;
@@ -81,12 +99,15 @@ public class OrderInfoVO {
 //    private String subTmsDesc;
 
 
-    @ApiModelProperty(value = "空运状态,用于标识驳回可编辑")
-    private String subAirStatus;
+//    @ApiModelProperty(value = "空运状态,用于标识驳回可编辑")
+//    private String subAirStatus;
+//
+//
+//    @ApiModelProperty(value = "内陆状态,用于标识驳回可编辑")
+//    private String subInlandStatus;
 
-
-    @ApiModelProperty(value = "内陆状态,用于标识驳回可编辑")
-    private String subInlandStatus;
+    @ApiModelProperty(value = "拖车状态,用于标识驳回可编辑")
+    private String subTrailerStatus;
 
 //    @ApiModelProperty(value = "空运状态描述,用于标识驳回可编辑")
 //    private String subAirDesc;
@@ -100,8 +121,11 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "已选中得服务")
     private String selectedServer;
 
-    @ApiModelProperty(value = "驳回原因,目前只要求显示报关驳回的")
+    @ApiModelProperty(value = "驳回原因")
     private String rejectComment;
+
+    @ApiModelProperty(value = "驳回原因")
+    private Boolean isRejected;
 
     @ApiModelProperty(value = "结算单位")
     private String unitCode;
@@ -109,14 +133,13 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "费用录用默认结算单位")
     private String defaultUnitCode;
 
-    @ApiModelProperty(value = "子订单状态描述")
-    private String subOrderStatusDesc;
+//    @ApiModelProperty(value = "子订单状态描述")
+//    private String subOrderStatusDesc;
+//
+//    @ApiModelProperty(value = "子订单状态描述增加换行")
+//    private String subOrderStatusDescOne;
 
-    @ApiModelProperty(value = "子订单状态描述增加换行")
-    private String subOrderStatusDescOne;
 
-    @ApiModelProperty(value = "主订单备注")
-    private String remarks;
 
 
 //    @ApiModelProperty(value = "中港订单号")
@@ -132,30 +155,30 @@ public class OrderInfoVO {
         return OrderStatusEnum.getDesc(this.status);
     }
 
-    public String getGoodsTypeDesc() {
-        if (CommonConstant.VALUE_1.equals(this.goodsType)) {
-            goodsTypeDesc = CommonConstant.GOODS_TYPE_DESC_1;
-        } else if (CommonConstant.VALUE_2.equals(this.goodsType)) {
-            goodsTypeDesc = CommonConstant.GOODS_TYPE_DESC_2;
-        }
-        return goodsTypeDesc;
-    }
+//    public String getGoodsTypeDesc() {
+//        if (CommonConstant.VALUE_1.equals(this.goodsType)) {
+//            goodsTypeDesc = CommonConstant.GOODS_TYPE_DESC_1;
+//        } else if (CommonConstant.VALUE_2.equals(this.goodsType)) {
+//            goodsTypeDesc = CommonConstant.GOODS_TYPE_DESC_2;
+//        }
+//        return goodsTypeDesc;
+//    }
 
-    public String getSubCustomsDesc() {
-        if (!StringUtil.isNullOrEmpty(this.subCustomsStatus)) {
-            String desc = "";
-            StringBuilder sb = new StringBuilder();
-            String[] strs = this.subCustomsStatus.split(",");
-            for (String str : strs) {
-                sb.append(OrderStatusEnum.getDesc(this.subCustomsStatus)).append(",");
-            }
-            if (!"".equals(String.valueOf(sb))) {
-                desc = sb.substring(0, sb.length() - 1);
-            }
-            return desc;
-        }
-        return "";
-    }
+//    public String getSubCustomsDesc() {
+//        if (!StringUtil.isNullOrEmpty(this.subCustomsStatus)) {
+//            String desc = "";
+//            StringBuilder sb = new StringBuilder();
+//            String[] strs = this.subCustomsStatus.split(",");
+//            for (String str : strs) {
+//                sb.append(OrderStatusEnum.getDesc(this.subCustomsStatus)).append(",");
+//            }
+//            if (!"".equals(String.valueOf(sb))) {
+//                desc = sb.substring(0, sb.length() - 1);
+//            }
+//            return desc;
+//        }
+//        return "";
+//    }
 
 //    public String getSubTmsDesc() {
 //        return OrderStatusEnum.getDesc(this.subTmsStatus);
@@ -182,10 +205,10 @@ public class OrderInfoVO {
 //        return sb.length() == 0 ? "" : sb.substring(0, sb.length() - 1);
 //    }
 
-    public void setSubOrderStatusDesc(String subOrderStatusDesc) {
-        this.subOrderStatusDesc = subOrderStatusDesc;
-        this.subOrderStatusDescOne = subOrderStatusDesc.replaceAll(",", "<br/>");
-    }
+//    public void setSubOrderStatusDesc(String subOrderStatusDesc) {
+//        this.subOrderStatusDesc = subOrderStatusDesc;
+//        this.subOrderStatusDescOne = subOrderStatusDesc.replaceAll(",", "<br/>");
+//    }
 
 
 //    public String getRemarks() {

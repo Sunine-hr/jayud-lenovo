@@ -63,4 +63,10 @@ public class CommonController {
         return CommonResult.success(omsClient.initVehicleInfo(vehicleId).getData());
     }
 
+    @ApiOperation(value = "查询联系人信息")
+    @RequestMapping(value = "/getContactInfoByPhone")
+    public CommonResult<List<Map<String, Object>>> getContactInfoByPhone(){
+        return CommonResult.success(omsClient.getContactInfoByPhone(6).getData());
+    }
+
 }

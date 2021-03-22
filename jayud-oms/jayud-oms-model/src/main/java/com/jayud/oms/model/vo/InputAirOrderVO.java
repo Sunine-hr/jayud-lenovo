@@ -41,6 +41,9 @@ public class InputAirOrderVO {
     @ApiModelProperty(value = "结算单位code")
     private String settlementUnitCode;
 
+    @ApiModelProperty(value = "结算单位名称")
+    private String unitName;
+
     @ApiModelProperty(value = "接单法人id")
     private Long legalEntityId;
 

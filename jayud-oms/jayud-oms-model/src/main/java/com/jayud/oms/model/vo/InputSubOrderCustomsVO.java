@@ -27,6 +27,9 @@ public class InputSubOrderCustomsVO {
     @ApiModelProperty(value = "结算单位code")
     private String unitCode;
 
+    @ApiModelProperty(value = "结算单位code")
+    private String unitName;
+
     @ApiModelProperty(value = "附件")
     private List<FileView> fileViews = new ArrayList<>();
 

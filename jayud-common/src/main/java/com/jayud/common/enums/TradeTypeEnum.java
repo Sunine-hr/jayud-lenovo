@@ -12,7 +12,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public enum TradeTypeEnum {
 
-    KY(1, "进口"), CBG(2, "出口");
+    ONE(1, "进口"), TWO(2, "出口");
     private Integer code;
     private String desc;
 

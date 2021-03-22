@@ -58,6 +58,9 @@ public class InputSeaOrderVO {
     @ApiModelProperty(value = "结算单位code")
     private String unitCode;
 
+    @ApiModelProperty(value = "结算单位")
+    private String unitName;
+
     @ApiModelProperty(value = "接单法人名称")
     private String legalName;
 
@@ -176,5 +179,7 @@ public class InputSeaOrderVO {
 
 
 
-
+    public void setUnitName(String unitName) {
+        this.unitName=unitName;
+    }
 }

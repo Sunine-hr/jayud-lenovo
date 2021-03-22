@@ -30,6 +30,7 @@ import com.jayud.oceanship.po.SeaOrder;
 import com.jayud.oceanship.service.ICabinetSizeNumberService;
 import com.jayud.oceanship.service.ISeaOrderService;
 import com.jayud.oceanship.service.ISeaPortService;
+import com.jayud.oceanship.service.ISeaReplenishmentService;
 import com.jayud.oceanship.vo.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
@@ -85,6 +86,9 @@ public class SeaOrderController {
 
     @Autowired
     private ICabinetSizeNumberService cabinetSizeNumberService;
+
+    @Autowired
+    private ISeaReplenishmentService seaReplenishmentService;
 
     @ApiOperation("分页查询海运订单列表")
     @PostMapping("/findByPage")
@@ -233,6 +237,51 @@ public class SeaOrderController {
         map1.put("pageInfo",new CommonPageResult(page));
         return CommonResult.success(map1);
     }
+
+    @ApiOperation("分页查询海运订单提单草稿确认列表")
+    @PostMapping("/findBillByPage")
+    public CommonResult findBillByPage(@RequestBody QuerySeaOrderForm form){
+        form.setStartTime();
+        //模糊查询客户信息
+        if (!StringUtils.isEmpty(form.getCustomerName())) {
+            ApiResult result = omsClient.getByCustomerName(form.getCustomerName());
+            Object data = result.getData();
+            if (data != null && ((List) data).size() > 0) {
+                JSONArray mainOrders = new JSONArray(data);
+                form.assemblyMainOrderNo(mainOrders);
+            } else {
+                form.setMainOrderNos(Collections.singletonList("-1"));
+            }
+        }
+        List list = new ArrayList();
+        //获取表头信息
+        Class<SeaOrderFormVO> seaOrderFormVOClass = SeaOrderFormVO.class;
+        Field[] declaredFields = seaOrderFormVOClass.getDeclaredFields();
+        for (Field declaredField : declaredFields) {
+            ApiModelProperty annotation = declaredField.getAnnotation(ApiModelProperty.class);
+            if(annotation!=null){
+                Map map = new HashMap<>();
+                map.put("key",declaredField.getName());
+                map.put("name",annotation.value());
+                list.add(map);
+            }
+        }
+        Map map1 = new HashMap();
+        map1.put("header",list);
+
+        IPage<SeaReplenishmentVO> page = this.seaReplenishmentService.findBillByPage(form);
+
+        //IPage<SeaOrderFormVO> page = this.seaOrderService.findByPage(form);
+        if (page.getRecords().size() == 0) {
+            map1.put("pageInfo",new CommonPageResult(page));
+            return CommonResult.success(map1);
+        }
+
+        String prePath = String.valueOf(fileClient.getBaseUrl().getData());
+
+        return CommonResult.success();
+    }
+
 
     //操作指令,cmd = S_0待接单,S_1海运接单,S_2订船,S_3订单入仓, S_4提交补料,S_5草稿提单,S_6放单确认,S_7确认离港,S_8确认到港,S_9海外代理S_10确认签收
     @ApiOperation(value = "执行海运流程操作")

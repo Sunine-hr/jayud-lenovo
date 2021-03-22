@@ -368,13 +368,13 @@ public class TrailerOrderController {
 
     @ApiOperation(value = "获取派车单号")
     @PostMapping(value = "/getDispatchNO")
-    public CommonResult<String> getDispatchNO(@RequestBody Map<String, Object> map){
+    public CommonResult<TrailerDispatch> getDispatchNO(@RequestBody Map<String, Object> map){
         String trailerOrderNo = MapUtil.getStr(map, "orderNo");
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("trailer_order_no",trailerOrderNo);
         TrailerDispatch one = trailerDispatchService.getOne(queryWrapper);
         if(one!=null){
-            return CommonResult.success(one.getOrderNo());
+            return CommonResult.success(one);
         }else{
             one = new TrailerDispatch();
         }
@@ -385,7 +385,7 @@ public class TrailerOrderController {
         one.setOrderNo(orderNo);
         one.setTrailerOrderNo(trailerOrderNo);
         trailerDispatchService.saveOrUpdateTrailerDispatch(one);
-        return CommonResult.success(orderNo);
+        return CommonResult.success(one);
     }
 
     @ApiOperation(value = "查询订单详情 trailerOrderId=拖车订单id")
@@ -533,6 +533,10 @@ public class TrailerOrderController {
             map.put("remark", trailerOrderDetails.getTrailerDispatchVO().getRemark());
             map.put("createTime", trailerOrderDetails.getCreateTime().toString().substring(0,10));
             map.put("so", trailerOrderDetails.getSo());
+            map.put("timeCounterRent", trailerOrderDetails.getTimeCounterRent());
+            map.put("totalWeightName", trailerOrderDetails.getTotalWeightName());
+            map.put("totalAmountName", trailerOrderDetails.getTotalAmountName());
+            map.put("totalXAmountName", trailerOrderDetails.getTotalXAmountName());
             excelWriter.fill(map, writeSheet);
 
             excelWriter.finish();

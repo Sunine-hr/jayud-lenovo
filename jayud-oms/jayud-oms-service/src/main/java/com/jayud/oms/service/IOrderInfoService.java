@@ -185,4 +185,8 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @param legalIds
      */
     int pendingGoCustomsAuditNum(List<Long> legalIds);
+
+    /**
+     * 是否录用过费用
+     */
 }

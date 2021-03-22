@@ -403,6 +403,10 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
         tmp.setStatus(auditInfoForm.getAuditStatus());
 
         omsClient.saveAuditInfo(auditInfoForm);
+        omsClient.doMainOrderRejectionSignOpt(trailerOrder.getMainOrderNo(),
+                trailerOrder.getOrderNo() + "-" + auditInfoForm.getAuditComment() + ",");
+
+        omsClient.saveAuditInfo(auditInfoForm);
         this.updateById(tmp);
     }
 
@@ -424,6 +428,10 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
                 TrailerDispatch trailerDispatch = new TrailerDispatch();
                 trailerDispatch.setStatus(TrailerOrderStatusEnum.DELETE.getCode());
                 this.trailerDispatchService.updateByTrailerOrderId(trailerOrder.getId(), trailerDispatch);
+
+                //执行主订单驳回标识
+                omsClient.doMainOrderRejectionSignOpt(trailerOrder.getMainOrderNo(),
+                        trailerOrder.getOrderNo() + "-" + auditInfoForm.getAuditComment() + ",");
                 break;
             case 2://派车驳回
                 DelOprStatusForm form = new DelOprStatusForm();

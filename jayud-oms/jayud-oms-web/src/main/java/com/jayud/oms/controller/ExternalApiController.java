@@ -1145,7 +1145,7 @@ public class ExternalApiController {
         List<OrderInfo> mainOrderInfos = orderInfoService.getByOrderNos(Collections.singletonList(mainOrderNo));
         OrderInfo orderInfo = mainOrderInfos.get(0);
         return ApiResult.ok(orderInfoService.updateById(new OrderInfo().setId(orderInfo.getId())
-                .setIsRejected(true).setRejectionDesc(rejectionDesc)));
+                .setIsRejected(true).setRejectComment(rejectionDesc)));
     }
 }
 

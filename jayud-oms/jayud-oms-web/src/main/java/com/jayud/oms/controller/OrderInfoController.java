@@ -377,6 +377,7 @@ public class OrderInfoController {
 
         //中港模板
         InputOrderTransportVO orderTransportForm = inputOrderVO.getOrderTransportForm();
+
         OrderInfoTemplate orderInfoTemplate = new OrderInfoTemplate();
         if (orderTransportForm != null) {
             TmsOrderTemplate tmsOrderTemplate = ConvertUtil.convert(orderTransportForm, TmsOrderTemplate.class);

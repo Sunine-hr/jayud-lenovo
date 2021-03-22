@@ -168,4 +168,9 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/getCustomerByUnitCode")
     ApiResult getCustomerByUnitCode(@RequestBody List<String> unitCodes);
+
+    @ApiOperation(value = "主订单驳回标识操作")
+    @RequestMapping(value = "/api/doMainOrderRejectionSignOpt")
+    public ApiResult<Boolean> doMainOrderRejectionSignOpt(@RequestParam("mainOrderNo") String mainOrderNo,
+                                                          @RequestParam("rejectionDesc") String rejectionDesc);
 }

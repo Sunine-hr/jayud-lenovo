@@ -296,6 +296,10 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
                 //删除订舱数据
                 this.airBookingService.updateByAirOrderId(airOrder.getId(),
                         new AirBooking().setStatus(AirBookingStatusEnum.DELETE.getCode()));
+
+                //执行主订单驳回标识
+                omsClient.doMainOrderRejectionSignOpt(airOrder.getMainOrderNo(),
+                        airOrder.getOrderNo() + "-" + auditInfoForm.getAuditComment() + ",");
                 break;
             case 2://订舱驳回
                 DelOprStatusForm form = new DelOprStatusForm();
@@ -498,6 +502,10 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
 
         this.bookingRejectedMsgPush(airOrder, airCargoRejected);
         omsClient.saveAuditInfo(auditInfoForm);
+
+        //执行主订单驳回标识
+        omsClient.doMainOrderRejectionSignOpt(airOrder.getMainOrderNo(),
+                airOrder.getOrderNo() + "-" + auditInfoForm.getAuditComment() + ",");
         this.updateById(tmp);
     }
 

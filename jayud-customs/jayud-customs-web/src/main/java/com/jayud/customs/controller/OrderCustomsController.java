@@ -393,6 +393,9 @@ public class OrderCustomsController {
         }
         boolean result = true;
         if (orderCustomsList.size() > 0) {
+            //执行主订单驳回标识
+            omsClient.doMainOrderRejectionSignOpt(form.getMainOrderNo(),
+                    orderCustoms.get(0).getOrderNo() + "-" + form.getCause() + ",");
             result = orderCustomsService.updateBatchById(orderCustomsList);
         }
         if (!result) {

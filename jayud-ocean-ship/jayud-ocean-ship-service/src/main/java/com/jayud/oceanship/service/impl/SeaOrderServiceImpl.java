@@ -445,6 +445,10 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         tmp.setStatus(auditInfoForm.getAuditStatus());
 
         omsClient.saveAuditInfo(auditInfoForm);
+
+        //执行主订单驳回标识
+        omsClient.doMainOrderRejectionSignOpt(seaOrder.getMainOrderNo(),
+                seaOrder.getOrderNo() + "-" + auditInfoForm.getAuditComment() + ",");
         this.updateById(tmp);
     }
 
@@ -466,6 +470,10 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
                 SeaBookship seaBookship = new SeaBookship();
                 seaBookship.setStatus(SeaBookShipStatusEnum.DELETE.getCode());
                 this.seaBookshipService.updateBySeaOrderId(seaOrder.getId(), seaBookship);
+
+                //执行主订单驳回标识
+                omsClient.doMainOrderRejectionSignOpt(seaOrder.getMainOrderNo(),
+                        seaOrder.getOrderNo() + "-" + auditInfoForm.getAuditComment() + ",");
                 break;
             case 2://订船驳回
                 DelOprStatusForm form = new DelOprStatusForm();

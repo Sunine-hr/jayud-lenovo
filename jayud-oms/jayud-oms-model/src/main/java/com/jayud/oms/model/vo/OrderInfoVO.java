@@ -118,8 +118,11 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "已选中得服务")
     private String selectedServer;
 
-    @ApiModelProperty(value = "驳回原因,目前只要求显示报关驳回的")
+    @ApiModelProperty(value = "驳回原因")
     private String rejectComment;
+
+    @ApiModelProperty(value = "驳回原因")
+    private Boolean isRejected;
 
     @ApiModelProperty(value = "结算单位")
     private String unitCode;

@@ -214,6 +214,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             OrderInfo oldOrder = baseMapper.selectById(form.getOrderId());
             orderInfo.setId(form.getOrderId());
             orderInfo.setUpTime(LocalDateTime.now());
+            orderInfo.setIsRejected(false);
+            orderInfo.setRejectComment(" ");
             orderInfo.setUpUser(UserOperator.getToken() == null ? loginUserName : UserOperator.getToken());
         } else {//新增
 
@@ -1655,33 +1657,33 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      *
      * @return
      */
-    private void getSubOrderRejectionMsg
-    (List<OrderInfoVO> orderInfoVOs, Map<String, Map<String, Object>> subOrderMap) {
-        for (OrderInfoVO orderInfoVO : orderInfoVOs) {
-            Map<String, Object> subOrderInfos = subOrderMap.get(orderInfoVO.getOrderNo());
-            String[] rejectionStatus = OrderStatusEnum.getRejectionStatus(null);
-            StringBuffer sb = StringUtils.isEmpty(orderInfoVO.getRejectComment()) ? new StringBuffer() : new StringBuffer(orderInfoVO.getRejectComment() + ",");
-            subOrderInfos.forEach((key, value) -> {
-                if (value != null) {
-                    String tableDesc = SubOrderSignEnum.getSignOne2SignTwo(key);
-                    if (value instanceof List) {
-                        List<Map<String, Object>> maps = (List<Map<String, Object>>) value;
-                        for (Map<String, Object> map : maps) {
-                            AuditInfo auditInfo = this.auditInfoService.getLatestByRejectionStatus(Long.valueOf(map.get("id").toString()),
-                                    tableDesc + "表", rejectionStatus);
-                            if (!StringUtils.isEmpty(auditInfo.getAuditComment())) {
-                                sb.append(map.get("orderNo")).append("-")
-                                        .append(auditInfo.getAuditComment()).append(",");
-                            }
-                        }
-                    }
-                }
-            });
-            if (!StringUtils.isEmpty(sb.toString())) {
-                orderInfoVO.setRejectComment(sb.substring(0, sb.length() - 1));
-            }
-        }
-    }
+//    private void getSubOrderRejectionMsg
+//    (List<OrderInfoVO> orderInfoVOs, Map<String, Map<String, Object>> subOrderMap) {
+//        for (OrderInfoVO orderInfoVO : orderInfoVOs) {
+//            Map<String, Object> subOrderInfos = subOrderMap.get(orderInfoVO.getOrderNo());
+//            String[] rejectionStatus = OrderStatusEnum.getRejectionStatus(null);
+//            StringBuffer sb = StringUtils.isEmpty(orderInfoVO.getRejectComment()) ? new StringBuffer() : new StringBuffer(orderInfoVO.getRejectComment() + ",");
+//            subOrderInfos.forEach((key, value) -> {
+//                if (value != null) {
+//                    String tableDesc = SubOrderSignEnum.getSignOne2SignTwo(key);
+//                    if (value instanceof List) {
+//                        List<Map<String, Object>> maps = (List<Map<String, Object>>) value;
+//                        for (Map<String, Object> map : maps) {
+//                            AuditInfo auditInfo = this.auditInfoService.getLatestByRejectionStatus(Long.valueOf(map.get("id").toString()),
+//                                    tableDesc + "表", rejectionStatus);
+//                            if (!StringUtils.isEmpty(auditInfo.getAuditComment())) {
+//                                sb.append(map.get("orderNo")).append("-")
+//                                        .append(auditInfo.getAuditComment()).append(",");
+//                            }
+//                        }
+//                    }
+//                }
+//            });
+//            if (!StringUtils.isEmpty(sb.toString())) {
+//                orderInfoVO.setRejectComment(sb.substring(0, sb.length() - 1));
+//            }
+//        }
+//    }
 
     /**
      * 组装数据

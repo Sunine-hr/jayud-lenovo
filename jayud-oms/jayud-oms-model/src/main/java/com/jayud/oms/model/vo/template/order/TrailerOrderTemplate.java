@@ -2,6 +2,7 @@ package com.jayud.oms.model.vo.template.order;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.FileView;
 import com.jayud.oms.model.vo.InputGoodsVO;
 import com.jayud.oms.model.vo.TrailerDispatchVO;
@@ -165,4 +166,9 @@ public class TrailerOrderTemplate {
 //    @ApiModelProperty(value = "总箱数")
 //    private String totalXAmountName;
 
+
+    public void setStatus(String status) {
+        this.status = status;
+        this.statusDesc = OrderStatusEnum.getDesc(status);
+    }
 }

@@ -201,4 +201,9 @@ public interface OmsClient {
     @ApiOperation(value = "单个存储商品信息")
     @RequestMapping(value = "api/getGoodById")
     ApiResult getGoodById(@RequestParam("id") Long id);
+
+    @ApiOperation(value = "主订单驳回标识操作")
+    @RequestMapping(value = "/api/doMainOrderRejectionSignOpt")
+    public ApiResult<Boolean> doMainOrderRejectionSignOpt(@RequestParam("mainOrderNo") String mainOrderNo,
+                                                          @RequestParam("rejectionDesc") String rejectionDesc);
 }

@@ -111,7 +111,7 @@ public class OrderInfo extends Model<OrderInfo> {
     private Boolean isRejected;
 
     @ApiModelProperty(value = "驳回描述")
-    private String rejectionDesc;
+    private String rejectComment;
 
     @Override
     protected Serializable pkVal() {

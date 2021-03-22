@@ -81,6 +81,12 @@ public class SeaOrderTemplate {
     @ApiModelProperty(value = "提单号",required = true)
     private String mainNo;
 
+    @ApiModelProperty(value = "费用状态", required = true)
+    private String costDesc;
+
+    @ApiModelProperty(value = "费用状态")
+    private Boolean cost;
+
 
     @ApiModelProperty(value = "流程状态(0:进行中,1:完成,2:草稿,3.关闭)")
     private Integer processStatus;
@@ -207,5 +213,14 @@ public class SeaOrderTemplate {
             this.mainNo = seaBookshipVO.getMainNo();
         }
 
+    }
+
+    public void setCost(Boolean cost) {
+        this.cost = cost;
+        if (cost){
+            this.costDesc="是";
+        }else {
+            this.costDesc="否";
+        }
     }
 }

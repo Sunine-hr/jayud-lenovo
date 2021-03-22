@@ -48,7 +48,10 @@ public class OrderCustomsTemplate {
     private String yunCustomsNo;
 
     @ApiModelProperty(value = "费用状态", required = true)
-    private String cost;
+    private String costDesc;
+
+    @ApiModelProperty(value = "费用状态")
+    private Boolean cost;
 
 
 //    @ApiModelProperty(value = "进出口类型")
@@ -129,4 +132,14 @@ public class OrderCustomsTemplate {
         this.setLegalEntityId(orderCustomsForm.getLegalEntityId());
         this.setLegalName(orderCustomsForm.getLegalName());
     }
+
+    public void setCost(Boolean cost) {
+        this.cost = cost;
+        if (cost){
+            this.costDesc="是";
+        }else {
+            this.costDesc="否";
+        }
+    }
+
 }

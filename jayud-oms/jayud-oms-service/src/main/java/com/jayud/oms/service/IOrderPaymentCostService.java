@@ -49,4 +49,11 @@ public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
      */
     List<OrderPaymentCost> getCostSubmittedByOrderNos(List<String> mainOrders,List<String> subOrderNos);
 
+    /**
+     * 是否录用过费用
+     * @param orderNo
+     * @param type 0.主订单,1子订单
+     * @return
+     */
+    boolean isCost(String orderNo, Integer type);
 }

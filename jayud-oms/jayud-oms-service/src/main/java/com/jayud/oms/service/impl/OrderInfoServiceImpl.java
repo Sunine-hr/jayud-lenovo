@@ -100,6 +100,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private InlandTpClient inlandTpClient;
     @Autowired
     private IOrderFlowSheetService orderFlowSheetService;
+    @Autowired
+    private IOrderReceivableCostService orderReceivableCostService;
+    @Autowired
+    private IOrderPaymentCostService orderPaymentCostService;
 
     private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(),
             SubOrderSignEnum.KY.getSignOne(), SubOrderSignEnum.HY.getSignOne(),
@@ -1443,6 +1447,25 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public int pendingGoCustomsAuditNum(List<Long> legalIds) {
         return this.baseMapper.pendingGoCustomsAuditNum(legalIds);
+    }
+
+
+    /**
+     * 是否录用过费用
+     *
+     * @param orderNo
+     * @param type    0.主订单,1子订单
+     * @return
+     */
+    @Override
+    public boolean isCost(String orderNo, Integer type) {
+        if (orderReceivableCostService.isCost(orderNo, type)) {
+            return true;
+        }
+        if (orderPaymentCostService.isCost(orderNo, type)) {
+            return true;
+        }
+        return false;
     }
 
     /**

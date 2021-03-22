@@ -381,6 +381,7 @@ public class OrderInfoController {
         OrderInfoTemplate orderInfoTemplate = new OrderInfoTemplate();
         if (orderTransportForm != null) {
             TmsOrderTemplate tmsOrderTemplate = ConvertUtil.convert(orderTransportForm, TmsOrderTemplate.class);
+            tmsOrderTemplate.setCost(this.orderInfoService.isCost(tmsOrderTemplate.getOrderNo(), 1));
             Template<TmsOrderTemplate> template = new Template<TmsOrderTemplate>() {
             }.setList(Collections.singletonList(tmsOrderTemplate));
             orderInfoTemplate.setTmsOrderTemplates(template);
@@ -389,6 +390,7 @@ public class OrderInfoController {
         InputOrderInlandTPVO inlandTransportForm = inputOrderVO.getOrderInlandTransportForm();
         if (inlandTransportForm != null) {
             InlandTPTemplate inlandTPTemplate = ConvertUtil.convert(inlandTransportForm, InlandTPTemplate.class);
+            inlandTPTemplate.setCost(this.orderInfoService.isCost(inlandTPTemplate.getOrderNo(), 1));
             Template<InlandTPTemplate> template = new Template<InlandTPTemplate>() {
             }.setList(Collections.singletonList(inlandTPTemplate));
             orderInfoTemplate.setInlandTPTemplates(template);
@@ -403,6 +405,7 @@ public class OrderInfoController {
                     OrderCustomsTemplate customsTemplate = ConvertUtil.convert(subOrder, OrderCustomsTemplate.class);
                     customsTemplate.assemblyData(orderCustomsForm);
                     customsTemplate.setId(subOrder.getSubOrderId());
+                    customsTemplate.setCost(this.orderInfoService.isCost(customsTemplate.getOrderNo(), 1));
                     list.add(customsTemplate);
                 }
                 Template<OrderCustomsTemplate> template = new Template<OrderCustomsTemplate>() {
@@ -415,6 +418,7 @@ public class OrderInfoController {
         InputAirOrderVO airOrderForm = inputOrderVO.getAirOrderForm();
         if (airOrderForm != null) {
             AirOrderTemplate airOrderTemplate = ConvertUtil.convert(airOrderForm, AirOrderTemplate.class);
+            airOrderTemplate.setCost(this.orderInfoService.isCost(airOrderTemplate.getOrderNo(), 1));
             Template<AirOrderTemplate> template = new Template<AirOrderTemplate>() {
             }.setList(Collections.singletonList(airOrderTemplate));
             airOrderTemplate.assemblyData(airOrderForm);
@@ -425,6 +429,7 @@ public class OrderInfoController {
         InputSeaOrderVO seaOrderForm = inputOrderVO.getSeaOrderForm();
         if (seaOrderForm != null) {
             SeaOrderTemplate seaOrderTemplate = ConvertUtil.convert(seaOrderForm, SeaOrderTemplate.class);
+            seaOrderTemplate.setCost(this.orderInfoService.isCost(seaOrderTemplate.getOrderNo(), 1));
             Template<SeaOrderTemplate> template = new Template<SeaOrderTemplate>() {
             }.setList(Collections.singletonList(seaOrderTemplate));
             orderInfoTemplate.setSeaOrderTemplates(template);
@@ -434,11 +439,11 @@ public class OrderInfoController {
         InputTrailerOrderVO trailerOrderForm = inputOrderVO.getTrailerOrderForm();
         if (trailerOrderForm != null) {
             TrailerOrderTemplate trailerOrderTemplate = ConvertUtil.convert(trailerOrderForm, TrailerOrderTemplate.class);
+            trailerOrderTemplate.setCost(this.orderInfoService.isCost(trailerOrderTemplate.getOrderNo(), 1));
             Template<TrailerOrderTemplate> template = new Template<TrailerOrderTemplate>() {
             }.setList(Collections.singletonList(trailerOrderTemplate));
             orderInfoTemplate.setTrailerOrderTemplates(template);
         }
-
 
         return CommonResult.success(orderInfoTemplate);
     }

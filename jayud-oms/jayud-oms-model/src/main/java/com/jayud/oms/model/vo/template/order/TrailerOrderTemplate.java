@@ -63,6 +63,12 @@ public class TrailerOrderTemplate {
     @ApiModelProperty(value = "封条", required = true)
     private String paperStripSeal;
 
+    @ApiModelProperty(value = "费用状态", required = true)
+    private String costDesc;
+
+    @ApiModelProperty(value = "费用状态")
+    private Boolean cost;
+
     @ApiModelProperty(value = "主订单编号")
     private String mainOrderNo;
 
@@ -170,5 +176,14 @@ public class TrailerOrderTemplate {
     public void setStatus(String status) {
         this.status = status;
         this.statusDesc = OrderStatusEnum.getDesc(status);
+    }
+
+    public void setCost(Boolean cost) {
+        this.cost = cost;
+        if (cost){
+            this.costDesc="是";
+        }else {
+            this.costDesc="否";
+        }
     }
 }

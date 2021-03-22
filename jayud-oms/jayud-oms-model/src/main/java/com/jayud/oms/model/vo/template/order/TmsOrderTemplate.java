@@ -57,8 +57,7 @@ public class TmsOrderTemplate {
     private String deliveryAddr;
 
     @ApiModelProperty(value = "费用状态", required = true)
-    private String cost;
-
+    private String costDesc;
 
     @ApiModelProperty("通关口岸CODE")
     private String portCode;
@@ -71,6 +70,9 @@ public class TmsOrderTemplate {
 
     @ApiModelProperty(value = "状态")
     private String status;
+
+    @ApiModelProperty(value = "费用状态", required = true)
+    private Boolean cost;
 
 
 //    @ApiModelProperty(value = "六联单号")
@@ -232,5 +234,14 @@ public class TmsOrderTemplate {
     public void setStatus(String status) {
         this.status = status;
         this.statusDesc = OrderStatusEnum.getDesc(status);
+    }
+
+    public void setCost(Boolean cost) {
+        this.cost = cost;
+        if (cost){
+            this.costDesc="是";
+        }else {
+            this.costDesc="否";
+        }
     }
 }

@@ -174,19 +174,26 @@ public interface IOrderInfoService extends IService<OrderInfo> {
 
     /**
      * 获取法人主体下的待外部报关数
-     * @return
+     *
      * @param legalIds
+     * @return
      */
     int pendingExternalCustomsDeclarationNum(List<Long> legalIds);
 
     /**
      * 获取法人主体下的待通关前审核
-     * @return
+     *
      * @param legalIds
+     * @return
      */
     int pendingGoCustomsAuditNum(List<Long> legalIds);
 
+
     /**
      * 是否录用过费用
+     * @param orderNo
+     * @param type 0.主订单,1子订单
+     * @return
      */
+    public boolean isCost(String orderNo,Integer type);
 }

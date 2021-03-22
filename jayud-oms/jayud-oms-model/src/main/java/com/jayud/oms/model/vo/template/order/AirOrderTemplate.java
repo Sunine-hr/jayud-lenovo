@@ -78,6 +78,12 @@ public class AirOrderTemplate {
     @ApiModelProperty(value = "提单号", required = true)
     private String mainNo;
 
+    @ApiModelProperty(value = "费用状态", required = true)
+    private String costDesc;
+
+    @ApiModelProperty(value = "费用状态")
+    private Boolean cost;
+
 
     @ApiModelProperty(value = "结算单位code")
     private String settlementUnitCode;
@@ -164,5 +170,14 @@ public class AirOrderTemplate {
     public void setStatus(String status) {
         this.status = status;
         this.statusDesc = OrderStatusEnum.getDesc(status);
+    }
+
+    public void setCost(Boolean cost) {
+        this.cost = cost;
+        if (cost){
+            this.costDesc="是";
+        }else {
+            this.costDesc="否";
+        }
     }
 }

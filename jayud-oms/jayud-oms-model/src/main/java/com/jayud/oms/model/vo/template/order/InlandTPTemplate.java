@@ -49,7 +49,10 @@ public class InlandTPTemplate {
     private String deliveryAddr;
 
     @ApiModelProperty(value = "费用状态", required = true)
-    private String cost;
+    private String costDesc;
+
+    @ApiModelProperty(value = "费用状态")
+    private Boolean cost;
 
 //    @ApiModelProperty(value = "流程状态(0:进行中,1:完成,2:草稿,3.关闭)")
 //    private Integer processStatus;
@@ -142,5 +145,13 @@ public class InlandTPTemplate {
         this.deliveryAddr = orderDeliveryAddressSb.toString();
     }
 
+    public void setCost(Boolean cost) {
+        this.cost = cost;
+        if (cost){
+            this.costDesc="是";
+        }else {
+            this.costDesc="否";
+        }
+    }
 
 }

@@ -375,7 +375,7 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
     public void doTrailerDispatchOpt(TrailerProcessOptForm form) {
         AddTrailerDispatchFrom addTrailerDispatchFrom = form.getTrailerDispatchVO();
         //查询派车是否存在,存在做更新操作
-        TrailerDispatch oldTrailerDispatch = this.trailerDispatchService.getEnableByTrailerOrderId(form.getId());
+        TrailerDispatch oldTrailerDispatch = this.trailerDispatchService.getEnableByTrailerOrderId(addTrailerDispatchFrom.getId());
         addTrailerDispatchFrom.setId(oldTrailerDispatch != null ? oldTrailerDispatch.getId() : null);
 
         TrailerDispatch trailerDispatch = ConvertUtil.convert(addTrailerDispatchFrom, TrailerDispatch.class);

@@ -138,6 +138,12 @@ public class SeaOrder extends Model<SeaOrder> {
     @ApiModelProperty(value = "封条")
     private String paperStripSeal;
 
+    @ApiModelProperty(value = "审核意见")
+    private String auditOpinion;
+
+    @ApiModelProperty(value = "审核状况 1为审核通过;2为审核不通过")
+    private Integer auditStatus;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

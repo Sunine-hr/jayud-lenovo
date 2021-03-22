@@ -341,6 +341,9 @@ public class SeaOrderController {
             case SEA_S_4: //提交补料
                 this.seaOrderService.updateOrSaveProcessStatus(form);
                 break;
+            case SEA_S_5: //补料审核
+                this.seaOrderService.updateOrSaveReplenishmentAudit(form);
+                break;
             case SEA_S_6: //确认草稿提单
             case SEA_S_7: //确认装船
             case SEA_S_8: //确认放单

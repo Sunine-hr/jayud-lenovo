@@ -655,6 +655,17 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         return this.baseMapper.selectList(condition);
     }
 
+    @Override
+    public void updateOrSaveReplenishmentAudit(SeaProcessOptForm form) {
+        if(form.getAuditStatus().equals(1)){//审核通过
+            SeaOrder seaOrder = new SeaOrder();
+            seaOrder.setAuditStatus(form.getAuditStatus());
+            seaOrder.setAuditOpinion(form.getAuditOpinion());
+
+        }
+
+    }
+
 
     private void handleLadingBillFile(SeaBookship seaBookship, SeaProcessOptForm form) {
             seaBookship.setFilePath(StringUtils.getFileStr(form.getFileViewList()));

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -206,4 +207,8 @@ public interface OmsClient {
     @RequestMapping(value = "/api/doMainOrderRejectionSignOpt")
     public ApiResult<Boolean> doMainOrderRejectionSignOpt(@RequestParam("mainOrderNo") String mainOrderNo,
                                                           @RequestParam("rejectionDesc") String rejectionDesc);
+
+    @ApiOperation(value = "查询联系人信息")
+    @RequestMapping(value = "/getContactInfoByPhone")
+    public CommonResult<List<Map<String, Object>>> getContactInfoByPhone(@RequestParam("businessType") Integer businessType);
 }

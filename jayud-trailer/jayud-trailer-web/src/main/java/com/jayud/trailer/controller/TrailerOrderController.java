@@ -524,7 +524,7 @@ public class TrailerOrderController {
             map.put("orderNo", trailerOrderDetails.getTrailerDispatchVO().getOrderNo());
             map.put("cabinetNumber", trailerOrderDetails.getCabinetNumber());
             map.put("paperStripSeal", trailerOrderDetails.getPaperStripSeal());
-            map.put("plateNumber", trailerOrderDetails.getTrailerDispatchVO().getPlateNumber());
+            map.put("plateNumber", trailerOrderDetails.getTrailerDispatchVO().getPlateNumberName());
             map.put("phone", trailerOrderDetails.getTrailerDispatchVO().getPhone());
             map.put("cabinetSizeName", trailerOrderDetails.getCabinetSizeName());
             map.put("cuttingReplenishingTime", trailerOrderDetails.getCuttingReplenishingTime());

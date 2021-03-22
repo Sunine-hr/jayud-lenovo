@@ -23,7 +23,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/accountreceivable")
-@Api(tags = "A018-client-应收对账单接口(月结账单)")
+@Api(tags = "C018-client-应收对账单接口(月结账单)")
 @ApiSort(value = 18)
 public class AccountReceivableController {
 

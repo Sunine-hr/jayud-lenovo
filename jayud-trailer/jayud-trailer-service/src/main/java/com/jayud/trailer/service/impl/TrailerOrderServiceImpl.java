@@ -122,7 +122,7 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
         } else {
             //修改拖车单
             trailerOrder.setId(addTrailerOrderFrom.getId());
-            trailerOrder.setStatus(addTrailerOrderFrom.getStatus());
+            trailerOrder.setStatus(OrderStatusEnum.TT_0.getCode());
             trailerOrder.setUpdateTime(now);
             trailerOrder.setUpdateUser(UserOperator.getToken());
             this.updateById(trailerOrder);

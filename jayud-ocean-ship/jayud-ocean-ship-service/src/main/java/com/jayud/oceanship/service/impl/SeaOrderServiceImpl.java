@@ -110,7 +110,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         } else {
             //修改海运单
             seaOrder.setId(addSeaOrderForm.getOrderId());
-            seaOrder.setStatus(addSeaOrderForm.getStatus());
+            seaOrder.setStatus(OrderStatusEnum.SEA_S_0.getCode());
             seaOrder.setUpdateTime(now);
             seaOrder.setUpdateUser(UserOperator.getToken());
             this.updateById(seaOrder);

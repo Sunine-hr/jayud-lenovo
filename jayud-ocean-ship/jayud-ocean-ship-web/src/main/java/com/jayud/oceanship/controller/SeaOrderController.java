@@ -341,13 +341,13 @@ public class SeaOrderController {
             case SEA_S_4: //提交补料
                 this.seaOrderService.updateOrSaveProcessStatus(form);
                 break;
-            case SEA_S_5: //确认草稿提单
-            case SEA_S_6: //确认装船
-            case SEA_S_7: //确认放单
-            case SEA_S_8: //确认到港
+            case SEA_S_6: //确认草稿提单
+            case SEA_S_7: //确认装船
+            case SEA_S_8: //确认放单
+            case SEA_S_9: //确认到港
                 this.seaOrderService.doSeaBookShipOpt(form);
                 break;
-            case SEA_S_9: //海外代理
+            case SEA_S_10: //海外代理
                 StringBuilder sb = new StringBuilder();
                 form.getProxyServiceType().forEach(e -> sb.append(e).append(","));
                 String proxyServiceType = sb.length() == 0 ? null : sb.substring(0, sb.length() - 1);
@@ -356,7 +356,7 @@ public class SeaOrderController {
                 seaOrder2.setProxyServiceType(proxyServiceType);
                 this.seaOrderService.updateProcessStatus(seaOrder2, form);
                 break;
-            case SEA_S_10: //确认签收
+            case SEA_S_11: //确认签收
                 this.seaOrderService.updateProcessStatus(new SeaOrder(), form);
                 break;
         }

@@ -161,6 +161,12 @@ public class SeaProcessOptForm {
     @ApiModelProperty(value = "补料信息集合")
     private List<AddSeaReplenishment> seaReplenishments;
 
+    @ApiModelProperty(value = "审核意见")
+    private String auditOpinion;
+
+    @ApiModelProperty(value = "审核状况 1为审核通过;2为审核不通过")
+    private Integer auditStatus;
+
     /**
      * 校验创建海运子订单参数
      */

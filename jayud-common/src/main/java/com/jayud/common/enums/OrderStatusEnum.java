@@ -116,12 +116,13 @@ public enum OrderStatusEnum {
     SEA_S_3_1("S_3_1", "订单入仓驳回"),
     SEA_S_3_2("S_3_2", "订船驳回编辑"),
     SEA_S_4("S_4", "提交补料"),
-    SEA_S_5("S_5", "提单草稿确认"),
-    SEA_S_6("S_6", "确认装船"),
-    SEA_S_7("S_7", "放单确认"),
-    SEA_S_8("S_8", "确认到港"),
-    SEA_S_9("S_9", "海外代理"),
-    SEA_S_10("S_10", "订单签收"),
+    SEA_S_5("S_5", "补料审核"),
+    SEA_S_6("S_6", "提单草稿确认"),
+    SEA_S_7("S_7", "确认装船"),
+    SEA_S_8("S_8", "放单确认"),
+    SEA_S_9("S_9", "确认到港"),
+    SEA_S_10("S_10", "海外代理"),
+    SEA_S_11("S_11", "订单签收"),
 
     //内陆运输
     INLANDTP_NL_0("NL_0", "待接单"),
@@ -357,6 +358,7 @@ public enum OrderStatusEnum {
         statusEnums.add(SEA_S_8);
         statusEnums.add(SEA_S_9);
         statusEnums.add(SEA_S_10);
+        statusEnums.add(SEA_S_11);
         return statusEnums;
     }
 

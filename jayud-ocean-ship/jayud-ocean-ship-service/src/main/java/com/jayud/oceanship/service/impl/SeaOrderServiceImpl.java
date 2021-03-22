@@ -578,7 +578,12 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
                 }
             }
         }
-
+        //获取截补料数据
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("sea_order_id",seaOrder.getOrderId());
+        queryWrapper.eq("sea_order_no",seaOrder.getOrderNo());
+        List<SeaReplenishment> list = seaReplenishmentService.list(queryWrapper);
+        seaOrder.setSeaReplenishments(ConvertUtil.convertList(list,SeaReplenishmentVO.class));
         return seaOrder;
     }
 

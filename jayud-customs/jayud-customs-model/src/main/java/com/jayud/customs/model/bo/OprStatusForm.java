@@ -28,7 +28,7 @@ public class OprStatusForm {
 
     @ApiModelProperty(value = "操作人", required = true)
     @NotNull(message = "操作人不能为空")
-    private String operatorUser= UserOperator.getToken();
+    private String operatorUser = UserOperator.getToken();
 
     @ApiModelProperty(value = "操作时间", required = true)
     @NotNull(message = "操作时间不能为空")
@@ -71,15 +71,20 @@ public class OprStatusForm {
 
     public void checkParam(OrderStatusEnum statusEnum) {
         switch (statusEnum) {
+            case CUSTOMS_C_11:
+                if (fileViewList.size() == 0) {
+                    throw new JayudBizException(400, "请上传舱单文件");
+                }
+                break;
             case CUSTOMS_C_10://报关放行
                 if (StringUtil.isNullOrEmpty(this.operatorUser)) {
-                    throw new JayudBizException(400,"操作人不能为空");
+                    throw new JayudBizException(400, "操作人不能为空");
                 }
                 if (StringUtil.isNullOrEmpty(this.yunCustomsNo)) {
-                    throw new JayudBizException(400,"报关单号不能为空");
+                    throw new JayudBizException(400, "报关单号不能为空");
                 }
-                if (fileViewList.size()==0){
-                    throw new JayudBizException(400,"上传报关文件");
+                if (fileViewList.size() == 0) {
+                    throw new JayudBizException(400, "上传报关文件");
                 }
                 break;
         }

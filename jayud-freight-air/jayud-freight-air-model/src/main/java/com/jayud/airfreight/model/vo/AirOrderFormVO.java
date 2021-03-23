@@ -162,7 +162,7 @@ public class AirOrderFormVO {
                         .append(",");
             }
         }
-        this.goodsInfo = sb.substring(0, sb.length() - 1);
+        this.goodsInfo = sb.toString();
     }
 
     /**

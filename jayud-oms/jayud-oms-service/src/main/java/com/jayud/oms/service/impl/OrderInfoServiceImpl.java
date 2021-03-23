@@ -1318,7 +1318,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             //查询报关六联单号附件
             List<FileView> encodePics = this.customsClient.getEncodePicByMainOrderNo(form.getOrderNo()).getData();
 
-            String[] statusList = {OrderStatusEnum.CUSTOMS_C_9.getCode(), OrderStatusEnum.CUSTOMS_C_10.getCode()};
+            String[] statusList = {OrderStatusEnum.CUSTOMS_C_11.getCode(), OrderStatusEnum.CUSTOMS_C_10.getCode()};
             for (int i = 0; i < statusList.length; i++) {
                 String status = statusList[i];
                 List<LogisticsTrack> logisticsTracks = this.logisticsTrackService.getByCondition(new LogisticsTrack()

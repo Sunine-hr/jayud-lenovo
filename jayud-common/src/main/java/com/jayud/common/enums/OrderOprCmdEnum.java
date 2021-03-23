@@ -17,6 +17,8 @@ public enum OrderOprCmdEnum {
     RE_ISSUE_ORDER("reIssueOrder","报关重新打单"),
     DECLARE("declare","报关申报"),
     TO_CHECK("toCheck","报关复核"),
+
+    DECLARATION_MANIFEST("declarationManifest","申报舱单"),
     CUSTOMS_CLEARANCE("customsClearance","报关放行"),
     RELEASE_CONFIRM("releaseConfirm","放行审核"),
     AUDIT_FAIL_EDIT("auditFailEdit","审核不通过的编辑"),

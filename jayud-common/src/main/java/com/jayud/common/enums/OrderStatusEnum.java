@@ -51,6 +51,7 @@ public enum OrderStatusEnum {
     CUSTOMS_C_2("C_2", "报关打单"),
     CUSTOMS_C_3("C_3", "报关复核"),
     CUSTOMS_C_9("C_9", "报关二复"),
+    CUSTOMS_C_11("C_11", "申报舱单"),
     CUSTOMS_C_4("C_4", "报关申报"),
     CUSTOMS_C_10("C_10", "报关放行"),
     CUSTOMS_C_5("C_5", "放行审核"),
@@ -221,6 +222,7 @@ public enum OrderStatusEnum {
         statusEnums.add(CUSTOMS_C_2);
         statusEnums.add(CUSTOMS_C_3);
         statusEnums.add(CUSTOMS_C_9);
+        statusEnums.add(CUSTOMS_C_11);
         statusEnums.add(CUSTOMS_C_4);
         statusEnums.add(CUSTOMS_C_10);
         statusEnums.add(CUSTOMS_C_5);

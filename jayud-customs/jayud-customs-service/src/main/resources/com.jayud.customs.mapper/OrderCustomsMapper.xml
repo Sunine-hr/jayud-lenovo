@@ -270,8 +270,11 @@
         <if test="form.cmd == 'twoCheck'">
             AND oc.`status` = 'C_3'
         </if>
-        <if test="form.cmd == 'declare'">
+        <if test="form.cmd == 'declarationManifest'">
             AND oc.`status` = 'C_9'
+        </if>
+        <if test="form.cmd == 'declare'">
+            AND oc.`status` = 'C_11'
         </if>
         <if test="form.cmd == 'customsClearance'">
             AND oc.`status` = 'C_4'

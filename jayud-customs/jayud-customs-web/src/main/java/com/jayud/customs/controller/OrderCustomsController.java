@@ -198,7 +198,6 @@ public class OrderCustomsController {
         //根据订单获取下个节点信息
         OrderStatusEnum statusEnum = OrderStatusEnum.getCustomsOrderNextStatus(customsInfo.getStatus());
 
-
         OrderCustoms orderCustoms = new OrderCustoms();
         orderCustoms.setId(form.getOrderId());
         orderCustoms.setStatus(statusEnum.getCode());
@@ -231,7 +230,7 @@ public class OrderCustomsController {
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "报关申报/报关放行/放行确认/审核不通过-编辑完成/通关完成/通关查验/通关其他异常")
+    @ApiOperation(value = "/申报舱单/报关申报/报关放行/放行确认/审核不通过-编辑完成/通关完成/通关查验/通关其他异常")
     @PostMapping(value = "/oprOrder")
     public CommonResult oprOrder(@RequestBody OprStatusForm form) {
         if (StringUtil.isNullOrEmpty(form.getCmd()) || form.getOrderId() == null ||
@@ -249,6 +248,18 @@ public class OrderCustomsController {
         orderCustoms.setId(form.getOrderId());
 
         Boolean flag = true;//是否是流程节点中操作状态
+
+        //TODO 新操作模式
+        switch (statusEnum) {
+            case CUSTOMS_C_11:
+                form.setCmd(OrderOprCmdEnum.DECLARATION_MANIFEST.getCode());
+                orderCustoms.setStatus(statusEnum.getCode());
+                form.setStatus(statusEnum.getCode());
+                form.setStatusName(statusEnum.getDesc());
+                break;
+        }
+
+
         if (OrderOprCmdEnum.DECLARE.getCode().equals(form.getCmd())) {//报关申报
             if (StringUtil.isNullOrEmpty(form.getOperatorUser())) {
                 return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());

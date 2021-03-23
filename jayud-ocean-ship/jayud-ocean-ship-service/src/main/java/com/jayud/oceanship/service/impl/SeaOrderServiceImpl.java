@@ -613,7 +613,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         tmp.setStatus(auditInfoForm.getAuditStatus());
         //根据选择是否订船驳回
         ApiResult result = new ApiResult();
-        //删除物流轨迹表订舱数据
+        //删除物流轨迹表订船数据
         switch (seaCargoRejected.getRejectOptions()) {
             case 1://订单驳回
                 result = omsClient.deleteLogisticsTrackByType(seaOrder.getId(), BusinessTypeEnum.HY.getCode());
@@ -635,7 +635,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         }
 
         if (result.getCode() != HttpStatus.SC_OK) {
-            log.error("远程调用删除订舱轨迹失败");
+            log.error("远程调用删除订船轨迹失败");
             throw new JayudBizException(ResultEnum.OPR_FAIL);
         }
 
@@ -657,11 +657,32 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
 
     @Override
     public void updateOrSaveReplenishmentAudit(SeaProcessOptForm form) {
+        SeaOrder seaOrder = new SeaOrder();
+        seaOrder.setAuditStatus(form.getAuditStatus());
+        seaOrder.setAuditOpinion(form.getAuditOpinion());
         if(form.getAuditStatus().equals(1)){//审核通过
-            SeaOrder seaOrder = new SeaOrder();
-            seaOrder.setAuditStatus(form.getAuditStatus());
-            seaOrder.setAuditOpinion(form.getAuditOpinion());
+            this.updateProcessStatus(seaOrder,form);
+        }
+        if(form.getAuditStatus().equals(2)){
+            DelOprStatusForm delOprStatusForm = new DelOprStatusForm();
+            delOprStatusForm.setOrderId(seaOrder.getId());
+            delOprStatusForm.setStatus(Collections.singletonList(OrderStatusEnum.SEA_S_4.getCode()));
+            ApiResult result = this.omsClient.delSpecOprStatus(delOprStatusForm);
+            if (result.getCode() != HttpStatus.SC_OK) {
+                log.error("远程调用删除补料轨迹失败");
+                throw new JayudBizException(ResultEnum.OPR_FAIL);
+            }
 
+            seaOrder.setId(form.getOrderId());
+            seaOrder.setUpdateTime(LocalDateTime.now());
+            seaOrder.setUpdateUser(UserOperator.getToken());
+            seaOrder.setStatus(OrderStatusEnum.SEA_S_3.getCode());
+            form.setStatus(OrderStatusEnum.SEA_S_5_1.getCode());
+
+            //更新状态节点状态
+            this.baseMapper.updateById(seaOrder);
+            //节点操作记录
+            this.seaProcessOptRecord(form);
         }
 
     }

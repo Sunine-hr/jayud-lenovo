@@ -54,6 +54,7 @@ import java.lang.reflect.Field;
 import java.net.URLEncoder;
 import java.util.*;
 
+import static com.jayud.common.enums.OrderStatusEnum.TT_2;
 import static com.jayud.common.enums.OrderStatusEnum.TT_3;
 
 
@@ -266,7 +267,7 @@ public class TrailerOrderController {
             }
 
             //获取派车信息
-            TrailerDispatch enableByTrailerOrderId = trailerDispatchService.getEnableByTrailerOrderId(record.getId());
+            TrailerDispatch enableByTrailerOrderId = trailerDispatchService.getEnableByTrailerOrderId(record.getOrderNo());
             TrailerDispatchVO trailerDispatchVO = ConvertUtil.convert(enableByTrailerOrderId,TrailerDispatchVO.class);
 //            System.out.println("trailerDispatchVO=================================="+trailerDispatchVO);
             record.setTrailerDispatchVO(trailerDispatchVO);
@@ -312,12 +313,12 @@ public class TrailerOrderController {
             }
         }
 
-        if (form.getMainOrderId() == null || form.getId() == null) {
+        if (form.getMainOrderId() == null || form.getOrderId() == null) {
             log.warn("主订单id/拖车订单id必填");
             return CommonResult.error(ResultEnum.VALIDATE_FAILED);
         }
         //拖车订单信息
-        TrailerOrder trailerOrder = this.trailerOrderService.getById(form.getId());
+        TrailerOrder trailerOrder = this.trailerOrderService.getById(form.getOrderId());
         if (ProcessStatusEnum.COMPLETE.getCode().equals(trailerOrder.getProcessStatus())) {
             return CommonResult.error(400, "该订单已经完成");
         }
@@ -405,20 +406,20 @@ public class TrailerOrderController {
     @PostMapping(value = "/DispatchRejectionEdit")
     public CommonResult DispatchRejectionEdit(@RequestBody TrailerProcessOptForm form) {
         if (form.getMainOrderId() == null
-                || form.getId() == null
+                || form.getOrderId() == null
                 || form.getTrailerDispatchVO().getId() == null) {
             log.warn("拖车订单编号/拖车订单id必填/拖车派车id必填 data={}", JSONUtil.toJsonStr(form));
             return CommonResult.error(ResultEnum.VALIDATE_FAILED);
         }
 
-        TrailerOrder trailerOrder = this.trailerOrderService.getById(form.getId());
+        TrailerOrder trailerOrder = this.trailerOrderService.getById(form.getOrderId());
         if (!OrderStatusEnum.TT_3_2.getCode().equals(trailerOrder.getStatus())) {
             log.warn("当前订单状态无法进行操作 status={}", OrderStatusEnum.getDesc(trailerOrder.getStatus()));
             return CommonResult.error(400, "当前订单状态无法进行操作");
         }
-        form.setStatus(TT_3.getCode());
+        form.setStatus(TT_2.getCode());
         //校验参数
-        form.checkProcessOpt(TT_3);
+        form.checkProcessOpt(TT_2);
         //执行拖车驳回编辑
         this.trailerOrderService.doTrailerDispatchOpt(form);
         return CommonResult.success();

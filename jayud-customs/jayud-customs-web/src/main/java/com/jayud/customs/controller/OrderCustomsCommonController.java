@@ -2,6 +2,7 @@ package com.jayud.customs.controller;
 
 
 import com.jayud.common.CommonResult;
+import com.jayud.customs.feign.OmsClient;
 import com.jayud.customs.model.vo.StatisticsDataNumberVO;
 import com.jayud.customs.service.IOrderCustomsService;
 import io.swagger.annotations.Api;
@@ -19,6 +20,8 @@ public class OrderCustomsCommonController {
 
     @Autowired
     IOrderCustomsService orderCustomsService;
+    @Autowired
+    private OmsClient omsClient;
 
     @ApiOperation(value = "二期优化1:报关各个菜单列表数据量统计")
     @PostMapping(value = "/statisticsDataNumber")
@@ -27,6 +30,11 @@ public class OrderCustomsCommonController {
         return CommonResult.success(dataNumberVO);
     }
 
-
+    @ApiOperation(value = "下拉选择监管方式")
+    @PostMapping(value = "/initSupervisionMode")
+    public CommonResult initAirlineCompany() {
+        Object data = this.omsClient.initDictByDictTypeCode("supervisionMode").getData();
+        return CommonResult.success(data);
+    }
 }
 

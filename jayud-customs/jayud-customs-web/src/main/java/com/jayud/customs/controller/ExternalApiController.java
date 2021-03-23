@@ -1,13 +1,17 @@
 package com.jayud.customs.controller;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
+import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.customs.feign.FileClient;
+import com.jayud.customs.feign.OauthClient;
 import com.jayud.customs.model.bo.CustomsChangeStatusForm;
 import com.jayud.customs.model.bo.InputOrderCustomsForm;
 import com.jayud.customs.model.po.OrderCustoms;
@@ -16,6 +20,7 @@ import com.jayud.customs.model.vo.InputOrderCustomsVO;
 import com.jayud.customs.model.vo.OrderCustomsVO;
 import com.jayud.customs.service.IOrderCustomsService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +42,8 @@ public class ExternalApiController {
     RedisUtils redisUtils;
     @Autowired
     private FileClient fileClient;
+    @Autowired
+    private OauthClient oauthClient;
 
 
     @ApiOperation(value = "获取子订单信息")
@@ -132,6 +139,45 @@ public class ExternalApiController {
         return ApiResult.ok(fileViews);
     }
 
+
+    @ApiModelProperty(value = "获取菜单待处理数")
+    @RequestMapping(value = "/api/getMenuPendingNum")
+    public ApiResult getMenuPendingNum(@RequestBody List<Map<String, Object>> menusList) {
+        if (CollectionUtil.isEmpty(menusList)) {
+            return ApiResult.ok();
+        }
+        Map<String, String> tmp = new HashMap<>();
+        tmp.put("报关接单", "C_0");
+        tmp.put("报关打单", "C_1");
+        tmp.put("报关复核", "C_2");
+        tmp.put("报关二复", "C_3");
+        tmp.put("申报舱单", "C_9");
+        tmp.put("报关申报", "C_11");
+        tmp.put("报关放行", "C_4");
+        tmp.put("放行审核", "C_10");
+        tmp.put("驳回列表", "C_5_1");
+        tmp.put("通关确认", "C_5");
+
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+
+        for (Map<String, Object> menus : menusList) {
+
+            Map<String, Object> map = new HashMap<>();
+            Object title = menus.get("title");
+            String status = tmp.get(title);
+            Integer num = 0;
+            if (status != null) {
+                num = this.orderCustomsService.getNumByStatus(status, legalIds);
+            }
+            map.put("menusName", title);
+            map.put("num", num);
+            result.add(map);
+        }
+        return ApiResult.ok(result);
+    }
 }
 
 

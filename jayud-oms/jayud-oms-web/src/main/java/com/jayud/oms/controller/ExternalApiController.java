@@ -1147,6 +1147,25 @@ public class ExternalApiController {
         return ApiResult.ok(orderInfoService.updateById(new OrderInfo().setId(orderInfo.getId())
                 .setIsRejected(true).setRejectComment(rejectionDesc)));
     }
+
+
+    @ApiOperation(value = "获取过滤订单状态数量")
+    @RequestMapping(value = "/api/getFilterOrderStatus")
+    public ApiResult<Integer> getFilterOrderStatus(@RequestParam("mainOrderNos") List<String> mainOrderNos,
+                                                   @RequestParam("status") Integer status) {
+        List<OrderInfo> mainOrderInfos = orderInfoService.getOrderByStatus(mainOrderNos, status);
+
+        Map<String, String> map = mainOrderInfos.stream().collect(Collectors.toMap(OrderInfo::getOrderNo, OrderInfo::getOrderNo));
+
+        int count = 0;
+        for (String mainOrderNo : mainOrderNos) {
+            if (map.get(mainOrderNo) != null) {
+                ++count;
+            }
+        }
+
+        return ApiResult.ok(count);
+    }
 }
 
 

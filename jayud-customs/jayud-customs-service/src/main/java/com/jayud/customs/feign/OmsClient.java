@@ -2,6 +2,7 @@ package com.jayud.customs.feign;
 
 
 import com.jayud.common.ApiResult;
+import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.customs.model.bo.*;
 import com.jayud.customs.model.vo.OrderStatusVO;
 import io.swagger.annotations.ApiOperation;
@@ -21,6 +22,7 @@ public interface OmsClient {
 
     /**
      * 操作主订单
+     *
      * @return
      */
     @RequestMapping(value = "/api/oprMainOrder")
@@ -47,6 +49,7 @@ public interface OmsClient {
 
     /**
      * 子订单流程
+     *
      * @return
      */
     @RequestMapping(value = "/api/handleSubProcess")
@@ -54,6 +57,7 @@ public interface OmsClient {
 
     /**
      * 记录审核信息
+     *
      * @param form
      * @return
      */
@@ -62,6 +66,7 @@ public interface OmsClient {
 
     /**
      * 删除特定单的操作流程
+     *
      * @param form
      * @return
      */
@@ -70,14 +75,29 @@ public interface OmsClient {
 
     /**
      * 获取订单号
+     *
      * @return
      */
     @RequestMapping(value = "/api/getOrderNo")
-    ApiResult getOrderNo(@RequestParam("preOrder") String preOrder , @RequestParam("classCode") String classCode);
+    ApiResult getOrderNo(@RequestParam("preOrder") String preOrder, @RequestParam("classCode") String classCode);
 
 
     @ApiOperation(value = "主订单驳回标识操作")
     @RequestMapping(value = "/api/doMainOrderRejectionSignOpt")
     public ApiResult<Boolean> doMainOrderRejectionSignOpt(@RequestParam("mainOrderNo") String mainOrderNo,
                                                           @RequestParam("rejectionDesc") String rejectionDesc);
+
+
+    /**
+     * 根据字典类型下拉选项字典
+     */
+    @RequestMapping(value = "/api/initDictByDictTypeCode")
+    public ApiResult<List<InitComboxStrVO>> initDictByDictTypeCode(@RequestParam("dictTypeCode") String dictTypeCode);
+
+    /**
+     * 获取过滤订单状态数量
+     */
+    @RequestMapping(value = "/api/getFilterOrderStatus")
+    public ApiResult<Integer> getFilterOrderStatus(@RequestParam("mainOrderNos") List<String> mainOrderNos,
+                                                   @RequestParam("status") Integer status);
 }

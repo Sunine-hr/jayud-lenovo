@@ -207,11 +207,25 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
 
     /**
      * 获取特定状态下的报关订单
+     *
      * @param statuses
      * @return
      */
     @Override
     public List<OrderCustoms> getOrderCustomsByStatus(List<String> statuses) {
         return this.baseMapper.getOrderCustomsByStatus(statuses);
+    }
+
+    /**
+     * 查询菜单待处理订单数
+     *
+     * @param status
+     * @param legalIds
+     * @return
+     */
+    @Override
+    public Integer getNumByStatus(String status, List<Long> legalIds) {
+        List<String> mainOrderNos = this.baseMapper.getMainOrderNoByStatus(status, legalIds);
+        return this.omsClient.getFilterOrderStatus(mainOrderNos, 1).getData();
     }
 }

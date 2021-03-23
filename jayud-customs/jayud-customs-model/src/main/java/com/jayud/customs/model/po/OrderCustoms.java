@@ -149,6 +149,9 @@ public class OrderCustoms extends Model<OrderCustoms> {
     @ApiModelProperty(value = "接单时间")
     private LocalDateTime jiedanTime;
 
+    @ApiModelProperty(value = "监管方式")
+    private String supervisionMode;
+
 
     @Override
     protected Serializable pkVal() {

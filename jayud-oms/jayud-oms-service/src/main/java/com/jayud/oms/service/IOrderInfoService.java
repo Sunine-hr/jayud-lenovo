@@ -191,9 +191,17 @@ public interface IOrderInfoService extends IService<OrderInfo> {
 
     /**
      * 是否录用过费用
+     *
      * @param orderNo
-     * @param type 0.主订单,1子订单
+     * @param type    0.主订单,1子订单
      * @return
      */
-    public boolean isCost(String orderNo,Integer type);
+    public boolean isCost(String orderNo, Integer type);
+
+
+    /**
+     * 根据主订单号码集合和状态查询订单
+     * @return
+     */
+    public List<OrderInfo> getOrderByStatus(List<String> orderNo, Integer status);
 }

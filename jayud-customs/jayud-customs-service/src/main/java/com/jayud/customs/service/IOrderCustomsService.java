@@ -72,4 +72,12 @@ public interface IOrderCustomsService extends IService<OrderCustoms> {
     List<OrderCustoms> getCustomsOrderByMainOrderNos(@RequestParam("mainOrderNos") List<String> mainOrderNos);
 
     List<OrderCustoms> getOrderCustomsByStatus(List<String> statuses);
+
+    /**
+     * 查询菜单待处理订单数
+     * @param status
+     * @param legalIds
+     * @return
+     */
+    Integer getNumByStatus(String status, List<Long> legalIds);
 }

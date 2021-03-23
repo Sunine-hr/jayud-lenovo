@@ -60,4 +60,6 @@ public interface OrderCustomsMapper extends BaseMapper<OrderCustoms> {
      * @return
      */
     List<OrderCustoms> getOrderCustomsByStatus(List<String> statuses);
+
+    List<String> getMainOrderNoByStatus(@Param("status") String status, @Param("legalIds")List<Long> legalIds);
 }

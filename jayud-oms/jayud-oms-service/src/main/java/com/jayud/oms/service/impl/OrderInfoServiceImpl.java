@@ -402,6 +402,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     public InputCostVO getCostDetail(GetCostDetailForm form) {
         List<InputPaymentCostVO> inputPaymentCostVOS = paymentCostService.findPaymentCost(form);
         List<InputReceivableCostVO> inputReceivableCostVOS = receivableCostService.findReceivableCost(form);
+
         InputCostVO inputCostVO = new InputCostVO();
         inputCostVO.setPaymentCostList(inputPaymentCostVOS);
         inputCostVO.setReceivableCostList(inputReceivableCostVOS);
@@ -1472,6 +1473,19 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             return true;
         }
         return false;
+    }
+
+    /**
+     * 根据主订单号码集合和状态查询订单
+     *
+     * @return
+     */
+    @Override
+    public List<OrderInfo> getOrderByStatus(List<String> orderNo, Integer status) {
+        QueryWrapper<OrderInfo> condition = new QueryWrapper<>();
+        condition.lambda().in(OrderInfo::getOrderNo, orderNo)
+                .eq(OrderInfo::getStatus, status);
+        return this.baseMapper.selectList(condition);
     }
 
     /**

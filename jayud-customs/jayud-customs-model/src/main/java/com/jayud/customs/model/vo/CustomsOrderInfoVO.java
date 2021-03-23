@@ -120,6 +120,9 @@ public class CustomsOrderInfoVO {
     @ApiModelProperty(value = "过磅数KG")
     private Double carWeighNum;
 
+    @ApiModelProperty(value = "监管方式")
+    private String supervisionMode;
+
     public void setGoodsTypeDesc(Integer goodsType) {
         if (goodsType == 1) {
             this.goodsTypeDesc = "进口";

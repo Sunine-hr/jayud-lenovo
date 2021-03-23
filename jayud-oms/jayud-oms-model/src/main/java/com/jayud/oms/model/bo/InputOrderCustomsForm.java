@@ -104,6 +104,9 @@ public class InputOrderCustomsForm {
     @ApiModelProperty(value = "审核状态")
     private String subCustomsStatus;
 
+    @ApiModelProperty(value = "监管方式")
+    private String supervisionMode;
+
 
     public void checkCustomsInfoParam() {
         String title = "报关:";

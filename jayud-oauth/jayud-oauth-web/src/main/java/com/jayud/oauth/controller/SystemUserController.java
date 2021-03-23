@@ -8,6 +8,7 @@ import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.*;
+import com.jayud.oauth.feign.CustomsClient;
 import com.jayud.oauth.feign.FreightAirClient;
 import com.jayud.oauth.feign.OmsClient;
 import com.jayud.oauth.feign.TmsClient;
@@ -62,6 +63,8 @@ public class SystemUserController {
     private FreightAirClient freightAirClient;
     @Autowired
     private OmsClient omsClient;
+    @Autowired
+    private CustomsClient customsClient;
 
     /**
      * 登录接口
@@ -654,6 +657,9 @@ public class SystemUserController {
         }
         if (SubOrderSignEnum.MAIN.getSignOne().equals(type)) {
             result.put(SubOrderSignEnum.MAIN.getSignOne(), this.omsClient.getMenuPendingNum(systemMenus).getData());
+        }
+        if (SubOrderSignEnum.BG.getSignOne().equals(type)) {
+            result.put(SubOrderSignEnum.BG.getSignOne(), this.customsClient.getMenuPendingNum(systemMenus).getData());
         }
         return CommonResult.success(result);
     }

@@ -66,8 +66,8 @@
             or (orc.is_sum_to_main = 1  and orc.`status` = '3'))
         </if>
         <if test="form.cmd == 'main_cost_audit'">
-            and orc.`status` in ('2','3')
---             and orc.sub_type = 'main'
+            and ((orc.`status` in ('2','3') and orc.sub_type = 'main')
+            or (orc.`status` in ('3') and orc.sub_type !='main'))
         </if>
         <if test="form.cmd == 'sub_cost'">
             and orc.sub_type = #{form.subType}

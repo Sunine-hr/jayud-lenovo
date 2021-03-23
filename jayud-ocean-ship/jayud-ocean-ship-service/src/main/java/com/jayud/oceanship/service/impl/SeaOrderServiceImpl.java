@@ -122,7 +122,12 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
             this.updateById(seaOrder);
         }
         //获取柜型数量
-        if(addSeaOrderForm.getCabinetType().equals("FCL")){
+        if (addSeaOrderForm.getCabinetType().equals("FCL")) {
+            //先删除原来的柜型
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("sea_order_id",seaOrder.getId());
+            queryWrapper.eq("sea_order_no",seaOrder.getOrderNo());
+            this.remove(queryWrapper);
             List<CabinetSizeNumber> cabinetSizeNumbers = addSeaOrderForm.getCabinetSizeNumbers();
             for (CabinetSizeNumber cabinetSizeNumber : cabinetSizeNumbers) {
                 cabinetSizeNumber.setSeaOrderId(seaOrder.getId());
@@ -168,7 +173,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
      * 生成订单号
      */
     @Override
-    public String generationOrderNo(Long legalId , Integer integer) {
+    public String generationOrderNo(Long legalId, Integer integer) {
         //生成订单号
 //        String orderNo = StringUtils.loadNum(CommonConstant.S, 12);
 //        while (true) {
@@ -178,17 +183,17 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
 //                break;
 //            }
 //        }
-        String legalCode = (String)oauthClient.getLegalEntityCodeByLegalId(legalId).getData();
+        String legalCode = (String) oauthClient.getLegalEntityCodeByLegalId(legalId).getData();
         String preOrder = null;
         String classCode = null;
-        if(integer.equals("1")){
+        if (integer.equals("1")) {
             preOrder = OrderTypeEnum.SI.getCode() + legalCode;
             classCode = OrderTypeEnum.SI.getCode();
-        }else {
+        } else {
             preOrder = OrderTypeEnum.SE.getCode() + legalCode;
             classCode = OrderTypeEnum.SE.getCode();
         }
-        String orderNo = (String)omsClient.getOrderNo(preOrder,classCode).getData();
+        String orderNo = (String) omsClient.getOrderNo(preOrder, classCode).getData();
         return orderNo;
     }
 
@@ -204,6 +209,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
 
     /**
      * 根据主订单号获取海运订单详情
+     *
      * @param orderNo
      * @return
      */
@@ -237,14 +243,14 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
             seaOrderVO.processingAddress(address);
         }
         //获取柜型数量
-        if(seaOrderVO.getCabinetType().equals("FCL")){
+        if (seaOrderVO.getCabinetType().equals("FCL")) {
             List<CabinetSizeNumberVO> cabinetSizeNumberVOS = cabinetSizeNumberService.getList(seaOrderVO.getOrderId());
             seaOrderVO.setCabinetSizeNumbers(cabinetSizeNumberVOS);
         }
 
         //查询订船信息
         SeaBookship seaBookship = this.seaBookshipService.getEnableBySeaOrderId(id);
-        SeaBookshipVO seaBookshipVO = ConvertUtil.convert(seaBookship,SeaBookshipVO.class);
+        SeaBookshipVO seaBookshipVO = ConvertUtil.convert(seaBookship, SeaBookshipVO.class);
         seaOrderVO.setSeaBookshipVO(seaBookshipVO);
         return seaOrderVO;
     }
@@ -263,7 +269,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
 
         Page<SeaOrderFormVO> page = new Page<>(form.getPageNum(), form.getPageSize());
-        return this.baseMapper.findByPage(page, form,legalIds);
+        return this.baseMapper.findByPage(page, form, legalIds);
     }
 
     /**
@@ -338,8 +344,8 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
             List<Terms> terms = termsService.list();
 
             for (Terms term : terms) {
-                if(term.getName().equals("FOB")||term.getName().equals("CIF")||term.getName().equals("DAP")||term.getName().equals("FCA")){
-                    if(term.getId().equals(tmp.getTerms())){
+                if (term.getName().equals("FOB") || term.getName().equals("CIF") || term.getName().equals("DAP") || term.getName().equals("FCA")) {
+                    if (term.getId().equals(tmp.getTerms())) {
                         SeaOrder seaOrder1 = new SeaOrder();
                         seaOrder1.setId(tmp.getId());
                         seaOrder1.setProcessStatus(1);
@@ -383,13 +389,13 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
     }
 
     //生成补料单号
-    public String getBLOrderNo(String seaOrderNo,Integer type,Integer size,Integer i){
+    public String getBLOrderNo(String seaOrderNo, Integer type, Integer size, Integer i) {
         String order = null;
-        if(type == 1){
-            order = seaOrderNo+"BL"+"101";
+        if (type == 1) {
+            order = seaOrderNo + "BL" + "101";
         }
-        if(type == 2){
-            order = seaOrderNo+"BL"+size+"0"+i;
+        if (type == 2) {
+            order = seaOrderNo + "BL" + size + "0" + i;
         }
         return order;
     }
@@ -397,19 +403,37 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
     @Override
     public void updateOrSaveProcessStatus(SeaProcessOptForm form) {
 
-        if(form.getType().equals(1)){//合并，多个订单合并成一个补料
+        if (form.getType().equals(1)) {//合并，多个订单合并成一个补料
             List<AddSeaOrderForm> seaOrderForms = form.getSeaOrderForms();
             List<AddSeaReplenishment> seaReplenishments = form.getSeaReplenishments();
             for (AddSeaOrderForm seaOrderForm : seaOrderForms) {
-                SeaReplenishment replenishment = ConvertUtil.convert(seaReplenishments.get(0),SeaReplenishment.class);
+                SeaReplenishment replenishment = ConvertUtil.convert(seaReplenishments.get(0), SeaReplenishment.class);
                 replenishment.setSeaOrderId(seaOrderForm.getOrderId());
                 replenishment.setSeaOrderNo(seaOrderForm.getOrderNo());
-                replenishment.setOrderNo(getBLOrderNo(seaOrderForm.getOrderNo(),form.getType(),seaReplenishments.size(),1));
+                replenishment.setOrderNo(getBLOrderNo(seaOrderForm.getOrderNo(), form.getType(), seaReplenishments.size(), 1));
                 replenishment.setIsBillOfLading(0);
                 boolean save = seaReplenishmentService.save(replenishment);
-                if(!save){
+                if (!save) {
                     log.warn("补料信息添加失败");
                 }
+
+                //获取柜型数量
+                if (seaOrderForm.getCabinetType().equals("FCL")) {
+                    //先删除原来的柜型
+                    QueryWrapper queryWrapper = new QueryWrapper();
+                    queryWrapper.eq("sea_order_id",replenishment.getId());
+                    queryWrapper.eq("sea_order_no",replenishment.getOrderNo());
+                    this.remove(queryWrapper);
+                    List<CabinetSizeNumber> cabinetSizeNumbers = seaOrderForm.getCabinetSizeNumbers();
+                    for (CabinetSizeNumber cabinetSizeNumber : cabinetSizeNumbers) {
+                        cabinetSizeNumber.setSeaOrderId(replenishment.getId());
+                        cabinetSizeNumber.setSraOrderNo(replenishment.getOrderNo());
+                        cabinetSizeNumber.setCreateTime(LocalDateTime.now());
+                        cabinetSizeNumber.setCreateUser(UserOperator.getToken());
+                        cabinetSizeNumberService.save(cabinetSizeNumber);
+                    }
+                }
+
                 AddSeaOrderForm convert = ConvertUtil.convert(form, AddSeaOrderForm.class);
                 convert.assemblyAddress();
                 SeaOrder seaOrder = new SeaOrder();
@@ -455,19 +479,36 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
                 }
             }
         }
-        if(form.getType().equals(2)){//分单，一个订单多个补料，订单号只有一个，补料信息有多个
+        if (form.getType().equals(2)) {//分单，一个订单多个补料，订单号只有一个，补料信息有多个
             List<AddSeaOrderForm> seaOrderForms = form.getSeaOrderForms();
             List<AddSeaReplenishment> seaReplenishments = form.getSeaReplenishments();
             int count = 0;
             for (int i = 0; i < seaReplenishments.size(); i++) {
-                SeaReplenishment replenishment = ConvertUtil.convert(seaReplenishments.get(i),SeaReplenishment.class);
+                SeaReplenishment replenishment = ConvertUtil.convert(seaReplenishments.get(i), SeaReplenishment.class);
                 replenishment.setSeaOrderId(seaOrderForms.get(0).getOrderId());
                 replenishment.setSeaOrderNo(seaOrderForms.get(0).getOrderNo());
-                replenishment.setOrderNo(getBLOrderNo(seaOrderForms.get(0).getOrderNo(),form.getType(),seaReplenishments.size(),i+1));
+                replenishment.setOrderNo(getBLOrderNo(seaOrderForms.get(0).getOrderNo(), form.getType(), seaReplenishments.size(), i + 1));
                 replenishment.setIsBillOfLading(0);
                 boolean save = seaReplenishmentService.save(replenishment);
-                if(!save){
+                if (!save) {
                     log.warn("补料信息添加失败");
+                }
+
+                //获取柜型数量
+                if (seaOrderForms.get(0).getCabinetType().equals("FCL")) {
+                    //先删除原来的柜型
+                    QueryWrapper queryWrapper = new QueryWrapper();
+                    queryWrapper.eq("sea_order_id",replenishment.getId());
+                    queryWrapper.eq("sea_order_no",replenishment.getOrderNo());
+                    this.remove(queryWrapper);
+                    List<CabinetSizeNumber> cabinetSizeNumbers = seaOrderForms.get(0).getCabinetSizeNumbers();
+                    for (CabinetSizeNumber cabinetSizeNumber : cabinetSizeNumbers) {
+                        cabinetSizeNumber.setSeaOrderId(replenishment.getId());
+                        cabinetSizeNumber.setSraOrderNo(replenishment.getOrderNo());
+                        cabinetSizeNumber.setCreateTime(LocalDateTime.now());
+                        cabinetSizeNumber.setCreateUser(UserOperator.getToken());
+                        cabinetSizeNumberService.save(cabinetSizeNumber);
+                    }
                 }
 
                 //获取用户地址
@@ -500,7 +541,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
                 }
                 count++;
             }
-            if(count == seaReplenishments.size()){
+            if (count == seaReplenishments.size()) {
                 AddSeaOrderForm convert = ConvertUtil.convert(form, AddSeaOrderForm.class);
                 convert.assemblyAddress();
                 SeaOrder seaOrder = new SeaOrder();
@@ -516,8 +557,8 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
 
                 //完成订单状态
                 finishSeaOrderOpt(seaOrder);
-            }else{
-                log.warn("提交补料操作失败",count);
+            } else {
+                log.warn("提交补料操作失败", count);
             }
         }
 
@@ -526,6 +567,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
 
     /**
      * 获取订单详情
+     *
      * @param seaOrderId
      * @return
      */
@@ -553,11 +595,11 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
             seaOrder.processingAddress(address);
         }
 
-        List<FileView> attachments = (List<FileView>)this.omsClient.getAttachments(seaOrder.getOrderId()).getData();
+        List<FileView> attachments = (List<FileView>) this.omsClient.getAttachments(seaOrder.getOrderId()).getData();
         seaOrder.setAllPics(attachments);
 
         //获取柜型数量
-        if(seaOrder.getCabinetType().equals("FCL")){
+        if (seaOrder.getCabinetType().equals("FCL")) {
             List<CabinetSizeNumberVO> cabinetSizeNumberVOS = cabinetSizeNumberService.getList(seaOrder.getOrderId());
             seaOrder.setCabinetSizeNumbers(cabinetSizeNumberVOS);
         }
@@ -569,21 +611,21 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         seaOrder.setSeaBookshipVO(convert);
 
 //        System.out.println("status========================"+seaOrder.getStatus());
-        if(seaOrder.getStatus() != OrderStatusEnum.SEA_S_0.getCode() || seaOrder.getStatus() != OrderStatusEnum.SEA_S_1.getCode()){
+        if (seaOrder.getStatus() != OrderStatusEnum.SEA_S_0.getCode() || seaOrder.getStatus() != OrderStatusEnum.SEA_S_1.getCode()) {
             CommonResult<List<InitComboxVO>> initSupplierInfo = omsClient.initSupplierInfo();
             List<InitComboxVO> data = initSupplierInfo.getData();
             for (InitComboxVO datum : data) {
-                if(datum.getId().equals(seaOrder.getSeaBookshipVO().getAgentSupplierId())){
+                if (datum.getId().equals(seaOrder.getSeaBookshipVO().getAgentSupplierId())) {
                     seaOrder.setSupplierName(datum.getName());
                 }
             }
         }
         //获取截补料数据
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("sea_order_id",seaOrder.getOrderId());
-        queryWrapper.eq("sea_order_no",seaOrder.getOrderNo());
+        queryWrapper.eq("sea_order_id", seaOrder.getOrderId());
+        queryWrapper.eq("sea_order_no", seaOrder.getOrderNo());
         List<SeaReplenishment> list = seaReplenishmentService.list(queryWrapper);
-        seaOrder.setSeaReplenishments(ConvertUtil.convertList(list,SeaReplenishmentVO.class));
+        seaOrder.setSeaReplenishments(ConvertUtil.convertList(list, SeaReplenishmentVO.class));
         return seaOrder;
     }
 
@@ -660,10 +702,10 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         SeaOrder seaOrder = new SeaOrder();
         seaOrder.setAuditStatus(form.getAuditStatus());
         seaOrder.setAuditOpinion(form.getAuditOpinion());
-        if(form.getAuditStatus().equals(1)){//审核通过
-            this.updateProcessStatus(seaOrder,form);
+        if (form.getAuditStatus().equals(1)) {//审核通过
+            this.updateProcessStatus(seaOrder, form);
         }
-        if(form.getAuditStatus().equals(2)){
+        if (form.getAuditStatus().equals(2)) {
             DelOprStatusForm delOprStatusForm = new DelOprStatusForm();
             delOprStatusForm.setOrderId(seaOrder.getId());
             delOprStatusForm.setStatus(Collections.singletonList(OrderStatusEnum.SEA_S_4.getCode()));
@@ -689,7 +731,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
 
 
     private void handleLadingBillFile(SeaBookship seaBookship, SeaProcessOptForm form) {
-            seaBookship.setFilePath(StringUtils.getFileStr(form.getFileViewList()));
-            seaBookship.setFileName(StringUtils.getFileNameStr(form.getFileViewList()));
+        seaBookship.setFilePath(StringUtils.getFileStr(form.getFileViewList()));
+        seaBookship.setFileName(StringUtils.getFileNameStr(form.getFileViewList()));
     }
 }

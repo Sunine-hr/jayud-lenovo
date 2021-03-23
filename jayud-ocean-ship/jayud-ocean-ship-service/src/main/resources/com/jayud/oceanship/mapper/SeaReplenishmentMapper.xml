@@ -35,7 +35,7 @@
         id, order_no, sea_order_id, sea_order_no, cut_replenish_time, cabinet_number, paper_strip_seal, create_user, create_time, update_user, update_time, is_bill_of_lading, imp_and_exp_type, terms, port_departure_code, port_destination_code, good_time, is_freight_collect, is_other_expenses_paid, is_dangerous_goods, is_charged, transit_port_code, cabinet_type, cabinet_type_name
     </sql>
 
-    <select id="findBillByPage" resultType="com.jayud.oceanship.vo.SeaReplenishmentVO">
+    <select id="findBillByPage" resultType="com.jayud.oceanship.vo.SeaReplenishmentFormVO">
         select id,order_no orderNo,sea_order_id seaOrderId,sea_order_no seaOrderNo,
         cut_replenish_time cutReplenishTime,cabinet_number cabinetNumber,
         paper_strip_seal paperStripSeal,create_user createUser,create_time createTime,

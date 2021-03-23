@@ -12,6 +12,7 @@ import com.jayud.oceanship.mapper.SeaReplenishmentMapper;
 import com.jayud.oceanship.service.ISeaReplenishmentService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.oceanship.vo.SeaOrderFormVO;
+import com.jayud.oceanship.vo.SeaReplenishmentFormVO;
 import com.jayud.oceanship.vo.SeaReplenishmentVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,10 +37,11 @@ public class SeaReplenishmentServiceImpl extends ServiceImpl<SeaReplenishmentMap
 
     /**
      * 分页获取草稿提单数据
+     *
      * @return
      */
     @Override
-    public IPage<SeaReplenishmentVO> findBillByPage(QuerySeaOrderForm form) {
+    public IPage<SeaReplenishmentFormVO> findBillByPage(QuerySeaOrderForm form) {
         if (StringUtils.isEmpty(form.getStatus())) { //订单列表
             form.setProcessStatusList(Arrays.asList(ProcessStatusEnum.PROCESSING.getCode()
                     , ProcessStatusEnum.COMPLETE.getCode(), ProcessStatusEnum.CLOSE.getCode()));
@@ -52,6 +54,6 @@ public class SeaReplenishmentServiceImpl extends ServiceImpl<SeaReplenishmentMap
         List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
 
         Page<SeaOrderFormVO> page = new Page<>(form.getPageNum(), form.getPageSize());
-        return this.baseMapper.findBillByPage(page, form,legalIds);
+        return this.baseMapper.findBillByPage(page, form, legalIds);
     }
 }

@@ -6,6 +6,7 @@ import com.jayud.oceanship.bo.QuerySeaOrderForm;
 import com.jayud.oceanship.po.SeaReplenishment;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.oceanship.vo.SeaOrderFormVO;
+import com.jayud.oceanship.vo.SeaReplenishmentFormVO;
 import com.jayud.oceanship.vo.SeaReplenishmentVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -23,5 +24,5 @@ import java.util.List;
 @Mapper
 public interface SeaReplenishmentMapper extends BaseMapper<SeaReplenishment> {
 
-    IPage<SeaReplenishmentVO> findBillByPage(Page<SeaOrderFormVO> page, @Param("form") QuerySeaOrderForm form, @Param("legalIds")List<Long> legalIds);
+    IPage<SeaReplenishmentFormVO> findBillByPage(Page<SeaOrderFormVO> page, @Param("form") QuerySeaOrderForm form, @Param("legalIds")List<Long> legalIds);
 }

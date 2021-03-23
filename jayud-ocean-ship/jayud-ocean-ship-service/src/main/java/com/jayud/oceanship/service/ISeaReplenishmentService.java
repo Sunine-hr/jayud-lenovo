@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.oceanship.bo.QuerySeaOrderForm;
 import com.jayud.oceanship.po.SeaReplenishment;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.oceanship.vo.SeaReplenishmentFormVO;
 import com.jayud.oceanship.vo.SeaReplenishmentVO;
 
 /**
@@ -20,6 +21,6 @@ public interface ISeaReplenishmentService extends IService<SeaReplenishment> {
      * 分页获取草稿提单数据
      * @return
      */
-    IPage<SeaReplenishmentVO> findBillByPage(QuerySeaOrderForm form);
+    IPage<SeaReplenishmentFormVO> findBillByPage(QuerySeaOrderForm form);
 
 }

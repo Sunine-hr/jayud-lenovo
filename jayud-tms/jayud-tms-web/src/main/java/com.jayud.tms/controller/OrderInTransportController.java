@@ -648,16 +648,15 @@ public class OrderInTransportController {
             QueryWrapper removeWrapper = new QueryWrapper();
             removeWrapper.eq("order_no", orderTransport1.getOrderNo());
             orderSendCarsService.remove(removeWrapper);
+            //执行主订单驳回标识
+            omsClient.doMainOrderRejectionSignOpt(orderTransport1.getMainOrderNo(),
+                    orderTransport1.getOrderNo() + "-" + auditInfoForm.getAuditComment() + ",");
         } else {
             DelOprStatusForm deleteOpr = new DelOprStatusForm();
             deleteOpr.setOrderId(form.getOrderId());
             deleteOpr.setStatus(deleteStatus);
             //删除特定流程
             this.omsClient.delSpecOprStatus(deleteOpr);
-
-            //执行主订单驳回标识
-            omsClient.doMainOrderRejectionSignOpt(orderTransport1.getMainOrderNo(),
-                    orderTransport1.getOrderNo() + "-" + auditInfoForm.getAuditComment() + ",");
         }
 
         boolean result = orderTransportService.updateById(orderTransport);

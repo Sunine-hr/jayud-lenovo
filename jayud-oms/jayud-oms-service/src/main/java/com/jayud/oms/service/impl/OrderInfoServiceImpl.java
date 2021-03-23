@@ -860,7 +860,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
 
         //获取拖车信息
-        if (OrderStatusEnum.TC.getCode().equals(form.getClassCode()) || inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.TCDD.getCode())) {
+        if (OrderStatusEnum.TC.getCode().equals(form.getClassCode()) || inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.TCEDD.getCode())|| inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.TCIDD.getCode())) {
             InputTrailerOrderVO trailerOrderVO = this.trailerClient.getTrailerOrderDetails(inputMainOrderVO.getOrderNo()).getData();
             if (trailerOrderVO != null) {
                 //查询供应商
@@ -1141,7 +1141,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
         }
         //拖车
-        if (OrderStatusEnum.TC.getCode().equals(classCode)) {
+        if (OrderStatusEnum.TC.getCode().equals(classCode) || selectedServer.contains(OrderStatusEnum.TCEDD.getCode()) || selectedServer.contains(OrderStatusEnum.TCIDD.getCode())) {
             InputTrailerOrderFrom trailerOrderFrom = form.getTrailerOrderFrom();
 
             //生成拖车订单号

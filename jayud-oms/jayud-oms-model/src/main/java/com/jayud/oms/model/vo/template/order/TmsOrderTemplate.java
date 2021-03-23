@@ -71,7 +71,7 @@ public class TmsOrderTemplate {
     @ApiModelProperty(value = "状态")
     private String status;
 
-    @ApiModelProperty(value = "费用状态", required = true)
+    @ApiModelProperty(value = "费用状态")
     private Boolean cost;
 
 

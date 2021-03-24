@@ -165,7 +165,7 @@ public class TrailerOrderController {
 //        List<Long> supplierIds = new ArrayList<>();
         List<String> unitCodes = new ArrayList<>();
         for (TrailerOrderFormVO record : records) {
-            trailerOrderIds.add(record.getId());
+            trailerOrderIds.add(record.getOrderId());
             mainOrder.add(record.getMainOrderNo());
             entityIds.add(record.getLegalEntityId());
             unitCodes.add(record.getUnitCode());
@@ -385,6 +385,7 @@ public class TrailerOrderController {
         String orderNo = (String)omsClient.getOrderNo(preOrderNo,classCode).getData();
         one.setOrderNo(orderNo);
         one.setTrailerOrderNo(trailerOrderNo);
+        one.setStatus(1);
         trailerDispatchService.saveOrUpdateTrailerDispatch(one);
         return CommonResult.success(one);
     }
@@ -475,9 +476,9 @@ public class TrailerOrderController {
     private String filePath;
     @ApiOperation(value = "下载派车单")
     @GetMapping(value = "/uploadExcel")
-    public void uploadExcel(@RequestParam("id") Long id, HttpServletResponse response) {
+    public void uploadExcel(@RequestParam("orderId") Long orderId, HttpServletResponse response) {
 
-        TrailerOrderVO trailerOrderDetails = trailerOrderService.getTrailerOrderByOrderNO(id);
+        TrailerOrderVO trailerOrderDetails = trailerOrderService.getTrailerOrderByOrderNO(orderId);
 
 //        ClassPathResource classPathResource = new ClassPathResource("/static/派车单.xls");
 //        String filename1 = classPathResource.getFilename();

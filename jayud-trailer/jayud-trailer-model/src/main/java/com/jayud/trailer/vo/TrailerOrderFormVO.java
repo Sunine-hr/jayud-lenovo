@@ -40,7 +40,7 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
 
 //    @ApiModelProperty(value = "主键id")
     @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    private Long orderId;
 
     @ApiModelProperty(value = "子订单编号")
     private String orderNo;
@@ -260,7 +260,7 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
         StringBuilder sb = new StringBuilder();
 
         for (GoodsVO goods : goodsList) {
-            if (this.id.equals(goods.getBusinessId())
+            if (this.orderId.equals(goods.getBusinessId())
                     && BusinessTypeEnum.TC.getCode().equals(goods.getBusinessType())) {
                 sb.append(goods.getName())
                         .append(" ").append(goods.getPlateAmount() == null ? 0 : goods.getPlateAmount()).append(goods.getPlateUnit())

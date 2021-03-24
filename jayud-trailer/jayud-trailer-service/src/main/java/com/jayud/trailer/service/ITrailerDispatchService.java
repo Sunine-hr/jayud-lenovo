@@ -15,10 +15,10 @@ public interface ITrailerDispatchService extends IService<TrailerDispatch> {
 
     /**
      * 根据拖车id获取派车信息
-     * @param id
+     * @param orderNo
      * @return
      */
-    TrailerDispatch getEnableByTrailerOrderId(Long id);
+    TrailerDispatch getEnableByTrailerOrderId(String orderNo);
 
     /**
      * 保存或修改派车信息

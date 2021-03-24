@@ -82,7 +82,7 @@ release_time, is_weighed, is_make_up, create_user, create_time, update_user, upd
     </select>
 
     <select id="findByPage" resultType="com.jayud.trailer.vo.TrailerOrderFormVO">
-        select tor.id,tor.order_no orderNo,main_order_no mainOrderNo,status, process_status processStatus,
+        select tor.id orderId,tor.order_no orderNo,main_order_no mainOrderNo,status, process_status processStatus,
         legal_entity_id legalEntityId,legal_name subLegalName,imp_and_exp_type impAndExpType,
         unit_code unitCode,unit_code_name unitCodeName,port_code portCode,
         cabinet_size cabinetSize,

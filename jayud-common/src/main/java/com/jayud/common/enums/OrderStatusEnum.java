@@ -27,7 +27,8 @@ public enum OrderStatusEnum {
     HYDD("HYDD", "海运订单"),
     NLDD("NLDD", "内陆运输订单"),
     TC("TC","拖车"),
-    TCDD("TCDD","拖车订单"),
+    TCEDD("TCEDD","拖车出口订单"),
+    TCIDD("TCIDD","拖车进口订单"),
 
     //主订单状态
     MAIN_1("1", "正常"),

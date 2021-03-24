@@ -1,5 +1,7 @@
 package com.jayud.finance.service.impl;
 
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -9,6 +11,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.BeanUtils;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
@@ -24,6 +27,7 @@ import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.service.*;
 import com.jayud.finance.util.ReflectUtil;
 import com.jayud.finance.vo.*;
+import com.jayud.finance.vo.template.order.AirOrderTemplate;
 import io.netty.util.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,6 +65,8 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
     ICancelAfterVerificationService verificationService;
     @Autowired
     OauthClient oauthClient;
+    @Autowired
+    private CommonService commonService;
 
     @Override
     public IPage<OrderPaymentBillDetailVO> findReceiveBillDetailByPage(QueryPaymentBillDetailForm form) {
@@ -79,7 +85,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
 
     @Override
     public List<OrderPaymentBillDetailVO> findReceiveBillDetail(QueryPaymentBillDetailForm form) {
-        return baseMapper.findReceiveBillDetailByPage(form,null);
+        return baseMapper.findReceiveBillDetailByPage(form, null);
     }
 
     @Override
@@ -493,6 +499,78 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         return newOrderList;
     }
 
+
+    @Override
+    public JSONArray viewSBillDetailInfo(String billNo, String cmd) {
+        List<ViewBilToOrderVO> orderList = baseMapper.viewSBillDetail(billNo);
+
+        JSONArray array = new JSONArray(orderList);
+
+        List<ViewBilToOrderVO> newOrderList = new ArrayList<>();
+        List<String> mainOrderNos = new ArrayList<>();
+        List<ViewBillToCostClassVO> findCostClass = baseMapper.findSCostClass(billNo);
+
+        for (int i = 0; i < orderList.size(); i++) {
+            ViewBilToOrderVO viewBillToOrder = orderList.get(i);
+            JSONObject jsonObject = array.getJSONObject(i);
+            this.tmsSpecialDataProcessing(cmd, viewBillToOrder);
+
+            for (ViewBillToCostClassVO viewBillToCostClass : findCostClass) {
+                if ((StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo()) && StringUtil.isNullOrEmpty(viewBillToCostClass.getSubOrderNo()) &&
+                        viewBillToCostClass.getOrderNo().equals(viewBillToOrder.getOrderNo()))
+                        || ((!StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo())) && viewBillToOrder.getSubOrderNo().equals(viewBillToCostClass.getSubOrderNo()))) {
+                    try {
+                        String addProperties = "";
+                        String addValue = "";
+                        Map<String, Object> propertiesMap = new HashMap<String, Object>();
+                        Class cls = viewBillToCostClass.getClass();
+                        Field[] fields = cls.getDeclaredFields();
+                        for (int j = 0; j < fields.length; j++) {
+                            Field f = fields[j];
+                            f.setAccessible(true);
+                            if ("name".equals(f.getName())) {
+                                addProperties = String.valueOf(f.get(viewBillToCostClass)).toLowerCase();//待新增得属性
+                            }
+                            if ("money".equals(f.getName())) {
+                                addValue = String.valueOf(f.get(viewBillToCostClass));//待新增属性得值
+                            }
+                            propertiesMap.put(addProperties, addValue);
+                        }
+                        jsonObject.putAll(propertiesMap);
+//                        viewBillToOrder = (ViewBilToOrderVO) ReflectUtil.getObject(viewBillToOrder, propertiesMap);
+//                        viewBillToOrder.setDynamicMap(propertiesMap);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            newOrderList.add(viewBillToOrder);
+            mainOrderNos.add(viewBillToOrder.getOrderNo());
+//            list.add(viewBillToOrder);
+        }
+        //模板数据处理
+//        array = this.inlandTPDataProcessing(form, array, mainOrderNos);
+        array = this.templateDataProcessing(cmd, array, mainOrderNos);
+        return array;
+    }
+
+    private JSONArray templateDataProcessing(String cmd, JSONArray array, List<String> mainOrderNos) {
+        Map<String, Object> data = new HashMap<>();
+        if (SubOrderSignEnum.KY.getSignOne().equals(cmd)) {
+            List<AirOrderTemplate> airOrderTemplate = this.commonService.getAirOrderTemplate(mainOrderNos);
+            data = airOrderTemplate.stream().collect(Collectors.toMap(AirOrderTemplate::getOrderNo, e -> e));
+        }
+        JSONArray jsonArray = new JSONArray();
+        for (int i = 0; i < array.size(); i++) {
+            JSONObject jsonObject = array.getJSONObject(i);
+            JSONObject object = new JSONObject(data.get(jsonObject.getStr("subOrderNo")));
+            object.putAll(jsonObject);
+            jsonArray.add(object);
+        }
+        return jsonArray;
+    }
+
+
     @Override
     public List<SheetHeadVO> findSSheetHead(String billNo, Map<String, Object> callbackArg) {
         List<SheetHeadVO> allHeadList = new ArrayList<>();
@@ -822,7 +900,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
     public int getEditBillNum(String billNo) {
         QueryWrapper<OrderReceivableBillDetail> condition = new QueryWrapper<>();
         condition.lambda().notIn(OrderReceivableBillDetail::getAuditStatus,
-                BillEnum.EDIT_DEL.getCode(),BillEnum.EDIT_NO_COMMIT.getCode())
+                BillEnum.EDIT_DEL.getCode(), BillEnum.EDIT_NO_COMMIT.getCode())
                 .eq(OrderReceivableBillDetail::getBillNo, billNo);
         return this.count(condition);
     }
@@ -913,6 +991,19 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 .setBillNum(billNos.size());
 
         this.receivableBillService.updateById(orderReceivableBill);
+    }
+
+
+    private void tmsSpecialDataProcessing(String cmd, ViewBilToOrderVO viewBillToOrder) {
+        //中港运输 处理目的地:当有两条或两条以上时,则获取中转仓地址
+        if (SubOrderSignEnum.ZGYS.getSignOne().equals(cmd)) {
+            if (!StringUtil.isNullOrEmpty(viewBillToOrder.getEndAddress())) {
+                String[] strs = viewBillToOrder.getEndAddress().split(",");
+                if (strs.length > 1) {
+                    viewBillToOrder.setEndAddress(receivableBillService.getWarehouseAddress(viewBillToOrder.getOrderNo()));
+                }
+            }
+        }
     }
 
 }

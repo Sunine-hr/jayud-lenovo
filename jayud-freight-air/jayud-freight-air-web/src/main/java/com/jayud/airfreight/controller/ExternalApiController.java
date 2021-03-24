@@ -10,6 +10,7 @@ import com.jayud.airfreight.model.bo.vivo.BookingSpaceForm;
 import com.jayud.airfreight.model.enums.VivoRejectionStatusEnum;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.jayud.airfreight.model.po.AirPort;
+import com.jayud.airfreight.model.vo.AirOrderInfoVO;
 import com.jayud.airfreight.model.vo.AirOrderVO;
 import com.jayud.airfreight.service.AirFreightService;
 import com.jayud.airfreight.service.IAirOrderService;
@@ -186,8 +187,8 @@ public class ExternalApiController {
 
     @ApiModelProperty(value = "查询空运订单信息")
     @RequestMapping(value = "/api/airfreight/getAirOrderByMainOrderNos")
-    public ApiResult<AirOrder> getAirOrderByMainOrderNos(@RequestParam("mainOrderNos") List<String> mainOrderNos) {
-        List<AirOrder> airOrders = this.airOrderService.getAirOrderByMainOrderNos(mainOrderNos);
+    public ApiResult<AirOrderInfoVO> getAirOrderByMainOrderNos(@RequestParam("mainOrderNos") List<String> mainOrderNos) {
+        List<AirOrderInfoVO> airOrders = this.airOrderService.getAirOrderByMainOrderNos(mainOrderNos);
         return ApiResult.ok(airOrders);
     }
 

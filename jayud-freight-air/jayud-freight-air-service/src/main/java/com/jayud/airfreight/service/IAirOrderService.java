@@ -5,6 +5,7 @@ import com.jayud.airfreight.model.bo.*;
 import com.jayud.airfreight.model.po.AirOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.airfreight.model.vo.AirOrderFormVO;
+import com.jayud.airfreight.model.vo.AirOrderInfoVO;
 import com.jayud.airfreight.model.vo.AirOrderVO;
 
 import java.util.List;
@@ -128,10 +129,12 @@ public interface IAirOrderService extends IService<AirOrder> {
     /**
      * 根据主订单号查询空运订单信息
      */
-    public List<AirOrder> getAirOrderByMainOrderNos(List<String> mainOrderNos);
+    public List<AirOrderInfoVO> getAirOrderByMainOrderNos(List<String> mainOrderNos);
 
     /**
      * 根据订单状态查询订单数
      */
     Integer getNumByStatus(String status, List<Long> legalIds);
+
+
 }

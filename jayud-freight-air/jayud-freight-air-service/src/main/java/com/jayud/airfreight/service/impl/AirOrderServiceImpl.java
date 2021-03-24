@@ -164,7 +164,7 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
 
         Page<AirOrder> page = new Page<>(form.getPageNum(), form.getPageSize());
-        return this.baseMapper.findByPage(page, form,legalIds);
+        return this.baseMapper.findByPage(page, form, legalIds);
     }
 
 
@@ -548,10 +548,11 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
      * 根据主订单号查询空运订单信息
      */
     @Override
-    public List<AirOrder> getAirOrderByMainOrderNos(List<String> mainOrderNos) {
-        QueryWrapper<AirOrder> condition = new QueryWrapper<>();
-        condition.lambda().in(AirOrder::getMainOrderNo, mainOrderNos);
-        return this.baseMapper.selectList(condition);
+    public List<AirOrderInfoVO> getAirOrderByMainOrderNos(List<String> mainOrderNos) {
+        return this.baseMapper.getByMainOrderNo(mainOrderNos);
+//        QueryWrapper<AirOrder> condition = new QueryWrapper<>();
+//        condition.lambda().in(AirOrder::getMainOrderNo, mainOrderNos);
+//        return this.baseMapper.selectList(condition);
     }
 
 
@@ -563,8 +564,6 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         Integer num = this.baseMapper.getNumByStatus(status, legalIds);
         return num == null ? 0 : num;
     }
-
-
 
 
     private void pushExceptionFeedbackInfo(AddAirExceptionFeedbackForm form, AirExceptionFeedback airExceptionFeedback) {
@@ -582,7 +581,6 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
 
         }
     }
-
 
 
 //    /**

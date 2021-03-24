@@ -17,9 +17,11 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.Utilities;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.enums.OrderBillCostTotalTypeEnum;
+import com.jayud.finance.feign.FreightAirClient;
 import com.jayud.finance.feign.InlandTpClient;
 import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.feign.OmsClient;
@@ -27,13 +29,13 @@ import com.jayud.finance.mapper.OrderReceivableBillMapper;
 import com.jayud.finance.po.OrderBillCostTotal;
 import com.jayud.finance.po.OrderReceivableBill;
 import com.jayud.finance.po.OrderReceivableBillDetail;
-import com.jayud.finance.service.ICurrencyRateService;
-import com.jayud.finance.service.IOrderBillCostTotalService;
-import com.jayud.finance.service.IOrderReceivableBillDetailService;
-import com.jayud.finance.service.IOrderReceivableBillService;
+import com.jayud.finance.service.*;
 import com.jayud.finance.util.ReflectUtil;
 import com.jayud.finance.vo.*;
 import com.jayud.finance.vo.InlandTP.OrderInlandTransportDetails;
+import com.jayud.finance.vo.template.order.AirOrderTemplate;
+import com.jayud.finance.vo.template.order.OrderTemplate;
+import com.jayud.finance.vo.template.order.Template;
 import io.netty.util.internal.StringUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +71,10 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
     OauthClient oauthClient;
     @Autowired
     private InlandTpClient inlandTpClient;
+    @Autowired
+    private FreightAirClient freightAirClient;
+    @Autowired
+    private CommonService commonService;
 
     @Override
     public IPage<OrderReceiveBillVO> findReceiveBillByPage(QueryReceiveBillForm form) {
@@ -123,6 +129,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
     public IPage<ReceiveNotPaidBillVO> findNotPaidBillByPage(QueryNotPaidBillForm form) {
         //定义分页参数
         Page<ReceiveNotPaidBillVO> page = new Page(form.getPageNum(), form.getPageSize());
+
         //定义排序规则
         page.addOrder(OrderItem.desc("temp.costId"));
         IPage<ReceiveNotPaidBillVO> pageInfo = null;
@@ -150,6 +157,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             pageList.forEach(e -> e.assembleInlandTPData(data));
         }
 
+
         //中港处理
         if (SubOrderSignEnum.ZGYS.getSignOne().equals(form.getCmd())) {
             for (ReceiveNotPaidBillVO receiveNotPaidBillVO : pageList) {
@@ -165,6 +173,57 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
 
         return pageInfo;
     }
+
+//    @Override
+//    public IPage<ReceiveNotPaidBillVO> findNotPaidBillByPage(QueryNotPaidBillForm form) {
+//        //定义分页参数
+//        Page<ReceiveNotPaidBillVO> page = new Page(form.getPageNum(), form.getPageSize());
+//
+//        //定义排序规则
+//        page.addOrder(OrderItem.desc("temp.costId"));
+//        IPage<ReceiveNotPaidBillVO> pageInfo = null;
+//
+//        if (SubOrderSignEnum.NL.getSignOne().equals(form.getCmd())) {
+//            Map<String, Object> param = new HashMap<>();
+//            param.put("cmd", form.getCmd());
+//            form.setIsQueryOrderAddress(true);
+//            Map<String, Object> dynamicSqlParam = this.dynamicSQLFindReceiveBillByPageParam(param);
+//            pageInfo = this.baseMapper.findBaseNotPaidBillByPage(page, form, dynamicSqlParam);
+//        } else {
+//            pageInfo = baseMapper.findNotPaidBillByPage(page, form);
+//
+//        }
+//        this.assembleTemplate(form.getCmd(),page.getRecords());
+//
+//        List<ReceiveNotPaidBillVO> pageList = pageInfo.getRecords();
+//        if (CollectionUtils.isEmpty(pageList)) {
+//            return pageInfo;
+//        }
+//
+//        //内陆处理
+//        if (SubOrderSignEnum.NL.getSignOne().equals(form.getCmd())) {
+//            List<String> mainOrderNos = pageList.stream().map(ReceiveNotPaidBillVO::getOrderNo).collect(Collectors.toList());
+//            List<OrderInlandTransportDetails> data = this.inlandTpClient.getInlandOrderInfoByMainOrderNos(mainOrderNos).getData();
+//            pageList.forEach(e -> e.assembleInlandTPData(data));
+//        }
+//
+//
+//        //中港处理
+//        if (SubOrderSignEnum.ZGYS.getSignOne().equals(form.getCmd())) {
+//            for (ReceiveNotPaidBillVO receiveNotPaidBillVO : pageList) {
+//                //处理目的地:当有两条或两条以上时,则获取中转仓地址
+//                if (!StringUtil.isNullOrEmpty(receiveNotPaidBillVO.getEndAddress())) {
+//                    String[] strs = receiveNotPaidBillVO.getEndAddress().split(",");
+//                    if (strs.length > 1) {
+//                        receiveNotPaidBillVO.setEndAddress(getWarehouseAddress(receiveNotPaidBillVO.getOrderNo()));
+//                    }
+//                }
+//            }
+//        }
+//
+//        return pageInfo;
+//    }
+
 
     @Override
     public CommonResult createReceiveBill(CreateReceiveBillForm form) {
@@ -483,7 +542,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         String cmd = MapUtil.getStr(map, "cmd");
         Map<String, Object> sqlParam = new HashMap<>();
         String subOrderSign = SubOrderSignEnum.getSignOne2SignTwo(cmd);
-        sqlParam.put("table",SubOrderSignEnum.MAIN.getSignTwo().equals(subOrderSign) ? "" : subOrderSign);
+        sqlParam.put("table", SubOrderSignEnum.MAIN.getSignTwo().equals(subOrderSign) ? "" : subOrderSign);
         return sqlParam;
     }
 
@@ -517,4 +576,25 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             }
         }
     }
+
+
+//    public Page<OrderTemplate> assembleTemplate(String cmd, List<ReceiveNotPaidBillVO> pageList) {
+//
+//        if (CollectionUtils.isEmpty(pageList)) {
+//            return null;
+//        }
+//        List<String> mainOrderNos = pageList.stream().map(ReceiveNotPaidBillVO::getOrderNo).collect(Collectors.toList());
+//
+//        if (SubOrderSignEnum.KY.getSignOne().equals(cmd)) {
+//            List<AirOrderTemplate> airOrderTemplate = this.commonService.getAirOrderTemplate(mainOrderNos);
+//            Map<String, AirOrderTemplate> tmp = airOrderTemplate.stream().collect(Collectors.toMap(AirOrderTemplate::getMainOrderNo, e -> e));
+//            for (ReceiveNotPaidBillVO receiveNotPaidBillVO : pageList) {
+//                AirOrderTemplate convert = ConvertUtil.convert(tmp.get(receiveNotPaidBillVO.getOrderNo()), AirOrderTemplate.class);
+//
+//            }
+//        }
+//
+//        Page<Template> page = new Page<>();
+//        return null;
+//    }
 }

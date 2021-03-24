@@ -1,6 +1,6 @@
 ALTER TABLE `order_info`
 ADD COLUMN `is_rejected` tinyint(1) NULL COMMENT '是否驳回操作' AFTER `remarks`,
-ADD COLUMN `reject_comment` varchar(500) NULL COMMENT '驳回描述' AFTER `isRejected`;
+ADD COLUMN `reject_comment` varchar(500) NULL COMMENT '驳回描述' AFTER `is_rejected`;
 
 
 

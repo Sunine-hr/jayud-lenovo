@@ -253,6 +253,8 @@ public class ReceiveBillDetailController {
 
         TypeUtils.compatibleWithJavaBean = true;
         JSONArray datas = JSONArray.parseArray(JSON.toJSONString(list));
+
+//        this.billDetailService.viewSBillDetailInfo(billNo,cmd);
         ViewBillVO viewBillVO = billDetailService.getViewSBill(billNo);
 
         Map<String, Object> callbackArg = new HashMap<>();

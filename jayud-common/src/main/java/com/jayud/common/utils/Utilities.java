@@ -1,5 +1,7 @@
 package com.jayud.common.utils;
 
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONUtil;
 import io.swagger.annotations.ApiModelProperty;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.stereotype.Component;
@@ -33,5 +35,13 @@ public class Utilities {
             }
         }
         return heads;
+    }
+
+
+    /**
+     * Object转实体类
+     */
+    public static <T> List<T> obj2List(Object obj, Class<T> clazz) {
+        return JSONUtil.toList(new JSONArray(obj), clazz);
     }
 }

@@ -5,8 +5,8 @@ import com.jayud.common.ApiResult;
 import com.jayud.finance.bo.AuditInfoForm;
 import com.jayud.finance.bo.OprCostBillForm;
 import com.jayud.finance.bo.OrderCostForm;
-import com.jayud.finance.vo.InitComboxStrVO;
-import com.jayud.finance.vo.InitComboxVO;
+import com.jayud.finance.vo.*;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -140,4 +140,22 @@ public interface OmsClient {
     @RequestMapping(value = "/api/getCostCurrencyInfo")
     public ApiResult getCostInfo(@RequestParam("costIds") List<Long> costIds,
                                  @RequestParam("type") Integer type);
+
+    /**
+     * 根据主订单集合查询主订单信息
+     */
+    @RequestMapping(value = "/api/mainOrder/getByOrderNos")
+    ApiResult getMainOrderByOrderNos(@RequestParam("orderNos") List<String> orderNos);
+
+    /**
+     * 根据订单id集合查询商品信息
+     */
+    @RequestMapping(value = "/api/getGoodsByBusIds")
+    public ApiResult<List<InputGoodsVO>> getGoodsByBusIds(@RequestParam("orderId") List<Long> orderId,
+                                                     @RequestParam("businessType") Integer businessType);
+
+    @ApiOperation("根据业务id集合查询订单地址")
+    @RequestMapping(value = "/api/getOrderAddressByBusIds")
+    public ApiResult<List<InputOrderAddressVO>> getOrderAddressByBusIds(@RequestParam("orderId") List<Long> orderId,
+                                                                        @RequestParam("businessType") Integer businessType);
 }

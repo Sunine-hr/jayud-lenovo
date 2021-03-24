@@ -158,4 +158,37 @@
             group by status
         </where>
     </select>
+
+
+    <select id="getByMainOrderNo" resultType="com.jayud.airfreight.model.vo.AirOrderInfoVO">
+        select
+        a.id,
+        a.main_order_no mainOrderNo,
+        a.order_no orderNo,a.status,
+        a.process_status processStatus,
+        a.imp_and_exp_type impAndExpType,
+        a.terms,
+        ap.name port_departure,
+        ap1.name port_destination,
+        a.create_user createUser, a.create_time createdTimeStr,
+        ab.airline_company airlineCompany,
+        ab.flight,ab.etd,ab.eta,
+        ab.warehousing_no warehousingNo,
+        a.settlement_unit_code subUnitCode,
+        a.legal_entity_id,
+        ab.agent_supplier_id supplierId,
+        a.invoice_no,a.good_time,
+        ab.main_no,ab.sub_no,ab.atd,ab.billing_weight
+        FROM
+        `air_order` a
+        left join air_port ap on ap.`code`=a.port_departure_code
+        left join air_port ap1 on ap1.`code`=a.port_destination_code
+        left join air_booking ab on a.id=ab.air_order_id and (ab.`status` != 2 OR ab.`status` IS NULL)
+        <where>
+            and a.main_order_no IN
+            <foreach collection="mainOrderNos" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+    </select>
 </mapper>

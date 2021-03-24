@@ -8,8 +8,8 @@ import java.util.Objects;
 @Getter
 @AllArgsConstructor
 public enum IsEnum {
-    YES(true, "确认"),
-    NO(false, "待确认");
+    YES(true, "是"),
+    NO(false, "否");
 
     private boolean code;
     private String desc;

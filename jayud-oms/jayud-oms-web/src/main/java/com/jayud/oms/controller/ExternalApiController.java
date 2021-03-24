@@ -1076,8 +1076,7 @@ public class ExternalApiController {
     @RequestMapping(value = "api/getGoodById")
     ApiResult getGoodById(@RequestParam("id") Long id) {
         Goods goods = this.goodsService.getById(id);
-        InputGoodsVO convert = ConvertUtil.convert(goods, InputGoodsVO.class);
-        return ApiResult.ok(convert);
+        return ApiResult.ok(goods);
     }
 
 

@@ -62,6 +62,9 @@ public class QueryTrailerOrderForm extends BasePageForm {
     @ApiModelProperty(value = "创建人")
     private String createUser;
 
+    @ApiModelProperty(value = "流程状态")
+    private Integer processStatus;
+
     @ApiModelProperty(value = "封条")
     private String paperStripSeal;
 

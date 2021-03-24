@@ -253,9 +253,7 @@ public class TrailerOrderController {
                     }
 
                 }
-                if(goodsVOS.size()>0){
-                    record.assemblyGoodsInfo(goodsVOS);
-                }
+                record.assemblyGoodsInfo(goodsVOS);
                 record.setOrderAddressForms(trailerOrderAddressVOS);
             }
 

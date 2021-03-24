@@ -246,11 +246,16 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
 
     @Override
     public IPage<TrailerOrderFormVO> findByPage(QueryTrailerOrderForm form) {
-        if (StringUtils.isEmpty(form.getStatus())) { //订单列表
-            form.setProcessStatusList(Arrays.asList(ProcessStatusEnum.PROCESSING.getCode()
-                    , ProcessStatusEnum.COMPLETE.getCode(), ProcessStatusEnum.CLOSE.getCode()));
-        } else {
-            form.setProcessStatusList(Collections.singletonList(ProcessStatusEnum.PROCESSING.getCode()));
+        if(form.getProcessStatus() !=null ){
+            form.setProcessStatusList(Collections.singletonList(form.getProcessStatus()));
+        }else{
+            if (StringUtils.isEmpty(form.getStatus())) { //订单列表
+                form.setProcessStatusList(Arrays.asList(ProcessStatusEnum.PROCESSING.getCode()
+                        , ProcessStatusEnum.COMPLETE.getCode(), ProcessStatusEnum.CLOSE.getCode()));
+            } else {
+                form.setProcessStatusList(Collections.singletonList(ProcessStatusEnum.PROCESSING.getCode()));
+            }
+
         }
 
         //获取当前用户所属法人主体

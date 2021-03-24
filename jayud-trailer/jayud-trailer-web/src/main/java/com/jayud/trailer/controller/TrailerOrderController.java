@@ -516,9 +516,9 @@ public class TrailerOrderController {
 
             WriteSheet writeSheet = EasyExcel.writerSheet().build();
 
-            FillConfig fillConfig = FillConfig.builder().direction(WriteDirectionEnum.HORIZONTAL).build();
+//            FillConfig fillConfig = FillConfig.builder().direction(WriteDirectionEnum.HORIZONTAL).build();
             //将集合数据填充
-            excelWriter.fill(new FillWrapper("orderAddress",trailerOrderDetails.getOrderAddressForms()),fillConfig,writeSheet);
+            excelWriter.fill(new FillWrapper("orderAddress",trailerOrderDetails.getOrderAddressForms()),writeSheet);
 //            excelWriter.fill(new FillWrapper("good",trailerOrderDetails.getGoodsForms()),fillConfig,writeSheet);
 
             //将指定数据填充

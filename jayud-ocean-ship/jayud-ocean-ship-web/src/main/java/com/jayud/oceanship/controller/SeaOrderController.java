@@ -360,6 +360,9 @@ public class SeaOrderController {
                 this.seaOrderService.updateProcessStatus(seaOrder1, form);
                 break;
             case SEA_S_2: //订船
+            case SEA_S_7: //确认装船
+            case SEA_S_8: //确认放单
+            case SEA_S_9: //确认到港
                 this.seaOrderService.doSeaBookShipOpt(form);
                 break;
             case SEA_S_3: //确认订单入仓
@@ -372,12 +375,7 @@ public class SeaOrderController {
                 this.seaOrderService.updateOrSaveReplenishmentAudit(form);
                 break;
             case SEA_S_6: //确认草稿提单
-                this.seaOrderService.updateOrSaveReplenishmentAudit(form);
-                break;
-            case SEA_S_7: //确认装船
-            case SEA_S_8: //确认放单
-            case SEA_S_9: //确认到港
-                this.seaOrderService.doSeaBookShipOpt(form);
+                this.seaOrderService.updateOrSaveConfirmationAudit(form);
                 break;
             case SEA_S_10: //海外代理
                 StringBuilder sb = new StringBuilder();

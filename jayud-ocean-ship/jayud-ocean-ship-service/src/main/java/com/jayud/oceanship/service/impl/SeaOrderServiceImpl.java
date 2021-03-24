@@ -729,6 +729,16 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
 
     }
 
+    @Override
+    public void updateOrSaveConfirmationAudit(SeaProcessOptForm form) {
+        //获取该订单的截补料单数
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("sea_order_id",form.getOrderId());
+        queryWrapper.eq("sea_order_no",form.getOrderNo());
+        int count = seaReplenishmentService.count(queryWrapper);
+
+    }
+
 
     private void handleLadingBillFile(SeaBookship seaBookship, SeaProcessOptForm form) {
         seaBookship.setFilePath(StringUtils.getFileStr(form.getFileViewList()));

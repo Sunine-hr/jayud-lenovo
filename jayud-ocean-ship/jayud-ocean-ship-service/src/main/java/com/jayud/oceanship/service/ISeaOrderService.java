@@ -129,7 +129,14 @@ public interface ISeaOrderService extends IService<SeaOrder> {
     List<SeaOrder> getSeaOrderByOrderNOs(List<String> mainOrderNoList);
 
     /**
+     * 补料审核
      * @param form
      */
     void updateOrSaveReplenishmentAudit(SeaProcessOptForm form);
+
+    /**
+     * 草稿提单确认
+     * @param form
+     */
+    void updateOrSaveConfirmationAudit(SeaProcessOptForm form);
 }

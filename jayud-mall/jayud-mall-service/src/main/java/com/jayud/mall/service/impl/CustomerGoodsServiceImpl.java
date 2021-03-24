@@ -1,5 +1,6 @@
 package com.jayud.mall.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -103,6 +104,9 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
     @Override
     public CommonResult<CustomerGoodsVO> findCustomerGoodsById(Integer id) {
         CustomerGoodsVO customerGoodsVO = customerGoodsMapper.findCustomerGoodsById(id);
+        if(ObjectUtil.isEmpty(customerGoodsVO)){
+            return CommonResult.error(-1, "没有找到商品");
+        }
         return CommonResult.success(customerGoodsVO);
     }
 }

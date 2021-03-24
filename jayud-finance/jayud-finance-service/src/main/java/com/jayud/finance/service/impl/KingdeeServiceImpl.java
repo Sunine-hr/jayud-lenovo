@@ -12,6 +12,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.enums.PushKingdeeEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.vaildator.ValidList;
 import com.jayud.finance.bo.APARDetailForm;
 import com.jayud.finance.bo.PayableHeaderForm;
@@ -112,8 +113,6 @@ public class KingdeeServiceImpl implements KingdeeService {
     @Override
     public CommonResult saveReceivableBill(String formId, ReceivableHeaderForm reqForm) {
 
-        //如果本次推送没有应付数据，需要查看是否存在本单号的应收，如有，要删去
-        this.deleteOrder(reqForm.getBillNo(), 0);
 
         //调用Redis中的cookie
         Map<String, Object> header = new HashMap<>();
@@ -159,8 +158,6 @@ public class KingdeeServiceImpl implements KingdeeService {
         //调用Redis中的cookie
 
         try {
-            //如果本次推送没有应付数据，需要查看是否存在本单号的应付，如有，要删去
-            this.deleteOrder(reqForm.getBillNo(), 0);
 
             Map<String, Object> header = new HashMap<>();
             header.put("Cookie", cookieService.getCookie(k3CloudConfig));
@@ -193,7 +190,7 @@ public class KingdeeServiceImpl implements KingdeeService {
             }
         } catch (Exception e) {
             log.error(e.getMessage());
-            return CommonResult.error(-1, "errors");
+            throw new JayudBizException(e.getMessage());
         }
 
 
@@ -1221,7 +1218,8 @@ public class KingdeeServiceImpl implements KingdeeService {
      * @param orderNo 订单号
      * @param type    0应收,1应付
      */
-    public void deleteOrder(String orderNo, Integer type) {
+    @Override
+    public void deleteOrder(String orderNo, int type) {
         if (StringUtils.isEmpty(orderNo)) {
             return;
         }

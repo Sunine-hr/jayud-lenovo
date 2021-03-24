@@ -563,7 +563,7 @@
             left join department d on d.id = oi.biz_belong_depart
             left join supplier_info si on si.supplier_code = opc.customer_code
         where opbd.bill_no = #{billNo}
-        group by opbd.bill_no
+        group by opbd.bill_no,opbd.order_no
     </select>
     <select id="findPayableHeaderDetail" parameterType="java.lang.String"
             resultType="com.jayud.finance.bo.APARDetailForm">

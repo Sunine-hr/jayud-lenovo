@@ -91,4 +91,11 @@ public interface KingdeeService {
     CommonResult save(String formId, String content);
 
 
+    /**
+     * 删除金蝶已存在应收/应付订单
+     *
+     * @param businessNo 业务单号
+     * @param type    0应收,1应付
+     */
+    void deleteOrder(String businessNo, int type);
 }

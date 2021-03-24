@@ -485,7 +485,7 @@
             left join department d on d.id = oi.biz_belong_depart
             left join customer_info ci on ci.id_code = orc.customer_code
         where orbd.bill_no = #{billNo}
-        group by orbd.bill_no
+        group by orbd.bill_no,orbd.order_no
     </select>
     <select id="findReceivableHeaderDetail" parameterType="java.lang.String"
             resultType="com.jayud.finance.bo.APARDetailForm">

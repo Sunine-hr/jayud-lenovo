@@ -59,6 +59,8 @@ public class FinanceController {
 
     @Autowired
     IMakeInvoiceService makeInvoiceService;//开票
+    @Autowired
+    private KingdeeService kingdeeService;
 
     @Autowired
     KingdeeService service;
@@ -422,8 +424,9 @@ public class FinanceController {
             return CommonResult.error(10001, sb.toString());
         }
         //构建数据，推金蝶
-        QueryWrapper queryWrapper = new QueryWrapper();
+        QueryWrapper<OrderReceivableBillDetail> queryWrapper = new QueryWrapper();
         queryWrapper.in("bill_no", form.getBillNos());
+        queryWrapper.lambda().groupBy(OrderReceivableBillDetail::getBillNo);
         List<OrderReceivableBillDetail> receivableBillDetails = receivableBillDetailService.list(queryWrapper);
         for (OrderReceivableBillDetail receivableBillDetail : receivableBillDetails) {
             List<ReceivableHeaderForm> reqForm = receivableBillDetailService.getReceivableHeaderForm(receivableBillDetail.getBillNo());
@@ -431,6 +434,9 @@ public class FinanceController {
             for (ReceivableHeaderForm tempReqForm : reqForm) {
                 List<APARDetailForm> entityDetail = receivableBillDetailService.findReceivableHeaderDetail(tempReqForm.getBillNo(), tempReqForm.getBusinessNo());
                 tempReqForm.setEntityDetail(entityDetail);
+
+                //如果本次推送没有应付数据，需要查看是否存在本单号的应收，如有，要删去
+                this.kingdeeService.deleteOrder(tempReqForm.getBusinessNo(), 0);
                 logger.info("推送金蝶传参:" + reqForm);
                 result = service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), tempReqForm);
             }
@@ -478,8 +484,9 @@ public class FinanceController {
             return CommonResult.error(10001, sb.toString());
         }
         //构建数据，推金蝶
-        QueryWrapper queryWrapper = new QueryWrapper();
+        QueryWrapper<OrderPaymentBillDetail> queryWrapper = new QueryWrapper();
         queryWrapper.in("bill_no", form.getBillNos());
+        queryWrapper.lambda().groupBy(OrderPaymentBillDetail::getBillNo);
         List<OrderPaymentBillDetail> paymentBillDetailList = paymentBillDetailService.list(queryWrapper);
         for (OrderPaymentBillDetail paymentBillDetail : paymentBillDetailList) {
             List<PayableHeaderForm> reqForm = paymentBillDetailService.getPayableHeaderForm(paymentBillDetail.getBillNo());
@@ -488,6 +495,8 @@ public class FinanceController {
                 List<APARDetailForm> entityDetail = paymentBillDetailService.findPayableHeaderDetail(tempReqForm.getBillNo(), tempReqForm.getBusinessNo());
                 tempReqForm.setEntityDetail(entityDetail);
                 logger.info("推送金蝶传参:" + reqForm);
+                //如果本次推送没有应付数据，需要查看是否存在本单号的应付，如有，要删去
+                this.kingdeeService.deleteOrder(tempReqForm.getBusinessNo(), 1);
                 result = service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), tempReqForm);
             }
             if (result.getCode() == 0) {

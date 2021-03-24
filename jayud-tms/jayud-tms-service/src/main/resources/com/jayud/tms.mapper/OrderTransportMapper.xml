@@ -381,6 +381,7 @@
         pc.`name` classCodeDesc,
         oi.`customer_name` customerName,
         oi.`customer_code` customerCode,
+        oi.`remarks` mainOrderRemarks,
         ot.`created_user` createdUser,
         wi.warehouse_name warehouseName,
         DATE_FORMAT(ot.`created_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,

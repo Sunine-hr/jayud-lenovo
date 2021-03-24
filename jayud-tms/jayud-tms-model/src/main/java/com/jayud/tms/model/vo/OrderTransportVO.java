@@ -191,6 +191,9 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "车牌")
     private String plateNumber;
 
+    @ApiModelProperty(value = "主订单备注")
+    private String mainOrderRemarks;
+
     public String getEntireAddress1() {
         String stateName1 = this.stateName1;
         String cityName1 = this.cityName1;

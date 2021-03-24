@@ -260,15 +260,13 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
         StringBuilder sb = new StringBuilder();
 
         for (GoodsVO goods : goodsList) {
-            if (this.orderId.equals(goods.getBusinessId())
-                    && BusinessTypeEnum.TC.getCode().equals(goods.getBusinessType())) {
-                sb.append(goods.getName())
-                        .append(" ").append(goods.getPlateAmount() == null ? 0 : goods.getPlateAmount()).append(goods.getPlateUnit())
-                        .append(",").append(goods.getBulkCargoAmount()).append(goods.getBulkCargoUnit())
-                        .append(",").append("重量:").append(goods.getTotalWeight()).append("KG")
-                        .append(";");
-            }
-            if(goods.getTotalWeight()!=null){
+
+            sb.append(goods.getName())
+                    .append(" ").append(goods.getPlateAmount() == null ? 0 : goods.getPlateAmount()).append("板")
+                    .append(",").append(goods.getBulkCargoAmount()).append(goods.getBulkCargoUnit())
+                    .append(",").append("重量:").append(goods.getTotalWeight()).append("KG")
+                    .append(";");
+            if (goods.getTotalWeight() != null) {
                 this.totalWeight = this.totalWeight + goods.getTotalWeight();
             }
         }

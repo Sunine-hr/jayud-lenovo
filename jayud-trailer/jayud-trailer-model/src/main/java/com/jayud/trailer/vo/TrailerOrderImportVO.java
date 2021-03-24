@@ -94,7 +94,7 @@ public class TrailerOrderImportVO extends Model<TrailerOrderImportVO> {
     @ApiModelProperty(value = "提运单")
     private String billOfLading;
 
-    @ApiModelProperty(value = "提运单上传附件地址数组集合")
+   // @ApiModelProperty(value = "提运单上传附件地址数组集合")
     private List<FileView> billPics = new ArrayList<>();
 
     //@ApiModelProperty(value = "提运单附件路径，前台忽略")
@@ -109,7 +109,7 @@ public class TrailerOrderImportVO extends Model<TrailerOrderImportVO> {
     //@ApiModelProperty(value = "封条附件路径")
     private String pssFilePath;
 
-    @ApiModelProperty(value = "封条上传附件地址数组集合")
+   // @ApiModelProperty(value = "封条上传附件地址数组集合")
     private List<FileView> pssPics = new ArrayList<>();
 
     //@ApiModelProperty(value = "封条附件名称")
@@ -118,7 +118,7 @@ public class TrailerOrderImportVO extends Model<TrailerOrderImportVO> {
     @ApiModelProperty(value = "柜号")
     private String cabinetNumber;
 
-    @ApiModelProperty(value = "柜号上传附件地址数组集合")
+   // @ApiModelProperty(value = "柜号上传附件地址数组集合")
     private List<FileView> cnPics = new ArrayList<>();
 
     //@ApiModelProperty(value = "柜号附件路径")
@@ -178,7 +178,7 @@ public class TrailerOrderImportVO extends Model<TrailerOrderImportVO> {
     @ApiModelProperty(value = "更新时间")
     private String updateTime;
 
-    @ApiModelProperty(value = "是否需要录入费用(0:false,1:true)")
+    //@ApiModelProperty(value = "是否需要录入费用(0:false,1:true)")
     private Boolean needInputCost;
 
     @ApiModelProperty(value = "接单人(登录用户名)")
@@ -187,7 +187,7 @@ public class TrailerOrderImportVO extends Model<TrailerOrderImportVO> {
     @ApiModelProperty(value = "接单日期")
     private String receivingOrdersDate;
 
-    @ApiModelProperty(value = "拖车订单地址信息")
+    //@ApiModelProperty(value = "拖车订单地址信息")
     private List<TrailerOrderAddressVO> orderAddressForms;
 
 //    @ApiModelProperty(value = "货品信息")
@@ -196,7 +196,7 @@ public class TrailerOrderImportVO extends Model<TrailerOrderImportVO> {
     //@ApiModelProperty(value = "派车信息")
     private TrailerDispatchVO trailerDispatchVO;
 
-    @ApiModelProperty(value = "附件信息集合")
+    //@ApiModelProperty(value = "附件信息集合")
     private List<FileView> allPics = new ArrayList<>();
 
     @ApiModelProperty(value = "订单流程状态")

@@ -131,7 +131,7 @@ public class TrailerOrderExportVO extends Model<TrailerOrderExportVO> {
     @ApiModelProperty(value = "SO")
     private String so;
 
-    @ApiModelProperty(value = "SO上传附件地址数组集合")
+    //@ApiModelProperty(value = "SO上传附件地址数组集合")
     private List<FileView> soPics = new ArrayList<>();
 
     //@ApiModelProperty(value = "SO附件路径")
@@ -161,13 +161,13 @@ public class TrailerOrderExportVO extends Model<TrailerOrderExportVO> {
     @ApiModelProperty(value = "放行时间")
     private String releaseTime;
 
-    @ApiModelProperty(value = "是否过磅(1代表true,0代表false)")
+   // @ApiModelProperty(value = "是否过磅(1代表true,0代表false)")
     private Boolean isWeighed;
 
     @ApiModelProperty(value = "是否过磅")
     private String isWeighedName;
 
-    @ApiModelProperty(value = "是否做补料(1代表true,0代表false)")
+    //@ApiModelProperty(value = "是否做补料(1代表true,0代表false)")
     private Boolean isMakeUp;
 
     @ApiModelProperty(value = "是否做补料")
@@ -185,7 +185,7 @@ public class TrailerOrderExportVO extends Model<TrailerOrderExportVO> {
     @ApiModelProperty(value = "更新时间")
     private String updateTime;
 
-    @ApiModelProperty(value = "是否需要录入费用(0:false,1:true)")
+    //@ApiModelProperty(value = "是否需要录入费用(0:false,1:true)")
     private Boolean needInputCost;
 
     @ApiModelProperty(value = "接单人(登录用户名)")
@@ -203,7 +203,7 @@ public class TrailerOrderExportVO extends Model<TrailerOrderExportVO> {
     //@ApiModelProperty(value = "派车信息")
     private TrailerDispatchVO trailerDispatchVO;
 
-    @ApiModelProperty(value = "附件信息集合")
+    //@ApiModelProperty(value = "附件信息集合")
     private List<FileView> allPics = new ArrayList<>();
 
     @ApiModelProperty(value = "订单流程状态")

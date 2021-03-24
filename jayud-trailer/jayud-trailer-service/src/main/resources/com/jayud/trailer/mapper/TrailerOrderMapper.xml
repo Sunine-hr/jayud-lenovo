@@ -131,6 +131,9 @@ release_time, is_weighed, is_make_up, create_user, create_time, update_user, upd
             <if test="form.paperStripSeal !=null and form.paperStripSeal!=''">
                 and tor.paper_strip_seal like concat('%',#{form.paperStripSeal},'%')
             </if>
+            <if test="form.processStatus !=null and form.processStatus!=''">
+                and tor.process_status like concat('%',#{form.processStatus},'%')
+            </if>
             <if test="form.createUser !=null and form.createUser!=''">
                 and tor.create_user like concat('%',#{form.createUser},'%')
             </if>

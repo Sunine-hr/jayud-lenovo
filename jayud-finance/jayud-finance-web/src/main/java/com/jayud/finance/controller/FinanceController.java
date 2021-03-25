@@ -142,7 +142,7 @@ public class FinanceController {
     @ApiOperation(value = "应收对账单审核列表,对账单明细")
     @PostMapping("/findSBillAuditByPage")
     public CommonResult<Map<String, Object>> findSBillAuditByPage(@RequestBody @Valid QueryFBillAuditForm form) {
-        IPage<PaymentNotPaidBillVO> pageList = receivableBillDetailService.findSBillAuditByPage(form);
+        IPage<LinkedHashMap> pageList = receivableBillDetailService.findSBillAuditByPage(form);
         CommonPageResult<PaymentNotPaidBillVO> pageVO = new CommonPageResult(pageList);
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("pageList", pageVO);//列表

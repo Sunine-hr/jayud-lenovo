@@ -20,6 +20,7 @@ import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.Utilities;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
+import com.jayud.finance.enums.BillTemplateEnum;
 import com.jayud.finance.enums.OrderBillCostTotalTypeEnum;
 import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.feign.OmsClient;
@@ -554,7 +555,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         }
         //模板数据处理
 //        array = this.inlandTPDataProcessing(form, array, mainOrderNos);
-        array = this.commonService.templateDataProcessing(cmd, array, mainOrderNos,0);
+        array = this.commonService.templateDataProcessing(cmd, array, mainOrderNos, 0);
         return array;
     }
 
@@ -618,9 +619,9 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         List<SheetHeadVO> allHeadList = new ArrayList<>();
         List<SheetHeadVO> fixHeadList = new ArrayList<>();
         try {
-
-            if (SubOrderSignEnum.KY.getSignOne().equals(cmd)) {
-                List<Map<String, Object>> maps = Utilities.assembleEntityHead(AirOrderTemplate.class);
+            Class template = BillTemplateEnum.getTemplate(cmd);
+            if (template != null) {
+                List<Map<String, Object>> maps = Utilities.assembleEntityHead(template);
                 fixHeadList = Utilities.obj2List(maps, SheetHeadVO.class);
             } else {//TODO 增强不影响原有系统,除非更替完成
                 ViewBilToOrderHeadVO viewBilToOrderVO = new ViewBilToOrderHeadVO();
@@ -766,18 +767,78 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         return CommonResult.success();
     }
 
+//    @Override
+//    public IPage<PaymentNotPaidBillVO> findSBillAuditByPage(QueryFBillAuditForm form) {
+//        //定义分页参数
+//        Page<PaymentNotPaidBillVO> page = new Page(form.getPageNum(), form.getPageSize());
+//        //定义排序规则
+//        page.addOrder(OrderItem.desc("temp.createdTimeStr"));
+//        IPage<PaymentNotPaidBillVO> pageInfo = baseMapper.findSBillAuditByPage(page, form);
+//        if (pageInfo.getSize() == 0) {
+//            return pageInfo;
+//        }
+//
+//        IPage<Map> pageMap = new Page<>();
+//        pageMap.setCurrent(page.getCurrent());
+//        pageMap.setPages(page.getPages());
+//        pageMap.setSize(page.getSize());
+//        pageMap.setTotal(page.getTotal());
+//
+//        //所有的费用类型
+//        List<InitComboxVO> initComboxVOS = omsClient.findEnableCostGenre().getData();
+//        List<PaymentNotPaidBillVO> pageList = pageInfo.getRecords();
+//        List<String> mainOrderNos = new ArrayList<>();
+//        for (PaymentNotPaidBillVO paymentNotPaidBill : pageList) {
+//            List<InitComboxVO> haveCostGenre = new ArrayList<>();
+//            if (!StringUtil.isNullOrEmpty(paymentNotPaidBill.getCostGenreStr())) {
+//                String[] ids = paymentNotPaidBill.getCostGenreStr().split(",");//费用类型逗号分隔形式的
+//                for (String id : ids) {
+//                    for (InitComboxVO initComboxVO : initComboxVOS) {
+//                        if (initComboxVO.getId() == Long.parseLong(id)) {
+//                            haveCostGenre.add(initComboxVO);
+//                        }
+//                    }
+//                }
+//                paymentNotPaidBill.setCostGenreList(haveCostGenre);
+//            }
+//            //处理目的地:当有两条或两条以上时,则获取中转仓地址
+//            if (!StringUtil.isNullOrEmpty(paymentNotPaidBill.getEndAddress())) {
+//                String[] strs = paymentNotPaidBill.getEndAddress().split(",");
+//                if (strs.length > 1) {
+//                    paymentNotPaidBill.setEndAddress(receivableBillService.getWarehouseAddress(paymentNotPaidBill.getOrderNo()));
+//                }
+//            }
+//            mainOrderNos.add(paymentNotPaidBill.getOrderNo());
+//        }
+//        JSONArray array = new JSONArray(pageList);
+//        array = this.commonService.templateDataProcessing(pageList.get(0).getSubType(),array , mainOrderNos, 0);
+//        List<Map> maps = Utilities.obj2List(array, Map.class);
+//        pageMap.setRecords(maps);
+//        return pageMap;
+//    }
+
     @Override
-    public IPage<PaymentNotPaidBillVO> findSBillAuditByPage(QueryFBillAuditForm form) {
+    public IPage<LinkedHashMap> findSBillAuditByPage(QueryFBillAuditForm form) {
         //定义分页参数
         Page<PaymentNotPaidBillVO> page = new Page(form.getPageNum(), form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.desc("temp.createdTimeStr"));
         IPage<PaymentNotPaidBillVO> pageInfo = baseMapper.findSBillAuditByPage(page, form);
 
+        IPage<LinkedHashMap> pageMap = new Page<>();
+        pageMap.setCurrent(page.getCurrent());
+        pageMap.setPages(page.getPages());
+        pageMap.setSize(page.getSize());
+        pageMap.setTotal(page.getTotal());
+
+        if (pageInfo.getSize() == 0) {
+            return pageMap;
+        }
 
         //所有的费用类型
         List<InitComboxVO> initComboxVOS = omsClient.findEnableCostGenre().getData();
         List<PaymentNotPaidBillVO> pageList = pageInfo.getRecords();
+        List<String> mainOrderNos = new ArrayList<>();
         for (PaymentNotPaidBillVO paymentNotPaidBill : pageList) {
             List<InitComboxVO> haveCostGenre = new ArrayList<>();
             if (!StringUtil.isNullOrEmpty(paymentNotPaidBill.getCostGenreStr())) {
@@ -798,8 +859,13 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                     paymentNotPaidBill.setEndAddress(receivableBillService.getWarehouseAddress(paymentNotPaidBill.getOrderNo()));
                 }
             }
+            mainOrderNos.add(paymentNotPaidBill.getOrderNo());
         }
-        return pageInfo;
+        JSONArray array = new JSONArray(pageList);
+        array = this.commonService.templateDataProcessing(pageList.get(0).getSubType(), array, mainOrderNos, 0);
+        List<LinkedHashMap> maps = Utilities.obj2List(array, LinkedHashMap.class);
+        pageMap.setRecords(maps);
+        return pageMap;
     }
 
     @Override

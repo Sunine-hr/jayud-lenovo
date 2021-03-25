@@ -11,6 +11,7 @@ import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.vo.*;
 import com.jayud.finance.vo.template.order.Template;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -147,7 +148,15 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      * @param form
      * @return
      */
-    IPage<PaymentNotPaidBillVO> findSBillAuditByPage(QueryFBillAuditForm form);
+//    IPage<PaymentNotPaidBillVO> findSBillAuditByPage(QueryFBillAuditForm form);
+
+    /**
+     * 应收对账单分页查询
+     *
+     * @param form
+     * @return
+     */
+    IPage<LinkedHashMap> findSBillAuditByPage(QueryFBillAuditForm form);
 
     /**
      * 导出 对账单明细

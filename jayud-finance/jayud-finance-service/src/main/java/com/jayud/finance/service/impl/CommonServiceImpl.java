@@ -5,6 +5,7 @@ import cn.hutool.json.JSONObject;
 import com.jayud.common.ApiResult;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.common.utils.Utilities;
 import com.jayud.finance.feign.FreightAirClient;
 import com.jayud.finance.feign.OmsClient;
@@ -12,6 +13,7 @@ import com.jayud.finance.service.CommonService;
 import com.jayud.finance.vo.InputGoodsVO;
 import com.jayud.finance.vo.InputOrderAddressVO;
 import com.jayud.finance.vo.template.order.AirOrderTemplate;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -73,6 +75,16 @@ public class CommonServiceImpl implements CommonService {
         }
 
         //TODO 中港地址截取6个字符
+        if (SubOrderSignEnum.ZGYS.getSignOne().equals(cmd)) {
+            for (int i = 0; i < array.size(); i++) {
+                JSONObject jsonObject = array.getJSONObject(i);
+                String startAddress = jsonObject.getStr("startAddress");
+                String endAddress = jsonObject.getStr("endAddress");
+                jsonObject.put("startAddress", StringUtils.isEmpty(startAddress)?"":startAddress.substring(0,6));
+                jsonObject.put("endAddress", StringUtils.isEmpty(endAddress)?"":startAddress.substring(0,6));
+            }
+        }
+
 
         JSONArray jsonArray = new JSONArray();
         for (int i = 0; i < array.size(); i++) {

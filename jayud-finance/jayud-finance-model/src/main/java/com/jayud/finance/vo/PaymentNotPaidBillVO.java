@@ -126,6 +126,9 @@ public class PaymentNotPaidBillVO {
     @ApiModelProperty(value = "是否删除")
     private Boolean isDelete;
 
+    @ApiModelProperty(value = "出账类型")
+    private String subType;
+
     public void setAuditStatus(String auditStatus) {
         this.auditStatus = auditStatus;
         this.isDelete = auditStatus.equals(BillEnum.EDIT_DEL.getCode());

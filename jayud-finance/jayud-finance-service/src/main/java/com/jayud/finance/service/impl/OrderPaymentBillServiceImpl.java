@@ -19,6 +19,7 @@ import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.Utilities;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
+import com.jayud.finance.enums.BillTemplateEnum;
 import com.jayud.finance.enums.OrderBillCostTotalTypeEnum;
 import com.jayud.finance.feign.InlandTpClient;
 import com.jayud.finance.feign.OauthClient;
@@ -502,8 +503,9 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         List<SheetHeadVO> allHeadList = new ArrayList<>();
         List<SheetHeadVO> fixHeadList = new ArrayList<>();
         try {
-            if (SubOrderSignEnum.KY.getSignOne().equals(cmd)) {
-                List<Map<String, Object>> maps = Utilities.assembleEntityHead(AirOrderTemplate.class);
+            Class template = BillTemplateEnum.getTemplate(cmd);
+            if (template != null) {
+                List<Map<String, Object>> maps = Utilities.assembleEntityHead(template);
                 fixHeadList = Utilities.obj2List(maps, SheetHeadVO.class);
             } else {//TODO 增强不影响原有系统,除非更替完成
                 ViewFBilToOrderHeadVO viewBilToOrderVO = new ViewFBilToOrderHeadVO();

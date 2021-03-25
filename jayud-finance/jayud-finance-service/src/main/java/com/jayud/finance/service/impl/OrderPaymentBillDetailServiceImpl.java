@@ -18,6 +18,7 @@ import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.Utilities;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
+import com.jayud.finance.enums.BillTemplateEnum;
 import com.jayud.finance.enums.OrderBillCostTotalTypeEnum;
 import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.feign.OmsClient;
@@ -553,28 +554,28 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         return array;
     }
 
-    private JSONArray templateDataProcessing(String cmd, JSONArray array, List<String> mainOrderNos) {
-        Map<String, Object> data = new HashMap<>();
-
-        if (SubOrderSignEnum.KY.getSignOne().equals(cmd)) {
-            List<AirOrderTemplate> airOrderTemplate = this.commonService.getAirOrderTemplate(mainOrderNos);
-            data = airOrderTemplate.stream().collect(Collectors.toMap(AirOrderTemplate::getOrderNo, e -> e));
-        }
-        //TODO 中港地址截取6个字符
-
-        JSONArray jsonArray = new JSONArray();
-        for (int i = 0; i < array.size(); i++) {
-            if (data.size() == 0) {
-                break;
-            }
-            JSONObject jsonObject = array.getJSONObject(i);
-            JSONObject object = new JSONObject(data.get(jsonObject.getStr("subOrderNo")));
-            object.put("customerName", jsonObject.getStr("supplierChName"));
-            object.putAll(jsonObject);
-            jsonArray.add(object);
-        }
-        return jsonArray.size() == 0 ? array : jsonArray;
-    }
+//    private JSONArray templateDataProcessing(String cmd, JSONArray array, List<String> mainOrderNos) {
+//        Map<String, Object> data = new HashMap<>();
+//
+//        if (SubOrderSignEnum.KY.getSignOne().equals(cmd)) {
+//            List<AirOrderTemplate> airOrderTemplate = this.commonService.getAirOrderTemplate(mainOrderNos);
+//            data = airOrderTemplate.stream().collect(Collectors.toMap(AirOrderTemplate::getOrderNo, e -> e));
+//        }
+//        //TODO 中港地址截取6个字符
+//
+//        JSONArray jsonArray = new JSONArray();
+//        for (int i = 0; i < array.size(); i++) {
+//            if (data.size() == 0) {
+//                break;
+//            }
+//            JSONObject jsonObject = array.getJSONObject(i);
+//            JSONObject object = new JSONObject(data.get(jsonObject.getStr("subOrderNo")));
+//            object.put("customerName", jsonObject.getStr("supplierChName"));
+//            object.putAll(jsonObject);
+//            jsonArray.add(object);
+//        }
+//        return jsonArray.size() == 0 ? array : jsonArray;
+//    }
 
     @Override
     public List<SheetHeadVO> findSheetHead(String billNo, Map<String, Object> callbackArg) {
@@ -610,9 +611,9 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         List<SheetHeadVO> allHeadList = new ArrayList<>();
         List<SheetHeadVO> fixHeadList = new ArrayList<>();
         try {
-
-            if (SubOrderSignEnum.KY.getSignOne().equals(cmd)) {
-                List<Map<String, Object>> maps = Utilities.assembleEntityHead(AirOrderTemplate.class);
+            Class template = BillTemplateEnum.getTemplate(cmd);
+            if (template != null) {
+                List<Map<String, Object>> maps = Utilities.assembleEntityHead(template);
                 fixHeadList = Utilities.obj2List(maps, SheetHeadVO.class);
             } else {//TODO 增强不影响原有系统,除非更替完成
                 ViewFBilToOrderHeadVO viewBilToOrderVO = new ViewFBilToOrderHeadVO();
@@ -790,6 +791,10 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         //定义排序规则
         page.addOrder(OrderItem.desc("temp.createTimeStr"));
         IPage<PaymentNotPaidBillVO> pageInfo = baseMapper.findFBillAuditByPage(page, form);
+
+
+
+
         //所有的费用类型
         List<InitComboxVO> initComboxVOS = omsClient.findEnableCostGenre().getData();
         List<PaymentNotPaidBillVO> pageList = pageInfo.getRecords();

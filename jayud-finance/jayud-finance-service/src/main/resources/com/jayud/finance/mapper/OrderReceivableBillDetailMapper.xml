@@ -398,7 +398,8 @@
         orbd.bill_no,
         (select ci.currency_name from currency_info ci where ci.currency_code = orbd.settlement_currency)
         settlementCurrency,
-        orbct.money settlementAmount,orbct.exchange_rate exchangeRate
+        orbct.money settlementAmount,orbct.exchange_rate exchangeRate,
+        orb.sub_type
         FROM
         order_receivable_bill_detail orbd
         left join order_receivable_bill orb on orbd.bill_id = orb.id

@@ -1232,14 +1232,52 @@ public class KingdeeServiceImpl implements KingdeeService {
 
         if (CollectionUtil.isNotEmpty(existingMap)) {
             log.info("应收/应付单{}已经存在，但允许删单重推，尝试删除旧数据...", orderNo);
-            YunbaoguanPushProperties properties = new YunbaoguanPushProperties();
+            PushProperties properties = new PushProperties();
             properties.setApplyNo(orderNo);
             properties.setExistingOrders(existingMap);
-            properties = customsFinanceService.removeSpecifiedInvoice(properties);
+            properties = this.removeSpecifiedInvoice(properties);
             if (!properties.ifAllowPush(FormIDEnum.RECEIVABLE)) {
                 log.warn("{}应收/应付单所在状态已经无法删除", orderNo);
             }
         }
+    }
+
+
+    @Override
+    public PushProperties removeSpecifiedInvoice(PushProperties properties) {
+        Map<FormIDEnum, List<String>> existingOrders = properties.getExistingOrders();
+        for (Map.Entry<FormIDEnum, List<String>> existingEntries : existingOrders.entrySet()) {
+            List<String> orderList = existingEntries.getValue();
+            String formId = existingEntries.getKey().getFormid();
+            if (CollectionUtil.isNotEmpty(orderList)) {
+                Map<String, Object> header = new HashMap<>();
+                header.put("Cookie", cookieService.getCookie(k3CloudConfig));
+
+                Map<String, Object> param = new HashMap<>();
+                param.put("Numbers", orderList);
+                //拼装数据
+                String jsonString = JSONUtil.toJsonStr(param);
+                JSONObject data = JSONObject.parseObject(jsonString);
+                String content = buildParam(formId, data);
+
+                //向金蝶发送请求，尝试删除订单
+                String result = KingdeeHttpUtil.httpPost(k3CloudConfig.getDelete(), header, content);
+                log.debug("删除订单尝试：{}", result);
+                //如果推送失败，返回推送失败的订单号列表
+                List<String> failedOrders = KingdeeHttpUtil.ifSucceed(result, orderList);
+
+                //装载删除失败的订单列表
+                if (CollectionUtil.isNotEmpty(properties.getUnRemovableOrders())) {
+                    properties.getUnRemovableOrders().put(existingEntries.getKey(), failedOrders);
+                } else {
+                    Map<FormIDEnum, List<String>> failedOrdersMap = new HashMap<>();
+                    failedOrdersMap.put(existingEntries.getKey(), failedOrders);
+                    properties.setUnRemovableOrders(failedOrdersMap);
+                }
+            }
+
+        }
+        return  properties;
     }
 
     /**

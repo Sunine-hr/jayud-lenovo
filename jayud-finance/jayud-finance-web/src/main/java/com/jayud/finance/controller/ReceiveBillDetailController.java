@@ -2,11 +2,11 @@ package com.jayud.finance.controller;
 
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -223,10 +223,14 @@ public class ReceiveBillDetailController {
     @ApiOperation(value = "对账单详情，对账单审核详情")
     @PostMapping("/viewSBillDetail")
     public CommonResult<Map<String, Object>> viewSBillDetail(@RequestBody @Valid ViewBillDetailForm form) {
+        //TODO 缺少前端传cmd指令
+
         Map<String, Object> resultMap = new HashMap<>();
-        List<ViewBilToOrderVO> list = billDetailService.viewSBillDetail(form.getBillNo());
-        resultMap.put(CommonConstant.LIST, list);//分页数据
-        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHead(form.getBillNo(), new HashMap<>());
+//        List<ViewBilToOrderVO> list = billDetailService.viewSBillDetail(form.getBillNo());
+        JSONArray jsonArray = billDetailService.viewSBillDetailInfo(form.getBillNo(), form.getCmd());
+        resultMap.put(CommonConstant.LIST, jsonArray);//分页数据
+//        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHead(form.getBillNo(), new HashMap<>());
+        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHeadInfo(form.getBillNo(), new HashMap<>(), form.getCmd());
         resultMap.put(CommonConstant.SHEET_HEAD, sheetHeadVOS);//表头
         ViewBillVO viewBillVO = billDetailService.getViewSBill(form.getBillNo());
         resultMap.put(CommonConstant.WHOLE_DATA, viewBillVO);//全局数据
@@ -240,26 +244,28 @@ public class ReceiveBillDetailController {
     public void exportSBillDetail(@RequestParam(value = "billNo", required = true) String billNo,
                                   @RequestParam(value = "cmd", required = false) String cmd,
                                   HttpServletResponse response) throws IOException {
-        List<ViewBilToOrderVO> list = billDetailService.viewSBillDetail(billNo);
-        //地址只展示6个字符
-        list.stream().forEach(e -> {
-            if (e.getStartAddress() != null && e.getStartAddress().length() > 6) {
-                e.setStartAddress(e.getStartAddress().substring(0, 6));
-            }
-            if (e.getEndAddress() != null && e.getEndAddress().length() > 6) {
-                e.setEndAddress(e.getEndAddress().substring(0, 6));
-            }
-        });
 
-        TypeUtils.compatibleWithJavaBean = true;
-        JSONArray datas = JSONArray.parseArray(JSON.toJSONString(list));
+        cmd = "ky"; //TODO 前端要传指令
+//        List<ViewBilToOrderVO> list = billDetailService.viewSBillDetail(billNo);
+//        //地址只展示6个字符
+//        list.stream().forEach(e -> {
+//            if (e.getStartAddress() != null && e.getStartAddress().length() > 6) {
+//                e.setStartAddress(e.getStartAddress().substring(0, 6));
+//            }
+//            if (e.getEndAddress() != null && e.getEndAddress().length() > 6) {
+//                e.setEndAddress(e.getEndAddress().substring(0, 6));
+//            }
+//        });
+//
+//        TypeUtils.compatibleWithJavaBean = true;
+//        JSONArray datas = JSONArray.parseArray(JSON.toJSONString(list));
 
-//        this.billDetailService.viewSBillDetailInfo(billNo,cmd);
+        JSONArray datas = this.billDetailService.viewSBillDetailInfo(billNo, cmd);
         ViewBillVO viewBillVO = billDetailService.getViewSBill(billNo);
 
         Map<String, Object> callbackArg = new HashMap<>();
         //头部数据重组
-        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHead(billNo, callbackArg);
+        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHeadInfo(billNo, callbackArg, cmd);
         int index = Integer.parseInt(callbackArg.get("fixHeadIndex").toString()) - 1;
         LinkedHashMap<String, String> headMap = new LinkedHashMap<>();
         LinkedHashMap<String, String> dynamicHead = new LinkedHashMap<>();

@@ -1,10 +1,10 @@
 package com.jayud.common.utils.excel;
 
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import com.alibaba.excel.util.WorkBookUtil;
 import com.alibaba.excel.write.metadata.WriteWorkbook;
 import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.*;
@@ -193,7 +193,7 @@ public class EasyExcelUtils {
                 int cellNum = j.get();
                 Cell cell = row.createCell(cellNum);
                 cell.setCellStyle(cellStyle);
-                String data = datas.getString(k);
+                String data = datas.getStr(k);
                 if (entity.getTotalIndex() != null) { //费用等与空返回0
                     if (cellNum > entity.getTotalIndex()) {
                         data = data == null ? "0" : data;

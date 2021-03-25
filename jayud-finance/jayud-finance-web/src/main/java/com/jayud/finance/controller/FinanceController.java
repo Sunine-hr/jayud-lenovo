@@ -2,11 +2,10 @@ package com.jayud.finance.controller;
 
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.http.HttpStatus;
+import cn.hutool.json.JSONArray;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
@@ -25,7 +24,6 @@ import com.jayud.finance.util.StringUtils;
 import com.jayud.finance.vo.*;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
@@ -37,7 +35,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.*;
 
 
@@ -227,7 +224,7 @@ public class FinanceController {
         headMap.put("exchangeRate", "汇率");
         EasyExcelEntity entity = new EasyExcelEntity();
         entity.setTableHead(headMap);
-        entity.setTableData(JSONArray.parseArray(JSON.toJSONString(list)));
+        entity.setTableData(new cn.hutool.json.JSONArray(list));
         Workbook workbook = EasyExcelUtils.autoGeneration("", entity);
 
         ServletOutputStream out = response.getOutputStream();
@@ -313,7 +310,7 @@ public class FinanceController {
         headMap.put("exchangeRate", "汇率");
         EasyExcelEntity entity = new EasyExcelEntity();
         entity.setTableHead(headMap);
-        entity.setTableData(JSONArray.parseArray(JSON.toJSONString(list)));
+        entity.setTableData(new JSONArray(list));
         Workbook workbook = EasyExcelUtils.autoGeneration("", entity);
 
         ServletOutputStream out = response.getOutputStream();

@@ -1,7 +1,9 @@
 package com.jayud.finance.service.impl;
 
+import cn.hutool.json.JSON;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -15,6 +17,7 @@ import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.BeanUtils;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.Utilities;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.enums.OrderBillCostTotalTypeEnum;
@@ -29,6 +32,7 @@ import com.jayud.finance.util.ReflectUtil;
 import com.jayud.finance.vo.*;
 import com.jayud.finance.vo.template.order.AirOrderTemplate;
 import io.netty.util.internal.StringUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -550,25 +554,32 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         }
         //模板数据处理
 //        array = this.inlandTPDataProcessing(form, array, mainOrderNos);
-        array = this.templateDataProcessing(cmd, array, mainOrderNos);
+        array = this.commonService.templateDataProcessing(cmd, array, mainOrderNos,0);
         return array;
     }
 
-    private JSONArray templateDataProcessing(String cmd, JSONArray array, List<String> mainOrderNos) {
-        Map<String, Object> data = new HashMap<>();
-        if (SubOrderSignEnum.KY.getSignOne().equals(cmd)) {
-            List<AirOrderTemplate> airOrderTemplate = this.commonService.getAirOrderTemplate(mainOrderNos);
-            data = airOrderTemplate.stream().collect(Collectors.toMap(AirOrderTemplate::getOrderNo, e -> e));
-        }
-        JSONArray jsonArray = new JSONArray();
-        for (int i = 0; i < array.size(); i++) {
-            JSONObject jsonObject = array.getJSONObject(i);
-            JSONObject object = new JSONObject(data.get(jsonObject.getStr("subOrderNo")));
-            object.putAll(jsonObject);
-            jsonArray.add(object);
-        }
-        return jsonArray;
-    }
+//    private JSONArray templateDataProcessing(String cmd, JSONArray array, List<String> mainOrderNos) {
+//        Map<String, Object> data = new HashMap<>();
+//        if (SubOrderSignEnum.KY.getSignOne().equals(cmd)) {
+//            List<AirOrderTemplate> airOrderTemplate = this.commonService.getAirOrderTemplate(mainOrderNos);
+//            data = airOrderTemplate.stream().collect(Collectors.toMap(AirOrderTemplate::getOrderNo, e -> e));
+//        }
+//
+//        //TODO 中港地址截取6个字符
+//
+//        JSONArray jsonArray = new JSONArray();
+//        for (int i = 0; i < array.size(); i++) {
+//            if (data.size() == 0) {
+//                break;
+//            }
+//            JSONObject jsonObject = array.getJSONObject(i);
+//            JSONObject object = new JSONObject(data.get(jsonObject.getStr("subOrderNo")));
+//            object.put("customerName", jsonObject.getStr("unitAccount"));
+//            object.putAll(jsonObject);
+//            jsonArray.add(object);
+//        }
+//        return jsonArray.size() == 0 ? array : jsonArray;
+//    }
 
 
     @Override
@@ -586,6 +597,43 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 sheetHeadVO.setName(f.getName());
                 sheetHeadVO.setViewName(String.valueOf(f.get(viewBilToOrderVO)));
                 fixHeadList.add(sheetHeadVO);
+            }
+            //固定头部数目
+            callbackArg.put("fixHeadIndex", fixHeadList.size());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        List<SheetHeadVO> dynamicHeadList = baseMapper.findSSheetHead(billNo);
+        for (SheetHeadVO sheetHead : dynamicHeadList) {
+            sheetHead.setName(sheetHead.getName().toLowerCase());
+        }
+        allHeadList.addAll(fixHeadList);
+        allHeadList.addAll(dynamicHeadList);
+        return allHeadList;
+    }
+
+
+    @Override
+    public List<SheetHeadVO> findSSheetHeadInfo(String billNo, Map<String, Object> callbackArg, String cmd) {
+        List<SheetHeadVO> allHeadList = new ArrayList<>();
+        List<SheetHeadVO> fixHeadList = new ArrayList<>();
+        try {
+
+            if (SubOrderSignEnum.KY.getSignOne().equals(cmd)) {
+                List<Map<String, Object>> maps = Utilities.assembleEntityHead(AirOrderTemplate.class);
+                fixHeadList = Utilities.obj2List(maps, SheetHeadVO.class);
+            } else {//TODO 增强不影响原有系统,除非更替完成
+                ViewBilToOrderHeadVO viewBilToOrderVO = new ViewBilToOrderHeadVO();
+                Class cls = viewBilToOrderVO.getClass();
+                Field[] fields = cls.getDeclaredFields();
+                for (int i = 0; i < fields.length; i++) {
+                    Field f = fields[i];
+                    f.setAccessible(true);
+                    SheetHeadVO sheetHeadVO = new SheetHeadVO();
+                    sheetHeadVO.setName(f.getName());
+                    sheetHeadVO.setViewName(String.valueOf(f.get(viewBilToOrderVO)));
+                    fixHeadList.add(sheetHeadVO);
+                }
             }
             //固定头部数目
             callbackArg.put("fixHeadIndex", fixHeadList.size());

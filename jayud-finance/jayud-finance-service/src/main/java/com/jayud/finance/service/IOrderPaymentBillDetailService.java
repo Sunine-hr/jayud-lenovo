@@ -1,5 +1,6 @@
 package com.jayud.finance.service;
 
+import cn.hutool.json.JSONArray;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.CommonResult;
@@ -95,11 +96,24 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
     List<ViewFBilToOrderVO> viewBillDetail(String billNo);
 
     /**
+     * 对账单详情 TODO 改版
+     * @param billNo
+     * @param cmd
+     * @return
+     */
+    public JSONArray viewBillDetailInfo(String billNo, String cmd);
+
+    /**
      * 对账单详情表头
      *
      * @return
      */
     List<SheetHeadVO> findSheetHead(String billNo, Map<String, Object> callbackArg);
+
+    /**
+     * 对账单详情表头 TODO 增强版
+     */
+    public List<SheetHeadVO> findSSheetHeadInfo(String billNo, Map<String, Object> callbackArg, String cmd) ;
 
     /**
      * 对账单详情的全局数据部分

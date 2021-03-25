@@ -1,7 +1,10 @@
 package com.jayud.finance.service.impl;
 
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import com.jayud.common.ApiResult;
 import com.jayud.common.enums.BusinessTypeEnum;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.Utilities;
 import com.jayud.finance.feign.FreightAirClient;
 import com.jayud.finance.feign.OmsClient;
@@ -12,7 +15,9 @@ import com.jayud.finance.vo.template.order.AirOrderTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -48,5 +53,44 @@ public class CommonServiceImpl implements CommonService {
 //            record.assemblyOrderAddress(orderAddressVOS);
         }
         return airOrderTemplates;
+    }
+
+    /**
+     * 处理模板数据
+     *
+     * @param cmd
+     * @param array        原始数据
+     * @param mainOrderNos
+     * @param type        类型:应收:0,应付:1
+     * @return
+     */
+    @Override
+    public JSONArray templateDataProcessing(String cmd, JSONArray array, List<String> mainOrderNos, Integer type) {
+        Map<String, Object> data = new HashMap<>();
+        if (SubOrderSignEnum.KY.getSignOne().equals(cmd)) {
+            List<AirOrderTemplate> airOrderTemplate = this.getAirOrderTemplate(mainOrderNos);
+            data = airOrderTemplate.stream().collect(Collectors.toMap(AirOrderTemplate::getOrderNo, e -> e));
+        }
+
+        //TODO 中港地址截取6个字符
+
+        JSONArray jsonArray = new JSONArray();
+        for (int i = 0; i < array.size(); i++) {
+            if (data.size() == 0) {
+                break;
+            }
+            JSONObject jsonObject = array.getJSONObject(i);
+            JSONObject object = new JSONObject(data.get(jsonObject.getStr("subOrderNo")));
+            //客户字段 应收:结算单位 应付:供应商
+            if (type == 0) {
+                object.put("customerName", jsonObject.getStr("unitAccount"));
+            }else {
+                object.put("customerName", jsonObject.getStr("supplierChName"));
+            }
+
+            object.putAll(jsonObject);
+            jsonArray.add(object);
+        }
+        return jsonArray.size() == 0 ? array : jsonArray;
     }
 }

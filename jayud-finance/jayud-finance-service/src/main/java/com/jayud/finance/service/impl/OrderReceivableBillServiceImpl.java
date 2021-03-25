@@ -475,6 +475,60 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
 
 
     @Override
+    public JSONArray viewReceiveBillInfo(ViewSBillForm form, List<Long> costIds) {
+        List<ViewBilToOrderVO> orderList = baseMapper.viewReceiveBill(costIds);
+        JSONArray array = new JSONArray(orderList);
+
+        List<ViewBilToOrderVO> newOrderList = new ArrayList<>();
+        List<String> mainOrderNos = new ArrayList<>();
+        List<ViewBillToCostClassVO> findCostClass = baseMapper.findCostClass(costIds);
+
+        for (int i = 0; i < orderList.size(); i++) {
+            ViewBilToOrderVO viewBillToOrder = orderList.get(i);
+            JSONObject jsonObject = array.getJSONObject(i);
+            this.tmsSpecialDataProcessing(form, viewBillToOrder);
+
+            for (ViewBillToCostClassVO viewBillToCostClass : findCostClass) {
+                if ((StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo()) && StringUtil.isNullOrEmpty(viewBillToCostClass.getSubOrderNo()) &&
+                        viewBillToCostClass.getOrderNo().equals(viewBillToOrder.getOrderNo()))
+                        || ((!StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo())) && viewBillToOrder.getSubOrderNo().equals(viewBillToCostClass.getSubOrderNo()))) {
+                    try {
+                        String addProperties = "";
+                        String addValue = "";
+                        Map<String, Object> propertiesMap = new HashMap<String, Object>();
+                        Class cls = viewBillToCostClass.getClass();
+                        Field[] fields = cls.getDeclaredFields();
+                        for (int j = 0; j < fields.length; j++) {
+                            Field f = fields[j];
+                            f.setAccessible(true);
+                            if ("name".equals(f.getName())) {
+                                addProperties = String.valueOf(f.get(viewBillToCostClass)).toLowerCase();//待新增得属性
+                            }
+                            if ("money".equals(f.getName())) {
+                                addValue = String.valueOf(f.get(viewBillToCostClass));//待新增属性得值
+                            }
+                            propertiesMap.put(addProperties, addValue);
+                        }
+                        jsonObject.putAll(propertiesMap);
+//                        viewBillToOrder = (ViewBilToOrderVO) ReflectUtil.getObject(viewBillToOrder, propertiesMap);
+//                        viewBillToOrder.setDynamicMap(propertiesMap);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            newOrderList.add(viewBillToOrder);
+            mainOrderNos.add(viewBillToOrder.getOrderNo());
+//            list.add(viewBillToOrder);
+        }
+        //内陆数据处理
+//        array = this.inlandTPDataProcessing(form, array, mainOrderNos);
+        array = this.commonService.templateDataProcessing(form.getCmd(), array, mainOrderNos,0);
+        return array;
+    }
+
+
+    @Override
     public List<SheetHeadVO> findSheetHead(List<Long> costIds) {
         List<SheetHeadVO> allHeadList = new ArrayList<>();
         List<SheetHeadVO> fixHeadList = new ArrayList<>();
@@ -489,6 +543,39 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
                 sheetHeadVO.setName(f.getName());
                 sheetHeadVO.setViewName(String.valueOf(f.get(viewBilToOrderVO)));
                 fixHeadList.add(sheetHeadVO);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        List<SheetHeadVO> dynamicHeadList = baseMapper.findSheetHead(costIds);
+        for (SheetHeadVO sheetHead : dynamicHeadList) {
+            sheetHead.setName(sheetHead.getName().toLowerCase());
+        }
+        allHeadList.addAll(fixHeadList);
+        allHeadList.addAll(dynamicHeadList);
+        return allHeadList;
+    }
+
+    @Override
+    public List<SheetHeadVO> findSheetHeadInfo(List<Long> costIds,String cmd) {
+        List<SheetHeadVO> allHeadList = new ArrayList<>();
+        List<SheetHeadVO> fixHeadList = new ArrayList<>();
+        try {
+            if (SubOrderSignEnum.KY.getSignOne().equals(cmd)) {
+                List<Map<String, Object>> maps = Utilities.assembleEntityHead(AirOrderTemplate.class);
+                fixHeadList = Utilities.obj2List(maps, SheetHeadVO.class);
+            } else {//TODO 增强不影响原有系统,除非更替完成
+                ViewBilToOrderHeadVO viewBilToOrderVO = new ViewBilToOrderHeadVO();
+                Class cls = viewBilToOrderVO.getClass();
+                Field[] fields = cls.getDeclaredFields();
+                for (int i = 0; i < fields.length; i++) {
+                    Field f = fields[i];
+                    f.setAccessible(true);
+                    SheetHeadVO sheetHeadVO = new SheetHeadVO();
+                    sheetHeadVO.setName(f.getName());
+                    sheetHeadVO.setViewName(String.valueOf(f.get(viewBilToOrderVO)));
+                    fixHeadList.add(sheetHeadVO);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -596,5 +683,33 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
 //
 //        Page<Template> page = new Page<>();
 //        return null;
+//    }
+
+
+//    private JSONArray templateDataProcessing(String cmd, JSONArray array, List<String> mainOrderNos) {
+//        Map<String, Object> data = new HashMap<>();
+//        if (SubOrderSignEnum.KY.getSignOne().equals(cmd)) {
+//            List<AirOrderTemplate> airOrderTemplate = this.commonService.getAirOrderTemplate(mainOrderNos);
+//            data = airOrderTemplate.stream().collect(Collectors.toMap(AirOrderTemplate::getOrderNo, e -> e));
+//        }
+//        if (SubOrderSignEnum.NL.getSignOne().equals(cmd)) {
+////            List<OrderInlandTransportDetails> details = this.inlandTpClient.getInlandOrderInfoByMainOrderNos(mainOrderNos).getData();
+////            data = details.stream().collect(Collectors.toMap(OrderInlandTransportDetails::getOrderNo, e -> e));
+//        }
+//
+//        //TODO 中港地址截取6个字符
+//
+//        JSONArray jsonArray = new JSONArray();
+//        for (int i = 0; i < array.size(); i++) {
+//            if (data.size() == 0) {
+//                break;
+//            }
+//            JSONObject jsonObject = array.getJSONObject(i);
+//            JSONObject object = new JSONObject(data.get(jsonObject.getStr("subOrderNo")));
+//            object.put("customerName", jsonObject.getStr("unitAccount"));
+//            object.putAll(jsonObject);
+//            jsonArray.add(object);
+//        }
+//        return jsonArray.size() == 0 ? array : jsonArray;
 //    }
 }

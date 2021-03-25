@@ -113,6 +113,9 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      */
     List<SheetHeadVO> findSSheetHead(String billNo, Map<String, Object> callbackArg);
 
+
+    List<SheetHeadVO> findSSheetHeadInfo(String billNo, Map<String, Object> callbackArg,String cmd);
+
     /**
      * 对账单详情的全局数据部分
      *

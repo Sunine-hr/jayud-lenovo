@@ -63,12 +63,30 @@ public interface IOrderReceivableBillService extends IService<OrderReceivableBil
      */
     JSONArray viewReceiveBill(ViewSBillForm form, List<Long> costIds);
 
+
+    /**
+     * 预览账单 TODO 改版,等全部修改完成弃用viewReceiveBill
+     *
+     * @param form
+     * @param costIds
+     * @return
+     */
+    public JSONArray viewReceiveBillInfo(ViewSBillForm form, List<Long> costIds);
+
     /**
      * 预览账单表头
      *
      * @return
      */
     List<SheetHeadVO> findSheetHead(List<Long> costIds);
+
+
+    /**
+     * 预览账单表头 TODO 改版,等全部修改完成弃用findSheetHead
+     *
+     * @return
+     */
+    public List<SheetHeadVO> findSheetHeadInfo(List<Long> costIds, String cmd);
 
     /**
      * 预览账单全局数据

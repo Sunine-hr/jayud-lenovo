@@ -16,6 +16,7 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.Utilities;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.enums.OrderBillCostTotalTypeEnum;
@@ -30,6 +31,7 @@ import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.service.*;
 import com.jayud.finance.vo.*;
 import com.jayud.finance.vo.InlandTP.OrderInlandTransportDetails;
+import com.jayud.finance.vo.template.order.AirOrderTemplate;
 import io.netty.util.internal.StringUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +73,8 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
     OauthClient oauthClient;
     @Autowired
     private InlandTpClient inlandTpClient;
+    @Autowired
+    private CommonService commonService;
 
     @Override
     public IPage<OrderPaymentBillVO> findPaymentBillByPage(QueryPaymentBillForm form) {
@@ -410,6 +414,62 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
 
 
     @Override
+    public JSONArray viewPaymentBillInfo(ViewFBillForm form, List<Long> costIds) {
+        List<ViewFBilToOrderVO> orderList = baseMapper.viewPaymentBill(costIds);
+
+        JSONArray array = new JSONArray(orderList);
+
+        List<String> mainOrderNos = new ArrayList<>();
+        List<ViewFBilToOrderVO> newOrderList = new ArrayList<>();
+        List<ViewBillToCostClassVO> findCostClass = baseMapper.findCostClass(costIds);
+
+        for (int i = 0; i < orderList.size(); i++) {
+            ViewFBilToOrderVO viewBillToOrder = orderList.get(i);
+            JSONObject jsonObject = array.getJSONObject(i);
+
+            //中港运输特殊处理
+            this.tmsSpecialDataProcessing(form, viewBillToOrder);
+
+            for (ViewBillToCostClassVO viewBillToCostClass : findCostClass) {
+                if ((StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo()) && StringUtil.isNullOrEmpty(viewBillToCostClass.getSubOrderNo())
+                        && viewBillToOrder.getOrderNo().equals(viewBillToCostClass.getOrderNo()))
+                        || ((!StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo())) && viewBillToOrder.getSubOrderNo().equals(viewBillToCostClass.getSubOrderNo()))) {
+                    try {
+                        String addProperties = "";
+                        String addValue = "";
+                        Map<String, Object> propertiesMap = new HashMap<String, Object>();
+                        Class cls = viewBillToCostClass.getClass();
+                        Field[] fields = cls.getDeclaredFields();
+                        for (int j = 0; j < fields.length; j++) {
+                            Field f = fields[j];
+                            f.setAccessible(true);
+                            if ("name".equals(f.getName())) {
+                                addProperties = String.valueOf(f.get(viewBillToCostClass)).toLowerCase();//待新增得属性
+                            }
+                            if ("money".equals(f.getName())) {
+                                addValue = String.valueOf(f.get(viewBillToCostClass));//待新增属性得值
+                            }
+                            propertiesMap.put(addProperties, addValue);
+                        }
+                        jsonObject.putAll(propertiesMap);
+//                        viewBillToOrder = (ViewFBilToOrderVO) ReflectUtil.getObject(viewBillToOrder, propertiesMap);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            mainOrderNos.add(viewBillToOrder.getOrderNo());
+            newOrderList.add(viewBillToOrder);
+        }
+
+        //内陆数据处理
+//        array = this.inlandTPDataProcessing(form, array, mainOrderNos);
+        array = this.commonService.templateDataProcessing(form.getCmd(), array, mainOrderNos, 1);
+        return array;
+    }
+
+
+    @Override
     public List<SheetHeadVO> findSheetHead(List<Long> costIds) {
         List<SheetHeadVO> allHeadList = new ArrayList<>();
         List<SheetHeadVO> fixHeadList = new ArrayList<>();
@@ -424,6 +484,39 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
                 sheetHeadVO.setName(f.getName());
                 sheetHeadVO.setViewName(String.valueOf(f.get(viewBilToOrderVO)));
                 fixHeadList.add(sheetHeadVO);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        List<SheetHeadVO> dynamicHeadList = baseMapper.findSheetHead(costIds);
+        for (SheetHeadVO sheetHead : dynamicHeadList) {
+            sheetHead.setName(sheetHead.getName().toLowerCase());
+        }
+        allHeadList.addAll(fixHeadList);
+        allHeadList.addAll(dynamicHeadList);
+        return allHeadList;
+    }
+
+    @Override
+    public List<SheetHeadVO> findSheetHeadInfo(List<Long> costIds, String cmd) {
+        List<SheetHeadVO> allHeadList = new ArrayList<>();
+        List<SheetHeadVO> fixHeadList = new ArrayList<>();
+        try {
+            if (SubOrderSignEnum.KY.getSignOne().equals(cmd)) {
+                List<Map<String, Object>> maps = Utilities.assembleEntityHead(AirOrderTemplate.class);
+                fixHeadList = Utilities.obj2List(maps, SheetHeadVO.class);
+            } else {//TODO 增强不影响原有系统,除非更替完成
+                ViewFBilToOrderHeadVO viewBilToOrderVO = new ViewFBilToOrderHeadVO();
+                Class cls = viewBilToOrderVO.getClass();
+                Field[] fields = cls.getDeclaredFields();
+                for (int i = 0; i < fields.length; i++) {
+                    Field f = fields[i];
+                    f.setAccessible(true);
+                    SheetHeadVO sheetHeadVO = new SheetHeadVO();
+                    sheetHeadVO.setName(f.getName());
+                    sheetHeadVO.setViewName(String.valueOf(f.get(viewBilToOrderVO)));
+                    fixHeadList.add(sheetHeadVO);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -60,10 +60,25 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
     JSONArray viewPaymentBill(ViewFBillForm form, List<Long> costIds);
 
     /**
+     * 预览账单 预览账单表头 TODO 改版,等全部修改完成弃用viewPaymentBill
+     *
+     * @param form
+     * @param costIds
+     * @return
+     */
+    JSONArray viewPaymentBillInfo(ViewFBillForm form, List<Long> costIds);
+
+    /**
      * 预览账单表头
      * @return
      */
     List<SheetHeadVO> findSheetHead(List<Long> costIds);
+
+    /**
+     * 预览账单表头 TODO 改版,等全部修改完成弃用findSheetHead
+     * @return
+     */
+    List<SheetHeadVO> findSheetHeadInfo(List<Long> costIds,String cmd);
 
     /**
      * 预览账单全局数据

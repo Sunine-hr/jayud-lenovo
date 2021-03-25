@@ -1224,10 +1224,13 @@ public class KingdeeServiceImpl implements KingdeeService {
             return;
         }
         Map<FormIDEnum, List<String>> existingMap = null;
+        FormIDEnum formId;
         if (type == 0) {
             existingMap = checkForReceivableDuplicateOrder(orderNo);
+            formId = FormIDEnum.RECEIVABLE;
         } else {
             existingMap = checkForPayableDuplicateOrder(orderNo);
+            formId = FormIDEnum.PAYABLE;
         }
 
         if (CollectionUtil.isNotEmpty(existingMap)) {
@@ -1236,7 +1239,7 @@ public class KingdeeServiceImpl implements KingdeeService {
             properties.setApplyNo(orderNo);
             properties.setExistingOrders(existingMap);
             properties = this.removeSpecifiedInvoice(properties);
-            if (!properties.ifAllowPush(FormIDEnum.RECEIVABLE)) {
+            if (!properties.ifAllowPush(formId)) {
                 log.warn("{}应收/应付单所在状态已经无法删除", orderNo);
             }
         }
@@ -1277,7 +1280,7 @@ public class KingdeeServiceImpl implements KingdeeService {
             }
 
         }
-        return  properties;
+        return properties;
     }
 
     /**

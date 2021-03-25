@@ -5,6 +5,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.finance.bo.PayableHeaderForm;
 import com.jayud.finance.bo.ReceivableHeaderForm;
 import com.jayud.finance.po.K3Entity;
+import com.jayud.finance.po.PushProperties;
 
 import java.util.List;
 import java.util.Map;
@@ -98,4 +99,11 @@ public interface KingdeeService {
      * @param type    0应收,1应付
      */
     void deleteOrder(String businessNo, int type);
+
+
+    /**
+     * 金蝶删除接口
+     * @param properties
+     */
+    public PushProperties removeSpecifiedInvoice(PushProperties properties);
 }

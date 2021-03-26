@@ -80,4 +80,8 @@ public class WorkOrderVO {
     @JSONField(ordinal = 16)
     private List<TemplateUrlVO> fileUrls;
 
+    @ApiModelProperty(value = "提交账号", position = 17)
+    @JSONField(ordinal = 17)
+    private String customerAccount;
+
 }

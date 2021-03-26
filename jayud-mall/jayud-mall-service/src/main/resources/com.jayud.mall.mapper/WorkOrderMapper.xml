@@ -42,10 +42,13 @@
         t.operation_time,
         t.revert,
         t.customer_evaluation,
-        t1.user_name customerAccount
+        t1.user_name                      customerAccount,
+        concat(t1.name_cn, '/', t1.phone) namePhone,
+        t2.name                           operator
         from work_order t
         left join customer t1 on t1.id = t.customer_id
-        where 1=1
+        left join system_user t2 on t2.id = t.operator
+        where 1 = 1
         <if test="form.customerId != null">
             and t.customer_id = #{form.customerId}
         </if>
@@ -63,7 +66,12 @@
                 t.problem_description like concat('%',#{form.keyword},'%')
             )
         </if>
-
+        <if test="form.status != null">
+            and t.status = #{form.status}
+        </if>
+        <if test="form.operator != null">
+            and t.operator = #{form.operator}
+        </if>
     </select>
 
     <select id="findWorkOrderById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.WorkOrderVO">

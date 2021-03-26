@@ -1384,6 +1384,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return CommonResult.success(waybillTaskRelevanceVOS);
     }
 
+    @Override
+    public List<OrderInfoVO> findOrderInfoByCustomer(OrderInfoCustomerForm form) {
+        List<OrderInfoVO> orderInfoVOS = orderInfoMapper.findOrderInfoByCustomer(form);
+        return orderInfoVOS;
+    }
+
     /**
      * 获取订单费用明细
      * @param orderInfoVO

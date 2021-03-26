@@ -13,11 +13,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.mall.mapper.OrderInfoMapper;
 import com.jayud.mall.mapper.WorkOrderMapper;
 import com.jayud.mall.model.bo.QueryWorkOrderForm;
 import com.jayud.mall.model.bo.WorkOrderAddForm;
 import com.jayud.mall.model.bo.WorkOrderEvaluateForm;
 import com.jayud.mall.model.po.WorkOrder;
+import com.jayud.mall.model.vo.OrderInfoVO;
 import com.jayud.mall.model.vo.TemplateUrlVO;
 import com.jayud.mall.model.vo.WorkOrderVO;
 import com.jayud.mall.model.vo.domain.CustomerUser;
@@ -42,6 +44,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
     @Autowired
     WorkOrderMapper workOrderMapper;
+    @Autowired
+    OrderInfoMapper orderInfoMapper;
     @Autowired
     BaseService baseService;
 
@@ -135,6 +139,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     public CommonResult<WorkOrderVO> addWorkOrder(WorkOrderAddForm form) {
         WorkOrder workOrder = ConvertUtil.convert(form, WorkOrder.class);
+        Long orderId = workOrder.getOrderId();
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(orderId);
+        if(ObjectUtil.isEmpty(orderInfoVO)){
+            return CommonResult.error(-1, "当前订单不存在,无法创建工单");
+        }
+        String orderNo = orderInfoVO.getOrderNo();
+        workOrder.setOrderNo(orderNo);
         List<TemplateUrlVO> fileUrls = form.getFileUrls();
         if(CollUtil.isNotEmpty(fileUrls)){
             String s = JSONObject.toJSONString(fileUrls);

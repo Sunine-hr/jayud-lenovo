@@ -229,4 +229,10 @@ public interface IOrderInfoService extends IService<OrderInfo> {
     CommonResult<List<WaybillTaskRelevanceVO>> lookOperateLog(Long id);
 
 
+    /**
+     * 查询客户订单list
+     * @param form
+     * @return
+     */
+    List<OrderInfoVO> findOrderInfoByCustomer(OrderInfoCustomerForm form);
 }

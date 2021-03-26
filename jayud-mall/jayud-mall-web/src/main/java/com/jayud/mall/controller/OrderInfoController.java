@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageDraftResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.OrderInfoCustomerForm;
 import com.jayud.mall.model.bo.OrderInfoForm;
 import com.jayud.mall.model.bo.QueryOrderInfoForm;
 import com.jayud.mall.model.vo.OrderCaseVO;
@@ -231,6 +232,19 @@ public class OrderInfoController {
         }
         return orderInfoService.editSaveOrderInfo(form);
     }
+
+    //查询客户订单
+    @ApiOperation(value = "查询客户订单list")
+    @PostMapping("/findOrderInfoByCustomer")
+    @ApiOperationSupport(order = 13)
+    public CommonResult<List<OrderInfoVO>> findOrderInfoByCustomer(){
+        CustomerUser customerUser = baseService.getCustomerUser();
+        OrderInfoCustomerForm form = new OrderInfoCustomerForm();
+        form.setCustomerId(customerUser.getId());
+        List<OrderInfoVO> orderInfoVOS = orderInfoService.findOrderInfoByCustomer(form);
+        return CommonResult.success(orderInfoVOS);
+    }
+
 
 
 }

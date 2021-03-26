@@ -3,6 +3,7 @@ package com.jayud.mall.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.mall.model.bo.OrderInfoCustomerForm;
 import com.jayud.mall.model.bo.QueryOrderInfoForm;
 import com.jayud.mall.model.po.OrderInfo;
 import com.jayud.mall.model.vo.*;
@@ -96,4 +97,10 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      */
     List<WaybillTaskRelevanceVO> lookOperateLog(@Param("id") Long id);
 
+    /**
+     * 查询客户订单
+     * @param form
+     * @return
+     */
+    List<OrderInfoVO> findOrderInfoByCustomer(@Param("form") OrderInfoCustomerForm form);
 }

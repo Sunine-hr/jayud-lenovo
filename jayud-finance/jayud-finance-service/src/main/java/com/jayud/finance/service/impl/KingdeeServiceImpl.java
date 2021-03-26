@@ -1,6 +1,7 @@
 package com.jayud.finance.service.impl;
 
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
@@ -23,6 +24,7 @@ import com.jayud.finance.po.Currency;
 import com.jayud.finance.po.*;
 import com.jayud.finance.service.BaseService;
 import com.jayud.finance.service.CookieService;
+import com.jayud.finance.service.CustomsFinanceService;
 import com.jayud.finance.service.KingdeeService;
 import com.jayud.finance.util.FileUtil;
 import com.jayud.finance.util.KingdeeHttpUtil;
@@ -66,6 +68,8 @@ public class KingdeeServiceImpl implements KingdeeService {
 
     @Autowired
     CustomsApiClient customsApiClient;
+    @Autowired
+    private CustomsFinanceService customsFinanceService;
 
     @Override
     public CommonResult login(String url, String content) {
@@ -107,6 +111,10 @@ public class KingdeeServiceImpl implements KingdeeService {
 
     @Override
     public CommonResult saveReceivableBill(String formId, ReceivableHeaderForm reqForm) {
+
+        //如果本次推送没有应付数据，需要查看是否存在本单号的应收，如有，要删去
+        this.deleteOrder(reqForm.getBillNo(), 0);
+
         //调用Redis中的cookie
         Map<String, Object> header = new HashMap<>();
         header.put("Cookie", cookieService.getCookie(k3CloudConfig));
@@ -115,6 +123,7 @@ public class KingdeeServiceImpl implements KingdeeService {
         log.info("请求内容：{}", content);
 
         String result = KingdeeHttpUtil.httpPost(k3CloudConfig.getSave(), header, content);
+
 
         log.info("saveReceivableBill请求完成金蝶的保存结果是：{}", result);
         JSONObject jsonObject = JSON.parseObject(result);
@@ -150,6 +159,9 @@ public class KingdeeServiceImpl implements KingdeeService {
         //调用Redis中的cookie
 
         try {
+            //如果本次推送没有应付数据，需要查看是否存在本单号的应付，如有，要删去
+            this.deleteOrder(reqForm.getBillNo(), 0);
+
             Map<String, Object> header = new HashMap<>();
             header.put("Cookie", cookieService.getCookie(k3CloudConfig));
             String content = buildParam(formId, constructPayableBill(reqForm));
@@ -1202,4 +1214,73 @@ public class KingdeeServiceImpl implements KingdeeService {
         return detailForms;
     }
 
+
+    /**
+     * 删除金蝶已存在应收/应付订单
+     *
+     * @param orderNo 订单号
+     * @param type    0应收,1应付
+     */
+    public void deleteOrder(String orderNo, Integer type) {
+        if (StringUtils.isEmpty(orderNo)) {
+            return;
+        }
+        Map<FormIDEnum, List<String>> existingMap = null;
+        if (type == 0) {
+            existingMap = checkForReceivableDuplicateOrder(orderNo);
+        } else {
+            existingMap = checkForPayableDuplicateOrder(orderNo);
+        }
+
+        if (CollectionUtil.isNotEmpty(existingMap)) {
+            log.info("应收/应付单{}已经存在，但允许删单重推，尝试删除旧数据...", orderNo);
+            YunbaoguanPushProperties properties = new YunbaoguanPushProperties();
+            properties.setApplyNo(orderNo);
+            properties.setExistingOrders(existingMap);
+            properties = customsFinanceService.removeSpecifiedInvoice(properties);
+            if (!properties.ifAllowPush(FormIDEnum.RECEIVABLE)) {
+                log.warn("{}应收/应付单所在状态已经无法删除", orderNo);
+            }
+        }
+    }
+
+    /**
+     * 校验应收订单存在
+     * 返回已存在的订单
+     *
+     * @param applyNo
+     * @return
+     */
+    private Map<FormIDEnum, List<String>> checkForReceivableDuplicateOrder(String applyNo) {
+        List<String> existingReceivable = ((List<InvoiceBase>) baseService.query(applyNo, Receivable.class)).stream().map(InvoiceBase::getFBillNo).collect(Collectors.toList());
+        List<String> existingReceivableOther = ((List<InvoiceBase>) baseService.query(applyNo, ReceivableOther.class)).stream().map(InvoiceBase::getFBillNo).collect(Collectors.toList());
+        Map<FormIDEnum, List<String>> result = new HashMap<>();
+        if (CollectionUtil.isNotEmpty(existingReceivable)) {
+            result.put(FormIDEnum.RECEIVABLE, existingReceivable);
+        }
+        if (CollectionUtil.isNotEmpty(existingReceivableOther)) {
+            result.put(FormIDEnum.RECEIVABLE_OTHER, existingReceivableOther);
+        }
+        return result;
+    }
+
+    /**
+     * 校验应付订单存在
+     * 返回已存在的订单
+     *
+     * @param applyNo
+     * @return
+     */
+    private Map<FormIDEnum, List<String>> checkForPayableDuplicateOrder(String applyNo) {
+        List<String> existingPayable = ((List<InvoiceBase>) baseService.query(applyNo, Payable.class)).stream().map(InvoiceBase::getFBillNo).collect(Collectors.toList());
+        List<String> existingPayableOther = ((List<InvoiceBase>) baseService.query(applyNo, PayableOther.class)).stream().map(InvoiceBase::getFBillNo).collect(Collectors.toList());
+        Map<FormIDEnum, List<String>> result = new HashMap<>();
+        if (CollectionUtil.isNotEmpty(existingPayable)) {
+            result.put(FormIDEnum.PAYABLE, existingPayable);
+        }
+        if (CollectionUtil.isNotEmpty(existingPayableOther)) {
+            result.put(FormIDEnum.PAYABLE_OTHER, existingPayableOther);
+        }
+        return result;
+    }
 }

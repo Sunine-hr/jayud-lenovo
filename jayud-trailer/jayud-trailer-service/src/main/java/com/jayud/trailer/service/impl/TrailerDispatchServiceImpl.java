@@ -24,9 +24,9 @@ import java.time.LocalDateTime;
 public class TrailerDispatchServiceImpl extends ServiceImpl<TrailerDispatchMapper, TrailerDispatch> implements ITrailerDispatchService {
 
     @Override
-    public TrailerDispatch getEnableByTrailerOrderId(Long id) {
+    public TrailerDispatch getEnableByTrailerOrderId(String orderNo) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("order_id",id);
+        queryWrapper.eq("trailer_order_no",orderNo);
         queryWrapper.ne("status", TrailerOrderStatusEnum.DELETE.getCode());
         return this.baseMapper.selectOne(queryWrapper);
     }

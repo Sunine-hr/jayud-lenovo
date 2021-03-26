@@ -938,6 +938,16 @@ public class ExternalApiController {
     }
 
     /**
+     * 获取附件集合
+     */
+    @RequestMapping(value = "/api/getTrailerAttachments")
+    ApiResult getTrailerAttachments(Long orderId) {
+        String prePath = String.valueOf(fileClient.getBaseUrl().getData());
+        List<FileView> attachments = this.logisticsTrackService.getAttachments(orderId, BusinessTypeEnum.TC.getCode(), prePath);
+        return ApiResult.ok(attachments);
+    }
+
+    /**
      * 根据字典类型查询字典
      */
     @RequestMapping(value = "/api/getDictByDictTypeCode")
@@ -1066,8 +1076,7 @@ public class ExternalApiController {
     @RequestMapping(value = "api/getGoodById")
     ApiResult getGoodById(@RequestParam("id") Long id) {
         Goods goods = this.goodsService.getById(id);
-        InputGoodsVO convert = ConvertUtil.convert(goods, InputGoodsVO.class);
-        return ApiResult.ok(convert);
+        return ApiResult.ok(goods);
     }
 
 

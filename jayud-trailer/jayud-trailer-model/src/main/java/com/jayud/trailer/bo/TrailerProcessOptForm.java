@@ -33,7 +33,7 @@ public class TrailerProcessOptForm {
 
     @NotNull(message = "拖车订单id不能为空")
     @ApiModelProperty(value = "拖车订单id", required = true)
-    private Long id;
+    private Long orderId;
 
     @ApiModelProperty(value = "封条")
     private String paperStripSeal;

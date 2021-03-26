@@ -22,6 +22,12 @@ public class GoodsVO {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    @ApiModelProperty(value = "业务类型(0:空运)")
+    private Integer businessType;
+
+    @ApiModelProperty(value = "业务主键(根据类型选择对应表的主键)")
+    private Long businessId;
+
     @ApiModelProperty(value = "标签（空运是唛头）")
     private String label;
 
@@ -48,12 +54,6 @@ public class GoodsVO {
 
     @ApiModelProperty(value = "体积")
     private Double volume;
-
-    @ApiModelProperty(value = "业务类型(0:空运)")
-    private Integer businessType;
-
-    @ApiModelProperty(value = "业务主键(根据类型选择对应表的主键)")
-    private Long businessId;
 
 
 }

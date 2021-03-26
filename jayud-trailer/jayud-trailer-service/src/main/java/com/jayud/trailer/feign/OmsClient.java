@@ -146,8 +146,8 @@ public interface OmsClient {
     /**
      * 获取附件集合
      */
-    @RequestMapping(value = "/api/getAttachments")
-    ApiResult getAttachments(@RequestParam("orderId") Long orderId);
+    @RequestMapping(value = "/api/getTrailerAttachments")
+    ApiResult getTrailerAttachments(@RequestParam("orderId") Long orderId);
 
     /**
      * 根据客户code集合查询客户信息

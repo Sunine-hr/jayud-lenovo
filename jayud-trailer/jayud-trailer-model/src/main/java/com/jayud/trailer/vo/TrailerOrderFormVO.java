@@ -40,7 +40,7 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
 
 //    @ApiModelProperty(value = "主键id")
     @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    private Long orderId;
 
     @ApiModelProperty(value = "子订单编号")
     private String orderNo;
@@ -114,7 +114,7 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     //@ApiModelProperty(value = "封条附件路径")
     private String pssFilePath;
 
-    @ApiModelProperty(value = "封条上传附件地址数组集合")
+    //@ApiModelProperty(value = "封条上传附件地址数组集合")
     private List<FileView> pssPics = new ArrayList<>();
 
     //@ApiModelProperty(value = "封条附件名称")
@@ -123,7 +123,7 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     @ApiModelProperty(value = "柜号")
     private String cabinetNumber;
 
-    @ApiModelProperty(value = "柜号上传附件地址数组集合")
+    //@ApiModelProperty(value = "柜号上传附件地址数组集合")
     private List<FileView> cnPics = new ArrayList<>();
 
     //@ApiModelProperty(value = "柜号附件路径")
@@ -135,7 +135,7 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     @ApiModelProperty(value = "SO")
     private String so;
 
-    @ApiModelProperty(value = "SO上传附件地址数组集合")
+    //@ApiModelProperty(value = "SO上传附件地址数组集合")
     private List<FileView> soPics = new ArrayList<>();
 
     //@ApiModelProperty(value = "SO附件路径")
@@ -193,7 +193,7 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     @ApiModelProperty(value = "更新时间")
     private String updateTime;
 
-    @ApiModelProperty(value = "是否需要录入费用(0:false,1:true)")
+    //@ApiModelProperty(value = "是否需要录入费用(0:false,1:true)")
     private Boolean needInputCost;
 
     @ApiModelProperty(value = "接单人")
@@ -202,16 +202,16 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     @ApiModelProperty(value = "接单日期")
     private String receivingOrdersDate;
 
-    @ApiModelProperty(value = "拖车订单地址信息")
+    //@ApiModelProperty(value = "拖车订单地址信息")
     private List<TrailerOrderAddressVO> orderAddressForms;
 
 //    @ApiModelProperty(value = "货品信息")
 //    private List<GoodsVO> goodsForms;
 
-    @ApiModelProperty(value = "派车信息")
+    //@ApiModelProperty(value = "派车信息")
     private TrailerDispatchVO trailerDispatchVO = new TrailerDispatchVO();
 
-    @ApiModelProperty(value = "附件信息集合")
+   // @ApiModelProperty(value = "附件信息集合")
     private List<FileView> allPics = new ArrayList<>();
 
     @ApiModelProperty(value = "订单流程状态")
@@ -260,15 +260,13 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
         StringBuilder sb = new StringBuilder();
 
         for (GoodsVO goods : goodsList) {
-            if (this.id.equals(goods.getBusinessId())
-                    && BusinessTypeEnum.TC.getCode().equals(goods.getBusinessType())) {
-                sb.append(goods.getName())
-                        .append(" ").append(goods.getPlateAmount() == null ? 0 : goods.getPlateAmount()).append(goods.getPlateUnit())
-                        .append(",").append(goods.getBulkCargoAmount()).append(goods.getBulkCargoUnit())
-                        .append(",").append("重量:").append(goods.getTotalWeight()).append("KG")
-                        .append(";");
-            }
-            if(goods.getTotalWeight()!=null){
+
+            sb.append(goods.getName())
+                    .append(" ").append(goods.getPlateAmount() == null ? 0 : goods.getPlateAmount()).append("板")
+                    .append(",").append(goods.getBulkCargoAmount()).append(goods.getBulkCargoUnit())
+                    .append(",").append("重量:").append(goods.getTotalWeight()).append("KG")
+                    .append(";");
+            if (goods.getTotalWeight() != null) {
                 this.totalWeight = this.totalWeight + goods.getTotalWeight();
             }
         }

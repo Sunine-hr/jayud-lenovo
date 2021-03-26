@@ -5,6 +5,7 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.FileView;
+import com.jayud.oceanship.po.SeaContainerInformation;
 import com.jayud.oceanship.po.SeaReplenishment;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -161,6 +162,9 @@ public class SeaProcessOptForm {
     @ApiModelProperty(value = "补料信息集合")
     private List<AddSeaReplenishment> seaReplenishments;
 
+    @ApiModelProperty(value = "补料信息  草稿提单以及放单确认需要传的补料信息")
+    private AddSeaReplenishment seaReplenishment;
+
     @ApiModelProperty(value = "审核意见")
     private String auditOpinion;
 
@@ -185,6 +189,7 @@ public class SeaProcessOptForm {
             return false;
         }
         if (CollectionUtils.isEmpty(this.shippingAddress)) {
+
             log.warn("收货地址信息不能为空");
             return false;
         }
@@ -255,7 +260,7 @@ public class SeaProcessOptForm {
                 if (CollectionUtils.isEmpty(this.fileViewList)) throw new JayudBizException("提单文件必传", 400);
 //                if (this.fileViewList.size() != 1) throw new JayudBizException("只能上传一个提单文", 400);
                 if (!checkOptInfo()) throw new JayudBizException(ResultEnum.VALIDATE_FAILED);
-                pass = this.seaBookShipForm.checkConfirmLadingBillOptParam();
+                //pass = this.seaBookShipForm.checkConfirmLadingBillOptParam();
                 break;
             case SEA_S_8://确认到港
                 pass = this.seaBookShipForm.checkConfirmATAOptParam();

@@ -3,6 +3,9 @@ package com.jayud.oceanship.bo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.jayud.common.utils.FileView;
+import com.jayud.oceanship.po.CabinetSizeNumber;
+import com.jayud.oceanship.po.SeaContainerInformation;
 import com.jayud.oceanship.vo.GoodsVO;
 import com.jayud.oceanship.vo.OrderAddressVO;
 import io.swagger.annotations.ApiModel;
@@ -107,6 +110,9 @@ public class AddSeaReplenishment extends Model<AddSeaReplenishment> {
     @ApiModelProperty(value = "柜型类型名字")
     private String cabinetTypeName;
 
+    @ApiModelProperty(value = "柜型数量")
+    private List<CabinetSizeNumber> cabinetSizeNumbers;
+
     @ApiModelProperty(value = "发货地址集合")
     private List<AddOrderAddressForm> deliveryAddress;
 
@@ -121,6 +127,32 @@ public class AddSeaReplenishment extends Model<AddSeaReplenishment> {
 
     @ApiModelProperty(value = "货品信息")
     private List<AddGoodsForm> goodsForms;
+
+    @ApiModelProperty(value = "主单号")
+    private String mainNo;
+
+    @ApiModelProperty(value = "分单号")
+    private String subNo;
+
+    @ApiModelProperty(value = "提单重量")
+    private Double billLadingWeight;
+
+    @ApiModelProperty(value = "货柜信息集合")
+    private List<SeaContainerInformation> seaContainerInformations;
+
+    @ApiModelProperty(value = "提单文件路径(多个逗号隔开)")
+    private String filePath;
+
+    @ApiModelProperty(value = "提单文件名称(多个逗号隔开)")
+    private String fileName;
+
+    @ApiModelProperty(value = "附件集合")
+    private List<FileView> fileViewList = new ArrayList<>();
+
+
+    public void getFile(String path){
+        this.fileViewList = com.jayud.common.utils.StringUtils.getFileViews(this.getFilePath(),this.getFileName(),path);
+    }
 
     /**
      * 拼装地址

@@ -6,7 +6,10 @@ import com.baomidou.mybatisplus.annotation.TableId;
 
 import java.time.LocalDateTime;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -39,7 +42,7 @@ public class SeaReplenishment extends Model<SeaReplenishment> {
     @ApiModelProperty(value = "海运订单id")
     private Long seaOrderId;
 
-    @ApiModelProperty(value = "海运订单id")
+    @ApiModelProperty(value = "海运订单号")
     private String seaOrderNo;
 
     @ApiModelProperty(value = "截补料时间")
@@ -101,6 +104,21 @@ public class SeaReplenishment extends Model<SeaReplenishment> {
 
     @ApiModelProperty(value = "柜型类型名字")
     private String cabinetTypeName;
+
+    @ApiModelProperty(value = "主单号")
+    private String mainNo;
+
+    @ApiModelProperty(value = "分单号")
+    private String subNo;
+
+    @ApiModelProperty(value = "提单重量")
+    private Double billLadingWeight;
+
+    @ApiModelProperty(value = "提单文件路径(多个逗号隔开)")
+    private String filePath;
+
+    @ApiModelProperty(value = "提单文件名称(多个逗号隔开)")
+    private String fileName;
 
 
     @Override

@@ -6,7 +6,7 @@
     <resultMap id="BaseResultMap" type="com.jayud.oceanship.po.CabinetSizeNumber">
         <id column="id" property="id" />
         <result column="sea_order_id" property="seaOrderId" />
-        <result column="sra_order_no" property="sraOrderNo" />
+        <result column="sea_order_no" property="seaOrderNo" />
         <result column="cabinet_type_size" property="cabinetTypeSize" />
         <result column="number" property="number" />
         <result column="create_user" property="createUser" />
@@ -17,7 +17,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, sea_order_id, sra_order_no, cabinet_type_size, number, create_user, create_time, update_user, update_time
+        id, sea_order_id, sea_order_no, cabinet_type_size, number, create_user, create_time, update_user, update_time
     </sql>
 
 </mapper>

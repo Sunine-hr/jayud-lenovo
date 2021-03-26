@@ -36,7 +36,7 @@ public class AddCabinetSizeNumber {
     private Long seaOrderId;
 
     @ApiModelProperty(value = "海运订单编号")
-    private String sraOrderNo;
+    private String seaOrderNo;
 
     @ApiModelProperty(value = "柜型")
     private String cabinetTypeSize;

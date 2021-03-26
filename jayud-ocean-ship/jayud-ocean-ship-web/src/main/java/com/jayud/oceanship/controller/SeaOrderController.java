@@ -10,6 +10,7 @@ import com.alibaba.excel.enums.WriteDirectionEnum;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.metadata.fill.FillConfig;
 import com.alibaba.excel.write.metadata.fill.FillWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.ApiResult;
@@ -20,17 +21,17 @@ import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oceanship.bo.*;
 import com.jayud.oceanship.feign.FileClient;
 import com.jayud.oceanship.feign.OauthClient;
 import com.jayud.oceanship.feign.OmsClient;
+import com.jayud.oceanship.po.SeaContainerInformation;
 import com.jayud.oceanship.po.SeaOrder;
-import com.jayud.oceanship.service.ICabinetSizeNumberService;
-import com.jayud.oceanship.service.ISeaOrderService;
-import com.jayud.oceanship.service.ISeaPortService;
-import com.jayud.oceanship.service.ISeaReplenishmentService;
+import com.jayud.oceanship.po.SeaReplenishment;
+import com.jayud.oceanship.service.*;
 import com.jayud.oceanship.vo.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
@@ -89,6 +90,9 @@ public class SeaOrderController {
 
     @Autowired
     private ISeaReplenishmentService seaReplenishmentService;
+
+    @Autowired
+    private ISeaContainerInformationService seaContainerInformationService;
 
     @ApiOperation("分页查询海运订单列表")
     @PostMapping("/findByPage")
@@ -206,11 +210,26 @@ public class SeaOrderController {
             }
 
             //获取柜型数量
-            if (record.getCabinetType().equals("FCL")) {
+            if (record.getCabinetType().equals(1)) {
                 List<CabinetSizeNumberVO> cabinetSizeNumberVOS = cabinetSizeNumberService.getList(record.getId());
                 record.setCabinetSizeNumbers(cabinetSizeNumberVOS);
                 record.assemblyCabinetInfo(cabinetSizeNumberVOS);
             }
+
+            //获取截补料数据
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("sea_order_id", record.getId());
+            queryWrapper.eq("sea_order_no", record.getOrderNo());
+            List<SeaReplenishment> seaReplenishments = seaReplenishmentService.list(queryWrapper);
+            List<SeaReplenishmentVO> seaReplenishmentVOS = ConvertUtil.convertList(list, SeaReplenishmentVO.class);
+            for (SeaReplenishmentVO seaReplenishmentVO : seaReplenishmentVOS) {
+                //获取截补料中的柜型数量以及货柜信息
+                List<CabinetSizeNumberVO> list1 = cabinetSizeNumberService.getList(seaReplenishmentVO.getId());
+                seaReplenishmentVO.setCabinetSizeNumbers(list1);
+                List<SeaContainerInformation> seaContainerInformations = seaContainerInformationService.getList(seaReplenishmentVO.getId());
+                seaReplenishmentVO.setSeaContainerInformations(seaContainerInformations);
+            }
+            record.setSeaReplenishments(seaReplenishmentVOS);
         }
         map1.put("pageInfo", new CommonPageResult(page));
         return CommonResult.success(map1);
@@ -299,10 +318,15 @@ public class SeaOrderController {
             }
 
             //获取柜型数量
-            if (record.getCabinetType().equals("FCL")) {
+            if (record.getCabinetType().equals(1)) {
                 List<CabinetSizeNumberVO> cabinetSizeNumberVOS = cabinetSizeNumberService.getList(record.getId());
                 record.setCabinetSizeNumbers(cabinetSizeNumberVOS);
                 record.assemblyCabinetInfo(cabinetSizeNumberVOS);
+            }
+            //获取货柜信息
+            if (record.getCabinetType().equals(1)) {
+                List<SeaContainerInformation> seaContainerInformations = seaContainerInformationService.getList(record.getId());
+                record.setSeaContainerInformations(seaContainerInformations);
             }
         }
         map1.put("pageInfo", new CommonPageResult(page));
@@ -397,13 +421,34 @@ public class SeaOrderController {
 
     @ApiOperation(value = "查询订单详情 seaOrderId=海运订单id")
     @PostMapping(value = "/getSeaOrderDetails")
-    public CommonResult<SeaOrderVO> getAirOrderDetails(@RequestBody Map<String, Object> map) {
+    public CommonResult<SeaOrderVO> getSeaOrderDetails(@RequestBody Map<String, Object> map) {
         Long seaOrderId = MapUtil.getLong(map, "seaOrderId");
         if (seaOrderId == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         SeaOrderVO seaOrderDetails = this.seaOrderService.getSeaOrderDetails(seaOrderId);
 
+        return CommonResult.success(seaOrderDetails);
+    }
+
+    @ApiOperation(value = "查询订单详情 seaOrderId=海运订单id")
+    @PostMapping(value = "/getSeaRepOrderDetails")
+    public CommonResult<SeaOrderVO> getSeaRepOrderDetails(@RequestBody Map<String, Object> map) {
+        Long seaOrderId = MapUtil.getLong(map, "seaOrderId");
+        if (seaOrderId == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        SeaOrderVO seaOrderDetails = this.seaOrderService.getSeaOrderDetails(seaOrderId);
+        List<SeaReplenishmentVO> seaReplenishmentVOS = new ArrayList<>();
+        SeaReplenishmentVO convert = ConvertUtil.convert(seaOrderDetails, SeaReplenishmentVO.class);
+        System.out.println("convert======================================="+convert);
+        seaReplenishmentVOS.add(convert);
+        if(convert.getSeaContainerInformations()==null || convert.getSeaContainerInformations().size()<0){
+            List<SeaContainerInformation> seaContainerInformations = new ArrayList<>();
+            seaContainerInformations.add(new SeaContainerInformation());
+            convert.setSeaContainerInformations(seaContainerInformations);
+        }
+        seaOrderDetails.setSeaReplenishments(seaReplenishmentVOS);
         return CommonResult.success(seaOrderDetails);
     }
 

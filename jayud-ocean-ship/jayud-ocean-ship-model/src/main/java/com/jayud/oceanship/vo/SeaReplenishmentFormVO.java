@@ -9,15 +9,17 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.TradeTypeEnum;
+import com.jayud.common.utils.FileView;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.oceanship.bo.AddGoodsForm;
 import com.jayud.oceanship.bo.AddOrderAddressForm;
+import com.jayud.oceanship.po.SeaContainerInformation;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -36,10 +38,10 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="SeaReplenishment对象", description="海运补料表")
+@ApiModel(value = "SeaReplenishment对象", description = "海运补料表")
 public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
 
-    private static final long serialVersionUID=1L;
+    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "主键id")
     @TableId(value = "id", type = IdType.AUTO)
@@ -135,6 +137,9 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
     @ApiModelProperty(value = "柜型数量")
     private List<CabinetSizeNumberVO> cabinetSizeNumbers;
 
+    @ApiModelProperty(value = "货柜信息集合")
+    private List<SeaContainerInformation> seaContainerInformations;
+
     @ApiModelProperty(value = "发货地址集合")
     private List<OrderAddressVO> deliveryAddress;
 
@@ -149,6 +154,15 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
 
     @ApiModelProperty(value = "货品信息")
     private List<GoodsVO> goodsVOS;
+
+    @ApiModelProperty(value = "主单号")
+    private String mainNo;
+
+    @ApiModelProperty(value = "分单号")
+    private String subNo;
+
+    @ApiModelProperty(value = "提单重量")
+    private Double billLadingWeight;
 
     @ApiModelProperty(value = "流程状态(0:进行中,1:完成,2:草稿,3.关闭)")
     private Integer processStatus;
@@ -167,6 +181,20 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
 
     @ApiModelProperty(value = "货物信息")
     private String goodsInfo;
+
+    @ApiModelProperty(value = "提单文件路径(多个逗号隔开)")
+    private String filePath;
+
+    @ApiModelProperty(value = "提单文件名称(多个逗号隔开)")
+    private String fileName;
+
+    @ApiModelProperty(value = "附件集合")
+    private List<FileView> fileViewList = new ArrayList<>();
+
+
+    public void getFile(String path){
+        this.fileViewList = StringUtils.getFileViews(this.getFilePath(),this.getFileName(),path);
+    }
 
     /**
      * @param mainOrderObjs 远程客户对象集合

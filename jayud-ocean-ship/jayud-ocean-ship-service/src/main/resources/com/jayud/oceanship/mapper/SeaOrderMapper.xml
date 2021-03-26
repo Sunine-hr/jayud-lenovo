@@ -142,12 +142,9 @@
             <result column="atd" property="atd"></result>
             <result column="ata" property="ata"></result>
             <result column="closingTime" property="closingTime"></result>
-            <result column="main_no" property="mainNo"></result>
-            <result column="sub_no" property="subNo"></result>
             <result column="warehousingNo" property="warehousingNo"></result>
             <result column="delivery_wharf" property="deliveryWharf"></result>
             <result column="supplierId" property="agentSupplierId"></result>
-            <result column="bill_lading_weight" property="billLadingWeight"></result>
             <result column="file_path" property="filePath"></result>
             <result column="file_name" property="fileName"></result>
         </association>
@@ -179,8 +176,6 @@
         sb.ship_name shipName,
         sb.ship_number shipNumber,
         sb.eta,sb.etd,sb.ata,sb.atd,
-        sb.bill_lading_weight,
-        sb.main_no,sb.sub_no,
         sb.warehousing_no warehousingNo,
         sb.delivery_wharf,
         sb.agent_supplier_id supplierId,

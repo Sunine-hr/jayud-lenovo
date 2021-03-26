@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.WorkOrderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.WorkOrder">
+        <id column="id" property="id" />
+        <result column="work_no" property="workNo" />
+        <result column="order_id" property="orderId" />
+        <result column="order_no" property="orderNo" />
+        <result column="priority" property="priority" />
+        <result column="problem_description" property="problemDescription" />
+        <result column="file_url" property="fileUrl" />
+        <result column="status" property="status" />
+        <result column="type" property="type" />
+        <result column="customer_id" property="customerId" />
+        <result column="submission_time" property="submissionTime" />
+        <result column="operator" property="operator" />
+        <result column="operation_time" property="operationTime" />
+        <result column="revert" property="revert" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, work_no, order_id, order_no, priority, problem_description, file_url, status, type, customer_id, submission_time, operator, operation_time, revert
+    </sql>
+
+    <select id="findWorkOrderByPage" parameterType="com.jayud.mall.model.bo.QueryWorkOrderForm"
+            resultType="com.jayud.mall.model.vo.WorkOrderVO">
+        select t.id,
+        t.work_no,
+        t.order_id,
+        t.order_no,
+        t.priority,
+        t.problem_description,
+        t.file_url,
+        t.status,
+        t.type,
+        t.customer_id,
+        t.submission_time,
+        t.operator,
+        t.operation_time,
+        t.revert,
+        t.customer_evaluation,
+        t1.user_name customerAccount
+        from work_order t
+        left join customer t1 on t1.id = t.customer_id
+        where 1=1
+        <if test="form.customerId != null">
+            and t.customer_id = #{form.customerId}
+        </if>
+        <if test="form.workNo != null and form.workNo != ''">
+            and t.work_no like concat('%',#{form.workNo},'%')
+        </if>
+        <if test="form.submissionTimeStart != null and form.submissionTimeEnd != null">
+            and t.submission_time <![CDATA[ >= ]]> #{form.submissionTimeStart}
+            and t.submission_time <![CDATA[ <= ]]> #{form.submissionTimeEnd}
+        </if>
+        <if test="form.keyword != null and form.keyword != ''">
+            and (
+                t.work_no like concat('%',#{form.keyword},'%')
+                or
+                t.problem_description like concat('%',#{form.keyword},'%')
+            )
+        </if>
+
+    </select>
+
+    <select id="findWorkOrderById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.WorkOrderVO">
+        select t.id,
+               t.work_no,
+               t.order_id,
+               t.order_no,
+               t.priority,
+               t.problem_description,
+               t.file_url,
+               t.status,
+               t.type,
+               t.customer_id,
+               t.submission_time,
+               t.operator,
+               t.operation_time,
+               t.revert,
+               t.customer_evaluation,
+               t1.user_name customerAccount
+        from work_order t
+                 left join customer t1 on t1.id = t.customer_id
+        where t.id = #{id}
+
+    </select>
+    
+</mapper>

@@ -219,6 +219,7 @@ public class PaymentBillDetailController {
         return billDetailService.editBill(form);
     }
 
+    //TODO 需要前端传cmd
     @ApiOperation(value = "对账单详情，对账单审核详情")
     @PostMapping("/viewBillDetail")
     public CommonResult<Map<String, Object>> viewBillDetail(@RequestBody @Valid ViewBillDetailForm form) {
@@ -242,8 +243,8 @@ public class PaymentBillDetailController {
                                  @RequestParam(value = "cmd", required = false) String cmd,
                                  HttpServletResponse response) throws IOException {
 
-        cmd = "zgys"; //TODO 前端要传指令
-        List<ViewFBilToOrderVO> list = billDetailService.viewBillDetail(billNo);
+
+//        List<ViewFBilToOrderVO> list = billDetailService.viewBillDetail(billNo);
         //地址只展示6个字符
 //        list.stream().forEach(e -> {
 //            if (e.getStartAddress() != null && e.getStartAddress().length() > 6) {
@@ -289,7 +290,7 @@ public class PaymentBillDetailController {
         //组装标题
         List<String> titles = new ArrayList<>();
         titles.add(viewBillVO.getLegalName());
-        titles.add("客户应收款对帐单");
+        titles.add("客户应付款对帐单");
         StringBuilder sb = new StringBuilder();
         titles.add(sb.append("对账日期:")
                 .append(viewBillVO.getAccountTermStr()).toString());

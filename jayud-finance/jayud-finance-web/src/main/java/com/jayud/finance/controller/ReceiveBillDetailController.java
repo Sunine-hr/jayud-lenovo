@@ -223,8 +223,6 @@ public class ReceiveBillDetailController {
     @ApiOperation(value = "对账单详情，对账单审核详情")
     @PostMapping("/viewSBillDetail")
     public CommonResult<Map<String, Object>> viewSBillDetail(@RequestBody @Valid ViewBillDetailForm form) {
-        //TODO 缺少前端传cmd指令
-
         Map<String, Object> resultMap = new HashMap<>();
 //        List<ViewBilToOrderVO> list = billDetailService.viewSBillDetail(form.getBillNo());
         JSONArray jsonArray = billDetailService.viewSBillDetailInfo(form.getBillNo(), form.getCmd());
@@ -245,7 +243,6 @@ public class ReceiveBillDetailController {
                                   @RequestParam(value = "cmd", required = false) String cmd,
                                   HttpServletResponse response) throws IOException {
 
-        cmd = "ky"; //TODO 前端要传指令
 //        List<ViewBilToOrderVO> list = billDetailService.viewSBillDetail(billNo);
 //        //地址只展示6个字符
 //        list.stream().forEach(e -> {

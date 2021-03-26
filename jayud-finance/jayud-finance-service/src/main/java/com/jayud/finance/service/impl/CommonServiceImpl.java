@@ -63,7 +63,7 @@ public class CommonServiceImpl implements CommonService {
      * @param cmd
      * @param array        原始数据
      * @param mainOrderNos
-     * @param type        类型:应收:0,应付:1
+     * @param type         类型:应收:0,应付:1
      * @return
      */
     @Override
@@ -80,8 +80,12 @@ public class CommonServiceImpl implements CommonService {
                 JSONObject jsonObject = array.getJSONObject(i);
                 String startAddress = jsonObject.getStr("startAddress");
                 String endAddress = jsonObject.getStr("endAddress");
-                jsonObject.put("startAddress", StringUtils.isEmpty(startAddress)?"":startAddress.substring(0,6));
-                jsonObject.put("endAddress", StringUtils.isEmpty(endAddress)?"":startAddress.substring(0,6));
+                if (startAddress != null && startAddress.length() > 6) {
+                    jsonObject.put("startAddress", startAddress.substring(0, 6));
+                }
+                if (endAddress != null && endAddress.length() > 6) {
+                    jsonObject.put("endAddress", endAddress.substring(0, 6));
+                }
             }
         }
 
@@ -96,7 +100,7 @@ public class CommonServiceImpl implements CommonService {
             //客户字段 应收:结算单位 应付:供应商
             if (type == 0) {
                 object.put("customerName", jsonObject.getStr("unitAccount"));
-            }else {
+            } else {
                 object.put("customerName", jsonObject.getStr("supplierChName"));
             }
 

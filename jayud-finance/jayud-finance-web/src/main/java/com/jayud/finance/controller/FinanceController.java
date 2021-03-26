@@ -5,17 +5,19 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.enums.SubOrderSignEnum;
+import com.jayud.common.utils.Utilities;
 import com.jayud.common.utils.excel.EasyExcelEntity;
 import com.jayud.common.utils.excel.EasyExcelUtils;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
+import com.jayud.finance.enums.BillTemplateEnum;
 import com.jayud.finance.enums.FormIDEnum;
 import com.jayud.finance.po.OrderPaymentBillDetail;
 import com.jayud.finance.po.OrderReceivableBillDetail;
@@ -36,6 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -58,6 +61,8 @@ public class FinanceController {
     IMakeInvoiceService makeInvoiceService;//开票
     @Autowired
     private KingdeeService kingdeeService;
+    @Autowired
+    private CommonService commonService;
 
     @Autowired
     KingdeeService service;
@@ -197,18 +202,29 @@ public class FinanceController {
 //        writer.flush(out);
 //        writer.close();
 //        IoUtil.close(out);
-
+        JSONArray datas = new JSONArray(list);
         LinkedHashMap<String, String> headMap = new LinkedHashMap<>();
         headMap.put("orderNo", "订单编号");
         headMap.put("subOrderNo", "子订单编号");
         headMap.put("billNo", "账单编号");
         headMap.put("bizCodeDesc", "业务类型");
         headMap.put("createdTimeStr", "日期");
-        headMap.put("supplierChName", "供应商");
-        headMap.put("goodsDesc", "货物信息");
-        headMap.put("startAddress", "起运地");
-        headMap.put("endAddress", "目的地");
-        headMap.put("licensePlate", "车牌号");
+//        headMap.put("supplierChName", "供应商");
+
+        if (list.size() != 0 && SubOrderSignEnum.KY.getSignOne().equals(list.get(0).getSubType())) {
+            String cmd = list.get(0).getSubType();
+            List<String> mainOrderNos = list.stream().map(PaymentNotPaidBillVO::getOrderNo).collect(Collectors.toList());
+            datas = this.commonService.templateDataProcessing(cmd, datas, mainOrderNos, 1);
+            List<Map<String, Object>> maps = Utilities.assembleEntityHead(BillTemplateEnum.getTemplate(cmd));
+            for (Map<String, Object> map : maps) {
+                headMap.put(String.valueOf(map.get("name")), String.valueOf(map.get("viewName")));
+            }
+        } else {
+            headMap.put("goodsDesc", "货物信息");
+            headMap.put("startAddress", "起运地");
+            headMap.put("endAddress", "目的地");
+            headMap.put("licensePlate", "车牌号");
+        }
         headMap.put("yunCustomsNo", "报关单号");
         headMap.put("costTypeName", "费用类别");
         headMap.put("costGenreName", "费用类型");
@@ -224,7 +240,7 @@ public class FinanceController {
         headMap.put("exchangeRate", "汇率");
         EasyExcelEntity entity = new EasyExcelEntity();
         entity.setTableHead(headMap);
-        entity.setTableData(new cn.hutool.json.JSONArray(list));
+        entity.setTableData(datas);
         Workbook workbook = EasyExcelUtils.autoGeneration("", entity);
 
         ServletOutputStream out = response.getOutputStream();
@@ -283,19 +299,29 @@ public class FinanceController {
 //        writer.flush(out);
 //        writer.close();
 //        IoUtil.close(out);
-
+        JSONArray datas = new JSONArray(list);
         LinkedHashMap<String, String> headMap = new LinkedHashMap<>();
         headMap.put("orderNo", "订单编号");
         headMap.put("subOrderNo", "子订单编号");
         headMap.put("billNo", "账单编号");
         headMap.put("bizCodeDesc", "业务类型");
         headMap.put("createdTimeStr", "日期");
-        headMap.put("unitAccount", "结算单位");
-        headMap.put("goodsDesc", "货物信息");
-        headMap.put("startAddress", "起运地");
-        headMap.put("endAddress", "目的地");
-        headMap.put("licensePlate", "车牌号");
-        headMap.put("yunCustomsNo", "报关单号");
+        if (list.size() != 0 && SubOrderSignEnum.KY.getSignOne().equals(list.get(0).getSubType())) {
+            String cmd = list.get(0).getSubType();
+            List<String> mainOrderNos = list.stream().map(PaymentNotPaidBillVO::getOrderNo).collect(Collectors.toList());
+            datas = this.commonService.templateDataProcessing(cmd, datas, mainOrderNos, 0);
+            List<Map<String, Object>> maps = Utilities.assembleEntityHead(BillTemplateEnum.getTemplate(cmd));
+            for (Map<String, Object> map : maps) {
+                headMap.put(String.valueOf(map.get("name")), String.valueOf(map.get("viewName")));
+            }
+        } else {
+            headMap.put("unitAccount", "结算单位");
+            headMap.put("goodsDesc", "货物信息");
+            headMap.put("startAddress", "起运地");
+            headMap.put("endAddress", "目的地");
+            headMap.put("licensePlate", "车牌号");
+            headMap.put("yunCustomsNo", "报关单号");
+        }
         headMap.put("costTypeName", "费用类别");
         headMap.put("costGenreName", "费用类型");
         headMap.put("costName", "费用名称");
@@ -310,7 +336,7 @@ public class FinanceController {
         headMap.put("exchangeRate", "汇率");
         EasyExcelEntity entity = new EasyExcelEntity();
         entity.setTableHead(headMap);
-        entity.setTableData(new JSONArray(list));
+        entity.setTableData(datas);
         Workbook workbook = EasyExcelUtils.autoGeneration("", entity);
 
         ServletOutputStream out = response.getOutputStream();

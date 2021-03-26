@@ -474,7 +474,8 @@
         opbd.bill_no,
         (select ci.currency_name from currency_info ci where ci.currency_code = opbd.settlement_currency)
         settlementCurrency,
-        orbct.money settlementAmount,orbct.exchange_rate exchangeRate
+        orbct.money settlementAmount,orbct.exchange_rate exchangeRate,
+        opb.sub_type
         FROM
         order_payment_bill_detail opbd left join order_payment_bill opb on opbd.bill_id = opb.id
         left join order_info oi on oi.order_no = opbd.order_no

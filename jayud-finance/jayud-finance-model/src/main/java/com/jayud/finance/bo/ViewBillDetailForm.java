@@ -15,5 +15,5 @@ public class ViewBillDetailForm {
     private String billNo;
 
     @ApiModelProperty(value = "指令cmd=bg,ky,zgys,nl ..和费用类型一样")
-    private String cmd="ky";
+    private String cmd;
 }

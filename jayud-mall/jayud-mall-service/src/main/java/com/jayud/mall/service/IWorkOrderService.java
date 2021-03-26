@@ -5,6 +5,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.QueryWorkOrderForm;
 import com.jayud.mall.model.bo.WorkOrderAddForm;
 import com.jayud.mall.model.bo.WorkOrderEvaluateForm;
+import com.jayud.mall.model.bo.WorkOrderReplyForm;
 import com.jayud.mall.model.po.WorkOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.vo.WorkOrderVO;
@@ -53,4 +54,18 @@ public interface IWorkOrderService extends IService<WorkOrder> {
      * @return
      */
     CommonResult<WorkOrderVO> addWorkOrder(WorkOrderAddForm form);
+
+    /**
+     * 结单
+     * @param id
+     * @return
+     */
+    CommonResult statementWorkOrder(Long id);
+
+    /**
+     * 回复
+     * @param form
+     * @return
+     */
+    CommonResult replyWorkOrder(WorkOrderReplyForm form);
 }

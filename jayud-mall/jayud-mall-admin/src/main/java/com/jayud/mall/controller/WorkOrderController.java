@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.QueryWorkOrderForm;
+import com.jayud.mall.model.bo.WorkOrderParaForm;
+import com.jayud.mall.model.bo.WorkOrderReplyForm;
 import com.jayud.mall.model.vo.WorkOrderVO;
 import com.jayud.mall.model.vo.domain.AuthUser;
 import com.jayud.mall.service.BaseService;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/workorder")
@@ -49,6 +53,23 @@ public class WorkOrderController {
         IPage<WorkOrderVO> pageList = workOrderService.findWorkOrderByPage(form);
         CommonPageResult<WorkOrderVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
+    }
+
+    //结单    statement
+    @ApiOperation(value = "结单")
+    @PostMapping("/statementWorkOrder")
+    @ApiOperationSupport(order = 3)
+    public CommonResult statementWorkOrder(@Valid @RequestBody WorkOrderParaForm form){
+        Long id = form.getId();
+        return workOrderService.statementWorkOrder(id);
+    }
+
+    //回复
+    @ApiOperation(value = "回复")
+    @PostMapping("/replyWorkOrder")
+    @ApiOperationSupport(order = 4)
+    public CommonResult replyWorkOrder(@Valid @RequestBody WorkOrderReplyForm form){
+        return workOrderService.replyWorkOrder(form);
     }
 
 

@@ -18,16 +18,19 @@ import com.jayud.mall.mapper.WorkOrderMapper;
 import com.jayud.mall.model.bo.QueryWorkOrderForm;
 import com.jayud.mall.model.bo.WorkOrderAddForm;
 import com.jayud.mall.model.bo.WorkOrderEvaluateForm;
+import com.jayud.mall.model.bo.WorkOrderReplyForm;
 import com.jayud.mall.model.po.WorkOrder;
 import com.jayud.mall.model.vo.OrderInfoVO;
 import com.jayud.mall.model.vo.TemplateUrlVO;
 import com.jayud.mall.model.vo.WorkOrderVO;
+import com.jayud.mall.model.vo.domain.AuthUser;
 import com.jayud.mall.model.vo.domain.CustomerUser;
 import com.jayud.mall.service.BaseService;
 import com.jayud.mall.service.IWorkOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -159,5 +162,41 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         this.saveOrUpdate(workOrder);
         WorkOrderVO workOrderVO = ConvertUtil.convert(workOrder, WorkOrderVO.class);
         return CommonResult.success(workOrderVO);
+    }
+
+    @Override
+    public CommonResult statementWorkOrder(Long id) {
+        WorkOrderVO workOrderVO = workOrderMapper.findWorkOrderById(id);
+        if(ObjectUtil.isEmpty(workOrderVO)){
+            return CommonResult.error(-1, "没有找到工单");
+        }
+        Integer status = workOrderVO.getStatus();
+        if(status != 1){
+            return CommonResult.error(-1, "只能对进行中的工单进行结单");
+        }
+        WorkOrder workOrder = ConvertUtil.convert(workOrderVO, WorkOrder.class);
+        workOrder.setStatus(2);//1进行中 2已结单 3待评价 4已关闭
+        AuthUser user = baseService.getUser();
+        workOrder.setOperator(user.getId());
+        workOrder.setOperationTime(LocalDateTime.now());
+        this.saveOrUpdate(workOrder);
+        return CommonResult.success("结单成功");
+    }
+
+    @Override
+    public CommonResult replyWorkOrder(WorkOrderReplyForm form) {
+        Long id = form.getId();
+        String revert = form.getRevert();
+        WorkOrderVO workOrderVO = workOrderMapper.findWorkOrderById(id);
+        if(ObjectUtil.isEmpty(workOrderVO)){
+            return CommonResult.error(-1, "没有找到工单");
+        }
+        WorkOrder workOrder = ConvertUtil.convert(workOrderVO, WorkOrder.class);
+        workOrder.setRevert(revert);
+        AuthUser user = baseService.getUser();
+        workOrder.setOperator(user.getId());
+        workOrder.setOperationTime(LocalDateTime.now());
+        this.saveOrUpdate(workOrder);
+        return CommonResult.success("回复成功");
     }
 }

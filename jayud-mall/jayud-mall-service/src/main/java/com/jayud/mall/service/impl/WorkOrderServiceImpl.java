@@ -27,6 +27,7 @@ import com.jayud.mall.model.vo.domain.AuthUser;
 import com.jayud.mall.model.vo.domain.CustomerUser;
 import com.jayud.mall.service.BaseService;
 import com.jayud.mall.service.IWorkOrderService;
+import com.jayud.mall.utils.NumberGeneratedUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -149,6 +150,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
         String orderNo = orderInfoVO.getOrderNo();
         workOrder.setOrderNo(orderNo);
+        //生成工单编号
+        String workNo = NumberGeneratedUtils.getOrderNoByCode2("work_no");
+        workOrder.setWorkNo(workNo);
         List<TemplateUrlVO> fileUrls = form.getFileUrls();
         if(CollUtil.isNotEmpty(fileUrls)){
             String s = JSONObject.toJSONString(fileUrls);

@@ -10,6 +10,7 @@ import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.JDKUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.beanutils.ConvertUtils;
@@ -58,13 +59,16 @@ public class AirBookingController {
 
     @ApiOperation(value = "获取历史交仓仓库信息")
     @PostMapping(value = "/getHistoryDeliveryAddr")
-    public CommonResult<List<Map<String,Object>>> getHistoryDeliveryAddr() {
+    public CommonResult<List<Map<String, Object>>> getHistoryDeliveryAddr() {
         List<AirBooking> historyDeliveryAddrs = this.airBookingService.getHistoryDeliveryAddr();
-        List<Map<String,Object>> tmps = new ArrayList<>();
+
+        historyDeliveryAddrs = JDKUtils.getGroupByLastData(historyDeliveryAddrs, AirBooking::getId,
+                AirBooking::getDeliveryWarehouse);
+        List<Map<String, Object>> tmps = new ArrayList<>();
         for (AirBooking historyDeliveryAddr : historyDeliveryAddrs) {
-            Map<String,Object> tmp = new HashMap<>();
-            tmp.put("value",historyDeliveryAddr.getDeliveryWarehouse());
-            tmp.put("note",historyDeliveryAddr.getDeliveryAddress());
+            Map<String, Object> tmp = new HashMap<>();
+            tmp.put("value", historyDeliveryAddr.getDeliveryWarehouse());
+            tmp.put("note", historyDeliveryAddr.getDeliveryAddress());
             tmps.add(tmp);
         }
         return CommonResult.success(tmps);

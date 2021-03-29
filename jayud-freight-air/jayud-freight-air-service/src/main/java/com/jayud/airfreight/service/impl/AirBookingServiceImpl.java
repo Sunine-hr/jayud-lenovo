@@ -8,13 +8,15 @@ import com.jayud.airfreight.service.IAirBookingService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.airfreight.service.IAirOrderService;
 import com.jayud.common.UserOperator;
+import com.jayud.common.utils.JDKUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 
 /**
  * <p>
@@ -72,9 +74,32 @@ public class AirBookingServiceImpl extends ServiceImpl<AirBookingMapper, AirBook
      */
     @Override
     public List<AirBooking> getHistoryDeliveryAddr() {
-        QueryWrapper<AirBooking> condition=new QueryWrapper<>();
+        QueryWrapper<AirBooking> condition = new QueryWrapper<>();
         condition.lambda().orderByDesc(AirBooking::getId);
-        condition.lambda().groupBy(AirBooking::getDeliveryWarehouse);
+//        condition.lambda().groupBy(AirBooking::getDeliveryWarehouse);
         return this.baseMapper.selectList(condition);
+    }
+
+    public static void main(String[] args) {
+        List<AirBooking> list = new ArrayList<>();
+        AirBooking airBooking = new AirBooking();
+        airBooking.setId(1L)
+                .setDeliveryAddress("深圳机场")
+                .setDeliveryWarehouse("宝安仓库");
+
+        AirBooking airBooking1 = new AirBooking();
+        airBooking1.setId(2L)
+                .setDeliveryAddress("深圳机场")
+                .setDeliveryWarehouse("龙华仓库");
+        list.add(airBooking);
+        list.add(airBooking1);
+
+        List<AirBooking> groupByLastData = JDKUtils.getGroupByLastData(list,
+                AirBooking::getId,
+                AirBooking::getDeliveryAddress);
+
+        for (AirBooking groupByLastDatum : groupByLastData) {
+            System.out.println(groupByLastDatum.getDeliveryWarehouse());
+        }
     }
 }

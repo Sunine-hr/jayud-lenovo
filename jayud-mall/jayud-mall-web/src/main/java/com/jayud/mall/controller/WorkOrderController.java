@@ -76,6 +76,14 @@ public class WorkOrderController {
         return workOrderService.addWorkOrder(form);
     }
 
+    //客户关闭工单
+    @ApiOperation(value = "客户关闭工单")
+    @PostMapping("/closeWorkOrder")
+    @ApiOperationSupport(order = 5)
+    public CommonResult closeWorkOrder(@Valid @RequestBody WorkOrderParaForm form){
+        Long id = form.getId();
+        return workOrderService.closeWorkOrder(id);
+    }
 
 
 }

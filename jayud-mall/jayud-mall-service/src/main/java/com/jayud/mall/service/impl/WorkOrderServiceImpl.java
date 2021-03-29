@@ -203,4 +203,17 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         this.saveOrUpdate(workOrder);
         return CommonResult.success("回复成功");
     }
+
+    @Override
+    public CommonResult closeWorkOrder(Long id) {
+        WorkOrderVO workOrderVO = workOrderMapper.findWorkOrderById(id);
+        if(ObjectUtil.isEmpty(workOrderVO)){
+            return CommonResult.error(-1, "没有找到工单");
+        }
+        WorkOrder workOrder = ConvertUtil.convert(workOrderVO, WorkOrder.class);
+        //4已关闭
+        workOrder.setStatus(4);//状态(1进行中 2已结单 3待评价 4已关闭)
+        this.saveOrUpdate(workOrder);
+        return CommonResult.success("关闭工单成功");
+    }
 }

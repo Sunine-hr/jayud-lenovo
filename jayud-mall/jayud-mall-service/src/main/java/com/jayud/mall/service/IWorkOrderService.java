@@ -68,4 +68,11 @@ public interface IWorkOrderService extends IService<WorkOrder> {
      * @return
      */
     CommonResult replyWorkOrder(WorkOrderReplyForm form);
+
+    /**
+     * 关闭工单
+     * @param id
+     * @return
+     */
+    CommonResult closeWorkOrder(Long id);
 }

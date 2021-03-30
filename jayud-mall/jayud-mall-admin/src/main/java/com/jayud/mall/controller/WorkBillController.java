@@ -3,13 +3,13 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
-import com.jayud.mall.model.bo.QueryWorkOrderForm;
-import com.jayud.mall.model.bo.WorkOrderParaForm;
-import com.jayud.mall.model.bo.WorkOrderReplyForm;
-import com.jayud.mall.model.vo.WorkOrderVO;
+import com.jayud.mall.model.bo.QueryWorkBillForm;
+import com.jayud.mall.model.bo.WorkBillParaForm;
+import com.jayud.mall.model.bo.WorkBillReplyForm;
+import com.jayud.mall.model.vo.WorkBillVO;
 import com.jayud.mall.model.vo.domain.AuthUser;
 import com.jayud.mall.service.BaseService;
-import com.jayud.mall.service.IWorkOrderService;
+import com.jayud.mall.service.IWorkBillService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiOperationSupport;
@@ -23,54 +23,53 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/workorder")
-@Api(tags = "A052-admin-订单工单接口")
-@ApiSort(value = 52)
-public class WorkOrderController {
+@RequestMapping("/workbill")
+@Api(tags = "A053-admin-提单工单接口")
+@ApiSort(value = 53)
+public class WorkBillController {
 
     @Autowired
-    IWorkOrderService workOrderService;
+    IWorkBillService workBillService;
     @Autowired
     BaseService baseService;
 
     //工单列表
     @ApiOperation(value = "工单列表")
-    @PostMapping("/findWorkOrderByPage")
+    @PostMapping("/findWorkBillByPage")
     @ApiOperationSupport(order = 1)
-    public CommonResult<CommonPageResult<WorkOrderVO>> findWorkOrderByPage(@RequestBody QueryWorkOrderForm form) {
-        IPage<WorkOrderVO> pageList = workOrderService.findWorkOrderByPage(form);
-        CommonPageResult<WorkOrderVO> pageVO = new CommonPageResult(pageList);
+    public CommonResult<CommonPageResult<WorkBillVO>> findWorkBillByPage(@RequestBody QueryWorkBillForm form) {
+        IPage<WorkBillVO> pageList = workBillService.findWorkBillByPage(form);
+        CommonPageResult<WorkBillVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
     }
 
     //我的工单(我处理的工单)
     @ApiOperation(value = "我的工单(我处理的工单)")
-    @PostMapping("/findMyWorkOrderByPage")
+    @PostMapping("/findMyWorkBillByPage")
     @ApiOperationSupport(order = 2)
-    public CommonResult<CommonPageResult<WorkOrderVO>> findMyWorkOrderByPage(@RequestBody QueryWorkOrderForm form) {
+    public CommonResult<CommonPageResult<WorkBillVO>> findMyWorkBillByPage(@RequestBody QueryWorkBillForm form) {
         AuthUser user = baseService.getUser();
         form.setOperator(user.getId());//我的工单
-        IPage<WorkOrderVO> pageList = workOrderService.findWorkOrderByPage(form);
-        CommonPageResult<WorkOrderVO> pageVO = new CommonPageResult(pageList);
+        IPage<WorkBillVO> pageList = workBillService.findWorkBillByPage(form);
+        CommonPageResult<WorkBillVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
     }
 
     //结单    statement
     @ApiOperation(value = "结单")
-    @PostMapping("/statementWorkOrder")
+    @PostMapping("/statementWorkBill")
     @ApiOperationSupport(order = 3)
-    public CommonResult statementWorkOrder(@Valid @RequestBody WorkOrderParaForm form){
+    public CommonResult statementWorkBill(@Valid @RequestBody WorkBillParaForm form){
         Long id = form.getId();
-        return workOrderService.statementWorkOrder(id);
+        return workBillService.statementWorkBill(id);
     }
 
     //回复
     @ApiOperation(value = "回复")
-    @PostMapping("/replyWorkOrder")
+    @PostMapping("/replyWorkBill")
     @ApiOperationSupport(order = 4)
-    public CommonResult replyWorkOrder(@Valid @RequestBody WorkOrderReplyForm form){
-        return workOrderService.replyWorkOrder(form);
+    public CommonResult replyWorkBill(@Valid @RequestBody WorkBillReplyForm form){
+        return workBillService.replyWorkBill(form);
     }
-
 
 }

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.WorkBillMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.WorkBill">
+        <id column="id" property="id" />
+        <result column="work_no" property="workNo" />
+        <result column="bill_id" property="billId" />
+        <result column="bill_no" property="billNo" />
+        <result column="priority" property="priority" />
+        <result column="problem_description" property="problemDescription" />
+        <result column="file_url" property="fileUrl" />
+        <result column="status" property="status" />
+        <result column="type" property="type" />
+        <result column="create_id" property="createId" />
+        <result column="submission_time" property="submissionTime" />
+        <result column="operator" property="operator" />
+        <result column="operation_time" property="operationTime" />
+        <result column="revert" property="revert" />
+        <result column="evaluation" property="evaluation" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, work_no, bill_id, bill_no, priority, problem_description, file_url, status, type, create_id, submission_time, operator, operation_time, revert, evaluation
+    </sql>
+    
+    
+    <select id="findWorkBillByPage" parameterType="com.jayud.mall.model.bo.QueryWorkBillForm" resultType="com.jayud.mall.model.vo.WorkBillVO">
+        select t.id,
+        t.work_no,
+        t.bill_id,
+        t.bill_no,
+        t.priority,
+        t.problem_description,
+        t.file_url,
+        t.status,
+        t.type,
+        t.create_id,
+        t.submission_time,
+        t.operator,
+        t.operation_time,
+        t.revert,
+        t.evaluation,
+        t1.name                      customerAccount,
+        concat(t1.user_name, '/', t1.phone) namePhone,
+        t2.name                           operator
+        from work_bill t
+        left join system_user t1 on t1.id = t.create_id
+        left join system_user t2 on t2.id = t.operator
+        where 1 = 1
+        <if test="form.createId != null">
+            and t.create_id = #{form.createId}
+        </if>
+        <if test="form.workNo != null and form.workNo != ''">
+            and t.work_no like concat('%',#{form.workNo},'%')
+        </if>
+        <if test="form.submissionTimeStart != null and form.submissionTimeEnd != null">
+            and t.submission_time <![CDATA[ >= ]]> #{form.submissionTimeStart}
+            and t.submission_time <![CDATA[ <= ]]> #{form.submissionTimeEnd}
+        </if>
+        <if test="form.keyword != null and form.keyword != ''">
+            and (
+            t.work_no like concat('%',#{form.keyword},'%')
+            or
+            t.problem_description like concat('%',#{form.keyword},'%')
+            )
+        </if>
+        <if test="form.status != null">
+            and t.status = #{form.status}
+        </if>
+        <if test="form.operator != null">
+            and t.operator = #{form.operator}
+        </if>
+
+    </select>
+
+    <select id="findWorkBillById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.WorkBillVO">
+        select t.id,
+               t.work_no,
+               t.bill_id,
+               t.bill_no,
+               t.priority,
+               t.problem_description,
+               t.file_url,
+               t.status,
+               t.type,
+               t.create_id,
+               t.submission_time,
+               t.operator,
+               t.operation_time,
+               t.revert,
+               t.evaluation
+        from work_bill t
+        where t.id = #{id}
+    </select>
+
+</mapper>

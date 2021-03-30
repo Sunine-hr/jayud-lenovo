@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -173,4 +175,42 @@ public interface OmsClient {
     @RequestMapping(value = "/api/doMainOrderRejectionSignOpt")
     public ApiResult<Boolean> doMainOrderRejectionSignOpt(@RequestParam("mainOrderNo") String mainOrderNo,
                                                           @RequestParam("rejectionDesc") String rejectionDesc);
+
+    /**
+     * 根据主订单集合查询主订单信息
+     */
+    @RequestMapping(value = "/api/mainOrder/getByOrderNos")
+    ApiResult getMainOrderByOrderNos(@RequestParam("orderNos") List<String> orderNos);
+
+    /**
+     * 根据车辆id查询车辆信息
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getVehicleInfoByIds")
+    public ApiResult getVehicleInfoByIds(@RequestParam("orderIds") List<Long> vehicleIds);
+
+
+    /**
+     * 根据司机ids查询司机信息
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getDriverInfoByIds")
+    public ApiResult getDriverInfoByIds(@RequestParam("driverIds") List<Long> driverIds);
+
+    /**
+     * 根据中转仓库ids查询中转仓库信息
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getWarehouseInfoByIds")
+    public ApiResult getWarehouseInfoByIds(@RequestParam("warehouseIds") List<Long> warehouseIds);
+
+    /**
+     * 根据子订单id查询所有子订单物流轨迹
+     */
+    @RequestMapping(value = "/api/getLogisticsTrackBySubId")
+    public ApiResult getLogisticsTrackByType(@RequestParam("subOrderIds") List<Long> subOrderIds,
+                                                      @RequestParam("type") Integer type) ;
 }

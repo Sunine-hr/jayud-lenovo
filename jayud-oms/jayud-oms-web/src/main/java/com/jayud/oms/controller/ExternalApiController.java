@@ -1051,14 +1051,39 @@ public class ExternalApiController {
     }
 
     /**
-     * 根据车辆id查询车辆信息
+     * 根据车辆ids查询车辆信息
      *
      * @return
      */
     @RequestMapping(value = "/api/getVehicleInfoByIds")
-    public ApiResult<List<VehicleInfo>> getVehicleInfoByIds(@RequestParam("orderIds") List<Long> orderIds) {
-        Collection<VehicleInfo> vehicleInfos = this.vehicleInfoService.listByIds(orderIds);
+    public ApiResult<List<VehicleInfo>> getVehicleInfoByIds(@RequestParam("orderIds") List<Long> vehicleIds) {
+        if (CollectionUtils.isEmpty(vehicleIds)) {
+            return ApiResult.ok();
+        }
+        Collection<VehicleInfo> vehicleInfos = this.vehicleInfoService.listByIds(vehicleIds);
         return ApiResult.ok(new ArrayList<>(vehicleInfos));
+    }
+
+    /**
+     * 根据司机ids查询司机信息
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getDriverInfoByIds")
+    public ApiResult<List<DriverInfo>> getDriverInfoByIds(@RequestParam("driverIds") List<Long> driverIds) {
+        Collection<DriverInfo> driverInfos = this.driverInfoService.listByIds(driverIds);
+        return ApiResult.ok(new ArrayList<>(driverInfos));
+    }
+
+    /**
+     * 根据中转仓库ids查询中转仓库信息
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getWarehouseInfoByIds")
+    public ApiResult<List<WarehouseInfo>> getWarehouseInfoByIds(@RequestParam("warehouseIds") List<Long> warehouseIds) {
+        Collection<WarehouseInfo> warehouseInfos = this.warehouseInfoService.listByIds(warehouseIds);
+        return ApiResult.ok(new ArrayList<>(warehouseInfos));
     }
 
 
@@ -1175,6 +1200,15 @@ public class ExternalApiController {
 
         return ApiResult.ok(count);
     }
+
+    @ApiOperation(value = "根据子订单id查询所有子订单物流轨迹")
+    @RequestMapping(value = "/api/getLogisticsTrackBySubId")
+    public ApiResult<Integer> getLogisticsTrackByType(@RequestParam("subOrderIds") List<Long> subOrderIds,
+                                                      @RequestParam("type") Integer type) {
+        List<LogisticsTrack> logisticsTracks = this.logisticsTrackService.getLogisticsTrackByType(subOrderIds, type);
+        return ApiResult.ok(logisticsTracks);
+    }
+
 }
 
 

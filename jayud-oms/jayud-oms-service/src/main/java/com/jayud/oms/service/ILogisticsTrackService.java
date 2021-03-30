@@ -43,4 +43,13 @@ public interface ILogisticsTrackService extends IService<LogisticsTrack> {
      * 根据orderId和类型删除物流轨迹跟踪信息
      */
     public boolean deleteLogisticsTrackByType(Long orderId,Integer type);
+
+
+    /**
+     * 根据子订单id查询所有子订单物流轨迹
+     * @param subOrderIds
+     * @param type
+     * @return
+     */
+    public List<LogisticsTrack>  getLogisticsTrackByType(List<Long> subOrderIds,Integer type);
 }

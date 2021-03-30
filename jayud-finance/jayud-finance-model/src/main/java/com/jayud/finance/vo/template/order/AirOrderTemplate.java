@@ -36,6 +36,9 @@ public class AirOrderTemplate{
     @ApiModelProperty(value = "货好时间", required = true)
     private String goodTime;
 
+    @ApiModelProperty(value = "主订单编号", required = true)
+    private String mainOrderNo;
+
     @ApiModelProperty(value = "空运订单编号", required = true)
     private String orderNo;
 
@@ -169,8 +172,7 @@ public class AirOrderTemplate{
 //    @JsonIgnore
 //    private List<InputGoodsVO> goodsForms;
 
-    @ApiModelProperty(value = "主订单编号")
-    private String mainOrderNo;
+
 
 
     /**

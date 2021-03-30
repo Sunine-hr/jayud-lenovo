@@ -8,6 +8,7 @@ import com.jayud.tms.model.bo.QueryDriverOrderTransportForm;
 import com.jayud.tms.model.bo.QueryOrderTmsForm;
 import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.*;
+import com.jayud.tms.model.vo.statistical.TVOrderTransportVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -85,4 +86,15 @@ public interface OrderTransportMapper extends BaseMapper<OrderTransport> {
      * @return
      */
     public Integer getNumByStatus(@Param("status") String status,@Param("legalIds")List<Long> legalIds);
+
+    /**
+     * 大屏幕展示订单数据(分页查询)
+     * @param page
+     * @param form
+     * @param legalIds
+     * @return
+     */
+    IPage<TVOrderTransportVO> findTVShowOrderByPage(Page<TVOrderTransportVO> page, @Param("form")QueryOrderTmsForm form,
+                                                    @Param("legalNames") List<String> legalNames);
+
 }

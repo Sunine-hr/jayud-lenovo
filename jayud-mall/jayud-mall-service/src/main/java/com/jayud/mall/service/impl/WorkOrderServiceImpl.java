@@ -151,7 +151,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         String orderNo = orderInfoVO.getOrderNo();
         workOrder.setOrderNo(orderNo);
         //生成工单编号
-        String workNo = NumberGeneratedUtils.getOrderNoByCode2("work_no");
+        String workNo = NumberGeneratedUtils.getOrderNoByCode2("work_order_no");
         workOrder.setWorkNo(workNo);
         List<TemplateUrlVO> fileUrls = form.getFileUrls();
         if(CollUtil.isNotEmpty(fileUrls)){

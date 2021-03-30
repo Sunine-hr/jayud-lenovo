@@ -140,12 +140,6 @@ public class SeaOrderVO {
     @ApiModelProperty(value = "结算部门")
     private Long unitDepartmentId;
 
-    @ApiModelProperty(value = "柜号")
-    private String cabinetNumber;
-
-    @ApiModelProperty(value = "封条")
-    private String paperStripSeal;
-
     @ApiModelProperty(value = "柜型大小")
     private Integer cabinetSize;
 

@@ -69,9 +69,7 @@
         so.unit_department_id unitDepartmentId,
         so.cabinet_size cabinetSize,
         so.cabinet_type cabinetType,
-        so.paper_strip_seal paperStripSeal,
         so.cut_replenish_time cutReplenishTime,
-        so.cabinet_number cabinetNumber,
         oi.customer_name customerName,
         oi.id mainOrderId,
         oi.biz_uname bizName,
@@ -120,10 +118,8 @@
         <result column="cut_replenish_time" property="cutReplenishTime"></result>
         <result column="cabinet_size" property="cabinetSize"></result>
         <result column="cabinet_type" property="cabinetType"></result>
-        <result column="cabinet_number" property="cabinetNumber"></result>
         <result column="cabinet_type_name" property="cabinetTypeName"></result>
         <result column="cabinet_size_name" property="cabinetSizeName"></result>
-        <result column="paper_strip_seal" property="paperStripSeal"></result>
         <result column="is_freight_collect" property="isFreightCollect"></result>
         <result column="is_other_expenses_paid" property="isOtherExpensesPaid"></result>
         <result column="is_dangerous_goods" property="isDangerousGoods"></result>
@@ -190,8 +186,6 @@
         so.unit_code unitCode,
         so.unit_department_id,
         so.cut_replenish_time,
-        so.cabinet_number,
-        so.paper_strip_seal,
         so.cabinet_size,
         so.cabinet_type,
         so.is_freight_collect,

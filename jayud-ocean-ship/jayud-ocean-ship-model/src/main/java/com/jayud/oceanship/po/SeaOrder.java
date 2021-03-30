@@ -132,12 +132,6 @@ public class SeaOrder extends Model<SeaOrder> {
     @ApiModelProperty(value = "结算部门")
     private Long unitDepartmentId;
 
-    @ApiModelProperty(value = "柜号")
-    private String cabinetNumber;
-
-    @ApiModelProperty(value = "封条")
-    private String paperStripSeal;
-
     @ApiModelProperty(value = "审核意见")
     private String auditOpinion;
 

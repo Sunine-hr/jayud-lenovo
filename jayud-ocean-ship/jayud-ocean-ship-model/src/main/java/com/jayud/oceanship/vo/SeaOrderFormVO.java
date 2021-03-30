@@ -253,12 +253,6 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
     //@ApiModelProperty(value = "结算部门")
     private Long unitDepartmentId;
 
-    //@ApiModelProperty(value = "柜号")
-    private String cabinetNumber;
-
-    //@ApiModelProperty(value = "封条")
-    private String paperStripSeal;
-
     //@ApiModelProperty(value = "补料信息集合")
     private List<SeaReplenishmentVO> seaReplenishments;
 

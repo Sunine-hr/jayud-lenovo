@@ -5,9 +5,9 @@ import org.apache.http.util.TextUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StringUtils {
     /**
@@ -260,11 +260,162 @@ public class StringUtils {
         return sb.toString().toUpperCase();
     }
 
+
+    /**
+     * 解析地址
+     *
+     * @param address
+     * @return
+     */
+    public static Map<String, String> addressResolutionOne(String address) {
+        /*
+         * java.util.regex是一个用正则表达式所订制的模式来对字符串进行匹配工作的类库包。它包括两个类：Pattern和Matcher Pattern
+         *    一个Pattern是一个正则表达式经编译后的表现模式。 Matcher
+         *    一个Matcher对象是一个状态机器，它依据Pattern对象做为匹配模式对字符串展开匹配检查。
+         *    首先一个Pattern实例订制了一个所用语法与PERL的类似的正则表达式经编译后的模式，然后一个Matcher实例在这个给定的Pattern实例的模式控制下进行字符串的匹配工作。
+         */
+
+        String provinceRegex = "(?<province>[^省]+自治区|.*?省|.*?行政区)";
+        String cityRegex = "(?<city>[^市]+自治州|.*?地区|.*?行政单位|.+盟|市辖区|.*?市|.*?县)";
+        String countyRegex = "(?<county>[^县]+县|.+区|.+市|.+旗|.+海域|.+岛)?(?<town>[^区]+区|.+镇)?(?<village>.*)";
+//        String regex="((?<province>[^省]+自治区|.*?省|.*?行政区|.*?市)(?<city>[^市]+自治州|.*?地区|.*?行政单位|.+盟|市辖区|.*?市|.*?县)(?<county>[^县]+县|.+区|.+市|.+旗|.+海域|.+岛)?(?<town>[^区]+区|.+镇)?(?<village>.*)";
+//        Matcher m= Pattern.compile(regex).matcher(address);
+
+        String province = null, city = null, county = null, town = null, village = null;
+        List<Map<String, String>> table = new ArrayList<Map<String, String>>();
+//        Map<String, String> row = null;
+
+        Matcher m = Pattern.compile(provinceRegex).matcher(address);
+        Map<String, String> row = new LinkedHashMap<String, String>();
+        while (m.find()) {
+            province = m.group("province");
+            row.put("province", province == null ? "" : province.trim());
+        }
+
+        m = Pattern.compile(cityRegex).matcher(address);
+        while (m.find()) {
+            city = m.group("city");
+            row.put("city", city == null ? "" : city.trim());
+        }
+        m = Pattern.compile(countyRegex).matcher(address);
+        while (m.find()) {
+            county = m.group("county");
+            row.put("county", county == null ? "" : county.trim());
+            town = m.group("town");
+            row.put("town", town == null ? "" : town.trim());
+            village = m.group("village");
+            row.put("village", village == null ? "" : village.trim());
+        }
+
+
+//        while(m.find()){
+//            row=new LinkedHashMap<String,String>();
+//            province=m.group("province");
+//            row.put("province", province==null?"":province.trim());
+//            city=m.group("city");
+//            row.put("city", city==null?"":city.trim());
+//            county=m.group("county");
+//            row.put("county", county==null?"":county.trim());
+//            town=m.group("town");
+//            row.put("town", town==null?"":town.trim());
+//            village=m.group("village");
+//            row.put("village", village==null?"":village.trim());
+//            table.add(row);
+//        }
+        return row;
+    }
+
+    /**
+     * 解析地址
+     * @param address
+     * @return
+     */
+    public static List<Map<String,String>> addressResolutionTwo(String address) {
+        /*
+         * java.util.regex是一个用正则表达式所订制的模式来对字符串进行匹配工作的类库包。它包括两个类：Pattern和Matcher Pattern
+         *    一个Pattern是一个正则表达式经编译后的表现模式。 Matcher
+         *    一个Matcher对象是一个状态机器，它依据Pattern对象做为匹配模式对字符串展开匹配检查。
+         *    首先一个Pattern实例订制了一个所用语法与PERL的类似的正则表达式经编译后的模式，然后一个Matcher实例在这个给定的Pattern实例的模式控制下进行字符串的匹配工作。
+         */
+        String regex = "(?<province>[^省]+自治区|.*?省|.*?行政区|.*?市)(?<city>[^市]+自治州|.*?地区|.*?行政单位|.+盟|市辖区|.*?市|.*?县)(?<county>[^县]+县|.+区|.+市|.+旗|.+海域|.+岛)?(?<town>[^区]+区|.+镇)?(?<village>.*)";
+        Matcher m = Pattern.compile(regex).matcher(address);
+        String province = null, city = null, county = null, town = null, village = null;
+        List<Map<String, String>> table = new ArrayList<Map<String, String>>();
+        Map<String, String> row = null;
+        while (m.find()) {
+            row = new LinkedHashMap<String, String>();
+            province = m.group("province");
+            row.put("province", province == null ? "" : province.trim());
+            city = m.group("city");
+            row.put("city", city == null ? "" : city.trim());
+            county = m.group("county");
+            row.put("county", county == null ? "" : county.trim());
+            town = m.group("town");
+            row.put("town", town == null ? "" : town.trim());
+            village = m.group("village");
+            row.put("village", village == null ? "" : village.trim());
+            table.add(row);
+        }
+        return table;
+    }
+
+
+        /**
+         * 解析地址
+         *
+         * @param address
+         * @return
+         */
+    public static List<Map<String, String>> addressResolutionThree(String address) {
+//        String regex = "((?<province>[^省]+省|.+自治区)|上海|北京|天津|重庆)|(?<city>[^市]+市|.+自治州)|(?<county>[^县]+县|.+区|.+镇|.+局)?(?<town>[^区]+区|.+镇)?(?<village>.*)";
+        String regex = "(?<province>[^省]+自治区|.*?省|.*?行政区|.*?市)(?<city>[^市]+自治州|.*?地区|.*?行政单位|.+盟|市辖区|.*?市|.*?县)(?<county>[^县]+县|.+区|.+市|.+旗|.+海域|.+岛)?(?<town>[^区]+区|.+镇)?(?<village>.*)";
+        Matcher m = Pattern.compile(regex).matcher(address);
+        String province = "", city = "", county = "", town = "", village = "";
+        List<Map<String, String>> table = new ArrayList<Map<String, String>>();
+        Map<String, String> row = new LinkedHashMap<String, String>();
+        while (m.find()) {
+//            row=new LinkedHashMap<String,String>();
+            String provinceGroup = m.group("province")==null?"":m.group("province");
+            province = province.length() > 0 ? province : provinceGroup.trim();
+
+            String cityGroup = m.group("city")==null?"":m.group("city");
+            city = city.length() > 0 ? city : cityGroup.trim();
+
+            String countyGroup = m.group("county")==null?"":m.group("county");
+            county = county.length() > 0 ? county : countyGroup.trim();
+
+            String townGroup = m.group("town")==null?"":m.group("town");
+            town = town.length()>0 ? town : townGroup.trim();
+
+            String villageGroup = m.group("village")==null?"":m.group("village");
+            village = village.length()>0 ? village : villageGroup.trim();
+//            table.add(row);
+        }
+        row.put("province", province);
+        row.put("city", city);
+        row.put("county", county);
+        row.put("town", town);
+        row.put("village", village);
+        table.add(row);
+        return table;
+    }
+
+
     public static boolean isEmpty(String str) {
         return str == null || str.length() == 0;
     }
 
 
     public static void main(String[] args) {
+        String str = "湖北省恩施土家族苗族自治州恩施市";
+//        Map<String, String> table = addressResolution(str);
+        List<Map<String, String>> table = addressResolutionThree(str);
+        System.out.println(table);
+        System.out.println(table.get(0).get("province"));
+        System.out.println(table.get(0).get("city"));
+        System.out.println(table.get(0).get("county"));
+        System.out.println(table.get(0).get("town"));
+        System.out.println(table.get(0).get("village"));
+
     }
 }

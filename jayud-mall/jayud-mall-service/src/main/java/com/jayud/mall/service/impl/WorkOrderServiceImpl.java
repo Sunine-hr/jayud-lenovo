@@ -37,7 +37,7 @@ import java.util.List;
 
 /**
  * <p>
- * 工单表 服务实现类
+ * 订单工单表 服务实现类
  * </p>
  *
  * @author fachang.mao

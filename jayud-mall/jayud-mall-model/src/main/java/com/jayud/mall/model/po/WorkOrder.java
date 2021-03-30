@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 工单表
+ * 订单工单表
  * </p>
  *
  * @author fachang.mao
@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="WorkOrder对象", description="工单表")
+@ApiModel(value="WorkOrder对象", description="订单工单表")
 public class WorkOrder extends Model<WorkOrder> {
 
     private static final long serialVersionUID = 1L;

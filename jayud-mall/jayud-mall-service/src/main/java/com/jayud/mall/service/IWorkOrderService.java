@@ -12,7 +12,7 @@ import com.jayud.mall.model.vo.WorkOrderVO;
 
 /**
  * <p>
- * 工单表 服务类
+ * 订单工单表 服务类
  * </p>
  *
  * @author fachang.mao

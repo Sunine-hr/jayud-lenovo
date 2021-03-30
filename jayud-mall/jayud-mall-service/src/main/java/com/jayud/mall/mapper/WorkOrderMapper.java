@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * <p>
- * 工单表 Mapper 接口
+ * 订单工单表 Mapper 接口
  * </p>
  *
  * @author fachang.mao

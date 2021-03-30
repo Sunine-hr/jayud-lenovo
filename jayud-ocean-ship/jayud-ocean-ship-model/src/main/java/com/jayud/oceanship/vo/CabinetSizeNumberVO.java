@@ -44,19 +44,6 @@ public class CabinetSizeNumberVO extends Model<CabinetSizeNumberVO> {
     @ApiModelProperty(value = "柜量")
     private Integer number;
 
-    @ApiModelProperty(value = "创建人(登录用户)")
-    private String createUser;
-
-    @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
-
-    @ApiModelProperty(value = "更新人")
-    private String updateUser;
-
-    @ApiModelProperty(value = "更新时间")
-    private LocalDateTime updateTime;
-
-
     @Override
     protected Serializable pkVal() {
         return this.id;

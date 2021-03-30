@@ -2,6 +2,7 @@ package com.jayud.oceanship.service;
 
 import com.jayud.oceanship.po.SeaContainerInformation;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.oceanship.vo.SeaContainerInformationVO;
 
 import java.util.List;
 
@@ -15,5 +16,5 @@ import java.util.List;
  */
 public interface ISeaContainerInformationService extends IService<SeaContainerInformation> {
 
-    List<SeaContainerInformation> getList(Long id);
+    List<SeaContainerInformationVO> getList(Long id);
 }

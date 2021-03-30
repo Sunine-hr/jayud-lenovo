@@ -142,7 +142,7 @@ public class SeaProcessOptForm {
 
     @ApiModelProperty(value = "截补料时间")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime cutReplenishTime;
+    private String cutReplenishTime;
 
     @ApiModelProperty(value = "结算部门")
     private Long unitDepartmentId;
@@ -247,30 +247,30 @@ public class SeaProcessOptForm {
         switch (statusEnum) {
             case SEA_S_1: //海运接单
             case SEA_S_3: //确认订单入仓
-            case SEA_S_5: //提单草稿确认
+            case SEA_S_6: //提单草稿确认
                 pass = checkOptInfo();
                 break;
             case SEA_S_2: //订船
                 pass = this.seaBookShipForm.checkBookShipParam();
                 break;
-            case SEA_S_6: //确认装船
+            case SEA_S_7: //确认装船
                 pass = this.seaBookShipForm.checkBookShipOptParam();
                 break;
-            case SEA_S_7://放单确认
+            case SEA_S_8://放单确认
                 if (CollectionUtils.isEmpty(this.fileViewList)) throw new JayudBizException("提单文件必传", 400);
 //                if (this.fileViewList.size() != 1) throw new JayudBizException("只能上传一个提单文", 400);
                 if (!checkOptInfo()) throw new JayudBizException(ResultEnum.VALIDATE_FAILED);
                 //pass = this.seaBookShipForm.checkConfirmLadingBillOptParam();
                 break;
-            case SEA_S_8://确认到港
+            case SEA_S_9://确认到港
                 pass = this.seaBookShipForm.checkConfirmATAOptParam();
                 break;
-            case SEA_S_9://海外代理
+            case SEA_S_10://海外代理
                 if (!checkOptInfo()) throw new JayudBizException(ResultEnum.VALIDATE_FAILED);
                 pass = this.checkOverseasAgencyOpt();
                 //pass = this.checkOptInfo();
                 break;
-            case SEA_S_10://订单签收
+            case SEA_S_11://订单签收
                 if (CollectionUtils.isEmpty(this.fileViewList)) throw new JayudBizException("上传签收单必传", 400);
 //                if (this.fileViewList.size() != 1) throw new JayudBizException("只能上传一个提单文", 400);
                 if (!checkOptInfo()) throw new JayudBizException(ResultEnum.VALIDATE_FAILED);

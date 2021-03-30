@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
+import cn.hutool.core.collection.CollectionUtil;
 import org.apache.commons.lang.StringUtils;
 
 import java.time.LocalDateTime;
@@ -133,7 +133,7 @@ public class InputSeaOrderForm {
             return false;
         }
         // 发货/收货地址是必填项
-        if (CollectionUtils.isEmpty(this.deliveryAddress)) {
+        if (CollectionUtil.isEmpty(this.deliveryAddress)) {
             for (AddOrderAddressForm address : deliveryAddress) {
                 if(StringUtils.isEmpty(address.getAddress())){
                     log.warn("发货地址不能为空");
@@ -147,7 +147,7 @@ public class InputSeaOrderForm {
             log.warn("发货地址信息不能为空");
             return false;
         }
-        if (CollectionUtils.isEmpty(this.shippingAddress)) {
+        if (CollectionUtil.isEmpty(this.shippingAddress)) {
             for (AddOrderAddressForm address : deliveryAddress) {
                 if(StringUtils.isEmpty(address.getPhone())){
                     log.warn("电话号码不能为空");
@@ -176,6 +176,21 @@ public class InputSeaOrderForm {
                 return false;
             }
         }
+        if(this.cabinetType.equals(1)){
+            if(CollectionUtil.isNotEmpty(this.cabinetSizeNumbers)){
+                for (AddCabinetSizeNumber cabinetSizeNumber : this.cabinetSizeNumbers) {
+                    if(StringUtils.isEmpty(cabinetSizeNumber.getCabinetTypeSize())){
+                        log.warn("货柜大小类型信息不能为空");
+                        return false;
+                    }
+                    if(cabinetSizeNumber.getNumber() == null ){
+                        log.warn("柜子数量信息不能为空");
+                        return false;
+                    }
+                }
+            }
+
+        }
 
         return true;
     }
@@ -187,7 +202,7 @@ public class InputSeaOrderForm {
         this.orderAddressForms = new ArrayList<>();
         this.orderAddressForms.addAll(this.deliveryAddress);
         this.orderAddressForms.addAll(this.shippingAddress);
-        if (CollectionUtils.isNotEmpty(this.notificationAddress)
+        if (CollectionUtil.isNotEmpty(this.notificationAddress)
                 && StringUtils.isNotEmpty(this.notificationAddress.get(0).getAddress())) {
             this.orderAddressForms.addAll(this.notificationAddress);
         }

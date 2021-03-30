@@ -68,6 +68,7 @@ public class CommonController {
         response.put("seaTerms", initComboxVO);
 
         response.put("cabinetType",list);
+        response.put("cabinetSize",list.get(0).getCabinetSizes());
         return CommonResult.success(response);
     }
 

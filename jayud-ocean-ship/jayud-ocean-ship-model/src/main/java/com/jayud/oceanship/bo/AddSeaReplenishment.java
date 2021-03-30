@@ -51,7 +51,7 @@ public class AddSeaReplenishment extends Model<AddSeaReplenishment> {
     private String seaOrderNo;
 
     @ApiModelProperty(value = "截补料时间")
-    private LocalDateTime cutReplenishTime;
+    private String cutReplenishTime;
 
     @ApiModelProperty(value = "柜号")
     private String cabinetNumber;
@@ -63,16 +63,19 @@ public class AddSeaReplenishment extends Model<AddSeaReplenishment> {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
+    private String createTime;
 
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
     @ApiModelProperty(value = "更新时间")
-    private LocalDateTime updateTime;
+    private String updateTime;
 
     @ApiModelProperty(value = "是否已提单")
     private Integer isBillOfLading;
+
+    @ApiModelProperty(value = "是否已放单")
+    private Integer isReleaseOrder;
 
     @ApiModelProperty(value = "进出口类型(1：进口，2：出口)")
     private Integer impAndExpType;
@@ -87,7 +90,7 @@ public class AddSeaReplenishment extends Model<AddSeaReplenishment> {
     private String portDestinationCode;
 
     @ApiModelProperty(value = "货好时间")
-    private LocalDateTime goodTime;
+    private String goodTime;
 
     @ApiModelProperty(value = "运费是否到付(1代表true,0代表false)")
     private Boolean isFreightCollect;

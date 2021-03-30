@@ -28,7 +28,7 @@ public class SeaOrder extends Model<SeaOrder> {
     private static final long serialVersionUID=1L;
 
     @ApiModelProperty(value = "海运订单主键")
-      @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     @ApiModelProperty(value = "主订单编号")

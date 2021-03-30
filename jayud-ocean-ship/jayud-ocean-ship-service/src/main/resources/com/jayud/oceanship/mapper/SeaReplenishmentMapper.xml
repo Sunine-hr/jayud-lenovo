@@ -16,6 +16,7 @@
         <result column="update_user" property="updateUser" />
         <result column="update_time" property="updateTime" />
         <result column="is_bill_of_lading" property="isBillOfLading" />
+        <result column="is_release_order" property="isReleaseOrder" />
         <result column="imp_and_exp_type" property="impAndExpType" />
         <result column="terms" property="terms" />
         <result column="port_departure_code" property="portDepartureCode" />
@@ -32,33 +33,36 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, order_no, sea_order_id, sea_order_no, cut_replenish_time, cabinet_number, paper_strip_seal, create_user, create_time, update_user, update_time, is_bill_of_lading, imp_and_exp_type, terms, port_departure_code, port_destination_code, good_time, is_freight_collect, is_other_expenses_paid, is_dangerous_goods, is_charged, transit_port_code, cabinet_type, cabinet_type_name
+        id, order_no, sea_order_id, sea_order_no, cut_replenish_time, cabinet_number, paper_strip_seal, create_user, create_time, update_user, update_time, is_bill_of_lading, imp_and_exp_type, terms, port_departure_code, port_destination_code, good_time, is_freight_collect, is_other_expenses_paid, is_dangerous_goods, is_charged, transit_port_code, cabinet_type, cabinet_type_name,is_release_order
     </sql>
 
     <select id="findBillByPage" resultType="com.jayud.oceanship.vo.SeaReplenishmentFormVO">
-        select id,order_no orderNo,sea_order_id seaOrderId,sea_order_no seaOrderNo,
-        cut_replenish_time cutReplenishTime,cabinet_number cabinetNumber,
-        paper_strip_seal paperStripSeal,create_user createUser,create_time createTime,
-        update_user updateUser,update_time updateTime,is_bill_of_lading isBillOfLading,
-        imp_and_exp_type impAndExpType,terms,
+        select sr.id,sr.order_no orderNo,sea_order_id seaOrderId,sea_order_no seaOrderNo,
+        sr.cut_replenish_time cutReplenishTime,sr.cabinet_number cabinetNumber,
+        sr.paper_strip_seal paperStripSeal,sr.create_user createUser,sr.create_time createTime,
+        sr.update_user updateUser,sr.update_time updateTime,sr.is_bill_of_lading isBillOfLading,
+        sr.is_release_order isReleaseOrder,
+        sr.imp_and_exp_type impAndExpType,sr.terms,
         terms.name termsDesc,
-        port_departure_code portDepartureCode,
+        sr.port_departure_code portDepartureCode,
         sp.name portDepartureName,
-        port_destination_code portDestinationCode,
+        sr.port_destination_code portDestinationCode,
         sp1.name portDestinationName,
-        good_time goodTime,is_freight_collect isFreightCollect,
-        is_other_expenses_paid isOtherExpensesPaid,
-        is_dangerous_goods isDangerousGoods,is_charged isCharged,
-        transit_port_code transitPortCode,
+        sr.good_time goodTime,sr.is_freight_collect isFreightCollect,
+        sr.is_other_expenses_paid isOtherExpensesPaid,
+        sr.is_dangerous_goods isDangerousGoods,sr.is_charged isCharged,
+        sr.transit_port_code transitPortCode,
         sp2.name transitPort,
-        cabinet_type cabinetType,
-        cabinet_type_name cabinetTypeName
+        sr.cabinet_type cabinetType,
+        sr.cabinet_type_name cabinetTypeName,
+        sr.main_no,sr.sub_no,sr.bill_lading_weight
         from sea_replenishment sr
-        left join sea_port sp on so.port_departure_code = sp.code
-        left join sea_port sp1 on so.port_destination_code = sp1.code
-        left join sea_port sp2 on so.transit_port_code = sp2.code
-        left join terms on so.terms = terms.id
-        <where>
+        left join sea_port sp on sr.port_departure_code = sp.code
+        left join sea_port sp1 on sr.port_destination_code = sp1.code
+        left join sea_port sp2 on sr.transit_port_code = sp2.code
+        left join terms on sr.terms = terms.id
+        left join sea_order so on so.id = sr.sea_order_id
+        <where> sr.is_bill_of_lading = 0 or sr.is_release_order = 0
         <if test="form.orderNo !=null and form.orderNo!=''">
             and so.order_no like concat('%',#{form.orderNo},'%')
         </if>
@@ -84,10 +88,10 @@
             </foreach>
         </if>
         <if test="form.startTime !=null and form.startTime!=''">
-            and so.create_time <![CDATA[>= ]]> #{form.startTime}
+            and sr.create_time <![CDATA[>= ]]> #{form.startTime}
         </if>
         <if test="form.endTime !=null and form.endTime!=''">
-            and so.create_time <![CDATA[<= ]]> #{form.endTime}
+            and sr.create_time <![CDATA[<= ]]> #{form.endTime}
         </if>
 
         <if test="legalIds != null and legalIds.size>0">

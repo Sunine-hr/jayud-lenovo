@@ -31,6 +31,9 @@ public class AddSeaOrderForm {
     @TableId(value = "id", type = IdType.AUTO)
     private Long orderId;
 
+    @ApiModelProperty(value = "海运订单主键")
+    private Long id;
+
     @ApiModelProperty(value = "主订单编号")
     private String mainOrderNo;
 

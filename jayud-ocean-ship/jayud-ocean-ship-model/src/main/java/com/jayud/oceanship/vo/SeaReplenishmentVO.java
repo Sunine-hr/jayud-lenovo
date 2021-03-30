@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -51,7 +52,7 @@ public class SeaReplenishmentVO extends Model<SeaReplenishmentVO> {
     private String seaOrderNo;
 
     @ApiModelProperty(value = "截补料时间")
-    private LocalDateTime cutReplenishTime;
+    private String cutReplenishTime;
 
     @ApiModelProperty(value = "柜号")
     private String cabinetNumber;
@@ -73,6 +74,9 @@ public class SeaReplenishmentVO extends Model<SeaReplenishmentVO> {
 
     @ApiModelProperty(value = "是否已提单")
     private Integer isBillOfLading;
+
+    @ApiModelProperty(value = "是否已放单")
+    private Integer isReleaseOrder;
 
     @ApiModelProperty(value = "进出口类型(1：进口，2：出口)")
     private Integer impAndExpType;
@@ -129,22 +133,22 @@ public class SeaReplenishmentVO extends Model<SeaReplenishmentVO> {
     private List<CabinetSizeNumberVO> cabinetSizeNumbers;
 
     @ApiModelProperty(value = "货柜信息集合")
-    private List<SeaContainerInformation> seaContainerInformations;
+    private List<SeaContainerInformationVO> seaContainerInformations;
 
     @ApiModelProperty(value = "发货地址集合")
-    private List<AddOrderAddressForm> deliveryAddress;
+    private List<OrderAddressVO> deliveryAddress;
 
     @ApiModelProperty(value = "收货地址集合")
-    private List<AddOrderAddressForm> shippingAddress;
+    private List<OrderAddressVO> shippingAddress;
 
     @ApiModelProperty(value = "通知地址集合")
-    private List<AddOrderAddressForm> notificationAddress;
+    private List<OrderAddressVO> notificationAddress;
 
     @ApiModelProperty(value = "海运订单地址信息")
-    private List<AddOrderAddressForm> orderAddressForms;
+    private List<OrderAddressVO> orderAddressForms;
 
     @ApiModelProperty(value = "货品信息")
-    private List<AddGoodsForm> goodsForms;
+    private List<GoodsVO> goodsForms;
 
     @ApiModelProperty(value = "提单文件路径(多个逗号隔开)")
     private String filePath;
@@ -170,6 +174,20 @@ public class SeaReplenishmentVO extends Model<SeaReplenishmentVO> {
         if (CollectionUtils.isNotEmpty(this.notificationAddress)
                 && StringUtils.isNotEmpty(this.notificationAddress.get(0).getAddress())) {
             this.orderAddressForms.addAll(this.notificationAddress);
+        }
+    }
+
+    public void processingAddress(OrderAddressVO addressVO) {
+        switch (addressVO.getType()) {
+            case 0:
+                this.deliveryAddress = Collections.singletonList(addressVO);
+                break;
+            case 1:
+                this.shippingAddress = Collections.singletonList(addressVO);
+                break;
+            case 2:
+                this.notificationAddress = Collections.singletonList(addressVO);
+                break;
         }
     }
 

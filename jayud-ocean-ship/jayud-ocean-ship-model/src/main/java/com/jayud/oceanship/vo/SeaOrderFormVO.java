@@ -42,6 +42,9 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    @ApiModelProperty(value = "海运订单id")
+    private Long orderId;
+
     @ApiModelProperty(value = "主订单编号")
     private String mainOrderNo;
 
@@ -401,7 +404,7 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
     public void assemblyCabinetInfo(List<CabinetSizeNumberVO> cabinetSizeNumberVOS) {
         StringBuilder sb = new StringBuilder();
         for (CabinetSizeNumberVO cabinetSizeNumberVO : cabinetSizeNumberVOS) {
-            sb.append(cabinetSizeNumberVO.getCabinetTypeSize()).append("/").append(cabinetSizeNumberVO.getNumber()).append("<br/>");
+            sb.append(cabinetSizeNumberVO.getCabinetTypeSize()).append("/").append(cabinetSizeNumberVO.getNumber()).append(" ");
         }
         this.cabinetSizeName = sb.toString();
     }

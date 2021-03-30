@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.jayud.common.enums.BusinessTypeEnum;
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.TradeTypeEnum;
 import com.jayud.common.utils.FileView;
@@ -47,6 +48,9 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    @ApiModelProperty(value = "海运订单id")
+    private Long orderId;
+
     @ApiModelProperty(value = "截补料单号")
     private String orderNo;
 
@@ -79,6 +83,9 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
 
     @ApiModelProperty(value = "是否已提单")
     private Integer isBillOfLading;
+
+    @ApiModelProperty(value = "是否已放单")
+    private Integer isReleaseOrder;
 
     @ApiModelProperty(value = "进出口类型(1：进口，2：出口)")
     private Integer impAndExpType;
@@ -138,7 +145,7 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
     private List<CabinetSizeNumberVO> cabinetSizeNumbers;
 
     @ApiModelProperty(value = "货柜信息集合")
-    private List<SeaContainerInformation> seaContainerInformations;
+    private List<SeaContainerInformationVO> seaContainerInformations;
 
     @ApiModelProperty(value = "发货地址集合")
     private List<OrderAddressVO> deliveryAddress;
@@ -176,6 +183,9 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
     @ApiModelProperty(value = "主订单号")
     private String mainOrderNo;
 
+    //@ApiModelProperty(value = "主订单id")
+    private String mainOrderId;
+
     //@ApiModelProperty(value = "客户代码")
     private String customerCode;
 
@@ -191,6 +201,11 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
     @ApiModelProperty(value = "附件集合")
     private List<FileView> fileViewList = new ArrayList<>();
 
+    //@ApiModelProperty(value = "状态")
+    private String status;
+
+    @ApiModelProperty(value = "订单流程状态")
+    private String statusDesc;
 
     public void getFile(String path){
         this.fileViewList = StringUtils.getFileViews(this.getFilePath(),this.getFileName(),path);
@@ -208,6 +223,7 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
             JSONObject json = mainOrders.getJSONObject(i);
             if (this.mainOrderNo.equals(json.getStr("orderNo"))) { //主订单配对
                 this.customerName = json.getStr("customerName");
+                this.mainOrderId = json.getStr("id");
                 this.customerCode = json.getStr("customerCode");
                 break;
             }
@@ -262,11 +278,15 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
     public void assemblyCabinetInfo(List<CabinetSizeNumberVO> cabinetSizeNumberVOS) {
         StringBuilder sb = new StringBuilder();
         for (CabinetSizeNumberVO cabinetSizeNumberVO : cabinetSizeNumberVOS) {
-            sb.append(cabinetSizeNumberVO.getCabinetTypeSize()).append("/").append(cabinetSizeNumberVO.getNumber()).append("<br/>");
+            sb.append(cabinetSizeNumberVO.getCabinetTypeSize()).append("/").append(cabinetSizeNumberVO.getNumber()).append(" ");
         }
         this.cabinetSizeName = sb.toString();
     }
 
+    public void setStatus(String status) {
+        this.status = status;
+        this.statusDesc = OrderStatusEnum.getDesc(status);
+    }
 
     @Override
     protected Serializable pkVal() {

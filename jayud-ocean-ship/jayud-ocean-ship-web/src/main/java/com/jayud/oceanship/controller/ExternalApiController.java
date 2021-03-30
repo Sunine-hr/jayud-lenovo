@@ -37,6 +37,7 @@ public class ExternalApiController {
      */
     @RequestMapping(value = "/api/oceanship/createOrder")
     public ApiResult<String> createOrder(@RequestBody AddSeaOrderForm addSeaOrderForm) {
+        System.out.println("addSeaOrderForm================================="+addSeaOrderForm);
         String orderNo = seaOrderService.createOrder(addSeaOrderForm);
         return ApiResult.ok(orderNo);
     }

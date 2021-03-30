@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.TradeTypeEnum;
 import com.jayud.common.utils.FileView;
+import com.jayud.oceanship.bo.AddSeaReplenishment;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -157,6 +158,9 @@ public class SeaOrderVO {
     @ApiModelProperty(value = "柜型类型")
     private String cabinetTypeName;
 
+    @ApiModelProperty(value = "柜型数量")
+    private List<CabinetSizeNumberVO> cabinetSizeNumbers;
+
     @ApiModelProperty(value = "截补料时间")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime cutReplenishTime;
@@ -175,6 +179,9 @@ public class SeaOrderVO {
 
     @ApiModelProperty(value = "所有附件信息")
     private List<FileView> allPics = new ArrayList<>();
+
+    @ApiModelProperty(value = "补料信息集合")
+    private List<SeaReplenishmentVO> seaReplenishments;
 
     public void processingAddress(OrderAddressVO addressVO) {
         switch (addressVO.getType()) {

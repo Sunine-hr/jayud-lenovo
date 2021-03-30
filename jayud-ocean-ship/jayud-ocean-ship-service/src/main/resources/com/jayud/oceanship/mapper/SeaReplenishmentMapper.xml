@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oceanship.mapper.SeaReplenishmentMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oceanship.po.SeaReplenishment">
+        <id column="id" property="id" />
+        <result column="order_no" property="orderNo" />
+        <result column="sea_order_id" property="seaOrderId" />
+        <result column="sea_order_no" property="seaOrderNo" />
+        <result column="cut_replenish_time" property="cutReplenishTime" />
+        <result column="cabinet_number" property="cabinetNumber" />
+        <result column="paper_strip_seal" property="paperStripSeal" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_bill_of_lading" property="isBillOfLading" />
+        <result column="is_release_order" property="isReleaseOrder" />
+        <result column="imp_and_exp_type" property="impAndExpType" />
+        <result column="terms" property="terms" />
+        <result column="port_departure_code" property="portDepartureCode" />
+        <result column="port_destination_code" property="portDestinationCode" />
+        <result column="good_time" property="goodTime" />
+        <result column="is_freight_collect" property="isFreightCollect" />
+        <result column="is_other_expenses_paid" property="isOtherExpensesPaid" />
+        <result column="is_dangerous_goods" property="isDangerousGoods" />
+        <result column="is_charged" property="isCharged" />
+        <result column="transit_port_code" property="transitPortCode" />
+        <result column="cabinet_type" property="cabinetType" />
+        <result column="cabinet_type_name" property="cabinetTypeName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_no, sea_order_id, sea_order_no, cut_replenish_time, cabinet_number, paper_strip_seal, create_user, create_time, update_user, update_time, is_bill_of_lading, imp_and_exp_type, terms, port_departure_code, port_destination_code, good_time, is_freight_collect, is_other_expenses_paid, is_dangerous_goods, is_charged, transit_port_code, cabinet_type, cabinet_type_name,is_release_order
+    </sql>
+
+    <select id="findBillByPage" resultType="com.jayud.oceanship.vo.SeaReplenishmentFormVO">
+        select sr.id,sr.order_no orderNo,sea_order_id seaOrderId,sea_order_no seaOrderNo,
+        sr.cut_replenish_time cutReplenishTime,sr.cabinet_number cabinetNumber,
+        sr.paper_strip_seal paperStripSeal,sr.create_user createUser,sr.create_time createTime,
+        sr.update_user updateUser,sr.update_time updateTime,sr.is_bill_of_lading isBillOfLading,
+        sr.is_release_order isReleaseOrder,
+        sr.imp_and_exp_type impAndExpType,sr.terms,
+        terms.name termsDesc,
+        sr.port_departure_code portDepartureCode,
+        sp.name portDepartureName,
+        sr.port_destination_code portDestinationCode,
+        sp1.name portDestinationName,
+        sr.good_time goodTime,sr.is_freight_collect isFreightCollect,
+        sr.is_other_expenses_paid isOtherExpensesPaid,
+        sr.is_dangerous_goods isDangerousGoods,sr.is_charged isCharged,
+        sr.transit_port_code transitPortCode,
+        sp2.name transitPort,
+        sr.cabinet_type cabinetType,
+        sr.cabinet_type_name cabinetTypeName,
+        sr.main_no,sr.sub_no,sr.bill_lading_weight
+        from sea_replenishment sr
+        left join sea_port sp on sr.port_departure_code = sp.code
+        left join sea_port sp1 on sr.port_destination_code = sp1.code
+        left join sea_port sp2 on sr.transit_port_code = sp2.code
+        left join terms on sr.terms = terms.id
+        left join sea_order so on so.id = sr.sea_order_id
+        <where> sr.is_bill_of_lading = 0 or sr.is_release_order = 0
+        <if test="form.orderNo !=null and form.orderNo!=''">
+            and so.order_no like concat('%',#{form.orderNo},'%')
+        </if>
+        <if test="form.portDeparture !=null and form.portDeparture!=''">
+            and sp.name like concat('%',#{form.portDeparture},'%')
+        </if>
+        <if test="form.portDestination !=null and form.portDestination!=''">
+            and sp1.name like concat('%',#{form.portDestination},'%')
+        </if>
+        <if test="form.mainOrderNos !=null and form.mainOrderNos.size > 0">
+            and so.main_order_no IN
+            <foreach collection="form.mainOrderNos" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="form.status !=null and form.status!=''">
+            and so.status = #{form.status}
+        </if>
+        <if test="form.processStatusList!=null and form.processStatusList.size>0">
+            and so.process_status IN
+            <foreach collection="form.processStatusList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="form.startTime !=null and form.startTime!=''">
+            and sr.create_time <![CDATA[>= ]]> #{form.startTime}
+        </if>
+        <if test="form.endTime !=null and form.endTime!=''">
+            and sr.create_time <![CDATA[<= ]]> #{form.endTime}
+        </if>
+
+        <if test="legalIds != null and legalIds.size>0">
+            and so.`legal_entity_id` in
+            <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                #{legalId}
+            </foreach>
+        </if>
+        </where>
+        order by sr.id desc
+    </select>
+
+</mapper>

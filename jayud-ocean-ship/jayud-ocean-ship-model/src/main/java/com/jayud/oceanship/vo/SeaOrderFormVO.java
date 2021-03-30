@@ -13,6 +13,7 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.TradeTypeEnum;
 import com.jayud.common.utils.FileView;
+import com.jayud.oceanship.bo.AddSeaReplenishment;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,9 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
 //    @ApiModelProperty(value = "海运订单主键")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
+
+    @ApiModelProperty(value = "海运订单id")
+    private Long orderId;
 
     @ApiModelProperty(value = "主订单编号")
     private String mainOrderNo;
@@ -218,6 +222,9 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
     @ApiModelProperty(value = "柜型类型")
     private String cabinetTypeName;
 
+    @ApiModelProperty(value = "柜型数量")
+    private List<CabinetSizeNumberVO> cabinetSizeNumbers;
+
     @ApiModelProperty(value = "截补料时间")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime cutReplenishTime;
@@ -251,6 +258,9 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
 
     //@ApiModelProperty(value = "封条")
     private String paperStripSeal;
+
+    //@ApiModelProperty(value = "补料信息集合")
+    private List<SeaReplenishmentVO> seaReplenishments;
 
     /**
      * 组装商品信息
@@ -391,4 +401,11 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
         this.defaultUnitCode = unitCode;
     }
 
+    public void assemblyCabinetInfo(List<CabinetSizeNumberVO> cabinetSizeNumberVOS) {
+        StringBuilder sb = new StringBuilder();
+        for (CabinetSizeNumberVO cabinetSizeNumberVO : cabinetSizeNumberVOS) {
+            sb.append(cabinetSizeNumberVO.getCabinetTypeSize()).append("/").append(cabinetSizeNumberVO.getNumber()).append(" ");
+        }
+        this.cabinetSizeName = sb.toString();
+    }
 }

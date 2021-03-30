@@ -118,12 +118,14 @@ public enum OrderStatusEnum {
     SEA_S_3_1("S_3_1", "订单入仓驳回"),
     SEA_S_3_2("S_3_2", "订船驳回编辑"),
     SEA_S_4("S_4", "提交补料"),
-    SEA_S_5("S_5", "提单草稿确认"),
-    SEA_S_6("S_6", "确认装船"),
-    SEA_S_7("S_7", "放单确认"),
-    SEA_S_8("S_8", "确认到港"),
-    SEA_S_9("S_9", "海外代理"),
-    SEA_S_10("S_10", "订单签收"),
+    SEA_S_5("S_5", "补料审核"),
+    SEA_S_5_1("S_5_1", "补料审核不通过"),
+    SEA_S_6("S_6", "提单草稿确认"),
+    SEA_S_7("S_7", "确认装船"),
+    SEA_S_8("S_8", "放单确认"),
+    SEA_S_9("S_9", "确认到港"),
+    SEA_S_10("S_10", "海外代理"),
+    SEA_S_11("S_11", "订单签收"),
 
     //内陆运输
     INLANDTP_NL_0("NL_0", "待接单"),
@@ -140,23 +142,20 @@ public enum OrderStatusEnum {
     INLANDTP_NL_5_1("NL_5_1", "车辆提货驳回"),
     INLANDTP_NL_6("NL_6", "货物签收"),
     //拖车订单状态流程节点
-    TT_0("TT_0","待接单"),
-    TT_1("TT_1","拖车接单"),
-    TT_1_1("TT_1_1","拖车接单驳回"),
-    TT_2("TT_2","拖车派车"),
-    TT_2_1("TT_2_1","拖车派车驳回"),
-    TT_3("TT_3","派车审核"),
-    TT_3_1("TT_3_1","派车审核驳回"),
-    TT_3_2("TT_3_2","派车驳回调度"),
-    TT_4("TT_4","拖车提柜"),
-    TT_4_1("TT_4_1","拖车提柜驳回"),
-    TT_5("TT_5","拖车到仓"),
-    TT_6("TT_6","拖车离仓"),
-    TT_7("TT_7","拖车过磅"),
-    TT_8("TT_8","确认还柜"),
-
-
-
+    TT_0("TT_0", "待接单"),
+    TT_1("TT_1", "拖车接单"),
+    TT_1_1("TT_1_1", "拖车接单驳回"),
+    TT_2("TT_2", "拖车派车"),
+    TT_2_1("TT_2_1", "拖车派车驳回"),
+    TT_3("TT_3", "派车审核"),
+    TT_3_1("TT_3_1", "派车审核驳回"),
+    TT_3_2("TT_3_2", "派车驳回调度"),
+    TT_4("TT_4", "拖车提柜"),
+    TT_4_1("TT_4_1", "拖车提柜驳回"),
+    TT_5("TT_5", "拖车到仓"),
+    TT_6("TT_6", "拖车离仓"),
+    TT_7("TT_7", "拖车过磅"),
+    TT_8("TT_8", "确认还柜"),
 
 
     //外部报关放行
@@ -360,6 +359,7 @@ public enum OrderStatusEnum {
         statusEnums.add(SEA_S_8);
         statusEnums.add(SEA_S_9);
         statusEnums.add(SEA_S_10);
+        statusEnums.add(SEA_S_11);
         return statusEnums;
     }
 
@@ -388,7 +388,7 @@ public enum OrderStatusEnum {
         }
         List<OrderStatusEnum> statusEnums = getTrailerOrderProcess();
         for (OrderStatusEnum statusEnum : statusEnums) {
-            if(statusEnum.getCode().equals(currentStatus)){
+            if (statusEnum.getCode().equals(currentStatus)) {
                 return statusEnum;
             }
         }
@@ -457,7 +457,7 @@ public enum OrderStatusEnum {
                     INLANDTP_NL_1_1.getCode(), INLANDTP_NL_2_1.getCode(),
                     INLANDTP_NL_3_1.getCode(), INLANDTP_NL_3_2.getCode(),
                     INLANDTP_NL_4_1.getCode(), INLANDTP_NL_5_1.getCode(),
-                    TT_1_1.getCode(),TT_2_1.getCode(),TT_3_1.getCode(),TT_3_2.getCode(),TT_4_1.getCode()};
+                    TT_1_1.getCode(), TT_2_1.getCode(), TT_3_1.getCode(), TT_3_2.getCode(), TT_4_1.getCode()};
         }
         for (String subOrderSign : subOrderSigns) {
             //todo 有需要再补
@@ -485,9 +485,9 @@ public enum OrderStatusEnum {
                         INLANDTP_NL_3_2.getCode(), INLANDTP_NL_4_1.getCode(), INLANDTP_NL_5_1.getCode()
                 };
             }
-            if(SubOrderSignEnum.TC.getSignOne().equals(subOrderSign)){
+            if (SubOrderSignEnum.TC.getSignOne().equals(subOrderSign)) {
                 return new String[]{
-                        TT_1_1.getCode(),TT_2_1.getCode(),TT_3_1.getCode(),TT_3_2.getCode(),TT_4_1.getCode()
+                        TT_1_1.getCode(), TT_2_1.getCode(), TT_3_1.getCode(), TT_3_2.getCode(), TT_4_1.getCode()
                 };
             }
         }

@@ -21,24 +21,29 @@ public interface ISeaOrderService extends IService<SeaOrder> {
 
     /**
      * 生成海运单
+     *
      * @param addSeaOrderForm
      */
     String createOrder(AddSeaOrderForm addSeaOrderForm);
 
     /**
      * 生成订单号
+     *
      * @return
      */
-    String generationOrderNo(Long leaglId , Integer integer);
+    String generationOrderNo(Long leaglId, Integer integer);
 
     /**
      * 订单是否存在
+     *
      * @param orderNo
      * @return
      */
     boolean isExistOrder(String orderNo);
+
     /**
      * 根据主订单号获取订单信息
+     *
      * @param orderNo
      * @return
      */
@@ -46,6 +51,7 @@ public interface ISeaOrderService extends IService<SeaOrder> {
 
     /**
      * 根据订单id获取订单信息
+     *
      * @param id
      * @return
      */
@@ -53,6 +59,7 @@ public interface ISeaOrderService extends IService<SeaOrder> {
 
     /**
      * 分页获取海运订单信息
+     *
      * @param form
      * @return
      */
@@ -60,6 +67,7 @@ public interface ISeaOrderService extends IService<SeaOrder> {
 
     /**
      * 改变流程状态
+     *
      * @param seaOrder
      * @param form
      */
@@ -67,21 +75,28 @@ public interface ISeaOrderService extends IService<SeaOrder> {
 
     /**
      * 海运流程操作状态
+     *
      * @param form
      */
     void seaProcessOptRecord(SeaProcessOptForm form);
 
     /**
      * 订船操作
+     *
      * @param form
      */
     void doSeaBookShipOpt(SeaProcessOptForm form);
 
-
+    /**
+     * 订单补料
+     *
+     * @param form
+     */
     void updateOrSaveProcessStatus(SeaProcessOptForm form);
 
     /**
      * 获取订单详情
+     *
      * @param seaOrderId
      * @return
      */
@@ -89,6 +104,7 @@ public interface ISeaOrderService extends IService<SeaOrder> {
 
     /**
      * 订单驳回
+     *
      * @param seaOrder
      * @param auditInfoForm
      * @param seaCargoRejected
@@ -97,6 +113,7 @@ public interface ISeaOrderService extends IService<SeaOrder> {
 
     /**
      * 通用驳回操作
+     *
      * @param seaOrder
      * @param auditInfoForm
      * @param seaCargoRejected
@@ -105,8 +122,21 @@ public interface ISeaOrderService extends IService<SeaOrder> {
 
     /**
      * 根据主订单号集合获取海运订单信息
+     *
      * @param mainOrderNoList
      * @return
      */
     List<SeaOrder> getSeaOrderByOrderNOs(List<String> mainOrderNoList);
+
+    /**
+     * 补料审核
+     * @param form
+     */
+    void updateOrSaveReplenishmentAudit(SeaProcessOptForm form);
+
+    /**
+     * 草稿提单确认
+     * @param form
+     */
+    void updateOrSaveConfirmationAudit(SeaProcessOptForm form);
 }

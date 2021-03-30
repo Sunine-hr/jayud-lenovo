@@ -46,7 +46,7 @@ public class WorkOrderVO {
     @JSONField(ordinal = 8)
     private Integer status;
 
-    @ApiModelProperty(value = "工单类型(1普通工单)", position = 9)
+    @ApiModelProperty(value = "工单类型(1订单工单 2提单工单)", position = 9)
     @JSONField(ordinal = 9)
     private Integer type;
 

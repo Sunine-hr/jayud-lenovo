@@ -2,17 +2,17 @@ package com.jayud.tms.service.impl;
 
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.ApiResult;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.utils.StringUtils;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.mapper.OrderTransportMapper;
-import com.jayud.tms.model.bo.QueryOrderTmsForm;
+import com.jayud.tms.model.bo.BasePageForm;
 import com.jayud.tms.model.vo.DriverOrderTakeAdrVO;
+import com.jayud.tms.model.vo.statistical.BusinessPeople;
 import com.jayud.tms.model.vo.statistical.ProcessNode;
 import com.jayud.tms.model.vo.statistical.TVOrderTransportVO;
 import com.jayud.tms.service.IOrderTakeAdrService;
@@ -20,6 +20,7 @@ import com.jayud.tms.service.StatisticalChartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,27 +35,22 @@ public class StatisticalChartServiceImpl implements StatisticalChartService {
     private OmsClient omsClient;
 
     @Override
-    public IPage<TVOrderTransportVO> findTVShowOrderByPage(QueryOrderTmsForm form) {
+    public IPage<TVOrderTransportVO> findTVShowOrderByPage(BasePageForm form, List<String> legalNames) {
         //定义分页参数
         Page<TVOrderTransportVO> page = new Page(form.getPageNum(), form.getPageSize());
 
-        //出入指定法人主体id,指定时间
-        List<String> legalNames = new ArrayList<>();
-        legalNames.add("深圳市佳裕达国际货运代理有限公司");
-        legalNames.add("深圳市佳裕达物流科技有限公司");
-
-        IPage<TVOrderTransportVO> pageInfo = orderTransportMapper.findTVShowOrderByPage(page, form, legalNames);
+        IPage<TVOrderTransportVO> pageInfo = orderTransportMapper.findTVShowOrderByPage(page, legalNames);
         if (pageInfo.getRecords().size() == 0) {
             return pageInfo;
         }
         List<TVOrderTransportVO> records = pageInfo.getRecords();
 
         Map<Long, String> subOrderMap = new HashMap<>();
-        List<String> mainOrderNos = new ArrayList<>();
-        List<Long> warehouseIds = new ArrayList<>();
-        List<String> subOrderNos = new ArrayList<>();
-        List<Long> driverIds = new ArrayList<>();
-        List<Long> vehicleIds = new ArrayList<>();
+        Set<String> mainOrderNos = new HashSet<>();
+        Set<Long> warehouseIds = new HashSet<>();
+        Set<String> subOrderNos = new HashSet<>();
+        Set<Long> driverIds = new HashSet<>();
+        Set<Long> vehicleIds = new HashSet<>();
 
         for (TVOrderTransportVO record : records) {
             subOrderMap.put(record.getId(), record.getStatus());
@@ -66,13 +62,13 @@ public class StatisticalChartServiceImpl implements StatisticalChartService {
         }
 
         //查询主订单信息
-        ApiResult mainOrderResult = omsClient.getMainOrderByOrderNos(mainOrderNos);
+        ApiResult mainOrderResult = omsClient.getMainOrderByOrderNos(new ArrayList<>(mainOrderNos));
         //查询中转仓库地址
-        ApiResult warehouseResult = this.omsClient.getWarehouseInfoByIds(warehouseIds);
+        ApiResult warehouseResult = this.omsClient.getWarehouseInfoByIds(new ArrayList<>(warehouseIds));
         //查询司机信息
-        ApiResult driverResult = this.omsClient.getDriverInfoByIds(driverIds);
+        ApiResult driverResult = this.omsClient.getDriverInfoByIds(new ArrayList<>(driverIds));
         //查询车辆信息
-        ApiResult vehicleInfoResult = this.omsClient.getVehicleInfoByIds(vehicleIds);
+        ApiResult vehicleInfoResult = this.omsClient.getVehicleInfoByIds(new ArrayList<>(vehicleIds));
         //流程处理
         Map<Long, List<ProcessNode>> nodeProcessing = this.processNodeProcessing(subOrderMap);
 
@@ -83,7 +79,7 @@ public class StatisticalChartServiceImpl implements StatisticalChartService {
 
 
         List<TVOrderTransportVO> pageList = pageInfo.getRecords();
-        List<DriverOrderTakeAdrVO> takeAdrsList = this.orderTakeAdrService.getDriverOrderTakeAdr(subOrderNos, null);
+        List<DriverOrderTakeAdrVO> takeAdrsList = this.orderTakeAdrService.getDriverOrderTakeAdr(new ArrayList<>(subOrderNos), null);
         for (TVOrderTransportVO orderTransportVO : pageList) {
             //拼装主订单信息
             orderTransportVO.assemblyMainOrderData(mainOrderResult.getData());
@@ -114,19 +110,13 @@ public class StatisticalChartServiceImpl implements StatisticalChartService {
         JSONArray array = new JSONArray(result.getData());
         Map<Long, List<Object>> group = array.stream().collect(Collectors.groupingBy(e -> ((JSONObject) e).getLong("orderId")));
 
-//        LinkedHashMap<String, Object> allNodes = getAllNodes();
-
         Map<Long, List<ProcessNode>> tmp = new LinkedHashMap<>();
         group.forEach((k, v) -> {
             //子订单状态
             String subStatus = subOrderMap.get(k);
             LinkedHashMap<String, ProcessNode> allNodes = getAllNodes();
 
-            //没有节点时,默认带出所有
-//            if (v == null) {
-//
-//
-//            }
+
             for (Object o : v) {
                 JSONObject node = (JSONObject) o;
 
@@ -134,14 +124,12 @@ public class StatisticalChartServiceImpl implements StatisticalChartService {
                 ProcessNode processNode = allNodes.get(status);
 
                 if (processNode != null) {
-                    processNode.setCompleteTime(node.getStr("operatorTime"))
+                    processNode.setCompleteTime(DateUtils.format(node.getDate("operatorTime"), "HH:mm"))
                             .setStatus(2).setUserName(node.getStr("operatorUser"));
-//                    tmp.put(node.getStr("status"), processNode);
                     //特殊处理通关异常 通关前复核完成后,处理下个节点需要特效处理
                     if ("复核".equals(processNode.getName())) {
                         if (OrderStatusEnum.TMS_T_9_1.getCode().equals(subStatus)
                                 || OrderStatusEnum.TMS_T_9_2.getCode().equals(subStatus)) {
-//                            nodes.add(new ProcessNode().setName("通关").setStatus(1));
                             allNodes.put(OrderStatusEnum.TMS_T_9.getCode(), new ProcessNode().setName("通关").setStatus(1));
                         }
                     }
@@ -159,6 +147,19 @@ public class StatisticalChartServiceImpl implements StatisticalChartService {
         });
 
         return tmp;
+    }
+
+
+    @Override
+    public IPage<BusinessPeople> getRankingBusinessPeople(BasePageForm form, List<String> legalNames) {
+        //定义分页参数
+        Page<BusinessPeople> page = new Page(form.getPageNum(), form.getPageSize());
+        //统计业务员排名
+        IPage<BusinessPeople> iPage = this.orderTransportMapper.findStatisticsSalesmanRanking(page, legalNames);
+        List<BusinessPeople> records = iPage.getRecords();
+        Integer totalSum = records.stream().mapToInt(BusinessPeople::getOrderNum).sum();
+        records.forEach(e -> e.calculatePercentage(new BigDecimal(totalSum)));
+        return iPage;
     }
 
 
@@ -183,7 +184,7 @@ public class StatisticalChartServiceImpl implements StatisticalChartService {
         nodes.put(OrderStatusEnum.TMS_T_1.getCode(), new ProcessNode().setName("接单"));
         nodes.put(OrderStatusEnum.TMS_T_2.getCode(), new ProcessNode().setName("派车"));
         nodes.put(OrderStatusEnum.TMS_T_3.getCode(), new ProcessNode().setName("审核"));
-        nodes.put(OrderStatusEnum.TMS_T_4.getCode(), new ProcessNode().setName("确认派车"));
+        nodes.put(OrderStatusEnum.TMS_T_4.getCode(), new ProcessNode().setName("派车"));
         nodes.put(OrderStatusEnum.TMS_T_5.getCode(), new ProcessNode().setName("提货"));
         nodes.put(OrderStatusEnum.TMS_T_6.getCode(), new ProcessNode().setName("过磅"));
         nodes.put(OrderStatusEnum.TMS_T_8.getCode(), new ProcessNode().setName("复核"));

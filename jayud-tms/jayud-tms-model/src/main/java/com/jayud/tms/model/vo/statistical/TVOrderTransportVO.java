@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import com.jayud.tms.model.vo.DriverOrderTakeAdrVO;
@@ -19,9 +20,11 @@ import java.util.List;
 public class TVOrderTransportVO {
 
     @ApiModelProperty(value = "子订单ID")
+    @JsonIgnore
     private Long id;
 
     @ApiModelProperty(value = "主订单ID")
+    @JsonIgnore
     private Long mainOrderId;
 
     @ApiModelProperty(value = "主订单")
@@ -46,12 +49,14 @@ public class TVOrderTransportVO {
 //    private Integer goodsTypeDesc;
 
     @ApiModelProperty(value = "状态")
+    @JsonIgnore
     private String status;
 
 //    @ApiModelProperty(value = "作业类型")
 //    private String classCode;
 
     @ApiModelProperty(value = "作业类型描述")
+    @JsonIgnore
     private String classCodeDesc;
 
     @ApiModelProperty(value = "客户名称")
@@ -75,6 +80,7 @@ public class TVOrderTransportVO {
     private String statusDesc;
 
     @ApiModelProperty(value = "法人主体")
+    @JsonIgnore
     private String legalName;
 
 //    @ApiModelProperty(value = "结算单位")
@@ -127,21 +133,26 @@ public class TVOrderTransportVO {
 //    private String goodsInfo;
 
     @ApiModelProperty(value = "中转仓库")
+    @JsonIgnore
     private String warehouseName;
 
     @ApiModelProperty(value = "是否虚拟仓")
+    @JsonIgnore
     private Boolean isVirtualWarehouse;
 
     @ApiModelProperty(value = "中转仓库id")
+    @JsonIgnore
     private Long warehouseInfoId;
 
     @ApiModelProperty(value = "车牌")
     private String plateNumber;
 
     @ApiModelProperty(value = "车牌Id")
+    @JsonIgnore
     private Long vehicleId;
 
     @ApiModelProperty(value = "司机Id")
+    @JsonIgnore
     private Long driverInfoId;
 
     @ApiModelProperty(value = "司机姓名")
@@ -188,6 +199,8 @@ public class TVOrderTransportVO {
             case TMS_T_7:
             case TMS_T_8:
             case TMS_T_9:
+            case TMS_T_9_1:
+            case TMS_T_9_2:
             case TMS_T_10:
             case TMS_T_11:
             case TMS_T_12:
@@ -217,7 +230,7 @@ public class TVOrderTransportVO {
         for (DriverOrderTakeAdrVO orderTakeAdr : takeAdrsList) {
             if (this.orderNo.equals(orderTakeAdr.getOrderNo())) {
                 String address = orderTakeAdr.getAddress() == null ? "" : orderTakeAdr.getAddress();
-                if (0 == orderTakeAdr.getOprType()) { //提货地址
+                if (1 == orderTakeAdr.getOprType()) { //提货地址
                     if (pickUpAddress.length() == 0) {
                         pickUpAddress.append(orderTakeAdr.getAddress(), 0, Math.min(address.length(), 6));
                         this.takeTime = orderTakeAdr.getTakeTime();

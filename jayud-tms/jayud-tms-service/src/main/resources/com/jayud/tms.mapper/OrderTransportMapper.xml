@@ -438,14 +438,14 @@
         -- da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' group by ot.order_no order by ota.id
         -- ) file1,
         -- (SELECT GROUP_CONCAT(ota.file_name) FROM order_take_adr ota LEFT JOIN delivery_address da ON
-        ota.`delivery_id` =
+        -- ota.`delivery_id` =
         -- da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' group by ot.order_no order by ota.id
         -- ) fileName1,
         -- (SELECT GROUP_CONCAT(ota.file) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` =
         -- da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '2' group by ot.order_no order by ota.id
         -- ) file2,
         -- (SELECT GROUP_CONCAT(ota.file_name) FROM order_take_adr ota LEFT JOIN delivery_address da ON
-        ota.`delivery_id` =
+        -- ota.`delivery_id` =
         -- da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '2' group by ot.order_no order by ota.id
         -- ) fileName2,
         oi.selected_server selectedServer,
@@ -589,6 +589,29 @@
         order by id desc
     </select>
 
+
+
+    <select id="findStatisticsSalesmanRanking"
+            resultType="com.jayud.tms.model.vo.statistical.BusinessPeople">
+        SELECT
+        ot.created_user ,
+        count(id) orderNum
+        FROM
+        order_transport ot
+        <where>
+            <if test="legalNames != null and legalNames.size>0">
+                and ot.`legal_name` in
+                <foreach collection="legalNames" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            and DATE_FORMAT(ot.created_time, '%Y%m')=DATE_FORMAT(NOW(), '%Y%m')
+        </where>
+        GROUP BY ot.created_user
+        order by orderNum desc
+    </select>
+
+
     <select id="initPdfData" resultType="com.jayud.tms.model.vo.SendCarPdfVO">
         SELECT
         ot.`legal_name` legalName,
@@ -642,6 +665,16 @@
                 <when test="status == 'T_8'">
                     AND ot.`status` in ('T_8','T_9_1','T_9_2')
                 </when>
+                <when test="status == 'HK_C_1'">
+                    AND ot.`is_hk_clear` = '1' and ot.clear_customs_no is null
+                    AND oi.`status` in ('1','4')
+                    <if test="legalIds != null and legalIds.size>0">
+                        and ot.`hk_legal_id` in
+                        <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                            #{legalId}
+                        </foreach>
+                    </if>
+                </when>
                 <otherwise>
                     and ot.status=#{status}
                 </otherwise>
@@ -652,7 +685,14 @@
                     #{legalId}
                 </foreach>
             </if>
-            group by ot.status
+            <choose>
+                <when test="status== 'T_8'">
+                    group by ot.status in ('T_8','T_9_1','T_9_2')
+                </when>
+                <otherwise>
+                    group by ot.status
+                </otherwise>
+            </choose>
         </where>
     </select>
 </mapper>

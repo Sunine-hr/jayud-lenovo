@@ -1,5 +1,6 @@
 package com.jayud.tms.model.vo.statistical;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -13,6 +14,7 @@ public class ProcessNode {
     private String name;
 
     @ApiModelProperty(value = "完成时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "HH:mm:ss")
     private String completeTime;
 
     @ApiModelProperty(value = "操作用户")
@@ -20,5 +22,7 @@ public class ProcessNode {
 
     @ApiModelProperty(value = "0:未完成,1:异常,2:完成")
     private Integer status = 0;
+
+
 
 }

@@ -8,6 +8,7 @@ import com.jayud.tms.model.bo.QueryDriverOrderTransportForm;
 import com.jayud.tms.model.bo.QueryOrderTmsForm;
 import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.*;
+import com.jayud.tms.model.vo.statistical.BusinessPeople;
 import com.jayud.tms.model.vo.statistical.TVOrderTransportVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -59,12 +60,14 @@ public interface OrderTransportMapper extends BaseMapper<OrderTransport> {
 
     /**
      * 中港运输各个菜单列表数据量统计
+     *
      * @return
      */
     StatisticsDataNumberVO statisticsDataNumber();
 
     /**
      * 根据主订单编号查询中港详情
+     *
      * @param mainOrderNo
      * @return
      */
@@ -72,29 +75,41 @@ public interface OrderTransportMapper extends BaseMapper<OrderTransport> {
 
     /**
      * 分页查询
+     *
      * @param legalIds
      * @param page
      * @param form
      * @return
      */
-    IPage<OrderTransportVO> findTransportOrderByPage(Page<OrderTransportVO> page, @Param("form")QueryOrderTmsForm form, @Param("legalIds")List<Long> legalIds);
+    IPage<OrderTransportVO> findTransportOrderByPage(Page<OrderTransportVO> page, @Param("form") QueryOrderTmsForm form, @Param("legalIds") List<Long> legalIds);
 
     /**
      * 查询订单状态数量
+     *
      * @param status
      * @param legalIds
      * @return
      */
-    public Integer getNumByStatus(@Param("status") String status,@Param("legalIds")List<Long> legalIds);
+    public Integer getNumByStatus(@Param("status") String status, @Param("legalIds") List<Long> legalIds);
 
     /**
      * 大屏幕展示订单数据(分页查询)
+     *
      * @param page
      * @param form
      * @param legalIds
      * @return
      */
-    IPage<TVOrderTransportVO> findTVShowOrderByPage(Page<TVOrderTransportVO> page, @Param("form")QueryOrderTmsForm form,
+    IPage<TVOrderTransportVO> findTVShowOrderByPage(Page<TVOrderTransportVO> page,
                                                     @Param("legalNames") List<String> legalNames);
+
+
+    /**
+     * 统计业务员排名(分页查询)
+     *
+     * @return
+     */
+    IPage<BusinessPeople> findStatisticsSalesmanRanking(Page<BusinessPeople> page,
+                                                        @Param("legalNames") List<String> legalNames);
 
 }

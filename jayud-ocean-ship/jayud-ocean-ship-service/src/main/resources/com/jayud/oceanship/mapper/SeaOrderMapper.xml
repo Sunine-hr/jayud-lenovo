@@ -124,6 +124,8 @@
         <result column="is_other_expenses_paid" property="isOtherExpensesPaid"></result>
         <result column="is_dangerous_goods" property="isDangerousGoods"></result>
         <result column="is_charged" property="isCharged"></result>
+        <result column="audit_opinion" property="auditOpinion"></result>
+        <result column="audit_status" property="auditStatus"></result>
 
         <association property="seaBookShipForm" javaType="com.jayud.oceanship.vo.SeaBookshipVO">
             <result column="sid" property="id"></result>
@@ -194,6 +196,8 @@
         so.is_charged,
         so.cabinet_size_name,
         so.cabinet_type_name,
+        so.audit_opinion,
+        so.audit_status,
         terms.name termsDesc,
         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = so.`order_no`) +
         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = so.`order_no`)>0 THEN TRUE

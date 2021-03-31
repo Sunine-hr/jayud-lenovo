@@ -416,11 +416,12 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         if (form.getType().equals(1)) {//合并，多个订单合并成一个补料
             List<AddSeaOrderForm> seaOrderForms = form.getSeaOrderForms();
             List<AddSeaReplenishment> seaReplenishments = form.getSeaReplenishments();
+            String blOrderNo = getBLOrderNo(form.getOrderNo(), form.getType(), seaReplenishments.size(), 1);
             for (AddSeaOrderForm seaOrderForm : seaOrderForms) {
                 SeaReplenishment replenishment = ConvertUtil.convert(seaReplenishments.get(0), SeaReplenishment.class);
                 replenishment.setSeaOrderId(seaOrderForm.getId());
                 replenishment.setSeaOrderNo(seaOrderForm.getOrderNo());
-                replenishment.setOrderNo(getBLOrderNo(seaOrderForm.getOrderNo(), form.getType(), seaReplenishments.size(), 1));
+                replenishment.setOrderNo(blOrderNo);
                 replenishment.setIsBillOfLading(0);
                 replenishment.setIsReleaseOrder(0);
                 boolean save = seaReplenishmentService.save(replenishment);
@@ -452,12 +453,13 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
                     //修改或保存
                     List<SeaContainerInformation> seaContainerInformations = seaReplenishments.get(0).getSeaContainerInformations();
                     for (SeaContainerInformation seaContainerInformation : seaContainerInformations) {
-                        seaContainerInformation.setSeaOrderNo(replenishment.getSeaOrderNo());
-                        seaContainerInformation.setSeaRepId(replenishment.getId());
-                        seaContainerInformation.setSeaRepNo(replenishment.getOrderNo());
-                        seaContainerInformation.setCreateTime(LocalDateTime.now());
-                        seaContainerInformation.setCreateUser(UserOperator.getToken());
-                        boolean b = seaContainerInformationService.saveOrUpdate(seaContainerInformation);
+                        SeaContainerInformation convert = ConvertUtil.convert(seaContainerInformation, SeaContainerInformation.class);
+                        convert.setSeaOrderNo(replenishment.getSeaOrderNo());
+                        convert.setSeaRepId(replenishment.getId());
+                        convert.setSeaRepNo(replenishment.getOrderNo());
+                        convert.setCreateTime(LocalDateTime.now());
+                        convert.setCreateUser(UserOperator.getToken());
+                        boolean b = seaContainerInformationService.saveOrUpdate(convert);
                         if (!b) {
                             log.warn("合并货柜信息添加失败");
                         }
@@ -465,8 +467,6 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
 
                 }
 
-                AddSeaOrderForm convert = ConvertUtil.convert(form, AddSeaOrderForm.class);
-                convert.assemblyAddress();
                 SeaOrder seaOrder = new SeaOrder();
                 seaOrder.setId(seaOrderForm.getId());
                 seaOrder.setUpdateTime(LocalDateTime.now());
@@ -481,6 +481,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
                 //完成订单状态
                 finishSeaOrderOpt(seaOrder);
                 //获取用户地址
+                seaReplenishments.get(0).assemblyAddress();
                 List<AddOrderAddressForm> orderAddressForms = seaReplenishments.get(0).getOrderAddressForms();
                 //System.out.println("orderAddressForms=================================="+orderAddressForms);
                 for (AddOrderAddressForm orderAddressForm : orderAddressForms) {
@@ -502,6 +503,9 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
 
                 List<AddGoodsForm> goodsForms = seaReplenishments.get(0).getGoodsForms();
                 for (AddGoodsForm goodsForm : goodsForms) {
+                    if(form.getAuditOpinion() == null){
+                        goodsForm.setId(null);
+                    }
                     goodsForm.setOrderNo(replenishment.getOrderNo());
                     goodsForm.setBusinessId(replenishment.getId());
                     goodsForm.setBusinessType(BusinessTypeEnum.HY.getCode());

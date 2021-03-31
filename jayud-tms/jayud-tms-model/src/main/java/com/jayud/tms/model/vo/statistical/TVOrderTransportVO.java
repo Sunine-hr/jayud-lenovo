@@ -195,6 +195,7 @@ public class TVOrderTransportVO {
                 break;
             case TMS_T_5:
                 this.statusDesc = "提货";
+                break;
             case TMS_T_6:
             case TMS_T_7:
             case TMS_T_8:

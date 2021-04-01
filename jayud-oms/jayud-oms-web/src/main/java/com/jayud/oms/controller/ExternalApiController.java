@@ -1068,7 +1068,7 @@ public class ExternalApiController {
         LocalDateTime now = LocalDateTime.now();
         Goods goods = ConvertUtil.convert(goodsForm, Goods.class);
         goods.setCreateTime(goods.getId() == null ? now : null);
-        this.goodsService.save(goods);
+        this.goodsService.saveOrUpdate(goods);
         return ApiResult.ok(goods.getId());
     }
 

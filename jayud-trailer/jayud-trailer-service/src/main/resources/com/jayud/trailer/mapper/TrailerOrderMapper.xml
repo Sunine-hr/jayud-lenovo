@@ -77,7 +77,8 @@ release_time, is_weighed, is_make_up, create_user, create_time, update_user, upd
         closing_time closingTime,release_time releaseTime,
         is_weighed isWeighed,is_make_up isMakeUp,create_user createUser,create_time createTime,update_user updateUser,
         update_time updateTime,need_input_cost needInputCost,order_taker orderTaker,
-        receiving_orders_date receivingOrdersDate
+        receiving_orders_date receivingOrdersDate,
+         is_info_complete isInfoComplete
         from trailer_order tor where tor.id = #{id}
     </select>
 
@@ -177,7 +178,7 @@ release_time, is_weighed, is_make_up, create_user, create_time, update_user, upd
                     #{legalId}
                 </foreach>
             </if>
-
+            and tor.is_info_complete = 0
         </where>
         order by tor.id desc
     </select>

@@ -106,6 +106,7 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
                 goodsForm.setBulkCargoUnit(addTrailerOrderAddressForm.getBulkCargoUnit());
                 goodsForm.setTotalWeight(addTrailerOrderAddressForm.getTotalWeight());
                 goodsForm.setVolume(addTrailerOrderAddressForm.getVolume());
+
                 //批量保存货物信息
                 ApiResult result = this.omsClient.saveOrUpdateGood(goodsForm);
                 if (result.getCode() != HttpStatus.SC_OK) {

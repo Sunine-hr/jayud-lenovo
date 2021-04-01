@@ -23,7 +23,7 @@ import java.util.List;
 @Data
 @Slf4j
 public class InputTrailerOrderFrom {
-    private static final long serialVersionUID=1L;
+    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "主键id")
     @TableId(value = "id", type = IdType.AUTO)
@@ -161,6 +161,9 @@ public class InputTrailerOrderFrom {
     @ApiModelProperty(value = "拖车订单地址信息")
     private List<AddTrailerOrderAddressForm> orderAddressForms;
 
+    @ApiModelProperty(value = "是否待补全")
+    private boolean isInfoComplete;
+
 
     /**
      * 校验创建拖车子订单参数
@@ -173,18 +176,19 @@ public class InputTrailerOrderFrom {
             return false;
         }
         // 发货/收货地址是必填项
-        if (CollectionUtils.isEmpty(this.orderAddressForms)) {
-            log.warn("提货地址信息不能为空");
-            return false;
-        }
-        for (AddTrailerOrderAddressForm orderAddressForm : this.orderAddressForms) {
-            if(!orderAddressForm.checkCreateTrailerOrder()){
+        if (!isInfoComplete) {
+            if (CollectionUtils.isEmpty(this.orderAddressForms)) {
+                log.warn("提货地址信息不能为空");
                 return false;
             }
-            if(!orderAddressForm.checkCreateGood()){
-                return false;
+            for (AddTrailerOrderAddressForm orderAddressForm : this.orderAddressForms) {
+                if (!orderAddressForm.checkCreateTrailerOrder()) {
+                    return false;
+                }
+                if (!orderAddressForm.checkCreateGood()) {
+                    return false;
+                }
             }
-
         }
         //货品信息
 //        for (AddGoodsForm goodsForm : goodsForms) {

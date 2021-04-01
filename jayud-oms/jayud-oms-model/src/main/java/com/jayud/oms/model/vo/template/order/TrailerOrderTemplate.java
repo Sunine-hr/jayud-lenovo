@@ -66,6 +66,9 @@ public class TrailerOrderTemplate {
     @ApiModelProperty(value = "费用状态", required = true)
     private String costDesc;
 
+    @ApiModelProperty(value = "是否待补全")
+    private boolean isInfoComplete;
+
     @ApiModelProperty(value = "费用状态")
     private Boolean cost;
 

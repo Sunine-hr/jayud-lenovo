@@ -549,5 +549,25 @@ public class TrailerOrderController {
 
     }
 
+    /**
+     * 创建拖车单
+     * @param addTrailerOrderFrom
+     * @return
+     */
+    @RequestMapping(value = "/trailer/createOrder")
+    public ApiResult<String> createOrder(@RequestBody AddTrailerOrderFrom addTrailerOrderFrom) {
+        String order = trailerOrderService.createOrder(addTrailerOrderFrom);
+        return ApiResult.ok(order);
+    }
+
+    /**
+     * 根据主订单号获取拖车订单信息
+     */
+    @RequestMapping(value = "/trailer/getTrailerOrderDetails")
+    public ApiResult<TrailerOrderVO> getSeaOrderDetails(@RequestParam("orderNo")String orderNo){
+        TrailerOrder trailerOrder = trailerOrderService.getByMainOrderNO(orderNo);
+        TrailerOrderVO trailerOrderVO = trailerOrderService.getTrailerOrderByOrderNO(trailerOrder.getId());
+        return ApiResult.ok(trailerOrderVO);
+    }
 }
 

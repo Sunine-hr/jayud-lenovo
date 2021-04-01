@@ -151,6 +151,9 @@ public class TrailerOrder extends Model<TrailerOrder> {
     @ApiModelProperty(value = "接单日期")
     private LocalDateTime receivingOrdersDate;
 
+    @ApiModelProperty(value = "是否待补全")
+    private boolean isInfoComplete;
+
 
     @Override
     protected Serializable pkVal() {

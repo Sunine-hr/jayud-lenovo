@@ -45,7 +45,7 @@ public class ExternalApiController {
      * 根据主订单号获取拖车订单信息
      */
     @RequestMapping(value = "/api/trailer/getTrailerOrderDetails")
-    ApiResult<TrailerOrderVO> getSeaOrderDetails(@RequestParam("orderNo")String orderNo){
+    ApiResult<TrailerOrderVO> getTrailerOrderDetails(@RequestParam("orderNo")String orderNo){
         TrailerOrder trailerOrder = trailerOrderService.getByMainOrderNO(orderNo);
         TrailerOrderVO trailerOrderVO = trailerOrderService.getTrailerOrderByOrderNO(trailerOrder.getId());
         return ApiResult.ok(trailerOrderVO);
@@ -57,7 +57,7 @@ public class ExternalApiController {
      * @return
      */
     @RequestMapping(value = "/api/trailer/getTrailerOrderByMainOrderNos")
-    ApiResult getSeaOrderByMainOrderNos(@RequestBody List<String> mainOrderNoList){
+    ApiResult getTrailerOrderByMainOrderNos(@RequestBody List<String> mainOrderNoList){
         List<TrailerOrder> seaOrders = this.trailerOrderService.getTrailerOrderByOrderNOs(mainOrderNoList);
         return ApiResult.ok(seaOrders);
     }

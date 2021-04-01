@@ -199,7 +199,7 @@ public interface OmsClient {
     @RequestMapping(value = "api/saveOrUpdateGood")
     ApiResult saveOrUpdateGood(@RequestBody AddGoodsForm goodsForm);
 
-    @ApiOperation(value = "单个存储商品信息")
+    @ApiOperation(value = "单个商品信息获取")
     @RequestMapping(value = "api/getGoodById")
     ApiResult getGoodById(@RequestParam("id") Long id);
 

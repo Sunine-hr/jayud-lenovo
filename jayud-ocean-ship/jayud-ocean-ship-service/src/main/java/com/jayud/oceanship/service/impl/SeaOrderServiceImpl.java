@@ -787,7 +787,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         SeaOrder seaOrder = new SeaOrder();
         seaOrder.setAuditStatus(form.getAuditStatus());
         seaOrder.setAuditOpinion(form.getAuditOpinion());
-        String orderNo = form.getSeaReplenishment().getOrderNo();
+        String orderNo = form.getSeaReplenishments().get(0).getSeaOrderNo();
         String[] orderNoes = orderNo.split(",");
         for (String orderNoe : orderNoes) {
             QueryWrapper queryWrapper = new QueryWrapper();
@@ -841,7 +841,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
                 log.error("操作失败");
                 throw new JayudBizException(ResultEnum.OPR_FAIL);
             }
-            String orderNo = seaReplenishment.getOrderNo();
+            String orderNo = seaReplenishment.getSeaOrderNo();
             String[] orderNoes = orderNo.split(",");
             for (String orderNoe : orderNoes) {
                 QueryWrapper queryWrapper = new QueryWrapper();
@@ -898,38 +898,52 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
                 log.error("操作失败");
                 throw new JayudBizException(ResultEnum.OPR_FAIL);
             }
-            QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.like("sea_order_no",seaReplenishment.getSeaOrderNo());
-            int count = this.seaReplenishmentService.count(queryWrapper);
-            queryWrapper.eq("is_release_order",1);
-            int count1 = this.seaReplenishmentService.count(queryWrapper);
-            if(count==count1){ //该订单所有补料单都已提单
-                updateProcessStatus(new SeaOrder(),form);
-            }else{
-                //存储流程节点
-                AuditInfoForm auditInfoForm = new AuditInfoForm();
-                auditInfoForm.setExtId(seaReplenishment.getId());
-                auditInfoForm.setExtDesc(SqlConstant.SEA_REPLENISHMENT);
-                auditInfoForm.setAuditComment(form.getDescription());
-                auditInfoForm.setAuditUser(UserOperator.getToken());
-                auditInfoForm.setFileViews(form.getFileViewList());
-                auditInfoForm.setAuditStatus(form.getStatus());
-                auditInfoForm.setAuditTypeDesc(form.getStatusName());
+            String orderNo = seaReplenishment.getSeaOrderNo();
+            String[] orderNoes = orderNo.split(",");
+            for (String orderNoe : orderNoes) {
+                QueryWrapper queryWrapper = new QueryWrapper();
+                queryWrapper.eq("order_no", orderNoe);
+                SeaOrder seaOrder1 = this.baseMapper.selectOne(queryWrapper);
+                form.setOrderNo(seaOrder1.getOrderNo());
+                form.setOrderId(seaOrder1.getId());
+                form.setMainOrderNo(seaOrder1.getMainOrderNo());
+                //根据订单号获取订单id
+                Long mainOrderId = omsClient.getMainOrderByOrderNo(seaOrder1.getMainOrderNo()).getData();
+                form.setMainOrderId(mainOrderId);
+                QueryWrapper queryWrapper1 = new QueryWrapper();
+                queryWrapper.like("sea_order_no",seaReplenishment.getSeaOrderNo());
+                int count = this.seaReplenishmentService.count(queryWrapper1);
+                queryWrapper.eq("is_release_order",1);
+                int count1 = this.seaReplenishmentService.count(queryWrapper1);
+                if(count==count1){ //该订单所有补料单都已提单
+                    updateProcessStatus(new SeaOrder(),form);
+                }else{
+                    //存储流程节点
+                    AuditInfoForm auditInfoForm = new AuditInfoForm();
+                    auditInfoForm.setExtId(seaReplenishment.getId());
+                    auditInfoForm.setExtDesc(SqlConstant.SEA_REPLENISHMENT);
+                    auditInfoForm.setAuditComment(form.getDescription());
+                    auditInfoForm.setAuditUser(UserOperator.getToken());
+                    auditInfoForm.setFileViews(form.getFileViewList());
+                    auditInfoForm.setAuditStatus(form.getStatus());
+                    auditInfoForm.setAuditTypeDesc(form.getStatusName());
 
-                //文件拼接
-                form.setOrderId(seaReplenishment.getId());
-                form.setOrderNo(seaReplenishment.getOrderNo());
-                form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
-                form.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
-                form.setBusinessType(BusinessTypeEnum.HY.getCode());
+                    //文件拼接
+                    form.setOrderId(seaReplenishment.getId());
+                    form.setOrderNo(seaReplenishment.getOrderNo());
+                    form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
+                    form.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
+                    form.setBusinessType(BusinessTypeEnum.HY.getCode());
 
-                if (omsClient.saveOprStatus(form).getCode() != HttpStatus.SC_OK) {
-                    log.error("远程调用物流轨迹失败");
-                }
-                if (omsClient.saveAuditInfo(auditInfoForm).getCode() != HttpStatus.SC_OK) {
-                    log.error("远程调用审核记录失败");
+                    if (omsClient.saveOprStatus(form).getCode() != HttpStatus.SC_OK) {
+                        log.error("远程调用物流轨迹失败");
+                    }
+                    if (omsClient.saveAuditInfo(auditInfoForm).getCode() != HttpStatus.SC_OK) {
+                        log.error("远程调用审核记录失败");
+                    }
                 }
             }
+
         }
 
 

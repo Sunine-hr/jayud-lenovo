@@ -458,14 +458,22 @@ public class SeaOrderController {
             notificationAddress.add(new OrderAddressVO());
             seaReplenishmentVO.setNotificationAddress(notificationAddress);
         }
-        String orderNo = seaReplenishmentVO.getOrderNo();
+        List<SeaReplenishmentVO> seaReplenishmentVOS = new ArrayList<>();
+        seaReplenishmentVOS.add(seaReplenishmentVO);
+        String orderNo = seaReplenishmentVO.getSeaOrderNo();
         String[] orderNoes = orderNo.split(",");
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("order_no", orderNoes[0]);
         SeaOrder seaOrder1 = this.seaOrderService.getOne(queryWrapper);
         this.seaOrderService.getSeaOrderDetails(seaOrder1.getId());
         SeaOrderFormVO convert = ConvertUtil.convert(seaOrder1, SeaOrderFormVO.class);
-        convert.setSeaReplenishment(seaReplenishmentVO);
+        convert.setOrderId(convert.getId());
+        //查询主订单信息
+        List<String> mainOrder = new ArrayList<>();
+        mainOrder.add(convert.getMainOrderNo());
+        ApiResult result = omsClient.getMainOrderByOrderNos(mainOrder);
+        convert.assemblyMainOrderData(result.getData());
+        convert.setSeaReplenishments(seaReplenishmentVOS);
         return CommonResult.success(convert);
     }
 

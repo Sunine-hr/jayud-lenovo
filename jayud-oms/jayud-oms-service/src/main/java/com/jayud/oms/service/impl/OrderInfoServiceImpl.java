@@ -104,6 +104,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private IOrderReceivableCostService orderReceivableCostService;
     @Autowired
     private IOrderPaymentCostService orderPaymentCostService;
+    @Autowired
+    private IProductClassifyService productClassifyService;
 
     private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(),
             SubOrderSignEnum.KY.getSignOne(), SubOrderSignEnum.HY.getSignOne(),
@@ -263,6 +265,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             //定义排序规则
             page.addOrder(OrderItem.desc("oi.id"));
             pageInfo = baseMapper.findGoCustomsAuditByPage(page, form, legalIds);
+            //补充数据
+            this.supplementaryGoCustomsAuditData(pageInfo);
         } else {
             //定义排序规则
             page.addOrder(OrderItem.desc("id"));
@@ -280,6 +284,18 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 //            assemblyMasterOrderData(orderInfoVOs, subOrderMap);
         }
         return pageInfo;
+    }
+
+
+    private void supplementaryGoCustomsAuditData(IPage<OrderInfoVO> pageInfo) {
+        List<OrderInfoVO> records = pageInfo.getRecords();
+        if (CollectionUtil.isEmpty(records)) {
+            return;
+        }
+        Set<String> classCodes = records.stream().map(OrderInfoVO::getClassCode).collect(Collectors.toSet());
+        List<ProductClassify> productClassifies = this.productClassifyService.getIdCodes(new ArrayList<>(classCodes));
+        Map<String, String> map = productClassifies.stream().collect(Collectors.toMap(ProductClassify::getIdCode, ProductClassify::getName));
+        pageInfo.getRecords().forEach(e -> e.setClassCodeDesc(map.get(e.getClassCode())));
     }
 
 
@@ -861,7 +877,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
 
         //获取拖车信息
-        if (OrderStatusEnum.TC.getCode().equals(form.getClassCode()) || inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.TCEDD.getCode())|| inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.TCIDD.getCode())) {
+        if (OrderStatusEnum.TC.getCode().equals(form.getClassCode()) || inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.TCEDD.getCode()) || inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.TCIDD.getCode())) {
             InputTrailerOrderVO trailerOrderVO = this.trailerClient.getTrailerOrderDetails(inputMainOrderVO.getOrderNo()).getData();
             if (trailerOrderVO != null) {
                 //查询供应商

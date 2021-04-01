@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public interface IProductClassifyService extends IService<ProductClassify> {
 
-    List<ProductClassify> findProductClassify(Map<String,Object> param);
+    List<ProductClassify> findProductClassify(Map<String, Object> param);
 
     /**
      * 查询所有启用的父类产品分类
@@ -32,4 +32,10 @@ public interface IProductClassifyService extends IService<ProductClassify> {
      * 根据产品名字查询产品id
      */
     ProductClassify getProductClassifyId(String str);
+
+
+    /**
+     * 根据产品编码集合查询产品
+     */
+    List<ProductClassify> getIdCodes(List<String> idCodes);
 }

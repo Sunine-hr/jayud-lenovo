@@ -62,5 +62,15 @@ public class ProductClassifyServiceImpl extends ServiceImpl<ProductClassifyMappe
         return productClassify;
     }
 
+    /**
+     * 根据产品编码集合查询产品
+     */
+    @Override
+    public List<ProductClassify> getIdCodes(List<String> idCodes) {
+        QueryWrapper<ProductClassify> condition = new QueryWrapper<>();
+        condition.lambda().in(ProductClassify::getIdCode, idCodes);
+        return this.baseMapper.selectList(condition);
+    }
+
 
 }

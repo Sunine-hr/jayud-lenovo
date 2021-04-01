@@ -584,7 +584,9 @@
                 </foreach>
             </if>
             and ot.status != 'T_15'
-            and DATE_FORMAT(ot.created_time, '%Y%m')=DATE_FORMAT(NOW(), '%Y%m')
+--             and DATE_FORMAT(ot.created_time, '%Y%m')=DATE_FORMAT(NOW(), '%Y%m')
+            and DATE_FORMAT(ot.created_time, '%Y%m')=DATE_FORMAT('2021-3-1', '%Y%m')
+
         </where>
         order by id desc
     </select>
@@ -605,7 +607,7 @@
                     #{item}
                 </foreach>
             </if>
-            and DATE_FORMAT(ot.created_time, '%Y%m')=DATE_FORMAT(NOW(), '%Y%m')
+            and DATE_FORMAT(ot.created_time, '%Y%m')=DATE_FORMAT('2021-3-1', '%Y%m')
         </where>
         GROUP BY ot.created_user
         order by orderNum desc
@@ -689,9 +691,9 @@
                 <when test="status== 'T_8'">
                     group by ot.status in ('T_8','T_9_1','T_9_2')
                 </when>
-                <otherwise>
+                <when test="status != 'HK_C_1'">
                     group by ot.status
-                </otherwise>
+                </when>
             </choose>
         </where>
     </select>

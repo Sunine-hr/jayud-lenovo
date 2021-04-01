@@ -30,6 +30,9 @@ public class TVOrderTransportVO {
     @ApiModelProperty(value = "主订单")
     private String mainOrderNo;
 
+//    @ApiModelProperty(value = "主订单状态")
+//    private String mainOrderStatus;
+
 //    @ApiModelProperty(value = "已选中得服务")
 //    private String selectedServer;
 
@@ -132,7 +135,7 @@ public class TVOrderTransportVO {
 //    @ApiModelProperty(value = "商品信息")
 //    private String goodsInfo;
 
-    @ApiModelProperty(value = "中转仓库")
+    @ApiModelProperty(value = "中转仓库地址")
     @JsonIgnore
     private String warehouseName;
 
@@ -301,7 +304,7 @@ public class TVOrderTransportVO {
         for (int i = 0; i < arrays.size(); i++) {
             JSONObject json = arrays.getJSONObject(i);
             if (this.warehouseInfoId.equals(json.getLong("id"))) {
-                this.warehouseName = json.getStr("warehouseName");
+                this.warehouseName = json.getStr("address");
                 this.isVirtualWarehouse = json.getBool("isVirtual");
                 break;
             }

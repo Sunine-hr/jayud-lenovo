@@ -3,16 +3,20 @@ package com.jayud.oceanship.controller;
 import com.jayud.common.ApiResult;
 import com.jayud.oceanship.bo.AddSeaOrderForm;
 import com.jayud.oceanship.po.SeaOrder;
+import com.jayud.oceanship.service.ICabinetSizeNumberService;
 import com.jayud.oceanship.service.ISeaOrderService;
+import com.jayud.oceanship.vo.CabinetSizeNumberVO;
 import com.jayud.oceanship.vo.SeaOrderVO;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,6 +34,9 @@ public class ExternalApiController {
     @Autowired
     private ISeaOrderService seaOrderService;
 
+    @Autowired
+    private ICabinetSizeNumberService cabinetSizeNumberService;
+
     /**
      * 创建海运单
      * @param addSeaOrderForm
@@ -37,7 +44,7 @@ public class ExternalApiController {
      */
     @RequestMapping(value = "/api/oceanship/createOrder")
     public ApiResult<String> createOrder(@RequestBody AddSeaOrderForm addSeaOrderForm) {
-        System.out.println("addSeaOrderForm================================="+addSeaOrderForm);
+
         String orderNo = seaOrderService.createOrder(addSeaOrderForm);
         return ApiResult.ok(orderNo);
     }
@@ -49,6 +56,15 @@ public class ExternalApiController {
     ApiResult<SeaOrderVO> getSeaOrderDetails(@RequestParam("orderNo")String orderNo){
         SeaOrder seaOrder = seaOrderService.getByMainOrderNO(orderNo);
         SeaOrderVO seaOrderVO = seaOrderService.getSeaOrderByOrderNO(seaOrder.getId());
+        //获取柜型数量
+
+        if(CollectionUtils.isEmpty(seaOrderVO.getCabinetSizeNumbers())){
+            List<CabinetSizeNumberVO> cabinetSizeNumberVOS = new ArrayList<>();
+            cabinetSizeNumberVOS.add(new CabinetSizeNumberVO());
+            seaOrderVO.setCabinetSizeNumbers(cabinetSizeNumberVOS);
+        }
+
+
         return ApiResult.ok(seaOrderVO);
     }
 

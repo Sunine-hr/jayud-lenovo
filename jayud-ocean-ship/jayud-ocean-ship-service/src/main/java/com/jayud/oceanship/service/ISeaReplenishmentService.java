@@ -23,4 +23,10 @@ public interface ISeaReplenishmentService extends IService<SeaReplenishment> {
      */
     IPage<SeaReplenishmentFormVO> findBillByPage(QuerySeaOrderForm form);
 
+
+    /**
+     * 获取补料单详情
+     * @return
+     */
+    SeaReplenishmentVO getSeaRepOrderDetails(Long orderId);
 }

@@ -30,9 +30,6 @@ public class SeaContainerInformationVO extends Model<SeaContainerInformationVO> 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty(value = "海运订单号")
-    private String seaOrderNo;
-
     @ApiModelProperty(value = "截补料id")
     private Long seaRepId;
 

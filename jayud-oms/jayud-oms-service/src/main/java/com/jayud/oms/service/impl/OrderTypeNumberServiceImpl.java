@@ -25,17 +25,26 @@ public class OrderTypeNumberServiceImpl extends ServiceImpl<OrderTypeNumberMappe
     @Override
     public String getOrderNo(String preOrderNO, String classCode) {
         String orderNo = null;
+        OrderTypeNumber orderTypeNumber = baseMapper.getMaxNumberData(classCode,getDateData(DateUtils.getLocalToStr(LocalDateTime.now())));
+        OrderTypeNumber typeNumber = new OrderTypeNumber();
         if(isFirstDayofMonth(LocalDateTime.now())){
-            OrderTypeNumber typeNumber = new OrderTypeNumber();
-            typeNumber.setClassCode(classCode);
-            typeNumber.setNumber(1);
-            String dateData = getDateData(DateUtils.getLocalToStr(LocalDateTime.now()));
-            typeNumber.setDate(dateData);
-            orderNo = preOrderNO + dateData + String.format("%04d",typeNumber.getNumber());
-            baseMapper.insert(typeNumber);
+            if(orderTypeNumber != null){
+                orderNo = preOrderNO + orderTypeNumber.getDate() + String.format("%04d",orderTypeNumber.getNumber()+1);
+                typeNumber.setNumber(orderTypeNumber.getNumber()+1);
+                typeNumber.setDate(orderTypeNumber.getDate());
+                typeNumber.setClassCode(classCode);
+                baseMapper.insert(typeNumber);
+            }else{
+                typeNumber.setClassCode(classCode);
+                typeNumber.setNumber(1);
+                String dateData = getDateData(DateUtils.getLocalToStr(LocalDateTime.now()));
+                typeNumber.setDate(dateData);
+                orderNo = preOrderNO + dateData + String.format("%04d",typeNumber.getNumber());
+                baseMapper.insert(typeNumber);
+            }
+
         }else{
-           OrderTypeNumber orderTypeNumber = baseMapper.getMaxNumberData(classCode,getDateData(DateUtils.getLocalToStr(LocalDateTime.now())));
-           OrderTypeNumber typeNumber = new OrderTypeNumber();
+
            if(orderTypeNumber != null){
                orderNo = preOrderNO + orderTypeNumber.getDate() + String.format("%04d",orderTypeNumber.getNumber()+1);
                typeNumber.setNumber(orderTypeNumber.getNumber()+1);

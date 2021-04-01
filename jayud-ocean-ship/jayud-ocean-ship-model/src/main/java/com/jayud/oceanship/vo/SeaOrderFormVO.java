@@ -256,6 +256,9 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
     //@ApiModelProperty(value = "补料信息集合")
     private List<SeaReplenishmentVO> seaReplenishments;
 
+    //@ApiModelProperty(value = "补料信息")
+    private SeaReplenishmentVO seaReplenishment;
+
     @ApiModelProperty(value = "审核意见")
     private String auditOpinion;
 

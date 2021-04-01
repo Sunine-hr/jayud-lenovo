@@ -1175,6 +1175,15 @@ public class ExternalApiController {
 
         return ApiResult.ok(count);
     }
+
+    @ApiOperation(value = "获取订单id")
+    @RequestMapping(value = "/api/getMainOrderByOrderNo")
+    ApiResult<Long> getMainOrderByOrderNo(String mainOrderNo){
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("order_no",mainOrderNo);
+        OrderInfo one = orderInfoService.getOne(queryWrapper);
+        return ApiResult.ok(one.getId());
+    }
 }
 
 

@@ -25,4 +25,6 @@ import java.util.List;
 public interface SeaReplenishmentMapper extends BaseMapper<SeaReplenishment> {
 
     IPage<SeaReplenishmentFormVO> findBillByPage(Page<SeaOrderFormVO> page, @Param("form") QuerySeaOrderForm form, @Param("legalIds")List<Long> legalIds);
+
+    SeaReplenishmentVO getSeaRepOrderDetails(@Param("orderId")Long orderId);
 }

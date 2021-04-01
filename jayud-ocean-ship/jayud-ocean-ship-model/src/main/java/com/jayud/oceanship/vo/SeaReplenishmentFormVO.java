@@ -12,15 +12,12 @@ import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.TradeTypeEnum;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
-import com.jayud.oceanship.bo.AddGoodsForm;
-import com.jayud.oceanship.bo.AddOrderAddressForm;
-import com.jayud.oceanship.po.SeaContainerInformation;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import javassist.expr.NewArray;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import org.apache.commons.collections4.CollectionUtils;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -44,32 +41,32 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "主键id")
+    //@ApiModelProperty(value = "主键id")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
-
-    @ApiModelProperty(value = "海运订单id")
-    private Long orderId;
 
     @ApiModelProperty(value = "截补料单号")
     private String orderNo;
 
-    @ApiModelProperty(value = "海运订单id")
+    //@ApiModelProperty(value = "海运订单id")
+    private Long orderId;
+
+    //@ApiModelProperty(value = "海运订单id")
     private Long seaOrderId;
 
-    @ApiModelProperty(value = "海运订单id")
+    @ApiModelProperty(value = "海运订单号")
     private String seaOrderNo;
 
     @ApiModelProperty(value = "截补料时间")
     private LocalDateTime cutReplenishTime;
 
-    @ApiModelProperty(value = "柜号")
+    //@ApiModelProperty(value = "柜号")
     private String cabinetNumber;
 
-    @ApiModelProperty(value = "封条")
+    //@ApiModelProperty(value = "封条")
     private String paperStripSeal;
 
-    @ApiModelProperty(value = "创建人(登录用户)")
+    @ApiModelProperty(value = "创建人")
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
@@ -81,28 +78,28 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
     @ApiModelProperty(value = "更新时间")
     private LocalDateTime updateTime;
 
-    @ApiModelProperty(value = "是否已提单")
+    //@ApiModelProperty(value = "是否已提单")
     private Integer isBillOfLading;
 
-    @ApiModelProperty(value = "是否已放单")
+    //@ApiModelProperty(value = "是否已放单")
     private Integer isReleaseOrder;
 
-    @ApiModelProperty(value = "进出口类型(1：进口，2：出口)")
+    //@ApiModelProperty(value = "进出口类型(1：进口，2：出口)")
     private Integer impAndExpType;
 
     @ApiModelProperty(value = "进出口类型")
     private String impAndExpTypeDesc;
 
-    @ApiModelProperty(value = "贸易方式(0:FOB,1:CIF,2:DAP,3:FAC,4:DDU,5:DDP)")
+    //@ApiModelProperty(value = "贸易方式(0:FOB,1:CIF,2:DAP,3:FAC,4:DDU,5:DDP)")
     private Integer terms;
 
     @ApiModelProperty(value = "贸易方式")
     private String termsDesc;
 
-    @ApiModelProperty(value = "起运港代码")
+    //@ApiModelProperty(value = "起运港代码")
     private String portDepartureCode;
 
-    @ApiModelProperty(value = "目的港代码")
+    //@ApiModelProperty(value = "目的港代码")
     private String portDestinationCode;
 
     @ApiModelProperty(value = "起运港")
@@ -111,7 +108,7 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
     @ApiModelProperty(value = "目的港")
     private String portDestinationName;
 
-    @ApiModelProperty(value = "中转港")
+    //@ApiModelProperty(value = "中转港")
     private String transitPortCode;
 
     @ApiModelProperty(value = "中转港")
@@ -120,46 +117,46 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
     @ApiModelProperty(value = "货好时间")
     private LocalDateTime goodTime;
 
-    @ApiModelProperty(value = "运费是否到付(1代表true,0代表false)")
+    //@ApiModelProperty(value = "运费是否到付(1代表true,0代表false)")
     private Boolean isFreightCollect;
 
-    @ApiModelProperty(value = "其他费用是否到付(1代表true,0代表false)")
+   // @ApiModelProperty(value = "其他费用是否到付(1代表true,0代表false)")
     private Boolean isOtherExpensesPaid;
 
-    @ApiModelProperty(value = "是否危险品(1代表true,0代表false)")
+    //@ApiModelProperty(value = "是否危险品(1代表true,0代表false)")
     private Boolean isDangerousGoods;
 
-    @ApiModelProperty(value = "是否带电(1代表true,0代表false)")
+   // @ApiModelProperty(value = "是否带电(1代表true,0代表false)")
     private Boolean isCharged;
 
-    @ApiModelProperty(value = "柜型类型")
+    //@ApiModelProperty(value = "柜型类型")
     private Integer cabinetType;
 
-    @ApiModelProperty(value = "柜型类型名字")
+    @ApiModelProperty(value = "柜型名字")
     private String cabinetTypeName;
 
-    @ApiModelProperty(value = "柜型柜量名字")
+    @ApiModelProperty(value = "柜量名字")
     private String cabinetSizeName;
 
-    @ApiModelProperty(value = "柜型数量")
+    //@ApiModelProperty(value = "柜型数量")
     private List<CabinetSizeNumberVO> cabinetSizeNumbers;
 
-    @ApiModelProperty(value = "货柜信息集合")
+    //@ApiModelProperty(value = "货柜信息集合")
     private List<SeaContainerInformationVO> seaContainerInformations;
 
-    @ApiModelProperty(value = "发货地址集合")
+    //@ApiModelProperty(value = "发货地址集合")
     private List<OrderAddressVO> deliveryAddress;
 
-    @ApiModelProperty(value = "收货地址集合")
+   // @ApiModelProperty(value = "收货地址集合")
     private List<OrderAddressVO> shippingAddress;
 
-    @ApiModelProperty(value = "通知地址集合")
+   // @ApiModelProperty(value = "通知地址集合")
     private List<OrderAddressVO> notificationAddress;
 
-    @ApiModelProperty(value = "海运订单地址信息")
+    //@ApiModelProperty(value = "海运订单地址信息")
     private List<OrderAddressVO> orderAddressForms;
 
-    @ApiModelProperty(value = "货品信息")
+    //@ApiModelProperty(value = "货品信息")
     private List<GoodsVO> goodsVOS;
 
     @ApiModelProperty(value = "主单号")
@@ -171,16 +168,16 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
     @ApiModelProperty(value = "提单重量")
     private Double billLadingWeight;
 
-    @ApiModelProperty(value = "流程状态(0:进行中,1:完成,2:草稿,3.关闭)")
+    //@ApiModelProperty(value = "流程状态(0:进行中,1:完成,2:草稿,3.关闭)")
     private Integer processStatus;
 
     @ApiModelProperty(value = "流程状态描述")
     private String processStatusDesc;
 
-    @ApiModelProperty(value = "客户名称")
+    //@ApiModelProperty(value = "客户名称")
     private String customerName;
 
-    @ApiModelProperty(value = "主订单号")
+    //@ApiModelProperty(value = "主订单号")
     private String mainOrderNo;
 
     //@ApiModelProperty(value = "主订单id")
@@ -192,19 +189,19 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
     @ApiModelProperty(value = "货物信息")
     private String goodsInfo;
 
-    @ApiModelProperty(value = "提单文件路径(多个逗号隔开)")
+    //@ApiModelProperty(value = "提单文件路径(多个逗号隔开)")
     private String filePath;
 
-    @ApiModelProperty(value = "提单文件名称(多个逗号隔开)")
+    //@ApiModelProperty(value = "提单文件名称(多个逗号隔开)")
     private String fileName;
 
-    @ApiModelProperty(value = "附件集合")
+    //@ApiModelProperty(value = "附件集合")
     private List<FileView> fileViewList = new ArrayList<>();
 
     //@ApiModelProperty(value = "状态")
     private String status;
 
-    @ApiModelProperty(value = "订单流程状态")
+    //@ApiModelProperty(value = "订单流程状态")
     private String statusDesc;
 
     public void getFile(String path){
@@ -251,6 +248,7 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
         this.goodsInfo = sb.toString();
     }
 
+
     public void processingAddress(OrderAddressVO addressVO) {
         switch (addressVO.getType()) {
             case 0:
@@ -287,6 +285,9 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
         this.status = status;
         this.statusDesc = OrderStatusEnum.getDesc(status);
     }
+
+
+
 
     @Override
     protected Serializable pkVal() {

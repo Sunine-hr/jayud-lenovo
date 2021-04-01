@@ -280,21 +280,25 @@ public class SeaOrderController {
         List<Long> seaOrderIds = new ArrayList<>();
         List<String> mainOrder = new ArrayList<>();
         for (SeaReplenishmentFormVO record : records) {
-            seaOrderIds.add(record.getSeaOrderId());
+            seaOrderIds.add(record.getId());
             //获取海运订单信息
             SeaOrderVO seaOrderByOrderNO = seaOrderService.getSeaOrderByOrderNO(record.getSeaOrderId());
             mainOrder.add(seaOrderByOrderNO.getMainOrderNo());
             record.setMainOrderNo(seaOrderByOrderNO.getMainOrderNo());
             record.setStatus(seaOrderByOrderNO.getStatus());
+            record.setProcessStatus(seaOrderByOrderNO.getProcessStatus());
         }
 
         //查询商品信息
         List<GoodsVO> goods = this.omsClient.getGoodsByBusIds(seaOrderIds, BusinessTypeEnum.HY.getCode()).getData();
+        if (CollectionUtils.isEmpty(goods)) {
+            log.warn("查询订单地址信息失败 seaOrderId={}", seaOrderIds);
+        }
 
         //获取发货人信息
         ApiResult<List<OrderAddressVO>> resultOne = this.omsClient.getOrderAddressByBusIds(seaOrderIds, BusinessTypeEnum.HY.getCode());
         if (resultOne.getCode() != HttpStatus.SC_OK) {
-            log.warn("查询订单地址信息失败 airOrderId={}", seaOrderIds);
+            log.warn("查询订单地址信息失败 seaOrderId={}", seaOrderIds);
         }
 
         //查询主订单信息
@@ -322,11 +326,11 @@ public class SeaOrderController {
             }
 
             //获取柜型数量
-            if (record.getCabinetType().equals(1)) {
-                List<CabinetSizeNumberVO> cabinetSizeNumberVOS = cabinetSizeNumberService.getList(record.getId());
-                record.setCabinetSizeNumbers(cabinetSizeNumberVOS);
-                record.assemblyCabinetInfo(cabinetSizeNumberVOS);
-            }
+//            if (record.getCabinetType().equals(1)) {
+//                List<CabinetSizeNumberVO> cabinetSizeNumberVOS = cabinetSizeNumberService.getList(record.getId());
+//                record.setCabinetSizeNumbers(cabinetSizeNumberVOS);
+//                record.assemblyCabinetInfo(cabinetSizeNumberVOS);
+//            }
             //获取货柜信息
             if (record.getCabinetType().equals(1)) {
                 List<SeaContainerInformationVO> seaContainerInformations = seaContainerInformationService.getList(record.getId());
@@ -438,8 +442,38 @@ public class SeaOrderController {
 
     @ApiOperation(value = "查询订单详情 seaOrderId=海运订单id")
     @PostMapping(value = "/getSeaRepOrderDetails")
-    public CommonResult<SeaOrderVO> getSeaRepOrderDetails(@RequestBody Map<String, Object> map) {
-        Long seaOrderId = MapUtil.getLong(map, "seaOrderId");
+    public CommonResult<SeaOrderFormVO> getSeaRepOrderDetails(@RequestBody Map<String, Object> map) {
+        Long orderId = MapUtil.getLong(map, "id");
+        if (orderId == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        SeaReplenishmentVO seaReplenishmentVO = this.seaReplenishmentService.getSeaRepOrderDetails(orderId);
+        if(seaReplenishmentVO.getSeaContainerInformations()==null || seaReplenishmentVO.getSeaContainerInformations().size()<0){
+            List<SeaContainerInformationVO> seaContainerInformations = new ArrayList<>();
+            seaContainerInformations.add(new SeaContainerInformationVO());
+            seaReplenishmentVO.setSeaContainerInformations(seaContainerInformations);
+        }
+        if(seaReplenishmentVO.getNotificationAddress()==null || seaReplenishmentVO.getNotificationAddress().size()<0){
+            List<OrderAddressVO> notificationAddress = new ArrayList<>();
+            notificationAddress.add(new OrderAddressVO());
+            seaReplenishmentVO.setNotificationAddress(notificationAddress);
+        }
+        String orderNo = seaReplenishmentVO.getOrderNo();
+        String[] orderNoes = orderNo.split(",");
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("order_no", orderNoes[0]);
+        SeaOrder seaOrder1 = this.seaOrderService.getOne(queryWrapper);
+        this.seaOrderService.getSeaOrderDetails(seaOrder1.getId());
+        SeaOrderFormVO convert = ConvertUtil.convert(seaOrder1, SeaOrderFormVO.class);
+        convert.setSeaReplenishment(seaReplenishmentVO);
+        return CommonResult.success(convert);
+    }
+
+
+    @ApiOperation(value = "查询订单详情 seaOrderId=海运订单id")
+    @PostMapping(value = "/getSeaReplenishmentOrderDetails")
+    public CommonResult<SeaOrderVO> getSeaReplenishmentOrderDetails(@RequestBody Map<String, Object> map) {
+        Long seaOrderId = MapUtil.getLong(map, "id");
         if (seaOrderId == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }

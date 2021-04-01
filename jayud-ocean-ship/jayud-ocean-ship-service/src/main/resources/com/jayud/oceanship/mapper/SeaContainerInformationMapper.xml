@@ -5,7 +5,6 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.oceanship.po.SeaContainerInformation">
         <id column="id" property="id" />
-        <result column="sea_order_no" property="seaOrderNo" />
         <result column="sea_rep_id" property="seaRepId" />
         <result column="sea_rep_no" property="seaRepNo" />
         <result column="cabinet_name" property="cabinetName" />
@@ -23,7 +22,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, sea_order_no, sea_rep_id, sea_rep_no, cabinet_name, cabinet_number, paper_strip_seal, weight, volume, plat_number, packing, create_user, create_time, update_user, update_time
+        id, sea_rep_id, sea_rep_no, cabinet_name, cabinet_number, paper_strip_seal, weight, volume, plat_number, packing, create_user, create_time, update_user, update_time
     </sql>
 
 </mapper>

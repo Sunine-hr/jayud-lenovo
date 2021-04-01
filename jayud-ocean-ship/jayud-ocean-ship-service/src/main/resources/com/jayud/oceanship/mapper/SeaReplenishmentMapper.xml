@@ -62,7 +62,7 @@
         left join sea_port sp2 on sr.transit_port_code = sp2.code
         left join terms on sr.terms = terms.id
         left join sea_order so on so.id = sr.sea_order_id
-        <where> sr.is_bill_of_lading = 0 or sr.is_release_order = 0
+        <where>
         <if test="form.orderNo !=null and form.orderNo!=''">
             and so.order_no like concat('%',#{form.orderNo},'%')
         </if>
@@ -80,6 +80,12 @@
         </if>
         <if test="form.status !=null and form.status!=''">
             and so.status = #{form.status}
+        </if>
+        <if test="form.status == 'S_5'">
+            and sr.is_bill_of_lading = 0
+        </if>
+        <if test="form.status == 'S_7'">
+             and sr.is_release_order = 0
         </if>
         <if test="form.processStatusList!=null and form.processStatusList.size>0">
             and so.process_status IN
@@ -102,6 +108,35 @@
         </if>
         </where>
         order by sr.id desc
+    </select>
+
+    <select id="getSeaRepOrderDetails" resultType="com.jayud.oceanship.vo.SeaReplenishmentVO">
+        select
+        sr.id,sr.order_no orderNo,sea_order_id seaOrderId,sea_order_no seaOrderNo,
+        sr.cut_replenish_time cutReplenishTime,sr.cabinet_number cabinetNumber,
+        sr.paper_strip_seal paperStripSeal,sr.create_user createUser,sr.create_time createTime,
+        sr.update_user updateUser,sr.update_time updateTime,sr.is_bill_of_lading isBillOfLading,
+        sr.is_release_order isReleaseOrder,
+        sr.imp_and_exp_type impAndExpType,sr.terms,
+        terms.name termsDesc,
+        sr.port_departure_code portDepartureCode,
+        sp.name portDepartureName,
+        sr.port_destination_code portDestinationCode,
+        sp1.name portDestinationName,
+        sr.good_time goodTime,sr.is_freight_collect isFreightCollect,
+        sr.is_other_expenses_paid isOtherExpensesPaid,
+        sr.is_dangerous_goods isDangerousGoods,sr.is_charged isCharged,
+        sr.transit_port_code transitPortCode,
+        sp2.name transitPort,
+        sr.cabinet_type cabinetType,
+        sr.cabinet_type_name cabinetTypeName,
+        sr.main_no,sr.sub_no,sr.bill_lading_weight
+        from sea_replenishment sr
+        left join sea_port sp on sr.port_departure_code = sp.code
+        left join sea_port sp1 on sr.port_destination_code = sp1.code
+        left join sea_port sp2 on sr.transit_port_code = sp2.code
+        left join terms on sr.terms = terms.id
+        where sr.id = #{orderId}
     </select>
 
 </mapper>

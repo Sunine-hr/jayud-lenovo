@@ -189,4 +189,8 @@ public interface OmsClient {
     @RequestMapping(value = "/api/doMainOrderRejectionSignOpt")
     public ApiResult<Boolean> doMainOrderRejectionSignOpt(@RequestParam("mainOrderNo") String mainOrderNo,
                                                           @RequestParam("rejectionDesc") String rejectionDesc);
+
+    @ApiOperation(value = "获取订单id")
+    @RequestMapping(value = "/api/getMainOrderByOrderNo")
+    ApiResult<Long> getMainOrderByOrderNo(@RequestParam("mainOrderNo")String mainOrderNo);
 }

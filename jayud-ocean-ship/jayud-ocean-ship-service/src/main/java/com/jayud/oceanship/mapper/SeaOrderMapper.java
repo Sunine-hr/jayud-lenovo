@@ -38,4 +38,14 @@ public interface SeaOrderMapper extends BaseMapper<SeaOrder> {
      * @return
      */
     IPage<SeaOrderFormVO> findByPage(Page<SeaOrderFormVO> page,@Param("form") QuerySeaOrderForm form,@Param("legalIds") List<Long> legalIds);
+
+    /**
+     * 查询订单状态数量
+     *
+     * @param status
+     * @param legalIds
+     * @return
+     */
+    public Integer getNumByStatus(@Param("status") String status, @Param("legalIds") List<Long> legalIds);
+
 }

@@ -164,6 +164,9 @@ public class InputSeaOrderVO {
     @ApiModelProperty(value = "柜型类型")
     private String cabinetTypeName;
 
+    @ApiModelProperty(value = "柜型数量")
+    private List<CabinetSizeNumberVO> cabinetSizeNumbers;
+
     @ApiModelProperty(value = "截补料时间")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private String cutReplenishTime;

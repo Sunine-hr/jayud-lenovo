@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
+import cn.hutool.core.collection.CollectionUtil;
 import org.apache.commons.lang.StringUtils;
 
 import java.time.LocalDateTime;
@@ -78,6 +78,9 @@ public class InputSeaOrderForm {
     @ApiModelProperty(value = "柜型类型")
     private String cabinetTypeName;
 
+    @ApiModelProperty(value = "柜型数量")
+    private List<AddCabinetSizeNumber> cabinetSizeNumbers;
+
     @ApiModelProperty(value = "货好时间")
     private String goodTime;
 
@@ -120,47 +123,48 @@ public class InputSeaOrderForm {
     /**
      * 校验创建海运子订单参数
      */
-    public boolean checkCreateOrder() {
+    public String checkCreateOrder() {
         //海运
+        String message = null ;
         if (this.legalEntityId == null || StringUtils.isEmpty(this.unitCode)
                 || this.impAndExpType == null || this.terms == null
                 || StringUtils.isEmpty(this.portDepartureCode)
                 || StringUtils.isEmpty(this.portDestinationCode)
                 || this.goodTime == null) {
-            return false;
+            message = "参数不正确";
         }
         // 发货/收货地址是必填项
-        if (CollectionUtils.isEmpty(this.deliveryAddress)) {
+        if (CollectionUtil.isEmpty(this.deliveryAddress)) {
             for (AddOrderAddressForm address : deliveryAddress) {
                 if(StringUtils.isEmpty(address.getAddress())){
                     log.warn("发货地址不能为空");
-                    return false;
+                    message = "发货地址不能为空";
                 }
                 if(StringUtils.isEmpty(address.getContacts())){
                     log.warn("联系人不能为空");
-                    return false;
+                    message = "联系人不能为空";
                 }
             }
             log.warn("发货地址信息不能为空");
-            return false;
+            message = "发货地址信息不能为空";
         }
-        if (CollectionUtils.isEmpty(this.shippingAddress)) {
+        if (CollectionUtil.isEmpty(this.shippingAddress)) {
             for (AddOrderAddressForm address : deliveryAddress) {
                 if(StringUtils.isEmpty(address.getPhone())){
                     log.warn("电话号码不能为空");
-                    return false;
+                    message = "电话号码不能为空";
                 }
                 if(StringUtils.isEmpty(address.getAddress())){
                     log.warn("发货地址不能为空");
-                    return false;
+                    message = "发货地址不能为空";
                 }
                 if(StringUtils.isEmpty(address.getContacts())){
                     log.warn("联系人不能为空");
-                    return false;
+                    message = "联系人不能为空";
                 }
             }
             log.warn("收货地址信息不能为空");
-            return false;
+            message = "收货地址信息不能为空";
         }
         if (this.notificationAddress.size() == 0 ||
                 StringUtils.isEmpty(this.notificationAddress.get(0).getAddress())) {
@@ -170,11 +174,26 @@ public class InputSeaOrderForm {
         //货品信息
         for (AddGoodsForm goodsForm : goodsForms) {
             if (!goodsForm.checkCreateAirOrder()) {
-                return false;
+                message = "商品信息有缺失";
             }
         }
+        if(this.cabinetType.equals(1)){
+            if(CollectionUtil.isNotEmpty(this.cabinetSizeNumbers)){
+                for (AddCabinetSizeNumber cabinetSizeNumber : this.cabinetSizeNumbers) {
+                    if(StringUtils.isEmpty(cabinetSizeNumber.getCabinetTypeSize())){
+                        log.warn("货柜大小类型信息不能为空");
+                        message = "货柜大小类型信息不能为空";
+                    }
+                    if(cabinetSizeNumber.getNumber() == null ){
+                        log.warn("柜子数量信息不能为空");
+                        message = "柜子数量信息不能为空";
+                    }
+                }
+            }
 
-        return true;
+        }
+
+        return message;
     }
 
     /**
@@ -184,7 +203,7 @@ public class InputSeaOrderForm {
         this.orderAddressForms = new ArrayList<>();
         this.orderAddressForms.addAll(this.deliveryAddress);
         this.orderAddressForms.addAll(this.shippingAddress);
-        if (CollectionUtils.isNotEmpty(this.notificationAddress)
+        if (CollectionUtil.isNotEmpty(this.notificationAddress)
                 && StringUtils.isNotEmpty(this.notificationAddress.get(0).getAddress())) {
             this.orderAddressForms.addAll(this.notificationAddress);
         }

@@ -44,12 +44,6 @@ public class SeaBookship extends Model<SeaBookship> {
     @ApiModelProperty(value = "入仓号")
     private String warehousingNo;
 
-    @ApiModelProperty(value = "主单号")
-    private String mainNo;
-
-    @ApiModelProperty(value = "分单号")
-    private String subNo;
-
     @ApiModelProperty(value = "船公司")
     private String shipCompany;
 
@@ -95,8 +89,6 @@ public class SeaBookship extends Model<SeaBookship> {
     @ApiModelProperty(value = "更新时间")
     private LocalDateTime updateTime;
 
-    @ApiModelProperty(value = "提单重量")
-    private Double billLadingWeight;
 
 
     @Override

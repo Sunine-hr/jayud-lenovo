@@ -10,8 +10,6 @@
         <result column="sea_order_id" property="seaOrderId" />
         <result column="agent_supplier_id" property="agentSupplierId" />
         <result column="warehousing_no" property="warehousingNo" />
-        <result column="main_no" property="mainNo" />
-        <result column="sub_no" property="subNo" />
         <result column="ship_company" property="shipCompany" />
         <result column="ship_name" property="shipName" />
         <result column="ship_number" property="shipNumber" />
@@ -26,12 +24,11 @@
         <result column="create_time" property="createTime" />
         <result column="update_user" property="updateUser" />
         <result column="update_time" property="updateTime" />
-        <result column="bill_lading_weight" property="billLadingWeight" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, status, sea_order_no, sea_order_id, agent_supplier_id, warehousing_no, main_no, sub_no, ship_company, ship_name, ship_number, etd, atd, eta, ata, delivery_wharf, file_path, file_name, create_user, create_time, update_user, update_time, bill_lading_weight
+        id, status, sea_order_no, sea_order_id, agent_supplier_id, warehousing_no, ship_company, ship_name, ship_number, etd, atd, eta, ata, delivery_wharf, file_path, file_name, create_user, create_time, update_user, update_time
     </sql>
 
 </mapper>

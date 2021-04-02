@@ -226,8 +226,9 @@ public class OrderInfoController {
             //海运校验参数
             if (OrderStatusEnum.HY.getCode().equals(inputMainOrderForm.getClassCode())) {
                 InputSeaOrderForm seaOrderForm = form.getSeaOrderForm();
-                if (!seaOrderForm.checkCreateOrder()) {
-                    return CommonResult.error(ResultEnum.PARAM_ERROR);
+                String s = seaOrderForm.checkCreateOrder();
+                if (s!=null) {
+                    return CommonResult.error(1,s);
                 }
             }
             //拖车校验参数

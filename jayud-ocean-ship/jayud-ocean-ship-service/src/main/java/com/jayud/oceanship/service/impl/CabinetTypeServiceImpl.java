@@ -35,13 +35,17 @@ public class CabinetTypeServiceImpl extends ServiceImpl<CabinetTypeMapper, Cabin
         List<CabinetTypeVO> cabinetTypeVOs = new ArrayList<>();
         for (CabinetType cabinetType : cabinetTypes) {
             CabinetTypeVO convert = ConvertUtil.convert(cabinetType, CabinetTypeVO.class);
-            String[] split = cabinetType.getCabinetSizeId().split("," );
-            List<CabinetSize> cabinetSizes = new ArrayList<>();
-            for (int i = 0; i < split.length; i++) {
-                CabinetSize byId = cabinetSizeService.getById(Long.parseLong(split[i]));
-                cabinetSizes.add(byId);
+
+            if(cabinetType.getCabinetSizeId()!=null) {
+                String[] split = cabinetType.getCabinetSizeId().split(",");
+                List<CabinetSize> cabinetSizes = new ArrayList<>();
+                for (int i = 0; i < split.length; i++) {
+                    CabinetSize byId = cabinetSizeService.getById(Long.parseLong(split[i]));
+                    cabinetSizes.add(byId);
+                }
+                convert.setCabinetSizes(cabinetSizes);
+
             }
-            convert.setCabinetSizes(cabinetSizes);
             cabinetTypeVOs.add(convert);
         }
         return cabinetTypeVOs;

@@ -210,7 +210,7 @@ public class SeaOrderTemplate {
             this.shipNumber = seaBookshipVO.getShipNumber();
             this.etd = seaBookshipVO.getEtd();
             this.eta = seaBookshipVO.getEta();
-            this.mainNo = seaBookshipVO.getMainNo();
+//            this.mainNo = seaBookshipVO.getMainNo();
         }
 
     }

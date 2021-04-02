@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oceanship.mapper.SeaContainerInformationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oceanship.po.SeaContainerInformation">
+        <id column="id" property="id" />
+        <result column="sea_rep_id" property="seaRepId" />
+        <result column="sea_rep_no" property="seaRepNo" />
+        <result column="cabinet_name" property="cabinetName" />
+        <result column="cabinet_number" property="cabinetNumber" />
+        <result column="paper_strip_seal" property="paperStripSeal" />
+        <result column="weight" property="weight" />
+        <result column="volume" property="volume" />
+        <result column="plat_number" property="platNumber" />
+        <result column="packing" property="packing" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, sea_rep_id, sea_rep_no, cabinet_name, cabinet_number, paper_strip_seal, weight, volume, plat_number, packing, create_user, create_time, update_user, update_time
+    </sql>
+
+</mapper>

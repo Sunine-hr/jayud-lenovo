@@ -28,7 +28,7 @@ public class SeaOrder extends Model<SeaOrder> {
     private static final long serialVersionUID=1L;
 
     @ApiModelProperty(value = "海运订单主键")
-      @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     @ApiModelProperty(value = "主订单编号")
@@ -132,11 +132,11 @@ public class SeaOrder extends Model<SeaOrder> {
     @ApiModelProperty(value = "结算部门")
     private Long unitDepartmentId;
 
-    @ApiModelProperty(value = "柜号")
-    private String cabinetNumber;
+    @ApiModelProperty(value = "审核意见")
+    private String auditOpinion;
 
-    @ApiModelProperty(value = "封条")
-    private String paperStripSeal;
+    @ApiModelProperty(value = "审核状况 1为审核通过;2为审核不通过")
+    private Integer auditStatus;
 
     @Override
     protected Serializable pkVal() {

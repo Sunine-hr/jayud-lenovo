@@ -73,6 +73,9 @@ public class AddOrderAddressForm {
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "发货人/送货人")
+    private String consignee;
+
     public boolean checkCreateSeaOrder() {
         if (this.type == null || StringUtils.isEmpty(this.address)
                 || StringUtils.isEmpty(this.phone)) {

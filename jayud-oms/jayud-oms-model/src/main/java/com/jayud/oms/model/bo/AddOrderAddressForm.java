@@ -81,6 +81,9 @@ public class AddOrderAddressForm {
     @ApiModelProperty(value = "交货日期(提货日期/送货日期)")
     private String deliveryDate;
 
+    @ApiModelProperty(value = "发货人/送货人")
+    private String consignee;
+
 
     public boolean checkCreateAirOrder() {
         if (this.type == null || StringUtils.isEmpty(this.address)

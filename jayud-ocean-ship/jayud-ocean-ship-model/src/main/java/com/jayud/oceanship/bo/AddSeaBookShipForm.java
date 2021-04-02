@@ -43,12 +43,6 @@ public class AddSeaBookShipForm extends Model<AddSeaBookShipForm> {
     @ApiModelProperty(value = "入仓号")
     private String warehousingNo;
 
-    @ApiModelProperty(value = "主单号")
-    private String mainNo;
-
-    @ApiModelProperty(value = "分单号")
-    private String subNo;
-
     @ApiModelProperty(value = "船公司")
     private String shipCompany;
 
@@ -93,9 +87,6 @@ public class AddSeaBookShipForm extends Model<AddSeaBookShipForm> {
 
     @ApiModelProperty(value = "更新时间")
     private LocalDateTime updateTime;
-
-    @ApiModelProperty(value = "提单重量")
-    private Double billLadingWeight;
 
     @ApiModelProperty(value = "附件集合")
     private List<FileView> fileViewList = new ArrayList<>();
@@ -175,18 +166,18 @@ public class AddSeaBookShipForm extends Model<AddSeaBookShipForm> {
         return true;
     }
 
-    public boolean checkConfirmLadingBillOptParam() {
-        String title = "放单确认操作";
-        if (StringUtils.isEmpty(this.mainNo)) {
-            log.warn(title + " 主单号必填");
-            return false;
-        }
-        if (this.billLadingWeight == null) {
-            log.warn(title + " 提单重量必填");
-            return false;
-        }
-        return true;
-    }
+//    public boolean checkConfirmLadingBillOptParam() {
+//        String title = "放单确认操作";
+//        if (StringUtils.isEmpty(this.mainNo)) {
+//            log.warn(title + " 主单号必填");
+//            return false;
+//        }
+//        if (this.billLadingWeight == null) {
+//            log.warn(title + " 提单重量必填");
+//            return false;
+//        }
+//        return true;
+//    }
 
     public boolean checkConfirmATAOptParam() {
         String title = "确认到港操作";

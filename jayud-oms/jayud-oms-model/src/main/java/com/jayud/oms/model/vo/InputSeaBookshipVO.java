@@ -46,12 +46,6 @@ public class InputSeaBookshipVO {
     @ApiModelProperty(value = "入仓号")
     private String warehousingNo;
 
-    @ApiModelProperty(value = "主单号")
-    private String mainNo;
-
-    @ApiModelProperty(value = "分单号")
-    private String subNo;
-
     @ApiModelProperty(value = "船公司")
     private String shipCompany;
 
@@ -97,9 +91,6 @@ public class InputSeaBookshipVO {
     @ApiModelProperty(value = "更新时间")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
-
-    @ApiModelProperty(value = "提单重量")
-    private Double billLadingWeight;
 
     @ApiModelProperty(value = "附件集合")
     private List<FileView> fileViewList = new ArrayList<>();

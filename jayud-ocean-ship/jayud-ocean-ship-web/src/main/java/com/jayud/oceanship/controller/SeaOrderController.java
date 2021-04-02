@@ -10,6 +10,7 @@ import com.alibaba.excel.enums.WriteDirectionEnum;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.metadata.fill.FillConfig;
 import com.alibaba.excel.write.metadata.fill.FillWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.ApiResult;
@@ -20,19 +21,18 @@ import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oceanship.bo.*;
 import com.jayud.oceanship.feign.FileClient;
 import com.jayud.oceanship.feign.OauthClient;
 import com.jayud.oceanship.feign.OmsClient;
+import com.jayud.oceanship.po.SeaContainerInformation;
 import com.jayud.oceanship.po.SeaOrder;
-import com.jayud.oceanship.service.ISeaOrderService;
-import com.jayud.oceanship.service.ISeaPortService;
-import com.jayud.oceanship.vo.GoodsVO;
-import com.jayud.oceanship.vo.OrderAddressVO;
-import com.jayud.oceanship.vo.SeaOrderFormVO;
-import com.jayud.oceanship.vo.SeaOrderVO;
+import com.jayud.oceanship.po.SeaReplenishment;
+import com.jayud.oceanship.service.*;
+import com.jayud.oceanship.vo.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
@@ -85,9 +85,18 @@ public class SeaOrderController {
     @Autowired
     private ISeaPortService seaPortService;
 
+    @Autowired
+    private ICabinetSizeNumberService cabinetSizeNumberService;
+
+    @Autowired
+    private ISeaReplenishmentService seaReplenishmentService;
+
+    @Autowired
+    private ISeaContainerInformationService seaContainerInformationService;
+
     @ApiOperation("分页查询海运订单列表")
     @PostMapping("/findByPage")
-    public CommonResult findByPage(@RequestBody QuerySeaOrderForm form){
+    public CommonResult findByPage(@RequestBody QuerySeaOrderForm form) {
 
         form.setStartTime();
         //模糊查询客户信息
@@ -108,18 +117,18 @@ public class SeaOrderController {
         Field[] declaredFields = seaOrderFormVOClass.getDeclaredFields();
         for (Field declaredField : declaredFields) {
             ApiModelProperty annotation = declaredField.getAnnotation(ApiModelProperty.class);
-            if(annotation!=null){
+            if (annotation != null) {
                 Map map = new HashMap<>();
-                map.put("key",declaredField.getName());
-                map.put("name",annotation.value());
+                map.put("key", declaredField.getName());
+                map.put("name", annotation.value());
                 list.add(map);
             }
         }
         Map map1 = new HashMap();
-        map1.put("header",list);
+        map1.put("header", list);
         IPage<SeaOrderFormVO> page = this.seaOrderService.findByPage(form);
         if (page.getRecords().size() == 0) {
-            map1.put("pageInfo",new CommonPageResult(page));
+            map1.put("pageInfo", new CommonPageResult(page));
             return CommonResult.success(map1);
         }
 
@@ -136,7 +145,7 @@ public class SeaOrderController {
             mainOrder.add(record.getMainOrderNo());
             entityIds.add(record.getLegalEntityId());
             unitCodes.add(record.getUnitCode());
-            if(record.getSeaBookShipForm().getAgentSupplierId()!=null){
+            if (record.getSeaBookShipForm().getAgentSupplierId() != null) {
                 supplierIds.add(record.getSeaBookShipForm().getAgentSupplierId());
             }
 
@@ -153,7 +162,7 @@ public class SeaOrderController {
         }
         //查询供应商信息
         JSONArray supplierInfo = null;
-        if (CollectionUtils.isNotEmpty(supplierIds) && supplierIds.size()>0) {
+        if (CollectionUtils.isNotEmpty(supplierIds) && supplierIds.size() > 0) {
             supplierInfo = new JSONArray(this.omsClient.getSupplierInfoByIds(supplierIds).getData());
         }
 
@@ -164,7 +173,7 @@ public class SeaOrderController {
         }
 
         //获取发货人信息
-        ApiResult<List<OrderAddressVO>> resultOne = this.omsClient.getOrderAddressByBusIds(seaOrderIds, BusinessTypeEnum.HY.getCode() );
+        ApiResult<List<OrderAddressVO>> resultOne = this.omsClient.getOrderAddressByBusIds(seaOrderIds, BusinessTypeEnum.HY.getCode());
         if (resultOne.getCode() != HttpStatus.SC_OK) {
             log.warn("查询订单地址信息失败 airOrderId={}", seaOrderIds);
         }
@@ -180,6 +189,7 @@ public class SeaOrderController {
                     goodsVOS.add(goodsVO);
                 }
             }
+            record.setOrderId(record.getId());
             record.setGoodsVOS(goodsVOS);
             record.assemblyGoodsInfo(goods);
             //拼装主订单信息
@@ -195,45 +205,151 @@ public class SeaOrderController {
             //处理地址信息
             for (OrderAddressVO address : resultOne.getData()) {
                 address.getFile(prePath);
-                if(address.getOrderNo().equals(record.getOrderNo())){
+                if (address.getOrderNo().equals(record.getOrderNo())) {
                     record.processingAddress(address);
                 }
             }
-        }
 
-        //获取目的港名称
-//        List<SeaPort> seaPorts = seaPortService.list();
-//        List<SeaOrderFormVO> records1 = page.getRecords();
-//        for (SeaOrderFormVO seaOrderFormVO : records1) {
-//            //查询贸易方式
-//            for (SeaPort seaPort : seaPorts) {
-//                if (seaPort.getCode().equals(seaOrderFormVO.getPortDepartureCode())){
-//                    seaOrderFormVO.setPortDepartureName(seaPort.getName());
-//                }
-//                if(seaPort.getCode().equals(seaOrderFormVO.getPortDestinationCode())){
-//                    seaOrderFormVO.setPortDestinationName(seaPort.getName());
-//                }
-//                if(seaOrderFormVO.getTransitPortCode()!=null){
-//                    if(seaPort.getCode().equals(seaOrderFormVO.getTransitPortCode())){
-//                        seaOrderFormVO.setTransitPort(seaPort.getName());
-//                    }
-//                }
-//
-//            }
-//        }
-//        page.setRecords(records1);
-        map1.put("pageInfo",new CommonPageResult(page));
+            //获取柜型数量
+            if (record.getCabinetType().equals(1)) {
+                List<CabinetSizeNumberVO> cabinetSizeNumberVOS = cabinetSizeNumberService.getList(record.getId());
+                record.setCabinetSizeNumbers(cabinetSizeNumberVOS);
+                record.assemblyCabinetInfo(cabinetSizeNumberVOS);
+            }
+
+            //获取截补料数据
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("sea_order_id", record.getId());
+            queryWrapper.eq("sea_order_no", record.getOrderNo());
+            List<SeaReplenishment> seaReplenishments = seaReplenishmentService.list(queryWrapper);
+            List<SeaReplenishmentVO> seaReplenishmentVOS = ConvertUtil.convertList(seaReplenishments, SeaReplenishmentVO.class);
+            for (SeaReplenishmentVO seaReplenishmentVO : seaReplenishmentVOS) {
+                //获取截补料中的柜型数量以及货柜信息
+                List<CabinetSizeNumberVO> list1 = cabinetSizeNumberService.getList(seaReplenishmentVO.getId());
+                seaReplenishmentVO.setCabinetSizeNumbers(list1);
+                List<SeaContainerInformationVO> seaContainerInformations = seaContainerInformationService.getList(seaReplenishmentVO.getId());
+                seaReplenishmentVO.setSeaContainerInformations(seaContainerInformations);
+            }
+            record.setSeaReplenishments(seaReplenishmentVOS);
+        }
+        map1.put("pageInfo", new CommonPageResult(page));
         return CommonResult.success(map1);
     }
+
+    @ApiOperation("分页查询海运订单提单草稿确认列表")
+    @PostMapping("/findBillByPage")
+    public CommonResult findBillByPage(@RequestBody QuerySeaOrderForm form) {
+        form.setStartTime();
+        //模糊查询客户信息
+        if (!StringUtils.isEmpty(form.getCustomerName())) {
+            ApiResult result = omsClient.getByCustomerName(form.getCustomerName());
+            Object data = result.getData();
+            if (data != null && ((List) data).size() > 0) {
+                JSONArray mainOrders = new JSONArray(data);
+                form.assemblyMainOrderNo(mainOrders);
+            } else {
+                form.setMainOrderNos(Collections.singletonList("-1"));
+            }
+        }
+        List list = new ArrayList();
+        //获取表头信息
+        Class<SeaReplenishmentFormVO> replenishmentFormVOClass = SeaReplenishmentFormVO.class;
+        Field[] declaredFields = replenishmentFormVOClass.getDeclaredFields();
+        for (Field declaredField : declaredFields) {
+            ApiModelProperty annotation = declaredField.getAnnotation(ApiModelProperty.class);
+            if (annotation != null) {
+                Map map = new HashMap<>();
+                map.put("key", declaredField.getName());
+                map.put("name", annotation.value());
+                list.add(map);
+            }
+        }
+        Map map1 = new HashMap();
+        map1.put("header", list);
+
+        IPage<SeaReplenishmentFormVO> page = this.seaReplenishmentService.findBillByPage(form);
+
+        //IPage<SeaOrderFormVO> page = this.seaOrderService.findByPage(form);
+        if (page.getRecords().size() == 0) {
+            map1.put("pageInfo", new CommonPageResult(page));
+            return CommonResult.success(map1);
+        }
+
+        String prePath = String.valueOf(fileClient.getBaseUrl().getData());
+        List<SeaReplenishmentFormVO> records = page.getRecords();
+        List<Long> seaOrderIds = new ArrayList<>();
+        List<String> mainOrder = new ArrayList<>();
+        for (SeaReplenishmentFormVO record : records) {
+            seaOrderIds.add(record.getId());
+            //获取海运订单信息
+            SeaOrderVO seaOrderByOrderNO = seaOrderService.getSeaOrderByOrderNO(record.getSeaOrderId());
+            mainOrder.add(seaOrderByOrderNO.getMainOrderNo());
+            record.setMainOrderNo(seaOrderByOrderNO.getMainOrderNo());
+            record.setStatus(seaOrderByOrderNO.getStatus());
+            record.setProcessStatus(seaOrderByOrderNO.getProcessStatus());
+        }
+
+        //查询商品信息
+        List<GoodsVO> goods = this.omsClient.getGoodsByBusIds(seaOrderIds, BusinessTypeEnum.HY.getCode()).getData();
+        if (CollectionUtils.isEmpty(goods)) {
+            log.warn("查询订单地址信息失败 seaOrderId={}", seaOrderIds);
+        }
+
+        //获取发货人信息
+        ApiResult<List<OrderAddressVO>> resultOne = this.omsClient.getOrderAddressByBusIds(seaOrderIds, BusinessTypeEnum.HY.getCode());
+        if (resultOne.getCode() != HttpStatus.SC_OK) {
+            log.warn("查询订单地址信息失败 seaOrderId={}", seaOrderIds);
+        }
+
+        //查询主订单信息
+        ApiResult result = omsClient.getMainOrderByOrderNos(mainOrder);
+        for (SeaReplenishmentFormVO record : records) {
+            //组装商品信息
+            List<GoodsVO> goodsVOS = new ArrayList<>();
+            for (GoodsVO goodsVO : goods) {
+                if (record.getId().equals(goodsVO.getBusinessId())
+                        && BusinessTypeEnum.HY.getCode().equals(goodsVO.getBusinessType())) {
+                    goodsVOS.add(goodsVO);
+                }
+            }
+            record.setOrderId(record.getSeaOrderId());
+            record.setGoodsVOS(goodsVOS);
+            record.assemblyGoodsInfo(goods);
+            //拼装主订单信息
+            record.assemblyMainOrderData(result.getData());
+            //处理地址信息
+            for (OrderAddressVO address : resultOne.getData()) {
+                address.getFile(prePath);
+                if (address.getOrderNo().equals(record.getOrderNo())) {
+                    record.processingAddress(address);
+                }
+            }
+
+            //获取柜型数量
+//            if (record.getCabinetType().equals(1)) {
+//                List<CabinetSizeNumberVO> cabinetSizeNumberVOS = cabinetSizeNumberService.getList(record.getId());
+//                record.setCabinetSizeNumbers(cabinetSizeNumberVOS);
+//                record.assemblyCabinetInfo(cabinetSizeNumberVOS);
+//            }
+            //获取货柜信息
+            if (record.getCabinetType().equals(1)) {
+                List<SeaContainerInformationVO> seaContainerInformations = seaContainerInformationService.getList(record.getId());
+                record.setSeaContainerInformations(seaContainerInformations);
+            }
+        }
+        map1.put("pageInfo", new CommonPageResult(page));
+        return CommonResult.success(map1);
+    }
+
 
     //操作指令,cmd = S_0待接单,S_1海运接单,S_2订船,S_3订单入仓, S_4提交补料,S_5草稿提单,S_6放单确认,S_7确认离港,S_8确认到港,S_9海外代理S_10确认签收
     @ApiOperation(value = "执行海运流程操作")
     @PostMapping(value = "/doSeaProcessOpt")
-    public CommonResult doSeaProcessOpt(@RequestBody @Valid SeaProcessOptForm form , BindingResult result) {
+    public CommonResult doSeaProcessOpt(@RequestBody @Valid SeaProcessOptForm form, BindingResult result) {
 
-        if(result.hasErrors()){
+        if (result.hasErrors()) {
             for (ObjectError error : result.getAllErrors()) {
-                return CommonResult.error(444,error.getDefaultMessage());
+                return CommonResult.error(444, error.getDefaultMessage());
             }
         }
 
@@ -249,7 +365,7 @@ public class SeaOrderController {
         if (!ProcessStatusEnum.PROCESSING.getCode().equals(seaOrder.getProcessStatus())) {
             return CommonResult.error(400, "当前订单无法操作");
         }
-        if(!seaOrder.getStatus().equals(form.getStatus())){
+        if (!seaOrder.getStatus().equals(form.getStatus())) {
             return CommonResult.error(400, "当前订单正在操作");
         }
 //        OrderStatusEnum statusEnum = OrderStatusEnum.getSeaOrderNextStatus(seaOrder.getStatus());
@@ -257,8 +373,9 @@ public class SeaOrderController {
 //        queryWrapper.eq("f_status",seaOrder.getStatus());
 //        queryWrapper.eq("order_no",seaOrder.getOrderNo());
 //        OrderFlowSheet orderFlowSheet = orderFlowSheetService.getOne(queryWrapper);
-        String orderProcessNode = (String)omsClient.getOrderProcessNode(seaOrder.getMainOrderNo(),seaOrder.getOrderNo(),seaOrder.getStatus()).getData();
+        String orderProcessNode = (String) omsClient.getOrderProcessNode(seaOrder.getMainOrderNo(), seaOrder.getOrderNo(), seaOrder.getStatus()).getData();
         OrderStatusEnum statusEnum = OrderStatusEnum.getSeaOrderNextStatus(orderProcessNode);
+        System.out.println("statusEnum====================================================="+statusEnum);
         if (statusEnum == null) {
             log.error("执行海运流程操作失败,超出流程之外 data={}", seaOrder.toString());
             return CommonResult.error(ResultEnum.OPR_FAIL);
@@ -273,9 +390,11 @@ public class SeaOrderController {
                 SeaOrder seaOrder1 = new SeaOrder();
                 seaOrder1.setOrderTaker(form.getOperatorUser());
                 seaOrder1.setReceivingOrdersDate(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN));
-                this.seaOrderService.updateProcessStatus(seaOrder1 , form);
+                this.seaOrderService.updateProcessStatus(seaOrder1, form);
                 break;
             case SEA_S_2: //订船
+            case SEA_S_7: //确认装船
+            case SEA_S_9: //确认到港
                 this.seaOrderService.doSeaBookShipOpt(form);
                 break;
             case SEA_S_3: //确认订单入仓
@@ -284,13 +403,14 @@ public class SeaOrderController {
             case SEA_S_4: //提交补料
                 this.seaOrderService.updateOrSaveProcessStatus(form);
                 break;
-            case SEA_S_5: //确认草稿提单
-            case SEA_S_6: //确认装船
-            case SEA_S_7: //确认放单
-            case SEA_S_8: //确认到港
-                this.seaOrderService.doSeaBookShipOpt(form);
+            case SEA_S_5: //补料审核
+                this.seaOrderService.updateOrSaveReplenishmentAudit(form);
                 break;
-            case SEA_S_9: //海外代理
+            case SEA_S_6: //确认草稿提单
+            case SEA_S_8: //确认放单
+                this.seaOrderService.updateOrSaveConfirmationAudit(form);
+                break;
+            case SEA_S_10: //海外代理
                 StringBuilder sb = new StringBuilder();
                 form.getProxyServiceType().forEach(e -> sb.append(e).append(","));
                 String proxyServiceType = sb.length() == 0 ? null : sb.substring(0, sb.length() - 1);
@@ -299,7 +419,7 @@ public class SeaOrderController {
                 seaOrder2.setProxyServiceType(proxyServiceType);
                 this.seaOrderService.updateProcessStatus(seaOrder2, form);
                 break;
-            case SEA_S_10: //确认签收
+            case SEA_S_11: //确认签收
                 this.seaOrderService.updateProcessStatus(new SeaOrder(), form);
                 break;
         }
@@ -310,12 +430,98 @@ public class SeaOrderController {
 
     @ApiOperation(value = "查询订单详情 seaOrderId=海运订单id")
     @PostMapping(value = "/getSeaOrderDetails")
-    public CommonResult<SeaOrderVO> getAirOrderDetails(@RequestBody Map<String, Object> map) {
+    public CommonResult<SeaOrderVO> getSeaOrderDetails(@RequestBody Map<String, Object> map) {
         Long seaOrderId = MapUtil.getLong(map, "seaOrderId");
         if (seaOrderId == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         SeaOrderVO seaOrderDetails = this.seaOrderService.getSeaOrderDetails(seaOrderId);
+
+        return CommonResult.success(seaOrderDetails);
+    }
+
+    @ApiOperation(value = "查询订单详情 seaOrderId=海运订单id")
+    @PostMapping(value = "/getSeaRepOrderDetails")
+    public CommonResult<SeaOrderFormVO> getSeaRepOrderDetails(@RequestBody Map<String, Object> map) {
+        Long orderId = MapUtil.getLong(map, "id");
+        if (orderId == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        SeaReplenishmentVO seaReplenishmentVO = this.seaReplenishmentService.getSeaRepOrderDetails(orderId);
+        if(seaReplenishmentVO.getSeaContainerInformations()==null || seaReplenishmentVO.getSeaContainerInformations().size()<0){
+            List<SeaContainerInformationVO> seaContainerInformations = new ArrayList<>();
+            seaContainerInformations.add(new SeaContainerInformationVO());
+            seaReplenishmentVO.setSeaContainerInformations(seaContainerInformations);
+        }
+        if(seaReplenishmentVO.getNotificationAddress()==null || seaReplenishmentVO.getNotificationAddress().size()<0){
+            List<OrderAddressVO> notificationAddress = new ArrayList<>();
+            notificationAddress.add(new OrderAddressVO());
+            seaReplenishmentVO.setNotificationAddress(notificationAddress);
+        }
+        List<SeaReplenishmentVO> seaReplenishmentVOS = new ArrayList<>();
+        seaReplenishmentVOS.add(seaReplenishmentVO);
+        String orderNo = seaReplenishmentVO.getSeaOrderNo();
+        String[] orderNoes = orderNo.split(",");
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("order_no", orderNoes[0]);
+        SeaOrder seaOrder1 = this.seaOrderService.getOne(queryWrapper);
+        this.seaOrderService.getSeaOrderDetails(seaOrder1.getId());
+        SeaOrderFormVO convert = ConvertUtil.convert(seaOrder1, SeaOrderFormVO.class);
+        convert.setOrderId(convert.getId());
+        //查询主订单信息
+        List<String> mainOrder = new ArrayList<>();
+        mainOrder.add(convert.getMainOrderNo());
+        ApiResult result = omsClient.getMainOrderByOrderNos(mainOrder);
+        convert.assemblyMainOrderData(result.getData());
+        convert.setSeaReplenishments(seaReplenishmentVOS);
+        return CommonResult.success(convert);
+    }
+
+
+    @ApiOperation(value = "查询订单详情 seaOrderId=海运订单id")
+    @PostMapping(value = "/getSeaReplenishmentOrderDetails")
+    public CommonResult<SeaOrderVO> getSeaReplenishmentOrderDetails(@RequestBody Map<String, Object> map) {
+        Long seaOrderId = MapUtil.getLong(map, "id");
+        if (seaOrderId == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        SeaOrderVO seaOrderDetails = this.seaOrderService.getSeaOrderDetails(seaOrderId);
+        if(seaOrderDetails.getSeaReplenishments()==null || seaOrderDetails.getSeaReplenishments().size()<=0){
+            List<SeaReplenishmentVO> seaReplenishmentVOS = new ArrayList<>();
+            SeaReplenishmentVO convert = ConvertUtil.convert(seaOrderDetails, SeaReplenishmentVO.class);
+            convert.setOrderNo(null);
+            convert.setSeaOrderId(seaOrderDetails.getOrderId());
+            convert.setSeaOrderNo(seaOrderDetails.getOrderNo());
+            if(convert.getSeaContainerInformations()==null || convert.getSeaContainerInformations().size()<0){
+                List<SeaContainerInformationVO> seaContainerInformations = new ArrayList<>();
+                seaContainerInformations.add(new SeaContainerInformationVO());
+                convert.setSeaContainerInformations(seaContainerInformations);
+            }
+            if(convert.getNotificationAddress()==null || convert.getNotificationAddress().size()<0){
+                List<OrderAddressVO> notificationAddress = new ArrayList<>();
+                notificationAddress.add(new OrderAddressVO());
+                convert.setNotificationAddress(notificationAddress);
+            }
+            seaReplenishmentVOS.add(convert);
+            seaOrderDetails.setSeaReplenishments(seaReplenishmentVOS);
+        }else{
+            List<SeaReplenishmentVO> seaReplenishments = seaOrderDetails.getSeaReplenishments();
+            List<SeaReplenishmentVO> seaReplenishmentVOS = new ArrayList<>();
+            for (SeaReplenishmentVO seaReplenishment : seaReplenishments) {
+                if(seaReplenishment.getSeaContainerInformations()==null || seaReplenishment.getSeaContainerInformations().size()<0){
+                    List<SeaContainerInformationVO> seaContainerInformations = new ArrayList<>();
+                    seaContainerInformations.add(new SeaContainerInformationVO());
+                    seaReplenishment.setSeaContainerInformations(seaContainerInformations);
+                }
+                if(seaReplenishment.getNotificationAddress()==null || seaReplenishment.getNotificationAddress().size()<0){
+                    List<OrderAddressVO> notificationAddress = new ArrayList<>();
+                    notificationAddress.add(new OrderAddressVO());
+                    seaReplenishment.setNotificationAddress(notificationAddress);
+                }
+                seaReplenishmentVOS.add(seaReplenishment);
+            }
+            seaOrderDetails.setSeaReplenishments(seaReplenishmentVOS);
+        }
 
         return CommonResult.success(seaOrderDetails);
     }
@@ -343,7 +549,6 @@ public class SeaOrderController {
         this.seaOrderService.doSeaBookShipOpt(form);
         return CommonResult.success();
     }
-
 
 
     @ApiOperation(value = "海运订单驳回")
@@ -392,94 +597,91 @@ public class SeaOrderController {
     public void uploadExcel(@RequestParam("orderId") Long orderId, HttpServletResponse response) {
 //        Long orderId = MapUtil.getLong(map1, "OrderId");
         SeaOrderVO seaOrderDetails = seaOrderService.getSeaOrderDetails(orderId);
+        List<SeaReplenishmentVO> seaReplenishments = seaOrderDetails.getSeaReplenishments();
 
+        for (SeaReplenishmentVO seaReplenishment : seaReplenishments) {
+            File file = new File(filePath);
+            String filename1 = file.getName();
 
-//        ClassPathResource classPathResource = new ClassPathResource("/static/海运.xlsx");
-//        String filename1 = classPathResource.getFilename();
-
-        File file = new File(filePath);
-        String filename1 = file.getName();
-
-        try {
+            try {
 //            InputStream inputStream = classPathResource.getInputStream();
-            InputStream inputStream = new FileInputStream(file);
-            Workbook templateWorkbook = null;
-            String fileType = filename1.substring(filename1.lastIndexOf("."));
-            if (".xls".equals(fileType)) {
-                templateWorkbook = new HSSFWorkbook(inputStream); // 2003-
-            } else if (".xlsx".equals(fileType)) {
-                templateWorkbook = new XSSFWorkbook(inputStream); // 2007+
-            }else{
+                InputStream inputStream = new FileInputStream(file);
+                Workbook templateWorkbook = null;
+                String fileType = filename1.substring(filename1.lastIndexOf("."));
+                if (".xls".equals(fileType)) {
+                    templateWorkbook = new HSSFWorkbook(inputStream); // 2003-
+                } else if (".xlsx".equals(fileType)) {
+                    templateWorkbook = new XSSFWorkbook(inputStream); // 2007+
+                } else {
 
-            }
-            //HSSFWorkbook templateWorkbook = new HSSFWorkbook(inputStream);
+                }
+                //HSSFWorkbook templateWorkbook = new HSSFWorkbook(inputStream);
 
-            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-            templateWorkbook.write(outStream);
-            ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
+                ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+                templateWorkbook.write(outStream);
+                ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
 
-            String fileName = "海运补料";
+                String fileName = "海运补料";
 
-            response.setContentType("application/vnd.ms-excel");
-            response.setCharacterEncoding("utf-8");
-            // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
-            String filename = URLEncoder.encode(fileName, "utf-8");
-            response.setHeader("Content-disposition", "attachment;filename=" + filename+".xlsx");
+                response.setContentType("application/vnd.ms-excel");
+                response.setCharacterEncoding("utf-8");
+                // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
+                String filename = URLEncoder.encode(fileName, "utf-8");
+                response.setHeader("Content-disposition", "attachment;filename=" + filename + ".xlsx");
 
-            ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
+                ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
 
-            WriteSheet writeSheet = EasyExcel.writerSheet().build();
+                WriteSheet writeSheet = EasyExcel.writerSheet().build();
 
-            FillConfig fillConfig = FillConfig.builder().direction(WriteDirectionEnum.HORIZONTAL).build();
-            //将集合数据填充
-            excelWriter.fill(new FillWrapper("delivery",seaOrderDetails.getDeliveryAddress()),fillConfig,writeSheet);
-            excelWriter.fill(new FillWrapper("shipping",seaOrderDetails.getShippingAddress()),fillConfig,writeSheet);
-            if(seaOrderDetails.getNotificationAddress()!=null && seaOrderDetails.getNotificationAddress().size()>0){
-                excelWriter.fill(new FillWrapper("notification",seaOrderDetails.getNotificationAddress()),fillConfig,writeSheet);
-            }
-            excelWriter.fill(new FillWrapper("goodone",seaOrderDetails.getGoodsForms()),fillConfig,writeSheet);
-            excelWriter.fill(new FillWrapper("goodtwo",seaOrderDetails.getGoodsForms()),writeSheet);
+                FillConfig fillConfig = FillConfig.builder().direction(WriteDirectionEnum.HORIZONTAL).build();
+                //将集合数据填充
+                excelWriter.fill(new FillWrapper("delivery", seaReplenishment.getDeliveryAddress()), fillConfig, writeSheet);
+                excelWriter.fill(new FillWrapper("shipping", seaReplenishment.getShippingAddress()), fillConfig, writeSheet);
+                if (seaOrderDetails.getNotificationAddress() != null && seaReplenishment.getNotificationAddress().size() > 0) {
+                    excelWriter.fill(new FillWrapper("notification", seaReplenishment.getNotificationAddress()), fillConfig, writeSheet);
+                }
+                excelWriter.fill(new FillWrapper("goodone", seaReplenishment.getGoodsForms()), fillConfig, writeSheet);
+                excelWriter.fill(new FillWrapper("seaContainerInformation", seaReplenishment.getSeaContainerInformations()), fillConfig, writeSheet);
 
-            //将指定数据填充
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("shipCompany", seaOrderDetails.getSeaBookshipVO().getShipCompany());
-            map.put("shipNumber", seaOrderDetails.getSeaBookshipVO().getShipNumber());
-            map.put("portDeparture", seaOrderDetails.getPortDeparture());
-            map.put("portDestination", seaOrderDetails.getPortDestination());
-            map.put("cabinetNumber", seaOrderDetails.getCabinetNumber());
-            map.put("paperStripSeal", seaOrderDetails.getPaperStripSeal());
-            map.put("cabinetSize", seaOrderDetails.getCabinetSizeName());
-            map.put("cabinetType", seaOrderDetails.getCabinetTypeName());
-            if(seaOrderDetails.getCabinetTypeName().equals("FCL")){
-                map.put("whether","√");
-            }else{
-                map.put("whether2","√");
-            }
-
-            List<GoodsVO> goodsForms = seaOrderDetails.getGoodsForms();
-            Integer totalBulkCargoAmount = 0;
-            Double totalWeights = 0.0;
-            Double totalvolume = 0.0;
-            for (GoodsVO goodsForm : goodsForms) {
-                totalBulkCargoAmount = totalBulkCargoAmount + goodsForm.getBulkCargoAmount();
-                totalWeights = totalWeights + goodsForm.getTotalWeight();
-                if(goodsForm.getVolume()!=null){
-                    totalvolume = totalvolume + goodsForm.getVolume();
+                //将指定数据填充
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("shipCompany", seaOrderDetails.getSeaBookshipVO().getShipCompany());
+                map.put("shipNumber", seaOrderDetails.getSeaBookshipVO().getShipNumber());
+                map.put("portDeparture", seaOrderDetails.getPortDeparture());
+                map.put("portDestination", seaOrderDetails.getPortDestination());
+                map.put("cabinetType", seaOrderDetails.getCabinetTypeName());
+                if (seaOrderDetails.getCabinetTypeName().equals("FCL")) {
+                    map.put("whether", "√");
+                } else {
+                    map.put("whether2", "√");
                 }
 
+                List<SeaContainerInformationVO> seaContainerInformations = seaReplenishment.getSeaContainerInformations();
+                Integer totalBulkCargoAmount = 0;
+                Double totalWeights = 0.0;
+                Double totalvolume = 0.0;
+                for (SeaContainerInformationVO seaContainerInformation : seaContainerInformations) {
+                    totalBulkCargoAmount = totalBulkCargoAmount + seaContainerInformation.getPlatNumber();
+                    totalWeights = totalWeights + seaContainerInformation.getWeight();
+                    if (seaContainerInformation.getVolume() != null) {
+                        totalvolume = totalvolume + seaContainerInformation.getVolume();
+                    }
+
+                }
+                map.put("totalBulkCargoAmount", totalBulkCargoAmount);
+                map.put("totalWeights", totalWeights);
+                map.put("totalvolume", totalvolume);
+                excelWriter.fill(map, writeSheet);
+
+                excelWriter.finish();
+                outStream.close();
+                inputStream.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            map.put("totalBulkCargoAmount", totalBulkCargoAmount);
-            map.put("totalWeights", totalWeights);
-            map.put("totalvolume", totalvolume);
-            excelWriter.fill(map, writeSheet);
-
-            excelWriter.finish();
-            outStream.close();
-            inputStream.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+
 
     }
 

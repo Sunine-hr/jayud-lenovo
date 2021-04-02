@@ -1,22 +1,13 @@
 package com.jayud.airfreight.model.vo;
 
-import cn.hutool.json.JSONArray;
-import cn.hutool.json.JSONObject;
-import com.alibaba.fastjson.JSON;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.airfreight.model.enums.AirOrderTermsEnum;
-import com.jayud.common.ApiResult;
-import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.TradeTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.httpclient.HttpStatus;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * <p>
@@ -43,6 +34,9 @@ public class AirOrderInfoVO {
 
     @ApiModelProperty(value = "空运订单编号")
     private String orderNo;
+
+    @ApiModelProperty(value = "空运订单编号")
+    private String subOrderNo;
 
     @ApiModelProperty(value = "进出口类型(1：进口，2：出口)")
     private Integer impAndExpType;
@@ -242,5 +236,10 @@ public class AirOrderInfoVO {
     public void setSubUnitCode(String subUnitCode) {
         this.subUnitCode = subUnitCode;
 //        this.defaultUnitCode = subUnitCode;
+    }
+
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
+        this.subOrderNo = orderNo;
     }
 }

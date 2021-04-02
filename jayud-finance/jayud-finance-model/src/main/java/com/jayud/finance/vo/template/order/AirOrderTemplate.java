@@ -40,7 +40,7 @@ public class AirOrderTemplate{
     private String mainOrderNo;
 
     @ApiModelProperty(value = "空运订单编号", required = true)
-    private String orderNo;
+    private String subOrderNo;
 
     @ApiModelProperty(value = "客户", required = true)
     private String customerName;
@@ -167,6 +167,10 @@ public class AirOrderTemplate{
 
     @ApiModelProperty(value = "状态")
     private String status;
+
+    @ApiModelProperty(value = "子订单编号")
+    private String orderNo;
+
 
 //    @ApiModelProperty(value = "货品信息")
 //    @JsonIgnore

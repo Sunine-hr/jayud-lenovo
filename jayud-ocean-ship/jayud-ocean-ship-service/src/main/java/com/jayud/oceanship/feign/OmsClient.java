@@ -138,14 +138,14 @@ public interface OmsClient {
      * 根据订单号集合查询商品信息
      */
     @RequestMapping(value = "/api/getGoodsByBusOrders")
-    public ApiResult<List<GoodsVO>> getGoodsByBusOrders(@RequestParam("orderId") List<String> orderNo,
+    public ApiResult<List<GoodsVO>> getGoodsByBusOrders(@RequestParam("orderNo") List<String> orderNo,
                                                      @RequestParam("businessType") Integer businessType);
 
     /**
      * 根据业务号集合查询订单地址
      */
     @RequestMapping(value = "/api/getOrderAddressByBusOrders")
-    public ApiResult<List<OrderAddressVO>> getOrderAddressByBusOrders(@RequestParam("orderId") List<String> orderNo,
+    public ApiResult<List<OrderAddressVO>> getOrderAddressByBusOrders(@RequestParam("orderNo") List<String> orderNo,
                                                                    @RequestParam("businessType") Integer businessType);
 
 

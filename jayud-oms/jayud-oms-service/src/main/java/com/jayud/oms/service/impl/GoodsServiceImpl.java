@@ -56,7 +56,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     public List<Goods> getGoodsByBusOrders(List<String> orderNo, Integer businessType) {
         QueryWrapper<Goods> condition = new QueryWrapper<>();
         condition.lambda().in(Goods::getOrderNo, orderNo);
-        condition.lambda().eq(Goods::getBusinessType, orderNo);
+        condition.lambda().eq(Goods::getBusinessType, businessType);
         return this.baseMapper.selectList(condition);
     }
 

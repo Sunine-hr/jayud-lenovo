@@ -1,5 +1,6 @@
 package com.jayud.oceanship.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.ApiResult;
@@ -101,4 +102,13 @@ public class SeaReplenishmentServiceImpl extends ServiceImpl<SeaReplenishmentMap
 
         return seaReplenishmentVO;
     }
+
+    @Override
+    public void deleteSeaReplenishment(Long orderId, String orderNo) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("sea_order_id", orderId);
+        queryWrapper.like("sea_order_no", orderNo);
+        this.baseMapper.delete(queryWrapper);
+    }
+
 }

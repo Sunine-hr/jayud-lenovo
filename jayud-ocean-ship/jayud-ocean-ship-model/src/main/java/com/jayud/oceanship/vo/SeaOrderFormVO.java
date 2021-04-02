@@ -13,7 +13,6 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.TradeTypeEnum;
 import com.jayud.common.utils.FileView;
-import com.jayud.oceanship.bo.AddSeaReplenishment;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

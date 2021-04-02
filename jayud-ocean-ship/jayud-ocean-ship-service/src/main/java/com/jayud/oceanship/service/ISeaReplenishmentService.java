@@ -1,5 +1,6 @@
 package com.jayud.oceanship.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.oceanship.bo.QuerySeaOrderForm;
 import com.jayud.oceanship.po.SeaReplenishment;
@@ -29,4 +30,7 @@ public interface ISeaReplenishmentService extends IService<SeaReplenishment> {
      * @return
      */
     SeaReplenishmentVO getSeaRepOrderDetails(Long orderId);
+
+
+    void deleteSeaReplenishment(Long orderId, String orderNo);
 }

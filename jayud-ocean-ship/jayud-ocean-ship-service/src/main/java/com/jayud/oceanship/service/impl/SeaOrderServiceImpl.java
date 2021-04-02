@@ -127,24 +127,16 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         //获取柜型数量
         if(addSeaOrderForm.getCabinetType()!=null){
             if (addSeaOrderForm.getCabinetType().equals(2)) {
-                List<CabinetSizeNumber> cabinetSizeNumbers = addSeaOrderForm.getCabinetSizeNumbers();
-
                 //先删除原来的柜型
                 QueryWrapper queryWrapper = new QueryWrapper();
-                queryWrapper.eq("sea_order_id", seaOrder.getId());
-                queryWrapper.eq("sea_order_no", seaOrder.getOrderNo());
-                this.seaReplenishmentService.remove(queryWrapper);
+                queryWrapper.eq("sea_order_id", addSeaOrderForm.getOrderId());
+                queryWrapper.eq("sea_order_no", addSeaOrderForm.getOrderNo());
+                this.cabinetSizeNumberService.deleteCabinet(queryWrapper);
 
             }
             if (addSeaOrderForm.getCabinetType().equals(1)) {
                 List<CabinetSizeNumber> cabinetSizeNumbers = addSeaOrderForm.getCabinetSizeNumbers();
-                if (cabinetSizeNumbers.get(0).getId() != null) {
-                    //先删除原来的柜型
-                    QueryWrapper queryWrapper = new QueryWrapper();
-                    queryWrapper.eq("sea_order_id", seaOrder.getId());
-                    queryWrapper.eq("sea_order_no", seaOrder.getOrderNo());
-                    this.seaReplenishmentService.remove(queryWrapper);
-                }
+
                 for (CabinetSizeNumber cabinetSizeNumber : cabinetSizeNumbers) {
                     cabinetSizeNumber.setSeaOrderId(seaOrder.getId());
                     cabinetSizeNumber.setSeaOrderNo(seaOrder.getOrderNo());
@@ -161,7 +153,6 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
 
         //获取用户地址
         List<AddOrderAddressForm> orderAddressForms = addSeaOrderForm.getOrderAddressForms();
-        System.out.println("orderAddressForms=================================="+orderAddressForms);
         for (AddOrderAddressForm orderAddressForm : orderAddressForms) {
             orderAddressForm.setOrderNo(seaOrder.getOrderNo());
             orderAddressForm.setBusinessType(BusinessTypeEnum.HY.getCode());
@@ -427,6 +418,9 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
     @Override
     public void updateOrSaveProcessStatus(SeaProcessOptForm form) {
 
+        //删除补料信息
+        seaReplenishmentService.deleteSeaReplenishment(form.getOrderId(),form.getOrderNo());
+
         if (form.getType().equals(1)) {//合并，多个订单合并成一个补料
             List<AddSeaOrderForm> seaOrderForms = form.getSeaOrderForms();
             List<AddSeaReplenishment> seaReplenishments = form.getSeaReplenishments();
@@ -551,6 +545,10 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
 //                }
 
                 //获取货物信息数据,增加或修改货柜信息
+                QueryWrapper queryWrapper = new QueryWrapper();
+                queryWrapper.eq("sea_rep_id",replenishment.getId());
+                queryWrapper.eq("sea_rep_no",replenishment.getOrderNo());
+                seaContainerInformationService.remove(queryWrapper);
                 if (replenishment.getCabinetType().equals(1)) {
                     //修改或保存
                     List<SeaContainerInformation> seaContainerInformations = seaReplenishments.get(i).getSeaContainerInformations();
@@ -643,13 +641,13 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         //查询商品信息
         ApiResult<List<GoodsVO>> result = this.omsClient.getGoodsByBusIds(Collections.singletonList(seaOrderId), businessType);
         if (result.getCode() != HttpStatus.SC_OK) {
-            log.warn("查询商品信息失败 airOrderId={}", seaOrderId);
+            log.warn("查询商品信息失败 seaOrderId={}", seaOrderId);
         }
         seaOrder.setGoodsForms(result.getData());
         //查询地址信息
         ApiResult<List<OrderAddressVO>> resultOne = this.omsClient.getOrderAddressByBusIds(Collections.singletonList(seaOrderId), businessType);
         if (resultOne.getCode() != HttpStatus.SC_OK) {
-            log.warn("查询订单地址信息失败 airOrderId={}", seaOrderId);
+            log.warn("查询订单地址信息失败 seaOrderId={}", seaOrderId);
         }
         //处理地址信息
         for (OrderAddressVO address : resultOne.getData()) {

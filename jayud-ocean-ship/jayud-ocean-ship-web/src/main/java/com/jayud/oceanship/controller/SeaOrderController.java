@@ -175,7 +175,7 @@ public class SeaOrderController {
         //获取发货人信息
         ApiResult<List<OrderAddressVO>> resultOne = this.omsClient.getOrderAddressByBusIds(seaOrderIds, BusinessTypeEnum.HY.getCode());
         if (resultOne.getCode() != HttpStatus.SC_OK) {
-            log.warn("查询订单地址信息失败 airOrderId={}", seaOrderIds);
+            log.warn("查询订单地址信息失败 seaOrderId={}", seaOrderIds);
         }
 
         //查询主订单信息

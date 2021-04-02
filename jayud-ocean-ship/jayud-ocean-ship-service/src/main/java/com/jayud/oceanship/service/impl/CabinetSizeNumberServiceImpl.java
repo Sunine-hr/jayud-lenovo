@@ -31,4 +31,9 @@ public class CabinetSizeNumberServiceImpl extends ServiceImpl<CabinetSizeNumberM
         List<CabinetSizeNumberVO> list1 = ConvertUtil.convertList(list,CabinetSizeNumberVO.class);
         return list1;
     }
+
+    @Override
+    public void deleteCabinet(QueryWrapper queryWrapper) {
+        this.deleteCabinet(queryWrapper);
+    }
 }

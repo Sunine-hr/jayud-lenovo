@@ -1,5 +1,6 @@
 package com.jayud.oceanship.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.oceanship.po.CabinetSizeNumber;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oceanship.vo.CabinetSizeNumberVO;
@@ -17,4 +18,6 @@ import java.util.List;
 public interface ICabinetSizeNumberService extends IService<CabinetSizeNumber> {
 
     List<CabinetSizeNumberVO> getList(Long orderId);
+
+    void deleteCabinet(QueryWrapper queryWrapper);
 }

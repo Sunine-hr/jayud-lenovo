@@ -220,7 +220,6 @@ public class SeaOrderController {
             //获取截补料数据
             QueryWrapper queryWrapper = new QueryWrapper();
             queryWrapper.eq("sea_order_id", record.getId());
-            queryWrapper.like("sea_order_no", record.getOrderNo());
             List<SeaReplenishment> seaReplenishments = seaReplenishmentService.list(queryWrapper);
             List<SeaReplenishmentVO> seaReplenishmentVOS = ConvertUtil.convertList(seaReplenishments, SeaReplenishmentVO.class);
             for (SeaReplenishmentVO seaReplenishmentVO : seaReplenishmentVOS) {

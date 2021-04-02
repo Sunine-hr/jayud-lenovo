@@ -187,4 +187,12 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
         condition.lambda().in(OrderAddress::getBusinessType, businessType);
         return this.baseMapper.selectList(condition);
     }
+
+    @Override
+    public void deleteOrderAddressByBusOrders(List<String> orderNo, Integer businessType) {
+        QueryWrapper<OrderAddress> condition = new QueryWrapper<>();
+        condition.lambda().in(OrderAddress::getOrderNo, orderNo);
+        condition.lambda().in(OrderAddress::getBusinessType, businessType);
+        this.baseMapper.delete(condition);
+    }
 }

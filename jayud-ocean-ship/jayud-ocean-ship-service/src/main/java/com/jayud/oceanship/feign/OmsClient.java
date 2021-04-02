@@ -208,4 +208,18 @@ public interface OmsClient {
     @ApiOperation(value = "获取订单id")
     @RequestMapping(value = "/api/getMainOrderByOrderNo")
     ApiResult<Long> getMainOrderByOrderNo(@RequestParam("mainOrderNo")String mainOrderNo);
+
+    /**
+     * 根据订单号集合删除商品信息
+     */
+    @RequestMapping(value = "/api/deleteGoodsByBusOrders")
+    public ApiResult<List<GoodsVO>> deleteGoodsByBusOrders(@RequestParam("orderNo") List<String> orderNo,
+                                                        @RequestParam("businessType") Integer businessType);
+
+    /**
+     * 根据业务号集合删除订单地址
+     */
+    @RequestMapping(value = "/api/deleteOrderAddressByBusOrders")
+    public ApiResult<List<OrderAddressVO>> deleteOrderAddressByBusOrders(@RequestParam("orderNo") List<String> orderNo,
+                                                                      @RequestParam("businessType") Integer businessType);
 }

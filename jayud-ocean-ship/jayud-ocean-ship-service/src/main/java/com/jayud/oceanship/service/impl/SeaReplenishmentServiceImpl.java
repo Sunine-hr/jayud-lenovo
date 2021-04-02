@@ -84,13 +84,13 @@ public class SeaReplenishmentServiceImpl extends ServiceImpl<SeaReplenishmentMap
         seaReplenishmentVO.setSeaContainerInformations(seaContainerInformations);
 
         //查询商品信息
-        ApiResult<List<GoodsVO>> result1 = this.omsClient.getGoodsByBusIds(Collections.singletonList(seaReplenishmentVO.getId()), businessType);
+        ApiResult<List<GoodsVO>> result1 = this.omsClient.getGoodsByBusOrders(Collections.singletonList(seaReplenishmentVO.getOrderNo()), businessType);
         if (result1.getCode() != HttpStatus.SC_OK) {
             log.warn("查询商品信息失败 seaOrderId={}", seaReplenishmentVO.getId());
         }
         seaReplenishmentVO.setGoodsForms(result1.getData());
         //查询地址信息
-        ApiResult<List<OrderAddressVO>> resultOne1 = this.omsClient.getOrderAddressByBusIds(Collections.singletonList(seaReplenishmentVO.getId()), businessType);
+        ApiResult<List<OrderAddressVO>> resultOne1 = this.omsClient.getOrderAddressByBusOrders(Collections.singletonList(seaReplenishmentVO.getOrderNo()), businessType);
         if (resultOne1.getCode() != HttpStatus.SC_OK) {
             log.warn("查询订单地址信息失败 seaOrderId={}", seaReplenishmentVO.getId());
         }
@@ -109,6 +109,14 @@ public class SeaReplenishmentServiceImpl extends ServiceImpl<SeaReplenishmentMap
         queryWrapper.eq("sea_order_id", orderId);
         queryWrapper.like("sea_order_no", orderNo);
         this.baseMapper.delete(queryWrapper);
+    }
+
+    @Override
+    public List<SeaReplenishment> getList(Long orderId, String orderNo) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("sea_order_id", orderId);
+        queryWrapper.like("sea_order_no", orderNo);
+        return this.baseMapper.selectList(queryWrapper);
     }
 
 }

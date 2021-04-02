@@ -392,6 +392,13 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
 
         //删除补料信息
         seaReplenishmentService.deleteSeaReplenishment(form.getOrderId(),form.getOrderNo());
+        List<SeaReplenishment> list = seaReplenishmentService.getList(form.getOrderId(),form.getOrderNo());
+        List<String> orderNo = new ArrayList<>();
+        for (SeaReplenishment replenishment : list) {
+            orderNo.add(replenishment.getOrderNo());
+        }
+        omsClient.deleteOrderAddressByBusOrders(orderNo,BusinessTypeEnum.HY.getCode());
+        omsClient.deleteGoodsByBusOrders(orderNo,BusinessTypeEnum.HY.getCode());
 
         if (form.getType().equals(1)) {//合并，多个订单合并成一个补料
             List<AddSeaOrderForm> seaOrderForms = form.getSeaOrderForms();
@@ -422,6 +429,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
             replenishment.setOrderNo(blOrderNo);
             replenishment.setIsBillOfLading(0);
             replenishment.setIsReleaseOrder(0);
+            replenishment.setIsAduit(0);
             boolean save = seaReplenishmentService.save(replenishment);
             if (!save) {
                 log.warn("合并补料信息添加失败");
@@ -492,6 +500,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
                 replenishment.setOrderNo(getBLOrderNo(seaOrderForms.get(0).getOrderNo(), form.getType(), seaReplenishments.size(), i + 1));
                 replenishment.setIsBillOfLading(0);
                 replenishment.setIsReleaseOrder(0);
+                replenishment.setIsAduit(0);
                 boolean save = seaReplenishmentService.save(replenishment);
                 if (!save) {
                     log.warn("分单补料信息添加失败");
@@ -768,6 +777,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         seaOrder.setAuditStatus(form.getAuditStatus());
         seaOrder.setAuditOpinion(form.getAuditOpinion());
         String orderNo = form.getSeaReplenishments().get(0).getSeaOrderNo();
+        AddSeaReplenishment addSeaReplenishment = form.getSeaReplenishments().get(0);
         String[] orderNoes = orderNo.split(",");
         for (String orderNoe : orderNoes) {
             QueryWrapper queryWrapper = new QueryWrapper();
@@ -781,7 +791,21 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
             form.setMainOrderId(mainOrderId);
 
             if (form.getAuditStatus().equals(1)) {//审核通过
-                this.updateProcessStatus(seaOrder, form);
+                SeaReplenishment convert = ConvertUtil.convert(addSeaReplenishment, SeaReplenishment.class);
+                convert.setIsAduit(1);
+                boolean save = seaReplenishmentService.saveOrUpdate(convert);
+                if (!save) {
+                    log.error("操作失败");
+                    throw new JayudBizException(ResultEnum.OPR_FAIL);
+                }
+                QueryWrapper queryWrapper1 = new QueryWrapper();
+                queryWrapper1.like("sea_order_no",addSeaReplenishment.getSeaOrderNo());
+                int count = this.seaReplenishmentService.count(queryWrapper1);
+                queryWrapper1.eq("is_bill_of_lading",1);
+                int count1 = this.seaReplenishmentService.count(queryWrapper1);
+                if(count==count1) { //该订单所有补料单都已提单
+                    updateProcessStatus(new SeaOrder(), form);
+                }
             }
             if (form.getAuditStatus().equals(2)) {
                 DelOprStatusForm delOprStatusForm = new DelOprStatusForm();
@@ -834,9 +858,9 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
                 Long mainOrderId = omsClient.getMainOrderByOrderNo(seaOrder1.getMainOrderNo()).getData();
                 form.setMainOrderId(mainOrderId);
                 QueryWrapper queryWrapper1 = new QueryWrapper();
-                queryWrapper.like("sea_order_no",seaReplenishment.getSeaOrderNo());
+                queryWrapper1.like("sea_order_no",seaReplenishment.getSeaOrderNo());
                 int count = this.seaReplenishmentService.count(queryWrapper1);
-                queryWrapper.eq("is_bill_of_lading",1);
+                queryWrapper1.eq("is_bill_of_lading",1);
                 int count1 = this.seaReplenishmentService.count(queryWrapper1);
                 if(count==count1){ //该订单所有补料单都已提单
                     updateProcessStatus(new SeaOrder(),form);
@@ -891,9 +915,9 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
                 Long mainOrderId = omsClient.getMainOrderByOrderNo(seaOrder1.getMainOrderNo()).getData();
                 form.setMainOrderId(mainOrderId);
                 QueryWrapper queryWrapper1 = new QueryWrapper();
-                queryWrapper.like("sea_order_no",seaReplenishment.getSeaOrderNo());
+                queryWrapper1.like("sea_order_no",seaReplenishment.getSeaOrderNo());
                 int count = this.seaReplenishmentService.count(queryWrapper1);
-                queryWrapper.eq("is_release_order",1);
+                queryWrapper1.eq("is_release_order",1);
                 int count1 = this.seaReplenishmentService.count(queryWrapper1);
                 if(count==count1){ //该订单所有补料单都已提单
                     updateProcessStatus(new SeaOrder(),form);

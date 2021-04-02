@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oceanship.vo.SeaReplenishmentFormVO;
 import com.jayud.oceanship.vo.SeaReplenishmentVO;
 
+import java.util.List;
+
 /**
  * <p>
  * 海运补料表 服务类
@@ -33,4 +35,6 @@ public interface ISeaReplenishmentService extends IService<SeaReplenishment> {
 
 
     void deleteSeaReplenishment(Long orderId, String orderNo);
+
+    List<SeaReplenishment> getList(Long orderId, String orderNo);
 }

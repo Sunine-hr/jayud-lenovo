@@ -1237,6 +1237,26 @@ public class ExternalApiController {
         List<Goods> goods = this.goodsService.getGoodsByBusOrders(orderNo, businessType);
         return ApiResult.ok(goods);
     }
+
+
+    @ApiOperation("根据业务id集合查询订单地址")
+    @RequestMapping(value = "/api/deleteOrderAddressByBusOrders")
+    public ApiResult<List<OrderAddress>> deleteOrderAddressByBusOrders(@RequestParam("orderNo") List<String> orderNo,
+                                                                         @RequestParam("businessType") Integer businessType) {
+        //查询订单地址信息
+        this.orderAddressService.deleteOrderAddressByBusOrders(orderNo, businessType);
+        return ApiResult.ok();
+    }
+
+
+    @ApiOperation("根据订单id集合查询商品信息")
+    @RequestMapping(value = "/api/deleteGoodsByBusOrders")
+    public ApiResult<List<Goods>> deleteGoodsByBusOrders(@RequestParam("orderNo") List<String> orderNo,
+                                                           @RequestParam("businessType") Integer businessType) {
+        //查询商品信息
+        this.goodsService.deleteGoodsByBusOrders(orderNo, businessType);
+        return ApiResult.ok();
+    }
 }
 
 

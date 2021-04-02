@@ -60,4 +60,12 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         return this.baseMapper.selectList(condition);
     }
 
+    @Override
+    public void deleteGoodsByBusOrders(List<String> orderNo, Integer businessType) {
+        QueryWrapper<Goods> condition = new QueryWrapper<>();
+        condition.lambda().in(Goods::getOrderNo, orderNo);
+        condition.lambda().eq(Goods::getBusinessType, businessType);
+        this.baseMapper.delete(condition);
+    }
+
 }

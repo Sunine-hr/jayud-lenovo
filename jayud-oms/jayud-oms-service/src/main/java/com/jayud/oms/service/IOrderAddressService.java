@@ -48,4 +48,6 @@ public interface IOrderAddressService extends IService<OrderAddress> {
     public List<OrderAddress> getLastContactInfoByBusinessType(Integer businessType);
 
     List<OrderAddress> getOrderAddressByBusOrders(List<String> orderNo, Integer businessType);
+
+    void deleteOrderAddressByBusOrders(List<String> orderNo, Integer businessType);
 }

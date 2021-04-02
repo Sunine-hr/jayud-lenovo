@@ -161,8 +161,8 @@ public class InputTrailerOrderFrom {
     @ApiModelProperty(value = "拖车订单地址信息")
     private List<AddTrailerOrderAddressForm> orderAddressForms;
 
-    @ApiModelProperty(value = "是否待补全")
-    private Boolean isInfoComplete=false;
+    @ApiModelProperty(value = "是否资料齐全")
+    private Boolean isInfoComplete=true;
 
 
     /**
@@ -176,7 +176,7 @@ public class InputTrailerOrderFrom {
             return false;
         }
         // 发货/收货地址是必填项
-        if (!isInfoComplete) {
+        if (isInfoComplete) { //资料齐全,需要校验资料
             if (CollectionUtils.isEmpty(this.orderAddressForms)) {
                 log.warn("提货地址信息不能为空");
                 return false;

@@ -178,7 +178,7 @@ release_time, is_weighed, is_make_up, create_user, create_time, update_user, upd
                     #{legalId}
                 </foreach>
             </if>
-            and tor.is_info_complete = 0
+            and tor.is_info_complete = 1
         </where>
         order by tor.id desc
     </select>

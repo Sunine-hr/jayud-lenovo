@@ -210,7 +210,7 @@ public class TrailerOrderVO {
     @ApiModelProperty(value = "附件信息集合")
     private List<FileView> allPics = new ArrayList<>();
 
-    @ApiModelProperty(value = "是否待补全")
+    @ApiModelProperty(value = "是否资料齐全")
     private Boolean isInfoComplete;
 
     public void setImpAndExpType(Integer impAndExpType) {

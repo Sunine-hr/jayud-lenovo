@@ -553,7 +553,7 @@ public class TrailerOrderController {
     @PostMapping(value = "/createOrUpdateOrder")
     @ApiOperation(value = "创建拖车单")
     public CommonResult<String> createOrUpdateOrder(@RequestBody AddTrailerOrderFrom addTrailerOrderFrom) {
-        if (!addTrailerOrderFrom.getIsInfoComplete()) {
+        if (addTrailerOrderFrom.getIsInfoComplete()) {
             addTrailerOrderFrom.checkPickUpInfo();
         }
         String order = trailerOrderService.createOrder(addTrailerOrderFrom);

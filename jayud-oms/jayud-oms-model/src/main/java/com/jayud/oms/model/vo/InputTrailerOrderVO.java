@@ -194,7 +194,7 @@ public class InputTrailerOrderVO {
     @ApiModelProperty(value = "总箱数")
     private String totalXAmountName;
 
-    @ApiModelProperty(value = "是否待补全")
+    @ApiModelProperty(value = "是否资料齐全")
     private Boolean isInfoComplete;
 
 

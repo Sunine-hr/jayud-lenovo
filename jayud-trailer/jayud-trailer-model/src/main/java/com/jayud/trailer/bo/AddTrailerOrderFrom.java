@@ -165,8 +165,8 @@ public class AddTrailerOrderFrom {
     @ApiModelProperty(value = "货品信息")
     private List<AddGoodsForm> goodsForms;
 
-    @ApiModelProperty(value = "是否待补全")
-    private Boolean isInfoComplete = false;
+    @ApiModelProperty(value = "是否资料齐全")
+    private Boolean isInfoComplete = true;
 
     /**
      * 校验创建拖车子订单参数

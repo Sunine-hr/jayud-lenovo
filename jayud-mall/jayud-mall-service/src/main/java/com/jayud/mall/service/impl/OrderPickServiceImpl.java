@@ -35,7 +35,9 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
         List<OrderPickVO> orderPickVOList = new ArrayList<>();
         form.forEach(deliveryAddressVO -> {
             OrderPickVO orderPickVO = new OrderPickVO();
-            //String warehouseNo = numberGeneratedService.getOrderNoByCode("warehouse_receipt");
+            String pickNo = NumberGeneratedUtils.getOrderNoByCode2("pick_no");
+            orderPickVO.setPickNo(pickNo);//提货单号
+            orderPickVO.setPickStatus(1);//提货状态(1未提货 2正在提货 3已提货 4已到仓)
             String warehouseNo = NumberGeneratedUtils.getOrderNoByCode2("warehouse_receipt");
             orderPickVO.setWarehouseNo(warehouseNo);//进仓单号
             orderPickVO.setAddressId(deliveryAddressVO.getId());

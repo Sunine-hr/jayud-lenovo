@@ -26,6 +26,9 @@ public class OrderPickVO {
     @JSONField(ordinal = 3)
     private String pickNo;
 
+    @ApiModelProperty(value = "提货状态(1未提货 2正在提货 3已提货 4已到仓)")
+    private Integer pickStatus;
+
     @ApiModelProperty(value = "进仓单号", position = 4)
     @JSONField(ordinal = 4)
     private String warehouseNo;

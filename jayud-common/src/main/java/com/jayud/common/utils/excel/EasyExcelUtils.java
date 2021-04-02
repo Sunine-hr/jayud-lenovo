@@ -2,8 +2,12 @@ package com.jayud.common.utils.excel;
 
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.util.WorkBookUtil;
+import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.metadata.WriteWorkbook;
+import com.alibaba.excel.write.metadata.fill.FillConfig;
 import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -11,9 +15,16 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.RegionUtil;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -362,6 +373,68 @@ public class EasyExcelUtils {
                 }
             }
             sheet.setColumnWidth(columnNum, columnWidth * 256);
+        }
+    }
+
+
+    public void complexFill(String json, HttpServletResponse response) throws IOException {
+
+        // 模板注意 用{} 来表示你要用的变量 如果本来就有"{","}" 特殊字符 用"\{","\}"代替
+        // {} 代表普通变量 {.} 代表是list的变量
+        String templateFileName = URLDecoder.decode(this.getClass().getClassLoader().getResource("templates/" + "填充模板.xlsx").getPath(), "utf-8");
+        // create template work book
+        XSSFWorkbook templateWorkbook = new XSSFWorkbook(new FileInputStream(templateFileName));
+        // copy sheet
+        JSONArray jsonArray = new JSONArray(json);
+        copyFirstSheet(templateWorkbook, jsonArray.size() - 1);
+        // update sheet name
+        String sheetNamePrefix = "Sheet-";
+        for (int i = 0; i < templateWorkbook.getNumberOfSheets(); i++) {
+            String sheetName = sheetNamePrefix + (i + 1);
+            templateWorkbook.setSheetName(i, sheetName);
+        }
+
+        // outStream to inStream
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        templateWorkbook.write(outStream);
+        ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
+
+        String fileName = "单据.xlsx";
+
+        ExcelWriter excelWriter = null;
+        if (response != null) { //网络流下载
+            response.setContentType("application/vnd.ms-excel");
+            response.setCharacterEncoding("utf-8");
+            // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
+            String filename = URLEncoder.encode(fileName, "utf-8");
+            response.setHeader("Content-disposition", "attachment;filename=" + filename + ".xls");
+            excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
+        } else {
+            excelWriter = EasyExcel.write(fileName).withTemplate(templateInputStream).build();
+        }
+
+
+        // 这里注意 入参用了forceNewRow 代表在写入list的时候不管list下面有没有空行 都会创建一行，然后下面的数据往后移动。默认 是false，会直接使用下一行，如果没有则创建。
+        // forceNewRow 如果设置了true,有个缺点 就是他会把所有的数据都放到内存了，所以慎用
+        // 简单的说 如果你的模板有list,且list不是最后一行，下面还有数据需要填充 就必须设置 forceNewRow=true 但是这个就会把所有数据放到内存 会很耗内存
+        // 如果数据量大 list不是最后一行 参照下一个
+
+        FillConfig fillConfig = FillConfig.builder().forceNewRow(Boolean.TRUE).build();
+        for (int i = 0; i < templateWorkbook.getNumberOfSheets(); i++) {
+            WriteSheet sheet = EasyExcel.writerSheet(i).build();
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            excelWriter.fill(jsonObject.getJSONArray("details"), fillConfig, sheet);
+            excelWriter.fill(jsonObject, sheet);
+        }
+
+        excelWriter.finish();
+
+    }
+
+    public static void copyFirstSheet(XSSFWorkbook workbook, int times) {
+        if (times <= 0) throw new IllegalArgumentException("times error");
+        for (int i = 0; i < times; i++) {
+            workbook.cloneSheet(0);
         }
     }
 }

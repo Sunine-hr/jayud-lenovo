@@ -24,6 +24,7 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.common.utils.excel.EasyExcelUtils;
 import com.jayud.oceanship.bo.*;
 import com.jayud.oceanship.feign.FileClient;
 import com.jayud.oceanship.feign.OauthClient;
@@ -374,7 +375,7 @@ public class SeaOrderController {
 //        OrderFlowSheet orderFlowSheet = orderFlowSheetService.getOne(queryWrapper);
         String orderProcessNode = (String) omsClient.getOrderProcessNode(seaOrder.getMainOrderNo(), seaOrder.getOrderNo(), seaOrder.getStatus()).getData();
         OrderStatusEnum statusEnum = OrderStatusEnum.getSeaOrderNextStatus(orderProcessNode);
-        System.out.println("statusEnum====================================================="+statusEnum);
+        System.out.println("statusEnum=====================================================" + statusEnum);
         if (statusEnum == null) {
             log.error("执行海运流程操作失败,超出流程之外 data={}", seaOrder.toString());
             return CommonResult.error(ResultEnum.OPR_FAIL);
@@ -447,12 +448,12 @@ public class SeaOrderController {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         SeaReplenishmentVO seaReplenishmentVO = this.seaReplenishmentService.getSeaRepOrderDetails(orderId);
-        if(seaReplenishmentVO.getSeaContainerInformations()==null || seaReplenishmentVO.getSeaContainerInformations().size()<0){
+        if (seaReplenishmentVO.getSeaContainerInformations() == null || seaReplenishmentVO.getSeaContainerInformations().size() < 0) {
             List<SeaContainerInformationVO> seaContainerInformations = new ArrayList<>();
             seaContainerInformations.add(new SeaContainerInformationVO());
             seaReplenishmentVO.setSeaContainerInformations(seaContainerInformations);
         }
-        if(seaReplenishmentVO.getNotificationAddress()==null || seaReplenishmentVO.getNotificationAddress().size()<0){
+        if (seaReplenishmentVO.getNotificationAddress() == null || seaReplenishmentVO.getNotificationAddress().size() < 0) {
             List<OrderAddressVO> notificationAddress = new ArrayList<>();
             notificationAddress.add(new OrderAddressVO());
             seaReplenishmentVO.setNotificationAddress(notificationAddress);
@@ -485,34 +486,34 @@ public class SeaOrderController {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         SeaOrderVO seaOrderDetails = this.seaOrderService.getSeaOrderDetails(seaOrderId);
-        if(seaOrderDetails.getSeaReplenishments()==null || seaOrderDetails.getSeaReplenishments().size()<=0){
+        if (seaOrderDetails.getSeaReplenishments() == null || seaOrderDetails.getSeaReplenishments().size() <= 0) {
             List<SeaReplenishmentVO> seaReplenishmentVOS = new ArrayList<>();
             SeaReplenishmentVO convert = ConvertUtil.convert(seaOrderDetails, SeaReplenishmentVO.class);
             convert.setOrderNo(null);
             convert.setSeaOrderId(seaOrderDetails.getOrderId());
             convert.setSeaOrderNo(seaOrderDetails.getOrderNo());
-            if(convert.getSeaContainerInformations()==null || convert.getSeaContainerInformations().size()<0){
+            if (convert.getSeaContainerInformations() == null || convert.getSeaContainerInformations().size() < 0) {
                 List<SeaContainerInformationVO> seaContainerInformations = new ArrayList<>();
                 seaContainerInformations.add(new SeaContainerInformationVO());
                 convert.setSeaContainerInformations(seaContainerInformations);
             }
-            if(convert.getNotificationAddress()==null || convert.getNotificationAddress().size()<0){
+            if (convert.getNotificationAddress() == null || convert.getNotificationAddress().size() < 0) {
                 List<OrderAddressVO> notificationAddress = new ArrayList<>();
                 notificationAddress.add(new OrderAddressVO());
                 convert.setNotificationAddress(notificationAddress);
             }
             seaReplenishmentVOS.add(convert);
             seaOrderDetails.setSeaReplenishments(seaReplenishmentVOS);
-        }else{
+        } else {
             List<SeaReplenishmentVO> seaReplenishments = seaOrderDetails.getSeaReplenishments();
             List<SeaReplenishmentVO> seaReplenishmentVOS = new ArrayList<>();
             for (SeaReplenishmentVO seaReplenishment : seaReplenishments) {
-                if(seaReplenishment.getSeaContainerInformations()==null || seaReplenishment.getSeaContainerInformations().size()<0){
+                if (seaReplenishment.getSeaContainerInformations() == null || seaReplenishment.getSeaContainerInformations().size() < 0) {
                     List<SeaContainerInformationVO> seaContainerInformations = new ArrayList<>();
                     seaContainerInformations.add(new SeaContainerInformationVO());
                     seaReplenishment.setSeaContainerInformations(seaContainerInformations);
                 }
-                if(seaReplenishment.getNotificationAddress()==null || seaReplenishment.getNotificationAddress().size()<0){
+                if (seaReplenishment.getNotificationAddress() == null || seaReplenishment.getNotificationAddress().size() < 0) {
                     List<OrderAddressVO> notificationAddress = new ArrayList<>();
                     notificationAddress.add(new OrderAddressVO());
                     seaReplenishment.setNotificationAddress(notificationAddress);
@@ -591,48 +592,151 @@ public class SeaOrderController {
     @Value("${address.seaAddr}")
     private String filePath;
 
+//    @ApiOperation(value = "导出补料单")
+//    @GetMapping(value = "/uploadExcel")
+//    public void uploadExcel(@RequestParam("orderId") Long orderId, HttpServletResponse response) throws IOException {
+////        Long orderId = MapUtil.getLong(map1, "OrderId");
+//        SeaOrderVO seaOrderDetails = seaOrderService.getSeaOrderDetails(orderId);
+//        List<SeaReplenishmentVO> seaReplenishments = seaOrderDetails.getSeaReplenishments();
+//
+//
+//
+//
+//        File file = new File(filePath);
+//        String filename1 = file.getName();
+//
+//        InputStream inputStream = new FileInputStream(file);
+////        String fileType = filename1.substring(filename1.lastIndexOf("."));
+//        XSSFWorkbook templateWorkbook = new XSSFWorkbook(inputStream); // 2007+
+//
+//        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+//        templateWorkbook.write(outStream);
+//        ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
+//
+//        EasyExcelUtils.copyFirstSheet(templateWorkbook, seaReplenishments.size() - 1);
+//        // update sheet name
+//        String sheetNamePrefix = "Sheet-";
+//        for (int i = 0; i < templateWorkbook.getNumberOfSheets(); i++) {
+//            String sheetName = sheetNamePrefix + (i + 1);
+//            templateWorkbook.setSheetName(i, sheetName);
+//        }
+//
+//
+//        String fileName = "海运补料";
+//        ExcelWriter excelWriter = null;
+//        if (response != null) {
+//            response.setContentType("application/vnd.ms-excel");
+//            response.setContentType("application/msexcel;charset=UTF-8");
+//            response.setCharacterEncoding("utf-8");
+//            // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
+//            String filename = URLEncoder.encode(fileName, "utf-8");
+//            response.setHeader("Content-disposition", "attachment;filename=" + filename + ".xlsx");
+//            excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
+//        } else {
+//            excelWriter = EasyExcel.write(fileName).withTemplate(templateInputStream).build();
+//        }
+//
+//        FillConfig fillConfig = FillConfig.builder().forceNewRow(Boolean.TRUE).build();
+//
+//        for (int i = 0; i < seaReplenishments.size(); i++) {
+//                SeaReplenishmentVO seaReplenishment = seaReplenishments.get(i);
+//                WriteSheet writeSheet = EasyExcel.writerSheet(i).build();
+//
+//                //将集合数据填充
+//                excelWriter.fill(new FillWrapper("delivery", seaReplenishment.getDeliveryAddress()), fillConfig, writeSheet);
+//                excelWriter.fill(new FillWrapper("shipping", seaReplenishment.getShippingAddress()), fillConfig, writeSheet);
+//                if (seaOrderDetails.getNotificationAddress() != null && seaReplenishment.getNotificationAddress().size() > 0) {
+//                    excelWriter.fill(new FillWrapper("notification", seaReplenishment.getNotificationAddress()), fillConfig, writeSheet);
+//                }
+//                excelWriter.fill(new FillWrapper("goodone", seaReplenishment.getGoodsForms()), fillConfig, writeSheet);
+//                excelWriter.fill(new FillWrapper("seaContainerInformation", seaReplenishment.getSeaContainerInformations()), fillConfig, writeSheet);
+//
+//                //将指定数据填充
+//                Map<String, Object> map = new HashMap<String, Object>();
+//                map.put("shipCompany", seaOrderDetails.getSeaBookshipVO().getShipCompany());
+//                map.put("shipNumber", seaOrderDetails.getSeaBookshipVO().getShipNumber());
+//                map.put("portDeparture", seaOrderDetails.getPortDeparture());
+//                map.put("portDestination", seaOrderDetails.getPortDestination());
+//                map.put("cabinetType", seaOrderDetails.getCabinetTypeName());
+//                if (seaOrderDetails.getCabinetTypeName().equals("FCL")) {
+//                    map.put("whether", "√");
+//                } else {
+//                    map.put("whether2", "√");
+//                }
+//
+//                List<SeaContainerInformationVO> seaContainerInformations = seaReplenishment.getSeaContainerInformations();
+//                Integer totalBulkCargoAmount = 0;
+//                Double totalWeights = 0.0;
+//                Double totalvolume = 0.0;
+//                for (SeaContainerInformationVO seaContainerInformation : seaContainerInformations) {
+//                    totalBulkCargoAmount = totalBulkCargoAmount + seaContainerInformation.getPlatNumber();
+//                    totalWeights = totalWeights + seaContainerInformation.getWeight();
+//                    if (seaContainerInformation.getVolume() != null) {
+//                        totalvolume = totalvolume + seaContainerInformation.getVolume();
+//                    }
+//
+//                }
+//                map.put("totalBulkCargoAmount", totalBulkCargoAmount);
+//                map.put("totalWeights", totalWeights);
+//                map.put("totalvolume", totalvolume);
+//                excelWriter.fill(map, writeSheet);
+//
+//        }
+//        excelWriter.finish();
+//        inputStream.close();
+//        outStream.close();
+//
+//
+//    }
+
+
     @ApiOperation(value = "导出补料单")
     @GetMapping(value = "/uploadExcel")
-    public void uploadExcel(@RequestParam("orderId") Long orderId, HttpServletResponse response) {
+    public void uploadExcel(@RequestParam("orderId") Long orderId, HttpServletResponse response) throws IOException {
 //        Long orderId = MapUtil.getLong(map1, "OrderId");
         SeaOrderVO seaOrderDetails = seaOrderService.getSeaOrderDetails(orderId);
         List<SeaReplenishmentVO> seaReplenishments = seaOrderDetails.getSeaReplenishments();
 
+        File file = new File(filePath);
+        String filename1 = file.getName();
+
+        InputStream inputStream = new FileInputStream(file);
+        String fileType = filename1.substring(filename1.lastIndexOf("."));
+        XSSFWorkbook templateWorkbook = new XSSFWorkbook(inputStream); // 2007+
+
+        EasyExcelUtils.copyFirstSheet(templateWorkbook, seaReplenishments.size() - 1);
+        // update sheet name
+        String sheetNamePrefix = "Sheet-";
+        for (int i = 0; i < templateWorkbook.getNumberOfSheets(); i++) {
+            String sheetName = sheetNamePrefix + (i + 1);
+            templateWorkbook.setSheetName(i, sheetName);
+        }
+
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        templateWorkbook.write(outStream);
+        ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
+
+        String fileName = "海运补料";
+
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding("utf-8");
+        // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
+        String filename = URLEncoder.encode(fileName, "utf-8");
+        response.setHeader("Content-disposition", "attachment;filename=" + filename + ".xlsx");
+
+        ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
+
+//                WriteSheet writeSheet = EasyExcel.writerSheet().build();
+
+        FillConfig fillConfig = FillConfig.builder().direction(WriteDirectionEnum.HORIZONTAL).build();
+
+        int count = 0;
         for (SeaReplenishmentVO seaReplenishment : seaReplenishments) {
-            File file = new File(filePath);
-            String filename1 = file.getName();
-
-            try {
-//            InputStream inputStream = classPathResource.getInputStream();
-                InputStream inputStream = new FileInputStream(file);
-                Workbook templateWorkbook = null;
-                String fileType = filename1.substring(filename1.lastIndexOf("."));
-                if (".xls".equals(fileType)) {
-                    templateWorkbook = new HSSFWorkbook(inputStream); // 2003-
-                } else if (".xlsx".equals(fileType)) {
-                    templateWorkbook = new XSSFWorkbook(inputStream); // 2007+
-                } else {
-
-                }
+            WriteSheet writeSheet = EasyExcel.writerSheet(count).build();
+//
                 //HSSFWorkbook templateWorkbook = new HSSFWorkbook(inputStream);
 
-                ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-                templateWorkbook.write(outStream);
-                ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
 
-                String fileName = "海运补料";
-
-                response.setContentType("application/vnd.ms-excel");
-                response.setCharacterEncoding("utf-8");
-                // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
-                String filename = URLEncoder.encode(fileName, "utf-8");
-                response.setHeader("Content-disposition", "attachment;filename=" + filename + ".xlsx");
-
-                ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
-
-                WriteSheet writeSheet = EasyExcel.writerSheet().build();
-
-                FillConfig fillConfig = FillConfig.builder().direction(WriteDirectionEnum.HORIZONTAL).build();
                 //将集合数据填充
                 excelWriter.fill(new FillWrapper("delivery", seaReplenishment.getDeliveryAddress()), fillConfig, writeSheet);
                 excelWriter.fill(new FillWrapper("shipping", seaReplenishment.getShippingAddress()), fillConfig, writeSheet);
@@ -672,15 +776,13 @@ public class SeaOrderController {
                 map.put("totalvolume", totalvolume);
                 excelWriter.fill(map, writeSheet);
 
-                excelWriter.finish();
-                outStream.close();
-                inputStream.close();
+                ++count;
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
         }
-
+        excelWriter.finish();
+        outStream.close();
+        inputStream.close();
 
     }
 

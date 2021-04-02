@@ -1,7 +1,11 @@
 package com.jayud.mall.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.mall.mapper.OrderPickMapper;
+import com.jayud.mall.model.bo.QueryOrderPickForm;
 import com.jayud.mall.model.po.OrderPick;
 import com.jayud.mall.model.vo.DeliveryAddressVO;
 import com.jayud.mall.model.vo.OrderPickVO;
@@ -27,9 +31,6 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
     @Autowired
     OrderPickMapper orderPickMapper;
 
-//    @Autowired
-//    INumberGeneratedService numberGeneratedService;
-
     @Override
     public List<OrderPickVO> createOrderPickList(List<DeliveryAddressVO> form) {
         List<OrderPickVO> orderPickVOList = new ArrayList<>();
@@ -50,5 +51,15 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
             orderPickVOList.add(orderPickVO);
         });
         return orderPickVOList;
+    }
+
+    @Override
+    public IPage<OrderPickVO> findOrderPickByPage(QueryOrderPickForm form) {
+        //定义分页参数
+        Page<OrderPickVO> page = new Page(form.getPageNum(),form.getPageSize());
+        //定义排序规则
+        page.addOrder(OrderItem.desc("t.id"));
+        IPage<OrderPickVO> pageInfo = orderPickMapper.findOrderPickByPage(page, form);
+        return pageInfo;
     }
 }

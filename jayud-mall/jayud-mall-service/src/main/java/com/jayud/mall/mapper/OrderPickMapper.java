@@ -1,5 +1,8 @@
 package com.jayud.mall.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.mall.model.bo.QueryOrderPickForm;
 import com.jayud.mall.model.po.OrderPick;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.vo.OrderPickVO;
@@ -27,4 +30,12 @@ public interface OrderPickMapper extends BaseMapper<OrderPick> {
      * @return
      */
     List<OrderPickVO> findOrderPickByOrderId(@Param("orderId") Long orderId);
+
+    /**
+     * 分页查询订单提货信息
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<OrderPickVO> findOrderPickByPage(Page<OrderPickVO> page, @Param("form") QueryOrderPickForm form);
 }

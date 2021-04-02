@@ -32,4 +32,60 @@
 
     </select>
 
+    <select id="findOrderPickByPage" parameterType="com.jayud.mall.model.bo.QueryOrderPickForm"
+            resultType="com.jayud.mall.model.vo.OrderPickVO">
+        select t.id,
+        t.order_id,
+        t.pick_no,
+        t.pick_status,
+        t.warehouse_no,
+        t.pick_time,
+        t.weight,
+        t.volume,
+        t.total_carton,
+        t.remark,
+        t.address_id,
+        t.create_time,
+        t1.contacts,
+        t1.phone,
+        t1.country_code,
+        t1.country_name,
+        t1.state_code,
+        t1.state_name,
+        t1.address,
+        concat(t1.country_name,' ',t1.state_name,' ',t1.address) as pickAddress,
+        t2.order_no,
+        t2.store_goods_warehouse_code shippingWarehouseCode,
+        t2.store_goods_warehouse_name shippingWarehouseName,
+        t3.company customerName,
+        t4.jc_time
+        from order_pick t
+        left join delivery_address t1 on t1.id = t.address_id
+        left join order_info t2 on t2.id = t.order_id
+        left join customer t3 on t3.id = t2.customer_id
+        left join offer_info t4 on t4.id = t2.offer_info_id
+        where 1=1
+        <if test="form.pickTime != null">
+            and t.pick_time <![CDATA[ >= ]]> concat(date_format(#{form.pickTime}, '%Y-%m-%d'), ' 00:00:00')
+            and t.pick_time <![CDATA[ <= ]]> concat(date_format(#{form.pickTime}, '%Y-%m-%d'), ' 23:59:59')
+        </if>
+        <if test="form.jcTime != null ">
+            and t4.jc_time <![CDATA[ <= ]]> concat(date_format(#{form.jcTime}, '%Y-%m-%d'), ' 00:00:00')
+            and t4.jc_time <![CDATA[ <= ]]> concat(date_format(#{form.jcTime}, '%Y-%m-%d'), ' 23:59:59')
+        </if>
+        <if test="form.shippingWarehouseCode != null and form.shippingWarehouseCode != ''">
+            and t2.store_goods_warehouse_code = #{form.shippingWarehouseCode}
+        </if>
+        <if test="form.keyword != null and form.keyword != ''">
+            and (
+                t2.order_no like concat('%',#{form.keyword},'%')
+                or
+                t.pick_no like concat('%',#{form.keyword},'%')
+                )
+        </if>
+        <if test="form.pickStatus != null">
+            and t.pick_status = #{form.pickStatus}
+        </if>
+    </select>
+
 </mapper>

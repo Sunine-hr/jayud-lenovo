@@ -42,7 +42,7 @@ public class OrderPickVO {
     @JSONField(ordinal = 6)
     private BigDecimal weight;
 
-    @ApiModelProperty(value = "总体积", position = 7)
+    @ApiModelProperty(value = "总体积(预报体积)", position = 7)
     @JSONField(ordinal = 7)
     private BigDecimal volume;
 
@@ -99,5 +99,25 @@ public class OrderPickVO {
     @ApiModelProperty(value = "地址1", position = 20)
     @JSONField(ordinal = 20)
     private String address;
+
+    @ApiModelProperty(value = "提货地址", position = 21)
+    private String pickAddress;
+
+    @ApiModelProperty(value = "订单编号", position = 22)
+    private String orderNo;
+
+    @ApiModelProperty(value = "集货仓库代码", position = 23)
+    private String shippingWarehouseCode;
+
+    @ApiModelProperty(value = "集货仓库名称", position = 24)
+    private String shippingWarehouseName;
+
+    @ApiModelProperty(value = "客户简称", position = 25)
+    private String customerName;
+
+    @ApiModelProperty(value = "截仓日期", position = 26)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 26, format="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime jcTime;
 
 }

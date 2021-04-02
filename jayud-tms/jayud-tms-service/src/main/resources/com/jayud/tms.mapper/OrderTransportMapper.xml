@@ -584,8 +584,8 @@
                 </foreach>
             </if>
             and ot.status != 'T_15'
-            and DATE_FORMAT(ot.created_time, '%Y%m')=DATE_FORMAT(NOW(), '%Y%m')
---             and DATE_FORMAT(ot.created_time, '%Y%m')=DATE_FORMAT('2021-3-1', '%Y%m')
+            and 	DATE_FORMAT( ot.created_time, '%Y%m' ) >= DATE_FORMAT( DATE_SUB( curdate(), INTERVAL 1 MONTH ), '%Y%m' )
+            --      and DATE_FORMAT(ot.created_time, '%Y%m')=DATE_FORMAT('2021-3-1', '%Y%m')
 
         </where>
         order by id desc
@@ -607,8 +607,8 @@
                     #{item}
                 </foreach>
             </if>
-            and DATE_FORMAT(ot.created_time, '%Y%m')=DATE_FORMAT(NOW(), '%Y%m')
---             and DATE_FORMAT(ot.created_time, '%Y%m')=DATE_FORMAT('2021-3-1', '%Y%m')
+--             and DATE_FORMAT( ot.created_time, '%Y%m' ) >= DATE_FORMAT( DATE_SUB( curdate(), INTERVAL 1 MONTH ), '%Y%m' )
+               and DATE_FORMAT(ot.created_time, '%Y%m')=DATE_FORMAT(NOW(), '%Y%m')
         </where>
         GROUP BY ot.created_user
         order by orderNum desc

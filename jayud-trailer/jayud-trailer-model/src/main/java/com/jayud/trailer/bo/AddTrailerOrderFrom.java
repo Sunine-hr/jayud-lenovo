@@ -1,7 +1,9 @@
 package com.jayud.trailer.bo;
 
+import com.alibaba.excel.util.CollectionUtils;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -22,7 +24,7 @@ import java.util.List;
 @Data
 @Slf4j
 public class AddTrailerOrderFrom {
-    private static final long serialVersionUID=1L;
+    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "主键id")
     @TableId(value = "id", type = IdType.AUTO)
@@ -164,7 +166,7 @@ public class AddTrailerOrderFrom {
     private List<AddGoodsForm> goodsForms;
 
     @ApiModelProperty(value = "是否待补全")
-    private Boolean isInfoComplete;
+    private Boolean isInfoComplete = false;
 
     /**
      * 校验创建拖车子订单参数
@@ -176,17 +178,7 @@ public class AddTrailerOrderFrom {
                 || StringUtils.isEmpty(this.portCode)) {
             return false;
         }
-        // 发货/收货地址是必填项
-//        if (CollectionUtils.isEmpty(this.orderAddressForms)) {
-//            for (AddTrailerOrderAddressForm orderAddressForm : orderAddressForms) {
-//                boolean b = orderAddressForm.checkCreateTrailerOrder();
-//                if(!b){
-//                    return false;
-//                }
-//            }
-//            log.warn("发货地址信息不能为空");
-//            return false;
-//        }
+
         //货品信息
 //        for (AddGoodsForm goodsForm : goodsForms) {
 //            if (!goodsForm.checkCreateAirOrder()) {
@@ -197,8 +189,22 @@ public class AddTrailerOrderFrom {
         return true;
     }
 
+
+    /**
+     * 检查地址信息
+     */
+    public void checkPickUpInfo() {
+        // 发货/收货地址是必填项
+        if (CollectionUtils.isEmpty(this.orderAddressForms)) {
+            throw new JayudBizException(400, "请输入地址信息");
+        }
+        for (AddTrailerOrderAddressForm orderAddressForm : orderAddressForms) {
+            orderAddressForm.checkPickUpInfo();
+        }
+    }
+
     //获取附件地址以及附件名称
-    public void getPathAndName(){
+    public void getPathAndName() {
         this.soFilePath = com.jayud.common.utils.StringUtils.getFileStr(soPics);
         this.soFileName = com.jayud.common.utils.StringUtils.getFileNameStr(soPics);
         this.bolFilePath = com.jayud.common.utils.StringUtils.getFileStr(billPics);

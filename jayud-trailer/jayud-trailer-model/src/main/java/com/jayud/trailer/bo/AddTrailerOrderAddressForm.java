@@ -2,6 +2,7 @@ package com.jayud.trailer.bo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -80,12 +81,52 @@ public class AddTrailerOrderAddressForm {
     private LocalDateTime createTime;
 
 
-    public boolean checkCreateTrailerOrder() {
-        if (this.type == null || StringUtils.isEmpty(this.address)
-                || StringUtils.isEmpty(this.company)) {
-            return false;
+//    public void checkCreateTrailerOrder() {
+//        if (StringUtils.isEmpty(this.contacts)){
+//            throw new JayudBizException(400,"联系人不能为空");
+//        }
+//        if (StringUtils.isEmpty(this.phone)){
+//            throw new JayudBizException(400,"联系电话不能为空");
+//        }
+//        if (StringUtils.isEmpty(this.address)){
+//            throw new JayudBizException(400,"地址不能空");
+//        }
+//        if (StringUtils.isEmpty(this.deliveryDate)){
+//            throw new JayudBizException(400,"提货日期不能为空");
+//        }
+//
+////        if (this.type == null || StringUtils.isEmpty(this.address)
+////                || StringUtils.isEmpty(this.company)) {
+////            return false;
+////        }
+////        return true;
+//    }
+
+    public void checkPickUpInfo() {
+        if (StringUtils.isEmpty(this.contacts)) {
+            throw new JayudBizException(400, "请输入联系人");
         }
-        return true;
+        if (StringUtils.isEmpty(this.phone)) {
+            throw new JayudBizException(400, "请输入联系电话");
+        }
+        if (StringUtils.isEmpty(this.address)) {
+            throw new JayudBizException(400, "请输入地址");
+        }
+        if (StringUtils.isEmpty(this.deliveryDate)) {
+            throw new JayudBizException(400, "请输入提货日期");
+        }
+        if (StringUtils.isEmpty(this.name)) {
+            throw new JayudBizException(400, "请输入货物描述");
+        }
+        if (this.bulkCargoAmount == null) {
+            throw new JayudBizException(400, "请输入件数");
+        }
+        if (StringUtils.isEmpty(this.bulkCargoUnit)) {
+            throw new JayudBizException(400, "请输入单位");
+        }
+        if (this.totalWeight == null) {
+            throw new JayudBizException(400, "请输入重量");
+        }
     }
 
 

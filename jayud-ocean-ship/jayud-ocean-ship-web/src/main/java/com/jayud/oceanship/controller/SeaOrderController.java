@@ -703,14 +703,16 @@ public class SeaOrderController {
         InputStream inputStream = new FileInputStream(file);
         String fileType = filename1.substring(filename1.lastIndexOf("."));
         XSSFWorkbook templateWorkbook = new XSSFWorkbook(inputStream); // 2007+
-
-        EasyExcelUtils.copyFirstSheet(templateWorkbook, seaReplenishments.size() - 1);
-        // update sheet name
-        String sheetNamePrefix = "Sheet-";
-        for (int i = 0; i < templateWorkbook.getNumberOfSheets(); i++) {
-            String sheetName = sheetNamePrefix + (i + 1);
-            templateWorkbook.setSheetName(i, sheetName);
+        if ((seaReplenishments.size() - 1) != 0) {
+            EasyExcelUtils.copyFirstSheet(templateWorkbook, seaReplenishments.size() - 1);
+            // update sheet name
+            String sheetNamePrefix = "Sheet-";
+            for (int i = 0; i < templateWorkbook.getNumberOfSheets(); i++) {
+                String sheetName = sheetNamePrefix + (i + 1);
+                templateWorkbook.setSheetName(i, sheetName);
+            }
         }
+
 
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         templateWorkbook.write(outStream);
@@ -734,49 +736,49 @@ public class SeaOrderController {
         for (SeaReplenishmentVO seaReplenishment : seaReplenishments) {
             WriteSheet writeSheet = EasyExcel.writerSheet(count).build();
 //
-                //HSSFWorkbook templateWorkbook = new HSSFWorkbook(inputStream);
+            //HSSFWorkbook templateWorkbook = new HSSFWorkbook(inputStream);
 
 
-                //将集合数据填充
-                excelWriter.fill(new FillWrapper("delivery", seaReplenishment.getDeliveryAddress()), fillConfig, writeSheet);
-                excelWriter.fill(new FillWrapper("shipping", seaReplenishment.getShippingAddress()), fillConfig, writeSheet);
-                if (seaOrderDetails.getNotificationAddress() != null && seaReplenishment.getNotificationAddress().size() > 0) {
-                    excelWriter.fill(new FillWrapper("notification", seaReplenishment.getNotificationAddress()), fillConfig, writeSheet);
+            //将集合数据填充
+            excelWriter.fill(new FillWrapper("delivery", seaReplenishment.getDeliveryAddress()), fillConfig, writeSheet);
+            excelWriter.fill(new FillWrapper("shipping", seaReplenishment.getShippingAddress()), fillConfig, writeSheet);
+            if (seaOrderDetails.getNotificationAddress() != null && seaReplenishment.getNotificationAddress().size() > 0) {
+                excelWriter.fill(new FillWrapper("notification", seaReplenishment.getNotificationAddress()), fillConfig, writeSheet);
+            }
+            excelWriter.fill(new FillWrapper("goodone", seaReplenishment.getGoodsForms()), fillConfig, writeSheet);
+            excelWriter.fill(new FillWrapper("seaContainerInformation", seaReplenishment.getSeaContainerInformations()), fillConfig, writeSheet);
+
+            //将指定数据填充
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("shipCompany", seaOrderDetails.getSeaBookshipVO().getShipCompany());
+            map.put("shipNumber", seaOrderDetails.getSeaBookshipVO().getShipNumber());
+            map.put("portDeparture", seaOrderDetails.getPortDeparture());
+            map.put("portDestination", seaOrderDetails.getPortDestination());
+            map.put("cabinetType", seaOrderDetails.getCabinetTypeName());
+            if (seaOrderDetails.getCabinetTypeName().equals("FCL")) {
+                map.put("whether", "√");
+            } else {
+                map.put("whether2", "√");
+            }
+
+            List<SeaContainerInformationVO> seaContainerInformations = seaReplenishment.getSeaContainerInformations();
+            Integer totalBulkCargoAmount = 0;
+            Double totalWeights = 0.0;
+            Double totalvolume = 0.0;
+            for (SeaContainerInformationVO seaContainerInformation : seaContainerInformations) {
+                totalBulkCargoAmount = totalBulkCargoAmount + seaContainerInformation.getPlatNumber();
+                totalWeights = totalWeights + seaContainerInformation.getWeight();
+                if (seaContainerInformation.getVolume() != null) {
+                    totalvolume = totalvolume + seaContainerInformation.getVolume();
                 }
-                excelWriter.fill(new FillWrapper("goodone", seaReplenishment.getGoodsForms()), fillConfig, writeSheet);
-                excelWriter.fill(new FillWrapper("seaContainerInformation", seaReplenishment.getSeaContainerInformations()), fillConfig, writeSheet);
 
-                //将指定数据填充
-                Map<String, Object> map = new HashMap<String, Object>();
-                map.put("shipCompany", seaOrderDetails.getSeaBookshipVO().getShipCompany());
-                map.put("shipNumber", seaOrderDetails.getSeaBookshipVO().getShipNumber());
-                map.put("portDeparture", seaOrderDetails.getPortDeparture());
-                map.put("portDestination", seaOrderDetails.getPortDestination());
-                map.put("cabinetType", seaOrderDetails.getCabinetTypeName());
-                if (seaOrderDetails.getCabinetTypeName().equals("FCL")) {
-                    map.put("whether", "√");
-                } else {
-                    map.put("whether2", "√");
-                }
+            }
+            map.put("totalBulkCargoAmount", totalBulkCargoAmount);
+            map.put("totalWeights", totalWeights);
+            map.put("totalvolume", totalvolume);
+            excelWriter.fill(map, writeSheet);
 
-                List<SeaContainerInformationVO> seaContainerInformations = seaReplenishment.getSeaContainerInformations();
-                Integer totalBulkCargoAmount = 0;
-                Double totalWeights = 0.0;
-                Double totalvolume = 0.0;
-                for (SeaContainerInformationVO seaContainerInformation : seaContainerInformations) {
-                    totalBulkCargoAmount = totalBulkCargoAmount + seaContainerInformation.getPlatNumber();
-                    totalWeights = totalWeights + seaContainerInformation.getWeight();
-                    if (seaContainerInformation.getVolume() != null) {
-                        totalvolume = totalvolume + seaContainerInformation.getVolume();
-                    }
-
-                }
-                map.put("totalBulkCargoAmount", totalBulkCargoAmount);
-                map.put("totalWeights", totalWeights);
-                map.put("totalvolume", totalvolume);
-                excelWriter.fill(map, writeSheet);
-
-                ++count;
+            ++count;
 
 
         }

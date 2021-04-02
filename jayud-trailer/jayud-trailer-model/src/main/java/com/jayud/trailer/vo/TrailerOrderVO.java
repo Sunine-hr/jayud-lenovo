@@ -211,7 +211,7 @@ public class TrailerOrderVO {
     private List<FileView> allPics = new ArrayList<>();
 
     @ApiModelProperty(value = "是否待补全")
-    private boolean isInfoComplete;
+    private Boolean isInfoComplete;
 
     public void setImpAndExpType(Integer impAndExpType) {
         this.impAndExpType = impAndExpType;

@@ -231,7 +231,9 @@ public class OrderInfoController {
                 }
             }
             //拖车校验参数
-            if (OrderStatusEnum.TC.getCode().equals(inputMainOrderForm.getClassCode())) {
+            if (OrderStatusEnum.TC.getCode().equals(inputMainOrderForm.getClassCode())
+            ||inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.TCEDD.getCode())
+            ||inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.TCIDD.getCode())) {
                 InputTrailerOrderFrom trailerOrderFrom = form.getTrailerOrderFrom();
                 if (!trailerOrderFrom.checkCreateOrder()) {
                     return CommonResult.error(ResultEnum.PARAM_ERROR);

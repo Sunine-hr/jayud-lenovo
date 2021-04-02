@@ -195,7 +195,7 @@ public class InputTrailerOrderVO {
     private String totalXAmountName;
 
     @ApiModelProperty(value = "是否待补全")
-    private boolean isInfoComplete;
+    private Boolean isInfoComplete;
 
 
     public void setUnitName(String unitName) {

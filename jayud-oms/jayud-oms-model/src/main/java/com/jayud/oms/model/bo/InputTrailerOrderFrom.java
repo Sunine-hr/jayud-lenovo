@@ -162,7 +162,7 @@ public class InputTrailerOrderFrom {
     private List<AddTrailerOrderAddressForm> orderAddressForms;
 
     @ApiModelProperty(value = "是否待补全")
-    private boolean isInfoComplete;
+    private Boolean isInfoComplete=false;
 
 
     /**

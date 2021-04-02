@@ -33,7 +33,9 @@ public class CabinetSizeNumberServiceImpl extends ServiceImpl<CabinetSizeNumberM
     }
 
     @Override
-    public void deleteCabinet(QueryWrapper queryWrapper) {
-        this.deleteCabinet(queryWrapper);
+    public void deleteCabinet(Long id) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("sea_order_id", id);
+        this.baseMapper.delete(queryWrapper);
     }
 }

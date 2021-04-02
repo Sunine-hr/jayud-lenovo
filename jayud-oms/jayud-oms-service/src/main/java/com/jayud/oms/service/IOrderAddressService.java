@@ -46,4 +46,6 @@ public interface IOrderAddressService extends IService<OrderAddress> {
      * 获取最新的联系人信息
      */
     public List<OrderAddress> getLastContactInfoByBusinessType(Integer businessType);
+
+    List<OrderAddress> getOrderAddressByBusOrders(List<String> orderNo, Integer businessType);
 }

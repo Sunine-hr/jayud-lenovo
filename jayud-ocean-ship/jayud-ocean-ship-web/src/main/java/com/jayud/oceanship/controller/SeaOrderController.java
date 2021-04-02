@@ -135,13 +135,13 @@ public class SeaOrderController {
         String prePath = String.valueOf(fileClient.getBaseUrl().getData());
 
         List<SeaOrderFormVO> records = page.getRecords();
-        List<Long> seaOrderIds = new ArrayList<>();
+        List<String> seaOrderIds = new ArrayList<>();
         List<String> mainOrder = new ArrayList<>();
         List<Long> entityIds = new ArrayList<>();
         List<Long> supplierIds = new ArrayList<>();
         List<String> unitCodes = new ArrayList<>();
         for (SeaOrderFormVO record : records) {
-            seaOrderIds.add(record.getId());
+            seaOrderIds.add(record.getOrderNo());
             mainOrder.add(record.getMainOrderNo());
             entityIds.add(record.getLegalEntityId());
             unitCodes.add(record.getUnitCode());
@@ -153,7 +153,7 @@ public class SeaOrderController {
         }
 
         //查询商品信息
-        List<GoodsVO> goods = this.omsClient.getGoodsByBusIds(seaOrderIds, BusinessTypeEnum.HY.getCode()).getData();
+        List<GoodsVO> goods = this.omsClient.getGoodsByBusOrders(seaOrderIds, BusinessTypeEnum.HY.getCode()).getData();
 
         //查询法人主体
         ApiResult legalEntityResult = null;
@@ -173,7 +173,7 @@ public class SeaOrderController {
         }
 
         //获取发货人信息
-        ApiResult<List<OrderAddressVO>> resultOne = this.omsClient.getOrderAddressByBusIds(seaOrderIds, BusinessTypeEnum.HY.getCode());
+        ApiResult<List<OrderAddressVO>> resultOne = this.omsClient.getOrderAddressByBusOrders(seaOrderIds, BusinessTypeEnum.HY.getCode());
         if (resultOne.getCode() != HttpStatus.SC_OK) {
             log.warn("查询订单地址信息失败 seaOrderId={}", seaOrderIds);
         }
@@ -220,7 +220,7 @@ public class SeaOrderController {
             //获取截补料数据
             QueryWrapper queryWrapper = new QueryWrapper();
             queryWrapper.eq("sea_order_id", record.getId());
-            queryWrapper.eq("sea_order_no", record.getOrderNo());
+            queryWrapper.like("sea_order_no", record.getOrderNo());
             List<SeaReplenishment> seaReplenishments = seaReplenishmentService.list(queryWrapper);
             List<SeaReplenishmentVO> seaReplenishmentVOS = ConvertUtil.convertList(seaReplenishments, SeaReplenishmentVO.class);
             for (SeaReplenishmentVO seaReplenishmentVO : seaReplenishmentVOS) {
@@ -277,10 +277,10 @@ public class SeaOrderController {
 
         String prePath = String.valueOf(fileClient.getBaseUrl().getData());
         List<SeaReplenishmentFormVO> records = page.getRecords();
-        List<Long> seaOrderIds = new ArrayList<>();
+        List<String> seaOrderIds = new ArrayList<>();
         List<String> mainOrder = new ArrayList<>();
         for (SeaReplenishmentFormVO record : records) {
-            seaOrderIds.add(record.getId());
+            seaOrderIds.add(record.getOrderNo());
             //获取海运订单信息
             SeaOrderVO seaOrderByOrderNO = seaOrderService.getSeaOrderByOrderNO(record.getSeaOrderId());
             mainOrder.add(seaOrderByOrderNO.getMainOrderNo());
@@ -290,13 +290,13 @@ public class SeaOrderController {
         }
 
         //查询商品信息
-        List<GoodsVO> goods = this.omsClient.getGoodsByBusIds(seaOrderIds, BusinessTypeEnum.HY.getCode()).getData();
+        List<GoodsVO> goods = this.omsClient.getGoodsByBusOrders(seaOrderIds, BusinessTypeEnum.HY.getCode()).getData();
         if (CollectionUtils.isEmpty(goods)) {
             log.warn("查询订单地址信息失败 seaOrderId={}", seaOrderIds);
         }
 
         //获取发货人信息
-        ApiResult<List<OrderAddressVO>> resultOne = this.omsClient.getOrderAddressByBusIds(seaOrderIds, BusinessTypeEnum.HY.getCode());
+        ApiResult<List<OrderAddressVO>> resultOne = this.omsClient.getOrderAddressByBusOrders(seaOrderIds, BusinessTypeEnum.HY.getCode());
         if (resultOne.getCode() != HttpStatus.SC_OK) {
             log.warn("查询订单地址信息失败 seaOrderId={}", seaOrderIds);
         }

@@ -90,7 +90,7 @@ public class ExternalApiController {
 
 
     @ApiModelProperty(value = "获取菜单待处理数")
-    @RequestMapping(value = "/api/getMenuPendingNum")
+    @RequestMapping(value = "/api/oceanship/getMenuPendingNum")
     public ApiResult getMenuPendingNum(@RequestBody List<Map<String, Object>> menusList) {
         if (CollectionUtil.isEmpty(menusList)) {
             return ApiResult.ok();

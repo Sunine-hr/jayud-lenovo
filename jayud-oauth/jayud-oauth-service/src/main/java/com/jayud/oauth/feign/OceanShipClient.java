@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 /**
- * oms模块消费tms模块的接口
+ * oms模块消费oceanship模块的接口
  */
 @FeignClient(value = "jayud-ocean-ship-web")
 public interface OceanShipClient {
 
 
     @ApiModelProperty(value = "获取菜单待处理数")
-    @RequestMapping(value = "/api/getMenuPendingNum")
+    @RequestMapping(value = "/api/oceanship/getMenuPendingNum")
     public ApiResult getMenuPendingNum(@RequestBody List<SystemMenu> menusList);
 }

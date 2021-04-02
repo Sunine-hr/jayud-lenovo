@@ -1218,6 +1218,25 @@ public class ExternalApiController {
         OrderInfo one = orderInfoService.getOne(queryWrapper);
         return ApiResult.ok(one.getId());
     }
+
+    @ApiOperation("根据业务id集合查询订单地址")
+    @RequestMapping(value = "/api/getOrderAddressByBusOrders")
+    public ApiResult<List<OrderAddress>> getOrderAddressByBusOrders(@RequestParam("orderId") List<String> orderNo,
+                                                                      @RequestParam("businessType") Integer businessType) {
+        //查询订单地址信息
+        List<OrderAddress> orderAddresses = this.orderAddressService.getOrderAddressByBusOrders(orderNo, businessType);
+        return ApiResult.ok(orderAddresses);
+    }
+
+
+    @ApiOperation("根据订单id集合查询商品信息")
+    @RequestMapping(value = "/api/getGoodsByBusOrders")
+    public ApiResult<List<Goods>> getGoodsByBusOrders(@RequestParam("orderId") List<String> orderNo,
+                                                        @RequestParam("businessType") Integer businessType) {
+        //查询商品信息
+        List<Goods> goods = this.goodsService.getGoodsByBusOrders(orderNo, businessType);
+        return ApiResult.ok(goods);
+    }
 }
 
 

@@ -19,5 +19,5 @@ public interface ICabinetSizeNumberService extends IService<CabinetSizeNumber> {
 
     List<CabinetSizeNumberVO> getList(Long orderId);
 
-    void deleteCabinet(QueryWrapper queryWrapper);
+    void deleteCabinet(Long id);
 }

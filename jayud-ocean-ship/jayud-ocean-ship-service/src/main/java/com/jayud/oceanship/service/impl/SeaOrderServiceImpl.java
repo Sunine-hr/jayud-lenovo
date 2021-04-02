@@ -90,32 +90,6 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
             seaOrder.setCreateUser(UserOperator.getToken());
             seaOrder.setStatus(OrderStatusEnum.SEA_S_0.getCode());
             this.save(seaOrder);
-//            QueryWrapper queryWrapper = new QueryWrapper();
-//            queryWrapper.eq("class_code","HY");
-//            queryWrapper.isNotNull("sub_sorts");
-//            queryWrapper.orderByAsc("sub_sorts");
-//            List<OrderStatus> statuses = orderStatusService.list(queryWrapper);
-//            for (int i = 0; i < statuses.size(); i++) {
-//                OrderFlowSheet orderFlowSheet = new OrderFlowSheet();
-//                orderFlowSheet.setMainOrderNo(seaOrder.getMainOrderNo());
-//                orderFlowSheet.setOrderNo(seaOrder.getOrderNo());
-//                orderFlowSheet.setProductClassifyId(statuses.get(i).getClassCode());
-//                orderFlowSheet.setProductClassifyName(statuses.get(i).getClassName());
-//                orderFlowSheet.setStatus(statuses.get(i).getContainState());
-//                orderFlowSheet.setStatusName(statuses.get(i).getName());
-//                if(i==0){
-//                    orderFlowSheet.setComplete("1");
-//                    orderFlowSheet.setFStatus(null);
-//                }else{
-//                    orderFlowSheet.setComplete("0");
-//                    orderFlowSheet.setFStatus(statuses.get(i-1).getContainState());
-//                }
-//
-//                orderFlowSheet.setIsPass("1");
-//                orderFlowSheet.setCreateTime(now);
-//                orderFlowSheet.setCreateUser(seaOrder.getCreateUser());
-//                orderFlowSheetService.saveOrUpdate(orderFlowSheet);
-//            }
         } else {
             //修改海运单
             seaOrder.setId(addSeaOrderForm.getOrderId());
@@ -128,10 +102,8 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         if(addSeaOrderForm.getCabinetType()!=null){
             if (addSeaOrderForm.getCabinetType().equals(2)) {
                 //先删除原来的柜型
-                QueryWrapper queryWrapper = new QueryWrapper();
-                queryWrapper.eq("sea_order_id", addSeaOrderForm.getOrderId());
-                queryWrapper.eq("sea_order_no", addSeaOrderForm.getOrderNo());
-                this.cabinetSizeNumberService.deleteCabinet(queryWrapper);
+
+                this.cabinetSizeNumberService.deleteCabinet(addSeaOrderForm.getOrderId());
 
             }
             if (addSeaOrderForm.getCabinetType().equals(1)) {
@@ -239,13 +211,13 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         //海运订单信息
         SeaOrderVO seaOrderVO = this.baseMapper.getSeaOrder(id);
         //查询商品信息
-        ApiResult<List<GoodsVO>> result = this.omsClient.getGoodsByBusIds(Collections.singletonList(id), businessType);
+        ApiResult<List<GoodsVO>> result = this.omsClient.getGoodsByBusOrders(Collections.singletonList(seaOrderVO.getOrderNo()), businessType);
         if (result.getCode() != HttpStatus.SC_OK) {
             log.warn("查询商品信息失败 airOrderId={}");
         }
         seaOrderVO.setGoodsForms(result.getData());
         //查询地址信息
-        ApiResult<List<OrderAddressVO>> resultOne = this.omsClient.getOrderAddressByBusIds(Collections.singletonList(id), businessType);
+        ApiResult<List<OrderAddressVO>> resultOne = this.omsClient.getOrderAddressByBusOrders(Collections.singletonList(seaOrderVO.getOrderNo()), businessType);
         if (resultOne.getCode() != HttpStatus.SC_OK) {
             log.warn("查询订单地址信息失败 airOrderId={}");
         }
@@ -639,13 +611,13 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         //海运订单信息
         SeaOrderVO seaOrder = this.baseMapper.getSeaOrder(seaOrderId);
         //查询商品信息
-        ApiResult<List<GoodsVO>> result = this.omsClient.getGoodsByBusIds(Collections.singletonList(seaOrderId), businessType);
+        ApiResult<List<GoodsVO>> result = this.omsClient.getGoodsByBusOrders(Collections.singletonList(seaOrder.getOrderNo()), businessType);
         if (result.getCode() != HttpStatus.SC_OK) {
             log.warn("查询商品信息失败 seaOrderId={}", seaOrderId);
         }
         seaOrder.setGoodsForms(result.getData());
         //查询地址信息
-        ApiResult<List<OrderAddressVO>> resultOne = this.omsClient.getOrderAddressByBusIds(Collections.singletonList(seaOrderId), businessType);
+        ApiResult<List<OrderAddressVO>> resultOne = this.omsClient.getOrderAddressByBusOrders(Collections.singletonList(seaOrder.getOrderNo()), businessType);
         if (resultOne.getCode() != HttpStatus.SC_OK) {
             log.warn("查询订单地址信息失败 seaOrderId={}", seaOrderId);
         }
@@ -694,13 +666,13 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
             seaReplenishmentVO.setSeaContainerInformations(seaContainerInformations);
 
             //查询商品信息
-            ApiResult<List<GoodsVO>> result1 = this.omsClient.getGoodsByBusIds(Collections.singletonList(seaReplenishmentVO.getId()), businessType);
+            ApiResult<List<GoodsVO>> result1 = this.omsClient.getGoodsByBusOrders(Collections.singletonList(seaReplenishmentVO.getOrderNo()), businessType);
             if (result1.getCode() != HttpStatus.SC_OK) {
                 log.warn("查询商品信息失败 seaOrderId={}", seaReplenishmentVO.getId());
             }
             seaReplenishmentVO.setGoodsForms(result1.getData());
             //查询地址信息
-            ApiResult<List<OrderAddressVO>> resultOne1 = this.omsClient.getOrderAddressByBusIds(Collections.singletonList(seaReplenishmentVO.getId()), businessType);
+            ApiResult<List<OrderAddressVO>> resultOne1 = this.omsClient.getOrderAddressByBusOrders(Collections.singletonList(seaReplenishmentVO.getOrderNo()), businessType);
             if (resultOne1.getCode() != HttpStatus.SC_OK) {
                 log.warn("查询订单地址信息失败 seaOrderId={}", seaReplenishmentVO.getId());
             }

@@ -429,7 +429,6 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
             replenishment.setOrderNo(blOrderNo);
             replenishment.setIsBillOfLading(0);
             replenishment.setIsReleaseOrder(0);
-            replenishment.setIsAduit(0);
             boolean save = seaReplenishmentService.save(replenishment);
             if (!save) {
                 log.warn("合并补料信息添加失败");
@@ -500,7 +499,6 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
                 replenishment.setOrderNo(getBLOrderNo(seaOrderForms.get(0).getOrderNo(), form.getType(), seaReplenishments.size(), i + 1));
                 replenishment.setIsBillOfLading(0);
                 replenishment.setIsReleaseOrder(0);
-                replenishment.setIsAduit(0);
                 boolean save = seaReplenishmentService.save(replenishment);
                 if (!save) {
                     log.warn("分单补料信息添加失败");
@@ -777,7 +775,6 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         seaOrder.setAuditStatus(form.getAuditStatus());
         seaOrder.setAuditOpinion(form.getAuditOpinion());
         String orderNo = form.getSeaReplenishments().get(0).getSeaOrderNo();
-        AddSeaReplenishment addSeaReplenishment = form.getSeaReplenishments().get(0);
         String[] orderNoes = orderNo.split(",");
         for (String orderNoe : orderNoes) {
             QueryWrapper queryWrapper = new QueryWrapper();
@@ -791,21 +788,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
             form.setMainOrderId(mainOrderId);
 
             if (form.getAuditStatus().equals(1)) {//审核通过
-                SeaReplenishment convert = ConvertUtil.convert(addSeaReplenishment, SeaReplenishment.class);
-                convert.setIsAduit(1);
-                boolean save = seaReplenishmentService.saveOrUpdate(convert);
-                if (!save) {
-                    log.error("操作失败");
-                    throw new JayudBizException(ResultEnum.OPR_FAIL);
-                }
-                QueryWrapper queryWrapper1 = new QueryWrapper();
-                queryWrapper1.like("sea_order_no",addSeaReplenishment.getSeaOrderNo());
-                int count = this.seaReplenishmentService.count(queryWrapper1);
-                queryWrapper1.eq("is_bill_of_lading",1);
-                int count1 = this.seaReplenishmentService.count(queryWrapper1);
-                if(count==count1) { //该订单所有补料单都已提单
-                    updateProcessStatus(new SeaOrder(), form);
-                }
+                updateProcessStatus(new SeaOrder(), form);
             }
             if (form.getAuditStatus().equals(2)) {
                 DelOprStatusForm delOprStatusForm = new DelOprStatusForm();

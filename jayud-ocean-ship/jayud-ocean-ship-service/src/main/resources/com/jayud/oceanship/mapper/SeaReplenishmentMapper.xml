@@ -17,7 +17,6 @@
         <result column="update_time" property="updateTime" />
         <result column="is_bill_of_lading" property="isBillOfLading" />
         <result column="is_release_order" property="isReleaseOrder" />
-        <result column="is_aduit" property="isAduit" />
         <result column="imp_and_exp_type" property="impAndExpType" />
         <result column="terms" property="terms" />
         <result column="port_departure_code" property="portDepartureCode" />
@@ -34,7 +33,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, order_no, sea_order_id, sea_order_no, cut_replenish_time, cabinet_number, paper_strip_seal, create_user, create_time, update_user, update_time, is_bill_of_lading, imp_and_exp_type, terms, port_departure_code, port_destination_code, good_time, is_freight_collect, is_other_expenses_paid, is_dangerous_goods, is_charged, transit_port_code, cabinet_type, cabinet_type_name,is_release_order,is_aduit
+        id, order_no, sea_order_id, sea_order_no, cut_replenish_time, cabinet_number, paper_strip_seal, create_user, create_time, update_user, update_time, is_bill_of_lading, imp_and_exp_type, terms, port_departure_code, port_destination_code, good_time, is_freight_collect, is_other_expenses_paid, is_dangerous_goods, is_charged, transit_port_code, cabinet_type, cabinet_type_name,is_release_order
     </sql>
 
     <select id="findBillByPage" resultType="com.jayud.oceanship.vo.SeaReplenishmentFormVO">
@@ -56,8 +55,7 @@
         sp2.name transitPort,
         sr.cabinet_type cabinetType,
         sr.cabinet_type_name cabinetTypeName,
-        sr.main_no,sr.sub_no,sr.bill_lading_weight,
-        sr.is_aduit
+        sr.main_no,sr.sub_no,sr.bill_lading_weight
         from sea_replenishment sr
         left join sea_port sp on sr.port_departure_code = sp.code
         left join sea_port sp1 on sr.port_destination_code = sp1.code
@@ -88,9 +86,6 @@
         </if>
         <if test="form.status == 'S_7'">
              and sr.is_release_order = 0
-        </if>
-        <if test="form.status == 'S_4'">
-             and sr.is_aduit = 0
         </if>
         <if test="form.processStatusList!=null and form.processStatusList.size>0">
             and so.process_status IN

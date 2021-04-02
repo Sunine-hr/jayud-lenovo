@@ -84,9 +84,6 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
     //@ApiModelProperty(value = "是否已放单")
     private Integer isReleaseOrder;
 
-    //@ApiModelProperty(value = "是否已审核")
-    private Integer isAduit;
-
     //@ApiModelProperty(value = "进出口类型(1：进口，2：出口)")
     private Integer impAndExpType;
 

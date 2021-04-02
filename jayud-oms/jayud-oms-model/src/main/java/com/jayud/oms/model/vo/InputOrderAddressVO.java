@@ -63,4 +63,7 @@ public class InputOrderAddressVO {
     @ApiModelProperty(value = "附件")
     private List<FileView> takeFiles = new ArrayList<>();
 
+    @ApiModelProperty(value = "发货人/送货人")
+    private String consignee;
+
 }

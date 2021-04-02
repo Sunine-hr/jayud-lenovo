@@ -258,4 +258,26 @@
         order by so.id desc
     </select>
 
+    <select id="getNumByStatus" resultType="java.lang.Integer">
+        select count(*) from sea_order so
+        LEFT JOIN order_info oi
+        ON so.`main_order_no` = oi.`order_no`
+        <where>
+            <choose>
+                <when test="status=='S_0'">
+                    and so.status=#{status} AND oi.`status` in ('1','4')
+                </when>
+                <otherwise>
+                    and so.status=#{status}
+                </otherwise>
+            </choose>
+            <if test="legalIds != null and legalIds.size>0">
+                and so.`legal_entity_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
 </mapper>

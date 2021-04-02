@@ -139,4 +139,12 @@ public interface ISeaOrderService extends IService<SeaOrder> {
      * @param form
      */
     void updateOrSaveConfirmationAudit(SeaProcessOptForm form);
+
+    /**
+     * 获取菜单待处理数
+     * @param status
+     * @param legalIds
+     * @return
+     */
+    Integer getNumByStatus(String status, List<Long> legalIds);
 }

@@ -60,6 +60,9 @@ public class OrderAddressVO {
     @ApiModelProperty(value = "附件名称(多个逗号隔开)")
     private String fileName;
 
+    @ApiModelProperty(value = "发货人/送货人")
+    private String consignee;
+
     @ApiModelProperty(value = "附件")
     private List<FileView> takeFiles = new ArrayList<>();
 

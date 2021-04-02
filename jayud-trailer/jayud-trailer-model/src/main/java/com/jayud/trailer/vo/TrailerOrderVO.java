@@ -231,10 +231,13 @@ public class TrailerOrderVO {
         JSONArray cabinetSizeInfos = new JSONArray(cabinetSizeInfo.getData());
         for (int i = 0; i < cabinetSizeInfos.size(); i++) {
             JSONObject json = cabinetSizeInfos.getJSONObject(i);
-            if (this.cabinetSize.equals(json.getLong("id"))) { //结算单位配对
-                this.cabinetSizeName = json.getStr("name");
-                break;
+            if(cabinetSize!= null){
+                if (this.cabinetSize.equals(json.getLong("id"))) { //车型尺寸配对
+                    this.cabinetSizeName = json.getStr("name");
+                    break;
+                }
             }
+
         }
     }
 

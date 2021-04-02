@@ -126,6 +126,16 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         }
         //获取柜型数量
         if(addSeaOrderForm.getCabinetType()!=null){
+            if (addSeaOrderForm.getCabinetType().equals(2)) {
+                List<CabinetSizeNumber> cabinetSizeNumbers = addSeaOrderForm.getCabinetSizeNumbers();
+
+                //先删除原来的柜型
+                QueryWrapper queryWrapper = new QueryWrapper();
+                queryWrapper.eq("sea_order_id", seaOrder.getId());
+                queryWrapper.eq("sea_order_no", seaOrder.getOrderNo());
+                this.seaReplenishmentService.remove(queryWrapper);
+
+            }
             if (addSeaOrderForm.getCabinetType().equals(1)) {
                 List<CabinetSizeNumber> cabinetSizeNumbers = addSeaOrderForm.getCabinetSizeNumbers();
                 if (cabinetSizeNumbers.get(0).getId() != null) {
@@ -140,7 +150,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
                     cabinetSizeNumber.setSeaOrderNo(seaOrder.getOrderNo());
                     cabinetSizeNumber.setCreateTime(LocalDateTime.now());
                     cabinetSizeNumber.setCreateUser(UserOperator.getToken());
-                    boolean save = cabinetSizeNumberService.save(cabinetSizeNumber);
+                    boolean save = cabinetSizeNumberService.saveOrUpdate(cabinetSizeNumber);
                     if (!save) {
                         log.error("柜型数量添加失败");
                     }
@@ -151,7 +161,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
 
         //获取用户地址
         List<AddOrderAddressForm> orderAddressForms = addSeaOrderForm.getOrderAddressForms();
-        //System.out.println("orderAddressForms=================================="+orderAddressForms);
+        System.out.println("orderAddressForms=================================="+orderAddressForms);
         for (AddOrderAddressForm orderAddressForm : orderAddressForms) {
             orderAddressForm.setOrderNo(seaOrder.getOrderNo());
             orderAddressForm.setBusinessType(BusinessTypeEnum.HY.getCode());
@@ -947,6 +957,13 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         }
 
 
+    }
+
+    @Override
+    public Integer getNumByStatus(String status, List<Long> legalIds) {
+        //获取当前用户所属法人主体
+        Integer num = this.baseMapper.getNumByStatus(status, legalIds);
+        return num == null ? 0 : num;
     }
 
 

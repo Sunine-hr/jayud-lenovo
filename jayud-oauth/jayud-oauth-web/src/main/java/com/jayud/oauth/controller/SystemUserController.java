@@ -8,10 +8,7 @@ import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.*;
-import com.jayud.oauth.feign.CustomsClient;
-import com.jayud.oauth.feign.FreightAirClient;
-import com.jayud.oauth.feign.OmsClient;
-import com.jayud.oauth.feign.TmsClient;
+import com.jayud.oauth.feign.*;
 import com.jayud.oauth.model.bo.*;
 import com.jayud.oauth.model.enums.SystemUserStatusEnum;
 import com.jayud.oauth.model.enums.UserTypeEnum;
@@ -65,6 +62,8 @@ public class SystemUserController {
     private OmsClient omsClient;
     @Autowired
     private CustomsClient customsClient;
+    @Autowired
+    private OceanShipClient oceanShipClient;
 
     /**
      * 登录接口
@@ -660,6 +659,9 @@ public class SystemUserController {
         }
         if (SubOrderSignEnum.BG.getSignOne().equals(type)) {
             result.put(SubOrderSignEnum.BG.getSignOne(), this.customsClient.getMenuPendingNum(systemMenus).getData());
+        }
+        if (SubOrderSignEnum.HY.getSignOne().equals(type)) {
+            result.put(SubOrderSignEnum.HY.getSignOne(), this.oceanShipClient.getMenuPendingNum(systemMenus).getData());
         }
         return CommonResult.success(result);
     }

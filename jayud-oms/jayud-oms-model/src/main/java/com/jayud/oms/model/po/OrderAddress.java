@@ -84,6 +84,9 @@ public class OrderAddress extends Model<OrderAddress> {
     @ApiModelProperty(value = "入仓号,送货有")
     private String enterWarehouseNo;
 
+    @ApiModelProperty(value = "发货人/送货人")
+    private String consignee;
+
 
     @Override
     protected Serializable pkVal() {

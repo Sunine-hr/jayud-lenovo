@@ -123,47 +123,48 @@ public class InputSeaOrderForm {
     /**
      * 校验创建海运子订单参数
      */
-    public boolean checkCreateOrder() {
+    public String checkCreateOrder() {
         //海运
+        String message = null ;
         if (this.legalEntityId == null || StringUtils.isEmpty(this.unitCode)
                 || this.impAndExpType == null || this.terms == null
                 || StringUtils.isEmpty(this.portDepartureCode)
                 || StringUtils.isEmpty(this.portDestinationCode)
                 || this.goodTime == null) {
-            return false;
+            message = "参数不正确";
         }
         // 发货/收货地址是必填项
         if (CollectionUtil.isEmpty(this.deliveryAddress)) {
             for (AddOrderAddressForm address : deliveryAddress) {
                 if(StringUtils.isEmpty(address.getAddress())){
                     log.warn("发货地址不能为空");
-                    return false;
+                    message = "发货地址不能为空";
                 }
                 if(StringUtils.isEmpty(address.getContacts())){
                     log.warn("联系人不能为空");
-                    return false;
+                    message = "联系人不能为空";
                 }
             }
             log.warn("发货地址信息不能为空");
-            return false;
+            message = "发货地址信息不能为空";
         }
         if (CollectionUtil.isEmpty(this.shippingAddress)) {
             for (AddOrderAddressForm address : deliveryAddress) {
                 if(StringUtils.isEmpty(address.getPhone())){
                     log.warn("电话号码不能为空");
-                    return false;
+                    message = "电话号码不能为空";
                 }
                 if(StringUtils.isEmpty(address.getAddress())){
                     log.warn("发货地址不能为空");
-                    return false;
+                    message = "发货地址不能为空";
                 }
                 if(StringUtils.isEmpty(address.getContacts())){
                     log.warn("联系人不能为空");
-                    return false;
+                    message = "联系人不能为空";
                 }
             }
             log.warn("收货地址信息不能为空");
-            return false;
+            message = "收货地址信息不能为空";
         }
         if (this.notificationAddress.size() == 0 ||
                 StringUtils.isEmpty(this.notificationAddress.get(0).getAddress())) {
@@ -173,7 +174,7 @@ public class InputSeaOrderForm {
         //货品信息
         for (AddGoodsForm goodsForm : goodsForms) {
             if (!goodsForm.checkCreateAirOrder()) {
-                return false;
+                message = "商品信息有缺失";
             }
         }
         if(this.cabinetType.equals(1)){
@@ -181,18 +182,18 @@ public class InputSeaOrderForm {
                 for (AddCabinetSizeNumber cabinetSizeNumber : this.cabinetSizeNumbers) {
                     if(StringUtils.isEmpty(cabinetSizeNumber.getCabinetTypeSize())){
                         log.warn("货柜大小类型信息不能为空");
-                        return false;
+                        message = "货柜大小类型信息不能为空";
                     }
                     if(cabinetSizeNumber.getNumber() == null ){
                         log.warn("柜子数量信息不能为空");
-                        return false;
+                        message = "柜子数量信息不能为空";
                     }
                 }
             }
 
         }
 
-        return true;
+        return message;
     }
 
     /**

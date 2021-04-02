@@ -35,7 +35,7 @@
 
     <select id="selectByUserId" resultMap="BaseResultMap">
         SELECT
-        DISTINCT
+--         DISTINCT
             <include refid="Base_Column_List"/>
         FROM
             system_menu

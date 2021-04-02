@@ -97,7 +97,9 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
             for (AddTrailerOrderAddressForm addTrailerOrderAddressForm : orderAddressForms) {
 
                 AddGoodsForm goodsForm = new AddGoodsForm();
+                goodsForm.setId(addTrailerOrderAddressForm.getBindGoodsId());
                 goodsForm.setOrderNo(trailerOrder.getOrderNo());
+                goodsForm.setId(addTrailerOrderAddressForm.getBindGoodsId());
                 goodsForm.setBusinessId(trailerOrder.getId());
                 goodsForm.setBusinessType(BusinessTypeEnum.TC.getCode());
                 goodsForm.setName(addTrailerOrderAddressForm.getName());

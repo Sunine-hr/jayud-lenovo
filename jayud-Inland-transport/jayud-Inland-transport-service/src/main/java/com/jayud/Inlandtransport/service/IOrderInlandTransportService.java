@@ -88,4 +88,12 @@ public interface IOrderInlandTransportService extends IService<OrderInlandTransp
      * @return
      */
     List<OrderInlandTransportDetails> getInlandOrderInfoByMainOrderNos(List<String> mainOrderNos);
+
+    /**
+     * 获取内陆状态待处理数量
+     * @param status
+     * @param legalIds
+     * @return
+     */
+    Integer getNumByStatus(String status, List<Long> legalIds);
 }

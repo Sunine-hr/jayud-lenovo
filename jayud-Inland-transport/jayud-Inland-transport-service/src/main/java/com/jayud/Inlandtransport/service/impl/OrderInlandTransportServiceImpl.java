@@ -359,6 +359,13 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
         return details;
     }
 
+
+    @Override
+    public Integer getNumByStatus(String status, List<Long> legalIds) {
+        Integer num = this.baseMapper.getNumByStatus(status, legalIds);
+        return num == null ? 0 : num;
+    }
+
     private void updateSendCars(ProcessOptForm form) {
         if (OrderStatusEnum.INLANDTP_NL_3.getCode().equals(form.getStatus())) {
             List<OrderInlandSendCars> sendCarsList = this.orderInlandSendCarsService.getByCondition(new OrderInlandSendCars().setOrderId(form.getOrderId()));

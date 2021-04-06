@@ -760,8 +760,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     allPics.addAll(attachments);
                     subOrder.setFileViews(attachments);
                     //结算单位名称
-                    CustomerInfo customerInfo = customerInfoService.getByCode(inputMainOrderVO.getUnitCode());
-                    subOrder.setUnitName(customerInfo.getName());
+                    CustomerInfo customerInfo = customerInfoService.getByCode(subOrder.getUnitCode());
+                    if (customerInfo != null) {
+                        subOrder.setUnitName(customerInfo.getName());
+                    }
+
                 }
                 inputOrderCustomsVO.setAllPics(allPics);
 
@@ -791,8 +794,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 //组装车型/柜号
                 inputOrderTransportVO.assembleModelAndCntrNo();
                 //结算单位名称
-                CustomerInfo customerInfo = customerInfoService.getByCode(inputMainOrderVO.getUnitCode());
-                inputOrderTransportVO.setUnitName(customerInfo.getName());
+                CustomerInfo customerInfo = customerInfoService.getByCode(inputOrderTransportVO.getUnitCode());
+                if (customerInfo != null) {
+                    inputOrderTransportVO.setUnitName(customerInfo.getName());
+                }
+
                 //附件信息
                 List<FileView> allPics = new ArrayList<>(StringUtils.getFileViews(inputOrderTransportVO.getCntrPic(), inputOrderTransportVO.getCntrPicName(), prePath));
                 //获取反馈操作人时上传的附件
@@ -842,8 +848,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         , BusinessTypeEnum.KY.getCode(), prePath);
                 airOrderVO.setAllPics(attachments);
                 //结算单位名称
-                CustomerInfo customerInfo = customerInfoService.getByCode(inputMainOrderVO.getUnitCode());
-                airOrderVO.setUnitName(customerInfo.getName());
+                CustomerInfo customerInfo = customerInfoService.getByCode(airOrderVO.getSettlementUnitCode());
+                if (customerInfo != null) {
+                    airOrderVO.setUnitName(customerInfo.getName());
+                }
+
                 inputOrderVO.setAirOrderForm(airOrderVO);
             }
         }
@@ -870,8 +879,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         , BusinessTypeEnum.HY.getCode(), prePath);
                 seaOrderVO.setAllPics(attachments);
                 //结算单位名称
-                CustomerInfo customerInfo = customerInfoService.getByCode(inputMainOrderVO.getUnitCode());
-                seaOrderVO.setUnitName(customerInfo.getName());
+                CustomerInfo customerInfo = customerInfoService.getByCode(seaOrderVO.getUnitCode());
+                if (customerInfo != null) {
+                    seaOrderVO.setUnitName(customerInfo.getName());
+                }
                 inputOrderVO.setSeaOrderForm(seaOrderVO);
             }
         }
@@ -891,8 +902,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         , BusinessTypeEnum.TC.getCode(), prePath);
                 trailerOrderVO.setAllPics(attachments);
                 //结算单位名称
-                CustomerInfo customerInfo = customerInfoService.getByCode(inputMainOrderVO.getUnitCode());
-                trailerOrderVO.setUnitName(customerInfo.getName());
+                CustomerInfo customerInfo = customerInfoService.getByCode(trailerOrderVO.getUnitCode());
+                if (customerInfo != null) {
+                    trailerOrderVO.setUnitName(customerInfo.getName());
+                }
                 inputOrderVO.setTrailerOrderForm(trailerOrderVO);
             }
         }

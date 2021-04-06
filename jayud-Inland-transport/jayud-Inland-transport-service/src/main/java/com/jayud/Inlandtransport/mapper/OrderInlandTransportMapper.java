@@ -28,4 +28,7 @@ public interface OrderInlandTransportMapper extends BaseMapper<OrderInlandTransp
                                                  @Param("legalIds") List<Long> legalIds);
 
     List<OrderInlandTransportDetails> getOrderInfoByMainOrderNos(@Param("mainOrderNos") List<String> mainOrderNos);
+
+    Integer getNumByStatus(@Param("status") String status, @Param("legalIds") List<Long> legalIds);
+    
 }

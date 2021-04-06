@@ -156,4 +156,19 @@
             </foreach>
         </if>
     </select>
+
+
+    <select id="getNumByStatus" resultType="java.lang.Integer">
+        select count(*) from order_inland_transport
+        <where>
+            and status=#{status} and (process_status=0)
+            <if test="legalIds != null and legalIds.size>0">
+                and `legal_entity_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
+            </if>
+            group by status
+        </where>
+    </select>
 </mapper>

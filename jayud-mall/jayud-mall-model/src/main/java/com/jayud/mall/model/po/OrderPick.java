@@ -56,6 +56,11 @@ public class OrderPick extends Model<OrderPick> {
     @JSONField(ordinal = 5, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime pickTime;
 
+    @ApiModelProperty(value = "指定提货时间(后台拼车提货时指定)", position = 5)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 5, format="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime assignPickTime;
+
     @ApiModelProperty(value = "重量", position = 6)
     @JSONField(ordinal = 6)
     private BigDecimal weight;

@@ -86,6 +86,10 @@ public class OrderPick extends Model<OrderPick> {
     @JSONField(ordinal = 11, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "运输id(transport id)")
+    @JSONField(ordinal = 11)
+    private Long transportId;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

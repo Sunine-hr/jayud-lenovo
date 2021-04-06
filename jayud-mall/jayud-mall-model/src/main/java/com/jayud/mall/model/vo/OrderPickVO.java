@@ -68,6 +68,10 @@ public class OrderPickVO {
     @JSONField(ordinal = 11, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "运输id(transport id)")
+    @JSONField(ordinal = 11)
+    private Long transportId;
+
     /*提货地址基础数据表：delivery_address*/
     @ApiModelProperty(value = "联系人", position = 12)
     @JSONField(ordinal = 12)

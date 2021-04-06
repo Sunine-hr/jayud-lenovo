@@ -750,30 +750,33 @@ public class SeaOrderController {
                 Map<String, Object> map = new HashMap<String, Object>();
                 map.put("shipCompany", seaOrderDetails.getSeaBookshipVO().getShipCompany());
                 map.put("shipNumber", seaOrderDetails.getSeaBookshipVO().getShipNumber());
-                map.put("portDeparture", seaOrderDetails.getPortDeparture());
-                map.put("portDestination", seaOrderDetails.getPortDestination());
-                map.put("cabinetType", seaOrderDetails.getCabinetTypeName());
+                map.put("portDeparture", seaReplenishment.getPortDepartureName());
+                map.put("portDestination", seaReplenishment.getPortDestinationName());
+                map.put("cabinetType", seaReplenishment.getCabinetTypeName());
                 if (seaOrderDetails.getCabinetTypeName().equals("FCL")) {
                     map.put("whether", "√");
                 } else {
                     map.put("whether2", "√");
                 }
 
-                List<SeaContainerInformationVO> seaContainerInformations = seaReplenishment.getSeaContainerInformations();
-                Integer totalBulkCargoAmount = 0;
-                Double totalWeights = 0.0;
-                Double totalvolume = 0.0;
-                for (SeaContainerInformationVO seaContainerInformation : seaContainerInformations) {
-                    totalBulkCargoAmount = totalBulkCargoAmount + seaContainerInformation.getPlatNumber();
-                    totalWeights = totalWeights + seaContainerInformation.getWeight();
-                    if (seaContainerInformation.getVolume() != null) {
-                        totalvolume = totalvolume + seaContainerInformation.getVolume();
-                    }
+                if(seaReplenishment.getCabinetTypeName().equals("FCL")){
+                    List<SeaContainerInformationVO> seaContainerInformations = seaReplenishment.getSeaContainerInformations();
+                    Integer totalBulkCargoAmount = 0;
+                    Double totalWeights = 0.0;
+                    Double totalvolume = 0.0;
+                    for (SeaContainerInformationVO seaContainerInformation : seaContainerInformations) {
+                        totalBulkCargoAmount = totalBulkCargoAmount + seaContainerInformation.getPlatNumber();
+                        totalWeights = totalWeights + seaContainerInformation.getWeight();
+                        if (seaContainerInformation.getVolume() != null) {
+                            totalvolume = totalvolume + seaContainerInformation.getVolume();
+                        }
 
+                    }
+                    map.put("totalBulkCargoAmount", totalBulkCargoAmount);
+                    map.put("totalWeights", totalWeights);
+                    map.put("totalvolume", totalvolume);
                 }
-                map.put("totalBulkCargoAmount", totalBulkCargoAmount);
-                map.put("totalWeights", totalWeights);
-                map.put("totalvolume", totalvolume);
+
                 excelWriter.fill(map, writeSheet);
 
                 ++count;

@@ -1,8 +1,10 @@
 package com.jayud.mall.service;
 
-import com.jayud.mall.model.po.QuotationType;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.po.QuotationType;
 import com.jayud.mall.model.vo.QuotationTypeReturnVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -18,5 +20,5 @@ public interface IQuotationTypeService extends IService<QuotationType> {
      * 报价类型下拉选择
      * @return
      */
-    QuotationTypeReturnVO findQuotationTypeBy();
+    List<QuotationTypeReturnVO> findQuotationTypeBy();
 }

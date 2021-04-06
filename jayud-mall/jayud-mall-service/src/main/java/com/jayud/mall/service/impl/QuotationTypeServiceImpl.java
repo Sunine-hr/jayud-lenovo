@@ -28,23 +28,21 @@ public class QuotationTypeServiceImpl extends ServiceImpl<QuotationTypeMapper, Q
     QuotationTypeMapper quotationTypeMapper;
 
     @Override
-    public QuotationTypeReturnVO findQuotationTypeBy() {
-        //1	整柜
-        QueryWrapper<QuotationType> queryWrapper1 = new QueryWrapper<>();
-        queryWrapper1.eq("fid", 1);
-        List<QuotationType> list1 = quotationTypeMapper.selectList(queryWrapper1);
-        List<QuotationTypeVO> quotationTypeVOS1 = ConvertUtil.convertList(list1, QuotationTypeVO.class);
-        //2	散柜
-        QueryWrapper<QuotationType> queryWrapper2 = new QueryWrapper<>();
-        queryWrapper2.eq("fid", 2);
-        List<QuotationType> list2 = quotationTypeMapper.selectList(queryWrapper2);
-        List<QuotationTypeVO> quotationTypeVOS2 = ConvertUtil.convertList(list2, QuotationTypeVO.class);
-
-        //返回对象
-        QuotationTypeReturnVO quotationTypeReturnVO = new QuotationTypeReturnVO();
-        quotationTypeReturnVO.setFullContainer(quotationTypeVOS1);
-        quotationTypeReturnVO.setScatteredArk(quotationTypeVOS2);
-
-        return quotationTypeReturnVO;
+    public List<QuotationTypeReturnVO> findQuotationTypeBy() {
+        QueryWrapper<QuotationType> quotationTypeQueryWrapper = new QueryWrapper<>();
+        quotationTypeQueryWrapper.eq("fid", 0);
+        quotationTypeQueryWrapper.select().orderByAsc("sort");
+        List<QuotationType> quotationTypes = quotationTypeMapper.selectList(quotationTypeQueryWrapper);
+        List<QuotationTypeReturnVO> quotationTypeReturnVOS = ConvertUtil.convertList(quotationTypes, QuotationTypeReturnVO.class);
+        quotationTypeReturnVOS.forEach(quotationTypeReturnVO -> {
+            String fid = quotationTypeReturnVO.getId();
+            QueryWrapper<QuotationType> childrenQueryWrapper = new QueryWrapper<>();
+            childrenQueryWrapper.eq("fid", fid);
+            childrenQueryWrapper.select().orderByAsc("sort");
+            List<QuotationType> quotationTypeList = quotationTypeMapper.selectList(childrenQueryWrapper);
+            List<QuotationTypeVO> children = ConvertUtil.convertList(quotationTypeList, QuotationTypeVO.class);
+            quotationTypeReturnVO.setChildren(children);
+        });
+        return quotationTypeReturnVOS;
     }
 }

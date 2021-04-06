@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/quotationtype")
 @Api(tags = "A031-admin-报价类型表接口")
@@ -24,10 +26,12 @@ public class QuotationTypeController {
     @ApiOperation(value = "报价类型下拉选择，给前端用")
     @PostMapping("/findQuotationTypeBy")
     @ApiOperationSupport(order = 1)
-    public CommonResult<QuotationTypeReturnVO> findQuotationTypeBy(){
-        QuotationTypeReturnVO quotationTypeReturnVO = quotationTypeService.findQuotationTypeBy();
-        return CommonResult.success(quotationTypeReturnVO);
+    public CommonResult<List<QuotationTypeReturnVO>> findQuotationTypeBy(){
+        List<QuotationTypeReturnVO> quotationTypeReturnVOList = quotationTypeService.findQuotationTypeBy();
+        return CommonResult.success(quotationTypeReturnVOList);
     }
+
+
 
 
 }

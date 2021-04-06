@@ -181,7 +181,7 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
 //                request.put("key", KafkaMsgEnums.VIVO_FREIGHT_TMS_MESSAGE_ONE.getKey());
         Map<String, Object> msg = new HashMap<>();
         msg.put("dispatchNo", orderTransport.getThirdPartyOrderNo());
-        msg.put("licensePlate", new JSONObject(resultTwo.getData()).getStr("plateNumber")); //TODO 等派车单增加车辆id字段再修改
+        msg.put("licensePlate", new JSONObject(resultTwo.getData()).getStr("plateNumber"));
         msg.put("transportationCompany", new JSONObject(resultOne.getData()).getStr("legalName"));
         msg.put("containerNo", orderSendCars.getCntrNo());
 //                request.put("msg", JSONUtil.toJsonStr(msg));

@@ -262,6 +262,7 @@ public class BookingSpaceForm {
         addAirOrderForm.setCreateUserType(CreateUserTypeEnum.VIVO.getCode());
         addAirOrderForm.setGoodTime(this.pickUpDate);
         addAirOrderForm.setId(this.airOrderId);
+        addAirOrderForm.setInvoiceNo(this.invoiceNo);
         //发货地址信息
         AddOrderAddressForm deliveryAddress = new AddOrderAddressForm();
         deliveryAddress.setCompany(this.shipper);
@@ -297,7 +298,7 @@ public class BookingSpaceForm {
         String message = "贸易类型暂时不支持";
         for (AirOrderTermsEnum termsEnum : AirOrderTermsEnum.values()) {
             this.tradeTerms = this.tradeTerms.split(" ")[0];
-            if (termsEnum.getDesc().equals(this.tradeTerms)){
+            if (termsEnum.getDesc().equals(this.tradeTerms)) {
                 message = "";
                 break;
             }

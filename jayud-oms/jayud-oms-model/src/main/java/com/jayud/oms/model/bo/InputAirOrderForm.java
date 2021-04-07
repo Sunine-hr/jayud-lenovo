@@ -120,9 +120,9 @@ public class InputAirOrderForm {
             return false;
         }
 
-        if (StringUtils.isNotEmpty(this.invoiceNo) && !Pattern.matches("^[A-Za-z0-9,]+$", this.invoiceNo)) {
-            throw new JayudBizException(400, "发票号只能输入英文、数字包括,");
-        }
+//        if (StringUtils.isNotEmpty(this.invoiceNo) && !Pattern.matches("^[A-Za-z0-9,]+$", this.invoiceNo)) {
+//            throw new JayudBizException(400, "发票号只能输入英文、数字包括,");
+//        }
 
         // 发货/收货地址是必填项
         if (CollectionUtils.isEmpty(this.deliveryAddress)) {

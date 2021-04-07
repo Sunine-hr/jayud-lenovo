@@ -113,6 +113,9 @@ public class OrderInfo extends Model<OrderInfo> {
     @ApiModelProperty(value = "驳回描述")
     private String rejectComment;
 
+    @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo.... 参照CreateUserTypeEnum)")
+    private Integer createUserType;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

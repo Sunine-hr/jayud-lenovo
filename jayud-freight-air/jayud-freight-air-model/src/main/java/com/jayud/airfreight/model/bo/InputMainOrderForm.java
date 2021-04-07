@@ -59,5 +59,6 @@ public class InputMainOrderForm {
     @ApiModelProperty(value = "审核状态")
     private Integer status;
 
-
+    @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo.... 参照CreateUserTypeEnum)")
+    private Integer createUserType;
 }

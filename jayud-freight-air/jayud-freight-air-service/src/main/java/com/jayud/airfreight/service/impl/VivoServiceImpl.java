@@ -510,6 +510,7 @@ public class VivoServiceImpl implements VivoService {
         mainOrderForm.setCustomerCode(customerInfo.getStr("idCode"));
         mainOrderForm.setClassCode(OrderStatusEnum.KY.getCode());
         mainOrderForm.setSelectedServer(OrderStatusEnum.KYDD.getCode());
+        mainOrderForm.setCreateUserType(CreateUserTypeEnum.VIVO.getCode());
         mainOrderForm.setOrderId(form.getMainOrderId());
         //TODO 不清楚接单法人和结算单位是否要传
         //组装空运订单

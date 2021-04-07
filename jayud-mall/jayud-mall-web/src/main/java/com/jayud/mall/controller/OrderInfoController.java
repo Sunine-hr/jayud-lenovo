@@ -61,18 +61,6 @@ public class OrderInfoController {
         CustomerUser customerUser = baseService.getCustomerUser();
         form.setCustomerId(customerUser.getId());//当前登录客户
         IPage<OrderInfoVO> pageList = orderInfoService.findWebOrderInfoByPage(form);
-
-        //订单显示，提货状态
-        List<OrderInfoVO> records = pageList.getRecords();
-        if(CollUtil.isEmpty(records)){
-            records.forEach(orderInfoVO -> {
-                Integer isPick = orderInfoVO.getIsPick();//是否上门提货(0否 1是,order_pick)
-                if(isPick == 1){
-
-                }
-            });
-        }
-
         Long draftNum = orderInfoService.findOrderInfoDraftCount(form);
         CommonPageDraftResult<OrderInfoVO> draftResult = new CommonPageDraftResult(pageList, draftNum);
 

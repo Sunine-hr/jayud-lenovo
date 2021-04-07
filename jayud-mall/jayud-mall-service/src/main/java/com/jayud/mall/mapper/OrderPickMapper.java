@@ -6,6 +6,7 @@ import com.jayud.mall.model.bo.QueryOrderPickForm;
 import com.jayud.mall.model.po.OrderPick;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.vo.OrderPickVO;
+import com.jayud.mall.model.vo.PickStatusVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -45,4 +46,11 @@ public interface OrderPickMapper extends BaseMapper<OrderPick> {
      * @return
      */
     List<OrderPickVO> findOrderPickByTransportId(@Param("transportId") Long transportId);
+
+    /**
+     * 查询订单提货状态
+     * @param orderId 订单id
+     * @return
+     */
+    List<PickStatusVO> findPickStatusByOrderId(@Param("orderId") Long orderId);
 }

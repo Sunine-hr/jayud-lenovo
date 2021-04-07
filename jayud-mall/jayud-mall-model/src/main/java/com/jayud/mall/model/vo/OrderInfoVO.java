@@ -329,4 +329,10 @@ public class OrderInfoVO {
     @JSONField(ordinal = 68)
     private String destinationCountryCode;
 
+    //订单，提货状态
+    @ApiModelProperty(value = "订单，提货状态", position = 69)
+    @JSONField(ordinal = 69)
+    private List<PickStatusVO> pickStatusVOList;
+
+
 }

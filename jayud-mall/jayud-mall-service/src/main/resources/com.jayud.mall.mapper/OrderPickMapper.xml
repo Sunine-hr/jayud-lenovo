@@ -137,5 +137,21 @@
         and t.transport_id = #{transportId}
     </select>
 
+    <select id="findPickStatusByOrderId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.PickStatusVO">
+        select pick_no,
+               warehouse_no,
+               pick_status,
+               (case pick_status
+                    when 1 then '未提货'
+                    when 2 then '正在提货'
+                    when 3 then '已提货'
+                    when 4 then '已到仓'
+                    else null end) as pickStatusDescribes
+        from order_pick
+        where order_id = #{orderId}
+    </select>
+
+
 
 </mapper>

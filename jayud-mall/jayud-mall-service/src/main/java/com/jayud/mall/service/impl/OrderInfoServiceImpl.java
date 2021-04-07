@@ -1162,6 +1162,22 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //定义排序规则
         page.addOrder(OrderItem.desc("t.id"));
         IPage<OrderInfoVO> pageInfo = orderInfoMapper.findWebOrderInfoByPage(page, form);
+
+        //订单显示，提货状态
+        List<OrderInfoVO> records = pageInfo.getRecords();
+        if(CollUtil.isNotEmpty(records)){
+            records.forEach(orderInfoVO -> {
+                Long orderId = orderInfoVO.getId();
+                Integer isPick = orderInfoVO.getIsPick();//是否上门提货(0否 1是,order_pick)
+                if(isPick == 1){
+                    List<PickStatusVO> pickStatusVOList = orderPickMapper.findPickStatusByOrderId(orderId);
+                    orderInfoVO.setPickStatusVOList(pickStatusVOList);
+                }else{
+                    orderInfoVO.setPickStatusVOList(new ArrayList<>());
+                }
+            });
+        }
+
         return pageInfo;
     }
 

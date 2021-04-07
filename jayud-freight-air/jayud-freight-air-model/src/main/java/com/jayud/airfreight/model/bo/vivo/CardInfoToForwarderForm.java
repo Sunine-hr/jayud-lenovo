@@ -99,6 +99,13 @@ public class CardInfoToForwarderForm {
     @ApiModelProperty("提货仓联系人")
     private String deliveryContact;
 
+    @JsonProperty("Delivery_contact_phone")
+    @SerializedName("Delivery_contact_phone")
+    @Length(max = 20, message = "Delivery_contact_phone最大长度为20位")
+    @NotEmpty(message = "Delivery_contact_phone 必填")
+    @ApiModelProperty("提货仓联系方式")
+    private String deliveryContactPhone;
+
     @JsonProperty("Consignee")
     @SerializedName("Consignee")
     @Length(max = 100, message = "Consignee最大长度为100位")
@@ -135,6 +142,8 @@ public class CardInfoToForwarderForm {
         //TODO 提货/送货地址等财务上了,进行修改
         InputOrderTakeAdrForm deliveryAddress = new InputOrderTakeAdrForm();
         deliveryAddress.setAddress(this.deliveryAddress);
+        deliveryAddress.setContacts(this.deliveryContact);//TODO  之前开发是没有的,暂时不知道要不要 2011-4-7
+        deliveryAddress.setPhone(this.deliveryContactPhone);//TODO  之前开发是没有的,暂时不知道要不要 2011-4-7
 
         deliveryAddress.setTakeTimeStr(str2LocalDateTime(this.pickUpDate));
         orderTransportForm.setTakeAdrForms1(Collections.singletonList(deliveryAddress));

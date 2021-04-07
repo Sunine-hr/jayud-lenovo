@@ -247,7 +247,7 @@ public class DateUtils {
     /**
      * 一组时间  返回最大时间
      *
-     * @param List<Date>date
+     * @param date
      * @return
      */
     public static Date getMaxDate(List<Date> date) {
@@ -288,6 +288,9 @@ public class DateUtils {
 
 
     public static LocalDateTime str2LocalDateTime(String date, String oldSymbol, String replaceSymbol) {
+        if (StringUtils.isEmpty(date)){
+            return null;
+        }
         date = date.replace(replaceSymbol, oldSymbol);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtils.DATE_TIME_PATTERN);
         try {

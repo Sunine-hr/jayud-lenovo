@@ -486,7 +486,7 @@ public class SeaOrderController {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         SeaOrderVO seaOrderDetails = this.seaOrderService.getSeaOrderDetails(seaOrderId);
-        if (seaOrderDetails.getSeaReplenishments() == null || seaOrderDetails.getSeaReplenishments().size() <= 0) {
+        if (seaOrderDetails.getSeaReplenishments() == null || seaOrderDetails.getSeaReplenishments().size() <= 0 ||seaOrderDetails.getCabinetTypeName().equals("LCL")) {
             List<SeaReplenishmentVO> seaReplenishmentVOS = new ArrayList<>();
             SeaReplenishmentVO convert = ConvertUtil.convert(seaOrderDetails, SeaReplenishmentVO.class);
             convert.setOrderNo(null);
@@ -764,14 +764,17 @@ public class SeaOrderController {
                     Integer totalBulkCargoAmount = 0;
                     Double totalWeights = 0.0;
                     Double totalvolume = 0.0;
-                    for (SeaContainerInformationVO seaContainerInformation : seaContainerInformations) {
-                        totalBulkCargoAmount = totalBulkCargoAmount + seaContainerInformation.getPlatNumber();
-                        totalWeights = totalWeights + seaContainerInformation.getWeight();
-                        if (seaContainerInformation.getVolume() != null) {
-                            totalvolume = totalvolume + seaContainerInformation.getVolume();
-                        }
+                    if(seaContainerInformations!=null || seaContainerInformations.size()>0){
+                        for (SeaContainerInformationVO seaContainerInformation : seaContainerInformations) {
+                            totalBulkCargoAmount = totalBulkCargoAmount + seaContainerInformation.getPlatNumber();
+                            totalWeights = totalWeights + seaContainerInformation.getWeight();
+                            if (seaContainerInformation.getVolume() != null) {
+                                totalvolume = totalvolume + seaContainerInformation.getVolume();
+                            }
 
+                        }
                     }
+
                     map.put("totalBulkCargoAmount", totalBulkCargoAmount);
                     map.put("totalWeights", totalWeights);
                     map.put("totalvolume", totalvolume);

@@ -75,6 +75,9 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
     @Autowired
     private ISeaContainerInformationService seaContainerInformationService;
 
+    @Autowired
+    private ISeaPortService seaPortService;
+
     @Override
     @Transactional
     public String createOrder(AddSeaOrderForm addSeaOrderForm) {
@@ -99,13 +102,10 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
             this.updateById(seaOrder);
         }
         //获取柜型数量
+        //先删除原来的柜型
+        this.cabinetSizeNumberService.deleteCabinet(addSeaOrderForm.getOrderId());
+
         if(addSeaOrderForm.getCabinetType()!=null){
-            if (addSeaOrderForm.getCabinetType().equals(2)) {
-                //先删除原来的柜型
-
-                this.cabinetSizeNumberService.deleteCabinet(addSeaOrderForm.getOrderId());
-
-            }
             if (addSeaOrderForm.getCabinetType().equals(1)) {
                 List<CabinetSizeNumber> cabinetSizeNumbers = addSeaOrderForm.getCabinetSizeNumbers();
 
@@ -213,13 +213,13 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         //查询商品信息
         ApiResult<List<GoodsVO>> result = this.omsClient.getGoodsByBusOrders(Collections.singletonList(seaOrderVO.getOrderNo()), businessType);
         if (result.getCode() != HttpStatus.SC_OK) {
-            log.warn("查询商品信息失败 airOrderId={}");
+            log.warn("查询商品信息失败 seaOrderId={}");
         }
         seaOrderVO.setGoodsForms(result.getData());
         //查询地址信息
         ApiResult<List<OrderAddressVO>> resultOne = this.omsClient.getOrderAddressByBusOrders(Collections.singletonList(seaOrderVO.getOrderNo()), businessType);
         if (resultOne.getCode() != HttpStatus.SC_OK) {
-            log.warn("查询订单地址信息失败 airOrderId={}");
+            log.warn("查询订单地址信息失败 seaOrderId={}");
         }
         //处理地址信息
         for (OrderAddressVO address : resultOne.getData()) {
@@ -399,6 +399,10 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         }
         omsClient.deleteOrderAddressByBusOrders(orderNo,BusinessTypeEnum.HY.getCode());
         omsClient.deleteGoodsByBusOrders(orderNo,BusinessTypeEnum.HY.getCode());
+        int i1 = seaContainerInformationService.deleteSeaContainerInfo(orderNo);
+        if(i1<=0){
+            log.warn("货柜信息添加失败");
+        }
 
         if (form.getType().equals(1)) {//合并，多个订单合并成一个补料
             List<AddSeaOrderForm> seaOrderForms = form.getSeaOrderForms();
@@ -667,8 +671,6 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         List<SeaReplenishmentVO> seaReplenishmentVOS = ConvertUtil.convertList(list, SeaReplenishmentVO.class);
         for (SeaReplenishmentVO seaReplenishmentVO : seaReplenishmentVOS) {
             //获取截补料中的柜型数量以及货柜信息
-            List<CabinetSizeNumberVO> list1 = cabinetSizeNumberService.getList(seaReplenishmentVO.getId());
-            seaReplenishmentVO.setCabinetSizeNumbers(list1);
             List<SeaContainerInformationVO> seaContainerInformations = seaContainerInformationService.getList(seaReplenishmentVO.getId());
             seaReplenishmentVO.setSeaContainerInformations(seaContainerInformations);
 
@@ -688,6 +690,9 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
                 address.getFile(prePath);
                 seaReplenishmentVO.processingAddress(address);
             }
+            //匹配港口信息
+            seaReplenishmentVO.setPortDepartureName(seaPortService.getPortName(seaReplenishmentVO.getPortDepartureCode()));
+            seaReplenishmentVO.setPortDestinationName(seaPortService.getPortName(seaReplenishmentVO.getPortDestinationCode()));
         }
         seaOrder.setSeaReplenishments(seaReplenishmentVOS);
         return seaOrder;

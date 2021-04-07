@@ -33,4 +33,7 @@ public class AddAuditSupplierInfoForm {
 
     @ApiModelProperty(value = "审核描述")
     private String auditComment;
+
+    @ApiModelProperty(value = "供应商代码,财务审核时必填")
+    private String supplierCode;
 }

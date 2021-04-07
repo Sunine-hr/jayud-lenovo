@@ -437,7 +437,7 @@ public class CustomerInfoController {
     @ApiOperation(value = "导入客户信息")
     @PostMapping(value = "/uploadExcel")
     public CommonResult ajaxUploadExcel(MultipartFile file, HttpServletResponse response, @RequestParam("userName") String userName) {
-        System.out.println("userName:=======" + userName);
+        //c System.out.println("userName:=======" + userName);
 
         String commentHTML = null;
         try {
@@ -456,7 +456,7 @@ public class CustomerInfoController {
     @ApiOperation(value = "下载错误信息")
     @GetMapping(value = "/downloadErrorExcel")
     public void downloadErrorExcel(HttpServletResponse response, @RequestParam("userName") String userName) {
-        System.out.println("downloadErrorExcel:userName========================" + userName);
+        //System.out.println("downloadErrorExcel:userName========================" + userName);
         try {
             customerInfoService.insExcel(response, userName);
         } catch (Exception exception) {
@@ -468,7 +468,7 @@ public class CustomerInfoController {
     @PostMapping(value = "/checkMes")
     public CommonResult checkMes(@RequestBody Map<String, Object> param) {
         String userName = MapUtil.getStr(param, "loginUserName");
-        System.out.println("checkMes:userName========================" + userName);
+        //System.out.println("checkMes:userName========================" + userName);
         boolean result = customerInfoService.checkMes(userName);
         return CommonResult.success(result);
     }

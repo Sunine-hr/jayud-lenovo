@@ -24,6 +24,7 @@ import com.jayud.oms.model.vo.SupplierInfoVO;
 import com.jayud.oms.service.IAuditInfoService;
 import com.jayud.oms.service.IProductClassifyService;
 import com.jayud.oms.service.ISupplierInfoService;
+import com.jayud.oms.service.ISupplierRelaLegalService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,9 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
 
     @Autowired
     private OauthClient oauthClient;
+
+    @Autowired
+    private ISupplierRelaLegalService supplierRelaLegalServic;
 
     /**
      * 列表分页查询
@@ -89,8 +93,8 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             record.setSettlementType(SettlementTypeEnum.getDesc(record.getSettlementType()));
 
             //获取法人主体
-            LegalEntityVO legalEntityVO = ConvertUtil.convert(oauthClient.getLegalEntityByLegalId(record.getLegalEntityId()).getData(), LegalEntityVO.class);
-            record.setLegalEntityName(legalEntityVO.getLegalName());
+//            LegalEntityVO legalEntityVO = ConvertUtil.convert(oauthClient.getLegalEntityByLegalId(record.getLegalEntityIds().get(0)).getData(), LegalEntityVO.class);
+//            record.setLegalEntityName(legalEntityVO.getLegalName());
             //查询审核状态
             AuditInfo auditInfo = this.auditInfoService.getAuditInfoLatestByExtId(record.getId(), AuditTypeDescEnum.ONE.getTable());
             record.setAuditStatus(AuditStatusEnum.getDesc(auditInfo.getAuditStatus()));
@@ -128,6 +132,11 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
                     .setSupplierCode(null);
             isTrue = this.updateById(supplierInfo);
         }
+
+        form.setId(supplierInfo.getId());
+        //保存客户和法人主体关系
+        this.supplierRelaLegalServic.saveSupplierRelLegal(form);
+
         //创建审核表
         auditInfoService.saveOrUpdateAuditInfo(new AuditInfo()
                 .setExtId(supplierInfo.getId())
@@ -278,7 +287,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
                     com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(3)) && com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(4)) &&
                     com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(5)) && com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(6)) && com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(7)) &&
                     com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(8)) && com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(9)) && com.alibaba.nacos.client.utils.StringUtils.isNotBlank(lo.get(11))) {//判断每行某个数据是否符合规范要求
-                //符合要求，插入到数据库customerInfo表中
+                //符合要求，插入到数据库supplierInfo表中
                 String s = saveSupplierInfoFromExcel(supplierInfo, lo, userName);
                 if (s.equals("添加成功")) {
                     lo = null;
@@ -384,13 +393,32 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             Long buyerId = Long.parseLong(systemUserBySystemName.getData().toString());
             supplierInfo.setBuyerId(buyerId);
         }
-        ApiResult legalEntityByLegalName = oauthClient.getLegalEntityByLegalName(lo.get(11));
-        if (legalEntityByLegalName.getMsg().equals("fail")) {
-            return "法人主体数据与系统不匹配";
+        String s = lo.get(11);
+        String[] legalNames = s.split("/");
+        List<Long> legalId = new ArrayList<>();
+        for (String legalName : legalNames) {
+            ApiResult legalEntityByLegalName = oauthClient.getLegalEntityByLegalName(legalName);
+            if (legalEntityByLegalName.getMsg().equals("fail")) {
+                return "法人主体数据与系统不匹配";
+            }
+            legalId.add(Long.parseLong(legalEntityByLegalName.getData().toString()));
         }
-        supplierInfo.setLegalEntityId(Long.parseLong(legalEntityByLegalName.getData().toString()));
+//        supplierInfo.setLegalEntityIds(Long.parseLong(legalEntityByLegalName.getData().toString()));
         supplierInfo.setCreateUser(userName);
-        baseMapper.insert(supplierInfo);
+        boolean b1 = this.saveOrUpdate(supplierInfo);
+        if (b1) {
+            for (int i = 0; i < legalId.size(); i++) {
+                SupplierRelaLegal supplierRelaLegal = new SupplierRelaLegal();
+                supplierRelaLegal.setSupplierInfoId(supplierInfo.getId());
+                supplierRelaLegal.setLegalEntityId(legalId.get(i));
+                supplierRelaLegal.setCreatedUser(userName);
+                supplierRelaLegal.setCreatedTime(LocalDateTime.now());
+                boolean save = supplierRelaLegalServic.save(supplierRelaLegal);
+                if (!save) {
+                    return "法人主体添加失败";
+                }
+            }
+        }
         boolean b = auditInfoService.saveOrUpdateAuditInfo(new AuditInfo()
                 .setExtId(supplierInfo.getId())
                 .setExtDesc(AuditTypeDescEnum.ONE.getTable())
@@ -456,6 +484,35 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         QueryWrapper<SupplierInfo> condition = new QueryWrapper<>();
         condition.lambda().eq(SupplierInfo::getSupplierChName, name);
         return this.getOne(condition);
+    }
+
+    @Override
+    public boolean exitName(Long id, String supplierChName) {
+        QueryWrapper<SupplierInfo> condition = new QueryWrapper<>();
+        condition.lambda().eq(SupplierInfo::getSupplierChName, supplierChName);
+        if (id != null) {
+            //修改过滤自身名字
+            condition.lambda().ne(SupplierInfo::getId, id);
+        }
+        return this.count(condition) > 0;
+    }
+
+    @Override
+    public List<SupplierInfo> existSupplierInfo(String supplierCode) {
+        QueryWrapper<SupplierInfo> condition = new QueryWrapper<>();
+        condition.lambda().eq(SupplierInfo::getSupplierCode, supplierCode);
+        return this.baseMapper.selectList(condition);
+    }
+
+    @Override
+    public boolean exitCode(Long id, String supplierCode) {
+        QueryWrapper<SupplierInfo> condition = new QueryWrapper<>();
+        condition.lambda().eq(SupplierInfo::getSupplierCode, supplierCode);
+        if (id != null) {
+            //修改过滤自身名字
+            condition.lambda().ne(SupplierInfo::getId, id);
+        }
+        return this.count(condition) > 0;
     }
 
 }

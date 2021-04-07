@@ -24,7 +24,6 @@ public class AddSupplierInfoForm {
     private Long id;
 
     @ApiModelProperty(value = "供应商代码", required = true)
-    @NotEmpty(message = "supplierCode is required")
     private String supplierCode;
 
     @ApiModelProperty(value = "服务类型id集合", required = true)
@@ -67,8 +66,8 @@ public class AddSupplierInfoForm {
 //    @NotNull(message = "buyerId is required")
     private Long buyerId;
 
-    @ApiModelProperty(value = "法人主体id", required = true)
+    @ApiModelProperty(value = "法人主体id集合", required = true)
     @NotNull(message = "legalEntityId is required")
-    private Long legalEntityId;
+    private List<Long> legalEntityIds;
 
 }

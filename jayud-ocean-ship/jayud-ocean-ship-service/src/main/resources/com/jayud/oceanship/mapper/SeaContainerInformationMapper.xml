@@ -25,4 +25,11 @@
         id, sea_rep_id, sea_rep_no, cabinet_name, cabinet_number, paper_strip_seal, weight, volume, plat_number, packing, create_user, create_time, update_user, update_time
     </sql>
 
+    <delete id="deleteSeaContainerInfo" parameterType="list">
+        delete from sea_container_information where sea_rep_no in
+        <foreach collection="orderNo" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
 </mapper>

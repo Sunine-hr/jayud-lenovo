@@ -2,6 +2,7 @@ package com.jayud.oms.model.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.oms.model.enums.AuditStatusEnum;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.lang.StringUtils;
@@ -75,12 +76,12 @@ public class SupplierInfoVO {
     @ApiModelProperty(value = "状态(0无效 1有效)")
     private String status;
 
-    @ApiModelProperty(value = "法人主体id", required = true)
-    @NotEmpty(message = "legal_entity_id is required")
-    private Long legalEntityId;
+    @ApiModelProperty(value = "法人主体id集合", required = true)
+    @NotEmpty(message = "legal_entity_ids is required")
+    private List<Long> legalEntityIds = new ArrayList<>();
 
     @ApiModelProperty(value = "法人主体", required = true)
-    private String legalEntityName;
+    private String legalEntityIdStr;
 
     @ApiModelProperty(value = "创建人")
     private String createUser;
@@ -113,6 +114,16 @@ public class SupplierInfoVO {
         for (String id : ids.split(",")) {
             this.productClassifyIds.add(Long.parseLong(id));
         }
+    }
+
+    public List<Long> getLegalEntityIds() {
+        if(!StringUtil.isNullOrEmpty(this.legalEntityIdStr)){
+            String[] strs = this.legalEntityIdStr.split(",");
+            for (String str : strs) {
+                legalEntityIds.add(Long.valueOf(str));
+            }
+        }
+        return legalEntityIds;
     }
 
     public void setAuditStatus(String auditStatus) {

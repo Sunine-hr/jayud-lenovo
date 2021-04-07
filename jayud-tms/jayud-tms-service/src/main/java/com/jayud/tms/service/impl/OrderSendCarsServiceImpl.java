@@ -189,7 +189,7 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
         ApiResult result = freightAirApiClient.forwarderVehicleInfo(JSONUtil.toJsonStr(msg));
         if (result.getCode() != HttpStatus.SC_OK) {
             log.error("推送派车消息给vivo失败 msg={}", result.getMsg());
-            throw new JayudBizException(ResultEnum.OPR_FAIL);
+            throw new JayudBizException(400,result.getMsg());
         }
     }
 

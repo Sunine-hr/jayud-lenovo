@@ -17,4 +17,6 @@ import java.util.List;
 public interface ICabinetTypeService extends IService<CabinetType> {
 
     List<CabinetTypeVO> initCabinetType();
+
+    String getCabinetTypeName(Integer cabinetType);
 }

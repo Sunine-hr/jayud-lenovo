@@ -36,4 +36,12 @@ public class SeaPortServiceImpl extends ServiceImpl<SeaPortMapper, SeaPort> impl
         }
         return initComboxStrVOS;
     }
+
+    @Override
+    public String getPortName(String portDepartureCode) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("code",portDepartureCode);
+        SeaPort one = this.getOne(queryWrapper);
+        return one.getName();
+    }
 }

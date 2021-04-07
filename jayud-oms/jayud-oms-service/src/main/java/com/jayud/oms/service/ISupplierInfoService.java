@@ -91,4 +91,11 @@ public interface ISupplierInfoService extends IService<SupplierInfo> {
      * 根据供应商名称查询供应商信息
      */
     SupplierInfo getByName(String name);
+
+    boolean exitName(Long id, String supplierChName);
+
+    List<SupplierInfo> existSupplierInfo(String supplierCode);
+
+    //判断代码是否存在
+    boolean exitCode(Long id, String supplierCode);
 }

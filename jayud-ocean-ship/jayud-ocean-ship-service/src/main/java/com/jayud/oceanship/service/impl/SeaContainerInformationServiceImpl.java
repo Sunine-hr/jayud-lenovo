@@ -30,4 +30,9 @@ public class SeaContainerInformationServiceImpl extends ServiceImpl<SeaContainer
         List list1 = ConvertUtil.convertList(list, SeaContainerInformationVO.class);
         return list1;
     }
+
+    @Override
+    public int deleteSeaContainerInfo(List<String> orderNo) {
+        return this.baseMapper.deleteSeaContainerInfo(orderNo);
+    }
 }

@@ -21,4 +21,6 @@ public interface ISeaPortService extends IService<SeaPort> {
      * @return
      */
     List<InitComboxStrVO> initSeaPort();
+
+    String getPortName(String portDepartureCode);
 }

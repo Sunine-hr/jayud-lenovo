@@ -10,22 +10,22 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.*;
-import com.jayud.oms.model.enums.AuditStatusEnum;
-import com.jayud.oms.model.enums.AuditTypeDescEnum;
-import com.jayud.oms.model.enums.SettlementTypeEnum;
-import com.jayud.oms.model.enums.UserTypeEnum;
+import com.jayud.oms.model.enums.*;
 import com.jayud.oms.model.po.AuditInfo;
 import com.jayud.oms.model.po.CustomerInfo;
 import com.jayud.oms.model.po.SupplierInfo;
+import com.jayud.oms.model.vo.CustomerInfoVO;
 import com.jayud.oms.model.vo.EnumVO;
 import com.jayud.oms.model.vo.InitComboxVO;
 import com.jayud.oms.model.vo.SupplierInfoVO;
 import com.jayud.oms.service.IAuditInfoService;
 import com.jayud.oms.service.ISupplierInfoService;
+import com.jayud.oms.service.ISupplierRelaLegalService;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -68,6 +68,8 @@ public class SupplierInfoController {
     @Autowired
     private IAuditInfoService auditInfoService;
 
+    @Autowired
+    private ISupplierRelaLegalService supplierRelaLegalService;
     @Autowired
     OauthClient oauthClient;
 
@@ -123,8 +125,10 @@ public class SupplierInfoController {
         }
         Long id = Long.parseLong(map.get("id"));
         SupplierInfo supplierInfo = this.supplierInfoService.getById(id);
+        List<Long> longs = supplierRelaLegalService.getList(supplierInfo.getId());
         SupplierInfoVO supplierInfoVO = ConvertUtil.convert(supplierInfo, SupplierInfoVO.class);
         supplierInfoVO.packageProductClassifyId(supplierInfo.getProductClassifyIds());
+        supplierInfoVO.setLegalEntityIds(longs);
         //审核意见
         AuditInfo auditInfo = this.auditInfoService.getAuditInfoLatestByExtId(supplierInfoVO.getId(), AuditTypeDescEnum.ONE.getTable());
         supplierInfoVO.setAuditComment(auditInfo.getAuditComment());
@@ -136,11 +140,17 @@ public class SupplierInfoController {
     @ApiOperation(value = "新增编辑供应商")
     @PostMapping(value = "/saveOrUpdateSupplierInfo")
     public CommonResult saveOrUpdateSupplierInfo(@Valid @RequestBody AddSupplierInfoForm form) {
-        SupplierInfo supplierInfo = new SupplierInfo()
-                .setId(form.getId())
-                .setSupplierCode(form.getSupplierCode()).setSupplierChName(form.getSupplierChName());
-        if (this.supplierInfoService.checkUnique(supplierInfo)) {
-            return CommonResult.error(400, "名称或代码已经存在");
+        //校验客户代码的唯一性
+        if (!com.alibaba.nacos.client.utils.StringUtils.isEmpty(form.getSupplierCode())) {
+            List<SupplierInfo> supplierInfoVOS = supplierInfoService.existSupplierInfo(form.getSupplierCode());
+            if ((form.getId() == null && supplierInfoVOS != null && supplierInfoVOS.size() > 0)
+                    || (form.getId() != null && supplierInfoVOS != null && supplierInfoVOS.size() > 1)) {
+                return CommonResult.error(400, "该供应商代码已存在");
+            }
+        }
+        //校验客户名称是否唯一性
+        if (this.supplierInfoService.exitName(form.getId(), form.getSupplierChName())) {
+            return CommonResult.error(400,"该供应商名称已存在");
         }
 
         //检查审核状态是否是审核通过和审核不通过，才能进行编辑
@@ -151,6 +161,7 @@ public class SupplierInfoController {
                 return CommonResult.error(ResultEnum.CANNOT_MODIFY_IN_AUDIT);
             }
         }
+
         if (this.supplierInfoService.saveOrUpdateSupplierInfo(form)) {
             return CommonResult.success();
         } else {
@@ -205,6 +216,23 @@ public class SupplierInfoController {
             //审核拒绝，不继续往下审核
             auditInfo.setAuditStatus(FAIL.getCode());
         } else if (AuditStatusEnum.CW_WAIT.getCode().equals(tmp.getAuditStatus())) {
+
+            //供应商代码此处必填项
+            if (StringUtil.isNullOrEmpty(form.getSupplierCode())) {
+                return CommonResult.error(400,"供应商代码未填写");
+            }
+            if (this.supplierInfoService.exitCode(form.getId(), form.getSupplierCode())) {
+                return CommonResult.error(400, "供应商代码已存在");
+            }
+
+            //更新供应商代码
+            SupplierInfo supplierInfo = new SupplierInfo();
+            supplierInfo.setId(form.getId());
+            supplierInfo.setSupplierCode(form.getSupplierCode());
+            boolean b = supplierInfoService.saveOrUpdate(supplierInfo);
+            if(!b){
+                return CommonResult.error(400, "供应商代码修改失败");
+            }
             //财务审核
             auditInfo.setAuditStatus(ZJB_WAIT.getCode());
         } else {
@@ -218,6 +246,25 @@ public class SupplierInfoController {
         }
         return CommonResult.error(ResultEnum.OPR_FAIL);
     }
+
+    @ApiOperation(value = "编辑及审核客户代码是否可填 id = 客户ID")
+    @PostMapping(value = "/isFillCustomerCode")
+    public CommonResult<Boolean> isFillCustomerCode(@RequestBody Map<String, Object> param) {
+        String supplierInfoIdStr = MapUtil.getStr(param, "id");
+        if (StringUtil.isNullOrEmpty(supplierInfoIdStr)) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("ext_id", Long.parseLong(supplierInfoIdStr));
+        queryWrapper.eq("ext_desc", AuditTypeDescEnum.ONE.getTable());
+        queryWrapper.eq("audit_status", CustomerInfoStatusEnum.AUDIT_SUCCESS);
+        List<AuditInfo> auditInfos = auditInfoService.list(queryWrapper);
+        if (auditInfos != null && auditInfos.size() > 0) {
+            return CommonResult.success(false);
+        }
+        return CommonResult.success(true);
+    }
+
 
     @ApiOperation(value = "供应商账号管理-下拉框合并返回")
     @PostMapping(value = "/findComboxs2")

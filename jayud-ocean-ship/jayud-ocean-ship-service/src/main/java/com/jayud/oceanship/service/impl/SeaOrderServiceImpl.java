@@ -78,6 +78,9 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
     @Autowired
     private ISeaPortService seaPortService;
 
+    @Autowired
+    private ICabinetTypeService cabinetTypeService;
+
     @Override
     @Transactional
     public String createOrder(AddSeaOrderForm addSeaOrderForm) {
@@ -391,18 +394,22 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
     public void updateOrSaveProcessStatus(SeaProcessOptForm form) {
 
         //删除补料信息
-        seaReplenishmentService.deleteSeaReplenishment(form.getOrderId(),form.getOrderNo());
         List<SeaReplenishment> list = seaReplenishmentService.getList(form.getOrderId(),form.getOrderNo());
         List<String> orderNo = new ArrayList<>();
         for (SeaReplenishment replenishment : list) {
             orderNo.add(replenishment.getOrderNo());
         }
-        omsClient.deleteOrderAddressByBusOrders(orderNo,BusinessTypeEnum.HY.getCode());
-        omsClient.deleteGoodsByBusOrders(orderNo,BusinessTypeEnum.HY.getCode());
-        int i1 = seaContainerInformationService.deleteSeaContainerInfo(orderNo);
-        if(i1<=0){
-            log.warn("货柜信息添加失败");
+        seaReplenishmentService.deleteSeaReplenishment(form.getOrderId(),form.getOrderNo());
+
+        if(orderNo.size()>0){
+            omsClient.deleteOrderAddressByBusOrders(orderNo,BusinessTypeEnum.HY.getCode());
+            omsClient.deleteGoodsByBusOrders(orderNo,BusinessTypeEnum.HY.getCode());
+            int i1 = seaContainerInformationService.deleteSeaContainerInfo(orderNo);
+            if(i1<=0){
+                log.warn("货柜信息添加失败");
+            }
         }
+
 
         if (form.getType().equals(1)) {//合并，多个订单合并成一个补料
             List<AddSeaOrderForm> seaOrderForms = form.getSeaOrderForms();
@@ -433,6 +440,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
             replenishment.setOrderNo(blOrderNo);
             replenishment.setIsBillOfLading(0);
             replenishment.setIsReleaseOrder(0);
+            replenishment.setCabinetTypeName(cabinetTypeService.getCabinetTypeName(replenishment.getCabinetType()));
             boolean save = seaReplenishmentService.save(replenishment);
             if (!save) {
                 log.warn("合并补料信息添加失败");
@@ -503,6 +511,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
                 replenishment.setOrderNo(getBLOrderNo(seaOrderForms.get(0).getOrderNo(), form.getType(), seaReplenishments.size(), i + 1));
                 replenishment.setIsBillOfLading(0);
                 replenishment.setIsReleaseOrder(0);
+                replenishment.setCabinetTypeName(cabinetTypeService.getCabinetTypeName(replenishment.getCabinetType()));
                 boolean save = seaReplenishmentService.save(replenishment);
                 if (!save) {
                     log.warn("分单补料信息添加失败");

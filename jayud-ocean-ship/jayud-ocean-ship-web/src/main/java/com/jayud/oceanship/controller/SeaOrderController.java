@@ -508,7 +508,7 @@ public class SeaOrderController {
             List<SeaReplenishmentVO> seaReplenishments = seaOrderDetails.getSeaReplenishments();
             List<SeaReplenishmentVO> seaReplenishmentVOS = new ArrayList<>();
             for (SeaReplenishmentVO seaReplenishment : seaReplenishments) {
-                if (seaReplenishment.getSeaContainerInformations() == null || seaReplenishment.getSeaContainerInformations().size() < 0) {
+                if (seaReplenishment.getSeaContainerInformations() == null || seaReplenishment.getSeaContainerInformations().size() < 0 || seaReplenishment.getCabinetTypeName().equals("LCL")) {
                     List<SeaContainerInformationVO> seaContainerInformations = new ArrayList<>();
                     seaContainerInformations.add(new SeaContainerInformationVO());
                     seaReplenishment.setSeaContainerInformations(seaContainerInformations);
@@ -744,7 +744,7 @@ public class SeaOrderController {
                     excelWriter.fill(new FillWrapper("notification", seaReplenishment.getNotificationAddress()), fillConfig, writeSheet);
                 }
                 excelWriter.fill(new FillWrapper("goodone", seaReplenishment.getGoodsForms()), fillConfig, writeSheet);
-                excelWriter.fill(new FillWrapper("seaContainerInformation", seaReplenishment.getSeaContainerInformations()), fillConfig, writeSheet);
+                excelWriter.fill(new FillWrapper("seaContainerInformation", seaReplenishment.getSeaContainerInformations()), writeSheet);
 
                 //将指定数据填充
                 Map<String, Object> map = new HashMap<String, Object>();
@@ -766,8 +766,12 @@ public class SeaOrderController {
                     Double totalvolume = 0.0;
                     if(seaContainerInformations!=null || seaContainerInformations.size()>0){
                         for (SeaContainerInformationVO seaContainerInformation : seaContainerInformations) {
-                            totalBulkCargoAmount = totalBulkCargoAmount + seaContainerInformation.getPlatNumber();
-                            totalWeights = totalWeights + seaContainerInformation.getWeight();
+                            if(seaContainerInformation.getPlatNumber()!=null ){
+                                totalBulkCargoAmount = totalBulkCargoAmount + seaContainerInformation.getPlatNumber();
+                            }
+                            if(seaContainerInformation.getWeight()!=null){
+                                totalWeights = totalWeights + seaContainerInformation.getWeight();
+                            }
                             if (seaContainerInformation.getVolume() != null) {
                                 totalvolume = totalvolume + seaContainerInformation.getVolume();
                             }

@@ -1,6 +1,8 @@
 package com.jayud.oceanship.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.Query;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oceanship.po.CabinetSize;
 import com.jayud.oceanship.po.CabinetType;
@@ -49,5 +51,13 @@ public class CabinetTypeServiceImpl extends ServiceImpl<CabinetTypeMapper, Cabin
             cabinetTypeVOs.add(convert);
         }
         return cabinetTypeVOs;
+    }
+
+    @Override
+    public String getCabinetTypeName(Integer cabinetType) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("id",cabinetType);
+        CabinetType one = this.getOne(queryWrapper);
+        return one.getName();
     }
 }

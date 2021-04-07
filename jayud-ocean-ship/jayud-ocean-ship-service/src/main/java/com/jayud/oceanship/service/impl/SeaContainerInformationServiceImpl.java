@@ -33,8 +33,6 @@ public class SeaContainerInformationServiceImpl extends ServiceImpl<SeaContainer
 
     @Override
     public int deleteSeaContainerInfo(List<String> orderNo) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.in("sea_rep_no",orderNo);
-        return this.baseMapper.delete(queryWrapper);
+        return this.baseMapper.deleteSeaContainerInfo(orderNo);
     }
 }

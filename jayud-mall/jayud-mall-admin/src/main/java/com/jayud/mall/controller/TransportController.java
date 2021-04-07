@@ -78,7 +78,12 @@ public class TransportController {
     //运输管理-编辑-取消，不做。关闭前端页面。
 
     //运输管理-确认送达
-
+    @ApiOperation(value = "运输管理-确认送达")
+    @PostMapping("/confirmDelivery")
+    @ApiOperationSupport(order = 6)
+    public CommonResult confirmDelivery(@Valid @RequestBody TransportParaForm form){
+        return transportService.confirmDelivery(form);
+    }
 
 
 

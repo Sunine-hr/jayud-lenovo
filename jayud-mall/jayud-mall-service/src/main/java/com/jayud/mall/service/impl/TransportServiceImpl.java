@@ -155,6 +155,7 @@ public class TransportServiceImpl extends ServiceImpl<TransportMapper, Transport
 
         orderPicks.forEach(orderPick -> {
             orderPick.setTransportId(transportId);
+            orderPick.setPickStatus(2);//提货状态(1未提货 2正在提货 3已提货 4已到仓)
         });
         orderPickService.saveOrUpdateBatch(orderPicks);
 
@@ -207,6 +208,28 @@ public class TransportServiceImpl extends ServiceImpl<TransportMapper, Transport
         transportVO.setDeliverInfoVOS(deliverInfoVOS);
 
         return CommonResult.success(transportVO);
+    }
+
+    @Override
+    public CommonResult confirmDelivery(TransportParaForm form) {
+        Long id = form.getId();
+        TransportVO transportVO = transportMapper.findTransportById(id);
+        if(ObjectUtil.isEmpty(transportVO)){
+            return CommonResult.error(-1, "运输单不存在");
+        }
+        Transport transport = ConvertUtil.convert(transportVO, Transport.class);
+        transport.setTransportStatus(2);//运输状态(1在途 2已送达)
+        this.saveOrUpdate(transport);
+
+        //提货信息
+        List<OrderPickVO> orderPickVOS = orderPickMapper.findOrderPickByTransportId(id);
+        List<OrderPick> orderPicks = ConvertUtil.convertList(orderPickVOS, OrderPick.class);
+        orderPicks.forEach(orderPick -> {
+            orderPick.setPickStatus(4);//提货状态(1未提货 2正在提货 3已提货 4已到仓)
+        });
+        orderPickService.saveOrUpdateBatch(orderPicks);
+
+        return CommonResult.success("确认送达，成功");
     }
 
 }

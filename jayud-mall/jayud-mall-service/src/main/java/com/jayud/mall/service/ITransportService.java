@@ -56,4 +56,11 @@ public interface ITransportService extends IService<Transport> {
      * @return
      */
     CommonResult<TransportVO> editAffirmTransport(TransportForm from);
+
+    /**
+     * 运输管理-确认送达
+     * @param form
+     * @return
+     */
+    CommonResult confirmDelivery(TransportParaForm form);
 }

@@ -49,4 +49,11 @@ public interface ITransportService extends IService<Transport> {
      * @return
      */
     CommonResult<TransportVO> findTransport(TransportParaForm form);
+
+    /**
+     * 运输管理，编辑确认
+     * @param from
+     * @return
+     */
+    CommonResult<TransportVO> editAffirmTransport(TransportForm from);
 }

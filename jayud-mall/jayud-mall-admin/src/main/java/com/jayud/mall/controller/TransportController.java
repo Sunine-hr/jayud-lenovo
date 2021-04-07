@@ -68,6 +68,12 @@ public class TransportController {
     }
 
     //运输管理-编辑-确认
+    @ApiOperation(value = "运输管理-编辑-确认")
+    @PostMapping("/editAffirmTransport")
+    @ApiOperationSupport(order = 5)
+    public CommonResult<TransportVO> editAffirmTransport(@Valid @RequestBody TransportForm from){
+        return transportService.editAffirmTransport(from);
+    }
 
     //运输管理-编辑-取消，不做。关闭前端页面。
 

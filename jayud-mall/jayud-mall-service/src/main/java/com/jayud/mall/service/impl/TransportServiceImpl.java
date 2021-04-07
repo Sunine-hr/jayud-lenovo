@@ -185,4 +185,28 @@ public class TransportServiceImpl extends ServiceImpl<TransportMapper, Transport
         return CommonResult.success(transportVO);
     }
 
+    @Override
+    public CommonResult<TransportVO> editAffirmTransport(TransportForm from) {
+        Long id = from.getId();
+        TransportVO transportVO = transportMapper.findTransportById(id);
+        if(ObjectUtil.isEmpty(transportVO)){
+            return CommonResult.error(-1, "运输单不存在");
+        }
+
+        //1.运输信息
+        Transport transport = ConvertUtil.convert(from, Transport.class);
+        this.saveOrUpdate(transport);
+
+        //2.提货信息，仅展示，不修改
+        List<OrderPickVO> orderPickVOS = from.getOrderPickVOS();
+        //3.送货信息，仅展示，不修改
+        List<DeliverInfoVO> deliverInfoVOS = from.getDeliverInfoVOS();
+
+        transportVO = ConvertUtil.convert(transport, TransportVO.class);
+        transportVO.setOrderPickVOS(orderPickVOS);
+        transportVO.setDeliverInfoVOS(deliverInfoVOS);
+
+        return CommonResult.success(transportVO);
+    }
+
 }

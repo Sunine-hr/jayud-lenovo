@@ -14,9 +14,9 @@ public class WorkOrderEvaluateForm {
     @NotNull(message = "工单id不能为空")
     private Long id;
 
-    @ApiModelProperty(value = "客户评价", position = 15)
-    @JSONField(ordinal = 15)
-    @NotNull(message = "客户评价不能为空")
-    private String customerEvaluation;
+    @ApiModelProperty(value = "评价(创建人评价)", position = 19)
+    @JSONField(ordinal = 19)
+    @NotNull(message = "评价不能为空")
+    private String evaluation;
 
 }

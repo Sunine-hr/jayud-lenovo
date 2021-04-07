@@ -25,20 +25,22 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/workorder")
-@Api(tags = "C019-client-订单工单接口")
+@Api(tags = "C019-client-工单接口")
 @ApiSort(value = 19)
 public class WorkOrderController {
+
     @Autowired
     IWorkOrderService workOrderService;
     @Autowired
     BaseService baseService;
 
-    @ApiOperation(value = "工单分页查询")
+    @ApiOperation(value = "客户订单工单分页查询")
     @PostMapping("/findWorkOrderByPage")
     @ApiOperationSupport(order = 1)
     public CommonResult<CommonPageResult<WorkOrderVO>> findWorkOrderByPage(@RequestBody QueryWorkOrderForm form) {
         CustomerUser customerUser = baseService.getCustomerUser();
-        form.setCustomerId(customerUser.getId());
+        form.setCreator(customerUser.getId());
+        form.setBusinessType(1);//工单业务类型(1订单工单 2提单工单)
         IPage<WorkOrderVO> pageList = workOrderService.findWorkOrderByPage(form);
         CommonPageResult<WorkOrderVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
@@ -54,7 +56,7 @@ public class WorkOrderController {
 
     @ApiOperation(value = "客户删除工单(仅关闭状态，可以删除)")
     @PostMapping("/delWorkOrderById")
-    @ApiOperationSupport(order = 2)
+    @ApiOperationSupport(order = 3)
     public CommonResult delWorkOrderById(@Valid @RequestBody WorkOrderParaForm form){
         Long id = form.getId();
         return workOrderService.delWorkOrderById(id);
@@ -63,7 +65,7 @@ public class WorkOrderController {
 
     @ApiOperation(value = "客户评价工单(仅待评价状态，可以评价)")
     @PostMapping("/evaluateWorkOrderById")
-    @ApiOperationSupport(order = 3)
+    @ApiOperationSupport(order = 4)
     public CommonResult evaluateWorkOrderById(@Valid @RequestBody WorkOrderEvaluateForm form){
         return workOrderService.evaluateWorkOrderById(form);
     }
@@ -71,15 +73,16 @@ public class WorkOrderController {
     //客户新增工单
     @ApiOperation(value = "客户新增工单")
     @PostMapping("/addWorkOrder")
-    @ApiOperationSupport(order = 4)
+    @ApiOperationSupport(order = 5)
     public CommonResult<WorkOrderVO> addWorkOrder(@Valid @RequestBody WorkOrderAddForm form){
+        form.setBusinessType(1);//工单业务类型(1订单工单 2提单工单)
         return workOrderService.addWorkOrder(form);
     }
 
     //客户关闭工单
     @ApiOperation(value = "客户关闭工单")
     @PostMapping("/closeWorkOrder")
-    @ApiOperationSupport(order = 5)
+    @ApiOperationSupport(order = 6)
     public CommonResult closeWorkOrder(@Valid @RequestBody WorkOrderParaForm form){
         Long id = form.getId();
         return workOrderService.closeWorkOrder(id);

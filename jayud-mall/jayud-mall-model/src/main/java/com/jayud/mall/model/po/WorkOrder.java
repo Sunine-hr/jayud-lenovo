@@ -49,7 +49,7 @@ public class WorkOrder extends Model<WorkOrder> {
 
     @ApiModelProperty(value = "业务id(订单id order_info id, 提单id ocean_bill id)", position = 5)
     @JSONField(ordinal = 5)
-    private Long business_id;
+    private Long businessId;
 
     @ApiModelProperty(value = "优先级(1重要 2普通)", position = 6)
     @JSONField(ordinal = 6)

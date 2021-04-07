@@ -29,28 +29,27 @@
             resultType="com.jayud.mall.model.vo.WorkOrderVO">
         select t.id,
         t.work_no,
-        t.order_id,
-        t.order_no,
+        t.business_type,
+        t.business_no,
+        t.business_id,
         t.priority,
         t.problem_description,
         t.file_url,
         t.status,
-        t.type,
-        t.customer_id,
+        t.work_type,
+        t.creator_type,
+        t.creator,
+        t.creator_name,
         t.submission_time,
         t.operator,
+        t.operator_name,
         t.operation_time,
         t.revert,
-        t.customer_evaluation,
-        t1.user_name                      customerAccount,
-        concat(t1.name_cn, '/', t1.phone) namePhone,
-        t2.name                           operator
+        t.evaluation
         from work_order t
-        left join customer t1 on t1.id = t.customer_id
-        left join system_user t2 on t2.id = t.operator
         where 1 = 1
-        <if test="form.customerId != null">
-            and t.customer_id = #{form.customerId}
+        <if test="form.creator != null">
+            and t.creator = #{form.creator}
         </if>
         <if test="form.workNo != null and form.workNo != ''">
             and t.work_no like concat('%',#{form.workNo},'%')
@@ -77,22 +76,24 @@
     <select id="findWorkOrderById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.WorkOrderVO">
         select t.id,
                t.work_no,
-               t.order_id,
-               t.order_no,
+               t.business_type,
+               t.business_no,
+               t.business_id,
                t.priority,
                t.problem_description,
                t.file_url,
                t.status,
-               t.type,
-               t.customer_id,
+               t.work_type,
+               t.creator_type,
+               t.creator,
+               t.creator_name,
                t.submission_time,
                t.operator,
+               t.operator_name,
                t.operation_time,
                t.revert,
-               t.customer_evaluation,
-               t1.user_name customerAccount
+               t.evaluation
         from work_order t
-                 left join customer t1 on t1.id = t.customer_id
         where t.id = #{id}
 
     </select>

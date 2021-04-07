@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class WorkOrderVO {
@@ -31,7 +32,7 @@ public class WorkOrderVO {
 
     @ApiModelProperty(value = "业务id(订单id order_info id, 提单id ocean_bill id)", position = 5)
     @JSONField(ordinal = 5)
-    private Long business_id;
+    private Long businessId;
 
     @ApiModelProperty(value = "优先级(1重要 2普通)", position = 6)
     @JSONField(ordinal = 6)
@@ -90,5 +91,10 @@ public class WorkOrderVO {
     @ApiModelProperty(value = "评价(创建人评价)", position = 19)
     @JSONField(ordinal = 19)
     private String evaluation;
+
+
+    @ApiModelProperty(value = "文件附件(url)文件上传", position = 20)
+    @JSONField(ordinal = 20)
+    private List<TemplateUrlVO> fileUrls;
 
 }

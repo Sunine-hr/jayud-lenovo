@@ -125,7 +125,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     public CommonResult evaluateWorkOrderById(WorkOrderEvaluateForm form) {
         Long id = form.getId();
-        String customerEvaluation = form.getCustomerEvaluation();
+        String evaluation = form.getEvaluation();
         WorkOrderVO workOrderVO = workOrderMapper.findWorkOrderById(id);
         if(ObjectUtil.isEmpty(workOrderVO)){
             return CommonResult.error(-1, "没有找到工单");
@@ -135,7 +135,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return CommonResult.error(-1, "当前工单状态不正确，不能评价");
         }
         WorkOrder workOrder = ConvertUtil.convert(workOrderVO, WorkOrder.class);
-        workOrder.setCustomerEvaluation(customerEvaluation);
+        workOrder.setEvaluation(evaluation);
         this.saveOrUpdate(workOrder);
         return CommonResult.success("客户评价，操作成功");
     }
@@ -143,25 +143,38 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     public CommonResult<WorkOrderVO> addWorkOrder(WorkOrderAddForm form) {
         WorkOrder workOrder = ConvertUtil.convert(form, WorkOrder.class);
-        Long orderId = workOrder.getOrderId();
-        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(orderId);
-        if(ObjectUtil.isEmpty(orderInfoVO)){
-            return CommonResult.error(-1, "当前订单不存在,无法创建工单");
+
+        Integer businessType = form.getBusinessType();//工单业务类型(1订单工单 2提单工单)
+        Long businessId = workOrder.getBusinessId();
+        if(businessType == 1){
+            //1订单工单
+            OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(businessId);
+            if(ObjectUtil.isEmpty(orderInfoVO)){
+                return CommonResult.error(-1, "当前订单不存在,无法创建工单");
+            }
+            String orderNo = orderInfoVO.getOrderNo();
+            Long orderInfoVOId = orderInfoVO.getId();
+            workOrder.setBusinessNo(orderNo);
+            workOrder.setBusinessId(orderInfoVOId);
+
+            //生成工单编号
+            String workNo = NumberGeneratedUtils.getOrderNoByCode2("work_order_no");
+            workOrder.setWorkNo(workNo);
+            CustomerUser customerUser = baseService.getCustomerUser();
+            workOrder.setCreatorType(1);//创建人类型(1客户 2后台用户)
+            workOrder.setCreator(customerUser.getId());//创建人(客户id customer id, 用户id system_user id)
+            workOrder.setCreatorName(customerUser.getCompany());//创建人名称(客户名称 customer company, 用户名称 system_user name)
+        } else {
+            //2提单工单
+            //TODO ...
         }
-        String orderNo = orderInfoVO.getOrderNo();
-        workOrder.setOrderNo(orderNo);
-        //生成工单编号
-        String workNo = NumberGeneratedUtils.getOrderNoByCode2("work_order_no");
-        workOrder.setWorkNo(workNo);
         List<TemplateUrlVO> fileUrls = form.getFileUrls();
         if(CollUtil.isNotEmpty(fileUrls)){
             String s = JSONObject.toJSONString(fileUrls);
             workOrder.setFileUrl(s);
         }
+        workOrder.setWorkType(1);//工单类型(1普通工单)
         workOrder.setStatus(1);//状态(1进行中 2已结单 3待评价 4已关闭)
-        workOrder.setType(1);//工单类型(1普通工单)
-        CustomerUser customerUser = baseService.getCustomerUser();
-        workOrder.setCustomerId(customerUser.getId());//创建人(客户用户、客户id)、提交账号(customer id)
 
         this.saveOrUpdate(workOrder);
         WorkOrderVO workOrderVO = ConvertUtil.convert(workOrder, WorkOrderVO.class);

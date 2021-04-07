@@ -284,7 +284,7 @@
 
     <select id="getCustomerInfoByCondition"
             resultType="com.jayud.oms.model.po.CustomerInfo">
-        select
+        select distinct
         ci.id,name,id_code idCode,contact,phone,address,email,ci.created_time createdTimeStr
         from customer_info ci LEFT JOIN `customer_rela_legal` crl ON ci.`id` = crl.`customer_info_id`
         <where>

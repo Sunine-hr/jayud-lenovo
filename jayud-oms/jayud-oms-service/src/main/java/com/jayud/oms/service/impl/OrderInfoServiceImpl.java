@@ -174,8 +174,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             classCode = OrderTypeEnum.TL.getCode();
         }
         if (classStatus.equals(OrderStatusEnum.CBG.getCode())) {
-            preOrder = OrderTypeEnum.BE.getCode() + legalCode;
-            classCode = OrderTypeEnum.BE.getCode();
+            if (integer.equals(1)) {
+                preOrder = OrderTypeEnum.BI.getCode() + legalCode;
+                classCode = OrderTypeEnum.BI.getCode();
+            } else {
+                preOrder = OrderTypeEnum.BE.getCode() + legalCode;
+                classCode = OrderTypeEnum.BE.getCode();
+            }
+
         }
         if (classStatus.equals(OrderStatusEnum.KY.getCode())) {
             if (integer.equals(1)) {
@@ -936,11 +942,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 selectedServer.contains(OrderStatusEnum.CKBG.getCode())) {
             InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
 
-            //生成内陆订单号
+            //生成报关订单号
             if (form.getCmd().equals("submit")) {
                 for (InputSubOrderCustomsForm subOrder : orderCustomsForm.getSubOrders()) {
 
-                    String orderNo = generationOrderNo(orderCustomsForm.getLegalEntityId(), null, OrderStatusEnum.CBG.getCode());
+                    String orderNo = generationOrderNo(orderCustomsForm.getLegalEntityId(), orderCustomsForm.getGoodsType(), OrderStatusEnum.CBG.getCode());
                     subOrder.setOrderNo(orderNo);
 
 //                    if (orderCustomsForm.getStatus() != null && subOrder.getStatus().equals("NL_0")) {

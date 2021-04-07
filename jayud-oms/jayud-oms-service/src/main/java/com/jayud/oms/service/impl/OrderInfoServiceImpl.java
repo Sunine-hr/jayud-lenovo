@@ -173,6 +173,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             preOrder = OrderTypeEnum.TL.getCode() + legalCode;
             classCode = OrderTypeEnum.TL.getCode();
         }
+        if (classStatus.equals(OrderStatusEnum.CBG.getCode())) {
+            preOrder = OrderTypeEnum.BE.getCode() + legalCode;
+            classCode = OrderTypeEnum.BE.getCode();
+        }
         if (classStatus.equals(OrderStatusEnum.KY.getCode())) {
             if (integer.equals(1)) {
                 preOrder = OrderTypeEnum.AI.getCode() + legalCode;
@@ -918,6 +922,21 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if (OrderStatusEnum.CBG.getCode().equals(classCode) ||
                 selectedServer.contains(OrderStatusEnum.CKBG.getCode())) {
             InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
+
+            //生成内陆订单号
+            if (form.getCmd().equals("submit")) {
+                for (InputSubOrderCustomsForm subOrder : orderCustomsForm.getSubOrders()) {
+
+                    String orderNo = generationOrderNo(orderCustomsForm.getLegalEntityId(), null, OrderStatusEnum.CBG.getCode());
+                    subOrder.setOrderNo(orderNo);
+
+//                    if (orderCustomsForm.getStatus() != null && subOrder.getStatus().equals("NL_0")) {
+//                        String orderNo = generationOrderNo(orderCustomsForm.getLegalEntityId(), null, OrderStatusEnum.NLYS.getCode());
+//                        subOrder.setOrderNo(orderNo);
+//                    }
+                }
+
+            }
 
             //查询编辑条件
             //主订单草稿状态,可以对所有订单进行编辑

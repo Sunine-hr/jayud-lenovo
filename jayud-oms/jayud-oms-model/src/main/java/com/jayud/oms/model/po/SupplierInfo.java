@@ -111,10 +111,6 @@ public class SupplierInfo extends Model<SupplierInfo> {
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
-    @ApiModelProperty(value = "法人主体id", required = true)
-    @NotEmpty(message = "legal_entity_id is required")
-    private Long legalEntityId;
-
     @Override
     protected Serializable pkVal() {
         return this.id;

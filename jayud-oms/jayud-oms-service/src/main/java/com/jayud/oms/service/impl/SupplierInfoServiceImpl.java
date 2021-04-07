@@ -2,6 +2,7 @@ package com.jayud.oms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.ApiResult;
@@ -69,7 +70,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
     @Override
     public IPage<SupplierInfoVO> findSupplierInfoByPage(QuerySupplierInfoForm form) {
         Page<SupplierInfoVO> page = new Page<>(form.getPageNum(), form.getPageSize());
-
+        page.addOrder(OrderItem.desc("s.id"));
         //获取当前用户的法人主体
         ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
         List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
@@ -154,6 +155,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
     public IPage<SupplierInfoVO> findAuditSupplierInfoByPage(QueryAuditSupplierInfoForm form) {
         Page page = new Page(form.getPageNum(), form.getPageSize());
 
+        page.addOrder(OrderItem.desc("s.id"));
         form.setAuditTableDesc(AuditTypeDescEnum.ONE.getTable());
         IPage<SupplierInfoVO> iPage = this.baseMapper.findAuditSupplierInfoByPage(page, form);
         for (SupplierInfoVO record : iPage.getRecords()) {

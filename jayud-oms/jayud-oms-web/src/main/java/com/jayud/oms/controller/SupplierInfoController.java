@@ -207,6 +207,9 @@ public class SupplierInfoController {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
 
+        //获取供应商信息
+        SupplierInfo supplierInfo1 = supplierInfoService.getById(form.getId());
+
         //获取最新供应商审核信息
         AuditInfo tmp = this.auditInfoService.getAuditInfoLatestByExtId(form.getId(), AuditTypeDescEnum.ONE.getTable());
         AuditInfo auditInfo = new AuditInfo().setId(tmp.getId()).setAuditComment(form.getAuditComment());
@@ -221,18 +224,21 @@ public class SupplierInfoController {
             if (StringUtil.isNullOrEmpty(form.getSupplierCode())) {
                 return CommonResult.error(400,"供应商代码未填写");
             }
-            if (this.supplierInfoService.exitCode(form.getId(), form.getSupplierCode())) {
-                return CommonResult.error(400, "供应商代码已存在");
+            if(form.getSupplierCode() != supplierInfo1.getSupplierCode()){
+                if (this.supplierInfoService.exitCode(form.getId(), form.getSupplierCode())) {
+                    return CommonResult.error(400, "供应商代码已存在");
+                }
+
+                //更新供应商代码
+                SupplierInfo supplierInfo = new SupplierInfo();
+                supplierInfo.setId(form.getId());
+                supplierInfo.setSupplierCode(form.getSupplierCode());
+                boolean b = supplierInfoService.saveOrUpdate(supplierInfo);
+                if(!b){
+                    return CommonResult.error(400, "供应商代码修改失败");
+                }
             }
 
-            //更新供应商代码
-            SupplierInfo supplierInfo = new SupplierInfo();
-            supplierInfo.setId(form.getId());
-            supplierInfo.setSupplierCode(form.getSupplierCode());
-            boolean b = supplierInfoService.saveOrUpdate(supplierInfo);
-            if(!b){
-                return CommonResult.error(400, "供应商代码修改失败");
-            }
             //财务审核
             auditInfo.setAuditStatus(ZJB_WAIT.getCode());
         } else {
@@ -248,8 +254,8 @@ public class SupplierInfoController {
     }
 
     @ApiOperation(value = "编辑及审核客户代码是否可填 id = 客户ID")
-    @PostMapping(value = "/isFillCustomerCode")
-    public CommonResult<Boolean> isFillCustomerCode(@RequestBody Map<String, Object> param) {
+    @PostMapping(value = "/isFillSupplierCode")
+    public CommonResult<Boolean> isFillSupplierCode(@RequestBody Map<String, Object> param) {
         String supplierInfoIdStr = MapUtil.getStr(param, "id");
         if (StringUtil.isNullOrEmpty(supplierInfoIdStr)) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
@@ -257,7 +263,7 @@ public class SupplierInfoController {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("ext_id", Long.parseLong(supplierInfoIdStr));
         queryWrapper.eq("ext_desc", AuditTypeDescEnum.ONE.getTable());
-        queryWrapper.eq("audit_status", CustomerInfoStatusEnum.AUDIT_SUCCESS);
+        queryWrapper.eq("audit_status", CustomerInfoStatusEnum.AUDIT_SUCCESS.getCode());
         List<AuditInfo> auditInfos = auditInfoService.list(queryWrapper);
         if (auditInfos != null && auditInfos.size() > 0) {
             return CommonResult.success(false);

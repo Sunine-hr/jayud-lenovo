@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import com.jayud.tms.model.vo.DriverOrderTakeAdrVO;
 import com.jayud.tms.model.vo.InputOrderTakeAdrVO;
+import com.jayud.tms.model.vo.OrderTakeAdrInfoVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -32,5 +33,13 @@ public interface OrderTakeAdrMapper extends BaseMapper<OrderTakeAdr> {
      * 根据订单编号查询司机送货/收货地址
      */
     List<DriverOrderTakeAdrVO> getDriverOrderTakeAdr(@Param("list") List<String> orderNoList
+            , @Param("oprType") Integer oprType);
+
+
+
+    /**
+     *  批量查询所有地址详细内容
+     */
+    List<OrderTakeAdrInfoVO> getOrderTakeAdrInfos(@Param("list") List<String> orderNoList
             , @Param("oprType") Integer oprType);
 }

@@ -214,21 +214,21 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         IPage<OrderTransportVO> pageInfo = baseMapper.findTransportOrderByPage(page, form, legalIds);
         String prePath = fileClient.getBaseUrl().getData().toString();
 
-        List<OrderTransportVO> records = pageInfo.getRecords();
-        List<String> subOrderNos = records.stream().map(OrderTransportVO::getOrderNo).collect(Collectors.toList());
+        List<OrderTransportVO> pageList = pageInfo.getRecords();
+        List<String> subOrderNos = pageList.stream().map(OrderTransportVO::getOrderNo).collect(Collectors.toList());
         //查询提货商品信息
-        List<OrderTakeAdr> orderTakeAdrs = this.orderTakeAdrService.getOrderTakeAdrByOrderNos(subOrderNos, OrderTakeAdrTypeEnum.ONE.getCode());
+//        List<OrderTakeAdr> orderTakeAdrs = this.orderTakeAdrService.getOrderTakeAdrByOrderNos(subOrderNos, OrderTakeAdrTypeEnum.ONE.getCode());
         //是否录用费用
 
 
-        List<OrderTransportVO> pageList = pageInfo.getRecords();
-        List<String> orderNo = pageList.stream().map(OrderTransportVO::getOrderNo).collect(Collectors.toList());
-        List<OrderTakeAdr> takeAdrsList = this.orderTakeAdrService.getOrderTakeAdrByOrderNos(orderNo, null);
+//        List<OrderTransportVO> pageList = pageInfo.getRecords();
+//        List<String> orderNo = pageList.stream().map(OrderTransportVO::getOrderNo).collect(Collectors.toList());
+//        List<OrderTakeAdr> takeAdrsList = this.orderTakeAdrService.getOrderTakeAdrByOrderNos(orderNo, null);
+        List<OrderTakeAdrInfoVO> takeAdrsList = this.orderTakeAdrService.getOrderTakeAdrInfos(subOrderNos, null);
         for (OrderTransportVO orderTransportVO : pageList) {
-            orderTransportVO.assemblyGoodsInfo(orderTakeAdrs);
-            orderTransportVO.assemblyTakeFiles(takeAdrsList, prePath);
-//            orderTransportVO.setTakeFiles1(StringUtils.getFileViews(orderTransportVO.getFile1(), orderTransportVO.getFileName1(), prePath));
-//            orderTransportVO.setTakeFiles2(StringUtils.getFileViews(orderTransportVO.getFile2(), orderTransportVO.getFileName2(), prePath));
+//            orderTransportVO.assemblyGoodsInfo(orderTakeAdrs);
+//            orderTransportVO.assemblyTakeFiles(takeAdrsList, prePath);
+            orderTransportVO.assemblyTakeAdrInfos(takeAdrsList, prePath);
         }
 
         return pageInfo;

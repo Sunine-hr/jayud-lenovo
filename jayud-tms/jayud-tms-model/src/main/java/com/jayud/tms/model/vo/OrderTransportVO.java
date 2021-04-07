@@ -122,16 +122,16 @@ public class OrderTransportVO {
     private String goodsDesc;
 
     @ApiModelProperty(value = "板数")
-    private String plateAmount;
+    private Integer plateAmount;
 
     @ApiModelProperty(value = "件数")
-    private String pieceAmount;
+    private Integer pieceAmount;
 
     @ApiModelProperty(value = "重量")
-    private String weight;
+    private Double weight;
 
     @ApiModelProperty(value = "总重量")
-    private String totalWeight;
+    private Double totalWeight;
 
     @ApiModelProperty(value = "提货时间,多个逗号拼接")
     private String takeTimeStr;
@@ -194,56 +194,58 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "主订单备注")
     private String mainOrderRemarks;
 
-    public String getEntireAddress1() {
-        String stateName1 = this.stateName1;
-        String cityName1 = this.cityName1;
-        String address1 = this.address1;
-        if (StringUtil.isNullOrEmpty(this.stateName1)) {
-            stateName1 = "";
-        }
-        if (StringUtil.isNullOrEmpty(this.cityName1)) {
-            cityName1 = "";
-        }
-        if (StringUtil.isNullOrEmpty(this.address1)) {
-            address1 = "";
-        }
-        return this.entireAddress1 = stateName1 + cityName1 + address1;
-    }
+//    public String getEntireAddress1() {
+////        String stateName1 = this.stateName1;
+////        String cityName1 = this.cityName1;
+//        String address1 = this.address1;
+////        if (StringUtil.isNullOrEmpty(this.stateName1)) {
+////            stateName1 = "";
+////        }
+////        if (StringUtil.isNullOrEmpty(this.cityName1)) {
+////            cityName1 = "";
+////        }
+//        if (StringUtil.isNullOrEmpty(this.address1)) {
+//            address1 = "";
+//        }
+//        return this.entireAddress1 = address1;
+//    }
 
-    public String getEntireAddress2() {
-        String stateName2 = this.stateName2;
-        String cityName2 = this.cityName2;
-        String address2 = this.address2;
-        if (StringUtil.isNullOrEmpty(this.stateName2)) {
-            stateName2 = "";
-        }
-        if (StringUtil.isNullOrEmpty(this.cityName2)) {
-            cityName2 = "";
-        }
-        if (StringUtil.isNullOrEmpty(this.address2)) {
-            address2 = "";
-        }
-        return this.entireAddress2 = stateName2 + cityName2 + address2;
-    }
+//    public String getEntireAddress2() {
+//        String stateName2 = this.stateName2;
+//        String cityName2 = this.cityName2;
+//        String address2 = this.address2;
+//        if (StringUtil.isNullOrEmpty(this.stateName2)) {
+//            stateName2 = "";
+//        }
+//        if (StringUtil.isNullOrEmpty(this.cityName2)) {
+//            cityName2 = "";
+//        }
+//        if (StringUtil.isNullOrEmpty(this.address2)) {
+//            address2 = "";
+//        }
+//        return this.entireAddress2 = stateName2 + cityName2 + address2;
+//    }
 
     /**
      * 组装商品信息
      */
-    public void assemblyGoodsInfo(List<OrderTakeAdr> orderTakeAdrs) {
-        StringBuilder sb = new StringBuilder();
-
-        for (OrderTakeAdr orderTakeAdr : orderTakeAdrs) {
-            if (this.orderNo.equals(orderTakeAdr.getOrderNo())) {
-                sb.append(orderTakeAdr.getGoodsDesc())
-                        .append("/").append(orderTakeAdr.getPlateAmount() == null ? 0 : orderTakeAdr.getPlateAmount()).append("板")
-                        .append("/").append(orderTakeAdr.getPieceAmount()).append("件")
-                        .append("/").append("重量").append(orderTakeAdr.getWeight()).append("KG")
-                        .append(",");
-            }
-        }
-        this.goodsInfo = sb.substring(0, sb.length() - 1);
-    }
-
+//    public void assemblyGoodsInfo(List<OrderTakeAdr> orderTakeAdrs) {
+//        StringBuilder sb = new StringBuilder();
+//        Integer pieceAmount = 0;
+//        Integer plateAmount = 0;
+//
+//        for (OrderTakeAdr orderTakeAdr : orderTakeAdrs) {
+//            if (this.orderNo.equals(orderTakeAdr.getOrderNo())) {
+//                sb.append(orderTakeAdr.getGoodsDesc())
+//                        .append("/").append(orderTakeAdr.getPlateAmount() == null ? 0 : orderTakeAdr.getPlateAmount()).append("板")
+//                        .append("/").append(orderTakeAdr.getPieceAmount()).append("件")
+//                        .append("/").append("重量").append(orderTakeAdr.getWeight()).append("KG")
+//                        .append(",");
+//            }
+//
+//        }
+//        this.goodsInfo = sb.toString();
+//    }
     public String getStatusDesc() {
         return OrderStatusEnum.getDesc(this.status);
     }
@@ -288,5 +290,57 @@ public class OrderTransportVO {
                 }
             }
         }
+    }
+
+    public void assemblyTakeAdrInfos(List<OrderTakeAdrInfoVO> takeAdrsList, String prePath) {
+        if (CollectionUtil.isEmpty(takeAdrsList)) {
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        StringBuilder goodsDesc = new StringBuilder();
+        StringBuilder pickUpAddr = new StringBuilder();
+        StringBuilder deliveryAddr = new StringBuilder();
+        StringBuilder takeTimeStr = new StringBuilder();
+        takeFiles1 = new ArrayList<>();
+        takeFiles2 = new ArrayList<>();
+        Integer pieceAmount = 0;
+        Integer plateAmount = 0;
+        Double totalWeight = 0.0;
+
+        for (OrderTakeAdrInfoVO orderTakeAdr : takeAdrsList) {
+            if (this.orderNo.equals(orderTakeAdr.getOrderNo())) {
+                if (1 == orderTakeAdr.getOprType()) {
+                    //提货时间
+                    takeTimeStr.append(orderTakeAdr.getTakeTimeStr()).append(",");
+
+                    takeFiles1.addAll(StringUtils.getFileViews(orderTakeAdr.getFile(), orderTakeAdr.getFileName(), prePath));
+                    //商品名称
+                    sb.append(orderTakeAdr.getGoodsDesc())
+                            .append("/").append(orderTakeAdr.getPlateAmount() == null ? 0 : orderTakeAdr.getPlateAmount()).append("板")
+                            .append("/").append(orderTakeAdr.getPieceAmount()).append("件")
+                            .append("/").append("重量").append(orderTakeAdr.getWeight()).append("KG")
+                            .append(",");
+
+
+                    //提货地址
+                    pickUpAddr.append(orderTakeAdr.getAddress()).append(",");
+                    pieceAmount += orderTakeAdr.getPieceAmount() == null ? 0 : orderTakeAdr.getPieceAmount();
+                    plateAmount += orderTakeAdr.getPlateAmount() == null ? 0 : orderTakeAdr.getPlateAmount();
+                    totalWeight += orderTakeAdr.getWeight() == null ? 0 : orderTakeAdr.getWeight();
+                }
+                if (2 == orderTakeAdr.getOprType()) {
+                    takeFiles2.addAll(StringUtils.getFileViews(orderTakeAdr.getFile(), orderTakeAdr.getFileName(), prePath));
+                    //送货地址
+                    deliveryAddr.append(orderTakeAdr.getAddress()).append(",");
+                }
+            }
+        }
+        this.goodsInfo = sb.toString();
+        this.pieceAmount = pieceAmount;
+        this.plateAmount = plateAmount;
+        this.totalWeight = totalWeight;
+        this.entireAddress1 = pickUpAddr.toString();
+        this.entireAddress2 = deliveryAddr.toString();
+        this.takeTimeStr = takeTimeStr.toString();
     }
 }

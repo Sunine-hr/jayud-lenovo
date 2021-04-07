@@ -385,39 +385,39 @@
         ot.`created_user` createdUser,
         wi.warehouse_name warehouseName,
         DATE_FORMAT(ot.`created_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
-        (SELECT ota.`goods_desc` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
-        where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
-        ) goodsDesc,
-        (SELECT ota.`piece_amount` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
-        where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
-        ) pieceAmount,
-        (SELECT ota.`plate_amount` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
-        where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
-        ) plateAmount,
-        (SELECT ota.`weight` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where
-        ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
-        ) weight,
-        (SELECT SUM(ota.`weight`) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
-        where ota.order_no = ot.order_no AND ota.`opr_type` = '1'
-        ) totalWeight,
-        (SELECT da.`state_name` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
-        where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
-        ) stateName1,
-        (SELECT da.`city_name` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
-        where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
-        ) cityName1,
-        (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where
-        ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
-        ) address1,
-        (SELECT da.`state_name` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
-        where ota.order_no = ot.order_no AND ota.`opr_type` = '2' limit 1
-        ) stateName2,
-        (SELECT da.`city_name` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
-        where ota.order_no = ot.order_no AND ota.`opr_type` = '2' limit 1
-        ) cityName2,
-        (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where
-        ota.order_no = ot.order_no AND ota.`opr_type` = '2' limit 1
-        ) address2,
+--         (SELECT ota.`goods_desc` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
+--         where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
+--         ) goodsDesc,
+--         (SELECT ota.`piece_amount` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
+--         where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
+--         ) pieceAmount,
+--         (SELECT ota.`plate_amount` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
+--         where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
+--         ) plateAmount,
+--         (SELECT ota.`weight` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where
+--         ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
+--         ) weight,
+--         (SELECT SUM(ota.`weight`) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
+--         where ota.order_no = ot.order_no AND ota.`opr_type` = '1'
+--         ) totalWeight,
+--         (SELECT da.`state_name` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
+--         where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
+--         ) stateName1,
+--         (SELECT da.`city_name` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
+--         where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
+--         ) cityName1,
+--         (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where
+--         ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
+--         ) address1,
+--         (SELECT da.`state_name` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
+--         where ota.order_no = ot.order_no AND ota.`opr_type` = '2' limit 1
+--         ) stateName2,
+--         (SELECT da.`city_name` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
+--         where ota.order_no = ot.order_no AND ota.`opr_type` = '2' limit 1
+--         ) cityName2,
+--         (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where
+--         ota.order_no = ot.order_no AND ota.`opr_type` = '2' limit 1
+--         ) address2,
         ot.`vehicle_type` vehicleType,
         ot.`vehicle_size` vehicleSize,
         ot.`cntr_no` cntrNo,
@@ -431,9 +431,9 @@
         oi.unit_code unitCode,
         ot.`legal_name` subLegalName,
         ot.unit_code subUnitCode,
-        (SELECT GROUP_CONCAT(ota.take_time) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` =
-        da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' group by ot.order_no
-        ) takeTimeStr,
+--         (SELECT GROUP_CONCAT(ota.take_time) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` =
+--         da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' group by ot.order_no
+--         ) takeTimeStr,
         -- (SELECT GROUP_CONCAT(ota.file) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` =
         -- da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' group by ot.order_no order by ota.id
         -- ) file1,

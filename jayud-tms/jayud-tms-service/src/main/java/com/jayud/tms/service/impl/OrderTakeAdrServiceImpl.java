@@ -7,6 +7,7 @@ import com.jayud.tms.mapper.OrderTakeAdrMapper;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import com.jayud.tms.model.vo.DriverOrderTakeAdrVO;
 import com.jayud.tms.model.vo.InputOrderTakeAdrVO;
+import com.jayud.tms.model.vo.OrderTakeAdrInfoVO;
 import com.jayud.tms.service.IOrderTakeAdrService;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,13 @@ public class OrderTakeAdrServiceImpl extends ServiceImpl<OrderTakeAdrMapper, Ord
         return baseMapper.findTakeGoodsInfo(orderNo);
     }
 
+    /**
+     * 中港小程序用的
+     *
+     * @param orderNoList
+     * @param oprType
+     * @return
+     */
     @Override
     public List<DriverOrderTakeAdrVO> getDriverOrderTakeAdr(List<String> orderNoList, Integer oprType) {
         return this.baseMapper.getDriverOrderTakeAdr(orderNoList, oprType);
@@ -68,6 +76,12 @@ public class OrderTakeAdrServiceImpl extends ServiceImpl<OrderTakeAdrMapper, Ord
             condition.lambda().eq(OrderTakeAdr::getOprType, oprType);
         }
         return this.baseMapper.selectList(condition);
+    }
+
+
+    @Override
+    public List<OrderTakeAdrInfoVO> getOrderTakeAdrInfos(List<String> orderNoList, Integer oprType) {
+        return this.baseMapper.getOrderTakeAdrInfos(orderNoList, oprType);
     }
 
 }

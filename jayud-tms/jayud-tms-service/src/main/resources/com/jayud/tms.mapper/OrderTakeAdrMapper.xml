@@ -82,7 +82,42 @@
             <if test="oprType!=null">
                 and ota.opr_type = #{oprType}
             </if>
-                and ota.`order_no` in
+            and ota.`order_no` in
+            <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+    </select>
+
+
+    <select id="getOrderTakeAdrInfos" resultType="com.jayud.tms.model.vo.OrderTakeAdrInfoVO">
+        SELECT
+        ota.order_no orderNo,
+        ota.delivery_id deliveryId,
+        ota.id takeAdrId,
+        ota.`take_time` takeTimeStr,
+        ota.`goods_desc` goodsDesc,
+        ota.`plate_amount` plateAmount,
+        ota.`piece_amount` pieceAmount,
+        ota.`weight`,
+        ota.`volume`,
+        ota.`opr_type` oprType,
+        ota.`remarks`,
+        ota.`enter_warehouse_no` enterWarehouseNo,
+        ota.file,
+        ota.file_name fileName,
+        da.`contacts`,
+        da.`phone`,
+        da.`address`
+        FROM
+        order_take_adr ota
+        LEFT JOIN delivery_address da
+        ON ota.`delivery_id` = da.`id`
+        <where>
+            <if test="oprType!=null">
+                and ota.opr_type = #{oprType}
+            </if>
+            and ota.`order_no` in
             <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>

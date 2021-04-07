@@ -41,9 +41,10 @@ public class OrderInfoController {
     BaseService baseService;
 
     //分页查询订单列表
-    @ApiOperation(value = "web端分页查询订单列表")
+    @ApiOperation(value = "web端分页查询订单列表,废弃")
     @PostMapping("/findWebOrderInfoByPage")
     @ApiOperationSupport(order = 1)
+    @Deprecated
     public CommonResult<CommonPageResult<OrderInfoVO>> findWebOrderInfoByPage(@RequestBody QueryOrderInfoForm form) {
         CustomerUser customerUser = baseService.getCustomerUser();
         form.setCustomerId(customerUser.getId());//当前登录客户
@@ -60,7 +61,17 @@ public class OrderInfoController {
         CustomerUser customerUser = baseService.getCustomerUser();
         form.setCustomerId(customerUser.getId());//当前登录客户
         IPage<OrderInfoVO> pageList = orderInfoService.findWebOrderInfoByPage(form);
-        //CommonPageResult<OrderInfoVO> pageVO = new CommonPageResult(pageList);
+
+        //订单显示，提货状态
+        List<OrderInfoVO> records = pageList.getRecords();
+        if(CollUtil.isEmpty(records)){
+            records.forEach(orderInfoVO -> {
+                Integer isPick = orderInfoVO.getIsPick();//是否上门提货(0否 1是,order_pick)
+                if(isPick == 1){
+
+                }
+            });
+        }
 
         Long draftNum = orderInfoService.findOrderInfoDraftCount(form);
         CommonPageDraftResult<OrderInfoVO> draftResult = new CommonPageDraftResult(pageList, draftNum);

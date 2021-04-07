@@ -129,4 +129,11 @@ public class OrderPickVO {
     @JSONField(ordinal = 26, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime jcTime;
 
+    //运输
+    @ApiModelProperty(value = "运输单号", position = 27)
+    private String transportNo;
+
+    @ApiModelProperty(value = "供应商名称", position = 28)
+    private String supplierName;
+
 }

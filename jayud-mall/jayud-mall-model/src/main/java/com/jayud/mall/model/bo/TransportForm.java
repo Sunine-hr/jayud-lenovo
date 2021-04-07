@@ -1,7 +1,9 @@
-package com.jayud.mall.model.vo;
+package com.jayud.mall.model.bo;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.mall.model.vo.DeliverInfoVO;
+import com.jayud.mall.model.vo.OrderPickVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -11,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class TransportVO {
+public class TransportForm {
 
     @ApiModelProperty(value = "主键id", position = 1)
     @JSONField(ordinal = 1)
@@ -23,6 +25,7 @@ public class TransportVO {
 
     @ApiModelProperty(value = "供应商id(supplier_info id)", position = 3)
     @JSONField(ordinal = 3)
+    @NotNull(message = "供应商id不能为空")
     private Integer supplierId;
 
     @ApiModelProperty(value = "追踪号", position = 4)

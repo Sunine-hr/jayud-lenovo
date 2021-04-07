@@ -1,37 +1,16 @@
-package com.jayud.mall.model.po;
+package com.jayud.mall.model.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
-/**
- * <p>
- * 送货信息表
- * </p>
- *
- * @author fachang.mao
- * @since 2021-04-06
- */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value="DeliverInfo对象", description="送货信息表")
-public class DeliverInfo extends Model<DeliverInfo> {
-
-    private static final long serialVersionUID = 1L;
+public class DeliverInfoVO {
 
     @ApiModelProperty(value = "主键id", position = 1)
-    @TableId(value = "id", type = IdType.AUTO)
     @JSONField(ordinal = 1)
     private Long id;
 
@@ -76,10 +55,9 @@ public class DeliverInfo extends Model<DeliverInfo> {
     @JSONField(ordinal = 10)
     private String contactPhone;
 
-
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
+    //送货地址(集货仓库)
+    @ApiModelProperty(value = "送货地址(集货仓库)(shipping_area pname + cname + address_first)", position = 11)
+    @JSONField(ordinal = 11)
+    private String deliveryAddress;
 
 }

@@ -1,10 +1,15 @@
 package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.QueryTransportForm;
+import com.jayud.mall.model.bo.TransportForm;
 import com.jayud.mall.model.po.Transport;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.vo.OrderPickVO;
 import com.jayud.mall.model.vo.TransportVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -22,4 +27,18 @@ public interface ITransportService extends IService<Transport> {
      * @return
      */
     IPage<TransportVO> findTransportByPage(QueryTransportForm form);
+
+    /**
+     * 拼车提货-创建展示运输单号、提货信息、送货信息
+     * @param form
+     * @return
+     */
+    CommonResult<TransportVO> createTransport(List<OrderPickVO> form);
+
+    /**
+     * 拼车提货-确认
+     * @param form
+     * @return
+     */
+    CommonResult<TransportVO> affirmTransport(TransportForm form);
 }

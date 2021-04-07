@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.QueryTransportForm;
+import com.jayud.mall.model.bo.TransportForm;
+import com.jayud.mall.model.vo.OrderPickVO;
 import com.jayud.mall.model.vo.TransportVO;
 import com.jayud.mall.service.ITransportService;
 import io.swagger.annotations.Api;
@@ -15,6 +17,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/transport")
@@ -34,5 +39,36 @@ public class TransportController {
         CommonPageResult<TransportVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
     }
+
+    //拼车提货-创建展示运输单号、提货信息、送货信息
+    @ApiOperation(value = "拼车提货-创建展示运输单号、提货信息、送货信息")
+    @PostMapping("/createTransport")
+    @ApiOperationSupport(order = 2)
+    public CommonResult<TransportVO> createTransport(@RequestBody List<OrderPickVO> form){
+        return transportService.createTransport(form);
+    }
+
+    //拼车提货-确认
+    @ApiOperation(value = "拼车提货-确认")
+    @PostMapping("/affirmTransport")
+    @ApiOperationSupport(order = 3)
+    public CommonResult<TransportVO> affirmTransport(@Valid @RequestBody TransportForm form){
+        return transportService.affirmTransport(form);
+    }
+
+
+    //拼车提货-取消，不做。关闭前端页面。
+
+    //运输管理-编辑
+
+    //运输管理-编辑-确认
+
+    //运输管理-编辑-取消，不做。关闭前端页面。
+
+    //运输管理-确认送达
+
+
+
+
 
 }

@@ -8,10 +8,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.mall.mapper.DeliverInfoMapper;
+import com.jayud.mall.mapper.OrderPickMapper;
 import com.jayud.mall.mapper.ShippingAreaMapper;
 import com.jayud.mall.mapper.TransportMapper;
 import com.jayud.mall.model.bo.QueryTransportForm;
 import com.jayud.mall.model.bo.TransportForm;
+import com.jayud.mall.model.bo.TransportParaForm;
 import com.jayud.mall.model.po.DeliverInfo;
 import com.jayud.mall.model.po.OrderPick;
 import com.jayud.mall.model.po.Transport;
@@ -45,12 +48,15 @@ public class TransportServiceImpl extends ServiceImpl<TransportMapper, Transport
     TransportMapper transportMapper;
     @Autowired
     ShippingAreaMapper shippingAreaMapper;
+    @Autowired
+    OrderPickMapper orderPickMapper;
+    @Autowired
+    DeliverInfoMapper deliverInfoMapper;
 
     @Autowired
     IOrderPickService orderPickService;
     @Autowired
     IDeliverInfoService deliverInfoService;
-
 
     @Override
     public IPage<TransportVO> findTransportByPage(QueryTransportForm form) {
@@ -158,6 +164,24 @@ public class TransportServiceImpl extends ServiceImpl<TransportMapper, Transport
         deliverInfoService.saveOrUpdateBatch(deliverInfos);
 
         TransportVO transportVO = ConvertUtil.convert(transport, TransportVO.class);
+        return CommonResult.success(transportVO);
+    }
+
+    @Override
+    public CommonResult<TransportVO> findTransport(TransportParaForm form) {
+        Long id = form.getId();
+        TransportVO transportVO = transportMapper.findTransportById(id);
+        if(ObjectUtil.isEmpty(transportVO)){
+            return CommonResult.error(-1, "运输单不存在");
+        }
+        Long transportId = transportVO.getId();
+        //提货信息
+        List<OrderPickVO> orderPickVOS = orderPickMapper.findOrderPickByTransportId(transportId);
+        transportVO.setOrderPickVOS(orderPickVOS);
+        //送货信息
+        List<DeliverInfoVO> deliverInfoVOS = deliverInfoMapper.findDeliverInfoByTransportId(transportId);
+        transportVO.setDeliverInfoVOS(deliverInfoVOS);
+
         return CommonResult.success(transportVO);
     }
 

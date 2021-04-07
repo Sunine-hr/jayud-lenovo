@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.QueryTransportForm;
 import com.jayud.mall.model.bo.TransportForm;
+import com.jayud.mall.model.bo.TransportParaForm;
 import com.jayud.mall.model.po.Transport;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.vo.OrderPickVO;
@@ -41,4 +42,11 @@ public interface ITransportService extends IService<Transport> {
      * @return
      */
     CommonResult<TransportVO> affirmTransport(TransportForm form);
+
+    /**
+     * 运输管理-编辑(查询展示)
+     * @param form
+     * @return
+     */
+    CommonResult<TransportVO> findTransport(TransportParaForm form);
 }

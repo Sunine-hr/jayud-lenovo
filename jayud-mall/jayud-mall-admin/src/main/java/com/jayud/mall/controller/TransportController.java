@@ -5,6 +5,7 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.QueryTransportForm;
 import com.jayud.mall.model.bo.TransportForm;
+import com.jayud.mall.model.bo.TransportParaForm;
 import com.jayud.mall.model.vo.OrderPickVO;
 import com.jayud.mall.model.vo.TransportVO;
 import com.jayud.mall.service.ITransportService;
@@ -56,10 +57,15 @@ public class TransportController {
         return transportService.affirmTransport(form);
     }
 
-
     //拼车提货-取消，不做。关闭前端页面。
 
-    //运输管理-编辑
+    //运输管理-编辑(查询展示)
+    @ApiOperation(value = "运输管理-编辑(查询展示)")
+    @PostMapping("/findTransport")
+    @ApiOperationSupport(order = 4)
+    public CommonResult<TransportVO> findTransport(@Valid @RequestBody TransportParaForm form){
+        return transportService.findTransport(form);
+    }
 
     //运输管理-编辑-确认
 

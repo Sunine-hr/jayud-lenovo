@@ -21,4 +21,23 @@
         id, order_pick_id, warehouse_no, pick_no, total_carton, scheduled_time, warehouse_code, warehouse_name, contacts, contact_phone
     </sql>
 
+    <select id="findDeliverInfoByTransportId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.DeliverInfoVO">
+        select t.id,
+               t.transport_id,
+               t.order_pick_id,
+               t.warehouse_no,
+               t.pick_no,
+               t.total_carton,
+               t.scheduled_time,
+               t.warehouse_code,
+               t.warehouse_name,
+               t.contacts,
+               t.contact_phone,
+               CONCAT(t1.pname,' ',t1.cname,' ',t1.address_first) deliveryAddress
+        from deliver_info t
+        left join shipping_area t1 on t1.warehouse_code = t.warehouse_code
+        where t.transport_id = #{transportId}
+    </select>
+
 </mapper>

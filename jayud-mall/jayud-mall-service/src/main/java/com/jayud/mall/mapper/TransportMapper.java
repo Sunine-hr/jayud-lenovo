@@ -29,4 +29,11 @@ public interface TransportMapper extends BaseMapper<Transport> {
      * @return
      */
     IPage<TransportVO> findTransportByPage(Page<TransportVO> page, @Param("form") QueryTransportForm form);
+
+    /**
+     * 根据id，查询运输单
+     * @param id
+     * @return
+     */
+    TransportVO findTransportById(@Param("id") Long id);
 }

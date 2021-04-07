@@ -44,5 +44,20 @@
         </if>
     </select>
 
+    <select id="findTransportById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.TransportVO">
+        select t.id,
+               t.transport_no,
+               t.supplier_id,
+               t.tracking_no,
+               t.weight,
+               t.volume,
+               t.amount,
+               t.cid,
+               t.transport_status,
+               t.create_time
+        from transport t
+        where t.id = #{id}
+    </select>
+
 
 </mapper>

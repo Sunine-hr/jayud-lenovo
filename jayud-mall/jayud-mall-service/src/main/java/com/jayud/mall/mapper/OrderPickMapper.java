@@ -38,4 +38,11 @@ public interface OrderPickMapper extends BaseMapper<OrderPick> {
      * @return
      */
     IPage<OrderPickVO> findOrderPickByPage(Page<OrderPickVO> page, @Param("form") QueryOrderPickForm form);
+
+    /**
+     * 根据transportId，查询提货信息
+     * @param transportId
+     * @return
+     */
+    List<OrderPickVO> findOrderPickByTransportId(@Param("transportId") Long transportId);
 }

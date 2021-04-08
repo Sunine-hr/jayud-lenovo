@@ -75,7 +75,6 @@ public class WorkOrderController {
     @PostMapping("/addWorkOrder")
     @ApiOperationSupport(order = 5)
     public CommonResult<WorkOrderVO> addWorkOrder(@Valid @RequestBody WorkOrderAddForm form){
-        form.setBusinessType(1);//工单业务类型(1订单工单 2提单工单)
         return workOrderService.addWorkOrder(form);
     }
 

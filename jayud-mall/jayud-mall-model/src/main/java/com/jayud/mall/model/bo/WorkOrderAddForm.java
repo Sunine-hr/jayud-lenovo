@@ -17,6 +17,7 @@ public class WorkOrderAddForm {
 
     @ApiModelProperty(value = "工单业务类型(1订单工单 2提单工单)", position = 2)
     @JSONField(ordinal = 2)
+    @NotNull(message = "工单业务类型不能为空")
     private Integer businessType;
 
     @ApiModelProperty(value = "业务编号(订单号order_info order_no, 提单号ocean_bill order_id)", position = 3)

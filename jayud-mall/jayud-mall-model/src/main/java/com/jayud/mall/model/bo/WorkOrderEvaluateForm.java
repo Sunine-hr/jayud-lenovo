@@ -1,11 +1,13 @@
 package com.jayud.mall.model.bo;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 
+@ApiModel(value = "WorkOrderEvaluateForm", description = "评价工单")
 @Data
 public class WorkOrderEvaluateForm {
 

@@ -3,9 +3,7 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
-import com.jayud.mall.model.bo.QueryWorkOrderForm;
-import com.jayud.mall.model.bo.WorkOrderParaForm;
-import com.jayud.mall.model.bo.WorkOrderReplyForm;
+import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.vo.WorkOrderVO;
 import com.jayud.mall.model.vo.domain.AuthUser;
 import com.jayud.mall.service.BaseService;
@@ -73,6 +71,38 @@ public class WorkOrderController {
     }
 
     //TODO 工单分业务类型 1订单工单 2提单工单
+
+    @ApiOperation(value = "删除工单(仅关闭状态，可以删除)")
+    @PostMapping("/delWorkOrderById")
+    @ApiOperationSupport(order = 5)
+    public CommonResult delWorkOrderById(@Valid @RequestBody WorkOrderParaForm form){
+        Long id = form.getId();
+        return workOrderService.delWorkOrderById(id);
+    }
+
+    @ApiOperation(value = "评价工单(仅待评价状态，可以评价)")
+    @PostMapping("/evaluateWorkOrderById")
+    @ApiOperationSupport(order = 6)
+    public CommonResult evaluateWorkOrderById(@Valid @RequestBody WorkOrderEvaluateForm form){
+        return workOrderService.evaluateWorkOrderById(form);
+    }
+
+    @ApiOperation(value = "新增工单")
+    @PostMapping("/addWorkOrder")
+    @ApiOperationSupport(order = 7)
+    public CommonResult<WorkOrderVO> addWorkOrder(@Valid @RequestBody WorkOrderAddForm form){
+        return workOrderService.addWorkOrder(form);
+    }
+
+    //客户关闭工单
+    @ApiOperation(value = "客户关闭工单")
+    @PostMapping("/closeWorkOrder")
+    @ApiOperationSupport(order = 8)
+    public CommonResult closeWorkOrder(@Valid @RequestBody WorkOrderParaForm form){
+        Long id = form.getId();
+        return workOrderService.closeWorkOrder(id);
+    }
+
 
 
 }

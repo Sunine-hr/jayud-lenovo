@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.mapper.OrderCostTemplateInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.OrderCostTemplateInfo">
+        <id column="id" property="id" />
+        <result column="order_cost_template_id" property="orderCostTemplateId" />
+        <result column="cost_code" property="costCode" />
+        <result column="cost_type_id" property="costTypeId" />
+        <result column="cost_genre_id" property="costGenreId" />
+        <result column="unit" property="unit" />
+        <result column="unit_price" property="unitPrice" />
+        <result column="number" property="number" />
+        <result column="currency_code" property="currencyCode" />
+        <result column="create_time" property="createTime" />
+        <result column="type" property="type" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_cost_template_id, cost_code, cost_type_id, cost_genre_id, unit, unit_price, number, currency_code, create_time, type
+    </sql>
+
+</mapper>

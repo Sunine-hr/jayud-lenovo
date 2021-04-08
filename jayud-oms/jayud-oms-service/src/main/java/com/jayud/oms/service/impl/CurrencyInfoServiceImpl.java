@@ -61,7 +61,7 @@ public class CurrencyInfoServiceImpl extends ServiceImpl<CurrencyInfoMapper, Cur
     @Override
     public List<InitComboxStrVO> initCurrencyInfo() {
         QueryWrapper<CurrencyInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(CurrencyInfo::getStatus, StatusEnum.ENABLE);
+        queryWrapper.lambda().eq(CurrencyInfo::getStatus, StatusEnum.ENABLE.getCode());
         List<CurrencyInfo> currencyInfos = this.list(queryWrapper);
         List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
         for (CurrencyInfo currencyInfo : currencyInfos) {

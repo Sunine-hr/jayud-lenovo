@@ -3,8 +3,10 @@ package com.jayud.oms.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.oms.mapper.CurrencyInfoMapper;
+import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.CurrencyInfo;
 import com.jayud.oms.model.vo.CurrencyInfoVO;
+import com.jayud.oms.model.vo.InitComboxStrVO;
 import com.jayud.oms.service.ICurrencyInfoService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -50,5 +52,24 @@ public class CurrencyInfoServiceImpl extends ServiceImpl<CurrencyInfoMapper, Cur
         QueryWrapper<CurrencyInfo> condition = new QueryWrapper<>();
         condition.lambda().in(CurrencyInfo::getCurrencyCode, currencyCodes);
         return this.baseMapper.selectList(condition);
+    }
+
+
+    /**
+     * 查询下拉币种
+     */
+    @Override
+    public List<InitComboxStrVO> initCurrencyInfo() {
+        QueryWrapper<CurrencyInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(CurrencyInfo::getStatus, StatusEnum.ENABLE);
+        List<CurrencyInfo> currencyInfos = this.list(queryWrapper);
+        List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
+        for (CurrencyInfo currencyInfo : currencyInfos) {
+            InitComboxStrVO initComboxVO = new InitComboxStrVO();
+            initComboxVO.setCode(currencyInfo.getCurrencyCode());
+            initComboxVO.setName(currencyInfo.getCurrencyName());
+            initComboxStrVOS.add(initComboxVO);
+        }
+        return initComboxStrVOS;
     }
 }

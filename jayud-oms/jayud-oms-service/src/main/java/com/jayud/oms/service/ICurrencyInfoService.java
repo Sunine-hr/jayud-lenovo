@@ -3,6 +3,7 @@ package com.jayud.oms.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.po.CurrencyInfo;
 import com.jayud.oms.model.vo.CurrencyInfoVO;
+import com.jayud.oms.model.vo.InitComboxStrVO;
 
 import java.util.List;
 import java.util.Set;
@@ -29,4 +30,9 @@ public interface ICurrencyInfoService extends IService<CurrencyInfo> {
      * 根据币种code获取币种信息
      */
     List<CurrencyInfo> getByCodes(Set<String> currencyCodes);
+
+    /**
+     * 查询下拉币种
+     */
+    public List<InitComboxStrVO> initCurrencyInfo();
 }

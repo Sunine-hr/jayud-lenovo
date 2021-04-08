@@ -47,7 +47,7 @@ public class WorkOrderController {
     @ApiOperation(value = "我的工单(我处理的工单)")
     @PostMapping("/findMyWorkOrderByPage")
     @ApiOperationSupport(order = 2)
-    public CommonResult<CommonPageResult<WorkOrderVO>> findMyWorkOrderByPage(@RequestBody QueryWorkOrderForm form) {
+    public CommonResult<CommonPageResult<WorkOrderVO>> findMyWorkOrderByPage(@Valid @RequestBody QueryWorkOrderForm form) {
         AuthUser user = baseService.getUser();
         form.setOperator(user.getId());//我的工单
         IPage<WorkOrderVO> pageList = workOrderService.findWorkOrderByPage(form);
@@ -72,7 +72,7 @@ public class WorkOrderController {
         return workOrderService.replyWorkOrder(form);
     }
 
-    //TODO 提单
+    //TODO 工单分业务类型 1订单工单 2提单工单
 
 
 }

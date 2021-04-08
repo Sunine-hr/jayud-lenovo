@@ -51,6 +51,9 @@
         <if test="form.creator != null">
             and t.creator = #{form.creator}
         </if>
+        <if test="form.businessType != null">
+            and t.business_type = #{form.businessType}
+        </if>
         <if test="form.workNo != null and form.workNo != ''">
             and t.work_no like concat('%',#{form.workNo},'%')
         </if>

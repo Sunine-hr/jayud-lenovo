@@ -37,7 +37,7 @@ public class WorkOrderController {
     @ApiOperation(value = "工单列表")
     @PostMapping("/findWorkOrderByPage")
     @ApiOperationSupport(order = 1)
-    public CommonResult<CommonPageResult<WorkOrderVO>> findWorkOrderByPage(@RequestBody QueryWorkOrderForm form) {
+    public CommonResult<CommonPageResult<WorkOrderVO>> findWorkOrderByPage(@Valid @RequestBody QueryWorkOrderForm form) {
         IPage<WorkOrderVO> pageList = workOrderService.findWorkOrderByPage(form);
         CommonPageResult<WorkOrderVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
@@ -71,6 +71,8 @@ public class WorkOrderController {
     public CommonResult replyWorkOrder(@Valid @RequestBody WorkOrderReplyForm form){
         return workOrderService.replyWorkOrder(form);
     }
+
+    //TODO 提单
 
 
 }

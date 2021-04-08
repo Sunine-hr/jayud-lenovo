@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
@@ -14,13 +15,14 @@ public class QueryWorkOrderForm extends BasePageForm {
     @JSONField(ordinal = 1)
     private Integer creator;
 
-    @ApiModelProperty(value = "工单编号", position = 2)
+    @ApiModelProperty(value = "工单业务类型(1订单工单 2提单工单)", position = 2)
     @JSONField(ordinal = 2)
-    private String workNo;
-
-    @ApiModelProperty(value = "工单业务类型(1订单工单 2提单工单)", position = 3)
-    @JSONField(ordinal = 3)
+    @NotNull(message = "工单业务类型必填")
     private Integer businessType;
+
+    @ApiModelProperty(value = "工单编号", position = 3)
+    @JSONField(ordinal = 3)
+    private String workNo;
 
     @ApiModelProperty(value = "提交时间Start", position = 4)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -59,5 +58,9 @@ public class TransportVO {
 
     @ApiModelProperty(value = "送货信息", position = 12)
     private List<DeliverInfoVO> deliverInfoVOS;
+
+    @ApiModelProperty(value = "供应商名称(supplier_info company_name)", position = 13)
+    @JSONField(ordinal = 13)
+    private String supplierName;
 
 }

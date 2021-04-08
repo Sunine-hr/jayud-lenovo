@@ -24,16 +24,18 @@
     <select id="findTransportByPage" parameterType="com.jayud.mall.model.bo.QueryTransportForm"
             resultType="com.jayud.mall.model.vo.TransportVO">
         select t.id,
-               t.transport_no,
-               t.supplier_id,
-               t.tracking_no,
-               t.weight,
-               t.volume,
-               t.amount,
-               t.cid,
-               t.transport_status,
-               t.create_time
+        t.transport_no,
+        t.supplier_id,
+        t.tracking_no,
+        t.weight,
+        t.volume,
+        t.amount,
+        t.cid,
+        t.transport_status,
+        t.create_time,
+        t1.company_name supplierName
         from transport t
+        left join supplier_info t1 on t1.id = t.supplier_id
         where 1=1
         <if test="form.keyword != null and form.keyword != ''">
             and (
@@ -54,8 +56,10 @@
                t.amount,
                t.cid,
                t.transport_status,
-               t.create_time
+               t.create_time,
+               t1.company_name supplierName
         from transport t
+        left join supplier_info t1 on t1.id = t.supplier_id
         where t.id = #{id}
     </select>
 

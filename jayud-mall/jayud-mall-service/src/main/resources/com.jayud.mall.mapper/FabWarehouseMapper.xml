@@ -54,7 +54,8 @@
         t.`status`,
         t.user_id,
         t.user_name,
-        t.create_time
+        t.create_time,
+        t.area_group
         from fab_warehouse t
         WHERE
         1 = 1
@@ -67,6 +68,9 @@
         </if>
         <if test="form.stateCode != null and form.stateCode != ''">
             AND t.state_code LIKE concat('%',#{form.stateCode},'%')
+        </if>
+        <if test="form.areaGroup != null and form.areaGroup != ''">
+            AND t.area_group LIKE concat('%',#{form.areaGroup},'%')
         </if>
     </select>
 

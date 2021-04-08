@@ -114,6 +114,10 @@ public class FabWarehouse extends Model<FabWarehouse> {
     @JSONField(ordinal = 20, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "区域分组", position = 21)
+    @JSONField(ordinal = 21)
+    private String areaGroup;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

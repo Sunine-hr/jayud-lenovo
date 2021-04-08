@@ -146,7 +146,8 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
 
         switch (CreateUserTypeEnum.getEnum(orderTransport.getCreateUserType())) {
             case VIVO:
-                if (OrderStatusEnum.TMS_T_4_1.getCode().equals(form.getCmd())) {
+                if (OrderStatusEnum.TMS_T_4_1.getCode().equals(form.getCmd())
+                ||OrderStatusEnum.TMS_T_5_1.getCode().equals(form.getCmd())) {
                     ApiResult result = freightAirApiClient.forwarderDispatchRejected(orderTransport.getThirdPartyOrderNo());
                     if (result.getCode() != HttpStatus.SC_OK) {
                         log.error("请求vivo派车推送接口失败 msg={}", result.getMsg());

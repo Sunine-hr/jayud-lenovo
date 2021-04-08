@@ -131,14 +131,14 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         if(companyCount > 0){
             return CommonResult.error(-1, "公司名称已存在");
         }
-        String verificationCode = form.getVerificationCode();//验证码(前端输入)
-        String code = redisUtils.get(phone);//验证码redis
-        if(code == null){
-            return CommonResult.error(-1, "验证码已过期或不存在");
-        }
-        if(!verificationCode.equals(code)){
-            return CommonResult.error(-1, "验证码不正确");
-        }
+//        String verificationCode = form.getVerificationCode();//验证码(前端输入)
+//        String code = redisUtils.get(phone);//验证码redis
+//        if(code == null){
+//            return CommonResult.error(-1, "验证码已过期或不存在");
+//        }
+//        if(!verificationCode.equals(code)){
+//            return CommonResult.error(-1, "验证码不正确");
+//        }
         //mysql-生成单号，有规则
         String customerCode = NumberGeneratedUtils.getOrderNoByCode2("customer_code");
         customer.setCode(customerCode);//客户代码

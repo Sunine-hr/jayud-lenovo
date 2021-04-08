@@ -212,6 +212,10 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
 
         IPage<OrderTransportVO> pageInfo = baseMapper.findTransportOrderByPage(page, form, legalIds);
+        if (pageInfo.getRecords().size() == 0) {
+            return pageInfo;
+        }
+
         String prePath = fileClient.getBaseUrl().getData().toString();
 
         List<OrderTransportVO> pageList = pageInfo.getRecords();

@@ -68,7 +68,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private String shipment_void;
     //5、 查询路由信息
     @Value("${nanjing.newwisdom.urls.tracking:}")
-    String tracking;
+    private String tracking;
     //6、 获取运单信息
     @Value("${nanjing.newwisdom.urls.info:}")
     private String info;
@@ -1463,6 +1463,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             String info = MapUtil.getStr(map, "info");//消息
             Long time = MapUtil.getLong(map, "time");//时间
             Map data = MapUtil.get(map, "data", Map.class);//数据
+
+            ShipmentVO shipmentVO = MapUtil.get(data, "shipment", ShipmentVO.class);
 
             //请求不成功，未获取到数据
             if(status != 1){

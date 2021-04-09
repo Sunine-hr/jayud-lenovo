@@ -6,6 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;
 import org.junit.Test;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -92,6 +96,20 @@ public class APITest {
         }catch (JSONException exception){
             log.info("feedback: " + feedback);
         }
+
+    }
+
+    @Test
+    public void test3(){
+        long epoch = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
+        log.info("epoch:{}", epoch);
+        LocalDateTime ldt = Instant.ofEpochMilli(epoch).atZone(ZoneId.systemDefault()).toLocalDateTime();
+        log.info("ldt:{}", ldt);
+
+
+        long l = 1569292358*1000L;//秒转为毫秒
+        LocalDateTime ldt2 = Instant.ofEpochMilli(l).atZone(ZoneId.systemDefault()).toLocalDateTime();
+        log.info("ldt2:{}", ldt2);
 
     }
 

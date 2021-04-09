@@ -1465,10 +1465,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             Map data = MapUtil.get(map, "data", Map.class);//数据
 
             ShipmentVO shipmentVO = MapUtil.get(data, "shipment", ShipmentVO.class);
+            String shipmentJson = JSONUtil.toJsonStr(shipmentVO);
+            log.info("shipmentJson:{}", shipmentJson);
 
             //请求不成功，未获取到数据
-            if(status != 1){
-                return CommonResult.error(-1, "请求不成功，未获取到数据");
+            if(status == 0){
+                return CommonResult.error(-1, info);
             }
 
             log.info("状态status:{}, 消息info:{}, 时间time:{}", status, info, time);

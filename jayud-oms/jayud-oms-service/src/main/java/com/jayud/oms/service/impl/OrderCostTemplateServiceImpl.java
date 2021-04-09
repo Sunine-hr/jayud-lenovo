@@ -95,7 +95,7 @@ public class OrderCostTemplateServiceImpl extends ServiceImpl<OrderCostTemplateM
         condition.lambda().select(OrderCostTemplate::getStatus).eq(OrderCostTemplate::getId, id);
         OrderCostTemplate tmp = this.baseMapper.selectOne(condition);
 
-        String status = StatusEnum.ENABLE.getCode().equals(tmp.getStatus()) ? StatusEnum.INVALID.getCode() : StatusEnum.ENABLE.getCode();
+        String status = Integer.valueOf(StatusEnum.ENABLE.getCode()).equals(tmp.getStatus()) ? StatusEnum.INVALID.getCode() : StatusEnum.ENABLE.getCode();
 
         tmp = new OrderCostTemplate().setId(id).setStatus(Integer.valueOf(status));
 
@@ -105,6 +105,7 @@ public class OrderCostTemplateServiceImpl extends ServiceImpl<OrderCostTemplateM
 
     /**
      * 校验唯一
+     *
      * @return
      */
     @Override
@@ -122,5 +123,10 @@ public class OrderCostTemplateServiceImpl extends ServiceImpl<OrderCostTemplateM
             return false;
         }
         return true;
+    }
+
+    @Override
+    public OrderCostTemplateDTO getCostTemplateInfo(Long id) {
+        return this.baseMapper.getCostTemplateInfo(id);
     }
 }

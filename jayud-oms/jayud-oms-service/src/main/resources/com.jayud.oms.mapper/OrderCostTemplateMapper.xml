@@ -4,11 +4,31 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.OrderCostTemplate">
-        <id column="id" property="id" />
-        <result column="name" property="name" />
-        <result column="status" property="status" />
-        <result column="create_time" property="createTime" />
-        <result column="create_user" property="createUser" />
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+    </resultMap>
+
+
+    <resultMap id="OrderCostTemplateDTO" type="com.jayud.oms.model.bo.OrderCostTemplateDTO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <collection property="costTemplateInfo" ofType="com.jayud.oms.model.bo.OrderCostTemplateInfoDTO">
+            <id column="id" property="id"/>
+            <result column="cost_code" property="costCode" />
+            <result column="cost_type_id" property="costTypeId" />
+            <result column="cost_genre_id" property="costGenreId" />
+            <result column="unit" property="unit" />
+            <result column="unit_price" property="unitPrice" />
+            <result column="number" property="number" />
+            <result column="currency_code" property="currencyCode" />
+            <result column="create_time" property="createTime" />
+        </collection>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -32,6 +52,18 @@
             </if>
         </where>
 
+    </select>
+    <select id="getCostTemplateInfo" resultMap="OrderCostTemplateDTO">
+        select
+        oct.id, oct.name, oct.status, oct.create_time, oct.create_user,
+        octi.cost_code, octi.cost_type_id, octi.cost_genre_id, octi.unit, octi.unit_price,
+        octi.number,octi.currency_code,octi.create_time
+        from
+        order_cost_template oct
+        left join order_cost_template_info octi on oct.id=octi.order_cost_template_id
+        <where>
+            oct.id=#{id}
+        </where>
     </select>
 
 </mapper>

@@ -32,4 +32,11 @@ public interface IOrderCostTemplateService extends IService<OrderCostTemplate> {
      * @return
      */
     boolean checkUnique(OrderCostTemplate tmp);
+
+    /**
+     * 获取费用模板详情
+     * @param id
+     * @return
+     */
+    OrderCostTemplateDTO getCostTemplateInfo(Long id);
 }

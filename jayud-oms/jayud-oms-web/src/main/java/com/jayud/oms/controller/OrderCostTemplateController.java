@@ -1,11 +1,14 @@
 package com.jayud.oms.controller;
 
 
+import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.UserOperator;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.oms.model.bo.OrderCostTemplateDTO;
+import com.jayud.oms.model.bo.OrderCostTemplateInfoDTO;
 import com.jayud.oms.model.bo.QueryCostTemplateForm;
 import com.jayud.oms.model.po.CostInfo;
 import com.jayud.oms.model.po.OrderCostTemplate;
@@ -62,6 +65,7 @@ public class OrderCostTemplateController {
     @ApiOperation(value = "分页查询模板")
     @PostMapping(value = "/findByPage")
     public CommonResult<CommonPageResult<OrderCostTemplateDTO>> findByPage(@RequestBody QueryCostTemplateForm form) {
+        form.setCreateUser(UserOperator.getToken());
         IPage<OrderCostTemplateDTO> page = this.orderCostTemplateService.findByPage(form);
         return CommonResult.success(new CommonPageResult(page));
     }
@@ -82,12 +86,24 @@ public class OrderCostTemplateController {
     }
 
     @ApiOperation(value = "查询费用模板详情信息")
-    @PostMapping(value = "/getCostTemplate")
-    public CommonResult getCostTemplate(@RequestBody Map<String, String> map) {
-        if (StringUtils.isEmpty(map.get("id"))) {
+    @PostMapping(value = "/getCostTemplateInfo")
+    public CommonResult getCostTemplateInfo(@RequestBody Map<String, String> map) {
+        Long id = MapUtil.getLong(map, "id");
+        if (id == null) {
             return CommonResult.error(500, "id is required");
         }
-      return null;
+        return CommonResult.success(this.orderCostTemplateService.getCostTemplateInfo(id));
+    }
+
+
+    @ApiOperation(value = "下拉模板数据")
+    @PostMapping(value = "/initCostTemplate")
+    public CommonResult initCostTemplate(@RequestBody Map<String, String> map) {
+        Long name = MapUtil.getLong(map, "name");
+        if (name == null) {
+            return CommonResult.error(500, "id is required");
+        }
+        return CommonResult.success(this.orderCostTemplateService.getCostTemplateInfo(name));
     }
 
 }

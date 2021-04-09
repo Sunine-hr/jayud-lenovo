@@ -14,7 +14,6 @@
         <result column="number" property="number" />
         <result column="currency_code" property="currencyCode" />
         <result column="create_time" property="createTime" />
-        <result column="type" property="type" />
     </resultMap>
 
     <!-- 通用查询结果列 -->

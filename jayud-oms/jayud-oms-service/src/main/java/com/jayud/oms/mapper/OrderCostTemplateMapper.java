@@ -20,4 +20,6 @@ import org.apache.ibatis.annotations.Mapper;
 public interface OrderCostTemplateMapper extends BaseMapper<OrderCostTemplate> {
 
     IPage<OrderCostTemplateDTO> findByPage(Page<OrderCostTemplateDTO> page, QueryCostTemplateForm form);
+
+    OrderCostTemplateDTO getCostTemplateInfo(Long id);
 }

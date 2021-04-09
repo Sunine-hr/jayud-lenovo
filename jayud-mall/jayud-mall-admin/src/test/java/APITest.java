@@ -64,4 +64,36 @@ public class APITest {
     }
 
 
+    @Test
+    public void test2(){
+
+        //入参键值对
+        Map<String, Object> requestMap = new HashMap<>();
+        Map<String, Object> validation = new HashMap<>();
+        validation.put("access_token", "606d57393aff974fe93c6574606d5739e96f98326");
+        requestMap.put("validation", validation);
+        //6、 获取运单信息
+        String url = "http://jydexp.nextsls.com/api/v4/shipment/info";
+        String feedback = HttpRequest
+                .post(url)
+                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                .body(JSONUtil.toJsonStr(requestMap))
+                .execute().body();
+        log.info("feedback: " + feedback);
+        try{
+            Map map = JSONUtil.toBean(feedback, Map.class);
+            Integer status = MapUtil.getInt(map, "status");//状态
+            String info = MapUtil.getStr(map, "info");//消息
+            Long time = MapUtil.getLong(map, "time");//时间
+            Map data = MapUtil.get(map, "data", Map.class);//数据
+            log.info("map: " + map);
+            log.info("状态status:{}, 消息info:{}, 时间time:{}", status, info, time);
+            log.info("数据data:{} ", data);
+        }catch (JSONException exception){
+            log.info("feedback: " + feedback);
+        }
+
+    }
+
+
 }

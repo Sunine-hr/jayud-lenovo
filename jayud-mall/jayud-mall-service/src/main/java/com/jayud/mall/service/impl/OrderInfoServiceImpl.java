@@ -1,7 +1,10 @@
 package com.jayud.mall.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
@@ -22,15 +25,17 @@ import com.jayud.mall.model.vo.domain.AuthUser;
 import com.jayud.mall.model.vo.domain.CustomerUser;
 import com.jayud.mall.service.*;
 import com.jayud.mall.utils.SnowflakeUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * <p>
@@ -40,8 +45,39 @@ import java.util.List;
  * @author fachang.mao
  * @since 2020-11-06
  */
+@Slf4j
+@RefreshScope
 @Service
 public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo> implements IOrderInfoService {
+
+
+    //南京新智慧api
+    @Value("${nanjing.newwisdom.access_token:}")
+    private String access_token;
+    //1、 创建运单
+    @Value("${nanjing.newwisdom.urls.create:}")
+    private String create;
+    //2、 标签获取
+    @Value("${nanjing.newwisdom.urls.get_labels:}")
+    private String get_labels;
+    //3、 服务类型获取
+    @Value("${nanjing.newwisdom.urls.get_services:}")
+    private String get_services;
+    //4、 取消订单
+    @Value("${nanjing.newwisdom.urls.shipment_void:}")
+    private String shipment_void;
+    //5、 查询路由信息
+    @Value("${nanjing.newwisdom.urls.tracking:}")
+    String tracking;
+    //6、 获取运单信息
+    @Value("${nanjing.newwisdom.urls.info:}")
+    private String info;
+    //7、 修改客户重量尺寸
+    @Value("${nanjing.newwisdom.urls.update_weight:}")
+    private String update_weight;
+    //8、 查看账户余额
+    @Value("${nanjing.newwisdom.urls.account:}")
+    private String account;
 
     @Autowired
     OrderInfoMapper orderInfoMapper;
@@ -1404,6 +1440,51 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     public List<OrderInfoVO> findOrderInfoByCustomer(OrderInfoCustomerForm form) {
         List<OrderInfoVO> orderInfoVOS = orderInfoMapper.findOrderInfoByCustomer(form);
         return orderInfoVOS;
+    }
+
+    @Override
+    public CommonResult syncOrder(SyncOrderForm form) {
+        //入参键值对
+        Map<String, Object> requestMap = new HashMap<>();
+        Map<String, Object> validation = new HashMap<>();
+        validation.put("access_token", access_token);
+        requestMap.put("validation", validation);
+        Map<String, Object> shipment = new HashMap<>();
+        shipment.put("shipment_id", form.getShipmentId());
+        shipment.put("client_reference", "");
+        requestMap.put("shipment", shipment);
+
+        //6、 获取运单信息
+        String url = info;
+        String feedback = extracted(url, requestMap);
+        try{
+            Map map = JSONUtil.toBean(feedback, Map.class);
+            Integer status = MapUtil.getInt(map, "status");//状态
+            String info = MapUtil.getStr(map, "info");//消息
+            Long time = MapUtil.getLong(map, "time");//时间
+            Map data = MapUtil.get(map, "data", Map.class);//数据
+
+            //请求不成功，未获取到数据
+            if(status != 1){
+                return CommonResult.error(-1, "请求不成功，未获取到数据");
+            }
+
+            log.info("状态status:{}, 消息info:{}, 时间time:{}", status, info, time);
+            log.info("数据data:{} ", data);
+        }catch (cn.hutool.json.JSONException exception){
+            log.info("feedback: " + feedback);
+            return CommonResult.error(-1, "请求不成功，未获取到数据");
+        }
+        return CommonResult.success("订单同步成功");
+    }
+
+    private String extracted(String url, Map<String, Object> requestMap) {
+        String feedback = HttpRequest
+                .post(url)
+                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                .body(JSONUtil.toJsonStr(requestMap))
+                .execute().body();
+        return feedback;
     }
 
     /**

@@ -199,6 +199,14 @@ public class OrderInfoController {
         return orderInfoService.lookOperateLog(id);
     }
 
+    //同步订单(根据南京新智慧api查询运单同步订单)
+    @ApiOperation(value = "同步订单(根据南京新智慧api查询运单同步订单)")
+    @PostMapping("/syncOrder")
+    @ApiOperationSupport(order = 21)
+    public CommonResult syncOrder(@Valid @RequestBody SyncOrderForm form){
+        return orderInfoService.syncOrder(form);
+    }
+
 
 
 

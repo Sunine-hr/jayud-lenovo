@@ -235,4 +235,11 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     List<OrderInfoVO> findOrderInfoByCustomer(OrderInfoCustomerForm form);
+
+    /**
+     * 同步订单(根据南京新智慧api查询运单同步订单)
+     * @param form
+     * @return
+     */
+    CommonResult syncOrder(SyncOrderForm form);
 }

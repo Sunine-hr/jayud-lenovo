@@ -80,4 +80,18 @@ public interface IOrderCustomsService extends IService<OrderCustoms> {
      * @return
      */
     Integer getNumByStatus(String status, List<Long> legalIds);
+
+    /**
+     * 根据订单号获取订单信息
+     * @param orderNo
+     * @return
+     */
+    OrderCustoms getOrderCustomsByOrderNo(String orderNo);
+
+    /**
+     * 更新流程状态
+     * @param orderCustoms
+     * @return
+     */
+    Boolean updateProcessStatus(OrderCustoms orderCustoms);
 }

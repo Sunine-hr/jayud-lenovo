@@ -6,23 +6,29 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.ApiResult;
+import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
+import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.enums.BusinessTypeEnum;
+import com.jayud.common.enums.OrderOprCmdEnum;
 import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.customs.feign.FileClient;
 import com.jayud.customs.feign.OauthClient;
 import com.jayud.customs.feign.OmsClient;
 import com.jayud.customs.mapper.OrderCustomsMapper;
-import com.jayud.customs.model.bo.InputOrderCustomsForm;
-import com.jayud.customs.model.bo.InputSubOrderCustomsForm;
-import com.jayud.customs.model.bo.QueryCustomsOrderInfoForm;
+import com.jayud.customs.model.bo.*;
+import com.jayud.customs.model.enums.BGOrderStatusEnum;
 import com.jayud.customs.model.po.OrderCustoms;
 import com.jayud.customs.model.vo.*;
 import com.jayud.customs.service.IOrderCustomsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -227,5 +233,46 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
     public Integer getNumByStatus(String status, List<Long> legalIds) {
         List<String> mainOrderNos = this.baseMapper.getMainOrderNoByStatus(status, legalIds);
         return this.omsClient.getFilterOrderStatus(mainOrderNos, 1).getData();
+    }
+
+    @Override
+    public OrderCustoms getOrderCustomsByOrderNo(String orderNo) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("order_no",orderNo);
+
+        return this.baseMapper.selectOne(queryWrapper);
+    }
+
+    @Override
+    public Boolean updateProcessStatus(OrderCustoms orderCustoms) {
+        OprStatusForm form = new OprStatusForm();
+        //获取主订单id
+        Long mainOrderId = omsClient.getIdByOrderNo(orderCustoms.getMainOrderNo()).getData();
+        //保存操作节点
+        form.setMainOrderId(mainOrderId);
+        form.setOrderId(orderCustoms.getId());
+        form.setStatus(orderCustoms.getStatus());
+        form.setStatusName(OrderStatusEnum.getEnums(orderCustoms.getStatus()).getDesc());
+        form.setBusinessType(BusinessTypeEnum.BG.getCode());
+        form.setOperatorTime(LocalDateTime.now().toString());
+        omsClient.saveOprStatus(form);
+
+        //保存操作记录
+        AuditInfoForm auditInfoForm = new AuditInfoForm();
+        auditInfoForm.setAuditComment(form.getDescription());
+        auditInfoForm.setAuditStatus(orderCustoms.getStatus());
+        auditInfoForm.setAuditTypeDesc(BGOrderStatusEnum.getDesc1(orderCustoms.getStatus()));
+        auditInfoForm.setExtId(form.getOrderId());
+        auditInfoForm.setExtDesc(SqlConstant.ORDER_CUSTOMS);
+        auditInfoForm.setAuditUser(form.getOperatorUser());
+        auditInfoForm.setFileViews(form.getFileViewList());
+        omsClient.saveAuditInfo(auditInfoForm);
+
+        boolean result = this.saveOrUpdate(orderCustoms);
+        if (!result) {
+            return false;
+        }
+
+        return true;
     }
 }

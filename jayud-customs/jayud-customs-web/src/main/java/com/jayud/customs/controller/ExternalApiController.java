@@ -1,8 +1,10 @@
 package com.jayud.customs.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
+import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
@@ -14,6 +16,7 @@ import com.jayud.customs.feign.FileClient;
 import com.jayud.customs.feign.OauthClient;
 import com.jayud.customs.model.bo.CustomsChangeStatusForm;
 import com.jayud.customs.model.bo.InputOrderCustomsForm;
+import com.jayud.customs.model.enums.BGOrderStatusEnum;
 import com.jayud.customs.model.po.OrderCustoms;
 import com.jayud.customs.model.vo.InitChangeStatusVO;
 import com.jayud.customs.model.vo.InputOrderCustomsVO;
@@ -22,11 +25,9 @@ import com.jayud.customs.service.IOrderCustomsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -34,6 +35,7 @@ import java.util.*;
 
 @RestController
 @Api(tags = "customs对外接口")
+@Slf4j
 public class ExternalApiController {
 
     @Autowired
@@ -177,6 +179,76 @@ public class ExternalApiController {
             result.add(map);
         }
         return ApiResult.ok(result);
+    }
+
+    @ApiOperation(value = "接收云报关改变状态回传的信息")
+    @PostMapping("/feedback/status")
+    public ApiResult receiveStatus(@RequestBody Map<String, String> param) {
+        String status = MapUtil.getStr(param, "status");
+        String orderNo = MapUtil.getStr(param, "orderNo");
+
+        //根据云报关推送的订单号以及订单状态，更新oms系统订单状态
+        //通过订单号查询该订单的订单信息
+        OrderCustoms orderCustoms = orderCustomsService.getOrderCustomsByOrderNo(orderNo);
+
+        //根据回传的云报关状态获取对应的oms系统订单状态
+        String code1 = BGOrderStatusEnum.getCode1(status);
+        if(code1.equals("C_2")){ //报关打单
+            orderCustoms.setStatus(code1);
+            //更新状态
+            Boolean result = orderCustomsService.updateProcessStatus(orderCustoms);
+            if(!result){
+                log.warn("更新报关打单状态失败");
+                return ApiResult.error("更新报关打单状态失败");
+            }
+        }
+        if(code1.equals("C_3")){ //报关复核
+            orderCustoms.setStatus(code1);
+            //更新状态
+            Boolean result = orderCustomsService.updateProcessStatus(orderCustoms);
+            if(!result){
+                log.warn("更新报关复核状态失败");
+                return ApiResult.error("更新报关复核状态失败");
+            }
+        }
+        if(code1.equals("C_9")){ //报关二复
+            orderCustoms.setStatus(code1);
+            //更新状态
+            Boolean result = orderCustomsService.updateProcessStatus(orderCustoms);
+            if(!result){
+                log.warn("更新报关二复状态失败");
+                return ApiResult.error("更新报关二复状态失败");
+            }
+        }
+        if(code1.equals("C_11")){ //申报舱单
+            orderCustoms.setStatus(code1);
+            //更新状态
+            Boolean result = orderCustomsService.updateProcessStatus(orderCustoms);
+            if(!result){
+                log.warn("更新申报舱单状态失败");
+                return ApiResult.error("更新申报舱单状态失败");
+            }
+        }
+        if(code1.equals("C_4")){ //报关申报
+            orderCustoms.setStatus(code1);
+            //更新状态
+            Boolean result = orderCustomsService.updateProcessStatus(orderCustoms);
+            if(!result){
+                log.warn("更新报关申报状态失败");
+                return ApiResult.error("更新报关申报状态失败");
+            }
+        }
+        if(code1.equals("C_10")){ //报关放行
+            orderCustoms.setStatus(code1);
+            //更新状态
+            Boolean result = orderCustomsService.updateProcessStatus(orderCustoms);
+            if(!result){
+                log.warn("更新报关放行状态失败");
+                return ApiResult.error("更新报关放行状态失败");
+            }
+        }
+        return ApiResult.error();
+
     }
 }
 

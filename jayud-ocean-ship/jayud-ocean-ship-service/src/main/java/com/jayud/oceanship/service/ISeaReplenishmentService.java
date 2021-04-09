@@ -34,7 +34,7 @@ public interface ISeaReplenishmentService extends IService<SeaReplenishment> {
     SeaReplenishmentVO getSeaRepOrderDetails(Long orderId);
 
 
-    void deleteSeaReplenishment(Long orderId, String orderNo);
+    void deleteSeaReplenishment(String orderNo);
 
-    List<SeaReplenishment> getList(Long orderId, String orderNo);
+    List<SeaReplenishment> getList(String orderNo);
 }

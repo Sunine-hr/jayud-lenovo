@@ -394,12 +394,12 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
     public void updateOrSaveProcessStatus(SeaProcessOptForm form) {
 
         //删除补料信息
-        List<SeaReplenishment> list = seaReplenishmentService.getList(form.getOrderId(),form.getOrderNo());
+        List<SeaReplenishment> list = seaReplenishmentService.getList(form.getOrderNo());
         List<String> orderNo = new ArrayList<>();
         for (SeaReplenishment replenishment : list) {
             orderNo.add(replenishment.getOrderNo());
         }
-        seaReplenishmentService.deleteSeaReplenishment(form.getOrderId(),form.getOrderNo());
+        seaReplenishmentService.deleteSeaReplenishment(form.getOrderNo());
 
         if(orderNo.size()>0){
             omsClient.deleteOrderAddressByBusOrders(orderNo,BusinessTypeEnum.HY.getCode());

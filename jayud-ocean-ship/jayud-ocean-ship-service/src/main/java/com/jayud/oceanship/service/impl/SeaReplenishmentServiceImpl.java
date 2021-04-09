@@ -104,17 +104,15 @@ public class SeaReplenishmentServiceImpl extends ServiceImpl<SeaReplenishmentMap
     }
 
     @Override
-    public void deleteSeaReplenishment(Long orderId, String orderNo) {
+    public void deleteSeaReplenishment( String orderNo) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("sea_order_id", orderId);
         queryWrapper.like("sea_order_no", orderNo);
         this.baseMapper.delete(queryWrapper);
     }
 
     @Override
-    public List<SeaReplenishment> getList(Long orderId, String orderNo) {
+    public List<SeaReplenishment> getList(String orderNo) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("sea_order_id", orderId);
         queryWrapper.like("sea_order_no", orderNo);
         return this.baseMapper.selectList(queryWrapper);
     }

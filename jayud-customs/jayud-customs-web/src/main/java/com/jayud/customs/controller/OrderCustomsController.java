@@ -20,11 +20,16 @@ import com.jayud.customs.model.bo.*;
 import com.jayud.customs.model.po.OrderCustoms;
 import com.jayud.customs.model.vo.CustomsOrderInfoVO;
 import com.jayud.customs.model.vo.OrderStatusVO;
+import com.jayud.customs.model.vo.PushOrderVO;
+import com.jayud.customs.service.ICustomsApiService;
 import com.jayud.customs.service.IOrderCustomsService;
+import com.jayud.customs.service.impl.ICustomsApiServiceImpl;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,6 +55,9 @@ public class OrderCustomsController {
 
     @Autowired
     OauthClient oauthClient;
+
+    @Autowired
+    ICustomsApiService customsApiService;
 
     @ApiOperation(value = "确认:生成报关子订单号,num=生成报关单数")
     @PostMapping(value = "/createOrderNo")
@@ -118,7 +126,31 @@ public class OrderCustomsController {
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
+
+        //接单成功，推送数据到云报关
+        OrderCustoms byId = orderCustomsService.getById(form.getOrderId());
+        pushOrder(byId);
+
         return CommonResult.success();
+    }
+
+    @Value("${yunbaoguan.urls.pathName}")
+    String pathName;
+
+    private void pushOrder(OrderCustoms orderCustoms){
+        PushOrderForm pushOrderForm = new PushOrderForm();
+        CustomsHeadForm customsHeadForm = new CustomsHeadForm();
+        customsHeadForm.setAgentCode("9144030035789940X2");
+        customsHeadForm.setAgentName("深圳市佳裕达报关有限公司");
+        customsHeadForm.setAgentNo("4453680066");
+        customsHeadForm.setBusNo(orderCustoms.getOrderNo());
+        customsHeadForm.setDeclareId(orderCustoms.getGoodsType());
+        customsHeadForm.setPortNo2(orderCustoms.getPortCode());
+//        customsHeadForm.setTradeNo(orderCustoms.getSupervisionMode());
+        pushOrderForm.setHead(customsHeadForm);
+        pushOrderForm.setCallback(pathName);
+        PushOrderVO pushOrderVO = customsApiService.pushOrder(pushOrderForm);
+        System.out.println("pushOrderVO==========================================="+pushOrderVO);
     }
 
     @ApiOperation(value = "报关打单/重新打单:录入委托号")
@@ -414,7 +446,6 @@ public class OrderCustomsController {
         }
         return CommonResult.success();
     }
-
 
 }
 

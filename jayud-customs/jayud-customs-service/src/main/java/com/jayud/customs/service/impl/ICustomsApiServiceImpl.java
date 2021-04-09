@@ -13,6 +13,7 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.HttpRequester;
+import com.jayud.common.utils.RsaEncryptUtil;
 import com.jayud.customs.feign.FinanceClient;
 import com.jayud.customs.feign.MsgClient;
 import com.jayud.customs.model.bo.*;
@@ -74,6 +75,30 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
         doLogin(form);
     }
 
+    //登录
+    private String doLogin(LoginForm form) {
+        //入参键值对
+        Map<String, String> requestMap = new HashMap<>(2);
+        requestMap.put("name", form.getName());
+        requestMap.put("password", form.getPassword());
+
+        //请求
+        String feedback = HttpRequest
+                .post(loginUrl)
+                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                .body(JSONUtil.toJsonStr(requestMap))
+                .execute().body();
+        //获取token
+        Map map = JSONUtil.toBean(feedback, Map.class);
+        String ticket = MapUtil.getStr(map, "ticket");
+        if (StringUtils.isEmpty(ticket)) {
+            Asserts.fail(ResultEnum.PARAM_ERROR, "登录失败，用户名或密码错误");
+        }
+        //token不为空，放入redis，过期时间12小时
+        redisUtils.set(getRedisKey(form), ticket, RedisUtils.EXPIRE_YUNBAOGUAN);
+        return ticket;
+    }
+
 
     @Override
     public String checkoutUserToken(LoginForm form) {
@@ -84,6 +109,7 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
         return token;
     }
 
+    //委托单上传
     @Override
     public PushOrderVO pushOrder(PushOrderForm form) {
         Gson gson = new Gson();
@@ -96,11 +122,11 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
             result = JSONUtil.toBean(feedback, PushOrderVO.class);
         } catch (Exception e) {
             e.printStackTrace();
-            Asserts.fail(ResultEnum.SAVE_ERROR, "写入数据失败");
+            Asserts.fail(ResultEnum.SAVE_ERROR, "出现异常，写入数据失败");
         }
 
         if (Objects.isNull(result)) {
-            Asserts.fail(ResultEnum.SAVE_ERROR, "写入数据失败");
+            Asserts.fail(ResultEnum.SAVE_ERROR, "返回值为null,写入数据失败");
         }
         return result;
     }
@@ -356,42 +382,27 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
 //                .body();
     }
 
-    private String doLogin(LoginForm form) {
-        //入参键值对
-        Map<String, String> requestMap = new HashMap<>(2);
-        requestMap.put("name", form.getName());
-        requestMap.put("password", form.getPassword());
-
-        //请求
-        String feedback = HttpRequest
-                .post(loginUrl)
-                .header(HttpHeaders.CONTENT_TYPE, "application/json")
-                .body(JSONUtil.toJsonStr(requestMap))
-                .execute().body();
-        //获取token
-        Map map = JSONUtil.toBean(feedback, Map.class);
-        String ticket = MapUtil.getStr(map, "ticket");
-        if (StringUtils.isEmpty(ticket)) {
-            Asserts.fail(ResultEnum.PARAM_ERROR, "登录失败，用户名或密码错误");
-        }
-        //token不为空，放入redis，过期时间12小时
-        redisUtils.set(getRedisKey(form), ticket, RedisUtils.EXPIRE_YUNBAOGUAN);
-        return ticket;
-    }
-
     private String doPost(String requestStr, String url) {
-        RestTemplate client = new RestTemplate();
-        org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+//        RestTemplate client = new RestTemplate();
+//        org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
         //  请勿轻易改变此提交方式，大部分的情况下，提交方式都是表单提交
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        String feedback = HttpRequest
+                .post(url)
+                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                .header("X-Ticket", checkoutUserToken(new LoginForm(defaultUserName, defaultPassword, null)))
+                .body(JSONUtil.toJsonStr(requestStr))
+                .execute().body();
 
-        headers.add("X-Ticket", checkoutUserToken(new LoginForm(defaultUserName, defaultPassword, null)));
-
-        HttpEntity<Map<String, String>> requestEntity = null;
-        requestEntity = new HttpEntity<Map<String, String>>(JSONUtil.toBean(requestStr, Map.class), headers);
-        //  执行HTTP请求
-        ResponseEntity<String> response = client.exchange(url, HttpMethod.POST, requestEntity, String.class);
-        return response.getBody();
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+//
+//        headers.add("X-Ticket", checkoutUserToken(new LoginForm(defaultUserName, defaultPassword, null)));
+//
+//        HttpEntity<Map<String, String>> requestEntity = null;
+//        requestEntity = new HttpEntity<Map<String, String>>(JSONUtil.toBean(requestStr, Map.class), headers);
+//        //  执行HTTP请求
+//        ResponseEntity<String> response = client.exchange(url, HttpMethod.POST, requestEntity, String.class);
+//        return response.getBody();
+        return feedback;
 
     }
 

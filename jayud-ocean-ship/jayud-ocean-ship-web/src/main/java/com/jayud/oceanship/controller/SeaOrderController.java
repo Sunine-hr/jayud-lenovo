@@ -448,6 +448,11 @@ public class SeaOrderController {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         SeaReplenishmentVO seaReplenishmentVO = this.seaReplenishmentService.getSeaRepOrderDetails(orderId);
+        SeaOrder byId = seaOrderService.getById(seaReplenishmentVO.getSeaOrderId());
+        if (byId.getCabinetType().equals(1)) {
+            List<CabinetSizeNumberVO> cabinetSizeNumberVOS = cabinetSizeNumberService.getList(byId.getId());
+            seaReplenishmentVO.setCabinetSizeNumbers(cabinetSizeNumberVOS);
+        }
         if (seaReplenishmentVO.getSeaContainerInformations() == null || seaReplenishmentVO.getSeaContainerInformations().size() < 0) {
             List<SeaContainerInformationVO> seaContainerInformations = new ArrayList<>();
             seaContainerInformations.add(new SeaContainerInformationVO());
@@ -508,6 +513,7 @@ public class SeaOrderController {
             List<SeaReplenishmentVO> seaReplenishments = seaOrderDetails.getSeaReplenishments();
             List<SeaReplenishmentVO> seaReplenishmentVOS = new ArrayList<>();
             for (SeaReplenishmentVO seaReplenishment : seaReplenishments) {
+                seaReplenishment.setCabinetSizeNumbers(seaOrderDetails.getCabinetSizeNumbers());
                 if (seaReplenishment.getSeaContainerInformations() == null || seaReplenishment.getSeaContainerInformations().size() < 0 || seaReplenishment.getCabinetTypeName().equals("LCL")) {
                     List<SeaContainerInformationVO> seaContainerInformations = new ArrayList<>();
                     seaContainerInformations.add(new SeaContainerInformationVO());

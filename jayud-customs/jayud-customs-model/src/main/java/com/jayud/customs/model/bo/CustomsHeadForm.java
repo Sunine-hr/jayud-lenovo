@@ -1,6 +1,7 @@
 package com.jayud.customs.model.bo;
 
 import com.jayud.customs.model.po.CustomsHead;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
@@ -10,4 +11,5 @@ import lombok.Data;
  */
 @Data
 public class CustomsHeadForm extends CustomsHead {
+
 }

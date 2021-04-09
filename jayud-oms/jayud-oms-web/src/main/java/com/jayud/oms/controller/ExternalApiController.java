@@ -1257,6 +1257,22 @@ public class ExternalApiController {
         this.goodsService.deleteGoodsByBusOrders(orderNo, businessType);
         return ApiResult.ok();
     }
+
+    /**
+     * 根据字典名称获取字典代码
+     * @param supervisionMode
+     * @return
+     */
+    @RequestMapping(value = "/api/getDictCodeByDictTypeName")
+    public ApiResult<String> getDictCodeByDictTypeName(@RequestParam("supervisionMode") String supervisionMode){
+        List<Dict> supervisionMode1 = dictService.getByDictTypeCode("supervisionMode");
+        for (Dict dict : supervisionMode1) {
+            if(dict.getValue().equals(supervisionMode)){
+                return ApiResult.ok(dict.getCode());
+            }
+        }
+        return ApiResult.error("数据匹配失败");
+    }
 }
 
 

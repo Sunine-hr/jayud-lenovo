@@ -100,4 +100,12 @@ public interface OmsClient {
     @RequestMapping(value = "/api/getFilterOrderStatus")
     public ApiResult<Integer> getFilterOrderStatus(@RequestParam("mainOrderNos") List<String> mainOrderNos,
                                                    @RequestParam("status") Integer status);
+
+    /**
+     * 根据字典名称获取字典代码
+     * @param supervisionMode
+     * @return
+     */
+    @RequestMapping(value = "/api/getDictCodeByDictTypeName")
+    public ApiResult<String> getDictCodeByDictTypeName(@RequestParam("supervisionMode") String supervisionMode);
 }

@@ -182,8 +182,18 @@ public class ExternalApiController {
     }
 
     @ApiOperation(value = "接收云报关改变状态回传的信息")
-    @PostMapping("/feedback/status")
+    @PostMapping("/api/feedback/status")
     public ApiResult receiveStatus(@RequestBody Map<String, String> param) {
+
+        System.out.println("云报关回调方法成功");
+        String applyNo = MapUtil.getStr(param, "ApplyNo");
+        String applyDt = MapUtil.getStr(param, "ApplyDt");
+        String stateNo = MapUtil.getStr(param, "StateNo");
+        String stateDt = MapUtil.getStr(param, "StateDt");
+        String note = MapUtil.getStr(param, "Note");
+        String stateName = MapUtil.getStr(param, "StateName");
+        System.out.println("applyNo:"+applyNo+"-----"+"applyDt:"+applyDt+"-----"+"stateNo:"+stateNo+"-----"+"stateDt:"+stateDt+"-----"+"note:"+note+"-----"+"stateName:"+stateName);
+
         String status = MapUtil.getStr(param, "status");
         String orderNo = MapUtil.getStr(param, "orderNo");
 

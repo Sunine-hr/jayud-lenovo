@@ -4,6 +4,7 @@ package com.jayud.customs.controller;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
@@ -144,9 +145,21 @@ public class OrderCustomsController {
         customsHeadForm.setAgentName("深圳市佳裕达报关有限公司");
         customsHeadForm.setAgentNo("4453680066");
         customsHeadForm.setBusNo(orderCustoms.getOrderNo());
-        customsHeadForm.setDeclareId(orderCustoms.getGoodsType());
+        if(orderCustoms.getGoodsType().equals(1)){
+            customsHeadForm.setDeclareId(2);
+        }else{
+            customsHeadForm.setDeclareId(1);
+        }
+
         customsHeadForm.setPortNo2(orderCustoms.getPortCode());
-//        customsHeadForm.setTradeNo(orderCustoms.getSupervisionMode());
+        customsHeadForm.setPortNo(orderCustoms.getPortCode());
+        if(orderCustoms.getSupervisionMode()!=null){
+            //根据名称获取字典代码
+            ApiResult result = omsClient.getDictCodeByDictTypeName(orderCustoms.getSupervisionMode());
+            if(result.isOk()){
+                customsHeadForm.setTradeNo((String)result.getData());
+            }
+        }
         pushOrderForm.setHead(customsHeadForm);
         pushOrderForm.setCallback(pathName);
         PushOrderVO pushOrderVO = customsApiService.pushOrder(pushOrderForm);

@@ -59,6 +59,9 @@ public class OrderCostTemplateInfo extends Model<OrderCostTemplateInfo> {
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "币种")
+    private String currency;
+
 
     @Override
     protected Serializable pkVal() {

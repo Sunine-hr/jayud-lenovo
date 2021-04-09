@@ -10,9 +10,12 @@ import com.jayud.oms.model.bo.OrderCostTemplateInfoDTO;
 import com.jayud.oms.model.bo.QueryCostTemplateForm;
 import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.CostInfo;
+import com.jayud.oms.model.po.CurrencyInfo;
 import com.jayud.oms.model.po.OrderCostTemplate;
 import com.jayud.oms.mapper.OrderCostTemplateMapper;
 import com.jayud.oms.model.po.OrderCostTemplateInfo;
+import com.jayud.oms.model.vo.InitComboxStrVO;
+import com.jayud.oms.model.vo.InitComboxVO;
 import com.jayud.oms.service.IOrderCostTemplateInfoService;
 import com.jayud.oms.service.IOrderCostTemplateService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -69,6 +72,7 @@ public class OrderCostTemplateServiceImpl extends ServiceImpl<OrderCostTemplateM
             if (templateInfo.getId() == null) {
                 templateInfo.setCreateTime(LocalDateTime.now());
             }
+            templateInfo.setOrderCostTemplateId(costTemplate.getId());
             costTemplateInfos.add(templateInfo);
         }
 
@@ -111,7 +115,7 @@ public class OrderCostTemplateServiceImpl extends ServiceImpl<OrderCostTemplateM
     @Override
     public boolean checkUnique(OrderCostTemplate orderCostTemplate) {
         QueryWrapper<OrderCostTemplate> condition = new QueryWrapper<>();
-        condition.lambda().eq(OrderCostTemplate::getName, orderCostTemplate.getCreateUser());
+        condition.lambda().eq(OrderCostTemplate::getName, orderCostTemplate.getName());
 
         List<OrderCostTemplate> orderCostTemplates = this.baseMapper.selectList(condition);
         if (CollectionUtils.isEmpty(orderCostTemplates)) {
@@ -128,5 +132,22 @@ public class OrderCostTemplateServiceImpl extends ServiceImpl<OrderCostTemplateM
     @Override
     public OrderCostTemplateDTO getCostTemplateInfo(Long id) {
         return this.baseMapper.getCostTemplateInfo(id);
+    }
+
+    @Override
+    public List<InitComboxStrVO> initCostTemplate() {
+        QueryWrapper<OrderCostTemplate> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(OrderCostTemplate::getStatus, StatusEnum.ENABLE.getCode())
+                .eq(OrderCostTemplate::getCreateUser, UserOperator.getToken());
+        List<OrderCostTemplate> tmps = this.list(queryWrapper);
+        List<InitComboxStrVO> initComboxVOS = new ArrayList<>();
+        for (OrderCostTemplate tmp : tmps) {
+            InitComboxStrVO initComboxVO = new InitComboxStrVO();
+            initComboxVO.setName(tmp.getName());
+            initComboxVO.setNote(String.valueOf(tmp.getType())); //设置费用类型
+            initComboxVO.setId(tmp.getId());
+            initComboxVOS.add(initComboxVO);
+        }
+        return initComboxVOS;
     }
 }

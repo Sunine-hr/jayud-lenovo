@@ -3,6 +3,7 @@ package com.jayud.oms.model.bo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.enums.UnitEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.NumberUtils;
@@ -57,9 +58,20 @@ public class OrderCostTemplateInfoDTO extends Model<OrderCostTemplateInfoDTO> {
     @ApiModelProperty(value = "币种代码")
     private String currencyCode;
 
+    @ApiModelProperty(value = "币种")
+    private String currency;
+
+    @ApiModelProperty(value = "币种")
+    private String currencyName;
+
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+
+    public String getCurrencyName() {
+        return this.currency;
+    }
 
     public void checkAdd() {
         if (StringUtils.isEmpty(this.costCode)) {

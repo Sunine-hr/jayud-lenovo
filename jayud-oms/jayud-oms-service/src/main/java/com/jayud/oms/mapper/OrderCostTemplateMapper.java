@@ -7,6 +7,7 @@ import com.jayud.oms.model.bo.QueryCostTemplateForm;
 import com.jayud.oms.model.po.OrderCostTemplate;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -19,7 +20,7 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface OrderCostTemplateMapper extends BaseMapper<OrderCostTemplate> {
 
-    IPage<OrderCostTemplateDTO> findByPage(Page<OrderCostTemplateDTO> page, QueryCostTemplateForm form);
+    IPage<OrderCostTemplateDTO> findByPage(Page<OrderCostTemplateDTO> page, @Param("form") QueryCostTemplateForm form);
 
     OrderCostTemplateDTO getCostTemplateInfo(Long id);
 }

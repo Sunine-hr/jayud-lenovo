@@ -1,22 +1,19 @@
 package com.jayud.airfreight.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.airfreight.mapper.AirBookingMapper;
 import com.jayud.airfreight.model.enums.AirBookingStatusEnum;
 import com.jayud.airfreight.model.po.AirBooking;
-import com.jayud.airfreight.mapper.AirBookingMapper;
 import com.jayud.airfreight.service.IAirBookingService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.airfreight.service.IAirOrderService;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.JDKUtils;
-import org.apache.poi.ss.formula.functions.T;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>

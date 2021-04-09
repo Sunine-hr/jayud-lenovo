@@ -13,9 +13,14 @@ import com.jayud.oms.model.bo.QueryCostTemplateForm;
 import com.jayud.oms.model.po.CostInfo;
 import com.jayud.oms.model.po.OrderCostTemplate;
 import com.jayud.oms.model.po.PortInfo;
+import com.jayud.oms.model.vo.CurrencyInfoVO;
 import com.jayud.oms.model.vo.InitComboxStrVO;
+import com.jayud.oms.model.vo.InitComboxVO;
+import com.jayud.oms.service.ICurrencyInfoService;
+import com.jayud.oms.service.IOrderCostTemplateInfoService;
 import com.jayud.oms.service.IOrderCostTemplateService;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -43,6 +49,10 @@ public class OrderCostTemplateController {
 
     @Autowired
     private IOrderCostTemplateService orderCostTemplateService;
+    @Autowired
+    private ICurrencyInfoService currencyInfoService;
+    @Autowired
+    private IOrderCostTemplateInfoService orderCostTemplateInfoService;
 
 
     @ApiOperation(value = "创建/编辑模板信息")
@@ -56,6 +66,14 @@ public class OrderCostTemplateController {
         if (this.orderCostTemplateService.checkUnique(tmp)) {
             return CommonResult.error(400, "模板名称已经存在");
         }
+        //查询币种
+        List<InitComboxStrVO> initComboxStrVOS = this.currencyInfoService.initCurrencyInfo();
+        Map<String, String> currencyMap = initComboxStrVOS.stream().collect(Collectors.toMap(InitComboxStrVO::getCode, InitComboxStrVO::getName));
+
+        if (CollectionUtils.isNotEmpty(orderCostTemplateDTO.getCostTemplateInfo())) {
+            orderCostTemplateDTO.getCostTemplateInfo().stream().map(e -> e.setCurrency(currencyMap.get(e.getCostCode())));
+        }
+
         //创建/修改模板数据
         this.orderCostTemplateService.saveOrUpdateInfo(orderCostTemplateDTO);
         return CommonResult.success();
@@ -99,12 +117,48 @@ public class OrderCostTemplateController {
     @ApiOperation(value = "下拉模板数据")
     @PostMapping(value = "/initCostTemplate")
     public CommonResult initCostTemplate(@RequestBody Map<String, String> map) {
-        Long name = MapUtil.getLong(map, "name");
-        if (name == null) {
-            return CommonResult.error(500, "id is required");
+//        Long name = MapUtil.getLong(map, "name");
+//        String type = MapUtil.getStr(map, "type");
+//        if (StringUtils.isEmpty(type)) {
+//            return CommonResult.error(ResultEnum.PARAM_ERROR);
+//        }
+        List<InitComboxStrVO> receivables = new ArrayList<>();
+        List<InitComboxStrVO> pays = new ArrayList<>();
+        for (InitComboxStrVO initComboxVO : this.orderCostTemplateService.initCostTemplate()) {
+            if ("0".equals(initComboxVO.getNote())) {
+                receivables.add(initComboxVO);
+            } else {
+                pays.add(initComboxVO);
+            }
         }
-        return CommonResult.success(this.orderCostTemplateService.getCostTemplateInfo(name));
+        Map<String, Object> obj = new HashMap<>();
+        obj.put("receivables", receivables);
+        obj.put("payment", pays);
+        return CommonResult.success(obj);
     }
 
+
+    @ApiOperation(value = "返回导入模板数据")
+    @PostMapping(value = "/returnImportTemplateData")
+    public CommonResult returnImportTemplateData(@RequestBody Map<String, String> map) {
+        Long id = MapUtil.getLong(map, "id");
+        String createdTimeStr = MapUtil.getStr(map, "createdTimeStr");
+        if (id == null || StringUtils.isEmpty(createdTimeStr)) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        OrderCostTemplateDTO costTemplateInfo = this.orderCostTemplateService.getCostTemplateInfo(id);
+
+        List<OrderCostTemplateInfoDTO> costTemplateInfos = costTemplateInfo.getCostTemplateInfo();
+        List<CurrencyInfoVO> currencyInfos = currencyInfoService.findCurrencyInfo(createdTimeStr);
+        Map<String, CurrencyInfoVO> tmp = currencyInfos.stream().collect(Collectors.toMap(CurrencyInfoVO::getCurrencyCode, e -> e));
+        List<OrderCostTemplateInfoDTO> list = costTemplateInfos.stream()
+                .map(e -> {
+                    CurrencyInfoVO currencyInfoVO = tmp.get(e.getCurrencyCode());
+                    e.setCurrencyCode(currencyInfoVO==null?null:currencyInfoVO.getCurrencyCode());
+                    return e.setCurrency(currencyInfoVO==null?null:currencyInfoVO.getCurrencyName());
+                }).collect(Collectors.toList());
+
+        return CommonResult.success(list);
+    }
 }
 

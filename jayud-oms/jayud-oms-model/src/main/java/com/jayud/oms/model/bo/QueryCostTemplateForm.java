@@ -34,6 +34,9 @@ public class QueryCostTemplateForm extends BasePageForm {
     @ApiModelProperty(value = "状态(0禁用 1启用)")
     private Integer status;
 
+    @ApiModelProperty(value = "类型(0应付 1应收)")
+    private Integer type;
+
     @ApiModelProperty(value = "创建人")
     private String createUser;
 

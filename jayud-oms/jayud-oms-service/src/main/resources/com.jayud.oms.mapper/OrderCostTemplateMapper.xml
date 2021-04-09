@@ -28,12 +28,13 @@
             <result column="number" property="number" />
             <result column="currency_code" property="currencyCode" />
             <result column="create_time" property="createTime" />
+            <result column="currency" property="currency" />
         </collection>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, name, status, create_time, create_user
+        id, name, status, create_time, create_user,currency
     </sql>
     <select id="findByPage" resultType="com.jayud.oms.model.bo.OrderCostTemplateDTO">
         select
@@ -44,8 +45,11 @@
             <if test="form.name !=null and form.name !=''">
                 and name like concat('%',#{form.name},'%')
             </if>
-            <if test="form.status !=null and form.status !=''">
+            <if test="form.status !=null">
                 and status = #{form.status}
+            </if>
+            <if test="form.type !=null">
+                and type = #{form.type}
             </if>
             <if test="form.createUser !=null and form.createUser !=''">
                 and create_user = #{form.createUser}
@@ -57,7 +61,7 @@
         select
         oct.id, oct.name, oct.status, oct.create_time, oct.create_user,
         octi.cost_code, octi.cost_type_id, octi.cost_genre_id, octi.unit, octi.unit_price,
-        octi.number,octi.currency_code,octi.create_time
+        octi.number,octi.currency_code,octi.create_time,octi.currency
         from
         order_cost_template oct
         left join order_cost_template_info octi on oct.id=octi.order_cost_template_id

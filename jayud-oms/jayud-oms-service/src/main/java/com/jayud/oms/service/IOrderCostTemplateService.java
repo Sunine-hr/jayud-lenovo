@@ -1,10 +1,13 @@
 package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.bo.OrderCostTemplateDTO;
 import com.jayud.oms.model.bo.QueryCostTemplateForm;
 import com.jayud.oms.model.po.OrderCostTemplate;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.oms.model.vo.InitComboxStrVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -39,4 +42,6 @@ public interface IOrderCostTemplateService extends IService<OrderCostTemplate> {
      * @return
      */
     OrderCostTemplateDTO getCostTemplateInfo(Long id);
+
+    List<InitComboxStrVO> initCostTemplate();
 }

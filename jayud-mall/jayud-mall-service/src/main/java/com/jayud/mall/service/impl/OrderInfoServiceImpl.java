@@ -167,6 +167,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     IWaybillTaskService waybillTaskService;
 
     @Autowired
+    IShipmentService shipmentService;
+
+    @Autowired
     BaseService baseService;
 
 
@@ -1467,14 +1470,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             ShipmentVO shipmentVO = MapUtil.get(data, "shipment", ShipmentVO.class);
             String shipmentJson = JSONUtil.toJsonStr(shipmentVO);
             log.info("shipmentJson:{}", shipmentJson);
+            log.info("状态status:{}, 消息info:{}, 时间time:{}", status, info, time);
+            log.info("数据data:{} ", data);
 
             //请求不成功，未获取到数据
             if(status == 0){
                 return CommonResult.error(-1, info);
             }
 
-            log.info("状态status:{}, 消息info:{}, 时间time:{}", status, info, time);
-            log.info("数据data:{} ", data);
+            ShipmentVO saveShipment = shipmentService.saveShipment(shipmentVO);
+
         }catch (cn.hutool.json.JSONException exception){
             log.info("feedback: " + feedback);
             return CommonResult.error(-1, "请求不成功，未获取到数据");

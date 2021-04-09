@@ -1,9 +1,13 @@
 package com.jayud.mall.model.vo;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @ApiModel(value = "ShipmentVO", description = "南京新智慧-运单装货信息")
@@ -11,6 +15,7 @@ import java.util.List;
 public class ShipmentVO {
 
     @ApiModelProperty(value = "运单号")
+    @JsonProperty(value = "shipment_id")
     private String shipment_id;
     @ApiModelProperty(value = "client_reference")
     private String client_reference;
@@ -35,10 +40,23 @@ public class ShipmentVO {
     private String status;
     private long picking_time;
     private long rates_time;
-    @ApiModelProperty(value = "下单时间")
     private long creat_time;
     @ApiModelProperty(value = "创建人")
     private long created;
+
+    //展示
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 8, format="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime pickingTime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 8, format="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime ratesTime;
+    @ApiModelProperty(value = "下单时间", position = 8)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 8, format="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime creatTime;
+    @ApiModelProperty(value = "shipmentJson")
+    private String shipmentJson;
 }
 
 @Data

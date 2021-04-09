@@ -1,6 +1,7 @@
 package com.jayud.mall.model.vo;
 
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.List;
@@ -9,22 +10,34 @@ import java.util.List;
 @Data
 public class ShipmentVO {
 
+    @ApiModelProperty(value = "运单号")
     private String shipment_id;
+    @ApiModelProperty(value = "client_reference")
     private String client_reference;
+    @ApiModelProperty(value = "服务")
     private String service;
+    @ApiModelProperty(value = "件数")
     private int parcel_count;
     private List<String> attrs;
+    @ApiModelProperty(value = "收货地址")
     private To_address to_address;
+    @ApiModelProperty(value = "发货地址")
     private From_address from_address;
+    @ApiModelProperty(value = "收费重")
     private String chargeable_weight;
+    @ApiModelProperty(value = "费用")
     private String charge_amount;
     private List<Charge_list> charge_list;
     private List<Parcels> parcels;
+    @ApiModelProperty(value = "备注")
     private String remark;
+    @ApiModelProperty(value = "状态")
     private String status;
     private long picking_time;
     private long rates_time;
+    @ApiModelProperty(value = "下单时间")
     private long creat_time;
+    @ApiModelProperty(value = "创建人")
     private long created;
 }
 

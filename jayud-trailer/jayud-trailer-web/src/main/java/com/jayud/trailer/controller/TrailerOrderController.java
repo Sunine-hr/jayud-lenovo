@@ -255,6 +255,9 @@ public class TrailerOrderController {
                 }
                 record.assemblyGoodsInfo(goodsVOS);
                 record.setOrderAddressForms(trailerOrderAddressVOS);
+                if(CollectionUtils.isNotEmpty(record.getOrderAddressForms())){
+                    record.assemblyDateStr();
+                }
             }
 
             //获取港口信息

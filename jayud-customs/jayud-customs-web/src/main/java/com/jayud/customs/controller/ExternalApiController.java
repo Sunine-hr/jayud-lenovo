@@ -203,6 +203,7 @@ public class ExternalApiController {
 
         //根据回传的云报关状态获取对应的oms系统订单状态
         String code1 = BGOrderStatusEnum.getCode1(status);
+
         if(code1.equals("C_2")){ //报关打单
             orderCustoms.setStatus(code1);
             //更新状态
@@ -211,6 +212,7 @@ public class ExternalApiController {
                 log.warn("更新报关打单状态失败");
                 return ApiResult.error("更新报关打单状态失败");
             }
+            return ApiResult.ok();
         }
         if(code1.equals("C_3")){ //报关复核
             orderCustoms.setStatus(code1);
@@ -220,6 +222,7 @@ public class ExternalApiController {
                 log.warn("更新报关复核状态失败");
                 return ApiResult.error("更新报关复核状态失败");
             }
+            return ApiResult.ok();
         }
         if(code1.equals("C_9")){ //报关二复
             orderCustoms.setStatus(code1);
@@ -229,6 +232,7 @@ public class ExternalApiController {
                 log.warn("更新报关二复状态失败");
                 return ApiResult.error("更新报关二复状态失败");
             }
+            return ApiResult.ok();
         }
         if(code1.equals("C_11")){ //申报舱单
             orderCustoms.setStatus(code1);
@@ -238,6 +242,7 @@ public class ExternalApiController {
                 log.warn("更新申报舱单状态失败");
                 return ApiResult.error("更新申报舱单状态失败");
             }
+            return ApiResult.ok();
         }
         if(code1.equals("C_4")){ //报关申报
             orderCustoms.setStatus(code1);
@@ -247,6 +252,7 @@ public class ExternalApiController {
                 log.warn("更新报关申报状态失败");
                 return ApiResult.error("更新报关申报状态失败");
             }
+            return ApiResult.ok();
         }
         if(code1.equals("C_10")){ //报关放行
             orderCustoms.setStatus(code1);
@@ -256,8 +262,9 @@ public class ExternalApiController {
                 log.warn("更新报关放行状态失败");
                 return ApiResult.error("更新报关放行状态失败");
             }
+            return ApiResult.ok();
         }
-        return ApiResult.error();
+        return ApiResult.error("状态不匹配");
 
     }
 }

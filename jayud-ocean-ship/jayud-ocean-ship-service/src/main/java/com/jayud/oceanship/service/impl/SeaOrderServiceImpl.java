@@ -482,7 +482,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
             //批量保存用户地址
             ApiResult result = this.omsClient.saveOrUpdateOrderAddressBatch(orderAddressForms);
             if (result.getCode() != HttpStatus.SC_OK) {
-                log.warn("批量保存/修改订单地址信息失败,订单地址信息={}", new JSONArray(orderAddressForms));
+                log.warn("合并补料：批量保存/修改订单地址信息失败,订单地址信息={}", new JSONArray(orderAddressForms));
             }
 
             List<AddGoodsForm> goodsForms = seaReplenishments.get(0).getGoodsForms();
@@ -497,7 +497,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
             //批量保存货物信息
             result = this.omsClient.saveOrUpdateGoodsBatch(goodsForms);
             if (result.getCode() != HttpStatus.SC_OK) {
-                log.warn("批量保存/修改商品信息失败,商品信息={}", new JSONArray(goodsForms));
+                log.warn("合并补料：批量保存/修改商品信息失败,商品信息={}", new JSONArray(goodsForms));
             }
         }
         if (form.getType().equals(2)) {//分单，一个订单多个补料，订单号只有一个，补料信息有多个
@@ -574,7 +574,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
                 //批量保存用户地址
                 ApiResult result = this.omsClient.saveOrUpdateOrderAddressBatch(orderAddressForms);
                 if (result.getCode() != HttpStatus.SC_OK) {
-                    log.warn("批量保存/修改订单地址信息失败,订单地址信息={}", new JSONArray(orderAddressForms));
+                    log.warn("分单补料：批量保存/修改订单地址信息失败,订单地址信息={}", new JSONArray(orderAddressForms));
                 }
 
                 List<AddGoodsForm> goodsForms = seaReplenishments.get(i).getGoodsForms();
@@ -589,7 +589,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
                 //批量保存货物信息
                 result = this.omsClient.saveOrUpdateGoodsBatch(goodsForms);
                 if (result.getCode() != HttpStatus.SC_OK) {
-                    log.warn("批量保存/修改商品信息失败,商品信息={}", new JSONArray(goodsForms));
+                    log.warn("分单补料：批量保存/修改商品信息失败,商品信息={}", new JSONArray(goodsForms));
                 }
                 count++;
             }

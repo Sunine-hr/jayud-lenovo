@@ -268,11 +268,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
         auditInfoForm.setFileViews(form.getFileViewList());
         omsClient.saveAuditInfo(auditInfoForm);
 
-        boolean result = this.saveOrUpdate(orderCustoms);
-        if (!result) {
-            return false;
-        }
-
-        return true;
+        boolean b = this.saveOrUpdate(orderCustoms);
+        return b;
     }
 }

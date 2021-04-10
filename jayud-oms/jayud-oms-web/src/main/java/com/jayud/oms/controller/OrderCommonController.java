@@ -159,6 +159,10 @@ public class OrderCommonController {
         if (OrderStatusEnum.HY.getCode().equals(classCode)) {
             isSea = true;
         }
+        Boolean isTrailer = false;
+        if (OrderStatusEnum.TC.getCode().equals(classCode)) {
+            isTrailer = true;
+        }
 
 //
         result.put("mainOrderNo", mainOrderNo);
@@ -169,6 +173,10 @@ public class OrderCommonController {
         result.put("isMainOrder", isMainOrder);
         result.put("isSea", isSea);
         result.put("cabinet", MapUtil.getStr(map, "cabinetTypeName") + "/" + MapUtil.getStr(map, "cabinetSizeName"));
+        result.put("isTrailer", isTrailer);
+        result.put("cabinetSizeName",MapUtil.getStr(map,"cabinetSizeName"));
+        result.put("plateNumber",MapUtil.getStr(map,"plateNumber"));
+        result.put("dateStr",MapUtil.getStr(map,"dateStr"));
         return CommonResult.success(result);
     }
 

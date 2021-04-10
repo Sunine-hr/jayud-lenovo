@@ -460,7 +460,9 @@ public class SeaOrderController {
         }
         if (seaReplenishmentVO.getNotificationAddress() == null || seaReplenishmentVO.getNotificationAddress().size() < 0) {
             List<OrderAddressVO> notificationAddress = new ArrayList<>();
-            notificationAddress.add(new OrderAddressVO());
+            OrderAddressVO orderAddressVO = new OrderAddressVO();
+            orderAddressVO.setType(2);
+            notificationAddress.add(orderAddressVO);
             seaReplenishmentVO.setNotificationAddress(notificationAddress);
         }
         List<SeaReplenishmentVO> seaReplenishmentVOS = new ArrayList<>();
@@ -504,7 +506,9 @@ public class SeaOrderController {
             }
             if (convert.getNotificationAddress() == null || convert.getNotificationAddress().size() < 0) {
                 List<OrderAddressVO> notificationAddress = new ArrayList<>();
-                notificationAddress.add(new OrderAddressVO());
+                OrderAddressVO orderAddressVO = new OrderAddressVO();
+                orderAddressVO.setType(2);
+                notificationAddress.add(orderAddressVO);
                 convert.setNotificationAddress(notificationAddress);
             }
             seaReplenishmentVOS.add(convert);
@@ -521,7 +525,9 @@ public class SeaOrderController {
                 }
                 if (seaReplenishment.getNotificationAddress() == null || seaReplenishment.getNotificationAddress().size() < 0) {
                     List<OrderAddressVO> notificationAddress = new ArrayList<>();
-                    notificationAddress.add(new OrderAddressVO());
+                    OrderAddressVO orderAddressVO = new OrderAddressVO();
+                    orderAddressVO.setType(2);
+                    notificationAddress.add(orderAddressVO);
                     seaReplenishment.setNotificationAddress(notificationAddress);
                 }
                 seaReplenishmentVOS.add(seaReplenishment);

@@ -205,6 +205,9 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     //@ApiModelProperty(value = "拖车订单地址信息")
     private List<TrailerOrderAddressVO> orderAddressForms;
 
+    //@ApiModelProperty(value = "提货时间拼接字符串")
+    private String dateStr;
+
 //    @ApiModelProperty(value = "货品信息")
 //    private List<GoodsVO> goodsForms;
 
@@ -353,6 +356,14 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
         }
     }
 
+    //拼装提货时间字段
+    public void assemblyDateStr() {
+        StringBuffer stringBuffer = new StringBuffer();
+        for (TrailerOrderAddressVO orderAddressForm : this.orderAddressForms) {
+            stringBuffer.append(orderAddressForm.getDeliveryDate()).append(";");
+        }
+        this.dateStr = stringBuffer.toString().substring(0,stringBuffer.length()-1);
+    }
 
     /**
      * 组装法人主体

@@ -1,5 +1,8 @@
 package com.jayud.mall.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.mall.model.bo.QueryShipmentForm;
 import com.jayud.mall.model.po.Shipment;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.vo.ShipmentVO;
@@ -25,4 +28,12 @@ public interface ShipmentMapper extends BaseMapper<Shipment> {
      * @return
      */
     ShipmentVO findShipment(@Param("shipment_id") String shipment_id);
+
+    /**
+     * 分页查询南京新智慧订单装货信息
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<ShipmentVO> findShipmentByPage(Page<ShipmentVO> page, @Param("form") QueryShipmentForm form);
 }

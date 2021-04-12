@@ -59,5 +59,30 @@
         from shipment t
         where t.shipment_id = #{shipment_id}
     </select>
+
+
+    <select id="findShipmentByPage" parameterType="com.jayud.mall.model.bo.QueryShipmentForm"
+            resultMap="ShipmentResultMap">
+        select t.shipment_id,
+               t.client_reference,
+               t.service,
+               t.parcel_count,
+               t.chargeable_weight,
+               t.charge_amount,
+               t.remark,
+               t.status,
+               t.picking_time,
+               t.rates_time,
+               t.creat_time,
+               t.created,
+               t.shipmentJson
+        from shipment t
+        where 1=1
+        <if test="form.shipment_id != null and form.shipment_id != ''">
+            and t.shipment_id like concat('%',#{form.shipment_id},'%')
+        </if>
+
+    </select>
+
     
 </mapper>

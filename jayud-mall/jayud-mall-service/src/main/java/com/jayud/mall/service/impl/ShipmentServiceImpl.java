@@ -1,10 +1,16 @@
 package com.jayud.mall.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.ShipmentMapper;
+import com.jayud.mall.model.bo.QueryShipmentForm;
 import com.jayud.mall.model.po.Shipment;
 import com.jayud.mall.model.vo.ShipmentVO;
 import com.jayud.mall.service.IShipmentService;
@@ -15,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 
 /**
  * <p>
@@ -61,5 +68,37 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
         s.setShipmentJson(JSONUtil.toJsonStr(shipmentVO));
         this.saveOrUpdate(s);
         return shipmentVO;
+    }
+
+    @Override
+    public IPage<ShipmentVO> findShipmentByPage(QueryShipmentForm form) {
+        //定义分页参数
+        Page<ShipmentVO> page = new Page(form.getPageNum(),form.getPageSize());
+        //定义排序规则
+        page.addOrder(OrderItem.desc("t.shipment_id"));
+        IPage<ShipmentVO> pageInfo = shipmentMapper.findShipmentByPage(page, form);
+        List<ShipmentVO> records = pageInfo.getRecords();
+        if(CollUtil.isNotEmpty(records)){
+            records.forEach(shipmentVO -> {
+                String shipmentJson = shipmentVO.getShipmentJson();
+                if(StrUtil.isNotEmpty(shipmentJson)){
+                    ShipmentVO shipment = null;
+                    try {
+                        shipment = JSONUtil.toBean(shipmentJson, ShipmentVO.class);
+                        shipmentVO.setAttrs(shipment.getAttrs());
+                        shipmentVO.setTo_address(shipment.getTo_address());
+                        shipmentVO.setFrom_address(shipment.getFrom_address());
+                        shipmentVO.setCharge_list(shipment.getCharge_list());
+                        shipmentVO.setParcels(shipment.getParcels());
+                        shipmentVO.setPicking_time(shipment.getPicking_time());
+                        shipmentVO.setRates_time(shipment.getRates_time());
+                        shipmentVO.setCreat_time(shipment.getCreat_time());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+        return pageInfo;
     }
 }

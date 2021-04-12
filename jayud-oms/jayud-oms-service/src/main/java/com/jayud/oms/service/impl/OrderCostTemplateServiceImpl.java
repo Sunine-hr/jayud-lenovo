@@ -52,14 +52,15 @@ public class OrderCostTemplateServiceImpl extends ServiceImpl<OrderCostTemplateM
     public void saveOrUpdateInfo(OrderCostTemplateDTO orderCostTemplateDTO) {
         OrderCostTemplate costTemplate = ConvertUtil.convert(orderCostTemplateDTO, OrderCostTemplate.class);
 
+        //清除之前数据
+        if (costTemplate.getId() != null) {
+            orderCostTemplateInfoMapper.deleteByTemplateId(costTemplate.getId());
+        }
+
         if (costTemplate.getId() == null) {
             costTemplate.setCreateTime(LocalDateTime.now())
                     .setCreateUser(UserOperator.getToken())
                     .setStatus(Integer.valueOf(StatusEnum.ENABLE.getCode()));
-        }
-        //清除之前数据
-        if (costTemplate.getId() != null) {
-            orderCostTemplateInfoMapper.deleteByTemplateId(costTemplate.getId());
         }
 
         this.saveOrUpdate(costTemplate);

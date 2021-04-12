@@ -19,7 +19,7 @@
         <result column="create_time" property="createTime"/>
         <result column="create_user" property="createUser"/>
         <collection property="costTemplateInfo" ofType="com.jayud.oms.model.bo.OrderCostTemplateInfoDTO">
-            <id column="id" property="id"/>
+            <id column="costTemplateInfoId" property="id"/>
             <result column="cost_code" property="costCode" />
             <result column="cost_type_id" property="costTypeId" />
             <result column="cost_genre_id" property="costGenreId" />
@@ -60,6 +60,7 @@
     <select id="getCostTemplateInfo" resultMap="OrderCostTemplateDTO">
         select
         oct.id, oct.name, oct.status, oct.create_time, oct.create_user,
+        octi.id costTemplateInfoId,
         octi.cost_code, octi.cost_type_id, octi.cost_genre_id, octi.unit, octi.unit_price,
         octi.number,octi.currency_code,octi.create_time,octi.currency
         from

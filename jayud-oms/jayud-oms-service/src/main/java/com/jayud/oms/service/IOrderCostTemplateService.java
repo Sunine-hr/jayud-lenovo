@@ -21,6 +21,7 @@ public interface IOrderCostTemplateService extends IService<OrderCostTemplate> {
 
     /**
      * 添加/编辑
+     *
      * @param orderCostTemplateDTO
      */
     public void saveOrUpdateInfo(OrderCostTemplateDTO orderCostTemplateDTO);
@@ -31,6 +32,7 @@ public interface IOrderCostTemplateService extends IService<OrderCostTemplate> {
 
     /**
      * 校验唯一
+     *
      * @param tmp
      * @return
      */
@@ -38,6 +40,7 @@ public interface IOrderCostTemplateService extends IService<OrderCostTemplate> {
 
     /**
      * 获取费用模板详情
+     *
      * @param id
      * @return
      */

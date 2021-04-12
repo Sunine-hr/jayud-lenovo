@@ -10,12 +10,9 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.oms.model.bo.OrderCostTemplateDTO;
 import com.jayud.oms.model.bo.OrderCostTemplateInfoDTO;
 import com.jayud.oms.model.bo.QueryCostTemplateForm;
-import com.jayud.oms.model.po.CostInfo;
 import com.jayud.oms.model.po.OrderCostTemplate;
-import com.jayud.oms.model.po.PortInfo;
 import com.jayud.oms.model.vo.CurrencyInfoVO;
 import com.jayud.oms.model.vo.InitComboxStrVO;
-import com.jayud.oms.model.vo.InitComboxVO;
 import com.jayud.oms.service.ICurrencyInfoService;
 import com.jayud.oms.service.IOrderCostTemplateInfoService;
 import com.jayud.oms.service.IOrderCostTemplateService;
@@ -26,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -140,13 +136,13 @@ public class OrderCostTemplateController {
 
     @ApiOperation(value = "返回导入模板数据")
     @PostMapping(value = "/returnImportTemplateData")
-    public CommonResult returnImportTemplateData(@RequestBody Map<String, String> map) {
+    public CommonResult<List<OrderCostTemplateInfoDTO>> returnImportTemplateData(@RequestBody Map<String, String> map) {
         Long id = MapUtil.getLong(map, "id");
         String createdTimeStr = MapUtil.getStr(map, "createdTimeStr");
         if (id == null || StringUtils.isEmpty(createdTimeStr)) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        OrderCostTemplateDTO costTemplateInfo = this.orderCostTemplateService.getCostTemplateInfo(id);
+       OrderCostTemplateDTO costTemplateInfo = this.orderCostTemplateService.getCostTemplateInfo(id);
 
         List<OrderCostTemplateInfoDTO> costTemplateInfos = costTemplateInfo.getCostTemplateInfo();
         List<CurrencyInfoVO> currencyInfos = currencyInfoService.findCurrencyInfo(createdTimeStr);

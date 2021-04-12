@@ -33,11 +33,20 @@ public interface ISeaReplenishmentService extends IService<SeaReplenishment> {
      */
     SeaReplenishmentVO getSeaRepOrderDetails(Long orderId);
 
-
+    /**
+     * 根据订单号删除补料单
+     * @param orderNo
+     */
     void deleteSeaReplenishment(String orderNo);
 
     List<SeaReplenishment> getList(String orderNo);
 
+    /**
+     * 获取菜单操作数
+     * @param status
+     * @param legalIds
+     * @return
+     */
     Integer getNumByStatus(String status, List<Long> legalIds);
 
 }

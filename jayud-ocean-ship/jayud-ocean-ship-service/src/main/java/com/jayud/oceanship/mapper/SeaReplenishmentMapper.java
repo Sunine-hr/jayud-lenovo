@@ -28,5 +28,5 @@ public interface SeaReplenishmentMapper extends BaseMapper<SeaReplenishment> {
 
     SeaReplenishmentVO getSeaRepOrderDetails(@Param("orderId")Long orderId);
 
-    Integer getNumByStatus(String status, List<Long> legalIds);
+    Integer getNumByStatus(@Param("status")String status,@Param("legalIds") List<Long> legalIds);
 }

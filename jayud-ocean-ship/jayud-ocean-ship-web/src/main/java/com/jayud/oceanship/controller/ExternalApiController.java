@@ -8,6 +8,7 @@ import com.jayud.oceanship.feign.OauthClient;
 import com.jayud.oceanship.po.SeaOrder;
 import com.jayud.oceanship.service.ICabinetSizeNumberService;
 import com.jayud.oceanship.service.ISeaOrderService;
+import com.jayud.oceanship.service.ISeaReplenishmentService;
 import com.jayud.oceanship.vo.CabinetSizeNumberVO;
 import com.jayud.oceanship.vo.SeaOrderVO;
 import io.swagger.annotations.Api;
@@ -45,6 +46,9 @@ public class ExternalApiController {
 
     @Autowired
     private OauthClient oauthClient;
+
+    @Autowired
+    private ISeaReplenishmentService seaReplenishmentService;
 
     /**
      * 创建海运单
@@ -119,8 +123,12 @@ public class ExternalApiController {
             Object title = menus.get("title");
             String status = tmp.get(title);
             Integer num = 0;
-            if (status != null) {
-                num = this.seaOrderService.getNumByStatus(status, legalIds);
+            if(status != null) {
+                if(status.equals("S_4") || status.equals("S_5") || status.equals("S_7")){
+                    num = this.seaReplenishmentService.getNumByStatus(status, legalIds);
+                }else{
+                    num = this.seaOrderService.getNumByStatus(status, legalIds);
+                }
             }
             map.put("menusName", title);
             map.put("num", num);

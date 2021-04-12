@@ -37,4 +37,7 @@ public interface ISeaReplenishmentService extends IService<SeaReplenishment> {
     void deleteSeaReplenishment(String orderNo);
 
     List<SeaReplenishment> getList(String orderNo);
+
+    Integer getNumByStatus(String status, List<Long> legalIds);
+
 }

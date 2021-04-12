@@ -400,10 +400,12 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
             case 1://订单驳回
                 result = omsClient.deleteLogisticsTrackByType(trailerOrder.getId(), BusinessTypeEnum.TC.getCode());
                 //删除派车数据
-                TrailerDispatch trailerDispatch = new TrailerDispatch();
-                trailerDispatch.setStatus(TrailerOrderStatusEnum.DELETE.getCode());
-                this.trailerDispatchService.updateByTrailerOrderId(trailerOrder.getId(), trailerDispatch);
-
+//                TrailerDispatch trailerDispatch = new TrailerDispatch();
+//                trailerDispatch.setStatus(TrailerOrderStatusEnum.DELETE.getCode());
+//                this.trailerDispatchService.updateByTrailerOrderId(trailerOrder.getId(), trailerDispatch);
+                QueryWrapper queryWrapper = new QueryWrapper();
+                queryWrapper.eq("order_id",trailerOrder.getId());
+                this.trailerDispatchService.remove(queryWrapper);
                 //执行主订单驳回标识
                 omsClient.doMainOrderRejectionSignOpt(trailerOrder.getMainOrderNo(),
                         trailerOrder.getOrderNo() + "-" + auditInfoForm.getAuditComment() + ",");

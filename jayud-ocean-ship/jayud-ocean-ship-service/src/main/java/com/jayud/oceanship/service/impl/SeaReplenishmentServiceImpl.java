@@ -117,4 +117,11 @@ public class SeaReplenishmentServiceImpl extends ServiceImpl<SeaReplenishmentMap
         return this.baseMapper.selectList(queryWrapper);
     }
 
+    @Override
+    public Integer getNumByStatus(String status, List<Long> legalIds) {
+        //获取当前用户所属法人主体
+        Integer num = this.baseMapper.getNumByStatus(status, legalIds);
+        return num == null ? 0 : num;
+    }
+
 }

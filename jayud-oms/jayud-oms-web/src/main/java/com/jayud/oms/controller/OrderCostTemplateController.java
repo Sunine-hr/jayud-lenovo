@@ -13,6 +13,7 @@ import com.jayud.oms.model.bo.QueryCostTemplateForm;
 import com.jayud.oms.model.po.OrderCostTemplate;
 import com.jayud.oms.model.vo.CurrencyInfoVO;
 import com.jayud.oms.model.vo.InitComboxStrVO;
+import com.jayud.oms.service.ICostTypeService;
 import com.jayud.oms.service.ICurrencyInfoService;
 import com.jayud.oms.service.IOrderCostTemplateInfoService;
 import com.jayud.oms.service.IOrderCostTemplateService;
@@ -49,6 +50,8 @@ public class OrderCostTemplateController {
     private ICurrencyInfoService currencyInfoService;
     @Autowired
     private IOrderCostTemplateInfoService orderCostTemplateInfoService;
+    @Autowired
+    private ICostTypeService costTypeService;
 
 
     @ApiOperation(value = "创建/编辑模板信息")
@@ -142,16 +145,17 @@ public class OrderCostTemplateController {
         if (id == null || StringUtils.isEmpty(createdTimeStr)) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-       OrderCostTemplateDTO costTemplateInfo = this.orderCostTemplateService.getCostTemplateInfo(id);
+        OrderCostTemplateDTO costTemplateInfo = this.orderCostTemplateService.getCostTemplateInfo(id);
 
         List<OrderCostTemplateInfoDTO> costTemplateInfos = costTemplateInfo.getCostTemplateInfo();
+        //币种
         List<CurrencyInfoVO> currencyInfos = currencyInfoService.findCurrencyInfo(createdTimeStr);
         Map<String, CurrencyInfoVO> tmp = currencyInfos.stream().collect(Collectors.toMap(CurrencyInfoVO::getCurrencyCode, e -> e));
         List<OrderCostTemplateInfoDTO> list = costTemplateInfos.stream()
                 .map(e -> {
                     CurrencyInfoVO currencyInfoVO = tmp.get(e.getCurrencyCode());
-                    e.setCurrencyCode(currencyInfoVO==null?null:currencyInfoVO.getCurrencyCode());
-                    return e.setCurrency(currencyInfoVO==null?null:currencyInfoVO.getCurrencyName());
+                    e.setCurrencyCode(currencyInfoVO == null ? null : currencyInfoVO.getCurrencyCode());
+                    return e.setCurrency(currencyInfoVO == null ? null : currencyInfoVO.getCurrencyName());
                 }).collect(Collectors.toList());
 
         return CommonResult.success(list);

@@ -1447,10 +1447,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Override
     public CommonResult syncOrder(SyncOrderForm form) {
+        String newWisdomToken = form.getNewWisdomToken();//新智慧token不能为空,每个客户的token不用，通过tonken区分客户
         //入参键值对
         Map<String, Object> requestMap = new HashMap<>();
         Map<String, Object> validation = new HashMap<>();
-        validation.put("access_token", access_token);
+        validation.put("access_token", newWisdomToken);
         requestMap.put("validation", validation);
         Map<String, Object> shipment = new HashMap<>();
         shipment.put("shipment_id", form.getShipmentId());
@@ -1478,6 +1479,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 return CommonResult.error(-1, info);
             }
 
+            shipmentVO.setNew_wisdom_token(newWisdomToken);
             ShipmentVO saveShipment = shipmentService.saveShipment(shipmentVO);
 
         }catch (cn.hutool.json.JSONException exception){

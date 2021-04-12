@@ -57,6 +57,8 @@ public class ShipmentVO {
     private LocalDateTime creatTime;
     @ApiModelProperty(value = "shipmentJson")
     private String shipmentJson;
+    @ApiModelProperty(value = "新智慧token")
+    private String new_wisdom_token;
 }
 
 @Data

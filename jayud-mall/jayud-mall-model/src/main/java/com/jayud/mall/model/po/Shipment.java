@@ -70,6 +70,9 @@ public class Shipment extends Model<Shipment> {
     @TableField("shipmentJson")
     private String shipmentJson;
 
+    @ApiModelProperty(value = "新智慧token")
+    private String new_wisdom_token;
+
 
     @Override
     protected Serializable pkVal() {

@@ -1,6 +1,7 @@
 package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.QueryShipmentForm;
 import com.jayud.mall.model.po.Shipment;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -29,4 +30,11 @@ public interface IShipmentService extends IService<Shipment> {
      * @return
      */
     IPage<ShipmentVO> findShipmentByPage(QueryShipmentForm form);
+
+    /**
+     * 根据运单号，查询运单装箱信息
+     * @param shipment_id 运单号
+     * @return
+     */
+    CommonResult<ShipmentVO> findfindShipmentById(String shipment_id);
 }

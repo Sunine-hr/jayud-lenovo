@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.ShipmentMapper;
 import com.jayud.mall.model.bo.QueryShipmentForm;
@@ -41,7 +42,7 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
     @Override
     public ShipmentVO saveShipment(ShipmentVO shipmentVO) {
         String shipment_id = shipmentVO.getShipment_id();
-        ShipmentVO shipment = shipmentMapper.findShipment(shipment_id);
+        ShipmentVO shipment = shipmentMapper.findfindShipmentById(shipment_id);
         if(ObjectUtil.isEmpty(shipment)){
             //新增插入
             log.info("新增插入:{}", shipmentVO);
@@ -100,5 +101,31 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
             });
         }
         return pageInfo;
+    }
+
+    @Override
+    public CommonResult<ShipmentVO> findfindShipmentById(String shipment_id) {
+        ShipmentVO shipmentVO = shipmentMapper.findfindShipmentById(shipment_id);
+        if(ObjectUtil.isEmpty(shipmentVO)){
+            return CommonResult.error(-1, "没有做找到新智慧对应的运单信息");
+        }
+        String shipmentJson = shipmentVO.getShipmentJson();
+        if(StrUtil.isNotEmpty(shipmentJson)){
+            ShipmentVO shipment = null;
+            try {
+                shipment = JSONUtil.toBean(shipmentJson, ShipmentVO.class);
+                shipmentVO.setAttrs(shipment.getAttrs());
+                shipmentVO.setTo_address(shipment.getTo_address());
+                shipmentVO.setFrom_address(shipment.getFrom_address());
+                shipmentVO.setCharge_list(shipment.getCharge_list());
+                shipmentVO.setParcels(shipment.getParcels());
+                shipmentVO.setPicking_time(shipment.getPicking_time());
+                shipmentVO.setRates_time(shipment.getRates_time());
+                shipmentVO.setCreat_time(shipment.getCreat_time());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return CommonResult.success(shipmentVO);
     }
 }

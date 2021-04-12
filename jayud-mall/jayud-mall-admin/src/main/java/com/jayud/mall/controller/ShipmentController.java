@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.QueryShipmentForm;
+import com.jayud.mall.model.bo.QueryShipmentParaForm;
 import com.jayud.mall.model.vo.ShipmentVO;
 import com.jayud.mall.service.IShipmentService;
 import io.swagger.annotations.Api;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/shipment")
@@ -32,6 +35,14 @@ public class ShipmentController {
         IPage<ShipmentVO> pageList = shipmentService.findShipmentByPage(form);
         CommonPageResult<ShipmentVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
+    }
+
+    @ApiOperation(value = "查询订单装货信息")
+    @PostMapping("/findfindShipmentById")
+    @ApiOperationSupport(order = 2)
+    public CommonResult<ShipmentVO> findfindShipmentById(@Valid @RequestBody QueryShipmentParaForm form){
+        String shipment_id = form.getShipment_id();
+        return shipmentService.findfindShipmentById(shipment_id);
     }
 
 }

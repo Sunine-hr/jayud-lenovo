@@ -23,17 +23,17 @@ import org.springframework.stereotype.Component;
 public interface ShipmentMapper extends BaseMapper<Shipment> {
 
     /**
-     * 根据运单号，查询运单装货信息
-     * @param shipment_id 运单号
-     * @return
-     */
-    ShipmentVO findShipment(@Param("shipment_id") String shipment_id);
-
-    /**
      * 分页查询南京新智慧订单装货信息
      * @param page
      * @param form
      * @return
      */
     IPage<ShipmentVO> findShipmentByPage(Page<ShipmentVO> page, @Param("form") QueryShipmentForm form);
+
+    /**
+     * 根据运单号，查询运单装箱
+     * @param shipment_id
+     * @return
+     */
+    ShipmentVO findfindShipmentById(@Param("shipment_id") String shipment_id);
 }

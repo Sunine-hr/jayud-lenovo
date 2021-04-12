@@ -754,7 +754,7 @@ public class SeaOrderController {
                 //将集合数据填充
                 excelWriter.fill(new FillWrapper("delivery", seaReplenishment.getDeliveryAddress()), fillConfig, writeSheet);
                 excelWriter.fill(new FillWrapper("shipping", seaReplenishment.getShippingAddress()), fillConfig, writeSheet);
-                if (seaOrderDetails.getNotificationAddress() != null && seaReplenishment.getNotificationAddress().size() > 0) {
+                if (seaReplenishment.getNotificationAddress() != null && seaReplenishment.getNotificationAddress().size() > 0) {
                     excelWriter.fill(new FillWrapper("notification", seaReplenishment.getNotificationAddress()), fillConfig, writeSheet);
                 }
                 excelWriter.fill(new FillWrapper("goodone", seaReplenishment.getGoodsForms()), fillConfig, writeSheet);
@@ -767,7 +767,7 @@ public class SeaOrderController {
                 map.put("portDeparture", seaReplenishment.getPortDepartureName());
                 map.put("portDestination", seaReplenishment.getPortDestinationName());
                 map.put("cabinetType", seaReplenishment.getCabinetTypeName());
-                if (seaOrderDetails.getCabinetTypeName().equals("FCL")) {
+                if (seaReplenishment.getCabinetTypeName().equals("FCL")) {
                     map.put("whether", "√");
                 } else {
                     map.put("whether2", "√");

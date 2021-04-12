@@ -47,4 +47,8 @@ public class CustomerEditForm {
     @JSONField(ordinal = 8)
     private String businessLicenseUrl;
 
+    @ApiModelProperty(value = "新智慧token", position = 9)
+    @JSONField(ordinal = 9)
+    private String newWisdomToken;
+
 }

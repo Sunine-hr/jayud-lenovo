@@ -36,5 +36,5 @@ public interface IShipmentService extends IService<Shipment> {
      * @param shipment_id 运单号
      * @return
      */
-    CommonResult<ShipmentVO> findfindShipmentById(String shipment_id);
+    CommonResult<ShipmentVO> findShipmentById(String shipment_id);
 }

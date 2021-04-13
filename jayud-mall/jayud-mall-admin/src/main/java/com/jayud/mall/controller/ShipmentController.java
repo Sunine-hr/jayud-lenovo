@@ -38,11 +38,19 @@ public class ShipmentController {
     }
 
     @ApiOperation(value = "查询订单装货信息")
-    @PostMapping("/findfindShipmentById")
+    @PostMapping("/findShipmentById")
     @ApiOperationSupport(order = 2)
-    public CommonResult<ShipmentVO> findfindShipmentById(@Valid @RequestBody QueryShipmentParaForm form){
+    public CommonResult<ShipmentVO> findShipmentById(@Valid @RequestBody QueryShipmentParaForm form){
         String shipment_id = form.getShipment_id();
-        return shipmentService.findfindShipmentById(shipment_id);
+        return shipmentService.findShipmentById(shipment_id);
     }
+
+    //根据新智慧运单生成南京订单(订单、订单商品、订单箱号)
+    public CommonResult<ShipmentVO> findByShipment(@Valid @RequestBody QueryShipmentParaForm form){
+        String shipment_id = form.getShipment_id();
+        return null;
+    }
+
+
 
 }

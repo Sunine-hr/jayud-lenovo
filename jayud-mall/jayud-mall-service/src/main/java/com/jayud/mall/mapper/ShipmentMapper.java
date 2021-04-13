@@ -35,5 +35,5 @@ public interface ShipmentMapper extends BaseMapper<Shipment> {
      * @param shipment_id
      * @return
      */
-    ShipmentVO findfindShipmentById(@Param("shipment_id") String shipment_id);
+    ShipmentVO findShipmentById(@Param("shipment_id") String shipment_id);
 }

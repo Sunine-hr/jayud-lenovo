@@ -66,7 +66,7 @@
 
     </select>
 
-    <select id="findfindShipmentById" parameterType="java.lang.String" resultMap="ShipmentResultMap">
+    <select id="findShipmentById" parameterType="java.lang.String" resultMap="ShipmentResultMap">
         select t.shipment_id,
                t.client_reference,
                t.service,

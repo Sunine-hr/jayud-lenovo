@@ -42,7 +42,7 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
     @Override
     public ShipmentVO saveShipment(ShipmentVO shipmentVO) {
         String shipment_id = shipmentVO.getShipment_id();
-        ShipmentVO shipment = shipmentMapper.findfindShipmentById(shipment_id);
+        ShipmentVO shipment = shipmentMapper.findShipmentById(shipment_id);
         if(ObjectUtil.isEmpty(shipment)){
             //新增插入
             log.info("新增插入:{}", shipmentVO);
@@ -104,8 +104,8 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
     }
 
     @Override
-    public CommonResult<ShipmentVO> findfindShipmentById(String shipment_id) {
-        ShipmentVO shipmentVO = shipmentMapper.findfindShipmentById(shipment_id);
+    public CommonResult<ShipmentVO> findShipmentById(String shipment_id) {
+        ShipmentVO shipmentVO = shipmentMapper.findShipmentById(shipment_id);
         if(ObjectUtil.isEmpty(shipmentVO)){
             return CommonResult.error(-1, "没有做找到新智慧对应的运单信息");
         }

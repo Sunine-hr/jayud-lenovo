@@ -14,16 +14,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.OrderEnum;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.mall.mapper.CustomerGoodsMapper;
-import com.jayud.mall.mapper.OrderCaseMapper;
-import com.jayud.mall.mapper.OrderInfoMapper;
-import com.jayud.mall.mapper.ShipmentMapper;
+import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.QueryShipmentForm;
 import com.jayud.mall.model.po.*;
-import com.jayud.mall.model.vo.CustomerGoodsVO;
-import com.jayud.mall.model.vo.OrderCaseVO;
-import com.jayud.mall.model.vo.OrderInfoVO;
-import com.jayud.mall.model.vo.ShipmentVO;
+import com.jayud.mall.model.vo.*;
 import com.jayud.mall.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +50,8 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
     CustomerGoodsMapper customerGoodsMapper;
     @Autowired
     OrderCaseMapper orderCaseMapper;
+    @Autowired
+    FabWarehouseMapper fabWarehouseMapper;
 
     @Autowired
     IOrderInfoService orderInfoService;
@@ -65,6 +61,8 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
     IOrderShopService orderShopService;
     @Autowired
     ICustomerGoodsService customerGoodsService;
+    @Autowired
+    IFabWarehouseService fabWarehouseService;
 
     @Override
     public ShipmentVO saveShipment(ShipmentVO shipmentVO) {
@@ -140,6 +138,20 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
         //组装数据
         extracted(shipmentVO, orderShopList, orderCaseList);
 
+        //目的仓库代码
+        JSONObject shipmentJSONObject = JSONUtil.parseObj(shipmentVO);
+        Object to_address = shipmentJSONObject.get("to_address");
+        JSONObject to_addressJsonObject = JSONUtil.parseObj(to_address);
+        String destinationWarehouseCode = to_addressJsonObject.get("name", String.class);//目的仓库代码,例如：ONT8
+        FabWarehouseVO fabWarehouseVO = fabWarehouseMapper.findFabWarehouseByWarehouseCode(destinationWarehouseCode);
+        if(ObjectUtil.isEmpty(fabWarehouseVO)){
+            //fabWarehouseVO 为 null
+            FabWarehouse fabWarehouse = new FabWarehouse();
+            fabWarehouse.setWarehouseCode(destinationWarehouseCode);
+            fabWarehouse.setWarehouseName(destinationWarehouseCode);
+            fabWarehouseService.saveOrUpdate(fabWarehouse);
+        }
+
         String orderNo = shipmentVO.getShipment_id();
         OrderInfoVO orderInfoVO = orderInfoMapper.findOrderInfoByOrderNo(orderNo);
         if(ObjectUtil.isEmpty(orderInfoVO)){
@@ -152,8 +164,8 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
             orderInfo.setReserveSize(null);//订柜尺寸,根据报价选择
             orderInfo.setStoreGoodsWarehouseCode(null);//集货仓库代码,根据报价选择
             orderInfo.setStoreGoodsWarehouseName(null);//集货仓库名称,根据报价选择
-            orderInfo.setDestinationWarehouseCode(null);//目的仓库代码,根据报价选择
-            orderInfo.setDestinationWarehouseName(null);//目的仓库名称,根据报价选择
+            orderInfo.setDestinationWarehouseCode(destinationWarehouseCode);//目的仓库代码,根据报价选择
+            orderInfo.setDestinationWarehouseName(destinationWarehouseCode);//目的仓库名称,根据报价选择
 
             orderInfo.setIsPick(0);//是否上门提货(0否 1是),默认为否
             orderInfo.setStatus(OrderEnum.DRAFT.getCode());//状态码,默认为草稿状态
@@ -198,8 +210,8 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
             orderInfo.setReserveSize(null);//订柜尺寸,根据报价选择
             orderInfo.setStoreGoodsWarehouseCode(null);//集货仓库代码,根据报价选择
             orderInfo.setStoreGoodsWarehouseName(null);//集货仓库名称,根据报价选择
-            orderInfo.setDestinationWarehouseCode(null);//目的仓库代码,根据报价选择
-            orderInfo.setDestinationWarehouseName(null);//目的仓库名称,根据报价选择
+            orderInfo.setDestinationWarehouseCode(destinationWarehouseCode);//目的仓库代码,根据报价选择
+            orderInfo.setDestinationWarehouseName(destinationWarehouseCode);//目的仓库名称,根据报价选择
 
             orderInfo.setIsPick(0);//是否上门提货(0否 1是),默认为否
             orderInfo.setStatus(OrderEnum.DRAFT.getCode());//状态码,默认为草稿状态

@@ -207,6 +207,13 @@ public class OrderInfoController {
         return orderInfoService.syncOrder(form);
     }
 
+    //订单-草稿-提交-进入编辑订单详情(从草稿进去，可以编辑，暂存和提交)
+    @ApiOperation(value = "订单-草稿-提交-进入编辑订单详情(从草稿进去，可以编辑，暂存和提交)给新智慧用的")
+    @PostMapping("/newEditOrderInfo")
+    @ApiOperationSupport(order = 22)
+    public CommonResult<OrderInfoVO> newEditOrderInfo(@Valid @RequestBody OrderInfoNewForm form){
+        return orderInfoService.newEditOrderInfo(form);
+    }
 
 
 

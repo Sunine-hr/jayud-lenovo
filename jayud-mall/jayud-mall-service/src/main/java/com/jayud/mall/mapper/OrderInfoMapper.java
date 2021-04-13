@@ -48,6 +48,15 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
     OrderInfoVO lookOrderInfo(@Param("orderInfoId") Long orderInfoId);
 
     /**
+     * 新智慧，进入编辑订单<br/>
+     * 根据报价id展示报价的信息，因为从新智慧过来的订单，没有关联上报价
+     * @param orderInfoId 订单id
+     * @param offerInfoId 报价id
+     * @return
+     */
+    OrderInfoVO newLookOrderInfo(@Param("orderInfoId") Long orderInfoId, @Param("offerInfoId") Integer offerInfoId);
+
+    /**
      * web端分页查询订单列表
      * @param page
      * @param form

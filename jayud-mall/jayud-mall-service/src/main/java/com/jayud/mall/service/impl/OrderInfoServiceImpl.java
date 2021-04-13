@@ -1489,6 +1489,78 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return CommonResult.success("订单同步成功");
     }
 
+    @Override
+    public CommonResult<OrderInfoVO> newEditOrderInfo(OrderInfoNewForm form) {
+        String orderNo = form.getOrderNo();
+        OrderInfoVO orderInfoByOrderNo = orderInfoMapper.findOrderInfoByOrderNo(orderNo);
+        if(ObjectUtil.isEmpty(orderInfoByOrderNo)){
+            return CommonResult.error(-1, "订单号不存在,请生成订单");
+        }
+
+        Long orderInfoId = orderInfoByOrderNo.getId();
+        //订单信息
+        OrderInfoVO orderInfoVO = orderInfoMapper.newLookOrderInfo(orderInfoId, form.getOfferInfoId());
+        if(orderInfoVO == null){
+            return CommonResult.error(-1, "订单不存在");
+        }
+        //报价id
+        Integer offerInfoId = form.getOfferInfoId();
+        OfferInfo offerInfo = offerInfoMapper.selectById(offerInfoId);
+        //报价模板id
+        Integer qie = offerInfo.getQie();
+        //是否上门提货 (0否 1是,order_pick)
+        Integer isPick = orderInfoVO.getIsPick();
+
+        //订柜尺寸[海运费]
+        /*订柜尺寸：海运费规格*/
+        List<TemplateCopeReceivableVO> oceanFeeList =
+                templateCopeReceivableMapper.findTemplateCopeReceivableOceanFeeByQie(qie);
+        orderInfoVO.setOceanFeeList(oceanFeeList);
+
+        //集货仓库[陆运费]
+        /*集货仓库：陆运费规格*/
+        List<TemplateCopeReceivableVO> inlandFeeList =
+                templateCopeReceivableMapper.findTemplateCopeReceivableInlandFeeListByQie(qie);
+        orderInfoVO.setInlandFeeList(inlandFeeList);
+
+        //目的仓库
+        List<FabWarehouseVO> fabWarehouseVOList = fabWarehouseMapper.findFabWarehouseByqie(qie);
+        orderInfoVO.setFabWarehouseVOList(fabWarehouseVOList);
+
+        //关联的订单箱号
+        /*订单对应箱号信息:order_case*/
+        List<OrderCaseVO> orderCaseVOList = orderCaseMapper.findOrderCaseByOrderId(orderInfoId);
+        orderInfoVO.setOrderCaseVOList(orderCaseVOList);
+
+        //关联的订单商品
+        /*订单对应商品：order_shop*/
+        List<OrderShopVO> orderShopVOList = orderShopMapper.findOrderShopByOrderId(orderInfoId);
+        orderInfoVO.setOrderShopVOList(orderShopVOList);
+
+        //是否上门提货[是] -- 有提货地址
+        //(0否 1是,order_pick)
+        if(isPick == 1){
+            //订单关联提货地址
+            List<OrderPickVO> orderPickVOList = orderPickMapper.findOrderPickByOrderId(orderInfoId);
+            orderInfoVO.setOrderPickVOList(orderPickVOList);
+        }
+
+        //TODO 其他费用 不做，删掉，放入`费用明细`
+        //TODO 费用明细 仅展示 订单应收费用，订单应付费用 不要展示
+        OrderCostDetailVO orderCostDetailVO = getOrderCostDetailVO(orderInfoVO);
+
+        orderInfoVO.setOrderCostDetailVO(orderCostDetailVO);//订单费用明细
+
+        String remarks = orderInfoVO.getRemarks();//操作说明
+        if(ObjectUtil.isNotEmpty(remarks)){
+            String[] split = remarks.split("\n");
+            List<String> list = Arrays.asList(split);
+            orderInfoVO.setRemarksList(list);
+        }
+
+        return CommonResult.success(orderInfoVO);
+    }
+
     private String extracted(String url, Map<String, Object> requestMap) {
         String feedback = HttpRequest
                 .post(url)

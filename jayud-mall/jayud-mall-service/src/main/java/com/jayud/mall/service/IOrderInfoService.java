@@ -242,4 +242,11 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     CommonResult syncOrder(SyncOrderForm form);
+
+    /**
+     * 订单-草稿-提交-进入编辑订单详情(从草稿进去，可以编辑，暂存和提交)给新智慧用的
+     * @param form
+     * @return
+     */
+    CommonResult<OrderInfoVO> newEditOrderInfo(OrderInfoNewForm form);
 }

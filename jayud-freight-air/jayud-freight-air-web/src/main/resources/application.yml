@@ -68,15 +68,15 @@ ribbon:
   ConnectTimeout: 30000
 
 
-jayud:
-  security:
-    permit-all:
-      - /v2/api-docs
-      - /swagger-resources/configuration/ui
-      - /swagger-resources
-      - /swagger-resources/configuration/security
-      - /swagger-ui.html
-      - /webjars/**
-    expired: 31536000
+#jayud:
+#  security:
+#    permit-all:
+#      - /v2/api-docs
+#      - /swagger-resources/configuration/ui
+#      - /swagger-resources
+#      - /swagger-resources/configuration/security
+#      - /swagger-ui.html
+#      - /webjars/**
+#    expired: 31536000
 
 

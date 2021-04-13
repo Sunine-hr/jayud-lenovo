@@ -502,8 +502,8 @@ public class OrderComboxController {
 
         //获取结算单位下拉框
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("status","1");
-        queryWrapper.eq("audit_status",10);
+        queryWrapper.eq("status", "1");
+        queryWrapper.eq("audit_status", 10);
         List<CustomerInfo> customerInfos = customerInfoService.list(queryWrapper);
         List<InitComboxStrVO> initComboxVOS = new ArrayList<>();
         for (CustomerInfo customerInfo : customerInfos) {
@@ -513,12 +513,20 @@ public class OrderComboxController {
             initComboxVOS.add(initComboxVO);
         }
         Map map = new HashMap();
-        map.put("ports",ports);
-        map.put("cabinetSizes",cabinetSizes);
-        map.put("legalEntitys",legals);
-        map.put("customerInfos",initComboxVOS);
+        map.put("ports", ports);
+        map.put("cabinetSizes", cabinetSizes);
+        map.put("legalEntitys", legals);
+        map.put("customerInfos", initComboxVOS);
         return CommonResult.success(map);
     }
+
+
+    @ApiOperation(value = "下拉币种")
+    @RequestMapping(value = "/initCurrencyInfo")
+    public CommonResult<List<InitComboxStrVO>> initCurrencyInfo() {
+        return CommonResult.success(this.currencyInfoService.initCurrencyInfo());
+    }
+
 
 }
 

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.mapper.OrderCostTemplateMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.OrderCostTemplate">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+    </resultMap>
+
+
+    <resultMap id="OrderCostTemplateDTO" type="com.jayud.oms.model.bo.OrderCostTemplateDTO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <collection property="costTemplateInfo" ofType="com.jayud.oms.model.bo.OrderCostTemplateInfoDTO">
+            <id column="costTemplateInfoId" property="id"/>
+            <result column="cost_code" property="costCode" />
+            <result column="cost_type_id" property="costTypeId" />
+            <result column="cost_genre_id" property="costGenreId" />
+            <result column="unit" property="unit" />
+            <result column="unit_price" property="unitPrice" />
+            <result column="number" property="number" />
+            <result column="currency_code" property="currencyCode" />
+            <result column="create_time" property="createTime" />
+            <result column="currency" property="currency" />
+        </collection>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name, status, create_time, create_user,currency
+    </sql>
+    <select id="findByPage" resultType="com.jayud.oms.model.bo.OrderCostTemplateDTO">
+        select
+        id, name, status, create_time, create_user
+        from
+        order_cost_template
+        <where>
+            <if test="form.name !=null and form.name !=''">
+                and name like concat('%',#{form.name},'%')
+            </if>
+            <if test="form.status !=null">
+                and status = #{form.status}
+            </if>
+            <if test="form.type !=null">
+                and type = #{form.type}
+            </if>
+            <if test="form.createUser !=null and form.createUser !=''">
+                and create_user = #{form.createUser}
+            </if>
+        </where>
+
+    </select>
+    <select id="getCostTemplateInfo" resultMap="OrderCostTemplateDTO">
+        select
+        oct.id, oct.name, oct.status, oct.create_time, oct.create_user,
+        octi.id costTemplateInfoId,
+        octi.cost_code, octi.cost_type_id, octi.cost_genre_id, octi.unit, octi.unit_price,
+        octi.number,octi.currency_code,octi.create_time,octi.currency
+        from
+        order_cost_template oct
+        left join order_cost_template_info octi on oct.id=octi.order_cost_template_id
+        <where>
+            oct.id=#{id}
+        </where>
+    </select>
+
+</mapper>

@@ -6,6 +6,7 @@ import com.jayud.oms.model.po.OrderReceivableCost;
 import com.jayud.oms.model.vo.InputReceivableCostVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -60,4 +61,9 @@ public interface IOrderReceivableCostService extends IService<OrderReceivableCos
      * @return
      */
     boolean isCost(String orderNo, Integer type);
+
+    /**
+     * 订单费用状态
+     */
+    public Map<String,Object> getOrderCostStatus(List<String> mainOrderNo,List<String> subOrderNo);
 }

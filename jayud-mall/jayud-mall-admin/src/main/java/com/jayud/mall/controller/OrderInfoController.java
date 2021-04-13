@@ -1,12 +1,17 @@
 package com.jayud.mall.controller;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.vo.*;
 import com.jayud.mall.service.IOrderInfoService;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperationSupport;
+import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -207,13 +212,92 @@ public class OrderInfoController {
         return orderInfoService.syncOrder(form);
     }
 
-    //订单-草稿-提交-进入编辑订单详情(从草稿进去，可以编辑，暂存和提交)
+    //订单-草稿-提交-进入编辑订单详情(从草稿进去，可以编辑，暂存和提交)给新智慧用的
     @ApiOperation(value = "订单-草稿-提交-进入编辑订单详情(从草稿进去，可以编辑，暂存和提交)给新智慧用的")
     @PostMapping("/newEditOrderInfo")
     @ApiOperationSupport(order = 22)
     public CommonResult<OrderInfoVO> newEditOrderInfo(@Valid @RequestBody OrderInfoNewForm form){
         return orderInfoService.newEditOrderInfo(form);
     }
+
+    //订单下单-暂存订单
+    @ApiOperation(value = "订单下单-暂存订单(新智慧订单)")
+    @PostMapping("/temporaryStorageOrderInfo")
+    @ApiOperationSupport(order = 23)
+    public CommonResult temporaryStorageOrderInfo(@Valid @RequestBody OrderInfoForm form){
+        //订单对应箱号信息:order_case
+        List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
+        if(CollUtil.isEmpty(orderCaseVOList)){
+            return CommonResult.error(-1, "订单箱号不能为空");
+        }
+        //订单对应商品：order_shop
+        List<OrderShopVO> orderShopVOList = form.getOrderShopVOList();
+        if(CollUtil.isEmpty(orderShopVOList)){
+            return CommonResult.error(-1, "订单商品不能为空");
+        }
+        Integer isPick = form.getIsPick();//是否上门提货(0否 1是,order_pick) is_pick=1
+        if(isPick == 1){
+            //订单对应提货信息表：order_pick
+            List<OrderPickVO> orderPickVOList = form.getOrderPickVOList();
+            if(CollUtil.isEmpty(orderPickVOList)){
+                return CommonResult.error(-1, "订单提货信息不能为空");
+            }
+            Integer totalCartonSum = 0;
+            for (int i=0; i<orderPickVOList.size(); i++){
+                OrderPickVO orderPickVO = orderPickVOList.get(i);
+                Integer totalCarton = orderPickVO.getTotalCarton();
+                if(ObjectUtil.isEmpty(totalCarton) || totalCarton <= 0){
+                    return CommonResult.error(-1, "提货地址的箱数，不能为空或者小于等于0");
+                }
+                totalCartonSum += totalCarton;
+            }
+            int size = orderCaseVOList.size();
+            if(!totalCartonSum.equals(size)){
+                return CommonResult.error(-1, "提货箱数不等于订单箱数");
+            }
+        }
+        return orderInfoService.temporaryStorageOrderInfo(form);
+    }
+
+    //订单下单-提交订单
+    @ApiOperation(value = "订单下单-提交订单(新智慧订单)")
+    @PostMapping("/submitOrderInfo")
+    @ApiOperationSupport(order = 24)
+    public CommonResult<OrderInfoVO> submitOrderInfo(@Valid @RequestBody OrderInfoForm form){
+        //订单对应箱号信息:order_case
+        List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
+        if(CollUtil.isEmpty(orderCaseVOList)){
+            return CommonResult.error(-1, "订单箱号不能为空");
+        }
+        //订单对应商品：order_shop
+        List<OrderShopVO> orderShopVOList = form.getOrderShopVOList();
+        if(CollUtil.isEmpty(orderShopVOList)){
+            return CommonResult.error(-1, "订单商品不能为空");
+        }
+        Integer isPick = form.getIsPick();//是否上门提货(0否 1是,order_pick) is_pick=1
+        if(isPick == 1){
+            //订单对应提货信息表：order_pick
+            List<OrderPickVO> orderPickVOList = form.getOrderPickVOList();
+            if(CollUtil.isEmpty(orderPickVOList)){
+                return CommonResult.error(-1, "订单提货信息不能为空");
+            }
+            Integer totalCartonSum = 0;
+            for (int i=0; i<orderPickVOList.size(); i++){
+                OrderPickVO orderPickVO = orderPickVOList.get(i);
+                Integer totalCarton = orderPickVO.getTotalCarton();
+                if(ObjectUtil.isEmpty(totalCarton) || totalCarton <= 0){
+                    return CommonResult.error(-1, "提货地址的箱数，不能为空或者小于等于0");
+                }
+                totalCartonSum += totalCarton;
+            }
+            int size = orderCaseVOList.size();
+            if(!totalCartonSum.equals(size)){
+                return CommonResult.error(-1, "提货箱数不等于订单箱数");
+            }
+        }
+        return orderInfoService.submitOrderInfo(form);
+    }
+
 
 
 

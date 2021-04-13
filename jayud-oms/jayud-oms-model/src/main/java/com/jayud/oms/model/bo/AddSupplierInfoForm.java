@@ -1,5 +1,6 @@
 package com.jayud.oms.model.bo;
 
+import com.jayud.common.exception.JayudBizException;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -69,5 +70,23 @@ public class AddSupplierInfoForm {
     @ApiModelProperty(value = "法人主体id集合", required = true)
     @NotNull(message = "legalEntityId is required")
     private List<Long> legalEntityIds;
+
+    @ApiModelProperty(value = "国家征信")
+    private Integer nationalCredit;
+
+    @ApiModelProperty(value = "海关征信")
+    private Integer customsCredit;
+
+    @ApiModelProperty(value = "海关信用等级(0:一般认证企业,1:一般信用企业,2:高级信用企业,3:失信企业)")
+    private Integer customsCreditRating;
+
+    public void checkAddr(){
+        if (this.nationalCredit==null) {
+            throw new JayudBizException(400,"请输入国家企业信用信息公示系统查询结果");
+        }
+        if (this.customsCredit==null) {
+            throw new JayudBizException(400,"请输入中国海关企业进出口信用公示平台查询结果");
+        }
+    }
 
 }

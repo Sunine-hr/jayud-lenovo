@@ -96,6 +96,15 @@ public class CustomerInfo extends Model<CustomerInfo> {
     @ApiModelProperty(value = "状态(0无效 1有效)")
     private String status;
 
+    @ApiModelProperty(value = "国家征信")
+    private Integer nationalCredit;
+
+    @ApiModelProperty(value = "海关征信")
+    private Integer customsCredit;
+
+    @ApiModelProperty(value = "海关信用等级(0:一般认证企业,1:一般信用企业,2:高级信用企业,3:失信企业)")
+    private Integer customsCreditRating;
+
 
 
     @Override

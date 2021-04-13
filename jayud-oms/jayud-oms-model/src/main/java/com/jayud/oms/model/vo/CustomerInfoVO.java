@@ -106,6 +106,16 @@ public class CustomerInfoVO {
     @ApiModelProperty(value = "法人主体集合")
     private List<LegalEntityVO> legalEntities;
 
+    @ApiModelProperty(value = "国家征信")
+    private Integer nationalCredit;
+
+    @ApiModelProperty(value = "海关征信")
+    private Integer customsCredit;
+
+    @ApiModelProperty(value = "海关信用等级(0:一般认证企业,1:一般信用企业,2:高级信用企业,3:失信企业)")
+    private Integer customsCreditRating;
+
+
     public List<Long> getLegalEntityIds() {
         if(!StringUtil.isNullOrEmpty(this.legalEntityIdStr)){
             String[] strs = this.legalEntityIdStr.split(",");

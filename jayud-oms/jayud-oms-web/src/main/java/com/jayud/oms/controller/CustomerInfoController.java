@@ -108,9 +108,10 @@ public class CustomerInfoController {
                 return CommonResult.error(ResultEnum.CUSTOMER_CODE_EXIST);
             }
         }
+        form.checkAddr();
         //校验客户名称是否唯一性
         if (this.customerInfoService.exitName(form.getId(), form.getName())) {
-            return CommonResult.error(400,"该客户名称已存在");
+            return CommonResult.error(400, "该客户名称已存在");
         }
 
         CustomerInfo customerInfo = ConvertUtil.convert(form, CustomerInfo.class);

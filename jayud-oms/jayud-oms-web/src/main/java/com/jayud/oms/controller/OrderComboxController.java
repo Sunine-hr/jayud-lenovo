@@ -7,6 +7,8 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.enums.CreditStatusEnum;
+import com.jayud.common.enums.CustomsCreditRatingEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.enums.UnitEnum;
 import com.jayud.common.utils.BeanUtils;
@@ -527,6 +529,17 @@ public class OrderComboxController {
         return CommonResult.success(this.currencyInfoService.initCurrencyInfo());
     }
 
+
+    @ApiOperation(value = "信用评价-下拉框")
+    @PostMapping(value = "/initCreditEvaluation")
+    public CommonResult<Map<String, Object>> initCreditEvaluation() {
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("credit", CreditStatusEnum.getDropDownList());
+        map.put("creditRating", CustomsCreditRatingEnum.getDropDownList());
+
+        return CommonResult.success(map);
+    }
 
 }
 

@@ -148,9 +148,10 @@ public class SupplierInfoController {
                 return CommonResult.error(400, "该供应商代码已存在");
             }
         }
+        form.checkAddr();
         //校验客户名称是否唯一性
         if (this.supplierInfoService.exitName(form.getId(), form.getSupplierChName())) {
-            return CommonResult.error(400,"该供应商名称已存在");
+            return CommonResult.error(400, "该供应商名称已存在");
         }
 
         //检查审核状态是否是审核通过和审核不通过，才能进行编辑
@@ -171,16 +172,16 @@ public class SupplierInfoController {
 
     @ApiOperation(value = "二期优化3:新增和编辑时校验供应商名称是否存在,name=供应商名称 id=供应商ID")
     @PostMapping(value = "/existSupplierName")
-    public CommonResult existSupplierName(@RequestBody Map<String,Object> param) {
+    public CommonResult existSupplierName(@RequestBody Map<String, Object> param) {
         String supplierName = MapUtil.getStr(param, "name");
-        String idStr = (MapUtil.getStr(param,"id"));
-        if(StringUtil.isNullOrEmpty(supplierName)){
+        String idStr = (MapUtil.getStr(param, "id"));
+        if (StringUtil.isNullOrEmpty(supplierName)) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.like("supplier_ch_name",supplierName);
+        queryWrapper.like("supplier_ch_name", supplierName);
         List<SupplierInfo> supplierInfos = supplierInfoService.list(queryWrapper);
-        if((StringUtil.isNullOrEmpty(idStr) && supplierInfos != null && supplierInfos.size() > 0) || ((!StringUtil.isNullOrEmpty(idStr)) && supplierInfos != null && supplierInfos.size() > 1)){
+        if ((StringUtil.isNullOrEmpty(idStr) && supplierInfos != null && supplierInfos.size() > 0) || ((!StringUtil.isNullOrEmpty(idStr)) && supplierInfos != null && supplierInfos.size() > 1)) {
             return CommonResult.error(ResultEnum.SUPPLIER_NAME_EXIST);
         }
         return CommonResult.success();
@@ -222,9 +223,9 @@ public class SupplierInfoController {
 
             //供应商代码此处必填项
             if (StringUtil.isNullOrEmpty(form.getSupplierCode())) {
-                return CommonResult.error(400,"供应商代码未填写");
+                return CommonResult.error(400, "供应商代码未填写");
             }
-            if(form.getSupplierCode() != supplierInfo1.getSupplierCode()){
+            if (form.getSupplierCode() != supplierInfo1.getSupplierCode()) {
                 if (this.supplierInfoService.exitCode(form.getId(), form.getSupplierCode())) {
                     return CommonResult.error(400, "供应商代码已存在");
                 }
@@ -234,7 +235,7 @@ public class SupplierInfoController {
                 supplierInfo.setId(form.getId());
                 supplierInfo.setSupplierCode(form.getSupplierCode());
                 boolean b = supplierInfoService.saveOrUpdate(supplierInfo);
-                if(!b){
+                if (!b) {
                     return CommonResult.error(400, "供应商代码修改失败");
                 }
             }
@@ -343,27 +344,24 @@ public class SupplierInfoController {
     }
 
 
-
-
-
     @Value("${address.supplierAddr}")
     private String filePath;
 
     @ApiOperation(value = "下载供应商模板")
     @GetMapping(value = "/downloadExcel")
-    public void downloadExcel(HttpServletResponse response)throws IOException {
+    public void downloadExcel(HttpServletResponse response) throws IOException {
         //获取输入流，原始模板位置
         InputStream bis = new BufferedInputStream(new FileInputStream(new File(filePath)));
         //假如以中文名下载的话，设置下载文件名称
         String filename = "供应商模板.xlsx";
         //转码，免得文件名中文乱码s
         //设置文件下载头
-        response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename,"UTF-8"));
+        response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename, "UTF-8"));
         //1.设置文件ContentType类型，这样设置，会自动判断下载文件类型
         response.setContentType("application/vnd.ms-excel;charset=utf-8");
         BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
         int len = 0;
-        while((len = bis.read()) != -1){
+        while ((len = bis.read()) != -1) {
             out.write(len);
             out.flush();
         }
@@ -372,28 +370,28 @@ public class SupplierInfoController {
 
     @ApiOperation(value = "导入供应商信息")
     @PostMapping(value = "/uploadExcel")
-    public CommonResult ajaxUploadExcel(MultipartFile file, HttpServletResponse response,@RequestParam("userName") String userName){
+    public CommonResult ajaxUploadExcel(MultipartFile file, HttpServletResponse response, @RequestParam("userName") String userName) {
 
-        String commentHTML=null;
+        String commentHTML = null;
         try {
-            commentHTML = supplierInfoService.importCustomerInfoExcel(response,file,userName);
+            commentHTML = supplierInfoService.importCustomerInfoExcel(response, file, userName);
         } catch (Exception e1) {
             e1.printStackTrace();
         }
 
         if (com.alibaba.nacos.client.utils.StringUtils.isNotBlank(commentHTML)) {
             return CommonResult.success(commentHTML);
-        }else {
-            return CommonResult.error(ResultEnum.OPR_FAIL,"导入失败");
+        } else {
+            return CommonResult.error(ResultEnum.OPR_FAIL, "导入失败");
         }
 
     }
 
     @ApiOperation(value = "下载错误信息")
     @GetMapping(value = "/downloadErrorExcel")
-    public void downloadErrorExcel( HttpServletResponse response,@RequestParam("userName") String userName)  {
+    public void downloadErrorExcel(HttpServletResponse response, @RequestParam("userName") String userName) {
         try {
-            supplierInfoService.insExcel(response,userName);
+            supplierInfoService.insExcel(response, userName);
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -401,7 +399,7 @@ public class SupplierInfoController {
 
     @ApiOperation(value = "判断是否有错误信息")
     @PostMapping(value = "/checkMes")
-    public CommonResult checkMes(@RequestBody Map<String, Object> param)  {
+    public CommonResult checkMes(@RequestBody Map<String, Object> param) {
         String userName = MapUtil.getStr(param, "loginUserName");
         boolean result = supplierInfoService.checkMes(userName);
         return CommonResult.success(result);

@@ -62,7 +62,7 @@ public class OrderCostTemplateDTO extends Model<OrderCostTemplateDTO> {
 
     public void checkAddOpt() {
         if (StringUtils.isEmpty(this.name)) {
-            throw new JayudBizException(500, "请输入模块名称");
+            throw new JayudBizException(400, "请输入模块名称");
         }
         if (CollectionUtils.isEmpty(costTemplateInfo)){
             throw new JayudBizException(400,"请输入费用项");

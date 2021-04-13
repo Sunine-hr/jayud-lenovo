@@ -2,6 +2,7 @@ package com.jayud.oms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.oms.mapper.OrderPaymentCostMapper;
 import com.jayud.oms.model.bo.GetCostDetailForm;
 import com.jayud.oms.model.po.OrderPaymentCost;
@@ -72,6 +73,27 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
             condition.lambda().eq(OrderPaymentCost::getOrderNo, orderNo);
         }
         return this.count(condition) > 0;
+    }
+
+    /**
+     * 根据类型查询费用详情
+     *
+     * @param subType 0.主订单,1子订单
+     * @return
+     */
+    @Override
+    public List<OrderPaymentCost> getByType(List<String> orderNos, String subType) {
+        QueryWrapper<OrderPaymentCost> condition = new QueryWrapper<>();
+        if (SubOrderSignEnum.MAIN.getSignOne().equals(subType)) {
+            condition.lambda().in(OrderPaymentCost::getMainOrderNo, orderNos)
+                    .eq(OrderPaymentCost::getSubType, subType);
+        }else {
+            condition.lambda().in(OrderPaymentCost::getOrderNo, orderNos)
+                    .eq(OrderPaymentCost::getSubType, subType);
+        }
+
+
+        return this.baseMapper.selectList(condition);
     }
 
 }

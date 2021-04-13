@@ -2,6 +2,7 @@ package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.bo.GetCostDetailForm;
+import com.jayud.oms.model.po.OrderPaymentCost;
 import com.jayud.oms.model.po.OrderReceivableCost;
 import com.jayud.oms.model.vo.InputReceivableCostVO;
 
@@ -66,4 +67,6 @@ public interface IOrderReceivableCostService extends IService<OrderReceivableCos
      * 订单费用状态
      */
     public Map<String,Object> getOrderCostStatus(List<String> mainOrderNo,List<String> subOrderNo);
+
+    List<OrderReceivableCost> getByType(List<String> orderNos, String subType);
 }

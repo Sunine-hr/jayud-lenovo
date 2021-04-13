@@ -56,4 +56,12 @@ public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
      * @return
      */
     boolean isCost(String orderNo, Integer type);
+
+
+    /**
+     * 根据类型查询费用详情
+     * @param subType
+     * @return
+     */
+    List<OrderPaymentCost> getByType(List<String> orderNos, String subType);
 }

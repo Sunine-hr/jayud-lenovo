@@ -10,6 +10,7 @@ import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.OrderDeliveryAddress;
 import com.jayud.common.enums.BusinessTypeEnum;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.*;
 import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.feign.OauthClient;
@@ -1212,9 +1213,9 @@ public class ExternalApiController {
 
     @ApiOperation(value = "获取订单id")
     @RequestMapping(value = "/api/getMainOrderByOrderNo")
-    ApiResult<Long> getMainOrderByOrderNo(String mainOrderNo){
+    ApiResult<Long> getMainOrderByOrderNo(String mainOrderNo) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("order_no",mainOrderNo);
+        queryWrapper.eq("order_no", mainOrderNo);
         OrderInfo one = orderInfoService.getOne(queryWrapper);
         return ApiResult.ok(one.getId());
     }
@@ -1222,7 +1223,7 @@ public class ExternalApiController {
     @ApiOperation("根据业务id集合查询订单地址")
     @RequestMapping(value = "/api/getOrderAddressByBusOrders")
     public ApiResult<List<OrderAddress>> getOrderAddressByBusOrders(@RequestParam("orderNo") List<String> orderNo,
-                                                                      @RequestParam("businessType") Integer businessType) {
+                                                                    @RequestParam("businessType") Integer businessType) {
         //查询订单地址信息
         List<OrderAddress> orderAddresses = this.orderAddressService.getOrderAddressByBusOrders(orderNo, businessType);
         return ApiResult.ok(orderAddresses);
@@ -1232,7 +1233,7 @@ public class ExternalApiController {
     @ApiOperation("根据订单id集合查询商品信息")
     @RequestMapping(value = "/api/getGoodsByBusOrders")
     public ApiResult<List<Goods>> getGoodsByBusOrders(@RequestParam("orderNo") List<String> orderNo,
-                                                        @RequestParam("businessType") Integer businessType) {
+                                                      @RequestParam("businessType") Integer businessType) {
         //查询商品信息
         List<Goods> goods = this.goodsService.getGoodsByBusOrders(orderNo, businessType);
         return ApiResult.ok(goods);
@@ -1242,7 +1243,7 @@ public class ExternalApiController {
     @ApiOperation("根据业务id集合查询订单地址")
     @RequestMapping(value = "/api/deleteOrderAddressByBusOrders")
     public ApiResult<List<OrderAddress>> deleteOrderAddressByBusOrders(@RequestParam("orderNo") List<String> orderNo,
-                                                                         @RequestParam("businessType") Integer businessType) {
+                                                                       @RequestParam("businessType") Integer businessType) {
         //查询订单地址信息
         this.orderAddressService.deleteOrderAddressByBusOrders(orderNo, businessType);
         return ApiResult.ok();
@@ -1252,7 +1253,7 @@ public class ExternalApiController {
     @ApiOperation("根据订单id集合查询商品信息")
     @RequestMapping(value = "/api/deleteGoodsByBusOrders")
     public ApiResult<List<Goods>> deleteGoodsByBusOrders(@RequestParam("orderNo") List<String> orderNo,
-                                                           @RequestParam("businessType") Integer businessType) {
+                                                         @RequestParam("businessType") Integer businessType) {
         //查询商品信息
         this.goodsService.deleteGoodsByBusOrders(orderNo, businessType);
         return ApiResult.ok();
@@ -1260,18 +1261,52 @@ public class ExternalApiController {
 
     /**
      * 根据字典名称获取字典代码
+     *
      * @param supervisionMode
      * @return
      */
     @RequestMapping(value = "/api/getDictCodeByDictTypeName")
-    public ApiResult<String> getDictCodeByDictTypeName(@RequestParam("supervisionMode") String supervisionMode){
+    public ApiResult<String> getDictCodeByDictTypeName(@RequestParam("supervisionMode") String supervisionMode) {
         List<Dict> supervisionMode1 = dictService.getByDictTypeCode("supervisionMode");
         for (Dict dict : supervisionMode1) {
-            if(dict.getValue().equals(supervisionMode)){
+            if (dict.getValue().equals(supervisionMode)) {
                 return ApiResult.ok(dict.getCode());
             }
         }
         return ApiResult.error("数据匹配失败");
+    }
+
+
+    /**
+     * 是否录用费用
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/isCost")
+    public ApiResult<Map<String, Object>> isCost(@RequestBody List<String> orderNos,
+                                                 @RequestParam("subType") String subType) {
+
+        List<OrderPaymentCost> payments = this.orderPaymentCostService.getByType(orderNos, subType);
+        Map<String, Object> map = new HashMap<>();
+        List<OrderReceivableCost> receivables = this.orderReceivableCostService.getByType(orderNos, subType);
+
+        if (SubOrderSignEnum.MAIN.getSignOne().equals(subType)) {
+            Map<String, Object> tmp = payments.stream().collect(Collectors.toMap(OrderPaymentCost::getMainOrderNo, e -> e));
+            map.putAll(tmp);
+            tmp = receivables.stream().collect(Collectors.toMap(OrderReceivableCost::getMainOrderNo, e -> e));
+            map.putAll(tmp);
+        } else {
+            Map<String, Object> tmp = payments.stream().collect(Collectors.toMap(OrderPaymentCost::getOrderNo, e -> e));
+            map.putAll(tmp);
+            tmp = receivables.stream().collect(Collectors.toMap(OrderReceivableCost::getOrderNo, e -> e));
+            map.putAll(tmp);
+        }
+
+        for (String orderNo : orderNos) {
+            map.put(orderNo, map.get(orderNo) != null);
+        }
+
+        return ApiResult.ok(map);
     }
 }
 

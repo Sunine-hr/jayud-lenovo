@@ -3,8 +3,10 @@ package com.jayud.oms.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.oms.mapper.OrderReceivableCostMapper;
 import com.jayud.oms.model.bo.GetCostDetailForm;
+import com.jayud.oms.model.po.OrderPaymentCost;
 import com.jayud.oms.model.po.OrderReceivableCost;
 import com.jayud.oms.model.vo.InputReceivableCostVO;
 import com.jayud.oms.service.IOrderReceivableCostService;
@@ -155,5 +157,19 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
         //需要全部费用都审核通过才是审核状态
 
         return null;
+    }
+
+    @Override
+    public List<OrderReceivableCost> getByType(List<String> orderNos, String subType) {
+        QueryWrapper<OrderReceivableCost> condition = new QueryWrapper<>();
+        if (SubOrderSignEnum.MAIN.getSignOne().equals(subType)) {
+            condition.lambda().in(OrderReceivableCost::getMainOrderNo, orderNos)
+                    .eq(OrderReceivableCost::getSubType, subType);
+        }else {
+            condition.lambda().in(OrderReceivableCost::getOrderNo, orderNos)
+                    .eq(OrderReceivableCost::getSubType, subType);
+        }
+
+        return this.baseMapper.selectList(condition);
     }
 }

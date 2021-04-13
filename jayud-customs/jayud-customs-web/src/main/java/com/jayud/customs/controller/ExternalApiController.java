@@ -192,17 +192,19 @@ public class ExternalApiController {
         String stateDt = MapUtil.getStr(param, "StateDt");
         String note = MapUtil.getStr(param, "Note");
         String stateName = MapUtil.getStr(param, "StateName");
-        System.out.println("applyNo:"+applyNo+"-----"+"applyDt:"+applyDt+"-----"+"stateNo:"+stateNo+"-----"+"stateDt:"+stateDt+"-----"+"note:"+note+"-----"+"stateName:"+stateName);
-
-        String status = MapUtil.getStr(param, "status");
-        String orderNo = MapUtil.getStr(param, "orderNo");
-
+        System.out.println("applyNo:"+applyNo+"-----"+"applyDt:"+applyDt);
+        System.out.println("stateNo:"+stateNo+"-----"+"stateDt:"+stateDt+"-----"+"note:"+note+"-----"+"stateName:"+stateName);
+        //委托单号
+        String uid = MapUtil.getStr(param, "uid");
+        //委托号
+        String busNo = MapUtil.getStr(param, "bus_no");
+        System.out.println("uid:"+uid+"-----"+"bus_no:"+busNo);
         //根据云报关推送的订单号以及订单状态，更新oms系统订单状态
         //通过订单号查询该订单的订单信息
-        OrderCustoms orderCustoms = orderCustomsService.getOrderCustomsByOrderNo(orderNo);
+        OrderCustoms orderCustoms = orderCustomsService.getOrderCustomsByOrderNo(busNo);
 
         //根据回传的云报关状态获取对应的oms系统订单状态
-        String code1 = BGOrderStatusEnum.getCode1(status);
+        String code1 = BGOrderStatusEnum.getCode1(stateName);
 
         if(code1.equals("C_2")){ //报关打单
             orderCustoms.setStatus(code1);

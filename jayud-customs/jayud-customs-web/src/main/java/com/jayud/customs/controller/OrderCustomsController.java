@@ -163,7 +163,6 @@ public class OrderCustomsController {
         pushOrderForm.setHead(customsHeadForm);
         pushOrderForm.setCallback(pathName);
         PushOrderVO pushOrderVO = customsApiService.pushOrder(pushOrderForm);
-        System.out.println("pushOrderVO==========================================="+pushOrderVO);
     }
 
     @ApiOperation(value = "报关打单/重新打单:录入委托号")

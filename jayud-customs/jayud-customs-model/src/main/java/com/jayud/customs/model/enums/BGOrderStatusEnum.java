@@ -12,7 +12,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public enum BGOrderStatusEnum {
 
-    CUSTOMS_C_2("C_2", "报关打单", "报关接单"),
+    CUSTOMS_C_2("C_2", "报关打单", "逻辑审核"),
     CUSTOMS_C_3("C_3", "报关复核","复核"),
     CUSTOMS_C_9("C_9", "报关二复","总复核"),
     CUSTOMS_C_11("C_11", "申报舱单","导入舱单"),

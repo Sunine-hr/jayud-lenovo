@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -62,6 +63,9 @@ public class OrderCostTemplateDTO extends Model<OrderCostTemplateDTO> {
     public void checkAddOpt() {
         if (StringUtils.isEmpty(this.name)) {
             throw new JayudBizException(500, "请输入模块名称");
+        }
+        if (CollectionUtils.isEmpty(costTemplateInfo)){
+            throw new JayudBizException(400,"请输入费用项");
         }
         for (OrderCostTemplateInfoDTO orderCostTemplateInfoDTO : costTemplateInfo) {
             orderCostTemplateInfoDTO.checkAdd();

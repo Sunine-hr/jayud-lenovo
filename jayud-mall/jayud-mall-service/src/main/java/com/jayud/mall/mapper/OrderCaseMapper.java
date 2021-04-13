@@ -46,4 +46,11 @@ public interface OrderCaseMapper extends BaseMapper<OrderCase> {
      * @return
      */
     List<OrderCaseConfVO> findOrderCaseConfByOrderId(@Param("orderId") Long orderId);
+
+    /**
+     * 查询订单箱号
+     * @param cartonNo 订单箱号
+     * @return
+     */
+    OrderCaseVO findOrderCaseByCartonNo(@Param("cartonNo") String cartonNo);
 }

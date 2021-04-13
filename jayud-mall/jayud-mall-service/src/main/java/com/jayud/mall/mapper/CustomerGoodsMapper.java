@@ -36,4 +36,12 @@ public interface CustomerGoodsMapper extends BaseMapper<CustomerGoods> {
      * @return
      */
     CustomerGoodsVO findCustomerGoodsById(@Param("id") Integer id);
+
+    /**
+     * 查询客户商品
+     * @param customerId 客户id
+     * @param sku 商品sku
+     * @return
+     */
+    CustomerGoodsVO findCustomerGoodsByCustomerIdAndsku(@Param("customerId") Integer customerId, @Param("sku") String sku);
 }

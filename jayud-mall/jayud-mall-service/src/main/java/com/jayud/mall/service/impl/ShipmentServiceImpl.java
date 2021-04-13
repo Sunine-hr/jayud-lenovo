@@ -9,16 +9,21 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.OrderEnum;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.mall.mapper.OrderInfoMapper;
 import com.jayud.mall.mapper.ShipmentMapper;
 import com.jayud.mall.model.bo.QueryShipmentForm;
+import com.jayud.mall.model.po.OrderInfo;
 import com.jayud.mall.model.po.Shipment;
+import com.jayud.mall.model.vo.OrderInfoVO;
 import com.jayud.mall.model.vo.ShipmentVO;
-import com.jayud.mall.service.IShipmentService;
+import com.jayud.mall.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -38,6 +43,17 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
 
     @Autowired
     ShipmentMapper shipmentMapper;
+    @Autowired
+    OrderInfoMapper orderInfoMapper;
+
+    @Autowired
+    IOrderInfoService orderInfoService;
+    @Autowired
+    IOrderCaseService orderCaseService;
+    @Autowired
+    IOrderShopService orderShopService;
+    @Autowired
+    ICustomerGoodsService customerGoodsService;
 
     @Override
     public ShipmentVO saveShipment(ShipmentVO shipmentVO) {
@@ -81,23 +97,7 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
         List<ShipmentVO> records = pageInfo.getRecords();
         if(CollUtil.isNotEmpty(records)){
             records.forEach(shipmentVO -> {
-                String shipmentJson = shipmentVO.getShipmentJson();
-                if(StrUtil.isNotEmpty(shipmentJson)){
-                    ShipmentVO shipment = null;
-                    try {
-                        shipment = JSONUtil.toBean(shipmentJson, ShipmentVO.class);
-                        shipmentVO.setAttrs(shipment.getAttrs());
-                        shipmentVO.setTo_address(shipment.getTo_address());
-                        shipmentVO.setFrom_address(shipment.getFrom_address());
-                        shipmentVO.setCharge_list(shipment.getCharge_list());
-                        shipmentVO.setParcels(shipment.getParcels());
-                        shipmentVO.setPicking_time(shipment.getPicking_time());
-                        shipmentVO.setRates_time(shipment.getRates_time());
-                        shipmentVO.setCreat_time(shipment.getCreat_time());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+                fit(shipmentVO);
             });
         }
         return pageInfo;
@@ -109,8 +109,59 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
         if(ObjectUtil.isEmpty(shipmentVO)){
             return CommonResult.error(-1, "没有做找到新智慧对应的运单信息");
         }
+        fit(shipmentVO);
+        return CommonResult.success(shipmentVO);
+    }
+
+    @Override
+    public CommonResult<ShipmentVO> createOrderByShipment(String shipment_id) {
+        ShipmentVO shipmentVO = shipmentMapper.findShipmentById(shipment_id);
+        if(ObjectUtil.isEmpty(shipmentVO)){
+            return CommonResult.error(-1, "没有做找到新智慧对应的运单信息");
+        }
+        fit(shipmentVO);
+
+        String orderNo = shipmentVO.getShipment_id();
+        OrderInfoVO orderInfoVO = orderInfoMapper.findOrderInfoByOrderNo(orderNo);
+        if(ObjectUtil.isEmpty(orderInfoVO)){
+            OrderInfo orderInfo = new OrderInfo();
+            orderInfo.setOrderNo(shipmentVO.getShipment_id());//订单号
+            orderInfo.setCustomerId(shipmentVO.getCustomerId());//客户ID(customer id)
+
+            orderInfo.setOfferInfoId(null);//报价id(offer_info id),没有关联的报价
+            orderInfo.setReserveSize(null);//订柜尺寸,根据报价选择
+            orderInfo.setStoreGoodsWarehouseCode(null);//集货仓库代码,根据报价选择
+            orderInfo.setStoreGoodsWarehouseName(null);//集货仓库名称,根据报价选择
+            orderInfo.setDestinationWarehouseCode(null);//目的仓库代码,根据报价选择
+            orderInfo.setDestinationWarehouseName(null);//目的仓库名称,根据报价选择
+
+            orderInfo.setIsPick(0);//是否上门提货(0否 1是),默认为否
+            orderInfo.setStatus(OrderEnum.DRAFT.getCode());//状态码,默认为草稿状态
+            orderInfo.setStatusName(OrderEnum.DRAFT.getName());//状态名称
+
+            orderInfo.setCreateTime(shipmentVO.getCreatTime());//创建日期,新智慧的下单日期
+            orderInfo.setCreateUserId(shipmentVO.getCustomerId());//创建人ID(customer id)
+            orderInfo.setCreateUserName(shipmentVO.getCustomerUserName());//创建人名称(customer user_name)
+            orderInfo.setOrderOrigin("2");//订单来源(1web端 2新智慧同步)
+
+            orderInfo.setRemark("新智慧同步订单");
+            orderInfo.setChargeWeight(new BigDecimal(shipmentVO.getChargeable_weight()));//收费重(KG)
+            orderInfo.setVolumeWeight(new BigDecimal(shipmentVO.getChargeable_weight()));//材积重(KG),默认等于 收费重(KG)
+            orderInfo.setActualVolume(null);//实际体积(m3),默认为空
+            orderInfo.setTotalCartons(null);//总箱数,默认为空
+            orderInfoService.saveOrUpdate(orderInfo);
+        }
+
+        return null;
+    }
+
+    /**
+     * 组装数据
+     * @param shipmentVO
+     */
+    private void fit(ShipmentVO shipmentVO) {
         String shipmentJson = shipmentVO.getShipmentJson();
-        if(StrUtil.isNotEmpty(shipmentJson)){
+        if (StrUtil.isNotEmpty(shipmentJson)) {
             ShipmentVO shipment = null;
             try {
                 shipment = JSONUtil.toBean(shipmentJson, ShipmentVO.class);
@@ -126,6 +177,5 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
                 e.printStackTrace();
             }
         }
-        return CommonResult.success(shipmentVO);
     }
 }

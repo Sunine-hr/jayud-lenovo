@@ -37,4 +37,11 @@ public interface IShipmentService extends IService<Shipment> {
      * @return
      */
     CommonResult<ShipmentVO> findShipmentById(String shipment_id);
+
+    /**
+     * 根据新智慧运单生成南京订单(订单、订单商品、订单箱号)
+     * @param shipment_id 运单表
+     * @return
+     */
+    CommonResult<ShipmentVO> createOrderByShipment(String shipment_id);
 }

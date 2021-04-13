@@ -59,6 +59,11 @@ public class ShipmentVO {
     private String shipmentJson;
     @ApiModelProperty(value = "新智慧token")
     private String new_wisdom_token;
+
+    @ApiModelProperty(value = "客户id")
+    private Integer customerId;
+    @ApiModelProperty(value = "客户用户名称")
+    private String customerUserName;
 }
 
 @Data

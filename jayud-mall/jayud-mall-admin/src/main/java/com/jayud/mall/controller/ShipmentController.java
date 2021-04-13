@@ -46,9 +46,12 @@ public class ShipmentController {
     }
 
     //根据新智慧运单生成南京订单(订单、订单商品、订单箱号)
-    public CommonResult<ShipmentVO> findByShipment(@Valid @RequestBody QueryShipmentParaForm form){
+    @ApiOperation(value = "根据新智慧运单生成南京订单(订单、订单商品、订单箱号)")
+    @PostMapping("/createOrderByShipment")
+    @ApiOperationSupport(order = 3)
+    public CommonResult<ShipmentVO> createOrderByShipment(@Valid @RequestBody QueryShipmentParaForm form){
         String shipment_id = form.getShipment_id();
-        return null;
+        return shipmentService.createOrderByShipment(shipment_id);
     }
 
 

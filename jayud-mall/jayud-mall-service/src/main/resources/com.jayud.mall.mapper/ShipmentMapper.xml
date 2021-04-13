@@ -40,6 +40,8 @@
         <result column="created" property="created" />
         <result column="shipmentJson" property="shipmentJson" />
         <result column="new_wisdom_token" property="new_wisdom_token" />
+        <result column="customerId" property="customerId" />
+        <result column="customerUserName" property="customerUserName" />
     </resultMap>
 
     <select id="findShipmentByPage" parameterType="com.jayud.mall.model.bo.QueryShipmentForm"
@@ -80,8 +82,11 @@
                t.creat_time,
                t.created,
                t.shipmentJson,
-               t.new_wisdom_token
+               t.new_wisdom_token,
+               t1.id customerId,
+               t1.user_name customerUserName
         from shipment t
+        join customer t1 on t1.new_wisdom_token = t.new_wisdom_token
         where t.shipment_id = #{shipment_id}
     </select>
 

@@ -103,4 +103,11 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      * @return
      */
     List<OrderInfoVO> findOrderInfoByCustomer(@Param("form") OrderInfoCustomerForm form);
+
+    /**
+     * 根据订单号，查看订单
+     * @param orderNo
+     * @return
+     */
+    OrderInfoVO findOrderInfoByOrderNo(@Param("orderNo") String orderNo);
 }

@@ -99,7 +99,7 @@ public class OrderInfo extends Model<OrderInfo> {
     @JSONField(ordinal = 14)
     private String createUserName;
 
-    @ApiModelProperty(value = "订单来源，默认为1，web端；", position = 15)
+    @ApiModelProperty(value = "订单来源(1web端 2新智慧同步)", position = 15)
     @JSONField(ordinal = 15)
     private String orderOrigin;
 

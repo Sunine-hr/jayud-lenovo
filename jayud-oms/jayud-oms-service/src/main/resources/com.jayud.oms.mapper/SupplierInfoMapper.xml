@@ -87,9 +87,9 @@
         s.create_user createUser, s.create_time createTime,
         s.update_time updateTime,s.update_user updateUser,
         a.audit_status auditStatus, a.audit_comment auditComment,
-        ci.national_credit nationalCredit,
-        ci.customs_credit customsCredit,
-        ci.customs_credit_rating customsCreditRating
+        s.national_credit nationalCredit,
+        s.customs_credit customsCredit,
+        s.customs_credit_rating customsCreditRating
         from
         supplier_info s left join audit_info a on s.id = a.ext_id and ext_desc=#{form.auditTableDesc}
         <where>
@@ -120,9 +120,9 @@
         s.create_user createUser, s.create_time createTime,
         s.update_time updateTime,s.update_user updateUser,
         (select GROUP_CONCAT(srl.legal_entity_id) from supplier_rela_legal srl where srl.supplier_info_id = s.id group by s.id) legalEntityIdStr,
-        ci.national_credit nationalCredit,
-        ci.customs_credit customsCredit,
-        ci.customs_credit_rating customsCreditRating
+        s.national_credit nationalCredit,
+        s.customs_credit customsCredit,
+        s.customs_credit_rating customsCreditRating
         from
         supplier_info s
         LEFT JOIN `supplier_rela_legal` srl ON s.`id` = srl.`supplier_info_id`

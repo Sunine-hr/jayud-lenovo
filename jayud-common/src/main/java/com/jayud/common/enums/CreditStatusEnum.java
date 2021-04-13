@@ -16,7 +16,7 @@ import java.util.Objects;
 public enum CreditStatusEnum {
 
     ABNORMAL(0, "异常"),
-    NON_ANOMALY(1,"非异常");
+    NON_ANOMALY(1, "非异常");
     private Integer code;
     private String desc;
 
@@ -31,7 +31,7 @@ public enum CreditStatusEnum {
         return comboxStrVOS;
     }
 
-    public static String getDesc(String code) {
+    public static String getDesc(Integer code) {
         for (CreditStatusEnum value : values()) {
             if (Objects.equals(code, value.getCode())) {
                 return value.getDesc();

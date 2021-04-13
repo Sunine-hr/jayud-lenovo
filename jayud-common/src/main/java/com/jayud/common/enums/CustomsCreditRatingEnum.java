@@ -31,7 +31,7 @@ public enum CustomsCreditRatingEnum {
     }
 
 
-    public static String getDesc(String code) {
+    public static String getDesc(Integer code) {
         for (CustomsCreditRatingEnum value : values()) {
             if (Objects.equals(code, value.getCode())) {
                 return value.getDesc();

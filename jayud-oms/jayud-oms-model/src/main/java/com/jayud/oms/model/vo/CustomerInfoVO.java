@@ -1,5 +1,7 @@
 package com.jayud.oms.model.vo;
 
+import com.jayud.common.enums.CreditStatusEnum;
+import com.jayud.common.enums.CustomsCreditRatingEnum;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -115,9 +117,18 @@ public class CustomerInfoVO {
     @ApiModelProperty(value = "海关信用等级(0:一般认证企业,1:一般信用企业,2:高级信用企业,3:失信企业)")
     private Integer customsCreditRating;
 
+    @ApiModelProperty(value = "国家征信")
+    private String nationalCreditDesc;
+
+    @ApiModelProperty(value = "海关征信")
+    private String customsCreditDesc;
+
+    @ApiModelProperty(value = "海关信用等级(0:一般认证企业,1:一般信用企业,2:高级信用企业,3:失信企业)")
+    private String customsCreditRatingDesc;
+
 
     public List<Long> getLegalEntityIds() {
-        if(!StringUtil.isNullOrEmpty(this.legalEntityIdStr)){
+        if (!StringUtil.isNullOrEmpty(this.legalEntityIdStr)) {
             String[] strs = this.legalEntityIdStr.split(",");
             for (String str : strs) {
                 legalEntityIds.add(Long.valueOf(str));
@@ -126,8 +137,26 @@ public class CustomerInfoVO {
         return legalEntityIds;
     }
 
+
+    public void setNationalCredit(Integer nationalCredit) {
+        this.nationalCredit = nationalCredit;
+        this.nationalCreditDesc = CreditStatusEnum.getDesc(nationalCredit);
+    }
+
+    public void setCustomsCredit(Integer customsCredit) {
+        this.customsCredit = customsCredit;
+        this.customsCreditDesc = CreditStatusEnum.getDesc(nationalCredit);
+    }
+
+    public void setCustomsCreditRating(Integer customsCreditRating) {
+        this.customsCreditRating = customsCreditRating;
+        this.customsCreditRatingDesc = CustomsCreditRatingEnum.getDesc(customsCreditRating);
+    }
+
+
+
     public Boolean getStatusDesc() {
-        if("1".equals(this.status)){
+        if ("1".equals(this.status)) {
             return true;
         }
         return false;

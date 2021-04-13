@@ -23,6 +23,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -104,17 +105,26 @@ public class SeaReplenishmentServiceImpl extends ServiceImpl<SeaReplenishmentMap
     }
 
     @Override
-    public void deleteSeaReplenishment( String orderNo) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.like("sea_order_no", orderNo);
-        this.baseMapper.delete(queryWrapper);
+    public void deleteSeaReplenishment( List<String> orderNo) {
+        for (String s : orderNo) {
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.like("sea_order_no", s);
+            this.baseMapper.delete(queryWrapper);
+        }
     }
 
     @Override
-    public List<SeaReplenishment> getList(String orderNo) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.like("sea_order_no", orderNo);
-        return this.baseMapper.selectList(queryWrapper);
+    public List<SeaReplenishment> getList(List<String> orderNo) {
+        List<SeaReplenishment> seaReplenishments = new ArrayList<>();
+        for (String s : orderNo) {
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.like("sea_order_no", s);
+            List<SeaReplenishment> list = this.baseMapper.selectList(queryWrapper);
+            for (SeaReplenishment replenishment : list) {
+                seaReplenishments.add(replenishment);
+            }
+        }
+        return seaReplenishments;
     }
 
     @Override

@@ -37,9 +37,9 @@ public interface ISeaReplenishmentService extends IService<SeaReplenishment> {
      * 根据订单号删除补料单
      * @param orderNo
      */
-    void deleteSeaReplenishment(String orderNo);
+    void deleteSeaReplenishment(List<String> orderNo);
 
-    List<SeaReplenishment> getList(String orderNo);
+    List<SeaReplenishment> getList(List<String> orderNo);
 
     /**
      * 获取菜单操作数

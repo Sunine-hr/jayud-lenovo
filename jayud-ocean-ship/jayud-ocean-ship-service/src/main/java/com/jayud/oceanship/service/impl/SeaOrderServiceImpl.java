@@ -393,20 +393,28 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
     @Override
     public void updateOrSaveProcessStatus(SeaProcessOptForm form) {
 
+        //获取所有订单的订单号
+        List<String> orderNos = new ArrayList<>();
+        List<AddSeaOrderForm> seaOrderForms1 = form.getSeaOrderForms();
+        for (AddSeaOrderForm addSeaOrderForm : seaOrderForms1) {
+            orderNos.add(addSeaOrderForm.getOrderNo());
+        }
+
         //删除补料信息
-        List<SeaReplenishment> list = seaReplenishmentService.getList(form.getOrderNo());
+        List<SeaReplenishment> list = seaReplenishmentService.getList(orderNos);
         List<String> orderNo = new ArrayList<>();
         for (SeaReplenishment replenishment : list) {
             orderNo.add(replenishment.getOrderNo());
         }
-        seaReplenishmentService.deleteSeaReplenishment(form.getOrderNo());
+        seaReplenishmentService.deleteSeaReplenishment(orderNos);
 
         if(orderNo.size()>0){
+            //补料删除原来补料信息
             omsClient.deleteOrderAddressByBusOrders(orderNo,BusinessTypeEnum.HY.getCode());
             omsClient.deleteGoodsByBusOrders(orderNo,BusinessTypeEnum.HY.getCode());
             int i1 = seaContainerInformationService.deleteSeaContainerInfo(orderNo);
             if(i1<=0){
-                log.warn("货柜信息添加失败");
+                log.warn("货柜信息删除失败");
             }
         }
 

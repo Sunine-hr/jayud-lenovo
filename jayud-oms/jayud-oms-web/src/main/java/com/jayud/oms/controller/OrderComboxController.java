@@ -115,7 +115,7 @@ public class OrderComboxController {
             if (CreditStatusEnum.ABNORMAL.getCode().equals(customerInfo.getNationalCredit())
                     || CreditStatusEnum.ABNORMAL.getCode().equals(customerInfo.getCustomsCredit())
                     || CustomsCreditRatingEnum.THREE.getCode().equals(customerInfo.getCustomsCreditRating())) {
-                comboxStrVO.setNote("该用存在风险");
+                comboxStrVO.setNote("该用户存在风险");
             }
 
             comboxStrVO.setName(customerInfo.getName() + " (" + customerInfo.getIdCode() + ")");

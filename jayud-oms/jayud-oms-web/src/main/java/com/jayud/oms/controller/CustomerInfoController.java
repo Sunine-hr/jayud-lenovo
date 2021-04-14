@@ -87,6 +87,17 @@ public class CustomerInfoController {
         return CommonResult.success(pageVO);
     }
 
+    @ApiOperation(value = "根据客户code查询相客户信息")
+    @PostMapping(value = "/getByCode")
+    public CommonResult<CustomerInfo> getByCode(@RequestBody Map<String, Object> map) {
+        String customerCode = MapUtil.getStr(map, "customerCode");
+        if (StringUtils.isEmpty(customerCode)) {
+            return CommonResult.success();
+        }
+        CustomerInfo customerInfo = customerInfoService.getByCode(customerCode);
+        return CommonResult.success(customerInfo);
+    }
+
     @ApiOperation(value = "查看客户详情和编辑时数据回显,id=客户ID")
     @PostMapping(value = "/getCustomerInfoById")
     public CommonResult<CustomerInfoVO> getCustomerInfoById(@RequestBody Map<String, Object> param) {

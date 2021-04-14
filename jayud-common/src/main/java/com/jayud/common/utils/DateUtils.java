@@ -375,4 +375,8 @@ public class DateUtils {
         return df.format(cal.getTime());
     }
 
+    public static Date localDateTime2Date(LocalDateTime localDateTime) {
+        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
 }

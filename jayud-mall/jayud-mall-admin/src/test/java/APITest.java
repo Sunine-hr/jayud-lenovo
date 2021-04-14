@@ -114,4 +114,10 @@ public class APITest {
     }
 
 
+
+    public String push(){
+        return "1";
+    }
+
+
 }

@@ -63,6 +63,8 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
     ICustomerGoodsService customerGoodsService;
     @Autowired
     IFabWarehouseService fabWarehouseService;
+    @Autowired
+    IShipmentService shipmentService;
 
     @Override
     public ShipmentVO saveShipment(ShipmentVO shipmentVO) {
@@ -93,6 +95,12 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
         }
         s.setShipmentJson(JSONUtil.toJsonStr(shipmentVO));
         this.saveOrUpdate(s);
+
+        String shipment_id1 = s.getShipment_id();
+        OrderInfoVO orderInfoByOrderNo = orderInfoMapper.findOrderInfoByOrderNo(shipment_id1);
+        if(ObjectUtil.isEmpty(orderInfoByOrderNo)){
+            shipmentService.createOrderByShipment(shipment_id1);
+        }
         return shipmentVO;
     }
 

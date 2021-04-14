@@ -1,11 +1,11 @@
 package com.jayud.tms.model.vo;
 
 import cn.hutool.core.collection.CollectionUtil;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.tms.model.po.OrderTakeAdr;
-import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -70,7 +70,7 @@ public class OrderTransportVO {
     private String cntrNo;
 
     @ApiModelProperty(value = "是否有费用详情")
-    private boolean isCost;
+    private Boolean cost;
 
     @ApiModelProperty(value = "中港运输状态,用于标识驳回可编辑")
     private String subTmsStatus;
@@ -165,6 +165,7 @@ public class OrderTransportVO {
     private String createdUser;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private String createdTimeStr;
 
     @ApiModelProperty(value = "商品信息")

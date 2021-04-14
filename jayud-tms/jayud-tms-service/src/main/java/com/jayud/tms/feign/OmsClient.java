@@ -2,12 +2,10 @@ package com.jayud.tms.feign;
 
 
 import com.jayud.common.ApiResult;
-import com.jayud.common.CommonResult;
 import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.tms.model.bo.AuditInfoForm;
 import com.jayud.tms.model.bo.HandleSubProcessForm;
 import com.jayud.tms.model.bo.OprStatusForm;
-import com.jayud.tms.model.vo.DriverInfoLinkVO;
 import com.jayud.tms.model.vo.InitComboxVO;
 import com.jayud.tms.model.vo.OrderStatusVO;
 import io.swagger.annotations.ApiOperation;
@@ -16,9 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -212,5 +209,14 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/getLogisticsTrackBySubId")
     public ApiResult getLogisticsTrackByType(@RequestParam("subOrderIds") List<Long> subOrderIds,
-                                                      @RequestParam("type") Integer type) ;
+                                             @RequestParam("type") Integer type);
+
+
+    /**
+     * 是否录用费用
+     * @return
+     */
+    @RequestMapping(value = "/api/isCost")
+    public ApiResult<Map<String, Object>> isCost(@RequestBody List<String> orderNos,
+                                                 @RequestParam("subType") String subType);
 }

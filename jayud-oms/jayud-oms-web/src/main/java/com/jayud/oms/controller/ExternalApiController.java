@@ -1291,14 +1291,14 @@ public class ExternalApiController {
         List<OrderReceivableCost> receivables = this.orderReceivableCostService.getByType(orderNos, subType);
 
         if (SubOrderSignEnum.MAIN.getSignOne().equals(subType)) {
-            Map<String, Object> tmp = payments.stream().collect(Collectors.toMap(OrderPaymentCost::getMainOrderNo, e -> e));
+            Map<String, Long> tmp = payments.stream().collect(Collectors.groupingBy(OrderPaymentCost::getMainOrderNo, Collectors.counting()));
             map.putAll(tmp);
-            tmp = receivables.stream().collect(Collectors.toMap(OrderReceivableCost::getMainOrderNo, e -> e));
+            tmp = receivables.stream().collect(Collectors.groupingBy(OrderReceivableCost::getMainOrderNo, Collectors.counting()));
             map.putAll(tmp);
         } else {
-            Map<String, Object> tmp = payments.stream().collect(Collectors.toMap(OrderPaymentCost::getOrderNo, e -> e));
+            Map<String, Long> tmp = payments.stream().collect(Collectors.groupingBy(OrderPaymentCost::getOrderNo, Collectors.counting()));
             map.putAll(tmp);
-            tmp = receivables.stream().collect(Collectors.toMap(OrderReceivableCost::getOrderNo, e -> e));
+            tmp = receivables.stream().collect(Collectors.groupingBy(OrderReceivableCost::getOrderNo, Collectors.counting()));
             map.putAll(tmp);
         }
 

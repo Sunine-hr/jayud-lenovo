@@ -1,5 +1,6 @@
 package com.jayud.tms.service.impl;
 
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -11,6 +12,7 @@ import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
@@ -35,6 +37,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -229,9 +234,11 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 //        List<String> orderNo = pageList.stream().map(OrderTransportVO::getOrderNo).collect(Collectors.toList());
 //        List<OrderTakeAdr> takeAdrsList = this.orderTakeAdrService.getOrderTakeAdrByOrderNos(orderNo, null);
         List<OrderTakeAdrInfoVO> takeAdrsList = this.orderTakeAdrService.getOrderTakeAdrInfos(subOrderNos, null);
+        Map<String, Object> data = this.omsClient.isCost(subOrderNos, SubOrderSignEnum.ZGYS.getSignOne()).getData();
         for (OrderTransportVO orderTransportVO : pageList) {
 //            orderTransportVO.assemblyGoodsInfo(orderTakeAdrs);
 //            orderTransportVO.assemblyTakeFiles(takeAdrsList, prePath);
+            orderTransportVO.setCost(MapUtil.getBool(data, orderTransportVO.getOrderNo()));
             orderTransportVO.assemblyTakeAdrInfos(takeAdrsList, prePath);
         }
 
@@ -539,6 +546,5 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         Integer num = this.baseMapper.getNumByStatus(status, legalIds);
         return num == null ? 0 : num;
     }
-
 
 }

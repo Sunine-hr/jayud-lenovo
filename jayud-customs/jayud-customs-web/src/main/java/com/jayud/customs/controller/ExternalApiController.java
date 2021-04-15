@@ -182,8 +182,8 @@ public class ExternalApiController {
     }
 
     @ApiOperation(value = "接收云报关改变状态回传的信息")
-    @PostMapping("/api/feedback/status")
-    public ApiResult receiveStatus(@RequestBody Map<String, String> param) {
+    @PostMapping("/api/feedback/status/{busNo}")
+    public ApiResult receiveStatus(@RequestBody Map<String, String> param,@PathVariable String busNo) {
 
         System.out.println("云报关回调方法成功");
         String applyNo = MapUtil.getStr(param, "ApplyNo");
@@ -192,13 +192,11 @@ public class ExternalApiController {
         String stateDt = MapUtil.getStr(param, "StateDt");
         String note = MapUtil.getStr(param, "Note");
         String stateName = MapUtil.getStr(param, "StateName");
-        System.out.println("applyNo:"+applyNo+"-----"+"applyDt:"+applyDt);
-        System.out.println("stateNo:"+stateNo+"-----"+"stateDt:"+stateDt+"-----"+"note:"+note+"-----"+"stateName:"+stateName);
         //委托单号
         String BgId = MapUtil.getStr(param, "BgId");
         //委托号
         String BusNo = MapUtil.getStr(param, "BusNo");
-        String busNo = MapUtil.getStr(param, "busNo");
+//        String busNo = MapUtil.getStr(param, "busNo");
         System.out.println("BgId:"+BgId+"-----"+"BusNo:"+BusNo+"-----"+"busNo:"+busNo);
         //根据云报关推送的订单号以及订单状态，更新oms系统订单状态
         //通过订单号查询该订单的订单信息

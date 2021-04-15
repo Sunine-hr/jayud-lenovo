@@ -1,9 +1,11 @@
 package com.jayud.oms.controller;
 
 
+import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.ResultEnum;
 import com.jayud.oms.model.bo.AddCustomsQuestionnaireForm;
 import com.jayud.oms.model.bo.QueryCustomsQuestionnaireForm;
 import com.jayud.oms.model.po.CustomsQuestionnaire;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -48,6 +51,18 @@ public class CustomsQuestionnaireController {
     public CommonResult<CommonPageResult<CustomsQuestionnaireVO>> findByPage(@RequestBody QueryCustomsQuestionnaireForm form) {
         IPage<CustomsQuestionnaireVO> list = this.customsQuestionnaireService.findByPage(form);
         return CommonResult.success(new CommonPageResult<>(list));
+    }
+
+
+    @ApiOperation("获取海关调查问卷详情")
+    @PostMapping(value = "/getById")
+    public CommonResult<CustomsQuestionnaire> getById(@RequestBody Map<String, Object> map) {
+        Long id = MapUtil.getLong(map, "id");
+        if (id == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        CustomsQuestionnaire customsQuestionnaire = this.customsQuestionnaireService.getById(id);
+        return CommonResult.success(customsQuestionnaire);
     }
 }
 

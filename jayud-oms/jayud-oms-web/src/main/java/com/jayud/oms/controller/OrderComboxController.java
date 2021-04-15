@@ -17,10 +17,7 @@ import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.FreightAirClient;
 import com.jayud.oms.feign.OauthClient;
-import com.jayud.oms.model.enums.LegalEntityAuditStatusEnum;
-import com.jayud.oms.model.enums.RoleKeyEnum;
-import com.jayud.oms.model.enums.StatusEnum;
-import com.jayud.oms.model.enums.VehicleTypeEnum;
+import com.jayud.oms.model.enums.*;
 import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
@@ -545,6 +542,12 @@ public class OrderComboxController {
         map.put("creditRating", CustomsCreditRatingEnum.getDropDownList());
 
         return CommonResult.success(map);
+    }
+
+    @ApiOperation(value = "海关调查问卷状态-下拉框")
+    @PostMapping(value = "/initCustomsQuestionnaireStatus")
+    public CommonResult<List<com.jayud.common.entity.InitComboxVO>> initCustomsQuestionnaireStatus() {
+        return CommonResult.success(CustomsQuestionnaireStatusEnum.getDropDownList());
     }
 
 }

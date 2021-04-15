@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 /**
  * <p>
@@ -21,14 +22,18 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
 @ApiModel(value="CustomsQuestionnaire对象", description="海关调查问卷")
 public class CustomsQuestionnaire extends Model<CustomsQuestionnaire> {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "主键")
-      @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
+
+    @ApiModelProperty(value = "订单号")
+    private String orderNo;
 
     @ApiModelProperty(value = "客户名称")
     private String customerName;
@@ -93,6 +98,9 @@ public class CustomsQuestionnaire extends Model<CustomsQuestionnaire> {
     @ApiModelProperty(value = "评估日期")
     private LocalDateTime evaluationDate;
 
+    @ApiModelProperty(value = "失效时间")
+    private LocalDateTime expiresTime;
+
     @ApiModelProperty(value = "状态(0:待审核,1:经理审核,2:总经理审核)")
     private Integer status;
 
@@ -104,6 +112,9 @@ public class CustomsQuestionnaire extends Model<CustomsQuestionnaire> {
 
     @ApiModelProperty(value = "更新时间")
     private LocalDateTime updateTime;
+
+    @ApiModelProperty(value = "审核意见")
+    private String auditOpinion;
 
 
     @Override

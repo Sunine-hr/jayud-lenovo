@@ -1,38 +1,27 @@
 package com.jayud.common.enums;
 
-import com.jayud.common.entity.InitComboxVO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /**
- * 征信类型
+ * 业务类型(空运,中港运输,纯报关,...)
  */
 @Getter
 @AllArgsConstructor
-public enum CreditStatusEnum {
+public enum CustomerTypeEnum {
 
-    ABNORMAL(0, "有异常"),
-    NON_ANOMALY(1, "无异常");
+    ONE(1, "同行"),
+    TWO(2, "电商"),
+    THREE(3, "货代"), FOUR(4, "供应商"),
+    FIVE(5, "工厂"), SIX(6, "贸易"),
+    SEVEN(7, "国际");
     private Integer code;
     private String desc;
 
-    public static List<InitComboxVO> getDropDownList() {
-        List<InitComboxVO> comboxStrVOS = new ArrayList<>();
-        for (CreditStatusEnum value : values()) {
-            InitComboxVO comboxStrVO = new InitComboxVO();
-            comboxStrVO.setId(Long.valueOf(value.getCode()));
-            comboxStrVO.setName(value.getDesc());
-            comboxStrVOS.add(comboxStrVO);
-        }
-        return comboxStrVOS;
-    }
-
     public static String getDesc(Integer code) {
-        for (CreditStatusEnum value : values()) {
+        for (CustomerTypeEnum value : values()) {
             if (Objects.equals(code, value.getCode())) {
                 return value.getDesc();
             }
@@ -41,7 +30,7 @@ public enum CreditStatusEnum {
     }
 
     public static Integer getCode(String desc) {
-        for (CreditStatusEnum value : values()) {
+        for (CustomerTypeEnum value : values()) {
             if (Objects.equals(desc, value.getDesc())) {
                 return value.getCode();
             }

@@ -108,10 +108,9 @@ public class AddCustomsQuestionnaireForm extends Model<AddCustomsQuestionnaireFo
     private String updateUser;
 
     @ApiModelProperty(value = "更新时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
-    @ApiModelProperty(value = "警告")
-    private String warningMsg;
 
     public void checkAdd() {
         if (StringUtils.isEmpty(customerCode)) {
@@ -188,21 +187,6 @@ public class AddCustomsQuestionnaireForm extends Model<AddCustomsQuestionnaireFo
         System.out.println(str);
     }
 
-    public String getWarningMsg() {
-        if (this.status != 0) {
-            return "";
-        }
-        LocalDateTime dateOne = this.evaluationDate.plusMonths(11);
-        LocalDateTime dateTwo = this.evaluationDate.plusMonths(12);
-        if (LocalDateTime.now().compareTo(dateOne) >= 0 &&
-                LocalDateTime.now().compareTo(dateTwo) < 0) {
-            return "将近过期,请审核";
-        }
-        if (LocalDateTime.now().compareTo(dateTwo) >= 0) {
-            return "已过期";
-        }
-        return "";
-    }
 
     @Override
     protected Serializable pkVal() {

@@ -5,6 +5,7 @@ import org.apache.http.util.TextUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -417,5 +418,10 @@ public class StringUtils {
         System.out.println(table.get(0).get("town"));
         System.out.println(table.get(0).get("village"));
 
+    }
+
+    public static String supplyZero(int count, int zeroNum) {
+        DecimalFormat df=new DecimalFormat("0000");
+        return df.format(count);
     }
 }

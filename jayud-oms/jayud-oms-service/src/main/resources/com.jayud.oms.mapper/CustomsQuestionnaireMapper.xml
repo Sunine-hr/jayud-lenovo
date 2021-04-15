@@ -4,31 +4,31 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.CustomsQuestionnaire">
-        <id column="id" property="id" />
-        <result column="customer_name" property="customerName" />
-        <result column="customer_code" property="customerCode" />
-        <result column="customer_addr" property="customerAddr" />
-        <result column="legal_representative" property="legalRepresentative" />
-        <result column="customer_type" property="customerType" />
-        <result column="registered_capital" property="registeredCapital" />
-        <result column="phone" property="phone" />
-        <result column="national_credit" property="nationalCredit" />
-        <result column="customs_credit" property="customsCredit" />
-        <result column="payment_period" property="paymentPeriod" />
-        <result column="self_accounting" property="selfAccounting" />
-        <result column="is_alarm_system" property="isAlarmSystem" />
-        <result column="is_empe_iden_sys" property="isEmpeIdenSys" />
-        <result column="is_work_handover" property="isWorkHandover" />
-        <result column="is_bus_partner_comp_eval" property="isBusPartnerCompEval" />
-        <result column="is_goods_identical" property="isGoodsIdentical" />
-        <result column="is_provide_vehicle_info" property="isProvideVehicleInfo" />
-        <result column="risk_level" property="riskLevel" />
-        <result column="recorder" property="recorder" />
-        <result column="evaluation_date" property="evaluationDate" />
-        <result column="status" property="status" />
-        <result column="type" property="type" />
-        <result column="update_user" property="updateUser" />
-        <result column="update_time" property="updateTime" />
+        <id column="id" property="id"/>
+        <result column="customer_name" property="customerName"/>
+        <result column="customer_code" property="customerCode"/>
+        <result column="customer_addr" property="customerAddr"/>
+        <result column="legal_representative" property="legalRepresentative"/>
+        <result column="customer_type" property="customerType"/>
+        <result column="registered_capital" property="registeredCapital"/>
+        <result column="phone" property="phone"/>
+        <result column="national_credit" property="nationalCredit"/>
+        <result column="customs_credit" property="customsCredit"/>
+        <result column="payment_period" property="paymentPeriod"/>
+        <result column="self_accounting" property="selfAccounting"/>
+        <result column="is_alarm_system" property="isAlarmSystem"/>
+        <result column="is_empe_iden_sys" property="isEmpeIdenSys"/>
+        <result column="is_work_handover" property="isWorkHandover"/>
+        <result column="is_bus_partner_comp_eval" property="isBusPartnerCompEval"/>
+        <result column="is_goods_identical" property="isGoodsIdentical"/>
+        <result column="is_provide_vehicle_info" property="isProvideVehicleInfo"/>
+        <result column="risk_level" property="riskLevel"/>
+        <result column="recorder" property="recorder"/>
+        <result column="evaluation_date" property="evaluationDate"/>
+        <result column="status" property="status"/>
+        <result column="type" property="type"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -38,13 +38,34 @@
 
     <select id="findByPage" resultType="com.jayud.oms.model.vo.CustomsQuestionnaireVO">
         select
-        id, customer_name, customer_code, customer_addr, legal_representative, customer_type,
-         registered_capital, phone, national_credit, customs_credit, payment_period,
+        id,order_no, customer_name, customer_code, customer_addr, legal_representative, customer_type,
+        registered_capital, phone,contacts, national_credit, customs_credit, payment_period,
         self_accounting, is_alarm_system, is_empe_iden_sys, is_work_handover,
-         is_bus_partner_comp_eval, is_goods_identical, is_provide_vehicle_info,
-         risk_level, recorder, evaluation_date, status, type, update_user, update_time
+        is_bus_partner_comp_eval, is_goods_identical, is_provide_vehicle_info,
+        risk_level, recorder, evaluation_date,expires_time, status, `type`,
+        update_user, update_time
         from
         customs_questionnaire
+        <where>
+            <if test="form.orderNo != null and form.orderNo != ''">
+                and order_no like concat('%',#{form.order_no},'%')
+            </if>
+            <if test="form.customerName != null and form.customerName != ''">
+                and customer_name like concat('%',#{form.customerName},'%')
+            </if>
+            <if test="form.recorder != null and form.recorder != ''">
+                and recorder like concat('%',#{form.recorder},'%')
+            </if>
+            <if test="form.orderStatus != null">
+                <if test="form.orderStatus == 2">
+                    and evaluation_date <![CDATA[>=]]> date_add(evaluation_date, interval 11 month)
+                    and evaluation_date <![CDATA[<]]> expires_time
+                </if>
+                <if test="form.orderStatus == 3">
+                    and evaluation_date <![CDATA[>=]]> expires_time
+                </if>
+            </if>
+        </where>
     </select>
 
 </mapper>

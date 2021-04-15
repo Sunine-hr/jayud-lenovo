@@ -197,9 +197,9 @@ public class ExternalApiController {
         //委托单号
         String BgId = MapUtil.getStr(param, "BgId");
         //委托号
-        String busNo = MapUtil.getStr(param, "BusNo");
-        String orderNo = MapUtil.getStr(param, "order_no");
-        System.out.println("BgId:"+BgId+"-----"+"bus_no:"+busNo+"-----"+"orderNo:"+orderNo);
+        String BusNo = MapUtil.getStr(param, "BusNo");
+        String busNo = MapUtil.getStr(param, "busNo");
+        System.out.println("BgId:"+BgId+"-----"+"BusNo:"+BusNo+"-----"+"busNo:"+busNo);
         //根据云报关推送的订单号以及订单状态，更新oms系统订单状态
         //通过订单号查询该订单的订单信息
         OrderCustoms orderCustoms = orderCustomsService.getOrderCustomsByOrderNo(busNo);
@@ -210,6 +210,7 @@ public class ExternalApiController {
 
         if(code1.equals("C_2")){ //报关打单
             orderCustoms.setStatus(code1);
+            orderCustoms.setEntrustNo(BgId);
             //更新状态
             Boolean result = orderCustomsService.updateProcessStatus(orderCustoms);
             if(!result){

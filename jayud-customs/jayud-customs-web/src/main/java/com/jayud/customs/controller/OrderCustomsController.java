@@ -161,7 +161,8 @@ public class OrderCustomsController {
             }
         }
         pushOrderForm.setHead(customsHeadForm);
-        pushOrderForm.setCallback(pathName);
+        String path = pathName+orderCustoms.getOrderNo();
+        pushOrderForm.setCallback(path);
         PushOrderVO pushOrderVO = customsApiService.pushOrder(pushOrderForm);
     }
 

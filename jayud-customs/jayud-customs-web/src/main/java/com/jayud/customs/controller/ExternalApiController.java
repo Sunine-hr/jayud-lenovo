@@ -195,11 +195,11 @@ public class ExternalApiController {
         System.out.println("applyNo:"+applyNo+"-----"+"applyDt:"+applyDt);
         System.out.println("stateNo:"+stateNo+"-----"+"stateDt:"+stateDt+"-----"+"note:"+note+"-----"+"stateName:"+stateName);
         //委托单号
-        String uid = MapUtil.getStr(param, "uid");
+        String BgId = MapUtil.getStr(param, "BgId");
         //委托号
-        String busNo = MapUtil.getStr(param, "busNo");
+        String busNo = MapUtil.getStr(param, "BusNo");
         String orderNo = MapUtil.getStr(param, "order_no");
-        System.out.println("uid:"+uid+"-----"+"bus_no:"+busNo+"-----"+"orderNo:"+orderNo);
+        System.out.println("BgId:"+BgId+"-----"+"bus_no:"+busNo+"-----"+"orderNo:"+orderNo);
         //根据云报关推送的订单号以及订单状态，更新oms系统订单状态
         //通过订单号查询该订单的订单信息
         OrderCustoms orderCustoms = orderCustomsService.getOrderCustomsByOrderNo(busNo);

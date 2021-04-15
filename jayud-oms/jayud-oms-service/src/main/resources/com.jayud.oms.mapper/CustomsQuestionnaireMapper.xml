@@ -65,6 +65,9 @@
                     and evaluation_date <![CDATA[>=]]> expires_time
                 </if>
             </if>
+            <if test="form.status != null and form.status != ''">
+                and status =#{form.status}
+            </if>
         </where>
     </select>
 

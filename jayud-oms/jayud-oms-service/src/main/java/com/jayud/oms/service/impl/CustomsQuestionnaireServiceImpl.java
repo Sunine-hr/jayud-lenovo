@@ -9,15 +9,19 @@ import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.AddCustomsQuestionnaireForm;
 import com.jayud.oms.model.bo.QueryCustomsQuestionnaireForm;
+import com.jayud.oms.model.enums.CustomsQuestionnaireStatusEnum;
+import com.jayud.oms.model.po.AuditInfo;
 import com.jayud.oms.model.po.CustomerInfo;
 import com.jayud.oms.model.po.CustomsQuestionnaire;
 import com.jayud.oms.mapper.CustomsQuestionnaireMapper;
 import com.jayud.oms.model.vo.CustomsQuestionnaireVO;
+import com.jayud.oms.service.IAuditInfoService;
 import com.jayud.oms.service.ICustomerInfoService;
 import com.jayud.oms.service.ICustomsQuestionnaireService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
@@ -36,6 +40,8 @@ public class CustomsQuestionnaireServiceImpl extends ServiceImpl<CustomsQuestion
 
     @Autowired
     private ICustomerInfoService customerInfoService;
+    @Autowired
+    private IAuditInfoService auditInfoService;
 
     @Override
     public void addOrUpdate(AddCustomsQuestionnaireForm form) {
@@ -61,11 +67,19 @@ public class CustomsQuestionnaireServiceImpl extends ServiceImpl<CustomsQuestion
         return this.baseMapper.findByPage(page, form);
     }
 
+    @Override
+    @Transactional
+    public void approvalRejection(AuditInfo auditInfo) {
+        CustomsQuestionnaire customsQuestionnaire = new CustomsQuestionnaire().setId(auditInfo.getExtId()).setStatus(0);
+        this.baseMapper.updateById(customsQuestionnaire);
+        this.auditInfoService.save(auditInfo);
+    }
+
 
     public String generateOrderRules(Integer type) {
         //(0:客户,1:供应商)
         String prefix = type == 0 ? "CS" : "VN";
-        String count = StringUtils.supplyZero(this.count(), 4);
+        String count = StringUtils.supplyZero(this.count() + 1, 4);
         return prefix + DateUtils.format(new Date(), "yyyy") + count;
     }
 }

@@ -33,4 +33,7 @@ public class QueryCustomsQuestionnaireForm extends BasePageForm {
     @ApiModelProperty(value = "订单状态 (1:正常,2:提醒,3:失效)")
     private Integer orderStatus;
 
+    @ApiModelProperty(value = "审核状态")
+    private Integer status;
+
 }

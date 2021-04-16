@@ -112,6 +112,10 @@ public class SupplierInfoVO {
     @ApiModelProperty(value = "海关信用等级(0:一般认证企业,1:一般信用企业,2:高级信用企业,3:失信企业)")
     private Integer customsCreditRating;
 
+    @ApiModelProperty(value = "是否高级认证")
+    private Boolean isAdvancedCertification;
+
+
     /**
      * 组装服务类型id集合
      */

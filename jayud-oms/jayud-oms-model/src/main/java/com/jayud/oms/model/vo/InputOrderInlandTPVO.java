@@ -50,9 +50,8 @@ public class InputOrderInlandTPVO extends Model<InputOrderInlandTPVO> {
     @ApiModelProperty(value = "运输状态描述")
     private String statusDesc;
 
-//    @ApiModelProperty(value = "车型(1吨车 2柜车)")
-//    private Integer vehicleType;
-
+    @ApiModelProperty(value = "车型(1吨车 2柜车)")
+    private Integer vehicleType;
 
     @ApiModelProperty(value = "结算单位CODE")
     private String unitCode;

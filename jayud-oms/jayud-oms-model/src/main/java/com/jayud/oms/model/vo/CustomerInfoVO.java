@@ -148,7 +148,7 @@ public class CustomerInfoVO {
 
     public void setCustomsCredit(Integer customsCredit) {
         this.customsCredit = customsCredit;
-        this.customsCreditDesc = CreditStatusEnum.getDesc(nationalCredit);
+        this.customsCreditDesc = CreditStatusEnum.getDesc(customsCredit);
     }
 
     public void setCustomsCreditRating(Integer customsCreditRating) {

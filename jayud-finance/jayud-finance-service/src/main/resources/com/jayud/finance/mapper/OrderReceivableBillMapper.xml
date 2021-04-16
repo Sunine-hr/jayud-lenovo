@@ -296,22 +296,22 @@
             </when>
         </choose>
 
-<!--        <if test="form.cmd == 'zgys'">-->
-<!--            and ot.legal_name = #{form.legalName}-->
-<!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'zgys'-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'bg'">-->
-<!--            and oc.legal_name = #{form.legalName}-->
-<!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'bg'-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'ky'">-->
-<!--            and ao.legal_name = #{form.legalName}-->
-<!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'ky'-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'hy'">-->
-<!--            and so.legal_name = #{form.legalName}-->
-<!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'hy'-->
-<!--        </if>-->
+        <!--        <if test="form.cmd == 'zgys'">-->
+        <!--            and ot.legal_name = #{form.legalName}-->
+        <!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'zgys'-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'bg'">-->
+        <!--            and oc.legal_name = #{form.legalName}-->
+        <!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'bg'-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'ky'">-->
+        <!--            and ao.legal_name = #{form.legalName}-->
+        <!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'ky'-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'hy'">-->
+        <!--            and so.legal_name = #{form.legalName}-->
+        <!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'hy'-->
+        <!--        </if>-->
         ) temp where 1 = 1
         <if test="form.startAddress != null and form.startAddress != ''">
             and temp.startAddress like concat('%',#{form.startAddress},'%')
@@ -719,11 +719,24 @@
 
     </select>
 
-<!--    <select id="">-->
-<!--         select count(DISTINCT t1.main_order_no) from order_receivable_cost t1-->
-<!--         where t1.is_bill != '2' AND t1.is_bill != 'save_confirm' AND-->
-<!--         t1.is_sum_to_main = '1' and t1.status = '3' and t1.customer_code = orc.customer_code and-->
-<!--         t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_entity_id = #{legalEntityId})-->
+    <select id="statisticsNotPaidBillInfo" resultType="">
+        select
+        t1.main_order_no, t1.order_no,
+        t1.change_amount from order_receivable_cost t1
+        <where>
+            and t1.is_bill in('0','1')
+            and t1.is_sum_to_main = #{isMain}
+            and t1.status = 3
+            and t1.customer_code = #{customerCode}
+            <choose>
+                <when test="isMain">
+                    and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_entity_id = #{legalEntityId})
+                </when>
+                <otherwise>
+                    and t1.order_no in (select o1.order_no from ${dynamicSqlParam.table} o1 where o1.legal_entity_id = #{legalEntityId})
+                </otherwise>
+            </choose>
 
-<!--    </select>-->
+        </where>
+    </select>
 </mapper>

@@ -134,6 +134,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     WaybillTaskMapper waybillTaskMapper;
 
     @Autowired
+    CustomerMapper customerMapper;
+
+    @Autowired
     IOrderCustomsFileService orderCustomsFileService;
 
     @Autowired
@@ -1447,7 +1450,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Override
     public CommonResult syncOrder(SyncOrderForm form) {
-        String newWisdomToken = form.getNewWisdomToken();//新智慧token不能为空,每个客户的token不用，通过tonken区分客户
+
+        Integer customerId = form.getCustomerId();
+        CustomerVO customerVO = customerMapper.findCustomerById(customerId);
+        String newWisdomToken = customerVO.getNewWisdomToken();//新智慧token不能为空,每个客户的token不用，通过tonken区分客户
         //入参键值对
         Map<String, Object> requestMap = new HashMap<>();
         Map<String, Object> validation = new HashMap<>();

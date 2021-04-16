@@ -45,4 +45,11 @@ public interface CustomerMapper extends BaseMapper<Customer> {
      * @return
      */
     List<CustomerVO> findCustomer();
+
+    /**
+     * 根据id，查询客户list
+     * @param customerId
+     * @return
+     */
+    CustomerVO findCustomerById(@Param("customerId") Integer customerId);
 }

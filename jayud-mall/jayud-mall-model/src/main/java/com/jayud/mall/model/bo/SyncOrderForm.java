@@ -14,9 +14,14 @@ public class SyncOrderForm {
     @NotNull(message = "运单号不能为空")
     private String shipmentId;
 
-    @ApiModelProperty(value = "新智慧token", position = 2)
+//    @ApiModelProperty(value = "新智慧token", position = 2)
+//    @JSONField(ordinal = 2)
+//    @NotNull(message = "新智慧token不能为空")
+//    private String newWisdomToken;
+
+    @ApiModelProperty(value = "客户id", position = 2)
     @JSONField(ordinal = 2)
-    @NotNull(message = "新智慧token不能为空")
-    private String newWisdomToken;
+    @NotNull(message = "客户id不能为空")
+    private Integer customerId;
 
 }

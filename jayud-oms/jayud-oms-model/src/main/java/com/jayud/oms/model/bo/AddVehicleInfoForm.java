@@ -113,8 +113,6 @@ public class AddVehicleInfoForm {
                 if (this.mainDriverId == null) {
                     throw new JayudBizException("请选择司机");
                 }
-                //默认吨车
-                this.carType = 1;
                 break;
             default:
                 throw new JayudBizException("不存在该车辆类型");

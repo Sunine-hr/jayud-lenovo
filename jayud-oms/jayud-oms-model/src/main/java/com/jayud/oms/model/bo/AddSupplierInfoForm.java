@@ -80,6 +80,9 @@ public class AddSupplierInfoForm {
     @ApiModelProperty(value = "海关信用等级(0:一般认证企业,1:一般信用企业,2:高级信用企业,3:失信企业)")
     private Integer customsCreditRating;
 
+    @ApiModelProperty(value = "是否高级认证")
+    private Boolean isAdvancedCertification;
+
     public void checkAddr(){
         if (this.nationalCredit==null) {
             throw new JayudBizException(400,"请输入国家企业信用信息公示系统查询结果");
@@ -87,6 +90,10 @@ public class AddSupplierInfoForm {
         if (this.customsCredit==null) {
             throw new JayudBizException(400,"请输入中国海关企业进出口信用公示平台查询结果");
         }
+//        if (this.isAdvancedCertification == null) {
+//            throw new JayudBizException(400, "高级认证不能为空");
+//        }
+
     }
 
 }

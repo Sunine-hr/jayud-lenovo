@@ -718,4 +718,12 @@
         <!--        </if>-->
 
     </select>
+
+<!--    <select id="">-->
+<!--         select count(DISTINCT t1.main_order_no) from order_receivable_cost t1-->
+<!--         where t1.is_bill != '2' AND t1.is_bill != 'save_confirm' AND-->
+<!--         t1.is_sum_to_main = '1' and t1.status = '3' and t1.customer_code = orc.customer_code and-->
+<!--         t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_entity_id = #{legalEntityId})-->
+
+<!--    </select>-->
 </mapper>

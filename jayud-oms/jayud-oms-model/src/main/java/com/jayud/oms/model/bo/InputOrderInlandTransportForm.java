@@ -47,8 +47,8 @@ public class InputOrderInlandTransportForm extends Model<InputOrderInlandTranspo
     @ApiModelProperty(value = "状态(NL_0待接单,NL_1内陆接单,NL_1_1内陆接单驳回,NL_2内陆派车,NL_2_1内陆派车驳回,NL_3派车审核, NL_3_1派车审核不通过,NL_3_2派车审核驳回,L_4确认派车,NL_4_1确认派车驳回,NL_5车辆提货,NL_5_1车辆提货驳回,NL_6货物签收)")
     private String status;
 
-//    @ApiModelProperty(value = "车型(1吨车 2柜车)")
-//    private Integer vehicleType;
+    @ApiModelProperty(value = "车型(1吨车 2柜车)")
+    private Integer vehicleType;
 
     @ApiModelProperty(value = "车型(3T 5t 8T 10T 12T 20GP 40GP 45GP..)")
     private String vehicleSize;
@@ -98,13 +98,16 @@ public class InputOrderInlandTransportForm extends Model<InputOrderInlandTranspo
         if (StringUtils.isEmpty(this.unitCode)) {
             throw new JayudBizException("结算单位code" + msg);
         }
+        if (vehicleType == null) {
+            throw new JayudBizException("车型" + msg);
+        }
         if (StringUtils.isEmpty(this.legalName)) {
             throw new JayudBizException("操作主体" + msg);
         }
         if (this.legalEntityId == null) {
             throw new JayudBizException("操作主体id" + msg);
         }
-        if (CollectionUtil.isEmpty(pickUpAddressList)||CollectionUtil.isEmpty(orderDeliveryAddressList)) {
+        if (CollectionUtil.isEmpty(pickUpAddressList) || CollectionUtil.isEmpty(orderDeliveryAddressList)) {
             throw new JayudBizException("请输入提货/送货地址");
         } else {
             pickUpAddressList.forEach(OrderDeliveryAddress::checkCreateOrder);

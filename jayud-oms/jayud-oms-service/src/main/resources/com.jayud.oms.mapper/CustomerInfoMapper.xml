@@ -109,7 +109,8 @@
 		(select GROUP_CONCAT(crl.legal_entity_id) from customer_rela_legal crl where crl.customer_info_id = ci.id group by ci.id) legalEntityIdStr,
         ci.national_credit nationalCredit,
         ci.customs_credit customsCredit,
-        ci.customs_credit_rating customsCreditRating
+        ci.customs_credit_rating customsCreditRating,
+        ci.is_advanced_certification isAdvancedCertification
         FROM
         customer_info ci
         LEFT JOIN department d

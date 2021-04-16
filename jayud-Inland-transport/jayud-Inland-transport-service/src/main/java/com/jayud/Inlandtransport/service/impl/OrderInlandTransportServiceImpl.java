@@ -69,10 +69,9 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
     public String createOrder(AddOrderInlandTransportForm form) {
         LocalDateTime now = LocalDateTime.now();
         OrderInlandTransport inlandOrder = ConvertUtil.convert(form, OrderInlandTransport.class);
-        inlandOrder.setVehicleType(1);//吨车
         //生成订单号
         String orderNo = null;
-        //创建内陆运输订单
+        //创建内陆运输订
         if (form.getId() == null) {
             //生成订单号
             orderNo = form.getOrderNo();

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.enums.CreditStatusEnum;
 import com.jayud.common.enums.CustomerTypeEnum;
 import com.jayud.common.enums.CustomsCreditRatingEnum;
+import com.jayud.oms.model.enums.CustomerRiskLevelEnum;
 import com.jayud.oms.model.enums.CustomsQuestionnaireStatusEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -159,7 +160,7 @@ public class CustomsQuestionnaireVO extends Model<CustomsQuestionnaireVO> {
 
     public void setRiskLevel(Integer riskLevel) {
         this.riskLevel = riskLevel;
-        this.riskLevelDesc = CustomsCreditRatingEnum.getDesc(riskLevel);
+        this.riskLevelDesc = CustomerRiskLevelEnum.getDesc(riskLevel);
     }
 
 

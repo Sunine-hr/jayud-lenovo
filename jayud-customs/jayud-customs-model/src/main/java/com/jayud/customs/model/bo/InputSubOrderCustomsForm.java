@@ -16,6 +16,9 @@ public class InputSubOrderCustomsForm {
     @NotEmpty(message = "orderNo is required")
     private String orderNo;
 
+    @ApiModelProperty(value = "报关子订单")
+    private Long subOrderId;
+
     @ApiModelProperty(value = "报关抬头",required = true)
     @NotEmpty(message = "title is required")
     private String title;

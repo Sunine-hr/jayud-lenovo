@@ -74,6 +74,9 @@ public class InputOrderCustomsVO {
     @ApiModelProperty(value = "审核状态")
     private String status;
 
+    @ApiModelProperty(value = "监管方式")
+    private String supervisionMode;
+
 
     public void setSubCustomsStatus(String subCustomsStatus) {
         this.subCustomsStatus = subCustomsStatus;

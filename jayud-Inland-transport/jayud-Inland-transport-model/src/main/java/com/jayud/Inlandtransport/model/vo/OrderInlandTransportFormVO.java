@@ -172,8 +172,8 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
             }
 
         }
-        this.goodsInfo = sb.substring(0, sb.length() - 1);
-        this.goodsDesc = sb.toString().replaceAll(",", "<br/>");
+        this.goodsInfo = sb.toString();
+        this.goodsDesc = goodsInfo.replaceAll(",", "<br/>");
     }
 
     /**

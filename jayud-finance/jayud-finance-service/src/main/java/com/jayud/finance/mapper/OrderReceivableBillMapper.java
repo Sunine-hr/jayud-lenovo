@@ -167,4 +167,8 @@ public interface OrderReceivableBillMapper extends BaseMapper<OrderReceivableBil
     IPage<ReceiveNotPaidBillVO> findBaseNotPaidBillByPage(Page page, @Param("form") QueryNotPaidBillForm form, @Param("dynamicSqlParam") Map<String, Object> dynamicSqlParam);
 
 
+    List<Map<String, Object>> statisticsNotPaidBillInfo(@Param("isMain") Boolean isMain, @Param("customerCode") String customerCode,
+                                                        @Param("legalEntityId") Long legalEntityId,
+                                                        @Param("dynamicSqlParam") Map<String, Object> dynamicSqlParam);
+
 }

@@ -89,6 +89,10 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         IPage<OrderReceiveBillVO> pageInfo = null;
         if ("main".equals(form.getCmd())) {
             pageInfo = baseMapper.findReceiveBillByPage(page, form, legalIds);//法人主体/结算单位/可汇总主订单费用的维度统计
+            for (OrderReceiveBillVO record : pageInfo.getRecords()) {
+                List<Map<String, Object>> maps = baseMapper.statisticsNotPaidBillInfo(true, record.getUnitCode(), record.getLegalEntityId(), new HashMap<>());
+                record.statisticsNotPaidBillInfo(maps);
+            }
         } else {
             //动态sql参数
             Map<String, Object> param = new HashMap<>();
@@ -524,7 +528,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         }
         //内陆数据处理
 //        array = this.inlandTPDataProcessing(form, array, mainOrderNos);
-        array = this.commonService.templateDataProcessing(form.getCmd(), array, mainOrderNos,0);
+        array = this.commonService.templateDataProcessing(form.getCmd(), array, mainOrderNos, 0);
         return array;
     }
 
@@ -558,7 +562,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
     }
 
     @Override
-    public List<SheetHeadVO> findSheetHeadInfo(List<Long> costIds,String cmd) {
+    public List<SheetHeadVO> findSheetHeadInfo(List<Long> costIds, String cmd) {
         List<SheetHeadVO> allHeadList = new ArrayList<>();
         List<SheetHeadVO> fixHeadList = new ArrayList<>();
         try {

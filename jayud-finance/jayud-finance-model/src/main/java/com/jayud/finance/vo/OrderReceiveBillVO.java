@@ -1,7 +1,11 @@
 package com.jayud.finance.vo;
 
+import cn.hutool.core.map.MapUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * 该视图从其他表查询统计而来展示，后在保存到表中
@@ -36,5 +40,17 @@ public class OrderReceiveBillVO {
     @ApiModelProperty(value = "结算单位code")
     private String unitCode;
 
+
+    public void statisticsNotPaidBillInfo(List<Map<String, Object>> maps) {
+        BigDecimal amount = new BigDecimal(0);
+        Set<String> orderNos = new HashSet<>();
+        for (Map<String, Object> map : maps) {
+            orderNos.add(MapUtil.getStr(map, "orderNo"));
+            BigDecimal changeAmount = map.get("changeAmount") == null ? new BigDecimal(0) : (BigDecimal) map.get("changeAmount");
+            amount = amount.add(changeAmount);
+        }
+        this.notPaidOrderNum = orderNos.size();
+        this.notPaidAmount = amount.toPlainString();
+    }
 
 }

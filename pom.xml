@@ -31,6 +31,7 @@
         <module>jayud-Inland-transport</module>
 
         <module>jayud-trailer</module>
+        <module>jayud-storage</module>
 
     </modules>
     <parent>

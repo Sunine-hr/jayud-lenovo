@@ -1,6 +1,7 @@
 package com.jayud.airfreight.model.enums;
 
 import com.jayud.common.enums.OrderAddressEnum;
+import com.jayud.common.exception.JayudBizException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -19,7 +20,9 @@ public enum AirOrderTermsEnum {
     CFR(4, "CFR"),
     CPT(5, "CPT"),
     CNF(6, "CNF"),
-    CIP(7, "CIP"),;
+    CIP(7, "CIP"),
+    FCA(8, "FCA"),;
+
 
     private Integer code;
     private String desc;

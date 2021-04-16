@@ -3,6 +3,7 @@ package com.jayud.oms.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.oms.model.bo.AddCustomsQuestionnaireForm;
 import com.jayud.oms.model.bo.QueryCustomsQuestionnaireForm;
+import com.jayud.oms.model.po.AuditInfo;
 import com.jayud.oms.model.po.CustomsQuestionnaire;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.vo.CustomsQuestionnaireVO;
@@ -20,4 +21,6 @@ public interface ICustomsQuestionnaireService extends IService<CustomsQuestionna
     void addOrUpdate(AddCustomsQuestionnaireForm form);
 
     IPage<CustomsQuestionnaireVO> findByPage(QueryCustomsQuestionnaireForm form);
+
+    void approvalRejection(AuditInfo auditInfo);
 }

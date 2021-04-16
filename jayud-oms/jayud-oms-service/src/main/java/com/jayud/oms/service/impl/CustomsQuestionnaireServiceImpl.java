@@ -47,7 +47,7 @@ public class CustomsQuestionnaireServiceImpl extends ServiceImpl<CustomsQuestion
     public void addOrUpdate(AddCustomsQuestionnaireForm form) {
         CustomsQuestionnaire tmp = ConvertUtil.convert(form, CustomsQuestionnaire.class);
         CustomerInfo customerInfo = customerInfoService.getByCode(tmp.getCustomerCode());
-        tmp.setCustomerName(customerInfo.getName());
+        tmp.setCustomerName(customerInfo.getName()).setAuditOpinion(" ");
         if (tmp.getId() == null) {
             LocalDateTime now = LocalDateTime.now();
             tmp.setRecorder(UserOperator.getToken())

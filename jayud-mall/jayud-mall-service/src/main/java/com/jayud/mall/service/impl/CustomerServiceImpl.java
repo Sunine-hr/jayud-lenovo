@@ -222,10 +222,11 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
     @Override
     public List<CustomerVO> findCustomer() {
-        QueryWrapper<Customer> queryWrapper = new QueryWrapper<>();
-        //queryWrapper.eq("","");
-        List<Customer> list = this.list(queryWrapper);
-        List<CustomerVO> customerVOS = ConvertUtil.convertList(list, CustomerVO.class);
+//        QueryWrapper<Customer> queryWrapper = new QueryWrapper<>();
+//        //queryWrapper.eq("","");
+//        List<Customer> list = this.list(queryWrapper);
+//        List<CustomerVO> customerVOS = ConvertUtil.convertList(list, CustomerVO.class);
+        List<CustomerVO> customerVOS = customerMapper.findCustomer();
         return customerVOS;
     }
 

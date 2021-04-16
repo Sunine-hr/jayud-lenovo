@@ -133,5 +133,7 @@ public class CustomerVO {
     private String newWisdomToken;
 
     /****/
+    @ApiModelProperty(value = "展示字段(user_name + company)", position = 30)
+    private String text;
 
 }

@@ -11,6 +11,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * <p>
  * 客户表 Mapper 接口
@@ -37,4 +39,10 @@ public interface CustomerMapper extends BaseMapper<Customer> {
      * @return
      */
     CustomerVO customerLogin(@Param("form") CustomerLoginForm form);
+
+    /**
+     * 查询客户list
+     * @return
+     */
+    List<CustomerVO> findCustomer();
 }

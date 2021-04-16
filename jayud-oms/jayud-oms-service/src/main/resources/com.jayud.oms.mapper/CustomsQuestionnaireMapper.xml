@@ -43,7 +43,7 @@
         self_accounting, is_alarm_system, is_empe_iden_sys, is_work_handover,
         is_bus_partner_comp_eval, is_goods_identical, is_provide_vehicle_info,
         risk_level, recorder, evaluation_date,expires_time, status, `type`,
-        update_user, update_time
+        update_user, update_time,audit_opinion
         from
         customs_questionnaire
         <where>
@@ -65,7 +65,7 @@
                     and evaluation_date <![CDATA[>=]]> expires_time
                 </if>
             </if>
-            <if test="form.status != null and form.status != ''">
+            <if test="form.status != null">
                 and status =#{form.status}
             </if>
         </where>

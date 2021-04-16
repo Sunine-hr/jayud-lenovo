@@ -138,6 +138,9 @@ public class CustomsQuestionnaireVO extends Model<CustomsQuestionnaireVO> {
     @ApiModelProperty(value = "订单状态")
     private String orderStatus;
 
+    @ApiModelProperty(value = "审核意见")
+    private String auditOpinion;
+
 
     public void setCustomerType(Integer customerType) {
         this.customerType = customerType;

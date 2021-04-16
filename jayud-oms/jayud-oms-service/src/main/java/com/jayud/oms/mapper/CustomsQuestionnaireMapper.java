@@ -7,6 +7,7 @@ import com.jayud.oms.model.po.CustomsQuestionnaire;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.oms.model.vo.CustomsQuestionnaireVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -20,5 +21,6 @@ import org.apache.ibatis.annotations.Mapper;
 public interface CustomsQuestionnaireMapper extends BaseMapper<CustomsQuestionnaire> {
 
 
-    IPage<CustomsQuestionnaireVO> findByPage(Page<CustomsQuestionnaireVO> page, QueryCustomsQuestionnaireForm form);
+    IPage<CustomsQuestionnaireVO> findByPage(Page<CustomsQuestionnaireVO> page,
+                                             @Param("form") QueryCustomsQuestionnaireForm form);
 }

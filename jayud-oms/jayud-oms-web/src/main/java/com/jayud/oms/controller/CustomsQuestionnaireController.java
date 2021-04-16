@@ -93,13 +93,13 @@ public class CustomsQuestionnaireController {
     @PostMapping(value = "/approvalRejection")
     public CommonResult approvalRejection(@RequestBody Map<String, Object> map) {
         Long id = MapUtil.getLong(map, "id");
-        String msg = MapUtil.getStr(map, "msg");
+        String auditOpinion = MapUtil.getStr(map, "auditOpinion");
 
         AuditInfo auditInfo = new AuditInfo().setExtId(id)
                 .setExtDesc(AuditTypeDescEnum.TWO.getTable())
                 .setAuditTypeDesc(AuditTypeDescEnum.TWO.getDesc())
                 .setAuditStatus("reject")
-                .setAuditComment(msg);
+                .setAuditComment(auditOpinion);
         this.customsQuestionnaireService.approvalRejection(auditInfo);
         return CommonResult.success();
     }

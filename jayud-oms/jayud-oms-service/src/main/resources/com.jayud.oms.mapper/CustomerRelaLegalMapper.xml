@@ -16,7 +16,7 @@
         id, customer_info_id, legal_entity_id, created_user, created_time
     </sql>
 
-    <select id="findLegalByCustomerId"  resultType="com.jayud.oms.model.vo.LegalEntityVO">
+    <select id="findLegalByCustomerId" resultType="com.jayud.oms.model.vo.LegalEntityVO">
         SELECT
         le.id,
         le.legal_name legalName

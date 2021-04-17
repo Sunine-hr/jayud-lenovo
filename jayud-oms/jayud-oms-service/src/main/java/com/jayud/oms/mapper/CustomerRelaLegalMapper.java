@@ -25,5 +25,5 @@ public interface CustomerRelaLegalMapper extends BaseMapper<CustomerRelaLegal> {
      * @param auditStatus
      * @return
      */
-    List<LegalEntityVO> findLegalByCustomerId(@Param("id") Long id, Long auditStatus);
+    List<LegalEntityVO> findLegalByCustomerId(@Param("id") Long id, @Param("auditStatus") Long auditStatus);
 }

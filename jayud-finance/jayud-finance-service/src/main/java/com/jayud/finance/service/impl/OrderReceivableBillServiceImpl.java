@@ -90,7 +90,8 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         if ("main".equals(form.getCmd())) {
             pageInfo = baseMapper.findReceiveBillByPage(page, form, legalIds);//法人主体/结算单位/可汇总主订单费用的维度统计
             for (OrderReceiveBillVO record : pageInfo.getRecords()) {
-                List<Map<String, Object>> maps = baseMapper.statisticsNotPaidBillInfo(true, record.getUnitCode(), record.getLegalEntityId(), new HashMap<>());
+                List<Map<String, Object>> maps = baseMapper.statisticsNotPaidBillInfo(true, record.getUnitCode(),
+                        null, record.getLegalName(), new HashMap<>());
                 record.statisticsNotPaidBillInfo(maps);
             }
         } else {

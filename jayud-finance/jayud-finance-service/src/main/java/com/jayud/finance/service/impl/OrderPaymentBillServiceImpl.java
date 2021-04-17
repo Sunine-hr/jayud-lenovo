@@ -89,6 +89,11 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         IPage<OrderPaymentBillVO> pageInfo = null;
         if ("main".equals(form.getCmd())) {
             pageInfo = baseMapper.findPaymentBillByPage(page, form, legalIds);//法人主体/供应商/可汇总主订单费用的维度统计
+            for (OrderPaymentBillVO record : pageInfo.getRecords()) {
+                List<Map<String, Object>> maps = baseMapper.statisticsNotPaidBillInfo(true, record.getSupplierCode(),
+                        record.getLegalEntityId(), null, new HashMap<>());
+                record.statisticsNotPaidBillInfo(maps, true);
+            }
         } else {
             //动态sql参数
             Map<String, Object> param = new HashMap<>();

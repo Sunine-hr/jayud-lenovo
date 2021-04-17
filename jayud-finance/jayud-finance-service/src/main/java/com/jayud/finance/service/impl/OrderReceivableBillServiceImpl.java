@@ -92,7 +92,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             for (OrderReceiveBillVO record : pageInfo.getRecords()) {
                 List<Map<String, Object>> maps = baseMapper.statisticsNotPaidBillInfo(true, record.getUnitCode(),
                         null, record.getLegalName(), new HashMap<>());
-                record.statisticsNotPaidBillInfo(maps);
+                record.statisticsNotPaidBillInfo(maps,true);
             }
         } else {
             //动态sql参数

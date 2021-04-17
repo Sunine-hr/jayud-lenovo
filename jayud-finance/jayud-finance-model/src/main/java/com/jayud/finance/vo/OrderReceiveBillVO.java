@@ -41,11 +41,12 @@ public class OrderReceiveBillVO {
     private String unitCode;
 
 
-    public void statisticsNotPaidBillInfo(List<Map<String, Object>> maps) {
+    public void statisticsNotPaidBillInfo(List<Map<String, Object>> maps, Boolean isMain) {
         BigDecimal amount = new BigDecimal(0);
         Set<String> orderNos = new HashSet<>();
         for (Map<String, Object> map : maps) {
-            orderNos.add(MapUtil.getStr(map, "orderNo"));
+            String tmp=isMain?"mainOrderNo":"orderNo";
+            orderNos.add(MapUtil.getStr(map, tmp));
             BigDecimal changeAmount = map.get("changeAmount") == null ? new BigDecimal(0) : (BigDecimal) map.get("changeAmount");
             amount = amount.add(changeAmount);
         }

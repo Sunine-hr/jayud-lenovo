@@ -1,5 +1,6 @@
 package com.jayud.mall.model.po;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
@@ -26,21 +27,30 @@ public class TemplateFile extends Model<TemplateFile> {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "自增id")
+    @ApiModelProperty(value = "自增id", position = 1)
+    @JSONField(ordinal = 1)
     private Long id;
 
-    @ApiModelProperty(value = "报价模板id(quotation_template)")
+    @ApiModelProperty(value = "报价模板id(quotation_template id)", position = 2)
+    @JSONField(ordinal = 2)
     private Integer qie;
 
-    @ApiModelProperty(value = "文件标题(quoted_file)")
+    @ApiModelProperty(value = "文件标题(quoted_file file_name)", position = 3)
+    @JSONField(ordinal = 3)
     private String fileName;
 
-    @ApiModelProperty(value = "是否必要(0否 1是)")
+    @ApiModelProperty(value = "是否必要(0否 1是)", position = 4)
     @TableField(value = "`options`")
+    @JSONField(ordinal = 4)
     private Integer options;
 
-    @ApiModelProperty(value = "描述")
+    @ApiModelProperty(value = "描述", position = 5)
+    @JSONField(ordinal = 5)
     private String remarks;
+
+    @ApiModelProperty(value = "报价对应的文件id(quoted_file id)", position = 6)
+    @JSONField(ordinal = 6)
+    private String qfId;
 
     @Override
     protected Serializable pkVal() {

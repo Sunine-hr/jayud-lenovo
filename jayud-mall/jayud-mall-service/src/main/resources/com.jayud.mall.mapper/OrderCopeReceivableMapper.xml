@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.OrderCopeReceivableMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.OrderCopeReceivable">
+        <id column="id" property="id" />
+        <result column="order_id" property="orderId" />
+        <result column="cost_name" property="costName" />
+        <result column="amount" property="amount" />
+        <result column="cid" property="cid" />
+        <result column="remarks" property="remarks" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_id, cost_name, amount, cid, remarks
+    </sql>
+
+    <select id="findOrderCopeReceivableByOrderId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.OrderCopeReceivableVO">
+        select
+        t.id,t.order_id,t.cost_code,t.cost_name,t.amount,t.cid,t.remarks,t.bill_id,t.status,
+        t1.currency_code,t1.currency_name,
+        t2.customer_id,
+        t3.company customerName
+        from order_cope_receivable t
+        LEFT JOIN currency_info t1 on t1.id = t.cid
+        left join order_info t2 on t2.id = t.order_id
+        left join customer t3 on t3.id = t2.customer_id
+        where t.order_id = #{orderId}
+    </select>
+
+
+    <select id="findOrderCopeReceivableByOrderIdAndBillId"
+            resultType="com.jayud.mall.model.vo.OrderCopeReceivableVO">
+        select
+        t.id,t.order_id,t.cost_code,t.cost_name,t.amount,t.cid,t.remarks,t.bill_id,
+        t1.currency_code,t1.currency_name
+        from order_cope_receivable t
+        LEFT JOIN currency_info t1 on t1.id = t.cid
+        where
+        t.order_id = #{orderId, jdbcType=BIGINT}
+        and t.bill_id = #{billId, jdbcType=BIGINT}
+    </select>
+
+</mapper>

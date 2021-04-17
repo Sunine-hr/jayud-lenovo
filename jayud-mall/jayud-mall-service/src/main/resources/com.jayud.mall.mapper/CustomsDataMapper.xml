@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.CustomsDataMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.CustomsData">
+        <id column="id" property="id" />
+        <result column="id_code" property="idCode" />
+        <result column="cn_code" property="cnCode" />
+        <result column="hs_code" property="hsCode" />
+        <result column="ch_name" property="chName" />
+        <result column="en_name" property="enName" />
+        <result column="texture" property="texture" />
+        <result column="uses" property="uses" />
+        <result column="declare_price" property="declarePrice" />
+        <result column="cid" property="cid" />
+        <result column="suttle" property="suttle" />
+        <result column="suttle_unit" property="suttleUnit" />
+        <result column="gross_weight" property="grossWeight" />
+        <result column="gross_unit" property="grossUnit" />
+        <result column="drawback_tax" property="drawbackTax" />
+        <result column="pic_url" property="picUrl" />
+        <result column="declare_elements" property="declareElements" />
+        <result column="status" property="status" />
+        <result column="user_id" property="userId" />
+        <result column="user_name" property="userName" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, id_code, cn_code, hs_code, ch_name, en_name, texture, uses, declare_price, cid, suttle, suttle_unit, gross_weight, gross_unit, drawback_tax, pic_url, declare_elements, status, user_id, user_name, create_time
+    </sql>
+
+    <!--查询并分页-->
+    <select id="findCustomsDataByPage" parameterType="com.jayud.mall.model.bo.QueryCustomsDataForm"
+            resultType="com.jayud.mall.model.vo.CustomsDataVO" >
+        select t.id,
+        t.id_code,
+        t.cn_code,
+        t.hs_code,
+        t.ch_name,
+        t.en_name,
+        t.texture,
+        t.uses,
+        t.declare_price,
+        t.cid,
+        t.suttle,
+        t.suttle_unit,
+        t.gross_weight,
+        t.gross_unit,
+        t.drawback_tax,
+        t.efund_rates,
+        t.annex_fee,
+        t.pic_url,
+        t.declare_elements,
+        t.status,
+        t.user_id,
+        t.user_name,
+        t.create_time
+        from customs_data t
+        WHERE
+        1 = 1
+        <if test="form.idCode != null and form.idCode != ''">
+            AND t.id_code LIKE concat('%',#{form.idCode},'%')
+        </if>
+        <if test="form.enName != null and form.enName != ''">
+            AND t.en_name LIKE concat('%',#{form.enName},'%')
+        </if>
+        <if test="form.hsCode != null and form.hsCode != ''">
+            AND t.hs_code LIKE concat('%',#{form.hsCode},'%')
+        </if>
+    </select>
+
+
+</mapper>

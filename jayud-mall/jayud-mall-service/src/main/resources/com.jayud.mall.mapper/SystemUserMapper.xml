@@ -11,26 +11,20 @@
         <result column="en_user_name" property="enUserName"/>
         <result column="phone" property="phone"/>
         <result column="email" property="email"/>
-        <result column="is_department_charge" property="isDepartmentCharge"/>
-        <result column="department_id" property="departmentId"/>
-        <result column="work_id" property="workId"/>
-        <result column="work_name" property="workName"/>
-        <result column="company_id" property="companyId"/>
-        <result column="superior_id" property="superiorId"/>
-        <result column="login_time" property="loginTime"/>
-        <result column="status" property="status"/>
-        <result column="audit_status" property="auditStatus"/>
-        <result column="user_type" property="userType"/>
+        <result column="company" property="company" />
+        <result column="wkno" property="wkno" />
+        <result column="login_time" property="loginTime" />
+        <result column="status" property="status" />
         <result column="note" property="note"/>
         <result column="created_user" property="createdUser"/>
         <result column="created_time" property="createdTime"/>
-        <result column="updated_time" property="updatedTime"/>
         <result column="updated_user" property="updatedUser"/>
+        <result column="updated_time" property="updatedTime"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, `name`, password, user_name, en_user_name, phone, email, is_department_charge, department_id, work_id, work_name, company_id, superior_id, login_time, status, audit_status, user_type, note, created_user, created_time, updated_time, updated_user
+        id,`name`,`password`,user_name,en_user_name,phone,email,company,wkno,login_time,`status`,note,created_user,created_time,updated_user,updated_time
     </sql>
 
     <!--查询登录用户-->
@@ -38,7 +32,7 @@
         SELECT
         <include refid="Base_Column_List"/>
         FROM system_user
-        WHERE status = 1
+        WHERE status = 0
         AND phone=#{loginname} OR email=#{loginname}
     </select>
 
@@ -50,13 +44,13 @@
     </select>
 
     <!--插入用户-->
-    <insert id="insertUser" parameterType="com.jayud.mall.model.bo.SaveUserForm">
+    <insert id="insertUser" parameterType="com.jayud.mall.model.bo.SaveSystemUserForm">
         INSERT INTO system_user (user_name, company_id, en_user_name, phone, email)
         VALUES (#{userName}, #{companyId}, #{enUserName}, #{phone}, #{email})
     </insert>
 
     <!--修改用户-->
-    <update id="updateUser" parameterType="com.jayud.mall.model.bo.SaveUserForm">
+    <update id="updateUser" parameterType="com.jayud.mall.model.bo.SaveSystemUserForm">
         UPDATE system_user
         SET
             user_name = #{userName},
@@ -73,7 +67,7 @@
     </delete>
 
     <!--根据用户Id查询用户-->
-    <select id="getUser" parameterType="Long" resultType="com.jayud.mall.model.vo.SystemUserVO">
+    <select id="getUser" parameterType="Long" resultMap="SystemUserVOResultMap">
         select
         <include refid="Base_Column_List"/>
         from system_user where id = #{id}
@@ -83,7 +77,7 @@
     <update id="disableUser" parameterType="Long">
         UPDATE system_user
         SET
-            status = 0
+            status = 1
         where id = #{id}
     </update>
 
@@ -91,7 +85,7 @@
     <update id="enableUser" parameterType="Long">
         UPDATE system_user
         SET
-            status = 1
+            status = 0
         where id = #{id}
     </update>
 
@@ -105,42 +99,77 @@
 
     <!--查询用户分页-->
     <select id="findUserByPage" parameterType="com.jayud.mall.model.bo.QueryUserForm"
-            resultType="com.jayud.mall.model.vo.SystemUserVO" >
-        SELECT
-            su.id,
-            su.`name`,
-            su.`password`,
-            su.user_name,
-            su.en_user_name,
-            su.phone,
-            su.email,
-            su.is_department_charge,
-            su.department_id,
-            su.work_id,
-            su.work_name,
-            su.company_id,
-            su.superior_id,
-            su.login_time,
-            su.`status`,
-            su.audit_status,
-            su.user_type,
-            su.note,
-            su.created_user,
-            su.created_time,
-            su.updated_time,
-            su.updated_user
-        FROM
-            system_user su
-        WHERE
-            1 = 1
-        <if test="form.userName != null and form.userName != ''">
-            AND su.user_name LIKE concat('%',#{form.userName},'%')
+            resultMap="SystemUserVOResultMap" >
+        select
+        t.id,t.name,t.password,t.user_name,t.en_user_name,t.phone,t.email,t.company,t.wkno,t.login_time,t.`status`,t.note,t.created_user,t.created_time,t.updated_user,t.updated_time
+        from system_user t
+        left join (
+        select distinct user_id from system_user_role_relation
+        where 1=1
+        <if test="form.roleIds != null and form.roleIds.size > 0">
+            and role_id in
+            <foreach collection="form.roleIds" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
         </if>
-        <if test="form.status != null and form.status != ''">
-            AND su.`status` = #{form.status}
+        ) t1 on t1.user_id = t.id
+        where
+        1=1
+        <if test="form.name != null and form.name != ''">
+            and t.name LIKE concat('%',#{form.name},'%')
         </if>
-        GROUP BY
-            su.`id`
+        <if test="form.wkno != null and form.wkno != ''">
+            and t.wkno like concat('%',#{form.wkno},'%')
+        </if>
+        <if test="form.status != null">
+            and t.status = #{form.status}
+        </if>
+        <if test="form.roleIds != null and form.roleIds.size > 0">
+            and t.id = t1.user_id
+        </if>
+
+    </select>
+
+    <!--用户VO(包含角色list)-->
+    <resultMap id="SystemUserVOResultMap" type="com.jayud.mall.model.vo.SystemUserVO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="password" property="password"/>
+        <result column="user_name" property="userName"/>
+        <result column="en_user_name" property="enUserName"/>
+        <result column="phone" property="phone"/>
+        <result column="email" property="email"/>
+        <result column="company" property="company" />
+        <result column="wkno" property="wkno" />
+        <result column="login_time" property="loginTime" />
+        <result column="status" property="status" />
+        <result column="note" property="note"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_user" property="updatedUser"/>
+        <result column="updated_time" property="updatedTime"/>
+        <!--角色集合-->
+        <collection property="systemRoleVOS" column="id" ofType="com.jayud.mall.model.vo.SystemRoleVO" select="selectSystemRoleByUserId"></collection>
+        <!--角色id-->
+        <collection property="roleIds" column="id" ofType="java.lang.Long" select="selectSystemRoleIdByUserId"></collection>
+    </resultMap>
+
+    <!--根据用户id，查询用户角色-->
+    <select id="selectSystemRoleByUserId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.SystemRoleVO">
+        select t.id, t.role_name, t.role_describe, t.create_by, t.create_time, t.update_by, t.update_time
+        from system_role t
+        join system_user_role_relation t1 on t1.role_id = t.id
+        where t1.user_id = #{id}
+    </select>
+
+    <!--根据用户id，查询用户角色id-->
+    <select id="selectSystemRoleIdByUserId" parameterType="java.lang.Long"
+            resultType="java.lang.Long">
+        select t.id
+        from system_role t
+        join system_user_role_relation t1 on t1.role_id = t.id
+        where t1.user_id = #{id}
     </select>
 
 

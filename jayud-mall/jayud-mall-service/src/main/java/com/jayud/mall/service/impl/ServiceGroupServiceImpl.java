@@ -1,10 +1,10 @@
 package com.jayud.mall.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.mall.mapper.ServiceGroupMapper;
 import com.jayud.mall.model.bo.ServiceGroupForm;
 import com.jayud.mall.model.po.ServiceGroup;
+import com.jayud.mall.model.vo.ServiceGroupVO;
 import com.jayud.mall.service.IServiceGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,21 +26,8 @@ public class ServiceGroupServiceImpl extends ServiceImpl<ServiceGroupMapper, Ser
     ServiceGroupMapper serviceGroupMapper;
 
     @Override
-    public List<ServiceGroup> findServiceGroup(ServiceGroupForm form) {
-        QueryWrapper<ServiceGroup> queryWrapper = new QueryWrapper<>();
-        String idCode = form.getIdCode();
-        String codeName = form.getCodeName();
-        String status = form.getStatus();
-        if(idCode != null && idCode != ""){
-            queryWrapper.like("id_code", idCode);
-        }
-        if(codeName != null && codeName != ""){
-            queryWrapper.like("code_name", codeName);
-        }
-        if(status != null && status != ""){
-            queryWrapper.eq("status", status);
-        }
-        List<ServiceGroup> list = serviceGroupMapper.selectList(queryWrapper);
+    public List<ServiceGroupVO> findServiceGroup(ServiceGroupForm form) {
+        List<ServiceGroupVO> list = serviceGroupMapper.findServiceGroup(form);
         return list;
     }
 }

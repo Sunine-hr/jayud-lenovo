@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.mall.model.bo.QuotedFileForm;
 import com.jayud.mall.model.po.QuotedFile;
 import com.jayud.mall.mapper.QuotedFileMapper;
+import com.jayud.mall.model.vo.QuotedFileReturnVO;
 import com.jayud.mall.service.IQuotedFileService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,5 +63,11 @@ public class QuotedFileServiceImpl extends ServiceImpl<QuotedFileMapper, QuotedF
         }
         List<QuotedFile> list = quotedFileMapper.selectList(queryWrapper);
         return list;
+    }
+
+    @Override
+    public List<QuotedFileReturnVO> findQuotedFileBy(QuotedFileForm form) {
+        List<QuotedFileReturnVO> quotedFileReturnVOS = quotedFileMapper.findQuotedFileBy(form);
+        return quotedFileReturnVOS;
     }
 }

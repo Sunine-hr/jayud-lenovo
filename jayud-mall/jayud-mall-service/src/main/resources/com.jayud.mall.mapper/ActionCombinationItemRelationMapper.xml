@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.ActionCombinationItemRelationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.ActionCombinationItemRelation">
+        <id column="id" property="id" />
+        <result column="action_combination_id" property="actionCombinationId" />
+        <result column="action_item_id" property="actionItemId" />
+        <result column="prefix_declare" property="prefixDeclare" />
+        <result column="time_number" property="timeNumber" />
+        <result column="time_unit" property="timeUnit" />
+        <result column="sort" property="sort" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, action_combination_id, action_item_id, prefix_declare, time_number, time_unit, sort
+    </sql>
+
+    <select id="findActionCombinationItemRelationByActionCombinationId" parameterType="java.lang.Integer"
+            resultType="com.jayud.mall.model.vo.ActionCombinationItemRelationVO">
+        select
+        t.id,t.action_combination_id,t.action_item_id,t.prefix_declare,t.time_number,t.time_unit,t.sort,
+        t1.combination_name actionCombinationName,
+        t2.item_name actionItemName
+        from action_combination_item_relation t
+        left join action_combination t1 on t1.id = t.action_combination_id
+        left join action_item t2 on t2.id = t.action_item_id
+        where 1=1
+        and t.action_combination_id = #{actionCombinationId}
+    </select>
+
+
+</mapper>

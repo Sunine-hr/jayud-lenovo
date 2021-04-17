@@ -1,8 +1,9 @@
 package com.jayud.mall.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.bo.TransportWayForm;
 import com.jayud.mall.model.po.TransportWay;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.vo.TransportWayVO;
 
 import java.util.List;
 
@@ -21,5 +22,5 @@ public interface ITransportWayService extends IService<TransportWay> {
      * @param form
      * @return
      */
-    List<TransportWay> findTransportWay(TransportWayForm form);
+    List<TransportWayVO> findTransportWay(TransportWayForm form);
 }

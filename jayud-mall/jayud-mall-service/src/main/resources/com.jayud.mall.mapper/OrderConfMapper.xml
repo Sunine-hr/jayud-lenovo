@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.OrderConfMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.OrderConf">
+        <id column="id" property="id" />
+        <result column="order_no" property="orderNo" />
+        <result column="tid" property="tid" />
+        <result column="status" property="status" />
+        <result column="user_id" property="userId" />
+        <result column="user_name" property="userName" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_no, tid, destination_country_code, status, user_id, user_name, create_time
+    </sql>
+
+    <select id="findOrderConfByPage" parameterType="com.jayud.mall.model.bo.QueryOrderConfForm"
+            resultType="com.jayud.mall.model.vo.OrderConfVO" >
+        select
+        t.id,t.order_no,t.tid,t.destination_country_code,t.status,t.user_id,t.user_name,t.create_time,
+        t1.code_name tname,
+        t2.name destinationCountryName
+        from order_conf t
+        left join transport_way t1 on t1.id = t.tid
+        left join country t2 on t2.code = t.destination_country_code
+        where 1=1
+        <if test="form.orderNo != null and form.orderNo != ''">
+            and t.order_no LIKE concat('%',#{form.orderNo},'%')
+        </if>
+        <if test="form.destinationCountryCode != null and form.destinationCountryCode != ''">
+            and t.destination_country_code = #{form.destinationCountryCode}
+        </if>
+    </select>
+
+    <select id="findOrderConfById" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.OrderConfVO" >
+        select
+        t.id,t.order_no,t.tid,t.destination_country_code,t.status,t.user_id,t.user_name,t.create_time,
+        t1.code_name tname,
+        t2.name destinationCountryName
+        from order_conf t
+        left join transport_way t1 on t1.id = t.tid
+        left join country t2 on t2.code = t.destination_country_code
+        WHERE
+        t.id = #{id}
+    </select>
+
+    <select id="findOfferInfoVOByOrderId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.OfferInfoVO" >
+        select
+        t.id,t.qie,t.names,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.status,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,
+        CONCat(t4.code_name,'-',t5.code_name) route
+        from offer_info t
+        JOIN ocean_conf_detail t1 on t1.id_code = t.id and t1.types=1
+        JOIN order_conf t2 on t2.id = t1.order_id
+        LEFT JOIN quotation_template t3 on t3.id = t.qie
+        LEFT JOIN harbour_info t4 on t4.id_code = t3.start_shipment
+        LEFT JOIN harbour_info t5 on t5.id_code = t3.destination_port
+        where t2.id = #{orderId}
+    </select>
+
+    <select id="findOceanCounterVOByOrderId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.OceanCounterVO" >
+        select
+        t.id,t.cntr_no,t.cabinet_code,t.volume,t.cost,t.cid,t.`status`,t.ob_id,t.create_time,
+        t1.order_id,t1.supplier_code,t1.sail_time,
+        t2.supplier_ch_name
+        from ocean_counter t
+        left join ocean_bill t1 on t1.id = t.ob_id
+        left join supplier_info t2 on t2.supplier_code = t1.supplier_code
+        left join ocean_conf_detail t3 on t3.id_code = t1.id and t3.types=2
+        left JOIN order_conf t4 on t4.id = t3.order_id
+        where t4.id = #{orderId}
+    </select>
+    
+    <select id="findOceanBillVOByOrderId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.OceanBillVO">
+        select
+        t.id,t.tid,t.supplier_id,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time,t.task_id,t.operation_team_id,
+        t3.code_name    tname,
+        t4.company_name supplierName,
+        t5.code_name    startName,
+        t6.code_name    endName,
+        t7.group_name    taskName,
+        t8.group_name   operationTeamName
+        from
+        ocean_bill t
+        JOIN ocean_conf_detail t1 on t1.id_code = t.id and t1.types=2
+        JOIN order_conf t2 on t2.id = t1.order_id
+        left join transport_way t3 on t3.id = t.tid
+        left join  supplier_info t4 on t4.id = t.supplier_id
+        left join harbour_info t5 on t5.id_code = t.start_code
+        left join harbour_info t6 on t6.id_code = t.end_code
+        left join task_group t7 on t7.id = t.task_id
+        left join operation_team t8 on t8.id = t.operation_team_id
+        where t2.id = #{orderId}
+    </select>
+
+    <!--根据报价查询配载id，配载查询提单id，提单查询柜号id，最终获取柜号信息-->
+    <select id="findOceanCounterByOfferInfoId" parameterType="java.lang.Integer"
+            resultType="com.jayud.mall.model.po.OceanCounter">
+        select
+        t4.id,t4.cntr_no,t4.cabinet_code,t4.volume,t4.cost,t4.cid,t4.status,t4.ob_id,t4.create_time
+        from order_conf t
+        join (
+        select order_id pzId from ocean_conf_detail where types=1 and id_code=#{offerInfoId}
+        ) t1 on t1.pzId = t.id
+        left join (
+        select order_id pzId,id_code tdId from ocean_conf_detail where types=2
+        ) t2 on t2.pzId = t.id
+        left join (
+        select id tdId from ocean_bill
+        ) t3 on t3.tdId = t2.tdId
+        left join (
+        select id, cntr_no, cabinet_code, volume, cost, cid, status, ob_id, create_time from ocean_counter
+        ) t4 on t4.ob_id = t3.tdId
+    </select>
+
+
+</mapper>

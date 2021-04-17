@@ -2,8 +2,9 @@ package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.QueryUserForm;
-import com.jayud.mall.model.bo.SaveUserForm;
+import com.jayud.mall.model.bo.SaveSystemUserForm;
 import com.jayud.mall.model.bo.SystemUserLoginForm;
 import com.jayud.mall.model.po.SystemUser;
 import com.jayud.mall.model.vo.SystemUserVO;
@@ -35,21 +36,21 @@ public interface ISystemUserService extends IService<SystemUser> {
 
     /**
      * 新增用户
-     * @param user
+     * @param form
      */
-    void insertUser(SaveUserForm user);
+    CommonResult<SystemUserVO> insertUser(SaveSystemUserForm form);
 
     /**
      * 修改用户
-     * @param user
+     * @param form
      */
-    void updateUser(SaveUserForm user);
+    CommonResult<SystemUserVO> updateUser(SaveSystemUserForm form);
 
     /**
      * 删除用户
      * @param userId
      */
-    void deleteUser(Long userId);
+    CommonResult deleteUser(Long userId);
 
     /**
      * 通过id获取用户
@@ -63,19 +64,19 @@ public interface ISystemUserService extends IService<SystemUser> {
      * <p>帐号启用状态：0->Off；1->On</p>
      * @param id
      */
-    void disableUser(Long id);
+    CommonResult disableUser(Long id);
 
     /**
      * 启用用户
      * @param id
      */
-    void enableUser(Long id);
+    CommonResult enableUser(Long id);
 
     /**
      * 重置用户密码
      * @param id
      */
-    void resetPassword(Long id);
+    CommonResult resetPassword(Long id);
 
     /**
      * 查询用户分页

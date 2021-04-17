@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.OperationTeamMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.OperationTeam">
+        <id column="id" property="id" />
+        <result column="group_code" property="groupCode" />
+        <result column="group_name" property="groupName" />
+        <result column="status" property="status" />
+        <result column="creator" property="creator" />
+        <result column="creation_time" property="creationTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, group_code, group_name, status, creator, creation_time
+    </sql>
+    
+    <select id="findOperationTeamByPage" parameterType="com.jayud.mall.model.bo.QueryOperationTeamForm"
+            resultType="com.jayud.mall.model.vo.OperationTeamVO">
+        select
+        t.id,t.group_code,t.group_name,t.status,t.creator,t.creation_time,
+        t1.name creatorName,
+        t2.memberUserNames
+        from operation_team t
+        left join system_user t1 on t1.id = t.creator
+        left join (
+            SELECT
+            t.operation_team_id, GROUP_CONCAT(t.memberUserName order by member_user_id asc) AS memberUserNames
+            FROM
+            (
+            select
+            t.operation_team_id, t.member_user_id,
+            t1.name memberUserName
+            from operation_team_member t
+            left join system_user t1 on t1.id = t. member_user_id
+            ) t GROUP BY t.operation_team_id
+        ) t2 on t2.operation_team_id = t.id
+        where 1=1
+        <if test="form.groupName != null and form.groupName != ''">
+            and t.group_name like concat('%',#{form.groupName},'%')
+        </if>
+
+    </select>
+
+
+    <select id="findOperationTeamById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OperationTeamVO">
+        select
+            t.id,t.group_code,t.group_name,t.status,t.creator,t.creation_time,
+            t1.name creatorName,
+            t2.memberUserNames
+        from operation_team t
+                 left join system_user t1 on t1.id = t.creator
+                 left join (
+            SELECT
+                t.operation_team_id, GROUP_CONCAT(t.memberUserName order by member_user_id asc) AS memberUserNames
+            FROM
+                (
+                    select
+                        t.operation_team_id, t.member_user_id,
+                        t1.name memberUserName
+                    from operation_team_member t
+                             left join system_user t1 on t1.id = t. member_user_id
+                ) t GROUP BY t.operation_team_id
+        ) t2 on t2.operation_team_id = t.id
+        where 1=1
+        and t.id = #{id}
+
+    </select>
+
+
+</mapper>

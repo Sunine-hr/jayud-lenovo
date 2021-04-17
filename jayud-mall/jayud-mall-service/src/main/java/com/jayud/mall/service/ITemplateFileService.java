@@ -1,8 +1,10 @@
 package com.jayud.mall.service;
 
-import com.jayud.mall.model.bo.TemplateFileForm;
-import com.jayud.mall.model.po.TemplateFile;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.bo.TemplateFileForm;
+import com.jayud.mall.model.bo.TemplateFileOrderForm;
+import com.jayud.mall.model.po.TemplateFile;
+import com.jayud.mall.model.vo.TemplateFileVO;
 
 import java.util.List;
 
@@ -22,4 +24,7 @@ public interface ITemplateFileService extends IService<TemplateFile> {
      * @return
      */
     List<TemplateFile> findTemplateFile(TemplateFileForm form);
+
+    List<TemplateFileVO> findTemplateFileByOrder(TemplateFileOrderForm form);
+
 }

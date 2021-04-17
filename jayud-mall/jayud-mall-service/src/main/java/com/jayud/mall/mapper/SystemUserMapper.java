@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.mall.model.bo.QueryUserForm;
 import com.jayud.mall.model.bo.ResetUserPwdForm;
-import com.jayud.mall.model.bo.SaveUserForm;
+import com.jayud.mall.model.bo.SaveSystemUserForm;
 import com.jayud.mall.model.po.SystemUser;
 import com.jayud.mall.model.vo.SystemUserVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -43,44 +43,44 @@ public interface SystemUserMapper extends BaseMapper<SystemUser> {
      * 新增用户
      * @param user
      */
-    void insertUser(SaveUserForm user);
+    void insertUser(@Param("user") SaveSystemUserForm user);
 
     /**
      * 修改用户
      * @param user
      */
-    void updateUser(SaveUserForm user);
+    void updateUser(@Param("user") SaveSystemUserForm user);
 
     /**
      * 删除用户
      * @param id
      */
-    void deleteUser(Long id);
+    void deleteUser(@Param("id") Long id);
 
     /**
      * 获取根据Id，获取用户
      * @param id
      * @return
      */
-    SystemUserVO getUser(Long id);
+    SystemUserVO getUser(@Param("id") Long id);
 
     /**
      * 禁用用户
      * @param id
      */
-    void disableUser(Long id);
+    void disableUser(@Param("id") Long id);
 
     /**
      * 启用用户
      * @param id
      */
-    void enableUser(Long id);
+    void enableUser(@Param("id") Long id);
 
     /**
      * 重置用户密码
-     * @param id
+     * @param form
      */
-    void resetPassword(ResetUserPwdForm resetUserPwdForm);
+    void resetPassword(@Param("form") ResetUserPwdForm form);
 
     /**
      * 查询用户分页
@@ -88,8 +88,7 @@ public interface SystemUserMapper extends BaseMapper<SystemUser> {
      * @param form
      * @return
      */
-    IPage<SystemUserVO> findUserByPage(Page<SystemUserVO> page, QueryUserForm form);
-
+    IPage<SystemUserVO> findUserByPage(Page<SystemUserVO> page, @Param("form") QueryUserForm form);
 
 
 }

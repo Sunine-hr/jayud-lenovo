@@ -160,6 +160,7 @@ public class OrderCustomsController {
             customsHeadForm.setCabinNo(orderCustoms.getAirTransportNo());
         }
 
+        customsHeadForm.setNote(orderCustoms.getTitle());
         customsHeadForm.setPortNo2(orderCustoms.getPortCode());
         customsHeadForm.setPortNo(orderCustoms.getPortCode());
         if(orderCustoms.getSupervisionMode()!=null){

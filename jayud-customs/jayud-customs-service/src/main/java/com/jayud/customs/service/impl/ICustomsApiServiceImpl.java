@@ -117,6 +117,7 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
         System.out.println("requestStr=================================="+requestStr);
         //请求
         String feedback = doPost(requestStr, trustsUrl);
+        System.out.println("feedback====================================="+feedback);
 
         PushOrderVO result = null;
         try {

@@ -48,7 +48,7 @@
         customs_questionnaire
         <where>
             <if test="form.orderNo != null and form.orderNo != ''">
-                and order_no like concat('%',#{form.order_no},'%')
+                and order_no like concat('%',#{form.orderNo},'%')
             </if>
             <if test="form.customerName != null and form.customerName != ''">
                 and customer_name like concat('%',#{form.customerName},'%')

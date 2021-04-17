@@ -116,6 +116,9 @@ public class CustomsQuestionnaire extends Model<CustomsQuestionnaire> {
     @ApiModelProperty(value = "审核意见")
     private String auditOpinion;
 
+    @ApiModelProperty(value = "是否可以编辑")
+    private Boolean isEdit;
+
 
     @Override
     protected Serializable pkVal() {

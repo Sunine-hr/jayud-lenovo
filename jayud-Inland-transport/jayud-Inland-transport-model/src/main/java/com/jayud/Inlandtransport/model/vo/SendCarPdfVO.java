@@ -104,7 +104,7 @@ public class SendCarPdfVO {
         if (this.vehicleType == 1) {
             this.vehicleTypeDesc = "吨车";
         } else if (this.vehicleType == 2) {
-            this.vehicleTypeDesc = "吨车";
+            this.vehicleTypeDesc = "柜车";
         }
     }
 

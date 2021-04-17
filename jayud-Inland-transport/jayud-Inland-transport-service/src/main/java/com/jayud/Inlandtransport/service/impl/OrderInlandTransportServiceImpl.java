@@ -189,11 +189,16 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
     public void doDispatchOpt(ProcessOptForm form) {
         //保存派车信息
         SendCarForm sendCarForm = form.getSendCarForm();
+        //修改派车
         OrderInlandSendCars orderInlandSendCars = ConvertUtil.convert(sendCarForm, OrderInlandSendCars.class);
         orderInlandSendCars.setCreateUser(UserOperator.getToken());
         orderInlandSendCars.setCreateTime(LocalDateTime.now());
         orderInlandSendCars.setTransportNo(this.orderInlandSendCarsService.createTransportNo(sendCarForm.getOrderNo()));
         this.orderInlandSendCarsService.saveOrUpdate(orderInlandSendCars);
+        //同步修改内陆单车型和尺寸
+        this.updateById(new OrderInlandTransport().setId(form.getOrderId())
+                .setVehicleSize(orderInlandSendCars.getVehicleSize())
+                .setVehicleType(orderInlandSendCars.getVehicleType()));
         this.updateProcessStatus(new OrderInlandTransport(), form);
     }
 

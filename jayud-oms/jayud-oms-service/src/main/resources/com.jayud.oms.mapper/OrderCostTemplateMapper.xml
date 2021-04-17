@@ -55,7 +55,7 @@
                 and create_user = #{form.createUser}
             </if>
         </where>
-
+        order by id desc
     </select>
     <select id="getCostTemplateInfo" resultMap="OrderCostTemplateDTO">
         select

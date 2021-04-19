@@ -150,7 +150,17 @@ public class OrderCustomsController {
         }else{
             customsHeadForm.setDeclareId(1);
         }
+        if(orderCustoms.getBizModel().equals("2")){
+            customsHeadForm.setCabinNo(orderCustoms.getAirTransportNo());
+        }
+        if(orderCustoms.getBizModel().equals("3")){
+            customsHeadForm.setCabinNo(orderCustoms.getSeaTransportNo());
+        }
+        if(orderCustoms.getBizModel().equals("4")){
+            customsHeadForm.setCabinNo(orderCustoms.getAirTransportNo());
+        }
 
+        customsHeadForm.setNote(orderCustoms.getTitle());
         customsHeadForm.setPortNo2(orderCustoms.getPortCode());
         customsHeadForm.setPortNo(orderCustoms.getPortCode());
         if(orderCustoms.getSupervisionMode()!=null){

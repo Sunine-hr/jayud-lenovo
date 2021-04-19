@@ -16,6 +16,9 @@ public class InputSubOrderCustomsForm {
     @NotEmpty(message = "orderNo is required")
     private String orderNo;
 
+    @ApiModelProperty(value = "报关子订单")
+    private Long subOrderId;
+
     @ApiModelProperty(value = "报关抬头",required = true)
     @NotEmpty(message = "title is required")
     private String title;
@@ -32,6 +35,12 @@ public class InputSubOrderCustomsForm {
 
     @ApiModelProperty(value = "单双抬头")
     private String isTitle;
+
+    @ApiModelProperty(value = "委托单号")
+    private String entrustNo;
+
+    @ApiModelProperty(value = "监管方式")
+    private String supervisionMode;
 
     @ApiModelProperty(value = "附件",required = true)
     @NotEmpty(message = "fileViews is required")

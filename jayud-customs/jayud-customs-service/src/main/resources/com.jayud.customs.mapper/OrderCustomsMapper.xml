@@ -81,7 +81,9 @@
             oc.`is_agency_tax` isAgencyTax,
             oc.`legal_name` legalName,
             oc.legal_entity_id legalEntityId,
-            oc.`status` status
+            oc.`status` status,
+            oc.`entrust_no` entrustNo,
+            oc.`supervision_mode` supervisionMode
         FROM
             order_customs oc
         WHERE 1 = 1

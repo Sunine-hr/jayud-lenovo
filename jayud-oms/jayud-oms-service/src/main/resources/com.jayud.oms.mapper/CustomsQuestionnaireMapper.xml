@@ -43,12 +43,12 @@
         self_accounting, is_alarm_system, is_empe_iden_sys, is_work_handover,
         is_bus_partner_comp_eval, is_goods_identical, is_provide_vehicle_info,
         risk_level, recorder, evaluation_date,expires_time, status, `type`,
-        update_user, update_time,audit_opinion
+        update_user, update_time,audit_opinion,is_edit
         from
         customs_questionnaire
         <where>
             <if test="form.orderNo != null and form.orderNo != ''">
-                and order_no like concat('%',#{form.order_no},'%')
+                and order_no like concat('%',#{form.orderNo},'%')
             </if>
             <if test="form.customerName != null and form.customerName != ''">
                 and customer_name like concat('%',#{form.customerName},'%')
@@ -69,6 +69,7 @@
                 and status =#{form.status}
             </if>
         </where>
+        order by id desc
     </select>
 
 </mapper>

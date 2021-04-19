@@ -67,4 +67,10 @@ public class InputOrderCustomsVO {
 
     @ApiModelProperty(value = "审核状态")
     private String subCustomsStatus;
+
+    @ApiModelProperty(value = "委托单号")
+    private String entrustNo;
+
+    @ApiModelProperty(value = "监管方式")
+    private String supervisionMode;
 }

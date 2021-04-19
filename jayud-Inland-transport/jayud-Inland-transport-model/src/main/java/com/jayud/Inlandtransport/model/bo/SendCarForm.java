@@ -27,8 +27,7 @@ public class SendCarForm extends Model<SendCarForm> {
     private String orderNo;
 
     @ApiModelProperty(value = "车型(1吨车 2柜车)", required = true)
-    @JsonIgnore
-    private Integer vehicleType = 1;
+    private Integer vehicleType;
 
     @ApiModelProperty(value = "车型(例:3T)", required = true)
     private String vehicleSize;

@@ -72,9 +72,14 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
     public boolean oprOrderCustoms(InputOrderCustomsForm form) {
         try {
             //暂存或提交只是主订单的状态不一样，子订单的操作每次先根据主订单号清空子订单
-            QueryWrapper<OrderCustoms> queryWrapper = new QueryWrapper<OrderCustoms>();
-            queryWrapper.eq("main_order_no", form.getMainOrderNo());
-            remove(queryWrapper);
+//            QueryWrapper<OrderCustoms> queryWrapper = new QueryWrapper<OrderCustoms>();
+//            queryWrapper.eq("main_order_no", form.getMainOrderNo());
+//            remove(queryWrapper);
+            for (InputSubOrderCustomsForm subOrder : form.getSubOrders()) {
+                if(subOrder.getSubOrderId()!=null){
+                    removeById(subOrder.getSubOrderId());
+                }
+            }
             //子订单数据初始化处理
             //设置子订单号/报关抬头/结算单位/附件
             List<OrderCustoms> orderCustomsList = new ArrayList<>();
@@ -170,6 +175,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
             inputOrderCustomsVO.setLegalName(orderCustomsVO.getLegalName());
             inputOrderCustomsVO.setLegalEntityId(orderCustomsVO.getLegalEntityId());
             inputOrderCustomsVO.setBizModel(orderCustomsVO.getBizModel());
+            inputOrderCustomsVO.setSupervisionMode(orderCustomsVO.getSupervisionMode());
             //为了控制驳回编辑子订单之间互不影响,报关中驳回时所有子订单都应驳回
             inputOrderCustomsVO.setSubCustomsStatus(orderCustomsVO.getStatus());
             //处理子订单部分
@@ -183,6 +189,8 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 subOrderCustomsVO.setUnitCode(orderCustoms.getUnitCode());
                 orderCustoms.setStatusDesc(orderCustoms.getStatus());
                 subOrderCustomsVO.setStatusDesc(orderCustoms.getStatusDesc());
+                subOrderCustomsVO.setEntrustNo(orderCustoms.getEntrustNo());
+                subOrderCustomsVO.setSupervisionMode(orderCustoms.getSupervisionMode());
                 //处理子订单附件信息
                 String fileStr = orderCustoms.getFileStr();
                 String fileNameStr = orderCustoms.getFileNameStr();

@@ -47,7 +47,8 @@ public class CustomsQuestionnaireServiceImpl extends ServiceImpl<CustomsQuestion
     public void addOrUpdate(AddCustomsQuestionnaireForm form) {
         CustomsQuestionnaire tmp = ConvertUtil.convert(form, CustomsQuestionnaire.class);
         CustomerInfo customerInfo = customerInfoService.getByCode(tmp.getCustomerCode());
-        tmp.setCustomerName(customerInfo.getName()).setAuditOpinion(" ");
+        tmp.setCustomerName(customerInfo.getName()).setAuditOpinion(" ")
+                .setIsEdit(false);
         if (tmp.getId() == null) {
             LocalDateTime now = LocalDateTime.now();
             tmp.setRecorder(UserOperator.getToken())
@@ -71,7 +72,8 @@ public class CustomsQuestionnaireServiceImpl extends ServiceImpl<CustomsQuestion
     @Transactional
     public void approvalRejection(AuditInfo auditInfo) {
         CustomsQuestionnaire customsQuestionnaire = new CustomsQuestionnaire()
-                .setId(auditInfo.getExtId()).setStatus(0).setAuditOpinion(auditInfo.getAuditComment());
+                .setId(auditInfo.getExtId()).setStatus(0).setAuditOpinion(auditInfo.getAuditComment())
+                .setIsEdit(true);
         this.baseMapper.updateById(customsQuestionnaire);
         this.auditInfoService.save(auditInfo);
     }

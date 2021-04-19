@@ -100,6 +100,12 @@ public class OrderCustomsVO {
     @ApiModelProperty(value = "附件")
     private List<FileView> fileViews;
 
+    @ApiModelProperty(value = "委托单号")
+    private String entrustNo;
+
+    @ApiModelProperty(value = "监管方式")
+    private String supervisionMode;
+
     public void setStatusDesc(String status) {
         this.status = status;
         this.statusDesc = OrderStatusEnum.getDesc(status);

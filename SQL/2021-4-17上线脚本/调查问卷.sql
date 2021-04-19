@@ -6,8 +6,9 @@ CREATE TABLE `customs_questionnaire` (
   `customer_addr` varchar(255) DEFAULT NULL COMMENT '客户地址',
   `legal_representative` varchar(50) DEFAULT NULL COMMENT '法定代表人',
   `customer_type` int(11) DEFAULT NULL COMMENT '客户类型',
-  `registered_capital` decimal(20,4) DEFAULT NULL COMMENT '注册资本',
-  `phone` varchar(20) DEFAULT NULL COMMENT '联系人电话',
+  `registered_capital` decimal(20,4) DEFAULT NULL COMMENT '注册资本(单位:万)',
+  `phone` varchar(255) DEFAULT NULL COMMENT '联系人电话',
+  `contacts` varchar(255) DEFAULT NULL COMMENT '联系人',
   `national_credit` int(11) DEFAULT '1' COMMENT '国家征信(0:异常,1:非异常)',
   `customs_credit` int(11) DEFAULT '1' COMMENT '海关征信(0:异常,1:非异常)',
   `payment_period` varchar(255) DEFAULT NULL COMMENT '承诺付款账期',
@@ -27,5 +28,6 @@ CREATE TABLE `customs_questionnaire` (
   `update_user` varchar(50) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `audit_opinion` varchar(255) DEFAULT NULL COMMENT '审核意见',
+  `is_edit` tinyint(2) DEFAULT NULL COMMENT '是否可编辑',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='海关调查问卷';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='海关调查问卷';

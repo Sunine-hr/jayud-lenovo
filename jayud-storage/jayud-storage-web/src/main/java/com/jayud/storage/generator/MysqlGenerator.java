@@ -32,7 +32,7 @@ public class MysqlGenerator {
                 "jayud-storage\\jayud-storage-web"
         };
         for (String model : models) {
-            shell(model, "tms_extension_field");
+            shell(model, "warehouse");
 
         }
     }
@@ -51,7 +51,7 @@ public class MysqlGenerator {
         gc.setBaseResultMap(true);// XML ResultMap
         gc.setBaseColumnList(true);// XML columList
         gc.setSwagger2(true);
-        gc.setAuthor("LDR");
+        gc.setAuthor("fachang.mao");
 
         // 自定义文件命名，注意 %s 会自动填充表实体属性！
         gc.setMapperName("%sMapper");
@@ -65,9 +65,9 @@ public class MysqlGenerator {
         DataSourceConfig dsc = new DataSourceConfig();
         dsc.setDbType(DbType.MYSQL);
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
-        dsc.setUsername("jayudtest");
-        dsc.setPassword("jayudtest");
-        dsc.setUrl("jdbc:mysql://rm-wz9m40gpm90c230wobo.mysql.rds.aliyuncs.com/jayud_oms");
+        dsc.setUsername("root");
+        dsc.setPassword("Root!!2020");
+        dsc.setUrl("jdbc:mysql://113.100.140.250:8097/jayud_storage?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC");
         mpg.setDataSource(dsc);
 
         // 策略配置
@@ -80,7 +80,7 @@ public class MysqlGenerator {
         String pack = "";
         // 包配置
         PackageConfig pc = new PackageConfig();
-        pc.setParent("com.jayud.tms");
+        pc.setParent("com.jayud.storage");
         pc.setEntity("model.po");
         pc.setController("controller");
         pc.setMapper("mapper");

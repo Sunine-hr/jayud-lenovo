@@ -374,7 +374,7 @@ public class TrailerOrderController {
         String trailerOrderNo = MapUtil.getStr(map, "orderNo");
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("trailer_order_no", trailerOrderNo);
-        queryWrapper.eq("status",2);
+        queryWrapper.eq("status",1);
         TrailerDispatch one = trailerDispatchService.getOne(queryWrapper);
         if (one != null) {
             return CommonResult.success(one);

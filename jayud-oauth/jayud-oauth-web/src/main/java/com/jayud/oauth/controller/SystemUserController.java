@@ -624,7 +624,8 @@ public class SystemUserController {
             return CommonResult.error(400, "密码错误");
         }
 
-        SystemUser user = new SystemUser().setId(form.getId()).setPassword(MD5.encode(form.getPassword()));
+        SystemUser user = new SystemUser().setId(form.getId())
+                .setPassword(MD5.encode(form.getPassword()));
         this.userService.saveOrUpdateSystemUser(user);
         return CommonResult.success();
     }

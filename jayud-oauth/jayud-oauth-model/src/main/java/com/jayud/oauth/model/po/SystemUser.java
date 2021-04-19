@@ -34,6 +34,9 @@ public class SystemUser extends Model<SystemUser> {
     @ApiModelProperty(value = "密码")
     private String password;
 
+    @ApiModelProperty(value = "修改密码时间")
+    private String updatePassWordDate;
+
     @ApiModelProperty(value = "用户名")
     private String userName;
 

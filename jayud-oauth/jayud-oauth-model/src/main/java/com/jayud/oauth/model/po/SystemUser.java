@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="SystemUser对象", description="后台用户表")
+@ApiModel(value = "SystemUser对象", description = "后台用户表")
 public class SystemUser extends Model<SystemUser> {
 
     private static final long serialVersionUID = 1L;
@@ -35,7 +35,7 @@ public class SystemUser extends Model<SystemUser> {
     private String password;
 
     @ApiModelProperty(value = "修改密码时间")
-    private String updatePassWordDate;
+    private LocalDateTime updatePassWordDate;
 
     @ApiModelProperty(value = "用户名")
     private String userName;
@@ -93,7 +93,6 @@ public class SystemUser extends Model<SystemUser> {
 
     @ApiModelProperty(value = "修改时间")
     private Timestamp updatedTime;
-
 
 
     @Override

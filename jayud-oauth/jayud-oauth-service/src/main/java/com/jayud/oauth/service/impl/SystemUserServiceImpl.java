@@ -33,6 +33,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -127,12 +128,12 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         redisUtils.set(cacheUser.getToken(), user.getName());
 
         //初始密码+3个月期限(如果没有修改时间,根据创建时间判断,否则根据修改时间)
-        cacheUser.setIsForcedPasswordChange(this.isForcedPasswordChange(cacheUser.getPassword(), cacheUser.getCreatedTime(),
+        cacheUser.setIsForcedPasswordChange(this.isForcedPasswordChange(cacheUser.getPassword(), user.getCreatedTime(),
                 cacheUser.getUpdatePassWordDate()));
         return cacheUser;
     }
 
-    private boolean isForcedPasswordChange(String password, String createdTime,
+    private boolean isForcedPasswordChange(String password, Timestamp createdTime,
                                            LocalDateTime updatePassWordDate) {
         //初始密码
         if ("E10ADC3949BA59ABBE56E057F20F883E".equals(password)) {
@@ -141,7 +142,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         //三个月
         LocalDateTime dateTime = null;
         if (updatePassWordDate == null) {
-            dateTime = DateUtils.str2LocalDateTime(createdTime, DateUtils.DATE_TIME_PATTERN);
+            dateTime = createdTime.toLocalDateTime();
         } else {
             dateTime = updatePassWordDate;
         }

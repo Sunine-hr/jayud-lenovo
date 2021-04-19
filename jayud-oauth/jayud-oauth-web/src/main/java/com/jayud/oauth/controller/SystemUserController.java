@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -625,7 +626,8 @@ public class SystemUserController {
         }
 
         SystemUser user = new SystemUser().setId(form.getId())
-                .setPassword(MD5.encode(form.getPassword()));
+                .setPassword(MD5.encode(form.getPassword()))
+                .setUpdatePassWordDate(LocalDateTime.now());
         this.userService.saveOrUpdateSystemUser(user);
         return CommonResult.success();
     }

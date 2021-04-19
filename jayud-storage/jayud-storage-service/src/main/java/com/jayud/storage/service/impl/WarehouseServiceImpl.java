@@ -19,6 +19,7 @@ import com.jayud.storage.service.IWarehouseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -71,7 +72,25 @@ public class WarehouseServiceImpl extends ServiceImpl<WarehouseMapper, Warehouse
 
     @Override
     public void saveWarehouse(SaveWarehouseForm form) {
-
+        Long id = form.getId();
+        WarehouseVO warehouseVO = warehouseMapper.findWarehouseById(id);
+        if(ObjectUtil.isEmpty(warehouseVO)){
+            //warehouseVO 为null，代表为新增
+            Warehouse warehouse = ConvertUtil.convert(form, Warehouse.class);
+            warehouse.setStatus(WarehouseStatusEnum.ENABLE.getCode());
+            warehouse.setCreateUser("");
+            warehouse.setCreateTime(LocalDateTime.now());
+            this.saveOrUpdate(warehouse);
+        }else{
+            //warehouseVO 不为null，代表为编辑
+            Warehouse warehouse = ConvertUtil.convert(warehouseVO, Warehouse.class);
+            warehouse.setName(form.getName());
+            warehouse.setCode(form.getCode());
+            warehouse.setContacts(form.getContacts());
+            warehouse.setPhone(form.getPhone());
+            warehouse.setAddress(form.getAddress());
+            this.saveOrUpdate(warehouse);
+        }
     }
 
     @Override

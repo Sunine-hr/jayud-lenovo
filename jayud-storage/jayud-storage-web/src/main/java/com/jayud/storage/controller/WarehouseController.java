@@ -37,20 +37,6 @@ public class WarehouseController {
     @Autowired
     IWarehouseService warehouseService;
 
-    /*
-    1.不分页查询list
-        仓库名称、仓库代码、创建人、创建日期
-
-    2.分页查询page
-    仓库名称、仓库代码、创建人、创建日期
-
-    3.操作：启用、禁用
-
-    4.保存：新增、编辑
-
-    5.根据id，查询仓库
-     */
-
     @ApiOperation(value = "1.不分页查询list")
     @PostMapping("/findWarehouse")
     public CommonResult<List<WarehouseVO>> findWarehouse(@RequestBody QueryWarehouseForm form) {
@@ -81,7 +67,8 @@ public class WarehouseController {
         return CommonResult.success("保存成功！");
     }
 
-    //5.根据id，查询仓库
+    @ApiOperation(value = "5.根据id，查询仓库")
+    @PostMapping("/findWarehouseById")
     public CommonResult<WarehouseVO> findWarehouseById(@Valid @RequestBody WarehouseIdForm form){
         Long id = form.getId();
         WarehouseVO warehouseVO = warehouseService.findWarehouseById(id);

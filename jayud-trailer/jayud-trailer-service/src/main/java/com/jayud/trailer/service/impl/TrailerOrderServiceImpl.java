@@ -309,7 +309,7 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
     public void trailerProcessOptRecord(TrailerProcessOptForm form) {
         AuditInfoForm auditInfoForm = new AuditInfoForm();
         auditInfoForm.setExtId(form.getOrderId());
-        auditInfoForm.setExtDesc(SqlConstant.SEA_ORDER);
+        auditInfoForm.setExtDesc(SqlConstant.TRAILER_ORDER);
         auditInfoForm.setAuditComment(form.getDescription());
         auditInfoForm.setAuditUser(UserOperator.getToken());
         auditInfoForm.setFileViews(form.getFileViewList());

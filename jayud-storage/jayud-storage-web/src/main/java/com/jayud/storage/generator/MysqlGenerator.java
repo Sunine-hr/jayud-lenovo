@@ -103,7 +103,7 @@ public class MysqlGenerator {
             focList.add(new FileOutConfig("/templates/mapper.xml.vm") {
                 @Override
                 public String outputFile(TableInfo tableInfo) {
-                    return path + "/src/main/resources/com/jayud/tms/mapper"
+                    return path + "/src/main/resources/com.jayud.storage.mapper"
                             + "/" + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
                 }
             });

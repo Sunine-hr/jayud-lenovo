@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.CustomerGoodsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.CustomerGoods">
+        <id column="id" property="id" />
+        <result column="customer_id" property="customerId" />
+        <result column="sku" property="sku" />
+        <result column="name_cn" property="nameCn" />
+        <result column="name_en" property="nameEn" />
+        <result column="image_url" property="imageUrl" />
+        <result column="barcode" property="barcode" />
+        <result column="weight" property="weight" />
+        <result column="length" property="length" />
+        <result column="width" property="width" />
+        <result column="height" property="height" />
+        <result column="is_sensitive" property="isSensitive" />
+        <result column="declared_value" property="declaredValue" />
+        <result column="declared_currency" property="declaredCurrency" />
+        <result column="material_quality" property="materialQuality" />
+        <result column="purpose" property="purpose" />
+        <result column="declare_elements" property="declareElements" />
+        <result column="hs_code" property="hsCode" />
+        <result column="data_code" property="dataCode" />
+        <result column="clearance_code" property="clearanceCode" />
+        <result column="sales_link" property="salesLink" />
+        <result column="sales_price" property="salesPrice" />
+        <result column="description" property="description" />
+        <result column="status" property="status" />
+        <result column="status_name" property="statusName" />
+        <result column="remark" property="remark" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_id, sku, name_cn, name_en, image_url, barcode, weight, length, width, height, is_sensitive, declared_value, declared_currency, material_quality, purpose, declare_elements, hs_code, data_code, clearance_code, sales_link, sales_price, description, status, status_name, remark
+    </sql>
+
+    <!--查询并分页-->
+    <select id="findCustomerGoodsByPage" parameterType="com.jayud.mall.model.bo.QueryCustomerGoodsForm"
+            resultType="com.jayud.mall.model.vo.CustomerGoodsVO" >
+        select
+        t.id,t.customer_id,t.sku,t.name_cn,t.name_en,t.image_url,t.barcode,t.weight,t.length,t.width,t.height,t.is_sensitive,t.types,
+        t.declared_value,t.declared_currency,t.material_quality,t.purpose,t.declare_elements,t.hs_code,t.data_code,t.clearance_code,t.sales_link,
+        t.sales_price,t.sales_price_currency,t.description,t.`status`,t.status_name,t.remark,
+        t1.company customerName
+        from customer_goods t
+        left join customer t1 on t1.id = t.customer_id
+        WHERE
+        1 = 1
+        <if test="form.customerId != null">
+            AND t.customer_id = #{form.customerId}
+        </if>
+        <if test="form.sku != null and form.sku != ''">
+            AND t.sku LIKE CONCAT('%',#{form.sku},'%')
+        </if>
+        <if test="form.nameCn != null and form.nameCn != ''">
+            AND t.name_cn LIKE CONCAT('%',#{form.nameCn},'%')
+        </if>
+        <if test="form.dataCode != null and form.dataCode != ''">
+            AND t.data_code LIKE CONCAT('%',#{form.dataCode},'%')
+        </if>
+        <if test="form.clearanceCode != null and form.clearanceCode != ''">
+            AND t.clearance_code LIKE CONCAT('%',#{form.clearanceCode},'%')
+        </if>
+        <if test="form.status != null">
+            AND t.status = #{form.status}
+        </if>
+        <if test="form.customerName != null and form.customerName != ''">
+            and t1.name_cn LIKE CONCAT('%',#{form.customerName},'%')
+        </if>
+    </select>
+
+    <select id="findCustomerGoodsById" parameterType="java.lang.Integer" resultType="com.jayud.mall.model.vo.CustomerGoodsVO">
+        select t.id,
+               t.customer_id,
+               t.sku,
+               t.name_cn,
+               t.name_en,
+               t.image_url,
+               t.barcode,
+               t.weight,
+               t.length,
+               t.width,
+               t.height,
+               t.is_sensitive,
+               t.types,
+               t.declared_value,
+               t.declared_currency,
+               t.material_quality,
+               t.purpose,
+               t.declare_elements,
+               t.hs_code,
+               t.data_code,
+               t.clearance_code,
+               t.sales_link,
+               t.sales_price,
+               t.sales_price_currency,
+               t.description,
+               t.status,
+               t.status_name,
+               t.remark
+        from customer_goods t
+        where t.id = #{id}
+    </select>
+
+    <select id="findCustomerGoodsByCustomerIdAndsku" resultType="com.jayud.mall.model.vo.CustomerGoodsVO">
+        select t.id,
+               t.customer_id,
+               t.sku,
+               t.name_cn,
+               t.name_en,
+               t.image_url,
+               t.barcode,
+               t.weight,
+               t.length,
+               t.width,
+               t.height,
+               t.is_sensitive,
+               t.types,
+               t.declared_value,
+               t.declared_currency,
+               t.material_quality,
+               t.purpose,
+               t.declare_elements,
+               t.hs_code,
+               t.data_code,
+               t.clearance_code,
+               t.sales_link,
+               t.sales_price,
+               t.sales_price_currency,
+               t.description,
+               t.status,
+               t.status_name,
+               t.remark
+        from customer_goods t
+        where
+            t.customer_id = #{customerId, jdbcType=INTEGER}
+            and t.sku = #{sku, jdbcType=VARCHAR}
+    </select>
+
+
+
+</mapper>

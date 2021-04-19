@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.SupplierInfoServiceTypeRelationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.SupplierInfoServiceTypeRelation">
+        <id column="id" property="id" />
+        <result column="info_id" property="infoId" />
+        <result column="service_type_id" property="serviceTypeId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, info_id, service_type_id
+    </sql>
+
+</mapper>

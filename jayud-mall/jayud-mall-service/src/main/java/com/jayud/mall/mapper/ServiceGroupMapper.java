@@ -1,9 +1,14 @@
 package com.jayud.mall.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.mall.model.bo.ServiceGroupForm;
 import com.jayud.mall.model.po.ServiceGroup;
+import com.jayud.mall.model.vo.ServiceGroupVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +22,10 @@ import org.springframework.stereotype.Component;
 @Component
 public interface ServiceGroupMapper extends BaseMapper<ServiceGroup> {
 
+    /**
+     * 查询报价服务组List
+     * @param form
+     * @return
+     */
+    List<ServiceGroupVO> findServiceGroup(@Param("form") ServiceGroupForm form);
 }

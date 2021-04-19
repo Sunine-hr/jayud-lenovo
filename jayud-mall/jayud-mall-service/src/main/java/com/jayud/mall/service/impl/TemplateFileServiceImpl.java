@@ -2,8 +2,10 @@ package com.jayud.mall.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.mall.model.bo.TemplateFileForm;
+import com.jayud.mall.model.bo.TemplateFileOrderForm;
 import com.jayud.mall.model.po.TemplateFile;
 import com.jayud.mall.mapper.TemplateFileMapper;
+import com.jayud.mall.model.vo.TemplateFileVO;
 import com.jayud.mall.service.ITemplateFileService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,4 +53,12 @@ public class TemplateFileServiceImpl extends ServiceImpl<TemplateFileMapper, Tem
         List<TemplateFile> list = templateFileMapper.selectList(queryWrapper);
         return list;
     }
+
+    @Override
+    public List<TemplateFileVO> findTemplateFileByOrder(TemplateFileOrderForm form) {
+        List<TemplateFileVO> templateFileVOS = templateFileMapper.findTemplateFileByOrder(form);
+        return templateFileVOS;
+    }
+
+
 }

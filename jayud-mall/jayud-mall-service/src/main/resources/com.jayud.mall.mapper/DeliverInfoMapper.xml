@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.DeliverInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.DeliverInfo">
+        <id column="id" property="id" />
+        <result column="order_pick_id" property="orderPickId" />
+        <result column="warehouse_no" property="warehouseNo" />
+        <result column="pick_no" property="pickNo" />
+        <result column="total_carton" property="totalCarton" />
+        <result column="scheduled_time" property="scheduledTime" />
+        <result column="warehouse_code" property="warehouseCode" />
+        <result column="warehouse_name" property="warehouseName" />
+        <result column="contacts" property="contacts" />
+        <result column="contact_phone" property="contactPhone" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_pick_id, warehouse_no, pick_no, total_carton, scheduled_time, warehouse_code, warehouse_name, contacts, contact_phone
+    </sql>
+
+    <select id="findDeliverInfoByTransportId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.DeliverInfoVO">
+        select t.id,
+               t.transport_id,
+               t.order_pick_id,
+               t.warehouse_no,
+               t.pick_no,
+               t.total_carton,
+               t.scheduled_time,
+               t.warehouse_code,
+               t.warehouse_name,
+               t.contacts,
+               t.contact_phone,
+               CONCAT(t1.pname,' ',t1.cname,' ',t1.address_first) deliveryAddress
+        from deliver_info t
+        left join shipping_area t1 on t1.warehouse_code = t.warehouse_code
+        where t.transport_id = #{transportId}
+    </select>
+
+</mapper>

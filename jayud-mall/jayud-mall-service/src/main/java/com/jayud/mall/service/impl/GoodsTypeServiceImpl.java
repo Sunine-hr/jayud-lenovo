@@ -1,11 +1,14 @@
 package com.jayud.mall.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.utils.ConvertUtil;
+import com.jayud.mall.mapper.GoodsTypeMapper;
 import com.jayud.mall.model.bo.GoodsTypeForm;
 import com.jayud.mall.model.po.GoodsType;
-import com.jayud.mall.mapper.GoodsTypeMapper;
+import com.jayud.mall.model.vo.GoodsTypeReturnVO;
+import com.jayud.mall.model.vo.GoodsTypeVO;
 import com.jayud.mall.service.IGoodsTypeService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +29,7 @@ public class GoodsTypeServiceImpl extends ServiceImpl<GoodsTypeMapper, GoodsType
     GoodsTypeMapper goodsTypeMapper;
 
     @Override
-    public List<GoodsType> findGoodsType(GoodsTypeForm form) {
+    public List<GoodsTypeVO> findGoodsType(GoodsTypeForm form) {
         QueryWrapper<GoodsType> queryWrapper = new QueryWrapper<>();
         //类型    1报价类型 2货物类型
         String types = form.getTypes();
@@ -51,6 +54,32 @@ public class GoodsTypeServiceImpl extends ServiceImpl<GoodsTypeMapper, GoodsType
             queryWrapper.eq("fid", fid);
         }
         List<GoodsType> list = goodsTypeMapper.selectList(queryWrapper);
-        return list;
+        List<GoodsTypeVO> goodsTypeVOS = ConvertUtil.convertList(list, GoodsTypeVO.class);
+        return goodsTypeVOS;
     }
+
+    @Override
+    public GoodsTypeReturnVO findGoodsTypeBy() {
+        //1	普货
+        QueryWrapper<GoodsType> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("fid", 1);
+        List<GoodsType> list1 = goodsTypeMapper.selectList(queryWrapper1);
+        List<GoodsTypeVO> goodsTypeVOS1 = ConvertUtil.convertList(list1, GoodsTypeVO.class);
+        //2	特货
+        QueryWrapper<GoodsType> queryWrapper2 = new QueryWrapper<>();
+        queryWrapper2.eq("fid", 2);
+        List<GoodsType> list2 = goodsTypeMapper.selectList(queryWrapper2);
+        List<GoodsTypeVO> goodsTypeVOS2 = ConvertUtil.convertList(list2, GoodsTypeVO.class);
+
+        //返回对象
+        GoodsTypeReturnVO goodsTypeReturnVO = new GoodsTypeReturnVO();
+        goodsTypeReturnVO.setGeneralCargo(goodsTypeVOS1);
+        goodsTypeReturnVO.setSpecialCargo(goodsTypeVOS2);
+
+        return goodsTypeReturnVO;
+    }
+
+
+
+
 }

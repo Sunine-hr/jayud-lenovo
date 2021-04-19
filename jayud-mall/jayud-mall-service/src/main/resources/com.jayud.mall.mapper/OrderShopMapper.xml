@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.OrderShopMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.OrderShop">
+        <id column="id" property="id" />
+        <result column="order_id" property="orderId" />
+        <result column="good_id" property="goodId" />
+        <result column="quantity" property="quantity" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_id, good_id, quantity, create_time
+    </sql>
+
+    <!--根据订单id，获取订单商品-->
+    <select id="findOrderShopByOrderId" parameterType="java.lang.Long"
+        resultType="com.jayud.mall.model.vo.OrderShopVO" >
+        select
+        t.id,t.order_id,t.good_id,t.quantity,t.create_time,
+        t2.sku,t2.hs_code,t2.name_cn,t2.declared_value,t2.declared_currency
+        from order_shop t
+        LEFT JOIN order_info t1 on t1.id = t.order_id
+        LEFT JOIN customer_goods t2 on t2.id = t.good_id
+        WHERE t1.id = #{orderId}
+        ORDER BY t1.id
+    </select>
+
+
+</mapper>

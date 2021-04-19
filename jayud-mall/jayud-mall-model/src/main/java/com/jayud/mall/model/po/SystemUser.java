@@ -1,15 +1,18 @@
 package com.jayud.mall.model.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -27,73 +30,58 @@ public class SystemUser extends Model<SystemUser> {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "主键ID")
+    @ApiModelProperty(value = "主键ID", position = 1)
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "登录名")
+    @ApiModelProperty(value = "登录名,用户名", position = 2)
     private String name;
 
-    @ApiModelProperty(value = "密码")
+    @ApiModelProperty(value = "密码", position = 3)
     private String password;
 
-    @ApiModelProperty(value = "用户姓名")
+    @ApiModelProperty(value = "用户姓名", position = 4)
     private String userName;
 
-    @ApiModelProperty(value = "英文名")
+    @ApiModelProperty(value = "英文名", position = 5)
     private String enUserName;
 
-    @ApiModelProperty(value = "联系方式")
+    @ApiModelProperty(value = "手机号(联系方式)", position = 6)
     private String phone;
 
-    @ApiModelProperty(value = "邮箱")
+    @ApiModelProperty(value = "邮箱", position = 7)
     private String email;
 
-    @ApiModelProperty(value = "1-是 0-否")
-    private String isDepartmentCharge;
+    @ApiModelProperty(value = "所属公司(直接输入名称)", position = 8)
+    private String company;
 
-    @ApiModelProperty(value = "部门id")
-    private Long departmentId;
+    @ApiModelProperty(value = "工号", position = 9)
+    private String wkno;
 
-    @ApiModelProperty(value = "岗位ID")
-    private Long workId;
-
-    @ApiModelProperty(value = "岗位描述")
-    private String workName;
-
-    @ApiModelProperty(value = "所属公司id")
-    private Long companyId;
-
-    @ApiModelProperty(value = "所属上级id")
-    private Long superiorId;
-
-    @ApiModelProperty(value = "最后登录时间")
+    @ApiModelProperty(value = "最后登录时间", position = 10)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime loginTime;
 
-    @ApiModelProperty(value = "帐号启用状态：0->Off；1->On")
+    @ApiModelProperty(value = "帐号启用状态：0->Off 启用；1->On 停用", position = 11)
+    @TableField(value = "`status`")
     private Integer status;
 
-    @ApiModelProperty(value = "1-待审核 2-审核通过 0-审核拒绝")
-    private String auditStatus;
-
-    @ApiModelProperty(value = "1-用户 2-客户")
-    private String userType;
-
-    @ApiModelProperty(value = "备注")
+    @ApiModelProperty(value = "备注", position = 12)
     private String note;
 
-    @ApiModelProperty(value = "创建人")
-    private String createdUser;
+    @ApiModelProperty(value = "创建人(system_user id)", position = 13)
+    private Integer createdUser;
 
-    @ApiModelProperty(value = "创建时间")
+    @ApiModelProperty(value = "创建时间", position = 14)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdTime;
 
-    @ApiModelProperty(value = "修改时间")
+    @ApiModelProperty(value = "修改人(system_user id)", position = 15)
+    private Integer updatedUser;
+
+    @ApiModelProperty(value = "修改时间", position = 16)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedTime;
-
-    @ApiModelProperty(value = "修改人")
-    private String updatedUser;
-
 
     @Override
     protected Serializable pkVal() {

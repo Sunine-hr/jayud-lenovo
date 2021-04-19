@@ -3,6 +3,7 @@ package com.jayud.mall.service;
 import com.jayud.mall.model.bo.QuotedFileForm;
 import com.jayud.mall.model.po.QuotedFile;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.vo.QuotedFileReturnVO;
 
 import java.util.List;
 
@@ -22,4 +23,11 @@ public interface IQuotedFileService extends IService<QuotedFile> {
      * @return
      */
     List<QuotedFile> findQuotedFile(QuotedFileForm form);
+
+    /**
+     * 报价模板使用模板文件
+     * @param form
+     * @return
+     */
+    List<QuotedFileReturnVO> findQuotedFileBy(QuotedFileForm form);
 }

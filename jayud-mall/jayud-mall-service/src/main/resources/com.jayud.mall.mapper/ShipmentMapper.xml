@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.ShipmentMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.Shipment">
+        <id column="shipment_id" property="shipment_id" />
+        <result column="client_reference" property="client_reference" />
+        <result column="service" property="service" />
+        <result column="parcel_count" property="parcel_count" />
+        <result column="chargeable_weight" property="chargeable_weight" />
+        <result column="charge_amount" property="charge_amount" />
+        <result column="remark" property="remark" />
+        <result column="status" property="status" />
+        <result column="picking_time" property="picking_time" />
+        <result column="rates_time" property="rates_time" />
+        <result column="creat_time" property="creat_time" />
+        <result column="created" property="created" />
+        <result column="shipmentJson" property="shipmentJson" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        shipment_id, client_reference, service, parcel_count, chargeable_weight, charge_amount, remark, status, picking_time, rates_time, creat_time, created, shipmentJson
+    </sql>
+
+    <!--ShipmentResultMap-->
+    <resultMap id="ShipmentResultMap" type="com.jayud.mall.model.vo.ShipmentVO">
+        <id column="shipment_id" property="shipment_id" />
+        <result column="client_reference" property="client_reference" />
+        <result column="service" property="service" />
+        <result column="parcel_count" property="parcel_count" />
+        <result column="chargeable_weight" property="chargeable_weight" />
+        <result column="charge_amount" property="charge_amount" />
+        <result column="remark" property="remark" />
+        <result column="status" property="status" />
+        <result column="picking_time" property="pickingTime" />
+        <result column="rates_time" property="ratesTime" />
+        <result column="creat_time" property="creatTime" />
+        <result column="created" property="created" />
+        <result column="shipmentJson" property="shipmentJson" />
+        <result column="new_wisdom_token" property="new_wisdom_token" />
+        <result column="customerId" property="customerId" />
+        <result column="customerUserName" property="customerUserName" />
+    </resultMap>
+
+    <select id="findShipmentByPage" parameterType="com.jayud.mall.model.bo.QueryShipmentForm"
+            resultMap="ShipmentResultMap">
+        select t.shipment_id,
+        t.client_reference,
+        t.service,
+        t.parcel_count,
+        t.chargeable_weight,
+        t.charge_amount,
+        t.remark,
+        t.status,
+        t.picking_time,
+        t.rates_time,
+        t.creat_time,
+        t.created,
+        t.shipmentJson,
+        t.new_wisdom_token
+        from shipment t
+        where 1=1
+        <if test="form.shipment_id != null and form.shipment_id != ''">
+            and t.shipment_id like concat('%',#{form.shipment_id},'%')
+        </if>
+
+    </select>
+
+    <select id="findShipmentById" parameterType="java.lang.String" resultMap="ShipmentResultMap">
+        select t.shipment_id,
+               t.client_reference,
+               t.service,
+               t.parcel_count,
+               t.chargeable_weight,
+               t.charge_amount,
+               t.remark,
+               t.status,
+               t.picking_time,
+               t.rates_time,
+               t.creat_time,
+               t.created,
+               t.shipmentJson,
+               t.new_wisdom_token,
+               t1.id customerId,
+               t1.user_name customerUserName
+        from shipment t
+        join customer t1 on t1.new_wisdom_token = t.new_wisdom_token
+        where t.shipment_id = #{shipment_id}
+    </select>
+
+    
+</mapper>

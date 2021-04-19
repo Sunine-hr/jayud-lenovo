@@ -86,10 +86,10 @@ spring:
         - id: route-jayud-mall-admin      #佳裕达jayud-mall-admin 服务端(南京电商后台)
           uri: lb://jayud-mall-admin      # uri以lb://开头（后面接的服务名称)
           predicates:
-          - Path=/jayudMallAdmin/**
+            - Path=/jayudMallAdmin/**
           filters:
-          - StripPrefix=1
-          - IgnoreGlobalFilterFactor
+            - StripPrefix=1
+            - IgnoreGlobalFilterFactor
         - id: route-jayud-tools      #佳裕达jayud-tools 佳裕达小工具项目
           uri: lb://jayud-tools      # uri以lb://开头（后面接的服务名称)
           predicates:
@@ -129,6 +129,13 @@ spring:
           uri: lb://jayud-trailer-web  # uri以lb://开头（后面接的服务名称)
           predicates:
             - Path=/jayudTrailer/**
+          filters:
+            - StripPrefix=1
+            - IgnoreGlobalFilterFactor
+        - id: route-jayud-mall-web      #佳裕达jayud-mall-web 服务端(南京电商C端[客户端])
+          uri: lb://jayud-mall-web      # uri以lb://开头（后面接的服务名称)
+          predicates:
+            - Path=/jayudMallWeb/**
           filters:
             - StripPrefix=1
             - IgnoreGlobalFilterFactor

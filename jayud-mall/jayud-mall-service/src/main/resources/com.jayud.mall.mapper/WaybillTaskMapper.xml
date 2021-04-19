@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.WaybillTaskMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.WaybillTask">
+        <id column="id" property="id" />
+        <result column="group_code" property="groupCode" />
+        <result column="task_code" property="taskCode" />
+        <result column="task_name" property="taskName" />
+        <result column="sort" property="sort" />
+        <result column="days" property="days" />
+        <result column="day_flag" property="dayFlag" />
+        <result column="operators" property="operators" />
+        <result column="minutes" property="minutes" />
+        <result column="score" property="score" />
+        <result column="remarks" property="remarks" />
+        <result column="status" property="status" />
+        <result column="user_id" property="userId" />
+        <result column="user_name" property="userName" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, group_code, task_code, task_name, sort, days, day_flag, operators, minutes, score, remarks, status, user_id, user_name, create_time
+    </sql>
+
+
+
+</mapper>

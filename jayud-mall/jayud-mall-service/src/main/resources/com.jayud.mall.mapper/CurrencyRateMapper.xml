@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.CurrencyRateMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.CurrencyRate">
+        <id column="id" property="id" />
+        <result column="dcid" property="dcid" />
+        <result column="ocid" property="ocid" />
+        <result column="exchange_rate" property="exchangeRate" />
+        <result column="status" property="status" />
+        <result column="user_id" property="userId" />
+        <result column="user_name" property="userName" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, dcid, ocid, exchange_rate, status, user_id, user_name, create_time
+    </sql>
+
+    <!--查询币种汇率-->
+    <select id="findCurrencyRate" parameterType="com.jayud.mall.model.bo.QueryCurrencyRateForm"
+            resultType="com.jayud.mall.model.vo.CurrencyRateVO" >
+        select
+        t.id,t.dcid,t.ocid,t.exchange_rate,t.`status`,t.user_id,t.user_name,t.create_time,
+        t1.currency_code dcCurrencyCode,t1.currency_name dcCurrencyName,t1.country_code dcCountryCode,
+        t2.currency_code ocCurrencyCode,t2.currency_name ocCurrencyName,t2.country_code ocCountryCode,
+        CONCAT('1 ',t1.currency_code,'(',t1.currency_name,')',' = ',t.exchange_rate,' ',t2.currency_code,'(',t2.currency_name,')') rate
+        from currency_rate t
+        LEFT JOIN currency_info t1 on t1.id = t.dcid
+        LEFT JOIN currency_info t2 on t2.id = t.ocid
+        WHERE
+        1 = 1
+        <if test="form.dcid != null">
+            AND t.dcid = #{form.dcid}
+        </if>
+        <if test="form.ocid != null">
+            AND t.ocid = #{form.ocid}
+        </if>
+        <if test="form.exchangeRate != null">
+            AND t.exchange_rate = #{form.exchangeRate}
+        </if>
+        GROUP BY
+        t.`id`
+    </select>
+
+    <select id="findCurrencyRateByDcidAndOcid" resultType="com.jayud.mall.model.vo.CurrencyRateVO">
+        select
+        t.id,t.dcid,t.ocid,t.exchange_rate,t.status,t.user_id,t.user_name,t.create_time
+        from currency_rate t
+        where 1=1
+        and t.dcid = #{dcid, jdbcType=INTEGER}
+        and t.ocid = #{ocid, jdbcType=INTEGER}
+    </select>
+
+
+</mapper>

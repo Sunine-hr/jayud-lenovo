@@ -8,10 +8,8 @@ import com.jayud.mall.service.ISystemMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * <p>
@@ -33,9 +31,7 @@ public class SystemMenuServiceImpl extends ServiceImpl<SystemMenuMapper, SystemM
      */
     @Override
     public List<SystemMenuVO> findAllMenuVO() {
-
         List<SystemMenuVO> menuVOList = menuMapper.findAllMenuVO();
-
         //0L 代表一级菜单
         List<SystemMenuVO> systemMenuVOList = convertMenuTree(menuVOList, 0L);
         return systemMenuVOList;

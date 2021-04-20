@@ -3,6 +3,7 @@ package com.jayud.oms.model.vo;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -124,4 +125,41 @@ public class InputAirOrderVO {
 
     @ApiModelProperty(value = "发票号(多个逗号隔开)")
     private String invoiceNo;
+
+    public void copyOperationInfo() {
+        this.id = null;
+        this.allPics = null;
+        this.orderNo = null;
+        this.mainOrderNo = null;
+        this.thirdPartyOrderNo=null;
+        this.overseasSuppliersId = null;
+        this.receivingOrdersDate = null;
+        this.orderTaker = null;
+        this.airBookingVO = null;
+        this.createUser = null;
+        if (CollectionUtils.isNotEmpty(shippingAddress)) {
+            shippingAddress.forEach(e -> {
+                e.setId(null);
+                e.setTakeFiles(null);
+            });
+        }
+        if (CollectionUtils.isNotEmpty(deliveryAddress)) {
+            deliveryAddress.forEach(e -> {
+                e.setId(null);
+                e.setTakeFiles(null);
+            });
+        }
+
+        if (CollectionUtils.isNotEmpty(notificationAddress)) {
+            notificationAddress.forEach(e -> {
+                e.setId(null);
+                e.setTakeFiles(null);
+            });
+        }
+        if (CollectionUtils.isNotEmpty(goodsForms)){
+            goodsForms.forEach(e->{
+                e.setId(null);
+            });
+        }
+    }
 }

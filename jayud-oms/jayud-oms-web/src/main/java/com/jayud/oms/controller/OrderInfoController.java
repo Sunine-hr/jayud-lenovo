@@ -227,14 +227,14 @@ public class OrderInfoController {
             if (OrderStatusEnum.HY.getCode().equals(inputMainOrderForm.getClassCode())) {
                 InputSeaOrderForm seaOrderForm = form.getSeaOrderForm();
                 String s = seaOrderForm.checkCreateOrder();
-                if (s!=null) {
-                    return CommonResult.error(1,s);
+                if (s != null) {
+                    return CommonResult.error(1, s);
                 }
             }
             //拖车校验参数
             if (OrderStatusEnum.TC.getCode().equals(inputMainOrderForm.getClassCode())
-            ||inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.TCEDD.getCode())
-            ||inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.TCIDD.getCode())) {
+                    || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.TCEDD.getCode())
+                    || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.TCIDD.getCode())) {
                 List<InputTrailerOrderFrom> trailerOrderFrom = form.getTrailerOrderFrom();
                 for (InputTrailerOrderFrom inputTrailerOrderFrom : trailerOrderFrom) {
                     if (!inputTrailerOrderFrom.checkCreateOrder()) {
@@ -458,5 +458,53 @@ public class OrderInfoController {
 
         return CommonResult.success(orderInfoTemplate);
     }
+
+
+    @ApiOperation(value = "获取复制信息")
+    @PostMapping("/copyInformation")
+    public CommonResult<InputOrderVO> copyInformation(@RequestBody @Valid GetOrderDetailForm form) {
+        InputOrderVO inputOrderVO = orderInfoService.getOrderDetail(form);
+
+        inputOrderVO.copyOperationInfo();
+
+        //中港
+        InputOrderTransportVO orderTransportForm = inputOrderVO.getOrderTransportForm();
+        if (orderTransportForm != null) {
+            orderTransportForm.copyOperationInfo();
+        }
+        //内陆模板
+        InputOrderInlandTPVO inlandTransportForm = inputOrderVO.getOrderInlandTransportForm();
+        if (inlandTransportForm != null) {
+            inlandTransportForm.copyOperationInfo();
+        }
+
+        //报关模板
+        InputOrderCustomsVO orderCustomsForm = inputOrderVO.getOrderCustomsForm();
+        if (orderCustomsForm != null) {
+            orderCustomsForm.copyOperationInfo();
+        }
+
+        //空运模板
+        InputAirOrderVO airOrderForm = inputOrderVO.getAirOrderForm();
+        if (airOrderForm != null) {
+            airOrderForm.copyOperationInfo();
+        }
+
+        //海运模板
+        InputSeaOrderVO seaOrderForm = inputOrderVO.getSeaOrderForm();
+        if (seaOrderForm != null) {
+            seaOrderForm.copyOperationInfo();
+        }
+
+        //拖车模板
+        List<InputTrailerOrderVO> trailerOrderForm = inputOrderVO.getTrailerOrderForm();
+        if (CollectionUtils.isNotEmpty(trailerOrderForm)) {
+            trailerOrderForm.forEach(InputTrailerOrderVO::copyOperationInfo);
+        }
+
+        return CommonResult.success(inputOrderVO);
+    }
+
+
 }
 

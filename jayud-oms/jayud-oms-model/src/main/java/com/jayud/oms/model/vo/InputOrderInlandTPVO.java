@@ -10,12 +10,14 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -117,5 +119,28 @@ public class InputOrderInlandTPVO extends Model<InputOrderInlandTPVO> {
     public void setStatus(String status) {
         this.status = status;
         this.statusDesc = OrderStatusEnum.getDesc(status);
+    }
+
+    public void copyOperationInfo() {
+        this.id = null;
+        this.allPics = null;
+        this.orderNo = null;
+        if (CollectionUtils.isNotEmpty(pickUpAddressList)) {
+            pickUpAddressList.forEach(e -> {
+                e.setGoodsId(null);
+                e.setOrderAddressId(null);
+                e.setFileViewList(null);
+                e.setBusinessId(null);
+            });
+        }
+
+        if (CollectionUtils.isNotEmpty(orderDeliveryAddressList)) {
+            orderDeliveryAddressList.forEach(e -> {
+                e.setGoodsId(null);
+                e.setOrderAddressId(null);
+                e.setFileViewList(null);
+                e.setBusinessId(null);
+            });
+        }
     }
 }

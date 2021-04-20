@@ -229,4 +229,24 @@ public class InputOrderTransportVO {
         }
         this.modelAndCntrNo = vehicleSize;
     }
+
+    public void copyOperationInfo() {
+        this.id = null;
+        this.allPics = null;
+        this.orderNo = null;
+        if (this.orderTakeAdrForms1 != null) {
+            orderTakeAdrForms1.forEach(e -> {
+                e.setTakeAdrId(null);
+                e.setDeliveryId(null);
+                e.setTakeFiles(null);
+            });
+        }
+        if (this.orderTakeAdrForms2 != null) {
+            orderTakeAdrForms2.forEach(e -> {
+                e.setTakeAdrId(null);
+                e.setDeliveryId(null);
+                e.setTakeFiles(null);
+            });
+        }
+    }
 }

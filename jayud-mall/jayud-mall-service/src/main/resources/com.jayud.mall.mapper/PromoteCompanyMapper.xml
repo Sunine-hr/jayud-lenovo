@@ -22,4 +22,51 @@
         company_id, company_name, contacts, phone, company_address, qr_code, create_id, create_name, create_time, client_number, parent_id
     </sql>
 
+
+    <select id="findPromoteCompanyByPage" parameterType="com.jayud.mall.model.bo.QueryPromoteCompanyForm" resultType="com.jayud.mall.model.vo.PromoteCompanyVO">
+        select t.company_id,
+               t.company_name,
+               t.contacts,
+               t.phone,
+               t.company_address,
+               t.qr_code,
+               t.create_id,
+               t.create_name,
+               t.create_time,
+               t.client_number,
+               t.parent_id
+        from promote_company t
+        where 1=1
+        <if test="form.companyId != null">
+            and t.company_id = #{form.companyId}
+        </if>
+        <if test="form.companyName != null and form.companyName != ''">
+            and t.company_name like concat('%',#{form.companyName},'%')
+        </if>
+        <if test="form.isQueryCompany">
+            and t.parent_id is null
+        </if>
+        <if test="!form.isQueryCompany">
+            and t.parent_id is not null
+        </if>
+    </select>
+
+    <select id="findPromoteCompanyByParentId" parameterType="java.lang.Integer" resultType="com.jayud.mall.model.vo.PromoteCompanyVO">
+        select t.company_id,
+               t.company_name,
+               t.contacts,
+               t.phone,
+               t.company_address,
+               t.qr_code,
+               t.create_id,
+               t.create_name,
+               t.create_time,
+               t.client_number,
+               t.parent_id
+        from promote_company t
+        where t.parent_id = {parentId}
+    </select>
+
+
+
 </mapper>

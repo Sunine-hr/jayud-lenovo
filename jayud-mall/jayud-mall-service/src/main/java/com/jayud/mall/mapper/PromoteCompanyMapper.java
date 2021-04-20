@@ -25,4 +25,6 @@ public interface PromoteCompanyMapper extends BaseMapper<PromoteCompany> {
     IPage<PromoteCompanyVO> findPromoteCompanyByPage(Page<PromoteCompanyVO> page, @Param("form") QueryPromoteCompanyForm form);
 
     List<PromoteCompanyVO> findPromoteCompanyByParentId(@Param("parentId") Integer parentId);
+
+    PromoteCompanyVO findPromoteCompanyByCompanyId(@Param("companyId") Integer companyId);
 }

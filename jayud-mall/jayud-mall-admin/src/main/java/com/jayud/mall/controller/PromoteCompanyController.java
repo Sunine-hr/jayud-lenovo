@@ -23,7 +23,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/customer")
+@RequestMapping("/promotepompany")
 @Api(tags = "A056-admin-推广公司接口")
 @ApiSort(value = 56)
 public class PromoteCompanyController {
@@ -51,11 +51,20 @@ public class PromoteCompanyController {
     }
 
     @ApiOperation(value = "3.查询公司下面的所有渠道")
-    @PostMapping("/savePromoteCompany")
+    @PostMapping("/findPromoteCompanyByParentId")
     @ApiOperationSupport(order = 3)
     public CommonResult<List<PromoteCompanyVO>> findPromoteCompanyByParentId(@Valid @RequestBody PromoteCompanyIdForm form){
         Integer parentId = form.getCompanyId();
         List<PromoteCompanyVO> promoteCompanyVOS = promoteCompanyService.findPromoteCompanyByParentId(parentId);
+        return CommonResult.success(promoteCompanyVOS);
+    }
+
+    @ApiOperation(value = "4.查询推广公司")
+    @PostMapping("/findPromoteCompanyByCompanyId")
+    @ApiOperationSupport(order = 4)
+    public CommonResult<PromoteCompanyVO> findPromoteCompanyByCompanyId(@Valid @RequestBody PromoteCompanyIdForm form){
+        Integer companyId = form.getCompanyId();
+        PromoteCompanyVO promoteCompanyVOS = promoteCompanyService.findPromoteCompanyByCompanyId(companyId);
         return CommonResult.success(promoteCompanyVOS);
     }
 

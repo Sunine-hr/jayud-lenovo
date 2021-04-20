@@ -1,9 +1,13 @@
 package com.jayud.mall.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.Asserts;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.PromoteCompanyMapper;
 import com.jayud.mall.model.bo.QueryPromoteCompanyForm;
 import com.jayud.mall.model.bo.SavePromoteCompanyForm;
@@ -12,6 +16,7 @@ import com.jayud.mall.model.vo.PromoteCompanyVO;
 import com.jayud.mall.service.IPromoteCompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -40,12 +45,35 @@ public class PromoteCompanyServiceImpl extends ServiceImpl<PromoteCompanyMapper,
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void savePromoteCompany(SavePromoteCompanyForm form) {
-
+        Integer companyId = form.getCompanyId();
+        if(ObjectUtil.isEmpty(companyId)){
+            //新增
+            PromoteCompany promoteCompany = ConvertUtil.convert(form, PromoteCompany.class);
+            this.saveOrUpdate(promoteCompany);
+        }else{
+            PromoteCompanyVO promoteCompanyVO = promoteCompanyMapper.findPromoteCompanyByCompanyId(companyId);
+            if(ObjectUtil.isEmpty(promoteCompanyVO)){
+                Asserts.fail(ResultEnum.UNKNOWN_ERROR, "公司不存在");
+            }
+            //编辑
+            PromoteCompany promoteCompany = ConvertUtil.convert(promoteCompanyVO, PromoteCompany.class);
+            promoteCompany.setCompanyName(form.getCompanyName());
+            promoteCompany.setContacts(form.getContacts());
+            promoteCompany.setPhone(form.getPhone());
+            promoteCompany.setCompanyAddress(form.getCompanyAddress());
+            this.saveOrUpdate(promoteCompany);
+        }
     }
 
     @Override
     public List<PromoteCompanyVO> findPromoteCompanyByParentId(Integer parentId) {
         return promoteCompanyMapper.findPromoteCompanyByParentId(parentId);
+    }
+
+    @Override
+    public PromoteCompanyVO findPromoteCompanyByCompanyId(Integer companyId) {
+        return promoteCompanyMapper.findPromoteCompanyByCompanyId(companyId);
     }
 }

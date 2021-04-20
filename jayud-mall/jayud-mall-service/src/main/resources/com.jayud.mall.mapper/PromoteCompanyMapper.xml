@@ -64,9 +64,24 @@
                t.client_number,
                t.parent_id
         from promote_company t
-        where t.parent_id = {parentId}
+        where t.parent_id = #{parentId}
     </select>
 
+   <select id="findPromoteCompanyByCompanyId" parameterType="java.lang.Integer" resultType="com.jayud.mall.model.vo.PromoteCompanyVO">
+       select t.company_id,
+              t.company_name,
+              t.contacts,
+              t.phone,
+              t.company_address,
+              t.qr_code,
+              t.create_id,
+              t.create_name,
+              t.create_time,
+              t.client_number,
+              t.parent_id
+       from promote_company t
+       where t.company_id = #{companyId}
+   </select>
 
 
 </mapper>

@@ -24,4 +24,6 @@ public interface IPromoteCompanyService extends IService<PromoteCompany> {
     void savePromoteCompany(SavePromoteCompanyForm form);
 
     List<PromoteCompanyVO> findPromoteCompanyByParentId(Integer parentId);
+
+    PromoteCompanyVO findPromoteCompanyByCompanyId(Integer companyId);
 }

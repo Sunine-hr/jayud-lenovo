@@ -4,14 +4,14 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.finance.po.OrderBillCostTotal">
-        <id column="id" property="id" />
-        <result column="order_no" property="orderNo" />
-        <result column="bill_no" property="billNo" />
-        <result column="currency_code" property="currencyCode" />
-        <result column="cost_info_name" property="costInfoName" />
-        <result column="money" property="money" />
-        <result column="status" property="status" />
-        <result column="money_type" property="moneyType" />
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="bill_no" property="billNo"/>
+        <result column="currency_code" property="currencyCode"/>
+        <result column="cost_info_name" property="costInfoName"/>
+        <result column="money" property="money"/>
+        <result column="status" property="status"/>
+        <result column="money_type" property="moneyType"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -19,7 +19,8 @@
         id, order_no, bill_no, currency_code, cost_info_name, money, status,money_type
     </sql>
 
-    <select id="findOrderFBillCostTotal" parameterType="java.util.HashMap" resultType="com.jayud.finance.vo.OrderBillCostTotalVO">
+    <select id="findOrderFBillCostTotal" parameterType="java.util.HashMap"
+            resultType="com.jayud.finance.vo.OrderBillCostTotalVO">
         SELECT
         opc.order_no orderNo,
         opc.main_order_no mainOrderNo,
@@ -31,10 +32,12 @@
         ifnull((
         SELECT cr.exchange_rate FROM currency_rate cr
         WHERE cr.dcid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = 'CNY' )
-        AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = opc.currency_code ) and cr.month = #{accountTermStr}),0) localMoneyRate,
+        AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = opc.currency_code ) and cr.month =
+        #{accountTermStr}),0) localMoneyRate,
         ifnull((SELECT cr.exchange_rate FROM currency_rate cr
         WHERE cr.dcid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = #{settlementCurrency} )
-        AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = opc.currency_code ) and cr.month = #{accountTermStr}),0) exchangeRate
+        AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = opc.currency_code ) and cr.month =
+        #{accountTermStr}),0) exchangeRate
         FROM
         order_payment_cost opc
         LEFT JOIN cost_info ci ON ci.id_code = opc.cost_code
@@ -44,7 +47,8 @@
             #{item}
         </foreach>
     </select>
-    <select id="findOrderSBillCostTotal" parameterType="java.util.HashMap" resultType="com.jayud.finance.vo.OrderBillCostTotalVO">
+    <select id="findOrderSBillCostTotal" parameterType="java.util.HashMap"
+            resultType="com.jayud.finance.vo.OrderBillCostTotalVO">
         SELECT
         orc.order_no orderNo,
         orc.main_order_no mainOrderNo,
@@ -55,10 +59,12 @@
         orc.amount money,
         ifnull((SELECT cr.exchange_rate FROM currency_rate cr WHERE
         cr.dcid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = 'CNY' )
-        AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = orc.currency_code ) and cr.`month`=#{accountTermStr} ORDER BY cr.created_time desc limit 1),0) localMoneyRate,
+        AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = orc.currency_code ) and
+        cr.`month`=#{accountTermStr} ORDER BY cr.created_time desc limit 1),0) localMoneyRate,
         ifnull((SELECT cr.exchange_rate FROM currency_rate cr WHERE
         cr.dcid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = #{settlementCurrency} )
-        AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = orc.currency_code ) and cr.`month`=#{accountTermStr} ORDER BY cr.created_time desc limit 1),0) exchangeRate
+        AND cr.ocid = ( SELECT ci.id FROM currency_info ci WHERE ci.currency_code = orc.currency_code ) and
+        cr.`month`=#{accountTermStr} ORDER BY cr.created_time desc limit 1),0) exchangeRate
         FROM
         order_receivable_cost orc
         LEFT JOIN cost_info ci ON orc.cost_code = ci.id_code
@@ -67,6 +73,27 @@
         <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
+    </select>
+
+
+    <select id="totalCurrencyAmount" resultType="java.util.Map">
+        select bill_no billNo, currency_code currencyCode,sum(money) amount
+        from order_bill_cost_total
+        where
+        bill_no in
+        <foreach collection="billNos" item="billNo" open="(" separator="," close=")">
+            #{billNo}
+        </foreach>
+        group by bill_no,currency_code
+        -- (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='CNY')
+        -- rmb,
+        -- (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='USD')
+        -- dollar,
+        -- (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='EUR')
+        -- euro,
+        -- (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='HKD')
+        -- hKDollar,
+
     </select>
 
 </mapper>

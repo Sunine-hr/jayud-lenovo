@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -58,4 +59,11 @@ public class AuditInfoServiceImpl extends ServiceImpl<AuditInfoMapper, AuditInfo
         List<AuditInfo> auditInfos = this.baseMapper.selectList(condition);
         return auditInfos.size() > 0 ? auditInfos.get(0) : new AuditInfo();
     }
+
+    @Override
+    public List<Map<String, Object>> getByExtUniqueFlag(List<String> extUniqueFlags) {
+        return this.baseMapper.getByExtUniqueFlag(extUniqueFlags);
+    }
+
+
 }

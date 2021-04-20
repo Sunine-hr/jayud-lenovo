@@ -1,11 +1,14 @@
 package com.jayud.finance.vo;
 
+import cn.hutool.core.map.MapUtil;
 import com.jayud.finance.enums.BillEnum;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 应付/应收一致对账单
@@ -83,18 +86,38 @@ public class OrderPaymentBillDetailVO {
     private Integer pushKingdeeCount;
 
     public String getAuditStatusDesc() {
-        if(!StringUtil.isNullOrEmpty(this.auditStatus)){
+        if (!StringUtil.isNullOrEmpty(this.auditStatus)) {
             return BillEnum.getDesc(this.auditStatus);
         }
         return "";
     }
 
     public String getApplyStatus() {
-        if(!StringUtil.isNullOrEmpty(this.applyStatus)){
+        if (!StringUtil.isNullOrEmpty(this.applyStatus)) {
             return BillEnum.getDesc(this.applyStatus);
         }
         return "";
     }
 
 
+    public void totalCurrencyAmount(List<Map<String, Object>> currencyAmounts) {
+        for (Map<String, Object> currencyAmount : currencyAmounts) {
+            if (!MapUtil.getStr(currencyAmount,"billNo").equals(this.billNo)) {
+                continue;
+            }
+            String key = "amount";
+            if ("CNY".equals(currencyAmount.get("currencyCode"))) {
+                this.rmb = (BigDecimal) currencyAmount.get(key);
+            }
+            if ("USD".equals(currencyAmount.get("currencyCode"))) {
+                this.dollar = (BigDecimal) currencyAmount.get(key);
+            }
+            if ("EUR".equals(currencyAmount.get("currencyCode"))) {
+                this.euro = (BigDecimal) currencyAmount.get(key);
+            }
+            if ("HKD".equals(currencyAmount.get("currencyCode"))) {
+                this.hKDollar = (BigDecimal) currencyAmount.get(key);
+            }
+        }
+    }
 }

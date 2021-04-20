@@ -5,6 +5,9 @@ import com.jayud.oms.model.po.AuditInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
  * 审核信息记录表 Mapper 接口
@@ -17,4 +20,6 @@ import org.apache.ibatis.annotations.Param;
 public interface AuditInfoMapper extends BaseMapper<AuditInfo> {
 
     AuditInfo getLatestByExtId(@Param("id") Long id, @Param("tableDesc") String tableDesc);
+
+    List<Map<String,Object>> getByExtUniqueFlag(@Param("extUniqueFlags") List<String> extUniqueFlags);
 }

@@ -172,4 +172,15 @@ public class OrderBillCostTotalServiceImpl extends ServiceImpl<OrderBillCostTota
 
         return editBillDateilVO;
     }
+
+    /**
+     * 合计币种
+     *
+     * @param billNos
+     * @return
+     */
+    @Override
+    public List<Map<String, Object>> totalCurrencyAmount(List<String> billNos) {
+        return this.baseMapper.totalCurrencyAmount(billNos);
+    }
 }

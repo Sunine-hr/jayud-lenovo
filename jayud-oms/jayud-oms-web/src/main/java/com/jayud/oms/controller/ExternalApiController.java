@@ -1308,6 +1308,20 @@ public class ExternalApiController {
 
         return ApiResult.ok(map);
     }
+
+
+    /**
+     * 根据审核表唯一标识查询审核描述(对账单)
+     *
+     * @param extUniqueFlags
+     * @return
+     */
+    @RequestMapping(value = "/api/getByExtUniqueFlag")
+    public ApiResult<Map<String, Object>> getByExtUniqueFlag(@RequestBody List<String> extUniqueFlags) {
+        List<Map<String, Object>> list = this.auditInfoService.getByExtUniqueFlag(extUniqueFlags);
+        Map<Object, Object> map = list.stream().collect(Collectors.toMap(e -> e.get("extUniqueFlag"), e -> e.get("auditComment")));
+        return ApiResult.ok(map);
+    }
 }
 
 

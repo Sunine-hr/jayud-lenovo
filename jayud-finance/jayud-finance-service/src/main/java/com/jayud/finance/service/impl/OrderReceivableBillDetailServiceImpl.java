@@ -1,5 +1,6 @@
 package com.jayud.finance.service.impl;
 
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSON;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
@@ -14,10 +15,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
-import com.jayud.common.utils.BeanUtils;
-import com.jayud.common.utils.ConvertUtil;
-import com.jayud.common.utils.DateUtils;
-import com.jayud.common.utils.Utilities;
+import com.jayud.common.utils.*;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.enums.BillTemplateEnum;
@@ -85,12 +83,33 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         List<String> data = (List<String>) legalNameBySystemName.getData();
 
         IPage<OrderPaymentBillDetailVO> pageInfo = baseMapper.findReceiveBillDetailByPage(page, form, data);
+
+        List<OrderPaymentBillDetailVO> records = pageInfo.getRecords();
+        if (CollectionUtils.isEmpty(records)) {
+            return pageInfo;
+        }
+        List<String> billNos = records.stream().map(OrderPaymentBillDetailVO::getBillNo).collect(toList());
+        //统计合计币种金额
+        List<Map<String, Object>> currencyAmounts = this.costTotalService.totalCurrencyAmount(billNos);
+        //审核意见
+        Map<String, Object> auditComment = this.omsClient.getByExtUniqueFlag(billNos).getData();
+        for (OrderPaymentBillDetailVO record : records) {
+            record.totalCurrencyAmount(currencyAmounts);
+            record.setAuditComment(MapUtil.getStr(auditComment, record.getBillNo()));
+        }
         return pageInfo;
     }
 
     @Override
     public List<OrderPaymentBillDetailVO> findReceiveBillDetail(QueryPaymentBillDetailForm form) {
-        return baseMapper.findReceiveBillDetailByPage(form, null);
+        List<OrderPaymentBillDetailVO> list = baseMapper.findReceiveBillDetailByPage(form, null);
+        List<String> billNos = list.stream().map(OrderPaymentBillDetailVO::getBillNo).collect(toList());
+        //统计合计币种金额
+        List<Map<String, Object>> currencyAmounts = this.costTotalService.totalCurrencyAmount(billNos);
+        for (OrderPaymentBillDetailVO record : list) {
+            record.totalCurrencyAmount(currencyAmounts);
+        }
+        return list;
     }
 
     @Override

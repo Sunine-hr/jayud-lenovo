@@ -4,6 +4,7 @@ import com.jayud.oms.model.po.AuditInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -30,4 +31,5 @@ public interface IAuditInfoService extends IService<AuditInfo> {
      */
     public AuditInfo getLatestByRejectionStatus(Long orderId, String tableDesc, String... status);
 
+    List<Map<String, Object>> getByExtUniqueFlag(List<String> extUniqueFlags);
 }

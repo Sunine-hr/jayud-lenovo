@@ -25,10 +25,10 @@
         status_file_name,ext_desc
     </sql>
 
-    <select id="getLatestByExtId"  resultMap="BaseResultMap">
+    <select id="getLatestByExtId" resultMap="BaseResultMap">
         select
-             id, ext_id, audit_type_desc, audit_status, audit_comment, audit_user,
-             created_user, audit_time, created_time,status_file,
+        id, ext_id, audit_type_desc, audit_status, audit_comment, audit_user,
+        created_user, audit_time, created_time,status_file,
         status_file_name,ext_desc
         from audit_info
         <where>
@@ -41,5 +41,19 @@
 
     </select>
 
+
+    <select id="getByExtUniqueFlag" resultType="java.util.Map">
+        select a.ext_unique_flag extUniqueFlag,a.audit_comment auditComment from
+        (select  max(ai.id) id from audit_info ai
+        <where>
+            ai.ext_unique_flag in
+            <foreach collection="extUniqueFlags" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            and ai.audit_status in
+            ('B_2_1','B_4_1','B_6_1','B_7','B_8')
+        </where>
+        group by ext_unique_flag) tmp,audit_info a where tmp.id=a.id
+    </select>
 
 </mapper>

@@ -1241,6 +1241,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
         }
 
+        //仓储
+        if(OrderStatusEnum.CC.getCode().equals(classCode)  || selectedServer.contains(OrderStatusEnum.CCIDD.getCode()) || selectedServer.contains(OrderStatusEnum.CCEDD.getCode())){
+            if(selectedServer.contains(OrderStatusEnum.CCIDD.getCode())){
+
+            }
+            if(selectedServer.contains(OrderStatusEnum.CCEDD.getCode()) ){
+
+            }
+        }
+
         return true;
     }
 

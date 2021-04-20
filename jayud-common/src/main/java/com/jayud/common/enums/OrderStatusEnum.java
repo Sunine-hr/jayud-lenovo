@@ -26,9 +26,12 @@ public enum OrderStatusEnum {
     HY("HY", "海运"),
     HYDD("HYDD", "海运订单"),
     NLDD("NLDD", "内陆运输订单"),
-    TC("TC","拖车"),
-    TCEDD("TCEDD","拖车出口订单"),
-    TCIDD("TCIDD","拖车进口订单"),
+    TC("TC", "拖车"),
+    TCEDD("TCEDD", "拖车出口订单"),
+    TCIDD("TCIDD", "拖车进口订单"),
+    CC("CC", "仓储"),
+    CCEDD("CCEDD", "入库订单"),
+    CCIDD("CCIDD", "出库订单"),
 
     //主订单状态
     MAIN_1("1", "正常"),
@@ -157,7 +160,23 @@ public enum OrderStatusEnum {
     TT_7("TT_7", "拖车过磅"),
     TT_8("TT_8", "确认还柜"),
 
-
+    //仓储订单状态流程节点
+    //入库
+    CCI_0("CCI_O", "待接单"),
+    CCI_1("CCI_1", "入库接单"),
+    CCI_1_1("CCI_1_1", "入库接单驳回"),
+    CCI_2("CCI_2", "确认入仓"),
+    CCI_3("CCI_3", "仓储入库"),
+    CCI_4("CCI_4", "已入库"),
+    //出库
+    CCE_0("CCI_O", "待接单"),
+    CCE_1("CCI_1", "出库接单"),
+    CCE_1_1("CCI_1_1", "出库接单驳回"),
+    CCE_2("CCI_2", "打印拣货单"),
+    CCE_3("CCI_3", "仓储拣货"),
+    CCE_4("CCI_4", "出仓确认"),
+    CCE_5("CCI_5", "出仓异常"),
+    CCE_6("CCI_6", "已出库"),
     //外部报关放行
     EXT_CUSTOMS_RELEASE("E_C_0", "外部报关放行"),
 
@@ -410,6 +429,43 @@ public enum OrderStatusEnum {
         return statusEnums;
     }
 
+
+    public static List<OrderStatusEnum> getInStorageOrderProcess() {
+        List<OrderStatusEnum> statusEnums = new ArrayList<>();
+        statusEnums.add(CCI_0);
+        statusEnums.add(CCI_1);
+        statusEnums.add(CCI_2);
+        statusEnums.add(CCI_3);
+        statusEnums.add(CCI_4);
+        return statusEnums;
+    }
+
+    public static List<OrderStatusEnum> getOutStorageOrderProcess() {
+        List<OrderStatusEnum> statusEnums = new ArrayList<>();
+        statusEnums.add(CCE_0);
+        statusEnums.add(CCE_1);
+        statusEnums.add(CCE_2);
+        statusEnums.add(CCE_3);
+        statusEnums.add(CCE_4);
+        statusEnums.add(CCE_5);
+        statusEnums.add(CCE_6);
+        return statusEnums;
+    }
+
+    public static OrderStatusEnum getInStorageOrderRejection(String status) {
+        if (OrderStatusEnum.CCI_0.getCode().equals(status)) {//接单页面驳回
+            return CCI_1_1;
+        }
+        return null;
+    }
+
+    public static OrderStatusEnum getOutStorageOrderRejection(String status) {
+        if (OrderStatusEnum.CCE_0.getCode().equals(status)) {//接单页面驳回
+            return CCE_1_1;
+        }
+        return null;
+    }
+
     public static OrderStatusEnum getTrailerOrderRejection(String status) {
         if (OrderStatusEnum.TT_0.getCode().equals(status)) {//接单页面驳回
             return TT_1_1;
@@ -457,7 +513,8 @@ public enum OrderStatusEnum {
                     INLANDTP_NL_1_1.getCode(), INLANDTP_NL_2_1.getCode(),
                     INLANDTP_NL_3_1.getCode(), INLANDTP_NL_3_2.getCode(),
                     INLANDTP_NL_4_1.getCode(), INLANDTP_NL_5_1.getCode(),
-                    TT_1_1.getCode(), TT_2_1.getCode(), TT_3_1.getCode(), TT_3_2.getCode(), TT_4_1.getCode()};
+                    TT_1_1.getCode(), TT_2_1.getCode(), TT_3_1.getCode(), TT_3_2.getCode(), TT_4_1.getCode(),
+                    CCI_1_1.getCode(), CCE_1_1.getCode()};
         }
         for (String subOrderSign : subOrderSigns) {
             //todo 有需要再补
@@ -488,6 +545,17 @@ public enum OrderStatusEnum {
             if (SubOrderSignEnum.TC.getSignOne().equals(subOrderSign)) {
                 return new String[]{
                         TT_1_1.getCode(), TT_2_1.getCode(), TT_3_1.getCode(), TT_3_2.getCode(), TT_4_1.getCode()
+                };
+            }
+            if (SubOrderSignEnum.CCI.getSignOne().equals(subOrderSign)) {
+                return new String[]{
+                        CCI_1_1.getCode()
+                };
+            }
+
+            if (SubOrderSignEnum.CCE.getSignOne().equals(subOrderSign)) {
+                return new String[]{
+                        CCE_1_1.getCode()
                 };
             }
         }

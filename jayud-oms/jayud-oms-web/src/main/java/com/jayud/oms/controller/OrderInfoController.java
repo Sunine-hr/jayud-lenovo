@@ -240,6 +240,22 @@ public class OrderInfoController {
                     return CommonResult.error(ResultEnum.PARAM_ERROR);
                 }
             }
+            //拖车校验参数
+            if (OrderStatusEnum.CC.getCode().equals(inputMainOrderForm.getClassCode()) || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCEDD.getCode()) || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCIDD.getCode())){
+                if(inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCEDD.getCode())){
+                    InputStorageOutOrderForm storageOutOrderForm = form.getStorageOutOrderForm();
+                    if(!storageOutOrderForm.checkCreateOrder().equals("pass")){
+                        return CommonResult.error(1,storageOutOrderForm.checkCreateOrder());
+                    }
+                }
+                if(inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCIDD.getCode())){
+                    InputStorageInputOrderForm storageInputOrderForm = form.getStorageInputOrderForm();
+                    if(!storageInputOrderForm.checkCreateOrder().equals("pass")){
+                        return CommonResult.error(1,storageInputOrderForm.checkCreateOrder());
+                    }
+                }
+            }
+
             //校验参数
             form.checkCreateParam();
         }

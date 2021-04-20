@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.storage.mapper.StorageOutOrderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.storage.model.po.StorageOutOrder">
+        <id column=" id" property=" id" />
+        <result column="order_no" property="orderNo" />
+        <result column="main_order_no" property="mainOrderNo" />
+        <result column="status" property="status" />
+        <result column="process_status" property="processStatus" />
+        <result column="unit_code" property="unitCode" />
+        <result column="legal_name" property="legalName" />
+        <result column="legal_entity_id" property="legalEntityId" />
+        <result column="department_id" property="departmentId" />
+        <result column="plate_information" property="plateInformation" />
+        <result column="warehouse_number" property="warehouseNumber" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="remarks" property="remarks" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+         id, order_no, main_order_no, status, process_status, unit_code, legal_name, legal_entity_id, department_id, plate_information, warehouse_number, create_user, create_time, update_user, update_time, remarks
+    </sql>
+
+</mapper>

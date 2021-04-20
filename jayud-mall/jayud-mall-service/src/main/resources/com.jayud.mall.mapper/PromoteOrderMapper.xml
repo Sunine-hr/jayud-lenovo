@@ -20,4 +20,41 @@
         id, company_id, company_name, client_company_name, client_contacts, client_phone, client_company_address, client_manage_platform, create_time
     </sql>
 
+
+    <select id="findPromoteOrderByPage" parameterType="com.jayud.mall.model.bo.QueryPromoteOrderForm" resultType="com.jayud.mall.model.vo.PromoteOrderVO">
+        select t.id,
+               t.company_id,
+               t.company_name,
+               t.client_company_name,
+               t.client_contacts,
+               t.client_phone,
+               t.client_company_address,
+               t.client_manage_platform,
+               t.create_time
+        from promote_order t
+        where 1=1
+        <if test="form.companyName != null and form.companyName != ''">
+            and t.company_name like concat('%',#{form.companyName},'%')
+        </if>
+        <if test="form.clientContacts != null and form.clientContacts != ''">
+            and t.client_contacts like concat('%',#{form.clientContacts},'%')
+        </if>
+    </select>
+
+    <select id="findPromoteOrderById" parameterType="java.lang.Integer" resultType="com.jayud.mall.model.vo.PromoteOrderVO">
+        select t.id,
+               t.company_id,
+               t.company_name,
+               t.client_company_name,
+               t.client_contacts,
+               t.client_phone,
+               t.client_company_address,
+               t.client_manage_platform,
+               t.create_time
+        from promote_order t
+        where t.id = #{id}
+
+    </select>
+
+
 </mapper>

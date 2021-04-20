@@ -568,11 +568,11 @@ public class TrailerOrderController {
     @PostMapping(value = "/getOrderDetails")
     @ApiOperation(value = "根据主订单号获取拖车订单信息 ")
     public CommonResult<TrailerOrderVO> getOrderDetails(@RequestBody Map<String, Object> map) {
-        String mainOrderNo = MapUtil.getStr(map, "orderNo");
-        if (StringUtils.isEmpty(mainOrderNo)) {
+        String orderNo = MapUtil.getStr(map, "orderNo");
+        if (StringUtils.isEmpty(orderNo)) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        TrailerOrder trailerOrder = trailerOrderService.getByMainOrderNO(mainOrderNo);
+        TrailerOrder trailerOrder = trailerOrderService.getByOrderNO(orderNo);
         TrailerOrderVO trailerOrderVO = trailerOrderService.getTrailerOrderByOrderNO(trailerOrder.getId());
         return CommonResult.success(trailerOrderVO);
     }

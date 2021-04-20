@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,10 +46,14 @@ public class ExternalApiController {
      * 根据主订单号获取拖车订单信息
      */
     @RequestMapping(value = "/api/trailer/getTrailerOrderDetails")
-    ApiResult<TrailerOrderVO> getTrailerOrderDetails(@RequestParam("orderNo")String orderNo){
-        TrailerOrder trailerOrder = trailerOrderService.getByMainOrderNO(orderNo);
-        TrailerOrderVO trailerOrderVO = trailerOrderService.getTrailerOrderByOrderNO(trailerOrder.getId());
-        return ApiResult.ok(trailerOrderVO);
+    ApiResult<List<TrailerOrderVO>> getTrailerOrderDetails(@RequestParam("orderNo")String orderNo){
+        List<TrailerOrder> trailerOrders = trailerOrderService.getByMainOrderNO(orderNo);
+        List<TrailerOrderVO> list = new ArrayList<>();
+        for (TrailerOrder trailerOrder : trailerOrders) {
+            TrailerOrderVO trailerOrderVO = trailerOrderService.getTrailerOrderByOrderNO(trailerOrder.getId());
+            list.add(trailerOrderVO);
+        }
+        return ApiResult.ok(list);
     }
 
     /**
@@ -58,8 +63,12 @@ public class ExternalApiController {
      */
     @RequestMapping(value = "/api/trailer/getTrailerOrderByMainOrderNos")
     ApiResult getTrailerOrderByMainOrderNos(@RequestBody List<String> mainOrderNoList){
-        List<TrailerOrder> seaOrders = this.trailerOrderService.getTrailerOrderByOrderNOs(mainOrderNoList);
-        return ApiResult.ok(seaOrders);
+        List<List<TrailerOrder>> trailerOrderList = new ArrayList<>();
+        for (String s : mainOrderNoList) {
+            List<TrailerOrder> trailerOrders = this.trailerOrderService.getByMainOrderNO(s);
+            trailerOrderList.add(trailerOrders);
+        }
+        return ApiResult.ok(trailerOrderList);
     }
 
 }

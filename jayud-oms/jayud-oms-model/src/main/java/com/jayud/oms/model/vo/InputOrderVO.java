@@ -3,6 +3,8 @@ package com.jayud.oms.model.vo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 
 @Data
 public class InputOrderVO {
@@ -29,5 +31,5 @@ public class InputOrderVO {
     private InputOrderInlandTPVO orderInlandTransportForm;
 
     @ApiModelProperty(value = "拖车单")
-    private InputTrailerOrderVO trailerOrderForm;
+    private List<InputTrailerOrderVO> trailerOrderForm;
 }

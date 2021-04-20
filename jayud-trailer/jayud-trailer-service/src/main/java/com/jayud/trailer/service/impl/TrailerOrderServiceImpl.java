@@ -153,10 +153,10 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
      * @return
      */
     @Override
-    public TrailerOrder getByMainOrderNO(String orderNo) {
+    public List<TrailerOrder> getByMainOrderNO(String orderNo) {
         QueryWrapper<TrailerOrder> condition = new QueryWrapper<>();
         condition.lambda().eq(TrailerOrder::getMainOrderNo, orderNo);
-        return this.getOne(condition);
+        return this.list(condition);
     }
 
     @Override
@@ -431,4 +431,12 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
         //更改为驳回状态
         this.updateById(tmp);
     }
+
+    @Override
+    public TrailerOrder getByOrderNO(String orderNo) {
+        QueryWrapper<TrailerOrder> condition = new QueryWrapper<>();
+        condition.lambda().eq(TrailerOrder::getOrderNo, orderNo);
+        return this.getOne(condition);
+    }
+
 }

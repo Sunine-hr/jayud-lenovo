@@ -899,25 +899,28 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         //获取拖车信息
         if (OrderStatusEnum.TC.getCode().equals(form.getClassCode()) || inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.TCEDD.getCode()) || inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.TCIDD.getCode())) {
-            InputTrailerOrderVO trailerOrderVO = this.trailerClient.getTrailerOrderDetails(inputMainOrderVO.getOrderNo()).getData();
-            if (trailerOrderVO != null) {
-                //查询供应商
-                TrailerDispatchVO trailerDispatchVO = trailerOrderVO.getTrailerDispatchVO();
-                if (trailerDispatchVO != null && trailerDispatchVO.getSupplierId() != null) {
-                    SupplierInfo supplierInfo = this.supplierInfoService.getById(trailerDispatchVO.getSupplierId());
-                    trailerDispatchVO.setSupplierName(supplierInfo.getSupplierChName());
+            List<InputTrailerOrderVO> trailerOrderVOs = this.trailerClient.getTrailerOrderDetails(inputMainOrderVO.getOrderNo()).getData();
+            for (InputTrailerOrderVO trailerOrderVO : trailerOrderVOs) {
+                if (trailerOrderVO != null) {
+                    //查询供应商
+                    TrailerDispatchVO trailerDispatchVO = trailerOrderVO.getTrailerDispatchVO();
+                    if (trailerDispatchVO != null && trailerDispatchVO.getSupplierId() != null) {
+                        SupplierInfo supplierInfo = this.supplierInfoService.getById(trailerDispatchVO.getSupplierId());
+                        trailerDispatchVO.setSupplierName(supplierInfo.getSupplierChName());
+                    }
+                    //添加附件
+                    List<FileView> attachments = this.logisticsTrackService.getAttachments(trailerOrderVO.getId()
+                            , BusinessTypeEnum.TC.getCode(), prePath);
+                    trailerOrderVO.setAllPics(attachments);
+                    //结算单位名称
+                    CustomerInfo customerInfo = customerInfoService.getByCode(trailerOrderVO.getUnitCode());
+                    if (customerInfo != null) {
+                        trailerOrderVO.setUnitName(customerInfo.getName());
+                    }
                 }
-                //添加附件
-                List<FileView> attachments = this.logisticsTrackService.getAttachments(trailerOrderVO.getId()
-                        , BusinessTypeEnum.TC.getCode(), prePath);
-                trailerOrderVO.setAllPics(attachments);
-                //结算单位名称
-                CustomerInfo customerInfo = customerInfoService.getByCode(trailerOrderVO.getUnitCode());
-                if (customerInfo != null) {
-                    trailerOrderVO.setUnitName(customerInfo.getName());
-                }
-                inputOrderVO.setTrailerOrderForm(trailerOrderVO);
             }
+            inputOrderVO.setTrailerOrderForm(trailerOrderVOs);
+
         }
 
         return inputOrderVO;
@@ -1197,47 +1200,49 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
         //拖车
         if (OrderStatusEnum.TC.getCode().equals(classCode) || selectedServer.contains(OrderStatusEnum.TCEDD.getCode()) || selectedServer.contains(OrderStatusEnum.TCIDD.getCode())) {
-            InputTrailerOrderFrom trailerOrderFrom = form.getTrailerOrderFrom();
+            List<InputTrailerOrderFrom> trailerOrderFroms = form.getTrailerOrderFrom();
 
-            //生成拖车订单号
-            if (form.getCmd().equals("submit")) {//提交
-                if (trailerOrderFrom.getId() == null) {
-                    String orderNo = generationOrderNo(trailerOrderFrom.getLegalEntityId(), trailerOrderFrom.getImpAndExpType(), OrderStatusEnum.TC.getCode());
-                    trailerOrderFrom.setOrderNo(orderNo);
-                }
-                //草稿编辑提交
-                if (trailerOrderFrom.getStatus() != null && trailerOrderFrom.getStatus().equals("TT_0")) {
-                    String orderNo = generationOrderNo(trailerOrderFrom.getLegalEntityId(), trailerOrderFrom.getImpAndExpType(), OrderStatusEnum.TC.getCode());
-                    trailerOrderFrom.setOrderNo(orderNo);
-                }
-
-            }
-            //暂存，随机生成订单号
-            if (form.getCmd().equals("preSubmit") && trailerOrderFrom.getId() == null) {
+            for (InputTrailerOrderFrom trailerOrderFrom : trailerOrderFroms) {
                 //生成拖车订单号
-                String orderNo = StringUtils.loadNum(CommonConstant.TC, 12);
-                while (true) {
-                    if (!isExistOrder(orderNo)) {//重复
-                        orderNo = StringUtils.loadNum(CommonConstant.TC, 12);
-                    } else {
-                        break;
+                if (form.getCmd().equals("submit")) {//提交
+                    if (trailerOrderFrom.getId() == null) {
+                        String orderNo = generationOrderNo(trailerOrderFrom.getLegalEntityId(), trailerOrderFrom.getImpAndExpType(), OrderStatusEnum.TC.getCode());
+                        trailerOrderFrom.setOrderNo(orderNo);
                     }
+                    //草稿编辑提交
+                    if (trailerOrderFrom.getStatus() != null && trailerOrderFrom.getStatus().equals("TT_0")) {
+                        String orderNo = generationOrderNo(trailerOrderFrom.getLegalEntityId(), trailerOrderFrom.getImpAndExpType(), OrderStatusEnum.TC.getCode());
+                        trailerOrderFrom.setOrderNo(orderNo);
+                    }
+
                 }
-                trailerOrderFrom.setOrderNo(orderNo);
-            }
+                //暂存，随机生成订单号
+                if (form.getCmd().equals("preSubmit") && trailerOrderFrom.getId() == null) {
+                    //生成拖车订单号
+                    String orderNo = StringUtils.loadNum(CommonConstant.TC, 12);
+                    while (true) {
+                        if (!isExistOrder(orderNo)) {//重复
+                            orderNo = StringUtils.loadNum(CommonConstant.TC, 12);
+                        } else {
+                            break;
+                        }
+                    }
+                    trailerOrderFrom.setOrderNo(orderNo);
+                }
 
-            if (this.queryEditOrderCondition(trailerOrderFrom.getStatus(),
-                    inputMainOrderForm.getStatus(), SubOrderSignEnum.TC.getSignOne(), form)) {
-                trailerOrderFrom.setMainOrderNo(mainOrderNo);
-                trailerOrderFrom.setCreateUser(UserOperator.getToken());
-                Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
-                        : ProcessStatusEnum.DRAFT.getCode();
-                trailerOrderFrom.setProcessStatus(processStatus);
-                String subOrderNo = this.trailerClient.createOrder(trailerOrderFrom).getData();
-                trailerOrderFrom.setOrderNo(subOrderNo);
+                if (this.queryEditOrderCondition(trailerOrderFrom.getStatus(),
+                        inputMainOrderForm.getStatus(), SubOrderSignEnum.TC.getSignOne(), form)) {
+                    trailerOrderFrom.setMainOrderNo(mainOrderNo);
+                    trailerOrderFrom.setCreateUser(UserOperator.getToken());
+                    Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
+                            : ProcessStatusEnum.DRAFT.getCode();
+                    trailerOrderFrom.setProcessStatus(processStatus);
+                    String subOrderNo = this.trailerClient.createOrder(trailerOrderFrom).getData();
+                    trailerOrderFrom.setOrderNo(subOrderNo);
 
-                this.initProcessNode(mainOrderNo, subOrderNo, OrderStatusEnum.TC,
-                        form, trailerOrderFrom.getId(), OrderStatusEnum.getTrailerOrderProcess());
+                    this.initProcessNode(mainOrderNo, subOrderNo, OrderStatusEnum.TC,
+                            form, trailerOrderFrom.getId(), OrderStatusEnum.getTrailerOrderProcess());
+                }
             }
         }
 

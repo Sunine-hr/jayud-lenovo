@@ -28,7 +28,7 @@ public interface TrailerClient {
      * 根据主订单号获取拖车单信息
      */
     @RequestMapping(value = "/api/trailer/getTrailerOrderDetails")
-    ApiResult<InputTrailerOrderVO> getTrailerOrderDetails(@RequestParam("orderNo") String orderNo);
+    ApiResult<List<InputTrailerOrderVO>> getTrailerOrderDetails(@RequestParam("orderNo") String orderNo);
 
     /**
      * 根据主订单号集合获取拖车订单信息

@@ -235,9 +235,11 @@ public class OrderInfoController {
             if (OrderStatusEnum.TC.getCode().equals(inputMainOrderForm.getClassCode())
             ||inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.TCEDD.getCode())
             ||inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.TCIDD.getCode())) {
-                InputTrailerOrderFrom trailerOrderFrom = form.getTrailerOrderFrom();
-                if (!trailerOrderFrom.checkCreateOrder()) {
-                    return CommonResult.error(ResultEnum.PARAM_ERROR);
+                List<InputTrailerOrderFrom> trailerOrderFrom = form.getTrailerOrderFrom();
+                for (InputTrailerOrderFrom inputTrailerOrderFrom : trailerOrderFrom) {
+                    if (!inputTrailerOrderFrom.checkCreateOrder()) {
+                        return CommonResult.error(ResultEnum.PARAM_ERROR);
+                    }
                 }
             }
             //校验参数
@@ -441,14 +443,18 @@ public class OrderInfoController {
         }
 
         //拖车模板
-        InputTrailerOrderVO trailerOrderForm = inputOrderVO.getTrailerOrderForm();
-        if (trailerOrderForm != null) {
-            TrailerOrderTemplate trailerOrderTemplate = ConvertUtil.convert(trailerOrderForm, TrailerOrderTemplate.class);
-            trailerOrderTemplate.setCost(this.orderInfoService.isCost(trailerOrderTemplate.getOrderNo(), 1));
-            Template<TrailerOrderTemplate> template = new Template<TrailerOrderTemplate>() {
-            }.setList(Collections.singletonList(trailerOrderTemplate));
-            orderInfoTemplate.setTrailerOrderTemplates(template);
+        List<InputTrailerOrderVO> trailerOrderForms = inputOrderVO.getTrailerOrderForm();
+        List<TrailerOrderTemplate> templates = new ArrayList<>();
+        for (InputTrailerOrderVO trailerOrderForm : trailerOrderForms) {
+            if (trailerOrderForm != null) {
+                TrailerOrderTemplate trailerOrderTemplate = ConvertUtil.convert(trailerOrderForm, TrailerOrderTemplate.class);
+                trailerOrderTemplate.setCost(this.orderInfoService.isCost(trailerOrderTemplate.getOrderNo(), 1));
+
+            }
         }
+        Template<TrailerOrderTemplate> template = new Template<TrailerOrderTemplate>() {
+        }.setList(templates);
+        orderInfoTemplate.setTrailerOrderTemplates(template);
 
         return CommonResult.success(orderInfoTemplate);
     }

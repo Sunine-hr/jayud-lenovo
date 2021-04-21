@@ -26,4 +26,6 @@ public interface IPromoteCompanyService extends IService<PromoteCompany> {
     List<PromoteCompanyVO> findPromoteCompanyByParentId(Integer parentId);
 
     PromoteCompanyVO findPromoteCompanyByCompanyId(Integer companyId);
+
+    List<PromoteCompanyVO> findPromoteCompanyParent();
 }

@@ -27,4 +27,6 @@ public interface PromoteCompanyMapper extends BaseMapper<PromoteCompany> {
     List<PromoteCompanyVO> findPromoteCompanyByParentId(@Param("parentId") Integer parentId);
 
     PromoteCompanyVO findPromoteCompanyByCompanyId(@Param("companyId") Integer companyId);
+
+    List<PromoteCompanyVO> findPromoteCompanyParent();
 }

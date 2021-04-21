@@ -13,6 +13,8 @@ import com.jayud.mall.model.bo.QueryPromoteCompanyForm;
 import com.jayud.mall.model.bo.SavePromoteCompanyForm;
 import com.jayud.mall.model.po.PromoteCompany;
 import com.jayud.mall.model.vo.PromoteCompanyVO;
+import com.jayud.mall.model.vo.domain.AuthUser;
+import com.jayud.mall.service.BaseService;
 import com.jayud.mall.service.IPromoteCompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,8 @@ public class PromoteCompanyServiceImpl extends ServiceImpl<PromoteCompanyMapper,
 
     @Autowired
     PromoteCompanyMapper promoteCompanyMapper;
+    @Autowired
+    BaseService baseService;
 
     @Override
     public IPage<PromoteCompanyVO> findPromoteCompanyByPage(QueryPromoteCompanyForm form) {
@@ -47,10 +51,13 @@ public class PromoteCompanyServiceImpl extends ServiceImpl<PromoteCompanyMapper,
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void savePromoteCompany(SavePromoteCompanyForm form) {
+        AuthUser user = baseService.getUser();
         Integer companyId = form.getCompanyId();
         if(ObjectUtil.isEmpty(companyId)){
             //新增
             PromoteCompany promoteCompany = ConvertUtil.convert(form, PromoteCompany.class);
+            promoteCompany.setCreateId(user.getId());
+            promoteCompany.setCreateName(user.getName());
             this.saveOrUpdate(promoteCompany);
         }else{
             PromoteCompanyVO promoteCompanyVO = promoteCompanyMapper.findPromoteCompanyByCompanyId(companyId);
@@ -63,6 +70,8 @@ public class PromoteCompanyServiceImpl extends ServiceImpl<PromoteCompanyMapper,
             promoteCompany.setContacts(form.getContacts());
             promoteCompany.setPhone(form.getPhone());
             promoteCompany.setCompanyAddress(form.getCompanyAddress());
+            promoteCompany.setCreateId(user.getId());
+            promoteCompany.setCreateName(user.getName());
             this.saveOrUpdate(promoteCompany);
         }
     }
@@ -75,5 +84,10 @@ public class PromoteCompanyServiceImpl extends ServiceImpl<PromoteCompanyMapper,
     @Override
     public PromoteCompanyVO findPromoteCompanyByCompanyId(Integer companyId) {
         return promoteCompanyMapper.findPromoteCompanyByCompanyId(companyId);
+    }
+
+    @Override
+    public List<PromoteCompanyVO> findPromoteCompanyParent() {
+        return promoteCompanyMapper.findPromoteCompanyParent();
     }
 }

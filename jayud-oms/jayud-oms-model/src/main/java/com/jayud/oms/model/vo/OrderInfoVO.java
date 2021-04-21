@@ -133,6 +133,9 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "费用录用默认结算单位")
     private String defaultUnitCode;
 
+    @ApiModelProperty(value = "费用状态")
+    private String costStatus;
+
 //    @ApiModelProperty(value = "子订单状态描述")
 //    private String subOrderStatusDesc;
 //

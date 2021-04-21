@@ -220,17 +220,23 @@ public class SeaOrderController {
 
             //获取截补料数据
             QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.eq("sea_order_id", record.getId());
+            queryWrapper.like("sea_order_no", record.getOrderNo());
             List<SeaReplenishment> seaReplenishments = seaReplenishmentService.list(queryWrapper);
-            List<SeaReplenishmentVO> seaReplenishmentVOS = ConvertUtil.convertList(seaReplenishments, SeaReplenishmentVO.class);
-            for (SeaReplenishmentVO seaReplenishmentVO : seaReplenishmentVOS) {
-                //获取截补料中的柜型数量以及货柜信息
-                List<CabinetSizeNumberVO> list1 = cabinetSizeNumberService.getList(seaReplenishmentVO.getId());
-                seaReplenishmentVO.setCabinetSizeNumbers(list1);
-                List<SeaContainerInformationVO> seaContainerInformations = seaContainerInformationService.getList(seaReplenishmentVO.getId());
-                seaReplenishmentVO.setSeaContainerInformations(seaContainerInformations);
+            if(CollectionUtils.isNotEmpty(seaReplenishments)){
+                StringBuffer stringBuffer = new StringBuffer();
+                List<SeaReplenishmentVO> seaReplenishmentVOS = ConvertUtil.convertList(seaReplenishments, SeaReplenishmentVO.class);
+                for (SeaReplenishmentVO seaReplenishmentVO : seaReplenishmentVOS) {
+                    stringBuffer.append(seaReplenishmentVO.getOrderNo()).append(",");
+                    //获取截补料中的柜型数量以及货柜信息
+                    List<CabinetSizeNumberVO> list1 = cabinetSizeNumberService.getList(seaReplenishmentVO.getId());
+                    seaReplenishmentVO.setCabinetSizeNumbers(list1);
+                    List<SeaContainerInformationVO> seaContainerInformations = seaContainerInformationService.getList(seaReplenishmentVO.getId());
+                    seaReplenishmentVO.setSeaContainerInformations(seaContainerInformations);
+                }
+                record.setSeaReplenishments(seaReplenishmentVOS);
+                record.setRepOrderNo(stringBuffer.substring(0,stringBuffer.length()-1));
             }
-            record.setSeaReplenishments(seaReplenishmentVOS);
+
         }
         map1.put("pageInfo", new CommonPageResult(page));
         return CommonResult.success(map1);
@@ -595,6 +601,25 @@ public class SeaOrderController {
                 break;
         }
 
+        return CommonResult.success();
+    }
+
+    /**
+     * 判断订单能否放单
+     */
+    @ApiOperation(value = "判断订单能否放单")
+    @PostMapping(value = "/isReleaseOrder")
+    public CommonResult isReleaseOrder(@RequestParam("orderId") Long orderId){
+        //根据补料单id获取截补料信息
+        SeaReplenishment seaReplenishment = seaReplenishmentService.getById(orderId);
+        String seaOrderNo = seaReplenishment.getSeaOrderNo();
+        String[] split = seaOrderNo.split(",");
+        for (String s : split) {
+            SeaOrder byMainOrderNO = seaOrderService.getByOrderNO(s);
+            if(!byMainOrderNO.getStatus().equals("S_7")){
+                return CommonResult.error(444,"该补料单有订单未确认装船");
+            }
+        }
         return CommonResult.success();
     }
 

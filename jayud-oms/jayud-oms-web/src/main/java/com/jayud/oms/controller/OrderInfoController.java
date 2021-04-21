@@ -444,17 +444,20 @@ public class OrderInfoController {
 
         //拖车模板
         List<InputTrailerOrderVO> trailerOrderForms = inputOrderVO.getTrailerOrderForm();
-        List<TrailerOrderTemplate> templates = new ArrayList<>();
-        for (InputTrailerOrderVO trailerOrderForm : trailerOrderForms) {
-            if (trailerOrderForm != null) {
-                TrailerOrderTemplate trailerOrderTemplate = ConvertUtil.convert(trailerOrderForm, TrailerOrderTemplate.class);
-                trailerOrderTemplate.setCost(this.orderInfoService.isCost(trailerOrderTemplate.getOrderNo(), 1));
-
+        if (CollectionUtils.isNotEmpty(trailerOrderForms)){
+            List<TrailerOrderTemplate> templates = new ArrayList<>();
+            for (InputTrailerOrderVO trailerOrderForm : trailerOrderForms) {
+                if (trailerOrderForm != null) {
+                    TrailerOrderTemplate trailerOrderTemplate = ConvertUtil.convert(trailerOrderForm, TrailerOrderTemplate.class);
+                    trailerOrderTemplate.setCost(this.orderInfoService.isCost(trailerOrderTemplate.getOrderNo(), 1));
+                    templates.add(trailerOrderTemplate);
+                }
             }
+            Template<TrailerOrderTemplate> template = new Template<TrailerOrderTemplate>() {
+            }.setList(templates);
+            orderInfoTemplate.setTrailerOrderTemplates(template);
         }
-        Template<TrailerOrderTemplate> template = new Template<TrailerOrderTemplate>() {
-        }.setList(templates);
-        orderInfoTemplate.setTrailerOrderTemplates(template);
+
 
         return CommonResult.success(orderInfoTemplate);
     }

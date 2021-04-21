@@ -125,6 +125,7 @@ public class InputOrderInlandTPVO extends Model<InputOrderInlandTPVO> {
         this.id = null;
         this.allPics = null;
         this.orderNo = null;
+        this.mainOrderNo = null;
         if (CollectionUtils.isNotEmpty(pickUpAddressList)) {
             pickUpAddressList.forEach(e -> {
                 e.setGoodsId(null);

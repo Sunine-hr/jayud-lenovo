@@ -68,4 +68,13 @@ public class PromoteCompanyController {
         return CommonResult.success(promoteCompanyVOS);
     }
 
+    @ApiOperation(value = "5.查询推广公司list")
+    @PostMapping("/findPromoteCompanyParent")
+    @ApiOperationSupport(order = 5)
+    public CommonResult<List<PromoteCompanyVO>> findPromoteCompanyParent(){
+        List<PromoteCompanyVO> promoteCompanyVOS = promoteCompanyService.findPromoteCompanyParent();
+        return CommonResult.success(promoteCompanyVOS);
+    }
+
+
 }

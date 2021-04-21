@@ -1,6 +1,7 @@
 package com.jayud.oms.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -286,6 +287,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             if (CollectionUtil.isEmpty(orderInfoVOs)) {
                 return pageInfo;
             }
+            List<String> mainOrderNos = orderInfoVOs.stream().map(OrderInfoVO::getOrderNo).collect(Collectors.toList());
+            //费用状态
+            Map<String, Object> orderCostStatus = this.orderReceivableCostService.getOrderCostStatus(mainOrderNos, null);
+            for (OrderInfoVO orderInfoVO : orderInfoVOs) {
+                orderInfoVO.setCostStatus(MapUtil.getStr(orderCostStatus, orderInfoVO.getOrderNo()));
+            }
+
 //            List<String> mainOrderNoList = orderInfoVOs.stream().map(OrderInfoVO::getOrderNo).collect(Collectors.toList());
 //            Map<String, Map<String, Object>> subOrderMap = this.getSubOrderByMainOrderNos(mainOrderNoList);
 //            //查询子订单驳回原因

@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 /**
  * <p>
@@ -88,8 +89,8 @@ public class AddCustomsQuestionnaireForm extends Model<AddCustomsQuestionnaireFo
     @ApiModelProperty(value = "是否提供车辆及司机信息(0:达标,1:部分达标,2:不达标)")
     private Integer isProvideVehicleInfo;
 
-    @ApiModelProperty(value = "风险等级(1:不可接受之信用风险,2:高度信用风险,3:中度信用风险,4:低信用风险)")
-    private Integer riskLevel;
+//    @ApiModelProperty(value = "风险等级(1:不可接受之信用风险,2:高度信用风险,3:中度信用风险,4:低信用风险)")
+//    private Integer riskLevel;
 
     @ApiModelProperty(value = "记录人")
     private String recorder;
@@ -143,6 +144,9 @@ public class AddCustomsQuestionnaireForm extends Model<AddCustomsQuestionnaireFo
         if (StringUtils.isEmpty(paymentPeriod)) {
             throw new JayudBizException(400, "承诺付款账期不能为空");
         }
+        if (!Pattern.compile("^[0-9]*$").matcher(paymentPeriod).matches()) {
+            throw new JayudBizException(400, "承诺付款账期输入格式不正确");
+        }
         if (selfAccounting == null) {
             throw new JayudBizException(400, "是否为自理记账不能为空");
         }
@@ -164,9 +168,9 @@ public class AddCustomsQuestionnaireForm extends Model<AddCustomsQuestionnaireFo
         if (isProvideVehicleInfo == null) {
             throw new JayudBizException(400, "是否提供车辆及司机信息不能为空");
         }
-        if (riskLevel == null) {
-            throw new JayudBizException(400, "风险等级不能为空");
-        }
+//        if (riskLevel == null) {
+//            throw new JayudBizException(400, "风险等级不能为空");
+//        }
 //        if (StringUtils.isEmpty(recorder)) {
 //            throw new JayudBizException(400, "记录人不能为空");
 //        }

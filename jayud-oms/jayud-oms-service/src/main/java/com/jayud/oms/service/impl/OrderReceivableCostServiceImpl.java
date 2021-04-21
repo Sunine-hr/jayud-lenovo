@@ -105,37 +105,52 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
 
         //根据子订单查询费用
         List<OrderReceivableCost> orderReceivableCosts = null;
+        Map<String, List<OrderReceivableCost>> group = null;
         if (CollectionUtils.isNotEmpty(mainOrderNos)) {
             QueryWrapper<OrderReceivableCost> condition = new QueryWrapper<>();
-            condition.lambda().in(OrderReceivableCost::getMainOrderNo, mainOrderNos);
-
+            condition.lambda().in(OrderReceivableCost::getMainOrderNo, mainOrderNos)
+                    .eq(OrderReceivableCost::getSubType, SubOrderSignEnum.MAIN.getSignOne());
+            orderReceivableCosts = this.baseMapper.selectList(condition);
+            //子订单审核通过
+            condition = new QueryWrapper<>();
+            condition.lambda().in(OrderReceivableCost::getMainOrderNo, mainOrderNos)
+                    .eq(OrderReceivableCost::getIsSumToMain, true)
+                    .isNotNull(OrderReceivableCost::getOrderNo)
+                    .eq(OrderReceivableCost::getStatus, OrderStatusEnum.COST_3.getCode());
+            List<OrderReceivableCost> subOrderReceivableCosts = this.baseMapper.selectList(condition);
+            orderReceivableCosts.addAll(subOrderReceivableCosts);
+            //主单分组
+            group = orderReceivableCosts.stream().collect(Collectors.groupingBy(OrderReceivableCost::getMainOrderNo));
         }
         if (CollectionUtils.isNotEmpty(subOrderNos)) {
             QueryWrapper<OrderReceivableCost> condition = new QueryWrapper<>();
             condition.lambda().in(OrderReceivableCost::getOrderNo, subOrderNos);
 
             orderReceivableCosts = this.baseMapper.selectList(condition);
+            //子订单分组
+            group = orderReceivableCosts.stream().collect(Collectors.groupingBy(OrderReceivableCost::getOrderNo));
         }
 
-
-        //分组
-        Map<String, List<OrderReceivableCost>> group = orderReceivableCosts.stream().collect(Collectors.groupingBy(OrderReceivableCost::getOrderNo));
-
         Map<String, Object> map = new HashMap<>();
+        if (group == null) {
+            return map;
+        }
+
         group.forEach((k, v) -> {
             int submited = 0;
             int audited = 0;
             String str = "";
             for (OrderReceivableCost orderReceivableCost : v) {
-                if (OrderStatusEnum.COST_0.getCode().equals(orderReceivableCost.getStatus()) ||
-                        OrderStatusEnum.COST_1.getCode().equals(orderReceivableCost.getStatus())) {
-                    str = "已提交";
+                String status = String.valueOf(orderReceivableCost.getStatus());
+                if (OrderStatusEnum.COST_0.getCode().equals(status) ||
+                        OrderStatusEnum.COST_1.getCode().equals(status)) {
+                    str = "已录单";
                     break;
                 }
-                if (OrderStatusEnum.COST_2.getCode().equals(orderReceivableCost.getStatus())) {
+                if (OrderStatusEnum.COST_2.getCode().equals(status)) {
                     ++submited;
                 }
-                if (OrderStatusEnum.COST_3.getCode().equals(orderReceivableCost.getStatus())) {
+                if (OrderStatusEnum.COST_3.getCode().equals(status)) {
                     ++audited;
                 }
             }
@@ -145,7 +160,9 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
             } else if (audited > 0 && str.length() == 0) {
                 map.put(k, "已提交");
             } else if (str.length() == 0) {
-                map.put(k, "未提交");
+                map.put(k, "未录单");
+            } else {
+                map.put(k, str);
             }
 
         });

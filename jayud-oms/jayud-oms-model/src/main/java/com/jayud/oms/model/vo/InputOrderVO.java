@@ -40,5 +40,6 @@ public class InputOrderVO {
         orderForm.setOrderNo(null);
         orderForm.setCreatedTimeStr(null);
         orderForm.setCreatedUser(null);
+        orderForm.setStatus(null);
     }
 }

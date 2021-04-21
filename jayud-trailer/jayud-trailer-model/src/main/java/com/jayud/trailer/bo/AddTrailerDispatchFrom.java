@@ -74,6 +74,9 @@ public class AddTrailerDispatchFrom {
     @ApiModelProperty(value = "更新时间")
     private String updateTime;
 
+    @ApiModelProperty(value = "柜重")
+    private Double cabinetWeight;
+
     public boolean checkDispatchOptParam() {
         String title = "派车及派车审核";
         if (this.orderNo == null) {

@@ -57,7 +57,10 @@
         t.status,
         t.user_id,
         t.user_name,
-        t.create_time
+        t.create_time,
+        t.additional_duty,
+        t.sales_tax,
+        t.sundry_tax
         from customs_data t
         WHERE
         1 = 1

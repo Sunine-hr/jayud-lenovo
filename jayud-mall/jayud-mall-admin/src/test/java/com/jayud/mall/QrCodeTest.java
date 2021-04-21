@@ -4,8 +4,6 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.extra.qrcode.QrCodeUtil;
 import org.junit.Test;
 
-import java.awt.image.BufferedImage;
-
 public class QrCodeTest {
 
     /**
@@ -21,10 +19,20 @@ public class QrCodeTest {
                 "http://192.168.3.25:8081/#/addh5?id=111122222",
                 300,
                 300,
-                FileUtil.file("d:/qrcode.jpg"));
-        final BufferedImage image = QrCodeUtil.generate(
-                "http://192.168.3.25:8081/#/addh5?id=111122222", 300, 300);
-        System.out.println(image);
+                FileUtil.file("d:/aaa/qrcode.jpg"));
+
+
+    }
+
+
+    @Test
+    public void createQrCode2(){
+        // 生成指定url对应的二维码到文件，宽和高都是300像素
+        QrCodeUtil.generate(
+                "http://192.168.3.25:8081/#/addh5?id=111122222",
+                300,
+                300,
+                FileUtil.touch("d:/aaa/111/qrcode.jpg"));
 
     }
 

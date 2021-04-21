@@ -1,5 +1,8 @@
 package com.jayud.file.service.impl;
 
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.IdUtil;
+import cn.hutool.extra.qrcode.QrCodeUtil;
 import cn.hutool.json.JSONObject;
 import com.github.tobato.fastdfs.domain.fdfs.StorePath;
 import com.github.tobato.fastdfs.domain.fdfs.ThumbImageConfig;
@@ -13,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
@@ -20,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -33,6 +38,11 @@ import java.util.Objects;
 @EnableConfigurationProperties(FdfsConfig.class)
 public class UploadServiceImpl implements UploadService {
     private Logger logger = LoggerFactory.getLogger(UploadServiceImpl.class);
+
+    //南京新智慧api
+    @Value("${QrCode.Path:}")
+    private String QrCodePath;
+
 
     @Autowired
     private FastFileStorageClient fastFileStorageClient;
@@ -121,6 +131,27 @@ public class UploadServiceImpl implements UploadService {
             throw new FileException(ExceptionEnum.UPLOAD_FILE_ERROR);
         }
     }
+
+    @Override
+    public JSONObject createQrCode(String url) {
+        log.info("nacos配置二维码路径地址 QrCodePath:{}", QrCodePath);
+        String simpleUUID = IdUtil.simpleUUID();
+        String separator = File.separator;
+        String target = QrCodePath + separator + simpleUUID + ".jpg";
+        // 生成指定url对应的二维码到文件，宽和高都是300像素
+        QrCodeUtil.generate(
+                url,
+                300,
+                300,
+                FileUtil.touch(target));
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("absolutePath", uploadProperties.getBaseUrl() + "/" + target);
+        jsonObject.put("relativePath",target);
+        jsonObject.put("fileName",simpleUUID);
+        Objects.requireNonNull(jsonObject);
+        return jsonObject;
+    }
+
 
     /**
      * 删除图片

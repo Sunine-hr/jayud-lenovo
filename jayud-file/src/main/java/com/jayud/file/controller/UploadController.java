@@ -75,6 +75,18 @@ public class UploadController {
         }
     }
 
+    @PostMapping("/createQrCode")
+    @ApiOperation(value = "根据url创建二维码",httpMethod = "POST")
+    public ApiResult createQrCode(@RequestParam("url") String url) {
+        try {
+            JSONObject jsonObject = uploadService.createQrCode(url);
+            return ApiResult.ok(jsonObject);
+        } catch (Exception e){
+            logger.error("upload file Exception!", e);
+            return ApiResult.error(e.getMessage());
+        }
+    }
+
 
     /**
      * 删除文件

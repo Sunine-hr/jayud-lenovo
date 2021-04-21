@@ -39,9 +39,12 @@ import java.util.Objects;
 public class UploadServiceImpl implements UploadService {
     private Logger logger = LoggerFactory.getLogger(UploadServiceImpl.class);
 
-    //南京新智慧api
+    //nacos
     @Value("${QrCode.Path:}")
     private String QrCodePath;
+
+    @Value("${QrCode.Access.Address:}")
+    private String AccessAddress;
 
 
     @Autowired
@@ -135,9 +138,11 @@ public class UploadServiceImpl implements UploadService {
     @Override
     public JSONObject createQrCode(String url) {
         log.info("nacos配置二维码路径地址 QrCodePath:{}", QrCodePath);
+        log.info("AccessAddress:{}", AccessAddress);
         String simpleUUID = IdUtil.simpleUUID();
         String separator = File.separator;
         String target = QrCodePath + separator + simpleUUID + ".jpg";
+        String address = AccessAddress + separator + simpleUUID + ".jpg";
         // 生成指定url对应的二维码到文件，宽和高都是300像素
         QrCodeUtil.generate(
                 url,
@@ -145,8 +150,8 @@ public class UploadServiceImpl implements UploadService {
                 300,
                 FileUtil.touch(target));
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("absolutePath", uploadProperties.getBaseUrl() + "/" + target);
-        jsonObject.put("relativePath",target);
+        jsonObject.put("absolutePath", uploadProperties.getBaseUrl() + "/" + address);
+        jsonObject.put("relativePath", address);
         jsonObject.put("fileName",simpleUUID);
         Objects.requireNonNull(jsonObject);
         return jsonObject;

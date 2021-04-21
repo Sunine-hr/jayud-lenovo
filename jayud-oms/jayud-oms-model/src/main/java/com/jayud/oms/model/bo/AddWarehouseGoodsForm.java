@@ -87,6 +87,7 @@ public class AddWarehouseGoodsForm extends Model<AddWarehouseGoodsForm> {
     @ApiModelProperty(value = "商品类型 1为入库  2为出库")
     private Integer type;
 
-
+    @ApiModelProperty(value = "入库批次号")
+    private String warehousingBatchNo;
 
 }

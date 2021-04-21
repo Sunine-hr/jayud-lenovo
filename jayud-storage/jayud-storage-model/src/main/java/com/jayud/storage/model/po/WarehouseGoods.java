@@ -26,7 +26,7 @@ public class WarehouseGoods extends Model<WarehouseGoods> {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "主键id")
-      @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     @ApiModelProperty(value = "商品对应的订单号")
@@ -34,6 +34,9 @@ public class WarehouseGoods extends Model<WarehouseGoods> {
 
     @ApiModelProperty(value = "商品对应的订单id")
     private Long orderId;
+
+    @ApiModelProperty(value = "预计到达时间")
+    private LocalDateTime estimatedArrivalTime;
 
     @ApiModelProperty(value = "商品名称")
     private String name;
@@ -62,9 +65,6 @@ public class WarehouseGoods extends Model<WarehouseGoods> {
     @ApiModelProperty(value = "体积")
     private Double volume;
 
-    @ApiModelProperty(value = "预计到达时间")
-    private LocalDateTime estimatedArrivalTime;
-
     @ApiModelProperty(value = "预计出库时间")
     private LocalDateTime expectedDeliveryTime;
 
@@ -91,6 +91,9 @@ public class WarehouseGoods extends Model<WarehouseGoods> {
 
     @ApiModelProperty(value = "商品类型 1为入库  2为出库")
     private Integer type;
+
+    @ApiModelProperty(value = "入库批次号")
+    private String warehousingBatchNo;
 
 
     @Override

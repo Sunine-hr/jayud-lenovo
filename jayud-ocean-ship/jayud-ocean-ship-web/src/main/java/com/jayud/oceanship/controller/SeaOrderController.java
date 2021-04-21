@@ -609,7 +609,8 @@ public class SeaOrderController {
      */
     @ApiOperation(value = "判断订单能否放单")
     @PostMapping(value = "/isReleaseOrder")
-    public CommonResult isReleaseOrder(@RequestParam("orderId") Long orderId){
+    public CommonResult isReleaseOrder(@RequestBody Map<String,Object> map){
+        Long orderId = MapUtil.getLong(map, "orderId");
         //根据补料单id获取截补料信息
         SeaReplenishment seaReplenishment = seaReplenishmentService.getById(orderId);
         String seaOrderNo = seaReplenishment.getSeaOrderNo();

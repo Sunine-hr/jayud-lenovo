@@ -128,15 +128,16 @@ public class InputAirOrderVO {
 
     public void copyOperationInfo() {
         this.id = null;
-        this.allPics = null;
+        this.allPics = new ArrayList<>();
         this.orderNo = null;
         this.mainOrderNo = null;
-        this.thirdPartyOrderNo=null;
+        this.thirdPartyOrderNo = null;
         this.overseasSuppliersId = null;
         this.receivingOrdersDate = null;
         this.orderTaker = null;
         this.airBookingVO = null;
         this.createUser = null;
+        this.status = null;
         if (CollectionUtils.isNotEmpty(shippingAddress)) {
             shippingAddress.forEach(e -> {
                 e.setId(null);
@@ -156,8 +157,8 @@ public class InputAirOrderVO {
                 e.setTakeFiles(null);
             });
         }
-        if (CollectionUtils.isNotEmpty(goodsForms)){
-            goodsForms.forEach(e->{
+        if (CollectionUtils.isNotEmpty(goodsForms)) {
+            goodsForms.forEach(e -> {
                 e.setId(null);
             });
         }

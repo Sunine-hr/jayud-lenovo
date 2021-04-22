@@ -184,7 +184,7 @@ public class InputSeaOrderVO {
 
     public void copyOperationInfo() {
         this.orderId = null;
-        this.allPics = null;
+        this.allPics = new ArrayList<>();
         this.orderNo = null;
         this.mainOrderNo = null;
         this.mainOrderId = null;

@@ -120,6 +120,7 @@ public class PromoteCompanyServiceImpl extends ServiceImpl<PromoteCompanyMapper,
             promoteCompany.setCompanyAddress(form.getCompanyAddress());
             promoteCompany.setCreateId(user.getId());
             promoteCompany.setCreateName(user.getName());
+            promoteCompany.setTitle(form.getTitle());
             this.saveOrUpdate(promoteCompany);
             Integer id = promoteCompany.getCompanyId();
             String h5address = frontAccessAddress + "?id=" + id;

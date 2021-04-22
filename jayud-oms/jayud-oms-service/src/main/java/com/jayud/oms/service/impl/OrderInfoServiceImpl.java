@@ -289,6 +289,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
             List<String> mainOrderNos = orderInfoVOs.stream().map(OrderInfoVO::getOrderNo).collect(Collectors.toList());
             //费用状态
+            Map<String, Object> receivableCostStatus = this.orderReceivableCostService.getOrderCostStatus(mainOrderNos, null);
             Map<String, Object> orderCostStatus = this.orderReceivableCostService.getOrderCostStatus(mainOrderNos, null);
             for (OrderInfoVO orderInfoVO : orderInfoVOs) {
                 orderInfoVO.assembleCostStatus(orderCostStatus);

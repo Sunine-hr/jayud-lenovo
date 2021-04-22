@@ -8,10 +8,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
-import com.jayud.common.enums.OrderAttachmentTypeEnum;
-import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.enums.ResultEnum;
-import com.jayud.common.enums.StatusEnum;
+import com.jayud.common.enums.*;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
@@ -404,6 +401,7 @@ public class OrderInfoController {
             tmsOrderTemplate.setCost(this.orderInfoService.isCost(tmsOrderTemplate.getOrderNo(), 1));
             tmsOrderTemplate.setMainOrderId(form.getMainOrderId());
             tmsOrderTemplate.setClassCode(form.getClassCode());
+            tmsOrderTemplate.isRejected();
             tmsOrderTemplate.setMainOrderStatus(inputOrderVO.getOrderForm().getStatus());
             Template<TmsOrderTemplate> template = new Template<TmsOrderTemplate>() {
             }.setList(Collections.singletonList(tmsOrderTemplate));
@@ -519,6 +517,12 @@ public class OrderInfoController {
         List<InputTrailerOrderVO> trailerOrderForm = inputOrderVO.getTrailerOrderForm();
         if (CollectionUtils.isNotEmpty(trailerOrderForm)) {
             trailerOrderForm.forEach(InputTrailerOrderVO::copyOperationInfo);
+        }
+
+        //服务模板
+        InputOrderServiceVO orderServiceForm = inputOrderVO.getOrderServiceForm();
+        if (orderServiceForm != null) {
+            orderServiceForm.copyOperationInfo();
         }
 
         return CommonResult.success(inputOrderVO);

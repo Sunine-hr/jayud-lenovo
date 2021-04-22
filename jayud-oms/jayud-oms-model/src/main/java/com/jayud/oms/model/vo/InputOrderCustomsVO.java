@@ -86,14 +86,16 @@ public class InputOrderCustomsVO {
 
     public void copyOperationInfo() {
         this.id = null;
-        this.cntrPics = null;
+        this.cntrPics = new ArrayList<>();
         this.encode = null;
-        this.encodePics = null;
-        this.airTransportPics = null;
-        this.seaTransportPics = null;
-        this.allPics = null;
+        this.encodePics = new ArrayList<>();
+        this.airTransportPics = new ArrayList<>();
+        this.seaTransportPics = new ArrayList<>();
+        this.allPics = new ArrayList<>();
         this.subOrders = null;
-        this.number=null;
+        this.number = null;
+        this.subCustomsStatus = null;
+        this.status = null;
 //        if (CollectionUtils.isNotEmpty(this.subOrders)) {
 //            subOrders.forEach(e -> {
 //                e.setSubOrderId(null);

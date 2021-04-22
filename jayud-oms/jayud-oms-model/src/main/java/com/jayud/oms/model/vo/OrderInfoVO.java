@@ -1,11 +1,12 @@
 package com.jayud.oms.model.vo;
 
-import com.jayud.common.constant.CommonConstant;
+import cn.hutool.core.map.MapUtil;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.StringUtils;
-import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.Map;
 
 
 @Data
@@ -59,7 +60,6 @@ public class OrderInfoVO {
 
     @ApiModelProperty(value = "状态描述")
     private String statusDesc;
-
 
 
     @ApiModelProperty(value = "作业类型CODE")
@@ -133,16 +133,14 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "费用录用默认结算单位")
     private String defaultUnitCode;
 
-    @ApiModelProperty(value = "费用状态")
-    private String costStatus;
+    @ApiModelProperty(value = "应收费用状态")
+    private String receivableCostStatus;
 
 //    @ApiModelProperty(value = "子订单状态描述")
 //    private String subOrderStatusDesc;
 //
 //    @ApiModelProperty(value = "子订单状态描述增加换行")
 //    private String subOrderStatusDescOne;
-
-
 
 
 //    @ApiModelProperty(value = "中港订单号")
@@ -225,6 +223,12 @@ public class OrderInfoVO {
 //        }
 //        return sb.length() == 0 ? "" : sb.substring(0, sb.length() - 1);
 //    }
+
+
+    public void assembleCostStatus(Map<String, Object> orderCostStatus) {
+        String statusDesc = MapUtil.getStr(orderCostStatus, this.orderNo);
+        this.receivableCostStatus = StringUtils.isEmpty(statusDesc) ? "未录入" : statusDesc;
+    }
 
 
     public void setUnitCode(String unitCode) {

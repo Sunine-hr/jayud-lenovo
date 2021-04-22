@@ -123,9 +123,12 @@ public class InputOrderInlandTPVO extends Model<InputOrderInlandTPVO> {
 
     public void copyOperationInfo() {
         this.id = null;
-        this.allPics = null;
+        this.allPics = new ArrayList<>();
         this.orderNo = null;
         this.mainOrderNo = null;
+        this.status=null;
+        this.orderTaker=null;
+        this.receivingOrdersDate=null;
         if (CollectionUtils.isNotEmpty(pickUpAddressList)) {
             pickUpAddressList.forEach(e -> {
                 e.setGoodsId(null);

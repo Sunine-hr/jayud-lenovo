@@ -104,4 +104,17 @@ public class CustomsDataVO {
     @JSONField(ordinal = 23)
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "附加关税", position = 24)
+    @JSONField(ordinal = 24)
+    private BigDecimal additionalDuty;
+
+    @ApiModelProperty(value = "消费税", position = 25)
+    @JSONField(ordinal = 25)
+    private BigDecimal salesTax;
+
+    @ApiModelProperty(value = "杂税", position = 26)
+    @JSONField(ordinal = 26)
+    private BigDecimal sundryTax;
+
+
 }

@@ -50,7 +50,7 @@ public class InputOrderTransportVO {
     @ApiModelProperty(value = "通关口岸")
     private String portName;
 
-    @ApiModelProperty(value = "六联单号")
+    @ApiModelProperty(value = "六联单号 (移到报关,中港没用)")
     private String encode;
 
     @ApiModelProperty(value = "状态")
@@ -228,5 +228,29 @@ public class InputOrderTransportVO {
             vehicleSize = vehicleSize + "/" + cntrNo;
         }
         this.modelAndCntrNo = vehicleSize;
+    }
+
+    public void copyOperationInfo() {
+        this.id = null;
+        this.allPics = new ArrayList<>();
+        this.orderNo = null;
+        this.jiedanUser=null;
+        this.jiedanTimeStr=null;
+        this.encode=null;
+        this.status=null;
+        if (this.orderTakeAdrForms1 != null) {
+            orderTakeAdrForms1.forEach(e -> {
+                e.setTakeAdrId(null);
+                e.setDeliveryId(null);
+                e.setTakeFiles(null);
+            });
+        }
+        if (this.orderTakeAdrForms2 != null) {
+            orderTakeAdrForms2.forEach(e -> {
+                e.setTakeAdrId(null);
+                e.setDeliveryId(null);
+                e.setTakeFiles(null);
+            });
+        }
     }
 }

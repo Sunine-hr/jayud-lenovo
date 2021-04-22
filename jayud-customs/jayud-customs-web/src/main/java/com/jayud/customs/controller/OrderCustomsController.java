@@ -129,8 +129,8 @@ public class OrderCustomsController {
         }
 
         //接单成功，推送数据到云报关
-        OrderCustoms byId = orderCustomsService.getById(form.getOrderId());
-        pushOrder(byId);
+//        OrderCustoms byId = orderCustomsService.getById(form.getOrderId());
+//        pushOrder(byId);
 
         return CommonResult.success();
     }

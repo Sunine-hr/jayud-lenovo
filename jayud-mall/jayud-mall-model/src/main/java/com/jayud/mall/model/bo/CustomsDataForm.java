@@ -87,4 +87,16 @@ public class CustomsDataForm {
     @JSONField(ordinal = 19)
     private String declareElements;
 
+    @ApiModelProperty(value = "附加关税", position = 20)
+    @JSONField(ordinal = 20)
+    private BigDecimal additionalDuty;
+
+    @ApiModelProperty(value = "消费税", position = 21)
+    @JSONField(ordinal = 21)
+    private BigDecimal salesTax;
+
+    @ApiModelProperty(value = "杂税", position = 22)
+    @JSONField(ordinal = 22)
+    private BigDecimal sundryTax;
+
 }

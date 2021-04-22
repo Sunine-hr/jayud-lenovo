@@ -109,4 +109,16 @@ public class CustomsClearanceForm {
     @TableField(value = "`status`")
     private String status;
 
+    @ApiModelProperty(value = "附加关税", position = 28)
+    @JSONField(ordinal = 28)
+    private BigDecimal additionalDuty;
+
+    @ApiModelProperty(value = "消费税", position = 29)
+    @JSONField(ordinal = 29)
+    private BigDecimal salesTax;
+
+    @ApiModelProperty(value = "杂税", position = 30)
+    @JSONField(ordinal = 30)
+    private BigDecimal sundryTax;
+
 }

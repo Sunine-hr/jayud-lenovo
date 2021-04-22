@@ -6,10 +6,11 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.oms.mapper.OrderReceivableCostMapper;
 import com.jayud.oms.model.bo.GetCostDetailForm;
-import com.jayud.oms.model.po.OrderPaymentCost;
 import com.jayud.oms.model.po.OrderReceivableCost;
 import com.jayud.oms.model.vo.InputReceivableCostVO;
 import com.jayud.oms.service.IOrderReceivableCostService;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -101,41 +102,76 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
     }
 
     @Override
-    public Map<String, Object> getOrderCostStatus(List<String> mainOrderNo, List<String> subOrderNo) {
+    public Map<String, Object> getOrderCostStatus(List<String> mainOrderNos, List<String> subOrderNos) {
 
         //根据子订单查询费用
-        QueryWrapper<OrderReceivableCost> condition = new QueryWrapper<>();
-        condition.lambda().in(OrderReceivableCost::getOrderNo, subOrderNo);
+        List<OrderReceivableCost> orderReceivableCosts = null;
+        Map<String, List<OrderReceivableCost>> group = null;
+        if (CollectionUtils.isNotEmpty(mainOrderNos)) {
+            QueryWrapper<OrderReceivableCost> condition = new QueryWrapper<>();
+            condition.lambda().in(OrderReceivableCost::getMainOrderNo, mainOrderNos)
+                    .eq(OrderReceivableCost::getIsSumToMain, true);
+//                    .eq(OrderReceivableCost::getSubType, SubOrderSignEnum.MAIN.getSignOne());
+            orderReceivableCosts = this.baseMapper.selectList(condition);
 
-        List<OrderReceivableCost> orderReceivableCosts = this.baseMapper.selectList(condition);
-        //分组
-        Map<String, List<OrderReceivableCost>> group = orderReceivableCosts.stream().collect(Collectors.groupingBy(OrderReceivableCost::getOrderNo));
+            //过滤子订单审核状态
+            orderReceivableCosts = orderReceivableCosts.stream()
+                    .filter(e -> SubOrderSignEnum.MAIN.getSignOne().equals(e.getSubType())
+                            || (StringUtils.isNotEmpty(e.getOrderNo()) && OrderStatusEnum.COST_3.getCode().equals(e.getStatus().toString())))
+                    .collect(Collectors.toList());
+
+            //子订单审核通过
+//            condition = new QueryWrapper<>();
+//            condition.lambda().in(OrderReceivableCost::getMainOrderNo, mainOrderNos)
+//                    .eq(OrderReceivableCost::getIsSumToMain, true)
+//                    .isNotNull(OrderReceivableCost::getOrderNo)
+//                    .eq(OrderReceivableCost::getStatus, OrderStatusEnum.COST_3.getCode());
+//            List<OrderReceivableCost> subOrderReceivableCosts = this.baseMapper.selectList(condition);
+//            orderReceivableCosts.addAll(subOrderReceivableCosts);
+            //主单分组
+            group = orderReceivableCosts.stream().collect(Collectors.groupingBy(OrderReceivableCost::getMainOrderNo));
+        }
+        if (CollectionUtils.isNotEmpty(subOrderNos)) {
+            QueryWrapper<OrderReceivableCost> condition = new QueryWrapper<>();
+            condition.lambda().in(OrderReceivableCost::getOrderNo, subOrderNos);
+
+            orderReceivableCosts = this.baseMapper.selectList(condition);
+            //子订单分组
+            group = orderReceivableCosts.stream().collect(Collectors.groupingBy(OrderReceivableCost::getOrderNo));
+        }
 
         Map<String, Object> map = new HashMap<>();
+        if (group == null) {
+            return map;
+        }
+
         group.forEach((k, v) -> {
             int submited = 0;
             int audited = 0;
             String str = "";
             for (OrderReceivableCost orderReceivableCost : v) {
-                if (OrderStatusEnum.COST_0.getCode().equals(orderReceivableCost.getStatus()) ||
-                        OrderStatusEnum.COST_1.getCode().equals(orderReceivableCost.getStatus())) {
-                    str = "已提交";
+                String status = String.valueOf(orderReceivableCost.getStatus());
+                if (OrderStatusEnum.COST_0.getCode().equals(status) ||
+                        OrderStatusEnum.COST_1.getCode().equals(status)) {
+                    str = "已录单";
                     break;
                 }
-                if (OrderStatusEnum.COST_2.getCode().equals(orderReceivableCost.getStatus())) {
+                if (OrderStatusEnum.COST_2.getCode().equals(status)) {
                     ++submited;
                 }
-                if (OrderStatusEnum.COST_3.getCode().equals(orderReceivableCost.getStatus())) {
+                if (OrderStatusEnum.COST_3.getCode().equals(status)) {
                     ++audited;
                 }
             }
 
             if (submited > 0 && str.length() == 0) {
                 map.put(k, "已提交");
-            }else if (audited > 0 && str.length() == 0) {
-                map.put(k, "已提交");
-            }else if (str.length()==0){
-                map.put(k,"未提交");
+            } else if (audited > 0 && str.length() == 0) {
+                map.put(k, "已审核");
+            } else if (str.length() == 0) {
+                map.put(k, "未录单");
+            } else {
+                map.put(k, str);
             }
 
         });
@@ -156,7 +192,7 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
 
         //需要全部费用都审核通过才是审核状态
 
-        return null;
+        return map;
     }
 
     @Override
@@ -165,7 +201,7 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
         if (SubOrderSignEnum.MAIN.getSignOne().equals(subType)) {
             condition.lambda().in(OrderReceivableCost::getMainOrderNo, orderNos)
                     .eq(OrderReceivableCost::getSubType, subType);
-        }else {
+        } else {
             condition.lambda().in(OrderReceivableCost::getOrderNo, orderNos)
                     .eq(OrderReceivableCost::getSubType, subType);
         }

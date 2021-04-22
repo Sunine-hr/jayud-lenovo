@@ -1,31 +1,15 @@
-package com.jayud.mall.model.po;
+package com.jayud.mall.model.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
-/**
- * <p>
- * 推广公司表
- * </p>
- *
- * @author fachang.mao
- * @since 2021-04-20
- */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@ApiModel(value = "PromoteCompany对象", description = "推广公司表")
-public class PromoteCompany extends Model<PromoteCompany> {
-
-    private static final long serialVersionUID = 1L;
+public class PromoteCompanyVO {
 
     @ApiModelProperty(value = "公司id/渠道id")
     @TableId(value = "company_id", type = IdType.AUTO)
@@ -64,10 +48,5 @@ public class PromoteCompany extends Model<PromoteCompany> {
 
     @ApiModelProperty(value = "标题")
     private String title;
-
-    @Override
-    protected Serializable pkVal() {
-        return this.companyId;
-    }
 
 }

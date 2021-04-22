@@ -1,5 +1,6 @@
 package com.jayud.oms.model.vo;
 
+import com.jayud.oms.model.bo.InputStorageInputOrderForm;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -30,4 +31,10 @@ public class InputOrderVO {
 
     @ApiModelProperty(value = "拖车单")
     private InputTrailerOrderVO trailerOrderForm;
+
+    @ApiModelProperty(value = "入库订单")
+    private InputStorageInputOrderVO storageInputOrderForm;
+
+    @ApiModelProperty(value = "出库订单")
+    private InputStorageOutOrderVO storageOutOrderForm;
 }

@@ -1308,6 +1308,17 @@ public class ExternalApiController {
 
         return ApiResult.ok(map);
     }
+
+    /**
+     * 获取订单号
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getWarehouseNumber")
+    ApiResult getWarehouseNumber(@RequestParam("preOrder") String preOrder) {
+        String warehouseNumber = orderTypeNumberService.getWarehouseNumber(preOrder);
+        return ApiResult.ok(warehouseNumber);
+    }
 }
 
 

@@ -3,6 +3,7 @@ package com.jayud.storage.model.bo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -10,6 +11,7 @@ import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -75,6 +77,9 @@ public class WarehouseGoodsForm extends Model<WarehouseGoodsForm> {
 
     @ApiModelProperty(value = "附件名称（多个以逗号隔开）")
     private String fileName;
+
+    @ApiModelProperty(value = "附件集合")
+    private List<FileView> takeFiles;
 
     @ApiModelProperty(value = "创建人(登录用户)")
     private String createUser;

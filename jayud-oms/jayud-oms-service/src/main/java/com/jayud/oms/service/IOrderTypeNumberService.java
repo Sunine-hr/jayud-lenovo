@@ -20,4 +20,6 @@ public interface IOrderTypeNumberService extends IService<OrderTypeNumber> {
      * @return
      */
     String getOrderNo(String preOrderNO, String classCode);
+
+    String getWarehouseNumber(String preOrder);
 }

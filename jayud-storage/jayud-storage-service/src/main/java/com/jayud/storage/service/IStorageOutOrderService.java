@@ -1,5 +1,6 @@
 package com.jayud.storage.service;
 
+import com.jayud.storage.model.bo.StorageOutOrderForm;
 import com.jayud.storage.model.po.StorageOutOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -13,4 +14,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IStorageOutOrderService extends IService<StorageOutOrder> {
 
+    /**
+     * 创建出库订单
+     * @param storageOutOrderForm
+     * @return
+     */
+    String createOrder(StorageOutOrderForm storageOutOrderForm);
 }

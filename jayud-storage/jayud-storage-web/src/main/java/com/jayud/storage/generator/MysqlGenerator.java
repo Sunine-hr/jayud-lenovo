@@ -32,7 +32,7 @@ public class MysqlGenerator {
                 "jayud-storage\\jayud-storage-web"
         };
         for (String model : models) {
-            shell(model, "warehouse");
+            shell(model, "good");
 
         }
     }

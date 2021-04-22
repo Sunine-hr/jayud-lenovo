@@ -63,6 +63,30 @@ public class OrderTypeNumberServiceImpl extends ServiceImpl<OrderTypeNumberMappe
         return orderNo;
     }
 
+    @Override
+    public String getWarehouseNumber(String preOrder) {
+        String orderNo = null;
+        OrderTypeNumber orderTypeNumber = baseMapper.getMaxNumberData(preOrder,getDateData(DateUtils.getLocalToStr(LocalDateTime.now())));
+        OrderTypeNumber typeNumber = new OrderTypeNumber();
+        String dateData2 = getDateData2(DateUtils.getLocalToStr(LocalDateTime.now()), 2, 8);
+        if(orderTypeNumber!=null){
+            if(orderTypeNumber.getDate().equals(dateData2)){
+                typeNumber.setClassCode(preOrder);
+                typeNumber.setDate(orderTypeNumber.getDate());
+                typeNumber.setNumber(orderTypeNumber.getNumber()+1);
+                orderNo = preOrder + dateData2 + String.format("%04d",typeNumber.getNumber());
+                baseMapper.insert(typeNumber);
+            }else{
+                typeNumber.setClassCode(preOrder);
+                typeNumber.setDate(dateData2);
+                typeNumber.setNumber(1);
+                orderNo = preOrder + dateData2 + String.format("%04d",typeNumber.getNumber());
+                baseMapper.insert(typeNumber);
+            }
+        }
+        return orderNo;
+    }
+
     //判断是否为本月第一天
     public boolean isFirstDayofMonth(LocalDateTime localDateTime){
         int dayOfMonth = localDateTime.getDayOfMonth();
@@ -73,6 +97,11 @@ public class OrderTypeNumberServiceImpl extends ServiceImpl<OrderTypeNumberMappe
     public static String getDateData(String date){
         String s = date.substring(0, 10).replaceAll("-", "");
         return s.substring(2,6);
+    }
+
+    public static String getDateData2(String date,int start,int end){
+        String s = date.substring(0, 10).replaceAll("-", "");
+        return s.substring(start,end);
     }
 
 }

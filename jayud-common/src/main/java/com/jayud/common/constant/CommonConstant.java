@@ -129,6 +129,10 @@ public abstract class CommonConstant {
      */
     public static final String TC = "TC";
     /**
+     * 生成仓储订单号
+     */
+    public static final String CC = "CC";
+    /**
      * 生成账单号
      */
     public static final String B = "B";

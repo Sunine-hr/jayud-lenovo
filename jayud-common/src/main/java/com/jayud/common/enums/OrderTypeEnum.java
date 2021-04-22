@@ -26,7 +26,9 @@ public enum OrderTypeEnum {
     BE("BE", "报关出口"),
     P("P", "派车单号"),
     ZD("ZD", "对账单号"),
-    FW("FW", "服务单号");
+    FW("FW", "服务单号"),
+    RK("RK", "入库订单号"),
+    CK("CK", "出库订单号");
 
     private String code;
     private String desc;

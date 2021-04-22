@@ -1,10 +1,9 @@
-package com.jayud.oms.model.bo;
+package com.jayud.storage.model.vo;
 
+import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -20,7 +19,7 @@ import java.util.List;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class InputStorageOutOrderForm {
+public class StorageOutOrderVO {
 
 
     @ApiModelProperty(value = "主键id")
@@ -42,6 +41,12 @@ public class InputStorageOutOrderForm {
     @NotNull(message = "结算单位不为空")
     private String unitCode;
 
+    @ApiModelProperty(value = "流程状态名")
+    private String processStatusDesc;
+
+    @ApiModelProperty(value = "结算单位姓名")
+    private String unitCodeName;
+
     @ApiModelProperty(value = "接单法人名称")
     private String legalName;
 
@@ -52,6 +57,9 @@ public class InputStorageOutOrderForm {
     @ApiModelProperty(value = "操作部门id")
     @NotNull(message = "操作部门不为空")
     private Long departmentId;
+
+    @ApiModelProperty(value = "操作部门")
+    private String departmentName;
 
     @ApiModelProperty(value = "车牌信息")
     private String plateInformation;
@@ -76,19 +84,12 @@ public class InputStorageOutOrderForm {
     private String remarks;
 
     @ApiModelProperty(value = "入库商品对象集合")
-    private List<AddWarehouseGoodsForm> goodsFormList;
+    private List<WarehouseGoodsVO> goodsFormList;
 
-    /**
-     * 校验创建入库子订单参数
-     */
-    public String checkCreateOrder() {
-        //拖车
-        for (AddWarehouseGoodsForm addWarehouseGoodsForm : goodsFormList) {
-            if(!addWarehouseGoodsForm.checkCreateOrder().equals("pass")){
-                return addWarehouseGoodsForm.checkCreateOrder();
-            }
-        }
-        return "pass";
+    @ApiModelProperty(value = "附件集合")
+    private List<FileView> allPics;
+
+    public void setUnitCodeName(String unitCodeName) {
+        this.unitCodeName=unitCodeName;
     }
-
 }

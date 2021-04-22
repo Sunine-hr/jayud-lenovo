@@ -1,4 +1,4 @@
-package com.jayud.oms.model.bo;
+package com.jayud.oms.model.vo;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.jayud.common.utils.FileView;
@@ -21,9 +21,7 @@ import java.util.List;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class AddWarehouseGoodsForm extends Model<AddWarehouseGoodsForm> {
-
-    private static final long serialVersionUID = 1L;
+public class WarehouseGoodsVO {
 
     @ApiModelProperty(value = "主键id")
     private Long id;
@@ -97,19 +95,5 @@ public class AddWarehouseGoodsForm extends Model<AddWarehouseGoodsForm> {
 
     @ApiModelProperty(value = "入库批次号")
     private String warehousingBatchNo;
-
-    public String checkCreateOrder() {
-        //拖车
-        if (StringUtils.isEmpty(this.sku)) {
-            return "sku不为空";
-        }
-        if(StringUtils.isEmpty(this.warehousingBatchNo)){
-            return "入库批次不为空";
-        }
-        if(this.number != null){
-            return "件数不为空";
-        }
-        return "pass";
-    }
 
 }

@@ -248,12 +248,6 @@ public class OrderInfoController {
                         return CommonResult.error(1,storageOutOrderForm.checkCreateOrder());
                     }
                 }
-                if(inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCIDD.getCode())){
-                    InputStorageInputOrderForm storageInputOrderForm = form.getStorageInputOrderForm();
-                    if(!storageInputOrderForm.checkCreateOrder().equals("pass")){
-                        return CommonResult.error(1,storageInputOrderForm.checkCreateOrder());
-                    }
-                }
             }
 
             //校验参数

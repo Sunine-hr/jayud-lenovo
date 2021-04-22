@@ -106,6 +106,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private IOrderPaymentCostService orderPaymentCostService;
     @Autowired
     private IProductClassifyService productClassifyService;
+    @Autowired
+    private StorageClient storageClient;
 
     private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(),
             SubOrderSignEnum.KY.getSignOne(), SubOrderSignEnum.HY.getSignOne(),
@@ -190,6 +192,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             } else {
                 preOrder = OrderTypeEnum.AE.getCode() + legalCode;
                 classCode = OrderTypeEnum.AE.getCode();
+            }
+        }
+        if (classStatus.equals(OrderStatusEnum.CC.getCode())) {
+            if (integer.equals(1)) {
+                preOrder = OrderTypeEnum.RK.getCode() + legalCode;
+                classCode = OrderTypeEnum.RK.getCode();
+            } else {
+                preOrder = OrderTypeEnum.CK.getCode() + legalCode;
+                classCode = OrderTypeEnum.CK.getCode();
             }
         }
         String orderNo = orderTypeNumberService.getOrderNo(preOrder, classCode);
@@ -919,6 +930,39 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 inputOrderVO.setTrailerOrderForm(trailerOrderVO);
             }
         }
+        //获取仓储订单信息
+        if(OrderStatusEnum.CC.getCode().equals(form.getClassCode()) || inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode()) || inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode())){
+            if(inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode())){
+                InputStorageOutOrderVO storageOutOrderVO = this.storageClient.getStorageOutOrderDetails(inputMainOrderVO.getOrderNo()).getData();
+                if(storageOutOrderVO!=null){
+                    //添加附件
+                    List<FileView> attachments = this.logisticsTrackService.getAttachments(storageOutOrderVO.getId()
+                            , BusinessTypeEnum.RK.getCode(), prePath);
+                    storageOutOrderVO.setAllPics(attachments);
+                    //结算单位名称
+                    CustomerInfo customerInfo = customerInfoService.getByCode(storageOutOrderVO.getUnitCode());
+                    if (customerInfo != null) {
+                        storageOutOrderVO.setUnitCodeName(customerInfo.getName());
+                    }
+                }
+                inputOrderVO.setStorageOutOrderForm(storageOutOrderVO);
+            }
+            if(inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode())){
+                InputStorageInputOrderVO storageInputOrderVO = this.storageClient.getStorageInOrderDetails(inputMainOrderVO.getOrderNo()).getData();
+                if(storageInputOrderVO!=null){
+                    //添加附件
+                    List<FileView> attachments = this.logisticsTrackService.getAttachments(storageInputOrderVO.getId()
+                            , BusinessTypeEnum.RK.getCode(), prePath);
+                    storageInputOrderVO.setAllPics(attachments);
+                    //结算单位名称
+                    CustomerInfo customerInfo = customerInfoService.getByCode(storageInputOrderVO.getUnitCode());
+                    if (customerInfo != null) {
+                        storageInputOrderVO.setUnitCodeName(customerInfo.getName());
+                    }
+                }
+                inputOrderVO.setStorageInputOrderForm(storageInputOrderVO);
+            }
+        }
 
         return inputOrderVO;
     }
@@ -1245,11 +1289,87 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if(OrderStatusEnum.CC.getCode().equals(classCode)  || selectedServer.contains(OrderStatusEnum.CCIDD.getCode()) || selectedServer.contains(OrderStatusEnum.CCEDD.getCode())){
             if(selectedServer.contains(OrderStatusEnum.CCIDD.getCode())){
                 InputStorageInputOrderForm storageInputOrderForm = form.getStorageInputOrderForm();
+                if (form.getCmd().equals("submit")) {//提交
+                    if (storageInputOrderForm.getId() == null) {
+                        String orderNo = generationOrderNo(storageInputOrderForm.getLegalEntityId(), 1, OrderStatusEnum.CC.getCode());
+                        storageInputOrderForm.setOrderNo(orderNo);
+                    }
+                    //草稿编辑提交
+                    if (storageInputOrderForm.getStatus() != null && storageInputOrderForm.getStatus().equals("CCI_0")) {
+                        String orderNo = generationOrderNo(storageInputOrderForm.getLegalEntityId(), 1, OrderStatusEnum.CC.getCode());
+                        storageInputOrderForm.setOrderNo(orderNo);
+                    }
+                }
+                //暂存，随机生成订单号
+                if (form.getCmd().equals("preSubmit") && storageInputOrderForm.getId() == null) {
+                    //生成仓储订单号
+                    String orderNo = StringUtils.loadNum(CommonConstant.CC, 12);
+                    while (true) {
+                        if (!isExistOrder(orderNo)) {//重复
+                            orderNo = StringUtils.loadNum(CommonConstant.CC, 12);
+                        } else {
+                            break;
+                        }
+                    }
+                    storageInputOrderForm.setOrderNo(orderNo);
+                }
+
+                if (this.queryEditOrderCondition(storageInputOrderForm.getStatus(),
+                        inputMainOrderForm.getStatus(), SubOrderSignEnum.CCI.getSignOne(), form)) {
+                    storageInputOrderForm.setMainOrderNo(mainOrderNo);
+                    storageInputOrderForm.setCreateUser(UserOperator.getToken());
+                    Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
+                            : ProcessStatusEnum.DRAFT.getCode();
+                    storageInputOrderForm.setProcessStatus(processStatus);
+                    String subOrderNo = this.storageClient.createInOrder(storageInputOrderForm).getData();
+                    storageInputOrderForm.setOrderNo(subOrderNo);
+
+                    this.initProcessNode(mainOrderNo, subOrderNo, OrderStatusEnum.CC,
+                            form, storageInputOrderForm.getId(), OrderStatusEnum.getInStorageOrderProcess());
+                }
 
             }
             if(selectedServer.contains(OrderStatusEnum.CCEDD.getCode()) ){
                 InputStorageOutOrderForm storageOutOrderForm = form.getStorageOutOrderForm();
+                if (form.getCmd().equals("submit")) {//提交
+                    if (storageOutOrderForm.getId() == null) {
+                        String orderNo = generationOrderNo(storageOutOrderForm.getLegalEntityId(), 2, OrderStatusEnum.CC.getCode());
+                        storageOutOrderForm.setOrderNo(orderNo);
+                    }
+                    //草稿编辑提交
+                    if (storageOutOrderForm.getStatus() != null && storageOutOrderForm.getStatus().equals("CCE_0")) {
+                        String orderNo = generationOrderNo(storageOutOrderForm.getLegalEntityId(), 2, OrderStatusEnum.CC.getCode());
+                        storageOutOrderForm.setOrderNo(orderNo);
+                    }
 
+                }
+                //暂存，随机生成订单号
+                if (form.getCmd().equals("preSubmit") && storageOutOrderForm.getId() == null) {
+                    //生成仓储订单号
+                    String orderNo = StringUtils.loadNum(CommonConstant.CC, 12);
+                    while (true) {
+                        if (!isExistOrder(orderNo)) {//重复
+                            orderNo = StringUtils.loadNum(CommonConstant.CC, 12);
+                        } else {
+                            break;
+                        }
+                    }
+                    storageOutOrderForm.setOrderNo(orderNo);
+                }
+
+                if (this.queryEditOrderCondition(storageOutOrderForm.getStatus(),
+                        inputMainOrderForm.getStatus(), SubOrderSignEnum.CCI.getSignOne(), form)) {
+                    storageOutOrderForm.setMainOrderNo(mainOrderNo);
+                    storageOutOrderForm.setCreateUser(UserOperator.getToken());
+                    Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
+                            : ProcessStatusEnum.DRAFT.getCode();
+                    storageOutOrderForm.setProcessStatus(processStatus);
+                    String subOrderNo = this.storageClient.createOutOrder(storageOutOrderForm).getData();
+                    storageOutOrderForm.setOrderNo(subOrderNo);
+
+                    this.initProcessNode(mainOrderNo, subOrderNo, OrderStatusEnum.CC,
+                            form, storageOutOrderForm.getId(), OrderStatusEnum.getInStorageOrderProcess());
+                }
             }
         }
 

@@ -1,30 +1,39 @@
 package com.jayud.storage.controller;
 
+import cn.hutool.core.map.MapUtil;
+import com.alibaba.excel.EasyExcelFactory;
+import com.alibaba.excel.metadata.Sheet;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.excel.ExcelUtils;
+import com.jayud.storage.feign.OmsClient;
+import com.jayud.storage.model.bo.WarehouseGoodsForm;
 import com.jayud.storage.model.bo.WarehouseGoodsInForm;
 import com.jayud.storage.model.bo.WarehouseGoodsOutForm;
-import com.jayud.storage.model.po.WarehouseGoods;
-import com.netflix.client.http.HttpResponse;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @Api(tags = "仓储模块公用接口")
 @RestController
 @Slf4j
 @RequestMapping("/common")
 public class CommonController {
+
+    @Autowired
+    private OmsClient omsClient;
 
     /**
      * 导出入库商品模板
@@ -47,19 +56,52 @@ public class CommonController {
     /**
      * 导入入库商品信息
      */
-//    @ApiOperation(value = "导入入库商品信息")
-//    @PostMapping(value = "/importInProductInformation")
-//    public CommonResult importInProductInformation(MultipartFile file){
-//
-//    }
+    @ApiOperation(value = "导入入库商品信息")
+    @PostMapping(value = "/importInProductInformation")
+    public CommonResult importInProductInformation(MultipartFile file){
+        List<Object> list = null;
+        try {
+            list = EasyExcelFactory.read(file.getInputStream(), new Sheet(1));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String listString = JSONObject.toJSONString(list);
+        log.info("list:{}",  listString);
+        JSONArray arryList = JSONObject.parseArray(listString);
+
+        return CommonResult.success();
+    }
 
     /**
      * 导入出库商品信息
      */
-//    @ApiOperation(value = "导入出库商品信息")
-//    @PostMapping(value = "/importOutProductInformation")
-//    public CommonResult importOutProductInformation(MultipartFile file){
+    @ApiOperation(value = "导入出库商品信息")
+    @PostMapping(value = "/importOutProductInformation")
+    public CommonResult importOutProductInformation(MultipartFile file){
+
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "生成入仓号/生成出仓号")
+    @PostMapping(value = "/getWarehouseNumber")
+    public CommonResult getWarehouseNumber(Map<String,Object> map){
+        Long type = MapUtil.getLong(map,"type");
+        String warehouseNumber = null;
+        if(type.equals(1)){//生成入仓号
+            warehouseNumber = (String)omsClient.getWarehouseNumber("JYDRK").getData();
+        }
+        if(type.equals(2)){
+            warehouseNumber = (String)omsClient.getWarehouseNumber("JYDCK").getData();
+        }
+        return CommonResult.success(warehouseNumber);
+    }
+
+//    @ApiOperation(value = "判断商品是否为商品表维护的数据")
+//    @PostMapping(value = "/isCommodity")
+//    public CommonResult isCommodity(@RequestBody List<WarehouseGoodsForm> warehouseGoodsForms){
+//        for (WarehouseGoodsForm warehouseGoodsForm : warehouseGoodsForms) {
 //
+//        }
 //    }
 
 }

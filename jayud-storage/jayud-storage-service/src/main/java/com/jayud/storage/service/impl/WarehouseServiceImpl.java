@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.UserOperator;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
@@ -33,12 +34,9 @@ import java.util.List;
 @Service
 public class WarehouseServiceImpl extends ServiceImpl<WarehouseMapper, Warehouse> implements IWarehouseService {
 
-    @Autowired
-    WarehouseMapper warehouseMapper;
-
     @Override
     public List<WarehouseVO> findWarehouse(QueryWarehouseForm form) {
-        return warehouseMapper.findWarehouse(form);
+        return this.baseMapper.findWarehouse(form);
     }
 
     @Override
@@ -47,14 +45,14 @@ public class WarehouseServiceImpl extends ServiceImpl<WarehouseMapper, Warehouse
         Page<WarehouseVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.asc("t.id"));
-        IPage<WarehouseVO> pageInfo = warehouseMapper.findWarehouseByPage(page, form);
+        IPage<WarehouseVO> pageInfo = this.baseMapper.findWarehouseByPage(page, form);
         return pageInfo;
     }
 
     @Override
     public void operationWarehouse(OperationWarehouseForm form) {
         Long id = form.getId();
-        WarehouseVO warehouseVO = warehouseMapper.findWarehouseById(id);
+        WarehouseVO warehouseVO = this.baseMapper.findWarehouseById(id);
         if(ObjectUtil.isEmpty(warehouseVO)){
             Asserts.fail(ResultEnum.OPR_FAIL, "操作失败，没有找到该仓库");
         }
@@ -73,12 +71,12 @@ public class WarehouseServiceImpl extends ServiceImpl<WarehouseMapper, Warehouse
     @Override
     public void saveWarehouse(SaveWarehouseForm form) {
         Long id = form.getId();
-        WarehouseVO warehouseVO = warehouseMapper.findWarehouseById(id);
+        WarehouseVO warehouseVO = this.baseMapper.findWarehouseById(id);
         if(ObjectUtil.isEmpty(warehouseVO)){
             //warehouseVO 为null，代表为新增
             Warehouse warehouse = ConvertUtil.convert(form, Warehouse.class);
             warehouse.setStatus(WarehouseStatusEnum.ENABLE.getCode());
-            warehouse.setCreateUser("");
+            warehouse.setCreateUser(UserOperator.getToken());
             warehouse.setCreateTime(LocalDateTime.now());
             this.saveOrUpdate(warehouse);
         }else{
@@ -95,6 +93,6 @@ public class WarehouseServiceImpl extends ServiceImpl<WarehouseMapper, Warehouse
 
     @Override
     public WarehouseVO findWarehouseById(Long id) {
-        return warehouseMapper.findWarehouseById(id);
+        return this.baseMapper.findWarehouseById(id);
     }
 }

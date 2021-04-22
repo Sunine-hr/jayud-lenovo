@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang.StringUtils;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -39,15 +40,18 @@ public class InputStorageInputOrderForm extends Model<InputStorageInputOrderForm
     private Integer processStatus;
 
     @ApiModelProperty(value = "结算单位code")
+    @NotNull(message = "结算单位不为空")
     private String unitCode;
 
     @ApiModelProperty(value = "接单法人名称")
     private String legalName;
 
     @ApiModelProperty(value = "接单法人id")
+    @NotNull(message = "操作主体不为空")
     private Long legalEntityId;
 
     @ApiModelProperty(value = "操作部门id")
+    @NotNull(message = "操作部门不为空")
     private Long departmentId;
 
     @ApiModelProperty(value = "运单号")

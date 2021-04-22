@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.CounterCaseMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.CounterCase">
+        <id column="id" property="id" />
+        <result column="ocean_counter_id" property="oceanCounterId" />
+        <result column="order_case_id" property="orderCaseId" />
+        <result column="user_id" property="userId" />
+        <result column="user_name" property="userName" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, ocean_counter_id, order_case_id, user_id, user_name, create_time
+    </sql>
+
+    <select id="findCounterCaseByObId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CounterCaseVO">
+        select
+            t.id,t.ocean_counter_id,t.order_case_id,t.user_id,t.user_name,t.create_time,
+            t1.cntr_no,
+            t2.id tdId,t2.order_id tdh,
+            t3.carton_no,IFNULL(t3.confirm_volume ,0) as confirm_volume,
+            t4.order_no
+        from counter_case t
+                 left join ocean_counter t1 on t1.id = t.ocean_counter_id
+                 left join ocean_bill t2 on t2.id = t1.ob_id
+                 left join order_case t3 on t3.id = t.order_case_id
+                 left join order_info t4 on t4.id = t3.order_id
+        where t2.id = #{obId}
+    </select>
+
+
+    <select id="findCounterCaseVolumeTotalByObId" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
+        select sum(confirm_volume) counterCaseVolumeTotal
+        from (
+                 select
+                     t.id,t.ocean_counter_id,t.order_case_id,t.user_id,t.user_name,t.create_time,
+                     t1.cntr_no,
+                     t2.id tdId,t2.order_id tdh,
+                     t3.carton_no,IFNULL(t3.confirm_volume ,0) as confirm_volume,
+                     t4.order_no
+                 from counter_case t
+                          left join ocean_counter t1 on t1.id = t.ocean_counter_id
+                          left join ocean_bill t2 on t2.id = t1.ob_id
+                          left join order_case t3 on t3.id = t.order_case_id
+                          left join order_info t4 on t4.id = t3.order_id
+                 where t2.id = #{obId}
+             ) t
+    </select>
+
+
+</mapper>

@@ -7,6 +7,7 @@ import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ import java.util.List;
 @Slf4j
 public class InputTrailerOrderVO {
 
-    private static final long serialVersionUID=1L;
+    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "主键id")
     @TableId(value = "id", type = IdType.AUTO)
@@ -199,6 +200,35 @@ public class InputTrailerOrderVO {
 
 
     public void setUnitName(String unitName) {
-        this.unitName=unitName;
+        this.unitName = unitName;
+    }
+
+    public void copyOperationInfo() {
+        this.id = null;
+        this.allPics = null;
+        this.orderNo = null;
+        this.mainOrderNo = null;
+        this.status = null;
+        this.processStatus = null;
+        this.billPics = new ArrayList<>();
+        this.pssPics=new ArrayList<>();
+        this.cnPics=new ArrayList<>();
+        this.soPics=new ArrayList<>();
+        this.trailerDispatchVO=null;
+        if (CollectionUtils.isNotEmpty(orderAddressForms)) {
+            orderAddressForms.forEach(e -> {
+                e.setId(null);
+                e.setBindGoodsId(null);
+                e.setBusinessId(null);
+                e.setBusinessType(null);
+                e.setTakeFiles(null);
+            });
+        }
+
+        if (CollectionUtils.isNotEmpty(goodsForms)) {
+            goodsForms.forEach(e -> {
+                e.setId(null);
+            });
+        }
     }
 }

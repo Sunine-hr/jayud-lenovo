@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.AccountPayableMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.AccountPayable">
+        <id column="id" property="id" />
+        <result column="dzd_no" property="dzdNo" />
+        <result column="legal_person_id" property="legalPersonId" />
+        <result column="supplier_id" property="supplierId" />
+        <result column="payment_days_start" property="paymentDaysStart" />
+        <result column="payment_days_end" property="paymentDaysEnd" />
+        <result column="status" property="status" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, dzd_no, legal_person_id, supplier_id, payment_days_start, payment_days_end, status, create_time
+    </sql>
+
+
+    <select id="findAccountPayableByPage" parameterType="com.jayud.mall.model.bo.QueryAccountPayableForm"
+            resultType="com.jayud.mall.model.vo.AccountPayableVO">
+        select
+        t.id,t.dzd_no,t.legal_person_id,t.supplier_id,t.payment_days_start,t.payment_days_end,t.status,t.create_time,
+        t1.legal_entity,
+        t2.company_name supplierName,
+        concat(DATE_FORMAT(t.payment_days_start,'%Y-%m-%d'),'~',DATE_FORMAT(t.payment_days_end,'%Y-%m-%d')) paymentDays
+        from account_payable t
+        left join legal_person t1 on t1.id = t.legal_person_id
+        left join supplier_info t2 on t2.id = t.supplier_id
+        where 1=1
+        <if test="form.dzdNo != null and form.dzdNo != ''">
+            and t.dzd_no LIKE concat('%',#{form.dzdNo},'%')
+        </if>
+        <if test="form.legalPersonId != null">
+            and t.legal_person_id = #{form.legalPersonId}
+        </if>
+        <if test="form.supplierId != null">
+            and t.supplier_id = #{form.supplierId}
+        </if>
+        <if test="form.status != null">
+            and t.status = #{form.status}
+        </if>
+    </select>
+
+
+    <select id="findAccountPayableById" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.AccountPayableVO">
+        select
+        t.id,t.dzd_no,t.legal_person_id,t.supplier_id,t.payment_days_start,t.payment_days_end,t.status,t.create_time,
+        t1.legal_entity,
+        t2.company_name supplierName,
+        concat(DATE_FORMAT(t.payment_days_start,'%Y-%m-%d'),'~',DATE_FORMAT(t.payment_days_end,'%Y-%m-%d')) paymentDays
+        from account_payable t
+        left join legal_person t1 on t1.id = t.legal_person_id
+        left join supplier_info t2 on t2.id = t.supplier_id
+        where t.id = #{id}
+    </select>
+
+
+
+</mapper>

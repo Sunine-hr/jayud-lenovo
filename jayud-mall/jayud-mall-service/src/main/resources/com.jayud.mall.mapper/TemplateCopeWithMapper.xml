@@ -7,7 +7,6 @@
         <id column="id" property="id" />
         <result column="qie" property="qie" />
         <result column="cost_name" property="costName" />
-        <result column="supplier_code" property="supplierCode" />
         <result column="calculate_way" property="calculateWay" />
         <result column="count" property="count" />
         <result column="unit" property="unit" />
@@ -22,5 +21,42 @@
     <sql id="Base_Column_List">
         id, qie, cost_name, supplier_code, calculate_way, count, unit, source, unit_price, cid, amount, remarks
     </sql>
+
+    <select id="selectListByQie" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.TemplateCopeWithVO">
+        select
+        t.id,t.qie,t.cost_code,t.cost_name,t.supplier_id,t.calculate_way,t.count,t.unit,t.source,t.unit_price,t.cid,t.amount,t.remarks,
+        t1.supplier_code supplierCode,
+        t1.company_name supplierName
+        from template_cope_with t
+        left join supplier_info t1 on t1.id = t.supplier_id
+        where 1=1
+        and t.qie = #{qie}
+    </select>
+
+
+    <select id="findTemplateCopeWithByQie" parameterType="java.lang.Integer" resultType="com.jayud.mall.model.vo.TemplateCopeWithVO">
+        select t.id,
+               t.qie,
+               t.cost_code,
+               t.cost_name,
+               t.supplier_id,
+               t.calculate_way,
+               t.count,
+               t.unit,
+               t.source,
+               t.unit_price,
+               t.cid,
+               t.amount,
+               t.remarks,
+               t1.supplier_code supplierCode,
+               t1.company_name  supplierName,
+               t2.currency_code,
+               t2.currency_name
+        from template_cope_with t
+                 left join supplier_info t1 on t1.id = t.supplier_id
+                 left join currency_info t2 on t2.id = t.cid
+        where t.qie = #{qie}
+    </select>
+
 
 </mapper>

@@ -5,8 +5,6 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.TaskGroup">
         <id column="id" property="id" />
-        <result column="id_code" property="idCode" />
-        <result column="code__name" property="codeName" />
         <result column="status" property="status" />
         <result column="types" property="types" />
     </resultMap>
@@ -15,5 +13,72 @@
     <sql id="Base_Column_List">
         id, id_code, code__name, status, types
     </sql>
+
+
+    <select id="findTaskGroupByPage" parameterType="com.jayud.mall.model.bo.QueryTaskGroupForm"
+            resultType="com.jayud.mall.model.vo.TaskGroupVO">
+        select
+        t.id,t.types,t.group_code,t.group_name,t.remarks,t.status,t.user_id,t.user_name,t.create_time,
+        t1.taskItems
+        from task_group t
+        left join (
+        SELECT
+        t.group_code, GROUP_CONCAT(t.task_name order by sort asc) AS taskItems
+        FROM
+        waybill_task t GROUP BY t.group_code
+        union
+        SELECT
+        t.group_code, GROUP_CONCAT(t.task_name order by sort asc) AS taskItems
+        FROM
+        bill_task t GROUP BY t.group_code
+        ) t1 on t1.group_code = t.group_code
+        where 1=1
+        <if test="form.groupName != null and form.groupName != ''">
+            and t.group_name LIKE CONCAT('%',#{form.groupName},'%')
+        </if>
+
+    </select>
+
+
+    <select id="findTaskGroupById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.TaskGroupVO">
+
+        select
+            t.id,t.types,t.group_code,t.group_name,t.remarks,t.status,t.user_id,t.user_name,t.create_time,
+            t1.taskItems
+        from task_group t
+                 left join (
+            SELECT
+                t.group_code, GROUP_CONCAT(t.task_name order by sort asc) AS taskItems
+            FROM
+                waybill_task t GROUP BY t.group_code
+            union
+            SELECT
+                t.group_code, GROUP_CONCAT(t.task_name order by sort asc) AS taskItems
+            FROM
+                bill_task t GROUP BY t.group_code
+        ) t1 on t1.group_code = t.group_code
+        where 1=1
+        and t.id = #{id}
+
+    </select>
+    
+    
+    <select id="findBillTaskByGroupCode" parameterType="java.lang.String" resultType="com.jayud.mall.model.vo.TaskItemVO">
+        select
+               t.id,t.group_code,t.task_code,t.task_name,t.sort,t.days,t.day_flag,t.operators,t.minutes,t.score,t.remarks,t.status,t.user_id,t.user_name,t.create_time
+        from bill_task t
+        where t.group_code = #{groupCode}
+        order by t.sort asc
+    </select>
+
+    <select id="findWaybillTaskByGroupCode" parameterType="java.lang.String" resultType="com.jayud.mall.model.vo.TaskItemVO">
+        select
+               t.id,t.group_code,t.task_code,t.task_name,t.sort,t.days,t.day_flag,t.operators,t.minutes,t.score,t.remarks,t.status,t.user_id,t.user_name,t.create_time
+        from waybill_task t
+        where t.group_code = #{groupCode}
+        order by t.sort asc
+    </select>
+
+    
 
 </mapper>

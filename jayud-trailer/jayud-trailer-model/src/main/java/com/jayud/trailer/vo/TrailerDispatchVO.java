@@ -82,5 +82,6 @@ public class TrailerDispatchVO {
     @ApiModelProperty(value = "更新时间")
     private LocalDateTime updateTime;
 
-
+    @ApiModelProperty(value = "柜重")
+    private Double cabinetWeight;
 }

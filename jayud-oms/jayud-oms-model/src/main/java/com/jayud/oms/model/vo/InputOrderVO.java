@@ -1,7 +1,10 @@
 package com.jayud.oms.model.vo;
 
+import com.jayud.oms.model.bo.InputTrailerOrderFrom;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.List;
 
 
 @Data
@@ -29,5 +32,14 @@ public class InputOrderVO {
     private InputOrderInlandTPVO orderInlandTransportForm;
 
     @ApiModelProperty(value = "拖车单")
-    private InputTrailerOrderVO trailerOrderForm;
+    private List<InputTrailerOrderVO> trailerOrderForm;
+
+    public void copyOperationInfo() {
+        if (orderForm == null) return;
+        orderForm.setOrderId(null);
+        orderForm.setOrderNo(null);
+        orderForm.setCreatedTimeStr(null);
+        orderForm.setCreatedUser(null);
+        orderForm.setStatus(null);
+    }
 }

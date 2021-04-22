@@ -41,7 +41,7 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "海运订单id")
+    //@ApiModelProperty(value = "海运订单id")
     private Long orderId;
 
     @ApiModelProperty(value = "主订单编号")
@@ -52,6 +52,9 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
 
     @ApiModelProperty(value = "海运订单编号")
     private String orderNo;
+
+    @ApiModelProperty(value = "截补料单号")
+    private String repOrderNo;
 
     //状态(S_0待接单,S_1海运接单,S_2订船,S_3订单入仓, S_4提交补料,S_5草稿提单,S_6放单确认,S_7确认离港,S_8确认到港,S_9海外代理S_10确认签收)
     //@ApiModelProperty(value = "状态")

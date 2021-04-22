@@ -1,7 +1,14 @@
 package com.jayud.finance.vo;
 
+import cn.hutool.core.map.MapUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 该视图从其他表查询统计而来展示，后在保存到表中
@@ -36,4 +43,16 @@ public class OrderPaymentBillVO {
     @ApiModelProperty(value = "供应商code")
     private String supplierCode;
 
+    public void statisticsNotPaidBillInfo(List<Map<String, Object>> maps, Boolean isMain) {
+        BigDecimal amount = new BigDecimal(0);
+        Set<String> orderNos = new HashSet<>();
+        for (Map<String, Object> map : maps) {
+            String tmp=isMain?"mainOrderNo":"orderNo";
+            orderNos.add(MapUtil.getStr(map, tmp));
+            BigDecimal changeAmount = map.get("changeAmount") == null ? new BigDecimal(0) : (BigDecimal) map.get("changeAmount");
+            amount = amount.add(changeAmount);
+        }
+        this.notPaidOrderNum = orderNos.size();
+        this.notPaidAmount = amount.toPlainString();
+    }
 }

@@ -72,7 +72,7 @@ public class CustomsQuestionnaireServiceImpl extends ServiceImpl<CustomsQuestion
     @Transactional
     public void approvalRejection(AuditInfo auditInfo) {
         CustomsQuestionnaire customsQuestionnaire = new CustomsQuestionnaire()
-                .setId(auditInfo.getExtId()).setStatus(0).setAuditOpinion(auditInfo.getAuditComment())
+                .setId(auditInfo.getExtId()).setStatus(3).setAuditOpinion(auditInfo.getAuditComment())
                 .setIsEdit(true);
         this.baseMapper.updateById(customsQuestionnaire);
         this.auditInfoService.save(auditInfo);

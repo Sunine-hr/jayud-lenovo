@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.QuotationTypeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.QuotationType">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="fid" property="fid" />
+        <result column="sort" property="sort" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="status" property="status" />
+        <result column="types" property="types" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name, fid, sort, create_by, create_time, update_by, update_time, status, types
+    </sql>
+
+    <select id="findQuotationTypeByCode" parameterType="java.lang.String" resultType="com.jayud.mall.model.po.QuotationType">
+        select
+               t.id,t.code,t.name,t.fid,t.sort,t.create_by,t.create_time,t.update_by,t.update_time,t.status,t.types
+        from quotation_type t
+        where t.code=#{code}
+    </select>
+
+</mapper>

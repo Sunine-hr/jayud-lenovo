@@ -46,6 +46,7 @@ public class CustomsQuestionnaireController {
     @PostMapping(value = "/addOrUpdate")
     public CommonResult addOrUpdate(@RequestBody AddCustomsQuestionnaireForm form) {
         form.checkAdd();
+        form.setStatus(0);
         this.customsQuestionnaireService.addOrUpdate(form);
         return CommonResult.success();
     }

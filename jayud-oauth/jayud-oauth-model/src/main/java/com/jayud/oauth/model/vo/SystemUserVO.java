@@ -5,6 +5,7 @@ import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,6 +92,12 @@ public class SystemUserVO {
 
     @ApiModelProperty(value = "法人主体集合")
     private List<LegalEntity> legalEntities;
+
+    @ApiModelProperty(value = "是否强制修改密码")
+    private Boolean isForcedPasswordChange;
+
+    @ApiModelProperty(value = "修改密码时间")
+    private LocalDateTime updatePassWordDate;
 
 //    public List<Long> getLegalEntityIds() {
 //        if(!StringUtil.isNullOrEmpty(this.legalEntityIdStr)){

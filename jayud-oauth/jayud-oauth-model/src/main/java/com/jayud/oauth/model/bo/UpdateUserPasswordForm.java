@@ -18,10 +18,10 @@ public class UpdateUserPasswordForm {
     private String oldPassword;
 
     @ApiModelProperty(value = "密码")
-    @Size(max = 20, min = 8,message = "请输入8-20个字符")
+//    @Size(max = 20, min = 8,message = "请输入8-20个字符")
     private String password;
 
     @ApiModelProperty(value = "确认密码")
-    @Size(max = 20, min = 8,message = "请输入8-20个字符")
+//    @Size(max = 20, min = 8,message = "请输入8-20个字符")
     private String confirmPassword;
 }

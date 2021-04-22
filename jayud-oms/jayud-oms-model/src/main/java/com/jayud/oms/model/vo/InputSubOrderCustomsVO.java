@@ -60,4 +60,11 @@ public class InputSubOrderCustomsVO {
     @ApiModelProperty(value = "监管方式")
     private String supervisionMode;
 
+    public void copyOperationInfo() {
+        this.subOrderId = null;
+        this.fileViews = null;
+        this.yunCustomsNo = null;
+        this.jiedanTimeStr=null;
+
+    }
 }

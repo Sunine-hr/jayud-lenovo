@@ -7,6 +7,7 @@ import com.jayud.mall.model.bo.QueryRoleForm;
 import com.jayud.mall.model.po.SystemRole;
 import com.jayud.mall.model.vo.SystemRoleVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -28,20 +29,20 @@ public interface SystemRoleMapper extends BaseMapper<SystemRole> {
      * @param from
      * @return
      */
-    Long saveRole(SystemRole from);
+    Long saveRole(@Param("from") SystemRole from);
 
     /**
      * 删除角色
      * @param id
      */
-    void deleteRole(Long id);
+    void deleteRole(@Param("id") Long id);
 
     /**
      * 根据id，获取角色信息
      * @param id
      * @return
      */
-    SystemRoleVO getRole(Long id);
+    SystemRoleVO getRole(@Param("id") Long id);
 
     /**
      * 查询角色分页
@@ -49,12 +50,12 @@ public interface SystemRoleMapper extends BaseMapper<SystemRole> {
      * @param form
      * @return
      */
-    IPage<SystemRoleVO> findRoleByPage(Page<SystemRoleVO> page, QueryRoleForm form);
+    IPage<SystemRoleVO> findRoleByPage(Page<SystemRoleVO> page, @Param("form") QueryRoleForm form);
 
     /**
      * 根据用户Id，查询用户角色
      * @param userId
      * @return
      */
-    List<SystemRole> selectRolesByUserId(Long userId);
+    List<SystemRole> selectRolesByUserId(@Param("userId") Long userId);
 }

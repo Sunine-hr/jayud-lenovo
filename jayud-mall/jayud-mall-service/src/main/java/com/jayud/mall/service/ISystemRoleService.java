@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.bo.QueryRoleForm;
 import com.jayud.mall.model.bo.SaveRoleForm;
 import com.jayud.mall.model.po.SystemRole;
+import com.jayud.mall.model.vo.CountryVO;
 import com.jayud.mall.model.vo.SystemRoleVO;
 
 import java.util.List;
@@ -52,5 +53,10 @@ public interface ISystemRoleService extends IService<SystemRole> {
      */
     List<SystemRole> selectRolesByUserId(Long userId);
 
-
+    /**
+     * 查询角色list
+     * @param form
+     * @return
+     */
+    List<SystemRoleVO> findRole(QueryRoleForm form);
 }

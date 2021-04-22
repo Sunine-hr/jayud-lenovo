@@ -2,6 +2,7 @@ package com.jayud.mall.mapper;
 
 import com.jayud.mall.model.po.SystemRoleMenuRelation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
 
@@ -23,5 +24,5 @@ public interface SystemRoleMenuRelationMapper extends BaseMapper<SystemRoleMenuR
      * 移除角色菜单关联信息
      * @param roleIds
      */
-    void removeRoleMenuRelation(List<Long> roleIds);
+    void removeRoleMenuRelation(@Param("roleIds") List<Long> roleIds);
 }

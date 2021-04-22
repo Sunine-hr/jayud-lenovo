@@ -3,6 +3,7 @@ package com.jayud.mall.mapper;
 import com.jayud.mall.model.po.SystemUserRoleRelation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -23,5 +24,5 @@ public interface SystemUserRoleRelationMapper extends BaseMapper<SystemUserRoleR
      * 根据userIds，删除用户关联的角色信息
      * @param userIds
      */
-    void removeUserRoleRelation(List<Long> userIds);
+    void removeUserRoleRelation(@Param("userIds") List<Long> userIds);
 }

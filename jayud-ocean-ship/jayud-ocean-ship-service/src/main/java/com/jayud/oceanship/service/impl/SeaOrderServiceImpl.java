@@ -208,6 +208,13 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
     }
 
     @Override
+    public SeaOrder getByOrderNO(String orderNo) {
+        QueryWrapper<SeaOrder> condition = new QueryWrapper<>();
+        condition.lambda().eq(SeaOrder::getOrderNo, orderNo);
+        return this.getOne(condition);
+    }
+
+    @Override
     public SeaOrderVO getSeaOrderByOrderNO(Long id) {
         String prePath = String.valueOf(fileClient.getBaseUrl().getData());
         Integer businessType = BusinessTypeEnum.HY.getCode();

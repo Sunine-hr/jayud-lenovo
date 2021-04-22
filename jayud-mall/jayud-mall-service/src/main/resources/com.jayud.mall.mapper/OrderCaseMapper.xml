@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.OrderCaseMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.OrderCase">
+        <id column="id" property="id" />
+        <result column="order_id" property="orderId" />
+        <result column="carton_no" property="cartonNo" />
+        <result column="fab_no" property="fabNo" />
+        <result column="asn_length" property="asnLength" />
+        <result column="asn_width" property="asnWidth" />
+        <result column="asn_height" property="asnHeight" />
+        <result column="asn_weight" property="asnWeight" />
+        <result column="asn_volume" property="asnVolume" />
+        <result column="asn_weigh_date" property="asnWeighDate" />
+        <result column="wms_length" property="wmsLength" />
+        <result column="wms_height" property="wmsHeight" />
+        <result column="wms_width" property="wmsWidth" />
+        <result column="wms_weight" property="wmsWeight" />
+        <result column="wms_volume" property="wmsVolume" />
+        <result column="wms_weigh_date" property="wmsWeighDate" />
+        <result column="confirm_length" property="confirmLength" />
+        <result column="confirm_height" property="confirmHeight" />
+        <result column="confirm_width" property="confirmWidth" />
+        <result column="confirm_weight" property="confirmWeight" />
+        <result column="confirm_volume" property="confirmVolume" />
+        <result column="confirm_weigh_date" property="confirmWeighDate" />
+        <result column="status" property="status" />
+        <result column="remark" property="remark" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_id, carton_no, fab_no, asn_length, asn_width, asn_height, asn_weight, asn_volume, asn_weigh_date, wms_length, wms_height, wms_width, wms_weight, wms_volume, wms_weigh_date, confirm_length, confirm_height, confirm_width, confirm_weight, confirm_volume, confirm_weigh_date, status, remark
+    </sql>
+
+    <!--分页查询-->
+    <select id="findOrderCaseByPage" parameterType="com.jayud.mall.model.bo.QueryOrderCaseForm"
+            resultType="com.jayud.mall.model.vo.OrderCaseVO" >
+        select
+        t.id,
+        t.order_id,
+        t.carton_no,
+        t.fab_no,
+        t.asn_length,
+        t.asn_width,
+        t.asn_height,
+        t.asn_weight,
+        t.asn_volume,
+        t.asn_weigh_date,
+        t.wms_length,
+        t.wms_height,
+        t.wms_width,
+        t.wms_weight,
+        t.wms_volume,
+        t.wms_weigh_date,
+        t.confirm_length,
+        t.confirm_height,
+        t.confirm_width,
+        t.confirm_weight,
+        t.confirm_volume,
+        t.confirm_weigh_date,
+        t.`status`,
+        t.remark,
+        t1.order_no,
+        t1.customer_id,
+        t2.name_cn,
+        t2.company
+        from
+        order_case t
+        LEFT JOIN order_info t1 on t1.id = t.order_id
+        LEFT JOIN customer t2 on t2.id = t1.customer_id
+        WHERE
+        1 = 1
+        /*箱号*/
+        <if test="form.cartonNo != null and form.cartonNo != ''">
+            AND t.`carton_no` LIKE concat('%',#{form.cartonNo},'%')
+        </if>
+        GROUP BY
+        t.`id`
+    </select>
+
+    <!--根据订单id，查询订单箱号-->
+    <select id="findOrderCaseByOrderId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OrderCaseVO">
+        select
+        t.id,t.order_id,t.carton_no,t.fab_no,
+        t.asn_length,t.asn_width,t.asn_height,t.asn_weight,t.asn_volume,t.asn_weigh_date,
+        t.wms_length,t.wms_height,t.wms_width,t.wms_weight,t.wms_volume,t.wms_weigh_date,
+        t.confirm_length,t.confirm_height,t.confirm_width,t.confirm_weight,t.confirm_volume,t.confirm_weigh_date,
+        t.`status`,t.remark,
+        CONCAT(t.asn_length,'*',t.asn_width,'*',t.asn_height) asn_lwg
+        from order_case t
+        where t.order_id = #{orderId}
+    </select>
+
+    <!--根据订单id，查询订单箱号，以及订单箱号的配载信息（运单号->柜号->提单号->配载单号）-->
+    <select id="findOrderCaseConfByOrderId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.OrderCaseConfVO">
+        select
+            distinct
+            t.id,t.carton_no,t.confirm_volume,
+            t1.ocean_counter_id,
+            t2.cntr_no,
+            t3.order_id oceanBillNo,t3.sail_time,t3.voyage_day,t3.unit,
+            (case t3.unit
+                 when '1' then DATE_ADD(t3.sail_time, INTERVAL t3.voyage_day HOUR)
+                 when '2' then DATE_ADD(t3.sail_time, INTERVAL t3.voyage_day DAY)
+                 when '3' then DATE_ADD(t3.sail_time, INTERVAL t3.voyage_day MONTH)
+                 else null end) as expectedReach,
+            t5.order_no orderConfNo
+        from order_case t
+                 left join counter_case t1 on t1.order_case_id = t.id
+                 left join ocean_counter t2 on t2.id = t1.ocean_counter_id
+                 left join ocean_bill t3 on t3.id = t2.ob_id
+                 left join (select * from ocean_conf_detail where types = 2) t4 on t4.id_code = t3.id
+                 left join order_conf t5 on t5.id = t4.order_id
+        where t.order_id = #{orderId}
+    </select>
+    
+    <select id="findOrderCaseByCartonNo" parameterType="java.lang.String" resultType="com.jayud.mall.model.vo.OrderCaseVO">
+        select
+            t.id,t.order_id,t.carton_no,t.fab_no,
+            t.asn_length,t.asn_width,t.asn_height,t.asn_weight,t.asn_volume,t.asn_weigh_date,
+            t.wms_length,t.wms_height,t.wms_width,t.wms_weight,t.wms_volume,t.wms_weigh_date,
+            t.confirm_length,t.confirm_height,t.confirm_width,t.confirm_weight,t.confirm_volume,t.confirm_weigh_date,
+            t.`status`,t.remark,
+            CONCAT(t.asn_length,'*',t.asn_width,'*',t.asn_height) asn_lwg
+        from order_case t
+        where t.carton_no = #{cartonNo}
+    </select>
+
+
+</mapper>

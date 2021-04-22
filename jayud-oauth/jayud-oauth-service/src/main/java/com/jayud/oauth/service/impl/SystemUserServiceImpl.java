@@ -33,6 +33,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -125,7 +126,31 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         //保存登录记录
         insertLoginLog(user);
         redisUtils.set(cacheUser.getToken(), user.getName());
+
+        //初始密码+3个月期限(如果没有修改时间,根据创建时间判断,否则根据修改时间)
+        cacheUser.setIsForcedPasswordChange(this.isForcedPasswordChange(cacheUser.getPassword(), user.getCreatedTime(),
+                cacheUser.getUpdatePassWordDate()));
         return cacheUser;
+    }
+
+    private boolean isForcedPasswordChange(String password, Timestamp createdTime,
+                                           LocalDateTime updatePassWordDate) {
+        //初始密码
+        if ("E10ADC3949BA59ABBE56E057F20F883E".equals(password)) {
+            return true;
+        }
+        //三个月
+        LocalDateTime dateTime = null;
+        if (updatePassWordDate == null) {
+            dateTime = createdTime.toLocalDateTime();
+        } else {
+            dateTime = updatePassWordDate;
+        }
+
+        if (LocalDateTime.now().compareTo(dateTime.plusMonths(3)) >= 0) {
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -159,23 +184,23 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         //定义排序规则
         page.addOrder(OrderItem.asc("su.id"));
         IPage<SystemUserVO> pageInfo = this.baseMapper.getPageList(page, form);
-        if(form.getCompanyId()!=null){
+        if (form.getCompanyId() != null) {
             List<SystemUserVO> records = pageInfo.getRecords();
             List<SystemUserVO> records2 = new ArrayList<>();
             for (SystemUserVO record : records) {
 
                 List<Long> legalEntityIds = record.getLegalEntityIds();
-                    for (Long legalEntityId : legalEntityIds) {
-                        if(legalEntityId!=null){
-                            if(legalEntityId.equals(form.getCompanyId())){
-                                records2.add(record);
-                            }
+                for (Long legalEntityId : legalEntityIds) {
+                    if (legalEntityId != null) {
+                        if (legalEntityId.equals(form.getCompanyId())) {
+                            records2.add(record);
                         }
                     }
+                }
             }
             pageInfo.setRecords(records2);
             pageInfo.setTotal(records2.size());
-            pageInfo.setPages(records2.size()%pageInfo.getSize()==0?records2.size()/pageInfo.getSize():records2.size()/pageInfo.getSize()+1);
+            pageInfo.setPages(records2.size() % pageInfo.getSize() == 0 ? records2.size() / pageInfo.getSize() : records2.size() / pageInfo.getSize() + 1);
         }
         return pageInfo;
     }
@@ -194,7 +219,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             SystemUser systemUser = ConvertUtil.convert(form, SystemUser.class);
             //校验登录名的唯一性
             SystemUser systemUser1 = baseMapper.selectById(form.getId());
-            if(!StringUtil.isNullOrEmpty(systemUser1.getName())) {
+            if (!StringUtil.isNullOrEmpty(systemUser1.getName())) {
                 if (!systemUser1.getName().equals(form.getName())) {//修改了登录名的情况下
                     String newName = systemUser.getName();
                     QueryWrapper queryWrapper = new QueryWrapper();
@@ -220,7 +245,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             //删除之前绑定的法人主体
             Long id = form.getId();
             QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.eq("system_user_id",id);
+            queryWrapper.eq("system_user_id", id);
             systemUserLegalService.remove(queryWrapper);
             //创建
             List<Long> legalEntityIds = form.getLegalEntityIds();
@@ -302,7 +327,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             systemUser.setUpdatedTime(DateUtils.getNowTime());
         }
         saveOrUpdate(systemUser);
-        if(systemUser.getDepartmentId()!=null){
+        if (systemUser.getDepartmentId() != null) {
             SystemUserLegal systemUserLegal = new SystemUserLegal();
             systemUserLegal.setSystemUserId(systemUser.getId());
             Long departmentId = systemUser.getDepartmentId();

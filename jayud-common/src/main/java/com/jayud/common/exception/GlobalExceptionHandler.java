@@ -91,6 +91,10 @@ public class GlobalExceptionHandler {
         }else {
             msg=ex.getMessage();
         }
+        if (ex instanceof ApiException){
+            ApiException apiException = (ApiException) ex;
+            return new ApiResult(apiException.getCode(), msg);
+        }
         return new ApiResult(getStatus(request).value(), msg);
     }
 

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.PromoteOrderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.PromoteOrder">
+        <id column="id" property="id" />
+        <result column="company_id" property="companyId" />
+        <result column="company_name" property="companyName" />
+        <result column="client_company_name" property="clientCompanyName" />
+        <result column="client_contacts" property="clientContacts" />
+        <result column="client_phone" property="clientPhone" />
+        <result column="client_company_address" property="clientCompanyAddress" />
+        <result column="client_manage_platform" property="clientManagePlatform" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, company_id, company_name, client_company_name, client_contacts, client_phone, client_company_address, client_manage_platform, create_time
+    </sql>
+
+
+    <select id="findPromoteOrderByPage" parameterType="com.jayud.mall.model.bo.QueryPromoteOrderForm" resultType="com.jayud.mall.model.vo.PromoteOrderVO">
+        select t.id,
+               t.company_id,
+               t.company_name,
+               t.client_company_name,
+               t.client_contacts,
+               t.client_phone,
+               t.client_company_address,
+               t.client_manage_platform,
+               t.create_time
+        from promote_order t
+        where 1=1
+        <if test="form.companyId != null">
+            and t.company_id = #{form.companyId}
+        </if>
+        <if test="form.companyName != null and form.companyName != ''">
+            and t.company_name like concat('%',#{form.companyName},'%')
+        </if>
+        <if test="form.clientCompanyName != null and form.clientCompanyName != ''">
+            and t.client_company_name like concat('%',#{form.clientCompanyName},'%')
+        </if>
+        <if test="form.clientContacts != null and form.clientContacts != ''">
+            and t.client_contacts like concat('%',#{form.clientContacts},'%')
+        </if>
+    </select>
+
+    <select id="findPromoteOrderById" parameterType="java.lang.Integer" resultType="com.jayud.mall.model.vo.PromoteOrderVO">
+        select t.id,
+               t.company_id,
+               t.company_name,
+               t.client_company_name,
+               t.client_contacts,
+               t.client_phone,
+               t.client_company_address,
+               t.client_manage_platform,
+               t.create_time
+        from promote_order t
+        where t.id = #{id}
+
+    </select>
+
+
+</mapper>

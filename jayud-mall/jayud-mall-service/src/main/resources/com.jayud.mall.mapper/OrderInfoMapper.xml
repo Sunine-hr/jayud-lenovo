@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.OrderInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.OrderInfo">
+        <id column="id" property="id" />
+        <result column="order_no" property="orderNo" />
+        <result column="customer_id" property="customerId" />
+        <result column="store_goods_warehouse_code" property="storeGoodsWarehouseCode" />
+        <result column="store_goods_warehouse_name" property="storeGoodsWarehouseName" />
+        <result column="destination_warehouse_code" property="destinationWarehouseCode" />
+        <result column="destination_warehouse_name" property="destinationWarehouseName" />
+        <result column="is_pick" property="isPick" />
+        <result column="status" property="status" />
+        <result column="status_name" property="statusName" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="create_user_name" property="createUserName" />
+        <result column="order_origin" property="orderOrigin" />
+        <result column="bol_no" property="bolNo" />
+        <result column="need_declare" property="needDeclare" />
+        <result column="need_clearance" property="needClearance" />
+        <result column="remark" property="remark" />
+        <result column="charge_weight" property="chargeWeight" />
+        <result column="volume_weight" property="volumeWeight" />
+        <result column="actual_weight" property="actualWeight" />
+        <result column="actual_volume" property="actualVolume" />
+        <result column="total_cartons" property="totalCartons" />
+
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_no, customer_id, store_goods_warehouse_code, store_goods_warehouse_name, destination_warehouse_code, destination_warehouse_name, is_pick, status, status_name, create_time, create_user_id, create_user_name, order_origin, bol_no, need_declare, need_clearance, remark
+    </sql>
+
+    <!--查询并分页-->
+    <select id="findOrderInfoByPage" parameterType="com.jayud.mall.model.bo.QueryOrderInfoForm"
+            resultType="com.jayud.mall.model.vo.OrderInfoVO" >
+        select
+        t.id,t.order_no,t.customer_id,t.store_goods_warehouse_code,t.store_goods_warehouse_name,t.destination_warehouse_code,t.destination_warehouse_name,
+        t.is_pick,t.`status`,t.status_name,t.create_time,t.create_user_id,t.create_user_name,t.order_origin,t.bol_no,t.need_declare,t.need_clearance,t.remark,
+        t.charge_weight,t.volume_weight,t.actual_weight,t.actual_volume,t.total_cartons,
+        t1.company,
+        t2.names,t2.sail_time,t2.cut_off_time,
+        t3.taskItems taskTodo,
+        t4.group_name,
+        t5.destination_port,
+        t6.state_code destinationCountryCode
+        from order_info t
+        left join customer t1 on t1.id = t.customer_id
+        left join offer_info t2 on t2.id = t.offer_info_id
+        left join (
+        SELECT
+        t.order_info_id,
+        GROUP_CONCAT(t.task_name order by sort asc) AS taskItems
+        FROM
+        waybill_task_relevance t
+        where t.status != 3
+        GROUP BY
+        t.order_info_id
+        ) t3 on t3.order_info_id = t.id
+        left join operation_team t4 on t4.id = t1.operation_team_id
+        left join quotation_template t5 on t5.id = t2.id
+        left join harbour_info t6 on t6.id_code = t5.destination_port
+        WHERE
+        1 = 1
+        <if test="form.customerId != null">
+            AND t.customer_id = #{form.customerId}
+        </if>
+        <if test="form.orderNo != null and form.orderNo != ''">
+            AND t.order_no LIKE CONCAT('%',#{form.orderNo},'%')
+        </if>
+        <if test="form.destinationWarehouseCode != null and form.destinationWarehouseCode != ''">
+            and t.destination_warehouse_code = #{form.destinationWarehouseCode}
+        </if>
+        <if test="form.status != null">
+            and t.status = #{form.status}
+        </if>
+    </select>
+
+    <select id="lookOrderInfoById" parameterType="java.lang.Long"
+        resultType="com.jayud.mall.model.vo.OrderInfoVO">
+        select
+            t.id,t.order_no,t.customer_id,t.offer_info_id,t.reserve_size,t.store_goods_warehouse_code,t.store_goods_warehouse_name,t.destination_warehouse_code,t.destination_warehouse_name,t.is_pick,t.status,t.status_name,t.create_time,t.create_user_id,t.create_user_name,t.order_origin,t.bol_no,t.need_declare,t.need_clearance,t.remark,t.charge_weight,t.volume_weight,t.actual_weight,t.actual_volume,t.total_cartons,
+            t1.company,
+            t2.types,t2.names,t2.sail_time,t2.cut_off_time,
+            t3.tid,t3.start_shipment,t3.destination_port,t3.gidtype,
+            t4.code_name tname,
+            t5.code_name startShipmentName,
+            t6.code_name destinationPortName,
+            CONCAT(t5.code_name,'->',t6.code_name) shipRoute
+        from order_info t
+                 left join customer t1 on t1.id = t.customer_id
+                 left join offer_info t2 on t2.id = t.offer_info_id
+                 left join quotation_template t3 on t3.id = t2.qie
+                 left join transport_way t4 on t4.id = t3.tid
+                 left join harbour_info t5 on t5.id_code = t3.start_shipment
+                 left join harbour_info t6 on t6.id_code = t3.destination_port
+        where t.id = #{id}
+    </select>
+
+    <select id="lookOrderInfo" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.OrderInfoVO">
+        select
+            t.id,t.order_no,t.customer_id,t.offer_info_id,t.reserve_size,t.store_goods_warehouse_code,t.store_goods_warehouse_name,t.destination_warehouse_code,t.destination_warehouse_name,t.is_pick,t.status,t.status_name,t.create_time,t.create_user_id,t.create_user_name,t.order_origin,t.bol_no,t.need_declare,t.need_clearance,t.remark,t.charge_weight,t.volume_weight,t.actual_weight,t.actual_volume,t.total_cartons,
+            t1.qie,t1.names,t1.types,t1.sail_time,t1.cut_off_time,t1.jc_time,t1.jkc_time,t1.estimated_time,DATEDIFF(t1.estimated_time,t1.sail_time) voyage_day,t1.remarks,
+            t2.start_shipment,t2.destination_port,t2.bubble_coefficient,
+            t3.code_name startShipmentName,
+            t4.code_name destinationPortName,
+            t5.name reserveSizeName
+        from order_info t
+                 left join offer_info t1 on t1.id = t.offer_info_id
+                 left join quotation_template t2 on t2.id = t1.qie
+                 left join harbour_info t3 on t3.id_code = t2.start_shipment
+                 left join harbour_info t4 on t4.id_code = t2.destination_port
+                 left join quotation_type t5 on t5.code = t.reserve_size
+        where 1=1
+        and t.id = #{orderInfoId}
+    </select>
+    
+    
+    <select id="newLookOrderInfo" resultType="com.jayud.mall.model.vo.OrderInfoVO">
+        select
+            t.id,t.order_no,t.customer_id,ifnull(t.offer_info_id, #{offerInfoId, jdbcType=INTEGER}) offer_info_id ,t.reserve_size,t.store_goods_warehouse_code,t.store_goods_warehouse_name,t.destination_warehouse_code,t.destination_warehouse_name,t.is_pick,t.status,t.status_name,t.create_time,t.create_user_id,t.create_user_name,t.order_origin,t.bol_no,t.need_declare,t.need_clearance,t.remark,t.charge_weight,t.volume_weight,t.actual_weight,t.actual_volume,t.total_cartons,
+            t1.qie,t1.names,t1.types,t1.sail_time,t1.cut_off_time,t1.jc_time,t1.jkc_time,t1.estimated_time,DATEDIFF(t1.estimated_time,t1.sail_time) voyage_day,t1.remarks,
+            t2.start_shipment,t2.destination_port,t2.bubble_coefficient,
+            t3.code_name startShipmentName,
+            t4.code_name destinationPortName,
+            t5.name reserveSizeName
+        from order_info t
+                 left join offer_info t1 on t1.id = #{offerInfoId, jdbcType=INTEGER}
+                 left join quotation_template t2 on t2.id = t1.qie
+                 left join harbour_info t3 on t3.id_code = t2.start_shipment
+                 left join harbour_info t4 on t4.id_code = t2.destination_port
+                 left join quotation_type t5 on t5.code = t.reserve_size
+        where 1=1
+          and t.id = #{orderInfoId, jdbcType=BIGINT}
+    </select>
+
+    <select id="findWebOrderInfoByPage" parameterType="com.jayud.mall.model.bo.QueryOrderInfoForm"
+            resultType="com.jayud.mall.model.vo.OrderInfoVO">
+        select
+        t.id,t.order_no,t.customer_id,t.offer_info_id,t.reserve_size,t.store_goods_warehouse_code,t.store_goods_warehouse_name,t.destination_warehouse_code,
+        t.destination_warehouse_name,t.is_pick,t.status,t.status_name,t.create_time,t.create_user_id,t.create_user_name,t.order_origin,
+        t.bol_no,t.need_declare,t.need_clearance,t.remark,t.charge_weight,t.volume_weight,t.actual_weight,t.actual_volume,t.total_cartons,
+        t1.names,t1.types,t1.sail_time,t1.cut_off_time,t1.jc_time,t1.jkc_time,t1.estimated_time,DATEDIFF(t1.estimated_time,t1.sail_time) voyage_day,t1.remarks,
+        t2.start_shipment,t2.destination_port,
+        t3.code_name startShipmentName,t3.cname startShipmentCityName,
+        t4.code_name destinationPortName,
+        t1.qie,
+        t5.quantity quantityShipped
+        from order_info t
+        left join offer_info t1 on t1.id = t.offer_info_id
+        left join quotation_template t2 on t2.id = t1.qie
+        left join harbour_info t3 on t3.id_code = t2.start_shipment
+        left join harbour_info t4 on t4.id_code = t2.destination_port
+        left join (select t5.order_id,count(t5.order_id) quantity from order_case t5 group by t5.order_id) t5 on t5.order_id = t.id
+        where 1=1
+        <if test="form.customerId != null">
+            and t.customer_id = #{form.customerId}
+        </if>
+        <if test="form.status != null">
+            and t.status = #{form.status}
+        </if>
+        <if test="form.orderNo != null and form.orderNo != ''">
+            and t.order_no = #{form.orderNo}
+        </if>
+    </select>
+    
+    <select id="findOrderInfoDraftCount" parameterType="com.jayud.mall.model.bo.QueryOrderInfoForm" resultType="java.lang.Long">
+        select count(t.id) draftNum from order_info t
+        where 1=1
+        <if test="form.customerId != null">
+            and t.customer_id = #{form.customerId}
+        </if>
+        and t.status = 0
+    </select>
+
+    <select id="findOrderConfInfoByOrderId" parameterType="java.lang.Long" resultType="java.lang.String">
+        select
+        CONCAT('配载单号:',orderConfNo,CHAR(10),'提单号:',oceanBillNo,CHAR(10),'柜号:',cntr_no,';',CHAR(10)) confinfo
+        from (
+            select
+            distinct
+            t2.cntr_no,
+            t3.order_id oceanBillNo,
+            t5.order_no orderConfNo
+            from order_case t
+            left join counter_case t1 on t1.order_case_id = t.id
+            left join ocean_counter t2 on t2.id = t1.ocean_counter_id
+            left join ocean_bill t3 on t3.id = t2.ob_id
+            left join (select * from ocean_conf_detail where types = 2) t4 on t4.id_code = t3.id
+            left join order_conf t5 on t5.id = t4.order_id
+            where t.order_id=#{orderId}
+        ) t
+    </select>
+
+
+    <select id="findOceanBillByOfferInfoId" parameterType="java.lang.Integer" resultType="com.jayud.mall.model.vo.OceanBillVO">
+        select
+        t3.tdId,t3.id,t3.tid,t3.supplier_id,t3.order_id,t3.start_code,t3.end_code,t3.sail_time,t3.voyage_day,t3.unit,t3.create_time,t3.task_id,t3.operation_team_id
+        from order_conf t
+        join (
+        select order_id pzId from ocean_conf_detail where types=1 and id_code=#{offerInfoId}
+        ) t1 on t1.pzId = t.id
+        left join (
+        select order_id pzId,id_code tdId from ocean_conf_detail where types=2
+        ) t2 on t2.pzId = t.id
+        left join (
+        select id tdId,id, tid, supplier_id, order_id, start_code, end_code, sail_time, voyage_day, unit, create_time, task_id, operation_team_id from ocean_bill
+        ) t3 on t3.tdId = t2.tdId
+    </select>
+
+    <select id="findOceanCounterByTdId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OceanCounterVO">
+        select id,
+               cntr_no,
+               cabinet_code,
+               volume,
+               cost,
+               cid,
+               status,
+               ob_id,
+               create_time
+        from ocean_counter
+        where ob_id = #{tdId}
+    </select>
+
+
+    <select id="findWaybillTaskRelevanceByOrderInfoId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.WaybillTaskRelevanceVO">
+        select
+            t.id,t.order_info_id,t.task_code,t.task_name,t.sort,t.days,t.day_flag,t.operators,t.minutes,t.score,t.remarks,t.status,t.reason,t.up_time,t.user_id,t.user_name,t.create_time
+        from waybill_task_relevance t
+        where t.order_info_id = #{orderId}
+        order by t.sort asc
+    </select>
+
+
+    <select id="lookOperateLog" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.WaybillTaskRelevanceVO">
+        select
+        t.up_time,t.operators,
+        CONCAT('点击【',t.task_name, '】任务,',statusDescribes) operateDescribes
+        from (
+            select up_time,operators,task_name,
+            (case status
+            when '0' then '未激活'
+            when '1' then '已激活'
+            when '2' then '异常'
+            when '3' then '已完成'
+            else null end) as statusDescribes
+            from
+            waybill_task_relevance
+            where 1=1
+            and up_time is not null
+            and order_info_id=#{id}
+        ) t
+        order by t.up_time desc
+
+    </select>
+
+    <select id="findOrderInfoByCustomer" parameterType="com.jayud.mall.model.bo.OrderInfoCustomerForm"
+            resultType="com.jayud.mall.model.vo.OrderInfoVO">
+        select t.id,
+               t.order_no,
+               t.customer_id,
+               t.offer_info_id,
+               t.reserve_size,
+               t.store_goods_warehouse_code,
+               t.store_goods_warehouse_name,
+               t.destination_warehouse_code,
+               t.destination_warehouse_name,
+               t.is_pick,
+               t.status,
+               t.status_name,
+               t.create_time,
+               t.create_user_id,
+               t.create_user_name,
+               t.order_origin,
+               t.bol_no,
+               t.need_declare,
+               t.need_clearance,
+               t.remark,
+               t.charge_weight,
+               t.volume_weight,
+               t.actual_weight,
+               t.actual_volume,
+               t.total_cartons
+        from order_info t
+        where 1=1
+        <if test="form.customerId != null">
+            and t.customer_id = #{form.customerId}
+        </if>
+    </select>
+
+
+    <select id="findOrderInfoByOrderNo" parameterType="java.lang.String"
+            resultType="com.jayud.mall.model.vo.OrderInfoVO">
+        select
+            t.id,t.order_no,t.customer_id,t.offer_info_id,t.reserve_size,t.store_goods_warehouse_code,t.store_goods_warehouse_name,t.destination_warehouse_code,t.destination_warehouse_name,t.is_pick,t.status,t.status_name,t.create_time,t.create_user_id,t.create_user_name,t.order_origin,t.bol_no,t.need_declare,t.need_clearance,t.remark,t.charge_weight,t.volume_weight,t.actual_weight,t.actual_volume,t.total_cartons,
+            t1.qie,t1.names,t1.types,t1.sail_time,t1.cut_off_time,t1.jc_time,t1.jkc_time,t1.estimated_time,DATEDIFF(t1.estimated_time,t1.sail_time) voyage_day,t1.remarks,
+            t2.start_shipment,t2.destination_port,t2.bubble_coefficient,
+            t3.code_name startShipmentName,
+            t4.code_name destinationPortName,
+            t5.name reserveSizeName
+        from order_info t
+                 left join offer_info t1 on t1.id = t.offer_info_id
+                 left join quotation_template t2 on t2.id = t1.qie
+                 left join harbour_info t3 on t3.id_code = t2.start_shipment
+                 left join harbour_info t4 on t4.id_code = t2.destination_port
+                 left join quotation_type t5 on t5.code = t.reserve_size
+        where 1=1
+          and t.order_no = #{orderNo}
+    </select>
+    
+
+</mapper>

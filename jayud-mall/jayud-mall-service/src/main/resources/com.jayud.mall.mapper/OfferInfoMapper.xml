@@ -38,26 +38,223 @@
         t.`status`,
         t.user_id,
         t.user_name,
-        t.create_time
+        t.create_time,
+        t1.start_shipment,
+        t1.destination_port,
+        t1.gidtype,
+        t1.qidtype,
+        t2.code_name startShipmentName,
+        t3.code_name destinationPortName,
+        t4.name destinationCountryName
         from
         offer_info t
+        LEFT JOIN quotation_template t1 ON t1.id = t.qie
+        LEFT JOIN harbour_info t2 on t2.id_code = t1.start_shipment
+        LEFT JOIN harbour_info t3 on t3.id_code = t1.destination_port
+        left join country t4 on t4.code = t3.state_code
         WHERE
         1 = 1
-        /*报价名*/
         <if test="form.names != null and form.names != ''">
             AND t.`names` LIKE concat('%',#{form.names},'%')
         </if>
-        /*开船日期*/
-        <if test="form.sailTime != null and form.sailTimeStart != null and form.sailTimeStart != '' and form.sailTimeEnd != null and form.sailTimeEnd != '' ">
-            and t.sail_time <![CDATA[ >= ]]> #{form.sailTimeStart} AND t.sail_time <![CDATA[ <= ]]> #{form.sailTimeEnd}
+        <if test="form.sailTime != null">
+            and t.sail_time <![CDATA[ >= ]]> concat(date_format(#{form.sailTime}, '%Y-%m-%d'), ' 00:00:00') AND t.sail_time <![CDATA[ <= ]]> concat(date_format(#{form.sailTime}, '%Y-%m-%d'), ' 23:59:59')
         </if>
-        /*截单日期*/
-        <if test="form.cutOffTime != null and form.cutOffTimeStart != null and form.cutOffTimeStart != '' and form.cutOffTimeEnd != null and form.cutOffTimeEnd != '' ">
-            and t.cut_off_time <![CDATA[ >= ]]> #{form.cutOffTimeStart} AND t.cut_off_time <![CDATA[ <= ]]> #{form.cutOffTimeEnd}
+        <if test="form.cutOffTime != null">
+            and t.cut_off_time <![CDATA[ >= ]]> concat(date_format(#{form.cutOffTime}, '%Y-%m-%d'), ' 00:00:00') AND t.cut_off_time <![CDATA[ <= ]]> concat(date_format(#{form.cutOffTime}, '%Y-%m-%d'), ' 23:59:59')
         </if>
-        GROUP BY
-        t.`id`
+        <if test="form.countryCode != null and form.countryCode != ''">
+            and t4.code = #{form.countryCode}
+        </if>
+
     </select>
 
+    <!--报价，关联报价模板，再关联报价模板的关联信息-->
+    <select id="selectOfferInfoVO" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.OfferInfoVO" >
+        select
+        t.id,t.qie,t.names,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.status,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,datediff(t.estimated_time,t.sail_time) voyage_day,
+        t1.sid,
+        t1.pic_url,
+        t1.tid,
+        t1.start_shipment,
+        t1.destination_port,
+        t1.arrive_warehouse,
+        t1.visible_customer,
+        t1.visible_uid,
+        t1.gidtype,
+        t1.gid,
+        t1.area_id,
+        t1.qidtype,
+        t1.qid,
+        t1.task_id,
+        t1.remarks templateRemarks,
+        t2.code_name sName,
+        t3.code_name tName,
+        t4.code_name startShipmentName,
+        t5.code_name destinationPortName,
+        t6.group_name taskName
+        from offer_info t
+        LEFT JOIN quotation_template t1 on t1.id = t.qie
+        LEFT JOIN service_group t2 on t2.id = t1.sid
+        LEFT JOIN transport_way t3 on t3.id = t1.tid
+        LEFT JOIN harbour_info t4 on t4.id_code = t1.start_shipment
+        LEFT JOIN harbour_info t5 on t5.id_code = t1.destination_port
+        LEFT JOIN task_group t6 on t6.id = t1.task_id
+        where t.id = #{id}
+    </select>
+
+    <!--分页查询报价(运价)-->
+    <select id="findOfferInfoFareByPage" parameterType="com.jayud.mall.model.bo.QueryOfferInfoFareForm"
+            resultType="com.jayud.mall.model.vo.OfferInfoVO">
+        select
+        t.id,t.qie,t.`names`,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.status,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,
+        t1.start_shipment,t1.destination_port,
+        t3.code_name startShipmentName,
+        t4.code_name destinationPortName,
+        CONCAT(t3.code_name,'---->',t4.code_name) shipRoute,
+        DATEDIFF(t.estimated_time,t.sail_time) voyage_day,
+        arrware1.arriveWarehouseCodes
+        from offer_info t
+        JOIN (
+            select id from (
+            select
+            distinct
+            t1.id,substring_index( substring_index(t1.visible_uid,',',t2.id + 1), ',' ,-1 ) as visible_uid
+            from (select id,visible_uid from quotation_template) t1 join help_index t2 on t2.id <![CDATA[ < ]]>  (length(t1.visible_uid) - length(REPLACE(t1.visible_uid,',','')) + 1 )
+            ) t
+            where t.visible_uid = #{form.customerId}
+            UNION
+            select id from quotation_template where visible_customer=0
+        ) qt on qt.id = t.qie
+        join (
+            select DISTINCT id from (
+            select
+            DISTINCT t1.id,substring_index( substring_index(t1.arrive_warehouse,',',t2.id + 1), ',' ,-1 ) as arrive_warehouse_id
+            from (select id,arrive_warehouse from quotation_template) t1 join help_index t2 on t2.id <![CDATA[ < ]]>  (length(t1.arrive_warehouse) - length(REPLACE(t1.arrive_warehouse,',','')) + 1 )
+            ) t
+            where 1=1
+            <if test="form.arriveWarehouseId != null">
+                and t.arrive_warehouse_id = #{form.arriveWarehouseId}
+            </if>
+        ) arrware on arrware.id = t.qie
+        left join (
+            select x.id,GROUP_CONCAT(x.warehouse_code order by x.arrive_warehouse_id asc) AS arriveWarehouseCodes
+            from (
+            select a.id,a.arrive_warehouse_id,b.warehouse_code,b.warehouse_name from (
+            select
+            DISTINCT t1.id,substring_index( substring_index(t1.arrive_warehouse,',',t2.id + 1), ',' ,-1 ) as arrive_warehouse_id
+            from (select id,arrive_warehouse from quotation_template) t1 join help_index t2 on t2.id <![CDATA[ < ]]>  (length(t1.arrive_warehouse) - length(REPLACE(t1.arrive_warehouse,',','')) + 1 )
+            ) a
+            left join fab_warehouse b on b.id = a.arrive_warehouse_id
+            order by a.id
+            ) x GROUP BY x.id
+        ) arrware1 on arrware1.id = t.qie
+        LEFT JOIN quotation_template t1 on t1.id = t.qie
+        LEFT JOIN service_group t2 on t2.id = t1.sid
+        LEFT JOIN harbour_info t3 on t3.id_code = t1.start_shipment
+        LEFT JOIN harbour_info t4 on t4.id_code = t1.destination_port
+        WHERE
+        1 = 1
+        <if test="form.stateCode != null and form.stateCode != ''">
+            AND t4.state_code = #{form.stateCode}
+        </if>
+        <if test="form.tid != null">
+            AND t1.tid = #{form.tid}
+        </if>
+        <if test="form.types != null">
+            AND t.types = #{form.types}
+        </if>
+    </select>
+
+    <select id="lookOfferInfoFare" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OfferInfoVO">
+        select
+        t.id,t.qie,t.`names`,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.`status`,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,
+        datediff(t.estimated_time,t.sail_time) voyage_day,
+        t1.sid,
+        t1.pic_url,
+        t1.tid,
+        t1.start_shipment,
+        t1.destination_port,
+        t1.arrive_warehouse,
+        t1.visible_customer,
+        t1.visible_uid,
+        t1.gidtype,
+        t1.gid,
+        t1.area_id,
+        t1.qidtype,
+        t1.qid,
+        t1.task_id,
+        t1.remarks templateRemarks,
+        t2.code_name sname,
+        t3.code_name tname,
+        t4.code_name startShipmentName,
+        t5.code_name destinationPortName,
+        t6.group_name taskName
+        from offer_info t
+        LEFT JOIN quotation_template t1 on t1.id = t.qie
+        LEFT JOIN service_group t2 on t2.id = t1.sid
+        LEFT JOIN transport_way t3 on t3.id = t1.tid
+        LEFT JOIN harbour_info t4 on t4.id_code = t1.start_shipment
+        LEFT JOIN harbour_info t5 on t5.id_code = t1.destination_port
+        LEFT JOIN task_group t6 on t6.id = t1.task_id
+        where t.id = #{id}
+    </select>
+
+    <select id="findOfferInfoFareTop4" parameterType="com.jayud.mall.model.bo.QueryOfferInfoFareForm"
+            resultType="com.jayud.mall.model.vo.OfferInfoVO">
+
+        select
+        t.id,t.qie,t.`names`,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.status,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,
+        t1.start_shipment,t1.destination_port,t1.pic_url,
+        t3.code_name startShipmentName,
+        t4.code_name destinationPortName,
+        CONCAT(t3.code_name,'---->',t4.code_name) shipRoute,
+        DATEDIFF(t.estimated_time,t.sail_time) voyage_day,
+        arrware1.arriveWarehouseCodes
+        from offer_info t
+        JOIN (
+            select id from (
+            select
+            distinct
+            t1.id,substring_index( substring_index(t1.visible_uid,',',t2.id + 1), ',' ,-1 ) as visible_uid
+            from (select id,visible_uid from quotation_template) t1 join help_index t2 on t2.id <![CDATA[ < ]]>  (length(t1.visible_uid) - length(REPLACE(t1.visible_uid,',','')) + 1 )
+            ) t
+            where t.visible_uid = #{form.customerId}
+            UNION
+            select id from quotation_template where visible_customer=0
+        ) qt on qt.id = t.qie
+        join (
+            select DISTINCT id from (
+            select
+            DISTINCT t1.id,substring_index( substring_index(t1.arrive_warehouse,',',t2.id + 1), ',' ,-1 ) as arrive_warehouse_id
+            from (select id,arrive_warehouse from quotation_template) t1 join help_index t2 on t2.id <![CDATA[ < ]]>  (length(t1.arrive_warehouse) - length(REPLACE(t1.arrive_warehouse,',','')) + 1 )
+            ) t
+            where 1=1
+            <if test="form.arriveWarehouseId != null">
+                and t.arrive_warehouse_id = #{form.arriveWarehouseId}
+            </if>
+        ) arrware on arrware.id = t.qie
+        left join (
+            select x.id,GROUP_CONCAT(x.warehouse_code order by x.arrive_warehouse_id asc) AS arriveWarehouseCodes
+            from (
+            select a.id,a.arrive_warehouse_id,b.warehouse_code,b.warehouse_name from (
+            select
+            DISTINCT t1.id,substring_index( substring_index(t1.arrive_warehouse,',',t2.id + 1), ',' ,-1 ) as arrive_warehouse_id
+            from (select id,arrive_warehouse from quotation_template) t1 join help_index t2 on t2.id <![CDATA[ < ]]>  (length(t1.arrive_warehouse) - length(REPLACE(t1.arrive_warehouse,',','')) + 1 )
+            ) a
+            left join fab_warehouse b on b.id = a.arrive_warehouse_id
+            order by a.id
+            ) x GROUP BY x.id
+        ) arrware1 on arrware1.id = t.qie
+        LEFT JOIN quotation_template t1 on t1.id = t.qie
+        LEFT JOIN service_group t2 on t2.id = t1.sid
+        LEFT JOIN harbour_info t3 on t3.id_code = t1.start_shipment
+        LEFT JOIN harbour_info t4 on t4.id_code = t1.destination_port
+        WHERE
+        1 = 1
+        order by t.create_time desc
+        limit 4
+    </select>
 
 </mapper>

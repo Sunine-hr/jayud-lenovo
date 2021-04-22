@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.DeliveryAddressMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.DeliveryAddress">
+        <id column="id" property="id" />
+        <result column="customer_id" property="customerId" />
+        <result column="contacts" property="contacts" />
+        <result column="phone" property="phone" />
+        <result column="country_code" property="countryCode" />
+        <result column="country_name" property="countryName" />
+        <result column="state_code" property="stateCode" />
+        <result column="state_name" property="stateName" />
+        <result column="city_code" property="cityCode" />
+        <result column="city_name" property="cityName" />
+        <result column="address" property="address" />
+        <result column="address2" property="address2" />
+        <result column="address3" property="address3" />
+        <result column="zip_code" property="zipCode" />
+        <result column="warehouse_code" property="warehouseCode" />
+        <result column="warehouse_name" property="warehouseName" />
+        <result column="status" property="status" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_id, contacts, phone, country_code, country_name, state_code, state_name, city_code, city_name, address, address2, address3, zip_code, warehouse_code, warehouse_name, status
+    </sql>
+
+    <select id="findDeliveryAddressByPage" parameterType="com.jayud.mall.model.bo.QueryDeliveryAddressForm"
+            resultType="com.jayud.mall.model.vo.DeliveryAddressVO">
+        SELECT
+        id,t.customer_id,t.types,t.contacts,t.phone,t.country_code,t.country_name,t.state_code,t.state_name,t.city_code,t.city_name,t.address,t.address2,t.address3,t.zip_code,t.warehouse_code,t.warehouse_name,t.`status`
+        FROM delivery_address t
+        WHERE
+        1=1
+        and t.customer_id = #{form.customerId}
+        <if test="form.types != null ">
+            AND t.types = #{form.types}
+        </if>
+        <if test="form.contacts != null and form.contacts != ''">
+            AND t.contacts LIKE concat('%',#{form.contacts},'%')
+        </if>
+        <if test="form.phone != null and form.phone != ''">
+            AND t.phone LIKE concat('%',#{form.phone},'%')
+        </if>
+
+    </select>
+
+</mapper>

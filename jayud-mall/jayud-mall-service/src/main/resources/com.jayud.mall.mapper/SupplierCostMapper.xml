@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.SupplierCostMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.SupplierCost">
+        <id column="id" property="id" />
+        <result column="count_way" property="countWay" />
+        <result column="amount" property="amount" />
+        <result column="amount_unit" property="amountUnit" />
+        <result column="amount_source" property="amountSource" />
+        <result column="unit_price" property="unitPrice" />
+        <result column="cid" property="cid" />
+        <result column="status" property="status" />
+        <result column="user_id" property="userId" />
+        <result column="user_name" property="userName" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, supplier_code, serve_code, cost_code, cost_name, tid, count_way, amount, amount_unit, amount_source, unit_price, unit, cid, status, user_id, user_name, create_time
+    </sql>
+
+    <select id="findSupplierCost" parameterType="com.jayud.mall.model.bo.SupplierCostForm"
+            resultType="com.jayud.mall.model.vo.SupplierCostVO">
+        select
+        t.id,t.supplier_info_id,t.service_id,t.cost_item_id,t.count_way,t.amount,t.amount_unit,t.amount_source,t.unit_price,t.cid,t.remark,t.status,t.user_id,t.user_name,t.create_time,
+        t1.company_name supplierInfoName,
+        t2.serve_name,
+        t3.cost_name costItemName,
+        t4.currency_code,t4.currency_name
+        from supplier_cost t
+        left join supplier_info t1 on t1.id = t.supplier_info_id
+        left join supplier_serve t2 on t2.id = t.service_id
+        left join cost_item t3 on t3.id = t.cost_item_id
+        left join currency_info t4 on t4.id = t.cid
+        where 1=1
+        <if test="form.id != null">
+            and t.id = #{form.id}
+        </if>
+        <if test="form.supplierInfoId != null">
+            and t.supplier_info_id = #{form.supplierInfoId}
+        </if>
+        <if test="form.serviceId != null">
+            and t.service_id = #{form.serviceId}
+        </if>
+        <if test="form.costItemId != null">
+            and t.cost_item_id = #{form.costItemId}
+        </if>
+    </select>
+
+</mapper>

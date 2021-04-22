@@ -32,7 +32,7 @@ public interface ITrailerOrderService extends IService<TrailerOrder> {
      * @param orderNo
      * @return
      */
-    TrailerOrder getByMainOrderNO(String orderNo);
+    List<TrailerOrder> getByMainOrderNO(String orderNo);
 
     /**
      * 根据id获取订单信息
@@ -88,4 +88,11 @@ public interface ITrailerOrderService extends IService<TrailerOrder> {
      * @param trailerCargoRejected
      */
     void rejectedOpt(TrailerOrder tmp, AuditInfoForm auditInfoForm, TrailerCargoRejected trailerCargoRejected);
+
+    /**
+     * 根据订单号获取订单详情
+     * @param orderNo
+     * @return
+     */
+    TrailerOrder getByOrderNO(String orderNo);
 }

@@ -5,6 +5,8 @@ import com.jayud.common.exception.JayudBizException;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 
 @Data
 public class InputOrderForm {
@@ -31,7 +33,7 @@ public class InputOrderForm {
     private InputOrderInlandTransportForm orderInlandTransportForm;
 
     @ApiModelProperty(value = "拖车")
-    private  InputTrailerOrderFrom trailerOrderFrom;
+    private List<InputTrailerOrderFrom> trailerOrderFrom;
 
     @ApiModelProperty(value = "入库")
     private  InputStorageInputOrderForm storageInputOrderForm;

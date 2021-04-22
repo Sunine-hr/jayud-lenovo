@@ -21,10 +21,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 
 @RestController
@@ -613,12 +615,19 @@ public class SystemUserController {
         if (!form.getPassword().equals(form.getConfirmPassword())) {
             return CommonResult.error(400, "两个密码不相同");
         }
+
+        if (!Pattern.compile("^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?\\d).{8,20}$").matcher(form.getPassword()).matches()) {
+            return CommonResult.error(400, "密码需8位以上且包含大小写字母+数字");
+        }
+
         String oldPassWord = MD5.encode(form.getOldPassword());
         if (!this.userService.getById(form.getId()).getPassword().equals(oldPassWord)) {
             return CommonResult.error(400, "密码错误");
         }
 
-        SystemUser user = new SystemUser().setId(form.getId()).setPassword(MD5.encode(form.getPassword()));
+        SystemUser user = new SystemUser().setId(form.getId())
+                .setPassword(MD5.encode(form.getPassword()))
+                .setUpdatePassWordDate(LocalDateTime.now());
         this.userService.saveOrUpdateSystemUser(user);
         return CommonResult.success();
     }
@@ -670,5 +679,7 @@ public class SystemUserController {
         }
         return CommonResult.success(result);
     }
+
+
 }
 

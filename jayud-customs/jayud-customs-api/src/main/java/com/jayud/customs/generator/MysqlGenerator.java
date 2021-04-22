@@ -26,11 +26,12 @@ import java.util.Map;
 public class MysqlGenerator {
 
     public static void main(String[] args) {
-        String[] models = {"jayud-customs\\jayud-customs-model",
-                "jayud-customs\\jayud-customs-service",
-                "jayud-customs\\jayud-customs-api"};
+        String[] models = {
+                "jayud-mall\\jayud-mall-model",
+                "jayud-mall\\jayud-mall-service"
+        };
         for (String model : models) {
-            shell(model,"customs_handbook_recognize_log");
+            shell(model,"shipment");
 
 
         }
@@ -50,7 +51,7 @@ public class MysqlGenerator {
         gc.setBaseResultMap(true);// XML ResultMap
         gc.setBaseColumnList(true);// XML columList
         gc.setSwagger2(true);
-        gc.setAuthor("william.chen");
+        gc.setAuthor("fachang.mao");
 
         // 自定义文件命名，注意 %s 会自动填充表实体属性！
         gc.setMapperName("%sMapper");
@@ -65,8 +66,8 @@ public class MysqlGenerator {
         dsc.setDbType(DbType.MYSQL);
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
         dsc.setUsername("root");
-        dsc.setPassword("Root!!2020");
-        dsc.setUrl("jdbc:mysql://113.100.140.250:8098/jayud_platform?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC");
+        dsc.setPassword("123456");
+        dsc.setUrl("jdbc:mysql://127.0.0.1:3306/jayud_shop?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC");
         mpg.setDataSource(dsc);
 
         // 策略配置
@@ -79,7 +80,7 @@ public class MysqlGenerator {
         String pack = "";
         // 包配置
         PackageConfig pc = new PackageConfig();
-        pc.setParent("com.jayud.customs");
+        pc.setParent("com.jayud.mall");
         pc.setEntity("model.po");
         pc.setController("controller");
         pc.setMapper("mapper");
@@ -102,7 +103,7 @@ public class MysqlGenerator {
             focList.add(new FileOutConfig("/templates/mapper.xml.vm") {
                 @Override
                 public String outputFile(TableInfo tableInfo) {
-                    return path + "/src/main/resources/com/jayud/customs/mapper"
+                    return path + "/src/main/resources/com.jayud.mall.mapper"
                             + "/" + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
                 }
             });

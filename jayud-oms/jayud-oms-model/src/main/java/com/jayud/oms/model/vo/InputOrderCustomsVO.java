@@ -3,6 +3,7 @@ package com.jayud.oms.model.vo;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,5 +82,29 @@ public class InputOrderCustomsVO {
     public void setSubCustomsStatus(String subCustomsStatus) {
         this.subCustomsStatus = subCustomsStatus;
         this.status = subCustomsStatus;
+    }
+
+    public void copyOperationInfo() {
+        this.id = null;
+        this.cntrPics = new ArrayList<>();
+        this.encode = null;
+        this.encodePics = new ArrayList<>();
+        this.airTransportPics = new ArrayList<>();
+        this.seaTransportPics = new ArrayList<>();
+        this.allPics = new ArrayList<>();
+        this.subOrders = null;
+        this.number = null;
+        this.subCustomsStatus = null;
+        this.status = null;
+//        if (CollectionUtils.isNotEmpty(this.subOrders)) {
+//            subOrders.forEach(e -> {
+//                e.setSubOrderId(null);
+//                e.setFileViews(null);
+//                e.setYunCustomsNo(null);
+//                e.setJiedanTimeStr(null);
+//                e.setJiedanUser(null);
+//                e.setOrderNo(null);
+//            });
+//        }
     }
 }

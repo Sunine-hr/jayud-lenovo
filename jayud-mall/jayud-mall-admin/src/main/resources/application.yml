@@ -3,7 +3,7 @@ server:
   servlet:
     context-path: ${mall.content.path}
     session:
-      timeout: 3600 # Session的有效期
+      timeout: 86400 # Session的有效期 s(秒) 60*60*24 设置为24小时
 spring:
   servlet:
     multipart:
@@ -57,8 +57,7 @@ mybatis-plus:
       id-type: auto
 swagger:
   enable: true
-  ui-config:
-    operations-sorter: method
+  production: false #生产环境设为true，禁用swagger资源
 secure:
   ignored:
     urls: #安全路径白名单

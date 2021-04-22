@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.CustomsClearanceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.CustomsClearance">
+        <id column="id" property="id" />
+        <result column="id_code" property="idCode" />
+        <result column="customs_code" property="customsCode" />
+        <result column="hs_code" property="hsCode" />
+        <result column="ch_name" property="chName" />
+        <result column="en_name" property="enName" />
+        <result column="texture" property="texture" />
+        <result column="uses" property="uses" />
+        <result column="declare_price" property="declarePrice" />
+        <result column="suggest_price" property="suggestPrice" />
+        <result column="cid" property="cid" />
+        <result column="suttle" property="suttle" />
+        <result column="suttle_unit" property="suttleUnit" />
+        <result column="gross_weight" property="grossWeight" />
+        <result column="gross_unit" property="grossUnit" />
+        <result column="tariff_tax" property="tariffTax" />
+        <result column="raise_hscode" property="raiseHscode" />
+        <result column="raise_tax" property="raiseTax" />
+        <result column="weight_tax" property="weightTax" />
+        <result column="weight_tariff_unit" property="weightTariffUnit" />
+        <result column="weight_unit" property="weightUnit" />
+        <result column="pic_url" property="picUrl" />
+        <result column="status" property="status" />
+        <result column="user_id" property="userId" />
+        <result column="user_name" property="userName" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, id_code, customs_code, hs_code, ch_name, en_name, texture, uses, declare_price, suggest_price, cid, suttle, suttle_unit, gross_weight, gross_unit, tariff_tax, raise_hscode, raise_tax, weight_tax, weight_tariff_unit, weight_unit, pic_url, status, user_id, user_name, create_time
+    </sql>
+
+    <!--查询并分页-->
+    <select id="findCustomsClearanceByPage" parameterType="com.jayud.mall.model.bo.QueryCustomsClearanceForm"
+            resultType="com.jayud.mall.model.vo.CustomsClearanceVO" >
+        select t.id,
+        t.id_code,
+        t.customs_code,
+        t.hs_code,
+        t.ch_name,
+        t.en_name,
+        t.texture,
+        t.uses,
+        t.declare_elements,
+        t.declare_price,
+        t.suggest_price,
+        t.cid,
+        t.suttle,
+        t.suttle_unit,
+        t.gross_weight,
+        t.gross_unit,
+        t.tariff_tax,
+        t.raise_hscode,
+        t.raise_tax,
+        t.weight_tax,
+        t.weight_tariff_unit,
+        t.weight_unit,
+        t.pic_url,
+        t.status,
+        t.user_id,
+        t.user_name,
+        t.create_time,
+        t.additional_duty,
+        t.sales_tax,
+        t.sundry_tax
+        from customs_clearance t
+        WHERE
+        1 = 1
+        <if test="form.idCode != null and form.idCode != ''">
+            AND t.id_code LIKE concat('%',#{form.idCode},'%')
+        </if>
+        <if test="form.customsCode != null and form.customsCode != ''">
+            AND t.customs_code LIKE concat('%',#{form.customsCode},'%')
+        </if>
+        <if test="form.hsCode != null and form.hsCode != ''">
+            AND t.hs_code LIKE concat('%',#{form.hsCode},'%')
+        </if>
+    </select>
+
+</mapper>

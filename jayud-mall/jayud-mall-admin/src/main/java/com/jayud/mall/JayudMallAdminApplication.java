@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * jayud-mall模块启动类(后端，管理员使用)
@@ -15,6 +15,7 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication(scanBasePackages = "com.jayud.mall")
 @EnableDiscoveryClient
 @EnableFeignClients
+@EnableScheduling//项目启动类上增加注解@EnableScheduling，表示开启定时任务
 public class JayudMallAdminApplication {
 
     public static void main(String[] args) {

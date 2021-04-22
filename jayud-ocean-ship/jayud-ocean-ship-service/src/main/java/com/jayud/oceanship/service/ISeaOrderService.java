@@ -49,6 +49,8 @@ public interface ISeaOrderService extends IService<SeaOrder> {
      */
     SeaOrder getByMainOrderNO(String orderNo);
 
+    SeaOrder getByOrderNO(String orderNo);
+
     /**
      * 根据订单id获取订单信息
      *

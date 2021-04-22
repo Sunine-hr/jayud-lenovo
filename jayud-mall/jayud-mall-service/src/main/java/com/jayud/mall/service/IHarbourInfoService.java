@@ -1,8 +1,9 @@
 package com.jayud.mall.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.bo.HarbourInfoForm;
 import com.jayud.mall.model.po.HarbourInfo;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.vo.HarbourInfoVO;
 
 import java.util.List;
 
@@ -21,5 +22,5 @@ public interface IHarbourInfoService extends IService<HarbourInfo> {
      * @param form
      * @return
      */
-    List<HarbourInfo> findHarbourInfo(HarbourInfoForm form);
+    List<HarbourInfoVO> findHarbourInfo(HarbourInfoForm form);
 }

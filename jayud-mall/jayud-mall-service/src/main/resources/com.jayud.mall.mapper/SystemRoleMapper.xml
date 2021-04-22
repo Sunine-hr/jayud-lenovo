@@ -5,9 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.SystemRole">
         <id column="id" property="id"/>
-        <result column="bs_user_id" property="bsUserId"/>
         <result column="role_name" property="roleName"/>
-        <result column="type" property="type"/>
         <result column="role_describe" property="roleDescribe"/>
         <result column="create_by" property="createBy"/>
         <result column="create_time" property="createTime"/>
@@ -27,7 +25,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, bs_user_id, role_name, `type`, role_describe, create_by, create_time, update_by, update_time
+        id, role_name, role_describe, create_by, create_time, update_by, update_time
     </sql>
 
     <!--保存角色-->
@@ -53,20 +51,12 @@
         from system_role where id = #{id}
     </select>
 
-    <!--根据roleId查询menuId-->
-    <select id="selectMenuIdByRoleId" resultType="Long" parameterType="java.lang.Long">
-        select menu_id from system_role_menu_relation where role_id = #{id}
-     </select>
-
-
     <!--查询角色分页-->
     <select id="findRoleByPage" parameterType="com.jayud.mall.model.bo.QueryRoleForm"
             resultType="com.jayud.mall.model.vo.SystemRoleVO" >
         SELECT
         sr.id,
-        sr.bs_user_id,
         sr.role_name,
-        sr.`type`,
         sr.role_describe,
         sr.create_by,
         sr.create_time,
@@ -78,17 +68,13 @@
         <if test="form.roleName != null and form.roleName != ''">
             AND sr.role_name LIKE concat('%',#{form.roleName},'%')
         </if>
-        GROUP BY
-        sr.`id`
     </select>
 
     <select id="selectRolesByUserId" parameterType="java.lang.Long"
             resultType="com.jayud.mall.model.po.SystemRole" >
         select
         t.id,
-        t.bs_user_id,
         t.role_name,
-        t.type,
         t.role_describe,
         t.create_by,
         t.create_time,

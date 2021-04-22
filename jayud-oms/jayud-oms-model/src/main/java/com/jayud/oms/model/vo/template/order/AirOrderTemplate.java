@@ -42,6 +42,9 @@ public class AirOrderTemplate {
     @ApiModelProperty(value = "贸易方式", required = true)
     private String termsDesc;
 
+    @ApiModelProperty(value = "分单号", required = true)
+    private String subNo;
+
     @ApiModelProperty(value = "状态", required = true)
     private String statusDesc;
 
@@ -141,6 +144,7 @@ public class AirOrderTemplate {
     @ApiModelProperty(value = "主订单编号")
     private String mainOrderNo;
 
+
     public void setGoodsForms(List<InputGoodsVO> goodsForms) {
         StringBuilder sb = new StringBuilder();
         for (InputGoodsVO goodsForm : goodsForms) {
@@ -163,6 +167,7 @@ public class AirOrderTemplate {
             this.etd = airBookingVO.getEtd();
             this.warehousingNo = airBookingVO.getWarehousingNo();
             this.mainNo = airBookingVO.getMainNo();
+            this.subNo=airBookingVO.getSubNo();
         }
 
     }

@@ -22,6 +22,7 @@
         <result column="area_id" property="areaId" />
         <result column="qid" property="qid" />
         <result column="task_id" property="taskId" />
+        <result column="bubble_coefficient" property="bubbleCoefficient" />
         <result column="remarks" property="remarks" />
         <result column="status" property="status" />
         <result column="user_id" property="userId" />
@@ -39,50 +40,58 @@
     <select id="findQuotationTemplateByPage" parameterType="com.jayud.mall.model.bo.QueryQuotationTemplateForm"
             resultType="com.jayud.mall.model.vo.QuotationTemplateVO" >
         select
-        t.id,
-        t.types,
-        t.sid,
-        t.`names`,
-        t.pic_url,
-        t.tid,
-        t.start_shipment,
-        t.destination_port,
-        t.arrive_warehouse,
-        t.visible_uid,
-        t.sail_time,
-        t.cut_off_time,
-        t.jc_time	jkc_time,
-        t.gid,
-        t.area_id,
-        t.qid,
-        t.task_id,
-        t.remarks,
-        t.`status`,
-        t.user_id,
-        t.user_name,
-        t.create_time,
-        t.update_time
+        t.id,t.types,t.sid,t.`names`,t.pic_url,t.tid,t.start_shipment,t.destination_port,
+        t.arrive_warehouse,t.visible_customer,t.visible_uid,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.estimated_time,t.gidtype,t.gid,t.area_id,t.qidtype,t.qid,t.task_id,t.bubble_coefficient,
+        t.remarks,t.`status`,t.user_id,t.user_name,t.create_time,t.update_time,
+        t1.code_name sname,
+        t2.code_name tname,
+        t3.code_name startShipmentName,
+        t4.code_name destinationPortName,
+        t5.group_name taskName,
+        t6.name destinationCountryName
         from quotation_template t
+        LEFT JOIN service_group t1 on t1.id = t.sid
+        LEFT JOIN transport_way t2 on t2.id = t.tid
+        LEFT JOIN harbour_info t3 on t3.id_code = t.start_shipment
+        LEFT JOIN harbour_info t4 on t4.id_code = t.destination_port
+        LEFT JOIN task_group t5 on t5.id = t.task_id
+        left join country t6 on t6.code = t4.state_code
         WHERE
         1 = 1
-        /*报价名*/
         <if test="form.names != null and form.names != ''">
             AND t.`names` LIKE concat('%',#{form.names},'%')
         </if>
-        /*开船日期*/
-        <if test="form.sailTime != null and form.sailTimeStart != null and form.sailTimeStart != '' and form.sailTimeEnd != null and form.sailTimeEnd != '' ">
-            and t.sail_time <![CDATA[ >= ]]> #{form.sailTimeStart} AND t.sail_time <![CDATA[ <= ]]> #{form.sailTimeEnd}
+        <if test="form.sailTime != null">
+            and t.sail_time <![CDATA[ >= ]]> concat(date_format(#{form.sailTime}, '%Y-%m-%d'), ' 00:00:00') AND t.sail_time <![CDATA[ <= ]]> concat(date_format(#{form.sailTime}, '%Y-%m-%d'), ' 23:59:59')
         </if>
-        /*截单日期*/
-        <if test="form.cutOffTime != null and form.cutOffTimeStart != null and form.cutOffTimeStart != '' and form.cutOffTimeEnd != null and form.cutOffTimeEnd != '' ">
-            and t.cut_off_time <![CDATA[ >= ]]> #{form.cutOffTimeStart} AND t.cut_off_time <![CDATA[ <= ]]> #{form.cutOffTimeEnd}
+        <if test="form.cutOffTime != null">
+            and t.cut_off_time <![CDATA[ >= ]]> concat(date_format(#{form.cutOffTime}, '%Y-%m-%d'), ' 00:00:00') AND t.cut_off_time <![CDATA[ <= ]]> concat(date_format(#{form.cutOffTime}, '%Y-%m-%d'), ' 23:59:59')
         </if>
-        /*目的港*/
-        <if test="form.destinationPort != null and form.destinationPort != ''">
-            AND t.`destination_port` LIKE concat('%',#{form.destinationPort},'%')
+        <if test="form.countryCode != null and form.countryCode != ''">
+            and t6.code = #{form.countryCode}
         </if>
-        GROUP BY
-        t.`id`
+
+    </select>
+
+    <!--查看报价模板-->
+    <select id="lookQuotationTemplate" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.QuotationTemplateVO" >
+        select
+        t.id,t.types,t.sid,t.`names`,t.pic_url,t.tid,t.start_shipment,t.destination_port,
+        t.arrive_warehouse,t.visible_customer,t.visible_uid,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.estimated_time,t.gidtype,t.gid,t.area_id,t.qidtype,t.qid,t.task_id,t.bubble_coefficient,
+        t.remarks,t.`status`,t.user_id,t.user_name,t.create_time,t.update_time,
+        t1.code_name sname,
+        t2.code_name tname,
+        t3.code_name startShipmentName,
+        t4.code_name destinationPortName,
+        t5.group_name taskName
+        from quotation_template t
+        LEFT JOIN service_group t1 on t1.id = t.sid
+        LEFT JOIN transport_way t2 on t2.id = t.tid
+        LEFT JOIN harbour_info t3 on t3.id_code = t.start_shipment
+        LEFT JOIN harbour_info t4 on t4.id_code = t.destination_port
+        LEFT JOIN task_group t5 on t5.id = t.task_id
+        where t.id = #{id}
     </select>
 
 

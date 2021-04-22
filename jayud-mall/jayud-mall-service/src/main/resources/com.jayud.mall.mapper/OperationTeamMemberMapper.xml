@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.OperationTeamMemberMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.OperationTeamMember">
+        <id column="id" property="id" />
+        <result column="operation_team_id" property="operationTeamId" />
+        <result column="member_user_id" property="memberUserId" />
+        <result column="status" property="status" />
+        <result column="creator" property="creator" />
+        <result column="creation_time" property="creationTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, operation_team_id, member_user_id, status, creator, creation_time
+    </sql>
+
+    <!--查询-运营(服务)小组成员-->
+    <select id="findOperationTeamMember" parameterType="com.jayud.mall.model.bo.OperationTeamMemberForm"
+            resultType="com.jayud.mall.model.vo.OperationTeamMemberVO">
+        select
+        t.id,t.operation_team_id,t.member_user_id,t.task_id,t.`status`,t.creator,t.creation_time,
+        t1.group_name operationTeamName,
+        t2.`name` memberUserName,
+        t3.task_code,t3.task_name
+        from
+        operation_team_member t
+        LEFT JOIN operation_team t1 on t1.id = t.operation_team_id
+        LEFT JOIN system_user t2 on t2.id = t.member_user_id
+        left join task t3 on t3.id = t.task_id
+        WHERE 1=1
+        <if test="form.id != null">
+            AND t.id = #{form.id}
+        </if>
+        <if test="form.operationTeamId != null">
+            AND t.operation_team_id = #{form.operationTeamId}
+        </if>
+        <if test="form.memberUserId != null ">
+            AND t.member_user_id = #{form.memberUserId}
+        </if>
+        <if test="form.status != null and form.status != ''">
+            AND t.`status` = #{form.status}
+        </if>
+    </select>
+
+    
+    <select id="findOperationTeamMemberByOperationTeamId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.vo.OperationTeamMemberVO">
+        select
+        t.id,t.operation_team_id,t.member_user_id,t.task_id,t.`status`,t.creator,t.creation_time,
+        t1.group_name operationTeamName,
+        t2.`name` memberUserName,
+        t3.task_code,t3.task_name
+        from
+        operation_team_member t
+        LEFT JOIN operation_team t1 on t1.id = t.operation_team_id
+        LEFT JOIN system_user t2 on t2.id = t.member_user_id
+        left join task t3 on t3.id = t.task_id
+        WHERE 1=1
+        and t.operation_team_id = #{operationTeamId}
+    </select>
+    
+    
+</mapper>

@@ -1,9 +1,10 @@
 package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.bo.QueryShippingAreaForm;
 import com.jayud.mall.model.po.ShippingArea;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.vo.ShippingAreaVO;
 
 /**
  * <p>
@@ -20,5 +21,5 @@ public interface IShippingAreaService extends IService<ShippingArea> {
      * @param form
      * @return
      */
-    IPage<ShippingArea> findShippingAreaByPage(QueryShippingAreaForm form);
+    IPage<ShippingAreaVO> findShippingAreaByPage(QueryShippingAreaForm form);
 }

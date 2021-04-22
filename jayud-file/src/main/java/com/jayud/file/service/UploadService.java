@@ -14,6 +14,13 @@ public interface UploadService {
     JSONObject upLoadFile(MultipartFile file);
 
     /**
+     * 根据url创建二维码
+     * @param url
+     * @return
+     */
+    JSONObject createQrCode(String url);
+
+    /**
      * 删除文件
      * @param filePath
      */

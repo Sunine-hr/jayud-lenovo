@@ -11,7 +11,7 @@ import com.jayud.oms.model.bo.AddOrderAddressForm;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.time.LocalDateTime;
@@ -108,16 +108,16 @@ public class InputSeaOrderVO {
     private String goodTime;
 
     @ApiModelProperty(value = "运费是否到付(1代表true,0代表false)")
-    private Boolean isFreightCollect ;
+    private Boolean isFreightCollect;
 
     @ApiModelProperty(value = "其他费用是否到付(1代表true,0代表false)")
-    private Boolean isOtherExpensesPaid ;
+    private Boolean isOtherExpensesPaid;
 
     @ApiModelProperty(value = "是否危险品(1代表true,0代表false)")
     private Boolean isDangerousGoods;
 
     @ApiModelProperty(value = "是否带电(1代表true,0代表false)")
-    private Boolean isCharged ;
+    private Boolean isCharged;
 
     @ApiModelProperty(value = "创建人(登录用户)")
     private String createUser;
@@ -178,8 +178,54 @@ public class InputSeaOrderVO {
     private String supplierName;
 
 
-
     public void setUnitName(String unitName) {
-        this.unitName=unitName;
+        this.unitName = unitName;
+    }
+
+    public void copyOperationInfo() {
+        this.orderId = null;
+        this.allPics = new ArrayList<>();
+        this.orderNo = null;
+        this.mainOrderNo = null;
+        this.mainOrderId = null;
+        this.status = null;
+        this.processStatus = null;
+        this.orderTaker = null;
+        this.createTime = null;
+        this.receivingOrdersDate = null;
+        this.seaBookshipVO = null;
+        this.createUser = null;
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(shippingAddress)) {
+            shippingAddress.forEach(e -> {
+                e.setId(null);
+                e.setTakeFiles(null);
+                e.setTakeFiles(null);
+            });
+        }
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(deliveryAddress)) {
+            deliveryAddress.forEach(e -> {
+                e.setId(null);
+                e.setTakeFiles(null);
+                e.setTakeFiles(null);
+            });
+        }
+
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(notificationAddress)) {
+            notificationAddress.forEach(e -> {
+                e.setId(null);
+                e.setTakeFiles(null);
+                e.setTakeFiles(null);
+            });
+        }
+        if (CollectionUtils.isNotEmpty(goodsForms)) {
+            goodsForms.forEach(e -> {
+                e.setId(null);
+            });
+        }
+        if (CollectionUtils.isNotEmpty(cabinetSizeNumbers)) {
+            cabinetSizeNumbers.forEach(e -> {
+                e.setId(null);
+            });
+        }
     }
 }

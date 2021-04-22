@@ -39,6 +39,9 @@
         <if test="form.companyName != null and form.companyName != ''">
             and t.company_name like concat('%',#{form.companyName},'%')
         </if>
+        <if test="form.clientCompanyName != null and form.clientCompanyName != ''">
+            and t.client_company_name like concat('%',#{form.clientCompanyName},'%')
+        </if>
         <if test="form.clientContacts != null and form.clientContacts != ''">
             and t.client_contacts like concat('%',#{form.clientContacts},'%')
         </if>

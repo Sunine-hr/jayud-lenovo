@@ -231,8 +231,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             OrderInfo oldOrder = baseMapper.selectById(form.getOrderId());
             orderInfo.setId(form.getOrderId());
             orderInfo.setUpTime(LocalDateTime.now());
-            orderInfo.setIsRejected(false);
-            orderInfo.setRejectComment(" ");
+//            orderInfo.setIsRejected(false);
+//            orderInfo.setRejectComment(" ");
             orderInfo.setUpUser(UserOperator.getToken() == null ? loginUserName : UserOperator.getToken());
         } else {//新增
 
@@ -251,6 +251,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         saveOrUpdate(orderInfo);
         return orderInfo.getOrderNo();
     }
+
 
     @Override
     public boolean isExistOrder(String orderNo) {
@@ -941,6 +942,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //保存主订单
         InputMainOrderForm inputMainOrderForm = form.getOrderForm();
         inputMainOrderForm.setCmd(form.getCmd());
+        //特殊处理
+        this.specialTreatment(form, inputMainOrderForm);
+
         String mainOrderNo = oprMainOrder(inputMainOrderForm, form.getLoginUserName());
         if (StringUtil.isNullOrEmpty(mainOrderNo)) {
             return false;
@@ -1256,12 +1260,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
 
         //仓储
-        if(OrderStatusEnum.CC.getCode().equals(classCode)  || selectedServer.contains(OrderStatusEnum.CCIDD.getCode()) || selectedServer.contains(OrderStatusEnum.CCEDD.getCode())){
-            if(selectedServer.contains(OrderStatusEnum.CCIDD.getCode())){
+        if (OrderStatusEnum.CC.getCode().equals(classCode) || selectedServer.contains(OrderStatusEnum.CCIDD.getCode()) || selectedServer.contains(OrderStatusEnum.CCEDD.getCode())) {
+            if (selectedServer.contains(OrderStatusEnum.CCIDD.getCode())) {
                 InputStorageInputOrderForm storageInputOrderForm = form.getStorageInputOrderForm();
 
             }
-            if(selectedServer.contains(OrderStatusEnum.CCEDD.getCode()) ){
+            if (selectedServer.contains(OrderStatusEnum.CCEDD.getCode())) {
                 InputStorageOutOrderForm storageOutOrderForm = form.getStorageOutOrderForm();
 
             }
@@ -1923,6 +1927,17 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
 
         }
+    }
+
+
+    private void specialTreatment(InputOrderForm form, InputMainOrderForm orderInfo) {
+        //中港货物编辑入口时候,不能修改主订单驳回状态
+        InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
+        if (orderTransportForm != null && orderTransportForm.getIsGoodsEdit()) {
+            return;
+        }
+        orderInfo.setIsRejected(false);
+        orderInfo.setRejectComment(" ");
     }
 
 

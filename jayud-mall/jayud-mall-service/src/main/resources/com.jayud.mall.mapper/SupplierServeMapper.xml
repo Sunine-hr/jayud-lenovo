@@ -56,4 +56,17 @@
     </select>
 
 
+    <select id="findSupplierSerCostInfoById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.SupplierServeVO">
+        select
+        t.id,t.supplier_info_id,t.service_type_id,t.serve_code,t.serve_name,t.effective_date,t.expiry_date,t.status,t.user_id,t.user_name,t.create_time,
+        t1.company_name supplierInfoName,
+        t2.type_name serviceTypeName
+        from supplier_serve t
+        left join supplier_info t1 on t1.id = t.supplier_info_id
+        left join supplier_service_type t2 on t2.id = t.service_type_id
+        where 1=1
+        and t.supplier_info_id = #{supplierInfoId}
+
+    </select>
+
 </mapper>

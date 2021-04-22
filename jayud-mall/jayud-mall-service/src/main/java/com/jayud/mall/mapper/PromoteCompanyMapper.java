@@ -6,6 +6,7 @@ import com.jayud.mall.model.bo.QueryPromoteCompanyForm;
 import com.jayud.mall.model.po.PromoteCompany;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.vo.PromoteCompanyVO;
+import com.jayud.mall.model.vo.PromoteOrderVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -29,4 +30,8 @@ public interface PromoteCompanyMapper extends BaseMapper<PromoteCompany> {
     PromoteCompanyVO findPromoteCompanyByCompanyId(@Param("companyId") Integer companyId);
 
     List<PromoteCompanyVO> findPromoteCompanyParent();
+
+    Integer selectClientNumber(@Param("companyId") Integer companyId);
+
+    List<PromoteOrderVO> findPromoteOrderbyCompanyId(@Param("companyId") Integer companyId);
 }

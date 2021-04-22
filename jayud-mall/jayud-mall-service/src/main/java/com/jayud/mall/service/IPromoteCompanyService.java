@@ -6,6 +6,7 @@ import com.jayud.mall.model.bo.SavePromoteCompanyForm;
 import com.jayud.mall.model.po.PromoteCompany;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.vo.PromoteCompanyVO;
+import com.jayud.mall.model.vo.PromoteOrderVO;
 
 import java.util.List;
 
@@ -28,4 +29,6 @@ public interface IPromoteCompanyService extends IService<PromoteCompany> {
     PromoteCompanyVO findPromoteCompanyByCompanyId(Integer companyId);
 
     List<PromoteCompanyVO> findPromoteCompanyParent();
+
+    List<PromoteOrderVO> findPromoteOrderbyCompanyId(Integer companyId);
 }

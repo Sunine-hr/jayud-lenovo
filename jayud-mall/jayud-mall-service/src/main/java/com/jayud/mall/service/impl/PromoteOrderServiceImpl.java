@@ -61,6 +61,8 @@ public class PromoteOrderServiceImpl extends ServiceImpl<PromoteOrderMapper, Pro
                 Asserts.fail(ResultEnum.UNKNOWN_ERROR, "推广订单的渠道/公司不存在");
             }
             PromoteOrder promoteOrder = ConvertUtil.convert(form, PromoteOrder.class);
+            promoteOrder.setCompanyName(promoteCompanyVO.getCompanyName());
+
             this.saveOrUpdate(promoteOrder);
         }else{
             PromoteOrderVO promoteOrderVO = promoteOrderMapper.findPromoteOrderById(id);

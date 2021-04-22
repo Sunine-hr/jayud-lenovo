@@ -8,6 +8,7 @@ import com.jayud.mall.model.bo.PromoteCompanyIdForm;
 import com.jayud.mall.model.bo.QueryPromoteCompanyForm;
 import com.jayud.mall.model.bo.SavePromoteCompanyForm;
 import com.jayud.mall.model.vo.PromoteCompanyVO;
+import com.jayud.mall.model.vo.PromoteOrderVO;
 import com.jayud.mall.service.IPromoteCompanyService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -76,5 +77,14 @@ public class PromoteCompanyController {
         return CommonResult.success(promoteCompanyVOS);
     }
 
+    //6.查询推广公司下面的所有客户（推广订单）
+    @ApiOperation(value = "6.查询推广公司下面的所有客户（推广订单）")
+    @PostMapping("/findPromoteOrderbyCompanyId")
+    @ApiOperationSupport(order = 5)
+    public CommonResult<List<PromoteOrderVO>> findPromoteOrderbyCompanyId(@Valid @RequestBody PromoteCompanyIdForm form){
+        Integer companyId = form.getCompanyId();
+        List<PromoteOrderVO> promoteOrderVOS = promoteCompanyService.findPromoteOrderbyCompanyId(companyId);
+        return CommonResult.success(promoteOrderVOS);
+    }
 
 }

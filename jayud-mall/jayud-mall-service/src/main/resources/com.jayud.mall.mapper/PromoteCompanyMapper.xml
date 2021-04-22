@@ -100,6 +100,25 @@
         where t.parent_id is null
     </select>
 
+    <select id="selectClientNumber" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(*) client_number
+        from promote_order
+        where company_id = #{companyId}
+    </select>
 
+    <select id="findPromoteOrderbyCompanyId" parameterType="java.lang.Integer" resultType="com.jayud.mall.model.vo.PromoteOrderVO">
+        select t.id,
+               t.company_id,
+               t.company_name,
+               t.client_company_name,
+               t.client_contacts,
+               t.client_phone,
+               t.client_company_address,
+               t.client_manage_platform,
+               t.create_time
+        from promote_order t
+        where t.company_id = #{companyId}
+
+    </select>
 
 </mapper>

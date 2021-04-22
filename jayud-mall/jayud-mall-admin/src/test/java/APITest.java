@@ -3,9 +3,19 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.json.JSONException;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -114,10 +124,61 @@ public class APITest {
     }
 
 
+    /**
+     * 调用，生成二维码的接口
+     *  POST请求模拟表单FORM-DATA
+     * @throws IOException
+     */
+    @Test
+    public void test5() throws IOException {
 
-    public String push(){
-        return "1";
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        try {
+            String uri = "http://test.oms.jayud.com:9448/jayudFile/file/createQrCode";
+            HttpPost httppost = new HttpPost(uri);
+
+            //JAVA后台HTTP POST请求模拟表单FORM-DATA格式获取数据的方法
+            StringBody url = new StringBody("http://192.168.3.25:8081/#/addh5?id=111122222", ContentType.TEXT_PLAIN);
+            HttpEntity reqEntity = MultipartEntityBuilder.create()
+                    .addPart("url", url)
+                    .build();
+
+            httppost.setEntity(reqEntity);
+
+            System.out.println("executing request " + httppost.getRequestLine());
+            CloseableHttpResponse response = httpclient.execute(httppost);
+            try {
+                System.out.println("----------------------------------------");
+                System.out.println(response.getStatusLine());
+                HttpEntity resEntity = response.getEntity();
+                if (resEntity != null) {
+                    System.out.println("Response content length: " + resEntity.getContentLength());
+                    System.out.println("Response content length: " + resEntity.getContent());
+                    String str = EntityUtils.toString(resEntity);
+                    //打印获取到的返回值
+                    System.out.println("Response content: " + str);
+
+                    Map map = JSONUtil.toBean(str, Map.class);
+
+                    Map data = MapUtil.get(map, "data", Map.class);//数据
+
+                    String relativePath = MapUtil.getStr(data, "relativePath");//相对路径
+                    System.out.println(relativePath);
+
+                }
+                EntityUtils.consume(resEntity);
+            } finally {
+                response.close();
+            }
+        } finally {
+            httpclient.close();
+        }
+
+
     }
+
+
+
 
 
 }

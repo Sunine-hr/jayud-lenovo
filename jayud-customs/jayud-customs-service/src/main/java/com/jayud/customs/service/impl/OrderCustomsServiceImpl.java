@@ -24,6 +24,7 @@ import com.jayud.customs.model.enums.BGOrderStatusEnum;
 import com.jayud.customs.model.po.OrderCustoms;
 import com.jayud.customs.model.vo.*;
 import com.jayud.customs.service.IOrderCustomsService;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -76,7 +77,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
 //            queryWrapper.eq("main_order_no", form.getMainOrderNo());
 //            remove(queryWrapper);
             for (InputSubOrderCustomsForm subOrder : form.getSubOrders()) {
-                if(subOrder.getSubOrderId()!=null){
+                if (subOrder.getSubOrderId() != null) {
                     removeById(subOrder.getSubOrderId());
                 }
             }
@@ -240,13 +241,16 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
     @Override
     public Integer getNumByStatus(String status, List<Long> legalIds) {
         List<String> mainOrderNos = this.baseMapper.getMainOrderNoByStatus(status, legalIds);
+        if (CollectionUtils.isEmpty(mainOrderNos)) {
+            return 0;
+        }
         return this.omsClient.getFilterOrderStatus(mainOrderNos, 1).getData();
     }
 
     @Override
     public OrderCustoms getOrderCustomsByOrderNo(String orderNo) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("order_no",orderNo);
+        queryWrapper.eq("order_no", orderNo);
 
         return this.baseMapper.selectOne(queryWrapper);
     }

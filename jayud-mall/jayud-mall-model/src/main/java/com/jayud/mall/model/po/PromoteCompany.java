@@ -1,17 +1,16 @@
 package com.jayud.mall.model.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
-
-import java.time.LocalDateTime;
-import java.io.Serializable;
-
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -63,6 +62,8 @@ public class PromoteCompany extends Model<PromoteCompany> {
     @ApiModelProperty(value = "父id(promote_company company_id)")
     private Integer parentId;
 
+    @ApiModelProperty(value = "标题")
+    private String title;
 
     @Override
     protected Serializable pkVal() {

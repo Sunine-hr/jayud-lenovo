@@ -34,7 +34,8 @@
                t.create_name,
                t.create_time,
                t.client_number,
-               t.parent_id
+               t.parent_id,
+               t.title
         from promote_company t
         where 1=1
         <if test="form.companyId != null">
@@ -62,7 +63,8 @@
                t.create_name,
                t.create_time,
                t.client_number,
-               t.parent_id
+               t.parent_id,
+               t.title
         from promote_company t
         where t.parent_id = #{parentId}
     </select>
@@ -79,7 +81,8 @@
                t.create_name,
                t.create_time,
                t.client_number,
-               t.parent_id
+               t.parent_id,
+               t.title
         from promote_company t
         where t.company_id = #{companyId}
     </select>
@@ -95,7 +98,8 @@
                t.create_name,
                t.create_time,
                t.client_number,
-               t.parent_id
+               t.parent_id,
+               t.title
         from promote_company t
         where t.parent_id is null
     </select>

@@ -31,5 +31,7 @@ public class SavePromoteCompanyForm {
     @NotBlank(message = "联系电话不能为空")
     private String companyAddress;
 
+    @ApiModelProperty(value = "标题")
+    private String title;
 
 }

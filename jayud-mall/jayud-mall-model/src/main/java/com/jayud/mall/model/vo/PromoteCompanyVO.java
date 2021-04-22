@@ -46,5 +46,7 @@ public class PromoteCompanyVO {
     @ApiModelProperty(value = "父id(promote_company company_id)")
     private Integer parentId;
 
+    @ApiModelProperty(value = "标题")
+    private String title;
 
 }

@@ -7,6 +7,7 @@ import com.jayud.mall.model.bo.QuerySupplierInfoForm;
 import com.jayud.mall.model.bo.SupplierInfoForm;
 import com.jayud.mall.model.bo.SupplierInfoParaForm;
 import com.jayud.mall.model.vo.SupplierInfoVO;
+import com.jayud.mall.model.vo.SupplierServeVO;
 import com.jayud.mall.service.ISupplierInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -80,6 +81,14 @@ public class SupplierInfoController {
     }
 
 
+    @ApiOperation(value = "查询供应商的服务和费用详细")
+    @PostMapping("/findSupplierSerCostInfoById")
+    @ApiOperationSupport(order = 7)
+    public CommonResult<List<SupplierServeVO>> findSupplierSerCostInfoById(@Valid @RequestBody SupplierInfoParaForm form){
+        Long supplierInfoId = form.getId();
+        List<SupplierServeVO> supplierServeVOS = supplierInfoService.findSupplierSerCostInfoById(supplierInfoId);
+        return CommonResult.success(supplierServeVOS);
+    }
 
 
 

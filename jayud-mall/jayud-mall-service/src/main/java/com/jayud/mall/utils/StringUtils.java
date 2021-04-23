@@ -23,7 +23,9 @@ public class StringUtils {
                 }
                 for (int j = 0; j < b.length; j++) {
                     int k = b[j];
-                    if (k < 0) k += 256;
+                    if (k < 0) {
+                        k += 256;
+                    }
                     sb.append("%" + Integer.toHexString(k).
                             toUpperCase());
                 }

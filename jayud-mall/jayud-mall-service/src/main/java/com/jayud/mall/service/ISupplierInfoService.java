@@ -7,6 +7,7 @@ import com.jayud.mall.model.bo.QuerySupplierInfoForm;
 import com.jayud.mall.model.bo.SupplierInfoForm;
 import com.jayud.mall.model.po.SupplierInfo;
 import com.jayud.mall.model.vo.SupplierInfoVO;
+import com.jayud.mall.model.vo.SupplierServeVO;
 
 import java.util.List;
 
@@ -61,4 +62,6 @@ public interface ISupplierInfoService extends IService<SupplierInfo> {
      * @return
      */
     CommonResult<SupplierInfoVO> disableSupplierInfo(Long id);
+
+    List<SupplierServeVO> findSupplierSerCostInfoById(Long supplierInfoId);
 }

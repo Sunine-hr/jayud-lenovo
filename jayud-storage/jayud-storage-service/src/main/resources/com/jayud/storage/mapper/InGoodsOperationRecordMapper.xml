@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.storage.mapper.InGoodsOperationRecordMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.storage.model.po.InGoodsOperationRecord">
+        <id column="id" property="id" />
+        <result column="order_no" property="orderNo" />
+        <result column="order_id" property="orderId" />
+        <result column="warehousing_batch_no" property="warehousingBatchNo" />
+        <result column="name" property="name" />
+        <result column="sku" property="sku" />
+        <result column="specification_model" property="specificationModel" />
+        <result column="board_number" property="boardNumber" />
+        <result column="number" property="number" />
+        <result column="pcs" property="pcs" />
+        <result column="weight" property="weight" />
+        <result column="volume" property="volume" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="remarks" property="remarks" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_no, order_id, warehousing_batch_no, name, sku, specification_model, board_number, number, pcs, weight, volume, create_user, create_time, update_user, update_time, remarks
+    </sql>
+
+</mapper>

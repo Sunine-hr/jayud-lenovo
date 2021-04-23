@@ -3,6 +3,7 @@ package com.jayud.oms.model.vo.template.order;
 import cn.hutool.core.collection.CollectionUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.oms.model.vo.InputOrderTakeAdrVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -187,6 +188,9 @@ public class TmsOrderTemplate {
     @ApiModelProperty(value = "主订单状态")
     private Integer mainOrderStatus;
 
+    @ApiModelProperty(value = "是否驳回")
+    private Boolean isRejected;
+
 
     public void setOrderTakeAdrForms1(List<InputOrderTakeAdrVO> orderTakeAdrForms1) {
         this.assemblyPickUpInfo(orderTakeAdrForms1);
@@ -255,4 +259,7 @@ public class TmsOrderTemplate {
     }
 
 
+    public void isRejected() {
+        this.isRejected = OrderStatusEnum.getRejectionStatus(this.status, SubOrderSignEnum.ZGYS.getSignOne()) != null;
+    }
 }

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.storage.mapper.StorageInputOrderDetailsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.storage.model.po.StorageInputOrderDetails">
+        <id column="id" property="id" />
+        <result column="order_no" property="orderNo" />
+        <result column="order_id" property="orderId" />
+        <result column="operation_id" property="operationId" />
+        <result column="cardType_id" property="cardtypeId" />
+        <result column="YES" property="yes" />
+        <result column="NO" property="no" />
+        <result column="is_gone" property="isGone" />
+        <result column="is_instructions" property="isInstructions" />
+        <result column="num1" property="num1" />
+        <result column="is_door_collection" property="isDoorCollection" />
+        <result column="is_self_delivery" property="isSelfDelivery" />
+        <result column="is_gold_labels" property="isGoldLabels" />
+        <result column="is_improper_packing" property="isImproperPacking" />
+        <result column="num2" property="num2" />
+        <result column="is_tom_open" property="isTomOpen" />
+        <result column="tom_open_number" property="tomOpenNumber" />
+        <result column="is_re_taped" property="isReTaped" />
+        <result column="is_crushed_collapsed" property="isCrushedCollapsed" />
+        <result column="crushed_collapsed_number" property="crushedCollapsedNumber" />
+        <result column="re_taped_number" property="reTapedNumber" />
+        <result column="is_water_greased" property="isWaterGreased" />
+        <result column="water_greased_number" property="waterGreasedNumber" />
+        <result column="is_punctured_holes" property="isPuncturedHoles" />
+        <result column="punctured_holes_number" property="puncturedHolesNumber" />
+        <result column="is_damaged_ctn" property="isDamagedCtn" />
+        <result column="damaged_ctn _number" property="damagedCtn Number" />
+        <result column="beizhu" property="beizhu" />
+        <result column="Remarks" property="remarks" />
+        <result column="Marks" property="marks" />
+        <result column="documents" property="documents" />
+        <result column="warehouse_management" property="warehouseManagement" />
+        <result column="driver" property="driver" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_no, order_id, operation_id, cardType_id, YES, NO, is_gone, is_instructions, num1, is_door_collection, is_self_delivery, is_gold_labels, is_improper_packing, num2, is_tom_open, tom_open_number, is_re_taped, is_crushed_collapsed, crushed_collapsed_number, re_taped_number, is_water_greased, water_greased_number, is_punctured_holes, punctured_holes_number, is_damaged_ctn, damaged_ctn _number, beizhu, Remarks, Marks, documents, warehouse_management, driver, create_user, create_time, update_user, update_time
+    </sql>
+
+</mapper>

@@ -10,6 +10,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * <p>
  * 供应商服务 Mapper 接口
@@ -29,4 +31,6 @@ public interface SupplierServeMapper extends BaseMapper<SupplierServe> {
      * @return
      */
     IPage<SupplierServeVO> findSupplierServeByPage(Page<SupplierServeVO> page, @Param("form") QuerySupplierServeForm form);
+
+    List<SupplierServeVO> findSupplierSerCostInfoById(@Param("supplierInfoId") Long supplierInfoId);
 }

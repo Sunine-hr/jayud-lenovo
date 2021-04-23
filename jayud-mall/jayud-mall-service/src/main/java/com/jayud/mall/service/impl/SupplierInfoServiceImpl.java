@@ -9,16 +9,17 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.SupplierInfoMapper;
+import com.jayud.mall.mapper.SupplierServeMapper;
 import com.jayud.mall.model.bo.QuerySupplierInfoForm;
+import com.jayud.mall.model.bo.SupplierCostForm;
 import com.jayud.mall.model.bo.SupplierInfoForm;
 import com.jayud.mall.model.po.SupplierInfo;
 import com.jayud.mall.model.po.SupplierInfoServiceTypeRelation;
+import com.jayud.mall.model.vo.SupplierCostVO;
 import com.jayud.mall.model.vo.SupplierInfoVO;
+import com.jayud.mall.model.vo.SupplierServeVO;
 import com.jayud.mall.model.vo.domain.AuthUser;
-import com.jayud.mall.service.BaseService;
-import com.jayud.mall.service.INumberGeneratedService;
-import com.jayud.mall.service.ISupplierInfoService;
-import com.jayud.mall.service.ISupplierInfoServiceTypeRelationService;
+import com.jayud.mall.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,13 +40,17 @@ import java.util.List;
 public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, SupplierInfo> implements ISupplierInfoService {
 
     @Autowired
+    SupplierInfoMapper supplierInfoMapper;
+    @Autowired
+    SupplierServeMapper supplierServeMapper;
+    @Autowired
     BaseService baseService;
     @Autowired
     INumberGeneratedService numberGeneratedService;
     @Autowired
-    SupplierInfoMapper supplierInfoMapper;
-    @Autowired
     ISupplierInfoServiceTypeRelationService supplierInfoServiceTypeRelationService;
+    @Autowired
+    ISupplierCostService supplierCostService;
 
     @Override
     public List<SupplierInfoVO> findSupplierInfo(QuerySupplierInfoForm form) {
@@ -155,5 +160,22 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         this.saveOrUpdate(supplierInfo);
         SupplierInfoVO supplierInfoVO = ConvertUtil.convert(supplierInfo, SupplierInfoVO.class);
         return CommonResult.success(supplierInfoVO);
+    }
+
+    @Override
+    public List<SupplierServeVO> findSupplierSerCostInfoById(Long supplierInfoId) {
+        List<SupplierServeVO> supplierServeVOS = supplierServeMapper.findSupplierSerCostInfoById(supplierInfoId);
+        if(ObjectUtil.isNotEmpty(supplierServeVOS)){
+            supplierServeVOS.forEach(supplierServeVO -> {
+                Long supplierInfoId2 = supplierServeVO.getSupplierInfoId();//供应商id
+                Long serviceId = supplierServeVO.getId();//供应商服务id
+                SupplierCostForm form1 = new SupplierCostForm();
+                form1.setSupplierInfoId(supplierInfoId2);
+                form1.setServiceId(serviceId);
+                List<SupplierCostVO> supplierCostVOS = supplierCostService.findSupplierCost(form1);
+                supplierServeVO.setSupplierCostVOList(supplierCostVOS);
+            });
+        }
+        return supplierServeVOS;
     }
 }

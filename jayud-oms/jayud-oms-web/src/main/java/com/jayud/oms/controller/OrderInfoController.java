@@ -8,10 +8,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
-import com.jayud.common.enums.OrderAttachmentTypeEnum;
-import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.enums.ResultEnum;
-import com.jayud.common.enums.StatusEnum;
+import com.jayud.common.enums.*;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
@@ -242,6 +239,22 @@ public class OrderInfoController {
                     }
                 }
             }
+            //拖车校验参数
+            if (OrderStatusEnum.CC.getCode().equals(inputMainOrderForm.getClassCode()) || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCEDD.getCode()) || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCIDD.getCode())){
+                if(inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCEDD.getCode())){
+                    InputStorageOutOrderForm storageOutOrderForm = form.getStorageOutOrderForm();
+                    if(!storageOutOrderForm.checkCreateOrder().equals("pass")){
+                        return CommonResult.error(1,storageOutOrderForm.checkCreateOrder());
+                    }
+                }
+                if(inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCIDD.getCode())){
+                    InputStorageInputOrderForm storageInputOrderForm = form.getStorageInputOrderForm();
+                    if(!storageInputOrderForm.checkCreateOrder().equals("pass")){
+                        return CommonResult.error(1,storageInputOrderForm.checkCreateOrder());
+                    }
+                }
+            }
+
             //校验参数
             form.checkCreateParam();
         }
@@ -388,6 +401,7 @@ public class OrderInfoController {
             tmsOrderTemplate.setCost(this.orderInfoService.isCost(tmsOrderTemplate.getOrderNo(), 1));
             tmsOrderTemplate.setMainOrderId(form.getMainOrderId());
             tmsOrderTemplate.setClassCode(form.getClassCode());
+            tmsOrderTemplate.isRejected();
             tmsOrderTemplate.setMainOrderStatus(inputOrderVO.getOrderForm().getStatus());
             Template<TmsOrderTemplate> template = new Template<TmsOrderTemplate>() {
             }.setList(Collections.singletonList(tmsOrderTemplate));
@@ -503,6 +517,12 @@ public class OrderInfoController {
         List<InputTrailerOrderVO> trailerOrderForm = inputOrderVO.getTrailerOrderForm();
         if (CollectionUtils.isNotEmpty(trailerOrderForm)) {
             trailerOrderForm.forEach(InputTrailerOrderVO::copyOperationInfo);
+        }
+
+        //服务模板
+        InputOrderServiceVO orderServiceForm = inputOrderVO.getOrderServiceForm();
+        if (orderServiceForm != null) {
+            orderServiceForm.copyOperationInfo();
         }
 
         return CommonResult.success(inputOrderVO);

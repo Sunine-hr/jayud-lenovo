@@ -35,6 +35,12 @@ public class InputOrderForm {
     @ApiModelProperty(value = "拖车")
     private List<InputTrailerOrderFrom> trailerOrderFrom;
 
+    @ApiModelProperty(value = "入库")
+    private  InputStorageInputOrderForm storageInputOrderForm;
+
+    @ApiModelProperty(value = "出库")
+    private  InputStorageOutOrderForm storageOutOrderForm;
+
     @ApiModelProperty(value = "登录人")
     private String loginUserName;
 

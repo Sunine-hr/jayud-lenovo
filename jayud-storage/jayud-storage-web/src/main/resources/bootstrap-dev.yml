@@ -1,0 +1,14 @@
+jayud:
+  nacos:
+    server-addr: 113.100.140.250:8848
+    config:
+      namespace: 7a4f5e06-9d25-4cd7-afaa-7ce6e46d687d
+mybatis-plus:
+  mapper-locations: classpath:com.jayud.storage.mapper/*.xml
+  typeAliasesPackage: com.jayud.model
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto

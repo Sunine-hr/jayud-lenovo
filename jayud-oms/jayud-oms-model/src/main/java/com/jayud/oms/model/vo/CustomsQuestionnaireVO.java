@@ -120,10 +120,10 @@ public class CustomsQuestionnaireVO extends Model<CustomsQuestionnaireVO> {
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private LocalDateTime expiresTime;
 
-    @ApiModelProperty(value = "状态(0:待审核,1:经理审核,2:总经理审核)")
+    @ApiModelProperty(value = "状态(0:待经理审核,1:待总经理审核,2:审核通过,3.审核拒绝)")
     private Integer status;
 
-    @ApiModelProperty(value = "状态(0:待审核,1:经理审核,2:总经理审核)")
+    @ApiModelProperty(value = "状态(0:待经理审核,1:待总经理审核,2:审核通过,3.审核拒绝)")
     private String statusDesc;
 
     @ApiModelProperty(value = "类型(0:客户,1:供应商)")
@@ -172,16 +172,19 @@ public class CustomsQuestionnaireVO extends Model<CustomsQuestionnaireVO> {
         //0:待审核,1:经理审核,2:总经理审核
         switch (status) {
             case 0:
-                statusDesc = "待审核";
+                statusDesc = "待经理审核";
                 break;
             case 1:
-                statusDesc = "经理审核";
+                statusDesc = "待总经理审核";
                 break;
             case 2:
-                statusDesc = "总经理审核";
+                statusDesc = "审核通过";
+                break;
+            case 3:
+                statusDesc = "审核拒绝";
                 break;
             default:
-                statusDesc = "待审核";
+                statusDesc = "待经理审核";
         }
     }
 

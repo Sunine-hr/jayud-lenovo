@@ -104,6 +104,16 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
     @Override
     public Map<String, Object> getOrderCostStatus(List<String> mainOrderNos, List<String> subOrderNos) {
 
+        /**
+         * 已录单:当数据库存在费用,并且金额不为0状态,就为已录单状态
+         * 已提交:例如5条费用都是已提交状态才是已提交状态,当只有4条是已提交,还有一条待提交,那么就是已录单
+         * 已审核:5条费用都审核才是已审核
+         * 注意:
+         * 只要一笔暂存费用,都是已录入状态,不管你已提交和审核多少条费用都是已录用
+         * 需要全部费用都是已提交的状态,才是已提交
+         * 需要全部费用都审核通过才是审核状态
+         */
+
         //根据子订单查询费用
         List<OrderReceivableCost> orderReceivableCosts = null;
         Map<String, List<OrderReceivableCost>> group = null;
@@ -175,23 +185,6 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
             }
 
         });
-
-
-        //已录单:当数据库存在费用,并且金额不为0状态,就为已录单状态
-
-        //已提交:例如5条费用都是已提交状态才是已提交状态,当只有4条是已提交,还有一条待提交,那么就是已录单
-
-        //已审核:5条费用都审核才是已审核,
-
-
-        //多种场景
-
-        //注意只要一笔暂存费用,都是已录入状态,不管你已提交和审核多少条费用都是已录用
-
-        //需要全部费用都是已提交的状态,才是已提交
-
-        //需要全部费用都审核通过才是审核状态
-
         return map;
     }
 

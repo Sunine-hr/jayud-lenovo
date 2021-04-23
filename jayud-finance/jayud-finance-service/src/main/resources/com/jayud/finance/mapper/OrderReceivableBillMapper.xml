@@ -559,9 +559,48 @@
             where oi.order_no = #{orderNo}
     </select>
 
+    <!--    <select id="findReceiveBillByPage" resultType="com.jayud.finance.vo.OrderReceiveBillVO">-->
+    <!--        SELECT DISTINCT-->
+    <!--        oi.legal_name legalName,-->
+    <!--        oi.legal_entity_id legalEntityId,-->
+    <!--        ci.`name` unitAccount,-->
+    <!--        ci.id_code unitCode,-->
+    <!--        ifnull( orb.already_paid_amount, 0 ) alreadyPaidAmount,-->
+    <!--        ifnull( orb.bill_order_num, 0 ) billOrderNum,-->
+    <!--        ifnull( orb.bill_num, 0 ) billNum-->
+    <!--        &#45;&#45;         (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_bill !=-->
+    <!--        &#45;&#45;         'save_confirm' AND-->
+    <!--        &#45;&#45;         t1.is_sum_to_main = '1' and t1.status = '3' and t1.customer_code = orc.customer_code and t1.main_order_no in-->
+    <!--        &#45;&#45;         (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidAmount,-->
+    <!--        &#45;&#45;         (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_bill !=-->
+    <!--        &#45;&#45;         'save_confirm' AND-->
+    <!--        &#45;&#45;         t1.is_sum_to_main = '1' and t1.status = '3' and t1.customer_code = orc.customer_code and t1.main_order_no in-->
+    <!--        &#45;&#45;         (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidOrderNum-->
+    <!--        FROM-->
+    <!--        order_receivable_cost orc-->
+    <!--        left join customer_info ci on ci.id_code = orc.customer_code-->
+    <!--        LEFT JOIN order_info oi ON oi.order_no = orc.main_order_no-->
+    <!--        left join order_receivable_bill orb on orb.legal_entity_id = oi.legal_entity_id-->
+    <!--        and orb.unit_code = ci.id_code and orb.is_main=1-->
+    <!--        where orc.is_sum_to_main = 1 and orc.status = '3'-->
+    <!--        <if test="form.unitAccount != null and form.unitAccount != ''">-->
+    <!--            and ci.`name` like concat('%',#{form.unitAccount},'%')-->
+    <!--        </if>-->
+    <!--        <if test="form.legalName != null and form.legalName != ''">-->
+    <!--            and oi.legal_name like concat('%',#{form.legalName},'%')-->
+    <!--        </if>-->
+
+    <!--        <if test="legalIds != null and legalIds.size>0">-->
+    <!--            and oi.`legal_entity_id` in-->
+    <!--            <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
+    <!--                #{legalId}-->
+    <!--            </foreach>-->
+    <!--        </if>-->
+    <!--    </select>-->
+
 
     <select id="findReceiveBillByPage" resultType="com.jayud.finance.vo.OrderReceiveBillVO">
-        SELECT DISTINCT
+        SELECT
         oi.legal_name legalName,
         oi.legal_entity_id legalEntityId,
         ci.`name` unitAccount,
@@ -569,14 +608,6 @@
         ifnull( orb.already_paid_amount, 0 ) alreadyPaidAmount,
         ifnull( orb.bill_order_num, 0 ) billOrderNum,
         ifnull( orb.bill_num, 0 ) billNum
---         (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_bill !=
---         'save_confirm' AND
---         t1.is_sum_to_main = '1' and t1.status = '3' and t1.customer_code = orc.customer_code and t1.main_order_no in
---         (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidAmount,
---         (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_bill !=
---         'save_confirm' AND
---         t1.is_sum_to_main = '1' and t1.status = '3' and t1.customer_code = orc.customer_code and t1.main_order_no in
---         (select o1.order_no from order_info o1 where o1.legal_name = oi.legal_name)) notPaidOrderNum
         FROM
         order_receivable_cost orc
         left join customer_info ci on ci.id_code = orc.customer_code
@@ -597,6 +628,7 @@
                 #{legalId}
             </foreach>
         </if>
+        group by oi.legal_name, orc.customer_code
     </select>
     <select id="findReceiveSubBillByPage" resultType="com.jayud.finance.vo.OrderReceiveBillVO">
         SELECT DISTINCT
@@ -718,6 +750,51 @@
         <!--        </if>-->
 
     </select>
+
+    <!--    <select id="statisticsNotPaidBillInfo" resultType="java.util.Map">-->
+    <!--        select-->
+    <!--        t1.main_order_no mainOrderNo, t1.order_no orderNo,-->
+    <!--        t1.change_amount changeAmount-->
+    <!--        from order_receivable_cost t1-->
+    <!--        <choose>-->
+    <!--            <when test="isMain">-->
+    <!--                left join order_info o1 on-->
+    <!--                o1.order_no = t1.main_order_no-->
+    <!--            </when>-->
+    <!--            <otherwise>-->
+    <!--                left join ${dynamicSqlParam.table} o1 on-->
+    <!--                o1.order_no = t1.order_no-->
+    <!--            </otherwise>-->
+    <!--        </choose>-->
+    <!--        <where>-->
+    <!--            and t1.is_bill in('0','1')-->
+    <!--            and t1.is_sum_to_main = #{isMain}-->
+    <!--            and t1.status = 3-->
+    <!--            and t1.customer_code in-->
+    <!--            <foreach collection="customerCodes" item="customerCode" open="(" separator="," close=")">-->
+    <!--                #{customerCode}-->
+    <!--            </foreach>-->
+    <!--            <if test="legalName != null and legalName.size>0">-->
+    <!--                and o1.legal_name in-->
+    <!--                <foreach collection="legalNames" item="legalName" open="(" separator="," close=")">-->
+    <!--                    #{legalName}-->
+    <!--                </foreach>-->
+    <!--            </if>-->
+    <!--            <if test="legalEntityIds != null and legalEntityIds.size>0">-->
+    <!--                and o1.legal_name in-->
+    <!--            </if>-->
+    <!--            &lt;!&ndash;            <choose>&ndash;&gt;-->
+    <!--            &lt;!&ndash;                <when test="isMain">&ndash;&gt;-->
+    <!--            &lt;!&ndash;                    and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name =&ndash;&gt;-->
+    <!--            &lt;!&ndash;                    #{legalName})&ndash;&gt;-->
+    <!--            &lt;!&ndash;                </when>&ndash;&gt;-->
+    <!--            &lt;!&ndash;                <otherwise>&ndash;&gt;-->
+    <!--            &lt;!&ndash;                    and t1.order_no in (select o1.order_no from ${dynamicSqlParam.table} o1 where o1.legal_entity_id =&ndash;&gt;-->
+    <!--            &lt;!&ndash;                    #{legalEntityId})&ndash;&gt;-->
+    <!--            &lt;!&ndash;                </otherwise>&ndash;&gt;-->
+    <!--            &lt;!&ndash;            </choose>&ndash;&gt;-->
+    <!--        </where>-->
+    <!--    </select>-->
 
     <select id="statisticsNotPaidBillInfo" resultType="java.util.Map">
         select

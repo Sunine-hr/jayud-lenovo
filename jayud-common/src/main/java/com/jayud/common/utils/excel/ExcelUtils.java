@@ -8,6 +8,7 @@ import cn.hutool.poi.excel.ExcelWriter;
 import com.jayud.common.dto.SheetDTO;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -364,6 +365,50 @@ public class ExcelUtils {
             for (Field field : fields) {
                 titleName.add(field.getName());
                 bigWriter.addHeaderAlias(field.getName(), field.getName());
+            }
+            //标题写入
+            bigWriter.writeHeadRow(titleName);
+            bigWriter.flush(outputStream);
+            bigWriter.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    log.error("关闭导出excel流异常:{}", e, e.getMessage());
+                }
+            }
+        }
+    }
+
+
+    /**
+     * 输出单页空表格模板,不带数据
+     *
+     * @param
+     * @param response
+     * @param <T>
+     */
+    public static <T> void exportSinglePageHeadExcel(String fileName, Class<T> clz, HttpServletResponse response) {
+        OutputStream outputStream = null;
+        try {
+            outputStream = response.getOutputStream();
+            fileName = fileName + ".xls";
+            response.setHeader("Content-disposition", "attachment; filename=" + URLEncoder.encode(fileName, "UTF-8"));
+            response.setContentType("application/vnd.ms-excel;charset=UTF-8");// 定义输出类型
+            ExcelWriter bigWriter = ExcelUtil.getBigWriter();
+            //装载标题
+            T t = clz.newInstance();
+            Field[] fields = clz.getDeclaredFields();
+            List<String> titleName = new ArrayList<>();
+            for (Field field : fields) {
+                ApiModelProperty annotation = field.getAnnotation(ApiModelProperty.class);
+                if(annotation != null){
+                    titleName.add(annotation.value());
+                    bigWriter.addHeaderAlias(annotation.value(), annotation.value());
+                }
             }
             //标题写入
             bigWriter.writeHeadRow(titleName);

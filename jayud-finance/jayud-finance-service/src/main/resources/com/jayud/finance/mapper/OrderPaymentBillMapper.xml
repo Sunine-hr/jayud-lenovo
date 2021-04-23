@@ -635,7 +635,7 @@
 <!--    </select>-->
 
     <select id="findPaymentBillByPage" resultType="com.jayud.finance.vo.OrderPaymentBillVO">
-        SELECT DISTINCT
+        SELECT
         oi.legal_name legalName,
         oi.legal_entity_id legalEntityId,
         si.supplier_ch_name supplierChName,
@@ -663,6 +663,7 @@
                 #{legalId}
             </foreach>
         </if>
+        group by oi.legal_name, opc.customer_code
     </select>
     <select id="findPaymentSubBillByPage" resultType="com.jayud.finance.vo.OrderPaymentBillVO">
         SELECT DISTINCT

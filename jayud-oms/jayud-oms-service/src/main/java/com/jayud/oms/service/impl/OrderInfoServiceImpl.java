@@ -1933,7 +1933,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private void specialTreatment(InputOrderForm form, InputMainOrderForm orderInfo) {
         //中港货物编辑入口时候,不能修改主订单驳回状态
         InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
-        if (orderTransportForm != null && orderTransportForm.getIsGoodsEdit()) {
+        if (orderTransportForm != null
+                && orderTransportForm.getIsGoodsEdit() != null
+                && orderTransportForm.getIsGoodsEdit()) {
             return;
         }
         orderInfo.setIsRejected(false);

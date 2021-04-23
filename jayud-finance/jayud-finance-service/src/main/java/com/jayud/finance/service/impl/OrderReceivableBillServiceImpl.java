@@ -39,6 +39,7 @@ import com.jayud.finance.vo.template.order.OrderTemplate;
 import com.jayud.finance.vo.template.order.Template;
 import io.netty.util.internal.StringUtil;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -92,7 +93,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             for (OrderReceiveBillVO record : pageInfo.getRecords()) {
                 List<Map<String, Object>> maps = baseMapper.statisticsNotPaidBillInfo(true, record.getUnitCode(),
                         null, record.getLegalName(), new HashMap<>());
-                record.statisticsNotPaidBillInfo(maps,true);
+                record.statisticsNotPaidBillInfo(maps, true);
             }
         } else {
             //动态sql参数
@@ -319,23 +320,31 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             OrderReceivableBill orderReceivableBill = ConvertUtil.convert(receiveBillForm, OrderReceivableBill.class);
             //1.统计已出账金额alreadyPaidAmount
             BigDecimal nowBillAmount = orderBillCostTotalVOS.stream().map(OrderBillCostTotalVO::getLocalMoney).reduce(BigDecimal.ZERO, BigDecimal::add);
-//            BigDecimal nowBillAmount = receiveBillDetailForms.stream().map(OrderReceiveBillDetailForm::getLocalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-            BigDecimal alreadyPaidAmount = getSAlreadyPaidAmount(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), form.getSubType());
+//            BigDecimal alreadyPaidAmount = getSAlreadyPaidAmount(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), form.getSubType());
+            BigDecimal alreadyPaidAmount = getSAlreadyPaidAmountByLegalId(orderReceivableBill.getLegalEntityId(), orderReceivableBill.getUnitCode(), form.getSubType());
             orderReceivableBill.setAlreadyPaidAmount(alreadyPaidAmount.add(nowBillAmount));
             //2.统计已出账订单数billOrderNum
             List<String> validOrders = new ArrayList<>();
             orderNos = orderNos.stream().distinct().collect(Collectors.toList());
             for (String orderNo : orderNos) {
-                List<OrderReceivableBillDetail> orderNoObjects = receivableBillDetailService.getNowSOrderExist(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), form.getSubType(), orderNo);
+//                List<OrderReceivableBillDetail> orderNoObjects = receivableBillDetailService.getNowSOrderExist(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), form.getSubType(), orderNo);
+
+                List<OrderReceivableBillDetail> orderNoObjects = receivableBillDetailService.getNowSOrderExistByLegalId(orderReceivableBill.getLegalEntityId(), orderReceivableBill.getUnitCode(), form.getSubType(), orderNo);
                 if (orderNoObjects == null || orderNoObjects.size() == 0) {
                     validOrders.add(orderNo);
                 }
             }
             Integer nowBillOrderNum = validOrders.size();
-            Integer billOrderNum = getSBillOrderNum(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), form.getSubType());
+//            Integer billOrderNum = getSBillOrderNum(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), form.getSubType());
+            //TODO 修改成根据法人id和结算code
+            Integer billOrderNum = this.baseMapper.getSBillOrderNumByLegalId(orderReceivableBill.getLegalEntityId(), orderReceivableBill.getUnitCode(), form.getSubType());
+
             orderReceivableBill.setBillOrderNum(billOrderNum + nowBillOrderNum);
             //3.统计账单数billNum
-            Integer billNum = getSBillNum(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), form.getSubType());
+//            Integer billNum = getSBillNum(orderReceivableBill.getLegalName(), orderReceivableBill.getUnitAccount(), form.getSubType());
+            //TODO 修改成根据法人id和结算code
+            Integer billNum = this.baseMapper.getSBillNumByLegalId(orderReceivableBill.getLegalEntityId(), orderReceivableBill.getUnitCode(), form.getSubType());
+
             orderReceivableBill.setBillNum(billNum + 1);
             if ("main".equals(form.getSubType())) {
                 orderReceivableBill.setIsMain(true);
@@ -344,13 +353,19 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             }
             orderReceivableBill.setSubType(form.getSubType());
             //判断该法人主体和客户是否已经生成过账单
-            QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.eq("sub_type", form.getSubType());
-            queryWrapper.eq("legal_name", receiveBillForm.getLegalName());
-            queryWrapper.eq("unit_account", receiveBillForm.getUnitAccount());
+//            QueryWrapper queryWrapper = new QueryWrapper();
+//            queryWrapper.eq("sub_type", form.getSubType());
+//            queryWrapper.eq("legal_name", receiveBillForm.getLegalName());
+//            queryWrapper.eq("unit_account", receiveBillForm.getUnitAccount());
+            //判断该法人主体和客户是否已经生成过账单
+            //TODO 修改成根据法人id和结算code
+            QueryWrapper<OrderReceivableBill> condition = new QueryWrapper<>();
+            condition.lambda().eq(OrderReceivableBill::getSubType, form.getSubType())
+                    .eq(OrderReceivableBill::getLegalEntityId, receiveBillForm.getLegalEntityId())
+                    .eq(OrderReceivableBill::getUnitCode, receiveBillForm.getUnitCode());
 
+            OrderReceivableBill existBill = baseMapper.selectOne(condition);
 
-            OrderReceivableBill existBill = baseMapper.selectOne(queryWrapper);
             if (existBill != null && existBill.getId() != null) {
                 orderReceivableBill.setId(existBill.getId());
                 orderReceivableBill.setUpdatedTime(LocalDateTime.now());
@@ -614,6 +629,18 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
     public BigDecimal getSAlreadyPaidAmount(String legalName, String unitAccount, String subType) {
         return baseMapper.getSAlreadyPaidAmount(legalName, unitAccount, subType);
     }
+
+    /**
+     * TODO 根据法人id和结算code
+     * 统计已出账金额alreadyPaidAmount
+     *
+     * @return
+     */
+    @Override
+    public BigDecimal getSAlreadyPaidAmountByLegalId(@Param("legalId") Long legalId, @Param("unitCode") String unitCode, @Param("subType") String subType) {
+        return baseMapper.getSAlreadyPaidAmountByLegalId(legalId, unitCode, subType);
+    }
+
 
     @Override
     public Integer getSBillNum(String legalName, String unitAccount, String subType) {

@@ -7,6 +7,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.po.OrderReceivableBill;
 import com.jayud.finance.vo.*;
+import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -114,6 +115,15 @@ public interface IOrderReceivableBillService extends IService<OrderReceivableBil
      * @return
      */
     BigDecimal getSAlreadyPaidAmount(String legalName, String unitAccount, String subType);
+
+
+    /**
+     * TODO 根据法人id和结算code
+     * 统计已出账金额alreadyPaidAmount
+     *
+     * @return
+     */
+    public BigDecimal getSAlreadyPaidAmountByLegalId(@Param("legalId") Long legalId, @Param("unitCode") String unitCode, @Param("subType") String subType);
 
     /**
      * 统计账单数billNum

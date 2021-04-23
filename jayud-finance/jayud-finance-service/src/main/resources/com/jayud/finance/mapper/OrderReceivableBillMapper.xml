@@ -354,6 +354,22 @@
         AND orb.unit_account = #{unitAccount}
         AND orb.sub_type = #{subType}
     </select>
+    <!-- TODO 修改为根据法人id和结算code-->
+    <select id="getSBillOrderNumByLegalId" resultType="java.lang.Integer">
+      SELECT
+	    count( DISTINCT orbd.order_no ) billOrderNum
+      FROM
+	    order_receivable_bill_detail orbd
+	    LEFT JOIN order_receivable_bill orb ON orbd.bill_id = orb.id
+      WHERE
+        orb.legal_entity_id = #{legalId}
+        AND orb.unit_code = #{unitCode}
+        AND orb.sub_type = #{subType}
+    </select>
+
+
+
+    <!--TODO 1.1 历史BUG根据法人名称和结算名称查询-->
     <select id="getSAlreadyPaidAmount" resultType="java.math.BigDecimal">
       SELECT
 	    ifnull(sum(orbd.local_amount),0) billOrderNum
@@ -366,6 +382,24 @@
         AND orb.sub_type = #{subType}
         AND orbd.audit_status!='edit_del'
     </select>
+
+    <!-- TODO 1.1 修改后根据法人主体id和结算code-->
+    <select id="getSAlreadyPaidAmountByLegalId" resultType="java.math.BigDecimal">
+      SELECT
+	    ifnull(sum(orbd.local_amount),0) billOrderNum
+      FROM
+	    order_receivable_bill_detail orbd
+	    LEFT JOIN order_receivable_bill orb ON orbd.bill_id = orb.id
+      WHERE
+        orb.legal_entity_id = #{legalId}
+        AND orb.unit_code = #{unitCode}
+        AND orb.sub_type = #{subType}
+        AND orbd.audit_status!='edit_del'
+    </select>
+
+
+
+
     <select id="getSBillNum" resultType="java.lang.Integer">
       SELECT
 	    count( DISTINCT orbd.bill_no ) billOrderNum
@@ -377,6 +411,20 @@
         AND orb.unit_account = #{unitAccount}
         AND orb.sub_type = #{subType}
     </select>
+<!--TODO 修改成根据法人id和结算code-->
+    <select id="getSBillNumByLegalId" resultType="java.lang.Integer">
+      SELECT
+	    count( DISTINCT orbd.bill_no ) billOrderNum
+      FROM
+	    order_receivable_bill_detail orbd
+	    LEFT JOIN order_receivable_bill orb ON orbd.bill_id = orb.id
+      WHERE
+         orb.legal_entity_id = #{legalId}
+        AND orb.unit_code = #{unitCode}
+        AND orb.sub_type = #{subType}
+    </select>
+
+
     <select id="findSheetHead" parameterType="java.util.List" resultType="com.jayud.finance.vo.SheetHeadVO">
         SELECT
         CONCAT( orc.cost_code, orc.currency_code ) NAME,

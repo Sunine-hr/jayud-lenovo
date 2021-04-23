@@ -1025,6 +1025,16 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
     }
 
     /**
+     * TODO 根据法人id和结算code
+     * 当前订单是否已经存在当前法人主体，结算单位，订单类型中,若存在则不做数量统计
+     * @return
+     */
+    @Override
+    public List<OrderReceivableBillDetail> getNowSOrderExistByLegalId(Long legalId, String unitCode, String subType, String orderNo) {
+        return baseMapper.getNowSOrderExistByLegalId(legalId, unitCode, subType, orderNo);
+    }
+
+    /**
      * 获取编辑账单数
      *
      * @param billNo

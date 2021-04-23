@@ -115,7 +115,7 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
     List<SheetHeadVO> findSSheetHead(String billNo, Map<String, Object> callbackArg);
 
 
-    List<SheetHeadVO> findSSheetHeadInfo(String billNo, Map<String, Object> callbackArg,String cmd);
+    List<SheetHeadVO> findSSheetHeadInfo(String billNo, Map<String, Object> callbackArg, String cmd);
 
     /**
      * 对账单详情的全局数据部分
@@ -234,6 +234,9 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      * @return
      */
     List<OrderReceivableBillDetail> getNowSOrderExist(String legalName, String unitAccount, String subType, String orderNo);
+
+
+    public List<OrderReceivableBillDetail> getNowSOrderExistByLegalId(Long legalId, String unitCode, String subType, String orderNo);
 
     /**
      * 获取编辑账单数

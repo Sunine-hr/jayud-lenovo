@@ -78,6 +78,16 @@ public interface OrderReceivableBillMapper extends BaseMapper<OrderReceivableBil
      */
     BigDecimal getSAlreadyPaidAmount(@Param("legalName") String legalName, @Param("unitAccount") String unitAccount, @Param("subType") String subType);
 
+
+    /**
+     * 统计已出账金额alreadyPaidAmount
+     *
+     * @return
+     */
+    BigDecimal getSAlreadyPaidAmountByLegalId(@Param("legalId") Long legalId, @Param("unitCode") String unitCode, @Param("subType") String subType);
+
+
+
     /**
      * 统计账单数billNum
      *
@@ -171,6 +181,10 @@ public interface OrderReceivableBillMapper extends BaseMapper<OrderReceivableBil
                                                         @Param("legalEntityId") Long legalEntityId,
                                                         @Param("legalName") String legalName,
                                                         @Param("dynamicSqlParam") Map<String, Object> dynamicSqlParam);
+
+    Integer getSBillOrderNumByLegalId(@Param("legalId") Long legalEntityId, String unitCode, String subType);
+
+    Integer getSBillNumByLegalId(@Param("legalId") Long legalEntityId, String unitCode, String subType);
 
 
 //    List<Map<String, Object>> statisticsNotPaidBillInfo(@Param("isMain") Boolean isMain, @Param("customerCode") String customerCode,

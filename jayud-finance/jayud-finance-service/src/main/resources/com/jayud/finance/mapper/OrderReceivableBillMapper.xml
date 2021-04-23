@@ -600,7 +600,7 @@
 
 
     <select id="findReceiveBillByPage" resultType="com.jayud.finance.vo.OrderReceiveBillVO">
-        SELECT DISTINCT
+        SELECT
         oi.legal_name legalName,
         oi.legal_entity_id legalEntityId,
         ci.`name` unitAccount,
@@ -628,6 +628,7 @@
                 #{legalId}
             </foreach>
         </if>
+        group by oi.legal_name, orc.customer_code
     </select>
     <select id="findReceiveSubBillByPage" resultType="com.jayud.finance.vo.OrderReceiveBillVO">
         SELECT DISTINCT

@@ -33,4 +33,6 @@ public interface SupplierServeMapper extends BaseMapper<SupplierServe> {
     IPage<SupplierServeVO> findSupplierServeByPage(Page<SupplierServeVO> page, @Param("form") QuerySupplierServeForm form);
 
     List<SupplierServeVO> findSupplierSerCostInfoById(@Param("supplierInfoId") Long supplierInfoId);
+
+    SupplierServeVO findSupplierServeById(@Param("id") Long id);
 }

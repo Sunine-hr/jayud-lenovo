@@ -35,7 +35,7 @@ public class OrderCaseVO {
     @JSONField(ordinal = 5)
     private BigDecimal asnLength;
 
-    @ApiModelProperty(value = "客户测量的重量，单位kg", position = 6)
+    @ApiModelProperty(value = "客户测量的宽度，单位kg", position = 6)
     @JSONField(ordinal = 6)
     private BigDecimal asnWidth;
 

@@ -362,7 +362,8 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
                     || AirOrderTermsEnum.CPT.getCode().equals(tmp.getTerms())
                     || AirOrderTermsEnum.CNF.getCode().equals(tmp.getTerms())
                     || AirOrderTermsEnum.CIP.getCode().equals(tmp.getTerms())
-                    || AirOrderTermsEnum.FCA.getCode().equals(tmp.getTerms())) {
+                    || AirOrderTermsEnum.FCA.getCode().equals(tmp.getTerms())
+                    || AirOrderTermsEnum.EXW.getCode().equals(tmp.getTerms())) {
                 this.updateById(new AirOrder().setId(tmp.getId()).setProcessStatus(1));
                 return;
             }

@@ -1,8 +1,12 @@
 package com.jayud.storage.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.storage.model.bo.QueryStorageOrderForm;
 import com.jayud.storage.model.bo.StorageOutOrderForm;
 import com.jayud.storage.model.po.StorageOutOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.storage.model.vo.StorageInputOrderFormVO;
+import com.jayud.storage.model.vo.StorageOutOrderVO;
 
 /**
  * <p>
@@ -20,4 +24,10 @@ public interface IStorageOutOrderService extends IService<StorageOutOrder> {
      * @return
      */
     String createOrder(StorageOutOrderForm storageOutOrderForm);
+
+    StorageOutOrder getStorageOutOrderByMainOrderNO(String orderNo);
+
+    StorageOutOrderVO getStorageOutOrderVOById(Long id);
+
+    IPage<StorageInputOrderFormVO> findByPage(QueryStorageOrderForm form);
 }

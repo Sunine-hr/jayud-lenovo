@@ -942,10 +942,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         }
         //获取仓储订单信息
-        if(OrderStatusEnum.CC.getCode().equals(form.getClassCode()) || inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode()) || inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode())){
-            if(inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode())){
+        if (OrderStatusEnum.CC.getCode().equals(form.getClassCode()) || inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode()) || inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode())) {
+            if (inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode())) {
                 InputStorageOutOrderVO storageOutOrderVO = this.storageClient.getStorageOutOrderDetails(inputMainOrderVO.getOrderNo()).getData();
-                if(storageOutOrderVO!=null){
+                if (storageOutOrderVO != null) {
                     //添加附件
                     List<FileView> attachments = this.logisticsTrackService.getAttachments(storageOutOrderVO.getId()
                             , BusinessTypeEnum.RK.getCode(), prePath);
@@ -958,9 +958,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
                 inputOrderVO.setStorageOutOrderForm(storageOutOrderVO);
             }
-            if(inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode())){
+            if (inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode())) {
                 InputStorageInputOrderVO storageInputOrderVO = this.storageClient.getStorageInOrderDetails(inputMainOrderVO.getOrderNo()).getData();
-                if(storageInputOrderVO!=null){
+                if (storageInputOrderVO != null) {
                     //添加附件
                     List<FileView> attachments = this.logisticsTrackService.getAttachments(storageInputOrderVO.getId()
                             , BusinessTypeEnum.RK.getCode(), prePath);
@@ -1299,8 +1299,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
 
         //仓储
-        if(OrderStatusEnum.CC.getCode().equals(classCode)  || selectedServer.contains(OrderStatusEnum.CCIDD.getCode()) || selectedServer.contains(OrderStatusEnum.CCEDD.getCode())){
-            if(selectedServer.contains(OrderStatusEnum.CCIDD.getCode())){
+        if (OrderStatusEnum.CC.getCode().equals(classCode) || selectedServer.contains(OrderStatusEnum.CCIDD.getCode()) || selectedServer.contains(OrderStatusEnum.CCEDD.getCode())) {
+            if (selectedServer.contains(OrderStatusEnum.CCIDD.getCode())) {
                 InputStorageInputOrderForm storageInputOrderForm = form.getStorageInputOrderForm();
                 if (form.getCmd().equals("submit")) {//提交
                     if (storageInputOrderForm.getId() == null) {
@@ -1342,7 +1342,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
 
             }
-            if(selectedServer.contains(OrderStatusEnum.CCEDD.getCode()) ){
+            if (selectedServer.contains(OrderStatusEnum.CCEDD.getCode())) {
                 InputStorageOutOrderForm storageOutOrderForm = form.getStorageOutOrderForm();
                 if (form.getCmd().equals("submit")) {//提交
                     if (storageOutOrderForm.getId() == null) {

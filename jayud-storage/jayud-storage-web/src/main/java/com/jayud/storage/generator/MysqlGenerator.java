@@ -51,7 +51,7 @@ public class MysqlGenerator {
         gc.setBaseResultMap(true);// XML ResultMap
         gc.setBaseColumnList(true);// XML columList
         gc.setSwagger2(true);
-        gc.setAuthor("fachang.mao");
+        gc.setAuthor("LLJ");
 
         // 自定义文件命名，注意 %s 会自动填充表实体属性！
         gc.setMapperName("%sMapper");

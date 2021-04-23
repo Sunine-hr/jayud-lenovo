@@ -74,6 +74,12 @@ public class StorageOutOrder extends Model<StorageOutOrder> {
     @ApiModelProperty(value = "备注")
     private String remarks;
 
+    @ApiModelProperty(value = "接单人")
+    private String orderTaker;
+
+    @ApiModelProperty(value = "接单日期")
+    private String receivingOrdersDate;
+
 
     @Override
     protected Serializable pkVal() {

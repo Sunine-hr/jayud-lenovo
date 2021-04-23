@@ -28,4 +28,65 @@
         id, order_no, main_order_no, status, process_status, unit_code, legal_name, legal_entity_id, department_id, waybill_no, plate_number, warehouse_number, create_user, create_time, update_user, update_time, remarks
     </sql>
 
+    <select id="findByPage" resultType="com.jayud.storage.model.vo.StorageInputOrderFormVO">
+        select sio.id orderId,sio.order_no orderNo,main_order_no mainOrderNo,status, process_status processStatus,
+        legal_entity_id legalEntityId,legal_name leaglName,
+        unit_code unitCode,unit_code_name unitCodeName,department_id departmentId,waybill_no waybillNo,
+        plate_number plateNumber,warehouse_number warehouseNumber, create_user createUser, create_time createTime, remarks,
+        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = sio.`order_no`) +
+        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = sio.`order_no`)>0 THEN TRUE
+        ELSE FALSE
+        END) cost
+        from storage_input_order sio
+        <where>
+            <if test="form.orderNo !=null and form.orderNo!=''">
+                and sio.order_no like concat('%',#{form.orderNo},'%')
+            </if>
+            <if test="form.warehouseNumber !=null and form.warehouseNumber!=''">
+                and sio.warehouseNumber like concat('%',#{form.warehouseNumber},'%')
+            </if>
+            <if test="form.processStatus !=null and form.processStatus!=''">
+                and sio.process_status like concat('%',#{form.processStatus},'%')
+            </if>
+            <if test="form.createUser !=null and form.createUser!=''">
+                and sio.create_user like concat('%',#{form.createUser},'%')
+            </if>
+            <if test="form.mainOrderNos !=null and form.mainOrderNos.size > 0">
+                and sio.main_order_no IN
+                <foreach collection="form.mainOrderNos" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="form.status !=null and form.status!=''">
+                and sio.status = #{form.status}
+            </if>
+            <if test="form.processStatusList!=null and form.processStatusList.size>0">
+                and sio.process_status IN
+                <foreach collection="form.processStatusList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="form.startTime !=null and form.startTime!=''">
+                and sio.create_time <![CDATA[>= ]]> #{form.startTime}
+            </if>
+            <if test="form.endTime !=null and form.endTime!=''">
+                and sio.create_time <![CDATA[<= ]]> #{form.endTime}
+            </if>
+            <if test="form.cmd == 'costAudit'">
+                AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = sio.order_no AND opc.`status` =
+                '2' and opc.sub_type = 'cc')
+                OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = sio.order_no AND orc.`status` =
+                '2' and orc.sub_type = 'cc'))
+            </if>
+
+            <if test="legalIds != null and legalIds.size>0">
+                and sio.`legal_entity_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
+            </if>
+        </where>
+        order by sio.id desc
+    </select>
+
 </mapper>

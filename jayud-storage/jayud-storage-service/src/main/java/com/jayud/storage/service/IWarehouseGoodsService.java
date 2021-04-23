@@ -2,6 +2,9 @@ package com.jayud.storage.service;
 
 import com.jayud.storage.model.po.WarehouseGoods;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.storage.model.vo.WarehouseGoodsVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IWarehouseGoodsService extends IService<WarehouseGoods> {
 
+    List<WarehouseGoodsVO> getList(Long id, String orderNo);
 }

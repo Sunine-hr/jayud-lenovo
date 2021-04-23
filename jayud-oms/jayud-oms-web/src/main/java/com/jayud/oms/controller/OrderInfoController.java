@@ -243,11 +243,11 @@ public class OrderInfoController {
                 }
             }
             //拖车校验参数
-            if (OrderStatusEnum.CC.getCode().equals(inputMainOrderForm.getClassCode()) || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCEDD.getCode()) || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCIDD.getCode())){
-                if(inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCEDD.getCode())){
+            if (OrderStatusEnum.CC.getCode().equals(inputMainOrderForm.getClassCode()) || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCEDD.getCode()) || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCIDD.getCode())) {
+                if (inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCEDD.getCode())) {
                     InputStorageOutOrderForm storageOutOrderForm = form.getStorageOutOrderForm();
-                    if(!storageOutOrderForm.checkCreateOrder().equals("pass")){
-                        return CommonResult.error(1,storageOutOrderForm.checkCreateOrder());
+                    if (!storageOutOrderForm.checkCreateOrder().equals("pass")) {
+                        return CommonResult.error(1, storageOutOrderForm.checkCreateOrder());
                     }
                 }
             }
@@ -454,7 +454,7 @@ public class OrderInfoController {
 
         //拖车模板
         List<InputTrailerOrderVO> trailerOrderForms = inputOrderVO.getTrailerOrderForm();
-        if (CollectionUtils.isNotEmpty(trailerOrderForms)){
+        if (CollectionUtils.isNotEmpty(trailerOrderForms)) {
             List<TrailerOrderTemplate> templates = new ArrayList<>();
             for (InputTrailerOrderVO trailerOrderForm : trailerOrderForms) {
                 if (trailerOrderForm != null) {

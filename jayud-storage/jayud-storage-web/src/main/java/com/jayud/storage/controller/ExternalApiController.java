@@ -4,6 +4,8 @@ package com.jayud.storage.controller;
 import com.jayud.common.ApiResult;
 import com.jayud.storage.model.bo.StorageInputOrderForm;
 import com.jayud.storage.model.bo.StorageOutOrderForm;
+import com.jayud.storage.model.po.StorageInputOrder;
+import com.jayud.storage.model.po.StorageOutOrder;
 import com.jayud.storage.model.vo.StorageInputOrderVO;
 import com.jayud.storage.model.vo.StorageOutOrderVO;
 import com.jayud.storage.service.IStorageInputOrderService;
@@ -59,16 +61,19 @@ public class ExternalApiController {
      */
     @RequestMapping(value = "/api/storage/getStorageInOrderDetails")
     ApiResult<StorageInputOrderVO> getStorageInOrderDetails(@RequestParam("orderNo") String orderNo){
-
+        StorageInputOrder storageInputOrder = storageInputOrderService.getStorageInOrderByMainOrderNO(orderNo);
+        StorageInputOrderVO storageInputOrderVO = storageInputOrderService.getStorageInputOrderVOById(storageInputOrder.getId());
         return ApiResult.ok(orderNo);
     }
 
     /**
      * 根据主订单号获取仓储出库单信息
+     *
      */
     @RequestMapping(value = "/api/storage/getStorageOutOrderDetails")
     ApiResult<StorageOutOrderVO> getStorageOutOrderDetails(@RequestParam("orderNo") String orderNo){
-
+        StorageOutOrder storageOutOrder = storageOutOrderService.getStorageOutOrderByMainOrderNO(orderNo);
+        StorageOutOrderVO storageOutOrderVO = storageOutOrderService.getStorageOutOrderVOById(storageOutOrder.getId());
         return ApiResult.ok(orderNo);
     }
 

@@ -94,6 +94,12 @@ public class StorageInputOrderVO extends Model<StorageInputOrderVO> {
     @ApiModelProperty(value = "附件集合")
     private List<FileView> allPics;
 
+    @ApiModelProperty(value = "接单人")
+    private String orderTaker;
+
+    @ApiModelProperty(value = "接单日期")
+    private String receivingOrdersDate;
+
     /**
      * 校验创建出库子订单参数
      */

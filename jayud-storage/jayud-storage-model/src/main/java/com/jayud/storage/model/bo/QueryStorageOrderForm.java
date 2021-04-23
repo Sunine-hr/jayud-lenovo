@@ -1,10 +1,9 @@
-package com.jayud.trailer.bo;
+package com.jayud.storage.model.bo;
 
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.models.auth.In;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -12,34 +11,23 @@ import java.util.List;
 
 /**
  * <p>
- * 拖车查询列表
+ * 入库查询列表
  * </p>
  *
  * @author
  * @since
  */
 @Data
-public class QueryTrailerOrderForm extends BasePageForm {
+public class QueryStorageOrderForm extends BasePageForm {
 
-    private static final long serialVersionUID = 1L;
-
-    @ApiModelProperty(value = "拖车订单编号")
+    @ApiModelProperty(value = "入库订单编号")
     private String orderNo;
 
-    @ApiModelProperty(value = "进出口类型",required = true)
-    private Integer impAndExpType;
-
-    @ApiModelProperty(value = "车型大小")
-    private Long cabinetSize;
-
-    @ApiModelProperty(value = "状态(TT_0待接单,TT_1拖车接单,TT_2拖车派车,TT_3派车审核,TT_4拖车提柜,TT_5拖车到仓,TT_6拖车离仓,TT_7拖车过磅,TT_8确认还柜)")
+    @ApiModelProperty(value = "状态()")
     private String status;
 
     @ApiModelProperty(value = "客户名称")
     private String customerName;
-
-    @ApiModelProperty(value = "起运港/目的港代码")
-    private String portCode;
 
     @ApiModelProperty(value = "创建时间")
     private String[] createTime;
@@ -50,14 +38,8 @@ public class QueryTrailerOrderForm extends BasePageForm {
     @ApiModelProperty(value = "结束时间")
     private String endTime;
 
-    @ApiModelProperty(value = "so")
-    private String so;
-
-    @ApiModelProperty(value = "柜号")
-    private String cabinetNumber;
-
-    @ApiModelProperty(value = "提单号")
-    private String billOfLading;
+    @ApiModelProperty(value = "入仓号")
+    private String warehouseNumber;
 
     @ApiModelProperty(value = "创建人")
     private String createUser;
@@ -65,15 +47,12 @@ public class QueryTrailerOrderForm extends BasePageForm {
     @ApiModelProperty(value = "流程状态")
     private Integer processStatus;
 
-    @ApiModelProperty(value = "封条")
-    private String paperStripSeal;
+    @ApiModelProperty(value = "流程状态")
+    private List<Integer> processStatusList;
 
     @ApiModelProperty(value = "主订单号")
     @JsonIgnore
     private List<String> mainOrderNos;
-
-    @ApiModelProperty(value = "流程状态")
-    private List<Integer> processStatusList;
 
     @ApiModelProperty(value = "操作指令,cmd = costAudit 费用审核")
     private String cmd;

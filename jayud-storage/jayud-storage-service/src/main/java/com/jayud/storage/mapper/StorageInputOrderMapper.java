@@ -1,8 +1,15 @@
 package com.jayud.storage.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.storage.model.bo.QueryStorageOrderForm;
 import com.jayud.storage.model.po.StorageInputOrder;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.storage.model.vo.StorageInputOrderFormVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -15,4 +22,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface StorageInputOrderMapper extends BaseMapper<StorageInputOrder> {
 
+    IPage<StorageInputOrderFormVO> findByPage(@Param("page") Page<StorageInputOrderFormVO> page, @Param("form")QueryStorageOrderForm form, @Param("legalIds")List<Long> legalIds);
 }

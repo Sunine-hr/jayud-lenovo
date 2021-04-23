@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.storage.mapper.GoodMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.storage.model.po.Good">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="sku" property="sku" />
+        <result column="customer_id" property="customerId" />
+        <result column="specification_model" property="specificationModel" />
+        <result column="status" property="status" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="remarks" property="remarks" />
+        <result column="customer_code" property="customerCode" />
+        <result column="good_length" property="goodLength" />
+        <result column="good_width" property="goodWidth" />
+        <result column="good_height" property="goodHeight" />
+        <result column="commodity_value" property="commodityValue" />
+        <result column="date_of_manufacture" property="dateOfManufacture" />
+        <result column="expiration_date" property="expirationDate" />
+        <result column="customer_name" property="customerName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name, sku, customer_id, specification_model, status, create_user, create_time, remarks, customer_code, good_length, good_width, good_height, commodity_value, date_of_manufacture, expiration_date,customer_name
+    </sql>
+
+    <select id="findGoodsByPage" resultType="com.jayud.storage.model.vo.GoodVO">
+        select id, name, sku, customer_id customerId, specification_model specificationModel, status, create_user createUser, create_time createTime,
+         remarks, customer_code customerCode, good_length goodLength, good_width goodWidth,
+         good_height goodHeight, commodity_value commodityValue, date_of_manufacture dateOfManufacture, expiration_date expirationDate,customer_name customerName
+         from good where 1=1
+         <if test="form.name!=null || form.name!=''">
+          and good.name like concat('%',#{form.name},'%')
+         </if>
+        <if test="form.sku!=null || form.sku!=''">
+            and good.sku like concat('%',#{form.sku},'%')
+        </if>
+        <if test="form.customerName!=null || form.customerName!=''">
+            and good.customerName like concat('%',#{form.customerName},'%')
+        </if>
+        order by createTime desc
+    </select>
+
+</mapper>

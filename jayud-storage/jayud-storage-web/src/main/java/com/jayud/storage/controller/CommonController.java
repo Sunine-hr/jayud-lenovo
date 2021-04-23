@@ -11,6 +11,7 @@ import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.WarehouseGoodsForm;
 import com.jayud.storage.model.bo.WarehouseGoodsInForm;
 import com.jayud.storage.model.bo.WarehouseGoodsOutForm;
+import com.jayud.storage.service.IGoodService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,9 @@ public class CommonController {
 
     @Autowired
     private OmsClient omsClient;
+
+    @Autowired
+    private IGoodService goodService;
 
     /**
      * 导出入库商品模板
@@ -96,12 +100,16 @@ public class CommonController {
         return CommonResult.success(warehouseNumber);
     }
 
-//    @ApiOperation(value = "判断商品是否为商品表维护的数据")
-//    @PostMapping(value = "/isCommodity")
-//    public CommonResult isCommodity(@RequestBody List<WarehouseGoodsForm> warehouseGoodsForms){
-//        for (WarehouseGoodsForm warehouseGoodsForm : warehouseGoodsForms) {
-//
-//        }
-//    }
+    @ApiOperation(value = "判断商品是否为商品表维护的数据")
+    @PostMapping(value = "/isCommodity")
+    public CommonResult isCommodity(@RequestBody List<WarehouseGoodsForm> warehouseGoodsForms){
+        for (WarehouseGoodsForm warehouseGoodsForm : warehouseGoodsForms) {
+            boolean flag = goodService.isCommodity(warehouseGoodsForm.getSku());
+            if(!flag){
+                return CommonResult.error(444,"商品未建档，请前往建档");
+            }
+        }
+        return CommonResult.success();
+    }
 
 }

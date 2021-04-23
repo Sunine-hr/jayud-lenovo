@@ -89,6 +89,12 @@ public class InputStorageOutOrderVO {
     @ApiModelProperty(value = "附件集合")
     private List<FileView> allPics;
 
+    @ApiModelProperty(value = "接单人")
+    private String orderTaker;
+
+    @ApiModelProperty(value = "接单日期")
+    private String receivingOrdersDate;
+
     public void setUnitCodeName(String unitCodeName) {
         this.unitCodeName=unitCodeName;
     }

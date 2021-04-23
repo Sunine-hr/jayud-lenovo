@@ -1,16 +1,20 @@
 package com.jayud.mall.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.SupplierServeMapper;
 import com.jayud.mall.model.bo.QuerySupplierServeForm;
 import com.jayud.mall.model.bo.SupplierCostForm;
 import com.jayud.mall.model.bo.SupplierServeForm;
+import com.jayud.mall.model.bo.SupplierServeStatusForm;
 import com.jayud.mall.model.po.SupplierCost;
 import com.jayud.mall.model.po.SupplierServe;
 import com.jayud.mall.model.vo.SupplierCostVO;
@@ -111,5 +115,39 @@ public class SupplierServeServiceImpl extends ServiceImpl<SupplierServeMapper, S
         supplierCostService.saveOrUpdateBatch(supplierCosts);
 
         return CommonResult.success("保存供应商服务，成功！");
+    }
+
+    @Override
+    public SupplierServeVO findSupplierServeById(Long id) {
+        //供应商服务
+        SupplierServeVO supplierServeVO = supplierServeMapper.findSupplierServeById(id);
+        if(ObjectUtil.isEmpty(supplierServeVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "供应商产品不存在");
+        }
+        //供应商费用
+        Long supplierInfoId = supplierServeVO.getSupplierInfoId();//供应商id
+        Long serviceId = supplierServeVO.getId();//供应商服务id
+        SupplierCostForm form1 = new SupplierCostForm();
+        form1.setSupplierInfoId(supplierInfoId);
+        form1.setServiceId(serviceId);
+        List<SupplierCostVO> supplierCostVOS = supplierCostService.findSupplierCost(form1);
+        supplierServeVO.setSupplierCostVOList(supplierCostVOS);
+        return supplierServeVO;
+    }
+
+    @Override
+    public void disableEnabledSupplierServe(SupplierServeStatusForm form) {
+        Long id = form.getId();
+        SupplierServe supplierServe = this.getById(id);
+        //状态(0无效 1有效)
+        String status = form.getStatus();
+        if(status.equals("0")){
+            supplierServe.setStatus(status);
+        }else if(status.equals("1")){
+            supplierServe.setStatus(status);
+        }else {
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "状态错误");
+        }
+        this.saveOrUpdate(supplierServe);
     }
 }

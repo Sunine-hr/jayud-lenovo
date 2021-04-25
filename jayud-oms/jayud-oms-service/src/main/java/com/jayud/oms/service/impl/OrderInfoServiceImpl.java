@@ -1216,6 +1216,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             List<InputTrailerOrderFrom> trailerOrderFroms = form.getTrailerOrderFrom();
 
             for (InputTrailerOrderFrom trailerOrderFrom : trailerOrderFroms) {
+
                 //生成拖车订单号
                 if (form.getCmd().equals("submit")) {//提交
                     if (trailerOrderFrom.getId() == null) {
@@ -1224,6 +1225,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     }
                     //草稿编辑提交
                     if (trailerOrderFrom.getStatus() != null && trailerOrderFrom.getStatus().equals("TT_0")) {
+                        trailerOrderFrom.setOldMainOrderNo(trailerOrderFrom.getMainOrderNo());
                         String orderNo = generationOrderNo(trailerOrderFrom.getLegalEntityId(), trailerOrderFrom.getImpAndExpType(), OrderStatusEnum.TC.getCode());
                         trailerOrderFrom.setOrderNo(orderNo);
                     }

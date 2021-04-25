@@ -68,6 +68,13 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
 
     @Override
     public String createOrder(AddTrailerOrderFrom addTrailerOrderFrom) {
+
+        if(addTrailerOrderFrom.getOldMainOrderNo()!=null){
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("main_order_no",addTrailerOrderFrom.getOldMainOrderNo());
+            this.remove(queryWrapper);
+        }
+
         LocalDateTime now = LocalDateTime.now();
         addTrailerOrderFrom.getPathAndName();
         TrailerOrder trailerOrder = ConvertUtil.convert(addTrailerOrderFrom, TrailerOrder.class);

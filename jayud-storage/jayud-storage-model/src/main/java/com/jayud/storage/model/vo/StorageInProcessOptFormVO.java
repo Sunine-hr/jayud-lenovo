@@ -1,10 +1,11 @@
-package com.jayud.storage.model.bo;
+package com.jayud.storage.model.vo;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.FileView;
+import com.jayud.storage.model.bo.WarehouseGoodsForm;
 import com.jayud.storage.model.po.InGoodsOperationRecord;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -16,11 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 入库节点操作流程
+ * 入仓数据返回
  */
 @Data
 @Slf4j
-public class StorageInProcessOptForm {
+public class StorageInProcessOptFormVO {
 
     @NotNull(message = "主订单id不能为空")
     @ApiModelProperty(value = "主订单id", required = true)
@@ -159,40 +160,14 @@ public class StorageInProcessOptForm {
     private String driver;
 
     @ApiModelProperty(value = "商品入库")
-    private List<WarehouseGoodsForm> warehouseGoodsForms;
+    private List<WarehouseGoodsVO> warehouseGoodsForms;
 
-    @ApiModelProperty(value = "司机")
+    @ApiModelProperty(value = "商品实际入库")
     private List<InGoodsOperationRecord> inGoodsOperationRecords;
-
 
     public void setStatus(String status) {
         this.status = status;
         this.statusName = OrderStatusEnum.getDesc(status);
     }
 
-    public void checkProcessOpt(OrderStatusEnum statusEnum) {
-        boolean pass = true;
-        switch (statusEnum) {
-            case CCI_1: //入库接单
-            case CCI_2: //确认入仓
-            case CCI_3: //仓储入库
-                pass = checkOptInfo();
-                break;
-        }
-        if (!pass) throw new JayudBizException(ResultEnum.VALIDATE_FAILED);
-    }
-
-
-
-    public boolean checkOptInfo() {
-        if (StringUtils.isEmpty(this.operatorUser)) {
-            log.warn("操作人必填");
-            return false;
-        }
-        if (StringUtils.isEmpty(this.operatorTime)) {
-            log.warn("操作时间必填");
-            return false;
-        }
-        return true;
-    }
 }

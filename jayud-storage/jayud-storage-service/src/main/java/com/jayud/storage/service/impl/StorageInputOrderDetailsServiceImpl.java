@@ -1,5 +1,6 @@
 package com.jayud.storage.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.storage.model.po.StorageInputOrderDetails;
 import com.jayud.storage.mapper.StorageInputOrderDetailsMapper;
 import com.jayud.storage.service.IStorageInputOrderDetailsService;
@@ -17,4 +18,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class StorageInputOrderDetailsServiceImpl extends ServiceImpl<StorageInputOrderDetailsMapper, StorageInputOrderDetails> implements IStorageInputOrderDetailsService {
 
+    @Override
+    public StorageInputOrderDetails getStorageInputOrderDetails(Long orderId) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("order_id",orderId);
+        return this.baseMapper.selectOne(queryWrapper);
+    }
 }

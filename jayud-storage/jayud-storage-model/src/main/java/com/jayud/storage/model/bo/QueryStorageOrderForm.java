@@ -2,7 +2,11 @@ package com.jayud.storage.model.bo;
 
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.jayud.storage.model.po.InGoodsOperationRecord;
+import com.jayud.storage.model.po.StorageInputOrderDetails;
+import com.jayud.storage.model.po.WarehouseGoods;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -11,7 +15,7 @@ import java.util.List;
 
 /**
  * <p>
- * 入库查询列表
+ * 入仓参数
  * </p>
  *
  * @author
@@ -59,9 +63,6 @@ public class QueryStorageOrderForm extends BasePageForm {
 
     @ApiModelProperty(value = "当前登录用户,前台传")
     private String loginUserName;
-
-    @ApiModelProperty(value = "仓库id")
-    private String warehouseId;
 
     public void assemblyMainOrderNo(JSONArray mainOrders) {
         mainOrderNos = new ArrayList<>(mainOrders.size());

@@ -1,6 +1,7 @@
 package com.jayud.storage.controller;
 
 
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -11,6 +12,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.storage.feign.FileClient;
@@ -18,9 +20,16 @@ import com.jayud.storage.feign.OauthClient;
 import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.QueryStorageOrderForm;
 import com.jayud.storage.model.bo.StorageInProcessOptForm;
+import com.jayud.storage.model.po.InGoodsOperationRecord;
 import com.jayud.storage.model.po.StorageInputOrder;
+import com.jayud.storage.model.po.StorageInputOrderDetails;
+import com.jayud.storage.model.vo.StorageInProcessOptFormVO;
 import com.jayud.storage.model.vo.StorageInputOrderFormVO;
+import com.jayud.storage.model.vo.WarehouseGoodsVO;
+import com.jayud.storage.service.IInGoodsOperationRecordService;
+import com.jayud.storage.service.IStorageInputOrderDetailsService;
 import com.jayud.storage.service.IStorageInputOrderService;
+import com.jayud.storage.service.IWarehouseGoodsService;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -61,6 +70,15 @@ public class StorageInputOrderController {
 
     @Autowired
     private OauthClient oauthClient;
+
+    @Autowired
+    private IStorageInputOrderDetailsService storageInputOrderDetailsService;
+
+    @Autowired
+    private IWarehouseGoodsService warehouseGoodsService;
+
+    @Autowired
+    private IInGoodsOperationRecordService inGoodsOperationRecordService;
 
     @ApiOperation("分页查询入库订单列表")
     @PostMapping("/findByPage")
@@ -191,6 +209,44 @@ public class StorageInputOrderController {
                 break;
             case CCI_3: //仓储入库
                 break;
+        }
+
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "获取入仓时的数据")
+    @PostMapping(value = "/getDataInConfirmEntry")
+    public CommonResult getDataInConfirmEntry(@RequestBody Map<String,Object> map){
+        Long orderId = MapUtil.getLong(map, "orderId");
+        StorageInputOrder storageInputOrder = storageInputOrderService.getById(orderId);
+        StorageInputOrderDetails storageInputOrderDetails = storageInputOrderDetailsService.getStorageInputOrderDetails(orderId);
+        if(storageInputOrderDetails == null){
+            storageInputOrderDetails = new StorageInputOrderDetails();
+        }
+
+        StorageInProcessOptFormVO storageInProcessOptFormVO = ConvertUtil.convert(storageInputOrderDetails, StorageInProcessOptFormVO.class);
+        List<WarehouseGoodsVO> list = warehouseGoodsService.getList(storageInputOrder.getId(), storageInputOrder.getOrderNo());
+        storageInProcessOptFormVO.setWarehouseGoodsForms(list);
+
+        for (WarehouseGoodsVO warehouseGoodsVO : list) {
+            List<InGoodsOperationRecord> inGoodsOperationRecords = inGoodsOperationRecordService.getList(storageInputOrder.getId(), storageInputOrder.getOrderNo(),warehouseGoodsVO.getName());
+            Double totalWeight = 0.0;
+            Integer totalAmount = 0;
+            Integer totalJAmount = 0;
+            Integer totalPCS = 0;
+
+            for (InGoodsOperationRecord inGoodsOperationRecord : inGoodsOperationRecords) {
+                totalAmount = totalAmount + inGoodsOperationRecord.getNumber();
+                totalJAmount = totalJAmount + inGoodsOperationRecord.getBoardNumber();
+                totalPCS = totalPCS + inGoodsOperationRecord.getPcs();
+                totalWeight = totalWeight + inGoodsOperationRecord.getWeight();
+            }
+            StringBuffer stringBuffer = new StringBuffer();
+            stringBuffer.append(totalJAmount).append("板").append("/")
+                    .append(totalAmount).append("件").append("/")
+                    .append(totalPCS).append("PCS").append("/")
+                    .append(totalWeight).append("KG");
+            warehouseGoodsVO.setWarehousingInformation(stringBuffer.toString());
         }
 
         return CommonResult.success();

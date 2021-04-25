@@ -94,4 +94,7 @@ public class WarehouseGoodsVO {
     @ApiModelProperty(value = "入库批次号")
     private String warehousingBatchNo;
 
+    @ApiModelProperty(value = "已入仓信息")
+    private String warehousingInformation;
+
 }

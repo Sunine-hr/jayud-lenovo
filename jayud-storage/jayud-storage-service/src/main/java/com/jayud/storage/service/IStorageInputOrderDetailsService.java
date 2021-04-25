@@ -13,4 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IStorageInputOrderDetailsService extends IService<StorageInputOrderDetails> {
 
+    StorageInputOrderDetails getStorageInputOrderDetails(Long orderId);
 }

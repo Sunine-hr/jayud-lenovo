@@ -6,6 +6,9 @@ import com.jayud.mall.model.bo.QueryShipmentForm;
 import com.jayud.mall.model.po.Shipment;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.vo.ShipmentVO;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * <p>
@@ -44,4 +47,11 @@ public interface IShipmentService extends IService<Shipment> {
      * @return
      */
     CommonResult<ShipmentVO> createOrderByShipment(String shipment_id);
+
+    /**
+     * 导入Excel的数据
+     * @param file
+     * @return
+     */
+    List<List<Object>> importExcelByNewWisdom(MultipartFile file);
 }

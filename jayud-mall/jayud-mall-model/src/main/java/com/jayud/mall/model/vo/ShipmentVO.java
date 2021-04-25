@@ -22,7 +22,7 @@ public class ShipmentVO {
     @ApiModelProperty(value = "服务")
     private String service;
     @ApiModelProperty(value = "件数")
-    private int parcel_count;
+    private String parcel_count;
     private List<String> attrs;
     @ApiModelProperty(value = "收货地址")
     private To_address to_address;
@@ -38,11 +38,11 @@ public class ShipmentVO {
     private String remark;
     @ApiModelProperty(value = "状态")
     private String status;
-    private long picking_time;
-    private long rates_time;
-    private long creat_time;
+    private String picking_time;
+    private String rates_time;
+    private String creat_time;
     @ApiModelProperty(value = "创建人")
-    private long created;
+    private String created;
 
     //展示
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
@@ -102,7 +102,7 @@ class From_address {
 
 @Data
 class Charge_list {
-    private long invoice_time;
+    private String invoice_time;
     private String charge_type;
     private String currency;
     private String charge;
@@ -125,7 +125,7 @@ class Parcels {
     private String chargeable_width;
     private String chargeable_height;
     private List<Declarations> declarations;
-    private long picking_time;
+    private String picking_time;
 }
 
 @Data
@@ -133,20 +133,20 @@ class Declarations {
     private String sku;
     private String name_zh;
     private String name_en;
-    private int unit_value;
-    private int qty;
+    private String unit_value;
+    private String qty;
     private String material;
     private String usage;
     private String brand;
-    private int sale_price;
+    private String sale_price;
     private String sale_url;
     private String asin;
     private String fnsku;
-    private int weight;
+    private String weight;
     private String size;
     private String photo_url;
     private String hscode;
-    private int duty_rate;
+    private String duty_rate;
     private String photos;
-    private int is_battery;
+    private String is_battery;
 }

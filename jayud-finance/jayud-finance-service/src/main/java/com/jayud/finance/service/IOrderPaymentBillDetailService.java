@@ -8,6 +8,7 @@ import com.jayud.finance.bo.*;
 import com.jayud.finance.po.OrderPaymentBillDetail;
 import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.vo.*;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -247,4 +248,9 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      * 根据条件查询账单详情信息
      */
     public List<OrderPaymentBillDetail> getByCondition(OrderPaymentBillDetail orderPaymentBillDetail);
+
+    List<OrderPaymentBillDetail> getNowFOrderExistByLegalId(@Param("legalEntityId") Long legalEntityId,
+                                                            @Param("supplierCode")String supplierCode,
+                                                            @Param("subType")String subType,
+                                                            @Param("orderNo")String orderNo);
 }

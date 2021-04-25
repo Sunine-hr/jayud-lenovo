@@ -158,4 +158,14 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
      */
     List<OrderPaymentBillDetail> getNowFOrderExist(@Param("legalName") String legalName, @Param("supplierChName") String supplierChName,
                                                    @Param("subType") String subType, @Param("orderNo") String orderNo);
+
+
+    /**
+     * 当前订单是否已经存在当前法人主体，结算单位，订单类型中,若存在则不做数量统计
+     * @return
+     */
+    List<OrderPaymentBillDetail> getNowFOrderExistByLegalId(@Param("legalEntityId") Long legalEntityId,
+                                                            @Param("supplierCode")String supplierCode,
+                                                            @Param("subType")String subType,
+                                                            @Param("orderNo")String orderNo);
 }

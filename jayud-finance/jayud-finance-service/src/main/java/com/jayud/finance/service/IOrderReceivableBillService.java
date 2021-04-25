@@ -151,4 +151,31 @@ public interface IOrderReceivableBillService extends IService<OrderReceivableBil
      */
     String getWarehouseAddress(String orderNo);
 
+
+    /**
+     * 配置汇率
+     *
+     * @return
+     */
+    List<OrderBillCostTotalVO> configureExchangeRate(List<Long> costIds, String settlementCurrency, String accountTermStr,
+                                                     Boolean isCustomExchangeRate, List<InitComboxStrVO> customExchangeRates);
+
+    /**
+     * 统计账单
+     *
+     * @param orderBillCostTotalVOS
+     * @param orderReceivableBill
+     * @param orderNos
+     * @param subType
+     * @return
+     */
+    OrderReceivableBill statisticsBill(List<OrderBillCostTotalVO> orderBillCostTotalVOS, OrderReceivableBill orderReceivableBill, List<String> orderNos, String subType);
+
+
+    /**
+     * 根据条件查询信息
+     * @param orderReceivableBill
+     * @return
+     */
+    List<OrderReceivableBill> getByCondition(OrderReceivableBill orderReceivableBill);
 }

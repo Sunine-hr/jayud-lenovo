@@ -68,13 +68,13 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
 
     @Override
     public String createOrder(AddTrailerOrderFrom addTrailerOrderFrom) {
-        TrailerOrder trailerOrder = ConvertUtil.convert(addTrailerOrderFrom, TrailerOrder.class);
+
         if(addTrailerOrderFrom.getOldMainOrderNo()!=null){
             QueryWrapper queryWrapper = new QueryWrapper();
             queryWrapper.eq("main_order_no",addTrailerOrderFrom.getOldMainOrderNo());
             this.remove(queryWrapper);
         }
-
+        TrailerOrder trailerOrder = ConvertUtil.convert(addTrailerOrderFrom, TrailerOrder.class);
         LocalDateTime now = LocalDateTime.now();
         addTrailerOrderFrom.getPathAndName();
 //        System.out.println("trailerOrder===================================="+trailerOrder);
@@ -94,7 +94,7 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
             trailerOrder.setStatus(OrderStatusEnum.TT_0.getCode());
             trailerOrder.setUpdateTime(now);
             trailerOrder.setUpdateUser(UserOperator.getToken());
-            this.updateById(trailerOrder);
+            this.saveOrUpdate(trailerOrder);
         }
         if(addTrailerOrderFrom.getOrderAddressForms()!=null&&addTrailerOrderFrom.getOrderAddressForms().size()>0){
             //获取用户地址

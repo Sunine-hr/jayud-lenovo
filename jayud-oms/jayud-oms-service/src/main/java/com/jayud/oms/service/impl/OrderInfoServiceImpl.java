@@ -1219,7 +1219,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
                 //生成拖车订单号
                 if (form.getCmd().equals("submit")) {//提交
-                    if (trailerOrderFrom.getId() == null) {
+                    if (trailerOrderFrom.getId() == null && trailerOrderFrom.getStatus() == null) {
                         String orderNo = generationOrderNo(trailerOrderFrom.getLegalEntityId(), trailerOrderFrom.getImpAndExpType(), OrderStatusEnum.TC.getCode());
                         trailerOrderFrom.setOrderNo(orderNo);
                     }

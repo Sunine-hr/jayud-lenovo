@@ -664,6 +664,7 @@
             </foreach>
         </if>
         group by oi.legal_name, opc.customer_code
+        order by opc.id desc
     </select>
     <select id="findPaymentSubBillByPage" resultType="com.jayud.finance.vo.OrderPaymentBillVO">
         SELECT DISTINCT
@@ -805,5 +806,42 @@
                 </otherwise>
             </choose>
         </where>
+    </select>
+
+    <select id="getAlreadyPaidAmountByLegalId" resultType="java.math.BigDecimal">
+         SELECT
+	    ifnull(sum(opbd.local_amount),0) billOrderNum
+      FROM
+	    order_payment_bill_detail opbd
+	    LEFT JOIN order_payment_bill opb ON opbd.bill_id = opb.id
+      WHERE
+        opb.legal_entity_id = #{legalEntityId}
+        AND opb.supplier_code = #{supplierCode}
+        AND opb.sub_type = #{subType}
+        AND opbd.audit_status!='edit_del'
+
+    </select>
+    <select id="getBillOrderNumByLegalId" resultType="java.lang.Integer">
+         SELECT
+	    count( DISTINCT opbd.order_no ) billOrderNum
+      FROM
+	    order_payment_bill_detail opbd
+	    LEFT JOIN order_payment_bill opb ON opbd.bill_id = opb.id
+      WHERE
+        opb.legal_entity_id = #{legalEntityId}
+        AND opb.supplier_code = #{supplierCode}
+        AND opb.sub_type = #{subType}
+    </select>
+
+    <select id="getBillNumByLegalId" resultType="java.lang.Integer">
+         SELECT
+	    count( DISTINCT opbd.bill_no ) billOrderNum
+      FROM
+	    order_payment_bill_detail opbd
+	    LEFT JOIN order_payment_bill opb ON opbd.bill_id = opb.id
+      WHERE
+         opb.legal_entity_id = #{legalEntityId}
+        AND opb.supplier_code = #{supplierCode}
+        AND opb.sub_type = #{subType}
     </select>
 </mapper>

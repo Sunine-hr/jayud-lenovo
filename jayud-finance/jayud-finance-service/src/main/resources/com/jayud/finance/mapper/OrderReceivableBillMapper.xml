@@ -354,6 +354,7 @@
         AND orb.unit_account = #{unitAccount}
         AND orb.sub_type = #{subType}
     </select>
+
     <!-- TODO 修改为根据法人id和结算code-->
     <select id="getSBillOrderNumByLegalId" resultType="java.lang.Integer">
       SELECT
@@ -676,7 +677,7 @@
                 #{legalId}
             </foreach>
         </if>
-        group by oi.legal_name, orc.customer_code
+        group by oi.legal_entity_id, orc.customer_code
     </select>
     <select id="findReceiveSubBillByPage" resultType="com.jayud.finance.vo.OrderReceiveBillVO">
         SELECT DISTINCT
@@ -856,8 +857,8 @@
             and t1.customer_code = #{customerCode}
             <choose>
                 <when test="isMain">
-                    and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_name =
-                    #{legalName})
+                    and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_entity_id =
+                    #{legalEntityId})
                 </when>
                 <otherwise>
                     and t1.order_no in (select o1.order_no from ${dynamicSqlParam.table} o1 where o1.legal_entity_id =

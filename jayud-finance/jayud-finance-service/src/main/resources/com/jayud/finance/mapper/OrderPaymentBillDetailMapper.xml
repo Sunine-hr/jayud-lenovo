@@ -730,4 +730,13 @@
         </if>
         group by opbd.bill_no
     </select>
+
+    <select id="getNowFOrderExistByLegalId" resultType="com.jayud.finance.po.OrderPaymentBillDetail">
+         SELECT opbd.*
+        FROM
+            order_payment_bill_detail opbd
+            LEFT JOIN order_payment_bill opb ON opbd.bill_id = opb.id
+        WHERE
+            opbd.order_no = #{orderNo} and opb.sub_type = #{subType} and opb.legal_entity_id = #{legalEntityId} and opb.supplier_code = #{supplierCode}
+    </select>
 </mapper>

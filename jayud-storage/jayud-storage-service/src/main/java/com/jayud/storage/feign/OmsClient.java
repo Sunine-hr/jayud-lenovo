@@ -7,6 +7,8 @@ import com.jayud.common.config.FeignRequestInterceptor;
 import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.InitComboxVO;
+import com.jayud.storage.model.bo.AuditInfoForm;
+import com.jayud.storage.model.bo.StorageInProcessOptForm;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,20 +39,20 @@ public interface OmsClient {
     @RequestMapping(value = "/api/mainOrder/getByOrderNos")
     ApiResult getMainOrderByOrderNos(@RequestParam("orderNos") List<String> orderNos);
 
-//    /**
-//     * 只记录成功操作流程状态
-//     */
-//    @RequestMapping(value = "/api/saveOprStatus")
-//    ApiResult saveOprStatus(@RequestBody TrailerProcessOptForm form);
-//
-//    /**
-//     * 记录审核信息
-//     *
-//     * @param form
-//     * @return
-//     */
-//    @RequestMapping(value = "/api/saveAuditInfo")
-//    ApiResult saveAuditInfo(@RequestBody AuditInfoForm form);
+    /**
+     * 只记录成功操作流程状态
+     */
+    @RequestMapping(value = "/api/saveOprStatus")
+    ApiResult saveOprStatus(@RequestBody StorageInProcessOptForm form);
+
+    /**
+     * 记录审核信息
+     *
+     * @param form
+     * @return
+     */
+    @RequestMapping(value = "/api/saveAuditInfo")
+    ApiResult saveAuditInfo(@RequestBody AuditInfoForm form);
 
     /**
      * 初始化审核通过车辆供应商
@@ -95,32 +97,6 @@ public interface OmsClient {
     @RequestMapping(value = "/api/deleteLogisticsTrackByType")
     ApiResult deleteLogisticsTrackByType(@RequestParam("orderId") Long orderId, @RequestParam("type") Integer type);
 
-//    /**
-//     * 批量保存/修改商品信息
-//     */
-//    @RequestMapping(value = "/api/saveOrUpdateGoodsBatch")
-//    public ApiResult saveOrUpdateGoodsBatch(@RequestBody List<AddGoodsForm> goodsForms);
-//
-//    /**
-//     * 批量保存/修改订单地址信息
-//     */
-//    @RequestMapping(value = "/api/saveOrUpdateOrderAddressBatch")
-//    public ApiResult saveOrUpdateOrderAddressBatch(@RequestBody List<AddOrderAddressForm> forms);
-//
-//    /**
-//     * 根据业务id集合查询订单地址
-//     */
-//    @RequestMapping(value = "/api/getOrderAddressByBusIds")
-//    public ApiResult<List<OrderAddressVO>> getOrderAddressByBusIds(@RequestParam("orderId") List<Long> orderId,
-//                                                                   @RequestParam("businessType") Integer businessType);
-//
-//    /**
-//     * 根据订单id集合查询商品信息
-//     */
-//    @RequestMapping(value = "/api/getGoodsByBusIds")
-//    public ApiResult<List<GoodsVO>> getGoodsByBusIds(@RequestParam("orderId") List<Long> orderId,
-//                                                     @RequestParam("businessType") Integer businessType);
-
 
     /**
      * 根据供应商id集合查询供应商信息
@@ -129,11 +105,6 @@ public interface OmsClient {
     @RequestMapping(value = "/api/getSupplierInfoByIds")
     ApiResult getSupplierInfoByIds(@RequestParam("supplierIds") List<Long> supplierIds);
 
-    /**
-     * 获取柜车大小类型
-     */
-    @RequestMapping(value = "/api/getVehicleSizeInfo")
-    ApiResult getVehicleSizeInfo();
 
     /**
      * 获取附件集合
@@ -190,13 +161,6 @@ public interface OmsClient {
     @RequestMapping(value = "api/initVehicle")
     public ApiResult initVehicle(@RequestParam("type") Integer type);
 
-//    @ApiOperation(value = "初始化车辆下拉框 (确认派车)")
-//    @RequestMapping(value = "api/initVehicleInfo")
-//    public ApiResult<VehicleInfoLinkVO> initVehicleInfo(@RequestParam("vehicleId") Long vehicleId);
-//
-//    @ApiOperation(value = "单个存储商品信息")
-//    @RequestMapping(value = "api/saveOrUpdateGood")
-//    ApiResult saveOrUpdateGood(@RequestBody AddGoodsForm goodsForm);
 
     @ApiOperation(value = "单个商品信息获取")
     @RequestMapping(value = "api/getGoodById")

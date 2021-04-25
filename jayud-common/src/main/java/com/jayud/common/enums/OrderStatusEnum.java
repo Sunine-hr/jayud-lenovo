@@ -167,7 +167,6 @@ public enum OrderStatusEnum {
     CCI_1_1("CCI_1_1", "入库接单驳回"),
     CCI_2("CCI_2", "确认入仓"),
     CCI_3("CCI_3", "仓储入库"),
-    CCI_4("CCI_4", "已入库"),
     //出库
     CCE_0("CCI_O", "待接单"),
     CCE_1("CCI_1", "出库接单"),
@@ -176,7 +175,6 @@ public enum OrderStatusEnum {
     CCE_3("CCI_3", "仓储拣货"),
     CCE_4("CCI_4", "出仓确认"),
     CCE_5("CCI_5", "出仓异常"),
-    CCE_6("CCI_6", "已出库"),
     //外部报关放行
     EXT_CUSTOMS_RELEASE("E_C_0", "外部报关放行"),
 
@@ -436,7 +434,6 @@ public enum OrderStatusEnum {
         statusEnums.add(CCI_1);
         statusEnums.add(CCI_2);
         statusEnums.add(CCI_3);
-        statusEnums.add(CCI_4);
         return statusEnums;
     }
 
@@ -448,7 +445,6 @@ public enum OrderStatusEnum {
         statusEnums.add(CCE_3);
         statusEnums.add(CCE_4);
         statusEnums.add(CCE_5);
-        statusEnums.add(CCE_6);
         return statusEnums;
     }
 

@@ -6,13 +6,16 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
+import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.enums.BusinessTypeEnum;
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.storage.feign.OauthClient;
-import com.jayud.storage.model.bo.QueryStorageOrderForm;
-import com.jayud.storage.model.bo.StorageInputOrderForm;
-import com.jayud.storage.model.bo.WarehouseGoodsForm;
+import com.jayud.storage.feign.OmsClient;
+import com.jayud.storage.model.bo.*;
 import com.jayud.storage.model.po.StorageInputOrder;
 import com.jayud.storage.mapper.StorageInputOrderMapper;
 import com.jayud.storage.model.po.StorageOutOrder;
@@ -23,6 +26,7 @@ import com.jayud.storage.model.vo.WarehouseGoodsVO;
 import com.jayud.storage.service.IStorageInputOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.storage.service.IWarehouseGoodsService;
+import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +52,9 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
 
     @Autowired
     private OauthClient oauthClient;
+
+    @Autowired
+    private OmsClient omsClient;
 
     @Override
     public String createOrder(StorageInputOrderForm storageInputOrderForm) {
@@ -118,5 +125,66 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
 
         Page<StorageInputOrderFormVO> page = new Page<>(form.getPageNum(), form.getPageSize());
         return this.baseMapper.findByPage(page, form,legalIds);
+    }
+
+    @Override
+    public void warehouseReceipt(StorageInProcessOptForm form) {
+        StorageInputOrder storageInputOrder = new StorageInputOrder();
+        storageInputOrder.setOrderTaker(form.getOperatorUser());
+        storageInputOrder.setReceivingOrdersDate(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
+        storageInputOrder.setId(form.getOrderId());
+        storageInputOrder.setUpdateUser(UserOperator.getToken());
+        storageInputOrder.setUpdateTime(LocalDateTime.now());
+        storageInputOrder.setStatus(form.getStatus());
+
+        boolean b = this.updateById(storageInputOrder);
+        if(!b){
+            log.warn("修改状态失败");
+        }
+        //节点操作记录
+        this.storageProcessOptRecord(form);
+
+        //完成订单状态
+        finishStorageOrderOpt(storageInputOrder);
+    }
+
+    /**
+     * 入库流程操作记录
+     */
+    @Override
+    public void storageProcessOptRecord(StorageInProcessOptForm form) {
+        AuditInfoForm auditInfoForm = new AuditInfoForm();
+        auditInfoForm.setExtId(form.getOrderId());
+        auditInfoForm.setExtDesc(SqlConstant.STORAGE_INPUT_ORDER);
+        auditInfoForm.setAuditComment(form.getDescription());
+        auditInfoForm.setAuditUser(UserOperator.getToken());
+        auditInfoForm.setFileViews(form.getFileViewList());
+        auditInfoForm.setAuditStatus(form.getStatus());
+        auditInfoForm.setAuditTypeDesc(form.getStatusName());
+
+        //文件拼接
+        form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
+        form.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
+        form.setBusinessType(BusinessTypeEnum.TC.getCode());
+
+        if (omsClient.saveOprStatus(form).getCode() != HttpStatus.SC_OK) {
+            log.error("远程调用物流轨迹失败");
+        }
+        if (omsClient.saveAuditInfo(auditInfoForm).getCode() != HttpStatus.SC_OK) {
+            log.error("远程调用审核记录失败");
+        }
+
+    }
+
+    //判断订单完成状态
+    private void finishStorageOrderOpt(StorageInputOrder storageInputOrder) {
+        if (OrderStatusEnum.CCI_3.getCode().equals(storageInputOrder.getStatus())) {
+            //查询海运订单信息
+            StorageInputOrder storageInputOrder1 = new StorageInputOrder();
+            storageInputOrder1.setId(storageInputOrder.getId());
+            storageInputOrder1.setProcessStatus(1);
+            this.updateById(storageInputOrder1);
+        }
+
     }
 }

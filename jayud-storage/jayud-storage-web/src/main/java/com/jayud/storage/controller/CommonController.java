@@ -6,6 +6,8 @@ import com.alibaba.excel.metadata.Sheet;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jayud.common.CommonResult;
+import com.jayud.common.entity.InitComboxStrVO;
+import com.jayud.common.entity.InitComboxVO;
 import com.jayud.common.utils.excel.ExcelUtils;
 import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.WarehouseGoodsForm;
@@ -24,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -110,6 +113,18 @@ public class CommonController {
             }
         }
         return CommonResult.success();
+    }
+
+    @ApiOperation(value = "确认入仓下拉列表框")
+    @PostMapping(value = "/commonComBox")
+    public CommonResult commonComBox(){
+        List<InitComboxStrVO> data = omsClient.initDictByDictTypeCode("operation").getData();
+        List<InitComboxStrVO> data1 = omsClient.initDictByDictTypeCode("cardType").getData();
+
+        HashMap<String,Object> hashMap = new HashMap();
+        hashMap.put("operation",data);
+        hashMap.put("cardType",data1);
+        return CommonResult.success(hashMap);
     }
 
 }

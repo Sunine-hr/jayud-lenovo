@@ -2,6 +2,7 @@ package com.jayud.storage.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.storage.model.bo.QueryStorageOrderForm;
+import com.jayud.storage.model.bo.StorageInProcessOptForm;
 import com.jayud.storage.model.bo.StorageInputOrderForm;
 import com.jayud.storage.model.po.StorageInputOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -30,4 +31,8 @@ public interface IStorageInputOrderService extends IService<StorageInputOrder> {
     StorageInputOrderVO getStorageInputOrderVOById(Long id);
 
     IPage<StorageInputOrderFormVO> findByPage(QueryStorageOrderForm form);
+
+    void warehouseReceipt(StorageInProcessOptForm form);
+
+    void storageProcessOptRecord(StorageInProcessOptForm form);
 }

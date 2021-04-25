@@ -185,7 +185,7 @@ public class StorageInputOrderController {
         //指令操作
         switch (statusEnum) {
             case CCI_1: //入库接单
-
+                storageInputOrderService.warehouseReceipt(form);
                 break;
             case CCI_2: //确认入仓
                 break;

@@ -29,4 +29,8 @@ public class CustomerAuditForm {
     @JSONField(ordinal = 5)
     private String remark;
 
+    @ApiModelProperty(value = "运营(服务)小组2(operation_team id)", position = 30)
+    @JSONField(ordinal = 30)
+    private Long operationTeamTwo;
+
 }

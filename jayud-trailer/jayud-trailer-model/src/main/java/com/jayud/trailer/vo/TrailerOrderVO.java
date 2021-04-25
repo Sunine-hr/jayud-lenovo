@@ -261,11 +261,14 @@ public class TrailerOrderVO {
             }
             if(goods.getTotalWeight()!=null){
                 this.totalWeight = this.totalWeight + goods.getTotalWeight();
-                if(goods.getBulkCargoUnit().equals("件")){
-                    this.totalAmount = this.totalAmount + goods.getBulkCargoAmount();
-                }else{
-                    this.totalXAmount = this.totalXAmount + goods.getBulkCargoAmount();
+                if(goods.getBulkCargoUnit() != null){
+                    if(goods.getBulkCargoUnit().equals("件")){
+                        this.totalAmount = this.totalAmount + goods.getBulkCargoAmount();
+                    }else{
+                        this.totalXAmount = this.totalXAmount + goods.getBulkCargoAmount();
+                    }
                 }
+
             }
         }
         this.totalWeightName = this.totalWeight.toString() + "KG";

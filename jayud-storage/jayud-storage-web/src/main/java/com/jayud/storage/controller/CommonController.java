@@ -13,6 +13,7 @@ import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.WarehouseGoodsForm;
 import com.jayud.storage.model.bo.WarehouseGoodsInForm;
 import com.jayud.storage.model.bo.WarehouseGoodsOutForm;
+import com.jayud.storage.model.vo.InitComboxWarehouseVO;
 import com.jayud.storage.service.IGoodService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -120,10 +121,11 @@ public class CommonController {
     public CommonResult commonComBox(){
         List<InitComboxStrVO> data = omsClient.initDictByDictTypeCode("operation").getData();
         List<InitComboxStrVO> data1 = omsClient.initDictByDictTypeCode("cardType").getData();
-
+        InitComboxWarehouseVO data2 = omsClient.initComboxWarehouseVO().getData();
         HashMap<String,Object> hashMap = new HashMap();
         hashMap.put("operation",data);
         hashMap.put("cardType",data1);
+        hashMap.put("warehouseInfo",data2);
         return CommonResult.success(hashMap);
     }
 

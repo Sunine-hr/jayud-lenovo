@@ -449,14 +449,14 @@ public enum OrderStatusEnum {
     }
 
     public static OrderStatusEnum getInStorageOrderRejection(String status) {
-        if (OrderStatusEnum.CCI_0.getCode().equals(status)) {//接单页面驳回
+        if (OrderStatusEnum.CCI_0.getCode().equals(status)) {//入库接单页面驳回
             return CCI_1_1;
         }
         return null;
     }
 
     public static OrderStatusEnum getOutStorageOrderRejection(String status) {
-        if (OrderStatusEnum.CCE_0.getCode().equals(status)) {//接单页面驳回
+        if (OrderStatusEnum.CCE_0.getCode().equals(status)) {//出库接单页面驳回
             return CCE_1_1;
         }
         return null;

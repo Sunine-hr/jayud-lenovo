@@ -60,6 +60,9 @@ public class QueryStorageOrderForm extends BasePageForm {
     @ApiModelProperty(value = "当前登录用户,前台传")
     private String loginUserName;
 
+    @ApiModelProperty(value = "仓库id")
+    private String warehouseId;
+
     public void assemblyMainOrderNo(JSONArray mainOrders) {
         mainOrderNos = new ArrayList<>(mainOrders.size());
         for (int i = 0; i < mainOrders.size(); i++) {

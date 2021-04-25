@@ -218,6 +218,24 @@ public class ExternalApiController {
         return CommonResult.success(initComboxVOS);
     }
 
+    @ApiOperation(value = "中转仓库")
+    @RequestMapping(value = "api/initComboxWarehouseVO")
+    public CommonResult initComboxWarehouseVO() {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(SqlConstant.STATUS, 1);
+        List<WarehouseInfo> warehouseInfos = warehouseInfoService.list(queryWrapper);
+        List<InitComboxWarehouseVO> initComboxVOS = new ArrayList<>();
+        for (WarehouseInfo warehouseInfo : warehouseInfos) {
+            InitComboxWarehouseVO initComboxVO = new InitComboxWarehouseVO();
+            initComboxVO.setId(warehouseInfo.getId());
+            initComboxVO.setName(warehouseInfo.getWarehouseName());
+            initComboxVO.setPhone(warehouseInfo.getContactNumber());
+            initComboxVO.setAddress(warehouseInfo.getAddress());
+            initComboxVOS.add(initComboxVO);
+        }
+        return CommonResult.success(initComboxVOS);
+    }
+
     @ApiOperation(value = "下拉框:获取审核通过的车辆供应商")
     @RequestMapping(value = "api/initSupplierInfo")
     public CommonResult initSupplierInfo() {

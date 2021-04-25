@@ -9,6 +9,7 @@ import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.InitComboxVO;
 import com.jayud.storage.model.bo.AuditInfoForm;
 import com.jayud.storage.model.bo.StorageInProcessOptForm;
+import com.jayud.storage.model.vo.InitComboxWarehouseVO;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -174,4 +175,8 @@ public interface OmsClient {
     @ApiOperation(value = "查询联系人信息")
     @RequestMapping(value = "/getContactInfoByPhone")
     public CommonResult<List<Map<String, Object>>> getContactInfoByPhone(@RequestParam("businessType") Integer businessType);
+
+    @ApiOperation(value = "中转仓库")
+    @RequestMapping(value = "api/initComboxWarehouseVO")
+    public CommonResult<InitComboxWarehouseVO> initComboxWarehouseVO();
 }

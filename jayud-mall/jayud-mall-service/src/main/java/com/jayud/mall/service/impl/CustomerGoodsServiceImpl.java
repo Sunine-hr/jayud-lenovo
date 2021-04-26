@@ -63,6 +63,7 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
         ids.forEach(id -> {
             CustomerGoods customerGoods = new CustomerGoods();
             customerGoods.setId(id);
+            customerGoods.setStatus(status);
             customerGoods.setStatusName(statusName);
             customerGoods.setDataCode(dataCode);
             customerGoods.setClearanceCode(clearanceCode);

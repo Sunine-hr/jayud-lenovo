@@ -64,9 +64,11 @@ public class OrderCaseController {
         Integer bNumber = Integer.valueOf(beginNumber);
         for (int i = 0; i<orderCaseVOList.size(); i++){
             OrderCaseVO orderCaseVO = orderCaseVOList.get(i);
-            bNumber = bNumber + i;
+            if(i != 0){
+                bNumber = bNumber + 1;
+            }
             //数字转字符串,前面自动补0的实现,补4位数的零
-            String fabNo = extensionNumber+String.format("%0"+beginNumber.length()+"d", bNumber);
+            String fabNo = extensionNumber+"U"+String.format("%0"+beginNumber.length()+"d", bNumber);
             orderCaseVO.setFabNo(fabNo);
         }
 

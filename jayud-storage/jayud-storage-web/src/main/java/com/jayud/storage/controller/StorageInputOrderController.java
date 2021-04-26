@@ -206,6 +206,7 @@ public class StorageInputOrderController {
                 storageInputOrderService.warehouseReceipt(form);
                 break;
             case CCI_2: //确认入仓
+                storageInputOrderService.confirmEntry(form);
                 break;
             case CCI_3: //仓储入库
                 break;

@@ -35,4 +35,6 @@ public interface IStorageInputOrderService extends IService<StorageInputOrder> {
     void warehouseReceipt(StorageInProcessOptForm form);
 
     void storageProcessOptRecord(StorageInProcessOptForm form);
+
+    void confirmEntry(StorageInProcessOptForm form);
 }

@@ -136,6 +136,9 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "应收费用状态")
     private String receivableCostStatus;
 
+    @ApiModelProperty(value = "应付费用状态")
+    private String paymentCostStatus;
+
 //    @ApiModelProperty(value = "子订单状态描述")
 //    private String subOrderStatusDesc;
 //
@@ -224,10 +227,16 @@ public class OrderInfoVO {
 //        return sb.length() == 0 ? "" : sb.substring(0, sb.length() - 1);
 //    }
 
-
-    public void assembleCostStatus(Map<String, Object> orderCostStatus) {
-        String statusDesc = MapUtil.getStr(orderCostStatus, this.orderNo);
-        this.receivableCostStatus = StringUtils.isEmpty(statusDesc) ? "未录入" : statusDesc;
+    /**
+     * 重组费用状态
+     * @param receivableCostStatus
+     * @param paymentCostStatus
+     */
+    public void assembleCostStatus(Map<String, Object> receivableCostStatus, Map<String, Object> paymentCostStatus) {
+        String receivableStatusDesc = MapUtil.getStr(receivableCostStatus, this.orderNo);
+        String paymentStatusDesc = MapUtil.getStr(paymentCostStatus, this.orderNo);
+        this.receivableCostStatus = StringUtils.isEmpty(receivableStatusDesc) ? "未录入" : receivableStatusDesc;
+        this.paymentCostStatus = StringUtils.isEmpty(paymentStatusDesc) ? "未录入" : paymentStatusDesc;
     }
 
 

@@ -13,6 +13,7 @@ public enum CustomerInfoStatusEnum {
     KF_WAIT_AUDIT("0","待客服审核"),
     CW_WAIT_AUDIT("1","待财务审核"),
     ZJB_WAIT_AUDIT("2","待总经办审核"),
+    DRAFT("3","草稿"),
     AUDIT_SUCCESS("10","审核通过"),
     AUDIT_FAIL("11","审核拒绝")
     ;

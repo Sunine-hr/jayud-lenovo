@@ -70,6 +70,9 @@
         <if test="form.countryCode != null and form.countryCode != ''">
             and t6.code = #{form.countryCode}
         </if>
+        <if test="form.status != null and form.status != ''">
+            and t.`status` = #{form.status}
+        </if>
 
     </select>
 

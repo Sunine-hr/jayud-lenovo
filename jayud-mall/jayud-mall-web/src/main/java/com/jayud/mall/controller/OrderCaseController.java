@@ -60,13 +60,13 @@ public class OrderCaseController {
 
         //fba箱号-生成规则
         String extensionNumber = form.getExtensionNumber();
-        Integer beginNumber = form.getBeginNumber();
-
+        String beginNumber = form.getBeginNumber();
+        Integer bNumber = Integer.valueOf(beginNumber);
         for (int i = 0; i<orderCaseVOList.size(); i++){
             OrderCaseVO orderCaseVO = orderCaseVOList.get(i);
-            beginNumber = beginNumber + i;
+            bNumber = bNumber + i;
             //数字转字符串,前面自动补0的实现,补4位数的零
-            String fabNo = extensionNumber+String.format("%04d", beginNumber);
+            String fabNo = extensionNumber+String.format("%0"+beginNumber.length()+"d", bNumber);
             orderCaseVO.setFabNo(fabNo);
         }
 

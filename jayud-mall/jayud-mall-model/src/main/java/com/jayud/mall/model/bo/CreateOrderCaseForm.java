@@ -53,7 +53,7 @@ public class CreateOrderCaseForm {
 
     @ApiModelProperty(value = "起始单号", position = 7)
     @JSONField(ordinal = 7)
-    private Integer beginNumber;
+    private String beginNumber;
 
 
 }

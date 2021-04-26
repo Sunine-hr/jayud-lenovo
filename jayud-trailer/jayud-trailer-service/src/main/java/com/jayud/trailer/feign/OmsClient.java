@@ -211,4 +211,18 @@ public interface OmsClient {
     @ApiOperation(value = "查询联系人信息")
     @RequestMapping(value = "/getContactInfoByPhone")
     public CommonResult<List<Map<String, Object>>> getContactInfoByPhone(@RequestParam("businessType") Integer businessType);
+
+    /**
+     * 根据订单号集合删除商品信息
+     */
+    @RequestMapping(value = "/api/deleteGoodsByBusOrders")
+    public ApiResult deleteGoodsByBusOrders(@RequestParam("orderNo") List<String> orderNo,
+                                                           @RequestParam("businessType") Integer businessType);
+
+    /**
+     * 根据业务号集合删除订单地址
+     */
+    @RequestMapping(value = "/api/deleteOrderAddressByBusOrders")
+    public ApiResult deleteOrderAddressByBusOrders(@RequestParam("orderNo") List<String> orderNo,
+                                                                         @RequestParam("businessType") Integer businessType);
 }

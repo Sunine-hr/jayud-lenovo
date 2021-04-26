@@ -74,6 +74,17 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
             queryWrapper.eq("main_order_no",addTrailerOrderFrom.getOldMainOrderNo());
             this.remove(queryWrapper);
         }
+        if(addTrailerOrderFrom.getOldOrderNo()!=null){
+            ApiResult result = omsClient.deleteGoodsByBusOrders(Collections.singletonList(addTrailerOrderFrom.getOldOrderNo()), BusinessTypeEnum.TC.getCode());
+            if (result.getCode() != HttpStatus.SC_OK) {
+                log.warn("删除商品信息失败");
+            }
+            ApiResult result1 = omsClient.deleteOrderAddressByBusOrders(Collections.singletonList(addTrailerOrderFrom.getOldOrderNo()), BusinessTypeEnum.TC.getCode());
+            if (result1.getCode() != HttpStatus.SC_OK) {
+                log.warn("删除地址信息失败");
+            }
+        }
+
         TrailerOrder trailerOrder = ConvertUtil.convert(addTrailerOrderFrom, TrailerOrder.class);
         LocalDateTime now = LocalDateTime.now();
         addTrailerOrderFrom.getPathAndName();

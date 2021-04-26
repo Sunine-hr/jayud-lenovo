@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,12 +70,10 @@ public class ShipmentController {
     @ResponseBody
     @ApiOperationSupport(order = 4)
     public CommonResult<ShipmentIdVO> importExcelByNewWisdom(
-            HttpServletRequest request,
             //用@RequestHeader获取请求头
             @RequestHeader(value = "customerId") String customerId,
             @RequestParam("file") MultipartFile file){
         //用HttpServletRequest，获取请求头内容
-        String customerId_request_header = request.getHeader("customerId");
         if (file.isEmpty()) {
             return CommonResult.error(-1, "文件为空！");
         }

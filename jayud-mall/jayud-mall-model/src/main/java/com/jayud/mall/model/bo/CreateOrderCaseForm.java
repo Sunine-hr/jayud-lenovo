@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -17,7 +18,8 @@ public class CreateOrderCaseForm {
     @ApiModelProperty(value = "总箱数", position = 1)
     @JSONField(ordinal = 1)
     @NotNull(message = "总箱数不能为空")
-    @Min(value = 1,message = "总箱数大于等于1")
+    @Min(value = 1,message = "总箱数最小为1")
+    @Max(value = 2000,message = "总箱数最大为2000")
     private Integer cartons;
 
     //每箱重量
@@ -43,5 +45,15 @@ public class CreateOrderCaseForm {
     @JSONField(ordinal = 5)
     @NotNull(message = "高不能为空")
     private BigDecimal height;
+
+    @ApiModelProperty(value = "扩展单号(FBA)", position = 6)
+    @JSONField(ordinal = 6)
+    @NotNull(message = "扩展单号(FBA)不能为空")
+    private String extensionNumber;
+
+    @ApiModelProperty(value = "起始单号", position = 7)
+    @JSONField(ordinal = 7)
+    private Integer beginNumber;
+
 
 }

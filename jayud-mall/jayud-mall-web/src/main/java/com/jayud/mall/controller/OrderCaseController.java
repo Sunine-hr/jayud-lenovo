@@ -57,8 +57,20 @@ public class OrderCaseController {
         }
         List<OrderCaseVO> orderCaseVOList = orderCaseService.createOrderCaseList(form);
 
-        CaseVO caseVO = new CaseVO();
 
+        //fba箱号-生成规则
+        String extensionNumber = form.getExtensionNumber();
+        Integer beginNumber = form.getBeginNumber();
+
+        for (int i = 0; i<orderCaseVOList.size(); i++){
+            OrderCaseVO orderCaseVO = orderCaseVOList.get(i);
+            beginNumber = beginNumber + i;
+            //数字转字符串,前面自动补0的实现,补4位数的零
+            String fabNo = extensionNumber+String.format("%04d", beginNumber);
+            orderCaseVO.setFabNo(fabNo);
+        }
+
+        CaseVO caseVO = new CaseVO();
         //(客户预报)总重量
         BigDecimal totalAsnWeight = new BigDecimal("0");
         //(客户预报)总体积

@@ -4,6 +4,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
@@ -91,6 +92,8 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
             trailerOrder.setUpdateUser(UserOperator.getToken());
             this.saveOrUpdate(trailerOrder);
         }
+        omsClient.deleteGoodsByBusOrders(Collections.singletonList(trailerOrder.getOrderNo()),BusinessTypeEnum.TC.getCode());
+        omsClient.deleteOrderAddressByBusOrders(Collections.singletonList(trailerOrder.getOrderNo()),BusinessTypeEnum.TC.getCode());
         if(addTrailerOrderFrom.getOrderAddressForms()!=null&&addTrailerOrderFrom.getOrderAddressForms().size()>0){
             //获取用户地址
             List<AddTrailerOrderAddressForm> orderAddressForms = addTrailerOrderFrom.getOrderAddressForms();

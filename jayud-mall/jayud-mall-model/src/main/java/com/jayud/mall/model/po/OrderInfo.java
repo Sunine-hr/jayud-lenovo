@@ -140,6 +140,13 @@ public class OrderInfo extends Model<OrderInfo> {
     @JSONField(ordinal = 24)
     private Integer totalCartons;
 
+    @ApiModelProperty(value = "Amazon Reference ID(亚马逊引用ID)", position = 25)
+    @JSONField(ordinal = 25)
+    private String amazonReferenceId;
+
+    @ApiModelProperty(value = "扩展单号", position = 26)
+    @JSONField(ordinal = 26)
+    private String extensionNumber;
 
     @Override
     protected Serializable pkVal() {

@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.ResultEnum;
@@ -79,6 +80,9 @@ public class StorageInputOrderController {
 
     @Autowired
     private IInGoodsOperationRecordService inGoodsOperationRecordService;
+
+    @Autowired
+    private RedisUtils redisUtils;
 
     @ApiOperation("分页查询入库订单列表")
     @PostMapping("/findByPage")
@@ -249,8 +253,27 @@ public class StorageInputOrderController {
                     .append(totalWeight).append("KG");
             warehouseGoodsVO.setWarehousingInformation(stringBuffer.toString());
         }
+        storageInProcessOptFormVO.setWarehouseGoodsForms(list);
 
-        return CommonResult.success();
+        return CommonResult.success(storageInProcessOptFormVO);
+    }
+
+    /**
+     * 获取入库批次号
+     * @param map
+     * @return
+     */
+    public CommonResult getWarehousingBatchNumber(@RequestBody Map<String,Object> map){
+        String orderNo = MapUtil.getStr(map, "orderNo");
+        //从redis中获取数据，没有在生成
+        String s = redisUtils.get(orderNo);
+        if(s!=null){
+            return CommonResult.success(s);
+        }
+        //获取入库批次号
+        String batchNumber = (String)omsClient.getWarehouseNumber("A").getData();
+        redisUtils.set(orderNo,batchNumber);
+        return CommonResult.success(batchNumber);
     }
 
 }

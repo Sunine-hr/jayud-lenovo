@@ -52,6 +52,17 @@
         LEFT JOIN harbour_info t2 on t2.id_code = t1.start_shipment
         LEFT JOIN harbour_info t3 on t3.id_code = t1.destination_port
         left join country t4 on t4.code = t3.state_code
+        join (
+        select DISTINCT id from (
+        select
+        DISTINCT t1.id,substring_index( substring_index(t1.arrive_warehouse,',',t2.id + 1), ',' ,-1 ) as arrive_warehouse_id
+        from (select id,arrive_warehouse from quotation_template) t1 join help_index t2 on t2.id <![CDATA[ < ]]>  (length(t1.arrive_warehouse) - length(REPLACE(t1.arrive_warehouse,',','')) + 1 )
+        ) t
+        where 1=1
+        <if test="form.arriveWarehouseId != null">
+            and t.arrive_warehouse_id = #{form.arriveWarehouseId}
+        </if>
+        ) arrware on arrware.id = t.qie
         WHERE
         1 = 1
         <if test="form.names != null and form.names != ''">

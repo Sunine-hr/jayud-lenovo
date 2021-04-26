@@ -34,4 +34,10 @@ public class QueryOfferInfoForm extends BasePageForm{
     @JSONField(ordinal = 5)
     private String status;
 
+    //目的仓库
+    @ApiModelProperty(value = "目的仓库id(fab_warehouse id)", position = 6)
+    @JSONField(ordinal = 6)
+    private Integer arriveWarehouseId;
+
+
 }

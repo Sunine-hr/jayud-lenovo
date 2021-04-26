@@ -170,6 +170,7 @@
         LEFT JOIN harbour_info t4 on t4.id_code = t1.destination_port
         WHERE
         1 = 1
+        and t.status = 1 and t.cut_off_time <![CDATA[ >= ]]> now()
         <if test="form.stateCode != null and form.stateCode != ''">
             AND t4.state_code = #{form.stateCode}
         </if>

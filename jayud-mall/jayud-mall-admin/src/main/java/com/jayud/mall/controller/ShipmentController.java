@@ -360,9 +360,8 @@ public class ShipmentController {
             //fabWarehouseVO 不存在 直接设置name
             shipmentIdVO.setWarehouseCode(destinationWarehouseCode);
         }else{
-            //fabWarehouseVO 不存在 直接设置id
-            Integer id = fabWarehouseVO.getId();
-            shipmentIdVO.setWarehouseCode(String.valueOf(id));
+            //fabWarehouseVO 存在 直接设置id
+            shipmentIdVO.setWarehouseId(fabWarehouseVO.getId());
         }
         return CommonResult.success(shipmentIdVO);
     }

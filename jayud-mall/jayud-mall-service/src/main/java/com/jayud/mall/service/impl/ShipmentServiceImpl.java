@@ -196,9 +196,10 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
             orderInfo.setReserveSize(null);//订柜尺寸,根据报价选择
             orderInfo.setStoreGoodsWarehouseCode(null);//集货仓库代码,根据报价选择
             orderInfo.setStoreGoodsWarehouseName(null);//集货仓库名称,根据报价选择
-            orderInfo.setDestinationWarehouseCode(fabWarehouseVO.getWarehouseCode());//目的仓库代码,根据报价选择
-            orderInfo.setDestinationWarehouseName(fabWarehouseVO.getWarehouseName());//目的仓库名称,根据报价选择
-
+            if(ObjectUtil.isNotEmpty(fabWarehouseVO)){
+                orderInfo.setDestinationWarehouseCode(fabWarehouseVO.getWarehouseCode());//目的仓库代码,根据报价选择
+                orderInfo.setDestinationWarehouseName(fabWarehouseVO.getWarehouseName());//目的仓库名称,根据报价选择
+            }
             orderInfo.setIsPick(0);//是否上门提货(0否 1是),默认为否
             orderInfo.setStatus(OrderEnum.DRAFT.getCode());//状态码,默认为草稿状态
             orderInfo.setStatusName(OrderEnum.DRAFT.getName());//状态名称
@@ -247,8 +248,11 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
             orderInfo.setReserveSize(null);//订柜尺寸,根据报价选择
             orderInfo.setStoreGoodsWarehouseCode(null);//集货仓库代码,根据报价选择
             orderInfo.setStoreGoodsWarehouseName(null);//集货仓库名称,根据报价选择
-            orderInfo.setDestinationWarehouseCode(fabWarehouseVO.getWarehouseCode());//目的仓库代码,根据报价选择
-            orderInfo.setDestinationWarehouseName(fabWarehouseVO.getWarehouseName());//目的仓库名称,根据报价选择
+
+            if(ObjectUtil.isNotEmpty(fabWarehouseVO)){
+                orderInfo.setDestinationWarehouseCode(fabWarehouseVO.getWarehouseCode());//目的仓库代码,根据报价选择
+                orderInfo.setDestinationWarehouseName(fabWarehouseVO.getWarehouseName());//目的仓库名称,根据报价选择
+            }
 
             orderInfo.setIsPick(0);//是否上门提货(0否 1是),默认为否
             orderInfo.setStatus(OrderEnum.DRAFT.getCode());//状态码,默认为草稿状态

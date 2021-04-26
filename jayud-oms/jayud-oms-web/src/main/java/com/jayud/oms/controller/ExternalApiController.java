@@ -1240,7 +1240,7 @@ public class ExternalApiController {
     }
 
 
-    @ApiOperation("根据业务id集合查询订单地址")
+    @ApiOperation("根据订单号删除订单地址")
     @RequestMapping(value = "/api/deleteOrderAddressByBusOrders")
     public ApiResult<List<OrderAddress>> deleteOrderAddressByBusOrders(@RequestParam("orderNo") List<String> orderNo,
                                                                        @RequestParam("businessType") Integer businessType) {
@@ -1250,7 +1250,7 @@ public class ExternalApiController {
     }
 
 
-    @ApiOperation("根据订单id集合查询商品信息")
+    @ApiOperation("根据订单号删除商品信息")
     @RequestMapping(value = "/api/deleteGoodsByBusOrders")
     public ApiResult<List<Goods>> deleteGoodsByBusOrders(@RequestParam("orderNo") List<String> orderNo,
                                                          @RequestParam("businessType") Integer businessType) {

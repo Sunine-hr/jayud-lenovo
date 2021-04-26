@@ -1,11 +1,15 @@
 package com.jayud.mall.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import cn.hutool.poi.excel.sax.Excel03SaxReader;
+import cn.hutool.poi.excel.sax.Excel07SaxReader;
+import cn.hutool.poi.excel.sax.handler.RowHandler;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -20,15 +24,19 @@ import com.jayud.mall.model.po.*;
 import com.jayud.mall.model.vo.*;
 import com.jayud.mall.service.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.poifs.filesystem.FileMagic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * <p>
@@ -66,7 +74,13 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
     @Autowired
     IShipmentService shipmentService;
 
+    /**
+     * excelList
+     */
+    private static List<List<Object>> excelList = Collections.synchronizedList(new ArrayList<List<Object>>());
+
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ShipmentVO saveShipment(ShipmentVO shipmentVO) {
         String shipment_id = shipmentVO.getShipment_id();
         ShipmentVO shipment = shipmentMapper.findShipmentById(shipment_id);
@@ -78,20 +92,27 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
             log.info("更新修改:{}", shipmentVO);
         }
         Shipment s = ConvertUtil.convert(shipmentVO, Shipment.class);
+        LocalDateTime now = LocalDateTime.now();
         if(ObjectUtil.isNotEmpty(shipmentVO.getPicking_time())){
-            long l = shipmentVO.getPicking_time()*1000L;//秒转为毫秒
+            long l = Long.valueOf(shipmentVO.getPicking_time())*1000L;//秒转为毫秒
             LocalDateTime ldt = Instant.ofEpochMilli(l).atZone(ZoneId.systemDefault()).toLocalDateTime();
             s.setPicking_time(ldt);
+        }else{
+            s.setPicking_time(now);
         }
         if(ObjectUtil.isNotEmpty(shipmentVO.getRates_time())){
-            long l = shipmentVO.getRates_time()*1000L;//秒转为毫秒
+            long l = Long.valueOf(shipmentVO.getRates_time())*1000L;//秒转为毫秒
             LocalDateTime ldt = Instant.ofEpochMilli(l).atZone(ZoneId.systemDefault()).toLocalDateTime();
             s.setRates_time(ldt);
+        }else{
+            s.setRates_time(now);
         }
         if(ObjectUtil.isNotEmpty(shipmentVO.getCreat_time())){
-            long l = shipmentVO.getCreat_time()*1000L;//秒转为毫秒
+            long l = Long.valueOf(shipmentVO.getCreat_time())*1000L;//秒转为毫秒
             LocalDateTime ldt = Instant.ofEpochMilli(l).atZone(ZoneId.systemDefault()).toLocalDateTime();
             s.setCreat_time(ldt);
+        }else{
+            s.setRates_time(now);
         }
         s.setShipmentJson(JSONUtil.toJsonStr(shipmentVO));
         this.saveOrUpdate(s);
@@ -179,14 +200,19 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
             orderInfo.setStatus(OrderEnum.DRAFT.getCode());//状态码,默认为草稿状态
             orderInfo.setStatusName(OrderEnum.DRAFT.getName());//状态名称
 
+            orderInfo.setNeedDeclare(0);//是否需要报关0-否，1-是 (订单对应报关文件:order_customs_file)
+            orderInfo.setNeedClearance(0);//是否需要清关0-否，1-是 (订单对应清关文件:order_clearance_file)
+
             orderInfo.setCreateTime(shipmentVO.getCreatTime());//创建日期,新智慧的下单日期
             orderInfo.setCreateUserId(shipmentVO.getCustomerId());//创建人ID(customer id)
             orderInfo.setCreateUserName(shipmentVO.getCustomerUserName());//创建人名称(customer user_name)
             orderInfo.setOrderOrigin("2");//订单来源(1web端 2新智慧同步)
 
             orderInfo.setRemark("新智慧同步订单");
-            orderInfo.setChargeWeight(new BigDecimal(shipmentVO.getChargeable_weight()));//收费重(KG)
-            orderInfo.setVolumeWeight(new BigDecimal(shipmentVO.getChargeable_weight()));//材积重(KG),默认等于 收费重(KG)
+            if(ObjectUtil.isNotEmpty(shipmentVO.getChargeable_weight())){
+                orderInfo.setChargeWeight(new BigDecimal(shipmentVO.getChargeable_weight()));//收费重(KG)
+                orderInfo.setVolumeWeight(new BigDecimal(shipmentVO.getChargeable_weight()));//材积重(KG),默认等于 收费重(KG)
+            }
             orderInfo.setActualVolume(null);//实际体积(m3),默认为空
             orderInfo.setTotalCartons(null);//总箱数,默认为空
 
@@ -260,6 +286,186 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
         return CommonResult.success(shipmentVO);
     }
 
+    @Override
+    public List<List<Object>> importExcelByNewWisdom(MultipartFile file) {
+        //每次进入createRowHandler之前先清空excelList
+        excelList.clear();
+        // 获取上传文件输入流
+        InputStream inputStream = null;
+        try {
+            inputStream = file.getInputStream();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        InputStream is = FileMagic.prepareToCheckMagic(inputStream);
+        try {
+            FileMagic fm = FileMagic.valueOf(is);
+            switch(fm) {
+                case OLE2:
+                    //excel是03版本
+                    Excel03SaxReader reader03 = new Excel03SaxReader(createRowHandler());
+                    reader03.read(is, 0);
+                    break;
+                case OOXML:
+                    //excel是07版本
+                    Excel07SaxReader reader07 = new Excel07SaxReader(createRowHandler());
+                    reader07.read(is, 0);
+                    break;
+                default:
+                    throw new IOException("Your InputStream was neither an OLE2 stream, nor an OOXML stream");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return excelList;
+    }
+
+    /**
+     * 读取大数据Excel
+     * @return
+     */
+    private RowHandler createRowHandler() {
+        return new RowHandler() {
+            @Override
+            public void handle(int sheetIndex, long rowIndex, List<Object> rowlist) {
+                List<Object> row = new ArrayList<>(26);
+                row.add(0, rowlist.get(0));
+                try {
+                    row.add(1, rowlist.get(1));
+                } catch (Exception e) {
+                    row.add(1, "");
+                }
+                try {
+                    row.add(2, rowlist.get(2));
+                } catch (Exception e) {
+                    row.add(2, "");
+                }
+                try {
+                    row.add(3, rowlist.get(3));
+                } catch (Exception e) {
+                    row.add(3, "");
+                }
+                try {
+                    row.add(4, rowlist.get(4));
+                } catch (Exception e) {
+                    row.add(4, "");
+                }
+                try {
+                    row.add(5, rowlist.get(5));
+                } catch (Exception e) {
+                    row.add(5, "");
+                }
+                try {
+                    row.add(6, rowlist.get(6));
+                } catch (Exception e) {
+                    row.add(6, "");
+                }
+                try {
+                    row.add(7, rowlist.get(7));
+                } catch (Exception e) {
+                    row.add(7, "");
+                }
+                try {
+                    row.add(8, rowlist.get(8));
+                } catch (Exception e) {
+                    row.add(8, "");
+                }
+                try {
+                    row.add(9, rowlist.get(9));
+                } catch (Exception e) {
+                    row.add(9, "");
+                }
+                try {
+                    row.add(10, rowlist.get(10));
+                } catch (Exception e) {
+                    row.add(10, "");
+                }
+                try {
+                    row.add(11, rowlist.get(11));
+                } catch (Exception e) {
+                    row.add(11, "");
+                }
+                try {
+                    row.add(12, rowlist.get(12));
+                } catch (Exception e) {
+                    row.add(12, "");
+                }
+                try {
+                    row.add(13, rowlist.get(13));
+                } catch (Exception e) {
+                    row.add(13, "");
+                }
+                try {
+                    row.add(14, rowlist.get(14));
+                } catch (Exception e) {
+                    row.add(14, "");
+                }
+                try {
+                    row.add(15, rowlist.get(15));
+                } catch (Exception e) {
+                    row.add(15, "");
+                }
+                try {
+                    row.add(16, rowlist.get(16));
+                } catch (Exception e) {
+                    row.add(16, "");
+                }
+                try {
+                    row.add(17, rowlist.get(17));
+                } catch (Exception e) {
+                    row.add(17, "");
+                }
+                try {
+                    row.add(18, rowlist.get(18));
+                } catch (Exception e) {
+                    row.add(18, "");
+                }
+                try {
+                    row.add(19, rowlist.get(19));
+                } catch (Exception e) {
+                    row.add(19, "");
+                }
+                try {
+                    row.add(20, rowlist.get(20));
+                } catch (Exception e) {
+                    row.add(20, "");
+                }
+                try {
+                    row.add(21, rowlist.get(21));
+                } catch (Exception e) {
+                    row.add(21, "");
+                }
+                try {
+                    row.add(22, rowlist.get(22));
+                } catch (Exception e) {
+                    row.add(22, "");
+                }
+                try {
+                    row.add(23, rowlist.get(23));
+                } catch (Exception e) {
+                    row.add(23, "");
+                }
+                try {
+                    row.add(24, rowlist.get(24));
+                } catch (Exception e) {
+                    row.add(24, "");
+                }
+                try {
+                    row.add(25, rowlist.get(25));
+                } catch (Exception e) {
+                    row.add(25, "");
+                }
+                try {
+                    row.add(26, rowlist.get(26));
+                } catch (Exception e) {
+                    row.add(26, "");
+                }
+                excelList.add(row);
+            }
+        };
+    }
+
+
     private void extracted(ShipmentVO shipmentVO, List<OrderShop> orderShopList, List<OrderCase> orderCaseList) {
         JSONObject shipmentJSONObject = JSONUtil.parseObj(shipmentVO);
         Object parcels = shipmentJSONObject.get("parcels");
@@ -282,10 +488,12 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
                 orderCase.setConfirmHeight(parcelsJsonObject.get("chargeable_height", BigDecimal.class));//最终确认高度，单位cm
                 orderCase.setConfirmWeight(parcelsJsonObject.get("chargeable_weight", BigDecimal.class));//最终确认重量，单位kg
                 Long picking_time = parcelsJsonObject.get("picking_time", Long.class);
-                long l = picking_time*1000L;//秒转为毫秒
-                LocalDateTime confirmWeighDate = Instant.ofEpochMilli(l).atZone(ZoneId.systemDefault()).toLocalDateTime();
-                log.info("confirmWeighDate:{}", confirmWeighDate);
-                orderCase.setConfirmWeighDate(confirmWeighDate);
+                if(ObjectUtil.isNotEmpty(picking_time)){
+                    long l = picking_time*1000L;//秒转为毫秒
+                    LocalDateTime confirmWeighDate = Instant.ofEpochMilli(l).atZone(ZoneId.systemDefault()).toLocalDateTime();
+                    log.info("confirmWeighDate:{}", confirmWeighDate);
+                    orderCase.setConfirmWeighDate(confirmWeighDate);
+                }
                 orderCase.setStatus(0);//是否已确认（0-未确认,1-已确认）
                 orderCase.setRemark("新智慧同步箱号");//备注
                 orderCaseList.add(orderCase);
@@ -300,10 +508,12 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
                 orderCase.setConfirmHeight(parcelsJsonObject.get("chargeable_height", BigDecimal.class));//最终确认高度，单位cm
                 orderCase.setConfirmWeight(parcelsJsonObject.get("chargeable_weight", BigDecimal.class));//最终确认重量，单位kg
                 Long picking_time = parcelsJsonObject.get("picking_time", Long.class);
-                long l = picking_time*1000L;//秒转为毫秒
-                LocalDateTime confirmWeighDate = Instant.ofEpochMilli(l).atZone(ZoneId.systemDefault()).toLocalDateTime();
-                log.info("confirmWeighDate:{}", confirmWeighDate);
-                orderCase.setConfirmWeighDate(confirmWeighDate);
+                if(ObjectUtil.isNotEmpty(picking_time)){
+                    long l = picking_time*1000L;//秒转为毫秒
+                    LocalDateTime confirmWeighDate = Instant.ofEpochMilli(l).atZone(ZoneId.systemDefault()).toLocalDateTime();
+                    log.info("confirmWeighDate:{}", confirmWeighDate);
+                    orderCase.setConfirmWeighDate(confirmWeighDate);
+                }
                 orderCase.setStatus(0);//是否已确认（0-未确认,1-已确认）
                 orderCase.setRemark("新智慧同步箱号");//备注
                 orderCaseList.add(orderCase);
@@ -315,14 +525,47 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
                 //订单商品
                 JSONObject declarationsJsonObject = declarationsJSONArray.getJSONObject(j);
                 String sku = declarationsJsonObject.get("sku", String.class);
-                CustomerGoodsVO customerGoodsVO = customerGoodsMapper.findCustomerGoodsByCustomerIdAndsku(shipmentVO.getCustomerId(), sku);
+                CustomerGoodsVO customerGoodsVO = null;
+                if(ObjectUtil.isNotEmpty(sku)){
+                    //新智慧商品 sku 不为空
+                    customerGoodsVO = customerGoodsMapper.findCustomerGoodsByCustomerIdAndsku(shipmentVO.getCustomerId(), sku);
+                }else{
+                    //新智慧商品 sku 为空
+                    /**
+                     * By查询：
+                     * 产品中文品名*-name_zh
+                     * 产品英文品名*-name_en
+                     * 产品材质*-material
+                     * 产品海关编码-hscode
+                     * 产品用途-usage
+                     */
+                    Integer customerId = shipmentVO.getCustomerId();//客户id
+                    String nameCn = declarationsJsonObject.get("name_zh", String.class);//中文名
+                    String nameEn = declarationsJsonObject.get("name_en", String.class);//英文名
+                    String materialQuality = declarationsJsonObject.get("material", String.class);//材质
+                    String hscode = declarationsJsonObject.get("hscode", String.class);//海关编码
+                    String purpose = declarationsJsonObject.get("usage", String.class);//用途
+
+                    Map<String, Object> newWisdomParam = new HashMap<>();
+                    newWisdomParam.put("customerId", customerId);
+                    newWisdomParam.put("nameCn", nameCn);
+                    newWisdomParam.put("nameEn", nameEn);
+                    newWisdomParam.put("materialQuality", materialQuality);
+                    newWisdomParam.put("hscode", hscode);
+                    newWisdomParam.put("purpose", purpose);
+                    customerGoodsVO = customerGoodsMapper.findCustomerGoodsByNewWisdomParam(newWisdomParam);
+                }
+
                 if(ObjectUtil.isEmpty(customerGoodsVO)){
                     //customerGoodsVO 为null
                     CustomerGoods customerGoods = new CustomerGoods();
                     customerGoods.setCustomerId(shipmentVO.getCustomerId());//客户ID(customer id)
-                    customerGoods.setSku(sku);//SKU商品编码
+                    customerGoods.setSku(IdUtil.simpleUUID());//SKU商品编码
                     customerGoods.setNameCn(declarationsJsonObject.get("name_zh", String.class));//中文名
                     customerGoods.setNameEn(declarationsJsonObject.get("name_en", String.class));//英文名
+                    customerGoods.setMaterialQuality(declarationsJsonObject.get("material", String.class));//材质
+                    customerGoods.setHsCode(declarationsJsonObject.get("hscode", String.class));//海关编码
+                    customerGoods.setPurpose(declarationsJsonObject.get("usage", String.class));//用途
                     customerGoods.setImageUrl(declarationsJsonObject.get("photos", String.class));//图片地址
                     customerGoods.setIsSensitive("0");//是否敏感货物，1是0否，默认为0
                     customerGoods.setTypes(1);//商品类型(1普货 2特货)

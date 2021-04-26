@@ -74,10 +74,20 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
             queryWrapper.eq("main_order_no",addTrailerOrderFrom.getOldMainOrderNo());
             this.remove(queryWrapper);
         }
+        if(addTrailerOrderFrom.getOldOrderNo()!=null){
+            ApiResult result = omsClient.deleteGoodsByBusOrders(Collections.singletonList(addTrailerOrderFrom.getOldOrderNo()), BusinessTypeEnum.TC.getCode());
+            if (result.getCode() != HttpStatus.SC_OK) {
+                log.warn("删除商品信息失败");
+            }
+            ApiResult result1 = omsClient.deleteOrderAddressByBusOrders(Collections.singletonList(addTrailerOrderFrom.getOldOrderNo()), BusinessTypeEnum.TC.getCode());
+            if (result1.getCode() != HttpStatus.SC_OK) {
+                log.warn("删除地址信息失败");
+            }
+        }
 
+        TrailerOrder trailerOrder = ConvertUtil.convert(addTrailerOrderFrom, TrailerOrder.class);
         LocalDateTime now = LocalDateTime.now();
         addTrailerOrderFrom.getPathAndName();
-        TrailerOrder trailerOrder = ConvertUtil.convert(addTrailerOrderFrom, TrailerOrder.class);
 //        System.out.println("trailerOrder===================================="+trailerOrder);
         //创建拖车单
         if (addTrailerOrderFrom.getId() == null) {
@@ -95,7 +105,7 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
             trailerOrder.setStatus(OrderStatusEnum.TT_0.getCode());
             trailerOrder.setUpdateTime(now);
             trailerOrder.setUpdateUser(UserOperator.getToken());
-            this.updateById(trailerOrder);
+            this.saveOrUpdate(trailerOrder);
         }
         if(addTrailerOrderFrom.getOrderAddressForms()!=null&&addTrailerOrderFrom.getOrderAddressForms().size()>0){
             //获取用户地址

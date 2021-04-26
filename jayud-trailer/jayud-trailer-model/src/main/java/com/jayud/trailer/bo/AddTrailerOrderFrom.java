@@ -33,6 +33,9 @@ public class AddTrailerOrderFrom {
     @ApiModelProperty(value = "拖车订单编号")
     private String orderNo;
 
+    @ApiModelProperty(value = "旧拖车订单编号")
+    private String oldOrderNo;
+
     @ApiModelProperty(value = "主订单编号")
     private String mainOrderNo;
 

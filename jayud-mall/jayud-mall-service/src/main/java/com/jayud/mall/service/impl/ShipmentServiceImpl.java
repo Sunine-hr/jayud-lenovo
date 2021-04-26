@@ -200,6 +200,9 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
             orderInfo.setStatus(OrderEnum.DRAFT.getCode());//状态码,默认为草稿状态
             orderInfo.setStatusName(OrderEnum.DRAFT.getName());//状态名称
 
+            orderInfo.setNeedDeclare(0);//是否需要报关0-否，1-是 (订单对应报关文件:order_customs_file)
+            orderInfo.setNeedClearance(0);//是否需要清关0-否，1-是 (订单对应清关文件:order_clearance_file)
+
             orderInfo.setCreateTime(shipmentVO.getCreatTime());//创建日期,新智慧的下单日期
             orderInfo.setCreateUserId(shipmentVO.getCustomerId());//创建人ID(customer id)
             orderInfo.setCreateUserName(shipmentVO.getCustomerUserName());//创建人名称(customer user_name)
@@ -325,7 +328,139 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
         return new RowHandler() {
             @Override
             public void handle(int sheetIndex, long rowIndex, List<Object> rowlist) {
-                excelList.add(rowlist);
+                List<Object> row = new ArrayList<>(26);
+                row.add(0, rowlist.get(0));
+                try {
+                    row.add(1, rowlist.get(1));
+                } catch (Exception e) {
+                    row.add(1, "");
+                }
+                try {
+                    row.add(2, rowlist.get(2));
+                } catch (Exception e) {
+                    row.add(2, "");
+                }
+                try {
+                    row.add(3, rowlist.get(3));
+                } catch (Exception e) {
+                    row.add(3, "");
+                }
+                try {
+                    row.add(4, rowlist.get(4));
+                } catch (Exception e) {
+                    row.add(4, "");
+                }
+                try {
+                    row.add(5, rowlist.get(5));
+                } catch (Exception e) {
+                    row.add(5, "");
+                }
+                try {
+                    row.add(6, rowlist.get(6));
+                } catch (Exception e) {
+                    row.add(6, "");
+                }
+                try {
+                    row.add(7, rowlist.get(7));
+                } catch (Exception e) {
+                    row.add(7, "");
+                }
+                try {
+                    row.add(8, rowlist.get(8));
+                } catch (Exception e) {
+                    row.add(8, "");
+                }
+                try {
+                    row.add(9, rowlist.get(9));
+                } catch (Exception e) {
+                    row.add(9, "");
+                }
+                try {
+                    row.add(10, rowlist.get(10));
+                } catch (Exception e) {
+                    row.add(10, "");
+                }
+                try {
+                    row.add(11, rowlist.get(11));
+                } catch (Exception e) {
+                    row.add(11, "");
+                }
+                try {
+                    row.add(12, rowlist.get(12));
+                } catch (Exception e) {
+                    row.add(12, "");
+                }
+                try {
+                    row.add(13, rowlist.get(13));
+                } catch (Exception e) {
+                    row.add(13, "");
+                }
+                try {
+                    row.add(14, rowlist.get(14));
+                } catch (Exception e) {
+                    row.add(14, "");
+                }
+                try {
+                    row.add(15, rowlist.get(15));
+                } catch (Exception e) {
+                    row.add(15, "");
+                }
+                try {
+                    row.add(16, rowlist.get(16));
+                } catch (Exception e) {
+                    row.add(16, "");
+                }
+                try {
+                    row.add(17, rowlist.get(17));
+                } catch (Exception e) {
+                    row.add(17, "");
+                }
+                try {
+                    row.add(18, rowlist.get(18));
+                } catch (Exception e) {
+                    row.add(18, "");
+                }
+                try {
+                    row.add(19, rowlist.get(19));
+                } catch (Exception e) {
+                    row.add(19, "");
+                }
+                try {
+                    row.add(20, rowlist.get(20));
+                } catch (Exception e) {
+                    row.add(20, "");
+                }
+                try {
+                    row.add(21, rowlist.get(21));
+                } catch (Exception e) {
+                    row.add(21, "");
+                }
+                try {
+                    row.add(22, rowlist.get(22));
+                } catch (Exception e) {
+                    row.add(22, "");
+                }
+                try {
+                    row.add(23, rowlist.get(23));
+                } catch (Exception e) {
+                    row.add(23, "");
+                }
+                try {
+                    row.add(24, rowlist.get(24));
+                } catch (Exception e) {
+                    row.add(24, "");
+                }
+                try {
+                    row.add(25, rowlist.get(25));
+                } catch (Exception e) {
+                    row.add(25, "");
+                }
+                try {
+                    row.add(26, rowlist.get(26));
+                } catch (Exception e) {
+                    row.add(26, "");
+                }
+                excelList.add(row);
             }
         };
     }

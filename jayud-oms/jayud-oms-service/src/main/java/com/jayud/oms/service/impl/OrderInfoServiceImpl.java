@@ -108,6 +108,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Autowired
     private IProductClassifyService productClassifyService;
 
+    @Autowired
+    private IGoodsService goodsService;
+
+    @Autowired
+    private IOrderAddressService orderAddressService;
+
     private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(),
             SubOrderSignEnum.KY.getSignOne(), SubOrderSignEnum.HY.getSignOne(),
             SubOrderSignEnum.BG.getSignOne(), SubOrderSignEnum.NL.getSignOne(),
@@ -1214,6 +1220,28 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //拖车
         if (OrderStatusEnum.TC.getCode().equals(classCode) || selectedServer.contains(OrderStatusEnum.TCEDD.getCode()) || selectedServer.contains(OrderStatusEnum.TCIDD.getCode())) {
             List<InputTrailerOrderFrom> trailerOrderFroms = form.getTrailerOrderFrom();
+            if( trailerOrderFroms.get(0).getMainOrderNo()!=null){
+                List<String> data = trailerClient.getOrderNosByMainOrderNo(trailerOrderFroms.get(0).getMainOrderNo()).getData();
+                if(data!=null && data.size()>0){
+                    goodsService.deleteGoodsByBusOrders(data,BusinessTypeEnum.TC.getCode());
+                    orderAddressService.deleteOrderAddressByBusOrders(data,BusinessTypeEnum.TC.getCode());
+                    log.warn("删除商品和地址信息成功");
+                }
+            }
+
+            if(form.getCmd().equals("preSubmit") && trailerOrderFroms.get(0).getMainOrderNo()!=null){
+                ApiResult result = trailerClient.deleteOrderByMainOrderNo(trailerOrderFroms.get(0).getMainOrderNo());
+                if(result.getCode() != HttpStatus.SC_OK){
+                    log.warn("删除订单信息失败");
+                }
+            }
+
+            if (form.getCmd().equals("submit") && trailerOrderFroms.get(0).getStatus() != null && trailerOrderFroms.get(0).getStatus().equals("TT_0")) {
+                ApiResult result = trailerClient.deleteOrderByMainOrderNo(trailerOrderFroms.get(0).getMainOrderNo());
+                if(result.getCode() != HttpStatus.SC_OK){
+                    log.warn("删除订单信息失败");
+                }
+            }
 
             for (InputTrailerOrderFrom trailerOrderFrom : trailerOrderFroms) {
 
@@ -1225,27 +1253,27 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     }
                     //草稿编辑提交
                     if (trailerOrderFrom.getStatus() != null && trailerOrderFrom.getStatus().equals("TT_0")) {
-                        trailerOrderFrom.setOldMainOrderNo(trailerOrderFrom.getMainOrderNo());
-                        trailerOrderFrom.setOldOrderNo(trailerOrderFrom.getOrderNo());
                         String orderNo = generationOrderNo(trailerOrderFrom.getLegalEntityId(), trailerOrderFrom.getImpAndExpType(), OrderStatusEnum.TC.getCode());
                         trailerOrderFrom.setOrderNo(orderNo);
                     }
 
                 }
                 //暂存，随机生成订单号
-                if (form.getCmd().equals("preSubmit") && trailerOrderFrom.getId() == null) {
-                    trailerOrderFrom.setOldMainOrderNo(trailerOrderFrom.getMainOrderNo());
-                    trailerOrderFrom.setOldOrderNo(trailerOrderFrom.getOrderNo());
-                    //生成拖车订单号
-                    String orderNo = StringUtils.loadNum(CommonConstant.TC, 12);
-                    while (true) {
-                        if (!isExistOrder(orderNo)) {//重复
-                            orderNo = StringUtils.loadNum(CommonConstant.TC, 12);
-                        } else {
-                            break;
+                if (form.getCmd().equals("preSubmit")) {
+
+                    if( trailerOrderFrom.getId() == null){
+                        //生成拖车订单号
+                        String orderNo = StringUtils.loadNum(CommonConstant.TC, 12);
+                        while (true) {
+                            if (!isExistOrder(orderNo)) {//重复
+                                orderNo = StringUtils.loadNum(CommonConstant.TC, 12);
+                            } else {
+                                break;
+                            }
                         }
+                        trailerOrderFrom.setOrderNo(orderNo);
                     }
-                    trailerOrderFrom.setOrderNo(orderNo);
+
                 }
 
                 if (this.queryEditOrderCondition(trailerOrderFrom.getStatus(),

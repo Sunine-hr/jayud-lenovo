@@ -1242,7 +1242,7 @@ public class ExternalApiController {
 
     @ApiOperation("根据订单号删除订单地址")
     @RequestMapping(value = "/api/deleteOrderAddressByBusOrders")
-    public ApiResult<List<OrderAddress>> deleteOrderAddressByBusOrders(@RequestParam("orderNo") List<String> orderNo,
+    public ApiResult deleteOrderAddressByBusOrders(@RequestParam("orderNo") List<String> orderNo,
                                                                        @RequestParam("businessType") Integer businessType) {
         //查询订单地址信息
         this.orderAddressService.deleteOrderAddressByBusOrders(orderNo, businessType);
@@ -1252,7 +1252,7 @@ public class ExternalApiController {
 
     @ApiOperation("根据订单号删除商品信息")
     @RequestMapping(value = "/api/deleteGoodsByBusOrders")
-    public ApiResult<List<Goods>> deleteGoodsByBusOrders(@RequestParam("orderNo") List<String> orderNo,
+    public ApiResult deleteGoodsByBusOrders(@RequestParam("orderNo") List<String> orderNo,
                                                          @RequestParam("businessType") Integer businessType) {
         //查询商品信息
         this.goodsService.deleteGoodsByBusOrders(orderNo, businessType);

@@ -9,4 +9,7 @@ public class ShipmentIdVO {
     @ApiModelProperty(value = "主键id")
     private String shipment_id;
 
+    @ApiModelProperty(value = "目的仓库代码(FBA仓库)")
+    private String warehouseCode;
+
 }

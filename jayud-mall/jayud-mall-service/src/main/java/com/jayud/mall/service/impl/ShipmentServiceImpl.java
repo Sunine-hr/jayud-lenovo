@@ -81,7 +81,6 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
     private static List<List<Object>> excelList = Collections.synchronizedList(new ArrayList<List<Object>>());
 
     @Override
-    //@Transactional(rollbackFor = Exception.class)
     public ShipmentVO saveShipment(ShipmentVO shipmentVO) {
         String shipment_id = shipmentVO.getShipment_id();
         ShipmentVO shipment = shipmentMapper.findShipmentById(shipment_id);

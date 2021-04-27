@@ -1,9 +1,12 @@
 package com.jayud.oms.model.po;
 
 import java.math.BigDecimal;
+
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+
 import java.time.LocalDateTime;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -21,13 +24,13 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="BusinessDevEvaluation对象", description="商业伙伴开发评估表")
+@ApiModel(value = "BusinessDevEvaluation对象", description = "商业伙伴开发评估表")
 public class BusinessDevEvaluation extends Model<BusinessDevEvaluation> {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "主键")
-      private Long id;
+    private Long id;
 
     @ApiModelProperty(value = "订单号")
     private String orderNo;
@@ -57,10 +60,10 @@ public class BusinessDevEvaluation extends Model<BusinessDevEvaluation> {
     private String authentication;
 
     @ApiModelProperty(value = "注册地址")
-    private String  registeredAddress;
+    private String registeredAddress;
 
     @ApiModelProperty(value = "企业类型")
-    private String enterpriseType;
+    private Integer enterpriseType;
 
     @ApiModelProperty(value = "通讯地址")
     private String correspondenceAddress;

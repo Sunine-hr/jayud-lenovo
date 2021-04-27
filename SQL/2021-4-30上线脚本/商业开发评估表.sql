@@ -1,5 +1,5 @@
 CREATE TABLE `business_dev_evaluation` (
-  `id` bigint(20) NOT NULL COMMENT '主键',
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `order_no` varchar(50) NOT NULL COMMENT '订单号',
   `customer_code` varchar(50) DEFAULT NULL COMMENT '商业伙伴全称(客户code)',
   `customer_name` varchar(255) DEFAULT NULL COMMENT '商业伙伴全称(客户名称)',
@@ -9,8 +9,8 @@ CREATE TABLE `business_dev_evaluation` (
   `business` varchar(500) DEFAULT NULL COMMENT '经营范围',
   `registered_capital` decimal(20,4) DEFAULT NULL COMMENT '注册资金',
   `authentication` varchar(255) DEFAULT NULL COMMENT '通过何种认证',
-  ` registered_address` varchar(500) DEFAULT NULL COMMENT '注册地址',
-  `enterprise_type` varchar(100) DEFAULT NULL COMMENT '企业类型',
+  `registered_address` varchar(500) DEFAULT NULL COMMENT '注册地址',
+  `enterprise_type` int(10) DEFAULT NULL COMMENT '企业类型',
   `correspondence_address` varchar(255) DEFAULT NULL COMMENT '通讯地址',
   `source` varchar(100) DEFAULT NULL COMMENT '商业伙伴来源',
   `number` int(20) DEFAULT NULL COMMENT '年报关量',
@@ -55,4 +55,4 @@ CREATE TABLE `business_dev_evaluation` (
   `audit_opinion` varchar(255) DEFAULT NULL COMMENT '审批意见',
   `evaluation_opinion` varchar(255) DEFAULT NULL COMMENT '评估意见',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商业伙伴开发评估表';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COMMENT='商业伙伴开发评估表';

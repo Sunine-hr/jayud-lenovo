@@ -63,7 +63,7 @@ public class AddBusinessDevEvaluationForm extends Model<AddBusinessDevEvaluation
     private String registeredAddress;
 
     @ApiModelProperty(value = "企业类型")
-    private String enterpriseType;
+    private Integer enterpriseType;
 
     @ApiModelProperty(value = "通讯地址")
     private String correspondenceAddress;
@@ -227,7 +227,7 @@ public class AddBusinessDevEvaluationForm extends Model<AddBusinessDevEvaluation
         if (StringUtils.isEmpty(registeredAddress)) {
             throw new JayudBizException(400, "注册地址不能为空");
         }
-        if (StringUtils.isEmpty(enterpriseType)) {
+        if (enterpriseType==null) {
             throw new JayudBizException(400, "企业类型不能为空");
         }
         if (StringUtils.isEmpty(correspondenceAddress)) {

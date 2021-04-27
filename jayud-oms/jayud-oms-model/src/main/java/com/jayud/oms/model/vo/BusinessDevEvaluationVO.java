@@ -66,7 +66,7 @@ public class BusinessDevEvaluationVO extends BasePageForm {
     private String registeredAddress;
 
     @ApiModelProperty(value = "企业类型")
-    private String enterpriseType;
+    private Integer enterpriseType;
 
     @ApiModelProperty(value = "企业类型")
     private String enterpriseTypeDesc;
@@ -215,9 +215,9 @@ public class BusinessDevEvaluationVO extends BasePageForm {
     private String evaluationOpinion;
 
 
-    public void setEnterpriseType(String enterpriseType) {
+    public void setEnterpriseType(Integer enterpriseType) {
         this.enterpriseType = enterpriseType;
-        this.enterpriseTypeDesc = CustomerTypeEnum.getDesc(Integer.valueOf(enterpriseType));
+        this.enterpriseTypeDesc = CustomerTypeEnum.getDesc(enterpriseType);
     }
 
 

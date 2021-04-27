@@ -7,9 +7,7 @@ import com.jayud.mall.model.bo.BillCostInfoForm;
 import com.jayud.mall.model.bo.OceanBillForm;
 import com.jayud.mall.model.bo.QueryOceanBillForm;
 import com.jayud.mall.model.po.OceanBill;
-import com.jayud.mall.model.vo.BillCostInfoVO;
-import com.jayud.mall.model.vo.BillTaskRelevanceVO;
-import com.jayud.mall.model.vo.OceanBillVO;
+import com.jayud.mall.model.vo.*;
 
 import java.util.List;
 
@@ -101,4 +99,25 @@ public interface IOceanBillService extends IService<OceanBill> {
      * @return
      */
     CommonResult<OceanBillVO> findOceanBillById(Long id);
+
+    /**
+     * 配载，提单（4个窗口），查看-清关
+     * @param billId 提单id
+     * @return
+     */
+    List<BillClearanceInfoVO> findBillClearanceInfoByBillId(Long billId);
+
+    /**
+     * 配载，提单（4个窗口），查看-报关
+     * @param billId 提单id
+     * @return
+     */
+    List<BillCustomsInfoVO> findBillCustomsInfoByBillId(Long billId);
+
+    /**
+     * 配载，提单（4个窗口），查看-柜子
+     * @param obId 提单id
+     * @return
+     */
+    List<OceanCounterVO> findOceanCounterByObId(Long obId);
 }

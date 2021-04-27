@@ -479,4 +479,22 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         OceanBillVO oceanBillVO = oceanBillMapper.findOceanBillById(id);
         return CommonResult.success(oceanBillVO);
     }
+
+    @Override
+    public List<BillClearanceInfoVO> findBillClearanceInfoByBillId(Long billId) {
+        List<BillClearanceInfoVO> billClearanceInfoVOS = oceanBillMapper.findBillClearanceInfoByBillId(billId);
+        return billClearanceInfoVOS;
+    }
+
+    @Override
+    public List<BillCustomsInfoVO> findBillCustomsInfoByBillId(Long billId) {
+        List<BillCustomsInfoVO> billCustomsInfoVOS = oceanBillMapper.findBillCustomsInfoByBillId(billId);
+        return billCustomsInfoVOS;
+    }
+
+    @Override
+    public List<OceanCounterVO> findOceanCounterByObId(Long obId) {
+        List<OceanCounterVO> oceanCounterVOS = oceanBillMapper.findOceanCounterByObId(obId);
+        return oceanCounterVOS;
+    }
 }

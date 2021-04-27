@@ -161,6 +161,53 @@
 
     </select>
 
+    <select id="findBillClearanceInfoByBillId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.BillClearanceInfoVO">
+        select t.id,
+               t.bill_id,
+               t.bill_no,
+               t.file_name,
+               t.template_url,
+               t.describes,
+               t.cartons,
+               t.status,
+               t.user_id,
+               t.user_name,
+               t.create_time
+        from bill_clearance_info t
+        where t.bill_id = #{billId}
 
+    </select>
+
+
+    <select id="findBillCustomsInfoByBillId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.BillCustomsInfoVO">
+        select t.id,
+               t.bill_id,
+               t.bill_no,
+               t.file_name,
+               t.template_url,
+               t.describes,
+               t.cartons,
+               t.status,
+               t.user_id,
+               t.user_name,
+               t.create_time
+        from bill_customs_info t
+        where t.bill_id = #{billId}
+
+    </select>
+
+    <select id="findOceanCounterByObId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OceanCounterVO">
+        select t.id,
+               t.cntr_no,
+               t.cabinet_code,
+               t.volume,
+               t.cost,
+               t.cid,
+               t.status,
+               t.ob_id,
+               t.create_time
+        from ocean_counter t
+        where t.ob_id = #{obId}
+    </select>
 
 </mapper>

@@ -5,9 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.mall.model.bo.QueryOceanBillForm;
 import com.jayud.mall.model.po.OceanBill;
-import com.jayud.mall.model.vo.BillOrderCostInfoVO;
-import com.jayud.mall.model.vo.BillTaskRelevanceVO;
-import com.jayud.mall.model.vo.OceanBillVO;
+import com.jayud.mall.model.vo.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -68,4 +66,25 @@ public interface OceanBillMapper extends BaseMapper<OceanBill> {
      * @return
      */
     List<BillTaskRelevanceVO> lookOperateLog(@Param("id") Long id);
+
+    /**
+     * 配载，提单（4个窗口），查看-清关
+     * @param billId
+     * @return
+     */
+    List<BillClearanceInfoVO> findBillClearanceInfoByBillId(@Param("billId") Long billId);
+
+    /**
+     * 配载，提单（4个窗口），查看-报关
+     * @param billId
+     * @return
+     */
+    List<BillCustomsInfoVO> findBillCustomsInfoByBillId(@Param("billId") Long billId);
+
+    /**
+     * 配载，提单（4个窗口），查看-柜子
+     * @param obId
+     * @return
+     */
+    List<OceanCounterVO> findOceanCounterByObId(@Param("obId") Long obId);
 }

@@ -4,9 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.*;
-import com.jayud.mall.model.vo.BillCostInfoVO;
-import com.jayud.mall.model.vo.BillTaskRelevanceVO;
-import com.jayud.mall.model.vo.OceanBillVO;
+import com.jayud.mall.model.vo.*;
 import com.jayud.mall.service.IOceanBillService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -117,13 +115,31 @@ public class OceanBillController {
         return oceanBillService.saveOceanBillByConf(form);
     }
 
-    //配载，提单（4个窗口），1.查看-清关
+    @ApiOperation(value = "配载，提单（4个窗口），查看-清关")
+    @PostMapping("/findBillClearanceInfoByBillId")
+    public CommonResult<List<BillClearanceInfoVO>> findBillClearanceInfoByBillId(@Valid @RequestBody OceanBillParaForm form){
+        Long billId = form.getId();
+        List<BillClearanceInfoVO> billClearanceInfoVOS = oceanBillService.findBillClearanceInfoByBillId(billId);
+        return CommonResult.success(billClearanceInfoVOS);
+    }
 
-    //配载，提单（4个窗口），1.查看-柜子
+    @ApiOperation(value = "配载，提单（4个窗口），查看-报关")
+    @PostMapping("/findBillCustomsInfoByBillId")
+    public CommonResult<List<BillCustomsInfoVO>> findBillCustomsInfoByBillId(@Valid @RequestBody OceanBillParaForm form){
+        Long billId = form.getId();
+        List<BillCustomsInfoVO> billCustomsInfoVOS = oceanBillService.findBillCustomsInfoByBillId(billId);
+        return CommonResult.success(billCustomsInfoVOS);
+    }
 
-    //配载，提单（4个窗口），1.查看-柜子
+    @ApiOperation(value = "配载，提单（4个窗口），查看-柜子")
+    @PostMapping("/findOceanCounterByObId")
+    public CommonResult<List<OceanCounterVO>> findOceanCounterByObId(@Valid @RequestBody OceanBillParaForm form){
+        Long obId = form.getId();
+        List<OceanCounterVO> oceanCounterVOS = oceanBillService.findOceanCounterByObId(obId);
+        return CommonResult.success(oceanCounterVOS);
+    }
 
-    @ApiOperation(value = "配载，提单（4个窗口），1.查看-详情")
+    @ApiOperation(value = "配载，提单（4个窗口），查看-详情")
     @PostMapping("/findOceanBillById")
     public CommonResult<OceanBillVO> findOceanBillById(@Valid @RequestBody OceanBillParaForm form){
         Long id = form.getId();

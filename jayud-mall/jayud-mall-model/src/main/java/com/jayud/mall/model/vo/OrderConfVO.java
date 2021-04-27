@@ -63,6 +63,10 @@ public class OrderConfVO {
     @ApiModelProperty(value = "提单信息list", position = 12)
     private List<OceanBillVO> oceanBillVOList;
 
+    /*运单(订单)信息list*/
+    @ApiModelProperty(value = "运单(订单)信息list", position = 13)
+    private List<OrderInfoVO> orderInfoVOList;
+
     /*TODO 已配载信息list*/
 
 }

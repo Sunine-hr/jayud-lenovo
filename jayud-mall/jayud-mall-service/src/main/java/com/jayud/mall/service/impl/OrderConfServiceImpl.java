@@ -1,5 +1,7 @@
 package com.jayud.mall.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -9,14 +11,12 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.OceanCounterMapper;
 import com.jayud.mall.mapper.OrderConfMapper;
+import com.jayud.mall.mapper.OrderInfoMapper;
 import com.jayud.mall.model.bo.OrderConfForm;
 import com.jayud.mall.model.bo.QueryOrderConfForm;
 import com.jayud.mall.model.po.OceanConfDetail;
 import com.jayud.mall.model.po.OrderConf;
-import com.jayud.mall.model.vo.OceanBillVO;
-import com.jayud.mall.model.vo.OceanCounterVO;
-import com.jayud.mall.model.vo.OfferInfoVO;
-import com.jayud.mall.model.vo.OrderConfVO;
+import com.jayud.mall.model.vo.*;
 import com.jayud.mall.model.vo.domain.AuthUser;
 import com.jayud.mall.service.BaseService;
 import com.jayud.mall.service.IOceanConfDetailService;
@@ -51,6 +51,9 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
 
     @Autowired
     OceanCounterMapper oceanCounterMapper;
+
+    @Autowired
+    OrderInfoMapper orderInfoMapper;
 
     @Override
     public IPage<OrderConfVO> findOrderConfByPage(QueryOrderConfForm form) {
@@ -196,6 +199,40 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
         oceanConfDetailService.saveOrUpdateBatch(oceanBillDetailList);
 
         OrderConfVO orderConfVO = ConvertUtil.convert(orderConf, OrderConfVO.class);
+        return orderConfVO;
+    }
+
+    @Override
+    public OrderConfVO findOrderConfById(Long id) {
+        OrderConfVO orderConfVO = orderConfMapper.findOrderConfById(id);
+        Long confId = orderConfVO.getId();//配载单id
+        //报价信息list
+        List<OfferInfoVO> offerInfoVOList = orderConfMapper.findOfferInfoVOByOrderId(confId);
+        orderConfVO.setOfferInfoVOList(offerInfoVOList);
+        //提单信息list
+        List<OceanBillVO> oceanBillVOList = orderConfMapper.findOceanBillVOByOrderId(confId);
+        oceanBillVOList.forEach(oceanBillVO -> {
+            Long obId = oceanBillVO.getId();
+            List<OceanCounterVO> oceanCounterVOList = oceanCounterMapper.findOceanCounterVOByObId(obId);
+            oceanBillVO.setOceanCounterVOList(oceanCounterVOList);
+        });
+        orderConfVO.setOceanBillVOList(oceanBillVOList);
+        //运单(订单)信息list
+        List<OrderInfoVO> orderInfoVOList = orderInfoMapper.findOrderInfoByConfId(confId);
+        orderInfoVOList.forEach(ororderInfoVO -> {
+            Long orderId = ororderInfoVO.getId();
+            List<String> confinfos = orderInfoMapper.findOrderConfInfoByOrderId(orderId);
+            if(CollUtil.isNotEmpty(confinfos)){
+                String confInfo = "";
+                for (int i=0; i<confinfos.size(); i++){
+                    if(ObjectUtil.isNotEmpty(confinfos.get(i))){
+                        confInfo += confinfos.get(i);
+                    }
+                }
+                ororderInfoVO.setConfInfo(confInfo);
+            }
+        });
+        orderConfVO.setOrderInfoVOList(orderInfoVOList);
         return orderConfVO;
     }
 

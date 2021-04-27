@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.OrderConfForm;
+import com.jayud.mall.model.bo.OrderConfIdForm;
 import com.jayud.mall.model.bo.OrderConfParaForm;
 import com.jayud.mall.model.bo.QueryOrderConfForm;
 import com.jayud.mall.model.vo.OrderConfVO;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/orderconf")
@@ -78,5 +81,15 @@ public class OrderConfController {
         OrderConfVO orderConfVO = orderConfService.saveOrderConfByOceanBill(form);
         return CommonResult.success(orderConfVO);
     }
+
+    @ApiOperation(value = "新增编辑查询配载：提单、报价、运单(订单)")
+    @PostMapping(value = "findOrderConfById")
+    @ApiOperationSupport(order = 7)
+    public CommonResult<OrderConfVO> findOrderConfById(@Valid @RequestBody OrderConfIdForm form){
+        Long id = form.getId();
+        OrderConfVO orderConfVO = orderConfService.findOrderConfById(id);
+        return CommonResult.success(orderConfVO);
+    }
+
 
 }

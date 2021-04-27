@@ -119,4 +119,11 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      * @return
      */
     OrderInfoVO findOrderInfoByOrderNo(@Param("orderNo") String orderNo);
+
+    /**
+     * 根据配载id，查询订单
+     * @param confId
+     * @return
+     */
+    List<OrderInfoVO> findOrderInfoByConfId(@Param("confId") Long confId);
 }

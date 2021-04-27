@@ -52,4 +52,11 @@ public interface IOrderConfService extends IService<OrderConf> {
      * @return
      */
     OrderConfVO saveOrderConfByOceanBill(OrderConfForm form);
+
+    /**
+     * 新增编辑查询配载：提单、报价、运单(订单)
+     * @param id
+     * @return
+     */
+    OrderConfVO findOrderConfById(Long id);
 }

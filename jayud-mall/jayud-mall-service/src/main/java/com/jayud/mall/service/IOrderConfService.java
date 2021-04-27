@@ -28,8 +28,9 @@ public interface IOrderConfService extends IService<OrderConf> {
     /**
      * 保存配载单
      * @param form
+     * @return
      */
-    void saveOrderConf(OrderConfForm form);
+    OrderConfVO saveOrderConf(OrderConfForm form);
 
     /**
      * 查看配载详情
@@ -37,4 +38,18 @@ public interface IOrderConfService extends IService<OrderConf> {
      * @return
      */
     CommonResult<OrderConfVO> lookOrderConf(Long id);
+
+    /**
+     * 配载，关联报价
+     * @param form
+     * @return
+     */
+    OrderConfVO saveOrderConfByOfferInfo(OrderConfForm form);
+
+    /**
+     * 配载，关联提单
+     * @param form
+     * @return
+     */
+    OrderConfVO saveOrderConfByOceanBill(OrderConfForm form);
 }

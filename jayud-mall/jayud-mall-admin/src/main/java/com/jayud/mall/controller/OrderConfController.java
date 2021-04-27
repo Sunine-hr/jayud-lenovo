@@ -63,4 +63,20 @@ public class OrderConfController {
         return CommonResult.success(orderNo);
     }
 
+    @ApiOperation(value = "保存配载单-关联报价")
+    @PostMapping(value = "saveOrderConfByOfferInfo")
+    @ApiOperationSupport(order = 5)
+    public CommonResult<OrderConfVO> saveOrderConfByOfferInfo(@RequestBody OrderConfForm form){
+        OrderConfVO orderConfVO = orderConfService.saveOrderConfByOfferInfo(form);
+        return CommonResult.success(orderConfVO);
+    }
+
+    @ApiOperation(value = "保存配载单-关联提单")
+    @PostMapping(value = "saveOrderConfByOceanBill")
+    @ApiOperationSupport(order = 6)
+    public CommonResult<OrderConfVO> saveOrderConfByOceanBill(@RequestBody OrderConfForm form){
+        OrderConfVO orderConfVO = orderConfService.saveOrderConfByOceanBill(form);
+        return CommonResult.success(orderConfVO);
+    }
+
 }

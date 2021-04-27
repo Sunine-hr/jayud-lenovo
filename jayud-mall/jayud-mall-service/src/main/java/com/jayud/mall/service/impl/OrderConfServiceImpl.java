@@ -65,7 +65,7 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveOrderConf(OrderConfForm form) {
+    public OrderConfVO saveOrderConf(OrderConfForm form) {
         OrderConf orderConf = ConvertUtil.convert(form, OrderConf.class);
         Long id = orderConf.getId();
         if(id == null){
@@ -103,6 +103,7 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
         oceanConfDetails.addAll(oceanBillDetailList);
         //3.保存配载的报价和提单
         oceanConfDetailService.saveOrUpdateBatch(oceanConfDetails);
+        return null;
     }
 
     @Override
@@ -124,6 +125,78 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
         orderConfVO.setOceanBillVOList(oceanBillVOList);
 
         return CommonResult.success(orderConfVO);
+    }
+
+    @Override
+    public OrderConfVO saveOrderConfByOfferInfo(OrderConfForm form) {
+        OrderConf orderConf = ConvertUtil.convert(form, OrderConf.class);
+        Long id = orderConf.getId();
+        if(id == null){
+            AuthUser user = baseService.getUser();
+            orderConf.setStatus("1");//状态(0无效 1有效)
+            orderConf.setUserId(user.getId().intValue());
+            orderConf.setUserName(user.getName());
+            orderConf.setCreateTime(LocalDateTime.now());
+        }
+        //1.保存配载单
+        this.saveOrUpdate(orderConf);
+        //配载单id
+        Long orderId = orderConf.getId();
+
+
+        //2.先删除配载的报价
+        QueryWrapper<OceanConfDetail> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("order_id", orderId);
+        queryWrapper.eq("types", 1);
+        oceanConfDetailService.remove(queryWrapper);
+        //配载的报价
+        List<OceanConfDetail> offerInfoDetailList = form.getOfferInfoDetailList();
+        offerInfoDetailList.forEach(oceanConfDetail -> {
+            oceanConfDetail.setOrderId(orderId);
+            oceanConfDetail.setTypes(1);//1报价 2提单
+            oceanConfDetail.setStatus("1");//状态(0无效 1有效)
+        });
+        //3.保存配载的报价
+        oceanConfDetailService.saveOrUpdateBatch(offerInfoDetailList);
+
+        OrderConfVO orderConfVO = ConvertUtil.convert(orderConf, OrderConfVO.class);
+        return orderConfVO;
+    }
+
+    @Override
+    public OrderConfVO saveOrderConfByOceanBill(OrderConfForm form) {
+        OrderConf orderConf = ConvertUtil.convert(form, OrderConf.class);
+        Long id = orderConf.getId();
+        if(id == null){
+            AuthUser user = baseService.getUser();
+            orderConf.setStatus("1");//状态(0无效 1有效)
+            orderConf.setUserId(user.getId().intValue());
+            orderConf.setUserName(user.getName());
+            orderConf.setCreateTime(LocalDateTime.now());
+        }
+        //1.保存配载单
+        this.saveOrUpdate(orderConf);
+        //配载单id
+        Long orderId = orderConf.getId();
+
+        //2.先删除配载的提单
+        QueryWrapper<OceanConfDetail> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("order_id", orderId);
+        queryWrapper.eq("types", 2);
+        oceanConfDetailService.remove(queryWrapper);
+
+        //配载的提单
+        List<OceanConfDetail> oceanBillDetailList = form.getOceanBillDetailList();
+        oceanBillDetailList.forEach(oceanConfDetail -> {
+            oceanConfDetail.setOrderId(orderId);
+            oceanConfDetail.setTypes(2);//1报价 2提单
+            oceanConfDetail.setStatus("1");//状态(0无效 1有效)
+        });
+        //3.保存配载的提单
+        oceanConfDetailService.saveOrUpdateBatch(oceanBillDetailList);
+
+        OrderConfVO orderConfVO = ConvertUtil.convert(orderConf, OrderConfVO.class);
+        return orderConfVO;
     }
 
 

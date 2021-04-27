@@ -60,6 +60,9 @@ public class StorageInProcessOptForm {
     @ApiModelProperty(value = "附件名称,前台不用传")
     private String statusPicName;
 
+    @ApiModelProperty(value = "操作情况 submit 提交  end 完结")
+    private String cmd;
+
 
     //入仓信息
 

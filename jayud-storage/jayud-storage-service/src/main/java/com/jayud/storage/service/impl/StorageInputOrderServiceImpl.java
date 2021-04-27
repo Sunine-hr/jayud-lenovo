@@ -176,6 +176,11 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
 
     }
 
+    @Override
+    public void confirmEntry(StorageInProcessOptForm form) {
+
+    }
+
     //判断订单完成状态
     private void finishStorageOrderOpt(StorageInputOrder storageInputOrder) {
         if (OrderStatusEnum.CCI_3.getCode().equals(storageInputOrder.getStatus())) {

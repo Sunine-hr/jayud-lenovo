@@ -26,15 +26,42 @@ public interface IStorageInputOrderService extends IService<StorageInputOrder> {
      */
     String createOrder(StorageInputOrderForm storageInputOrderForm);
 
+    /**
+     * 根据主订单号获取入库订单
+     * @param orderNo
+     * @return
+     */
     StorageInputOrder getStorageInOrderByMainOrderNO(String orderNo);
 
+    /**
+     * 根据id获取入库订单数据
+     * @param id
+     * @return
+     */
     StorageInputOrderVO getStorageInputOrderVOById(Long id);
 
+    /**
+     * 分页条件查询入库订单
+     * @param form
+     * @return
+     */
     IPage<StorageInputOrderFormVO> findByPage(QueryStorageOrderForm form);
 
+    /**
+     * 仓储接单
+     * @param form
+     */
     void warehouseReceipt(StorageInProcessOptForm form);
 
+    /**
+     * 执行入库流程操作
+     * @param form
+     */
     void storageProcessOptRecord(StorageInProcessOptForm form);
 
+    /**
+     * 确认入仓
+     * @param form
+     */
     void confirmEntry(StorageInProcessOptForm form);
 }

@@ -10,15 +10,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.*;
-import com.jayud.mall.model.bo.OfferInfoForm;
-import com.jayud.mall.model.bo.PicUrlArrForm;
-import com.jayud.mall.model.bo.QueryOfferInfoFareForm;
-import com.jayud.mall.model.bo.QueryOfferInfoForm;
+import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.*;
 import com.jayud.mall.model.vo.*;
 import com.jayud.mall.model.vo.domain.AuthUser;
-import com.jayud.mall.service.BaseService;
-import com.jayud.mall.service.IOfferInfoService;
+import com.jayud.mall.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -84,6 +80,15 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
     @Autowired
     BaseService baseService;
 
+    @Autowired
+    ITemplateCopeReceivableService templateCopeReceivableService;
+
+    @Autowired
+    ITemplateCopeWithService templateCopeWithService;
+
+    @Autowired
+    ITemplateFileService templateFileService;
+
     @Override
     public IPage<OfferInfoVO> findOfferInfoByPage(QueryOfferInfoForm form) {
         //定义分页参数
@@ -126,28 +131,100 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
             return CommonResult.error(-1, "日期验证不通过，验证规则：预计到达时间>=开船日期>=（截单日期、截仓日期、截亏仓日期）");
         }
         if(ObjectUtil.isEmpty(id)){
-            //id 为空 ，代表新增
-            QueryWrapper<OfferInfo> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("names", names);
-            List<OfferInfo> list = this.list(queryWrapper);
-            if(CollUtil.isNotEmpty(list)){
-                return CommonResult.error(-1, "["+names+"],名称已存在");
-            }
+//            //id 为空 ，代表新增
+//            QueryWrapper<OfferInfo> queryWrapper = new QueryWrapper<>();
+//            queryWrapper.eq("names", names);
+//            List<OfferInfo> list = this.list(queryWrapper);
+//            if(CollUtil.isNotEmpty(list)){
+//                return CommonResult.error(-1, "["+names+"],名称已存在");
+//            }
             AuthUser user = baseService.getUser();
             offerInfo.setStatus("1");//状态(0无效 1有效)
             offerInfo.setUserId(user.getId().intValue());
             offerInfo.setUserName(user.getName());
             offerInfo.setCreateTime(LocalDateTime.now());
         }else{
-            //id 不为空 ，代表新增
-            QueryWrapper<OfferInfo> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("names", names);
-            queryWrapper.ne("id", id);
-            List<OfferInfo> list = this.list(queryWrapper);
-            if(CollUtil.isNotEmpty(list)){
-                return CommonResult.error(-1, "["+names+"],名称已存在");
-            }
+//            //id 不为空 ，代表修改
+//            QueryWrapper<OfferInfo> queryWrapper = new QueryWrapper<>();
+//            queryWrapper.eq("names", names);
+//            queryWrapper.ne("id", id);
+//            List<OfferInfo> list = this.list(queryWrapper);
+//            if(CollUtil.isNotEmpty(list)){
+//                return CommonResult.error(-1, "["+names+"],名称已存在");
+//            }
         }
+
+        //报价模板id(quotation_template id)
+        Integer qie = offerInfo.getQie();
+        //修改保存报价模板的费用、文件
+        List<TemplateCopeReceivableVO> templateCopeReceivableVOList = form.getTemplateCopeReceivableVOList();//报价对应应收费用明细list
+        List<TemplateCopeWithVO> templateCopeWithVOList = form.getTemplateCopeWithVOList();//报价对应应付费用明细list
+        List<TemplateFileVO> templateFileVOList = form.getTemplateFileVOList();//模板对应模块信息list，文件信息
+
+        /*应收费用明细List*/
+        List<TemplateCopeReceivableForm> templateCopeReceivableFormList = ConvertUtil.convertList(templateCopeReceivableVOList, TemplateCopeReceivableForm.class);
+        //刪除
+        QueryWrapper<TemplateCopeReceivable> queryWrapperTemplateCopeReceivable = new QueryWrapper<>();
+        queryWrapperTemplateCopeReceivable.eq("qie", qie);
+        templateCopeReceivableService.remove(queryWrapperTemplateCopeReceivable);
+
+        if(CollUtil.isNotEmpty(templateCopeReceivableFormList)){
+            List<TemplateCopeReceivable> list = new ArrayList<>();
+            templateCopeReceivableFormList.forEach(templateCopeReceivableForm -> {
+                TemplateCopeReceivable templateCopeReceivable = ConvertUtil.convert(templateCopeReceivableForm, TemplateCopeReceivable.class);
+                templateCopeReceivable.setQie(qie);
+                //计算 总金额=数量 * 单价
+                Integer c = templateCopeReceivable.getCount() == null ? 0 : templateCopeReceivable.getCount();//数量
+                BigDecimal count = new BigDecimal(c.toString());
+                BigDecimal unitPrice = templateCopeReceivable.getUnitPrice() == null ? new BigDecimal("0") : templateCopeReceivable.getUnitPrice();//单价
+                BigDecimal amount = count.multiply(unitPrice);
+                templateCopeReceivable.setAmount(amount);
+                list.add(templateCopeReceivable);
+            });
+            //保存
+            templateCopeReceivableService.saveOrUpdateBatch(list);
+        }
+
+        /*应付费用明细list*/
+        List<TemplateCopeWithForm> templateCopeWithFormList = ConvertUtil.convertList(templateCopeWithVOList, TemplateCopeWithForm.class);
+        //刪除
+        QueryWrapper<TemplateCopeWith> queryWrapperTemplateCopeWith = new QueryWrapper<>();
+        queryWrapperTemplateCopeWith.eq("qie", qie);
+        templateCopeWithService.remove(queryWrapperTemplateCopeWith);
+        if(CollUtil.isNotEmpty(templateCopeWithFormList)){
+            List<TemplateCopeWith> list = new ArrayList<>();
+            templateCopeWithFormList.forEach(templateCopeWithForm -> {
+                TemplateCopeWith templateCopeWith = ConvertUtil.convert(templateCopeWithForm, TemplateCopeWith.class);
+                templateCopeWith.setQie(qie);
+                //计算 总金额=数量 * 单价
+                Integer c = templateCopeWith.getCount() == null ? 0 : templateCopeWith.getCount();//数量
+                BigDecimal count = new BigDecimal(c.toString());
+                BigDecimal unitPrice = templateCopeWith.getUnitPrice() == null ? new BigDecimal("0") : templateCopeWith.getUnitPrice();//单价
+                BigDecimal amount = count.multiply(unitPrice);
+                templateCopeWith.setAmount(amount);
+                list.add(templateCopeWith);
+            });
+            //保存
+            templateCopeWithService.saveOrUpdateBatch(list);
+        }
+
+        /*文件信息明细list*/
+        List<TemplateFileForm> templateFileFormList = ConvertUtil.convertList(templateFileVOList, TemplateFileForm.class);
+        //刪除
+        QueryWrapper<TemplateFile> queryWrapperTemplateFile = new QueryWrapper<>();
+        queryWrapperTemplateFile.eq("qie", qie);
+        templateFileService.remove(queryWrapperTemplateFile);
+        if(CollUtil.isNotEmpty(templateFileFormList)){
+            List<TemplateFile> list = new ArrayList<>();
+            templateFileFormList.forEach(templateFileForm -> {
+                TemplateFile templateFile = ConvertUtil.convert(templateFileForm, TemplateFile.class);
+                templateFile.setQie(qie);
+                list.add(templateFile);
+            });
+            //保存
+            templateFileService.saveOrUpdateBatch(list);
+        }
+        //保存报价
         this.saveOrUpdate(offerInfo);
         return CommonResult.success("保存报价，成功！");
     }

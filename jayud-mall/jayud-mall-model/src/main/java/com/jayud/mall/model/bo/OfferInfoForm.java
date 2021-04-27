@@ -2,12 +2,16 @@ package com.jayud.mall.model.bo;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.mall.model.vo.TemplateCopeReceivableVO;
+import com.jayud.mall.model.vo.TemplateCopeWithVO;
+import com.jayud.mall.model.vo.TemplateFileVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @ApiModel(value="OfferInfoForm对象", description="报价表单")
@@ -81,5 +85,23 @@ public class OfferInfoForm {
     @ApiModelProperty(value = "操作信息", position = 14)
     @JSONField(ordinal = 14)
     private String remarks;
+
+    //报价编辑报价模板的费用信息、文件信息
+
+    /*报价对应应收费用明细list*/
+    @ApiModelProperty(value = "报价对应应收费用明细list", position = 42)
+    @JSONField(ordinal = 42)
+    private List<TemplateCopeReceivableVO> templateCopeReceivableVOList;
+
+    /*报价对应应付费用明细list*/
+    @ApiModelProperty(value = "报价对应应付费用明细list", position = 43)
+    @JSONField(ordinal = 43)
+    private List<TemplateCopeWithVO> templateCopeWithVOList;
+
+    /*模板对应模块信息list，文件信息*/
+    @ApiModelProperty(value = "模板对应模块信息list，文件信息", position = 44)
+    @JSONField(ordinal = 44)
+    private List<TemplateFileVO> templateFileVOList;
+
 
 }

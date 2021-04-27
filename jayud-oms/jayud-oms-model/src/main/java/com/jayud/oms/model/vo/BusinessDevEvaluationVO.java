@@ -16,6 +16,7 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -48,7 +49,7 @@ public class BusinessDevEvaluationVO extends BasePageForm {
     private String legal;
 
     @ApiModelProperty(value = "成立年份")
-    private LocalDateTime setYear;
+    private String setYear;
 
     @ApiModelProperty(value = "社会信用代码")
     private String creditCode;
@@ -105,7 +106,8 @@ public class BusinessDevEvaluationVO extends BasePageForm {
     private String discussPeople;
 
     @ApiModelProperty(value = "洽谈日期")
-    private LocalDateTime discussDate;
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
+    private LocalDate discussDate;
 
     @ApiModelProperty(value = "信息整理人")
     private String informationOrganizer;

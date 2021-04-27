@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.io.Serializable;
 
@@ -45,7 +46,7 @@ public class BusinessDevEvaluation extends Model<BusinessDevEvaluation> {
     private String legal;
 
     @ApiModelProperty(value = "成立年份")
-    private LocalDateTime setYear;
+    private String setYear;
 
     @ApiModelProperty(value = "社会信用代码")
     private String creditCode;
@@ -96,7 +97,7 @@ public class BusinessDevEvaluation extends Model<BusinessDevEvaluation> {
     private String discussPeople;
 
     @ApiModelProperty(value = "洽谈日期")
-    private LocalDateTime discussDate;
+    private LocalDate discussDate;
 
     @ApiModelProperty(value = "信息整理人")
     private String informationOrganizer;
@@ -188,10 +189,10 @@ public class BusinessDevEvaluation extends Model<BusinessDevEvaluation> {
     @ApiModelProperty(value = "更新时间")
     private LocalDateTime updateTime;
 
-    @ApiModelProperty(value = "审批意见")
+    @ApiModelProperty(value = "审批意见(经理审核意见)")
     private String auditOpinion;
 
-    @ApiModelProperty(value = "评估意见")
+    @ApiModelProperty(value = "评估意见(总经理审核意见)")
     private String evaluationOpinion;
 
 

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.AddBusinessDevEvaluationForm;
 import com.jayud.oms.model.bo.AddCustomsQuestionnaireForm;
 import com.jayud.oms.model.bo.QueryCustomsQuestionnaireForm;
@@ -98,26 +99,27 @@ public class BusinessDevEvaluationController {
         Long id = MapUtil.getLong(map, "id");
         String auditOpinion = MapUtil.getStr(map, "auditOpinion");
         Integer status = MapUtil.getInt(map, "status");
-//
-//        BusinessDevEvaluation tmp = new BusinessDevEvaluation()
-//                .setId(auditInfo.getExtId()).setStatus(3).setAuditOpinion(auditInfo.getAuditComment());8
-//
-//        switch (status) {
-//            case 0:
-//                businessDevEvaluation.setStatus(1);
-//                businessDevEvaluation.setAuditOpinion(auditOpinion);
-//                break;
-//            case 1:
-//                businessDevEvaluation.setStatus(2);
-//                businessDevEvaluation.setEvaluationOpinion(auditOpinion);
-//        }
+        if (id == null || StringUtils.isEmpty(auditOpinion) || status == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
 
+        BusinessDevEvaluation tmp = new BusinessDevEvaluation()
+                .setId(id).setStatus(3);
 
         AuditInfo auditInfo = new AuditInfo().setExtId(id)
-                .setExtDesc(AuditTypeDescEnum.TWO.getTable())
-                .setAuditTypeDesc(AuditTypeDescEnum.TWO.getDesc())
-                .setAuditStatus("reject")
+                .setExtDesc(AuditTypeDescEnum.THREE.getTable())
                 .setAuditComment(auditOpinion);
+
+        switch (status) {
+            case 0:
+                auditInfo.setAuditStatus("1").setAuditTypeDesc("经理审核意见");
+                tmp.setAuditOpinion(auditOpinion);
+                break;
+            case 1:
+                auditInfo.setAuditStatus("2").setAuditTypeDesc("总经理审核意见");
+                tmp.setEvaluationOpinion(auditOpinion);
+        }
+
 
         this.businessDevEvaluationService.approvalRejection(auditInfo);
         return CommonResult.success();

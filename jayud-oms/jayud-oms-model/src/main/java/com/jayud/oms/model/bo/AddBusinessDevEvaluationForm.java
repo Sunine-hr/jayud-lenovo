@@ -1,7 +1,6 @@
 package com.jayud.oms.model.bo;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.common.utils.Utilities;
@@ -13,7 +12,9 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * <p>
@@ -43,9 +44,8 @@ public class AddBusinessDevEvaluationForm extends Model<AddBusinessDevEvaluation
     @ApiModelProperty(value = "法人代表")
     private String legal;
 
-//    @ApiModelProperty(value = "成立年份")
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM")
-//    private String setYear;
+    @ApiModelProperty(value = "成立年份")
+    private String setYear;
 
     @ApiModelProperty(value = "社会信用代码")
     private String creditCode;
@@ -95,10 +95,9 @@ public class AddBusinessDevEvaluationForm extends Model<AddBusinessDevEvaluation
     @ApiModelProperty(value = "我司洽谈人")
     private String discussPeople;
 
-//    @ApiModelProperty(value = "洽谈日期")
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
-
-//    private String discussDate;
+    @ApiModelProperty(value = "洽谈日期")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
+    private LocalDate discussDate;
 
     @ApiModelProperty(value = "信息整理人")
     private String informationOrganizer;
@@ -227,7 +226,7 @@ public class AddBusinessDevEvaluationForm extends Model<AddBusinessDevEvaluation
         if (StringUtils.isEmpty(registeredAddress)) {
             throw new JayudBizException(400, "注册地址不能为空");
         }
-        if (enterpriseType==null) {
+        if (enterpriseType == null) {
             throw new JayudBizException(400, "企业类型不能为空");
         }
         if (StringUtils.isEmpty(correspondenceAddress)) {

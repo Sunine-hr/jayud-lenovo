@@ -363,6 +363,9 @@ public class ShipmentController {
             //fabWarehouseVO 存在 直接设置id
             shipmentIdVO.setWarehouseId(fabWarehouseVO.getId());
         }
+        //运单服务
+        String service = MapUtil.getStr(shipment, "service");
+        shipmentIdVO.setService(service);
         return CommonResult.success(shipmentIdVO);
     }
 

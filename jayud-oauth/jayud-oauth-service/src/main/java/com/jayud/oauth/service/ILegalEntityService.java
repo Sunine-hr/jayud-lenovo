@@ -18,4 +18,9 @@ public interface ILegalEntityService extends IService<LegalEntity> {
 
     LegalEntity getLegalEntityByLegalName(String name,Integer auditStatus);
 
+
+    /**
+     * 根据法人id集合配对code
+     */
+    Boolean matchingCodeByLegalIds(List<Long> legalEntityIds, String code);
 }

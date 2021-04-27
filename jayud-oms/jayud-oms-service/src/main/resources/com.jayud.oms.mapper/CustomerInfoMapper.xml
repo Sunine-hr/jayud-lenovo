@@ -355,11 +355,11 @@
         departmentId,d.`name` departmentName,
         ci.`ku_id` kuId,su1.`user_name` kuName,ci.`yw_id` ywId,su2.`user_name` ywName,ci.`audit_status`
         auditStatus,ci.`status`,
-        (CASE ci.`audit_status` WHEN '0' THEN '待客服审核'
-        WHEN '1' THEN '待财务审核'
-        WHEN '2' THEN '待总经办审核'
-        WHEN '10' THEN '审核通过'
-        WHEN '11' THEN '审核拒绝' END) auditStatusDesc,
+--         (CASE ci.`audit_status` WHEN '0' THEN '待客服审核'
+--         WHEN '1' THEN '待财务审核'
+--         WHEN '2' THEN '待总经办审核'
+--         WHEN '10' THEN '审核通过'
+--         WHEN '11' THEN '审核拒绝' END) auditStatusDesc,
         ci.`created_user` createdUser,
         DATE_FORMAT(ci.`created_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
         ci.`updated_user` updatedUser,ci.`audit_comment` auditComment,

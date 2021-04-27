@@ -335,7 +335,7 @@ public class ExternalApiController {
 
     @ApiOperation(value = "根据用户名获取用户所属法人主体")
     @RequestMapping(value = "/api/getLegalNameBySystemName")
-    public ApiResult getLegalNameBySystemName(@RequestParam("loginName") String loginName){
+    public ApiResult getLegalNameBySystemName(@RequestParam("loginName") String loginName) {
         SystemUser systemUser = userService.getSystemUserBySystemName(loginName);
         List<String> legalName = systemUserLegalService.getLegalName(systemUser.getId());
         return ApiResult.ok(legalName);
@@ -345,9 +345,20 @@ public class ExternalApiController {
      * 根据用户名获取用户所属法人主体
      */
     @RequestMapping(value = "/api/getLegalEntityCodeByLegalId")
-    ApiResult getLegalEntityCodeByLegalId(Long legalId){
+    ApiResult getLegalEntityCodeByLegalId(Long legalId) {
         LegalEntity legalEntity = this.legalEntityService.getById(legalId);
         return ApiResult.ok(legalEntity.getLegalCode());
+    }
+
+
+    /**
+     * 根据法人id集合配对code
+     */
+    @RequestMapping(value = "/api/matchingCodeByLegalIds")
+    ApiResult<Boolean> matchingCodeByLegalIds(@RequestParam("legalEntityIds") List<Long> legalEntityIds,
+                                              @RequestParam("code") String code) {
+        Boolean matching = this.legalEntityService.matchingCodeByLegalIds(legalEntityIds, code);
+        return ApiResult.ok(matching);
     }
 
 

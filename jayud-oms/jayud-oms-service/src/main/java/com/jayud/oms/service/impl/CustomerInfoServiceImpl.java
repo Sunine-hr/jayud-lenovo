@@ -392,7 +392,10 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
             customerInfo.setCreatedUser(UserOperator.getToken())
                     .setCreatedTime(DateUtils.getNowTime());
         }
-        customerInfo.setAuditStatus(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode());
+        if (StringUtils.isEmpty(customerInfo.getAuditStatus())) {
+            customerInfo.setAuditStatus(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode());
+        }
+
         customerInfoService.saveOrUpdate(customerInfo);//保存客户信息
         form.setId(customerInfo.getId());
         //保存客户和法人主体关系

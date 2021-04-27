@@ -8,21 +8,18 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.AddBusinessDevEvaluationForm;
-import com.jayud.oms.model.bo.AddCustomsQuestionnaireForm;
 import com.jayud.oms.model.bo.QueryCustomsQuestionnaireForm;
 import com.jayud.oms.model.enums.AuditTypeDescEnum;
 import com.jayud.oms.model.po.AuditInfo;
 import com.jayud.oms.model.po.BusinessDevEvaluation;
 import com.jayud.oms.model.po.CustomsQuestionnaire;
 import com.jayud.oms.model.vo.BusinessDevEvaluationVO;
-import com.jayud.oms.model.vo.CustomsQuestionnaireVO;
 import com.jayud.oms.service.IBusinessDevEvaluationService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -119,7 +116,6 @@ public class BusinessDevEvaluationController {
                 auditInfo.setAuditStatus("2").setAuditTypeDesc("总经理审核意见");
                 tmp.setEvaluationOpinion(auditOpinion);
         }
-
 
         this.businessDevEvaluationService.approvalRejection(auditInfo);
         return CommonResult.success();

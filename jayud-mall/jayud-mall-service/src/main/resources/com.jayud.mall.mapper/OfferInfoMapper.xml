@@ -103,6 +103,8 @@
         t1.qid,
         t1.task_id,
         t1.remarks templateRemarks,
+        t1.whole_time,
+        t1.design_formulas,
         t2.code_name sName,
         t3.code_name tName,
         t4.code_name startShipmentName,

@@ -155,6 +155,13 @@ public class QuotationTemplate extends Model<QuotationTemplate> {
     @JSONField(ordinal = 29, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
+    @ApiModelProperty(value = "整体时效")
+    private String wholeTime;
+
+    @ApiModelProperty(value = "计算公式\n" +
+            "1材积->重量：长*高*宽/计泡系数(单位KG)\n" +
+            "2重量->材积：实重/计泡系数(单位CBM)")
+    private Integer designFormulas;
 
     @Override
     protected Serializable pkVal() {

@@ -231,7 +231,9 @@ public class OfferInfoVO {
     private List<TemplateCopeReceivableVO> inlandFeeList;
 
     //rec3.其他应收费用
-    //TODO
+    @ApiModelProperty(value = "其他费用：其他(应收费用明细)", position = 47)
+    @JSONField(ordinal = 47)
+    private List<TemplateCopeReceivableVO> otherFeeList;
 
     //图片
     @ApiModelProperty(value = "图片", position = 48)

@@ -79,6 +79,10 @@ public class TemplateCopeReceivableVO {
     @JSONField(ordinal = 15)
     private String amountFormat;
 
+    @ApiModelProperty(value = "单价格式化", position = 16)
+    @JSONField(ordinal = 16)
+    private String unitPriceFormat;
+
 
 
 }

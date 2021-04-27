@@ -364,6 +364,11 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
                 templateCopeReceivableMapper.findTemplateCopeReceivableInlandFeeListByQie(qie);
         offerInfoVO.setInlandFeeList(inlandFeeList);
 
+        /*报价其他应收费用*/
+        List<TemplateCopeReceivableVO> otherFeeList =
+                templateCopeReceivableMapper.findTemplateCopeReceivableOtherFeeListByQie(qie);
+        offerInfoVO.setOtherFeeList(otherFeeList);
+
         /*货物类型*/
         String gid = offerInfoVO.getGid();
         if(gid != null && gid != ""){

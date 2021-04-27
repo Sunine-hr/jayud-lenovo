@@ -59,4 +59,11 @@ public interface IOrderConfService extends IService<OrderConf> {
      * @return
      */
     OrderConfVO findOrderConfById(Long id);
+
+    /**
+     * 新增配载
+     * @param form
+     * @return
+     */
+    OrderConfVO addOrderConf(OrderConfForm form);
 }

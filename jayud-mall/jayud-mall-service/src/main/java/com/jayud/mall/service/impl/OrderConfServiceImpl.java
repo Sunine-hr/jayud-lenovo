@@ -236,5 +236,22 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
         return orderConfVO;
     }
 
+    @Override
+    public OrderConfVO addOrderConf(OrderConfForm form) {
+        OrderConf orderConf = ConvertUtil.convert(form, OrderConf.class);
+        Long id = orderConf.getId();
+        if(id == null){
+            AuthUser user = baseService.getUser();
+            orderConf.setStatus("1");//状态(0无效 1有效)
+            orderConf.setUserId(user.getId().intValue());
+            orderConf.setUserName(user.getName());
+            orderConf.setCreateTime(LocalDateTime.now());
+        }
+        //1.保存配载单
+        this.saveOrUpdate(orderConf);
+        OrderConfVO orderConfVO = ConvertUtil.convert(orderConf, OrderConfVO.class);
+        return orderConfVO;
+    }
+
 
 }

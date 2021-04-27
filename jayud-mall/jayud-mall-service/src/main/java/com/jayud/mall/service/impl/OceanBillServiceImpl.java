@@ -1,5 +1,6 @@
 package com.jayud.mall.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -434,25 +435,27 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         this.saveOrUpdate(oceanBill);
         Long obId = oceanBill.getId();//提单id
         List<OceanCounterForm> oceanCounterForms = form.getOceanCounterForms();
-        List<OceanCounter> oceanCounterList = new ArrayList<>();
-        oceanCounterForms.forEach(oceanCounterForm -> {
-            OceanCounter oceanCounter = ConvertUtil.convert(oceanCounterForm, OceanCounter.class);
-            oceanCounter.setObId(obId);
-            oceanCounter.setStatus("1");//状态(0无效 1有效)
-            oceanCounter.setCreateTime(LocalDateTime.now());
-            oceanCounterList.add(oceanCounter);
-        });
-        //2.保存提单对应的柜子
-        QueryWrapper<OceanCounter> oceanCounterQueryWrapper = new QueryWrapper<>();
-        oceanCounterQueryWrapper.eq("ob_id", obId);
-        oceanCounterService.remove(oceanCounterQueryWrapper);
-        oceanCounterService.saveOrUpdateBatch(oceanCounterList);
+
+        if(CollUtil.isNotEmpty(oceanCounterForms)){
+            List<OceanCounter> oceanCounterList = new ArrayList<>();
+            oceanCounterForms.forEach(oceanCounterForm -> {
+                OceanCounter oceanCounter = ConvertUtil.convert(oceanCounterForm, OceanCounter.class);
+                oceanCounter.setObId(obId);
+                oceanCounter.setStatus("1");//状态(0无效 1有效)
+                oceanCounter.setCreateTime(LocalDateTime.now());
+                oceanCounterList.add(oceanCounter);
+            });
+            //2.保存提单对应的柜子
+            QueryWrapper<OceanCounter> oceanCounterQueryWrapper = new QueryWrapper<>();
+            oceanCounterQueryWrapper.eq("ob_id", obId);
+            oceanCounterService.remove(oceanCounterQueryWrapper);
+            oceanCounterService.saveOrUpdateBatch(oceanCounterList);
+        }
         OceanBillVO oceanBillVO = ConvertUtil.convert(oceanBill, OceanBillVO.class);
 
         //3.保存提单关联任务
         List<BillTaskRelevanceVO> billTaskRelevanceVOS =
                 billTaskRelevanceService.savebillTaskRelevance(oceanBill);
-
 
         //4.保存提单到配载 ocean_conf_detail
         OceanConfDetail oceanConfDetail = new OceanConfDetail();
@@ -468,6 +471,12 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         oceanConfDetailService.remove(queryWrapper);
         oceanConfDetailService.saveOrUpdate(oceanConfDetail);
 
+        return CommonResult.success(oceanBillVO);
+    }
+
+    @Override
+    public CommonResult<OceanBillVO> findOceanBillById(Long id) {
+        OceanBillVO oceanBillVO = oceanBillMapper.findOceanBillById(id);
         return CommonResult.success(oceanBillVO);
     }
 }

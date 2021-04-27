@@ -94,4 +94,11 @@ public interface IOceanBillService extends IService<OceanBill> {
      * @return
      */
     CommonResult<OceanBillVO> saveOceanBillByConf(OceanBillForm form);
+
+    /**
+     * 查询提单信息
+     * @param id
+     * @return
+     */
+    CommonResult<OceanBillVO> findOceanBillById(Long id);
 }

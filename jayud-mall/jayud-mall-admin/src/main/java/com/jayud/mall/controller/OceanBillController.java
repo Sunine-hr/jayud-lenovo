@@ -117,5 +117,19 @@ public class OceanBillController {
         return oceanBillService.saveOceanBillByConf(form);
     }
 
+    //配载，提单（4个窗口），1.查看-清关
+
+    //配载，提单（4个窗口），1.查看-柜子
+
+    //配载，提单（4个窗口），1.查看-柜子
+
+    @ApiOperation(value = "配载，提单（4个窗口），1.查看-详情")
+    @PostMapping("/findOceanBillById")
+    public CommonResult<OceanBillVO> findOceanBillById(@Valid @RequestBody OceanBillParaForm form){
+        Long id = form.getId();
+        return oceanBillService.findOceanBillById(id);
+    }
+
+
 
 }

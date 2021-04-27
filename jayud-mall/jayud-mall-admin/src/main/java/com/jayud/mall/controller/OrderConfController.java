@@ -82,14 +82,25 @@ public class OrderConfController {
         return CommonResult.success(orderConfVO);
     }
 
+    @ApiOperation(value = "新增配载单（新增后在编辑，配载报价和提单）")
+    @PostMapping(value = "addOrderConf")
+    @ApiOperationSupport(order = 7)
+    public CommonResult<OrderConfVO> addOrderConf(@RequestBody OrderConfForm form){
+        OrderConfVO orderConfVO = orderConfService.addOrderConf(form);
+        return CommonResult.success(orderConfVO);
+    }
+
     @ApiOperation(value = "新增编辑查询配载：提单、报价、运单(订单)")
     @PostMapping(value = "findOrderConfById")
-    @ApiOperationSupport(order = 7)
+    @ApiOperationSupport(order = 8)
     public CommonResult<OrderConfVO> findOrderConfById(@Valid @RequestBody OrderConfIdForm form){
         Long id = form.getId();
         OrderConfVO orderConfVO = orderConfService.findOrderConfById(id);
         return CommonResult.success(orderConfVO);
     }
+
+
+
 
 
 }

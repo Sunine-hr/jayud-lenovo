@@ -87,4 +87,11 @@ public interface IOceanBillService extends IService<OceanBill> {
      * @return
      */
     CommonResult<List<BillTaskRelevanceVO>> lookOperateLog(Long id);
+
+    /**
+     * 在配载下，新增提单信息
+     * @param form
+     * @return
+     */
+    CommonResult<OceanBillVO> saveOceanBillByConf(OceanBillForm form);
 }

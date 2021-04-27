@@ -110,4 +110,12 @@ public class OceanBillController {
 
     //TODO 提单的接口
 
+    @ApiOperation(value = "保存提单信息2(在配载添加提单，默认关联配载)")
+    @PostMapping("/saveOceanBillByConf")
+    @ApiOperationSupport(order = 10)
+    public CommonResult<OceanBillVO> saveOceanBillByConf(@Valid @RequestBody OceanBillForm form){
+        return oceanBillService.saveOceanBillByConf(form);
+    }
+
+
 }

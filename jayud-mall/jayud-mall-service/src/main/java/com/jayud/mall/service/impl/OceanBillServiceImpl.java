@@ -60,6 +60,9 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     CostItemMapper costItemMapper;
 
     @Autowired
+    OrderConfMapper orderConfMapper;
+
+    @Autowired
     IOceanCounterService oceanCounterService;
 
     @Autowired
@@ -73,6 +76,9 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
 
     @Autowired
     IOrderCopeWithService orderCopeWithService;
+
+    @Autowired
+    IOceanConfDetailService oceanConfDetailService;
 
     @Autowired
     BaseService baseService;
@@ -405,5 +411,63 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         }
         List<BillTaskRelevanceVO> billTaskRelevanceVOS = oceanBillMapper.lookOperateLog(id);
         return CommonResult.success(billTaskRelevanceVOS);
+    }
+
+    @Override
+    public CommonResult<OceanBillVO> saveOceanBillByConf(OceanBillForm form) {
+        Long orderConfId = form.getOrderConfId();
+        OrderConfVO orderConfVO = orderConfMapper.findOrderConfById(orderConfId);
+        if(ObjectUtil.isEmpty(orderConfVO)){
+            return CommonResult.error(-1, "配载id不存在");
+        }
+
+        //1.保存提单
+        OceanBill oceanBill = ConvertUtil.convert(form, OceanBill.class);
+        Long id = oceanBill.getId();
+        if (ObjectUtil.isEmpty(id)){
+            AuthUser user = baseService.getUser();
+            oceanBill.setUserId(user.getId().intValue());
+            oceanBill.setUserName(user.getName());
+            oceanBill.setCreateTime(LocalDateTime.now());
+        }
+
+        this.saveOrUpdate(oceanBill);
+        Long obId = oceanBill.getId();//提单id
+        List<OceanCounterForm> oceanCounterForms = form.getOceanCounterForms();
+        List<OceanCounter> oceanCounterList = new ArrayList<>();
+        oceanCounterForms.forEach(oceanCounterForm -> {
+            OceanCounter oceanCounter = ConvertUtil.convert(oceanCounterForm, OceanCounter.class);
+            oceanCounter.setObId(obId);
+            oceanCounter.setStatus("1");//状态(0无效 1有效)
+            oceanCounter.setCreateTime(LocalDateTime.now());
+            oceanCounterList.add(oceanCounter);
+        });
+        //2.保存提单对应的柜子
+        QueryWrapper<OceanCounter> oceanCounterQueryWrapper = new QueryWrapper<>();
+        oceanCounterQueryWrapper.eq("ob_id", obId);
+        oceanCounterService.remove(oceanCounterQueryWrapper);
+        oceanCounterService.saveOrUpdateBatch(oceanCounterList);
+        OceanBillVO oceanBillVO = ConvertUtil.convert(oceanBill, OceanBillVO.class);
+
+        //3.保存提单关联任务
+        List<BillTaskRelevanceVO> billTaskRelevanceVOS =
+                billTaskRelevanceService.savebillTaskRelevance(oceanBill);
+
+
+        //4.保存提单到配载 ocean_conf_detail
+        OceanConfDetail oceanConfDetail = new OceanConfDetail();
+        oceanConfDetail.setOrderId(orderConfId);//配载id
+        oceanConfDetail.setIdCode(obId.intValue());//oceanBill.getId();//提单id
+        oceanConfDetail.setTypes(2);//类型1报价 2提单
+        oceanConfDetail.setStatus("1");//状态(0无效 1有效)
+
+        QueryWrapper<OceanConfDetail> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("order_id", orderConfId);//配载id
+        queryWrapper.eq("id_code", obId);//提单id
+        queryWrapper.eq("types", 2);//分类区分当前是报价或提单(1报价 2提单)
+        oceanConfDetailService.remove(queryWrapper);
+        oceanConfDetailService.saveOrUpdate(oceanConfDetail);
+
+        return CommonResult.success(oceanBillVO);
     }
 }

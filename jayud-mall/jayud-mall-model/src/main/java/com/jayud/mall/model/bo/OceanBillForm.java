@@ -17,6 +17,9 @@ import java.util.List;
 @ApiModel(value = "提单")
 public class OceanBillForm {
 
+    @ApiModelProperty("配载id(order_conf id)")
+    private Long orderConfId;
+
     @ApiModelProperty(value = "自增加id", position = 1)
     @TableId(value = "id", type = IdType.AUTO)
     @JSONField(ordinal = 1)

@@ -74,17 +74,21 @@ public class BusinessDevEvaluationController {
     public CommonResult<CustomsQuestionnaire> auditOperation(@RequestBody Map<String, Object> map) {
         Long id = MapUtil.getLong(map, "id");
         Integer status = MapUtil.getInt(map, "status");
+        String auditOpinion = MapUtil.getStr(map, "auditOpinion");
         if (id == null || status == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
+        BusinessDevEvaluation businessDevEvaluation = new BusinessDevEvaluation().setId(id);
         switch (status) {
             case 0:
-                status = 1;
+                businessDevEvaluation.setStatus(1);
+                businessDevEvaluation.setAuditOpinion(auditOpinion);
                 break;
             case 1:
-                status = 2;
+                businessDevEvaluation.setStatus(2);
+                businessDevEvaluation.setEvaluationOpinion(auditOpinion);
         }
-        this.businessDevEvaluationService.updateById(new BusinessDevEvaluation().setId(id).setStatus(status));
+        this.businessDevEvaluationService.updateById(businessDevEvaluation);
         return CommonResult.success();
     }
 
@@ -93,12 +97,28 @@ public class BusinessDevEvaluationController {
     public CommonResult approvalRejection(@RequestBody Map<String, Object> map) {
         Long id = MapUtil.getLong(map, "id");
         String auditOpinion = MapUtil.getStr(map, "auditOpinion");
+        Integer status = MapUtil.getInt(map, "status");
+//
+//        BusinessDevEvaluation tmp = new BusinessDevEvaluation()
+//                .setId(auditInfo.getExtId()).setStatus(3).setAuditOpinion(auditInfo.getAuditComment());8
+//
+//        switch (status) {
+//            case 0:
+//                businessDevEvaluation.setStatus(1);
+//                businessDevEvaluation.setAuditOpinion(auditOpinion);
+//                break;
+//            case 1:
+//                businessDevEvaluation.setStatus(2);
+//                businessDevEvaluation.setEvaluationOpinion(auditOpinion);
+//        }
+
 
         AuditInfo auditInfo = new AuditInfo().setExtId(id)
                 .setExtDesc(AuditTypeDescEnum.TWO.getTable())
                 .setAuditTypeDesc(AuditTypeDescEnum.TWO.getDesc())
                 .setAuditStatus("reject")
                 .setAuditComment(auditOpinion);
+
         this.businessDevEvaluationService.approvalRejection(auditInfo);
         return CommonResult.success();
     }

@@ -1,38 +1,29 @@
-package com.jayud.mall.model.po;
+package com.jayud.mall.model.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
-import java.io.Serializable;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+
+import java.time.LocalDateTime;
 
 /**
- * <p>
- * 报关文件箱号
- * </p>
- *
- * @author fachang.mao
- * @since 2021-04-27
+ * Larry 20210427
+ * 清关对应箱号返回实体
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@ApiModel(value="CustomsFileCase对象", description="报关文件箱号")
-public class CustomsFileCase extends Model<CustomsFileCase> {
+public class CustomsInfoCaseVO {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "自增id")
-      @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "文件id(bill_customs_info id)")
+    @ApiModelProperty(value = "提单对应报关信息id(bill_clearance_info id)")
     private Long fileId;
 
-    @ApiModelProperty(value = "文件名称(bill_customs_info file_name)")
+    @ApiModelProperty(value = "提单对应报关信息id(bill_clearance_info file_name)")
     private String fileName;
 
     @ApiModelProperty(value = "提单id(ocean_bill id)")
@@ -49,11 +40,5 @@ public class CustomsFileCase extends Model<CustomsFileCase> {
 
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
-
-
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
 
 }

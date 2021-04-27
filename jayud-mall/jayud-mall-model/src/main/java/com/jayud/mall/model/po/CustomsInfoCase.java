@@ -12,7 +12,7 @@ import lombok.EqualsAndHashCode;
 
 /**
  * <p>
- * 清关文件箱号
+ * 报关文件箱号
  * </p>
  *
  * @author fachang.mao
@@ -20,8 +20,8 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="ClearanceFileCase对象", description="清关文件箱号")
-public class ClearanceFileCase extends Model<ClearanceFileCase> {
+@ApiModel(value="CustomsInfoCase对象", description="报关文件箱号")
+public class CustomsInfoCase extends Model<CustomsInfoCase> {
 
     private static final long serialVersionUID = 1L;
 
@@ -29,10 +29,10 @@ public class ClearanceFileCase extends Model<ClearanceFileCase> {
       @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "文件id(bill_clearance_info id)")
-    private Long fileId;
+    @ApiModelProperty(value = "提单对应报关信息id(bill_customs_info id)")
+    private Long bId;
 
-    @ApiModelProperty(value = "文件名称(bill_clearance_info file_name)")
+    @ApiModelProperty(value = "提单对应报关信息id(bill_customs_info file_name)")
     private String fileName;
 
     @ApiModelProperty(value = "提单id(ocean_bill id)")

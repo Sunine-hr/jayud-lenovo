@@ -27,7 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.poifs.filesystem.FileMagic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -60,6 +59,8 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
     OrderCaseMapper orderCaseMapper;
     @Autowired
     FabWarehouseMapper fabWarehouseMapper;
+    @Autowired
+    NumberGeneratedMapper numberGeneratedMapper;
 
     @Autowired
     IOrderInfoService orderInfoService;
@@ -80,7 +81,6 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
     private static List<List<Object>> excelList = Collections.synchronizedList(new ArrayList<List<Object>>());
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public ShipmentVO saveShipment(ShipmentVO shipmentVO) {
         String shipment_id = shipmentVO.getShipment_id();
         ShipmentVO shipment = shipmentMapper.findShipmentById(shipment_id);
@@ -118,10 +118,12 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
         this.saveOrUpdate(s);
 
         String shipment_id1 = s.getShipment_id();
-        OrderInfoVO orderInfoByOrderNo = orderInfoMapper.findOrderInfoByOrderNo(shipment_id1);
-        if(ObjectUtil.isEmpty(orderInfoByOrderNo)){
-            shipmentService.createOrderByShipment(shipment_id1);
-        }
+//        OrderInfoVO orderInfoByOrderNo = orderInfoMapper.findOrderInfoByOrderNo(shipment_id1);
+//        if(ObjectUtil.isEmpty(orderInfoByOrderNo)){
+//            shipmentService.createOrderByShipment(shipment_id1);
+//        }
+        //根据新智慧运单shipment_id，创建订单
+        shipmentService.createOrderByShipment(shipment_id1);
         return shipmentVO;
     }
 
@@ -164,7 +166,7 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
         //订单箱号
         List<OrderCase> orderCaseList = new ArrayList<>();
 
-        //组装数据
+        //组装数据-构造订单箱号，构造订单商品
         extracted(shipmentVO, orderShopList, orderCaseList);
 
         //目的仓库代码
@@ -173,14 +175,15 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
         JSONObject to_addressJsonObject = JSONUtil.parseObj(to_address);
         String destinationWarehouseCode = to_addressJsonObject.get("name", String.class);//目的仓库代码,例如：ONT8
         FabWarehouseVO fabWarehouseVO = fabWarehouseMapper.findFabWarehouseByWarehouseCode(destinationWarehouseCode);
-        if(ObjectUtil.isEmpty(fabWarehouseVO)){
-            //fabWarehouseVO 为 null
-            FabWarehouse fabWarehouse = new FabWarehouse();
-            fabWarehouse.setWarehouseCode(destinationWarehouseCode);
-            fabWarehouse.setWarehouseName(destinationWarehouseCode);
-            fabWarehouseService.saveOrUpdate(fabWarehouse);
-        }
+//        if(ObjectUtil.isEmpty(fabWarehouseVO)){
+//            //fabWarehouseVO 为 null
+//            FabWarehouse fabWarehouse = new FabWarehouse();
+//            fabWarehouse.setWarehouseCode(destinationWarehouseCode);
+//            fabWarehouse.setWarehouseName(destinationWarehouseCode);
+//            fabWarehouseService.saveOrUpdate(fabWarehouse);
+//        }
 
+        //1.保存订单
         String orderNo = shipmentVO.getShipment_id();
         OrderInfoVO orderInfoVO = orderInfoMapper.findOrderInfoByOrderNo(orderNo);
         if(ObjectUtil.isEmpty(orderInfoVO)){
@@ -193,9 +196,10 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
             orderInfo.setReserveSize(null);//订柜尺寸,根据报价选择
             orderInfo.setStoreGoodsWarehouseCode(null);//集货仓库代码,根据报价选择
             orderInfo.setStoreGoodsWarehouseName(null);//集货仓库名称,根据报价选择
-            orderInfo.setDestinationWarehouseCode(destinationWarehouseCode);//目的仓库代码,根据报价选择
-            orderInfo.setDestinationWarehouseName(destinationWarehouseCode);//目的仓库名称,根据报价选择
-
+            if(ObjectUtil.isNotEmpty(fabWarehouseVO)){
+                orderInfo.setDestinationWarehouseCode(fabWarehouseVO.getWarehouseCode());//目的仓库代码,根据报价选择
+                orderInfo.setDestinationWarehouseName(fabWarehouseVO.getWarehouseName());//目的仓库名称,根据报价选择
+            }
             orderInfo.setIsPick(0);//是否上门提货(0否 1是),默认为否
             orderInfo.setStatus(OrderEnum.DRAFT.getCode());//状态码,默认为草稿状态
             orderInfo.setStatusName(OrderEnum.DRAFT.getName());//状态名称
@@ -244,8 +248,11 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
             orderInfo.setReserveSize(null);//订柜尺寸,根据报价选择
             orderInfo.setStoreGoodsWarehouseCode(null);//集货仓库代码,根据报价选择
             orderInfo.setStoreGoodsWarehouseName(null);//集货仓库名称,根据报价选择
-            orderInfo.setDestinationWarehouseCode(destinationWarehouseCode);//目的仓库代码,根据报价选择
-            orderInfo.setDestinationWarehouseName(destinationWarehouseCode);//目的仓库名称,根据报价选择
+
+            if(ObjectUtil.isNotEmpty(fabWarehouseVO)){
+                orderInfo.setDestinationWarehouseCode(fabWarehouseVO.getWarehouseCode());//目的仓库代码,根据报价选择
+                orderInfo.setDestinationWarehouseName(fabWarehouseVO.getWarehouseName());//目的仓库名称,根据报价选择
+            }
 
             orderInfo.setIsPick(0);//是否上门提货(0否 1是),默认为否
             orderInfo.setStatus(OrderEnum.DRAFT.getCode());//状态码,默认为草稿状态
@@ -257,8 +264,11 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
             orderInfo.setOrderOrigin("2");//订单来源(1web端 2新智慧同步)
 
             orderInfo.setRemark("新智慧同步订单");
-            orderInfo.setChargeWeight(new BigDecimal(shipmentVO.getChargeable_weight()));//收费重(KG)
-            orderInfo.setVolumeWeight(new BigDecimal(shipmentVO.getChargeable_weight()));//材积重(KG),默认等于 收费重(KG)
+            if(ObjectUtil.isNotEmpty(shipmentVO.getChargeable_weight())){
+                orderInfo.setChargeWeight(new BigDecimal(shipmentVO.getChargeable_weight()));//收费重(KG)
+                orderInfo.setVolumeWeight(new BigDecimal(shipmentVO.getChargeable_weight()));//材积重(KG),默认等于 收费重(KG)
+            }
+
             orderInfo.setActualVolume(null);//实际体积(m3),默认为空
             orderInfo.setTotalCartons(null);//总箱数,默认为空
 
@@ -266,7 +276,7 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
             orderInfoService.saveOrUpdate(orderInfo);
             Long orderId = orderInfo.getId();
 
-            //订单箱号
+            //2.保存订单箱号
             orderCaseList.forEach(orderCase -> {
                 orderCase.setOrderId(orderId.intValue());
             });
@@ -274,7 +284,7 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
             orderCaseQueryWrapper.eq("order_id", orderInfo.getId());
             orderCaseService.remove(orderCaseQueryWrapper);
             orderCaseService.saveOrUpdateBatch(orderCaseList);
-            //订单对应商品
+            //3.保存订单对应商品
             orderShopList.forEach(orderShop -> {
                 orderShop.setOrderId(orderId.intValue());
             });
@@ -465,7 +475,12 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
         };
     }
 
-
+    /**
+     * 组装数据-构造订单箱号，构造订单商品
+     * @param shipmentVO 新智慧运单(订单)
+     * @param orderShopList 订单商品
+     * @param orderCaseList 订单箱号
+     */
     private void extracted(ShipmentVO shipmentVO, List<OrderShop> orderShopList, List<OrderCase> orderCaseList) {
         JSONObject shipmentJSONObject = JSONUtil.parseObj(shipmentVO);
         Object parcels = shipmentJSONObject.get("parcels");
@@ -473,12 +488,17 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
         for (int i = 0; i < objects.size(); i++) {
             //订单箱号
             JSONObject parcelsJsonObject = objects.getJSONObject(i);
-            String cartonNo = parcelsJsonObject.get("number",String.class);
-            OrderCaseVO orderCaseVO = orderCaseMapper.findOrderCaseByCartonNo(cartonNo);
+            //String cartonNo = parcelsJsonObject.get("number",String.class);
+            //OrderCaseVO orderCaseVO = orderCaseMapper.findOrderCaseByCartonNo(cartonNo);
+            String fabNo = parcelsJsonObject.get("number",String.class);
+            OrderCaseVO orderCaseVO = orderCaseMapper.findOrderCaseByfabNo(fabNo);
             if(ObjectUtil.isEmpty(orderCaseVO)){
                 //orderCaseVO 为null
                 OrderCase orderCase = new OrderCase();
-                orderCase.setCartonNo(cartonNo);
+                //String cartonNOa = NumberGeneratedUtils.getOrderNoByCode2("case_number");
+                String cartonNO = numberGeneratedMapper.getOrderNoByCode("case_number");
+                orderCase.setCartonNo(cartonNO);//箱号
+                orderCase.setFabNo(fabNo);//FBA
                 orderCase.setAsnLength(parcelsJsonObject.get("client_length", BigDecimal.class));//客户测量的长度，单位cm
                 orderCase.setAsnWidth(parcelsJsonObject.get("client_width", BigDecimal.class));//客户测量的宽度，单位cm
                 orderCase.setAsnHeight(parcelsJsonObject.get("client_height", BigDecimal.class));//客户测量的高度，单位cm
@@ -519,6 +539,7 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
                 orderCaseList.add(orderCase);
             }
 
+            //遍历，新智慧运单，箱号下的商品
             Object declarations = parcelsJsonObject.get("declarations");
             JSONArray declarationsJSONArray = JSONUtil.parseArray(declarations);
             for (int j=0; j < declarationsJSONArray.size(); j++){
@@ -587,6 +608,48 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
                 }
             }
         }
+
+        //对商品进行合并,统计数量
+        Map<Integer, List<OrderShop>> integerListMap = groupListByGoodId(orderShopList);
+        orderShopList.clear();
+        // entrySet遍历，在键和值都需要时使用（最常用）
+        for (Map.Entry<Integer, List<OrderShop>> entry : integerListMap.entrySet()) {
+            Integer goodId = entry.getKey();//商品id
+            List<OrderShop> orderShops = entry.getValue();
+            Integer quantity = 0;
+            for (int i=0; i<orderShops.size(); i++){
+                OrderShop orderShop = orderShops.get(i);
+                quantity += orderShop.getQuantity();//数量
+            }
+            OrderShop shop = new OrderShop();
+            shop.setGoodId(goodId);//商品编号(customer_goods id)
+            shop.setQuantity(quantity);//数量
+            orderShopList.add(shop);
+        }
+        System.out.println(orderShopList);
+
+    }
+
+
+    /**
+     * 根据币种id，分组
+     * @param orderShopList 订单商品
+     * @return
+     */
+    private Map<Integer, List<OrderShop>> groupListByGoodId(List<OrderShop> orderShopList) {
+        Map<Integer, List<OrderShop>> map = new HashMap<>();
+        for (OrderShop orderShop : orderShopList) {
+            Integer key = orderShop.getGoodId();//商品id
+            List<OrderShop> tmpList = map.get(key);
+            if (CollUtil.isEmpty(tmpList)) {
+                tmpList = new ArrayList<>();
+                tmpList.add(orderShop);
+                map.put(key, tmpList);
+            } else {
+                tmpList.add(orderShop);
+            }
+        }
+        return map;
     }
 
     /**

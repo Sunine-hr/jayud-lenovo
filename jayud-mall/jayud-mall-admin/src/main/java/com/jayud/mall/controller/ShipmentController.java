@@ -2,15 +2,18 @@ package com.jayud.mall.controller;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.mapper.CustomerMapper;
+import com.jayud.mall.mapper.FabWarehouseMapper;
 import com.jayud.mall.model.bo.QueryShipmentForm;
 import com.jayud.mall.model.bo.QueryShipmentParaForm;
 import com.jayud.mall.model.vo.CustomerVO;
+import com.jayud.mall.model.vo.FabWarehouseVO;
 import com.jayud.mall.model.vo.ShipmentIdVO;
 import com.jayud.mall.model.vo.ShipmentVO;
 import com.jayud.mall.service.IShipmentService;
@@ -38,6 +41,9 @@ public class ShipmentController {
     IShipmentService shipmentService;
     @Autowired
     CustomerMapper customerMapper;
+
+    @Autowired
+    FabWarehouseMapper fabWarehouseMapper;
 
     @ApiOperation(value = "分页查询订单装货信息")
     @PostMapping("/findShipmentByPage")
@@ -344,8 +350,19 @@ public class ShipmentController {
         ShipmentVO saveShipment = shipmentService.saveShipment(shipmentVO);
 
         ShipmentIdVO shipmentIdVO = new ShipmentIdVO();
+        //订单号(新智慧运单号)
         shipmentIdVO.setShipment_id(shipment_id);
 
+        //目的仓库代码
+        String destinationWarehouseCode = MapUtil.getStr(to_address, "name");//目的仓库代码,例如：ONT8
+        FabWarehouseVO fabWarehouseVO = fabWarehouseMapper.findFabWarehouseByWarehouseCode(destinationWarehouseCode);
+        if(ObjectUtil.isEmpty(fabWarehouseVO)){
+            //fabWarehouseVO 不存在 直接设置name
+            shipmentIdVO.setWarehouseCode(destinationWarehouseCode);
+        }else{
+            //fabWarehouseVO 存在 直接设置id
+            shipmentIdVO.setWarehouseId(fabWarehouseVO.getId());
+        }
         return CommonResult.success(shipmentIdVO);
     }
 

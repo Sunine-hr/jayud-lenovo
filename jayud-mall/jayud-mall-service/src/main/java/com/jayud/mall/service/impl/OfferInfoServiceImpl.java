@@ -338,7 +338,7 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
         for (int i =1; i<oceanFeeList.size(); i++){
             BigDecimal amount = oceanFeeList.get(i).getAmount();
             Integer cid2 = oceanFeeList.get(i).getCid();
-            if(cid != cid2){
+            if(cid.equals(cid2)){
                 cid = cid2;
             }
             if(min.compareTo(amount) == 1){ //min > amount

@@ -230,8 +230,8 @@ public class OrderInfoController {
             }
             //拖车校验参数
             if (OrderStatusEnum.TC.getCode().equals(inputMainOrderForm.getClassCode())
-                    || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.TCEDD.getCode())
-                    || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.TCIDD.getCode())) {
+                    || inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.TCEDD.getCode())
+                    || inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.TCIDD.getCode())) {
                 List<InputTrailerOrderFrom> trailerOrderFrom = form.getTrailerOrderFrom();
                 for (InputTrailerOrderFrom inputTrailerOrderFrom : trailerOrderFrom) {
                     if (!inputTrailerOrderFrom.checkCreateOrder()) {
@@ -239,7 +239,7 @@ public class OrderInfoController {
                     }
                 }
             }
-            //拖车校验参数
+            //仓储校验参数
             if (OrderStatusEnum.CC.getCode().equals(inputMainOrderForm.getClassCode()) || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCEDD.getCode()) || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCIDD.getCode())){
                 if(inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCEDD.getCode())){
                     InputStorageOutOrderForm storageOutOrderForm = form.getStorageOutOrderForm();

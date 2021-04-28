@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -55,6 +56,9 @@ public class TrainingManagementVO extends Model<TrainingManagementVO> {
 
     @ApiModelProperty(value = "培训对象(多个对象隔开)")
     private List<Integer> trainees;
+
+    @ApiModelProperty(value = "培训对象")
+    private String traineesDesc;
 
     @ApiModelProperty(value = "附件路径(多个逗号隔开)")
     @JsonIgnore
@@ -98,4 +102,11 @@ public class TrainingManagementVO extends Model<TrainingManagementVO> {
     }
 
 
+    public void assembleTraineesDesc(Map<Long, String> departmentMap) {
+        StringBuilder sb = new StringBuilder();
+        for (String str : this.traineesDesc.split(",")) {
+            sb.append(departmentMap.get(Long.valueOf(str))).append(",");
+        }
+        this.traineesDesc = sb.toString();
+    }
 }

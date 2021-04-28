@@ -7,6 +7,7 @@ import com.jayud.oms.model.po.BusinessDevEvaluation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.oms.model.vo.BusinessDevEvaluationVO;
 import com.jayud.oms.model.vo.CustomsQuestionnaireVO;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -18,5 +19,5 @@ import com.jayud.oms.model.vo.CustomsQuestionnaireVO;
  */
 public interface BusinessDevEvaluationMapper extends BaseMapper<BusinessDevEvaluation> {
 
-    IPage<BusinessDevEvaluationVO> findByPage(Page<CustomsQuestionnaireVO> page, QueryCustomsQuestionnaireForm form);
+    IPage<BusinessDevEvaluationVO> findByPage(Page<CustomsQuestionnaireVO> page, @Param("form") QueryCustomsQuestionnaireForm form);
 }

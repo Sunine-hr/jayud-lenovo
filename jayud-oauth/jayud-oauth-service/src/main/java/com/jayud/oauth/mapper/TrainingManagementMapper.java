@@ -7,6 +7,7 @@ import com.jayud.oauth.model.po.TrainingManagement;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.oauth.model.vo.TrainingManagementVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -19,5 +20,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface TrainingManagementMapper extends BaseMapper<TrainingManagement> {
 
-    IPage<TrainingManagementVO> findByPage(Page<TrainingManagement> page, QueryTrainingManagementFrom form);
+    IPage<TrainingManagementVO> findByPage(Page<TrainingManagement> page,@Param("form") QueryTrainingManagementFrom form);
 }

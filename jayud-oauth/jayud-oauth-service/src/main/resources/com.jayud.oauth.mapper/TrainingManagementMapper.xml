@@ -24,7 +24,7 @@
     </sql>
     <select id="findByPage" resultType="com.jayud.oauth.model.vo.TrainingManagementVO">
         select
-        id, subject, training_start_time, training_end_time, training_location, trainees,
+        id, subject, training_start_time, training_end_time, training_location, trainees traineesDesc,
         file_path, file_name, create_user, create_time, update_user, update_time
         from
         training_management

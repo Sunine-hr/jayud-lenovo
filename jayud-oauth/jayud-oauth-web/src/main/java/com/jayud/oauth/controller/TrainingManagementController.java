@@ -12,8 +12,12 @@ import com.jayud.oauth.feign.FileClient;
 import com.jayud.oauth.model.bo.AddTrainingManagementForm;
 import com.jayud.oauth.model.bo.QueryTrainingManagementFrom;
 import com.jayud.oauth.model.po.TrainingManagement;
+import com.jayud.oauth.model.vo.DepartmentVO;
 import com.jayud.oauth.model.vo.TrainingManagementVO;
+import com.jayud.oauth.service.ISystemDepartmentService;
+import com.jayud.oauth.service.ISystemUserService;
 import com.jayud.oauth.service.ITrainingManagementService;
+import com.jayud.oauth.service.impl.SystemDepartmentServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +26,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -39,6 +45,8 @@ public class TrainingManagementController {
     @Autowired
     private ITrainingManagementService trainingManagementService;
     @Autowired
+    private ISystemDepartmentService departmentService;
+    @Autowired
     private FileClient fileClient;
 
     @ApiOperation("创建/编辑")
@@ -54,9 +62,13 @@ public class TrainingManagementController {
     public CommonResult<CommonPageResult<TrainingManagementVO>> findByPage(@RequestBody QueryTrainingManagementFrom form) {
         IPage<TrainingManagementVO> list = this.trainingManagementService.findByPage(form);
         Object url = fileClient.getBaseUrl().getData();
+        //培训对象
+        List<DepartmentVO> departments = departmentService.findDepartment(null);
+        Map<Long, String> departmentMap = departments.stream().collect(Collectors.toMap(DepartmentVO::getId, DepartmentVO::getName));
         for (TrainingManagementVO record : list.getRecords()) {
             record.setFileViewList(StringUtils.getFileViews(record.getFilePath(),
                     record.getFileName(), url.toString()));
+            record.assembleTraineesDesc(departmentMap);
         }
 
         return CommonResult.success(new CommonPageResult<>(list));

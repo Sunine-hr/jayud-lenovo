@@ -45,7 +45,7 @@ public class TrainingManagementServiceImpl extends ServiceImpl<TrainingManagemen
 
     @Override
     public IPage<TrainingManagementVO> findByPage(QueryTrainingManagementFrom form) {
-        Page<TrainingManagement> page = new Page<>(form.getPageNum(), form.getPageNum());
-        return this.baseMapper.findByPage(page,form);
+        Page<TrainingManagement> page = new Page<>(form.getPageNum(), form.getPageSize());
+        return this.baseMapper.findByPage(page, form);
     }
 }

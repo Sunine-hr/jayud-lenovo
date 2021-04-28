@@ -30,7 +30,7 @@ public class MysqlGenerator {
                 "jayud-oms\\jayud-oms-service",
                 "jayud-oms\\jayud-oms-web"};
         for (String model : models) {
-            shell(model,"order_cost_template_info");
+            shell(model,"business_dev_evaluation");
 
         }
     }
@@ -64,8 +64,8 @@ public class MysqlGenerator {
         dsc.setDbType(DbType.MYSQL);
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
         dsc.setUsername("root");
-        dsc.setPassword("123456");
-        dsc.setUrl("jdbc:mysql://113.100.140.250:6306/jayud_oms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC");
+        dsc.setPassword("Root!!2020");
+        dsc.setUrl("jdbc:mysql://113.100.140.250:8097/jayud_oms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC");
         mpg.setDataSource(dsc);
 
         // 策略配置

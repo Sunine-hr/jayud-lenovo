@@ -30,7 +30,7 @@ public class MysqlGenerator {
                 "jayud-tms\\jayud-tms-service",
                 "jayud-tms\\jayud-tms-web"};
         for (String model : models) {
-            shell(model,"tms_extension_field");
+            shell(model,"customs_questionnaire");
 
         }
     }
@@ -63,9 +63,9 @@ public class MysqlGenerator {
         DataSourceConfig dsc = new DataSourceConfig();
         dsc.setDbType(DbType.MYSQL);
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
-        dsc.setUsername("jayudtest");
-        dsc.setPassword("jayudtest");
-        dsc.setUrl("jdbc:mysql://rm-wz9m40gpm90c230wobo.mysql.rds.aliyuncs.com/jayud_oms");
+        dsc.setUsername("root");
+        dsc.setPassword("123456");
+        dsc.setUrl("jdbc:mysql://113.100.140.250:6306/jayud_oms");
         mpg.setDataSource(dsc);
 
         // 策略配置

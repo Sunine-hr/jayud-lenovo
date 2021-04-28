@@ -2,6 +2,7 @@ package com.jayud.mall.service;
 
 import com.jayud.mall.model.po.BillCustomsInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.vo.BillCustomsInfoVO;
 import com.jayud.mall.model.vo.CustomsInfoCaseVO;
 
 import java.util.List;
@@ -22,4 +23,11 @@ public interface IBillCustomsInfoService extends IService<BillCustomsInfo> {
      * @return
      */
     List<CustomsInfoCaseVO> findCustomsInfoCase(Long b_id);
+
+    /**
+     * 根据id查询
+     * @param id
+     * @return
+     */
+    BillCustomsInfoVO findBillCustomsInfoById(Long id);
 }

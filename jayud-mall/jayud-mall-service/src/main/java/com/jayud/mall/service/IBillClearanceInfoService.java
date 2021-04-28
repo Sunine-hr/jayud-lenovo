@@ -2,6 +2,7 @@ package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.po.BillClearanceInfo;
+import com.jayud.mall.model.vo.BillClearanceInfoVO;
 import com.jayud.mall.model.vo.ClearanceInfoCaseVO;
 
 import java.util.List;
@@ -22,4 +23,11 @@ public interface IBillClearanceInfoService extends IService<BillClearanceInfo> {
      * @return
      */
     List<ClearanceInfoCaseVO> findClearanceInfoCase(Long b_id);
+
+    /**
+     * 根据id查询
+     * @param id
+     * @return
+     */
+    BillClearanceInfoVO findBillClearanceInfoById(Long id);
 }

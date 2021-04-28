@@ -3,6 +3,7 @@ package com.jayud.mall.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.mall.mapper.BillClearanceInfoMapper;
 import com.jayud.mall.model.po.BillClearanceInfo;
+import com.jayud.mall.model.vo.BillClearanceInfoVO;
 import com.jayud.mall.model.vo.ClearanceInfoCaseVO;
 import com.jayud.mall.service.IBillClearanceInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,5 +29,10 @@ public class BillClearanceInfoServiceImpl extends ServiceImpl<BillClearanceInfoM
     @Override
     public List<ClearanceInfoCaseVO> findClearanceInfoCase(Long b_id) {
         return billClearanceInfoMapper.findClearanceInfoCase(b_id);
+    }
+
+    @Override
+    public BillClearanceInfoVO findBillClearanceInfoById(Long id) {
+        return billClearanceInfoMapper.findBillClearanceInfoById(id);
     }
 }

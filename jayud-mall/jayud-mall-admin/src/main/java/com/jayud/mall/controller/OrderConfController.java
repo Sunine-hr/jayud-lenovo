@@ -7,6 +7,7 @@ import com.jayud.mall.model.bo.OrderConfForm;
 import com.jayud.mall.model.bo.OrderConfIdForm;
 import com.jayud.mall.model.bo.OrderConfParaForm;
 import com.jayud.mall.model.bo.QueryOrderConfForm;
+import com.jayud.mall.model.vo.OceanBillVO;
 import com.jayud.mall.model.vo.OrderConfVO;
 import com.jayud.mall.service.IOrderConfService;
 import com.jayud.mall.utils.NumberGeneratedUtils;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/orderconf")
@@ -97,6 +99,15 @@ public class OrderConfController {
         Long id = form.getId();
         OrderConfVO orderConfVO = orderConfService.findOrderConfById(id);
         return CommonResult.success(orderConfVO);
+    }
+
+    @ApiOperation(value = "根据配载id，查询配载下所有的提单列表")
+    @PostMapping(value = "findOceanBillByConfId")
+    @ApiOperationSupport(order = 9)
+    public CommonResult<List<OceanBillVO>> findOceanBillByConfId(@Valid @RequestBody OrderConfIdForm form){
+        Long id = form.getId();
+        List<OceanBillVO> oceanBillVOList = orderConfService.findOceanBillByConfId(id);
+        return CommonResult.success(oceanBillVOList);
     }
 
 

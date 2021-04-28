@@ -2,6 +2,7 @@ package com.jayud.mall.mapper;
 
 import com.jayud.mall.model.po.BillCustomsInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.mall.model.vo.BillCustomsInfoVO;
 import com.jayud.mall.model.vo.CustomsInfoCaseVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -25,4 +26,11 @@ public interface BillCustomsInfoMapper extends BaseMapper<BillCustomsInfo> {
      * @return
      */
     List<CustomsInfoCaseVO> findCustomsInfoCase(@Param("b_id") Long b_id);
+
+    /**
+     * 根据id查询
+     * @param id
+     * @return
+     */
+    BillCustomsInfoVO findBillCustomsInfoById(@Param("id") Long id);
 }

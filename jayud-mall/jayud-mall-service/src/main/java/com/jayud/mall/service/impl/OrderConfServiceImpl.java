@@ -253,5 +253,12 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
         return orderConfVO;
     }
 
+    @Override
+    public List<OceanBillVO> findOceanBillByConfId(Long id) {
+        //提单信息list
+        List<OceanBillVO> oceanBillVOList = orderConfMapper.findOceanBillVOByOrderId(id);
+        return oceanBillVOList;
+    }
+
 
 }

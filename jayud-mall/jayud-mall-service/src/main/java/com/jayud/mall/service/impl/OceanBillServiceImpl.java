@@ -627,11 +627,10 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     @Override
     public BillClearanceInfoVO findBillClearanceInfoById(Long id) {
         //1.(提单)清关信息表
-        BillClearanceInfo billClearanceInfo = billClearanceInfoService.getById(id);
-        Long b_id = billClearanceInfo.getId();//提单对应清关信息id(bill_clearance_info id)
+        BillClearanceInfoVO billClearanceInfoVO = billClearanceInfoService.findBillClearanceInfoById(id);
+        Long b_id = billClearanceInfoVO.getId();//提单对应清关信息id(bill_clearance_info id)
         //2.提单对应清关箱号信息
         List<ClearanceInfoCaseVO> clearanceInfoCaseVOS =  billClearanceInfoService.findClearanceInfoCase(b_id);
-        BillClearanceInfoVO billClearanceInfoVO = ConvertUtil.convert(billClearanceInfo, BillClearanceInfoVO.class);
         billClearanceInfoVO.setClearanceInfoCaseVOS(clearanceInfoCaseVOS);
         return billClearanceInfoVO;
     }
@@ -639,11 +638,10 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     @Override
     public BillCustomsInfoVO findBillCustomsInfoById(Long id) {
         //1.(提单)报关信息表
-        BillCustomsInfo billCustomsInfo = billCustomsInfoService.getById(id);
-        Long b_id = billCustomsInfo.getId();
+        BillCustomsInfoVO billCustomsInfoVO = billCustomsInfoService.findBillCustomsInfoById(id);
+        Long b_id = billCustomsInfoVO.getId();
         //2.提单对应报关箱号信息
         List<CustomsInfoCaseVO> customsInfoCaseVOS = billCustomsInfoService.findCustomsInfoCase(b_id);
-        BillCustomsInfoVO billCustomsInfoVO = ConvertUtil.convert(billCustomsInfo, BillCustomsInfoVO.class);
         billCustomsInfoVO.setCustomsInfoCaseVOS(customsInfoCaseVOS);
         return billCustomsInfoVO;
     }

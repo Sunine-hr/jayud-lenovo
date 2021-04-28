@@ -6,7 +6,10 @@ import com.jayud.mall.model.bo.OrderConfForm;
 import com.jayud.mall.model.bo.QueryOrderConfForm;
 import com.jayud.mall.model.po.OrderConf;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.vo.OceanBillVO;
 import com.jayud.mall.model.vo.OrderConfVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -66,4 +69,11 @@ public interface IOrderConfService extends IService<OrderConf> {
      * @return
      */
     OrderConfVO addOrderConf(OrderConfForm form);
+
+    /**
+     * 根据配载id，查询提单list
+     * @param id
+     * @return
+     */
+    List<OceanBillVO> findOceanBillByConfId(Long id);
 }

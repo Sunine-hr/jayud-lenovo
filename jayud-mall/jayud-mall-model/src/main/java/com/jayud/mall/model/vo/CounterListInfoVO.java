@@ -1,40 +1,31 @@
 package com.jayud.mall.model.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Larry 20210427
- * 清关信息返回实体
- */
 @Data
-public class BillClearanceInfoVO {
-
-    private static final long serialVersionUID = 1L;
+public class CounterListInfoVO {
 
     @ApiModelProperty(value = "自增id")
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "提单id(ocean_bill id)")
-    private Integer billId;
+    @ApiModelProperty(value = "柜子id(ocean_counter id)")
+    private Long counterId;
 
-    @ApiModelProperty(value = "提单号(ocean_bill order_id)")
-    private String billNo;
+    @ApiModelProperty(value = "柜号(ocean_counter cntr_no)")
+    private String cntrNo;
 
-    @ApiModelProperty(value = "文件名称")
+    @ApiModelProperty(value = "清单名称")
     private String fileName;
 
     @ApiModelProperty(value = "模版文件地址(附件)")
     private String templateUrl;
 
     @ApiModelProperty(value = "说明")
-    private String describe;
+    private String describes;
 
     @ApiModelProperty(value = "总箱数")
     private Integer cartons;
@@ -51,9 +42,7 @@ public class BillClearanceInfoVO {
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
-    @ApiModelProperty(value = "提单对应清关箱号信息list")
-    private List<ClearanceInfoCaseVO> clearanceInfoCases;
-
-
+    @ApiModelProperty(value = "柜子箱号信息list")
+    private List<CounterCaseInfoVO> counterCaseInfoVOS;
 
 }

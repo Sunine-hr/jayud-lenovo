@@ -22,4 +22,26 @@
         id, counter_id, cntr_no, file_name, template_url, describes, cartons, status, user_id, user_name, create_time
     </sql>
 
+    <select id="findCounterListInfoById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CounterListInfoVO">
+        select
+            t.id,t.counter_id,t.cntr_no,t.file_name,t.template_url,t.describes,t.cartons,t.status,t.user_id,t.user_name,t.create_time
+        from counter_list_info t
+        where t.id = #{id}
+
+    </select>
+
+    <select id="findCounterCaseInfo" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CounterCaseInfoVO">
+        select
+            t.id,t.b_id,t.b_name,t.bill_id,t.bill_no,t.case_id,t.carton_no,t.create_time,t.order_no
+        from counter_case_info t
+        where t.b_id = #{b_id}
+    </select>
+
+    <select id="findCounterListInfoByCounterId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CounterListInfoVO">
+        select
+            t.id,t.counter_id,t.cntr_no,t.file_name,t.template_url,t.describes,t.cartons,t.status,t.user_id,t.user_name,t.create_time
+        from counter_list_info t
+        where t.counter_id = #{counterId}
+    </select>
+
 </mapper>

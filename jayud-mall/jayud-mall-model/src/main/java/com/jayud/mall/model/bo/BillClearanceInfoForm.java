@@ -55,6 +55,6 @@ public class BillClearanceInfoForm extends BasePageForm{
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "提单对应清关箱号信息list")
-    private List<ClearanceInfoCaseForm> clearanceInfoCaseForms;
+    private List<ClearanceInfoCaseForm> clearanceInfoCases;
 
 }

@@ -31,9 +31,7 @@ public class MysqlGenerator {
                 "jayud-mall\\jayud-mall-service"
         };
         for (String model : models) {
-            shell(model,"bill_customs_info");
-
-
+            shell(model,"counter_case_info");
         }
     }
 

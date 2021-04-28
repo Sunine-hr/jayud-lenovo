@@ -66,6 +66,9 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     OrderConfMapper orderConfMapper;
 
     @Autowired
+    CounterListInfoMapper counterListInfoMapper;
+
+    @Autowired
     IOceanCounterService oceanCounterService;
 
     @Autowired
@@ -94,7 +97,10 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     IBillCustomsInfoService billCustomsInfoService;
     @Autowired
     ICustomsInfoCaseService customsInfoCaseService;
-
+    @Autowired
+    ICounterListInfoService counterListInfoService;
+    @Autowired
+    ICounterCaseInfoService counterCaseInfoService;
 
 
     @Override
@@ -524,7 +530,7 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         Long b_id = billClearanceInfo.getId();//提单对应清关信息id(bill_clearance_info id)
 
         //2.保存-提单对应清关箱号信息
-        List<ClearanceInfoCaseForm> clearanceInfoCaseForms = form.getClearanceInfoCaseForms();
+        List<ClearanceInfoCaseForm> clearanceInfoCaseForms = form.getClearanceInfoCases();
         List<ClearanceInfoCase> clearanceInfoCases = ConvertUtil.convertList(clearanceInfoCaseForms, ClearanceInfoCase.class);
         QueryWrapper<ClearanceInfoCase> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("b_id", b_id);
@@ -635,7 +641,7 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         Long b_id = billClearanceInfoVO.getId();//提单对应清关信息id(bill_clearance_info id)
         //2.提单对应清关箱号信息
         List<ClearanceInfoCaseVO> clearanceInfoCaseVOS =  billClearanceInfoService.findClearanceInfoCase(b_id);
-        billClearanceInfoVO.setClearanceInfoCaseVOS(clearanceInfoCaseVOS);
+        billClearanceInfoVO.setClearanceInfoCases(clearanceInfoCaseVOS);
         return billClearanceInfoVO;
     }
 
@@ -648,5 +654,66 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         List<CustomsInfoCaseVO> customsInfoCaseVOS = billCustomsInfoService.findCustomsInfoCase(b_id);
         billCustomsInfoVO.setCustomsInfoCaseVOS(customsInfoCaseVOS);
         return billCustomsInfoVO;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CounterListInfoVO saveCounterListInfo(CounterListInfoForm form) {
+        CounterListInfo counterListInfo = ConvertUtil.convert(form, CounterListInfo.class);
+        Long counterId = counterListInfo.getCounterId();//柜子id(ocean_counter id)
+        if(ObjectUtil.isEmpty(counterId)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "柜子id不能为空");
+        }
+        //1.保存-柜子清单信息表
+        counterListInfoService.saveOrUpdate(counterListInfo);
+        Long b_id = counterListInfo.getId();//柜子清单信息表(counter_list_info id)
+
+        //2.保存-柜子箱号信息
+        List<CounterCaseInfoForm> counterCaseInfoForms = form.getCounterCaseInfoForms();
+        List<CounterCaseInfo> counterCaseInfos = ConvertUtil.convertList(counterCaseInfoForms, CounterCaseInfo.class);
+        QueryWrapper<CounterCaseInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("b_id", b_id);
+        counterCaseInfoService.remove(queryWrapper);
+        if(CollUtil.isNotEmpty(counterCaseInfos)){
+            counterCaseInfos.forEach(counterCaseInfo -> {
+                counterCaseInfo.setBId(b_id);//提单对应清关信息id(bill_clearance_info id)
+            });
+            counterCaseInfoService.saveOrUpdateBatch(counterCaseInfos);
+        }
+        CounterListInfoVO counterListInfoVO = ConvertUtil.convert(counterListInfo, CounterListInfoVO.class);
+        return counterListInfoVO;
+
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void delCounterListInfo(CounterListInfoIdForm form) {
+        Long id = form.getId();
+        //1.删除-柜子清单信息表
+        counterListInfoService.removeById(id);
+        //2.删除-柜子箱号信息
+        QueryWrapper<CounterCaseInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("b_id", id);
+        counterCaseInfoService.remove(queryWrapper);
+    }
+
+    @Override
+    public CounterListInfoVO findCounterListInfoById(Long id) {
+        //1.柜子清单信息表
+        CounterListInfoVO counterListInfoVO = counterListInfoService.findCounterListInfoById(id);
+        if(ObjectUtil.isEmpty(counterListInfoVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "柜子清单不存在");
+        }
+        Long b_id = counterListInfoVO.getId();//柜子清单信息表(counter_list_info id)
+        //2.柜子箱号信息
+        List<CounterCaseInfoVO> counterCaseInfoVOS = counterListInfoService.findCounterCaseInfo(b_id);
+        counterListInfoVO.setCounterCaseInfoVOS(counterCaseInfoVOS);
+        return counterListInfoVO;
+    }
+
+    @Override
+    public List<CounterListInfoVO> findCounterListInfoByCounterId(Long counterId) {
+        List<CounterListInfoVO> counterListInfoVOS = counterListInfoMapper.findCounterListInfoByCounterId(counterId);
+        return counterListInfoVOS;
     }
 }

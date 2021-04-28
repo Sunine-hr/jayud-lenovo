@@ -231,4 +231,41 @@ public class OceanBillController {
     }
 
 
+    //提单，柜子，柜子下的清单
+
+    @ApiOperation(value = "添加修改-柜子清单")
+    @PostMapping("/saveCounterListInfo")
+    @ApiOperationSupport(order = 24)
+    public CommonResult<CounterListInfoVO> saveCounterListInfo(@Valid @RequestBody CounterListInfoForm form){
+        CounterListInfoVO counterListInfoVO = oceanBillService.saveCounterListInfo(form);
+        return CommonResult.success(counterListInfoVO);
+    }
+
+    @ApiOperation(value = "删除-柜子清单")
+    @PostMapping("/delCounterListInfo")
+    @ApiOperationSupport(order = 25)
+    public CommonResult delCounterListInfo(@Valid @RequestBody CounterListInfoIdForm form){
+        oceanBillService.delCounterListInfo(form);
+        return CommonResult.success("删除成功");
+    }
+
+    @ApiOperation(value = "查询-柜子清单及其关联的箱号")
+    @PostMapping("/findCounterListInfoById")
+    @ApiOperationSupport(order = 26)
+    public CommonResult<CounterListInfoVO> findCounterListInfoById(@Valid @RequestBody CounterListInfoIdForm form){
+        Long id = form.getId();
+        CounterListInfoVO counterListInfoVO = oceanBillService.findCounterListInfoById(id);
+        return CommonResult.success(counterListInfoVO);
+    }
+
+    @ApiOperation(value = "查询-柜子下的柜子清单信息list")
+    @PostMapping("/findCounterListInfoByCounterId")
+    @ApiOperationSupport(order = 27)
+    public CommonResult<List<CounterListInfoVO>> findCounterListInfoByCounterId(@Valid @RequestBody OceanCounterIdForm form){
+        Long id = form.getId();
+        List<CounterListInfoVO> counterListInfoVOS = oceanBillService.findCounterListInfoByCounterId(id);
+        return CommonResult.success(counterListInfoVOS);
+    }
+
+
 }

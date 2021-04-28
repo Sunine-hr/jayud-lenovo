@@ -178,4 +178,31 @@ public interface IOceanBillService extends IService<OceanBill> {
      * @return
      */
     BillCustomsInfoVO findBillCustomsInfoById(Long id);
+
+    /**
+     * 添加修改-柜子清单
+     * @param form
+     * @return
+     */
+    CounterListInfoVO saveCounterListInfo(CounterListInfoForm form);
+
+    /**
+     * 删除-柜子清单
+     * @param form
+     */
+    void delCounterListInfo(CounterListInfoIdForm form);
+
+    /**
+     * 查询-柜子清单
+     * @param id
+     * @return
+     */
+    CounterListInfoVO findCounterListInfoById(Long id);
+
+    /**
+     * 查询柜子下的清单文件列表
+     * @param counterId
+     * @return
+     */
+    List<CounterListInfoVO> findCounterListInfoByCounterId(Long counterId);
 }

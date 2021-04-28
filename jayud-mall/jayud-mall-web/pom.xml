@@ -51,6 +51,8 @@
                 <configuration>
                     <mainClass>com.jayud.mall.JayudMallWebApplication</mainClass>
                     <layout>ZIP</layout>
+                    <!--fork:设置True，否则可能devtools不会起作用-->
+                    <fork>true</fork>
                 </configuration>
                 <executions>
                     <execution>

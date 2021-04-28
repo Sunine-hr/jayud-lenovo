@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.CounterCaseInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.CounterCaseInfo">
+        <id column="id" property="id" />
+        <result column="b_id" property="bId" />
+        <result column="b_name" property="bName" />
+        <result column="bill_id" property="billId" />
+        <result column="bill_no" property="billNo" />
+        <result column="case_id" property="caseId" />
+        <result column="carton_no" property="cartonNo" />
+        <result column="create_time" property="createTime" />
+        <result column="order_no" property="orderNo" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, b_id, b_name, bill_id, bill_no, case_id, carton_no, create_time, order_no
+    </sql>
+
+</mapper>

@@ -621,15 +621,27 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         customsInfoCaseService.remove(queryWrapper);
     }
 
+    /**
+     *
+     * @param form
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void delOceanCounter(OceanCounterIdForm form) {
-        Long id = form.getId();
-        //1.删除-柜子
-        oceanCounterService.removeById(id);
-        //2.删除-柜子清单信息表
+        Long counterId = form.getId();
+        //1.查询柜子下，所有的，柜子箱号信息 id
+        List<Long> counterCaseInfoIds = oceanCounterMapper.findCounterCaseInfoIdByCounterId(counterId);
+        //2.查询柜子下，所有的，柜子清单信息 id
+        List<Long> counterListInfoIds = oceanCounterMapper.findCounterListInfoIdByCounterId(counterId);
+        //3.查询柜子 id
+        Long id = oceanCounterMapper.findOceanCounterIdById(counterId);
 
-        //3.删除-柜子文件里面的箱子
+        //1.删除-柜子箱号信息
+        counterCaseInfoService.removeByIds(counterCaseInfoIds);
+        //2.删除-柜子清单信息表
+        counterListInfoService.removeByIds(counterListInfoIds);
+        //3.删除-柜子
+        oceanCounterService.removeById(id);
     }
 
     @Override

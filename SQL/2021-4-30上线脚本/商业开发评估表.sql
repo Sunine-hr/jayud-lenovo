@@ -4,7 +4,7 @@ CREATE TABLE `business_dev_evaluation` (
   `customer_code` varchar(50) DEFAULT NULL COMMENT '商业伙伴全称(客户code)',
   `customer_name` varchar(255) DEFAULT NULL COMMENT '商业伙伴全称(客户名称)',
   `legal` varchar(255) DEFAULT NULL COMMENT '法人代表',
-  `set_year` datetime DEFAULT NULL COMMENT '成立年份',
+  `set_year` varchar(20) DEFAULT NULL COMMENT '成立年份',
   `credit_code` varchar(255) DEFAULT NULL COMMENT '社会信用代码',
   `business` varchar(500) DEFAULT NULL COMMENT '经营范围',
   `registered_capital` decimal(20,4) DEFAULT NULL COMMENT '注册资金',
@@ -52,7 +52,7 @@ CREATE TABLE `business_dev_evaluation` (
   `type` int(5) DEFAULT '0' COMMENT '类型(0:客户,1:供应商)',
   `update_user` varchar(50) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  `audit_opinion` varchar(255) DEFAULT NULL COMMENT '审批意见',
-  `evaluation_opinion` varchar(255) DEFAULT NULL COMMENT '评估意见',
+  `audit_opinion` varchar(255) DEFAULT NULL COMMENT '审批意见(经理意见)',
+  `evaluation_opinion` varchar(255) DEFAULT NULL COMMENT '评估意见(总经理意见)',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COMMENT='商业伙伴开发评估表';

@@ -12,6 +12,9 @@ public class ConfCaseForm extends BasePageForm{
     @NotNull(message = "提单id必填")
     private Long billId;
 
+    @ApiModelProperty(value = "配载id")
+    private Long confId;
+
     @ApiModelProperty(value = "箱号")
     private String cartonNo;
 

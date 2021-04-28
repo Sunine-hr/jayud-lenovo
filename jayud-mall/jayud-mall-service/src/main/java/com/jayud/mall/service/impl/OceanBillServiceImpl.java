@@ -616,6 +616,10 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
 
     @Override
     public IPage<ConfCaseVO> findConfCaseByPage(ConfCaseForm form) {
+        Long billId = form.getBillId();
+        OrderConfVO orderConfVO = oceanBillMapper.findOrderConfByBillId(billId);
+        form.setConfId(orderConfVO.getId());
+
         //定义分页参数
         Page<ConfCaseVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则

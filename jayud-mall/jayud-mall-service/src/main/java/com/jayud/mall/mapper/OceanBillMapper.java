@@ -97,4 +97,10 @@ public interface OceanBillMapper extends BaseMapper<OceanBill> {
      */
     IPage<ConfCaseVO> findConfCaseByPage(Page<ConfCaseVO> page, @Param("form") ConfCaseForm form);
 
+    /**
+     * 根据提单id，查询配载
+     * @param billId
+     * @return
+     */
+    OrderConfVO findOrderConfByBillId(@Param("billId") Long billId);
 }

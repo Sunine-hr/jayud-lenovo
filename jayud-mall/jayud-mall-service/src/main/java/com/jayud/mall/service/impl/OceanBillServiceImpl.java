@@ -627,8 +627,9 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         Long id = form.getId();
         //1.删除-柜子
         oceanCounterService.removeById(id);
-        //2.删除-柜子的文件 TODO
-        //3.删除-柜子文件里面的箱子 TODO
+        //2.删除-柜子清单信息表
+
+        //3.删除-柜子文件里面的箱子
     }
 
     @Override

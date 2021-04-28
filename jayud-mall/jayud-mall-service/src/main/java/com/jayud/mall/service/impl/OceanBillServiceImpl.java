@@ -563,9 +563,8 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
             });
             customsInfoCaseService.saveOrUpdateBatch(customsInfoCases);
         }
-
-
-        return null;
+        BillCustomsInfoVO billCustomsInfoVO = ConvertUtil.convert(billCustomsInfo, BillCustomsInfoVO.class);
+        return billCustomsInfoVO;
     }
 
     @Override
@@ -613,5 +612,15 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         oceanCounterService.removeById(id);
         //2.删除-柜子的文件 TODO
         //3.删除-柜子文件里面的箱子 TODO
+    }
+
+    @Override
+    public IPage<ConfCaseVO> findConfCaseByPage(ConfCaseForm form) {
+        //定义分页参数
+        Page<ConfCaseVO> page = new Page(form.getPageNum(),form.getPageSize());
+        //定义排序规则
+        page.addOrder(OrderItem.desc("t.id"));
+        IPage<ConfCaseVO> pageInfo = oceanBillMapper.findConfCaseByPage(page, form);
+        return pageInfo;
     }
 }

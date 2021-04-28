@@ -203,5 +203,14 @@ public class OceanBillController {
         return CommonResult.success("删除成功");
     }
 
+    @ApiOperation(value = "提单，选择配载的箱子(配载，报价，订单，箱号 -> 展示 箱号) 分页")
+    @PostMapping("/findConfCaseByPage")
+    @ApiOperationSupport(order = 21)
+    public CommonResult<CommonPageResult<ConfCaseVO>> findConfCaseByPage(@Valid @RequestBody ConfCaseForm form){
+        IPage<ConfCaseVO> pageList = oceanBillService.findConfCaseByPage(form);
+        CommonPageResult<ConfCaseVO> pageVO = new CommonPageResult(pageList);
+        return CommonResult.success(pageVO);
+    }
+
 
 }

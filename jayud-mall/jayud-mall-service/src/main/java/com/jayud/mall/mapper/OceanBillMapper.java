@@ -3,6 +3,7 @@ package com.jayud.mall.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.mall.model.bo.ConfCaseForm;
 import com.jayud.mall.model.bo.QueryOceanBillForm;
 import com.jayud.mall.model.po.OceanBill;
 import com.jayud.mall.model.vo.*;
@@ -87,4 +88,12 @@ public interface OceanBillMapper extends BaseMapper<OceanBill> {
      * @return
      */
     List<OceanCounterVO> findOceanCounterByObId(@Param("obId") Long obId);
+
+    /**
+     * 提单，选择配载的箱子(配载，报价，订单，箱号 -> 展示 箱号) 分页
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<ConfCaseVO> findConfCaseByPage(Page<ConfCaseVO> page, @Param("form") ConfCaseForm form);
 }

@@ -157,4 +157,11 @@ public interface IOceanBillService extends IService<OceanBill> {
      * @param form
      */
     void delOceanCounter(OceanCounterIdForm form);
+
+    /**
+     * 提单，选择配载的箱子(配载，报价，订单，箱号 -> 展示 箱号) 分页
+     * @param form
+     * @return
+     */
+    IPage<ConfCaseVO> findConfCaseByPage(ConfCaseForm form);
 }

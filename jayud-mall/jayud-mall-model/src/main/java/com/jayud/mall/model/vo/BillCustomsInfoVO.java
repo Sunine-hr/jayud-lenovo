@@ -51,7 +51,7 @@ public class BillCustomsInfoVO {
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "提单对应报关箱号信息list")
-    private List<CustomsInfoCaseVO> customsInfoCaseVOS;
+    private List<CustomsInfoCaseVO> customsInfoCases;
 
 
 }

@@ -55,5 +55,5 @@ public class BillCustomsInfoForm extends BasePageForm{
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "提单对应报关箱号信息list")
-    private List<CustomsInfoCaseForm> customsInfoCaseForms;
+    private List<CustomsInfoCaseForm> customsInfoCases;
 }

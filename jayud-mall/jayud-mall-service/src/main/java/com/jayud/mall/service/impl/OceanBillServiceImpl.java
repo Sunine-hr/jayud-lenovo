@@ -561,7 +561,7 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         QueryWrapper<CustomsInfoCase> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("b_id", b_id);
         customsInfoCaseService.remove(queryWrapper);
-        List<CustomsInfoCaseForm> customsInfoCaseForms = form.getCustomsInfoCaseForms();
+        List<CustomsInfoCaseForm> customsInfoCaseForms = form.getCustomsInfoCases();
         if(CollUtil.isNotEmpty(customsInfoCaseForms)){
             List<CustomsInfoCase> customsInfoCases = ConvertUtil.convertList(customsInfoCaseForms, CustomsInfoCase.class);
             customsInfoCases.forEach(customsInfoCase -> {
@@ -652,7 +652,7 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         Long b_id = billCustomsInfoVO.getId();
         //2.提单对应报关箱号信息
         List<CustomsInfoCaseVO> customsInfoCaseVOS = billCustomsInfoService.findCustomsInfoCase(b_id);
-        billCustomsInfoVO.setCustomsInfoCaseVOS(customsInfoCaseVOS);
+        billCustomsInfoVO.setCustomsInfoCases(customsInfoCaseVOS);
         return billCustomsInfoVO;
     }
 
@@ -669,7 +669,7 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         Long b_id = counterListInfo.getId();//柜子清单信息表(counter_list_info id)
 
         //2.保存-柜子箱号信息
-        List<CounterCaseInfoForm> counterCaseInfoForms = form.getCounterCaseInfoForms();
+        List<CounterCaseInfoForm> counterCaseInfoForms = form.getCounterCaseInfos();
         List<CounterCaseInfo> counterCaseInfos = ConvertUtil.convertList(counterCaseInfoForms, CounterCaseInfo.class);
         QueryWrapper<CounterCaseInfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("b_id", b_id);
@@ -707,7 +707,7 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         Long b_id = counterListInfoVO.getId();//柜子清单信息表(counter_list_info id)
         //2.柜子箱号信息
         List<CounterCaseInfoVO> counterCaseInfoVOS = counterListInfoService.findCounterCaseInfo(b_id);
-        counterListInfoVO.setCounterCaseInfoVOS(counterCaseInfoVOS);
+        counterListInfoVO.setCounterCaseInfos(counterCaseInfoVOS);
         return counterListInfoVO;
     }
 

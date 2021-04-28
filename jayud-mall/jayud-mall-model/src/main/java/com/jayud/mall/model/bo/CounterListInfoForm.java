@@ -43,7 +43,7 @@ public class CounterListInfoForm {
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "柜子箱号信息list")
-    private List<CounterCaseInfoForm> counterCaseInfoForms;
+    private List<CounterCaseInfoForm> counterCaseInfos;
 
 
 }

@@ -791,6 +791,11 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     @Override
     public List<CounterListInfoVO> findCounterListInfoByCounterId(Long counterId) {
         List<CounterListInfoVO> counterListInfoVOS = counterListInfoMapper.findCounterListInfoByCounterId(counterId);
+        counterListInfoVOS.forEach(counterListInfoVO -> {
+            Long b_id = counterListInfoVO.getId();//b_id 柜子清单信息表(counter_list_info id)
+            Integer total = counterListInfoMapper.findCounterCaseInfoTotalBybid(b_id);
+            counterListInfoVO.setCartons(total);
+        });
         return counterListInfoVOS;
     }
 }

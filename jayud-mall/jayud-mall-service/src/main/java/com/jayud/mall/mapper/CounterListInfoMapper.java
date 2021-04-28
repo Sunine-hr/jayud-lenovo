@@ -40,4 +40,11 @@ public interface CounterListInfoMapper extends BaseMapper<CounterListInfo> {
      * @return
      */
     List<CounterListInfoVO> findCounterListInfoByCounterId(@Param("counterId") Long counterId);
+
+    /**
+     * 统计箱数
+     * @param b_id
+     * @return
+     */
+    Integer findCounterCaseInfoTotalBybid(@Param("b_id") Long b_id);
 }

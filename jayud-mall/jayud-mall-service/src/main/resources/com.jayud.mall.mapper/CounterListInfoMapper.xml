@@ -44,4 +44,8 @@
         where t.counter_id = #{counterId}
     </select>
 
+    <select id="findCounterCaseInfoTotalBybid" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        select count(*) total from counter_case_info where b_id=#{b_id}
+    </select>
+
 </mapper>

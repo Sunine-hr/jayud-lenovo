@@ -164,4 +164,18 @@ public interface IOceanBillService extends IService<OceanBill> {
      * @return
      */
     IPage<ConfCaseVO> findConfCaseByPage(ConfCaseForm form);
+
+    /**
+     * 查询-(提单)清关信息表
+     * @param id
+     * @return
+     */
+    BillClearanceInfoVO findBillClearanceInfoById(Long id);
+
+    /**
+     * 查询-(提单)报关信息表
+     * @param id
+     * @return
+     */
+    BillCustomsInfoVO findBillCustomsInfoById(Long id);
 }

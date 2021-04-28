@@ -8,10 +8,14 @@ import javax.validation.constraints.NotNull;
 @Data
 public class ConfCaseForm extends BasePageForm{
 
-    @ApiModelProperty(value = "配载id")
-    @NotNull(message = "配载id必填")
-    private Long confId;
+    @ApiModelProperty(value = "提单id")
+    @NotNull(message = "提单id必填")
+    private Long billId;
 
     @ApiModelProperty(value = "箱号")
     private String cartonNo;
+
+    @ApiModelProperty(value = "订单号")
+    private String orderNo;
+
 }

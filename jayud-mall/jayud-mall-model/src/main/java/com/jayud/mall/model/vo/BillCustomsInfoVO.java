@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Larry 20210427
@@ -49,6 +50,8 @@ public class BillCustomsInfoVO {
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "提单对应报关箱号信息list")
+    private List<CustomsInfoCaseVO> customsInfoCaseVOS;
 
 
 }

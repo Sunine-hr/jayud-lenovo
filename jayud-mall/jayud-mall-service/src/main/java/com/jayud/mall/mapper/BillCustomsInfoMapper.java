@@ -2,6 +2,11 @@ package com.jayud.mall.mapper;
 
 import com.jayud.mall.model.po.BillCustomsInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.mall.model.vo.CustomsInfoCaseVO;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -11,6 +16,13 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author fachang.mao
  * @since 2021-04-27
  */
+@Mapper
 public interface BillCustomsInfoMapper extends BaseMapper<BillCustomsInfo> {
 
+    /**
+     * 根据报关信息id，查询提单对应报关箱号信息
+     * @param b_id
+     * @return
+     */
+    List<CustomsInfoCaseVO> findCustomsInfoCase(@Param("b_id") Long b_id);
 }

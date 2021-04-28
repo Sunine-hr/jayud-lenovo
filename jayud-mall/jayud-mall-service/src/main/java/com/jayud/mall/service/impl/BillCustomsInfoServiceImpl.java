@@ -2,9 +2,13 @@ package com.jayud.mall.service.impl;
 
 import com.jayud.mall.model.po.BillCustomsInfo;
 import com.jayud.mall.mapper.BillCustomsInfoMapper;
+import com.jayud.mall.model.vo.CustomsInfoCaseVO;
 import com.jayud.mall.service.IBillCustomsInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +21,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class BillCustomsInfoServiceImpl extends ServiceImpl<BillCustomsInfoMapper, BillCustomsInfo> implements IBillCustomsInfoService {
 
+    @Autowired
+    BillCustomsInfoMapper billCustomsInfoMapper;
+
+    @Override
+    public List<CustomsInfoCaseVO> findCustomsInfoCase(Long b_id) {
+        return billCustomsInfoMapper.findCustomsInfoCase(b_id);
+    }
 }

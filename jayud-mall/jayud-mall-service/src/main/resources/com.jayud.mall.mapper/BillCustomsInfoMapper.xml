@@ -21,5 +21,13 @@
     <sql id="Base_Column_List">
         id, bill_id, bill_no, file_name, template_url, describes, cartons, status, user_id, user_name, create_time
     </sql>
+    
+    <select id="findCustomsInfoCase" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CustomsInfoCaseVO">
+        select
+            t.id,t.b_id,t.b_name,t.bill_id,t.bill_no,t.case_id,t.carton_no,t.create_time,t.order_no
+        from customs_info_case t
+        where t.b_id = #{b_id}
+    </select>
+    
 
 </mapper>

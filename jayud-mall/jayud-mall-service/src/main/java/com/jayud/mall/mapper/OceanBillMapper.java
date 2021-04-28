@@ -96,4 +96,5 @@ public interface OceanBillMapper extends BaseMapper<OceanBill> {
      * @return
      */
     IPage<ConfCaseVO> findConfCaseByPage(Page<ConfCaseVO> page, @Param("form") ConfCaseForm form);
+
 }

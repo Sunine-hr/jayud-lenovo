@@ -1,16 +1,12 @@
 package com.jayud.mall.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.mall.model.bo.BillClearanceInfoForm;
-import com.jayud.mall.model.bo.QueryAccountReceivableForm;
-import com.jayud.mall.model.bo.SaveSystemUserForm;
 import com.jayud.mall.model.po.BillClearanceInfo;
-import com.jayud.mall.model.po.BillCustomsInfo;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.jayud.mall.model.vo.AccountReceivableVO;
 import com.jayud.mall.model.vo.BillClearanceInfoVO;
-import com.jayud.mall.model.vo.SystemUserVO;
+import com.jayud.mall.model.vo.ClearanceInfoCaseVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -53,5 +49,10 @@ public interface BillClearanceInfoMapper extends BaseMapper<BillClearanceInfo> {
      */
     void deleteBillClearanceInfo(@Param("id") Long id);
 
-
+    /**
+     * 根据清关信息id，查询提单对应清关箱号信息
+     * @param b_id
+     * @return
+     */
+    List<ClearanceInfoCaseVO> findClearanceInfoCase(@Param("b_id") Long b_id);
 }

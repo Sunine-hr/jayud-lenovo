@@ -212,5 +212,23 @@ public class OceanBillController {
         return CommonResult.success(pageVO);
     }
 
+    @ApiOperation(value = "查询-(提单)清关信息表")
+    @PostMapping("/findBillClearanceInfoById")
+    @ApiOperationSupport(order = 22)
+    public CommonResult<BillClearanceInfoVO> findBillClearanceInfoById(@Valid @RequestBody BillClearanceInfoIdForm form){
+        Long id = form.getId();
+        BillClearanceInfoVO billClearanceInfoVO = oceanBillService.findBillClearanceInfoById(id);
+        return CommonResult.success(billClearanceInfoVO);
+    }
+
+    @ApiOperation(value = "查询-(提单)报关信息表")
+    @PostMapping("/findBillCustomsInfoById")
+    @ApiOperationSupport(order = 23)
+    public CommonResult<BillCustomsInfoVO> findBillCustomsInfoById(@Valid @RequestBody BillCustomsInfoIdForm form){
+        Long id = form.getId();
+        BillCustomsInfoVO billCustomsInfoVO = oceanBillService.findBillCustomsInfoById(id);
+        return CommonResult.success(billCustomsInfoVO);
+    }
+
 
 }

@@ -48,4 +48,11 @@
         delete from bill_clearance_info where id = #{id}
     </delete>
 
+    <select id="findClearanceInfoCase" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.ClearanceInfoCaseVO">
+        select
+            t.id,t.b_id,t.b_name,t.bill_id,t.bill_no,t.case_id,t.carton_no,t.create_time,t.order_no
+        from clearance_info_case t
+        where b_id= #{b_id}
+    </select>
+
 </mapper>

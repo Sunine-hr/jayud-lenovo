@@ -221,9 +221,12 @@
         join offer_info t3 on t3.id = t1.offer_info_id
         join ocean_conf_detail t4 on t4.id_code = t3.id and t4.types = 1
         join order_conf t5 on t5.id = t4.order_id
-        where t5.id = #{form.confId}
+        where t4.id_code = #{form.billId}
         <if test="form.cartonNo != null and form.cartonNo != ''">
             and t.carton_no = #{form.cartonNo}
+        </if>
+        <if test="form.orderNo != null and form.orderNo != ''">
+            and t1.order_no = #{form.orderNo}
         </if>
     </select>
 
